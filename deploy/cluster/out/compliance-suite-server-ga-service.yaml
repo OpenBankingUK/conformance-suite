@@ -1,0 +1,24 @@
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    kompose.cmd: kompose convert --verbose -f ./docker-compose.yml -o deploy/cluster/out/
+    kompose.service.type: loadbalancer
+    kompose.version: 1.15.0 (HEAD)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: compliance-suite-server-ga
+  name: compliance-suite-server-ga
+spec:
+  ports:
+  - name: "80"
+    port: 80
+    targetPort: 80
+  - name: "443"
+    port: 443
+    targetPort: 443
+  selector:
+    io.kompose.service: compliance-suite-server-ga
+  type: LoadBalancer
+status:
+  loadBalancer: {}

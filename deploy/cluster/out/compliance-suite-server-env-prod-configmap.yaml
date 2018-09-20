@@ -1,0 +1,20 @@
+apiVersion: v1
+data:
+  DATA_DB_HOST: mongo
+  DATA_DB_NAME: compliance_prod
+  ENDPOINT_URL_HOST: compliance-suite-server.ga
+  ENDPOINT_URL_PORT: "4000"
+  GOOGLE_OAUTH_CLIENT_ID: GOOGLE_OAUTH_CLIENT_ID
+  GOOGLE_OAUTH_CLIENT_SECRET: GOOGLE_OAUTH_CLIENT_SECRET
+  GUARDIAN_SECRET_KEY: GUARDIAN_SECRET_KEY
+  KAFKA_HOST: kafka
+  KAFKA_PORT: "9092"
+  OB_API_PROXY_URL: http://ob-api-proxy:8003
+  VALIDATION_KAFKA_BROKER: kafka:9092
+  VALIDATION_KAFKA_TOPIC: kafka-test-topic
+kind: ConfigMap
+metadata:
+  creationTimestamp: null
+  labels:
+    io.kompose.service: compliance-suite-server-env-prod
+  name: compliance-suite-server-env-prod

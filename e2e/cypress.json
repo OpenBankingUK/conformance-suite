@@ -1,0 +1,8 @@
+{
+    "chromeWebSecurity": false,
+    "baseUrl": "http://compliance-suite-server:4000",
+    "reporter": "mochawesome",
+    "screenshotsFolder": "artifacts/screenshots",
+    "videosFolder": "artifacts/videos",
+    "blacklistHosts": "apis.google.com"
+}

@@ -1,0 +1,12 @@
+version: "3.2"
+services:
+  compliance-suite-server-ga:
+    build: .
+    image: eu.gcr.io/compliance-suite-server/compliance-suite-server-ga:${COMPOSE_BUILD_TAG:-latest}
+    container_name: compliance-suite-server-ga
+    hostname: compliance-suite-server-ga
+    ports:
+      - 80:80
+      - 443:443
+    environment:
+      - CADDYFILE=/etc/Caddyfile

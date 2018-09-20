@@ -1,0 +1,210 @@
+version: "3"
+services:
+  # recommended version that works with the kafka library we are using; kafka_ex
+  zookeeper:
+    image: wurstmeister/zookeeper:3.4.6
+    container_name: zookeeper
+    restart: always
+    hostname: zookeeper
+    networks:
+      - openbanking_network
+    ports:
+      - 2181:2181
+    deploy:
+      placement:
+        constraints:
+          - node.labels.machine-size == medium
+
+  kafka:
+    image: wurstmeister/kafka:0.9.0.1
+    container_name: kafka
+    restart: always
+    hostname: kafka
+    networks:
+      - openbanking_network
+    depends_on:
+      - zookeeper
+    ports:
+      - 9092:9092
+    environment:
+      - KAFKA_ADVERTISED_HOST_NAME=${KAFKA_HOST:-kafka}
+      - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
+      - KAFKA_CREATE_TOPICS=kafka-test-topic:1:1
+      - KAFKA_ADVERTISED_PORT=9092
+      - KAFKA_PORT=9092
+      - KAFKA_BROKER_ID=1
+    deploy:
+      placement:
+        constraints:
+          - node.labels.machine-size == medium
+
+  redis:
+    image: redis:alpine
+    container_name: redis
+    restart: always
+    hostname: redis
+    networks:
+      - openbanking_network
+    ports:
+      - 6379:6379
+    deploy:
+      placement:
+        constraints:
+          - node.labels.machine-size == medium
+
+  mongo:
+    image: mongo:3.6-jessie
+    container_name: mongo
+    # don't set the hostname as another container started via `docker-compose run`
+    # will cause `ping mongo` to resolve to the current hostname instead of the
+    # original container serving mongo.
+    # hostname: mongo
+    networks:
+      - openbanking_network
+    ports:
+      - 27017:27017
+    deploy:
+      placement:
+        constraints:
+          - node.labels.machine-size == medium
+
+  reference-mock-server:
+    image: openbankinguk/reference-mock-server
+    container_name: reference-mock-server
+    hostname: reference-mock-server
+    networks:
+      - openbanking_network
+    ports:
+      - 8001:8001
+    environment:
+      - ACCESS_TOKEN=2YotnFZFEjr1zCsicMWpAA
+      - ACCOUNT_SWAGGER=https://raw.githubusercontent.com/OpenBankingUK/account-info-api-spec/ee715e094a59b37aeec46aef278f528f5d89eb03/dist/v1.1/account-info-swagger.json
+      - AUTHORISATION_CODE=spoofAuthorisationCode
+      - BANK_DATA_DIRECTORY=abcbank
+      - CLIENT_ID=spoofClientId
+      - CLIENT_SECRET=spoofClientSecret
+      - DEBUG=error,log
+      - HOST=http://${REFERENCE_HOST:-reference-mock-server}:8001
+      - HEADLESS_CONSENT=true
+      - OPENID_ASPSP_AUTH_HOST=http://${ASPSP_AUTH_HOST_IP:-reference-mock-server}:8001
+      - OPENID_ASPSP_TOKEN_HOST=http://${REFERENCE_HOST:-reference-mock-server}:8001
+      - OPENID_CONFIG_ENDPOINT_URL=http://${REFERENCE_HOST:-reference-mock-server}:8001/openid/config
+      - PAYMENT_SWAGGER=https://raw.githubusercontent.com/OpenBankingUK/payment-initiation-api-spec/96307a92e70e209e51710fab54164f6e8d2e61cf/dist/v1.1/payment-initiation-swagger.json
+      - PORT=8001
+      - USER_DATA_DIRECTORY=alice
+      - VERSION=v1.1
+    command: /bin/bash -c 'rm -fr .env && DEBUG=debug,log,error npm run foreman'
+    deploy:
+      placement:
+        constraints:
+          - node.labels.machine-size == medium
+
+  ob-api-proxy:
+    build: ./services/ob-api-proxy
+    image: eu.gcr.io/compliance-suite-server/ob-api-proxy:${COMPOSE_BUILD_TAG:-latest}
+    container_name: ob-api-proxy
+    hostname: ob-api-proxy
+    networks:
+      - openbanking_network
+    ports:
+      - 8003:8003
+    environment:
+      - CLIENT_SCOPES=ASPSPReadAccess TPPReadAccess AuthoritiesReadAccess
+      - DEBUG=error,log,debug
+      - MONGODB_URI=mongodb://mongo:27017/${DATA_DB_NAME}
+      - OB_DIRECTORY_AUTH_HOST=http://reference-mock-server:8001
+      - OB_DIRECTORY_HOST=http://reference-mock-server:8001
+      - OB_ISSUING_CA=
+      - OB_PROVISIONED=false
+      - TPP_REF_SERVER_PORT=8003
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - SIGNING_KEY=${SIGNING_KEY}
+      - SIGNING_KID=XXXXXX-XXXXxxxXxXXXxxx_xxxx
+      - SOFTWARE_STATEMENT_ID=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+      - TRANSPORT_CERT=
+      - TRANSPORT_KEY=
+      - VALIDATE_RESPONSE=${VALIDATE_RESPONSE:-true}
+      - VALIDATION_KAFKA_TOPIC=kafka-test-topic
+      - VALIDATION_KAFKA_BROKER=kafka:9092
+      - INIT_REFERENCE_MOCK_SERVER=${INIT_REFERENCE_MOCK_SERVER:-true}
+      - OZONE_CLIENT_ID=${OZONE_CLIENT_ID}
+      - OZONE_CLIENT_SECRET=${OZONE_CLIENT_SECRET}
+    volumes:
+      - ~/.cache:/root/.cache
+      - ~/.npm:/root/.npm
+    depends_on:
+      - redis
+      - kafka
+      - mongo
+    deploy:
+      placement:
+        constraints:
+          - node.labels.machine-size == medium
+
+  compliance-suite-server:
+    build:
+      context: .
+      args:
+        ENVFILE: ${ENVFILE:-.env}
+        ENV: $ENV
+        DEBUG_ENVS: $DEBUG_ENVS
+    image: eu.gcr.io/compliance-suite-server/compliance-suite-server:${COMPOSE_BUILD_TAG:-latest}
+    env_file: ${ENVFILE:-.env}
+    container_name: compliance-suite-server
+    hostname: compliance-suite-server
+    networks:
+      - openbanking_network
+    depends_on:
+      - ob-api-proxy
+      - mongo
+      - kafka
+    ports:
+      - 4000:4000
+    volumes:
+      - ~/.cache:/root/.cache
+      - ~/.npm:/root/.npm
+      - ./deps:/build/deps
+      - ./_build:/build/_build
+    deploy:
+      placement:
+        constraints:
+          - node.labels.machine-size == medium
+
+  # reverse proxy image with SSL
+  compliance-suite-server-ga:
+    build:
+      context: ./services/compliance-suite-server-ga/
+      args:
+        GIT_REV: ${GIT_REV}
+    image: eu.gcr.io/compliance-suite-server/compliance-suite-server-ga:${COMPOSE_BUILD_TAG:-latest}
+    container_name: compliance-suite-server-ga
+    hostname: compliance-suite-server-ga
+    networks:
+      - openbanking_network
+    depends_on:
+      - compliance-suite-server
+    ports:
+      - 80:80
+      - 443:443
+    environment:
+      - CADDYFILE=/etc/Caddyfile
+      # - CADDYFILE=/etc/Caddyfile_staging
+    volumes:
+      - caddy-certs:/root/.caddy/
+    # how to expose service externally:
+    # https://github.com/kubernetes/kompose/blob/master/docs/user-guide.md#labels
+    labels:
+      kompose.service.type: loadbalancer
+      # kompose.service.expose: "true"
+      # kompose.service.expose: "compliance-suite-server.ga"
+    deploy:
+      placement:
+        constraints:
+          - node.labels.machine-size == medium
+
+volumes:
+  caddy-certs:
+
+networks:
+  openbanking_network:
