@@ -1,0 +1,715 @@
+[
+  {
+    "permissions": [
+      "ReadAccountsBasic"
+    ],
+    "optional": false,
+    "endpoint": "/accounts",
+    "conditional": false
+  },
+  {
+    "permissions": [
+      "ReadAccountsDetail"
+    ],
+    "optional": false,
+    "endpoint": "/accounts",
+    "conditional": false
+  },
+  {
+    "permissions": [
+      "ReadAccountsBasic",
+      "ReadPAN"
+    ],
+    "optional": false,
+    "endpoint": "/accounts",
+    "conditional": false
+  },
+  {
+    "permissions": [
+      "ReadAccountsDetail",
+      "ReadPAN"
+    ],
+    "optional": false,
+    "endpoint": "/accounts",
+    "conditional": false
+  },
+  {
+    "permissions": [
+      "ReadAccountsBasic"
+    ],
+    "optional": false,
+    "endpoint": "/accounts/{AccountId}",
+    "conditional": false
+  },
+  {
+    "permissions": [
+      "ReadAccountsDetail"
+    ],
+    "optional": false,
+    "endpoint": "/accounts/{AccountId}",
+    "conditional": false
+  },
+  {
+    "permissions": [
+      "ReadAccountsBasic",
+      "ReadPAN"
+    ],
+    "optional": false,
+    "endpoint": "/accounts/{AccountId}",
+    "conditional": false
+  },
+  {
+    "permissions": [
+      "ReadAccountsDetail",
+      "ReadPAN"
+    ],
+    "optional": false,
+    "endpoint": "/accounts/{AccountId}",
+    "conditional": false
+  },
+  {
+    "permissions": [
+      "ReadAccountsBasic",
+      "ReadBalances"
+    ],
+    "optional": true,
+    "endpoint": "/balances",
+    "conditional": false
+  },
+  {
+    "permissions": [
+      "ReadAccountsBasic",
+      "ReadBalances"
+    ],
+    "optional": false,
+    "endpoint": "/accounts/{AccountId}/balances",
+    "conditional": false
+  },
+  {
+    "permissions": [
+      "ReadAccountsBasic",
+      "ReadBeneficiariesBasic"
+    ],
+    "optional": false,
+    "endpoint": "/beneficiaries",
+    "conditional": true
+  },
+  {
+    "permissions": [
+      "ReadAccountsDetail",
+      "ReadBeneficiariesDetail"
+    ],
+    "optional": false,
+    "endpoint": "/beneficiaries",
+    "conditional": true
+  },
+  {
+    "permissions": [
+      "ReadAccountsBasic",
+      "ReadBeneficiariesBasic"
+    ],
+    "optional": false,
+    "endpoint": "/accounts/{AccountId}/beneficiaries",
+    "conditional": true
+  },
+  {
+    "permissions": [
+      "ReadAccountsDetail",
+      "ReadBeneficiariesDetail"
+    ],
+    "optional": false,
+    "endpoint": "/accounts/{AccountId}/beneficiaries",
+    "conditional": true
+  },
+  {
+    "permissions": [
+      "ReadAccountsBasic",
+      "ReadDirectDebits"
+    ],
+    "optional": false,
+    "endpoint": "/direct-debits",
+    "conditional": true
+  },
+  {
+    "permissions": [
+      "ReadAccountsBasic",
+      "ReadDirectDebits"
+    ],
+    "optional": false,
+    "endpoint": "/accounts/{AccountId}/direct-debits",
+    "conditional": true
+  },
+  {
+    "permissions": [
+      "ReadAccountsBasic",
+      "ReadStandingOrdersBasic"
+    ],
+    "optional": true,
+    "endpoint": "/standing-orders",
+    "conditional": false
+  },
+  {
+    "permissions": [
+      "ReadAccountsDetail",
+      "ReadStandingOrdersDetail"
+    ],
+    "optional": true,
+    "endpoint": "/standing-orders",
+    "conditional": false
+  },
+  {
+    "permissions": [
+      "ReadAccountsBasic",
+      "ReadStandingOrdersBasic"
+    ],
+    "optional": false,
+    "endpoint": "/accounts/{AccountId}/standing-orders",
+    "conditional": true
+  },
+  {
+    "permissions": [
+      "ReadAccountsDetail",
+      "ReadStandingOrdersDetail"
+    ],
+    "optional": false,
+    "endpoint": "/accounts/{AccountId}/standing-orders",
+    "conditional": true
+  },
+  {
+    "permissions": [
+      "ReadAccountsBasic",
+      "ReadTransactionsBasic",
+      "ReadTransactionsCredits"
+    ],
+    "optional": true,
+    "endpoint": "/transactions",
+    "conditional": false
+  },
+  {
+    "permissions": [
+      "ReadAccountsDetail",
+      "ReadTransactionsDetail",
+      "ReadTransactionsCredits"
+    ],
+    "optional": true,
+    "endpoint": "/transactions",
+    "conditional": false
+  },
+  {
+    "permissions": [
+      "ReadAccountsBasic",
+      "ReadTransactionsBasic",
+      "ReadTransactionsDebits"
+    ],
+    "optional": true,
+    "endpoint": "/transactions",
+    "conditional": false
+  },
+  {
+    "permissions": [
+      "ReadAccountsDetail",
+      "ReadTransactionsDetail",
+      "ReadTransactionsDebits"
+    ],
+    "optional": true,
+    "endpoint": "/transactions",
+    "conditional": false
+  },
+  {
+    "permissions": [
+      "ReadAccountsBasic",
+      "ReadTransactionsBasic",
+      "ReadTransactionsCredits",
+      "ReadTransactionsDebits"
+    ],
+    "optional": true,
+    "endpoint": "/transactions",
+    "conditional": false
+  },
+  {
+    "permissions": [
+      "ReadAccountsDetail",
+      "ReadTransactionsDetail",
+      "ReadTransactionsCredits",
+      "ReadTransactionsDebits"
+    ],
+    "optional": true,
+    "endpoint": "/transactions",
+    "conditional": false
+  },
+  {
+    "permissions": [
+      "ReadAccountsBasic",
+      "ReadTransactionsBasic",
+      "ReadTransactionsCredits",
+      "ReadPAN"
+    ],
+    "optional": true,
+    "endpoint": "/transactions",
+    "conditional": false
+  },
+  {
+    "permissions": [
+      "ReadAccountsDetail",
+      "ReadTransactionsDetail",
+      "ReadTransactionsCredits",
+      "ReadPAN"
+    ],
+    "optional": true,
+    "endpoint": "/transactions",
+    "conditional": false
+  },
+  {
+    "permissions": [
+      "ReadAccountsBasic",
+      "ReadTransactionsBasic",
+      "ReadTransactionsDebits",
+      "ReadPAN"
+    ],
+    "optional": true,
+    "endpoint": "/transactions",
+    "conditional": false
+  },
+  {
+    "permissions": [
+      "ReadAccountsDetail",
+      "ReadTransactionsDetail",
+      "ReadTransactionsDebits",
+      "ReadPAN"
+    ],
+    "optional": true,
+    "endpoint": "/transactions",
+    "conditional": false
+  },
+  {
+    "permissions": [
+      "ReadAccountsBasic",
+      "ReadTransactionsBasic",
+      "ReadTransactionsCredits",
+      "ReadTransactionsDebits",
+      "ReadPAN"
+    ],
+    "optional": true,
+    "endpoint": "/transactions",
+    "conditional": false
+  },
+  {
+    "permissions": [
+      "ReadAccountsDetail",
+      "ReadTransactionsDetail",
+      "ReadTransactionsCredits",
+      "ReadTransactionsDebits",
+      "ReadPAN"
+    ],
+    "optional": true,
+    "endpoint": "/transactions",
+    "conditional": false
+  },
+  {
+    "permissions": [
+      "ReadAccountsBasic",
+      "ReadTransactionsBasic",
+      "ReadTransactionsCredits"
+    ],
+    "optional": false,
+    "endpoint": "/accounts/{AccountId}/transactions",
+    "conditional": false
+  },
+  {
+    "permissions": [
+      "ReadAccountsDetail",
+      "ReadTransactionsDetail",
+      "ReadTransactionsCredits"
+    ],
+    "optional": false,
+    "endpoint": "/accounts/{AccountId}/transactions",
+    "conditional": false
+  },
+  {
+    "permissions": [
+      "ReadAccountsBasic",
+      "ReadTransactionsBasic",
+      "ReadTransactionsDebits"
+    ],
+    "optional": false,
+    "endpoint": "/accounts/{AccountId}/transactions",
+    "conditional": false
+  },
+  {
+    "permissions": [
+      "ReadAccountsDetail",
+      "ReadTransactionsDetail",
+      "ReadTransactionsDebits"
+    ],
+    "optional": false,
+    "endpoint": "/accounts/{AccountId}/transactions",
+    "conditional": false
+  },
+  {
+    "permissions": [
+      "ReadAccountsBasic",
+      "ReadTransactionsBasic",
+      "ReadTransactionsCredits",
+      "ReadTransactionsDebits"
+    ],
+    "optional": false,
+    "endpoint": "/accounts/{AccountId}/transactions",
+    "conditional": false
+  },
+  {
+    "permissions": [
+      "ReadAccountsDetail",
+      "ReadTransactionsDetail",
+      "ReadTransactionsCredits",
+      "ReadTransactionsDebits"
+    ],
+    "optional": false,
+    "endpoint": "/accounts/{AccountId}/transactions",
+    "conditional": false
+  },
+  {
+    "permissions": [
+      "ReadAccountsBasic",
+      "ReadTransactionsBasic",
+      "ReadTransactionsCredits",
+      "ReadPAN"
+    ],
+    "optional": false,
+    "endpoint": "/accounts/{AccountId}/transactions",
+    "conditional": false
+  },
+  {
+    "permissions": [
+      "ReadAccountsDetail",
+      "ReadTransactionsDetail",
+      "ReadTransactionsCredits",
+      "ReadPAN"
+    ],
+    "optional": false,
+    "endpoint": "/accounts/{AccountId}/transactions",
+    "conditional": false
+  },
+  {
+    "permissions": [
+      "ReadAccountsBasic",
+      "ReadTransactionsBasic",
+      "ReadTransactionsDebits",
+      "ReadPAN"
+    ],
+    "optional": false,
+    "endpoint": "/accounts/{AccountId}/transactions",
+    "conditional": false
+  },
+  {
+    "permissions": [
+      "ReadAccountsDetail",
+      "ReadTransactionsDetail",
+      "ReadTransactionsDebits",
+      "ReadPAN"
+    ],
+    "optional": false,
+    "endpoint": "/accounts/{AccountId}/transactions",
+    "conditional": false
+  },
+  {
+    "permissions": [
+      "ReadAccountsBasic",
+      "ReadTransactionsBasic",
+      "ReadTransactionsCredits",
+      "ReadTransactionsDebits",
+      "ReadPAN"
+    ],
+    "optional": false,
+    "endpoint": "/accounts/{AccountId}/transactions",
+    "conditional": false
+  },
+  {
+    "permissions": [
+      "ReadAccountsDetail",
+      "ReadTransactionsDetail",
+      "ReadTransactionsCredits",
+      "ReadTransactionsDebits",
+      "ReadPAN"
+    ],
+    "optional": false,
+    "endpoint": "/accounts/{AccountId}/transactions",
+    "conditional": false
+  },
+  {
+    "permissions": [
+      "ReadAccountsBasic",
+      "ReadStatementsBasic"
+    ],
+    "optional": true,
+    "endpoint": "/statements",
+    "conditional": false
+  },
+  {
+    "permissions": [
+      "ReadAccountsDetail",
+      "ReadStatementsDetail"
+    ],
+    "optional": true,
+    "endpoint": "/statements",
+    "conditional": false
+  },
+  {
+    "permissions": [
+      "ReadAccountsBasic",
+      "ReadStatementsBasic"
+    ],
+    "optional": false,
+    "endpoint": "/accounts/{AccountId}/statements",
+    "conditional": true
+  },
+  {
+    "permissions": [
+      "ReadAccountsDetail",
+      "ReadStatementsDetail"
+    ],
+    "optional": false,
+    "endpoint": "/accounts/{AccountId}/statements",
+    "conditional": true
+  },
+  {
+    "permissions": [
+      "ReadAccountsBasic",
+      "ReadStatementsDetail"
+    ],
+    "optional": false,
+    "endpoint": "/accounts/{AccountId}/statements/{StatementId}/file",
+    "conditional": true
+  },
+  {
+    "permissions": [
+      "ReadAccountsBasic",
+      "ReadStatementsDetail",
+      "ReadTransactionsBasic",
+      "ReadTransactionsCredits"
+    ],
+    "optional": false,
+    "endpoint": "/accounts/{AccountId}/statements/{StatementId}/transactions",
+    "conditional": true
+  },
+  {
+    "permissions": [
+      "ReadAccountsDetail",
+      "ReadStatementsDetail",
+      "ReadTransactionsDetail",
+      "ReadTransactionsCredits"
+    ],
+    "optional": false,
+    "endpoint": "/accounts/{AccountId}/statements/{StatementId}/transactions",
+    "conditional": true
+  },
+  {
+    "permissions": [
+      "ReadAccountsBasic",
+      "ReadStatementsDetail",
+      "ReadTransactionsBasic",
+      "ReadTransactionsDebits"
+    ],
+    "optional": false,
+    "endpoint": "/accounts/{AccountId}/statements/{StatementId}/transactions",
+    "conditional": true
+  },
+  {
+    "permissions": [
+      "ReadAccountsDetail",
+      "ReadStatementsDetail",
+      "ReadTransactionsDetail",
+      "ReadTransactionsDebits"
+    ],
+    "optional": false,
+    "endpoint": "/accounts/{AccountId}/statements/{StatementId}/transactions",
+    "conditional": true
+  },
+  {
+    "permissions": [
+      "ReadAccountsBasic",
+      "ReadStatementsDetail",
+      "ReadTransactionsBasic",
+      "ReadTransactionsCredits",
+      "ReadTransactionsDebits"
+    ],
+    "optional": false,
+    "endpoint": "/accounts/{AccountId}/statements/{StatementId}/transactions",
+    "conditional": true
+  },
+  {
+    "permissions": [
+      "ReadAccountsDetail",
+      "ReadStatementsDetail",
+      "ReadTransactionsDetail",
+      "ReadTransactionsCredits",
+      "ReadTransactionsDebits"
+    ],
+    "optional": false,
+    "endpoint": "/accounts/{AccountId}/statements/{StatementId}/transactions",
+    "conditional": true
+  },
+  {
+    "permissions": [
+      "ReadAccountsBasic",
+      "ReadStatementsDetail",
+      "ReadTransactionsBasic",
+      "ReadTransactionsCredits",
+      "ReadPAN"
+    ],
+    "optional": false,
+    "endpoint": "/accounts/{AccountId}/statements/{StatementId}/transactions",
+    "conditional": true
+  },
+  {
+    "permissions": [
+      "ReadAccountsDetail",
+      "ReadStatementsDetail",
+      "ReadTransactionsDetail",
+      "ReadTransactionsCredits",
+      "ReadPAN"
+    ],
+    "optional": false,
+    "endpoint": "/accounts/{AccountId}/statements/{StatementId}/transactions",
+    "conditional": true
+  },
+  {
+    "permissions": [
+      "ReadAccountsBasic",
+      "ReadStatementsDetail",
+      "ReadTransactionsBasic",
+      "ReadTransactionsDebits",
+      "ReadPAN"
+    ],
+    "optional": false,
+    "endpoint": "/accounts/{AccountId}/statements/{StatementId}/transactions",
+    "conditional": true
+  },
+  {
+    "permissions": [
+      "ReadAccountsDetail",
+      "ReadStatementsDetail",
+      "ReadTransactionsDetail",
+      "ReadTransactionsDebits",
+      "ReadPAN"
+    ],
+    "optional": false,
+    "endpoint": "/accounts/{AccountId}/statements/{StatementId}/transactions",
+    "conditional": true
+  },
+  {
+    "permissions": [
+      "ReadAccountsBasic",
+      "ReadStatementsDetail",
+      "ReadTransactionsBasic",
+      "ReadTransactionsCredits",
+      "ReadTransactionsDebits",
+      "ReadPAN"
+    ],
+    "optional": false,
+    "endpoint": "/accounts/{AccountId}/statements/{StatementId}/transactions",
+    "conditional": true
+  },
+  {
+    "permissions": [
+      "ReadAccountsDetail",
+      "ReadStatementsDetail",
+      "ReadTransactionsDetail",
+      "ReadTransactionsCredits",
+      "ReadTransactionsDebits",
+      "ReadPAN"
+    ],
+    "optional": false,
+    "endpoint": "/accounts/{AccountId}/statements/{StatementId}/transactions",
+    "conditional": true
+  },
+  {
+    "permissions": [
+      "ReadAccountsBasic",
+      "ReadProducts"
+    ],
+    "optional": true,
+    "endpoint": "/products",
+    "conditional": false
+  },
+  {
+    "permissions": [
+      "ReadAccountsBasic",
+      "ReadProducts"
+    ],
+    "optional": false,
+    "endpoint": "/accounts/{AccountId}/product",
+    "conditional": true
+  },
+  {
+    "permissions": [
+      "ReadAccountsBasic",
+      "ReadOffers"
+    ],
+    "optional": true,
+    "endpoint": "/offers",
+    "conditional": false
+  },
+  {
+    "permissions": [
+      "ReadAccountsBasic",
+      "ReadOffers"
+    ],
+    "optional": false,
+    "endpoint": "/accounts/{AccountId}/offers",
+    "conditional": true
+  },
+  {
+    "permissions": [
+      "ReadAccountsBasic",
+      "ReadParty"
+    ],
+    "optional": false,
+    "endpoint": "/accounts/{AccountId}/party",
+    "conditional": true
+  },
+  {
+    "permissions": [
+      "ReadAccountsBasic",
+      "ReadPartyPSU"
+    ],
+    "optional": false,
+    "endpoint": "/party",
+    "conditional": true
+  },
+  {
+    "permissions": [
+      "ReadAccountsBasic",
+      "ReadScheduledPaymentsBasic"
+    ],
+    "optional": true,
+    "endpoint": "/scheduled-payments",
+    "conditional": false
+  },
+  {
+    "permissions": [
+      "ReadAccountsDetail",
+      "ReadScheduledPaymentsDetail"
+    ],
+    "optional": true,
+    "endpoint": "/scheduled-payments",
+    "conditional": false
+  },
+  {
+    "permissions": [
+      "ReadAccountsBasic",
+      "ReadScheduledPaymentsBasic"
+    ],
+    "optional": false,
+    "endpoint": "/accounts/{AccountId}/scheduled-payments",
+    "conditional": true
+  },
+  {
+    "permissions": [
+      "ReadAccountsDetail",
+      "ReadScheduledPaymentsDetail"
+    ],
+    "optional": false,
+    "endpoint": "/accounts/{AccountId}/scheduled-payments",
+    "conditional": true
+  }
+]

@@ -1,0 +1,7 @@
+extends: airbnb-base
+env:
+  node: true
+  mocha: true
+rules:
+  dot-notation: ["error", { "allowPattern": "authorization" }]
+  quote-props: ["error", "consistent-as-needed"]

@@ -1,0 +1,21 @@
+compliance-suite-server.ga www.compliance-suite-server.ga {
+  # there is a rate limit so we use the staging environment instead for testing.
+  # using production might get us banned if too many certificate requests fail.
+  # see:
+  # * https://github.com/abiosoft/caddy-docker#saving-certificates
+  # * https://caddyserver.com/docs/automatic-https#testing
+  # *
+  tls mohamed.bana@openbanking.org.uk {
+    ca https://acme-staging-v02.api.letsencrypt.org/directory
+  }
+
+  proxy / compliance-suite-server:4000 {
+    websocket
+    transparent
+  }
+
+  log stdout
+  errors stderr
+
+  gzip
+}

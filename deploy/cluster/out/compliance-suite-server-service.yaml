@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    kompose.cmd: kompose convert --verbose -f ./docker-compose.yml -o deploy/cluster/out/
+    kompose.version: 1.15.0 (HEAD)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: compliance-suite-server
+  name: compliance-suite-server
+spec:
+  ports:
+  - name: "4000"
+    port: 4000
+    targetPort: 4000
+  selector:
+    io.kompose.service: compliance-suite-server
+status:
+  loadBalancer: {}

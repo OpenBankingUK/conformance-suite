@@ -1,0 +1,284 @@
+[
+  {
+    "permissions": [
+      "ReadAccountsBasic"
+    ],
+    "optional": false,
+    "endpoint": "/accounts",
+    "conditional": false
+  },
+  {
+    "permissions": [
+      "ReadAccountsDetail"
+    ],
+    "optional": false,
+    "endpoint": "/accounts",
+    "conditional": false
+  },
+  {
+    "permissions": [
+      "ReadAccountsBasic"
+    ],
+    "optional": false,
+    "endpoint": "/accounts/{AccountId}",
+    "conditional": false
+  },
+  {
+    "permissions": [
+      "ReadAccountsDetail"
+    ],
+    "optional": false,
+    "endpoint": "/accounts/{AccountId}",
+    "conditional": false
+  },
+  {
+    "permissions": [
+      "ReadAccountsBasic",
+      "ReadBalances"
+    ],
+    "optional": true,
+    "endpoint": "/balances",
+    "conditional": false
+  },
+  {
+    "permissions": [
+      "ReadAccountsBasic",
+      "ReadBalances"
+    ],
+    "optional": false,
+    "endpoint": "/accounts/{AccountId}/balances",
+    "conditional": false
+  },
+  {
+    "permissions": [
+      "ReadAccountsBasic",
+      "ReadBeneficiariesBasic"
+    ],
+    "optional": true,
+    "endpoint": "/beneficiaries",
+    "conditional": false
+  },
+  {
+    "permissions": [
+      "ReadAccountsDetail",
+      "ReadBeneficiariesDetail"
+    ],
+    "optional": true,
+    "endpoint": "/beneficiaries",
+    "conditional": false
+  },
+  {
+    "permissions": [
+      "ReadAccountsBasic",
+      "ReadBeneficiariesBasic"
+    ],
+    "optional": false,
+    "endpoint": "/accounts/{AccountId}/beneficiaries",
+    "conditional": false
+  },
+  {
+    "permissions": [
+      "ReadAccountsDetail",
+      "ReadBeneficiariesDetail"
+    ],
+    "optional": false,
+    "endpoint": "/accounts/{AccountId}/beneficiaries",
+    "conditional": false
+  },
+  {
+    "permissions": [
+      "ReadAccountsBasic",
+      "ReadDirectDebits"
+    ],
+    "optional": true,
+    "endpoint": "/direct-debits",
+    "conditional": false
+  },
+  {
+    "permissions": [
+      "ReadAccountsBasic",
+      "ReadDirectDebits"
+    ],
+    "optional": false,
+    "endpoint": "/accounts/{AccountId}/direct-debits",
+    "conditional": false
+  },
+  {
+    "permissions": [
+      "ReadAccountsBasic",
+      "ReadStandingOrdersBasic"
+    ],
+    "optional": true,
+    "endpoint": "/standing-orders",
+    "conditional": false
+  },
+  {
+    "permissions": [
+      "ReadAccountsDetail",
+      "ReadStandingOrdersDetail"
+    ],
+    "optional": true,
+    "endpoint": "/standing-orders",
+    "conditional": false
+  },
+  {
+    "permissions": [
+      "ReadAccountsBasic",
+      "ReadStandingOrdersBasic"
+    ],
+    "optional": false,
+    "endpoint": "/accounts/{AccountId}/standing-orders",
+    "conditional": false
+  },
+  {
+    "permissions": [
+      "ReadAccountsDetail",
+      "ReadStandingOrdersDetail"
+    ],
+    "optional": false,
+    "endpoint": "/accounts/{AccountId}/standing-orders",
+    "conditional": false
+  },
+  {
+    "permissions": [
+      "ReadAccountsBasic",
+      "ReadTransactionsBasic",
+      "ReadTransactionsCredits"
+    ],
+    "optional": true,
+    "endpoint": "/transactions",
+    "conditional": false
+  },
+  {
+    "permissions": [
+      "ReadAccountsDetail",
+      "ReadTransactionsDetail",
+      "ReadTransactionsCredits"
+    ],
+    "optional": true,
+    "endpoint": "/transactions",
+    "conditional": false
+  },
+  {
+    "permissions": [
+      "ReadAccountsBasic",
+      "ReadTransactionsBasic",
+      "ReadTransactionsDebits"
+    ],
+    "optional": true,
+    "endpoint": "/transactions",
+    "conditional": false
+  },
+  {
+    "permissions": [
+      "ReadAccountsDetail",
+      "ReadTransactionsDetail",
+      "ReadTransactionsDebits"
+    ],
+    "optional": true,
+    "endpoint": "/transactions",
+    "conditional": false
+  },
+  {
+    "permissions": [
+      "ReadAccountsBasic",
+      "ReadTransactionsBasic",
+      "ReadTransactionsCredits",
+      "ReadTransactionsDebits"
+    ],
+    "optional": true,
+    "endpoint": "/transactions",
+    "conditional": false
+  },
+  {
+    "permissions": [
+      "ReadAccountsDetail",
+      "ReadTransactionsDetail",
+      "ReadTransactionsCredits",
+      "ReadTransactionsDebits"
+    ],
+    "optional": true,
+    "endpoint": "/transactions",
+    "conditional": false
+  },
+  {
+    "permissions": [
+      "ReadAccountsBasic",
+      "ReadTransactionsBasic",
+      "ReadTransactionsCredits"
+    ],
+    "optional": false,
+    "endpoint": "/accounts/{AccountId}/transactions",
+    "conditional": false
+  },
+  {
+    "permissions": [
+      "ReadAccountsDetail",
+      "ReadTransactionsDetail",
+      "ReadTransactionsCredits"
+    ],
+    "optional": false,
+    "endpoint": "/accounts/{AccountId}/transactions",
+    "conditional": false
+  },
+  {
+    "permissions": [
+      "ReadAccountsBasic",
+      "ReadTransactionsBasic",
+      "ReadTransactionsDebits"
+    ],
+    "optional": false,
+    "endpoint": "/accounts/{AccountId}/transactions",
+    "conditional": false
+  },
+  {
+    "permissions": [
+      "ReadAccountsDetail",
+      "ReadTransactionsDetail",
+      "ReadTransactionsDebits"
+    ],
+    "optional": false,
+    "endpoint": "/accounts/{AccountId}/transactions",
+    "conditional": false
+  },
+  {
+    "permissions": [
+      "ReadAccountsBasic",
+      "ReadTransactionsBasic",
+      "ReadTransactionsCredits",
+      "ReadTransactionsDebits"
+    ],
+    "optional": false,
+    "endpoint": "/accounts/{AccountId}/transactions",
+    "conditional": false
+  },
+  {
+    "permissions": [
+      "ReadAccountsDetail",
+      "ReadTransactionsDetail",
+      "ReadTransactionsCredits",
+      "ReadTransactionsDebits"
+    ],
+    "optional": false,
+    "endpoint": "/accounts/{AccountId}/transactions",
+    "conditional": false
+  },
+  {
+    "permissions": [
+      "ReadAccountsBasic",
+      "ReadProducts"
+    ],
+    "optional": true,
+    "endpoint": "/products",
+    "conditional": false
+  },
+  {
+    "permissions": [
+      "ReadAccountsBasic",
+      "ReadProducts"
+    ],
+    "optional": false,
+    "endpoint": "/accounts/{AccountId}/product",
+    "conditional": false
+  }
+]

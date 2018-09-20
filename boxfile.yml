@@ -1,0 +1,63 @@
+run.config:
+
+  # elixir runtime
+  engine: elixir
+
+  engine.config:
+    runtime: elixir-1.6
+
+  # nginx for obproxy reverse server
+  extra_packages:
+    - nodejs
+    - nginx
+
+  # ensure inotify exists for hot-code reloading
+  dev_packages:
+    - inotify-tools
+
+  # cache node_modules
+  cache_dirs:
+    - services/ob-api-proxy/node_modules
+    - apps/compliance_web/assets/node_modules
+
+  # add node_module bins to the $PATH
+  extra_path_dirs:
+    - services/ob-api-proxy/node_modules/.bin
+    - apps/compliance_web/assets/node_modules/.bin
+
+  # enable the filesystem watcher
+  fs_watch: true
+
+# deployment options
+deploy.config:
+  extra_steps:
+    - cd services/ob-api-proxy && npm i && cd -
+    - cd apps/compliance_web/assets && npm i && npm run build && cd -
+    - cd apps/compliance_web && mix phx.digest && cd -
+
+  # migrate the database just before the new process comes online
+  before_live:
+    web.main:
+      - mix ecto.create --quiet
+      - mix ecto.migrate
+
+# add a mongodb data component
+data.db:
+  image: nanobox/mongodb
+  config:
+    version: 3.4
+
+# add a web component with a start command
+web.main:
+  routes:
+    - '/'
+  start: node-start mix phx.server --no-deps-check
+
+web.ob_api_proxy:
+  routes:
+    - '/ob-api-proxy'
+  start:
+    nginx: nginx -c /app/etc/nginx.conf
+    express: node services/ob-api-proxy/index.js
+  writable_dirs:
+    - '.'

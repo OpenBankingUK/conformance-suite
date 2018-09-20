@@ -1,0 +1,61 @@
+##############################
+# Elixir stuff
+
+# The directory Mix will write compiled artifacts to.
+/_build
+
+# If you run "mix test --cover", coverage assets end up here.
+/cover
+
+# The directory Mix downloads your dependencies sources to.
+/deps
+
+# Where 3rd-party dependencies like ExDoc output generated docs.
+/doc
+
+# Ignore .fetch files in case you like to edit your project deps locally.
+/.fetch
+
+# If the VM crashes, it generates a dump, let's ignore it too.
+erl_crash.dump
+
+# Also ignore archive artifacts (built via "mix archive.build").
+*.ez
+
+*.beam
+
+# Files generated VSCode Elixir IDE plugin
+.elixir_ls
+
+##############################
+
+.DS_Store
+
+##############################
+# Node.js stuff
+node_modules
+npm-debug.log
+apps/compliance_web/priv/static/
+apps/compliance_web/assets/node_modules/
+##############################
+
+# >>>>>>>>>>>>>>>>>>>>>>>>>>>>
+# Cypress
+e2e/artifacts/
+e2e/junit-results/
+e2e/mochawesome-report/
+e2e/node_modules/
+.Trash-0/
+# <<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+.git
+.gitignore
+.gitmodules
+.circleci/
+.dockerignore
+.env.sample
+boxfile.yml
+artifacts
+
+# ignore ob-api-proxy
+services/

@@ -1,0 +1,128 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert --verbose -f ./docker-compose.yml -o deploy/cluster/out/
+    kompose.version: 1.15.0 (HEAD)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: ob-api-proxy
+  name: ob-api-proxy
+spec:
+  replicas: 1
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        io.kompose.service: ob-api-proxy
+    spec:
+      containers:
+      - args:
+        - /bin/bash
+        - -c
+        - ./init.sh && DEBUG=debug,log,error npm run start
+        env:
+        - name: ACCOUNT_SWAGGER
+          value: https://raw.githubusercontent.com/OpenBankingUK/account-info-api-spec/ee715e094a59b37aeec46aef278f528f5d89eb03/dist/v1.1/account-info-swagger.json
+        - name: CLIENT_SCOPES
+          value: ASPSPReadAccess TPPReadAccess AuthoritiesReadAccess
+        - name: DEBUG
+          value: error,log,debug
+        - name: LOG_ASPSP_RESPONSES
+          valueFrom:
+            configMapKeyRef:
+              key: LOG_ASPSP_RESPONSES
+              name: ob-api-proxy-env-ob-api-proxy-prod
+        - name: MONGODB_URI
+          valueFrom:
+            configMapKeyRef:
+              key: MONGODB_URI
+              name: ob-api-proxy-env-ob-api-proxy-prod
+        - name: OB_DIRECTORY_AUTH_HOST
+          valueFrom:
+            configMapKeyRef:
+              key: OB_DIRECTORY_AUTH_HOST
+              name: ob-api-proxy-env-ob-api-proxy-prod
+        - name: OB_DIRECTORY_HOST
+          valueFrom:
+            configMapKeyRef:
+              key: OB_DIRECTORY_HOST
+              name: ob-api-proxy-env-ob-api-proxy-prod
+        - name: OB_ISSUING_CA
+          valueFrom:
+            configMapKeyRef:
+              key: OB_ISSUING_CA
+              name: ob-api-proxy-env-ob-api-proxy-prod
+        - name: OB_PROVISIONED
+          valueFrom:
+            configMapKeyRef:
+              key: OB_PROVISIONED
+              name: ob-api-proxy-env-ob-api-proxy-prod
+        - name: PAYMENT_SWAGGER
+          value: https://raw.githubusercontent.com/OpenBankingUK/payment-initiation-api-spec/96307a92e70e209e51710fab54164f6e8d2e61cf/dist/v1.1/payment-initiation-swagger.json
+        - name: REDIS_HOST
+          value: redis
+        - name: REDIS_PORT
+          value: "6379"
+        - name: SIGNING_KEY
+          valueFrom:
+            configMapKeyRef:
+              key: SIGNING_KEY
+              name: ob-api-proxy-env-ob-api-proxy-prod
+        - name: SIGNING_KID
+          valueFrom:
+            configMapKeyRef:
+              key: SIGNING_KID
+              name: ob-api-proxy-env-ob-api-proxy-prod
+        - name: SOFTWARE_STATEMENT_ID
+          valueFrom:
+            configMapKeyRef:
+              key: SOFTWARE_STATEMENT_ID
+              name: ob-api-proxy-env-ob-api-proxy-prod
+        - name: TPP_REF_SERVER_PORT
+          value: "8003"
+        - name: TRANSPORT_CERT
+          valueFrom:
+            configMapKeyRef:
+              key: TRANSPORT_CERT
+              name: ob-api-proxy-env-ob-api-proxy-prod
+        - name: TRANSPORT_KEY
+          valueFrom:
+            configMapKeyRef:
+              key: TRANSPORT_KEY
+              name: ob-api-proxy-env-ob-api-proxy-prod
+        - name: VALIDATE_RESPONSE
+          valueFrom:
+            configMapKeyRef:
+              key: VALIDATE_RESPONSE
+              name: ob-api-proxy-env-ob-api-proxy-prod
+        - name: VALIDATION_KAFKA_BROKER
+          value: kafka:9092
+        - name: VALIDATION_KAFKA_TOPIC
+          value: kafka-test-topic
+        - name: INIT_REFERENCE_MOCK_SERVER
+          valueFrom:
+            configMapKeyRef:
+              key: INIT_REFERENCE_MOCK_SERVER
+              name: ob-api-proxy-env-ob-api-proxy-prod
+        - name: OZONE_CLIENT_ID
+          valueFrom:
+            configMapKeyRef:
+              key: OZONE_CLIENT_ID
+              name: ob-api-proxy-env-ob-api-proxy-prod
+        - name: OZONE_CLIENT_SECRET
+          valueFrom:
+            configMapKeyRef:
+              key: OZONE_CLIENT_SECRET
+              name: ob-api-proxy-env-ob-api-proxy-prod
+        image: eu.gcr.io/compliance-suite-server/ob-api-proxy:latest
+        name: ob-api-proxy
+        ports:
+        - containerPort: 8003
+        resources: {}
+      hostname: ob-api-proxy
+      nodeSelector:
+        machine-size: medium
+      restartPolicy: Always
+status: {}

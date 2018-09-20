@@ -1,0 +1,23 @@
+apiVersion: v1
+data:
+  LOG_ASPSP_RESPONSES: "true"
+  MONGODB_URI: mongodb://mongo:27017/compliance_prod
+  OB_DIRECTORY_AUTH_HOST: https://matls-sso.openbankingtest.org.uk
+  OB_DIRECTORY_HOST: https://matls-api.openbankingtest.org.uk
+  OB_ISSUING_CA: OB_ISSUING_CA
+  OB_PROVISIONED: "true"
+  SIGNING_KEY: SIGNING_KEY
+  SIGNING_KID: SIGNING_KID
+  SOFTWARE_STATEMENT_ID: SOFTWARE_STATEMENT_ID
+  TRANSPORT_CERT: TRANSPORT_CERT
+  TRANSPORT_KEY: TRANSPORT_KEY
+  VALIDATE_RESPONSE: "true"
+  INIT_REFERENCE_MOCK_SERVER: "false"
+  OZONE_CLIENT_ID: OZONE_CLIENT_ID
+  OZONE_CLIENT_SECRET: OZONE_CLIENT_SECRET
+kind: ConfigMap
+metadata:
+  creationTimestamp: null
+  labels:
+    io.kompose.service: ob-api-proxy-env-ob-api-proxy-prod
+  name: ob-api-proxy-env-ob-api-proxy-prod
