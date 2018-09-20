@@ -1,5 +1,26 @@
+clone:
+  depth: 1
+
+options:
+  size: 2x
+
+definitions:
+  services:
+    mongo:
+      image: mongo:3.6-jessie
+    redis:
+      image: redis:4.0.2
+
 pipelines:
   default:
     - step:
+        name: services/ob-api-proxy
+        image: node:8.11-slim
+        services:
+          - mongo
+          - redis
         script:
-          - python --version
+          - cd services/ob-api-proxy
+          - npm install --loglevel=warn --no-progress
+          - npm run eslint
+          - VALIDATION_KAFKA_TOPIC="" VALIDATION_KAFKA_BROKER="" npm test
