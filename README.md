@@ -2,6 +2,10 @@
 
 # compliance-suite-server
 
+## Technical Overview
+
+You can read an [overview of our suite umbrella project and process flow here](./apps/README.md).
+
 ## Cloning the repos
 This repository contains git submodules. So you can either git clone it using:
 
