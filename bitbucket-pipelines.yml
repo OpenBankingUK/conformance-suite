@@ -21,6 +21,15 @@ pipelines:
           - redis
         script:
           - cd services/ob-api-proxy
-          - npm install --loglevel=warn --no-progress
+          - npm install
           - npm run eslint
           - VALIDATION_KAFKA_TOPIC="" VALIDATION_KAFKA_BROKER="" npm test
+
+    - step:
+        name: apps/compliance_web/assets
+        image: node:8.11-slim
+        script:
+          - cd apps/compliance_web/assets
+          - npm install
+          - npm run eslint
+          - npm t -- --coverage --runInBand --ci
