@@ -1,4 +1,4 @@
-# Compliance
+# Conformance
 
 ## Account and Transaction API endpoint permutations file
 

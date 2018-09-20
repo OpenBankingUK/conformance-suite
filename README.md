@@ -1,13 +1,14 @@
 [![CircleCI](https://circleci.com/gh/OpenBankingUK/compliance-suite-server.svg?style=svg&circle-token=7042965fb04fa83d7cafa5b2d43a2c0f0febabf6)](https://circleci.com/gh/OpenBankingUK/compliance-suite-server)
 
-# compliance-suite-server
+# Functional Conformance Suite
 
 ## Technical Overview
 
 You can read an [overview of our suite umbrella project and process flow here](./apps/README.md).
 
 ## Cloning the repos
-This repository contains git submodules. So you can either git clone it using:
+
+You can git clone the repositories as follows:
 
 ```sh
 $ git clone https://github.com/OpenBankingUK/compliance-suite-server.git
@@ -41,7 +42,7 @@ make serve_web
 
 Start `ob-api-proxy` running (in isolation, `make serve_web` starts it in background):
 ```sh
-cd servvices/ob-api-proxy
+cd services/ob-api-proxy
 npm i
 npm run update # Add Auth Servers and save credentials
 npm run dev # Start the node app in watch mode
