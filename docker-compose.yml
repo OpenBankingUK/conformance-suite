@@ -10,10 +10,6 @@ services:
       - openbanking_network
     ports:
       - 2181:2181
-    deploy:
-      placement:
-        constraints:
-          - node.labels.machine-size == medium
 
   kafka:
     image: wurstmeister/kafka:0.9.0.1
@@ -33,10 +29,6 @@ services:
       - KAFKA_ADVERTISED_PORT=9092
       - KAFKA_PORT=9092
       - KAFKA_BROKER_ID=1
-    deploy:
-      placement:
-        constraints:
-          - node.labels.machine-size == medium
 
   redis:
     image: redis:alpine
@@ -47,10 +39,6 @@ services:
       - openbanking_network
     ports:
       - 6379:6379
-    deploy:
-      placement:
-        constraints:
-          - node.labels.machine-size == medium
 
   mongo:
     image: mongo:3.6-jessie
@@ -63,10 +51,6 @@ services:
       - openbanking_network
     ports:
       - 27017:27017
-    deploy:
-      placement:
-        constraints:
-          - node.labels.machine-size == medium
 
   reference-mock-server:
     image: openbankinguk/reference-mock-server
@@ -94,10 +78,6 @@ services:
       - USER_DATA_DIRECTORY=alice
       - VERSION=v1.1
     command: /bin/bash -c 'rm -fr .env && DEBUG=debug,log,error npm run foreman'
-    deploy:
-      placement:
-        constraints:
-          - node.labels.machine-size == medium
 
   ob-api-proxy:
     build: ./services/ob-api-proxy
@@ -106,6 +86,10 @@ services:
     hostname: ob-api-proxy
     networks:
       - openbanking_network
+    depends_on:
+      - redis
+      - kafka
+      - mongo
     ports:
       - 8003:8003
     environment:
@@ -130,17 +114,9 @@ services:
       - INIT_REFERENCE_MOCK_SERVER=${INIT_REFERENCE_MOCK_SERVER:-true}
       - OZONE_CLIENT_ID=${OZONE_CLIENT_ID}
       - OZONE_CLIENT_SECRET=${OZONE_CLIENT_SECRET}
-    volumes:
-      - ~/.cache:/root/.cache
-      - ~/.npm:/root/.npm
-    depends_on:
-      - redis
-      - kafka
-      - mongo
-    deploy:
-      placement:
-        constraints:
-          - node.labels.machine-size == medium
+    # volumes:
+    #   - ${BITBUCKET_CLONE_DIR}/.cache/ob-api-proxy/.cache:/root/.cache
+    #   - ${BITBUCKET_CLONE_DIR}/.cache/ob-api-proxy/.npm:/root/.npm
 
   compliance-suite-server:
     build:
@@ -161,50 +137,11 @@ services:
       - kafka
     ports:
       - 4000:4000
-    volumes:
-      - ~/.cache:/root/.cache
-      - ~/.npm:/root/.npm
-      - ./deps:/build/deps
-      - ./_build:/build/_build
-    deploy:
-      placement:
-        constraints:
-          - node.labels.machine-size == medium
-
-  # reverse proxy image with SSL
-  compliance-suite-server-ga:
-    build:
-      context: ./services/compliance-suite-server-ga/
-      args:
-        GIT_REV: ${GIT_REV}
-    image: eu.gcr.io/compliance-suite-server/compliance-suite-server-ga:${COMPOSE_BUILD_TAG:-latest}
-    container_name: compliance-suite-server-ga
-    hostname: compliance-suite-server-ga
-    networks:
-      - openbanking_network
-    depends_on:
-      - compliance-suite-server
-    ports:
-      - 80:80
-      - 443:443
-    environment:
-      - CADDYFILE=/etc/Caddyfile
-      # - CADDYFILE=/etc/Caddyfile_staging
-    volumes:
-      - caddy-certs:/root/.caddy/
-    # how to expose service externally:
-    # https://github.com/kubernetes/kompose/blob/master/docs/user-guide.md#labels
-    labels:
-      kompose.service.type: loadbalancer
-      # kompose.service.expose: "true"
-      # kompose.service.expose: "compliance-suite-server.ga"
-    deploy:
-      placement:
-        constraints:
-          - node.labels.machine-size == medium
-
-volumes:
-  caddy-certs:
+    # volumes:
+      # - ${BITBUCKET_CLONE_DIR}/.cache/compliance-suite-server/.cache:/root/.cache
+      # - ${BITBUCKET_CLONE_DIR}/.cache/compliance-suite-server/.npm:/root/.npm
+      # - ${BITBUCKET_CLONE_DIR}/deps:/build/deps
+      # - ${BITBUCKET_CLONE_DIR}/_build:/build/_build
 
 networks:
   openbanking_network:

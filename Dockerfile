@@ -22,13 +22,22 @@ COPY apps apps
 COPY config config
 COPY rel rel
 
+RUN echo '----' \
+    && echo -e "\\033[92m ---> cat $ENVFILE ... \\033[0m" \
+    && cat $ENVFILE && \
+    echo '----'
+RUN echo '----' \
+    && echo -e "\\033[92m ---> cat $ENVFILE | grep -v '^\s*#' ... \\033[0m" \
+    && cat $ENVFILE | grep -v '^\s*#' \
+    && echo '----'
+
 # Uncomment line below if you have assets in the priv dir
 COPY apps/compliance_web/priv apps/compliance_web/priv
 
 # Build Phoenix assets
-RUN  cd apps/compliance_web/assets && \
-  npm install && \
-  env `cat ../../../$ENVFILE | grep -v '^\s*#'` npm run build
+RUN cd apps/compliance_web/assets \
+    && npm install \
+    && env `cat ../../../$ENVFILE | grep -v '^\s*#'` npm run build
 
 RUN mix deps.get
 RUN env `cat $ENVFILE | grep -v '^\s*#'` mix phx.digest
@@ -37,9 +46,9 @@ RUN env `cat $ENVFILE | grep -v '^\s*#'` mix release --env=${MIX_ENV}
 # Container that will be used to run the final application
 FROM alpine:latest
 
-RUN apk --no-cache update && \
-  apk --no-cache upgrade && \
-  apk --no-cache add ncurses-libs openssl bash ca-certificates
+RUN apk --no-cache update \
+    && apk --no-cache upgrade \
+    && apk --no-cache add ncurses-libs openssl bash ca-certificates
 
 RUN adduser -D app
 
