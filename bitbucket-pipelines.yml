@@ -23,6 +23,8 @@ pipelines:
           - cd services/ob-api-proxy
           - npm install
           - npm run eslint
+          # prevent tests from trying to connect to Kafka by
+          # setting envs as blank strings
           - VALIDATION_KAFKA_TOPIC="" VALIDATION_KAFKA_BROKER="" npm test
 
     - step:
@@ -33,3 +35,15 @@ pipelines:
           - npm install
           - npm run eslint
           - npm t -- --coverage --runInBand --ci
+
+    - step:
+        name: conformance-suite/apps
+        image: bitwalker/alpine-elixir:1.7
+        services:
+          - mongo
+        script:
+          - mix local.hex --force
+          - mix local.rebar --force
+          - mix do deps.get
+          - mix do compile
+          - mix test --trace --color
