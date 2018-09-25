@@ -2,48 +2,112 @@ clone:
   depth: 1
 
 options:
-  size: 2x
+  docker: true
 
 definitions:
+  caches:
+    cache-ob-api-proxy-node-modules: services/ob-api-proxy/node_modules/
+    cache-compliance-web-modules: apps/compliance_web/assets/node_modules/
+    cache-elixir-deps: deps
+    cache-elixir-build: _build
+    cache-cypress: .cache/cypress/.cache
+    cache-cypress-npm: .cache/cypress/.npm
   services:
     mongo:
       image: mongo:3.6-jessie
+      memory: 128
     redis:
-      image: redis:4.0.2
+      image: redis:alpine
+      memory: 128
+    docker:
+      memory: 2048
 
 pipelines:
   default:
-    - step:
-        name: services/ob-api-proxy
-        image: node:8.11-slim
-        services:
-          - mongo
-          - redis
-        script:
-          - cd services/ob-api-proxy
-          - npm install
-          - npm run eslint
-          # prevent tests from trying to connect to Kafka by
-          # setting envs as blank strings
-          - VALIDATION_KAFKA_TOPIC="" VALIDATION_KAFKA_BROKER="" npm test
+    - parallel:
+        - step:
+            name: e2e
+            size: 2x
+            # When they start shipping docker-compose in the base image
+            # we should switch to the docker image instead.
+            # image: docker:18.06-dind
+            image: docker/compose:1.22.0
+            services:
+              - docker
+            caches:
+              - docker
+              - cache-cypress
+              - cache-cypress-npm
+            artifacts:
+              - e2e/artifacts/**
+            script:
+              - apk add --no-cache bash git # install bash and git and pip
+              - |
+                export ENV="circleci"
+                export ENVFILE=".env.circleci"
+                export KAFKA_HOST="kafka"
+                export KAFKA_PORT="9092"
+                export VALIDATION_KAFKA_BROKER="kafka:9092"
+                export VALIDATION_KAFKA_TOPIC="kafka-test-topic"
+                export OB_API_PROXY_URL="http://ob-api-proxy:8003"
+                export DATA_DB_HOST="mongo"
+                export DATA_DB_NAME="compliance_dev"
+                export ENDPOINT_URL_HOST="compliance-suite-server"
+                export ENDPOINT_URL_PORT="4000"
+                export GOOGLE_OAUTH_CLIENT_ID="<anything>"
+                export GOOGLE_OAUTH_TOKENINFO_URL="http://localhost:4000/tokeninfo?id_token="
+                export GOOGLE_OAUTH_CLIENT_SECRET="<anything>"
+              - ./scripts/create-envs.sh
+              - ./scripts/build-reference-mock-server.sh
+              - docker-compose up -d --build kafka mongo redis reference-mock-server ob-api-proxy
+              - ./scripts/wait-for-kafka.sh
+              - docker-compose up -d --build compliance-suite-server
+              - ./scripts/run-e2e.sh
 
-    - step:
-        name: apps/compliance_web/assets
-        image: node:8.11-slim
-        script:
-          - cd apps/compliance_web/assets
-          - npm install
-          - npm run eslint
-          - npm t -- --coverage --runInBand --ci
+        - step:
+            name: services/ob-api-proxy
+            image: node:8.11-alpine
+            services:
+              - mongo
+              - redis
+            caches:
+              - cache-ob-api-proxy-node-modules
+            script:
+              - cd services/ob-api-proxy && npm install
+              - npm run eslint
+              # Prevent tests from trying to connect to Kafka by
+              # setting envs as blank strings.
+              - VALIDATION_KAFKA_TOPIC="" VALIDATION_KAFKA_BROKER="" npm run test
 
-    - step:
-        name: conformance-suite/apps
-        image: bitwalker/alpine-elixir:1.7
-        services:
-          - mongo
-        script:
-          - mix local.hex --force
-          - mix local.rebar --force
-          - mix do deps.get
-          - mix do compile
-          - mix test --trace --color
+        - step:
+            name: apps/compliance_web/assets
+            image: node:8.11-alpine
+            caches:
+              - cache-compliance-web-modules
+            script:
+              - cd apps/compliance_web/assets && npm install
+              - npm run eslint
+              - npm run test -- --coverage --runInBand --ci
+
+        - step:
+            name: conformance-suite/apps
+            image: bitwalker/alpine-elixir:1.7
+            size: 2x
+            services:
+              - mongo
+            caches:
+              - cache-elixir-deps
+              - cache-elixir-build
+            script:
+              - mix local.hex --force
+              - mix local.rebar --force
+              - MIX_ENV=test mix do deps.get
+              - MIX_ENV=test mix do compile
+              # The tests intermittent fail when running in async mode,
+              # not sure why. Might be related to this:
+              # https://manuka.co/til/2016-08-26-mocks-in-exunit-tests/,
+              # "The second issue came when I realised that Mock would
+              # not allow me to run my test suites asynchronously
+              # (I probably should have been aware of this as it is stated in the README).
+              # Mock has to mock modules Globally so async testing just doesn't work."
+              - MIX_ENV=test mix test --trace --color

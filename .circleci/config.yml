@@ -137,7 +137,7 @@ jobs:
       - run:
           name: Start services
           command: |
-            ./scripts/create-envs
+            ./scripts/create-envs.sh
 
             if [[ "$(docker images -q openbankinguk/reference-mock-server:latest 2> /dev/null)" == "" ]]; then
               cd ../ && \

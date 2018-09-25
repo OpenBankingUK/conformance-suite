@@ -39,14 +39,14 @@ apps/compliance_web/priv/static/
 apps/compliance_web/assets/node_modules/
 ##############################
 
-# >>>>>>>>>>>>>>>>>>>>>>>>>>>>
+##############################
 # Cypress
 e2e/artifacts/
 e2e/junit-results/
 e2e/mochawesome-report/
 e2e/node_modules/
 .Trash-0/
-# <<<<<<<<<<<<<<<<<<<<<<<<<<<<
+##############################
 
 .git
 .gitignore
@@ -54,7 +54,6 @@ e2e/node_modules/
 .circleci/
 .dockerignore
 .env.sample
-boxfile.yml
 artifacts
 
 # ignore ob-api-proxy

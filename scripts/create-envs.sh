@@ -1,10 +1,11 @@
 #!/usr/bin/env bash
-
 if [[ -z "$ENV" ]]; then
   ENVFILE=".env"
 else
   ENVFILE=".env.${ENV}"
 fi
+
+echo -e "\\033[92m ---> create-envs, pwd=$(pwd), ENV=${ENV}, ENVFILE=${ENVFILE} ... \\033[0m"
 
 ENVS=(
   DATA_DB_HOST
