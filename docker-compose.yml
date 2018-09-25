@@ -114,6 +114,10 @@ services:
       - INIT_REFERENCE_MOCK_SERVER=${INIT_REFERENCE_MOCK_SERVER:-true}
       - OZONE_CLIENT_ID=${OZONE_CLIENT_ID}
       - OZONE_CLIENT_SECRET=${OZONE_CLIENT_SECRET}
+      - LOG_LEVEL=debug
+      - DEBUG_HIDE_DATE=0
+      - DEBUG_COLORS=1
+      - FORCE_COLORS=1
     # volumes:
     #   - ${BITBUCKET_CLONE_DIR}/.cache/ob-api-proxy/.cache:/root/.cache
     #   - ${BITBUCKET_CLONE_DIR}/.cache/ob-api-proxy/.npm:/root/.npm
@@ -124,7 +128,7 @@ services:
       args:
         ENVFILE: ${ENVFILE:-.env}
         ENV: $ENV
-        DEBUG_ENVS: $DEBUG_ENVS
+        DEBUG_ENVS: ${DEBUG_ENVS:-false}
     image: eu.gcr.io/compliance-suite-server/compliance-suite-server:${COMPOSE_BUILD_TAG:-latest}
     env_file: ${ENVFILE:-.env}
     container_name: compliance-suite-server
@@ -142,6 +146,24 @@ services:
       # - ${BITBUCKET_CLONE_DIR}/.cache/compliance-suite-server/.npm:/root/.npm
       # - ${BITBUCKET_CLONE_DIR}/deps:/build/deps
       # - ${BITBUCKET_CLONE_DIR}/_build:/build/_build
+
+  e2e:
+    image: cypress/base:8
+    container_name: e2e
+    hostname: e2e
+    networks:
+      - openbanking_network
+    volumes:
+      - ${BITBUCKET_CLONE_DIR:-.}/e2e:/e2e
+      - ${BITBUCKET_CLONE_DIR:-.}/.cache/cypress/.cache:/root/.cache
+      - ${BITBUCKET_CLONE_DIR:-.}/.cache/cypress/.npm:/root/.npm
+    command:
+      - /bin/bash
+      - -c
+      - |
+        cd /e2e
+        CI=true npm install
+        npm run headless
 
 networks:
   openbanking_network:
