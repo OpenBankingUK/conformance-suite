@@ -17,11 +17,11 @@ describe('Config', () => {
 
   describe('getters', () => {
     it('getConfig', () => {
-      expect(getters.getConfig(state)).toEqual(state.parsed);
+      expect(getters.getConfig(state)).toEqual(state.main);
     });
 
     it('getPayload', () => {
-      expect(getters.getPayload(state)).toEqual(state.payload.parsed);
+      expect(getters.getPayload(state)).toEqual(state.payload);
     });
   });
 });

@@ -1,4 +1,4 @@
 export default {
-  getConfig: configState => configState.parsed,
-  getPayload: configState => configState.payload.parsed,
+  getConfig: state => state.main,
+  getPayload: state => state.payload,
 };

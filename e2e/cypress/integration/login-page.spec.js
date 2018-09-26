@@ -8,13 +8,11 @@ describe('Login page', () => {
           // mock gapi with a non signed in user
           win.gapi = gapi('', false);
         }
-      });
-    cy
+      })
       .location().then(loc => {
         // check the redirect to /login
         expect(loc.pathname).to.eq('/login')
-      });
-    cy
+      })
       .get('.login')
       .should('contain', 'Sign in with Google');
   });
@@ -36,8 +34,7 @@ describe('Login page', () => {
       cy
         .location().then(loc => {
           expect(loc.pathname).to.eq('/')
-        });
-      cy
+        })
         .get('.go-to-config')
         .contains('Start a validation run');
     });
@@ -46,15 +43,12 @@ describe('Login page', () => {
       cy
         .location().then(loc => {
           expect(loc.pathname).to.eq('/')
-        });
-      cy
+        })
         .get('.navbar .avatar')
-        .click({ force: true });
-      cy
+        .click({ force: true })
         .get('.user-menu')
         .contains('Sign out')
-        .click({ force: true });
-      cy
+        .click({ force: true })
         .location().then(loc => {
           expect(loc.pathname).to.eq('/login')
         });

@@ -32,17 +32,11 @@ describe('Config', () => {
       expect(commit).toHaveBeenCalledWith('validations/SET_VALIDATION_PAYLOAD', null, { root: true });
     });
 
-    it('submitConfig', () => {
-      actions.submitConfig({ commit });
-      expect(commit).toHaveBeenCalledWith('SUBMIT_CONFIG');
-    });
-
     it('startValidation', () => {
       actions.startValidation({ dispatch, getters });
       expect(dispatch).toHaveBeenNthCalledWith(1, 'resetValidationsRun');
-      expect(dispatch).toHaveBeenNthCalledWith(2, 'submitConfig');
       expect(dispatch).toHaveBeenNthCalledWith(
-        3,
+        2,
         'validations/validate', {
           payload: getters.getPayload,
           config: getters.getConfig,
@@ -50,6 +44,18 @@ describe('Config', () => {
         { root: true },
       );
       expect(routerSpy).toHaveBeenCalledWith('/reports');
+    });
+
+    it('updatePayload', () => {
+      const payload = '{"a": 1}';
+      actions.updatePayload({ commit }, payload);
+      expect(commit).toHaveBeenCalledWith('UPDATE_PAYLOAD', payload);
+    });
+
+    it('deletePayload', () => {
+      const payload = '{"a": 1}';
+      actions.deletePayload({ commit }, payload);
+      expect(commit).toHaveBeenCalledWith('DELETE_PAYLOAD', payload);
     });
   });
 });

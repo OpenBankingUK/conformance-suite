@@ -39,10 +39,6 @@ const example = {
 };
 
 export default {
-  raw: JSON.stringify(example.config, null, 2),
-  parsed: example.config,
-  payload: {
-    raw: JSON.stringify(example.payload, null, 2),
-    parsed: example.payload,
-  },
+  main: example.config,
+  payload: example.payload,
 };

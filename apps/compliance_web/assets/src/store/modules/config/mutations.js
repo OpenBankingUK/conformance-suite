@@ -2,13 +2,18 @@ import * as types from './mutation-types';
 
 export default {
   [types.SET_CONFIG](state, config) {
-    state.raw = config;
+    state.main = config;
   },
   [types.SET_PAYLOAD](state, payload) {
-    state.payload.raw = payload;
+    state.payload = payload;
   },
-  [types.SUBMIT_CONFIG](state) {
-    state.parsed = JSON.parse(state.raw);
-    state.payload.parsed = JSON.parse(state.payload.raw);
+  [types.UPDATE_PAYLOAD](state, payload) {
+    state.payload = [
+      ...state.payload,
+      payload,
+    ];
+  },
+  [types.DELETE_PAYLOAD](state, payload) {
+    state.payload = state.payload.filter(item => JSON.stringify(item) !== JSON.stringify(payload));
   },
 };
