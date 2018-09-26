@@ -1,5 +1,5 @@
 # Reference: https://github.com/Financial-Times/docker-elixir-build
-FROM bitwalker/alpine-elixir:1.7.3 as build
+FROM bitwalker/alpine-elixir:1.7 as build
 
 WORKDIR /build
 
@@ -44,7 +44,7 @@ RUN env `cat $ENVFILE | grep -v '^\s*#'` mix phx.digest
 RUN env `cat $ENVFILE | grep -v '^\s*#'` mix release --env=${MIX_ENV}
 
 # Container that will be used to run the final application
-FROM alpine:latest
+FROM alpine:3.8
 
 RUN apk --no-cache update \
     && apk --no-cache upgrade \
@@ -77,4 +77,6 @@ ENV RELEASE_MUTABLE_DIR /tmp/app
 ENV START_ERL_DATA /tmp/app/start_erl.data
 
 # Start command
-CMD ["/opt/app/bin/compliance_suite_server", "foreground"]
+CMD echo -e "\\033[92m  ---> sleeping (10 seconds) ... \\033[0m" \
+    && sleep 10s \
+    && /opt/app/bin/compliance_suite_server foreground

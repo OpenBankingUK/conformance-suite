@@ -60,3 +60,6 @@ ozone_config/utils/certs
 # file generated when running:
 # $ DEBUG_ENVS=true ENV=serve_web make serve_web
 ob-api-proxy.log
+
+# cache folder used by BitBucket Pipelines
+.cache/
