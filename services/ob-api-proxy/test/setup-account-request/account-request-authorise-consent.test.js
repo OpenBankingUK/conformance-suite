@@ -81,7 +81,12 @@ const parseState = state => base64DecodeJSON(state);
 
 describe('/account-request-authorise-consent with successful setupAccountRequest', () => {
   const permissions = DefaultPermissions;
-  const setupAccountRequestStub = sinon.stub().returns({ accountRequestId, permissions });
+  const setupAccountRequestStub = sinon.stub().returns({
+    Data: {
+      AccountRequestId: accountRequestId,
+      Permissions: permissions,
+    },
+  });
   const setConsentStub = sinon.stub();
   const app = setupApp(setupAccountRequestStub, setConsentStub);
 

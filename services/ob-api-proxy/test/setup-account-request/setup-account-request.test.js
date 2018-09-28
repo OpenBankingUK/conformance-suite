@@ -52,9 +52,13 @@ describe('setupAccountRequest called with authorisationServerId and fapiFinancia
     before(setup('AwaitingAuthorisation'));
 
     it('returns { accountRequestId, permissions } from postAccountRequests call', async () => {
-      const { accountRequestId, permissions } = await setupAccountRequestProxy(headers); // eslint-disable-line
+      const response = await setupAccountRequestProxy(headers);
+      const { Data } = response;
+      const { AccountRequestId: accountRequestId, Permissions: permissions } = Data;
+
       assert.equal(accountRequestId, testAccountRequest);
       assert.equal(permissions, testPermissions);
+
       const headersWithToken = Object.assign({ accessToken }, headers);
       assert(accountRequestsStub.calledWithExactly(resourcePath, headersWithToken));
     });
@@ -64,7 +68,10 @@ describe('setupAccountRequest called with authorisationServerId and fapiFinancia
     before(setup('Authorised'));
 
     it('returns { accountRequestId, permissions } from postAccountRequests call', async () => {
-      const { accountRequestId, permissions } = await setupAccountRequestProxy(headers); // eslint-disable-line
+      const response = await setupAccountRequestProxy(headers);
+      const { Data } = response;
+      const { AccountRequestId: accountRequestId, Permissions: permissions } = Data;
+
       assert.equal(accountRequestId, testAccountRequest);
       assert.equal(permissions, testPermissions);
     });

@@ -1,4 +1,4 @@
-const request = require('superagent');
+const superagent = require('superagent');
 const { createRequest, obtainResult } = require('../ob-util');
 const { consentAccessTokenAndPermissions } = require('../authorise');
 const { extractHeaders } = require('../session');
@@ -49,19 +49,23 @@ const resourceRequestHandler = async (req, res) => {
       fapiFinancialId: headers.fapiFinancialId,
       validationRunId: headers.validationRunId,
     });
-    const call = createRequest(proxiedUrl, request.get(proxiedUrl), headers);
+    const request = createRequest(proxiedUrl, superagent.get(proxiedUrl), headers);
 
     let response;
     try {
-      response = await call.send();
+      response = await request.send();
+      debug('services/ob-api-proxy/app/request-data/ob-proxy.js:resourceRequestHandler -> response=%O', response);
     } catch (err) {
-      error(`error getting ${proxiedUrl}: ${err.message}`);
+      error('services/ob-api-proxy/app/request-data/ob-proxy.js:resourceRequestHandler -> error getting proxiedUrl=%O, err=%O', proxiedUrl, err.message);
       throw err;
     }
 
-    const result = await obtainResult(call, response, headers);
+    const result = await obtainResult(request, response, headers);
+    debug('services/ob-api-proxy/app/request-data/ob-proxy.js:resourceRequestHandler -> result=%O', result);
 
-    return res.status(response.status).json(result);
+    return res
+      .status(response.status)
+      .json(result);
   } catch (err) {
     const status = err.response ? err.response.status : 500;
     return res.status(status).send(err.message);

@@ -6,6 +6,7 @@ const { extractHeaders } = require('../session');
 const uuidv4 = require('uuid/v4');
 const error = require('debug')('error');
 const debug = require('debug')('debug');
+const _ = require('lodash');
 
 const DefaultPermissions = [
   'ReadAccountsDetail',
@@ -40,19 +41,32 @@ const accountRequestAuthoriseConsent = async (req, res) => {
     } = headers;
     const permissionsList = headers.permissions || DefaultPermissions;
     const headersWithPermissions = Object.assign({ permissions: permissionsList }, headers);
-    const { accountRequestId, permissions } = await setupAccountRequest(headersWithPermissions);
+    // const { accountRequestId, permissions } = await setupAccountRequest(headersWithPermissions);
+    const response = await setupAccountRequest(headersWithPermissions);
+    const accountRequestId = _.get(response, 'Data.AccountRequestId');
+    const permissions = _.get(response, 'Data.Permissions');
+    const validation_result = _.get(response, 'validation_result'); // eslint-disable-line
+
     const interactionId2 = uuidv4();
     const uri = await generateRedirectUri(
       authorisationServerId, accountRequestId,
       'openid accounts', sessionId, interactionId2, config,
     );
 
-    debug(`authorize URL is: ${uri}`);
+    debug('services/ob-api-proxy/app/setup-account-request/account-request-authorise-consent.js:accountRequestAuthoriseConsent -> authorize uri=%O', uri);
+    debug('services/ob-api-proxy/app/setup-account-request/account-request-authorise-consent.js:accountRequestAuthoriseConsent -> response=%O', response);
+
     await storePermissions(
       username, authorisationServerId, accountRequestId,
       validationRunId, permissions,
     );
-    return res.status(200).send({ uri }); // We can't intercept a 302 !
+
+    return res
+      .status(200) // We can't intercept a 302 !
+      .send({
+        uri,
+        validation_result,
+      });
   } catch (err) {
     error(err);
     const status = err.status ? err.status : 500;

@@ -52,7 +52,23 @@ defmodule OBApiRemote.Commands.Driver do
       }"
     end)
 
-    handler = fn {:ok, decoded} -> {:ok, decoded["uri"]} end
+    handler = fn {:ok, decoded_response} ->
+      uri = decoded_response["uri"]
+      # validation_result = decoded_response["validation_result"]
+      # json_string = Poison.encode!(validation_result)
+
+      # case Compliance.ValidationRuns.AggregateSupervisor.add_log_item(json_string) do
+      #   {:ok, report} ->
+      #     Logger.info("handler -> report=#{inspect(report)}")
+      #     report
+
+      #   error ->
+      #     Logger.error("handler -> error=#{error}")
+      #     nil
+      # end
+
+      {:ok, uri}
+    end
 
     :authorise_account_access
     |> execute(
@@ -173,7 +189,22 @@ defmodule OBApiRemote.Commands.Driver do
         config = %ApiConfig{}
       ) do
     Logger.debug(fn -> "do_get_resource: #{endpoint}" end)
-    handler = fn {:ok, payload} -> {:ok, payload} end
+    handler = fn {:ok, decoded_response} ->
+      # validation_result = decoded_response["validation_result"]
+      # json_string = Poison.encode!(validation_result)
+
+      # case Compliance.ValidationRuns.AggregateSupervisor.add_log_item(json_string) do
+      #   {:ok, report} ->
+      #     Logger.info("handler -> report=#{inspect(report)}")
+      #     report
+
+      #   error ->
+      #     Logger.error("handler -> error=#{error}")
+      #     nil
+      # end
+
+      {:ok, decoded_response}
+    end
 
     endpoint
     |> execute(
