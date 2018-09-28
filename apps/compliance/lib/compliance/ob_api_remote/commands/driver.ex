@@ -72,7 +72,25 @@ defmodule OBApiRemote.Commands.Driver do
         config = %ApiConfig{}
       ) do
     Logger.debug(fn -> "do_post_authorise_payment" end)
-    handler = fn {:ok, decoded} -> {:ok, decoded["uri"]} end
+
+    handler = fn {:ok, decoded_response} ->
+      uri = decoded_response["uri"]
+
+      # validation_result = decoded_response["validation_result"]
+      # json_string = Poison.encode!(validation_result)
+
+      # case Compliance.ValidationRuns.AggregateSupervisor.add_log_item(json_string) do
+      #   {:ok, report} ->
+      #     Logger.info("handler -> report=#{inspect(report)}")
+      #     report
+
+      #   error ->
+      #     Logger.error("handler -> error=#{error}")
+      #     nil
+      # end
+
+      {:ok, uri}
+    end
 
     :authorise_payment
     |> execute(
@@ -171,7 +189,23 @@ defmodule OBApiRemote.Commands.Driver do
         config = %ApiConfig{}
       ) do
     Logger.debug(fn -> "do_post_complete_payment" end)
-    handler = fn {:ok, _} -> :ok end
+    handler = fn {:ok, response} ->
+      # decoded_response = Poison.decode!(response)
+      # validation_result = decoded_response["validation_result"]
+      # json_string = Poison.encode!(validation_result)
+
+      # case Compliance.ValidationRuns.AggregateSupervisor.add_log_item(json_string) do
+      #   {:ok, report} ->
+      #     Logger.info("handler -> report=#{inspect(report)}")
+      #     report
+
+      #   error ->
+      #     Logger.error("handler -> error=#{error}")
+      #     nil
+      # end
+
+      :ok
+    end
 
     :complete_payment
     |> execute(
@@ -237,16 +271,34 @@ defmodule OBApiRemote.Commands.Driver do
   defp execute_cmd(cmd, handler, optionals \\ []) do
     request_headers = headers(optionals)
 
-    cmd.method
-    |> HTTPoison.request(cmd.url, cmd.body, request_headers)
-    |> case do
+    response = HTTPoison.request(cmd.method, cmd.url, cmd.body, request_headers)
+
+    case response do
       {:ok, %HTTPoison.Response{status_code: 200, body: body}} ->
+        Logger.info("cmd.method=#{cmd.method}")
+        Logger.info("cmd.url=#{cmd.url}")
+        Logger.info("cmd.body=#{cmd.body}")
+        Logger.info("status_code=200")
+        Logger.info("body=#{body}")
+        Logger.info("response=#{inspect(response)}")
         handle_json(body, handler)
 
       {:ok, %HTTPoison.Response{status_code: 201, body: body}} ->
+        Logger.info("cmd.method=#{cmd.method}")
+        Logger.info("cmd.url=#{cmd.url}")
+        Logger.info("cmd.body=#{cmd.body}")
+        Logger.info("status_code=201")
+        Logger.info("body=#{body}")
+        Logger.info("response=#{inspect(response)}")
         handler.({:ok, body})
 
       {:ok, %HTTPoison.Response{status_code: 204, body: body}} ->
+        Logger.info("cmd.method=#{cmd.method}")
+        Logger.info("cmd.url=#{cmd.url}")
+        Logger.info("cmd.body=#{cmd.body}")
+        Logger.info("status_code=204")
+        Logger.info("body=#{body}")
+        Logger.info("response=#{inspect(response)}")
         handler.({:ok, body})
 
       {:ok, %HTTPoison.Response{status_code: 400, body: body}} ->

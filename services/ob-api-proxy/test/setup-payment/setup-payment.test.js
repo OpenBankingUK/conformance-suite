@@ -73,8 +73,8 @@ describe('setupPayment called with authorisationServerId and fapiFinancialId', (
     before(setup('AcceptedTechnicalValidation'));
 
     it('returns PaymentId from postPayments call', async () => {
-      const id = await doSetupPayment();
-      assert.equal(id, paymentId);
+      const response = await doSetupPayment();
+      assert.equal(response.Data.PaymentId, paymentId);
 
       assert(paymentsStub.calledWithExactly(
         resourcePath,
@@ -91,13 +91,13 @@ describe('setupPayment called with authorisationServerId and fapiFinancialId', (
     before(setup('AcceptedCustomerProfile'));
 
     it('returns PaymentId from postPayments call', async () => {
-      let id;
+      let response;
       try {
-        id = await doSetupPayment();
+        response = await doSetupPayment();
       } catch (e) {
         assert.fail('Should not throw error');
       }
-      assert.equal(id, paymentId);
+      assert.equal(response.Data.PaymentId, paymentId);
     });
   });
 

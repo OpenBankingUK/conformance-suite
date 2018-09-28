@@ -149,7 +149,8 @@ const validate = async (req, res, details) => {
     await writeToKafka(logObject);
   }
 
-  return logObject.report;
+  // return logObject.report;
+  return logObject;
 };
 
 module.exports = {

@@ -68,8 +68,8 @@ describe('submitPayment called with authorisationServerId and fapiFinancialId', 
     before(setup(paymentsSuccessStub));
 
     it('Returns PaymentSubmissionId from postPayments call', async () => {
-      const id = await submitPaymentProxy(authorisationServerId, headers);
-      assert.equal(id, PAYMENT_SUBMISSION_ID);
+      const response = await submitPaymentProxy(authorisationServerId, headers);
+      assert.equal(response.Data.PaymentSubmissionId, PAYMENT_SUBMISSION_ID);
       assert.ok(paymentsSuccessStub.calledWithExactly(
         resourcePath,
         '/open-banking/v1.1/payment-submissions',

@@ -13,13 +13,15 @@ const createRequest = async (resourcePath, headers, paymentData) => {
     headers,
     paymentData,
   );
+  debug('services/ob-api-proxy/app/setup-payment/setup-payment.js:createRequest -> /payments response=%O', response);
+
   let error;
   if (response.Data) {
     const status = response.Data.Status;
-    debug(`/payments repsonse Data: ${JSON.stringify(response.Data)}`);
     if (status === 'AcceptedTechnicalValidation' || status === 'AcceptedCustomerProfile') {
       if (response.Data.PaymentId) {
-        return response.Data.PaymentId;
+        // return response.Data.PaymentId;
+        return response;
       }
     } else {
       error = new Error(`Payment response status: "${status}"`);
@@ -27,6 +29,7 @@ const createRequest = async (resourcePath, headers, paymentData) => {
       throw error;
     }
   }
+
   error = new Error('Payment response missing payload');
   error.status = 500;
   throw error;
@@ -44,11 +47,12 @@ exports.setupPayment = async (authorisationServerId,
   );
 
   const headersWithToken = Object.assign({ accessToken }, headers);
-  const paymentId = await createRequest(
+  const response = await createRequest(
     config.resource_endpoint,
     headersWithToken,
     paymentData,
   );
+  const { PaymentId: paymentId } = response.Data;
 
   const fullPaymentData = {
     Data: {
@@ -60,5 +64,6 @@ exports.setupPayment = async (authorisationServerId,
 
   persistPaymentDetails(headers.interactionId, fullPaymentData);
 
-  return paymentId;
+  // return paymentId;
+  return response;
 };

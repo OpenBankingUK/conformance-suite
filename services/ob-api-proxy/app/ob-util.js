@@ -71,8 +71,11 @@ const createRequest = (uri, requestObj, headers) => {
 };
 
 const validateRequestResponse = async (req, res, responseBody, details) => {
-  const { failedValidation } = await validate(req, res, details);
-  return Object.assign(responseBody, { failedValidation });
+  // const { failedValidation } = await validate(req, res, details);
+  // return Object.assign(responseBody, { failedValidation });
+  const validation_result = await validate(req, res, details);
+  const { failedValidation } = validation_result;
+  return Object.assign(responseBody, { failedValidation, validation_result });
 };
 
 const obtainResult = async (call, response, headers) => {

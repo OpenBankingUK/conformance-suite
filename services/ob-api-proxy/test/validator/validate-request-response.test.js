@@ -35,11 +35,11 @@ describe('validate', () => {
 
   describe('without response provided', () => {
     it('returns failedValidation true with message', async () => {
-      const response = await validate(Balances.request(), { body: '{}' }, details);
+      const { report } = await validate(Balances.request(), { body: '{}' }, details);
 
-      assert.equal(response.failedValidation, true);
-      assert.equal(response.message, 'Response validation failed: failed schema validation');
-      assert.deepEqual(response.results.errors, [{
+      assert.equal(report.failedValidation, true);
+      assert.equal(report.message, 'Response validation failed: failed schema validation');
+      assert.deepEqual(report.results.errors, [{
         code: 'OBJECT_MISSING_REQUIRED_PROPERTY',
         message: 'Missing required property: Meta',
         path: [],
@@ -59,8 +59,8 @@ describe('validate', () => {
 
   describe('with valid request and response', () => {
     it('returns failedValidation false', async () => {
-      const response = await validate(Balances.request(), Balances.response(), details);
-      assert.equal(response.failedValidation, false);
+      const { report } = await validate(Balances.request(), Balances.response(), details);
+      assert.equal(report.failedValidation, false);
     });
   });
 
@@ -76,13 +76,13 @@ describe('validate', () => {
     };
 
     it('returns failedValidation true with message and errors', async () => {
-      const response = await validate(Balances.request(), invalidResponse(), details);
+      const { report } = await validate(Balances.request(), invalidResponse(), details);
       const expected = {
         failedValidation: true,
         message: 'Response validation failed: failed schema validation',
         results: validationResults,
       };
-      assert.deepEqual(response, expected);
+      assert.deepEqual(report, expected);
     });
 
     it('and logFormat returns output object for logging', async () => {
@@ -128,7 +128,7 @@ describe('validate', () => {
         ],
       });
 
-      const response = await validate(
+      const { report } = await validate(
         Transactions.valid().request,
         Transactions.valid().basic,
         detailsWithSwaggerUris,
@@ -136,9 +136,9 @@ describe('validate', () => {
 
       // console.error('response:', JSON.stringify(response));
       assert.deepEqual(
-        response,
+        report,
         { failedValidation: false },
-        JSON.stringify(response),
+        JSON.stringify(report),
       );
     }).timeout(1000 * 5);
 
@@ -149,14 +149,14 @@ describe('validate', () => {
         ],
       });
 
-      const response = await validate(
+      const { report } = await validate(
         Transactions.valid().request,
         Transactions.valid().detail,
         detailsWithSwaggerUris,
       );
 
       // console.error('response:', JSON.stringify(response));
-      assert.deepEqual(response, {
+      assert.deepEqual(report, {
         failedValidation: true,
         results: {
           errors: [{
@@ -168,7 +168,7 @@ describe('validate', () => {
           warnings: [],
         },
         message: 'Response validation failed: failed schema validation',
-      }, JSON.stringify(response));
+      }, JSON.stringify(report));
     }).timeout(1000 * 5);
 
     it('returns failedValidation false on detail with detail swaggerUris', async () => {
@@ -178,7 +178,7 @@ describe('validate', () => {
         ],
       });
 
-      const response = await validate(
+      const { report } = await validate(
         Transactions.valid().request,
         Transactions.valid().detail,
         detailsWithSwaggerUris,
@@ -186,9 +186,9 @@ describe('validate', () => {
 
       // console.error('response:', JSON.stringify(response));
       assert.deepEqual(
-        response,
+        report,
         { failedValidation: false },
-        JSON.stringify(response),
+        JSON.stringify(report),
       );
     }).timeout(1000 * 5);
   });
