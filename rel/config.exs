@@ -50,7 +50,6 @@ release :compliance_suite_server do
     :runtime_tools,
     compliance: :permanent,
     compliance_web: :permanent,
-    log_consumer: :permanent,
-    ob_api_remote: :permanent
+    log_consumer: :permanent
   ]
 end
