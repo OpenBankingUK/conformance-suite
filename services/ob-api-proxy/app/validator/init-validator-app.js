@@ -2,16 +2,12 @@ const express = require('express');
 const { replayMiddleware } = require('./replay-middleware');
 const { validationErrorMiddleware } = require('./validation-error-middleware');
 const { swaggerMiddleware } = require('./swagger-middleware');
-const { KafkaStream } = require('./kafka-stream');
 const { logger } = require('../utils/logger');
 
 // validator key -> express app validator
 const validators = new Map();
-let _kafkaStream; // eslint-disable-line
 
 const validateResponseOn = () => process.env.VALIDATE_RESPONSE === 'true';
-const logTopic = () => process.env.VALIDATION_KAFKA_TOPIC;
-const connectionString = () => process.env.VALIDATION_KAFKA_BROKER;
 
 const addValidationMiddleware = async (app, swaggerUriOrFile, swaggerFile) => {
   const { metadata, validator } = await swaggerMiddleware(swaggerUriOrFile, swaggerFile);
@@ -35,21 +31,6 @@ const initValidatorApp = async ({ swaggerUris }) => {
   await configureSwagger(swaggerUris, app);
 
   return app;
-};
-
-const kakfaConfigured = () =>
-  !!(logTopic() && connectionString());
-
-const initKafkaStream = async () => {
-  const kafkaStream = new KafkaStream({
-    kafkaOpts: {
-      connectionString: connectionString(),
-    },
-    topic: logTopic(),
-  });
-  await kafkaStream.init();
-
-  return kafkaStream;
 };
 
 const makeValidatorKey = ({ swaggerUris = [], scope = '' }) => {
@@ -77,20 +58,8 @@ const validatorApp = async (details) => {
   return validator.default;
 };
 
-const kafkaStream = async () => {
-  if (!(validateResponseOn() && kakfaConfigured())) {
-    return undefined;
-  }
-  if (!_kafkaStream) {
-    _kafkaStream = await initKafkaStream();
-  }
-  return _kafkaStream;
-};
-
 module.exports = {
   initValidatorApp,
   validateResponseOn,
   validatorApp,
-  kafkaStream,
-  kakfaConfigured,
 };

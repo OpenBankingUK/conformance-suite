@@ -31,7 +31,11 @@ defmodule Compliance.ValidationRuns.EndpointCall do
   end
 
   def from_json(string) do
-    case Poison.decode(string, as: %EndpointCall{}) do
+    decoded = Poison.decode(string, as: %EndpointCall{})
+    case decoded do
+      {:ok, nil} ->
+        {:error, nil}
+
       {:ok, endpoint_call} ->
         with %EndpointCall{details: %{"validationRunId" => validation_run_id}} <- endpoint_call,
              %EndpointCall{request: %{"path" => path}} <- endpoint_call,

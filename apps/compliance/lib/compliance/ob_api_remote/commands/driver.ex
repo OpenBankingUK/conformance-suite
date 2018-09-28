@@ -54,18 +54,19 @@ defmodule OBApiRemote.Commands.Driver do
 
     handler = fn {:ok, decoded_response} ->
       uri = decoded_response["uri"]
-      # validation_result = decoded_response["validation_result"]
-      # json_string = Poison.encode!(validation_result)
 
-      # case Compliance.ValidationRuns.AggregateSupervisor.add_log_item(json_string) do
-      #   {:ok, report} ->
-      #     Logger.info("handler -> report=#{inspect(report)}")
-      #     report
+      validation_result = decoded_response["validation_result"]
+      json_string = Poison.encode!(validation_result)
 
-      #   error ->
-      #     Logger.error("handler -> error=#{error}")
-      #     nil
-      # end
+      case Compliance.ValidationRuns.AggregateSupervisor.add_log_item(json_string) do
+        {:ok, report} ->
+          Logger.info("handler -> report=#{inspect(report)}")
+          report
+
+        error ->
+          Logger.info("handler -> error=#{inspect(error)}")
+          nil
+      end
 
       {:ok, uri}
     end
@@ -92,18 +93,18 @@ defmodule OBApiRemote.Commands.Driver do
     handler = fn {:ok, decoded_response} ->
       uri = decoded_response["uri"]
 
-      # validation_result = decoded_response["validation_result"]
-      # json_string = Poison.encode!(validation_result)
+      validation_result = decoded_response["validation_result"]
+      json_string = Poison.encode!(validation_result)
 
-      # case Compliance.ValidationRuns.AggregateSupervisor.add_log_item(json_string) do
-      #   {:ok, report} ->
-      #     Logger.info("handler -> report=#{inspect(report)}")
-      #     report
+      case Compliance.ValidationRuns.AggregateSupervisor.add_log_item(json_string) do
+        {:ok, report} ->
+          Logger.info("handler -> report=#{inspect(report)}")
+          report
 
-      #   error ->
-      #     Logger.error("handler -> error=#{error}")
-      #     nil
-      # end
+        error ->
+          Logger.info("handler -> error=#{inspect(error)}")
+          nil
+      end
 
       {:ok, uri}
     end
@@ -190,18 +191,18 @@ defmodule OBApiRemote.Commands.Driver do
       ) do
     Logger.debug(fn -> "do_get_resource: #{endpoint}" end)
     handler = fn {:ok, decoded_response} ->
-      # validation_result = decoded_response["validation_result"]
-      # json_string = Poison.encode!(validation_result)
+      validation_result = decoded_response["validation_result"]
+      json_string = Poison.encode!(validation_result)
 
-      # case Compliance.ValidationRuns.AggregateSupervisor.add_log_item(json_string) do
-      #   {:ok, report} ->
-      #     Logger.info("handler -> report=#{inspect(report)}")
-      #     report
+      case Compliance.ValidationRuns.AggregateSupervisor.add_log_item(json_string) do
+        {:ok, report} ->
+          Logger.info("handler -> report=#{inspect(report)}")
+          report
 
-      #   error ->
-      #     Logger.error("handler -> error=#{error}")
-      #     nil
-      # end
+        error ->
+          Logger.info("handler -> error=#{inspect(error)}")
+          nil
+      end
 
       {:ok, decoded_response}
     end
@@ -221,19 +222,20 @@ defmodule OBApiRemote.Commands.Driver do
       ) do
     Logger.debug(fn -> "do_post_complete_payment" end)
     handler = fn {:ok, response} ->
-      # decoded_response = Poison.decode!(response)
-      # validation_result = decoded_response["validation_result"]
-      # json_string = Poison.encode!(validation_result)
+      decoded_response = Poison.decode!(response)
 
-      # case Compliance.ValidationRuns.AggregateSupervisor.add_log_item(json_string) do
-      #   {:ok, report} ->
-      #     Logger.info("handler -> report=#{inspect(report)}")
-      #     report
+      validation_result = decoded_response["validation_result"]
+      json_string = Poison.encode!(validation_result)
 
-      #   error ->
-      #     Logger.error("handler -> error=#{error}")
-      #     nil
-      # end
+      case Compliance.ValidationRuns.AggregateSupervisor.add_log_item(json_string) do
+        {:ok, report} ->
+          Logger.info("handler -> report=#{inspect(report)}")
+          report
+
+        error ->
+          Logger.info("handler -> error=#{inspect(error)}")
+          nil
+      end
 
       :ok
     end

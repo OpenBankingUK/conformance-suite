@@ -63,3 +63,4 @@ ob-api-proxy.log
 
 # cache folder used by BitBucket Pipelines
 .cache/
+.ignore/

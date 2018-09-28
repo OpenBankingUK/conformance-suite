@@ -42,7 +42,8 @@ wait_for_deps() {
 
 # Start ob-api-proxy in dev mode with watch
 start_ob_proxy() {
-  cd services/ob-api-proxy && npm i && npm run update && npm run dev
+  # cd services/ob-api-proxy && npm i && npm run update && npm run dev
+  cd services/ob-api-proxy && npm install && npm run dev
 }
 
 echo -e "\\033[92m  ---> web-serve.sh: starting ...  \\033[0m"
@@ -65,27 +66,17 @@ if [[ -n "$RECREATE" ]]; then
     --always-recreate-deps \
     --renew-anon-volumes \
     --remove-orphans \
-    kafka zookeeper mongo redis reference-mock-server
+    mongo redis reference-mock-server
 else
   time docker-compose up \
     -d \
-    kafka zookeeper mongo redis reference-mock-server
+    mongo redis reference-mock-server
 fi
 
 wait_for_deps
-echo -e "\\033[92m  ---> web-serve.sh: tail -F -n +1 ob-api-proxy.log \\033[0m"
+echo -e "\\033[92m  ---> web-serve.sh: tail -F -n +1 $(pwd)/ob-api-proxy.log \\033[0m"
 # Run ob-api-proxy in background
 start_ob_proxy > ./ob-api-proxy.log 2>&1 &
-
-# wait for these messages to appear in Kafka before starting compliance-suite-server.
-# NB: hardcoding topic name for now.
-# kafka                         | creating topics: kafka-test-topic:1:1
-# kafka                         | Created topic "kafka-test-topic".
-echo -e "\\033[92m  ---> web-serve.sh: waiting for kafka  \\033[0m"
-while ! docker-compose --log-level ERROR logs --timestamps --tail="all" kafka | grep 'Created topic "kafka-test-topic"'; do
-  echo -e "\\033[92m  ---> web-serve.sh: sleeping (1 second) for kafka  \\033[0m"
-  sleep 1
-done
 
 init_server
 make start_server_local
