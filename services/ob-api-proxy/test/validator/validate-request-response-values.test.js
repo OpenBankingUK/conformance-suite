@@ -204,7 +204,7 @@ describe('validate', () => {
           const request = AccountRequests.post.request();
           const response = AccountRequests.post.response();
 
-          const report = await validate(request, response, details);
+          const { report } = await validate(request, response, details);
 
           assert.deepEqual(report, { failedValidation: false });
         });
@@ -213,7 +213,7 @@ describe('validate', () => {
           const request = AccountRequests.post.request();
           const response = AccountRequests.post.response();
 
-          const report = await validate(request, response, details);
+          const { report } = await validate(request, response, details);
 
           assert.deepEqual(report, { failedValidation: false });
         });
@@ -230,7 +230,7 @@ describe('validate', () => {
           ];
           const response = AccountRequests.post.response();
 
-          const report = await validate(request, response, details);
+          const { report } = await validate(request, response, details);
 
           assert.equal(report.failedValidation, true);
           assert.deepEqual(report.results.errors, [{
@@ -289,7 +289,7 @@ describe('validate', () => {
 
           const response = AccountRequests.post.response();
 
-          const report = await validate(request, response, details);
+          const { report } = await validate(request, response, details);
 
           assert.equal(report.failedValidation, true);
           assert.deepEqual(report.results.errors, [{
@@ -308,7 +308,7 @@ describe('validate', () => {
 
           const response = AccountRequests.post.response();
 
-          const report = await validate(request, response, details);
+          const { report } = await validate(request, response, details);
 
           assert.equal(report.failedValidation, true);
           assert.deepEqual(report.results.errors, [{
@@ -327,7 +327,7 @@ describe('validate', () => {
 
           const response = AccountRequests.post.response();
 
-          const report = await validate(request, response, details);
+          const { report } = await validate(request, response, details);
 
           assert.equal(report.failedValidation, true);
           assert.deepEqual(report.results.errors, [{
@@ -343,7 +343,7 @@ describe('validate', () => {
           request.body.Risk.FakeRiskField1 = 'FakeRiskField1';
           const response = AccountRequests.post.response();
 
-          const report = await validate(request, response, details);
+          const { report } = await validate(request, response, details);
 
           assert.equal(report.failedValidation, true);
           assert.deepEqual(report.results.errors, [{
@@ -370,7 +370,7 @@ describe('validate', () => {
       request.body.Risk.FakeRiskField1 = 'FakeRiskField1';
       const response = AccountRequests.post.response();
 
-      const report = await validate(request, response, details);
+      const { report } = await validate(request, response, details);
 
       assert.deepEqual(report, { failedValidation: false });
     });

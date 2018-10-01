@@ -49,8 +49,6 @@ release :compliance_suite_server do
   set applications: [
     :runtime_tools,
     compliance: :permanent,
-    compliance_web: :permanent,
-    log_consumer: :permanent,
-    ob_api_remote: :permanent
+    compliance_web: :permanent
   ]
 end

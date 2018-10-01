@@ -1,5 +1,6 @@
 # Reference: https://github.com/Financial-Times/docker-elixir-build
-FROM bitwalker/alpine-elixir:1.7 as build
+FROM bitwalker/alpine-elixir:1.7.3 as build
+RUN apk --no-cache add nodejs-npm
 
 WORKDIR /build
 
@@ -14,8 +15,6 @@ ARG DEBUG_ENVS
 ENV ENV $ENV
 ENV MIX_ENV ${MIX_ENV}
 ENV APP_VERSION ${APP_VERSION}
-
-RUN apk --no-cache add nodejs-npm
 
 COPY $ENVFILE .
 COPY apps apps
@@ -35,8 +34,11 @@ RUN echo '----' \
 COPY apps/compliance_web/priv apps/compliance_web/priv
 
 # Build Phoenix assets
+RUN npm --version \
+    && node --version
+
 RUN cd apps/compliance_web/assets \
-    && npm install \
+    && npm install --no-progress \
     && env `cat ../../../$ENVFILE | grep -v '^\s*#'` npm run build
 
 RUN mix deps.get
@@ -45,12 +47,10 @@ RUN env `cat $ENVFILE | grep -v '^\s*#'` mix release --env=${MIX_ENV}
 
 # Container that will be used to run the final application
 FROM alpine:3.8
-
 RUN apk --no-cache update \
     && apk --no-cache upgrade \
-    && apk --no-cache add ncurses-libs openssl bash ca-certificates
-
-RUN adduser -D app
+    && apk --no-cache add ncurses-libs openssl bash ca-certificates\
+    && adduser -D app
 
 ARG MIX_ENV=prod
 ARG APP_VERSION=0.0.0
@@ -77,6 +77,5 @@ ENV RELEASE_MUTABLE_DIR /tmp/app
 ENV START_ERL_DATA /tmp/app/start_erl.data
 
 # Start command
-CMD echo -e "\\033[92m  ---> sleeping (10 seconds) ... \\033[0m" \
-    && sleep 10s \
+CMD echo -e "\\033[92m  ---> starting compliance-suite-server ... \\033[0m" \
     && /opt/app/bin/compliance_suite_server foreground

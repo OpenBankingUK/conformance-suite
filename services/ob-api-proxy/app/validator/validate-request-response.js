@@ -1,11 +1,10 @@
 const url = require('url');
 const objectSize = require('object.size');
-const errorLog = require('debug')('error');
 const debug = require('debug')('debug');
 const _ = require('lodash');
 
 const { validateResponse, mergeErrors } = require('./validator-response-request-values');
-const { validatorApp, kakfaConfigured, kafkaStream } = require('./init-validator-app');
+const { validatorApp } = require('./init-validator-app');
 const { logger } = require('../utils/logger');
 
 const getRawQs = req => (
@@ -102,17 +101,6 @@ const logFormat = (request, response, details, validationResponse) => ({
   response: response ? resSerializer(response) : response,
 });
 
-const writeToKafka = async (logObject) => {
-  try {
-    const kafka = await kafkaStream();
-    await kafka.write(logObject);
-  } catch (err) {
-    errorLog(err);
-    throw err;
-  }
-};
-
-
 const runSwaggerValidation = async (req, res, details) => {
   checkDetails(details);
   if (!res) {
@@ -145,11 +133,8 @@ const validate = async (req, res, details) => {
     _.set(logObject, 'report.message', _.get(logObject, 'report.message', 'Validation failed: see errors'));
   }
 
-  if (kakfaConfigured()) {
-    await writeToKafka(logObject);
-  }
-
-  return logObject.report;
+  // return logObject.report;
+  return logObject;
 };
 
 module.exports = {

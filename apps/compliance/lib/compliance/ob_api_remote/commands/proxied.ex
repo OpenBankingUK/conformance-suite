@@ -5,7 +5,7 @@ defmodule OBApiRemote.Commands.Proxied do
   require Logger
 
   def base_url do
-    Application.get_env(:ob_api_remote, :proxy_url)
+    Application.get_env(:compliance, :proxy_url)
   end
 
   def urls do

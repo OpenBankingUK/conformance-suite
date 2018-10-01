@@ -45,7 +45,6 @@ defmodule Compliance.Mixfile do
       {:mongodb_ecto, "~> 0.2"},
       {:poison, "~> 3.1.0"},
       {:uuid, "~> 1.1"},
-      {:ob_api_remote, in_umbrella: true}
     ]
   end
 

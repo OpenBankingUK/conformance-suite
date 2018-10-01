@@ -492,8 +492,8 @@ defmodule OBApiRemote.Commands.DriverTest do
 
   describe "Driver.do_get_resource" do
     @scope "accounts"
-    @mock_response "{ \"Data\": { \"Account\": [ { \"AccountId\": \"22290\" } ] } }"
-    @payload %{"Data" => %{"Account" => [%{"AccountId" => "22290"}]}}
+    @mock_response "{ \"Data\": { \"Account\": [ { \"AccountId\": \"22290\" } ] }, \"validation_result\": { } }"
+    @payload %{"Data" => %{"Account" => [%{"AccountId" => "22290"}]}, "validation_result" => %{}}
     @request_headers [
                        {"authorization", "#{@session_token}"},
                        {"x-authorization-server-id", "#{@aspsp_auth_server_id}"},
@@ -533,7 +533,7 @@ defmodule OBApiRemote.Commands.DriverTest do
 
   describe "Driver.do_post_complete_payment" do
     @scope "payments"
-    @mock_response ""
+    @mock_response "{ \"validation_result\": { } }"
     @request_headers [
                        {"authorization", "#{@session_token}"},
                        {"x-authorization-server-id", "#{@aspsp_auth_server_id}"},

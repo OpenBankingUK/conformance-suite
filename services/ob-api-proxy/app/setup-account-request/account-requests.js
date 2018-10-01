@@ -1,4 +1,4 @@
-const request = require('superagent');
+const superagent = require('superagent');
 const { createRequest, obtainResult } = require('../ob-util');
 const log = require('debug')('log');
 const errorLog = require('debug')('error');
@@ -28,12 +28,13 @@ const postAccountRequests = async (resourceServerPath, headers) => {
     const body = buildAccountRequestData(headers.permissions);
     const apiVersion = headers.config.api_version;
     const accountRequestsUri = `${resourceServerPath}/open-banking/v${apiVersion}/account-requests`;
-    log(`POST to ${accountRequestsUri}`);
-    const call = createRequest(accountRequestsUri, request.post(accountRequestsUri), headers);
-    const response = await call.send(body);
-    debug(`${response.status} response for ${accountRequestsUri}`);
+    log(`services/ob-api-proxy/app/setup-account-request/account-requests.js:postAccountRequests -> POST to ${accountRequestsUri}`);
 
-    const result = await obtainResult(call, response, Object.assign({}, headers, { scope: 'accounts' }));
+    const request = createRequest(accountRequestsUri, superagent.post(accountRequestsUri), headers);
+    const response = await request.send(body);
+    debug(`services/ob-api-proxy/app/setup-account-request/account-requests.js:postAccountRequests -> ${response.status} response for ${accountRequestsUri}`);
+
+    const result = await obtainResult(request, response, Object.assign({}, headers, { scope: 'accounts' }));
     return result;
   } catch (err) {
     errorLog(util.inspect(err));
@@ -54,7 +55,7 @@ const getAccountRequest = async (accountRequestId, resourceServerPath, headers) 
     log(`GET to ${accountRequestsUri}`);
     const response = await createRequest(
       accountRequestsUri,
-      request.get(accountRequestsUri), headers,
+      superagent.get(accountRequestsUri), headers,
     ).send();
     debug(`${response.status} response for ${accountRequestsUri}`);
     return response.body;
@@ -74,12 +75,15 @@ const deleteAccountRequest = async (accountRequestId, resourceServerPath, header
     log(`DELETE to ${accountRequestDeleteUri}`);
     const response = await createRequest(
       accountRequestDeleteUri,
-      request.del(accountRequestDeleteUri), headers,
+      superagent.del(accountRequestDeleteUri), headers,
     ).send();
-    debug(`${response.status} response for ${accountRequestDeleteUri}`);
+
+    debug(`services/ob-api-proxy/app/setup-account-request/account-requests.js:deleteAccountRequest -> ${response.status} response for ${accountRequestDeleteUri}`);
+
     if (response.status === 204) {
       return true;
     }
+
     errorLog(`deleteAccountRequest, expected 204, got: ${util.inspect(response)}`);
     throw new Error(`Expected 204 response to delete account request, got: ${response.status} body: ${response.body}`);
   } catch (err) {

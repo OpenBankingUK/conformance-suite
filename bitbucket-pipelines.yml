@@ -25,66 +25,62 @@ definitions:
 pipelines:
   default:
     - parallel:
-        # Temp, removal e2e tests.
-#        - step:
-#            name: e2e
-#            size: 2x
-#            # When they start shipping docker-compose in the base image
-#            # we should switch to the docker image instead.
-#            # image: docker:18.06-dind
-#            image: docker/compose:1.22.0
-#            services:
-#              - docker
-#            caches:
-#              - docker
-#              - cache-cypress
-#              - cache-cypress-npm
-#            artifacts:
-#              - e2e/artifacts/**
-#            script:
-#              # print logs from the container when a failure happens
-#              - |
-#                print_logs() {
-#                  echo -e "\\033[92m  ---> logs reference-mock-server ... \\033[0m";
-#                  docker logs reference-mock-server;
-#
-#                  echo -e "\\033[92m  ---> logs ob-api-proxy ... \\033[0m";
-#                  docker logs ob-api-proxy;
-#
-#                  echo -e "\\033[92m  ---> logs compliance-suite-server ... \\033[0m";
-#                  docker logs compliance-suite-server;
-#
-#                  echo -e "\\033[92m  ---> logs zookeeper ... \\033[0m";
-#                  docker logs zookeeper;
-#
-#                  echo -e "\\033[92m  ---> logs kafka ... \\033[0m";
-#                  docker logs kafka;
-#                }
-#                trap print_logs 0 1
-#              - apk add --no-cache bash git # install bash and git and pip
-#              - |
-#                export ENV="circleci"
-#                export ENVFILE=".env.circleci"
-#                export KAFKA_HOST="kafka"
-#                export KAFKA_PORT="9092"
-#                export VALIDATION_KAFKA_BROKER="kafka:9092"
-#                export VALIDATION_KAFKA_TOPIC="kafka-test-topic"
-#                export OB_API_PROXY_URL="http://ob-api-proxy:8003"
-#                export DATA_DB_HOST="mongo"
-#                export DATA_DB_NAME="compliance_dev"
-#                export ENDPOINT_URL_HOST="compliance-suite-server"
-#                export ENDPOINT_URL_PORT="4000"
-#                export GOOGLE_OAUTH_CLIENT_ID="<anything>"
-#                export GOOGLE_OAUTH_TOKENINFO_URL="http://localhost:4000/tokeninfo?id_token="
-#                export GOOGLE_OAUTH_CLIENT_SECRET="<anything>"
-#              - ./scripts/create-envs.sh
-#              - ./scripts/build-reference-mock-server.sh
-#              # pre-pull images in parallel
-#              - docker-compose pull --include-deps --parallel e2e reference-mock-server mongo redis kafka zookeeper
-#              - docker-compose up -d --build kafka mongo redis reference-mock-server ob-api-proxy
-#              - docker-compose up -d --build compliance-suite-server
-#              - echo -e "\\033[92m  ---> sleeping (10 seconds) ... \\033[0m" && sleep 10s
-#              - docker-compose run e2e
+        - step:
+            name: e2e
+            size: 2x
+            # When they start shipping docker-compose in the base image
+            # we should switch to the docker image instead.
+            # image: docker:18.06-dind
+            image: docker/compose:1.22.0
+            services:
+              - docker
+            caches:
+              - docker
+              # - cache-cypress
+              # - cache-cypress-npm
+            artifacts:
+              - e2e/artifacts/**
+            script:
+              - |
+                function print_logs_on_error {
+                  echo -e "\\033[92m  ---> logs reference-mock-server ... \\033[0m";
+                  docker logs reference-mock-server;
+
+                  echo -e "\\033[92m  ---> logs ob-api-proxy ... \\033[0m";
+                  docker logs ob-api-proxy;
+
+                  echo -e "\\033[92m  ---> logs compliance-suite-server ... \\033[0m";
+                  docker logs compliance-suite-server;
+
+                  exit 1;
+                }
+              - apk add --no-cache bash git # install bash and git and pip
+              - |
+                echo '----'
+                echo 'GOOGLE_OAUTH_CLIENT_ID:' $GOOGLE_OAUTH_CLIENT_ID
+                echo 'GOOGLE_OAUTH_CLIENT_SECRET' $GOOGLE_OAUTH_CLIENT_SECRET
+                echo '----'
+                export ENV="circleci"
+                export ENVFILE=".env.circleci"
+                export OB_API_PROXY_URL="http://ob-api-proxy:8003"
+                export DATA_DB_HOST="mongo"
+                export DATA_DB_NAME="compliance_dev"
+                export ENDPOINT_URL_HOST="compliance-suite-server"
+                export ENDPOINT_URL_PORT="4000"
+                export GOOGLE_OAUTH_CLIENT_ID=$GOOGLE_OAUTH_CLIENT_ID
+                export GOOGLE_OAUTH_TOKENINFO_URL="http://localhost:4000/tokeninfo?id_token="
+                export GOOGLE_OAUTH_CLIENT_SECRET=$GOOGLE_OAUTH_CLIENT_SECRET
+              - ./scripts/create-envs.sh
+              - ./scripts/build-reference-mock-server.sh
+              # pre-pull images in parallel
+              - docker-compose pull --include-deps --parallel e2e reference-mock-server mongo redis
+              - docker-compose up -d --build mongo redis reference-mock-server ob-api-proxy || print_logs_on_error
+              - docker-compose up -d --build compliance-suite-server || print_logs_on_error
+              - ls -lah .cache/cypress/ || true
+              - ls -lah .cache/cypress/.cache || true
+              - ls -lah .cache/cypress/.npm || true
+              - docker-compose run --rm -u root e2e || print_logs_on_error
+
         - step:
             name: services/ob-api-proxy
             image: node:8.11-alpine
@@ -94,11 +90,11 @@ pipelines:
             caches:
               - cache-ob-api-proxy-node-modules
             script:
-              - cd services/ob-api-proxy && npm install
+              - cd services/ob-api-proxy && npm install --no-progress
               - npm run eslint
-              # Prevent tests from trying to connect to Kafka by
-              # setting envs as blank strings.
-              - VALIDATION_KAFKA_TOPIC="" VALIDATION_KAFKA_BROKER="" npm run test
+              - npm run test
+              - npm --version
+              - node --version
 
         - step:
             name: apps/compliance_web/assets
@@ -106,13 +102,15 @@ pipelines:
             caches:
               - cache-compliance-web-modules
             script:
-              - cd apps/compliance_web/assets && npm install
+              - cd apps/compliance_web/assets && npm install --no-progress
               - npm run eslint
               - npm run test -- --coverage --runInBand --ci
+              - npm --version
+              - node --version
 
         - step:
             name: conformance-suite/apps
-            image: bitwalker/alpine-elixir:1.7
+            image: bitwalker/alpine-elixir:1.7.3
             size: 2x
             services:
               - mongo
@@ -122,8 +120,10 @@ pipelines:
             script:
               - mix local.hex --force
               - mix local.rebar --force
-              - MIX_ENV=test mix do deps.get
-              - MIX_ENV=test mix do compile
+              - mix deps.get
+              - MIX_ENV=test mix deps.get
+              - mix compile
+              - MIX_ENV=test mix compile
               # The tests intermittent fail when running in async mode,
               # not sure why. Might be related to this:
               # https://manuka.co/til/2016-08-26-mocks-in-exunit-tests/,
@@ -131,4 +131,4 @@ pipelines:
               # not allow me to run my test suites asynchronously
               # (I probably should have been aware of this as it is stated in the README).
               # Mock has to mock modules Globally so async testing just doesn't work."
-              - MIX_ENV=test mix test --trace --color
+              - mix test --trace --color
