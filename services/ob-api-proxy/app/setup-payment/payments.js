@@ -18,13 +18,13 @@ const postPayments = async (resourceServerPath, paymentPathEndpoint, headers, pa
     verifyHeaders(headers);
 
     const paymentsUri = `${resourceServerPath}${paymentPathEndpoint}`;
-    log('services/ob-api-proxy/app/setup-payment/payments.js:postPayments -> POST to paymentsUri=%O', paymentsUri);
+    log('services/ob-api-proxy/app/setup-payment/payments.js:postPayments -> POST to paymentsUri=%j', paymentsUri);
     const request = createRequest(paymentsUri, superagent.post(paymentsUri), headers);
     const response = await request.send(paymentData);
-    debug('services/ob-api-proxy/app/setup-payment/payments.js:postPayments -> response.status=%O, paymentsUri=%O', response.status, paymentsUri);
+    debug('services/ob-api-proxy/app/setup-payment/payments.js:postPayments -> response.status=%j, paymentsUri=%j', response.status, paymentsUri);
 
     const result = await obtainResult(request, response, Object.assign({}, headers, { scope: 'payments' }));
-    debug('services/ob-api-proxy/app/setup-payment/payments.js:postPayments -> result=%O', result);
+    debug('services/ob-api-proxy/app/setup-payment/payments.js:postPayments -> result=%j', result);
 
     return result;
   } catch (err) {

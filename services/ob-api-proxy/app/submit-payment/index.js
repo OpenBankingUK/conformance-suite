@@ -21,8 +21,8 @@ exports.paymentSubmission = async (req, res) => {
 
     const paymentSubmissionId = _.get(response, 'Data.PaymentSubmissionId');
     const validation_result = _.get(response, 'validation_result'); // eslint-disable-line
-    debug('services/ob-api-proxy/app/submit-payment/index.js:paymentSubmission -> response=%O', response);
-    debug('services/ob-api-proxy/app/submit-payment/index.js:paymentSubmission -> Payment Submission succesfully completed. paymentSubmissionId=%O', paymentSubmissionId);
+    debug('services/ob-api-proxy/app/submit-payment/index.js:paymentSubmission -> response=%j', response);
+    debug('services/ob-api-proxy/app/submit-payment/index.js:paymentSubmission -> Payment Submission succesfully completed. paymentSubmissionId=%j', paymentSubmissionId);
 
     return res
       .status(201) // We can't intercept a 302 !

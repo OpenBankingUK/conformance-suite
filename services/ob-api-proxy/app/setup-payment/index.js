@@ -18,7 +18,7 @@ exports.paymentAuthoriseConsent = async (req, res) => {
       authorisationServerId, Object.assign({ idempotencyKey }, headers),
       CreditorAccount, InstructedAmount,
     );
-    debug('services/ob-api-proxy/app/setup-payment/index.js:paymentAuthoriseConsent -> response=%O', response);
+    debug('services/ob-api-proxy/app/setup-payment/index.js:paymentAuthoriseConsent -> response=%j', response);
 
     const paymentId = _.get(response, 'Data.PaymentId');
     const validation_result = _.get(response, 'validation_result'); // eslint-disable-line
@@ -28,8 +28,8 @@ exports.paymentAuthoriseConsent = async (req, res) => {
       'openid payments', headers.sessionId, headers.interactionId, headers.config,
     );
 
-    debug('services/ob-api-proxy/app/setup-payment/index.js:paymentAuthoriseConsent -> authorize uri=%O', uri);
-    debug('services/ob-api-proxy/app/setup-payment/index.js:paymentAuthoriseConsent -> validation_result=%O', validation_result);
+    debug('services/ob-api-proxy/app/setup-payment/index.js:paymentAuthoriseConsent -> authorize uri=%j', uri);
+    debug('services/ob-api-proxy/app/setup-payment/index.js:paymentAuthoriseConsent -> validation_result=%j', validation_result);
     return res
       .status(200) // We can't intercept a 302 !
       .send({

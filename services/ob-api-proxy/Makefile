@@ -10,7 +10,7 @@ all: test
 .PHONY: deps_up
 deps_up:
 	@echo -e "\033[92m  ---> Starting Dependencies ...  \033[0m"
-	docker-compose up -d --force-recreate --remove-orphans mongo redis reference-mock-server
+	docker-compose up -d --force-recreate --remove-orphans mongo reference-mock-server
 
 .PHONY: deps_down
 deps_down:

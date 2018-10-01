@@ -15,12 +15,6 @@ if [[ -z "$OZONE_CLIENT_SECRET" ]]; then
 fi
 
 function wait_for_deps {
-    while ! nc -z redis 6379; do
-        echo -e "\033[92m  ---> waiting for redis ... \033[0m"
-        sleep 1
-    done
-    echo "redis is UP"
-
     while ! nc -z mongo 27017; do
         echo -e "\033[92m  ---> waiting for mongo ... \033[0m"
         sleep 1

@@ -25,7 +25,7 @@
     "node-jose": "^0.11.0",
     "object.size": "^1.0.0",
     "qs": "6.5.1",
-    "redis": "^2.8.0",
+    "redis-mock": "^0.33.0",
     "superagent": "^3.8.2",
     "swagger-tools": "^0.10.4",
     "url-pattern": "^1.0.3",

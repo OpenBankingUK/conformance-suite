@@ -13,7 +13,7 @@ const createRequest = async (resourcePath, headers, paymentData) => {
     headers,
     paymentData,
   );
-  debug('services/ob-api-proxy/app/setup-payment/setup-payment.js:createRequest -> /payments response=%O', response);
+  debug('services/ob-api-proxy/app/setup-payment/setup-payment.js:createRequest -> /payments response=%j', response);
 
   let error;
   if (response.Data) {

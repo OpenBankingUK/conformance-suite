@@ -60,7 +60,7 @@ defmodule OBApiRemote.Commands.Driver do
 
       case Compliance.ValidationRuns.AggregateSupervisor.add_log_item(json_string) do
         {:ok, report} ->
-          Logger.info("handler -> report=#{inspect(report)}")
+          # Logger.info("handler -> report=#{inspect(report)}")
           report
 
         error ->
@@ -98,7 +98,7 @@ defmodule OBApiRemote.Commands.Driver do
 
       case Compliance.ValidationRuns.AggregateSupervisor.add_log_item(json_string) do
         {:ok, report} ->
-          Logger.info("handler -> report=#{inspect(report)}")
+          # Logger.info("handler -> report=#{inspect(report)}")
           report
 
         error ->
@@ -196,7 +196,7 @@ defmodule OBApiRemote.Commands.Driver do
 
       case Compliance.ValidationRuns.AggregateSupervisor.add_log_item(json_string) do
         {:ok, report} ->
-          Logger.info("handler -> report=#{inspect(report)}")
+          # Logger.info("handler -> report=#{inspect(report)}")
           report
 
         error ->
@@ -229,7 +229,7 @@ defmodule OBApiRemote.Commands.Driver do
 
       case Compliance.ValidationRuns.AggregateSupervisor.add_log_item(json_string) do
         {:ok, report} ->
-          Logger.info("handler -> report=#{inspect(report)}")
+          # Logger.info("handler -> report=#{inspect(report)}")
           report
 
         error ->
@@ -308,39 +308,36 @@ defmodule OBApiRemote.Commands.Driver do
 
     case response do
       {:ok, %HTTPoison.Response{status_code: 200, body: body}} ->
-        Logger.info("cmd.method=#{cmd.method}")
-        Logger.info("cmd.url=#{cmd.url}")
-        Logger.info("cmd.body=#{cmd.body}")
-        Logger.info("status_code=200")
-        Logger.info("body=#{body}")
-        Logger.info("response=#{inspect(response)}")
+        Logger.info("status_code=200, cmd.method=#{cmd.method}, cmd.url=#{cmd.url}")
+        # Logger.info("cmd.body=#{cmd.body}")
+        # Logger.info("body=#{body}")
+        # Logger.info("response=#{inspect(response)}")
         handle_json(body, handler)
 
       {:ok, %HTTPoison.Response{status_code: 201, body: body}} ->
-        Logger.info("cmd.method=#{cmd.method}")
-        Logger.info("cmd.url=#{cmd.url}")
-        Logger.info("cmd.body=#{cmd.body}")
-        Logger.info("status_code=201")
-        Logger.info("body=#{body}")
-        Logger.info("response=#{inspect(response)}")
+        Logger.info("status_code=201, cmd.method=#{cmd.method}, cmd.url=#{cmd.url}")
+        # Logger.info("cmd.body=#{cmd.body}")
+        # Logger.info("body=#{body}")
+        # Logger.info("response=#{inspect(response)}")
         handler.({:ok, body})
 
       {:ok, %HTTPoison.Response{status_code: 204, body: body}} ->
-        Logger.info("cmd.method=#{cmd.method}")
-        Logger.info("cmd.url=#{cmd.url}")
-        Logger.info("cmd.body=#{cmd.body}")
-        Logger.info("status_code=204")
-        Logger.info("body=#{body}")
-        Logger.info("response=#{inspect(response)}")
+        Logger.info("status_code=204, cmd.method=#{cmd.method}, cmd.url=#{cmd.url}")
+        # Logger.info("cmd.body=#{cmd.body}")
+        # Logger.info("body=#{body}")
+        # Logger.info("response=#{inspect(response)}")
         handler.({:ok, body})
 
       {:ok, %HTTPoison.Response{status_code: 400, body: body}} ->
+        Logger.info("status_code=400, cmd.method=#{cmd.method}, cmd.url=#{cmd.url}")
         {:error, %{reason: body, cmd: cmd, status_code: 400, headers: request_headers}}
 
       {:ok, %HTTPoison.Response{status_code: 404, body: body}} ->
+        Logger.info("status_code=404, cmd.method=#{cmd.method}, cmd.url=#{cmd.url}")
         {:error, %{reason: body, cmd: cmd, status_code: 404, headers: request_headers}}
 
       {:ok, %HTTPoison.Response{status_code: 500, body: body}} ->
+        Logger.info("status_code=500, cmd.method=#{cmd.method}, cmd.url=#{cmd.url}")
         {:error, %{reason: body, cmd: cmd, status_code: 500, headers: request_headers}}
 
       {:error, %HTTPoison.Error{id: _id, reason: reason}} ->
