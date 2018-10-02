@@ -5,10 +5,8 @@ const morgan = require('morgan');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const { requireAuthorization } = require('./session');
-const { requireAuthorisationServerId } = require('./authorisation-servers');
 const { login } = require('./session');
 const { resourceRequestHandler } = require('./request-data/ob-proxy.js');
-const { accountPaymentServiceProviders } = require('./ob-directory');
 const { accountRequestAuthoriseConsent, accountRequestRevokeConsent } = require('./setup-account-request');
 const { paymentAuthoriseConsent } = require('./setup-payment');
 const { paymentSubmission } = require('./submit-payment');
@@ -21,17 +19,20 @@ if (process.env.NODE_ENV !== 'test') {
   app.use(morgan('dev')); // for logging
 }
 
+const requireAuthorisationServerId = async (req, res, next) => {
+  const authServerId = req.headers['x-authorization-server-id'];
+  if (!authServerId) {
+    return res.status(400).send('request missing x-authorization-server-id header');
+  }
+  return next();
+};
+
 app.options('*', cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use('/login', login.authenticate);
 app.use('/logout', login.logout);
-app.all('/account-payment-service-provider-authorisation-servers', requireAuthorization);
-app.use(
-  '/account-payment-service-provider-authorisation-servers',
-  accountPaymentServiceProviders,
-);
 
 app.all('/account-request-authorise-consent', requireAuthorization, requireAuthorisationServerId);
 app.post('/account-request-authorise-consent', accountRequestAuthoriseConsent);

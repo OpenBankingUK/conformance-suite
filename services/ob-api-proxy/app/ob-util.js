@@ -20,7 +20,6 @@ const base64EncodeJSON = object =>
 const base64DecodeJSON = encoded =>
   JSON.parse(base64Decode(encoded));
 
-const ca = base64Decode(process.env.OB_ISSUING_CA || '');
 const isMock = uri => uri.includes('localhost') || uri.includes('reference-mock-server');
 const setupMutualTLS = (uri, agent, cert, key) => {
   if (isMock(uri)) return agent;
@@ -117,7 +116,6 @@ module.exports = {
   createBasicAuth,
   createRequest,
   obtainResult,
-  caCert: ca,
   validateRequestResponse,
   createJwt,
   isMock,

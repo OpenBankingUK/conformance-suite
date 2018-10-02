@@ -2,12 +2,12 @@ defmodule Compliance.Configs.RunConfig do
   @moduledoc """
   Represents configuration for a validation run.
 
-  Has same keys as OBApiRemote.Commands.ApiConfig, apart from api_version.
+  Has same keys as Compliance.Commands.ApiConfig, apart from api_version.
 
   The Acccounts API and Payments API can be at different version numbers.
   So the api_version is not set a the global RunConfig level.
   """
-  alias OBApiRemote.Commands.ApiConfig
+  alias Compliance.Commands.ApiConfig
   use Ecto.Schema
   import Ecto.Changeset
 

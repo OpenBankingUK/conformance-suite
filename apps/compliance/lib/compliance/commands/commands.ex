@@ -1,11 +1,11 @@
-defmodule OBApiRemote.Commands do
+defmodule Compliance.Commands do
   @moduledoc """
   The Commands context.
   """
 
   require Logger
 
-  alias OBApiRemote.Commands.{ApiConfig, Driver}
+  alias Compliance.Commands.{ApiConfig, Driver}
 
   def request_resource(
         endpoint,
@@ -102,12 +102,6 @@ defmodule OBApiRemote.Commands do
       {:ok, parsed_state}
     else
       error -> error
-    end
-  end
-
-  def get_auth_servers do
-    with {:ok, session_token} <- Driver.do_post_login() do
-      Driver.do_get_authorisation_servers(session_token)
     end
   end
 end

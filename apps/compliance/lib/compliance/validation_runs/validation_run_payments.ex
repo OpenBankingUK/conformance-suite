@@ -4,7 +4,7 @@ defmodule Compliance.ValidationRuns.ValidationRunPayments do
   """
 
   alias Compliance.SwaggerUris
-  alias OBApiRemote.Commands
+  alias Compliance.Commands
   alias Compliance.Configs.RunConfig
   require Logger
 
@@ -14,14 +14,14 @@ defmodule Compliance.ValidationRuns.ValidationRunPayments do
         auth_server_id,
         config = %{}
       ) do
-    params = binding()
-    Logger.debug(fn -> "Compliance.ValidationRunPayments.make_payments, #{inspect(params)}" end)
+    # params = binding()
+    # Logger.debug(fn -> "Compliance.ValidationRunPayments.make_payments, #{inspect(params)}" end)
+    Logger.debug(fn -> "Compliance.ValidationRunPayments.make_payments" end)
 
-    config = RunConfig.from_map(config)
-    Logger.debug(fn -> "make_payments run_config: #{inspect(config)}" end)
+    run_config = RunConfig.from_map(config)
 
     payments
-    |> Enum.each(&make_payment(&1, validation_run_id, config, auth_server_id))
+    |> Enum.each(&make_payment(&1, validation_run_id, run_config, auth_server_id))
   end
 
   defp make_payment(payment, validation_run_id, config, auth_server_id) do
@@ -37,8 +37,7 @@ defmodule Compliance.ValidationRuns.ValidationRunPayments do
     )
     |> case do
       {:error, result} ->
-        "Compliance.ValidationRunPayments.make_payments failed: #{inspect(result)}"
-        |> Logger.error()
+        Logger.error("Compliance.ValidationRunPayments.make_payments failed: #{inspect(result)}")
 
       _ ->
         nil

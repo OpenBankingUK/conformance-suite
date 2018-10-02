@@ -2,7 +2,7 @@ defmodule Compliance.ValidationRuns.EndpointReportTest do
   @moduledoc """
   Tests for EndPointReport.
   """
-  use ExUnit.Case, async: true
+  use ExUnit.Case, async: false
   alias Compliance.ValidationRuns.EndpointReport
 
   describe "EndpointReport" do

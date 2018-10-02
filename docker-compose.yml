@@ -51,23 +51,10 @@ services:
     ports:
       - 8003:8003
     environment:
-      - CLIENT_SCOPES=ASPSPReadAccess TPPReadAccess AuthoritiesReadAccess
       - DEBUG=error,log,debug
       - MONGODB_URI=mongodb://mongo:27017/${DATA_DB_NAME}
-      - OB_DIRECTORY_AUTH_HOST=http://reference-mock-server:8001
-      - OB_DIRECTORY_HOST=http://reference-mock-server:8001
-      - OB_ISSUING_CA=
-      - OB_PROVISIONED=false
       - TPP_REF_SERVER_PORT=8003
-      - SIGNING_KEY=${SIGNING_KEY}
-      - SIGNING_KID=XXXXXX-XXXXxxxXxXXXxxx_xxxx
-      - SOFTWARE_STATEMENT_ID=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
-      - TRANSPORT_CERT=
-      - TRANSPORT_KEY=
-      - VALIDATE_RESPONSE=${VALIDATE_RESPONSE:-true}
-      - INIT_REFERENCE_MOCK_SERVER=${INIT_REFERENCE_MOCK_SERVER:-true}
-      - OZONE_CLIENT_ID=${OZONE_CLIENT_ID}
-      - OZONE_CLIENT_SECRET=${OZONE_CLIENT_SECRET}
+      - VALIDATE_RESPONSE=true
       - LOG_LEVEL=debug
       - DEBUG_HIDE_DATE=0
       - DEBUG_COLORS=1

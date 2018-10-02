@@ -1,4 +1,4 @@
-defmodule OBApiRemote.Commands.ApiConfig do
+defmodule Compliance.Commands.ApiConfig do
   @moduledoc """
   Represents a config required to use OB APIs.
 

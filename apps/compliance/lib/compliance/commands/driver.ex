@@ -1,9 +1,9 @@
-defmodule OBApiRemote.Commands.Driver do
+defmodule Compliance.Commands.Driver do
   @moduledoc """
   The Commands context.
   """
 
-  alias OBApiRemote.Commands.{ApiConfig, Proxied}
+  alias Compliance.Commands.{ApiConfig, Proxied}
   require Logger
 
   def do_post_login() do
@@ -19,18 +19,6 @@ defmodule OBApiRemote.Commands.Driver do
     handler = fn {:ok, decoded} -> {:ok, decoded["sid"]} end
 
     :logout
-    |> execute(handler, headers: [{"authorization", session_token}])
-  end
-
-  def do_get_authorisation_servers(session_token) do
-    Logger.debug(fn -> "do_get_authorisation_servers" end)
-
-    handler = fn {:ok, auth_servers} ->
-      results = auth_servers |> Enum.map(&(&1 |> Map.delete("accountsConsentGranted")))
-      {:ok, results}
-    end
-
-    :get_auth_servers
     |> execute(handler, headers: [{"authorization", session_token}])
   end
 

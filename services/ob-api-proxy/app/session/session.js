@@ -4,7 +4,11 @@ const util = require('util');
 const log = require('debug')('log');
 
 const session = (() => {
-  const setData = (sid, username) => store.set(sid, JSON.stringify({ sid, username }));
+  const setData = (sid, username, callback) => {
+    store.set(sid, JSON.stringify({ sid, username }), () => {
+      callback(sid);
+    });
+  };
   const getData = (sid, cb) => store.get(sid, cb);
   const getDataAsync = util.promisify(getData);
   const setAccessToken = accessToken => store.set('ob_directory_access_token', JSON.stringify(accessToken));
@@ -28,10 +32,9 @@ const session = (() => {
     store.get(candidate, sessHandler);
   };
 
-  const newSession = (username) => {
+  const newSession = (username, callback) => {
     const mySid = uuidv1();
-    setData(mySid, username);
-    return mySid;
+    setData(mySid, username, callback);
   };
 
   const deleteAll = async () => {

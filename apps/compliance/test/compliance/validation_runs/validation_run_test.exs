@@ -2,7 +2,7 @@ defmodule Compliance.ValidationRuns.ValidationRunTest do
   @moduledoc """
   Tests for ValidationRun.
   """
-  use ExUnit.Case, async: true
+  use ExUnit.Case, async: false
   alias Compliance.ValidationRuns.{ValidationRun, ValidationRunSupervisor}
 
   @validation_run_id "validation-run-id-123"

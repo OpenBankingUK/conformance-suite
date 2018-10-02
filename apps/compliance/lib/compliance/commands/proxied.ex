@@ -1,4 +1,4 @@
-defmodule OBApiRemote.Commands.Proxied do
+defmodule Compliance.Commands.Proxied do
   @moduledoc """
   Contains configuration for HTTP calls to OB API proxy.
   """

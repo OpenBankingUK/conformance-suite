@@ -48,7 +48,6 @@
     "dev": "nodemon -w app -w routes -w index.js --exec node -r dotenv/config .",
     "start": "node .",
     "test": "NODE_ENV=test MONGODB_URI='localhost:27017/test-tpp-server' mocha --exit --colors --full-trace --recursive",
-    "test:kafka": "NODE_ENV=test MONGODB_URI='localhost:27017/test-tpp-server' mocha --recursive",
     "test:watch": "NODE_ENV=test MONGODB_URI='localhost:27017/test-tpp-server' mocha --recursive --watch",
     "test:debug": "NODE_ENV=test MONGODB_URI='localhost:27017/test-tpp-server' node --inspect-brk node_modules/mocha/bin/_mocha --recursive --watch --no-timeouts",
     "eslint": "eslint .",

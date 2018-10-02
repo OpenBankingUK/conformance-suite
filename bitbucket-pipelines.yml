@@ -81,6 +81,8 @@ pipelines:
         - step:
             name: services/ob-api-proxy
             image: node:8.11-alpine
+            services:
+              - mongo
             caches:
               - cache-ob-api-proxy-node-modules
             script:

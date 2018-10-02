@@ -9,7 +9,6 @@ const { base64EncodeJSON } = require('../app/ob-util');
 
 process.env.DEBUG = 'error';
 process.env.AUTHORIZATION = authorization;
-process.env.OB_DIRECTORY_HOST = 'http://example.com';
 
 const { app } = require('../app/index.js');
 const { session } = require('../app/session');
@@ -201,12 +200,8 @@ const consentPayload = {
 };
 
 const { AUTH_SERVER_USER_CONSENTS_COLLECTION } = require('../app/authorise/consents');
-const { ASPSP_AUTH_SERVERS_COLLECTION } = require('../app/authorisation-servers');
 const { setConsent } = require('../app/authorise');
-const { setAuthServerConfig } = require('../app/authorisation-servers');
 const { drop } = require('../app/storage.js');
-
-const resourceApiHost = 'http://example.com';
 
 const loginAsync = async (application) => {
   const res = await login(application);
@@ -230,12 +225,6 @@ const requestResource = async (sessionId, url, application) => {
 
 describe('Proxy', () => {
   beforeEach(async () => {
-    await setAuthServerConfig(authServerId, {
-      obDirectoryConfig: {
-        OBOrganisationId: fapiFinancialId,
-        BaseApiDNSUri: resourceApiHost,
-      },
-    });
     await setConsent({
       username,
       authorisationServerId: authServerId,
@@ -247,9 +236,7 @@ describe('Proxy', () => {
   afterEach(async () => {
     await session.deleteAll();
     await drop(AUTH_SERVER_USER_CONSENTS_COLLECTION);
-    await drop(ASPSP_AUTH_SERVERS_COLLECTION);
     delete process.env.DEBUG;
-    delete process.env.OB_DIRECTORY_HOST;
     delete process.env.AUTHORIZATION;
     delete process.env.VALIDATE_RESPONSE;
   });

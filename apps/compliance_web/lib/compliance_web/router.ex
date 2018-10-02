@@ -32,15 +32,6 @@ defmodule ComplianceWeb.Router do
   end
 
   scope "/", ComplianceWeb do
-    # Use the default browser stack
-    pipe_through :browser
-
-    get "/account-payment-service-provider-authorisation-servers",
-        AuthorisationServersController,
-        :get
-  end
-
-  scope "/", ComplianceWeb do
     pipe_through :api
     pipe_through :authorized
 
