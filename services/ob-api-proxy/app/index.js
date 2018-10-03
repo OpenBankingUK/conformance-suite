@@ -14,9 +14,16 @@ const { authorisationCodeGrantedHandler } = require('./authorise');
 
 const app = express();
 
+// don't log requests when testing
 if (process.env.NODE_ENV !== 'test') {
-  // don't log requests when testing
-  app.use(morgan('dev')); // for logging
+  // // Log twice once for the request and once for the response.
+  // // Immediate means log as soon as the request arrives
+  // app.use(morgan('common', {
+  //   immediate: true,
+  // }));
+  app.use(morgan('combined', {
+    immediate: false,
+  }));
 }
 
 const requireAuthorisationServerId = async (req, res, next) => {

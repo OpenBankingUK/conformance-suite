@@ -55,9 +55,10 @@ const verifyHeaders = (headers) => {
     'config.transport_cert',
     'config.transport_key',
   ];
+
   const missingKeys = _.filter(requiredKeys, requiredKey => !_.has(headers, requiredKey));
   if (missingKeys.length > 0) {
-    const msg = `verifyHeaders: Missing: ${missingKeys.join(', ')} missing from headers`;
+    const msg = `verifyHeaders: Missing: ${missingKeys.join(', ')} missing from headers=${JSON.stringify(headers)}`;
     throw new Error(msg);
   }
 };

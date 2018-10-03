@@ -3,8 +3,8 @@ const { createRequest, obtainResult } = require('../ob-util');
 const log = require('debug')('log');
 const errorLog = require('debug')('error');
 const debug = require('debug')('debug');
-const assert = require('assert');
 const util = require('util');
+const _ = require('lodash');
 
 const buildAccountRequestData = Permissions => ({
   Data: { Permissions },
@@ -12,9 +12,15 @@ const buildAccountRequestData = Permissions => ({
 });
 
 const verifyHeaders = (headers) => {
-  assert.ok(headers.sessionId, 'sessionId missing from headers');
-  if (headers.config) {
-    assert.ok(headers.config.api_version, 'api_version missing from headers.config');
+  const requiredKeys = [
+    'sessionId',
+    'config.api_version',
+  ];
+
+  const missingKeys = _.filter(requiredKeys, requiredKey => !_.has(headers, requiredKey));
+  if (missingKeys.length > 0) {
+    const msg = `verifyHeaders: missingKeys=${missingKeys.join(', ')} missing from headers=${JSON.stringify(headers)}`;
+    throw new Error(msg);
   }
 };
 

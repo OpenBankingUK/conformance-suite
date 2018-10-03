@@ -3,32 +3,25 @@ const { obtainAuthorisationCodeAccessToken } = require('./obtain-access-token');
 const { session } = require('../session');
 const { base64DecodeJSON } = require('../ob-util');
 const debug = require('debug')('debug');
+const _ = require('lodash');
 
 const validatePayload = (payload) => {
-  const {
-    authorisationServerId,
-    authorisationCode,
-    scope,
-    accountRequestId,
-  } = payload;
-  const missing = [];
-  if (!authorisationServerId) {
-    missing.push('authorisationServerId');
-  }
-  if (!authorisationCode) {
-    missing.push('authorisationCode');
-  }
-  if (!scope) {
-    missing.push('scope');
-  }
-  if (!accountRequestId) {
-    missing.push('accountRequestId');
-  }
-  if (missing.length > 0) {
-    const err = new Error(`Bad request, ${missing.join(', ')} missing from request payload`);
+  const requiredKeys = [
+    'authorisationServerId',
+    'authorisationCode',
+    'scope',
+    'accountRequestId',
+  ];
+
+  const missingKeys = _.filter(requiredKeys, requiredKey => !_.has(payload, requiredKey));
+  if (missingKeys.length > 0) {
+    const msg = `validatePayload: missingKeys=${missingKeys.join(', ')} missing from request payload=${JSON.stringify(payload)}`;
+
+    const err = new Error(msg);
     err.status = 400;
     throw err;
   }
+
   return payload;
 };
 

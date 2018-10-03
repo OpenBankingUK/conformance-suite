@@ -51,9 +51,9 @@ services:
     ports:
       - 8003:8003
     environment:
+      - PORT=8003
       - DEBUG=error,log,debug
       - MONGODB_URI=mongodb://mongo:27017/${DATA_DB_NAME}
-      - TPP_REF_SERVER_PORT=8003
       - VALIDATE_RESPONSE=true
       - LOG_LEVEL=debug
       - DEBUG_HIDE_DATE=0

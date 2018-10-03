@@ -3,19 +3,23 @@ const { obtainClientCredentialsAccessToken } = require('./obtain-access-token');
 const { getAccountRequest } = require('../setup-account-request/account-requests');
 const uuidv4 = require('uuid/v4');
 const debug = require('debug')('debug');
-const assert = require('assert');
+const _ = require('lodash');
 
 const AUTH_SERVER_USER_CONSENTS_COLLECTION = 'authorisationServerUserConsents';
 
 const validateCompositeKey = (obj) => {
-  [
+  const requiredKeys = [
     'username',
     'authorisationServerId',
     'scope',
     'validationRunId',
-  ].forEach((key) => {
-    assert.ok(obj[key], `${key} missing from consent lookup keys ${JSON.stringify(obj)}`);
-  });
+  ];
+
+  const missingKeys = _.filter(requiredKeys, requiredKey => !_.has(obj, requiredKey));
+  if (missingKeys.length > 0) {
+    const msg = `validateCompositeKey: missingKeys=${missingKeys.join(', ')} from consent lookup keys obj=${JSON.stringify(obj)}`;
+    throw new Error(msg);
+  }
 };
 
 const generateCompositeKey = (obj) => {
