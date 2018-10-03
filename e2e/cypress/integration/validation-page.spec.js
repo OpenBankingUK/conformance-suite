@@ -20,6 +20,25 @@ const exampleConfig = {
   transport_key: '-----BEGIN PRIVATE KEY----------END PRIVATE KEY-----'
 };
 
+const examplePayload = [
+  {
+    api_version: '1.1',
+    name: 'Sam Morse',
+    sort_code: '111111',
+    account_number: '12345678',
+    amount: '10.00',
+    type: 'payments',
+  },
+  {
+    api_version: '1.1',
+    name: 'Michael Burnham',
+    sort_code: '222222',
+    account_number: '87654321',
+    amount: '200.00',
+    type: 'payments',
+  },
+];
+
 const fillForm = () => {
   cy
     .get('input[name=authorization_endpoint]')
@@ -40,6 +59,8 @@ const goToPayload = () => {
     .get('.validation-button-container .next')
     .click()
     .get('.validation-button-container .next')
+    .click()
+    .get('.ant-btn-danger[data-item=account-0]')
     .click();
 };
 
@@ -79,7 +100,9 @@ describe('Config page', () => {
         .click()
         .window().then(win => {
           const editor = win.ace.edit('editor');
+          const payload = win.ace.edit('payload');
           editor.getSession().setValue(JSON.stringify(exampleConfig, null, 2))
+          payload.getSession().setValue(JSON.stringify(examplePayload, null, 2))
         })
         .get('.start_validation')
         .click({ force: true });
@@ -125,7 +148,7 @@ describe('Config page', () => {
         .get('.add-payment button')
         .click()
         .get('.payload-item')
-        .eq(4)
+        .eq(3)
         .should('contain', 'Firstname')
         .get('.validation-button-container .start')
         .click();
@@ -137,18 +160,18 @@ describe('Config page', () => {
       goToPayload();
       cy
         .get('.payload-item')
-        .should('have.length', 5)
-        .eq(2)
+        .should('have.length', 4)
+        .eq(1)
         .should('contain', 'Sam Morse')
         .get('.payload-item')
-        .eq(3)
+        .eq(2)
         .should('contain', 'Michael Burnham')
         .get('.ant-btn-danger[data-item=payment-1]')
         .click()
         .get('.payload-item')
-        .should('have.length', 4)
+        .should('have.length', 3)
         .get('.payload-item')
-        .eq(3)
+        .eq(2)
         .should('not.contain', 'Michael Burnham')
         .get('.validation-button-container .start')
         .click();
