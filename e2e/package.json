@@ -5,20 +5,13 @@
   "repository": {},
   "license": "MIT",
   "scripts": {
-    "headless": "CI=true cypress run",
     "local": "REFERENCE_MOCK_SERVER=localhost CYPRESS_BASE_URL=http://localhost:4000 cypress open",
-    "cypress": "cypress",
-    "open": "cypress open",
-    "headless_local": "CYPRESS_BASE_URL=http://localhost:4000 cypress run",
-    "test_junit": "cypress run --reporter junit --reporter-options 'mochaFile=junit-results/my-test-output.xml'",
-    "test_multiple": "cypress run --reporter mocha-multi-reporters --reporter-options configFile=cypress/config.json"
+    "headless_local": "CYPRESS_BASE_URL=http://localhost:4000 cypress run"
   },
   "devDependencies": {
-    "cypress": "^3.1.0",
-    "mocha": "^5.2.0",
-    "mocha-junit-reporter": "^1.17.0",
-    "mocha-multi-reporters": "^1.1.7",
-    "mochawesome": "^3.0.2"
+    "cypress": "3.1.0",
+    "mocha": "5.2.0",
+    "mochawesome": "3.0.2"
   },
   "dependencies": {}
 }

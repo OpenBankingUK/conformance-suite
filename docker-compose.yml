@@ -106,13 +106,17 @@ services:
         ls -lah /root
         ls -lah /root/e2e
         cd /root/e2e
-        CI=true npm install
-        npm run cypress -- verify
+        echo -e "\\033[92m  ---> e2e: installing deps ... \\033[0m"
+        CI=true yarn install
+        echo -e "\\033[92m  ---> e2e: verifying ... \\033[0m"
+        CI=true npx cypress verify
         EXIT_CODE=$$?
         if [[ $$EXIT_CODE -ne 0 ]]; then
-          CI=true npm run cypress -- install --force
+          echo -e "\\033[92m  ---> e2e: installing cypress .. .\\033[0m"
+          CI=true npx cypress install --force
         fi
-        npm run headless
+        echo -e "\\033[92m  ---> e2e: running tests ... \\033[0m"
+        CI=true npx cypress run
 
 networks:
   openbanking_network:
