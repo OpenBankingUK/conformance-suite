@@ -114,7 +114,7 @@ describe('Authorized Code Granted', () => {
       // eslint-disable-next-line no-underscore-dangle
       assert.deepEqual(response._getData(), {
         message:
-        'Bad request, authorisationServerId, authorisationCode, scope, accountRequestId missing from request payload',
+        'validatePayload: missingKeys=authorisationServerId, authorisationCode, scope, accountRequestId missing from request payload={}',
       });
     });
 

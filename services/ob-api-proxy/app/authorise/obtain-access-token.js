@@ -11,6 +11,8 @@ const mungeToken = (body) => {
   return { accessToken, tokenType, tokenExpiresAt };
 };
 
+const CLIENT_ASSERTION_TYPE = 'urn:ietf:params:oauth:client-assertion-type:jwt-bearer';
+
 const postToken = async (
   {
     client_id, client_secret,
@@ -33,7 +35,7 @@ const postToken = async (
         aud: token_endpoint,
       };
       const createdJwt = createJwt(claims, signing_key);
-      body.client_assertion_type = 'urn:ietf:params:oauth:client-assertion-type:jwt-bearer';
+      body.client_assertion_type = CLIENT_ASSERTION_TYPE;
       body.client_assertion = createdJwt;
     } else if (isSecretBasic) {
       mtlsRequest.set('authorization', createBasicAuth(client_id, client_secret));

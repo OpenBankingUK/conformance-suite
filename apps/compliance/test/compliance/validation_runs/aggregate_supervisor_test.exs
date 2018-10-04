@@ -2,7 +2,7 @@ defmodule Compliance.ValidationRuns.AggregateSupervisorTest do
   @moduledoc """
   Tests for AggregateSupervisor.
   """
-  use ExUnit.Case, async: true
+  use ExUnit.Case, async: false
   alias Compliance.ValidationRuns.AggregateSupervisor
 
   @validation_run_id "validation-run-id-123"

@@ -24,11 +24,6 @@ init_server() {
 wait_for_deps() {
   echo -e "\\033[92m  ---> web-serve.sh: wait_for_deps  \\033[0m"
 
-  while ! nc -z localhost 6379; do
-    echo -e "\\033[92m  ---> web-serve.sh: waiting for redis ...  \033[0m"
-    sleep 1
-  done
-
   while ! nc -z localhost 27017; do
     echo -e "\\033[92m  ---> web-serve.sh: waiting for mongo ...  \\033[0m"
     sleep 1
@@ -66,11 +61,11 @@ if [[ -n "$RECREATE" ]]; then
     --always-recreate-deps \
     --renew-anon-volumes \
     --remove-orphans \
-    mongo redis reference-mock-server
+    mongo reference-mock-server
 else
   time docker-compose up \
     -d \
-    mongo redis reference-mock-server
+    mongo reference-mock-server
 fi
 
 wait_for_deps

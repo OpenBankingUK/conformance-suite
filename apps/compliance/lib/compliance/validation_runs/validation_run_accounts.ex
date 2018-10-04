@@ -5,7 +5,7 @@ defmodule Compliance.ValidationRuns.ValidationRunAccounts do
 
   alias Compliance.Permutations.Generator
   alias Compliance.SwaggerUris
-  alias OBApiRemote.Commands
+  alias Compliance.Commands
   alias Compliance.Configs.RunConfig
   require Logger
 
@@ -16,12 +16,6 @@ defmodule Compliance.ValidationRuns.ValidationRunAccounts do
         config = %RunConfig{}
       )
       when is_binary(api_version) do
-    params = binding()
-
-    Logger.debug(fn ->
-      "Compliance.ValidationRuns.request_account_resources, params: #{inspect(params)}"
-    end)
-
     permutations = Generator.endpoint_permutations(api_version)
 
     Logger.debug(fn ->
@@ -78,12 +72,6 @@ defmodule Compliance.ValidationRuns.ValidationRunAccounts do
         config = %RunConfig{}
       )
       when is_binary(api_version) do
-    params = binding()
-
-    Logger.debug(fn ->
-      "Compliance.ValidationRuns.request_account_resource_permutations, params: #{inspect(params)}"
-    end)
-
     api_version
     |> get_account_id(validation_run_id, auth_server_id, config)
     |> case do
@@ -113,12 +101,6 @@ defmodule Compliance.ValidationRuns.ValidationRunAccounts do
          auth_server_id,
          config = %RunConfig{}
        ) do
-    params = binding()
-
-    Logger.debug(fn ->
-      "Compliance.ValidationRuns.get_account_id, params: #{inspect(params)}"
-    end)
-
     swagger_uris = SwaggerUris.from("accounts", api_version, ["ReadAccountsBasic"])
 
     "/open-banking/v#{api_version}/accounts"
@@ -182,12 +164,6 @@ defmodule Compliance.ValidationRuns.ValidationRunAccounts do
          auth_server_id,
          config = %RunConfig{}
        ) do
-    params = binding()
-
-    Logger.debug(fn ->
-      "Compliance.ValidationRuns.request_account_resource, params: #{inspect(params)}"
-    end)
-
     swagger_uris = SwaggerUris.from("accounts", api_version, permissions)
     permissions = permissions |> Enum.join(" ")
     endpoint = endpoint |> String.replace("{AccountId}", account_id)

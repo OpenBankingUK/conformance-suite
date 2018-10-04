@@ -1,9 +1,9 @@
-defmodule OBApiRemote.Commands.DriverTest do
+defmodule Compliance.Commands.DriverTest do
   @moduledoc """
   Tests for Commands.
   """
-  use ExUnit.Case, async: true
-  alias OBApiRemote.Commands.{ApiConfig, Driver, Proxied}
+  use ExUnit.Case, async: false
+  alias Compliance.Commands.{ApiConfig, Driver, Proxied}
 
   import Mock
 
@@ -176,42 +176,6 @@ defmodule OBApiRemote.Commands.DriverTest do
         )
 
         assert called(HTTPoison.request(:get, @urls.logout, "", @request_headers))
-      end
-    end
-  end
-
-  describe "Driver.do_get_authorisation_servers" do
-    @mock_response "[{\"name\":\"AAA Example Bank\",\"logoUri\":\"\",\"id\":\"aaaj4NmBD8lQxmLh2O\",\"accountsConsentGranted\":false}]"
-    @auth_servers [
-      %{
-        "id" => @aspsp_auth_server_id,
-        "logoUri" => "",
-        "name" => "AAA Example Bank"
-      }
-    ]
-    @request_headers @session_headers
-
-    test "returns authorization servers on success" do
-      with_mock HTTPoison,
-        request: fn _method, _url, _body, _headers ->
-          {:ok, %HTTPoison.Response{status_code: 200, body: @mock_response}}
-        end do
-        assert({:ok, @auth_servers} == Driver.do_get_authorisation_servers(@session_token))
-        assert called(HTTPoison.request(:get, @urls.get_auth_servers, "", @request_headers))
-      end
-    end
-
-    test "returns error reason on failure" do
-      with_mock HTTPoison,
-        request: fn _method, _url, _body, _headers ->
-          {:error, %HTTPoison.Error{id: "an-id", reason: "ERROR"}}
-        end do
-        assert_error(
-          Driver.do_get_authorisation_servers(@session_token),
-          @urls.get_auth_servers
-        )
-
-        assert called(HTTPoison.request(:get, @urls.get_auth_servers, "", @request_headers))
       end
     end
   end

@@ -1,11 +1,11 @@
-defmodule OBApiRemote.CommandsTest do
+defmodule Compliance.CommandsTest do
   @moduledoc """
   Tests for Commands.
   """
-  use ExUnit.Case, async: true
+  use ExUnit.Case, async: false
 
-  alias OBApiRemote.Commands
-  alias OBApiRemote.Commands.{ApiConfig, Driver}
+  alias Compliance.Commands
+  alias Compliance.Commands.{ApiConfig, Driver}
 
   import Mock
 
@@ -274,38 +274,6 @@ defmodule OBApiRemote.CommandsTest do
                    @api_config
                  )
                )
-      end
-    end
-  end
-
-  describe "Commands.get_auth_servers" do
-    test "can get auth servers using all required driver calls" do
-      with_mock(
-        Driver,
-        do_post_login: fn -> {:ok, @session_token} end,
-        do_get_authorisation_servers: fn _session_token ->
-          {:ok, @authorisation_servers}
-        end
-      ) do
-        {:ok, auth_servers} = Commands.get_auth_servers()
-        assert(auth_servers == @authorisation_servers)
-        assert called(Driver.do_post_login())
-        assert called(Driver.do_get_authorisation_servers(@session_token))
-      end
-    end
-
-    test "handles errors" do
-      with_mock(
-        Driver,
-        do_post_login: fn -> {:ok, @session_token} end,
-        do_get_authorisation_servers: fn _session_token ->
-          {:error, %{}}
-        end
-      ) do
-        {:error, reason} = Commands.get_auth_servers()
-        assert(reason != nil)
-        assert called(Driver.do_post_login())
-        assert called(Driver.do_get_authorisation_servers(@session_token))
       end
     end
   end

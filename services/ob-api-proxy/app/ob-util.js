@@ -20,7 +20,6 @@ const base64EncodeJSON = object =>
 const base64DecodeJSON = encoded =>
   JSON.parse(base64Decode(encoded));
 
-const ca = base64Decode(process.env.OB_ISSUING_CA || '');
 const isMock = uri => uri.includes('localhost') || uri.includes('reference-mock-server');
 const setupMutualTLS = (uri, agent, cert, key) => {
   if (isMock(uri)) return agent;
@@ -56,9 +55,10 @@ const verifyHeaders = (headers) => {
     'config.transport_cert',
     'config.transport_key',
   ];
+
   const missingKeys = _.filter(requiredKeys, requiredKey => !_.has(headers, requiredKey));
   if (missingKeys.length > 0) {
-    const msg = `verifyHeaders: Missing: ${missingKeys.join(', ')} missing from headers`;
+    const msg = `verifyHeaders: Missing: ${missingKeys.join(', ')} missing from headers=${JSON.stringify(headers)}`;
     throw new Error(msg);
   }
 };
@@ -117,7 +117,6 @@ module.exports = {
   createBasicAuth,
   createRequest,
   obtainResult,
-  caCert: ca,
   validateRequestResponse,
   createJwt,
   isMock,

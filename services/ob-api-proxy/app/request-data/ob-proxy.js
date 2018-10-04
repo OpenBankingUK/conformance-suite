@@ -54,14 +54,14 @@ const resourceRequestHandler = async (req, res) => {
     let response;
     try {
       response = await request.send();
-      debug('services/ob-api-proxy/app/request-data/ob-proxy.js:resourceRequestHandler -> response=%O', response);
+      debug('services/ob-api-proxy/app/request-data/ob-proxy.js:resourceRequestHandler -> response=%j', response);
     } catch (err) {
-      error('services/ob-api-proxy/app/request-data/ob-proxy.js:resourceRequestHandler -> error getting proxiedUrl=%O, err=%O', proxiedUrl, err.message);
+      error('services/ob-api-proxy/app/request-data/ob-proxy.js:resourceRequestHandler -> error getting proxiedUrl=%j, err=%j', proxiedUrl, err.message);
       throw err;
     }
 
     const result = await obtainResult(request, response, headers);
-    debug('services/ob-api-proxy/app/request-data/ob-proxy.js:resourceRequestHandler -> result=%O', result);
+    debug('services/ob-api-proxy/app/request-data/ob-proxy.js:resourceRequestHandler -> result=%j', result);
 
     return res
       .status(response.status)

@@ -1,55 +1,58 @@
-const redis = require('redis');
-const error = require('debug')('error');
 const debug = require('debug')('debug');
-const url = require('url');
-
-let redisPort = process.env.REDIS_PORT || 6379;
-let redisHost = process.env.REDIS_HOST || 'localhost';
-
-if (process.env.REDISTOGO_URL) {
-  const rtg = url.parse(process.env.REDISTOGO_URL);
-  redisPort = rtg.port;
-  redisHost = rtg.hostname;
-}
-
-const client = redis.createClient(redisPort, redisHost);
-
-if (process.env.REDISTOGO_URL) {
-  const rtg = url.parse(process.env.REDISTOGO_URL);
-  client.auth(rtg.auth.split(':')[1]);
-}
-
-const noop = () => {};
-
-client.on('error', (err) => {
-  error(`Redis Client Error ${err}`);
-});
+const redis = require('redis-mock');
+const _ = require('lodash');
 
 exports.store = (() => {
-  const set = (key, value, cb) => {
-    const cbk = cb || noop;
-    if (typeof key !== 'string') throw new Error(' key must be of type String ');
-    if (typeof value !== 'string') throw new Error(' value must be of type String ');
-    debug(`setting key to ${key} with value ${value}`);
-    client.set(key, value, 'EX', 3600); // Default to 1 hour so we don't have too many sessions stored
-    return cbk();
+  const client = redis.createClient();
+  const EXPIRY_DURATION = 3600; // Default to 1 hour so we don't have too many sessions stored
+  const noop = (args) => {
+    debug('services/ob-api-proxy/app/session/persistence.js:noop -> args=%j', args);
   };
 
-  const get = (key, cb) => {
-    const cbk = cb || noop;
-    if (!key) return cbk(null, null);
+  const set = (key, value, callback) => {
+    const cbk = callback || noop;
+
+    if (!_.isString(key)) {
+      throw new Error(`services/ob-api-proxy/app/session/persistence.js:set -> key must be of type String, key=${JSON.stringify(key)}`);
+    }
+
+    if (!_.isString(value)) {
+      throw new Error(`services/ob-api-proxy/app/session/persistence.js:set -> value must be of type String, value=${JSON.stringify(value)}`);
+    }
+
+    debug('services/ob-api-proxy/app/session/persistence.js:set -> key=%j, value=%j, cbk=%O', key, value, cbk);
+    return client.set(key, value, 'EX', EXPIRY_DURATION, cbk);
+  };
+
+  const get = (key, callback) => {
+    const cbk = callback || noop;
+    debug('services/ob-api-proxy/app/session/persistence.js:get -> key=%j, cbk=%O', key, cbk);
+
+    if (!key) {
+      return cbk(null, null);
+    }
+
     return client.get(key, cbk);
   };
 
-  const remove = key => client.del(key, noop);
+  const remove = (key) => {
+    debug('services/ob-api-proxy/app/session/persistence.js:remove -> key=%j', key);
 
-  const getAll = (cb) => {
-    const cbk = cb || noop;
-    client.keys('*', cbk);
+    return client.del(key, noop);
   };
 
-  const deleteAll = async () =>
-    new Promise(resolve => client.flushall(resolve));
+  const getAll = (callback) => {
+    const cbk = callback || noop;
+    debug('services/ob-api-proxy/app/session/persistence.js:getAll -> cbk=%O', cbk);
+
+    return client.keys('*', cbk);
+  };
+
+  const deleteAll = async () => {
+    debug('services/ob-api-proxy/app/session/persistence.js:deleteAll');
+
+    return new Promise(resolve => client.flushall(resolve));
+  };
 
   return {
     set,

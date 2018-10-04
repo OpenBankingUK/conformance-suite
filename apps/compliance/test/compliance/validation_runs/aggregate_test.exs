@@ -2,7 +2,7 @@ defmodule Compliance.ValidationRuns.AggregateTest do
   @moduledoc """
   Tests for Aggregate.
   """
-  use ExUnit.Case, async: true
+  use ExUnit.Case, async: false
   alias Compliance.ValidationRuns.{Aggregate, EndpointCall}
   doctest Aggregate
 

@@ -198,7 +198,7 @@ describe('postPayments request to remote payment endpoints', () => {
     } catch (e) {
       error = e;
     }
-    assert.equal('idempotencyKey missing from headers', error.message);
+    assert.equal(error.message, 'verifyHeaders: missingKeys=idempotencyKey, sessionId missing from headers={}');
   });
 
   it('throws error when remote endpoing return 400 due to incorrect request format', async () => {

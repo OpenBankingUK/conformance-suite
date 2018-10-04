@@ -8,8 +8,8 @@ defmodule Compliance.ValidationRuns.ValidationRunAccountsTest do
   alias Compliance.Permutations.Generator
   alias Compliance.SwaggerUris
   alias Compliance.Configs.RunConfig
-  alias OBApiRemote.Commands
-  alias OBApiRemote.Commands.ApiConfig
+  alias Compliance.Commands
+  alias Compliance.Commands.ApiConfig
 
   import Mock
   import ExUnit.CaptureLog

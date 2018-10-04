@@ -1,3 +1,3 @@
 defmodule ComplianceWeb.PageViewTest do
-  use ComplianceWeb.ConnCase, async: true
+  use ComplianceWeb.ConnCase, async: false
 end

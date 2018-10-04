@@ -2,7 +2,7 @@ defmodule Compliance.Permutations.GeneratorTest do
   @moduledoc """
   Tests for Permutations.Generator.
   """
-  use ExUnit.Case, async: true
+  use ExUnit.Case, async: false
   doctest Compliance.Permutations.Generator
   alias Compliance.Permutations.Generator
 

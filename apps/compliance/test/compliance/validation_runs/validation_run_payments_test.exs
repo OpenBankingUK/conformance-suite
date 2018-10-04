@@ -6,8 +6,8 @@ defmodule Compliance.ValidationRuns.ValidationRunPaymentsTest do
 
   alias Compliance.ValidationRuns.ValidationRunPayments
   alias Compliance.SwaggerUris
-  alias OBApiRemote.Commands
-  alias OBApiRemote.Commands.ApiConfig
+  alias Compliance.Commands
+  alias Compliance.Commands.ApiConfig
 
   import Mock
   import ExUnit.CaptureLog

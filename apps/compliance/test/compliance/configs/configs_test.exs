@@ -2,7 +2,7 @@ defmodule Compliance.ConfigsTest do
   @moduledoc """
   Tests for Configs module.
   """
-  use ExUnit.Case, async: true
+  use ExUnit.Case, async: false
 
   alias Compliance.Configs
   alias Compliance.Configs.RunConfig
