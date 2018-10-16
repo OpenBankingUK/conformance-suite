@@ -1,81 +1,35 @@
-# Reference: https://github.com/Financial-Times/docker-elixir-build
-FROM bitwalker/alpine-elixir:1.7.3 as build
-RUN apk --no-cache add nodejs-npm
+# Image to compile go binary
+FROM golang:1.11-stretch as gobuilder
+# disable crosscompiling
+#
+# A normal compiled app is dynamically linked to the libraries it needs to run (i.e., all the C libraries it binds to).
+# Unfortunately, scratch is empty, so there are no libraries and no loadpath for it to look in. What we have to do is modify our build script to statically compile our app with all libraries built in.
+#
+# https://github.com/AlessioCoser/minimal-docker-container-for-golang
+ENV CGO_ENABLED=0
+# compile linux only
+ENV GOOS=linux
+ENV GOARCH=amd64
 
-WORKDIR /build
+WORKDIR /app
+ADD . .
 
-COPY mix.exs .
-COPY mix.lock .
+RUN make init
+RUN make build
 
-ARG MIX_ENV=prod
-ARG APP_VERSION=0.0.0
-ARG ENVFILE
-ARG ENV
-ARG DEBUG_ENVS
-ENV ENV $ENV
-ENV MIX_ENV ${MIX_ENV}
-ENV APP_VERSION ${APP_VERSION}
+# Image to compile Single Page Application of the Vue.js site
+FROM node:8.11.1-slim as nodebuilder
+WORKDIR /app
+ADD web .
 
-COPY $ENVFILE .
-COPY apps apps
-COPY config config
-COPY rel rel
+RUN yarn install \
+	&& NODE_ENV=production yarn build
 
-RUN echo '----' \
-    && echo -e "\\033[92m ---> cat $ENVFILE ... \\033[0m" \
-    && cat $ENVFILE && \
-    echo '----'
-RUN echo '----' \
-    && echo -e "\\033[92m ---> cat $ENVFILE | grep -v '^\s*#' ... \\033[0m" \
-    && cat $ENVFILE | grep -v '^\s*#' \
-    && echo '----'
+# Final image to run the binary
+FROM scratch
+LABEL MAINTAINER Open Banking
+WORKDIR /app
 
-# Uncomment line below if you have assets in the priv dir
-COPY apps/compliance_web/priv apps/compliance_web/priv
-
-# Build Phoenix assets
-RUN npm --version \
-    && node --version
-
-RUN cd apps/compliance_web/assets \
-    && npm install --no-progress \
-    && env `cat ../../../$ENVFILE | grep -v '^\s*#'` npm run build
-
-RUN mix deps.get
-RUN env `cat $ENVFILE | grep -v '^\s*#'` mix phx.digest
-RUN env `cat $ENVFILE | grep -v '^\s*#'` mix release --env=${MIX_ENV}
-
-# Container that will be used to run the final application
-FROM alpine:3.8
-RUN apk --no-cache update \
-    && apk --no-cache upgrade \
-    && apk --no-cache add ncurses-libs openssl bash ca-certificates\
-    && adduser -D app
-
-ARG MIX_ENV=prod
-ARG APP_VERSION=0.0.0
-ARG ENVFILE
-ARG ENV
-ARG DEBUG_ENVS
-ENV ENV $ENV
-ENV MIX_ENV ${MIX_ENV}
-ENV APP_VERSION ${APP_VERSION}
-ENV PORT 4000
-
-WORKDIR /opt/app
-
-COPY $ENVFILE .
-RUN cat $ENVFILE | awk '!/^ *#/ && NF' | sed -e 's/^/export /' >> /etc/profile.d/envs.sh
-
-# Copy release from build stage
-COPY --from=build /build/_build/${MIX_ENV}/rel/* ./
-USER app
-
-# Mutable Runtime Environment
-RUN mkdir /tmp/app
-ENV RELEASE_MUTABLE_DIR /tmp/app
-ENV START_ERL_DATA /tmp/app/start_erl.data
-
-# Start command
-CMD echo -e "\\033[92m  ---> starting compliance-suite-server ... \\033[0m" \
-    && /opt/app/bin/compliance_suite_server foreground
+COPY --from=gobuilder /app/conformance-suite /app/
+COPY --from=nodebuilder /app/dist /app/web/dist
+ENTRYPOINT ["/app/conformance-suite"]

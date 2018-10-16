@@ -1,113 +1,143 @@
-[![CircleCI](https://circleci.com/gh/OpenBankingUK/compliance-suite-server.svg?style=svg&circle-token=7042965fb04fa83d7cafa5b2d43a2c0f0febabf6)](https://circleci.com/gh/OpenBankingUK/compliance-suite-server)
+# `conformance-suite`
 
-# Functional Conformance Suite
+# Conformance-suite
 
-## Technical Overview
+## Overview
 
-You can read an [overview of our suite umbrella project and process flow here](./apps/README.md).
+```go
 
-## Cloning the repos
+                               +  Access Tokens
+                               |
+                               |
+                               v
+  +------------+      +-----------------+             +-----------------+
+  |            |      |                 |   MATLS     |                 |
+  |  Driver    +----->|   Proxy         +------------>|   Ozone Aspsp   |
+  |            |      |                 |             |                 |
+  +------------+      +--+--------------+             +-----------------+
+                         |           ^
+                         |           |
+                         |           |
+                     +---v-----------+----+           +-----------------+
+                     |  Request/Response  |           |                 |
+                     |                    |+--------->|  Log Reporter   |
+                     |    Validation      |           |                 |
+                     |                    |           +-----------------+
+                     +--------------------+
+                              ^
+                              |
+                      +-------+---------+
+                      |                 |
+                      |  Swagger Spec   |
+                      |                 |
+                      +-----------------+
+```
 
-You can git clone the repositories as follows:
+### Overview Detail
+
+* A driver application sends http request as part of a test suite to the Proxy
+* The Proxy is provided with valid access tokens and certificates for matls
+* The Proxy connects to ozone over matls using the provide access tokens
+* The driver sends request to the proxy
+  * The proxy passes all request and responses to the Validator for validation
+  * The validator using the swagger spec as the basis for validation
+  * The validator records validation results to the log Reporter
+  * The proxy ensures the requests/resposes travel to ozone
+
+### Application code structure
+
+* main.go
+  * get application config
+    * as a temporary measure reads this from a json file config/config.json
+    * also reads transport certs from config directory
+
+```javascript
+{
+  "softwareStatementId": "1p8bGrHhJRrphjFk0qwNAU",
+  "clientScopes": "AuthoritiesReadAccess ASPSPReadAccess TPPReadAccess",
+  "keyId": "BFnipP2g4ZaaFySsIaigOUoCP2E",
+  "verbose":true,
+  "specLocation":"swagger/rw20test.json",
+  "bindAddress":":8989",
+  "targetHost":"http://localhost:3000",
+  "accountAccessToken": "d2d50414-d7a2-48b7-9ddd-aa4bf3cb47ac"
+}
+```
+
+* start proxy on port 8989
+  * pass through to target server on http://localhost:3000
+  * you'll need to put somethere there for a response - will be ozone hopfully by Monday
+  * If you put something that can gives a 200 response to anything then you should be able to test
+  * if you have httpie installed - the following command will push some data through
+  * http -v get :8989/open-banking/v2.0/account-requests/myreq x-fapi-financial-id:123 Authorization:123
+
+* Loads the swagger specification
+  * currently from swagger/rw20test.json - configured in the config.json file ("specLocation")
+* Creates a Proxy Object using the spec, app config, and passes in a LogReporter
+* Waits for requests
+* Shutdown (ctrl-c typically) does a bit of tidyup
+
+## Other notes
+
+The original code for the swagger-proxy is at
+[https://github.com/gchaincl/swagger-proxy](https://github.com/gchaincl/swagger-proxy). I've improved the code and fixed some things - like the abilty to configure TLS - so the original code is not a direct dropin any more. Plus it hasn't changed in a year, so really just a starting point rather than something we need to actively watch. I guess at some stage we may want to offer changes back to it.
+
+Currently not proper package managment (go dep etc...)
+
+Logging is done with Logrus.
+I've also used a throwaway console output lib at github.com/x-cray/logrus-prefixed-formatter which enhances logrus output - but this is just a toy. Also how I've setup Logrus is fairly arbitary and open to suggestions for better ways.
+
+### LogReporter
+
+### Stuff which needs fixing
+
+I need to check which http headers are being passed through, not all of them are - specifically "applicaiton/json; charset=UTF-8" appears to struggle. Not a show stopper, just needs investigation.
+
+
+
+
+## run
+### build
+```sh
+$ docker build -t "openbanking/conformance-suite:latest" .
+$ docker run --rm -it -p 8080:8080 "openbanking/conformance-suite:latest"
+web_1  | conformance-suite2018/10/10 14:21:15 starting ...
+web_1  | conformance-suite2018/10/10 14:21:15 started ...
+web_1  |
+web_1  |    ____    __
+web_1  |   / __/___/ /  ___
+web_1  |  / _// __/ _ \/ _ \
+web_1  | /___/\__/_//_/\___/ v3.2.1
+web_1  | High performance, minimalist Go web framework
+web_1  | https://echo.labstack.com
+web_1  | ____________________________________O/_______
+web_1  |                                     O\
+web_1  | ⇨ http server started on [::]:8080
+```
+
+If you have `make` installed this becomes:
 
 ```sh
-$ git clone https://github.com/OpenBankingUK/compliance-suite-server.git
-$ git clone https://github.com/OpenBankingUK/reference-mock-server.git
+$ make build_image
+$ make run_image
+web_1  | conformance-suite2018/10/10 14:21:15 starting ...
+web_1  | conformance-suite2018/10/10 14:21:15 started ...
+web_1  |
+web_1  |    ____    __
+web_1  |   / __/___/ /  ___
+web_1  |  / _// __/ _ \/ _ \
+web_1  | /___/\__/_//_/\___/ v3.2.1
+web_1  | High performance, minimalist Go web framework
+web_1  | https://echo.labstack.com
+web_1  | ____________________________________O/_______
+web_1  |                                     O\
+web_1  | ⇨ http server started on [::]:8080
 ```
 
-## Getting Started
-- Install `elixir`, `docker` and `nodeJS`
-```sh
-brew install elixir node
-```
-
-On a mac to install `docker` you can follow this [page](https://docs.docker.com/docker-for-mac/install/) or run:
-```
-brew cask install docker
-```
-
-- Copy `.env` from `.env.sample` in the `root` and in `services/ob-api-proxy`
-
-## Commands
-Generate a new secret:
-```sh
-mix phx.gen.secret
-# Output: kro6Z/FRTZhnsjw0TTSs4tqZNmUv6zLJOmWWj7g0m1Fgp2ZOSzfo6cImpceDH1vD
-```
-
-Start local server:
-```sh
-make serve_web
-```
-
-Start `ob-api-proxy` running (in isolation, `make serve_web` starts it in background):
-```sh
-cd services/ob-api-proxy
-npm i
-npm run update # Add Auth Servers and save credentials
-npm run dev # Start the node app in watch mode
-```
-
-Start local server in Docker:
-```sh
-make serve_web_docker
-```
-
-You can go to [localhost:4000](http://localhost:4000) and try it out!
-
-## Local development
-
-Run tests automatically when files change:
+### verify
+In another terminal
 
 ```sh
-mix test.watch
-```
-
-Run Elixir formatter to auto-format files (configuration is in root and
-/apps/*/ `.formatter.exs` files):
-
-```sh
-mix format
-```
-
-Run credo static code analysis checks (configuration is in `.credo.exs` file):
-
-```sh
-mix credo
-```
-
-If you use [Atom](https://atom.io/) editor, formatter and credo checks can be
-run in editor on file save by installing these packages:
-
-```sh
-apm install atom-elixir-formatter
-apm install linter-elixir-credo
-```
-
-## Deployment & CI
-
-### Deployment
-
-TODO
-
-### CI (continuous deployment)
-Our CI server is [CircleCI](https://circleci.com) and is configured in [.circleci/config.yml](.circleci/config.yml).
-Also, it continuously deploys to our hosted AWS instance on a successful merge to master on Github.
-
-### Debugging
-
-#### Check containers status
-Execute the command to get logs into the service:
-```sh
-$ docker-compose ps
-```
-
-#### Accessing container logs
-Execute the command to get logs into the service:
-```sh
-$ docker-compose logs -f
-
-# Or for a single service:
-$ docker-compose logs -f reference-mock-server
-$ docker-compose logs -f ob-api-proxy
+$ curl http://localhost:8080/health
+OK%
 ```
