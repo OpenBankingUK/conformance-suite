@@ -39,11 +39,11 @@ pipelines:
               - yarn lint
               - yarn test:unit:coverage
 
-    # build docker image
-    - step:
-        name: docker-image-build
-        # caches:
-        #   - docker
-        script:
-          - make build_image
-          - docker images
+        # build docker image
+        - step:
+            name: docker-image-build
+            # caches:
+            #   - docker
+            script:
+              - make build_image
+              - docker images
