@@ -18,6 +18,7 @@ require (
 	github.com/mattn/go-colorable v0.0.9 // indirect
 	github.com/mattn/go-isatty v0.0.4 // indirect
 	github.com/mgutz/ansi v0.0.0-20170206155736-9520e82c474b // indirect
+	github.com/onsi/ginkgo v1.6.0
 	github.com/onsi/gomega v1.4.2 // indirect
 	github.com/sirupsen/logrus v1.1.1
 	github.com/stretchr/testify v1.2.2

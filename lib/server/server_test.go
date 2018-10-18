@@ -1,99 +1,97 @@
-package server
+package server_test
 
 import (
 	"encoding/json"
 	"fmt"
 	"net/http"
 	"net/http/httptest"
+
 	"testing"
 
 	"github.com/google/uuid"
+
 	"github.com/labstack/echo"
+	. "github.com/onsi/ginkgo"
 	"github.com/stretchr/testify/assert"
+
+	"bitbucket.org/openbankingteam/conformance-suite/lib/server"
 )
 
-// Test the NewServer constructor method returns a server.
-func TestServer_NewServer(t *testing.T) {
-	t.Parallel()
-
-	server := NewServer()
-	assert.NotNil(t, server)
+func TestServer(t *testing.T) {
+	RunSpecs(t, "Server Suite")
 }
 
-// Test the GET `/api/health` endpoint.
-func TestServer_HealthHandler(t *testing.T) {
-	t.Parallel()
-
-	server := NewServer()
-
-	req := httptest.NewRequest(http.MethodGet, "/api/health", nil)
-	rec := httptest.NewRecorder()
-
-	// Make the request
-	server.ServeHTTP(rec, req)
-
-	assert.Equal(t, http.StatusOK, rec.Code)
-	assert.Equal(t, "OK", rec.Body.String())
-}
-
-// Test that POST `/api/validation-runs` endpoint
-func TestServer_ValidationRunsHandler(t *testing.T) {
-	t.Parallel()
-
-	server := NewServer()
-
-	req := httptest.NewRequest(http.MethodPost, "/api/validation-runs", nil)
-	// req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
-	rec := httptest.NewRecorder()
-
-	// Make the request
-	server.ServeHTTP(rec, req)
-
-	assert.Equal(t, http.StatusAccepted, rec.Code)
-	assert.Equal(
-		t,
-		echo.MIMEApplicationJSONCharsetUTF8,
-		rec.HeaderMap.Get(echo.HeaderContentType),
+var _ bool = Describe("Server", func() {
+	var (
+		the_server *echo.Echo
 	)
 
-	assert.NotNil(t, rec.Body)
-	var body ValidationRunsResponse
-	json.Unmarshal(rec.Body.Bytes(), &body)
+	BeforeEach(func() {
+		the_server = server.NewServer()
+	})
 
-	id, err := uuid.Parse(body.ID)
-	assert.NoError(t, err)
+	It("is not nil", func() {
+		assert.NotNil(GinkgoT(), the_server)
+	})
 
-	assert.Equal(t, id.String(), body.ID)
-}
+	Describe("GET /api/health", func() {
+		Context("when successful", func() {
+			It("returns OK", func() {
+				req := httptest.NewRequest(http.MethodGet, "/api/health", nil)
+				rec := httptest.NewRecorder()
 
-// Test the GET `/api/validation-runs/:id` endpoint.
-func TestServer_ValidationRunsIDHandler(t *testing.T) {
-	t.Parallel()
+				the_server.ServeHTTP(rec, req) // Make the request
 
-	server := NewServer()
+				assert.Equal(GinkgoT(), http.StatusOK, rec.Code)
+				assert.Equal(GinkgoT(), "OK", rec.Body.String())
+			})
+		})
+	})
 
-	id := "c243d5b6-32f0-45ce-a516-1fc6bb6c3c9a"
-	req := httptest.NewRequest(
-		http.MethodGet,
-		fmt.Sprintf("/api/validation-runs/%s", id),
-		nil,
-	)
-	// req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
-	rec := httptest.NewRecorder()
+	Describe("POST /api/validation-runs", func() {
+		Context("when successful", func() {
+			It("returns validation run ID in JSON and nil error", func() {
+				req := httptest.NewRequest(http.MethodPost, "/api/validation-runs", nil)
+				rec := httptest.NewRecorder()
 
-	// Make the request
-	server.ServeHTTP(rec, req)
+				the_server.ServeHTTP(rec, req)
+				assert.Equal(GinkgoT(), http.StatusAccepted, rec.Code)
+				assert.Equal(GinkgoT(), echo.MIMEApplicationJSONCharsetUTF8, rec.HeaderMap.Get(echo.HeaderContentType))
 
-	assert.Equal(t, http.StatusOK, rec.Code)
-	assert.Equal(
-		t,
-		echo.MIMEApplicationJSONCharsetUTF8,
-		rec.HeaderMap.Get(echo.HeaderContentType),
-	)
+				assert.NotNil(GinkgoT(), rec.Body)
+				var body server.ValidationRunsResponse
+				json.Unmarshal(rec.Body.Bytes(), &body)
 
-	assert.NotNil(t, rec.Body)
-	var body ValidationRunsIDResponse
-	json.Unmarshal(rec.Body.Bytes(), &body)
+				id, err := uuid.Parse(body.ID)
+				assert.NoError(GinkgoT(), err)
 
-	assert.Equal(t, id, body.Status)
-}
+				assert.Equal(GinkgoT(), id.String(), body.ID)
+			})
+		})
+	})
+	Describe("GET /api/validation-runs/${id}", func() {
+		Context("when succesful", func() {
+			It("returns OK ", func() {
+				id := "c243d5b6-32f0-45ce-a516-1fc6bb6c3c9a"
+				req := httptest.NewRequest(
+					http.MethodGet,
+					fmt.Sprintf("/api/validation-runs/%s", id),
+					nil,
+				)
+				// req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
+				rec := httptest.NewRecorder()
+
+				the_server.ServeHTTP(rec, req)
+
+				assert.Equal(GinkgoT(), http.StatusOK, rec.Code)
+				assert.Equal(GinkgoT(), echo.MIMEApplicationJSONCharsetUTF8, rec.HeaderMap.Get(echo.HeaderContentType))
+
+				assert.NotNil(GinkgoT(), rec.Body)
+				var body server.ValidationRunsIDResponse
+				json.Unmarshal(rec.Body.Bytes(), &body)
+
+				assert.Equal(GinkgoT(), id, body.Status)
+			})
+		})
+	})
+})
