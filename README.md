@@ -94,10 +94,9 @@ I've also used a throwaway console output lib at github.com/x-cray/logrus-prefix
 I need to check which http headers are being passed through, not all of them are - specifically "applicaiton/json; charset=UTF-8" appears to struggle. Not a show stopper, just needs investigation.
 
 
-
-
-## run
-### build
+## Development
+### Docker
+#### build
 ```sh
 $ docker build -t "openbanking/conformance-suite:latest" .
 $ docker run --rm -it -p 8080:8080 "openbanking/conformance-suite:latest"
@@ -134,10 +133,21 @@ web_1  |                                     O\
 web_1  | ⇨ http server started on [::]:8080
 ```
 
-### verify
+#### verify
 In another terminal
 
 ```sh
 $ curl http://localhost:8080/health
 OK%
+```
+
+### Locally
+#### build `web/`
+```sh
+$ (cd web/ && yarn install && yarn build)
+```
+
+#### build `go` server
+```sh
+$ make init && make build && make test && make run
 ```

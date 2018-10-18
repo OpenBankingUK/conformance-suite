@@ -23,7 +23,8 @@ func NewWebSocketUpgrader() *websocket.Upgrader {
 	}
 }
 
-// MessageOut -
+// MessageOut is the structure of the message that gets sent to the
+// WebSocket client.
 type MessageOut struct {
 	Number int    `json:"number"`
 	Type   string `json:"type"`
@@ -66,6 +67,7 @@ func (h *WebSocketHandler) Handle(c echo.Context) error {
 			return err
 		}
 
+		// sleep for a bit before sending the next message
 		time.Sleep(10 * time.Second)
 	}
 }

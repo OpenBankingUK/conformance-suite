@@ -32,8 +32,7 @@ func getPort() string {
 
 func init() {
 	logrus.SetFormatter(&prefixed.TextFormatter{
-		DisableColors: false,
-		// TimestampFormat: "2006-01-02 15:04:05.000",
+		DisableColors:   false,
 		TimestampFormat: time.RFC3339,
 		FullTimestamp:   true,
 		ForceFormatting: true,

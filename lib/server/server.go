@@ -2,6 +2,8 @@ package server
 
 import (
 	"encoding/json"
+	"flag"
+	"io/ioutil"
 	"net/http"
 	"strings"
 
@@ -22,12 +24,12 @@ func Skipper(c echo.Context) bool {
 	return strings.HasPrefix(c.Path(), "/api")
 }
 
-// ValidationRunsResponse -
+// ValidationRunsResponse is the response to the `/validation-runs` endpoint.
 type ValidationRunsResponse struct {
 	ID string `json:"id"`
 }
 
-// ValidationRunsIDResponse -
+// ValidationRunsIDResponse is the response to the `/validation-runs/:id` endpoint.
 type ValidationRunsIDResponse struct {
 	Status string `json:"status"`
 }
@@ -36,7 +38,17 @@ type ValidationRunsIDResponse struct {
 func NewServer() *echo.Echo {
 	e := echo.New()
 
-	e.Use(middleware.Logger())
+	// Write output to `/dev/null` if running under test mode.
+	if flag.Lookup("test.v") == nil {
+		// Normal run
+		e.Use(middleware.Logger())
+	} else {
+		// Running under test
+		// discard output when running in test mode
+		e.Use(middleware.LoggerWithConfig(middleware.LoggerConfig{
+			Output: ioutil.Discard,
+		}))
+	}
 	e.Use(middleware.Recover())
 	// serve Vue.js site
 	e.Use(middleware.GzipWithConfig(middleware.GzipConfig{
