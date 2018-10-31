@@ -10,20 +10,20 @@
         <a-button
           type="primary"
           size="large"
-          @click="startValidation"
-          class="start_validation">
+          class="start_validation"
+          @click="startValidation">
           Start validation
         </a-button>
       </div>
       <editor
-        name="editor"
         :value="config"
-        :onChange="handleSetConfig" />
+        :onChange="handleSetConfig"
+        name="editor" />
       <h2>Payload</h2>
       <editor
-        name="payload"
         :value="payload"
-        :onChange="handleSetPayload" />
+        :onChange="handleSetPayload"
+        name="payload" />
     </div>
     <div v-else>
       <a-steps :current="current">
@@ -51,6 +51,10 @@ import Editor from './Config/Editor.vue';
 import Form from './Config/Form.vue';
 
 export default {
+  components: {
+    Editor,
+    Form,
+  },
   data() {
     return {
       useJson: 1,
@@ -68,10 +72,6 @@ export default {
         title: 'Payload',
       }],
     };
-  },
-  components: {
-    Editor,
-    Form,
   },
   computed: {
     ...mapGetters('config', {

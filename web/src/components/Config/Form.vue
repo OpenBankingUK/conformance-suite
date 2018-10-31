@@ -1,5 +1,6 @@
 <template>
   <div>
+    <!-- eslint-disable vue/this-in-template -->
     <a-form
       :autoFormCreate="(form)=>{this.form = form}"
       style="margin-top: 50px;">
@@ -35,28 +36,28 @@
     <div class="validation-button-container">
       <a-button
         v-if="current > 0"
-        @click="prev"
         size="large"
+        @click="prev"
       >
         Previous
       </a-button>
       <a-button
         v-if="current < length - 1"
-        type="primary"
-        @click="next"
-        size="large"
         :disabled="hasErrors()"
+        type="primary"
+        size="large"
         class="next"
+        @click="next"
       >
         Next
       </a-button>
       <a-button
+        v-if="current == length - 1"
+        :disabled="hasErrors()"
         type="primary"
         size="large"
-        v-if="current == length - 1"
-        @click="openNotification"
         class="start"
-        :disabled="hasErrors()">
+        @click="openNotification">
         Start validation
       </a-button>
     </div>
@@ -104,6 +105,11 @@ export default {
       default: () => {},
     },
   },
+  mounted() {
+    this.$nextTick(() => {
+      this.form.validateFields();
+    });
+  },
   methods: {
     openNotification() {
       this.$notification.success({
@@ -120,11 +126,6 @@ export default {
       }
       return true;
     },
-  },
-  mounted() {
-    this.$nextTick(() => {
-      this.form.validateFields();
-    });
   },
 };
 </script>

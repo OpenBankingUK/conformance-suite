@@ -1,7 +1,7 @@
 <template>
   <a-list
-    itemLayout="horizontal"
     :dataSource="errors"
+    itemLayout="horizontal"
   >
     <a-list-item
       slot="renderItem"

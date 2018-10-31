@@ -11,12 +11,12 @@
             <h3 slot="title">Api version: {{ item.api_version }}</h3>
           </a-list-item-meta>
           <a-button
+            :data-item="`account-${key}`"
             type="danger"
             size="small"
             shape="circle"
-            @click="handleDelete(item)"
-            :data-item="`account-${key}`"
-            icon="minus" />
+            icon="minus"
+            @click="handleDelete(item)" />
         </a-list-item>
       </a-list>
     </div>
@@ -26,9 +26,9 @@
     </div>
     <h2>Payments</h2>
     <div
-      class="payload-item"
       v-for="(item, key) in payments"
-      :key="item.account_number + key">
+      :key="item.account_number + key"
+      class="payload-item">
       <a-list>
         <a-list-item>
           <a-list-item-meta>
@@ -41,12 +41,12 @@
             </ul>
           </a-list-item-meta>
           <a-button
+            :data-item="`payment-${key}`"
             type="danger"
             size="small"
             shape="circle"
-            :data-item="`payment-${key}`"
-            @click="handleDelete(item)"
-            icon="minus" />
+            icon="minus"
+            @click="handleDelete(item)" />
         </a-list-item>
       </a-list>
     </div>

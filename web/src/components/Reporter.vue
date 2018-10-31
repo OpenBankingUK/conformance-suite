@@ -13,9 +13,9 @@
         :key="key" />
       <div class="buttons_container">
         <a-button
+          :disabled="connectionState !== 'CONNECTED'"
           class="disconnect_button"
           type="danger"
-          :disabled="connectionState !== 'CONNECTED'"
           @click="doDisconnect()">Disconnect</a-button>
       </div>
     </div>
@@ -52,6 +52,9 @@ export default {
       await this.connect();
     },
   },
+  async beforeDestroy() {
+    await this.disconnect();
+  },
   methods: {
     ...namespacedReporter.mapActions([
       'connect',
@@ -60,9 +63,6 @@ export default {
     async doDisconnect() {
       await this.disconnect();
     },
-  },
-  async beforeDestroy() {
-    await this.disconnect();
   },
   beforeRouteEnter(to, from, next) {
     if (from.name === 'Config') return next();

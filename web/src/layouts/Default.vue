@@ -32,15 +32,15 @@ import Spinner from '../components/Spinner.vue';
 import logoDark from '../assets/images/logo-dark.svg';
 
 export default {
-  data() {
-    return {
-      logoDark,
-    };
-  },
   components: {
     NavBar,
     SideBar,
     Spinner,
+  },
+  data() {
+    return {
+      logoDark,
+    };
   },
   computed: {
     isLoading() {

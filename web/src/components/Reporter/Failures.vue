@@ -7,8 +7,8 @@
         <span class="error-message">{{ item.message }}</span>
       </template>
       <error-details
-        v-if="errors.length"
         v-for="(errors, key) in item.results"
+        v-if="errors.length"
         :errors="errors"
         :type="key"
         :key="key" />

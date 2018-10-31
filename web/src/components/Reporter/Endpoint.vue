@@ -1,8 +1,8 @@
 <template>
   <a-collapse
-    class="endpoint"
     :bordered="false"
     :data-endpoint="endpoint"
+    class="endpoint"
     accordion
   >
     <a-collapse-panel :disabled="!value.failed_calls">

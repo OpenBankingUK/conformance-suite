@@ -1,8 +1,9 @@
 <template>
+  <!-- eslint-disable vue/this-in-template -->
   <a-form
+    :autoFormCreate="(form)=>{this.form = form}"
     layout="vertical"
-    @submit="handleSubmit"
-    :autoFormCreate="(form)=>{this.form = form}">
+    @submit="handleSubmit">
     <a-list>
       <a-list-item>
         <a-list-item-meta>
@@ -11,9 +12,9 @@
           </div>
           <div slot="description">
             <a-form-item
-              fieldDecoratorId="api_version"
               :fieldDecoratorOptions="{
-              rules: [{ required: true, message: 'Api Version is required!' }]}">
+              rules: [{ required: true, message: 'Api Version is required!' }]}"
+              fieldDecoratorId="api_version">
               <a-select
                 placeholder="Select api version..."
                 style="width: 100%;">
@@ -40,7 +41,7 @@
         </a-list-item-meta>
         <a-button
           type="primary"
-          htmlType='submit'
+          htmlType="submit"
           size="small"
           shape="circle"
           icon="plus" />
@@ -53,6 +54,16 @@
 import { mapActions } from 'vuex';
 
 export default {
+  props: {
+    type: {
+      type: String,
+      default: 'accounts',
+    },
+    addNew: {
+      type: Function,
+      default: () => {},
+    },
+  },
   data() {
     return {
       fields: [
@@ -86,16 +97,6 @@ export default {
           this.form.resetFields();
         }
       });
-    },
-  },
-  props: {
-    type: {
-      type: String,
-      default: 'accounts',
-    },
-    addNew: {
-      type: Function,
-      default: () => {},
     },
   },
 };
