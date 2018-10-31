@@ -1,7 +1,6 @@
 package server_test
 
 import (
-	"github.com/labstack/echo"
 	"strings"
 
 	"net/http/httptest"
@@ -15,7 +14,7 @@ import (
 
 var _ bool = Describe("Server Websocket", func() {
 	var (
-		the_server *echo.Echo
+		the_server *server.Server
 	)
 
 	It("handles connection and receives and sends messages", func() {

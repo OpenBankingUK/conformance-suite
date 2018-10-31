@@ -32,4 +32,7 @@ WORKDIR /app
 
 COPY --from=gobuilder /app/conformance-suite /app/
 COPY --from=nodebuilder /app/dist /app/web/dist
+
+EXPOSE 8080
+
 ENTRYPOINT ["/app/conformance-suite"]

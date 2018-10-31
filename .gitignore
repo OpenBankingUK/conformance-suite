@@ -5,7 +5,10 @@
 
 conformance-suite
 web/dist
-
+# For testing purposes we symbolic link web/public to lib/server/web/dist
+# so that we can test out that static file are being served by the Echo web server.
+lib/server/web/
+lib/server/web/dist
 
 ### .gitignore for go: https://github.com/github/gitignore/blob/master/Go.gitignore ###
 # Binaries for programs and plugins

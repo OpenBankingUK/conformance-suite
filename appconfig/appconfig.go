@@ -24,57 +24,39 @@ Typically this files looks like the following or simplar:-
 package appconfig
 
 import (
-	"encoding/json"
-	"fmt"
-	"io/ioutil"
-	"os"
-
 	"github.com/sirupsen/logrus"
 )
 
 // AccessToken - Generic Access token
 type AccessToken struct {
-	AccessToken string `json:"access_token"`
-	ExpiresIn   int    `json:"expires_in"`
-	TokenType   string `json:"token_type"`
+	AccessToken string `json:"access_token" form:"access_token" query:"access_token"`
+	ExpiresIn   int    `json:"expires_in" form:"expires_in" query:"expires_in"`
+	TokenType   string `json:"token_type" form:"token_type" query:"token_type"`
 }
 
 // AppConfig - application config
 // partly read from config.json
 // captures AccessTokens, Signing and Transport certs
+//
+// To get these in single-line form use these commands:
+// $ cat certTransport.pem | awk '{print}' ORS='\\n' | pbcopy
+// $ cat certSigning.pem | awk '{print}' ORS='\\n' | pbcopy
+// $ cat privateKeySigning.key | awk '{print}' ORS='\\n' | pbcopy
+// $ cat privateKeyTransport.key | awk '{print}' ORS='\\n' | pbcopy
 type AppConfig struct {
-	SoftwareStatementID   string `json:"softwareStatementId"` // OB Directory software statementid
-	KeyID                 string `json:"keyId"`               // Signing cert key id
-	TargetHost            string `json:"targetHost"`          // Host to proxy against
-	Verbose               bool   `json:"verbose"`             // vebose output
-	Spec                  string `json:"specLocation"`        // Spec location
-	Bind                  string `json:"bindAddress"`         // bind adderss
-	CertTransport         []byte // Certificates ..
-	CertSigning           []byte
-	KeySigning            []byte
-	KeyTransport          []byte
-	ClientCredentialToken AccessToken // Access Tokens
-	AccountRequestToken   AccessToken
-	PaymentRequestToken   AccessToken
-}
-
-// LoadAppConfiguration - from file - typically config/config.json
-func LoadAppConfiguration(dir string) (*AppConfig, error) {
-	var config *AppConfig
-	file := dir + "/config.json"
-	configFile, err := os.Open(file)
-	defer configFile.Close()
-	if err != nil {
-		fmt.Println(err.Error())
-		return &AppConfig{}, err
-	}
-	jsonParser := json.NewDecoder(configFile)
-	err = jsonParser.Decode(&config)
-	if err != nil {
-		return &AppConfig{}, err
-	}
-	err = config.readCerts(dir)
-	return config, err
+	SoftwareStatementID   string      `json:"softwareStatementId" form:"softwareStatementId" query:"softwareStatementId" validate:"required"` // OB Directory software statementid
+	KeyID                 string      `json:"keyId" form:"keyId" query:"keyId" validate:"required"`                                           // Signing cert key id
+	TargetHost            string      `json:"targetHost" form:"targetHost" query:"targetHost" validate:"required"`                            // Host to proxy against
+	Verbose               bool        `json:"verbose" form:"verbose" query:"verbose" validate:"required"`                                     // vebose output
+	Spec                  string      `json:"specLocation" form:"specLocation" query:"specLocation" validate:"required"`                      // Spec location
+	Bind                  string      `json:"bindAddress" form:"bindAddress" query:"bindAddress" validate:"required"`                         // bind adderss
+	CertTransport         string      `json:"certTransport" form:"certTransport" query:"certTransport" validate:"required"`
+	CertSigning           string      `json:"certSigning" form:"certSigning" query:"certSigning" validate:"required"`
+	KeySigning            string      `json:"keySigning" form:"keySigning" query:"keySigning" validate:"required"`
+	KeyTransport          string      `json:"keyTransport" form:"keyTransport" query:"keyTransport" validate:"required"`
+	ClientCredentialToken AccessToken `json:"client_credential_token" form:"client_credential_token" query:"client_credential_token"`
+	AccountRequestToken   AccessToken `json:"account_request_token" form:"account_request_token" query:"account_request_token"`
+	PaymentRequestToken   AccessToken `json:"payment_request_token" form:"payment_request_token" query:"payment_request_token"`
 }
 
 // PrintAppConfig - dumps application config to console
@@ -87,29 +69,4 @@ func (a *AppConfig) PrintAppConfig() {
 		"SpecLocation":        a.Spec,
 		"BindAddress":         a.Bind,
 	}).Info("AppConfig")
-}
-
-// Read certificates and keys from specified path
-func (a *AppConfig) readCerts(configdir string) error {
-	certTransport, err := ioutil.ReadFile(configdir + "/certTransport.pem")
-	if err != nil {
-		return fmt.Errorf("cannot read transport certificate")
-	}
-	keyTransport, err := ioutil.ReadFile(configdir + "/privateKeyTransport.key")
-	if err != nil {
-		return fmt.Errorf("cannot read transport key")
-	}
-	certSigning, err := ioutil.ReadFile(configdir + "/certSigning.pem")
-	if err != nil {
-		return fmt.Errorf("cannot read signing certificate")
-	}
-	keySigning, err := ioutil.ReadFile(configdir + "/privateKeySigning.key")
-	if err != nil {
-		return fmt.Errorf("cannot read signing key")
-	}
-	a.CertTransport = certTransport
-	a.KeyTransport = keyTransport
-	a.CertSigning = certSigning
-	a.KeySigning = keySigning
-	return nil
 }

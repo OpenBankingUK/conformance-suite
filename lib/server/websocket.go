@@ -31,6 +31,7 @@ type MessageOut struct {
 }
 
 // Handle a single WebSocket connection.
+// GET /api/ws
 func (h *WebSocketHandler) Handle(c echo.Context) error {
 	ws, err := h.upgrader.Upgrade(c.Response(), c.Request(), nil)
 	if err != nil {

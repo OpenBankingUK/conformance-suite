@@ -10,12 +10,18 @@ run: ## run binary directly without docker
 	@echo -e "\033[92m  ---> Starting web file watcher ... \033[0m"
 	cd web && FORCE_COLOR=1 NODE_DISABLE_COLORS=0 yarn build-watch &> $(shell pwd)/web/web.log &
 	@echo -e "\033[92m  ---> Starting server ... \033[0m"
-	go run main.go
+	PORT=8080 go run main.go
 
 .PHONY: run_image
 run_image: ## run the docker image
 	@echo -e "\033[92m  ---> Running image ... \033[0m"
-	docker run --rm -it -p 8080:8080 "openbanking/conformance-suite:latest"
+	docker run \
+		--rm \
+		-it \
+		-p 8080:8080 \
+		-v $(shell pwd)/config:/app/config:ro \
+		-v $(shell pwd)/swagger:/app/swagger:ro \
+		"openbanking/conformance-suite:latest"
 
 .PHONY: build
 build: ## build the binary directly
@@ -45,12 +51,18 @@ clean:
 .PHONY: test
 test: ## run the go tests
 	@echo -e "\033[92m  ---> Testing ... \033[0m"
+	@# make symbolic link to ./web/public -> /lib/server/web/dist so that we can test out that
+	@# static files are being served by the Echo web server
+	@if [[ ! -d "$$(pwd)/lib/server/web/dist" ]]; then \
+		echo -e "\033[92m  ---> Linking $(shell pwd)/lib/server/web/dist -> $(shell pwd)/web/public \033[0m"; \
+		mkdir -p $(shell pwd)/lib/server/web; \
+		ln -s $(shell pwd)/web/public $(shell pwd)/lib/server/web/dist; \
+	fi
 	GOMAXPROCS=${GOMAXPROCS} go test \
 		-v \
 		-cover \
 		-parallel ${PARALLEL} \
 		./...
-
 
 .PHONY: test_coverage
 test_coverage: ## run the go tests then open up coverage report

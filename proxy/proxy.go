@@ -68,7 +68,7 @@ func New(s *spec.Swagger, reporter Reporter, opts ...Opts) (*Proxy, error) {
 	proxy.reverseProxy = httputil.NewSingleHostReverseProxy(rpURL)
 
 	// Add OB Certs to the reverse proxy tls configuration
-	if proxy.appconfig.CertTransport != nil { // if we have MATLS transports certs in the application config - used them
+	if proxy.appconfig.CertTransport != "" { // if we have MATLS transports certs in the application config - used them
 		tlsconfig, _ := proxy.appconfig.NewTLSConfig() // if this fails we just get an empty tlsconfig
 		proxy.reverseProxy.Transport = &http.Transport{
 			TLSClientConfig: tlsconfig,
@@ -100,7 +100,6 @@ func (proxy *Proxy) SetSpec(spec *spec.Swagger) error {
 	proxy.doc = doc
 	proxy.spec = spec
 
-	//proxy.registerPaths()
 	return nil
 }
 
@@ -136,6 +135,7 @@ func (proxy *Proxy) registerPaths() {
 		proxy.routes[route] = op
 		proxy.pendingOperations[op] = struct{}{}
 	})
+
 	*proxy.router = *router
 }
 
@@ -151,6 +151,12 @@ func (proxy *Proxy) newHandler() http.Handler {
 // Handler -
 func (proxy *Proxy) Handler(next http.Handler) http.Handler {
 	fn := func(w http.ResponseWriter, req *http.Request) {
+		// https://stackoverflow.com/questions/38016477/reverse-proxy-does-not-work
+		// https://blog.semanticart.com/2013/11/11/a-proper-api-proxy-written-in-go/
+		// https://forum.golangbridge.org/t/explain-how-reverse-proxy-work/6492/7
+		// https://stackoverflow.com/questions/34745654/golang-reverseproxy-with-apache2-sni-hostname-error
+		req.Host = req.URL.Host
+
 		wr := &WriterRecorder{ResponseWriter: w}
 		next.ServeHTTP(wr, req)
 		logrus.Println("Handling Request ", req.URL)
