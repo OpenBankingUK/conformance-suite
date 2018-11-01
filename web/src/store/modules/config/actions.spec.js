@@ -14,10 +14,10 @@ describe('Config', () => {
       routerSpy = jest.spyOn(router, 'push');
     });
 
-    it('setPayload', () => {
-      const payload = '{"a": 1}';
-      actions.setPayload({ commit }, payload);
-      expect(commit).toHaveBeenCalledWith('SET_PAYLOAD', payload);
+    it('setDiscoveryModel', () => {
+      const discoveryModel = '{"a": 1}';
+      actions.setDiscoveryModel({ commit }, discoveryModel);
+      expect(commit).toHaveBeenCalledWith('SET_DISCOVERY_MODEL', discoveryModel);
     });
 
     it('setConfig', () => {
@@ -29,7 +29,7 @@ describe('Config', () => {
     it('resetValidationsRun', () => {
       actions.resetValidationsRun({ commit });
       expect(commit).toHaveBeenCalledWith('reporter/SET_WEBSOCKET_LAST_UPDATE', null, { root: true });
-      expect(commit).toHaveBeenCalledWith('validations/SET_VALIDATION_PAYLOAD', null, { root: true });
+      expect(commit).toHaveBeenCalledWith('validations/SET_VALIDATION_DISCOVERY_MODEL', null, { root: true });
     });
 
     it('startValidation', () => {
@@ -38,7 +38,7 @@ describe('Config', () => {
       expect(dispatch).toHaveBeenNthCalledWith(
         2,
         'validations/validate', {
-          payload: getters.getPayload,
+          discoveryModel: getters.getDiscoveryModel,
           config: getters.getConfig,
         },
         { root: true },
@@ -46,16 +46,16 @@ describe('Config', () => {
       expect(routerSpy).toHaveBeenCalledWith('/reports');
     });
 
-    it('updatePayload', () => {
-      const payload = '{"a": 1}';
-      actions.updatePayload({ commit }, payload);
-      expect(commit).toHaveBeenCalledWith('UPDATE_PAYLOAD', payload);
+    it('updateDiscoveryModel', () => {
+      const discoveryModel = '{"a": 1}';
+      actions.updateDiscoveryModel({ commit }, discoveryModel);
+      expect(commit).toHaveBeenCalledWith('UPDATE_DISCOVERY_MODEL', discoveryModel);
     });
 
-    it('deletePayload', () => {
-      const payload = '{"a": 1}';
-      actions.deletePayload({ commit }, payload);
-      expect(commit).toHaveBeenCalledWith('DELETE_PAYLOAD', payload);
+    it('deleteDiscoveryModel', () => {
+      const discoveryModel = '{"a": 1}';
+      actions.deleteDiscoveryModel({ commit }, discoveryModel);
+      expect(commit).toHaveBeenCalledWith('DELETE_DISCOVERY_MODEL', discoveryModel);
     });
   });
 });

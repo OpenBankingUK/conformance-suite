@@ -8,7 +8,7 @@ describe('Config', () => {
     state = {
       raw: example,
       parsed: JSON.parse(example),
-      payload: {
+      discoveryModel: {
         raw: example,
         parsed: JSON.parse(example),
       },
@@ -20,8 +20,8 @@ describe('Config', () => {
       expect(getters.getConfig(state)).toEqual(state.main);
     });
 
-    it('getPayload', () => {
-      expect(getters.getPayload(state)).toEqual(state.payload);
+    it('getDiscoveryModel', () => {
+      expect(getters.getDiscoveryModel(state)).toEqual(state.discoveryModel);
     });
   });
 });

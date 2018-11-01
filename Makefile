@@ -6,7 +6,7 @@ PARALLEL:=${GOMAXPROCS}
 all: help
 
 .PHONY: run
-run: ## run binary directly without docker
+run: init_web ## run binary directly without docker
 	@echo -e "\033[92m  ---> Starting web file watcher ... \033[0m"
 	cd web && FORCE_COLOR=1 NODE_DISABLE_COLORS=0 yarn build-watch &> $(shell pwd)/web/web.log &
 	@echo -e "\033[92m  ---> Starting server ... \033[0m"
@@ -37,6 +37,11 @@ build_image: ## build the docker image
 init: ## initialise
 	@echo -e "\033[92m  ---> Initialising ... \033[0m"
 	go get -v ./...
+
+init_web: ./web/node_modules ## install node_modules when not present
+
+./web/node_modules:
+	cd web && yarn install
 
 .PHONY: lint
 lint: ## lint the go code

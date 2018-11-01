@@ -4,16 +4,17 @@ export default {
   [types.SET_CONFIG](state, config) {
     state.main = config;
   },
-  [types.SET_PAYLOAD](state, payload) {
-    state.payload = payload;
+  [types.SET_DISCOVERY_MODEL](state, discoveryModel) {
+    state.discoveryModel = discoveryModel;
   },
-  [types.UPDATE_PAYLOAD](state, payload) {
-    state.payload = [
-      ...state.payload,
-      payload,
+  [types.UPDATE_DISCOVERY_MODEL](state, discoveryModel) {
+    state.discoveryModel = [
+      ...state.discoveryModel,
+      discoveryModel,
     ];
   },
-  [types.DELETE_PAYLOAD](state, payload) {
-    state.payload = state.payload.filter(item => JSON.stringify(item) !== JSON.stringify(payload));
+  [types.DELETE_DISCOVERY_MODEL](state, discoveryModel) {
+    state.discoveryModel =
+      state.discoveryModel.filter(item => JSON.stringify(item) !== JSON.stringify(discoveryModel));
   },
 };

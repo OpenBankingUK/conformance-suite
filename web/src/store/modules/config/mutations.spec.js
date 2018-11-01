@@ -5,47 +5,47 @@ describe('Config', () => {
   describe('mutations', () => {
     let state;
     const config = { a: 1 };
-    const payload = { b: 1 };
+    const discoveryModel = { b: 1 };
 
     beforeEach(() => {
       state = {
-        payload: [],
+        discoveryModel: [],
       };
     });
 
     it(`${types.SET_CONFIG}`, () => {
       const expectedState = {
         main: config,
-        payload: [],
+        discoveryModel: [],
       };
       mutations[types.SET_CONFIG](state, config);
       expect(state).toEqual(expectedState);
     });
 
-    it(`${types.SET_PAYLOAD}`, () => {
+    it(`${types.SET_DISCOVERY_MODEL}`, () => {
       const expectedState = {
-        payload,
+        discoveryModel,
       };
-      mutations[types.SET_PAYLOAD](state, payload);
+      mutations[types.SET_DISCOVERY_MODEL](state, discoveryModel);
       expect(state).toEqual(expectedState);
     });
 
-    it(`${types.UPLOAD_PAYLOAD}`, () => {
+    it(`${types.UPLOAD_DISCOVERY_MODEL}`, () => {
       const expectedState = {
-        payload: [payload],
+        discoveryModel: [discoveryModel],
       };
-      mutations[types.UPDATE_PAYLOAD](state, payload);
+      mutations[types.UPDATE_DISCOVERY_MODEL](state, discoveryModel);
       expect(state).toEqual(expectedState);
     });
 
-    it(`${types.DELETE_PAYLOAD}`, () => {
+    it(`${types.DELETE_DISCOVERY_MODEL}`, () => {
       const initialState = {
-        payload: [payload],
+        discoveryModel: [discoveryModel],
       };
       const expectedState = {
-        payload: [],
+        discoveryModel: [],
       };
-      mutations[types.DELETE_PAYLOAD](initialState, payload);
+      mutations[types.DELETE_DISCOVERY_MODEL](initialState, discoveryModel);
       expect(state).toEqual(expectedState);
     });
   });

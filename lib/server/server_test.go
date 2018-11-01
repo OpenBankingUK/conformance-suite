@@ -81,30 +81,38 @@ var _ bool = ginkgo.Describe("Server", func() {
 	})
 
 	ginkgo.It("NewServer() returns non-nil value", func() {
-		assert.NotNil(ginkgo.GinkgoT(), s)
+		assert := assert.New(ginkgo.GinkgoT())
+
+		assert.NotNil(s)
 	})
 
 	ginkgo.Describe("/", func() {
 		ginkgo.Context("GET", func() {
 			ginkgo.It("Returns index.html", func() {
+				assert := assert.New(ginkgo.GinkgoT())
+
 				code, body, _ := request(http.MethodGet, "/", nil, s)
 
-				assert.Equal(ginkgo.GinkgoT(), true, strings.HasPrefix(body.String(), "<!DOCTYPE html>"))
-				assert.Equal(ginkgo.GinkgoT(), http.StatusOK, code)
+				assert.Equal(true, strings.HasPrefix(body.String(), "<!DOCTYPE html>"))
+				assert.Equal(http.StatusOK, code)
 			})
 
 			ginkgo.It("Returns favicon.ico", func() {
+				assert := assert.New(ginkgo.GinkgoT())
+
 				code, body, _ := request(http.MethodGet, "/favicon.ico", nil, s)
 
-				assert.NotEmpty(ginkgo.GinkgoT(), body.String())
-				assert.Equal(ginkgo.GinkgoT(), http.StatusOK, code)
+				assert.NotEmpty(body.String())
+				assert.Equal(http.StatusOK, code)
 			})
 
 			ginkgo.It(`Returns {"message":"Not Found"} when file does not exist`, func() {
+				assert := assert.New(ginkgo.GinkgoT())
+
 				code, body, _ := request(http.MethodGet, "/NotFound.ico", nil, s)
 
-				assert.Equal(ginkgo.GinkgoT(), http.StatusNotFound, code)
-				assert.Equal(ginkgo.GinkgoT(), `{"message":"Not Found"}`, body.String())
+				assert.Equal(http.StatusNotFound, code)
+				assert.Equal(`{"message":"Not Found"}`, body.String())
 			})
 		})
 	})
@@ -112,10 +120,12 @@ var _ bool = ginkgo.Describe("Server", func() {
 	ginkgo.Describe("/api/health", func() {
 		ginkgo.Context("GET", func() {
 			ginkgo.It("When successful returns OK", func() {
+				assert := assert.New(ginkgo.GinkgoT())
+
 				code, body, _ := request(http.MethodGet, "/api/health", nil, s)
 
-				assert.Equal(ginkgo.GinkgoT(), "OK", body.String())
-				assert.Equal(ginkgo.GinkgoT(), http.StatusOK, code)
+				assert.Equal("OK", body.String())
+				assert.Equal(http.StatusOK, code)
 			})
 		})
 	})
@@ -123,18 +133,20 @@ var _ bool = ginkgo.Describe("Server", func() {
 	ginkgo.Describe("/api/validation-runs", func() {
 		ginkgo.Context("POST", func() {
 			ginkgo.It("When successful returns validation run ID in JSON and nil error", func() {
+				assert := assert.New(ginkgo.GinkgoT())
+
 				code, body, headerMap := request(http.MethodPost, "/api/validation-runs", nil, s)
 
-				assert.NotNil(ginkgo.GinkgoT(), body)
+				assert.NotNil(body)
 				var responseBody server.ValidationRunsResponse
 				json.Unmarshal(body.Bytes(), &responseBody)
 				id, err := uuid.Parse(responseBody.ID)
-				assert.NoError(ginkgo.GinkgoT(), err)
-				assert.Equal(ginkgo.GinkgoT(), id.String(), responseBody.ID)
+				assert.NoError(err)
+				assert.Equal(id.String(), responseBody.ID)
 
-				assert.Equal(ginkgo.GinkgoT(), echo.MIMEApplicationJSONCharsetUTF8, headerMap.Get(echo.HeaderContentType))
+				assert.Equal(echo.MIMEApplicationJSONCharsetUTF8, headerMap.Get(echo.HeaderContentType))
 
-				assert.Equal(ginkgo.GinkgoT(), http.StatusAccepted, code)
+				assert.Equal(http.StatusAccepted, code)
 			})
 		})
 	})
@@ -142,6 +154,8 @@ var _ bool = ginkgo.Describe("Server", func() {
 	ginkgo.Describe("/api/validation-runs/${id}", func() {
 		ginkgo.Context("GET", func() {
 			ginkgo.It("When succesful returns OK ", func() {
+				assert := assert.New(ginkgo.GinkgoT())
+
 				id := "c243d5b6-32f0-45ce-a516-1fc6bb6c3c9a"
 				code, body, headerMap := request(
 					http.MethodGet,
@@ -150,14 +164,14 @@ var _ bool = ginkgo.Describe("Server", func() {
 					s,
 				)
 
-				assert.NotNil(ginkgo.GinkgoT(), body)
+				assert.NotNil(body)
 				var responseBody server.ValidationRunsIDResponse
 				json.Unmarshal(body.Bytes(), &responseBody)
-				assert.Equal(ginkgo.GinkgoT(), id, responseBody.Status)
+				assert.Equal(id, responseBody.Status)
 
-				assert.Equal(ginkgo.GinkgoT(), echo.MIMEApplicationJSONCharsetUTF8, headerMap.Get(echo.HeaderContentType))
+				assert.Equal(echo.MIMEApplicationJSONCharsetUTF8, headerMap.Get(echo.HeaderContentType))
 
-				assert.Equal(ginkgo.GinkgoT(), http.StatusOK, code)
+				assert.Equal(http.StatusOK, code)
 			})
 		})
 	})
@@ -165,10 +179,12 @@ var _ bool = ginkgo.Describe("Server", func() {
 	ginkgo.Describe("/api/config", func() {
 		ginkgo.Context("POST", func() {
 			ginkgo.It("Can POST config", func() {
+				assert := assert.New(ginkgo.GinkgoT())
+
 				// assert server isn't started before call
 				frontendProxy, _ := url.Parse("http://0.0.0.0:8989/open-banking/v2.0/accounts")
 				_, err := http.Get(frontendProxy.String())
-				assert.Error(ginkgo.GinkgoT(), err)
+				assert.Error(err)
 
 				// create the request to post the config
 				// this should start the proxy
@@ -180,29 +196,30 @@ var _ bool = ginkgo.Describe("Server", func() {
 				// do the request
 				s.ServeHTTP(rec, req)
 
-				assert.NotNil(ginkgo.GinkgoT(), rec.Body)
-				assert.Equal(ginkgo.GinkgoT(), appConfigJSON, rec.Body.String())
-				assert.Equal(ginkgo.GinkgoT(), http.StatusOK, rec.Code)
+				assert.NotNil(rec.Body)
+				assert.Equal(appConfigJSON, rec.Body.String())
+				assert.Equal(http.StatusOK, rec.Code)
 
 				// check the proxy is up now, we should hit the forgerock server
 				resp, err := http.Get(frontendProxy.String())
 				body, err := ioutil.ReadAll(resp.Body)
-				assert.NoError(ginkgo.GinkgoT(), err)
-				assert.Equal(ginkgo.GinkgoT(), http.StatusBadRequest, resp.StatusCode)
+				assert.NoError(err)
+				assert.Equal(http.StatusBadRequest, resp.StatusCode)
 
 				// assert that the body matches a certain regex
 				assert.Regexp(
-					ginkgo.GinkgoT(),
 					regexp.MustCompile(`^{"Code":"OBRI.FR.Request.Invalid","Id":".*","Message":"An error happened when parsing the request arguments","Errors":\[{"ErrorCode":"UK.OBIE.Header.Missing","Message":"Missing request header 'x-fapi-financial-id' for method parameter of type String","Url":"https://docs.ob.forgerock.financial/errors#UK.OBIE.Header.Missing"}\]}$`),
 					string(body),
 				)
 			})
 
 			ginkgo.It("cannot POST config twice without first deleting it", func() {
+				assert := assert.New(ginkgo.GinkgoT())
+
 				// assert server isn't started before call
 				frontendProxy, _ := url.Parse("http://0.0.0.0:8989/open-banking/v2.0/accounts")
 				_, err := http.Get(frontendProxy.String())
-				assert.Error(ginkgo.GinkgoT(), err)
+				assert.Error(err)
 
 				// create the request to post the config
 				// this should start the proxy
@@ -213,9 +230,9 @@ var _ bool = ginkgo.Describe("Server", func() {
 				// do the request
 				s.ServeHTTP(rec, req)
 
-				assert.NotNil(ginkgo.GinkgoT(), rec.Body)
-				assert.Equal(ginkgo.GinkgoT(), appConfigJSON, rec.Body.String())
-				assert.Equal(ginkgo.GinkgoT(), http.StatusOK, rec.Code)
+				assert.NotNil(rec.Body)
+				assert.Equal(appConfigJSON, rec.Body.String())
+				assert.Equal(http.StatusOK, rec.Code)
 
 				// create another request to POST the config again
 				// this should fail because a DELETE need to happen first.
@@ -225,22 +242,23 @@ var _ bool = ginkgo.Describe("Server", func() {
 				// do the request
 				s.ServeHTTP(rec, req)
 
-				assert.NotNil(ginkgo.GinkgoT(), rec.Body)
+				assert.NotNil(rec.Body)
 				assert.Equal(
-					ginkgo.GinkgoT(),
 					"{\n    \"error\": \"listen tcp :8989: bind: address already in use\"\n}",
 					rec.Body.String(),
 				)
-				assert.Equal(ginkgo.GinkgoT(), http.StatusBadRequest, rec.Code)
+				assert.Equal(http.StatusBadRequest, rec.Code)
 			})
 		})
 
 		ginkgo.Context("DELETE", func() {
 			ginkgo.It("DELETE stops the proxy", func() {
+				assert := assert.New(ginkgo.GinkgoT())
+
 				// assert server isn't started before call
 				frontendProxy, _ := url.Parse("http://0.0.0.0:8989/open-banking/v2.0/accounts")
 				_, err := http.Get(frontendProxy.String())
-				assert.Error(ginkgo.GinkgoT(), err)
+				assert.Error(err)
 
 				// create the request to post the config
 				// this should start the proxy
@@ -251,9 +269,9 @@ var _ bool = ginkgo.Describe("Server", func() {
 				// do the request
 				s.ServeHTTP(rec, req)
 
-				assert.NotNil(ginkgo.GinkgoT(), rec.Body)
-				assert.Equal(ginkgo.GinkgoT(), appConfigJSON, rec.Body.String())
-				assert.Equal(ginkgo.GinkgoT(), http.StatusOK, rec.Code)
+				assert.NotNil(rec.Body)
+				assert.Equal(appConfigJSON, rec.Body.String())
+				assert.Equal(http.StatusOK, rec.Code)
 
 				// create request to delete config
 				req = httptest.NewRequest(http.MethodDelete, "/api/config", nil)
@@ -262,23 +280,21 @@ var _ bool = ginkgo.Describe("Server", func() {
 				// do the request
 				s.ServeHTTP(rec, req)
 
-				assert.NotNil(ginkgo.GinkgoT(), rec.Body)
+				assert.NotNil(rec.Body)
 				assert.Equal(
-					ginkgo.GinkgoT(),
 					"",
 					rec.Body.String(),
 				)
-				assert.Equal(ginkgo.GinkgoT(), http.StatusOK, rec.Code)
+				assert.Equal(http.StatusOK, rec.Code)
 
 				// call proxy and assert it is no longer up
 				// check the proxy is up now, we should hit the forgerock server
 				resp, err := http.Get(frontendProxy.String())
 				assert.Equal(
-					ginkgo.GinkgoT(),
 					`Get http://0.0.0.0:8989/open-banking/v2.0/accounts: dial tcp 0.0.0.0:8989: connect: connection refused`,
 					err.Error(),
 				)
-				assert.Nil(ginkgo.GinkgoT(), resp)
+				assert.Nil(resp)
 			})
 		})
 	})

@@ -8,7 +8,7 @@
         v-for="(row, el) in values.config"
         v-show="active.includes(el)"
         :key="el"
-        :label="el.replace(/_/g, ' ')"
+        :label="formatLabel(el)"
         :labelCol="{ span: 8 }"
         :wrapperCol="{ span: 12 }"
         :fieldDecoratorId="el"
@@ -17,7 +17,10 @@
           initialValue: row
       }">
         <a-textarea
-          v-if="['signing_key', 'transport_cert', 'transport_key'].includes(el)"
+          v-if="['certificateSigning',
+                 'certificateTransport',
+                 'privateKeySigning',
+                 'privateKeyTransport'].includes(el)"
           :name="el"
           :autosize="{ minRows: 2, maxRows: 6 }"
           @change="handleOnChange" />
@@ -28,10 +31,10 @@
           @change="handleOnChange" />
       </a-form-item>
     </a-form>
-    <payload
+    <DiscoveryModel
       v-show="current == length - 1"
       :current="current"
-      :payload="values.payload"
+      :discoveryModelValue="values.discoveryModel"
       :length="length" />
     <div class="validation-button-container">
       <a-button
@@ -65,11 +68,12 @@
 </template>
 
 <script>
-import Payload from './Payload.vue';
+import * as _ from 'lodash';
+import DiscoveryModel from './DiscoveryModel.vue';
 
 export default {
   components: {
-    Payload,
+    DiscoveryModel,
   },
   props: {
     handleOnChange: {
@@ -111,6 +115,11 @@ export default {
     });
   },
   methods: {
+    formatLabel(label) {
+      return _.startCase(label);
+      // return label.replace(/^[a-z]|[A-Z]/g, (v, i) =>
+      //   (i === 0 ? v.toUpperCase() : ` ${v.toLowerCase()}`));
+    },
     openNotification() {
       this.$notification.success({
         message: 'Valid config',

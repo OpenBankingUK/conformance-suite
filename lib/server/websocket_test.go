@@ -18,6 +18,8 @@ var _ bool = Describe("Server Websocket", func() {
 	)
 
 	It("handles connection and receives and sends messages", func() {
+		assert := assert.New(GinkgoT())
+
 		the_server = server.NewServer()
 		srv := httptest.NewServer(the_server)
 		defer srv.Close()
@@ -26,7 +28,7 @@ var _ bool = Describe("Server Websocket", func() {
 		urlStr := "ws" + strings.TrimPrefix(srv.URL, "http") + "/api/ws"
 		// Connect to the server
 		ws, _, err := websocket.DefaultDialer.Dial(urlStr, nil)
-		assert.NoError(GinkgoT(), err)
+		assert.NoError(err)
 		defer ws.Close()
 
 		// Send message to server, read response and check to see if it's what we expect.
@@ -35,8 +37,8 @@ var _ bool = Describe("Server Websocket", func() {
 			var body server.MessageOut
 			err := ws.ReadJSON(&body)
 
-			assert.NoError(GinkgoT(), err)
-			assert.Equal(GinkgoT(), "update", body.Type)
+			assert.NoError(err)
+			assert.Equal("update", body.Type)
 		}
 	})
 })

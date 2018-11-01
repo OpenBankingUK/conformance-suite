@@ -4,33 +4,32 @@
       <h2>Config</h2>
       <a-button @click="handleSwitch">Use {{ useJson ? 'Web Form' : 'JSON' }}</a-button>
     </div>
-    <a-divider />
+    <a-divider/>
     <div v-if="useJson">
       <div class="validation-button-container">
         <a-button
           type="primary"
           size="large"
           class="start_validation"
-          @click="startValidation">
-          Start validation
-        </a-button>
+          @click="startValidation"
+        >Start validation</a-button>
       </div>
       <editor
         :value="config"
         :onChange="handleSetConfig"
-        name="editor" />
-      <h2>Payload</h2>
+        name="editor"/>
+      <h2>Discovery Model</h2>
       <editor
-        :value="payload"
-        :onChange="handleSetPayload"
-        name="payload" />
+        :value="discoveryModel"
+        :onChange="handleSetDiscoveryModel"
+        name="discoveryModel"/>
     </div>
     <div v-else>
       <a-steps :current="current">
         <a-step
           v-for="item in steps"
           :key="item.title"
-          :title="item.title" />
+          :title="item.title"/>
       </a-steps>
       <Form
         :handleOnChange="handleOnChange"
@@ -39,8 +38,9 @@
         :length="steps.length"
         :next="next"
         :prev="prev"
-        :values="{ config, payload }"
-        :active="steps[current].filter" />
+        :values="{ config, discoveryModel }"
+        :active="steps[current].filter"
+      />
     </div>
   </div>
 </template>
@@ -60,27 +60,31 @@ export default {
       useJson: 1,
       current: 0,
       steps: [{
-        title: 'ASPSP',
-        filter: ['authorization_endpoint', 'fapi_financial_id', 'issuer', 'resource_endpoint', 'token_endpoint'],
+        title: 'Configuration',
+        filter: [
+          'accountAccessToken',
+          'certificateSigning',
+          'certificateTransport',
+          'clientScopes',
+          'keyId',
+          'privateKeySigning',
+          'privateKeyTransport',
+          'softwareStatementId',
+          'targetHost',
+        ],
       }, {
-        title: 'TPP Registered',
-        filter: ['token_endpoint_auth_method', 'client_id', 'client_secret', 'redirect_uri'],
-      }, {
-        title: 'TPP Keys',
-        filter: ['signing_key', 'signing_kid', 'transport_cert', 'transport_key'],
-      }, {
-        title: 'Payload',
+        title: 'DiscoveryModel',
       }],
     };
   },
   computed: {
     ...mapGetters('config', {
       config: 'getConfig',
-      payload: 'getPayload',
+      discoveryModel: 'getDiscoveryModel',
     }),
   },
   methods: {
-    ...mapActions('config', ['setConfig', 'setPayload', 'startValidation']),
+    ...mapActions('config', ['setConfig', 'setDiscoveryModel', 'startValidation']),
     next() {
       this.current += 1;
     },
@@ -111,9 +115,9 @@ export default {
       if (!this.isValidJSON(config)) return;
       this.setConfig(JSON.parse(config));
     },
-    handleSetPayload(payload) {
-      if (!this.isValidJSON(payload)) return;
-      this.setPayload(JSON.parse(payload));
+    handleSetDiscoveryModel(discoveryModel) {
+      if (!this.isValidJSON(discoveryModel)) return;
+      this.setDiscoveryModel(JSON.parse(discoveryModel));
     },
   },
 };
