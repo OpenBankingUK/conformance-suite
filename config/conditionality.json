@@ -1,0 +1,120 @@
+
+
+[{
+    "condition": 0,
+    "method": "POST",
+    "endpoint": "/account-access-consents"
+},
+{
+    "condition": 0,
+    "method": "GET",
+    "endpoint": "/account-access-consents/{ConsentId}"
+},{
+    "condition": 0,
+    "method": "DELETE",
+    "endpoint": "/account-access-consents/{ConsentId}"
+},{
+    "condition": 0,
+    "method": "GET",
+    "endpoint": "/accounts"
+},{
+    "condition": 0,
+    "method": "GET",
+    "endpoint": "/accounts/{AccountId}"
+},{
+    "condition": 0,
+    "method": "GET",
+    "endpoint": "/accounts/{AccountId}/balances"
+},{
+    "condition": 2,
+    "method": "GET",
+    "endpoint": "/balances"
+},{
+    "condition": 0,
+    "method": "GET",
+    "endpoint": "/accounts/{AccountId}/transactions"
+},{
+    "condition": 2,
+    "method": "GET",
+    "endpoint": "/transactions"
+},{
+    "condition": 1,
+    "method": "GET",
+    "endpoint": "/accounts/{AccountId}/beneficiaries"
+},{
+    "condition": 2,
+    "method": "GET",
+    "endpoint": "/beneficiaries"
+},{
+    "condition": 1,
+    "method": "GET",
+    "endpoint": "/accounts/{AccountId}/direct-debits"
+},{
+    "condition": 2,
+    "method": "GET",
+    "endpoint": "/direct-debits"
+},{
+    "condition": 1,
+    "method": "GET",
+    "endpoint": "/accounts/{AccountId}/standing-orders"
+},{
+    "condition": 2,
+    "method": "GET",
+    "endpoint": "/standing-orders"
+},{
+    "condition": 1,
+    "method": "GET",
+    "endpoint": "/accounts/{AccountId}/product"
+},{
+    "condition": 2,
+    "method": "GET",
+    "endpoint": "/products"
+},
+{	
+    "condition": 1,
+    "method": "GET",
+    "endpoint": "/accounts/{AccountId}/offers"
+},
+{
+    "condition": 2,
+    "method": "GET",
+    "endpoint": "/offers"
+},
+{
+    "condition": 1,
+    "method": "GET",
+    "endpoint": "/accounts/{AccountId}/party"
+},
+{
+    "condition": 2,
+    "method": "GET",
+    "endpoint": "/party"
+},{
+    "condition": 1,
+    "method": "GET",
+    "endpoint": "/accounts/{AccountId}/scheduled-payments"
+},{
+    "condition": 2,
+    "method": "GET",
+    "endpoint": "/scheduled-payments"
+},{
+    "condition": 1,
+    "method": "GET",
+    "endpoint": "/accounts/{AccountId}/statements"
+},{
+    "condition": 1,
+    "method": "GET",
+    "endpoint": "/accounts/{AccountId}/statements/{StatementId}"
+},{
+    "condition": 2,
+    "method": "GET",
+    "endpoint": "/accounts/{AccountId}/statements/{StatementId}/file"
+},{
+    "condition": 1,
+    "method": "GET",
+    "endpoint": "/accounts/{AccountId}/statements/{StatementId}/transactions"
+},{
+    "condition": 2,
+    "method": "GET",
+    "endpoint": "/statements"
+}]
