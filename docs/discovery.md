@@ -155,3 +155,8 @@ as follows:
   ...
 ]
 ```
+
+### Example file
+
+See ./docs/discovery-example.json for a [longer example file](./discovery-example.json).
+Note, this file is a nonnormative incomplete example of a discovery model.
