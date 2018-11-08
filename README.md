@@ -77,6 +77,16 @@
 * Waits for requests
 * Shutdown (ctrl-c typically) does a bit of tidyup
 
+#### `vendor/` directory
+We `vendor` the code, i.e., this repository contains all the code required to build itself. See
+https://github.com/golang-standards/project-layout for reasons why we have adopted this approach.
+
+The command to run to vendor the dependencies is:
+
+```sh
+go mod vendor
+```
+
 ## Other notes
 
 The original code for the swagger-proxy is at
