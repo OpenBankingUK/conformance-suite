@@ -11,6 +11,8 @@ import (
 // ConditionEnum models endpoint conditionality based on:
 // Account and Transaction API Specification - v3.0 - Section 4 Endpoints
 // https://openbanking.atlassian.net/wiki/spaces/DZ/pages/642090641/Account+and+Transaction+API+Specification+-+v3.0#AccountandTransactionAPISpecification-v3.0-Endpoints
+// Also see "Categorisation of Implementation Requirements" section of the following document
+// https://openbanking.atlassian.net/wiki/spaces/DZ/pages/641992418/Read+Write+Data+API+Specification+-+v3.0#Read/WriteDataAPISpecification-v3.0-CategorisationofImplementationRequirements
 type ConditionEnum int
 
 const (
@@ -24,15 +26,22 @@ const (
 	UndefinedCondition
 )
 
-// Conditionaity - capture the conditionaliy of a method/endpoint
-type Conditionaity struct {
+// Conditionality - capture the conditionality of a method/endpoint
+type Conditionality struct {
 	Condition ConditionEnum `json:"condition,omitempty"`
 	Method    string        `json:"method,omitempty"`
 	Endpoint  string        `json:"endpoint,omitempty"`
 }
 
+// helper struct to load entries with string conditionalities
+type conditionLoader struct {
+	StringCondition string `json:"condition,omitempty"`
+	Method          string `json:"method,omitempty"`
+	Endpoint        string `json:"endpoint,omitempty"`
+}
+
 // EndpointConditionality - Store of endpoint conditionality
-var endpointConditionality []Conditionaity
+var endpointConditionality []Conditionality
 
 func init() {
 	err := loadConditions()
@@ -92,21 +101,42 @@ func GetConditionality(method, endpoint string) (ConditionEnum, error) {
 
 // findCondition - find a condition given the method and endpoint
 // the condition can then be queried for optionality
-func findCondition(method, endpoint string) (Conditionaity, error) {
+func findCondition(method, endpoint string) (Conditionality, error) {
 	for _, cond := range endpointConditionality {
 		if cond.Method == method && cond.Endpoint == endpoint {
 			return cond, nil
 		}
 	}
-	return Conditionaity{}, errors.New("method: " + method + " endpoint:" + endpoint + " not found in conditionality array")
+	return Conditionality{}, errors.New("method: " + method + " endpoint:" + endpoint + " not found in conditionality array")
 }
 
 // loadConditions - get Mandatory/Conditional/Optional data from json file
 func loadConditions() error {
+	loader := []conditionLoader{}
 	rawjson, _ := ioutil.ReadFile("../config/conditionality.json") // lives here for now until we figure out somewhere better
-	err := json.Unmarshal(rawjson, &endpointConditionality)
+	err := json.Unmarshal(rawjson, &loader)
 	if err != nil {
 		return err
+	}
+	for _, loaded := range loader { // map struct conditionality into enum conditionality
+		condition := Conditionality{}
+		condition.Endpoint = loaded.Endpoint
+		condition.Method = loaded.Method
+		switch loaded.StringCondition {
+		case "mandatory":
+			condition.Condition = Mandatory
+		case "conditional":
+			condition.Condition = Conditional
+		case "optional":
+			condition.Condition = Optional
+		default:
+			logrus.WithFields(logrus.Fields{
+				"Condition": loaded.StringCondition,
+				"Method":    loaded.Method,
+				"Endpoint":  loaded.Endpoint,
+			}).Warn("Load Conditions - unknown condition")
+		}
+		endpointConditionality = append(endpointConditionality, condition)
 	}
 	return nil
 }
