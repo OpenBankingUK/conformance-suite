@@ -4,7 +4,49 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
+
+type dataHolder struct {
+	Method   string
+	Endpoint string
+}
+
+var mandatoryData = []dataHolder{
+	{"POST", "/account-access-consents"},
+	{"GET", "/account-access-consents/{ConsentId}"},
+	{"DELETE", "/account-access-consents/{ConsentId}"},
+	{"GET", "/accounts"},
+	{"GET", "/accounts/{AccountId}"},
+	{"GET", "/accounts/{AccountId}/balances"},
+	{"GET", "/accounts/{AccountId}/transactions"},
+}
+
+var conditionalData = []dataHolder{
+	{"GET", "/accounts/{AccountId}/scheduled-payments"},
+	{"GET", "/accounts/{AccountId}/direct-debits"},
+	{"GET", "/accounts/{AccountId}/standing-orders"},
+	{"GET", "/accounts/{AccountId}/product"},
+	{"GET", "/accounts/{AccountId}/offers"},
+	{"GET", "/accounts/{AccountId}/statements"},
+	{"GET", "/accounts/{AccountId}/statements/{StatementId}"},
+	{"GET", "/accounts/{AccountId}/party"},
+	{"GET", "/accounts/{AccountId}/beneficiaries"},
+	{"GET", "/accounts/{AccountId}/statements/{StatementId}/transactions"},
+}
+
+var optionalData = []dataHolder{
+	{"GET", "/scheduled-payments"},
+	{"GET", "/party"},
+	{"GET", "/offers"},
+	{"GET", "/standing-orders"},
+	{"GET", "/direct-debits"},
+	{"GET", "/beneficiaries"},
+	{"GET", "/transactions"},
+	{"GET", "/products"},
+	{"GET", "/accounts/{AccountId}/statements/{StatementId}/file"},
+	{"GET", "/statements"},
+}
 
 // Test we can read the conditionality file - performed in package init()
 // and that the endPointConditionality structure - which holds all the endpoint conditions
@@ -15,98 +57,29 @@ func TestConditionality(t *testing.T) {
 	assert.Equal(t, result, true)
 }
 
-// Test all Mandatory endpoints are correctly configured in model
-func TestMandatoryEndpoint(t *testing.T) {
-	result, err := IsMandatory("POST", "/account-access-consents")
-	assert.Nil(t, err)
-	assert.True(t, result)
-	result, err = IsMandatory("GET", "/account-access-consents/{ConsentId}")
-	assert.Nil(t, err)
-	assert.True(t, result)
-	result, err = IsMandatory("DELETE", "/account-access-consents/{ConsentId}")
-	assert.Nil(t, err)
-	assert.True(t, result)
-	result, err = IsMandatory("GET", "/accounts")
-	assert.Nil(t, err)
-	assert.True(t, result)
-	result, err = IsMandatory("GET", "/accounts/{AccountId}")
-	assert.Nil(t, err)
-	assert.True(t, result)
-	result, err = IsMandatory("GET", "/accounts/{AccountId}/balances")
-	assert.Nil(t, err)
-	assert.True(t, result)
-	result, err = IsMandatory("GET", "/accounts/{AccountId}/transactions")
-	assert.Nil(t, err)
-	assert.True(t, result)
-	result, err = IsConditional("GET", "/accounts/{AccountId}/scheduled-payments")
-	assert.Nil(t, err)
-	assert.True(t, result)
-	result, err = IsOptional("GET", "/scheduled-payments")
-	assert.Nil(t, err)
-	assert.True(t, result)
-	result, err = IsOptional("GET", "/party")
-	assert.Nil(t, err)
-	assert.True(t, result)
+// Test all Mandatory endpoints are correct and configured in the model
+func TestMandatoryData(t *testing.T) {
+	for _, tt := range mandatoryData {
+		result, err := IsMandatory(tt.Method, tt.Endpoint)
+		require.Nil(t, err)
+		require.True(t, result)
+	}
 }
 
 // Test all Conditional endpoints are correctly configured in model
-func TestConditionalEndpoint(t *testing.T) {
-	result, err := IsConditional("GET", "/accounts/{AccountId}/direct-debits")
-	assert.Nil(t, err)
-	assert.True(t, result)
-	result, err = IsConditional("GET", "/accounts/{AccountId}/standing-orders")
-	assert.Nil(t, err)
-	assert.True(t, result)
-	result, err = IsConditional("GET", "/accounts/{AccountId}/product")
-	assert.Nil(t, err)
-	assert.True(t, result)
-	result, err = IsConditional("GET", "/accounts/{AccountId}/offers")
-	assert.Nil(t, err)
-	assert.True(t, result)
-	result, err = IsConditional("GET", "/accounts/{AccountId}/statements")
-	assert.Nil(t, err)
-	assert.True(t, result)
-	result, err = IsConditional("GET", "/accounts/{AccountId}/statements/{StatementId}")
-	assert.Nil(t, err)
-	assert.True(t, result)
-	result, err = IsConditional("GET", "/accounts/{AccountId}/party")
-	assert.Nil(t, err)
-	assert.True(t, result)
-	result, err = IsConditional("GET", "/accounts/{AccountId}/beneficiaries")
-	assert.Nil(t, err)
-	assert.True(t, result)
-	result, err = IsConditional("GET", "/accounts/{AccountId}/statements/{StatementId}/transactions")
-	assert.Nil(t, err)
-	assert.True(t, result)
+func TestConditionalData(t *testing.T) {
+	for _, tt := range conditionalData {
+		result, err := IsConditional(tt.Method, tt.Endpoint)
+		require.Nil(t, err)
+		require.True(t, result)
+	}
 }
 
 // Test all Optional  endpoints are correctly configured in model
-func TestOptionalEndpoint(t *testing.T) {
-	result, err := IsOptional("GET", "/offers")
-	assert.Nil(t, err)
-	assert.True(t, result)
-	result, err = IsOptional("GET", "/party")
-	assert.Nil(t, err)
-	assert.True(t, result)
-	result, err = IsOptional("GET", "/standing-orders")
-	assert.Nil(t, err)
-	assert.True(t, result)
-	result, err = IsOptional("GET", "/direct-debits")
-	assert.Nil(t, err)
-	assert.True(t, result)
-	result, err = IsOptional("GET", "/beneficiaries")
-	assert.Nil(t, err)
-	assert.True(t, result)
-	result, err = IsOptional("GET", "/transactions")
-	assert.Nil(t, err)
-	assert.True(t, result)
-	result, err = IsOptional("GET", "/products")
-	assert.Nil(t, err)
-	assert.True(t, result)
-	result, err = IsOptional("GET", "/accounts/{AccountId}/statements/{StatementId}/file")
-	assert.Nil(t, err)
-	assert.True(t, result)
-	result, err = IsOptional("GET", "/statements")
-	assert.Nil(t, err)
-	assert.True(t, result)
+func TestOptionalData(t *testing.T) {
+	for _, tt := range optionalData {
+		result, err := IsOptional(tt.Method, tt.Endpoint)
+		require.Nil(t, err)
+		require.True(t, result)
+	}
 }
