@@ -14,7 +14,6 @@ ENV GOARCH=amd64
 WORKDIR /app
 ADD . .
 
-RUN make init
 RUN make build
 
 # Image to compile Single Page Application of the Vue.js site

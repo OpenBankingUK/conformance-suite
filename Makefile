@@ -1,6 +1,8 @@
 SHELL:=/bin/bash
 GOMAXPROCS:=12
 PARALLEL:=${GOMAXPROCS}
+# guarantee that go will not reach the network at all (e.g. GOPROXY=off)
+export GOPROXY:=off
 
 .PHONY: all
 all: help
@@ -26,7 +28,7 @@ run_image: ## run the docker image
 .PHONY: build
 build: ## build the binary directly
 	@echo -e "\033[92m  ---> Building ... \033[0m"
-	go build
+	go build -mod vendor
 
 .PHONY: build_image
 build_image: ## build the docker image
@@ -64,6 +66,7 @@ test: ## run the go tests
 		ln -s $(shell pwd)/web/public $(shell pwd)/lib/server/web/dist; \
 	fi
 	GOMAXPROCS=${GOMAXPROCS} go test \
+		-mod vendor \
 		-v \
 		-cover \
 		-parallel ${PARALLEL} \
@@ -73,6 +76,7 @@ test: ## run the go tests
 test_coverage: ## run the go tests then open up coverage report
 	@echo -e "\033[92m  ---> Testing wth coverage ... \033[0m"
 	-GOMAXPROCS=${GOMAXPROCS} go test \
+		-mod vendor \
 		-v \
 		-cover \
 		-parallel ${PARALLEL} \
