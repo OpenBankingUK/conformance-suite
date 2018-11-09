@@ -10,7 +10,7 @@
 *
 **/*
 
-# except go server
+# except go server and its dependencies
 !**/*.go
 !**/go.mod
 !**/go.sum
@@ -24,6 +24,12 @@
 !**/swagger
 !**/lib
 !**/lib/server
+
+# the server's dependencies
+!**/vendor
+!**/vendor/
+!**/vendor/**
+!**/vendor/**/*
 
 # except vue.js
 !**/web
