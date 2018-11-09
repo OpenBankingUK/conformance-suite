@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"io/ioutil"
+	"os"
 
 	"github.com/sirupsen/logrus"
 )
@@ -47,6 +48,7 @@ func init() {
 	err := loadConditions()
 	if err != nil {
 		logrus.Error(err)
+		os.Exit(1) // Abort if we can't read the config correctly
 	}
 }
 
