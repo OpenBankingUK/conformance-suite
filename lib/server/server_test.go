@@ -203,6 +203,7 @@ var _ bool = ginkgo.Describe("Server", func() {
 
 				// check the proxy is up now, we should hit the forgerock server
 				resp, err := http.Get(frontendProxy.String())
+				assert.NoError(err)
 				body, err := ioutil.ReadAll(resp.Body)
 				assert.NoError(err)
 				assert.Equal(http.StatusBadRequest, resp.StatusCode)
