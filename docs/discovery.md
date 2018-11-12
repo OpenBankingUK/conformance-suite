@@ -53,6 +53,7 @@ Properties in each discovery item are:
 The Discovery model records specification details in an unambiguous way:
 
 * `apiSpecification`
+  * `name` - the `info.title` field from the Swagger/OpenAPI specification file
   * `url` - URI identifier of the specification, i.e. link to specification document
   * `version` - API version number that appears in API paths, e.g. "v3.0"
   * `schemaVersion` - URI identifier of the Swagger/OpenAPI specification file patch version
@@ -70,6 +71,7 @@ Example
     "discoveryItems": [
       {
         "apiSpecification": {
+          "name": "Account and Transaction API Specification",
           "url": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/642090641/Account+and+Transaction+API+Specification+-+v3.0",
           "version": "v3.0",
           "schemaVersion": "https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.0.0/dist/account-info-swagger.json"
@@ -121,9 +123,9 @@ Example
 
 ##### Required properties
 
-The specification lists some resource schema properties may occur `0..1` times.
+The specification lists some resource schema properties may occur `0..1`, or `0..n` times.
 
-When an ASPSP provides a `0..1` occurrence property via its online channel,
+When an ASPSP provides a `0..1`, `0..n` occurrence property via its online channel,
 it must attest that it provides those properties in its API implementation. It adds
 such properties to a `requiredProperties` properties list in the relevant endpoint definition.
 
