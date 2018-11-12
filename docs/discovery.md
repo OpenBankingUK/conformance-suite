@@ -1,10 +1,10 @@
 # Functional Conformance Suite Discovery design
 
-The Functional Conformance Suite tests an ASPSP's implementation of Open Banking
-API specifications. Aspects of the API specifications are conditional or optional.
+The Functional Conformance Suite provides a configurable discovery model that
+allows an ASPSP to describe information on endpoint availability, and data
+schema properties provided.
 
-The suite requires an ASPSP attest what it has implemented via a discovery
-information model. The suite uses this discovery information to configure which tests cases are run.
+The suite uses this discovery information to configure which tests cases are run.
 
 ## Discovery Model
 
@@ -17,7 +17,9 @@ requirements of specifications and conditions, regulations, and standards.
 
 ### Model format
 
-The discovery model defines in a JSON format endpoints implemented per specification and optional payload schema properties provided for online channel equivalence.
+The discovery model defines in a JSON format endpoints implemented per
+specification and optional payload schema properties provided for online channel
+equivalence.
 
 The discovery model consists of a single root property `discoveryModel`
 containing an array of discovery items.
