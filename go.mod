@@ -24,6 +24,8 @@ require (
 	github.com/onsi/gomega v1.4.2 // indirect
 	github.com/sirupsen/logrus v1.1.1
 	github.com/stretchr/testify v1.2.2
+	github.com/tidwall/gjson v1.1.3
+	github.com/tidwall/match v0.0.0-20171002075945-1731857f09b1 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/valyala/fasttemplate v0.0.0-20170224212429-dcecefd839c4 // indirect
 	github.com/x-cray/logrus-prefixed-formatter v0.5.2

@@ -83,14 +83,20 @@ type Context struct {
 	BaseURL string `json:"baseurl,omitempty"`
 }
 
-// Expect -
+// Expect defines a structure for expressing testcase result expectations.
 type Expect struct {
-	StatusCode       int     `json:"status-code,omitempty"`
-	SchemaValidation bool    `json:"schema-validation,omitempty"`
-	Matches          []Match `json:"matches,omitempty"`
+	StatusCode       int  `json:"status-code,omitempty"`       // Http response code
+	SchemaValidation bool `json:"schema-validation,omitempty"` // Flag to indicate if we need schema validation -
+	// provides the ability to switch off schema validation
+	Matches []Match `json:"matches,omitempty"` // An array of zero or more match items which must be 'passed' for the testcase to succeed
 }
 
-// Match -
+// Match encapsulates a conditional statement that must 'match' in order to succeed.
+// Matches should -
+// - match using a specific JSON field and a value
+// - match using a Regex expression
+// - match a specific header field to a value
+// - match using a Regex expression on a header field
 type Match struct {
 	Description string `json:"description,omitempty"`
 	JSON        string `json:"json,omitempty"`
