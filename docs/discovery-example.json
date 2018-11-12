@@ -12,27 +12,22 @@
         "resourceBaseUri": "https://rs.aspsp.ob.forgerock.financial:443/",
         "endpoints": [
           {
-            "resource": "account-access-consents",
             "method": "POST",
             "path": "/account-access-consents"
           },
           {
-            "resource": "account-access-consents",
             "method": "GET",
             "path": "/account-access-consents/{ConsentId}"
           },
           {
-            "resource": "account-access-consents",
             "method": "DELETE",
             "path": "/account-access-consents/{ConsentId}"
           },
           {
-            "resource": "product",
             "method": "GET",
             "path": "/accounts/{AccountId}/product"
           },
           {
-            "resource": "transactions",
             "method": "GET",
             "path": "/accounts/{AccountId}/transactions",
             "requiredProperties": [
@@ -59,12 +54,10 @@
             ]
           },
           {
-            "resource": "accounts",
             "method": "GET",
             "path": "/accounts"
           },
           {
-            "resource": "accounts",
             "method": "GET",
             "path": "/accounts/{AccountId}"
           }
@@ -80,7 +73,6 @@
         "resourceBaseUri": "https://rs.aspsp.ob.forgerock.financial:443/",
         "endpoints": [
           {
-            "resource": "domestic-payment-consents",
             "method": "POST",
             "path": "/domestic-payment-consents",
             "requiredProperties": [
@@ -92,7 +84,6 @@
             ]
           },
           {
-            "resource": "domestic-payment-consents",
             "method": "GET",
             "path": "/domestic-payment-consents/{ConsentId}",
             "requiredProperties": [
@@ -104,7 +95,6 @@
             ]
           },
           {
-            "resource": "domestic-payments",
             "method": "POST",
             "path": "/domestic-payments",
             "requiredProperties": [
@@ -116,7 +106,6 @@
             ]
           },
           {
-            "resource": "domestic-payments",
             "method": "GET",
             "path": "/domestic-payments/{DomesticPaymentId}",
             "requiredProperties": [

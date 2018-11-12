@@ -91,7 +91,6 @@ implemented by an ASPSP. This list includes:
   * conditional and optional endpoints implemented
 
 Properties in each endpoint definition include (mandatory properties marked with *):
-  - `resource`* - resource name from specification, e.g. "account-access-consents"
   - `method`* - HTTP method, e.g. "GET" or "POST"
   - `path`* - endpoint path, e.g. "/account-access-consents"
   - `requiredProperties` - list of optional schema properties that an ASPSP attests it provides, more details in the next section.
@@ -101,22 +100,18 @@ Example
 ```json
 "endpoints": [
   {
-    "resource": "account-access-consents",
     "method": "POST",
     "path": "/account-access-consents"
   },
   {
-    "resource": "account-access-consents",
     "method": "GET",
     "path": "/account-access-consents/{ConsentId}"
   },
   {
-    "resource": "account-access-consents",
     "method": "DELETE",
     "path": "/account-access-consents/{ConsentId}"
   },
   {
-    "resource": "product",
     "method": "GET",
     "path": "/accounts/{AccountId}/product"
   },
@@ -145,7 +140,6 @@ as follows:
 ```json
 "endpoints": [
   {
-    "resource": "transactions",
     "method": "GET",
     "path": "/accounts/{AccountId}/transactions",
     "requiredProperties": [
