@@ -1,131 +1,134 @@
 {
-  "discoveryModel": [
-    {
-      "apiSpecification": {
-        "url": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/642090641/Account+and+Transaction+API+Specification+-+v3.0",
-        "version": "v3.0",
-        "schemaVersion": "https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.0.0/dist/account-info-swagger.json"
+  "discoveryModel": {
+    "version": "v0.0.1",
+    "discoveryItems": [
+      {
+        "apiSpecification": {
+          "url": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/642090641/Account+and+Transaction+API+Specification+-+v3.0",
+          "version": "v3.0",
+          "schemaVersion": "https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.0.0/dist/account-info-swagger.json"
+        },
+        "openidConfigurationUri": "https://as.aspsp.ob.forgerock.financial/oauth2/.well-known/openid-configuration",
+        "resourceBaseUri": "https://rs.aspsp.ob.forgerock.financial:443/",
+        "endpoints": [
+          {
+            "resource": "account-access-consents",
+            "method": "POST",
+            "path": "/account-access-consents"
+          },
+          {
+            "resource": "account-access-consents",
+            "method": "GET",
+            "path": "/account-access-consents/{ConsentId}"
+          },
+          {
+            "resource": "account-access-consents",
+            "method": "DELETE",
+            "path": "/account-access-consents/{ConsentId}"
+          },
+          {
+            "resource": "product",
+            "method": "GET",
+            "path": "/accounts/{AccountId}/product"
+          },
+          {
+            "resource": "transactions",
+            "method": "GET",
+            "path": "/accounts/{AccountId}/transactions",
+            "required": [
+              {
+                "schema": "OBTransaction3Detail",
+                "property": "Balance",
+                "path": "Data.Transaction[*].Balance"
+              },
+              {
+                "schema": "OBTransaction3Detail",
+                "property": "MerchantDetails",
+                "path": "Data.Transaction[*].MerchantDetails"
+              },
+              {
+                "schema": "OBTransaction3Basic",
+                "property": "TransactionReference",
+                "path": "Data.Transaction[*].TransactionReference"
+              },
+              {
+                "schema": "OBTransaction3Detail",
+                "property": "TransactionReference",
+                "path": "Data.Transaction[*].TransactionReference"
+              }
+            ]
+          },
+          {
+            "resource": "accounts",
+            "method": "GET",
+            "path": "/accounts"
+          },
+          {
+            "resource": "accounts",
+            "method": "GET",
+            "path": "/accounts/{AccountId}"
+          }
+        ]
       },
-      "openidConfigurationUri": "https://as.aspsp.ob.forgerock.financial/oauth2/.well-known/openid-configuration",
-      "resourceBaseUri": "https://rs.aspsp.ob.forgerock.financial:443/",
-      "endpoints": [
-        {
-          "resource": "account-access-consents",
-          "method": "POST",
-          "path": "/account-access-consents"
+      {
+        "apiSpecification": {
+          "url": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/645367011/Payment+Initiation+API+Specification+-+v3.0",
+          "version": "v3.0",
+          "schemaVersion": "https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.0.0/dist/payment-initiation-swagger.json"
         },
-        {
-          "resource": "account-access-consents",
-          "method": "GET",
-          "path": "/account-access-consents/{ConsentId}"
-        },
-        {
-          "resource": "account-access-consents",
-          "method": "DELETE",
-          "path": "/account-access-consents/{ConsentId}"
-        },
-        {
-          "resource": "product",
-          "method": "GET",
-          "path": "/accounts/{AccountId}/product"
-        },
-        {
-          "resource": "transactions",
-          "method": "GET",
-          "path": "/accounts/{AccountId}/transactions",
-          "required": [
-            {
-              "schema": "OBTransaction3Detail",
-              "property": "Balance",
-              "path": "Data.Transaction[*].Balance"
-            },
-            {
-              "schema": "OBTransaction3Detail",
-              "property": "MerchantDetails",
-              "path": "Data.Transaction[*].MerchantDetails"
-            },
-            {
-              "schema": "OBTransaction3Basic",
-              "property": "TransactionReference",
-              "path": "Data.Transaction[*].TransactionReference"
-            },
-            {
-              "schema": "OBTransaction3Detail",
-              "property": "TransactionReference",
-              "path": "Data.Transaction[*].TransactionReference"
-            }
-          ]
-        },
-        {
-          "resource": "accounts",
-          "method": "GET",
-          "path": "/accounts"
-        },
-        {
-          "resource": "accounts",
-          "method": "GET",
-          "path": "/accounts/{AccountId}"
-        }
-      ]
-    },
-    {
-      "apiSpecification": {
-        "url": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/645367011/Payment+Initiation+API+Specification+-+v3.0",
-        "version": "v3.0",
-        "schemaVersion": "https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.0.0/dist/payment-initiation-swagger.json"
-      },
-      "openidConfigurationUri": "https://as.aspsp.ob.forgerock.financial/oauth2/.well-known/openid-configuration",
-      "resourceBaseUri": "https://rs.aspsp.ob.forgerock.financial:443/",
-      "endpoints": [
-        {
-          "resource": "domestic-payment-consents",
-          "method": "POST",
-          "path": "/domestic-payment-consents",
-          "required": [
-            {
-              "schema": "OBWriteDataDomesticConsentResponse1",
-              "property": "Charges",
-              "path": "Data.Charges"
-            }
-          ]
-        },
-        {
-          "resource": "domestic-payment-consents",
-          "method": "GET",
-          "path": "/domestic-payment-consents/{ConsentId}",
-          "required": [
-            {
-              "schema": "OBWriteDataDomesticConsentResponse1",
-              "property": "Charges",
-              "path": "Data.Charges"
-            }
-          ]
-        },
-        {
-          "resource": "domestic-payments",
-          "method": "POST",
-          "path": "/domestic-payments",
-          "required": [
-            {
-              "schema": "OBWriteDataDomesticResponse1",
-              "property": "Charges",
-              "path": "Data.Charges"
-            }
-          ]
-        },
-        {
-          "resource": "domestic-payments",
-          "method": "GET",
-          "path": "/domestic-payments/{DomesticPaymentId}",
-          "required": [
-            {
-              "schema": "OBWriteDataDomesticResponse1",
-              "property": "Charges",
-              "path": "Data.Charges"
-            }
-          ]
-        }
-      ]
-    }
-  ]
+        "openidConfigurationUri": "https://as.aspsp.ob.forgerock.financial/oauth2/.well-known/openid-configuration",
+        "resourceBaseUri": "https://rs.aspsp.ob.forgerock.financial:443/",
+        "endpoints": [
+          {
+            "resource": "domestic-payment-consents",
+            "method": "POST",
+            "path": "/domestic-payment-consents",
+            "required": [
+              {
+                "schema": "OBWriteDataDomesticConsentResponse1",
+                "property": "Charges",
+                "path": "Data.Charges"
+              }
+            ]
+          },
+          {
+            "resource": "domestic-payment-consents",
+            "method": "GET",
+            "path": "/domestic-payment-consents/{ConsentId}",
+            "required": [
+              {
+                "schema": "OBWriteDataDomesticConsentResponse1",
+                "property": "Charges",
+                "path": "Data.Charges"
+              }
+            ]
+          },
+          {
+            "resource": "domestic-payments",
+            "method": "POST",
+            "path": "/domestic-payments",
+            "required": [
+              {
+                "schema": "OBWriteDataDomesticResponse1",
+                "property": "Charges",
+                "path": "Data.Charges"
+              }
+            ]
+          },
+          {
+            "resource": "domestic-payments",
+            "method": "GET",
+            "path": "/domestic-payments/{DomesticPaymentId}",
+            "required": [
+              {
+                "schema": "OBWriteDataDomesticResponse1",
+                "property": "Charges",
+                "path": "Data.Charges"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
 }

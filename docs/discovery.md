@@ -9,6 +9,7 @@ The suite uses this discovery information to configure which tests cases are run
 ## Discovery Model
 
 The discovery model information per specification includes:
+
 * endpoint and methods implemented
 * optional/conditional properties provided for online channel equivalence
 
@@ -21,15 +22,27 @@ The discovery model defines in a JSON format endpoints implemented per
 specification and optional payload schema properties provided for online channel
 equivalence.
 
-The discovery model consists of a single root property `discoveryModel`
-containing an array of discovery items.
+The discovery model consists of an `discoveryModel` root object with these
+properties:
+
+* `version` - version number of the discovery model format, e.g. "v0.0.1".
+* `discoveryItems` - an array of discovery items, see below for details.
+
+#### Discovery version
+
+The version number is used to track changes to made to the discovery model.
+
+The version number is formatted as MAJOR.MINOR.PATCH, following the
+[Semantic Versioning](https://semver.org/) approach to convey meaning about what
+has been modified from one version to the next. For details see: https://semver.org/
 
 #### Discovery item
 
-Each discovery item contains information
-related to a particular specification version.
+Each discovery item contains information related to a particular specification
+version.
 
 Properties in each discovery item are:
+
 * `apiSpecification` - details of API specification
 * `openidConfigurationUri` - URI of openid configuration well-known endpoint
 * `resourceBaseUri` - Base of resource URI, i.e. the part before "/open-banking/v3.0".
@@ -44,25 +57,29 @@ The Discovery model records specification details in an unambiguous way:
   * `version` - API version number that appears in API paths, e.g. "v3.0"
   * `schemaVersion` - URI identifier of the Swagger/OpenAPI specification file patch version
 
-The property names `url`, `version`, and `schemaVersion` are from the `APIReference`
-schema defined at schema.org here: https://schema.org/APIReference
+The property names `url`, `version`, and `schemaVersion` are from the schema.org
+[APIReference schema](https://schema.org/APIReference) defined here:
+https://schema.org/APIReference
 
 Example
 
 ```json
 {
-  "discoveryModel": [
-    {
-      "apiSpecification": {
-        "url": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/642090641/Account+and+Transaction+API+Specification+-+v3.0",
-        "version": "v3.0",
-        "schemaVersion": "https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.0.0/dist/account-info-swagger.json"
-      },
-      "openidConfigurationUri": "https://as.aspsp.ob.forgerock.financial/oauth2/.well-known/openid-configuration",
-      "resourceBaseUri": "https://rs.aspsp.ob.forgerock.financial:443/",
-      "endpoints": []
-    }
-  ]
+  "discoveryModel": {
+    "version": "v0.0.1",
+    "discoveryItems": [
+      {
+        "apiSpecification": {
+          "url": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/642090641/Account+and+Transaction+API+Specification+-+v3.0",
+          "version": "v3.0",
+          "schemaVersion": "https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.0.0/dist/account-info-swagger.json"
+        },
+        "openidConfigurationUri": "https://as.aspsp.ob.forgerock.financial/oauth2/.well-known/openid-configuration",
+        "resourceBaseUri": "https://rs.aspsp.ob.forgerock.financial:443/",
+        "endpoints": []
+      }
+    ]
+  }
 }
 ```
 
