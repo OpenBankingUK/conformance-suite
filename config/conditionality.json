@@ -1,0 +1,120 @@
+
+
+[{
+    "condition": "mandatory",
+    "method": "POST",
+    "endpoint": "/account-access-consents"
+},
+{
+    "condition": "mandatory",
+    "method": "GET",
+    "endpoint": "/account-access-consents/{ConsentId}"
+},{
+    "condition": "mandatory",
+    "method": "DELETE",
+    "endpoint": "/account-access-consents/{ConsentId}"
+},{
+    "condition": "mandatory",
+    "method": "GET",
+    "endpoint": "/accounts"
+},{
+    "condition": "mandatory",
+    "method": "GET",
+    "endpoint": "/accounts/{AccountId}"
+},{
+    "condition": "mandatory",
+    "method": "GET",
+    "endpoint": "/accounts/{AccountId}/balances"
+},{
+    "condition": "optional",
+    "method": "GET",
+    "endpoint": "/balances"
+},{
+    "condition": "mandatory",
+    "method": "GET",
+    "endpoint": "/accounts/{AccountId}/transactions"
+},{
+    "condition": "optional",
+    "method": "GET",
+    "endpoint": "/transactions"
+},{
+    "condition": "conditional",
+    "method": "GET",
+    "endpoint": "/accounts/{AccountId}/beneficiaries"
+},{
+    "condition": "optional",
+    "method": "GET",
+    "endpoint": "/beneficiaries"
+},{
+    "condition": "conditional",
+    "method": "GET",
+    "endpoint": "/accounts/{AccountId}/direct-debits"
+},{
+    "condition": "optional",
+    "method": "GET",
+    "endpoint": "/direct-debits"
+},{
+    "condition": "conditional",
+    "method": "GET",
+    "endpoint": "/accounts/{AccountId}/standing-orders"
+},{
+    "condition": "optional",
+    "method": "GET",
+    "endpoint": "/standing-orders"
+},{
+    "condition": "conditional",
+    "method": "GET",
+    "endpoint": "/accounts/{AccountId}/product"
+},{
+    "condition": "optional",
+    "method": "GET",
+    "endpoint": "/products"
+},
+{	
+    "condition": "conditional",
+    "method": "GET",
+    "endpoint": "/accounts/{AccountId}/offers"
+},
+{
+    "condition": "optional",
+    "method": "GET",
+    "endpoint": "/offers"
+},
+{
+    "condition": "conditional",
+    "method": "GET",
+    "endpoint": "/accounts/{AccountId}/party"
+},
+{
+    "condition": "optional",
+    "method": "GET",
+    "endpoint": "/party"
+},{
+    "condition": "conditional",
+    "method": "GET",
+    "endpoint": "/accounts/{AccountId}/scheduled-payments"
+},{
+    "condition": "optional",
+    "method": "GET",
+    "endpoint": "/scheduled-payments"
+},{
+    "condition": "conditional",
+    "method": "GET",
+    "endpoint": "/accounts/{AccountId}/statements"
+},{
+    "condition": "conditional",
+    "method": "GET",
+    "endpoint": "/accounts/{AccountId}/statements/{StatementId}"
+},{
+    "condition": "optional",
+    "method": "GET",
+    "endpoint": "/accounts/{AccountId}/statements/{StatementId}/file"
+},{
+    "condition": "conditional",
+    "method": "GET",
+    "endpoint": "/accounts/{AccountId}/statements/{StatementId}/transactions"
+},{
+    "condition": "optional",
+    "method": "GET",
+    "endpoint": "/statements"
+}]
