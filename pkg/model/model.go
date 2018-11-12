@@ -16,14 +16,14 @@ import (
 // Each rule can have multiple testcases which contribute to testing that particular rule
 // So essentially Manifest is a container
 type Manifest struct {
-	Context     string    `json:"@context"`
-	ID          string    `json:"@id"`
-	Type        string    `json:"@type"`
-	Name        string    `json:"name"`
-	Description string    `json:"description"`
-	BaseIri     string    `json:"baseIri"`
-	Sections    []Context `json:"section_contexts"`
-	Rules       []Rule    `json:"rules"`
+	Context     string    `json:"@context"`         // JSONLD contest reference
+	ID          string    `json:"@id"`              // JSONLD ID reference
+	Type        string    `json:"@type"`            // JSONLD Type reference
+	Name        string    `json:"name"`             // Name of the manifiest
+	Description string    `json:"description"`      // Description of the Mainfest and what it contains
+	BaseIri     string    `json:"baseIri"`          // Base Iri
+	Sections    []Context `json:"section_contexts"` // Section specific contexts
+	Rules       []Rule    `json:"rules"`            // All the rules in the Manifest
 }
 
 // Rule - Define a specific location within a specification that is being tested
