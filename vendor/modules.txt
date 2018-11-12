@@ -100,6 +100,7 @@ github.com/pmezard/go-difflib/difflib
 github.com/sirupsen/logrus
 # github.com/stretchr/testify v1.2.2
 github.com/stretchr/testify/assert
+github.com/stretchr/testify/require
 # github.com/valyala/bytebufferpool v1.0.0
 github.com/valyala/bytebufferpool
 # github.com/valyala/fasttemplate v0.0.0-20170224212429-dcecefd839c4
