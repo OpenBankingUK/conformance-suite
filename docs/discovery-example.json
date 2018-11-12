@@ -79,7 +79,7 @@
       "endpoints": [
         {
           "resource": "domestic-payment-consents",
-          "operation": "POST",
+          "method": "POST",
           "path": "/domestic-payment-consents",
           "required": [
             {
@@ -91,7 +91,7 @@
         },
         {
           "resource": "domestic-payment-consents",
-          "operation": "GET",
+          "method": "GET",
           "path": "/domestic-payment-consents/{ConsentId}",
           "required": [
             {
@@ -103,7 +103,7 @@
         },
         {
           "resource": "domestic-payments",
-          "operation": "POST",
+          "method": "POST",
           "path": "/domestic-payments",
           "required": [
             {
@@ -115,7 +115,7 @@
         },
         {
           "resource": "domestic-payments",
-          "operation": "GET",
+          "method": "GET",
           "path": "/domestic-payments/{DomesticPaymentId}",
           "required": [
             {
