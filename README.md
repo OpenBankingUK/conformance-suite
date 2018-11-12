@@ -7,10 +7,10 @@ The functional conformance suite is an open source tool that facilitates an ASPS
 
 * [Test Cases](docs/test-case-design.md):
     * The conformance suite provides a cross-platform, language agnostic representation of test cases. The primary purpose is to determine whether an ASPSP resource complies with requirements of specifications and conditions, regulations and standards.
-* [Discovery Configuration]():
-    * The conformance suite provides a configurable model that allows an ASPSP describe information on endpoint availability, data structure and code lists.
+* [Discovery Configuration](docs/discovery.md):
+    * The conformance suite provides a configurable model that allows an ASPSP describe information on endpoint availability, data structure.
 * [Report Data Model]():
-    * The conformance suite provides a configurable model that allows an ASPSP describe information on endpoint availability, data structure and code lists. 
+    * The conformance suite provides a configurable model that allows an ASPSP describe information on endpoint availability, data structure and code lists.
 
 ## Test List
 
