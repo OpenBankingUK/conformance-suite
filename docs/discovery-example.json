@@ -35,7 +35,7 @@
             "resource": "transactions",
             "method": "GET",
             "path": "/accounts/{AccountId}/transactions",
-            "required": [
+            "requiredProperties": [
               {
                 "schema": "OBTransaction3Detail",
                 "property": "Balance",
@@ -83,7 +83,7 @@
             "resource": "domestic-payment-consents",
             "method": "POST",
             "path": "/domestic-payment-consents",
-            "required": [
+            "requiredProperties": [
               {
                 "schema": "OBWriteDataDomesticConsentResponse1",
                 "property": "Charges",
@@ -95,7 +95,7 @@
             "resource": "domestic-payment-consents",
             "method": "GET",
             "path": "/domestic-payment-consents/{ConsentId}",
-            "required": [
+            "requiredProperties": [
               {
                 "schema": "OBWriteDataDomesticConsentResponse1",
                 "property": "Charges",
@@ -107,7 +107,7 @@
             "resource": "domestic-payments",
             "method": "POST",
             "path": "/domestic-payments",
-            "required": [
+            "requiredProperties": [
               {
                 "schema": "OBWriteDataDomesticResponse1",
                 "property": "Charges",
@@ -119,7 +119,7 @@
             "resource": "domestic-payments",
             "method": "GET",
             "path": "/domestic-payments/{DomesticPaymentId}",
-            "required": [
+            "requiredProperties": [
               {
                 "schema": "OBWriteDataDomesticResponse1",
                 "property": "Charges",

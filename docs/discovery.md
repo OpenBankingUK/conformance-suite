@@ -94,7 +94,7 @@ Properties in each endpoint definition include (mandatory properties marked with
   - `resource`* - resource name from specification, e.g. "account-access-consents"
   - `method`* - HTTP method, e.g. "GET" or "POST"
   - `path`* - endpoint path, e.g. "/account-access-consents"
-  - `required` - list of optional schema properties that an ASPSP attests it provides, more details in the next section.
+  - `requiredProperties` - list of optional schema properties that an ASPSP attests it provides, more details in the next section.
 
 Example
 
@@ -130,16 +130,16 @@ The specification lists some resource schema properties may occur `0..1` times.
 
 When an ASPSP provides a `0..1` occurrence property via its online channel,
 it must attest that it provides those properties in its API implementation. It adds
-such properties to a `required` properties list in the relevant endpoint definition.
+such properties to a `requiredProperties` properties list in the relevant endpoint definition.
 
-The `required` list contains items. Each item states:
+The `requiredProperties` list contains items. Each item states:
  * `schema` - schema definition name from the Swagger/OpenAPI specification, e.g. "OBTransaction3Detail"
  * `property` - property name from schema, e.g. "Balance"
  * `path` - path to property expressed in [JSON Path](https://goessner.net/articles/JsonPath/) format, e.g. "Data.Transaction[* ].Balance"
 
 Example: for online channel equivalence an ASPSP provides account
 transaction data including `Balance`, `MerchantDetails`, `TransactionReference`.
-The ASPSP attests to that in an endpoint definition, via a `required` list
+The ASPSP attests to that in an endpoint definition, via a `requiredProperties` list
 as follows:
 
 ```json
@@ -148,7 +148,7 @@ as follows:
     "resource": "transactions",
     "method": "GET",
     "path": "/accounts/{AccountId}/transactions",
-    "required": [
+    "requiredProperties": [
       {
         "schema": "OBTransaction3Detail",
         "property": "Balance",
