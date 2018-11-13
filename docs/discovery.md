@@ -95,7 +95,7 @@ implemented by an ASPSP. This list includes:
 Properties in each endpoint definition include (mandatory properties marked with *):
   - `method`* - HTTP method, e.g. "GET" or "POST"
   - `path`* - endpoint path, e.g. "/account-access-consents"
-  - `requiredProperties` - list of optional schema properties that an ASPSP attests it provides, more details in the next section.
+  - `conditionalProperties` - list of optional schema properties that an ASPSP attests it provides, more details in the next section.
 
 Example
 
@@ -127,16 +127,16 @@ The specification lists some resource schema properties may occur `0..1`, or `0.
 
 When an ASPSP provides a `0..1`, `0..n` occurrence property via its online channel,
 it must attest that it provides those properties in its API implementation. It adds
-such properties to a `requiredProperties` properties list in the relevant endpoint definition.
+such properties to a `conditionalProperties` properties list in the relevant endpoint definition.
 
-The `requiredProperties` list contains items. Each item states:
+The `conditionalProperties` list contains items. Each item states:
  * `schema` - schema definition name from the Swagger/OpenAPI specification, e.g. "OBTransaction3Detail"
  * `property` - property name from schema, e.g. "Balance"
  * `path` - path to property expressed in [JSON Path](https://goessner.net/articles/JsonPath/) format, e.g. "Data.Transaction[* ].Balance"
 
 Example: for online channel equivalence an ASPSP provides account
 transaction data including `Balance`, `MerchantDetails`, `TransactionReference`.
-The ASPSP attests to that in an endpoint definition, via a `requiredProperties` list
+The ASPSP attests to that in an endpoint definition, via a `conditionalProperties` list
 as follows:
 
 ```json
@@ -144,7 +144,7 @@ as follows:
   {
     "method": "GET",
     "path": "/accounts/{AccountId}/transactions",
-    "requiredProperties": [
+    "conditionalProperties": [
       {
         "schema": "OBTransaction3Detail",
         "property": "Balance",
