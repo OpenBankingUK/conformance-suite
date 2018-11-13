@@ -123,10 +123,10 @@ Example
 
 ##### Required properties
 
-The specification lists some resource schema properties may occur `0..1`, or `0..n` times.
+The specification lists some resource schema properties may occur `0..1`, or `0..*` times.
 
-When an ASPSP provides a `0..1`, `0..n` occurrence property via its online channel,
-it must attest that it provides those properties in its API implementation. It adds
+When an ASPSP provides a `0..1`, `0..*` occurrence property via its online channel,
+it must attest that it provides those properties in its API implementation. An ASPSP must add
 such properties to a `conditionalProperties` properties list in the relevant endpoint definition.
 
 The `conditionalProperties` list contains items. Each item states:
