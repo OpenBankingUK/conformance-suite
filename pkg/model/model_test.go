@@ -11,34 +11,34 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-// TestListRules - load a Manifest(Model) and lists all the Rules within the manifest
-func TestListRules(t *testing.T) {
+func TestLoadModel(t *testing.T) {
 	model, err := loadModel()
 	require.NoError(t, err)
-	model.Dump()
-	for _, rule := range model.Rules { // Iterate over Rules
-		rule.Dump()
-	}
-}
 
-// TestRunRules - Loads a Manifest, Iterates over all Rules, Runs All Tests
-func TestRunRules(t *testing.T) {
-	model, err := loadModel()
-	require.NoError(t, err)
-	for _, rule := range model.Rules { // Iterate over Rules
-		fmt.Println("Rule: ", rule.Name)
-		rule.RunTests() // Run Tests for a Rule
-	}
-}
+	t.Run("model has Dump() function", func(t *testing.T) {
+		model.Dump()
+	})
 
-// TestDumpTestCase - Loads a Manifest, Iterates over all Rules, DumpsAll tests
-func TestDumpTestCase(t *testing.T) {
-	model, err := loadModel()
-	require.NoError(t, err)
+	for _, rule := range model.Rules { // Iterate over Rules
+		t.Run("rule has Dump() function", func(t *testing.T) {
+			rule.Dump()
+		})
+
+		t.Run("rule has a Name", func(t *testing.T) {
+			fmt.Println("Rule: ", rule.Name)
+		})
+
+		t.Run("rule has a RunTests() function", func(t *testing.T) {
+			rule.RunTests() // Run Tests for a Rule
+		})
+	}
+
 	for _, rule := range model.Rules { // Iterate over Rules
 		for _, testcases := range rule.Tests {
 			for _, testcase := range testcases {
-				testcase.Dump()
+				t.Run("testcase has Dump() function", func(t *testing.T) {
+					testcase.Dump()
+				})
 			}
 		}
 	}
