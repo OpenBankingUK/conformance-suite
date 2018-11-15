@@ -66,4 +66,5 @@ func loadPermissions() error {
 		return err
 	}
 	return nil
+
 }
