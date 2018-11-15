@@ -1,7 +1,7 @@
 [{
     "permission": "ReadAccountsBasic",
     "endpoints": ["/accounts", "/accounts/{AccountId}"],
-    "default": true
+    "default": false
 },
 {
     "permission": "ReadAccountsDetail",
