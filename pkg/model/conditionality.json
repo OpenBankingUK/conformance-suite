@@ -138,5 +138,160 @@
     "condition": "optional",
     "method": "GET",
     "endpoint": "/statements"
+  },
+  {
+    "endpoint": "/domestic-payment-consents",
+    "method": "POST",
+    "conditional": "mandatory"
+  },
+  {
+    "endpoint": "/domestic-payment-consents/{ConsentId}",
+    "method": "GET",
+    "conditional": "mandatory"
+  },
+  {
+    "endpoint": "/domestic-payments",
+    "method": "POST",
+    "conditional": "mandatory"
+  },
+  {
+    "endpoint": "/domestic-payments/{DomesticPaymentId}",
+    "method": "GET",
+    "conditional": "mandatory"
+  },
+  {
+    "endpoint": "/domestic-scheduled-payment-consents",
+    "method": "POST",
+    "conditional": "conditional"
+  },
+  {
+    "endpoint": "/domestic-scheduled-payment-consents/{ConsentId}",
+    "method": "GET",
+    "conditional": "conditional"
+  },
+  {
+    "endpoint": "/domestic-scheduled-payments",
+    "method": "POST",
+    "conditional": "conditional"
+  },
+  {
+    "endpoint": "/domestic-scheduled-payments/{DomesticScheduledPaymentId}",
+    "method": "GET",
+    "conditional": "conditional"
+  },
+  {
+    "endpoint": "/domestic-standing-order-consents",
+    "method": "POST",
+    "conditional": "conditional"
+  },
+  {
+    "endpoint": "/domestic-standing-order-consents/{ConsentId}",
+    "method": "GET",
+    "conditional": "conditional"
+  },
+  {
+    "endpoint": "/domestic-standing-orders",
+    "method": "POST",
+    "conditional": "conditional"
+  },
+  {
+    "endpoint": "/domestic-standing-orders/{DomesticStandingOrderId}",
+    "method": "GET",
+    "conditional": "conditional"
+  },
+  {
+    "endpoint": "/international-payment-consents",
+    "method": "POST",
+    "conditional": "conditional"
+  },
+  {
+    "endpoint": "/international-payment-consents/{ConsentId}",
+    "method": "GET",
+    "conditional": "conditional"
+  },
+  {
+    "endpoint": "/international-payments",
+    "method": "POST",
+    "conditional": "conditional"
+  },
+  {
+    "endpoint": "/international-payments/{InternationalPaymentId}",
+    "method": "GET",
+    "conditional": "conditional"
+  },
+  {
+    "endpoint": "/international-scheduled-payment-consents",
+    "method": "POST",
+    "conditional": "conditional"
+  },
+  {
+    "endpoint": "/international-scheduled-payment-consents/{ConsentId}",
+    "method": "GET",
+    "conditional": "conditional"
+  },
+  {
+    "endpoint": "/international-scheduled-payments",
+    "method": "POST",
+    "conditional": "conditional"
+  },
+  {
+    "endpoint": "/international-scheduled-payments/{InternationalScheduledPaymentId}",
+    "method": "GET",
+    "conditional": "conditional"
+  },
+  {
+    "endpoint": "/international-standing-order-consents",
+    "method": "POST",
+    "conditional": "conditional"
+  },
+  {
+    "endpoint": "/international-standing-order-consents/{ConsentId}",
+    "method": "GET",
+    "conditional": "conditional"
+  },
+  {
+    "endpoint": "/international-standing-orders",
+    "method": "POST",
+    "conditional": "conditional"
+  },
+  {
+    "endpoint": "/international-standing-orders/{InternationalStandingOrderPaymentId}",
+    "method": "GET",
+    "conditional": "conditional"
+  },
+  {
+    "endpoint": "/file-payment-consents",
+    "method": "POST",
+    "conditional": "conditional"
+  },
+  {
+    "endpoint": "/file-payment-consents/{ConsentId}",
+    "method": "GET",
+    "conditional": "conditional"
+  },
+  {
+    "endpoint": "/file-payment-consents/{ConsentId}/file",
+    "method": "POST",
+    "conditional": "conditional"
+  },
+  {
+    "endpoint": "/file-payment-consents/{ConsentId}/file",
+    "method": "GET",
+    "conditional": "conditional"
+  },
+  {
+    "endpoint": "/file-payments",
+    "method": "POST",
+    "conditional": "conditional"
+  },
+  {
+    "endpoint": "/file-payments/{FilePaymentId}",
+    "method": "GET",
+    "conditional": "conditional"
+  },
+  {
+    "endpoint": "/file-payments/{FilePaymentId}/report-file",
+    "method": "GET",
+    "conditional": "conditional"
   }
 ]
