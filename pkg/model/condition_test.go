@@ -59,7 +59,6 @@ func TestConditionality(t *testing.T) {
 
 // Test that GetEndpointConditionality returns a clone of endpointConditionality.
 func TestGetEndpointConditionality(t *testing.T) {
-	t.Parallel()
 	assert := assert.New(t)
 
 	assert.Len(GetEndpointConditionality(), len(endpointConditionality))

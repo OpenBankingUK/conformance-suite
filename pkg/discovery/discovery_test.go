@@ -18,8 +18,6 @@ type invalidTestCase struct {
 }
 
 func TestDiscovery_FromJSONString_Invalid_Cases(t *testing.T) {
-	t.Parallel()
-
 	testCases := []invalidTestCase{
 		{
 			name:        `json_needs_to_be_valid`,
@@ -147,7 +145,6 @@ discoveryItemIndex=0, missing mandatory endpoint Method=GET, Path=/accounts/{Acc
 		// you will see the last element being used all the time.
 		func(testCase invalidTestCase) {
 			t.Run(testCase.name, func(t *testing.T) {
-				t.Parallel()
 				assert := assert.New(t)
 
 				model, err := FromJSONString(testCase.config)
@@ -163,7 +160,6 @@ discoveryItemIndex=0, missing mandatory endpoint Method=GET, Path=/accounts/{Acc
 }
 
 func TestDiscovery_FromJSONString_Valid(t *testing.T) {
-	t.Parallel()
 	assert := assert.New(t)
 
 	discoveryExample, err := ioutil.ReadFile("../../docs/discovery-example.json")
@@ -307,7 +303,6 @@ func TestDiscovery_FromJSONString_Valid(t *testing.T) {
 }
 
 func TestDiscovery_Version(t *testing.T) {
-	t.Parallel()
 	assert := assert.New(t)
 
 	assert.Equal(Version(), "v0.0.1")
