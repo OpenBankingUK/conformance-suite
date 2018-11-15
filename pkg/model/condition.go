@@ -115,7 +115,7 @@ func findCondition(method, endpoint string) (Conditionality, error) {
 // loadConditions - get Mandatory/Conditional/Optional data from json file
 func loadConditions() error {
 	loader := []conditionLoader{}
-	rawjson, _ := ioutil.ReadFile("../../config/conditionality.json") // lives here for now until we figure out somewhere better
+	rawjson, _ := ioutil.ReadFile("../../pkg/model/conditionality.json") // lives here for now until we figure out somewhere better
 	err := json.Unmarshal(rawjson, &loader)
 	if err != nil {
 		return err
