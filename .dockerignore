@@ -25,10 +25,6 @@
 !**/config
 !**/proxy
 !**/swagger
-# the lib/ folder will be removed soon
-!**/lib
-!**/lib/**
-!**/lib/**/*
 # Go project layout structure: https://github.com/golang-standards/project-layout
 !**/pkg
 !**/pkg/**
@@ -65,6 +61,6 @@ web/coverage
 # sent into the build context but just to be sure we exclude them
 # in case future versions of docker decide to send symbolic linked
 # directories into the build context
-**/lib/server/web
-**/lib/server/web/**
-**/lib/server/web/**/*
+**/pkg/server/web
+**/pkg/server/web/**
+**/pkg/server/web/**/*
