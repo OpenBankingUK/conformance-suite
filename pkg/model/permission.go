@@ -57,10 +57,14 @@ func GetPermissionFromName(name string) Permission {
 
 // loads permission data into modal permissions array structure
 func loadPermissions() error {
-	rawjson, _ := ioutil.ReadFile("../../pkg/model/permissions.json")
-	err := json.Unmarshal(rawjson, &permissions)
+	rawjson, err := ioutil.ReadFile("../../pkg/model/permissions.json")
 	if err != nil {
 		return err
 	}
+
+	if err := json.Unmarshal(rawjson, &permissions); err != nil {
+		return err
+	}
 	return nil
+
 }
