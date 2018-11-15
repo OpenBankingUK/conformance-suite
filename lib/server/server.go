@@ -9,16 +9,16 @@ import (
 	"strings"
 	"time"
 
+	"bitbucket.org/openbankingteam/conformance-suite/appconfig"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
+	"bitbucket.org/openbankingteam/conformance-suite/proxy"
+
 	"github.com/go-openapi/loads"
 	"github.com/google/uuid"
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
 	"github.com/sirupsen/logrus"
-
 	validator "gopkg.in/go-playground/validator.v9"
-
-	"bitbucket.org/openbankingteam/conformance-suite/appconfig"
-	"bitbucket.org/openbankingteam/conformance-suite/proxy"
 )
 
 // ValidationRunsResponse is the response to the `/api/validation-runs` endpoint.
@@ -33,7 +33,7 @@ type ValidationRunsIDResponse struct {
 
 // ErrorResponse wraps `error` into a JSON object.
 type ErrorResponse struct {
-	Error string `json:"error"`
+	Error interface{} `json:"error"`
 }
 
 // CustomValidator used to validate incoming payloads (for now).
@@ -106,6 +106,8 @@ func NewServer() *Server {
 	// endpoints to post a config and setup the proxy server
 	api.POST("/config", server.configPostHandler)
 	api.DELETE("/config", server.configDeleteHandler)
+	// endpoints for discovery model
+	api.POST("/discovery-model/validate", server.discoveryModelValidateHandler)
 
 	// routes, err := json.MarshalIndent(server.Routes(), "", "  ")
 	// if err == nil {
@@ -119,16 +121,20 @@ func NewServer() *Server {
 
 // Shutdown the server and the proxy if it is alive
 func (s *Server) Shutdown(ctx context.Context) error {
-	if err := s.Echo.Shutdown(ctx); err != nil {
-		logrus.Errorln("Server:Shutdown -> s.Echo.Shutdown err=", err)
-		return err
-	}
-
 	if s.proxy != nil {
 		if err := s.proxy.Shutdown(nil); err != nil {
 			logrus.Errorln("Server:Shutdown -> s.proxy.Shutdown err=", err)
 			return err
 		}
+	}
+
+	if s.Echo == nil {
+		logrus.Errorf("Server:Shutdown -> s.Echo=%p\n", s.Echo)
+	}
+
+	if err := s.Echo.Shutdown(ctx); err != nil {
+		logrus.Errorln("Server:Shutdown -> s.Echo.Shutdown err=", err)
+		return err
 	}
 
 	return nil
@@ -210,6 +216,42 @@ func (s *Server) configDeleteHandler(c echo.Context) error {
 	logrus.Debugf("Server:configDeleteHandler -> status=down proxy=%+v", s.proxy)
 
 	return c.NoContent(http.StatusOK)
+}
+
+// POST /api/discovery-model/validate
+// Validate the discovery model.
+// Returns the request payload otherwise returns errors.
+func (s *Server) discoveryModelValidateHandler(c echo.Context) error {
+	discoveryModel := new(discovery.Model)
+	if err := c.Bind(discoveryModel); err != nil {
+		return c.JSONPretty(http.StatusBadRequest, &ErrorResponse{
+			Error: err.Error(),
+		}, "    ")
+	}
+
+	if err := c.Validate(discoveryModel); err != nil {
+		// translate all error at once
+		errs := err.(validator.ValidationErrors)
+		errsMap := errs.Translate(nil)
+
+		return c.JSONPretty(http.StatusBadRequest, &ErrorResponse{
+			Error: errsMap,
+		}, "    ")
+	}
+
+	if _, err := discovery.HasValidEndpoints(discoveryModel); err != nil {
+		return c.JSONPretty(http.StatusBadRequest, &ErrorResponse{
+			Error: err.Error(),
+		}, "    ")
+	}
+
+	if _, err := discovery.HasMandatoryEndpoints(discoveryModel); err != nil {
+		return c.JSONPretty(http.StatusBadRequest, &ErrorResponse{
+			Error: err.Error(),
+		}, "    ")
+	}
+
+	return c.JSONPretty(http.StatusOK, discoveryModel, "    ")
 }
 
 // Skipper ensures that all requests not prefixed with `/api` get sent

@@ -1,125 +1,129 @@
 {
-  "discoveryModel": {
-    "version": "v0.0.1",
-    "discoveryItems": [
-      {
-        "apiSpecification": {
-          "name": "Account and Transaction API Specification",
-          "url": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/642090641/Account+and+Transaction+API+Specification+-+v3.0",
-          "version": "v3.0",
-          "schemaVersion": "https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.0.0/dist/account-info-swagger.json"
-        },
-        "openidConfigurationUri": "https://as.aspsp.ob.forgerock.financial/oauth2/.well-known/openid-configuration",
-        "resourceBaseUri": "https://rs.aspsp.ob.forgerock.financial:443/",
-        "endpoints": [
-          {
-            "method": "POST",
-            "path": "/account-access-consents"
-          },
-          {
-            "method": "GET",
-            "path": "/account-access-consents/{ConsentId}"
-          },
-          {
-            "method": "DELETE",
-            "path": "/account-access-consents/{ConsentId}"
-          },
-          {
-            "method": "GET",
-            "path": "/accounts/{AccountId}/product"
-          },
-          {
-            "method": "GET",
-            "path": "/accounts/{AccountId}/transactions",
-            "conditionalProperties": [
-              {
-                "schema": "OBTransaction3Detail",
-                "property": "Balance",
-                "path": "Data.Transaction[*].Balance"
-              },
-              {
-                "schema": "OBTransaction3Detail",
-                "property": "MerchantDetails",
-                "path": "Data.Transaction[*].MerchantDetails"
-              },
-              {
-                "schema": "OBTransaction3Basic",
-                "property": "TransactionReference",
-                "path": "Data.Transaction[*].TransactionReference"
-              },
-              {
-                "schema": "OBTransaction3Detail",
-                "property": "TransactionReference",
-                "path": "Data.Transaction[*].TransactionReference"
-              }
-            ]
-          },
-          {
-            "method": "GET",
-            "path": "/accounts"
-          },
-          {
-            "method": "GET",
-            "path": "/accounts/{AccountId}"
-          }
+    "discoveryModel": {
+        "version": "v0.0.1",
+        "discoveryItems": [
+            {
+                "apiSpecification": {
+                    "name": "Account and Transaction API Specification",
+                    "url": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/642090641/Account+and+Transaction+API+Specification+-+v3.0",
+                    "version": "v3.0",
+                    "schemaVersion": "https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.0.0/dist/account-info-swagger.json"
+                },
+                "openidConfigurationUri": "https://as.aspsp.ob.forgerock.financial/oauth2/.well-known/openid-configuration",
+                "resourceBaseUri": "https://rs.aspsp.ob.forgerock.financial:443/",
+                "endpoints": [
+                    {
+                        "method": "POST",
+                        "path": "/account-access-consents"
+                    },
+                    {
+                        "method": "GET",
+                        "path": "/account-access-consents/{ConsentId}"
+                    },
+                    {
+                        "method": "DELETE",
+                        "path": "/account-access-consents/{ConsentId}"
+                    },
+                    {
+                        "method": "GET",
+                        "path": "/accounts/{AccountId}/product"
+                    },
+                    {
+                        "method": "GET",
+                        "path": "/accounts/{AccountId}/transactions",
+                        "conditionalProperties": [
+                            {
+                                "schema": "OBTransaction3Detail",
+                                "property": "Balance",
+                                "path": "Data.Transaction[*].Balance"
+                            },
+                            {
+                                "schema": "OBTransaction3Detail",
+                                "property": "MerchantDetails",
+                                "path": "Data.Transaction[*].MerchantDetails"
+                            },
+                            {
+                                "schema": "OBTransaction3Basic",
+                                "property": "TransactionReference",
+                                "path": "Data.Transaction[*].TransactionReference"
+                            },
+                            {
+                                "schema": "OBTransaction3Detail",
+                                "property": "TransactionReference",
+                                "path": "Data.Transaction[*].TransactionReference"
+                            }
+                        ]
+                    },
+                    {
+                        "method": "GET",
+                        "path": "/accounts"
+                    },
+                    {
+                        "method": "GET",
+                        "path": "/accounts/{AccountId}"
+                    },
+                    {
+                        "method": "GET",
+                        "path": "/accounts/{AccountId}/balances"
+                    }
+                ]
+            },
+            {
+                "apiSpecification": {
+                    "name": "Payment Initiation API",
+                    "url": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/645367011/Payment+Initiation+API+Specification+-+v3.0",
+                    "version": "v3.0",
+                    "schemaVersion": "https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.0.0/dist/payment-initiation-swagger.json"
+                },
+                "openidConfigurationUri": "https://as.aspsp.ob.forgerock.financial/oauth2/.well-known/openid-configuration",
+                "resourceBaseUri": "https://rs.aspsp.ob.forgerock.financial:443/",
+                "endpoints": [
+                    {
+                        "method": "POST",
+                        "path": "/domestic-payment-consents",
+                        "conditionalProperties": [
+                            {
+                                "schema": "OBWriteDataDomesticConsentResponse1",
+                                "property": "Charges",
+                                "path": "Data.Charges"
+                            }
+                        ]
+                    },
+                    {
+                        "method": "GET",
+                        "path": "/domestic-payment-consents/{ConsentId}",
+                        "conditionalProperties": [
+                            {
+                                "schema": "OBWriteDataDomesticConsentResponse1",
+                                "property": "Charges",
+                                "path": "Data.Charges"
+                            }
+                        ]
+                    },
+                    {
+                        "method": "POST",
+                        "path": "/domestic-payments",
+                        "conditionalProperties": [
+                            {
+                                "schema": "OBWriteDataDomesticResponse1",
+                                "property": "Charges",
+                                "path": "Data.Charges"
+                            }
+                        ]
+                    },
+                    {
+                        "method": "GET",
+                        "path": "/domestic-payments/{DomesticPaymentId}",
+                        "conditionalProperties": [
+                            {
+                                "schema": "OBWriteDataDomesticResponse1",
+                                "property": "Charges",
+                                "path": "Data.Charges"
+                            }
+                        ]
+                    }
+                ]
+            }
         ]
-      },
-      {
-        "apiSpecification": {
-          "name": "Payment Initiation API",
-          "url": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/645367011/Payment+Initiation+API+Specification+-+v3.0",
-          "version": "v3.0",
-          "schemaVersion": "https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.0.0/dist/payment-initiation-swagger.json"
-        },
-        "openidConfigurationUri": "https://as.aspsp.ob.forgerock.financial/oauth2/.well-known/openid-configuration",
-        "resourceBaseUri": "https://rs.aspsp.ob.forgerock.financial:443/",
-        "endpoints": [
-          {
-            "method": "POST",
-            "path": "/domestic-payment-consents",
-            "conditionalProperties": [
-              {
-                "schema": "OBWriteDataDomesticConsentResponse1",
-                "property": "Charges",
-                "path": "Data.Charges"
-              }
-            ]
-          },
-          {
-            "method": "GET",
-            "path": "/domestic-payment-consents/{ConsentId}",
-            "conditionalProperties": [
-              {
-                "schema": "OBWriteDataDomesticConsentResponse1",
-                "property": "Charges",
-                "path": "Data.Charges"
-              }
-            ]
-          },
-          {
-            "method": "POST",
-            "path": "/domestic-payments",
-            "conditionalProperties": [
-              {
-                "schema": "OBWriteDataDomesticResponse1",
-                "property": "Charges",
-                "path": "Data.Charges"
-              }
-            ]
-          },
-          {
-            "method": "GET",
-            "path": "/domestic-payments/{DomesticPaymentId}",
-            "conditionalProperties": [
-              {
-                "schema": "OBWriteDataDomesticResponse1",
-                "property": "Charges",
-                "path": "Data.Charges"
-              }
-            ]
-          }
-        ]
-      }
-    ]
-  }
+    }
 }

@@ -33,7 +33,10 @@ build: ## build the binary directly
 .PHONY: build_image
 build_image: ## build the docker image
 	@echo -e "\033[92m  ---> Building image ... \033[0m"
-	docker build -t "openbanking/conformance-suite:latest" .
+	@# We could enable parallel builds for multi-staged builds with `DOCKER_BUILDKIT=1`
+	@# See: https://github.com/moby/moby/pull/37151
+	@#DOCKER_BUILDKIT=1
+	docker build ${DOCKER_BUILD_ARGS} -t "openbanking/conformance-suite:latest" .
 
 .PHONY: init
 init: ## initialise
