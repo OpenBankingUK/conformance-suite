@@ -329,10 +329,10 @@ func TestServer_DiscoveryModel_POST_Validate_Returns_Errors_When_Invalid(t *test
 
 	// we should get an error back
 	expected := `{
-    "error": {
-        "Model.DiscoveryModel.DiscoveryItems": "Key: 'Model.DiscoveryModel.DiscoveryItems' Error:Field validation for 'DiscoveryItems' failed on the 'required' tag",
-        "Model.DiscoveryModel.Version": "Key: 'Model.DiscoveryModel.Version' Error:Field validation for 'Version' failed on the 'required' tag"
-    }
+  "error": {
+    "Model.DiscoveryModel.DiscoveryItems": "Key: 'Model.DiscoveryModel.DiscoveryItems' Error:Field validation for 'DiscoveryItems' failed on the 'required' tag",
+    "Model.DiscoveryModel.Version": "Key: 'Model.DiscoveryModel.Version' Error:Field validation for 'Version' failed on the 'required' tag"
+  }
 }`
 
 	assert.NotNil(body)

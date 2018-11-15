@@ -227,7 +227,7 @@ func (s *Server) discoveryModelValidateHandler(c echo.Context) error {
 	if err := c.Bind(discoveryModel); err != nil {
 		return c.JSONPretty(http.StatusBadRequest, &ErrorResponse{
 			Error: err.Error(),
-		}, "    ")
+		}, "  ")
 	}
 
 	if err := c.Validate(discoveryModel); err != nil {
@@ -237,22 +237,22 @@ func (s *Server) discoveryModelValidateHandler(c echo.Context) error {
 
 		return c.JSONPretty(http.StatusBadRequest, &ErrorResponse{
 			Error: errsMap,
-		}, "    ")
+		}, "  ")
 	}
 	checker := model.NewConditionalityChecker()
 	if _, err := discovery.HasValidEndpoints(checker, discoveryModel); err != nil {
 		return c.JSONPretty(http.StatusBadRequest, &ErrorResponse{
 			Error: err.Error(),
-		}, "    ")
+		}, "  ")
 	}
 
 	if _, err := discovery.HasMandatoryEndpoints(checker, discoveryModel); err != nil {
 		return c.JSONPretty(http.StatusBadRequest, &ErrorResponse{
 			Error: err.Error(),
-		}, "    ")
+		}, "  ")
 	}
 
-	return c.JSONPretty(http.StatusOK, discoveryModel, "    ")
+	return c.JSONPretty(http.StatusOK, discoveryModel, "  ")
 }
 
 // Skipper ensures that all requests not prefixed with `/api` get sent
