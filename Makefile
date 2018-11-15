@@ -61,12 +61,12 @@ clean:
 .PHONY: test
 test: ## run the go tests
 	@echo -e "\033[92m  ---> Testing ... \033[0m"
-	@# make symbolic link to ./web/public -> /lib/server/web/dist so that we can test out that
+	@# make symbolic link to ./web/public -> ./pkg/server/web/dist so that we can test out that
 	@# static files are being served by the Echo web server
-	@if [[ ! -d "$$(pwd)/lib/server/web/dist" ]]; then \
-		echo -e "\033[92m  ---> Linking $(shell pwd)/lib/server/web/dist -> $(shell pwd)/web/public \033[0m"; \
-		mkdir -p $(shell pwd)/lib/server/web; \
-		ln -s $(shell pwd)/web/public $(shell pwd)/lib/server/web/dist; \
+	@if [[ ! -d "$$(pwd)/pkg/server/web/dist" ]]; then \
+		echo -e "\033[92m  ---> Linking $(shell pwd)/pkg/server/web/dist -> $(shell pwd)/web/public \033[0m"; \
+		mkdir -p $(shell pwd)/pkg/server/web; \
+		ln -s $(shell pwd)/web/public $(shell pwd)/pkg/server/web/dist; \
 	fi
 	GOMAXPROCS=${GOMAXPROCS} go test \
 		-mod vendor \
