@@ -13,7 +13,6 @@ import (
 // TestWebSocketHandler_Handle - tests that it handles an incoming connection and
 // that it can receive and send messages.
 func TestWebSocketHandler_Handle(t *testing.T) {
-	t.Parallel()
 	assert := assert.New(t)
 
 	server := httptest.NewServer(NewServer())

@@ -72,7 +72,6 @@ test: ## run the go tests
 		-mod vendor \
 		-v \
 		-cover \
-		-parallel ${PARALLEL} \
 		./...
 
 .PHONY: test_coverage
@@ -82,7 +81,6 @@ test_coverage: ## run the go tests then open up coverage report
 		-mod vendor \
 		-v \
 		-cover \
-		-parallel ${PARALLEL} \
 		-coverprofile=$(shell pwd)/coverage.out \
 		./...
 	go tool cover \
