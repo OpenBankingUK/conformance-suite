@@ -178,12 +178,20 @@ func (t *TestCase) ApplyExpects(res *http.Response) (bool, error) {
 
 // Dump Manifest helper
 func (m *Manifest) Dump() {
-	fmt.Printf("MANIFEST\nName: %s\nDescription: %s\nRules: %d\n", m.Name, m.Description, len(m.Rules))
+	fmt.Printf(m.String())
+}
+
+func (m *Manifest) String() string {
+	return fmt.Sprintf("MANIFEST\nName: %s\nDescription: %s\nRules: %d\n", m.Name, m.Description, len(m.Rules))
 }
 
 // Dump Rule helper
 func (r *Rule) Dump() {
-	fmt.Printf("RULE\nName: %s\nPurpose: %s\nSpecRef: %s\nSpec Location: %s\nTests: %d\n",
+	fmt.Printf(r.String())
+}
+
+func (r *Rule) String() string {
+	return fmt.Sprintf("RULE\nName: %s\nPurpose: %s\nSpecRef: %s\nSpec Location: %s\nTests: %d\n",
 		r.Name, r.Purpose, r.Specref, r.Speclocation, len(r.Tests))
 }
 

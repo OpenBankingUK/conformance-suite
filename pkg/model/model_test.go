@@ -8,6 +8,7 @@ import (
 
 	"github.com/go-openapi/loads"
 	"github.com/go-openapi/spec"
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
@@ -15,33 +16,29 @@ func TestLoadModel(t *testing.T) {
 	model, err := loadModel()
 	require.NoError(t, err)
 
-	t.Run("model has Dump() function", func(t *testing.T) {
-		model.Dump()
+	t.Run("model String() returns string representation", func(t *testing.T) {
+		expected := "MANIFEST\nName: Basic Swagger 2.0 test run\nDescription: Tests appropriate behaviour of the Open Banking Limited 2.0 Read/Write APIs\nRules: 3\n"
+		assert.Equal(t, expected, model.String())
 	})
 
-	for _, rule := range model.Rules { // Iterate over Rules
-		t.Run("rule has Dump() function", func(t *testing.T) {
-			rule.Dump()
-		})
+	rule := model.Rules[0]
+	t.Run("rule String() returns string representation", func(t *testing.T) {
+		expected := "RULE\nName: Get Accounts Basic Rule\nPurpose: Accesses the Accounts endpoint and retrives a list of PSU accounts\nSpecRef: Read Write 2.0 section subsection 1 point 1a\nSpec Location: https://openbanking.org.uk/rw2.0spec/errata#1.1a\nTests: 1\n"
+		assert.Equal(t, expected, rule.String())
+	})
 
-		t.Run("rule has a Name", func(t *testing.T) {
-			fmt.Println("Rule: ", rule.Name)
-		})
+	t.Run("rule has a Name", func(t *testing.T) {
+		assert.Equal(t, rule.Name, "Get Accounts Basic Rule")
+	})
 
-		t.Run("rule has a RunTests() function", func(t *testing.T) {
-			rule.RunTests() // Run Tests for a Rule
-		})
-	}
+	t.Run("rule has a RunTests() function", func(t *testing.T) {
+		rule.RunTests() // Run Tests for a Rule
+	})
 
-	for _, rule := range model.Rules { // Iterate over Rules
-		for _, testcases := range rule.Tests {
-			for _, testcase := range testcases {
-				t.Run("testcase has Dump() function", func(t *testing.T) {
-					testcase.Dump()
-				})
-			}
-		}
-	}
+	testcase := rule.Tests[0][0]
+	t.Run("testcase has Dump() function", func(t *testing.T) {
+		testcase.Dump()
+	})
 }
 
 // Enumerates all OpenAPI calls from swagger file
