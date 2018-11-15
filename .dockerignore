@@ -33,6 +33,9 @@
 !**/pkg
 !**/pkg/**
 !**/pkg/**/*
+!**/internal
+!**/internal/**
+!**/internal/**/*
 
 # the server's dependencies
 !**/vendor

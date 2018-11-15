@@ -52,6 +52,13 @@ func init() {
 	}
 }
 
+// GetEndpointConditionality - get a clone of the internal variable `endpointConditionality`.
+func GetEndpointConditionality() []Conditionality {
+	clone := make([]Conditionality, len(endpointConditionality))
+	copy(clone, endpointConditionality)
+	return clone
+}
+
 // IsOptional - returns true if the method/endpoint mix is optional
 func IsOptional(method, endpoint string) (bool, error) {
 	condition, err := findCondition(method, endpoint)
