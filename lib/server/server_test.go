@@ -1,5 +1,9 @@
 package server
 
+// Note: Do not run the server tests in parallel.
+// The server starts and stops proxy server at a particular port number.
+// Starting and stopping proxy server at the same port cannot be done in parallel.
+
 import (
 	"bytes"
 	"encoding/json"
@@ -121,7 +125,6 @@ func TestServer(t *testing.T) {
 
 // /api/validation-runs- POST when successful returns validation run ID in JSON and nil error
 func TestServer_ValidationRuns_POST_ValidationRuns_Returns_ValidationRunID(t *testing.T) {
-	t.Parallel()
 	assert := assert.New(t)
 
 	server := NewServer()
@@ -146,7 +149,6 @@ func TestServer_ValidationRuns_POST_ValidationRuns_Returns_ValidationRunID(t *te
 
 // /api/config - POST - can POST config
 func TestServer_Config_POST_Can_POST_Config(t *testing.T) {
-	// t.Parallel() // do not run the server tests in parallel
 	assert := assert.New(t)
 
 	server := NewServer()
@@ -190,7 +192,6 @@ func TestServer_Config_POST_Can_POST_Config(t *testing.T) {
 
 // /api/config - POST - cannot POST config twice without first deleting it
 func TestServer_Config_POST_Cannot_POST_Config_Twice_Without_First_Deleting_It(t *testing.T) {
-	// t.Parallel() // do not run the server tests in parallel
 	assert := assert.New(t)
 
 	server := NewServer()
@@ -236,7 +237,6 @@ func TestServer_Config_POST_Cannot_POST_Config_Twice_Without_First_Deleting_It(t
 
 // /api/config - DELETE - DELETE stops the proxy
 func TestServer_Config_DELETE_Stops_The_Proxy(t *testing.T) {
-	// t.Parallel() // do not run the server tests in parallel
 	assert := assert.New(t)
 
 	server := NewServer()
@@ -290,7 +290,6 @@ func TestServer_Config_DELETE_Stops_The_Proxy(t *testing.T) {
 
 // /api/discovery-model/validate - POST - When valid model returns request payload
 func TestServer_DiscoveryModel_POST_Validate_Returns_Request_Payload_When_Valid(t *testing.T) {
-	t.Parallel()
 	assert := assert.New(t)
 
 	server := NewServer()
@@ -316,7 +315,6 @@ func TestServer_DiscoveryModel_POST_Validate_Returns_Request_Payload_When_Valid(
 
 // /api/discovery-model/validate - POST - When valid model returns request payload
 func TestServer_DiscoveryModel_POST_Validate_Returns_Errors_When_Invalid(t *testing.T) {
-	t.Parallel()
 	assert := assert.New(t)
 
 	server := NewServer()
