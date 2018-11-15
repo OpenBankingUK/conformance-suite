@@ -61,91 +61,62 @@ func TestMain(m *testing.M) {
 	os.Exit(m.Run())
 }
 
-// NewServer - test that NewServer returns a non-nil object. This is basically a sanity check.
-func TestServer_NewServer(t *testing.T) {
-	t.Parallel()
-	assert := assert.New(t)
-
+func TestServer(t *testing.T) {
 	server := NewServer()
-	defer func() {
-		if err := server.Shutdown(nil); err != nil {
-			logrus.Fatalf("Test=%s, Shutdown err=%s", t.Name(), err)
-		}
-	}()
 
-	assert.NotNil(server)
-}
+	t.Run("NewServer() returns non-nil value", func(t *testing.T) {
+		assert.NotNil(t, server)
+	})
 
-// / - check that index.html is returned.
-func TestServer_StaticFiles_Get_Index_Returns_OK(t *testing.T) {
-	t.Parallel()
-	assert := assert.New(t)
+	t.Run("GET / returns index.html", func(t *testing.T) {
+		code, body, _ := request(http.MethodGet, "/", nil, server)
 
-	server := NewServer()
-	defer func() {
-		if err := server.Shutdown(nil); err != nil {
-			logrus.Fatalf("Test=%s, Shutdown err=%s", t.Name(), err)
-		}
-	}()
+		assert.Equal(t, true, strings.HasPrefix(body.String(), "<!DOCTYPE html>"))
+		assert.Equal(t, http.StatusOK, code)
+	})
 
-	code, body, _ := request(http.MethodGet, "/", nil, server)
+	t.Run("GET /favicon.ico returns favicon.ico", func(t *testing.T) {
+		code, body, _ := request(http.MethodGet, "/favicon.ico", nil, server)
 
-	assert.Equal(true, strings.HasPrefix(body.String(), "<!DOCTYPE html>"))
-	assert.Equal(http.StatusOK, code)
-}
+		assert.NotEmpty(t, body.String())
+		assert.Equal(t, http.StatusOK, code)
+	})
 
-// /favicon.ico - check that favicon.ico is returned.
-func TestServer_StaticFiles_Get_Favicon_Returns_OK(t *testing.T) {
-	t.Parallel()
-	assert := assert.New(t)
+	t.Run("returns {\"message\":\"Not Found\"} when file does not exist", func(t *testing.T) {
+		code, body, _ := request(http.MethodGet, "/NotFound.ico", nil, server)
 
-	server := NewServer()
-	defer func() {
-		if err := server.Shutdown(nil); err != nil {
-			logrus.Fatalf("Test=%s, Shutdown err=%s", t.Name(), err)
-		}
-	}()
+		assert.Equal(t, http.StatusNotFound, code)
+		assert.Equal(t, `{"message":"Not Found"}`, body.String())
+	})
 
-	code, body, _ := request(http.MethodGet, "/favicon.ico", nil, server)
+	t.Run("GET /api/health returns OK", func(t *testing.T) {
+		code, body, _ := request(http.MethodGet, "/api/health", nil, server)
 
-	assert.NotEmpty(body.String())
-	assert.Equal(http.StatusOK, code)
-}
+		assert.Equal(t, "OK", body.String())
+		assert.Equal(t, http.StatusOK, code)
+	})
 
-// /NotFound.ico - check that it returns {"message":"Not Found"} when file does not exist.
-func TestServer_Get_Non_Existent_File_Returns_Error(t *testing.T) {
-	t.Parallel()
-	assert := assert.New(t)
+	t.Run("GET /api/validation-runs/${id} when successful returns OK with validation run ID in response", func(t *testing.T) {
+		assert := assert.New(t)
+		id := "c243d5b6-32f0-45ce-a516-1fc6bb6c3c9a"
+		code, body, headerMap := request(
+			http.MethodGet,
+			fmt.Sprintf("/api/validation-runs/%s", id),
+			nil,
+			server,
+		)
 
-	server := NewServer()
-	defer func() {
-		if err := server.Shutdown(nil); err != nil {
-			logrus.Fatalf("Test=%s, Shutdown err=%s", t.Name(), err)
-		}
-	}()
+		assert.NotNil(body)
+		responseBody := &ValidationRunsIDResponse{}
+		json.Unmarshal(body.Bytes(), &responseBody)
+		assert.Equal(id, responseBody.Status)
+		assert.Equal(echo.MIMEApplicationJSONCharsetUTF8, headerMap.Get(echo.HeaderContentType))
+		assert.Equal(http.StatusOK, code)
+	})
 
-	code, body, _ := request(http.MethodGet, "/NotFound.ico", nil, server)
-
-	assert.Equal(http.StatusNotFound, code)
-	assert.Equal(`{"message":"Not Found"}`, body.String())
-}
-
-// /api/health - check that it returns OK.
-func TestServer_Health_Returns_OK(t *testing.T) {
-	t.Parallel()
-	assert := assert.New(t)
-
-	server := NewServer()
-	defer func() {
-		if err := server.Shutdown(nil); err != nil {
-			logrus.Fatalf("Test=%s, Shutdown err=%s", t.Name(), err)
-		}
-	}()
-
-	code, body, _ := request(http.MethodGet, "/api/health", nil, server)
-
-	assert.Equal("OK", body.String())
-	assert.Equal(http.StatusOK, code)
+	if err := server.Shutdown(nil); err != nil {
+		logrus.Fatalf("Test=%s, Shutdown err=%s", t.Name(), err)
+	}
 }
 
 // /api/validation-runs- POST when successful returns validation run ID in JSON and nil error
@@ -171,35 +142,6 @@ func TestServer_ValidationRuns_POST_ValidationRuns_Returns_ValidationRunID(t *te
 	assert.Equal(id.String(), responseBody.ID)
 	assert.Equal(echo.MIMEApplicationJSONCharsetUTF8, headerMap.Get(echo.HeaderContentType))
 	assert.Equal(http.StatusAccepted, code)
-}
-
-// /api/validation-runs/${id} - GET when succesful returns OK
-func TestServer_ValidationRuns_GET_ValidationRuns_Returns_OK(t *testing.T) {
-	t.Parallel()
-	assert := assert.New(t)
-
-	server := NewServer()
-	defer func() {
-		if err := server.Shutdown(nil); err != nil {
-			logrus.Fatalf("Test=%s, Shutdown err=%s", t.Name(), err)
-		}
-	}()
-
-	id := "c243d5b6-32f0-45ce-a516-1fc6bb6c3c9a"
-	code, body, headerMap := request(
-		http.MethodGet,
-		fmt.Sprintf("/api/validation-runs/%s", id),
-		nil,
-		server,
-	)
-
-	assert.NotNil(body)
-	responseBody := &ValidationRunsIDResponse{}
-	json.Unmarshal(body.Bytes(), &responseBody)
-
-	assert.Equal(id, responseBody.Status)
-	assert.Equal(echo.MIMEApplicationJSONCharsetUTF8, headerMap.Get(echo.HeaderContentType))
-	assert.Equal(http.StatusOK, code)
 }
 
 // /api/config - POST - can POST config
