@@ -62,6 +62,29 @@ type TestCase struct {
 	Request    *http.Request // The request that's been generated in order to call the endpoint
 }
 
+// Prepare a Testcase for execution at and endpoint,
+// results in a standard http request that encapsulates the testcase request
+// as defined in the test case object with any context inputs/replacements etc applied
+func (t *TestCase) Prepare(ctx *Context, resp *http.Response) (*http.Request, error) {
+	req, err := t.ApplyInput()
+	if err != nil {
+		return nil, err
+	}
+	req, err = t.ApplyContext() // Apply Context at end of creating request
+	return req, nil
+}
+
+// Validate takes the http response that results as a consequence of sending the testcase http
+// request to the endpoint implementation. Validate is responsible for checking the http status
+// code and running the set of 'Matches' within the 'Expect' object, to determine if all the
+// match conditions are met - which would mean the validation passed.
+// The context object is passed as part of the validation as its allows the match clauses to
+// examine the request object and 'push' response variables into the context object for use
+// in downstream test cases which are potentially part of this testcase sequence
+func (t *TestCase) Validate(resp *http.Response, ctx *Context) error {
+	return nil
+}
+
 // Input defines the content of the http request object used to execute the test case
 // Input is built up typically from the openapi/swagger definition of the method/endpoint for a particualar
 // specification. Additional properties/fields/headers can be added or change in order to setup the http
