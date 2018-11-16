@@ -30,13 +30,19 @@ type Manifest struct {
 // Rule also identifies all the tests that must be passed in order to show that the rule
 // implementation in conformant with the specific section in the referenced specification
 type Rule struct {
-	ID           string       `json:"@id"`             // JSONLD ID reference
-	Type         []string     `json:"@type,omitempty"` // JSONLD type reference
-	Name         string       `json:"name"`            // A short meaningful name for this rule
-	Purpose      string       `json:"purpose"`         // The purpose of this rule
-	Specref      string       `json:"specref"`         // Description of area of spec/name/version/section under test
-	Speclocation string       `json:"speclocation"`    // specific http reference to location in spec under test covered by this rule
-	Tests        [][]TestCase `json:"tests"`           // Tests - allows for many testcases - array of arrays - to be associated with this rule
+	ID           string           `json:"@id"`             // JSONLD ID reference
+	Type         []string         `json:"@type,omitempty"` // JSONLD type reference
+	Name         string           `json:"name"`            // A short meaningful name for this rule
+	Purpose      string           `json:"purpose"`         // The purpose of this rule
+	Specref      string           `json:"specref"`         // Description of area of spec/name/version/section under test
+	Speclocation string           `json:"speclocation"`    // specific http reference to location in spec under test covered by this rule
+	Tests        [][]TestCase     `json:"tests"`           // Tests - allows for many testcases - array of arrays - to be associated with this rule
+	Executor     TestCaseExecutor // TestCaseExecutor interface allow different testcase execution strategies
+}
+
+// TestCaseExecutor defines an interface capable of executing a testcase
+type TestCaseExecutor interface {
+	ExecuteTestCase(r *http.Request, t *TestCase, ctx *Context) (*http.Response, error)
 }
 
 // TestCase defines a test that will be run and needs to be passed as part of the conformance suite
@@ -79,6 +85,7 @@ type Input struct {
 // between a sequeuence of test cases, for example AccountId - extracted from the output of one testcase (/Accounts) and fed in
 // as part of the input of another testcase for example (/Accounts/{AccountId}/transactions}
 type Context struct {
+	store   map[string]interface{}
 	ID      string `json:"@id,omitempty"`
 	BaseURL string `json:"baseurl,omitempty"`
 }
@@ -103,6 +110,29 @@ type Match struct {
 	Value       string `json:"value,omitempty"`
 	Regex       string `json:"regex,omitempty"`
 	Header      string `json:"header,omitempty"`
+}
+
+// Prepare a Testcase for execution at and endpoint,
+// results in a standard http request that encapsulates the testcase request
+// as defined in the test case object with any context inputs/replacements etc applied
+func (t *TestCase) Prepare(ctx *Context, resp *http.Response) (*http.Request, error) {
+	req, err := t.ApplyInput()
+	if err != nil {
+		return nil, err
+	}
+	req, err = t.ApplyContext() // Apply Context at end of creating request
+	return req, nil
+}
+
+// Validate takes the http response that results as a consequence of sending the testcase http
+// request to the endpoint implementation. Validate is responsible for checking the http status
+// code and running the set of 'Matches' within the 'Expect' object, to determine if all the
+// match conditions are met - which would mean the validation passed.
+// The context object is passed as part of the validation as its allows the match clauses to
+// examine the request object and 'push' response variables into the context object for use
+// in downstream test cases which are potentially part of this testcase sequence
+func (t *TestCase) Validate(resp *http.Response, ctx *Context) error {
+	return nil
 }
 
 // ApplyInput - creates an HTTP request for this test case
@@ -142,7 +172,7 @@ func (t *TestCase) ApplyInput() (*http.Request, error) {
 // The functionality of ApplyContext will grow significantly over time.
 func (t *TestCase) ApplyContext() (*http.Request, error) {
 	req := t.Request
-	if (t.Context != Context{}) && (t.Context.BaseURL != "") {
+	if t.Context.BaseURL != "" {
 		u, err := url.Parse(t.Context.BaseURL + t.Input.Endpoint) // expand url in request to be full pathname including Discovery endpoint info from context
 		if err != nil {
 			return nil, errors.New("Error parsing context baseURL: (" + t.Context.BaseURL + ")")
@@ -216,5 +246,52 @@ func (r *Rule) RunTests() {
 			_ = tester // placeholder
 			fmt.Println("Test Result: ", true)
 		}
+	}
+}
+
+// Execute the testcase
+// For the rule this effectively equates to sending the assembled http request from
+// the testcase to an endpoint (typically APSPS implemetation) and getting an http.Response
+// The http.Request at this point will contain the fully assembled request from a testcase point of view
+// - testcase will have likely pulled out appropriate access_tokens/permissions
+// - rule will have the opportunited to further decorate this request before passing on
+func (r *Rule) Execute(req *http.Request, tc *TestCase) (*http.Response, error) {
+
+	return nil, nil
+}
+
+// NewContext creates an Context thats initialised correctly with a map structure
+// which holds the context parameters
+func NewContext() *Context {
+	var c Context
+	c.store = make(map[string]interface{})
+	return &c
+}
+
+// Unmarshall -
+func (c *Context) Unmarshall() error {
+	//	err := json.Unmarshal(&c.Data, &c.Store)
+	return nil
+}
+
+// Get the key form the Context map - currently assumes value converts easily to a string!
+func (c *Context) Get(key string) string {
+	value := c.store[key]
+	if value == nil {
+		return ""
+	}
+	return c.store[key].(string)
+}
+
+// Put a value indexed by 'key' into the context. The value can be any type
+func (c *Context) Put(key string, value interface{}) {
+	c.store[key] = value
+}
+
+// Dump Context, Diagnostic aid to dump out contents of context
+func (c *Context) Dump() {
+	fmt.Printf("Context: ID %s, BaseURL %s\n", c.ID, c.BaseURL)
+	for k, v := range c.store {
+		fmt.Printf("key[%s], value: %#v\n", k, v)
 	}
 }
