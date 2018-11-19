@@ -55,6 +55,35 @@ var (
 }`
 )
 
+// conditionalityCheckerMock - implements model.ConditionalityChecker interface for tests
+type conditionalityCheckerMock struct {
+}
+
+// Returns IsOptional false for all other endpoint/methods.
+func (c conditionalityCheckerMock) IsOptional(method, endpoint string) (bool, error) {
+	return false, nil
+}
+
+// Returns IsMandatory true for POST /account-access-consents, false for all other endpoint/methods.
+func (c conditionalityCheckerMock) IsMandatory(method, endpoint string) (bool, error) {
+	if method == "POST" && endpoint == "/account-access-consents" {
+		return true, nil
+	} else {
+		return false, nil
+	}
+}
+
+// Returns IsConditional false for POST /account-access-consents, true for all other valid GET/POST/DELETE endpoints.
+func (c conditionalityCheckerMock) IsConditional(method, endpoint string) (bool, error) {
+	if method == "POST" && endpoint == "/account-access-consents" {
+		return false, nil
+	} else if method == "GET" || method == "POST" || method == "DELETE" {
+		return true, nil
+	} else {
+		return false, nil
+	}
+}
+
 func TestMain(m *testing.M) {
 	// call flag.Parse() here if TestMain uses flags
 	flag.Parse()
@@ -66,7 +95,7 @@ func TestMain(m *testing.M) {
 }
 
 func TestServer(t *testing.T) {
-	server := NewServer()
+	server := NewServer(conditionalityCheckerMock{})
 
 	t.Run("NewServer() returns non-nil value", func(t *testing.T) {
 		assert.NotNil(t, server)
@@ -127,7 +156,7 @@ func TestServer(t *testing.T) {
 func TestServer_ValidationRuns_POST_ValidationRuns_Returns_ValidationRunID(t *testing.T) {
 	assert := assert.New(t)
 
-	server := NewServer()
+	server := NewServer(conditionalityCheckerMock{})
 	defer func() {
 		if err := server.Shutdown(nil); err != nil {
 			logrus.Fatalf("Test=%s, Shutdown err=%s", t.Name(), err)
@@ -151,7 +180,7 @@ func TestServer_ValidationRuns_POST_ValidationRuns_Returns_ValidationRunID(t *te
 func TestServer_Config_POST_Can_POST_Config(t *testing.T) {
 	assert := assert.New(t)
 
-	server := NewServer()
+	server := NewServer(conditionalityCheckerMock{})
 	defer func() {
 		if err := server.Shutdown(nil); err != nil {
 			logrus.Fatalf("Test=%s, Shutdown err=%s", t.Name(), err)
@@ -194,7 +223,7 @@ func TestServer_Config_POST_Can_POST_Config(t *testing.T) {
 func TestServer_Config_POST_Cannot_POST_Config_Twice_Without_First_Deleting_It(t *testing.T) {
 	assert := assert.New(t)
 
-	server := NewServer()
+	server := NewServer(conditionalityCheckerMock{})
 	defer func() {
 		if err := server.Shutdown(nil); err != nil {
 			logrus.Fatalf("Test=%s, Shutdown err=%s", t.Name(), err)
@@ -239,7 +268,7 @@ func TestServer_Config_POST_Cannot_POST_Config_Twice_Without_First_Deleting_It(t
 func TestServer_Config_DELETE_Stops_The_Proxy(t *testing.T) {
 	assert := assert.New(t)
 
-	server := NewServer()
+	server := NewServer(conditionalityCheckerMock{})
 	defer func() {
 		if err := server.Shutdown(nil); err != nil {
 			logrus.Fatalf("Test=%s, Shutdown err=%s", t.Name(), err)
@@ -292,7 +321,7 @@ func TestServer_Config_DELETE_Stops_The_Proxy(t *testing.T) {
 func TestServer_DiscoveryModel_POST_Validate_Returns_Request_Payload_When_Valid(t *testing.T) {
 	assert := assert.New(t)
 
-	server := NewServer()
+	server := NewServer(conditionalityCheckerMock{})
 	defer func() {
 		if err := server.Shutdown(nil); err != nil {
 			logrus.Fatalf("Test=%s, Shutdown err=%s", t.Name(), err)
@@ -317,7 +346,7 @@ func TestServer_DiscoveryModel_POST_Validate_Returns_Request_Payload_When_Valid(
 func TestServer_DiscoveryModel_POST_Validate_Returns_Errors_When_Invalid(t *testing.T) {
 	assert := assert.New(t)
 
-	server := NewServer()
+	server := NewServer(conditionalityCheckerMock{})
 	defer func() {
 		if err := server.Shutdown(nil); err != nil {
 			logrus.Fatalf("Test=%s, Shutdown err=%s", t.Name(), err)

@@ -1,7 +1,6 @@
 package server
 
 import (
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
 	"context"
 	"flag"
 	"fmt"
@@ -9,6 +8,8 @@ import (
 	"net/http"
 	"strings"
 	"time"
+
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
 
 	"bitbucket.org/openbankingteam/conformance-suite/appconfig"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
@@ -54,13 +55,15 @@ type Server struct {
 	proxy      *http.Server
 }
 
+var conditionalityChecker model.ConditionalityChecker
+
 // NewServer returns new echo.Echo server.
-func NewServer() *Server {
+func NewServer(checker model.ConditionalityChecker) *Server {
 	server := &Server{
 		Echo:  echo.New(),
 		proxy: nil,
 	}
-
+	conditionalityChecker = checker
 	// Write output to `/dev/null` if running under test mode.
 	if flag.Lookup("test.v") == nil {
 		// Normal run
@@ -239,14 +242,14 @@ func (s *Server) discoveryModelValidateHandler(c echo.Context) error {
 			Error: errsMap,
 		}, "  ")
 	}
-	checker := model.NewConditionalityChecker()
-	if _, err := discovery.HasValidEndpoints(checker, discoveryModel); err != nil {
+
+	if _, err := discovery.HasValidEndpoints(conditionalityChecker, discoveryModel); err != nil {
 		return c.JSONPretty(http.StatusBadRequest, &ErrorResponse{
 			Error: err.Error(),
 		}, "  ")
 	}
 
-	if _, err := discovery.HasMandatoryEndpoints(checker, discoveryModel); err != nil {
+	if _, err := discovery.HasMandatoryEndpoints(conditionalityChecker, discoveryModel); err != nil {
 		return c.JSONPretty(http.StatusBadRequest, &ErrorResponse{
 			Error: err.Error(),
 		}, "  ")
