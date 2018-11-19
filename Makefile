@@ -12,7 +12,7 @@ run: init_web ## run binary directly without docker
 	@echo -e "\033[92m  ---> Starting web file watcher ... \033[0m"
 	cd web && FORCE_COLOR=1 NODE_DISABLE_COLORS=0 yarn build-watch &> $(shell pwd)/web/web.log &
 	@echo -e "\033[92m  ---> Starting server ... \033[0m"
-	PORT=8080 go run main.go
+	PORT=8080 go run -mod=vendor main.go
 
 .PHONY: run_image
 run_image: ## run the docker image
@@ -28,7 +28,7 @@ run_image: ## run the docker image
 .PHONY: build
 build: ## build the binary directly
 	@echo -e "\033[92m  ---> Building ... \033[0m"
-	go build -mod vendor
+	go build -mod=vendor
 
 .PHONY: build_image
 build_image: ## build the docker image
@@ -69,7 +69,7 @@ test: ## run the go tests
 		ln -s $(shell pwd)/web/public $(shell pwd)/pkg/server/web/dist; \
 	fi
 	GOMAXPROCS=${GOMAXPROCS} go test \
-		-mod vendor \
+		-mod=vendor \
 		-v \
 		-cover \
 		./...
@@ -78,7 +78,7 @@ test: ## run the go tests
 test_coverage: ## run the go tests then open up coverage report
 	@echo -e "\033[92m  ---> Testing wth coverage ... \033[0m"
 	-GOMAXPROCS=${GOMAXPROCS} go test \
-		-mod vendor \
+		-mod=vendor \
 		-v \
 		-cover \
 		-coverprofile=$(shell pwd)/coverage.out \
