@@ -1,6 +1,7 @@
 package server
 
 import (
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
 	"context"
 	"flag"
 	"fmt"
@@ -238,14 +239,15 @@ func (s *Server) discoveryModelValidateHandler(c echo.Context) error {
 			Error: errsMap,
 		}, "    ")
 	}
+	checker := model.ConditionalityChecker{}
 
-	if _, err := discovery.HasValidEndpoints(discoveryModel); err != nil {
+	if _, err := discovery.HasValidEndpoints(checker, discoveryModel); err != nil {
 		return c.JSONPretty(http.StatusBadRequest, &ErrorResponse{
 			Error: err.Error(),
 		}, "    ")
 	}
 
-	if _, err := discovery.HasMandatoryEndpoints(discoveryModel); err != nil {
+	if _, err := discovery.HasMandatoryEndpoints(checker, discoveryModel); err != nil {
 		return c.JSONPretty(http.StatusBadRequest, &ErrorResponse{
 			Error: err.Error(),
 		}, "    ")
