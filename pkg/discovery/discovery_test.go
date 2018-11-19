@@ -1,7 +1,6 @@
 package discovery
 
 import (
-	model "bitbucket.org/openbankingteam/conformance-suite/pkg/model"
 	"io/ioutil"
 	"testing"
 
@@ -16,6 +15,35 @@ type invalidTestCase struct {
 	name        string
 	config      string
 	expectedErr string
+}
+
+// conditionalityCheckerMock - implements model.ConditionalityChecker interface for tests
+type conditionalityCheckerMock struct {
+}
+
+// Returns IsOptional false for all other endpoint/methods.
+func (c conditionalityCheckerMock) IsOptional(method, endpoint string) (bool, error) {
+	return false, nil
+}
+
+// Returns IsMandatory true for POST /account-access-consents, false for all other endpoint/methods.
+func (c conditionalityCheckerMock) IsMandatory(method, endpoint string) (bool, error) {
+	if (method == "POST" && endpoint == "/account-access-consents") {
+		return true, nil
+	} else {
+		return false, nil
+	}
+}
+
+// Returns IsConditional false for POST /account-access-consents, true for all other valid GET/POST/DELETE endpoints.
+func (c conditionalityCheckerMock) IsConditional(method, endpoint string) (bool, error) {
+	if (method == "POST" && endpoint == "/account-access-consents") {
+		return false, nil
+	} else if (method == "GET" || method == "POST" || method == "DELETE") {
+		return true, nil
+	} else {
+		return false, nil
+	}
 }
 
 func TestDiscovery_FromJSONString_Invalid_Cases(t *testing.T) {
@@ -130,14 +158,11 @@ discoveryItemIndex=0, invalid endpoint Method=FAKE-METHOD2, Path=/fake-path2`,
 	}
 }
 			`,
-			expectedErr: `discoveryItemIndex=0, missing mandatory endpoint Method=POST, Path=/account-access-consents
-discoveryItemIndex=0, missing mandatory endpoint Method=GET, Path=/account-access-consents/{ConsentId}
-discoveryItemIndex=0, missing mandatory endpoint Method=DELETE, Path=/account-access-consents/{ConsentId}
-discoveryItemIndex=0, missing mandatory endpoint Method=GET, Path=/accounts
-discoveryItemIndex=0, missing mandatory endpoint Method=GET, Path=/accounts/{AccountId}
-discoveryItemIndex=0, missing mandatory endpoint Method=GET, Path=/accounts/{AccountId}/transactions`,
+			expectedErr: `discoveryItemIndex=0, missing mandatory endpoint Method=POST, Path=/account-access-consents`,
 		},
 	}
+
+	mockChecker := conditionalityCheckerMock{}
 
 	for _, testCaseEntry := range testCases {
 		// See: https://github.com/golang/go/wiki/CommonMistakes#using-goroutines-on-loop-iterator-variables
@@ -148,7 +173,7 @@ discoveryItemIndex=0, missing mandatory endpoint Method=GET, Path=/accounts/{Acc
 			t.Run(testCase.name, func(t *testing.T) {
 				assert := assert.New(t)
 
-				discoveryModel, err := FromJSONString(model.NewConditionalityChecker(), testCase.config)
+				discoveryModel, err := FromJSONString(mockChecker, testCase.config)
 				// fmt.Println()
 				// fmt.Printf("%+v", err)
 				// fmt.Println()
@@ -297,7 +322,8 @@ func TestDiscovery_FromJSONString_Valid(t *testing.T) {
 			},
 		},
 	}
-	modelActual, err := FromJSONString(model.NewConditionalityChecker(), config)
+
+	modelActual, err := FromJSONString(conditionalityCheckerMock{}, config)
 
 	assert.NoError(err)
 	assert.Exactly(modelExpected, modelActual)
