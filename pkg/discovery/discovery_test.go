@@ -1,6 +1,7 @@
 package discovery
 
 import (
+	model "bitbucket.org/openbankingteam/conformance-suite/pkg/model"
 	"io/ioutil"
 	"testing"
 
@@ -147,12 +148,12 @@ discoveryItemIndex=0, missing mandatory endpoint Method=GET, Path=/accounts/{Acc
 			t.Run(testCase.name, func(t *testing.T) {
 				assert := assert.New(t)
 
-				model, err := FromJSONString(testCase.config)
+				discoveryModel, err := FromJSONString(model.NewConditionalityChecker(), testCase.config)
 				// fmt.Println()
 				// fmt.Printf("%+v", err)
 				// fmt.Println()
 
-				assert.Nil(model)
+				assert.Nil(discoveryModel)
 				assert.EqualError(err, testCase.expectedErr)
 			})
 		}(testCaseEntry)
@@ -296,7 +297,7 @@ func TestDiscovery_FromJSONString_Valid(t *testing.T) {
 			},
 		},
 	}
-	modelActual, err := FromJSONString(config)
+	modelActual, err := FromJSONString(model.NewConditionalityChecker(), config)
 
 	assert.NoError(err)
 	assert.Exactly(modelExpected, modelActual)

@@ -62,8 +62,9 @@ func Version() string {
 	return version
 }
 
-// FromJSONString ... TODO: Document.
-func FromJSONString(configStr string) (*Model, error) {
+// FromJSONString - used for testing.
+// In production, we use echo.Context Bind to load configuration from JSON in HTTP POST.
+func FromJSONString(checker model.ConditionalityChecker, configStr string) (*Model, error) {
 	discoveryConfig := &Model{}
 
 	err := json.Unmarshal([]byte(configStr), &discoveryConfig)
@@ -78,7 +79,6 @@ func FromJSONString(configStr string) (*Model, error) {
 		// errsMap := errs.Translate(nil)
 		return nil, err
 	}
-	checker := model.ConditionalityChecker{}
 	if _, err := HasValidEndpoints(checker, discoveryConfig); err != nil {
 		return nil, err
 	}
@@ -93,7 +93,7 @@ func FromJSONString(configStr string) (*Model, error) {
 // HasValidEndpoints - checks that all the endpoints defined in the discovery
 // model are either mandatory, conditional or optional.
 // Return false and errors indicating which endpoints are not valid.
-func HasValidEndpoints(checker model.ConditionalityInterface, discoveryConfig *Model) (bool, error) {
+func HasValidEndpoints(checker model.ConditionalityChecker, discoveryConfig *Model) (bool, error) {
 	errs := []string{}
 
 	for discoveryItemIndex, discoveryItem := range discoveryConfig.DiscoveryModel.DiscoveryItems {
@@ -130,7 +130,7 @@ func HasValidEndpoints(checker model.ConditionalityInterface, discoveryConfig *M
 // HasMandatoryEndpoints - checks that all the mandatory endpoints have been defined in each
 // discovery model, otherwise it returns a error with all the missing mandatory endpoints separated
 // by a newline.
-func HasMandatoryEndpoints(checker model.ConditionalityInterface, discoveryConfig *Model) (bool, error) {
+func HasMandatoryEndpoints(checker model.ConditionalityChecker, discoveryConfig *Model) (bool, error) {
 	errs := []string{}
 
 	// filter out non-mandatory endpoints, i.e., just store the mandatory endpoints.

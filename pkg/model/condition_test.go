@@ -73,7 +73,7 @@ func TestGetEndpointConditionality(t *testing.T) {
 
 // Test all Mandatory endpoints are correct and configured in the model
 func TestMandatoryData(t *testing.T) {
-	checker := ConditionalityChecker{}
+	checker := NewConditionalityChecker()
 	for _, tt := range mandatoryData {
 		result, err := checker.IsMandatory(tt.Method, tt.Endpoint)
 		require.Nil(t, err)
@@ -83,7 +83,7 @@ func TestMandatoryData(t *testing.T) {
 
 // Test all Conditional endpoints are correctly configured in model
 func TestConditionalData(t *testing.T) {
-	checker := ConditionalityChecker{}
+	checker := NewConditionalityChecker()
 	for _, tt := range conditionalData {
 		result, err := checker.IsConditional(tt.Method, tt.Endpoint)
 		require.Nil(t, err)
@@ -93,7 +93,7 @@ func TestConditionalData(t *testing.T) {
 
 // Test all Optional  endpoints are correctly configured in model
 func TestOptionalData(t *testing.T) {
-	checker := ConditionalityChecker{}
+	checker := NewConditionalityChecker()
 	for _, tt := range optionalData {
 		result, err := checker.IsOptional(tt.Method, tt.Endpoint)
 		require.Nil(t, err)

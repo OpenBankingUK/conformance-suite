@@ -27,36 +27,6 @@ const (
 	UndefinedCondition
 )
 
-// ConditionalityInterface - interface to provide loose coupling
-// between conditionality checks and invoking code
-type ConditionalityInterface interface {
-	IsOptional(method, endpoint string) (bool, error)
-	IsMandatory(method, endpoint string) (bool, error)
-	IsConditional(method, endpoint string) (bool, error)
-}
-
-// ConditionalityChecker - implementats ConditionalityInterface - for checking endpoint conditionality
-type ConditionalityChecker struct {
-}
-
-// IsOptional - returns true if the method/endpoint mix is optional
-func (checker ConditionalityChecker) IsOptional(method, endpoint string) (bool, error) {
-	flag, err := isOptional(method, endpoint)
-	return flag, err
-}
-
-// IsMandatory - returns true if the method/endpoint mix is mandatory
-func (checker ConditionalityChecker) IsMandatory(method, endpoint string) (bool, error) {
-	flag, err := isMandatory(method, endpoint)
-	return flag, err
-}
-
-// IsConditional - returns true if the method/endpoint mix is conditional
-func (checker ConditionalityChecker) IsConditional(method, endpoint string) (bool, error) {
-	flag, err := isConditional(method, endpoint)
-	return flag, err
-}
-
 // Conditionality - capture the conditionality of a method/endpoint
 type Conditionality struct {
 	Condition ConditionEnum `json:"condition,omitempty"`
@@ -69,6 +39,43 @@ type conditionLoader struct {
 	StringCondition string `json:"condition,omitempty"`
 	Method          string `json:"method,omitempty"`
 	Endpoint        string `json:"endpoint,omitempty"`
+}
+
+// ConditionalityChecker - interface to provide loose coupling
+// between endpoint conditionality checks and invoking code
+type ConditionalityChecker interface {
+	IsOptional(method, endpoint string) (bool, error)
+	IsMandatory(method, endpoint string) (bool, error)
+	IsConditional(method, endpoint string) (bool, error)
+}
+
+// conditionalityChecker - implements ConditionalityChecker - for checking endpoint conditionality
+type conditionalityChecker struct {
+}
+
+// IsOptional - returns true if the method/endpoint mix is optional
+func (checker conditionalityChecker) IsOptional(method, endpoint string) (bool, error) {
+	flag, err := isOptional(method, endpoint)
+	return flag, err
+}
+
+// IsMandatory - returns true if the method/endpoint mix is mandatory
+func (checker conditionalityChecker) IsMandatory(method, endpoint string) (bool, error) {
+	flag, err := isMandatory(method, endpoint)
+	return flag, err
+}
+
+// IsConditional - returns true if the method/endpoint mix is conditional
+func (checker conditionalityChecker) IsConditional(method, endpoint string) (bool, error) {
+	flag, err := isConditional(method, endpoint)
+	return flag, err
+}
+
+// NewConditionalityChecker - returns implementation of ConditionalityChecker interface
+// for checking endpoint conditionality
+func NewConditionalityChecker() ConditionalityChecker {
+	checker := conditionalityChecker{}
+	return checker
 }
 
 // EndpointConditionality - Store of endpoint conditionality

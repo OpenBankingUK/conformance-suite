@@ -239,8 +239,7 @@ func (s *Server) discoveryModelValidateHandler(c echo.Context) error {
 			Error: errsMap,
 		}, "    ")
 	}
-	checker := model.ConditionalityChecker{}
-
+	checker := model.NewConditionalityChecker()
 	if _, err := discovery.HasValidEndpoints(checker, discoveryModel); err != nil {
 		return c.JSONPretty(http.StatusBadRequest, &ErrorResponse{
 			Error: err.Error(),
