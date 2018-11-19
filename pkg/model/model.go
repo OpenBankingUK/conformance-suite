@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
-	"net/url"
 
 	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/utils"
 	"github.com/tidwall/gjson"
@@ -101,10 +100,7 @@ type Input struct {
 // information like endpoints and conditional implementation indicators. The other set of data is information passed
 // between a sequeuence of test cases, for example AccountId - extracted from the output of one testcase (/Accounts) and fed in
 // as part of the input of another testcase for example (/Accounts/{AccountId}/transactions}
-type Context struct {
-	ID      string `json:"@id,omitempty"`
-	BaseURL string `json:"baseurl,omitempty"`
-}
+type Context map[string]interface{}
 
 // Expect defines a structure for expressing testcase result expectations.
 type Expect struct {
@@ -165,13 +161,13 @@ func (t *TestCase) ApplyInput() (*http.Request, error) {
 // The functionality of ApplyContext will grow significantly over time.
 func (t *TestCase) ApplyContext() (*http.Request, error) {
 	req := t.Request
-	if (t.Context != Context{}) && (t.Context.BaseURL != "") {
-		u, err := url.Parse(t.Context.BaseURL + t.Input.Endpoint) // expand url in request to be full pathname including Discovery endpoint info from context
-		if err != nil {
-			return nil, errors.New("Error parsing context baseURL: (" + t.Context.BaseURL + ")")
-		}
-		req.URL = u
-	}
+	// if t.Context.Length > 0  {
+	// 	u, err := url.Parse(t.Context.BaseURL + t.Input.Endpoint) // expand url in request to be full pathname including Discovery endpoint info from context
+	// 	if err != nil {
+	// 		return nil, errors.New("Error parsing context baseURL: (" + t.Context.BaseURL + ")")
+	// 	}
+	// 	req.URL = u
+	// }
 	return req, nil
 }
 
@@ -195,6 +191,81 @@ func (t *TestCase) ApplyExpects(res *http.Response) (bool, error) {
 		}
 	}
 	return true, nil
+}
+
+// Get the key form the Context map - currently assumes value converts easily to a string!
+func (c Context) Get(key string) interface{} {
+	return c[key]
+}
+
+// Put a value indexed by 'key' into the context. The value can be any type
+func (c Context) Put(key string, value interface{}) {
+	c[key] = value
+}
+
+// NewTestCase creates an Context thats initialised correctly with a map structure
+// which holds the context parameters
+func NewTestCase() *TestCase {
+	var t TestCase
+	t.Context = make(map[string]interface{})
+	return &t
+}
+
+// GetIncludedPermission returns the list of permission names that need to be included
+// in the access token for this testcase. See permission model docs for more information
+//
+func (t *TestCase) GetIncludedPermission() []string {
+	var permissionArray []interface{}
+	var result []string
+	if t.Context["permissions"] == nil {
+		// Attempt to get default permissions
+		perms := GetPermissionsForEndpoint(t.Input.Endpoint)
+		if len(perms) > 1 { // need to figure out default
+			for _, p := range perms { // find default permission
+				if p.Default == true {
+					return []string{p.Permission}
+				}
+			}
+		} else {
+			if len(perms) > 0 { // only one permission so return that
+				return []string{perms[0].Permission}
+			}
+		}
+		return []string{} // no defaults - no permisions
+	}
+
+	permissionArray = t.Context["permissions"].([]interface{})
+	if permissionArray == nil {
+		return []string{}
+	}
+	for _, permissionName := range permissionArray {
+		result = append(result, permissionName.(string))
+	}
+	return result
+}
+
+// GetExcludedPermissions return a list of excluded permissions
+func (t *TestCase) GetExcludedPermissions() []string {
+	var permissionArray []interface{}
+	var result []string
+	if t.Context["permissions"] == nil {
+		return result
+	}
+	permissionArray = t.Context["permissions_excluded"].([]interface{})
+	if permissionArray == nil {
+		return []string{}
+	}
+	for _, permissionName := range permissionArray {
+		result = append(result, permissionName.(string))
+	}
+	return result
+}
+
+// GetPermissions returns a list of Permission objects associated with a testcase
+func (t *TestCase) GetPermissions() (included, excluded []string) {
+	included = t.GetIncludedPermission()
+	excluded = t.GetExcludedPermissions()
+	return
 }
 
 // Various helpers - main to dump struct contents to console
@@ -240,4 +311,24 @@ func (r *Rule) RunTests() {
 			fmt.Println("Test Result: ", true)
 		}
 	}
+}
+
+// GetPermissionSets returns the inclusive and exclusive permission sets required
+// to run the tests under this rule.
+// Initially the granulatiy of permissionSets will be set at rule level, meaning that one
+// included set and one excluded set will cover all the testcases with a rule.
+// In future iterations it may be desirable to have per testSequence permissionSets as this
+// would allow a finer grained mix of negative permission testing
+func (r *Rule) GetPermissionSets() (included, excluded []string) {
+	includedSet := NewPermissionSet("included", []string{})
+	excludedSet := NewPermissionSet("excluded", []string{})
+	for _, testSequence := range r.Tests {
+		for _, test := range testSequence {
+			i, x := test.GetPermissions()
+			includedSet.AddPermissions(i)
+			excludedSet.AddPermissions(x)
+		}
+	}
+
+	return includedSet.GetPermissions(), excludedSet.GetPermissions()
 }

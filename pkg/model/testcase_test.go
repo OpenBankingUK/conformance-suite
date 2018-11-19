@@ -202,32 +202,3 @@ func TestJsonExpectMatch(t *testing.T) {
 	// Verify that we don't have pending mocks (gock specific)
 	assert.Equal(t, gock.IsDone(), true)
 }
-
-// feature/refapp_466_add_permissions_to_testcase
-var (
-	// testcase in json format
-	transactionTestcase = []byte(`
-	{
-        "@id": "#t1008",
-        "name": "Transaction Test with Permissions",
-        "input": {
-            "method": "GET",
-            "endpoint": "/accounts"
-        },
-        "context": {
-			"baseurl":"http://myaspsp"
-		},
-        "expect": {
-            "status-code": 200,
-            "schema-validation": true
-        }
-    }
-	`)
-)
-
-func TestLoadATestCaseWithPermissions(t *testing.T) {
-	tc := TestCase{}
-	//permissionList := tc.GetPermissions()
-
-	_ = tc //, permissionList
-}
