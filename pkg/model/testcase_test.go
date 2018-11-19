@@ -105,6 +105,7 @@ func TestReadSingleTestCaseFromJsonBytes(t *testing.T) {
 	pkgutils.DumpJSON(testcase)
 }
 
+// Simple gock test
 func TestRunGock(t *testing.T) {
 	defer gock.Off()
 
@@ -127,6 +128,15 @@ func TestRunGock(t *testing.T) {
 
 }
 
+func TestSimpleMock(t *testing.T) {
+	defer gock.Off()
+	gock.New("http://myaspsp").Get("/accounts").Reply(200).BodyString(string(getAccountResponse))
+	req, _ := http.NewRequest("GET", "http://myaspsp/accounts", nil)
+	res, err := (&http.Client{}).Do(req)
+	assert.NoError(t, err)
+	assert.Equal(t, res.StatusCode, 200)
+}
+
 // TestMockedTestCase - creates http request and response objects, sends them to a mocked
 // service which uses "gock" as a mock http server.
 // Create a test case
@@ -141,13 +151,16 @@ func TestMockedTestCase(t *testing.T) {
 	err := json.Unmarshal(basicTestCase, &testcase)
 	assert.NoError(t, err)
 
-	req, err := testcase.Prepare(nil, nil)
+	req, err := testcase.Prepare(nil)
 	assert.Nil(t, err)
+	assert.NotNil(t, req)
 
 	res, err := (&http.Client{}).Do(req)
 	assert.Nil(t, err)
+	assert.NotNil(t, res)
 
 	result, err := testcase.ApplyExpects(res)
+	assert.NoError(t, err)
 	assert.Equal(t, res.StatusCode, 200)
 	assert.Nil(t, err)
 	assert.Equal(t, result, true)
@@ -165,7 +178,7 @@ func TestResponseStatusCodeMismatch(t *testing.T) {
 	err := json.Unmarshal(basicTestCase, &testcase)
 	assert.NoError(t, err)
 
-	req, err := testcase.Prepare(nil, nil)
+	req, err := testcase.Prepare(nil)
 	assert.Nil(t, err)
 
 	res, err := (&http.Client{}).Do(req)
@@ -189,7 +202,7 @@ func TestJsonExpectMatch(t *testing.T) {
 	err := json.Unmarshal(jsonTestCase, &testcase)
 	assert.NoError(t, err)
 
-	req, err := testcase.Prepare(nil, nil) // need a proper http object here
+	req, err := testcase.Prepare(nil) // need a proper http object here
 	assert.Nil(t, err)
 
 	res, err := (&http.Client{}).Do(req)

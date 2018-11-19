@@ -80,6 +80,26 @@ The following example will use the default permissions as specified in the Accou
     }
 ```
 
+The following example demonstrates the situation where "permissions" aren't specified but "permissions_excluded" are. In this situation, even though the "permissions" aren't specific, the default permissions for this endpoint are not used, as the test case include "permissions_excluded". To add default permissions is this case, one would have to explicitly define them under the "permissions" key.
+
+```json
+{
+        "@id": "#t0002",
+        "name": "Transaction Test with Permissions",
+        "input": {
+            "method": "GET",
+            "endpoint": "/transactions"
+        },
+        "context": {
+            "permissions_excluded":["ReadTransactionsBasic"]
+        },
+        "expect": {
+            "status-code": 200
+        }
+    }
+```
+
+
 ## Permission Sets
 
 PermissionSets are used to define the permission requirements for running testcases against available access_token permissions.
@@ -112,4 +132,3 @@ Each test case can have a list of required permissions, and a list of excluded p
 In order to simplify things in the initial iteration, we're taking the view that a Rule presents two permission sets that must be satified in order to run all the test cases defined under that Rule. One permission set contains all the permission required to run all the test cases under a Rule. The second permission set contains all the permission that must not be present (excluded) in order for the test cases defined under to the rule to run.
 
 When determining the Permission Sets required to run all the test cases in a rule, the rule traverses all associated test cases and accumulates two Permission Sets. One set containing all the required permissions, one set containing all the excluded permissions. Once we have the two permission sets, its a realtively straightfoward exercise to match these sets again the avaialble permission sets provided by any supplied access tokens.
-

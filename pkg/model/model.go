@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"net/url"
 
 	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/utils"
 	"github.com/tidwall/gjson"
@@ -64,13 +65,13 @@ type TestCase struct {
 // Prepare a Testcase for execution at and endpoint,
 // results in a standard http request that encapsulates the testcase request
 // as defined in the test case object with any context inputs/replacements etc applied
-func (t *TestCase) Prepare(ctx *Context, resp *http.Response) (*http.Request, error) {
+func (t *TestCase) Prepare(ctx *Context) (*http.Request, error) {
 	req, err := t.ApplyInput()
 	if err != nil {
 		return nil, err
 	}
 	req, err = t.ApplyContext() // Apply Context at end of creating request
-	return req, nil
+	return req, err
 }
 
 // Validate takes the http response that results as a consequence of sending the testcase http
@@ -151,7 +152,6 @@ func (t *TestCase) ApplyInput() (*http.Request, error) {
 	}
 	t.Request = req // store the request in the testcase
 
-	req, err = t.ApplyContext() // Apply Context at end of creating request
 	return req, err
 }
 
@@ -160,21 +160,25 @@ func (t *TestCase) ApplyInput() (*http.Request, error) {
 // Context parameter typically involve variables that originaled in discovery
 // The functionality of ApplyContext will grow significantly over time.
 func (t *TestCase) ApplyContext() (*http.Request, error) {
-	req := t.Request
-	// if t.Context.Length > 0  {
-	// 	u, err := url.Parse(t.Context.BaseURL + t.Input.Endpoint) // expand url in request to be full pathname including Discovery endpoint info from context
-	// 	if err != nil {
-	// 		return nil, errors.New("Error parsing context baseURL: (" + t.Context.BaseURL + ")")
-	// 	}
-	// 	req.URL = u
-	// }
-	return req, nil
+	base := t.Context.Get("baseurl")
+	if base != nil {
+		urlWithBase, err := url.Parse(base.(string) + t.Input.Endpoint) // expand url in request to be full pathname including Discovery endpoint info from context
+		if err != nil {
+			return nil, errors.New("Error parsing context baseURL: (" + base.(string) + ")")
+		}
+		t.Request.URL = urlWithBase
+	}
+	return t.Request, nil
 }
 
 // ApplyExpects runs the Expects section of the testcase to evaluate if the response from the system under test passes or fails
 // The Expects section of a testcase can contain multiple conditions that need to be met to pass a testcase
 // When a test failes, it the ApplyExpects that is responsible for reporting back information about the failure, why it occured, where it occured etc.
 func (t *TestCase) ApplyExpects(res *http.Response) (bool, error) {
+	if res == nil { // if we've not got a response object to check, always return false
+		return false, errors.New("nil http.Response - cannot process ApplyExpects")
+	}
+
 	if t.Expect.StatusCode != res.StatusCode { // Status codes don't match
 		return false, fmt.Errorf("(%s):%s: HTTP Status code does not match: expected %d got %d", t.ID, t.Name, t.Expect.StatusCode, res.StatusCode)
 	}
@@ -215,9 +219,18 @@ func NewTestCase() *TestCase {
 // in the access token for this testcase. See permission model docs for more information
 //
 func (t *TestCase) GetIncludedPermission() []string {
-	var permissionArray []interface{}
 	var result []string
-	if t.Context["permissions"] == nil {
+	if t.Context["permissions"] != nil {
+		permissionArray := t.Context["permissions"].([]interface{})
+		for _, permissionName := range permissionArray {
+			result = append(result, permissionName.(string))
+		}
+		fmt.Printf("return %#v\n", result)
+		return result
+	}
+
+	// for defaults to apply there should be no permissions no permissions_excluded specified
+	if t.Context["permissions"] == nil && t.Context["permissions_excluded"] == nil {
 		// Attempt to get default permissions
 		perms := GetPermissionsForEndpoint(t.Input.Endpoint)
 		if len(perms) > 1 { // need to figure out default
@@ -234,12 +247,8 @@ func (t *TestCase) GetIncludedPermission() []string {
 		return []string{} // no defaults - no permisions
 	}
 
-	permissionArray = t.Context["permissions"].([]interface{})
-	if permissionArray == nil {
+	if t.Context["permissions"] == nil {
 		return []string{}
-	}
-	for _, permissionName := range permissionArray {
-		result = append(result, permissionName.(string))
 	}
 	return result
 }
@@ -248,8 +257,8 @@ func (t *TestCase) GetIncludedPermission() []string {
 func (t *TestCase) GetExcludedPermissions() []string {
 	var permissionArray []interface{}
 	var result []string
-	if t.Context["permissions"] == nil {
-		return result
+	if t.Context["permissions_excluded"] == nil {
+		return []string{}
 	}
 	permissionArray = t.Context["permissions_excluded"].([]interface{})
 	if permissionArray == nil {

@@ -2,11 +2,10 @@ package model
 
 import (
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"testing"
 
-	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/utils"
+	gock "gopkg.in/h2non/gock.v1"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -33,7 +32,7 @@ func TestSpecifiedPermissionName(t *testing.T) {
 
 // feature/refapp_466_add_permissions_to_testcase
 var (
-	transactionTestcase01 = []byte(`
+	permissionTestcase01 = []byte(`
 	{
         "@id": "#t1008",
         "name": "Transaction Test with Permissions",
@@ -46,8 +45,7 @@ var (
 			"permissions_excluded":["ReadTransactionsDebits"]
 		},
         "expect": {
-            "status-code": 200,
-            "schema-validation": true
+            "status-code": 200
         }
     }
 	`)
@@ -56,7 +54,7 @@ var (
 // Read a testcase with permissions and check that they are all retrieved
 func TestIncludedAndExcludedPermissions(t *testing.T) {
 	tc := TestCase{}
-	err := json.Unmarshal(transactionTestcase01, &tc)
+	err := json.Unmarshal(permissionTestcase01, &tc)
 	assert.NoError(t, err)
 	included, excluded := tc.GetPermissions()
 	assert.Equal(t, len(included), 3)
@@ -69,7 +67,7 @@ func TestIncludedAndExcludedPermissions(t *testing.T) {
 // - so two sets - in inclusion set and an exclusion set
 
 var (
-	transactionTestcase02 = []byte(`
+	permissionTestcase02 = []byte(`
 	{
         "@id": "#t1008",
         "name": "Transaction Test with Permissions",
@@ -80,8 +78,7 @@ var (
         "context": {
 		},
         "expect": {
-            "status-code": 200,
-            "schema-validation": true
+            "status-code": 200
         }
     }
 	`)
@@ -90,7 +87,7 @@ var (
 // figure out the default permission for /transactions
 func TestGetDefaultPermissionsForEndpoint(t *testing.T) {
 	tc := TestCase{}
-	err := json.Unmarshal(transactionTestcase02, &tc)
+	err := json.Unmarshal(permissionTestcase02, &tc)
 	assert.NoError(t, err)
 	included, excluded := tc.GetPermissions()
 	assert.Equal(t, len(included), 1)
@@ -98,14 +95,113 @@ func TestGetDefaultPermissionsForEndpoint(t *testing.T) {
 	assert.Equal(t, included[0], "ReadTransactionsBasic")
 }
 
-//
+var (
+	excludedPermissionsOnlyTestcase = []byte(`
+	{
+        "@id": "#t1008",
+        "name": "Transaction Test with Permissions",
+        "input": {
+            "method": "GET",
+            "endpoint": "/accounts"
+        },
+        "context": {
+			"permissions_excluded":["ReadTransactionsDebits","DummyPermission"]
+		},
+        "expect": {
+            "status-code": 200
+        }
+    }
+	`)
+)
+
+// checks that when we just define
+func TestExcludedPermissionsOnlyForTestcase(t *testing.T) {
+	tc := TestCase{}
+	err := json.Unmarshal(excludedPermissionsOnlyTestcase, &tc)
+	assert.NoError(t, err)
+	included, excluded := tc.GetPermissions()
+	assert.Equal(t, len(included), 0)
+	assert.Equal(t, len(excluded), 2)
+	assert.Equal(t, excluded[1], "DummyPermission")
+}
+
+var (
+	transactionTestcase01 = []byte(`
+	{
+        "@id": "#t1008",
+        "name": "Transaction Test with Permissions",
+        "input": {
+            "method": "GET",
+            "endpoint": "/accounts"
+        },
+        "context": {
+			"permissions":["ReadTransactionsBasic","ReadTransactionsCredits","ReadTransactionsDebits"]
+		},
+        "expect": {
+            "status-code": 200
+        }
+    }
+	`)
+)
+
+var (
+	transactionTestcase02 = []byte(`
+	{
+        "@id": "#t1010",
+        "name": "Transaction Test with Permissions",
+        "input": {
+            "method": "GET",
+            "endpoint": "/transactions"
+        },
+        "context": {
+			"permissions_excluded":["ReadTransactionsBasic","ReadTransactionDetail"]
+		},
+        "expect": {
+            "status-code": 403
+        }
+    }
+	`)
+)
+
+// Checks that a rule can retrieve the permissionSets for both included and excluded permissions
+// from a series of test cases defined in a manifest
 func TestGetIncludedAndExcludedPermissionSetsFromTestcaseSequence(t *testing.T) {
 	m, err := loadPermissionTestData() // from testdata/permissionTestData.json
 	assert.Nil(t, err)
 	rule := m.Rules[0]
 	includedSet, excludedSet := rule.GetPermissionSets()
-	assert.Equal(t, len(includedSet), 3)
-	assert.Equal(t, len(excludedSet), 2)
+	assert.Equal(t, 3, len(includedSet))
+	assert.Equal(t, 2, len(excludedSet))
+}
+
+// two testcases to show /transcates with relevant permission
+// and without relevant permissions
+
+func TestTransactionsWithCorrectPermissions(t *testing.T) {
+	defer gock.Off()
+	gock.New("http://myaspsp").Get("/transactions").Reply(200).BodyString(string(getAccountResponse))
+	tc := TestCase{}
+	err := json.Unmarshal(transactionTestcase01, &tc)
+	assert.NoError(t, err)
+
+	included, excluded := tc.GetPermissions()
+	assert.Equal(t, 3, len(included))
+	assert.Equal(t, 0, len(excluded))
+	assert.Equal(t, included[0], "ReadTransactionsBasic")
+
+}
+
+func TestTransctionWithoutCorrectPermissions(t *testing.T) {
+	defer gock.Off()
+	gock.New("http://myaspsp").Get("/transactions").Reply(403).BodyString(string(getAccountResponse))
+
+	tc := TestCase{}
+	err := json.Unmarshal(transactionTestcase02, &tc)
+	assert.NoError(t, err)
+	included, excluded := tc.GetPermissions()
+	assert.Equal(t, 0, len(included))
+	assert.Equal(t, 2, len(excluded))
+	assert.Equal(t, excluded[0], "ReadTransactionsBasic")
 }
 
 func loadPermissionTestData() (Manifest, error) {
@@ -115,6 +211,6 @@ func loadPermissionTestData() (Manifest, error) {
 	if err != nil {
 		return Manifest{}, err
 	}
-	fmt.Printf(string(pkgutils.DumpJSON(m)))
+	//fmt.Printf(string(pkgutils.DumpJSON(m)))
 	return m, nil
 }
