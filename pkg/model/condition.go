@@ -41,6 +41,43 @@ type conditionLoader struct {
 	Endpoint        string `json:"endpoint,omitempty"`
 }
 
+// ConditionalityChecker - interface to provide loose coupling
+// between endpoint conditionality checks and invoking code
+type ConditionalityChecker interface {
+	IsOptional(method, endpoint string) (bool, error)
+	IsMandatory(method, endpoint string) (bool, error)
+	IsConditional(method, endpoint string) (bool, error)
+}
+
+// conditionalityChecker - implements ConditionalityChecker - for checking endpoint conditionality
+type conditionalityChecker struct {
+}
+
+// IsOptional - returns true if the method/endpoint mix is optional
+func (checker conditionalityChecker) IsOptional(method, endpoint string) (bool, error) {
+	flag, err := isOptional(method, endpoint)
+	return flag, err
+}
+
+// IsMandatory - returns true if the method/endpoint mix is mandatory
+func (checker conditionalityChecker) IsMandatory(method, endpoint string) (bool, error) {
+	flag, err := isMandatory(method, endpoint)
+	return flag, err
+}
+
+// IsConditional - returns true if the method/endpoint mix is conditional
+func (checker conditionalityChecker) IsConditional(method, endpoint string) (bool, error) {
+	flag, err := isConditional(method, endpoint)
+	return flag, err
+}
+
+// NewConditionalityChecker - returns implementation of ConditionalityChecker interface
+// for checking endpoint conditionality
+func NewConditionalityChecker() ConditionalityChecker {
+	checker := conditionalityChecker{}
+	return checker
+}
+
 // EndpointConditionality - Store of endpoint conditionality
 var endpointConditionality []Conditionality
 
@@ -59,8 +96,8 @@ func GetEndpointConditionality() []Conditionality {
 	return clone
 }
 
-// IsOptional - returns true if the method/endpoint mix is optional
-func IsOptional(method, endpoint string) (bool, error) {
+// isOptional - returns true if the method/endpoint mix is optional
+func isOptional(method, endpoint string) (bool, error) {
 	condition, err := findCondition(method, endpoint)
 	if err != nil {
 		return false, err
@@ -71,8 +108,8 @@ func IsOptional(method, endpoint string) (bool, error) {
 	return false, nil
 }
 
-// IsMandatory - returns true if the method/endpoint mix is mandatory
-func IsMandatory(method, endpoint string) (bool, error) {
+// isMandatory - returns true if the method/endpoint mix is mandatory
+func isMandatory(method, endpoint string) (bool, error) {
 	condition, err := findCondition(method, endpoint)
 	if err != nil {
 		return false, err
@@ -83,8 +120,8 @@ func IsMandatory(method, endpoint string) (bool, error) {
 	return false, nil
 }
 
-// IsConditional - returns true if the method/endpoint mix is conditional
-func IsConditional(method, endpoint string) (bool, error) {
+// isConditional - returns true if the method/endpoint mix is conditional
+func isConditional(method, endpoint string) (bool, error) {
 	condition, err := findCondition(method, endpoint)
 	if err != nil {
 		return false, err
