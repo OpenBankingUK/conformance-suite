@@ -75,7 +75,7 @@ func TestGetEndpointConditionality(t *testing.T) {
 func TestMandatoryData(t *testing.T) {
 	checker := NewConditionalityChecker()
 	for _, tt := range mandatoryData {
-		result, err := checker.IsMandatory(tt.Method, tt.Endpoint)
+		result, err := checker.IsMandatory(tt.Method, tt.Endpoint, "account-transaction-v3.0")
 		require.Nil(t, err)
 		require.True(t, result)
 	}
@@ -85,7 +85,7 @@ func TestMandatoryData(t *testing.T) {
 func TestConditionalData(t *testing.T) {
 	checker := NewConditionalityChecker()
 	for _, tt := range conditionalData {
-		result, err := checker.IsConditional(tt.Method, tt.Endpoint)
+		result, err := checker.IsConditional(tt.Method, tt.Endpoint, "account-transaction-v3.0")
 		require.Nil(t, err)
 		require.True(t, result)
 	}
@@ -95,7 +95,7 @@ func TestConditionalData(t *testing.T) {
 func TestOptionalData(t *testing.T) {
 	checker := NewConditionalityChecker()
 	for _, tt := range optionalData {
-		result, err := checker.IsOptional(tt.Method, tt.Endpoint)
+		result, err := checker.IsOptional(tt.Method, tt.Endpoint, "account-transaction-v3.0")
 		require.Nil(t, err)
 		require.True(t, result)
 	}
