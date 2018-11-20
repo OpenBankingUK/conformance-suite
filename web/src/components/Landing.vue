@@ -9,7 +9,7 @@
     <!--   size="large" /> -->
     <div class="centered">
       <router-link
-        to="/config"
+        to="/wizard"
         class="go-to-config">Start a validation run</router-link>
     </div>
   </div>

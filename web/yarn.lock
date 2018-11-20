@@ -9484,6 +9484,11 @@ text-table@~0.2.0:
   resolved "https://registry.yarnpkg.com/text-table/-/text-table-0.2.0.tgz#7f5ee823ae805207c00af2df4a84ec3fcfa570b4"
   integrity sha1-f17oI66AUgfACvLfSoTsP8+lcLQ=
 
+themify-icons-scss@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/themify-icons-scss/-/themify-icons-scss-1.0.0.tgz#1262a507ee31d7e7e130f286aff629760aba87d6"
+  integrity sha1-EmKlB+4x1+fhMPKGr/Ypdgq6h9Y=
+
 thread-loader@^1.1.5:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/thread-loader/-/thread-loader-1.2.0.tgz#35dedb23cf294afbbce6c45c1339b950ed17e7a4"
@@ -9959,6 +9964,11 @@ vue-eslint-parser@^2.0.3:
     espree "^3.5.2"
     esquery "^1.0.0"
     lodash "^4.17.4"
+
+vue-form-wizard@^0.8.4:
+  version "0.8.4"
+  resolved "https://registry.yarnpkg.com/vue-form-wizard/-/vue-form-wizard-0.8.4.tgz#ddf864c9709b7ba2a6323f59e5d6d17536b7800e"
+  integrity sha512-/Zk1+B7bz7qHFJ16mwu021lpPXWf/9Tlr2mTNG3J7M0Hdy3rgA802lWsbKYySns0B0qtsD8BYGjQ2Wyxgg+4uw==
 
 vue-functional-data-merge@^2.0.5:
   version "2.0.7"
