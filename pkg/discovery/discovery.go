@@ -104,11 +104,10 @@ func HasValidEndpoints(checker model.ConditionalityChecker, discoveryConfig *Mod
 
 		for _, endpoint := range discoveryItem.Endpoints {
 			specification := "account-transaction-v3.0"
-			isOptional, _ := checker.IsOptional(endpoint.Method, endpoint.Path, specification)
-			isConditional, _ := checker.IsConditional(endpoint.Method, endpoint.Path, specification)
-			isMandatory, _ := checker.IsMandatory(endpoint.Method, endpoint.Path, specification)
-			isPresent := isOptional || isConditional || isMandatory
-
+			isPresent, err := checker.IsPresent(endpoint.Method, endpoint.Path, specification)
+			if (err != nil) {
+				return false, err
+			}
 			if !isPresent {
 				err := fmt.Sprintf(
 					"discoveryItemIndex=%d, invalid endpoint Method=%s, Path=%s",
