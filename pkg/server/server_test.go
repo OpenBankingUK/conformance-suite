@@ -84,6 +84,15 @@ func (c conditionalityCheckerMock) IsConditional(method, endpoint string, specif
 	}
 }
 
+// Returns IsPresent true for valid GET/POST/DELETE endpoints.
+func (c conditionalityCheckerMock) IsPresent(method, endpoint string, specification string) (bool, error) {
+	if method == "GET" || method == "POST" || method == "DELETE" {
+		return true, nil
+	} else {
+		return false, nil
+	}
+}
+
 func TestMain(m *testing.M) {
 	// call flag.Parse() here if TestMain uses flags
 	flag.Parse()

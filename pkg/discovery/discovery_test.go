@@ -46,6 +46,15 @@ func (c conditionalityCheckerMock) IsConditional(method, endpoint string, specif
 	}
 }
 
+// Returns IsPresent true for valid GET/POST/DELETE endpoints.
+func (c conditionalityCheckerMock) IsPresent(method, endpoint string, specification string) (bool, error) {
+	if method == "GET" || method == "POST" || method == "DELETE" {
+		return true, nil
+	} else {
+		return false, nil
+	}
+}
+
 func TestDiscovery_FromJSONString_Invalid_Cases(t *testing.T) {
 	testCases := []invalidTestCase{
 		{

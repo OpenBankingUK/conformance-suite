@@ -71,6 +71,22 @@ func TestGetEndpointConditionality(t *testing.T) {
 	assert.EqualValues(endpointConditionality, GetEndpointConditionality())
 }
 
+func TestConditionalityChecker(t *testing.T) {
+	checker := NewConditionalityChecker()
+
+	t.Run("IsPresent true for endpoint method mix in specification", func(t *testing.T) {
+		result, err := checker.IsPresent("POST", "/account-access-consents", "account-transaction-v3.0")
+		require.Nil(t, err)
+		require.True(t, result)
+	})
+
+	t.Run("IsPresent false for endpoint method mix not in specification", func(t *testing.T) {
+		result, err := checker.IsPresent("PUT", "/account-access-consents", "account-transaction-v3.0")
+		require.Nil(t, err)
+		require.False(t, result)
+	})
+	}
+
 // Test all Mandatory endpoints are correct and configured in the model
 func TestMandatoryData(t *testing.T) {
 	checker := NewConditionalityChecker()
