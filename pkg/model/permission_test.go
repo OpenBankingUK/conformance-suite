@@ -3,6 +3,7 @@ package model
 import (
 	"encoding/json"
 	"io/ioutil"
+	"net/http"
 	"testing"
 
 	gock "gopkg.in/h2non/gock.v1"
@@ -134,9 +135,10 @@ var (
         "name": "Transaction Test with Permissions",
         "input": {
             "method": "GET",
-            "endpoint": "/accounts"
+            "endpoint": "/transactions"
         },
         "context": {
+			"baseurl":"http://myaspsp",
 			"permissions":["ReadTransactionsBasic","ReadTransactionsCredits","ReadTransactionsDebits"]
 		},
         "expect": {
@@ -156,6 +158,7 @@ var (
             "endpoint": "/transactions"
         },
         "context": {
+			"baseurl":"http://myaspsp",			
 			"permissions_excluded":["ReadTransactionsBasic","ReadTransactionDetail"]
 		},
         "expect": {
@@ -191,6 +194,19 @@ func TestTransactionsWithCorrectPermissions(t *testing.T) {
 	assert.Equal(t, 0, len(excluded))
 	assert.Equal(t, included[0], "ReadTransactionsBasic")
 
+	req, err := tc.Prepare(nil)
+	assert.Nil(t, err)
+
+	res, err := (&http.Client{}).Do(req)
+	assert.Nil(t, err)
+
+	result, err := tc.ApplyExpects(res)
+	assert.Nil(t, err)
+	assert.Equal(t, result, true) // test validates ok
+
+	// Verify that we don't have pending mocks (gock specific)
+	assert.Equal(t, gock.IsDone(), true)
+
 }
 
 func TestTransctionWithoutCorrectPermissions(t *testing.T) {
@@ -204,6 +220,18 @@ func TestTransctionWithoutCorrectPermissions(t *testing.T) {
 	assert.Equal(t, 0, len(included))
 	assert.Equal(t, 2, len(excluded))
 	assert.Equal(t, excluded[0], "ReadTransactionsBasic")
+	req, err := tc.Prepare(nil)
+	assert.Nil(t, err)
+
+	res, err := (&http.Client{}).Do(req)
+	assert.Nil(t, err)
+
+	result, err := tc.ApplyExpects(res)
+	assert.Nil(t, err)
+	assert.Equal(t, result, true) // test validates ok
+
+	// Verify that we don't have pending mocks (gock specific)
+	assert.Equal(t, gock.IsDone(), true)
 }
 
 func loadPermissionTestData() (Manifest, error) {
@@ -213,7 +241,6 @@ func loadPermissionTestData() (Manifest, error) {
 	if err != nil {
 		return Manifest{}, err
 	}
-	//fmt.Printf(string(pkgutils.DumpJSON(m)))
 	return m, nil
 }
 

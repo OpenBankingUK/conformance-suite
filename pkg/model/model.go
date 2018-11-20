@@ -225,7 +225,6 @@ func (t *TestCase) GetIncludedPermission() []string {
 		for _, permissionName := range permissionArray {
 			result = append(result, permissionName.(string))
 		}
-		fmt.Printf("return %#v\n", result)
 		return result
 	}
 
