@@ -99,9 +99,8 @@ func TestMandatoryData(t *testing.T) {
 
 // Test all Conditional endpoints are correctly configured in model
 func TestConditionalData(t *testing.T) {
-	checker := NewConditionalityChecker()
 	for _, tt := range conditionalData {
-		result, err := checker.IsConditional(tt.Method, tt.Endpoint, "account-transaction-v3.0")
+		result, err := isConditional(tt.Method, tt.Endpoint)
 		require.Nil(t, err)
 		require.True(t, result)
 	}
@@ -109,9 +108,8 @@ func TestConditionalData(t *testing.T) {
 
 // Test all Optional  endpoints are correctly configured in model
 func TestOptionalData(t *testing.T) {
-	checker := NewConditionalityChecker()
 	for _, tt := range optionalData {
-		result, err := checker.IsOptional(tt.Method, tt.Endpoint, "account-transaction-v3.0")
+		result, err := isOptional(tt.Method, tt.Endpoint)
 		require.Nil(t, err)
 		require.True(t, result)
 	}

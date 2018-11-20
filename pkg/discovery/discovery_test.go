@@ -21,25 +21,9 @@ type invalidTestCase struct {
 type conditionalityCheckerMock struct {
 }
 
-// Returns IsOptional false for all other endpoint/methods.
-func (c conditionalityCheckerMock) IsOptional(method, endpoint string, specification string) (bool, error) {
-	return false, nil
-}
-
 // Returns IsMandatory true for POST /account-access-consents, false for all other endpoint/methods.
 func (c conditionalityCheckerMock) IsMandatory(method, endpoint string, specification string) (bool, error) {
 	if method == "POST" && endpoint == "/account-access-consents" {
-		return true, nil
-	} else {
-		return false, nil
-	}
-}
-
-// Returns IsConditional false for POST /account-access-consents, true for all other valid GET/POST/DELETE endpoints.
-func (c conditionalityCheckerMock) IsConditional(method, endpoint string, specification string) (bool, error) {
-	if method == "POST" && endpoint == "/account-access-consents" {
-		return false, nil
-	} else if method == "GET" || method == "POST" || method == "DELETE" {
 		return true, nil
 	} else {
 		return false, nil

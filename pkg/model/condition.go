@@ -45,9 +45,7 @@ type conditionLoader struct {
 // between endpoint conditionality checks and invoking code
 type ConditionalityChecker interface {
 	IsPresent(method, endpoint string, specification string) (bool, error)
-	IsOptional(method, endpoint string, specification string) (bool, error)
 	IsMandatory(method, endpoint string, specification string) (bool, error)
-	IsConditional(method, endpoint string, specification string) (bool, error)
 }
 
 // conditionalityChecker - implements ConditionalityChecker - for checking endpoint conditionality
@@ -71,21 +69,9 @@ func (checker conditionalityChecker) IsPresent(method, endpoint string, specific
 	return (optional || mandatory || conditional), nil
 }
 
-// IsOptional - returns true if the method/endpoint mix is optional
-func (checker conditionalityChecker) IsOptional(method, endpoint string, specification string) (bool, error) {
-	flag, err := isOptional(method, endpoint)
-	return flag, err
-}
-
 // IsMandatory - returns true if the method/endpoint mix is mandatory in given specification
 func (checker conditionalityChecker) IsMandatory(method, endpoint string, specification string) (bool, error) {
 	flag, err := isMandatory(method, endpoint)
-	return flag, err
-}
-
-// IsConditional - returns true if the method/endpoint mix is conditional
-func (checker conditionalityChecker) IsConditional(method, endpoint string, specification string) (bool, error) {
-	flag, err := isConditional(method, endpoint)
 	return flag, err
 }
 
