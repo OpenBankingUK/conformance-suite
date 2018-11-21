@@ -32,13 +32,12 @@ export default {
     // console.log(this.$options);
   },
   methods: {
-    // Gets called by top-level Wizard component in the validateStep
-    // function.
-    validate() {
+    // Gets called by top-level Wizard component in the validateStep function.
+    async validate() {
       const valid = true;
       console.warn('%s.validate=%s', this.$options.name, valid);
       // TODO: remove stub.
-      return valid;
+      return Promise.resolve(true);
     },
   },
 };

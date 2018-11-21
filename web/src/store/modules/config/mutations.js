@@ -17,4 +17,10 @@ export default {
     state.discoveryModel =
       state.discoveryModel.filter(item => JSON.stringify(item) !== JSON.stringify(discoveryModel));
   },
+  [types.DISCOVERY_MODEL_RESET](state, discoveryModel) {
+    state.discoveryModel = discoveryModel;
+  },
+  [types.DISCOVERY_MODEL_PROBLEMS](state, problems) {
+    state.problems = problems;
+  },
 };

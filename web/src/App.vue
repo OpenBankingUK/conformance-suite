@@ -8,7 +8,7 @@
 
 <style>
 div {
-  border: 1px solid rgba(0, 0, 0, 0.09);
+  /* border: 1px solid rgba(0, 0, 0, 0.09); */
 }
 </style>
 

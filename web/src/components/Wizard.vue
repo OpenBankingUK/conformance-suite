@@ -1,11 +1,12 @@
 <template>
-  <div class="p-2 d-flex flex-column flex-fill">
+  <div class="d-flex flex-column flex-fill">
     <form-wizard
       :start-index.sync="activeTabIndex"
       title="Conformance Suite"
       subtitle
       color="#6180c3"
       class="p-2 d-flex flex-column flex-fill"
+      layout="vertical"
       @on-complete="onComplete"
     >
       <!-- <tab-content
@@ -45,6 +46,15 @@
 .wizard-tab-content {
   width: 100%;
   flex: 1;
+
+}
+
+.wizard-nav,
+.wizard-nav-pills,
+.wizard-tab-content {
+  padding: 0.5rem !important;
+  margin: 0.5rem;
+  border: 1px solid rgba(0, 0, 0, 0.5);
 }
 
 .wizard-navigation {
@@ -122,16 +132,21 @@ export default {
       // eslint-disable-next-line no-alert
       alert('Yay. Done!');
     },
-    validateStep(name) {
+    async validateStep(name) {
+      // this.$refs contains the components Step1-Step5, so we grab the
+      // the current component and call the asynchronous function `validate` on it.
+      // If it is an Array, we call `validate` on each one and wait for their results
+      // to return
       const steps = this.$refs[name];
       if (_.isArray(steps)) {
-        const results = _.map(steps, step => step.validate());
+        const results = await Promise.all(_.map(steps, step => step.validate()));
+        // If a single call to `validate` fail
         const result = _.every(results);
         console.info('steps=%o, results=%o, result=%s', steps, results, result);
         return result;
       } else if (_.isObject(steps)) {
         const step = steps[0];
-        const result = step.validate();
+        const result = await step.validate();
         console.info('step=%o, result=%s', step, result);
         return result;
       }
