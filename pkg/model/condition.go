@@ -46,6 +46,7 @@ type conditionLoader struct {
 type ConditionalityChecker interface {
 	IsPresent(method, endpoint string, specification string) (bool, error)
 	IsMandatory(method, endpoint string, specification string) (bool, error)
+	MissingMandatory(endpoints []Input, specification string) ([]Input, error)
 }
 
 // conditionalityChecker - implements ConditionalityChecker - for checking endpoint conditionality
@@ -73,6 +74,30 @@ func (checker conditionalityChecker) IsPresent(method, endpoint string, specific
 func (checker conditionalityChecker) IsMandatory(method, endpoint string, specification string) (bool, error) {
 	flag, err := isMandatory(method, endpoint, specification)
 	return flag, err
+}
+
+// MissingMandatory - returns array of mandatory endpoint Inputs that are missing from given endpoints parameter
+func (checker conditionalityChecker) MissingMandatory(endpoints []Input, specification string) ([]Input, error) {
+	missingMandatoryEndpoints := []Input{}
+
+	for _, condition := range GetEndpointConditionality(specification) {
+		if condition.Condition == Mandatory {
+			mandatory := condition
+			isPresent := false
+			for _, endpoint := range endpoints {
+				isPresent = endpoint.Method == condition.Method && endpoint.Endpoint == condition.Endpoint
+				if isPresent {
+					break
+				}
+			}
+			if !isPresent {
+				missing := Input{Endpoint: mandatory.Endpoint, Method: mandatory.Method}
+				missingMandatoryEndpoints = append(missingMandatoryEndpoints, missing)
+			}
+		}
+	}
+
+	return missingMandatoryEndpoints, nil
 }
 
 // NewConditionalityChecker - returns implementation of ConditionalityChecker interface

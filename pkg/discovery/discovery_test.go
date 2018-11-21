@@ -4,6 +4,8 @@ import (
 	"io/ioutil"
 	"testing"
 
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
+
 	"github.com/stretchr/testify/assert"
 )
 
@@ -37,6 +39,10 @@ func (c conditionalityCheckerMock) IsPresent(method, endpoint string, specificat
 	} else {
 		return false, nil
 	}
+}
+
+func (checker conditionalityCheckerMock) MissingMandatory(endpoints []model.Input, specification string) ([]model.Input, error) {
+	return []model.Input{}, nil
 }
 
 func TestDiscovery_FromJSONString_Invalid_Cases(t *testing.T) {

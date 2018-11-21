@@ -86,6 +86,29 @@ func TestConditionalityChecker(t *testing.T) {
 		require.Nil(t, err)
 		require.False(t, result)
 	})
+
+	t.Run("MissingMandatory returns array of missing mandatory endpoints", func(t *testing.T) {
+		result, err := checker.MissingMandatory([]Input{}, specification)
+		require.Nil(t, err)
+
+		expectedAllMissing := []Input{}
+		for _, tt := range mandatoryData {
+			expectedAllMissing = append(expectedAllMissing, Input{Method: tt.Method, Endpoint: tt.Endpoint})
+		}
+		assert.Equal(t, result, expectedAllMissing)
+	})
+
+	t.Run("MissingMandatory returns empty array when no missing mandatory endpoints", func(t *testing.T) {
+		allMandatory := []Input{}
+		for _, tt := range mandatoryData {
+			allMandatory = append(allMandatory, Input{Method: tt.Method, Endpoint: tt.Endpoint})
+		}
+		result, err := checker.MissingMandatory(allMandatory, specification)
+		assert.Nil(t, err)
+
+		expectedEmptyMissing := []Input{}
+		assert.Equal(t, result, expectedEmptyMissing)
+	})
 }
 
 // Test all Mandatory endpoints are correct and configured in the model
