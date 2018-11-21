@@ -7,9 +7,6 @@
 </template>
 
 <style>
-div {
-  /* border: 1px solid rgba(0, 0, 0, 0.09); */
-}
 </style>
 
 <script>

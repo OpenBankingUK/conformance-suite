@@ -10,5 +10,13 @@
 <script>
 export default {
   name: 'Step5',
+  methods: {
+    // Gets called by top-level Wizard component in the validateStep function.
+    async validate() {
+      const valid = true;
+      // TODO: remove stub.
+      return Promise.resolve(valid);
+    },
+  },
 };
 </script>

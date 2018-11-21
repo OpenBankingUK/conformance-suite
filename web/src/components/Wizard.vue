@@ -9,31 +9,14 @@
       layout="vertical"
       @on-complete="onComplete"
     >
-      <!-- <tab-content
-        icon="ti-import"
-        title="New/Import">
-        <step1/>
-      </tab-content>
-      <tab-content
-        icon="ti-settings"
-        title="Configuration">Configuration</tab-content>
-      <tab-content
-        icon="ti-panel"
-        title="Test Overview">Test Overview</tab-content>
-      <tab-content
-        icon="ti-list"
-        title="Summary">Summary</tab-content>
-      <tab-content
-        icon="ti-export"
-        title="Export">Export</tab-content> -->
-
       <tab-content
         v-for="tab in tabs"
         v-if="!tab.hide"
         :key="tab.title"
         :title="tab.title"
         :icon="tab.icon"
-        :before-change="()=>validateStep(tab.component.toLowerCase())">
+        :before-change="()=>validateStep(tab.component.toLowerCase())"
+      >
         <component
           :ref="tab.component.toLowerCase()"
           :is="tab.component"/>
@@ -46,7 +29,6 @@
 .wizard-tab-content {
   width: 100%;
   flex: 1;
-
 }
 
 .wizard-nav,
@@ -130,7 +112,7 @@ export default {
   methods: {
     onComplete() {
       // eslint-disable-next-line no-alert
-      alert('Yay. Done!');
+      alert('onComplete');
     },
     async validateStep(name) {
       // this.$refs contains the components Step1-Step5, so we grab the
@@ -140,14 +122,13 @@ export default {
       const steps = this.$refs[name];
       if (_.isArray(steps)) {
         const results = await Promise.all(_.map(steps, step => step.validate()));
-        // If a single call to `validate` fail
+        // If a single call to `validate` the result should be false.
+        // _.every ensures that all elements of the array are true, it returns false otherwise.
         const result = _.every(results);
-        console.info('steps=%o, results=%o, result=%s', steps, results, result);
         return result;
       } else if (_.isObject(steps)) {
-        const step = steps[0];
+        const step = steps;
         const result = await step.validate();
-        console.info('step=%o, result=%s', step, result);
         return result;
       }
 
