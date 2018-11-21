@@ -97,11 +97,11 @@ func HasValidEndpoints(checker model.ConditionalityChecker, discoveryConfig *Mod
 	errs := []string{}
 
 	for discoveryItemIndex, discoveryItem := range discoveryConfig.DiscoveryModel.DiscoveryItems {
-		// ignore if it isn't accounts as we don't have the definitions for payments just yet
-		if discoveryItem.APISpecification.Name != "Account and Transaction API Specification" {
-			continue
+		schemaVersion := discoveryItem.APISpecification.SchemaVersion
+		specification, err := model.SpecificationIdentifierFromSchemaVersion(schemaVersion)
+		if err != nil {
+			return false, err
 		}
-		specification := "account-transaction-v3.0"
 
 		for _, endpoint := range discoveryItem.Endpoints {
 			isPresent, err := checker.IsPresent(endpoint.Method, endpoint.Path, specification)
