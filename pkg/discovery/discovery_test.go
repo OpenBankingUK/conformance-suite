@@ -27,22 +27,23 @@ type conditionalityCheckerMock struct {
 func (c conditionalityCheckerMock) IsMandatory(method, endpoint string, specification string) (bool, error) {
 	if method == "POST" && endpoint == "/account-access-consents" {
 		return true, nil
-	} else {
-		return false, nil
 	}
+	return false, nil
 }
 
 // Returns IsPresent true for valid GET/POST/DELETE endpoints.
 func (c conditionalityCheckerMock) IsPresent(method, endpoint string, specification string) (bool, error) {
 	if method == "GET" || method == "POST" || method == "DELETE" {
 		return true, nil
-	} else {
-		return false, nil
 	}
+	return false, nil
 }
 
-func (checker conditionalityCheckerMock) MissingMandatory(endpoints []model.Input, specification string) ([]model.Input, error) {
-	return []model.Input{}, nil
+// Returns that "POST" "/account-access-consent" is missing
+func (c conditionalityCheckerMock) MissingMandatory(endpoints []model.Input, specification string) ([]model.Input, error) {
+	missing := []model.Input{}
+	missing = append(missing, model.Input{Method: "POST", Endpoint: "/account-access-consents"})
+	return missing, nil
 }
 
 func TestDiscovery_FromJSONString_Invalid_Cases(t *testing.T) {
@@ -263,7 +264,7 @@ func TestDiscovery_FromJSONString_Valid(t *testing.T) {
 		},
 	}
 
-	modelActual, err := FromJSONString(conditionalityCheckerMock{}, config)
+	modelActual, err := FromJSONString(model.NewConditionalityChecker(), config)
 	assert.NoError(err)
 	assert.NotNil(modelActual.DiscoveryModel)
 	discoveryModel := modelActual.DiscoveryModel

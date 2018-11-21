@@ -105,7 +105,7 @@ func HasValidEndpoints(checker model.ConditionalityChecker, discoveryConfig *Mod
 
 		for _, endpoint := range discoveryItem.Endpoints {
 			isPresent, err := checker.IsPresent(endpoint.Method, endpoint.Path, specification)
-			if (err != nil) {
+			if err != nil {
 				return false, err
 			}
 			if !isPresent {
@@ -133,47 +133,29 @@ func HasValidEndpoints(checker model.ConditionalityChecker, discoveryConfig *Mod
 func HasMandatoryEndpoints(checker model.ConditionalityChecker, discoveryConfig *Model) (bool, error) {
 	errs := []string{}
 
-	// filter out non-mandatory endpoints, i.e., just store the mandatory endpoints.
-	// this is just for accounts at the moment, conditionality for payments has not be defined just yet.
-	mandatoryEndpoints := []model.Conditionality{}
-	specification := "account-transaction-v3.0"
-	endpoints := model.GetEndpointConditionality(specification)
-	for _, endpoint := range endpoints {
-		isMandatory, err := checker.IsMandatory(endpoint.Method, endpoint.Endpoint, specification)
-		if err != nil {
+	for discoveryItemIndex, discoveryItem := range discoveryConfig.DiscoveryModel.DiscoveryItems {
+		// ignore if it isn't accounts as we don't have the definitions for payments just yet
+		if discoveryItem.APISpecification.Name != "Account and Transaction API Specification" {
 			continue
 		}
+		specification := "account-transaction-v3.0"
 
-		if isMandatory {
-			mandatoryEndpoints = append(mandatoryEndpoints, endpoint)
+		discoveryEndpoints := []model.Input{}
+		for _, endpoint := range discoveryItem.Endpoints {
+			discoveryEndpoints = append(discoveryEndpoints, model.Input{Endpoint: endpoint.Path, Method: endpoint.Method})
 		}
-	}
-
-	// check that each mandatory endpoint is included in the discovery model
-	for _, mandatoryEndpoint := range mandatoryEndpoints {
-		for discoveryItemIndex, discoveryItem := range discoveryConfig.DiscoveryModel.DiscoveryItems {
-			// ignore if it isn't accounts as we don't have the definitions for payments just yet
-			if discoveryItem.APISpecification.Name != "Account and Transaction API Specification" {
-				continue
-			}
-
-			isPresent := false
-			for _, endpoint := range discoveryItem.Endpoints {
-				isPresent = endpoint.Method == mandatoryEndpoint.Method && endpoint.Path == mandatoryEndpoint.Endpoint
-				if isPresent {
-					break
-				}
-			}
-
-			if !isPresent {
-				err := fmt.Sprintf(
-					"discoveryItemIndex=%d, missing mandatory endpoint Method=%s, Path=%s",
-					discoveryItemIndex,
-					mandatoryEndpoint.Method,
-					mandatoryEndpoint.Endpoint,
-				)
-				errs = append(errs, err)
-			}
+		missingMandatory, err := checker.MissingMandatory(discoveryEndpoints, specification)
+		if err != nil {
+			return false, err
+		}
+		for _, mandatoryEndpoint := range missingMandatory {
+			err := fmt.Sprintf(
+				"discoveryItemIndex=%d, missing mandatory endpoint Method=%s, Path=%s",
+				discoveryItemIndex,
+				mandatoryEndpoint.Method,
+				mandatoryEndpoint.Endpoint,
+			)
+			errs = append(errs, err)
 		}
 	}
 
