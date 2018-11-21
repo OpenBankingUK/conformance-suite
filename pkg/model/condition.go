@@ -54,15 +54,15 @@ type conditionalityChecker struct {
 
 // IsPresent - returns true if the method/endpoint mix exists for given specification
 func (checker conditionalityChecker) IsPresent(method, endpoint string, specification string) (bool, error) {
-	optional, err := isOptional(method, endpoint)
+	optional, err := isOptional(method, endpoint, specification)
 	if err != nil {
 		return false, nil
 	}
-	mandatory, err := isMandatory(method, endpoint)
+	mandatory, err := isMandatory(method, endpoint, specification)
 	if err != nil {
 		return false, nil
 	}
-	conditional, err := isConditional(method, endpoint)
+	conditional, err := isConditional(method, endpoint, specification)
 	if err != nil {
 		return false, nil
 	}
@@ -71,7 +71,7 @@ func (checker conditionalityChecker) IsPresent(method, endpoint string, specific
 
 // IsMandatory - returns true if the method/endpoint mix is mandatory in given specification
 func (checker conditionalityChecker) IsMandatory(method, endpoint string, specification string) (bool, error) {
-	flag, err := isMandatory(method, endpoint)
+	flag, err := isMandatory(method, endpoint, specification)
 	return flag, err
 }
 
@@ -82,8 +82,8 @@ func NewConditionalityChecker() ConditionalityChecker {
 	return checker
 }
 
-// EndpointConditionality - Store of endpoint conditionality
-var endpointConditionality []Conditionality
+// EndpointConditionality - Store of endpoint conditionality by specification key
+var endpointConditionality map[string][]Conditionality
 
 func init() {
 	err := loadConditions()
@@ -93,16 +93,16 @@ func init() {
 	}
 }
 
-// GetEndpointConditionality - get a clone of the internal variable `endpointConditionality`.
-func GetEndpointConditionality() []Conditionality {
-	clone := make([]Conditionality, len(endpointConditionality))
-	copy(clone, endpointConditionality)
+// GetEndpointConditionality - get a clone of `endpointConditionality` array for given specification identifier
+func GetEndpointConditionality(specification string) []Conditionality {
+	clone := make([]Conditionality, len(endpointConditionality[specification]))
+	copy(clone, endpointConditionality[specification])
 	return clone
 }
 
 // isOptional - returns true if the method/endpoint mix is optional
-func isOptional(method, endpoint string) (bool, error) {
-	condition, err := findCondition(method, endpoint)
+func isOptional(method, endpoint string, specification string) (bool, error) {
+	condition, err := findCondition(method, endpoint, specification)
 	if err != nil {
 		return false, err
 	}
@@ -113,8 +113,8 @@ func isOptional(method, endpoint string) (bool, error) {
 }
 
 // isMandatory - returns true if the method/endpoint mix is mandatory
-func isMandatory(method, endpoint string) (bool, error) {
-	condition, err := findCondition(method, endpoint)
+func isMandatory(method, endpoint string, specification string) (bool, error) {
+	condition, err := findCondition(method, endpoint, specification)
 	if err != nil {
 		return false, err
 	}
@@ -125,8 +125,8 @@ func isMandatory(method, endpoint string) (bool, error) {
 }
 
 // isConditional - returns true if the method/endpoint mix is conditional
-func isConditional(method, endpoint string) (bool, error) {
-	condition, err := findCondition(method, endpoint)
+func isConditional(method, endpoint string, specification string) (bool, error) {
+	condition, err := findCondition(method, endpoint, specification)
 	if err != nil {
 		return false, err
 	}
@@ -141,8 +141,8 @@ func isConditional(method, endpoint string) (bool, error) {
 // model.Conditional - endpoint is conditional
 // model.Optional - endpoint is optional
 // model.UndefineCondition - we don't recognise the endpoint
-func GetConditionality(method, endpoint string) (ConditionEnum, error) {
-	condition, err := findCondition(method, endpoint)
+func GetConditionality(method, endpoint string, specification string) (ConditionEnum, error) {
+	condition, err := findCondition(method, endpoint, specification)
 	if err != nil {
 		return UndefinedCondition, err
 	}
@@ -151,8 +151,8 @@ func GetConditionality(method, endpoint string) (ConditionEnum, error) {
 
 // findCondition - find a condition given the method and endpoint
 // the condition can then be queried for optionality
-func findCondition(method, endpoint string) (Conditionality, error) {
-	for _, cond := range endpointConditionality {
+func findCondition(method, endpoint string, specification string) (Conditionality, error) {
+	for _, cond := range endpointConditionality[specification] {
 		if cond.Method == method && cond.Endpoint == endpoint {
 			return cond, nil
 		}
@@ -162,36 +162,41 @@ func findCondition(method, endpoint string) (Conditionality, error) {
 
 // loadConditions - get Mandatory/Conditional/Optional data from json file
 func loadConditions() error {
-	loader := []conditionLoader{}
-
 	rawjson, err := ioutil.ReadFile("../../pkg/model/conditionality.json") // lives here for now until we figure out somewhere better
 	if err != nil {
 		return err
 	}
 
+	var loader map[string][]conditionLoader
 	if err := json.Unmarshal(rawjson, &loader); err != nil {
 		return err
 	}
 
-	for _, loaded := range loader { // map struct conditionality into enum conditionality
-		condition := Conditionality{}
-		condition.Endpoint = loaded.Endpoint
-		condition.Method = loaded.Method
-		switch loaded.StringCondition {
-		case "mandatory":
-			condition.Condition = Mandatory
-		case "conditional":
-			condition.Condition = Conditional
-		case "optional":
-			condition.Condition = Optional
-		default:
-			logrus.WithFields(logrus.Fields{
-				"Condition": loaded.StringCondition,
-				"Method":    loaded.Method,
-				"Endpoint":  loaded.Endpoint,
-			}).Warn("Load Conditions - unknown condition")
+	endpointConditionality = make(map[string][]Conditionality)
+
+	for specification, items := range loader {
+		var list []Conditionality
+		for _, item := range items {
+			condition := Conditionality{}
+			condition.Endpoint = item.Endpoint
+			condition.Method = item.Method
+			switch item.StringCondition {
+			case "mandatory":
+				condition.Condition = Mandatory
+			case "conditional":
+				condition.Condition = Conditional
+			case "optional":
+				condition.Condition = Optional
+			default:
+				logrus.WithFields(logrus.Fields{
+					"Condition": item.StringCondition,
+					"Method":    item.Method,
+					"Endpoint":  item.Endpoint,
+				}).Warn("Load Conditions - unknown condition")
+			}
+			list = append(list, condition)
 		}
-		endpointConditionality = append(endpointConditionality, condition)
+		endpointConditionality[specification] = list
 	}
 	return nil
 }

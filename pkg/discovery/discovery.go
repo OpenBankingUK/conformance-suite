@@ -101,9 +101,9 @@ func HasValidEndpoints(checker model.ConditionalityChecker, discoveryConfig *Mod
 		if discoveryItem.APISpecification.Name != "Account and Transaction API Specification" {
 			continue
 		}
+		specification := "account-transaction-v3.0"
 
 		for _, endpoint := range discoveryItem.Endpoints {
-			specification := "account-transaction-v3.0"
 			isPresent, err := checker.IsPresent(endpoint.Method, endpoint.Path, specification)
 			if (err != nil) {
 				return false, err
@@ -136,9 +136,10 @@ func HasMandatoryEndpoints(checker model.ConditionalityChecker, discoveryConfig 
 	// filter out non-mandatory endpoints, i.e., just store the mandatory endpoints.
 	// this is just for accounts at the moment, conditionality for payments has not be defined just yet.
 	mandatoryEndpoints := []model.Conditionality{}
-	endpoints := model.GetEndpointConditionality()
+	specification := "account-transaction-v3.0"
+	endpoints := model.GetEndpointConditionality(specification)
 	for _, endpoint := range endpoints {
-		isMandatory, err := checker.IsMandatory(endpoint.Method, endpoint.Endpoint, "account-transaction-v3.0")
+		isMandatory, err := checker.IsMandatory(endpoint.Method, endpoint.Endpoint, specification)
 		if err != nil {
 			continue
 		}
