@@ -193,7 +193,7 @@ func TestDiscovery_FromJSONString_Valid(t *testing.T) {
 	assert.NotNil(discoveryExample)
 	config := string(discoveryExample)
 
-	accountApiDiscoveryItem := ModelDiscoveryItem{
+	accountAPIDiscoveryItem := ModelDiscoveryItem{
 		APISpecification: ModelAPISpecification{
 			Name:          "Account and Transaction API Specification",
 			URL:           "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/642090641/Account+and+Transaction+API+Specification+-+v3.0",
@@ -278,7 +278,7 @@ func TestDiscovery_FromJSONString_Valid(t *testing.T) {
 	})
 
 	t.Run("model has correct discovery item contents", func(t *testing.T) {
-		assert.Equal(accountApiDiscoveryItem, discoveryModel.DiscoveryItems[0])
+		assert.Equal(accountAPIDiscoveryItem, discoveryModel.DiscoveryItems[0])
 	})
 }
 
