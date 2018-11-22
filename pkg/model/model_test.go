@@ -37,7 +37,7 @@ func TestLoadModel(t *testing.T) {
 
 	testcase := rule.Tests[0][0]
 	t.Run("testcase has Dump() function", func(t *testing.T) {
-		testcase.Dump()
+		testcase.Dump(false)
 	})
 }
 
@@ -50,7 +50,9 @@ func TestEnumerateOpenApiTestcases(t *testing.T) {
 	for path, props := range doc.Spec().Paths.Paths {
 		for meth := range getOperations(&props) {
 			newPath := base + path
-			fmt.Printf("Register %s %s\n", meth, newPath)
+			assert.NotNil(t, meth)
+			assert.NotNil(t, newPath)
+			// fmt.Printf("Register %s %s\n", meth, newPath)
 		}
 	}
 }

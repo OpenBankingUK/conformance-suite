@@ -1,7 +1,6 @@
 package pkgutils
 
 import (
-	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -22,6 +21,5 @@ type teststruct struct {
 func TestDumpStruct(t *testing.T) {
 	tst := teststruct{ID: "123", Type: []string{"ABC"}, Name: "XYZ", Purpose: "test", Specref: "My reference", Speclocation: "Mylocation"}
 	result := DumpJSON(tst)
-	fmt.Println(string(result))
 	assert.Equal(t, len(result), 163) // check the resulting byte slice is the expected length
 }

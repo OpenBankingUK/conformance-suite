@@ -52,7 +52,7 @@ var optionalData = []dataHolder{
 // and that the endPointConditionality structure - which holds all the endpoint conditions
 // in a package local manner, can be read
 func TestConditionality(t *testing.T) {
-	count := len(endpointConditionality)
+	count := len(endpointConditionality["account-transaction-v3.0"])
 	result := count > 10 // check we have more than an arbitary number of conditions
 	assert.Equal(t, result, true)
 }
@@ -60,22 +60,62 @@ func TestConditionality(t *testing.T) {
 // Test that GetEndpointConditionality returns a clone of endpointConditionality.
 func TestGetEndpointConditionality(t *testing.T) {
 	assert := assert.New(t)
-
-	assert.Len(GetEndpointConditionality(), len(endpointConditionality))
-	assert.EqualValues(endpointConditionality, GetEndpointConditionality())
+	specification := "account-transaction-v3.0"
+	assert.Len(GetEndpointConditionality(specification), len(endpointConditionality[specification]))
+	assert.EqualValues(endpointConditionality[specification], GetEndpointConditionality(specification))
 
 	// modify returned clone and ensure the original wasn't modified - just being pedantic
-	clone := GetEndpointConditionality()
+	clone := GetEndpointConditionality(specification)
 	clone[0].Endpoint = ""
 
-	assert.EqualValues(endpointConditionality, GetEndpointConditionality())
+	assert.EqualValues(endpointConditionality[specification], GetEndpointConditionality(specification))
+}
+
+func TestConditionalityChecker(t *testing.T) {
+	checker := NewConditionalityChecker()
+	specification := "account-transaction-v3.0"
+
+	t.Run("IsPresent true for endpoint method mix in specification", func(t *testing.T) {
+		result, err := checker.IsPresent("POST", "/account-access-consents", specification)
+		require.Nil(t, err)
+		require.True(t, result)
+	})
+
+	t.Run("IsPresent false for endpoint method mix not in specification", func(t *testing.T) {
+		result, err := checker.IsPresent("PUT", "/account-access-consents", specification)
+		require.Nil(t, err)
+		require.False(t, result)
+	})
+
+	t.Run("MissingMandatory returns array of missing mandatory endpoints", func(t *testing.T) {
+		result, err := checker.MissingMandatory([]Input{}, specification)
+		require.Nil(t, err)
+
+		expectedAllMissing := []Input{}
+		for _, tt := range mandatoryData {
+			expectedAllMissing = append(expectedAllMissing, Input{Method: tt.Method, Endpoint: tt.Endpoint})
+		}
+		assert.Equal(t, result, expectedAllMissing)
+	})
+
+	t.Run("MissingMandatory returns empty array when no missing mandatory endpoints", func(t *testing.T) {
+		allMandatory := []Input{}
+		for _, tt := range mandatoryData {
+			allMandatory = append(allMandatory, Input{Method: tt.Method, Endpoint: tt.Endpoint})
+		}
+		result, err := checker.MissingMandatory(allMandatory, specification)
+		assert.Nil(t, err)
+
+		expectedEmptyMissing := []Input{}
+		assert.Equal(t, result, expectedEmptyMissing)
+	})
 }
 
 // Test all Mandatory endpoints are correct and configured in the model
 func TestMandatoryData(t *testing.T) {
 	checker := NewConditionalityChecker()
 	for _, tt := range mandatoryData {
-		result, err := checker.IsMandatory(tt.Method, tt.Endpoint)
+		result, err := checker.IsMandatory(tt.Method, tt.Endpoint, "account-transaction-v3.0")
 		require.Nil(t, err)
 		require.True(t, result)
 	}
@@ -85,7 +125,7 @@ func TestMandatoryData(t *testing.T) {
 func TestConditionalData(t *testing.T) {
 	checker := NewConditionalityChecker()
 	for _, tt := range conditionalData {
-		result, err := checker.IsConditional(tt.Method, tt.Endpoint)
+		result, err := checker.IsConditional(tt.Method, tt.Endpoint, "account-transaction-v3.0")
 		require.Nil(t, err)
 		require.True(t, result)
 	}
@@ -95,7 +135,7 @@ func TestConditionalData(t *testing.T) {
 func TestOptionalData(t *testing.T) {
 	checker := NewConditionalityChecker()
 	for _, tt := range optionalData {
-		result, err := checker.IsOptional(tt.Method, tt.Endpoint)
+		result, err := checker.IsOptional(tt.Method, tt.Endpoint, "account-transaction-v3.0")
 		require.Nil(t, err)
 		require.True(t, result)
 	}
