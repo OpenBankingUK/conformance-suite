@@ -14,8 +14,9 @@ func TestSpecificationIdentifierFromSchemaVersion(t *testing.T) {
 	})
 
 	t.Run("returns error when invalid schema version URL", func(t *testing.T) {
-		specification, err := SpecificationIdentifierFromSchemaVersion("https://example.com/invalid")
-		assert.NotNil(t, err)
+		schemaVersion := "https://example.com/invalid"
+		specification, err := SpecificationIdentifierFromSchemaVersion(schemaVersion)
+		assert.Equal(t, err.Error(), "No specification found for schema version: "+schemaVersion)
 		assert.Equal(t, specification, "")
 	})
 }
