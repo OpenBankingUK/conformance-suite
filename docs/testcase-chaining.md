@@ -1,7 +1,7 @@
 # Test case parameter chaining
 
-Test case chaining is ability to use part of the results of one test case as input to another test case. Within the test case model, a rule has one or more test sequences, and each test sequence has one or more test cases. Parameter chaining occurs between two test cases within the same test sequence. The source test case is run before the receiving test case. Any part of a response that can be selected for comparison with a 'Matches' clause, can be used to extract data from the source test case, and make it available to the receiving test case.
-Data is transferred between test cases using the Context. Test cases have access to four levels of context scope: 
+Test case chaining is the ability to use part of the results of one test case as input to another test case. Within the test case model, a rule has one or more test sequences, and each test sequence has one or more test cases. Parameter chaining occurs between two test cases within the same test sequence. The source test case is run before the receiving test case. Any part of a response that can be selected for comparison with a 'Matches' clause, can be used to extract data from the source test case, and make it available to the receiving test case.
+Data is transferred between test cases using the Context. Test cases have access to four levels of context scope:
 
 1. test case scope - only visible to the test case
 2. test sequence scope - visible to any test case within the test sequence
@@ -10,7 +10,58 @@ Data is transferred between test cases using the Context. Test cases have access
 
 For test case chaining, the test sequence scope is involved as this exists for the duration of a test sequence and therefore enables parameters to be available after a test case has completed and before a subsequent testcase has started.
 
-In order to move parameter between test cases two directives have been introduced,
+In order to move a parameter between test cases, two directives have been introduced, **contextGet** and **contextPut**. **contextGet** is used in the situation where you **get** a variable from the context and insert the variable into the request payload. **contextPut** is used in the sutation where you **put** a variable into the context for later use.
+
+An example of each use case is below:-
+
+```json
+    "input": {
+        "method": "GET",
+        "endpoint": "/accounts/{AccountId}",
+        "contextGet": [{
+            "name": "AccountId",
+            "purpose": "supplies the account number to be queried",
+            "replaceInEndpoint": "{AccountId}"
+        }]
+    }
+
+```
+
+```json
+    "expect": {
+        "status-code": 200,
+        "matches": [{
+            "description": "A json match on response body",
+            "json": "Data.Account.Accountid",
+            "value": "XYZ1231231231231"
+        }],
+        "contextPut": [{
+            "matches": [{
+                "name": "AccountId",
+                "description": "A json match to extract vaiable to context",
+                "json": "Data.Account.Accountid"
+            }]
+        }]
+    }
+
+```
+
+The structure of **contextGet** clauses is as follows:-
+
+```json
+{
+  "contextPut": {
+    "matches": [
+      {},
+      {},
+      {},
+      {}
+    ]
+  }
+}
+
+```
+
 
 
 

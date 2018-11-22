@@ -30,13 +30,20 @@ type Manifest struct {
 // Rule also identifies all the tests that must be passed in order to show that the rule
 // implementation in conformant with the specific section in the referenced specification
 type Rule struct {
-	ID           string       `json:"@id"`             // JSONLD ID reference
-	Type         []string     `json:"@type,omitempty"` // JSONLD type reference
-	Name         string       `json:"name"`            // A short meaningful name for this rule
-	Purpose      string       `json:"purpose"`         // The purpose of this rule
-	Specref      string       `json:"specref"`         // Description of area of spec/name/version/section under test
-	Speclocation string       `json:"speclocation"`    // specific http reference to location in spec under test covered by this rule
-	Tests        [][]TestCase `json:"tests"`           // Tests - allows for many testcases - array of arrays - to be associated with this rule
+	ID           string           `json:"@id"`             // JSONLD ID reference
+	Type         []string         `json:"@type,omitempty"` // JSONLD type reference
+	Name         string           `json:"name"`            // A short meaningful name for this rule
+	Purpose      string           `json:"purpose"`         // The purpose of this rule
+	Specref      string           `json:"specref"`         // Description of area of spec/name/version/section under test
+	Speclocation string           `json:"speclocation"`    // specific http reference to location in spec under test covered by this rule
+	Tests        [][]TestCase     `json:"tests"`           // Tests - allows for many testcases - array of arrays - to be associated with this rule
+	Executor     TestCaseExecutor // TestCaseExecutor interface allow different testcase execution strategies
+}
+
+// TestCaseExecutor defines an interface capable of executing a testcase
+type TestCaseExecutor interface {
+	//ExecuteTestCase(r *http.Request, t *TestCase, ctx *Context) (*http.Response, error)
+	ExecuteTestCase(r *http.Request, t *TestCase, ctx *Context) (*http.Response, error)
 }
 
 // TestCase defines a test that will be run and needs to be passed as part of the conformance suite
@@ -81,8 +88,12 @@ func (t *TestCase) Prepare(ctx *Context) (*http.Request, error) {
 // The context object is passed as part of the validation as its allows the match clauses to
 // examine the request object and 'push' response variables into the context object for use
 // in downstream test cases which are potentially part of this testcase sequence
-func (t *TestCase) Validate(resp *http.Response, ctx *Context) error {
-	return nil
+// returns true - validation successful
+//         false - validation unsuccessful
+//         error - adds detail to validation failure
+//         TODO - cater for returning multiple validation failures and explanations
+func (t *TestCase) Validate(resp *http.Response, ctx *Context) (bool, error) {
+	return false, nil
 }
 
 // Input defines the content of the http request object used to execute the test case
@@ -92,8 +103,9 @@ func (t *TestCase) Validate(resp *http.Response, ctx *Context) error {
 // to the parent Rule which determine how to execute the requestion object. On execution an http response object
 // is received and passed back to the testcase for validation using the Expects object.
 type Input struct {
-	Method   string `json:"method"`   // http Method that this test case uses
-	Endpoint string `json:"endpoint"` // resource endpoint where the http object needs to be sent to get a response
+	Method     string          `json:"method,omitempty"`     // http Method that this test case uses
+	Endpoint   string          `json:"endpoint,omitempty"`   // resource endpoint where the http object needs to be sent to get a response
+	ContextGet ContextAccessor `json:"contextPut,omitempty"` // Allows retrieval of context variables an input parameters
 }
 
 // Context is intended to handle two types of object and make them available to various parts of the suite including
@@ -108,21 +120,8 @@ type Expect struct {
 	StatusCode       int  `json:"status-code,omitempty"`       // Http response code
 	SchemaValidation bool `json:"schema-validation,omitempty"` // Flag to indicate if we need schema validation -
 	// provides the ability to switch off schema validation
-	Matches []Match `json:"matches,omitempty"` // An array of zero or more match items which must be 'passed' for the testcase to succeed
-}
-
-// Match encapsulates a conditional statement that must 'match' in order to succeed.
-// Matches should -
-// - match using a specific JSON field and a value
-// - match using a Regex expression
-// - match a specific header field to a value
-// - match using a Regex expression on a header field
-type Match struct {
-	Description string `json:"description,omitempty"`
-	JSON        string `json:"json,omitempty"`
-	Value       string `json:"value,omitempty"`
-	Regex       string `json:"regex,omitempty"`
-	Header      string `json:"header,omitempty"`
+	Matches    []Match         `json:"matches,omitempty"`    // An array of zero or more match items which must be 'passed' for the testcase to succeed
+	ContextPut ContextAccessor `json:"contextPut,omitempty"` // allows storing of test response fragments in context variables
 }
 
 // ApplyInput - creates an HTTP request for this test case
@@ -140,7 +139,7 @@ type Match struct {
 func (t *TestCase) ApplyInput() (*http.Request, error) {
 	// NOTE: This is an initial implementation to get things moving - expect a lot of change in this function
 	var err error
-	if (t.Input == Input{}) {
+	if &t.Input.Endpoint == nil || &t.Input.Method == nil { // we don't have a value input object
 		return nil, errors.New("Testcase Input empty")
 	}
 	if t.Input.Method != "GET" { // Only get Supported Initially
@@ -339,4 +338,14 @@ func (r *Rule) GetPermissionSets() (included, excluded []string) {
 	}
 
 	return includedSet.GetPermissions(), excludedSet.GetPermissions()
+}
+
+// Execute the testcase
+// For the rule this effectively equates to sending the assembled http request from
+// the testcase to an endpoint (typically ASPSP implemetation) and getting an http.Response
+// The http.Request at this point will contain the fully assembled request from a testcase point of view
+// - testcase will have likely pulled out appropriate access_tokens/permissions
+// - rule will have the opportunited to further decorate this request before passing on
+func (r *Rule) Execute(req *http.Request, tc *TestCase) (*http.Response, error) {
+	return r.Executor.ExecuteTestCase(req, tc, &Context{})
 }

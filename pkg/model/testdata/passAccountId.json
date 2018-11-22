@@ -21,7 +21,9 @@
                         "method": "GET",
                         "endpoint": "/accounts/"
                     },
-                    "context": {},
+                    "context": {
+                        "baseurl":"http://myaspsp"
+                    },
                     "expect": {
                         "status-code": 200,
                         "matches": [{
@@ -53,6 +55,7 @@
                         }]
                     },
                     "context": {
+                        "baseurl":"http://myaspsp"
                     },
                     "expect": {
                         "status-code": 200,

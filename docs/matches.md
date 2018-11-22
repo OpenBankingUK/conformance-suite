@@ -37,7 +37,7 @@ The following json fragments show examples of each of the selection options :-
         "matches": [{
             "description": "match a header value using a regex",
             "header":"Proxied-via",
-            "header-regex": "^mybox$",
+            "regex": "^mybox$",
         }],
     }
 ```
@@ -46,7 +46,7 @@ The following json fragments show examples of each of the selection options :-
     "expect": {
         "matches": [{
             "description": "check that a header is present",
-            "header-present": "content-length"
+            "header-exists": "content-length"
          }]
     }
 ```
@@ -55,7 +55,7 @@ The following json fragments show examples of each of the selection options :-
     "expect": {
         "matches": [{
             "description": "body-regex",
-            "body-regex": ".*London Bridge.*",
+            "regex": ".*London Bridge.*",
         }],
     }
 ```
@@ -74,7 +74,7 @@ The following json fragments show examples of each of the selection options :-
         "matches": [{
             "description": "A json field count present",
             "json": "Data.Account.[*]Accountid",
-            "count: 4
+            "count": 4
         }],
     }
 ```
