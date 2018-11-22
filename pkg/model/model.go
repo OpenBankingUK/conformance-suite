@@ -42,6 +42,7 @@ type Rule struct {
 
 // TestCaseExecutor defines an interface capable of executing a testcase
 type TestCaseExecutor interface {
+	//ExecuteTestCase(r *http.Request, t *TestCase, ctx *Context) (*http.Response, error)
 	ExecuteTestCase(r *http.Request, t *TestCase, ctx *Context) (*http.Response, error)
 }
 
@@ -68,60 +69,16 @@ type TestCase struct {
 	Request    *http.Request // The request that's been generated in order to call the endpoint
 }
 
-// Input defines the content of the http request object used to execute the test case
-// Input is built up typically from the openapi/swagger definition of the method/endpoint for a particualar
-// specification. Additional properties/fields/headers can be added or change in order to setup the http
-// request object of the specific test case. Once setup correctly,the testcase gives the http request object
-// to the parent Rule which determine how to execute the requestion object. On execution an http response object
-// is received and passed back to the testcase for validation using the Expects object.
-type Input struct {
-	Method   string `json:"method"`   // http Method that this test case uses
-	Endpoint string `json:"endpoint"` // resource endpoint where the http object needs to be sent to get a response
-}
-
-// Context is intended to handle two types of object and make them available to various parts of the suite including
-// testcases. The first set are objects created as a result of the discovery phase, which capture discovery model
-// information like endpoints and conditional implementation indicators. The other set of data is information passed
-// between a sequeuence of test cases, for example AccountId - extracted from the output of one testcase (/Accounts) and fed in
-// as part of the input of another testcase for example (/Accounts/{AccountId}/transactions}
-type Context struct {
-	store   map[string]interface{}
-	ID      string `json:"@id,omitempty"`
-	BaseURL string `json:"baseurl,omitempty"`
-}
-
-// Expect defines a structure for expressing testcase result expectations.
-type Expect struct {
-	StatusCode       int  `json:"status-code,omitempty"`       // Http response code
-	SchemaValidation bool `json:"schema-validation,omitempty"` // Flag to indicate if we need schema validation -
-	// provides the ability to switch off schema validation
-	Matches []Match `json:"matches,omitempty"` // An array of zero or more match items which must be 'passed' for the testcase to succeed
-}
-
-// Match encapsulates a conditional statement that must 'match' in order to succeed.
-// Matches should -
-// - match using a specific JSON field and a value
-// - match using a Regex expression
-// - match a specific header field to a value
-// - match using a Regex expression on a header field
-type Match struct {
-	Description string `json:"description,omitempty"`
-	JSON        string `json:"json,omitempty"`
-	Value       string `json:"value,omitempty"`
-	Regex       string `json:"regex,omitempty"`
-	Header      string `json:"header,omitempty"`
-}
-
 // Prepare a Testcase for execution at and endpoint,
 // results in a standard http request that encapsulates the testcase request
 // as defined in the test case object with any context inputs/replacements etc applied
-func (t *TestCase) Prepare(ctx *Context, resp *http.Response) (*http.Request, error) {
+func (t *TestCase) Prepare(ctx *Context) (*http.Request, error) {
 	req, err := t.ApplyInput()
 	if err != nil {
 		return nil, err
 	}
 	req, err = t.ApplyContext() // Apply Context at end of creating request
-	return req, nil
+	return req, err
 }
 
 // Validate takes the http response that results as a consequence of sending the testcase http
@@ -131,8 +88,40 @@ func (t *TestCase) Prepare(ctx *Context, resp *http.Response) (*http.Request, er
 // The context object is passed as part of the validation as its allows the match clauses to
 // examine the request object and 'push' response variables into the context object for use
 // in downstream test cases which are potentially part of this testcase sequence
-func (t *TestCase) Validate(resp *http.Response, ctx *Context) error {
-	return nil
+// returns true - validation successful
+//         false - validation unsuccessful
+//         error - adds detail to validation failure
+//         TODO - cater for returning multiple validation failures and explanations
+func (t *TestCase) Validate(resp *http.Response, ctx *Context) (bool, error) {
+	return false, nil
+}
+
+// Input defines the content of the http request object used to execute the test case
+// Input is built up typically from the openapi/swagger definition of the method/endpoint for a particualar
+// specification. Additional properties/fields/headers can be added or change in order to setup the http
+// request object of the specific test case. Once setup correctly,the testcase gives the http request object
+// to the parent Rule which determine how to execute the requestion object. On execution an http response object
+// is received and passed back to the testcase for validation using the Expects object.
+type Input struct {
+	Method     string          `json:"method,omitempty"`     // http Method that this test case uses
+	Endpoint   string          `json:"endpoint,omitempty"`   // resource endpoint where the http object needs to be sent to get a response
+	ContextGet ContextAccessor `json:"contextPut,omitempty"` // Allows retrieval of context variables an input parameters
+}
+
+// Context is intended to handle two types of object and make them available to various parts of the suite including
+// testcases. The first set are objects created as a result of the discovery phase, which capture discovery model
+// information like endpoints and conditional implementation indicators. The other set of data is information passed
+// between a sequeuence of test cases, for example AccountId - extracted from the output of one testcase (/Accounts) and fed in
+// as part of the input of another testcase for example (/Accounts/{AccountId}/transactions}
+type Context map[string]interface{}
+
+// Expect defines a structure for expressing testcase result expectations.
+type Expect struct {
+	StatusCode       int  `json:"status-code,omitempty"`       // Http response code
+	SchemaValidation bool `json:"schema-validation,omitempty"` // Flag to indicate if we need schema validation -
+	// provides the ability to switch off schema validation
+	Matches    []Match         `json:"matches,omitempty"`    // An array of zero or more match items which must be 'passed' for the testcase to succeed
+	ContextPut ContextAccessor `json:"contextPut,omitempty"` // allows storing of test response fragments in context variables
 }
 
 // ApplyInput - creates an HTTP request for this test case
@@ -150,7 +139,7 @@ func (t *TestCase) Validate(resp *http.Response, ctx *Context) error {
 func (t *TestCase) ApplyInput() (*http.Request, error) {
 	// NOTE: This is an initial implementation to get things moving - expect a lot of change in this function
 	var err error
-	if (t.Input == Input{}) {
+	if &t.Input.Endpoint == nil || &t.Input.Method == nil { // we don't have a value input object
 		return nil, errors.New("Testcase Input empty")
 	}
 	if t.Input.Method != "GET" { // Only get Supported Initially
@@ -162,7 +151,6 @@ func (t *TestCase) ApplyInput() (*http.Request, error) {
 	}
 	t.Request = req // store the request in the testcase
 
-	req, err = t.ApplyContext() // Apply Context at end of creating request
 	return req, err
 }
 
@@ -171,21 +159,25 @@ func (t *TestCase) ApplyInput() (*http.Request, error) {
 // Context parameter typically involve variables that originaled in discovery
 // The functionality of ApplyContext will grow significantly over time.
 func (t *TestCase) ApplyContext() (*http.Request, error) {
-	req := t.Request
-	if t.Context.BaseURL != "" {
-		u, err := url.Parse(t.Context.BaseURL + t.Input.Endpoint) // expand url in request to be full pathname including Discovery endpoint info from context
+	base := t.Context.Get("baseurl")
+	if base != nil {
+		urlWithBase, err := url.Parse(base.(string) + t.Input.Endpoint) // expand url in request to be full pathname including Discovery endpoint info from context
 		if err != nil {
-			return nil, errors.New("Error parsing context baseURL: (" + t.Context.BaseURL + ")")
+			return nil, errors.New("Error parsing context baseURL: (" + base.(string) + ")")
 		}
-		req.URL = u
+		t.Request.URL = urlWithBase
 	}
-	return req, nil
+	return t.Request, nil
 }
 
 // ApplyExpects runs the Expects section of the testcase to evaluate if the response from the system under test passes or fails
 // The Expects section of a testcase can contain multiple conditions that need to be met to pass a testcase
 // When a test failes, it the ApplyExpects that is responsible for reporting back information about the failure, why it occured, where it occured etc.
 func (t *TestCase) ApplyExpects(res *http.Response) (bool, error) {
+	if res == nil { // if we've not got a response object to check, always return false
+		return false, errors.New("nil http.Response - cannot process ApplyExpects")
+	}
+
 	if t.Expect.StatusCode != res.StatusCode { // Status codes don't match
 		return false, fmt.Errorf("(%s):%s: HTTP Status code does not match: expected %d got %d", t.ID, t.Name, t.Expect.StatusCode, res.StatusCode)
 	}
@@ -202,6 +194,85 @@ func (t *TestCase) ApplyExpects(res *http.Response) (bool, error) {
 		}
 	}
 	return true, nil
+}
+
+// Get the key form the Context map - currently assumes value converts easily to a string!
+func (c Context) Get(key string) interface{} {
+	return c[key]
+}
+
+// Put a value indexed by 'key' into the context. The value can be any type
+func (c Context) Put(key string, value interface{}) {
+	c[key] = value
+}
+
+// NewTestCase creates an Context thats initialised correctly with a map structure
+// which holds the context parameters
+func NewTestCase() *TestCase {
+	var t TestCase
+	t.Context = make(map[string]interface{})
+	return &t
+}
+
+// GetIncludedPermission returns the list of permission names that need to be included
+// in the access token for this testcase. See permission model docs for more information
+//
+func (t *TestCase) GetIncludedPermission() []string {
+	var result []string
+	if t.Context["permissions"] != nil {
+		permissionArray := t.Context["permissions"].([]interface{})
+		for _, permissionName := range permissionArray {
+			result = append(result, permissionName.(string))
+		}
+		return result
+	}
+
+	// for defaults to apply there should be no permissions no permissions_excluded specified
+	if t.Context["permissions"] == nil && t.Context["permissions_excluded"] == nil {
+		// Attempt to get default permissions
+		perms := GetPermissionsForEndpoint(t.Input.Endpoint)
+		if len(perms) > 1 { // need to figure out default
+			for _, p := range perms { // find default permission
+				if p.Default == true {
+					return []string{p.Permission}
+				}
+			}
+		} else {
+			if len(perms) > 0 { // only one permission so return that
+				return []string{perms[0].Permission}
+			}
+		}
+		return []string{} // no defaults - no permisions
+	}
+
+	if t.Context["permissions"] == nil {
+		return []string{}
+	}
+	return result
+}
+
+// GetExcludedPermissions return a list of excluded permissions
+func (t *TestCase) GetExcludedPermissions() []string {
+	var permissionArray []interface{}
+	var result []string
+	if t.Context["permissions_excluded"] == nil {
+		return []string{}
+	}
+	permissionArray = t.Context["permissions_excluded"].([]interface{})
+	if permissionArray == nil {
+		return []string{}
+	}
+	for _, permissionName := range permissionArray {
+		result = append(result, permissionName.(string))
+	}
+	return result
+}
+
+// GetPermissions returns a list of Permission objects associated with a testcase
+func (t *TestCase) GetPermissions() (included, excluded []string) {
+	included = t.GetIncludedPermission()
+	excluded = t.GetExcludedPermissions()
+	return
 }
 
 // Various helpers - main to dump struct contents to console
@@ -249,49 +320,32 @@ func (r *Rule) RunTests() {
 	}
 }
 
+// GetPermissionSets returns the inclusive and exclusive permission sets required
+// to run the tests under this rule.
+// Initially the granulatiy of permissionSets will be set at rule level, meaning that one
+// included set and one excluded set will cover all the testcases with a rule.
+// In future iterations it may be desirable to have per testSequence permissionSets as this
+// would allow a finer grained mix of negative permission testing
+func (r *Rule) GetPermissionSets() (included, excluded []string) {
+	includedSet := NewPermissionSet("included", []string{})
+	excludedSet := NewPermissionSet("excluded", []string{})
+	for _, testSequence := range r.Tests {
+		for _, test := range testSequence {
+			i, x := test.GetPermissions()
+			includedSet.AddPermissions(i)
+			excludedSet.AddPermissions(x)
+		}
+	}
+
+	return includedSet.GetPermissions(), excludedSet.GetPermissions()
+}
+
 // Execute the testcase
 // For the rule this effectively equates to sending the assembled http request from
-// the testcase to an endpoint (typically APSPS implemetation) and getting an http.Response
+// the testcase to an endpoint (typically ASPSP implemetation) and getting an http.Response
 // The http.Request at this point will contain the fully assembled request from a testcase point of view
 // - testcase will have likely pulled out appropriate access_tokens/permissions
 // - rule will have the opportunited to further decorate this request before passing on
 func (r *Rule) Execute(req *http.Request, tc *TestCase) (*http.Response, error) {
-
-	return nil, nil
-}
-
-// NewContext creates an Context thats initialised correctly with a map structure
-// which holds the context parameters
-func NewContext() *Context {
-	var c Context
-	c.store = make(map[string]interface{})
-	return &c
-}
-
-// Unmarshall -
-func (c *Context) Unmarshall() error {
-	//	err := json.Unmarshal(&c.Data, &c.Store)
-	return nil
-}
-
-// Get the key form the Context map - currently assumes value converts easily to a string!
-func (c *Context) Get(key string) string {
-	value := c.store[key]
-	if value == nil {
-		return ""
-	}
-	return c.store[key].(string)
-}
-
-// Put a value indexed by 'key' into the context. The value can be any type
-func (c *Context) Put(key string, value interface{}) {
-	c.store[key] = value
-}
-
-// Dump Context, Diagnostic aid to dump out contents of context
-func (c *Context) Dump() {
-	fmt.Printf("Context: ID %s, BaseURL %s\n", c.ID, c.BaseURL)
-	for k, v := range c.store {
-		fmt.Printf("key[%s], value: %#v\n", k, v)
-	}
+	return r.Executor.ExecuteTestCase(req, tc, &Context{})
 }

@@ -21,14 +21,24 @@
                         "method": "GET",
                         "endpoint": "/accounts/"
                     },
-                    "context": {},
+                    "context": {
+                        "baseurl":"http://myaspsp"
+                    },
                     "expect": {
                         "status-code": 200,
                         "matches": [{
                             "description": "A json match on response body",
-                            "contextPut": "AccountId",
-                            "json": "Data.Account.Accountid"
+                            "json": "Data.Account.Accountid",
+                            "value": "XYZ1231231231231"
+                        }],
+                        "contextPut": [{
+                            "matches": [{
+                                "name": "AccountId",                                
+                                "description": "A json match to extract vaiable to context",                                
+                                "json": "Data.Account.Accountid"
+                            }]
                         }]
+
                     }
                 },
                 {
@@ -45,6 +55,7 @@
                         }]
                     },
                     "context": {
+                        "baseurl":"http://myaspsp"
                     },
                     "expect": {
                         "status-code": 200,
