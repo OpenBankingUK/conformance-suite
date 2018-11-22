@@ -100,13 +100,17 @@ func HasValidEndpoints(checker model.ConditionalityChecker, discoveryConfig *Mod
 		schemaVersion := discoveryItem.APISpecification.SchemaVersion
 		specification, err := model.SpecificationIdentifierFromSchemaVersion(schemaVersion)
 		if err != nil {
-			return false, err
+			warning := fmt.Sprintf("discoveryItemIndex=%d, "+err.Error(), discoveryItemIndex)
+			errs = append(errs, warning)
+			continue
 		}
 
 		for _, endpoint := range discoveryItem.Endpoints {
 			isPresent, err := checker.IsPresent(endpoint.Method, endpoint.Path, specification)
 			if err != nil {
-				return false, err
+				warning := fmt.Sprintf("discoveryItemIndex=%d, "+err.Error(), discoveryItemIndex)
+				errs = append(errs, warning)
+				continue
 			}
 			if !isPresent {
 				err := fmt.Sprintf(
@@ -137,7 +141,9 @@ func HasMandatoryEndpoints(checker model.ConditionalityChecker, discoveryConfig 
 		schemaVersion := discoveryItem.APISpecification.SchemaVersion
 		specification, err := model.SpecificationIdentifierFromSchemaVersion(schemaVersion)
 		if err != nil {
-			return false, err
+			warning := fmt.Sprintf("discoveryItemIndex=%d, "+err.Error(), discoveryItemIndex)
+			errs = append(errs, warning)
+			continue
 		}
 
 		discoveryEndpoints := []model.Input{}
@@ -146,7 +152,9 @@ func HasMandatoryEndpoints(checker model.ConditionalityChecker, discoveryConfig 
 		}
 		missingMandatory, err := checker.MissingMandatory(discoveryEndpoints, specification)
 		if err != nil {
-			return false, err
+			warning := fmt.Sprintf("discoveryItemIndex=%d, "+err.Error(), discoveryItemIndex)
+			errs = append(errs, warning)
+			continue
 		}
 		for _, mandatoryEndpoint := range missingMandatory {
 			err := fmt.Sprintf(
