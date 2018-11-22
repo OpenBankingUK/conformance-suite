@@ -1,0 +1,45 @@
+{
+    "rules": [{
+        "@id": "#r0001",
+        "@type": ["jld:testsuiteRule"],
+        "name": "Get Accounts Basic Rule",
+        "purpose": "Accesses the Accounts endpoint and retrives a list of PSU accounts",
+        "specref": "Read Write 2.0 section subsection 1 point 1a",
+        "speclocation": "https://openbanking.org.uk/rw2.0spec/errata#1.1a",
+        "tests": [
+            [{
+                    "@id": "#t1001",
+                    "name": "Transaction Test with Permissions",
+                    "input": {
+                        "method": "GET",
+                        "endpoint": "/transactions"
+                    },
+                    "context": {
+                        "permissions":["ReadTransactionsBasic","ReadTransactionsCredits"],
+                        "permissions_excluded":["ReadTransactionsDebits"]            
+                    },
+                    "expect": {
+                        "status-code": 200,
+                        "schema-validation": true
+                    }
+                },
+                {
+                    "@id": "#t1002",
+                    "name": "Transaction Test with Permissions",
+                    "input": {
+                        "method": "GET",
+                        "endpoint": "/transactions/{TransactionId}"
+                    },
+                    "context": {
+                        "permissions":["ReadTransactionsBasic","ReadTransactionsCredits","DummyReadTransaction"],
+                        "permissions_excluded":["DummyReadCredit"]
+                    },
+                    "expect": {
+                        "status-code": 200,
+                        "schema-validation": true
+                    }
+                }
+            ]
+        ]
+    }]
+}

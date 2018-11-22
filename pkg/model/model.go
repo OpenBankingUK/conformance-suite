@@ -62,6 +62,29 @@ type TestCase struct {
 	Request    *http.Request // The request that's been generated in order to call the endpoint
 }
 
+// Prepare a Testcase for execution at and endpoint,
+// results in a standard http request that encapsulates the testcase request
+// as defined in the test case object with any context inputs/replacements etc applied
+func (t *TestCase) Prepare(ctx *Context) (*http.Request, error) {
+	req, err := t.ApplyInput()
+	if err != nil {
+		return nil, err
+	}
+	req, err = t.ApplyContext() // Apply Context at end of creating request
+	return req, err
+}
+
+// Validate takes the http response that results as a consequence of sending the testcase http
+// request to the endpoint implementation. Validate is responsible for checking the http status
+// code and running the set of 'Matches' within the 'Expect' object, to determine if all the
+// match conditions are met - which would mean the validation passed.
+// The context object is passed as part of the validation as its allows the match clauses to
+// examine the request object and 'push' response variables into the context object for use
+// in downstream test cases which are potentially part of this testcase sequence
+func (t *TestCase) Validate(resp *http.Response, ctx *Context) error {
+	return nil
+}
+
 // Input defines the content of the http request object used to execute the test case
 // Input is built up typically from the openapi/swagger definition of the method/endpoint for a particualar
 // specification. Additional properties/fields/headers can be added or change in order to setup the http
@@ -78,10 +101,7 @@ type Input struct {
 // information like endpoints and conditional implementation indicators. The other set of data is information passed
 // between a sequeuence of test cases, for example AccountId - extracted from the output of one testcase (/Accounts) and fed in
 // as part of the input of another testcase for example (/Accounts/{AccountId}/transactions}
-type Context struct {
-	ID      string `json:"@id,omitempty"`
-	BaseURL string `json:"baseurl,omitempty"`
-}
+type Context map[string]interface{}
 
 // Expect defines a structure for expressing testcase result expectations.
 type Expect struct {
@@ -132,7 +152,6 @@ func (t *TestCase) ApplyInput() (*http.Request, error) {
 	}
 	t.Request = req // store the request in the testcase
 
-	req, err = t.ApplyContext() // Apply Context at end of creating request
 	return req, err
 }
 
@@ -141,21 +160,25 @@ func (t *TestCase) ApplyInput() (*http.Request, error) {
 // Context parameter typically involve variables that originaled in discovery
 // The functionality of ApplyContext will grow significantly over time.
 func (t *TestCase) ApplyContext() (*http.Request, error) {
-	req := t.Request
-	if (t.Context != Context{}) && (t.Context.BaseURL != "") {
-		u, err := url.Parse(t.Context.BaseURL + t.Input.Endpoint) // expand url in request to be full pathname including Discovery endpoint info from context
+	base := t.Context.Get("baseurl")
+	if base != nil {
+		urlWithBase, err := url.Parse(base.(string) + t.Input.Endpoint) // expand url in request to be full pathname including Discovery endpoint info from context
 		if err != nil {
-			return nil, errors.New("Error parsing context baseURL: (" + t.Context.BaseURL + ")")
+			return nil, errors.New("Error parsing context baseURL: (" + base.(string) + ")")
 		}
-		req.URL = u
+		t.Request.URL = urlWithBase
 	}
-	return req, nil
+	return t.Request, nil
 }
 
 // ApplyExpects runs the Expects section of the testcase to evaluate if the response from the system under test passes or fails
 // The Expects section of a testcase can contain multiple conditions that need to be met to pass a testcase
 // When a test failes, it the ApplyExpects that is responsible for reporting back information about the failure, why it occured, where it occured etc.
 func (t *TestCase) ApplyExpects(res *http.Response) (bool, error) {
+	if res == nil { // if we've not got a response object to check, always return false
+		return false, errors.New("nil http.Response - cannot process ApplyExpects")
+	}
+
 	if t.Expect.StatusCode != res.StatusCode { // Status codes don't match
 		return false, fmt.Errorf("(%s):%s: HTTP Status code does not match: expected %d got %d", t.ID, t.Name, t.Expect.StatusCode, res.StatusCode)
 	}
@@ -172,6 +195,85 @@ func (t *TestCase) ApplyExpects(res *http.Response) (bool, error) {
 		}
 	}
 	return true, nil
+}
+
+// Get the key form the Context map - currently assumes value converts easily to a string!
+func (c Context) Get(key string) interface{} {
+	return c[key]
+}
+
+// Put a value indexed by 'key' into the context. The value can be any type
+func (c Context) Put(key string, value interface{}) {
+	c[key] = value
+}
+
+// NewTestCase creates an Context thats initialised correctly with a map structure
+// which holds the context parameters
+func NewTestCase() *TestCase {
+	var t TestCase
+	t.Context = make(map[string]interface{})
+	return &t
+}
+
+// GetIncludedPermission returns the list of permission names that need to be included
+// in the access token for this testcase. See permission model docs for more information
+//
+func (t *TestCase) GetIncludedPermission() []string {
+	var result []string
+	if t.Context["permissions"] != nil {
+		permissionArray := t.Context["permissions"].([]interface{})
+		for _, permissionName := range permissionArray {
+			result = append(result, permissionName.(string))
+		}
+		return result
+	}
+
+	// for defaults to apply there should be no permissions no permissions_excluded specified
+	if t.Context["permissions"] == nil && t.Context["permissions_excluded"] == nil {
+		// Attempt to get default permissions
+		perms := GetPermissionsForEndpoint(t.Input.Endpoint)
+		if len(perms) > 1 { // need to figure out default
+			for _, p := range perms { // find default permission
+				if p.Default == true {
+					return []string{p.Permission}
+				}
+			}
+		} else {
+			if len(perms) > 0 { // only one permission so return that
+				return []string{perms[0].Permission}
+			}
+		}
+		return []string{} // no defaults - no permisions
+	}
+
+	if t.Context["permissions"] == nil {
+		return []string{}
+	}
+	return result
+}
+
+// GetExcludedPermissions return a list of excluded permissions
+func (t *TestCase) GetExcludedPermissions() []string {
+	var permissionArray []interface{}
+	var result []string
+	if t.Context["permissions_excluded"] == nil {
+		return []string{}
+	}
+	permissionArray = t.Context["permissions_excluded"].([]interface{})
+	if permissionArray == nil {
+		return []string{}
+	}
+	for _, permissionName := range permissionArray {
+		result = append(result, permissionName.(string))
+	}
+	return result
+}
+
+// GetPermissions returns a list of Permission objects associated with a testcase
+func (t *TestCase) GetPermissions() (included, excluded []string) {
+	included = t.GetIncludedPermission()
+	excluded = t.GetExcludedPermissions()
+	return
 }
 
 // Various helpers - main to dump struct contents to console
@@ -217,4 +319,24 @@ func (r *Rule) RunTests() {
 			fmt.Println("Test Result: ", true)
 		}
 	}
+}
+
+// GetPermissionSets returns the inclusive and exclusive permission sets required
+// to run the tests under this rule.
+// Initially the granulatiy of permissionSets will be set at rule level, meaning that one
+// included set and one excluded set will cover all the testcases with a rule.
+// In future iterations it may be desirable to have per testSequence permissionSets as this
+// would allow a finer grained mix of negative permission testing
+func (r *Rule) GetPermissionSets() (included, excluded []string) {
+	includedSet := NewPermissionSet("included", []string{})
+	excludedSet := NewPermissionSet("excluded", []string{})
+	for _, testSequence := range r.Tests {
+		for _, test := range testSequence {
+			i, x := test.GetPermissions()
+			includedSet.AddPermissions(i)
+			excludedSet.AddPermissions(x)
+		}
+	}
+
+	return includedSet.GetPermissions(), excludedSet.GetPermissions()
 }
