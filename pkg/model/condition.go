@@ -3,6 +3,7 @@ package model
 import (
 	"encoding/json"
 	"errors"
+	"flag"
 	"io/ioutil"
 	"os"
 
@@ -187,7 +188,11 @@ func findCondition(method, endpoint string, specification string) (Conditionalit
 
 // loadConditions - get Mandatory/Conditional/Optional data from json file
 func loadConditions() error {
-	rawjson, err := ioutil.ReadFile("../../pkg/model/conditionality.json") // lives here for now until we figure out somewhere better
+	file := "./pkg/model/conditionality.json"
+	if flag.Lookup("test.v") != nil {
+		file = "../../pkg/model/conditionality.json" // different path when running tests
+	}
+	rawjson, err := ioutil.ReadFile(file)
 	if err != nil {
 		return err
 	}

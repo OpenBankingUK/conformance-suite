@@ -3,6 +3,7 @@ package model
 import (
 	"encoding/json"
 	"errors"
+	"flag"
 	"io/ioutil"
 	"os"
 
@@ -33,7 +34,13 @@ func init() {
 
 // loadSpecifications - get specification data from json file
 func loadSpecifications() error {
-	rawjson, err := ioutil.ReadFile("../../config/specifications.json")
+	file := "./config/specifications.json"
+	if flag.Lookup("test.v") != nil {
+		file = "../../config/specifications.json" // different path when running tests
+	}
+
+	rawjson, err := ioutil.ReadFile(file)
+
 	if err != nil {
 		return err
 	}
