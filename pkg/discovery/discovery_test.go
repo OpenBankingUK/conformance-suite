@@ -23,11 +23,21 @@ type invalidTestCase struct {
 type conditionalityCheckerMock struct {
 }
 
+// IsOptional - not used in discovery test
+func (c conditionalityCheckerMock) IsOptional(method, endpoint string, specification string) (bool, error) {
+	return false, nil
+}
+
 // Returns IsMandatory true for POST /account-access-consents, false for all other endpoint/methods.
 func (c conditionalityCheckerMock) IsMandatory(method, endpoint string, specification string) (bool, error) {
 	if method == "POST" && endpoint == "/account-access-consents" {
 		return true, nil
 	}
+	return false, nil
+}
+
+// IsConditional - not used in discovery test
+func (c conditionalityCheckerMock) IsConditional(method, endpoint string, specification string) (bool, error) {
 	return false, nil
 }
 

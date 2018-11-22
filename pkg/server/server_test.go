@@ -61,25 +61,33 @@ var (
 type conditionalityCheckerMock struct {
 }
 
+// IsOptional - not used in discovery test
+func (c conditionalityCheckerMock) IsOptional(method, endpoint string, specification string) (bool, error) {
+	return false, nil
+}
+
 // Returns IsMandatory true for POST /account-access-consents, false for all other endpoint/methods.
 func (c conditionalityCheckerMock) IsMandatory(method, endpoint string, specification string) (bool, error) {
 	if method == "POST" && endpoint == "/account-access-consents" {
 		return true, nil
-	} else {
-		return false, nil
 	}
+	return false, nil
+}
+
+// IsOptional - not used in discovery test
+func (c conditionalityCheckerMock) IsConditional(method, endpoint string, specification string) (bool, error) {
+	return false, nil
 }
 
 // Returns IsPresent true for valid GET/POST/DELETE endpoints.
 func (c conditionalityCheckerMock) IsPresent(method, endpoint string, specification string) (bool, error) {
 	if method == "GET" || method == "POST" || method == "DELETE" {
 		return true, nil
-	} else {
-		return false, nil
 	}
+	return false, nil
 }
 
-func (checker conditionalityCheckerMock) MissingMandatory(endpoints []model.Input, specification string) ([]model.Input, error) {
+func (c conditionalityCheckerMock) MissingMandatory(endpoints []model.Input, specification string) ([]model.Input, error) {
 	return []model.Input{}, nil
 }
 
