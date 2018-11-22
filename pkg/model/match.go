@@ -68,7 +68,7 @@ type ContextGetter interface {
 // variable), a description (so if things go wrong we can accurately report) and an operation which results in
 // the a selection which is copied into the context variable
 // Note: the initial interation of this will just implement the JSON pattern/field matcher
-func (c *ContextAccessor) PutValues(resp *http.Response) error {
+func (c *ContextAccessor) PutValues(resp *http.Response) (string, interface{}, error) {
 	for _, m := range c.Matches {
 		// Figure out match type
 		// Execute to move selected/data sample into
@@ -76,17 +76,17 @@ func (c *ContextAccessor) PutValues(resp *http.Response) error {
 		// Must have name - target context variable
 		// Must have description
 		if len(m.ContextName) == 0 || len(m.Description) == 0 {
-			return errors.New("ContextName or Description is empty")
+			return "", nil, errors.New("ContextName or Description is empty")
 		}
 
 		if len(m.JSON) == 0 {
-			return errors.New("JSON target is empty")
+			return "", nil, errors.New("JSON target is empty")
 		}
 
 		m.Execute(resp) // maybe not this ... but ...
 		// maybe m.PutValues - returns variable name, value, error code --- generically
 	}
-	return nil
+	return "", nil, nil
 }
 
 // Execute a match function
@@ -115,9 +115,9 @@ func (c *ContextAccessor) GetValues() error {
 
 }
 
-func (c *ContextAccessor) PutValues() (string, interface{}, error) {
+// func (c *ContextAccessor) PutValues() (string, interface{}, error) {
 
-}
+// }
 
 // Maybe put errors in the context for collection by the rule and reporting back.
 // An slice of errors
