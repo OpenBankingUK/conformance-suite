@@ -2,30 +2,33 @@ package model
 
 import (
 	"errors"
-	"fmt"
 	"io/ioutil"
 	"net/http"
 
 	"github.com/tidwall/gjson"
 )
 
+// ContextAccessor -
 type ContextAccessor struct {
-	Context *Context
 	Matches []Match `json:"matches,omitempty"`
 }
 
-// // ContextPut is a directive used to PUT variables to the context from a test case definition
-// type ContextPut struct {
-// 	Context Context
-// 	Matches []Match `json:"matches,omitempty"`
-// }
+// MatchType enumeration
+type MatchType int
 
-// // ContextGet is a directive used to GET variables from a context and insert them into a test case
-// // request payload
-// type ContextGet struct {
-// 	Context Context
-// 	Matches []Match `json:"matches,omitempty"`
-// }
+// MatchType enumeration
+const (
+	StatusCode MatchType = iota
+	HeaderValue
+	HeaderRegex
+	HeaderPresent
+	BodyRegex
+	BodyJSONPresent
+	BodyJSONCount
+	BodyJSONValue
+	BodyJSONRegex
+	BodyLength
+)
 
 // Match defines various types of request, and response payload pattern and field checking
 // Match forms the basis for response validation outside of basic swagger/openapi schema validation
@@ -37,30 +40,24 @@ type ContextAccessor struct {
 // - match a specific header field to a value
 // - match using a Regex expression on a header field
 type Match struct {
-	Description  string `json:"description,omitempty"`   // Description of the purpose of the match
-	ContextName  string `json:"name,omitempty"`          // Context variable name
-	Header       string `json:"header,omitempty"`        // Header value to examine
-	HeaderExists string `json:"header_exists,omitempty"` // Header existence check
-	Regex        string `json:"regex,omitempty"`         // Regular expression to be used
-	JSON         string `json:"json,omitempty"`          // Json expression to be used
-	Value        string `json:"value,omitempty"`         // Value to match against (string)
-	Numeric      int64  `json:"numeric,omitempty"`       //Value to match against - numeric
-	Count        int64  `json:"count,omitempty"`         // Cont for JSON array match purposes
-	Length       int64  `json:"length,omitempty"`        // Body payload length for matching
+	MatchType    MatchType // Type of Match we're doing
+	Description  string    `json:"description,omitempty"`   // Description of the purpose of the match
+	ContextName  string    `json:"name,omitempty"`          // Context variable name
+	Header       string    `json:"header,omitempty"`        // Header value to examine
+	HeaderExists string    `json:"header_exists,omitempty"` // Header existence check
+	Regex        string    `json:"regex,omitempty"`         // Regular expression to be used
+	JSON         string    `json:"json,omitempty"`          // Json expression to be used
+	Value        string    `json:"value,omitempty"`         // Value to match against (string)
+	Numeric      int64     `json:"numeric,omitempty"`       //Value to match against - numeric
+	Count        int64     `json:"count,omitempty"`         // Cont for JSON array match purposes
+	Length       int64     `json:"length,omitempty"`        // Body payload length for matching
+	Context      *Context  // allows easily getting/setting context variables as required
 }
 
 // Matcher captures the behaviour required to perform a match against a test case response using a number of different
 // criteria - see /docs/matches.md for more information about the matching model
 type Matcher interface {
-	Execute(*http.Response) (interface{}, error)
-}
-
-type ContextPutter interface {
-	PutValue(*http.Response) (interface{}, error)
-}
-
-type ContextGetter interface {
-	GetValue(*http.Response) (interface{}, error)
+	Match(*http.Response) (interface{}, error)
 }
 
 // PutValues is used by the 'contextPut' directive and essentially collects a set of matches whose purpose is
@@ -83,19 +80,37 @@ func (c *ContextAccessor) PutValues(resp *http.Response) (string, interface{}, e
 			return "", nil, errors.New("JSON target is empty")
 		}
 
-		m.Execute(resp) // maybe not this ... but ...
+		m.Check(resp) // maybe not this ... but ...
 		// maybe m.PutValues - returns variable name, value, error code --- generically
 	}
 	return "", nil, nil
 }
 
-// Execute a match function
-func (m *Match) Execute(resp *http.Response) (interface{}, error) {
+// Check a match function
+func (m *Match) Check(resp *http.Response) (bool, string) {
 	responseBody, _ := ioutil.ReadAll(resp.Body)
 	result := gjson.Get(string(responseBody), m.JSON)
-	fmt.Printf("Result: %s\n", result.String())
-	return nil, nil
+	return result.String() == m.Value, result.String()
+}
 
+// GetValue the value from the json match along with a context variable to put it into
+func (m *Match) GetValue(resp *http.Response) (interface{}, string) {
+	responseBody, _ := ioutil.ReadAll(resp.Body)
+	result := gjson.Get(string(responseBody), m.JSON)
+	return result.String(), m.ContextName
+}
+
+// PutValue puts the value from the json match along with a context variable to put it into
+func (m *Match) PutValue(resp *http.Response) bool {
+	responseBody, _ := ioutil.ReadAll(resp.Body)
+	result := gjson.Get(string(responseBody), m.JSON)
+	if m.Context != nil {
+		if len(m.ContextName) > 0 {
+			m.Context.Put(m.ContextName, result.String())
+			return true
+		}
+	}
+	return false
 }
 
 // GetValues -

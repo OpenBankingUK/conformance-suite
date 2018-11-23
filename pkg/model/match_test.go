@@ -1,58 +1,40 @@
 package model
 
 import (
-	"net/http"
 	"testing"
+
+	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/utils"
+	"github.com/stretchr/testify/assert"
 )
 
-var (
-	responseBody = []byte(`
-	{
-	    "Data": {
-	        "Account": [{
-	            "AccountId": "500000000000000000000001",
-	            "Currency": "GBP",
-	            "Nickname": "xxxx0101",
-	            "AccountType": "Personal",
-	            "AccountSubType": "CurrentAccount",
-	            "Account": [{
-	                "SchemeName": "SortCodeAccountNumber",
-	                "Identification": "10000119820101",
-	                "Name": "Mr. Roberto Rastapopoulos & Mr. Mitsuhirato",
-	                "SecondaryIdentification": "Roll No. 001"
-	            }]
-	        }, {
-	            "AccountId": "500000000000000000000007",
-	            "Currency": "GBP",
-	            "Nickname": "xxxx0001",
-	            "AccountType": "Business",
-	            "AccountSubType": "CurrentAccount",
-	            "Account": [{
-	                "SchemeName": "SortCodeAccountNumber",
-	                "Identification": "10000190210001",
-	                "Name": "Marios Amazing Carpentry Supplies Limited"
-	            }]
-	        }]
-	    },
-	    "Links": {
-	        "Self": "http://modelobank2018.o3bank.co.uk/open-banking/v2.0/accounts/"
-	    },
-	    "Meta": {
-	        "TotalPages": 1
-	    }
-    }    
-	`)
-)
+const simplejson = `{"name":{"first":"Janet","last":"Prichard"},"age":47}`
 
-func TestContextPutFromExpectsMatch(t *testing.T) {
+// create a context
+// create a json match object
+// create an http response
+// send response to match object
+// have match object parse response and extract json field into context parameter
+func TestContextPutFromMatch(t *testing.T) {
 	ctx := Context{}
-	// look for variable in context - should not be there
-	m := Match{Description: "Test Context Put", ContextName: "AccountId", JSON: "Data.Account.1.AccountId"}
-	contextPut := ContextAccessor{Context: ctx, Matches: []Match{m}}
+	m := Match{Context: &ctx, JSON: "name.last", Description: "simple match test", ContextName: "LastName"}
+	resp := pkgutils.CreateHTTPResponse(200, "OK", simplejson)
+	assert.True(t, m.PutValue(resp))
+	assert.Equal(t, ctx.Get(m.ContextName), ctx.Get(m.ContextName))
+}
 
-	response := http.Response{}
-	contextPut.PutValues(&response)
+// Create a testcase that defines the basic matchers
+// json matcher
+func TestJSONMatcher(t *testing.T) {
+	match := Match{JSON: "name.last", Description: "simple match test", ContextName: "NameInContext", Value: "Prichard"}
+	resp := pkgutils.CreateHTTPResponse(200, "OK", simplejson)
+	success, result := match.Check(resp)
+	assert.Equal(t, "Prichard", result)
+	assert.True(t, success)
+}
 
+func TestJSONPutValueInContext(t *testing.T) {
+	match := Match{JSON: "name.last", Description: "simple match test", ContextName: "Lastname"}
+	_ = match
 }
 
 /*
@@ -68,3 +50,23 @@ func TestContextPutFromExpectsMatch(t *testing.T) {
 	}
 
 */
+
+// Make a bunch of match fragments
+// json field
+// header match
+// figure out a mock http response with the appropriate data in
+//
+// Two areas:-
+//
+// test data
+// match definition
+// creating match data can be done in two ways:-
+//  programatically
+//  declaratively
+//
+// Specifiying test data
+//   Table driven? - maybe specify match json ?
+//
+//
+//
+//

@@ -31,13 +31,13 @@
                             "json": "Data.Account.Accountid",
                             "value": "XYZ1231231231231"
                         }],
-                        "contextPut": [{
+                        "contextPut": {
                             "matches": [{
                                 "name": "AccountId",                                
                                 "description": "A json match to extract vaiable to context",                                
                                 "json": "Data.Account.Accountid"
                             }]
-                        }]
+                        }
 
                     }
                 },
@@ -48,11 +48,14 @@
                     "input": {
                         "method": "GET",
                         "endpoint": "/accounts/{AccountId}",
-                        "contextGet": [{
+                        "contextGet": {
+                            "matches":                        
+                            [{
                             "name": "AccountId",
-                            "purpose": "supplies the account number to be queried",
+                            "description": "supplies the account number to be queried",
                             "replaceInEndpoint": "{AccountId}"
-                        }]
+                            }]
+                        }
                     },
                     "context": {
                         "baseurl":"http://myaspsp"

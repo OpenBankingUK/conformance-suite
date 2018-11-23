@@ -7,11 +7,11 @@ import (
 	"net/http"
 	"testing"
 
+	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/utils"
 	"github.com/go-openapi/loads"
 	"github.com/go-openapi/spec"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	gock "gopkg.in/h2non/gock.v1"
 )
 
 func TestLoadModel(t *testing.T) {
@@ -161,22 +161,18 @@ func TestChainedTestCases(t *testing.T) {
 	require.NoError(t, err)
 	assert.Equal(t, manifest.Name, "Basic Swagger 2.0 test run")
 
-	defer gock.Off()
-	gock.New("http://myaspsp").Get("/accounts").Reply(200).BodyString(string(getAccountResponse))
-
 	for _, rule := range manifest.Rules { // Iterate over Rules
 		rule.Executor = &executor{}
 		for _, testcases := range rule.Tests {
-			ctx := NewContext()
+			ctx := Context{}
 			ctx.Put("{AccountId}", "1231231")
 			for _, testcase := range testcases {
 				fmt.Println("\n==============Dumping testcase =-->")
 				testcase.Dump()
-				ctx.Dump()
 
-				myReq, _ := testcase.Prepare(ctx, nil)      // Apply inputs, context - results on http object and context
+				myReq, _ := testcase.Prepare(&ctx)          // Apply inputs, context - results on http object and context
 				resp, err := rule.Execute(myReq, &testcase) // execute the testcase
-				testcase.Validate(resp, ctx)
+				testcase.Validate(resp, &ctx)
 
 				_, _, _ = resp, err, myReq
 			}
@@ -198,89 +194,17 @@ func TestChainedTestCases(t *testing.T) {
 type executor struct {
 }
 
+var chaintest = []struct {
+	method   string
+	response *http.Response
+}{
+	{"GET /accounts", pkgutils.CreateHTTPResponse(200, "OK", string(getAccountResponse))},
+	{"GET /accounts/{AccountId}", pkgutils.CreateHTTPResponse(404, "OK", string(getAccountResponse))},
+}
+
 func (e *executor) ExecuteTestCase(r *http.Request, t *TestCase, ctx *Context) (*http.Response, error) {
-	return nil, nil
+	// loop through table of responses !!!!
+	// map "GET /accounts" - parameterised result
+	resp := pkgutils.CreateHTTPResponse(200, "OK", string(getAccountResponse))
+	return resp, nil
 }
-
-/*
-As a developer I'd like many types of matches in my toolkit
-- some matches simple match the response for success for failure
-- some matches match a value and put it in the context - for access by other testcases
-
-
-
-As a developer I'd like my testcase which uses accountid between testcases to be run against ozone bank
-
-    			  "expect": {
-                        "status-code": 200,
-                        "matches": [{
-                            "description": "A json match on response body",
-                            "json": "Data.Account.Accountid",
-                            "value": "@AccountId"   // store result in context - what if its not there? Match fails!!! with appropriate message
-                        }]
-                    }
-                    "input": {
-                        "method": "GET",
-                        "endpoint": "/accounts/{AccountId}",
-                        "contextGet": [{ // get a variable from the context and put it somewhere in the request
-                            "name": "AccountId", // index into context
-                            "purpose": "supplies the account number to be queried",
-							"replaceInEndpoint": "{AccountId}" // replace strategy, also replace with jsonexpression - SJSON friend
-							"replaceInBody": "{AccountId}" // replace strategy, also replace with jsonexpression - SJSON friend - after body constructed!!! (not get)
-							"replaceInHeader/put header?"
-							"replaceWithJson":"Data.OBresponse1.Field[3]" // build a response object and but this value in there
-							"rawJsonBody":"{}" // raw json to but in the request body - simply use this as the body rather than building
-                        }]
-                    },
-*/
-
-// Context Tests
-//
-// Put things into a context
-// Put and get strings from a context
-// Put and get numbers from a context
-// Put ang get structures from a context (deep vs shallow)
-// Read context from a configuration file
-//
-
-/*
-
-Test cases to handle looping through paginated output ... how?
-
-Expects {
-	pagecount indicator ... 1 of 6
-	// current page
-	// total pages
-	// logic while current page < total page and not error
-	// must be able to report currently page and total pages in any errors
-	// pagereader:Testcase
-	// firstpage:Testcase
-	// loopconstruct:Rule? ... so testcases dont know and run unmodified
-	// output feeds to input of same testcase until condition met
-	// status - match, fail, loop
-
-	Or ... changing parameter in context referred to by input section
-	update context parameter in expects section
-	repeat keyword in section
-	repeatUntil {
-		maxtimes: 10
-		Match[] - condition
-	}
-
-}
-
-
-///////////// TESTCASE GENERATION
-// iterate over swagger
-Get Endpoint/permission combinations
-.. so figure out all positive permission permutations
-end up with a list of structs that contains a permission + and method/endpoint tied to a testcase
-
-for each permissioned endpoint, identify which permission set it can be satisfied from.
-Figure out a set of rules for declarative testcase permission annotations + specifiy default if makes it clearer
-
-
-OpenAPI - what does it do, what does is provide, is it upto date and reliable, can it be used to enrich our
-our core model?
-
-*/

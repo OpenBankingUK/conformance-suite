@@ -337,24 +337,24 @@ func TestSequencingTestCases(t *testing.T) {
 	assert.True(t, result)
 }
 
-type executor struct {
-}
+// type executor struct {
+// }
 
-func (e *executor) ExecuteTestCase(r *http.Request, t *TestCase, ctx *Context) (*http.Response, error) {
-	res, err := (&http.Client{}).Do(r)
-	return res, err
-}
+// func (e *executor) ExecuteTestCase(r *http.Request, t *TestCase, ctx *Context) (*http.Response, error) {
+// 	res, err := (&http.Client{}).Do(r)
+// 	return res, err
+// }
 
-// Utility to load Manifest Data Model containing all Rules, Tests and Conditions
-func loadManifest(filename string) (Manifest, error) {
-	plan, _ := ioutil.ReadFile(filename)
-	var i Manifest
-	err := json.Unmarshal(plan, &i)
-	if err != nil {
-		return i, err
-	}
-	return i, nil
-}
+// // Utility to load Manifest Data Model containing all Rules, Tests and Conditions
+// func loadManifest(filename string) (Manifest, error) {
+// 	plan, _ := ioutil.ReadFile(filename)
+// 	var i Manifest
+// 	err := json.Unmarshal(plan, &i)
+// 	if err != nil {
+// 		return i, err
+// 	}
+// 	return i, nil
+// }
 
 // for _, rule := range manifest.Rules { // Iterate over Rules
 // 	rule.Executor = &executor

@@ -105,7 +105,7 @@ func (t *TestCase) Validate(resp *http.Response, ctx *Context) (bool, error) {
 type Input struct {
 	Method     string          `json:"method,omitempty"`     // http Method that this test case uses
 	Endpoint   string          `json:"endpoint,omitempty"`   // resource endpoint where the http object needs to be sent to get a response
-	ContextGet ContextAccessor `json:"contextPut,omitempty"` // Allows retrieval of context variables an input parameters
+	ContextGet ContextAccessor `json:"contextGet,omitempty"` // Allows retrieval of context variables an input parameters
 }
 
 // Context is intended to handle two types of object and make them available to various parts of the suite including

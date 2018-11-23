@@ -12,6 +12,7 @@ The following methods are available for checking a API http response and its con
 - Http Body - Json field present
 - Http Body - Json specific number of particualar fields present
 - Http Body - Json field content
+- Http Body - Json field with Regex applied
 - Http Body length
 
 The following json fragments show examples of each of the selection options :-
