@@ -165,9 +165,7 @@ func TestChainedTestCases(t *testing.T) {
 	tc01 := rule.Tests[0][0]                     // get the first testcase of the first rule
 	req, _ := tc01.Prepare(&rulectx)             // Prepare calls ApplyInput and ApplyContext on testcase
 	resp, err := rule.Execute(req, &tc01)        // send the request to be executed resulting in a response
-	result, err := tc01.Validate(resp, &rulectx) // Validate checks the match rules and processes any contextPuts present
-	assert.Nil(t, err)
-	assert.True(t, result) // match check succeeds
+	result, err := tc01.Validate(resp, &rulectx) // Validate checks response against the match rules and processes any contextPuts present
 
 	tc02 := rule.Tests[0][1]                    // get the second testcase of the first rule
 	req, err = tc02.Prepare(&rulectx)           // Prepare
@@ -175,6 +173,7 @@ func TestChainedTestCases(t *testing.T) {
 	result, err = tc02.Validate(resp, &rulectx) // Validate checks the match rules and processes any contextPuts present
 	assert.True(t, result)
 	assert.Equal(t, "500000000000000000000007", rulectx.Get("AccountId"))
+	assert.Equal(t, "/accounts/500000000000000000000007", tc02.Input.Endpoint)
 }
 
 type executor struct {
@@ -186,8 +185,9 @@ func (e *executor) ExecuteTestCase(r *http.Request, t *TestCase, ctx *Context) (
 }
 
 var chainTest = map[string]func() *http.Response{
-	"GET /accounts/":            httpAccountCall(),
-	"GET /accounts/{AccountId}": httpAccountIDCall(),
+	"GET /accounts/":                         httpAccountCall(),
+	"GET /accounts/{AccountId}":              httpAccountIDCall(),
+	"GET /accounts/500000000000000000000007": httpAccountID007Call(),
 }
 
 func httpAccountCall() func() *http.Response {
@@ -199,5 +199,11 @@ func httpAccountCall() func() *http.Response {
 func httpAccountIDCall() func() *http.Response {
 	return func() *http.Response {
 		return pkgutils.CreateHTTPResponse(200, "OK", string(getAccountResponse), "content-type", "klingon/text")
+	}
+}
+
+func httpAccountID007Call() func() *http.Response {
+	return func() *http.Response {
+		return pkgutils.CreateHTTPResponse(200, "OK", string(account0007), "content-type", "klingon/text")
 	}
 }

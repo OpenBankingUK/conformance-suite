@@ -34,7 +34,7 @@
                         "contextPut": {
                             "matches": [{
                                 "name": "AccountId",                                
-                                "description": "A json match to extract vaiable to context",                                
+                                "description": "A json match to extract variable to context",                                
                                 "json": "Data.Account.1.AccountId"
                             }]
                         }
@@ -64,8 +64,8 @@
                         "status-code": 200,
                         "matches": [{
                             "description": "A json match on response body",
-                            "json": "Data.Account.0.AccountId",
-                            "value": "500000000000000000000001"
+                            "json": "Data.Account.0.Account.0.Identification",
+                            "value": "GB29PAPA20000390210099"
                         }]
                     }
                 }

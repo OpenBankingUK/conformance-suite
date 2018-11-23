@@ -2,7 +2,9 @@ package model
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
+	"strings"
 
 	"github.com/tidwall/gjson"
 )
@@ -40,17 +42,18 @@ const (
 // - match a specific header field to a value
 // - match using a Regex expression on a header field
 type Match struct {
-	MatchType    MatchType // Type of Match we're doing
-	Description  string    `json:"description,omitempty"`   // Description of the purpose of the match
-	ContextName  string    `json:"name,omitempty"`          // Context variable name
-	Header       string    `json:"header,omitempty"`        // Header value to examine
-	HeaderExists string    `json:"header_exists,omitempty"` // Header existence check
-	Regex        string    `json:"regex,omitempty"`         // Regular expression to be used
-	JSON         string    `json:"json,omitempty"`          // Json expression to be used
-	Value        string    `json:"value,omitempty"`         // Value to match against (string)
-	Numeric      int64     `json:"numeric,omitempty"`       //Value to match against - numeric
-	Count        int64     `json:"count,omitempty"`         // Cont for JSON array match purposes
-	Length       int64     `json:"length,omitempty"`        // Body payload length for matching
+	MatchType       MatchType `json:"match_type,omitempty"`        // Type of Match we're doing
+	Description     string    `json:"description,omitempty"`       // Description of the purpose of the match
+	ContextName     string    `json:"name,omitempty"`              // Context variable name
+	Header          string    `json:"header,omitempty"`            // Header value to examine
+	HeaderExists    string    `json:"header_exists,omitempty"`     // Header existence check
+	Regex           string    `json:"regex,omitempty"`             // Regular expression to be used
+	JSON            string    `json:"json,omitempty"`              // Json expression to be used
+	Value           string    `json:"value,omitempty"`             // Value to match against (string)
+	Numeric         int64     `json:"numeric,omitempty"`           //Value to match against - numeric
+	Count           int64     `json:"count,omitempty"`             // Cont for JSON array match purposes
+	Length          int64     `json:"length,omitempty"`            // Body payload length for matching
+	ReplaceEndpoint string    `json:"replaceInEndpoint,omitempty"` // allows substituion of resourceIds
 }
 
 // Matcher captures the behaviour required to perform a match against a test case response using a number of different
@@ -74,6 +77,28 @@ func (c *ContextAccessor) PutValues(tc *TestCase, ctx *Context) (string, error) 
 	return "", nil
 }
 
+// GetValues -
+func (c *ContextAccessor) GetValues(tc *TestCase, ctx *Context) error {
+	for _, match := range c.Matches {
+		if len(match.ContextName) > 0 {
+			value := ctx.Get(match.ContextName)
+			if value != nil {
+				contextValue := value.(string)
+				if len(contextValue) > 0 {
+					if len(match.ReplaceEndpoint) > 0 {
+						result := strings.Replace(tc.Input.Endpoint, match.ReplaceEndpoint, contextValue, 1)
+						fmt.Println("Old endpoint", tc.Input.Endpoint)
+						fmt.Println("New endpoint", result)
+						tc.Input.Endpoint = result
+					}
+				}
+			}
+		}
+	}
+	return nil
+
+}
+
 // Check a match function
 func (m *Match) Check(inputBuffer string) (bool, string) {
 	result := gjson.Get(inputBuffer, m.JSON)
@@ -94,21 +119,4 @@ func (m *Match) PutValue(inputBuffer string, ctx *Context) bool {
 		return true
 	}
 	return false
-}
-
-// GetValues -
-func (c *ContextAccessor) GetValues() error {
-	for _, match := range c.Matches {
-		// Figure out match type
-		// Execute to move selected/data sample into
-
-		// Must have name
-		// Must have description
-		//
-		// can have json - to start
-		_ = match
-
-	}
-	return nil
-
 }

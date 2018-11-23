@@ -74,7 +74,7 @@ type TestCase struct {
 // results in a standard http request that encapsulates the testcase request
 // as defined in the test case object with any context inputs/replacements etc applied
 func (t *TestCase) Prepare(ctx *Context) (*http.Request, error) {
-	req, err := t.ApplyInput()
+	req, err := t.ApplyInput(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -142,9 +142,12 @@ type Expect struct {
 //     Rule - receives http response from endpoint and provides it back to testcase
 //     Testcase evaluates the http response object using its 'Expects' clause
 //     Testcase passes or fails depending on the 'Expects' outcome
-func (t *TestCase) ApplyInput() (*http.Request, error) {
+func (t *TestCase) ApplyInput(rulectx *Context) (*http.Request, error) {
 	// NOTE: This is an initial implementation to get things moving - expect a lot of change in this function
 	var err error
+
+	err = t.Input.ContextGet.GetValues(t, rulectx)
+
 	if &t.Input.Endpoint == nil || &t.Input.Method == nil { // we don't have a value input object
 		return nil, errors.New("Testcase Input empty")
 	}
@@ -155,6 +158,7 @@ func (t *TestCase) ApplyInput() (*http.Request, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	t.Request = req // store the request in the testcase
 
 	return req, err
@@ -194,6 +198,7 @@ func (t *TestCase) ApplyExpects(res *http.Response, rulectx *Context) (bool, err
 	}
 
 	for _, match := range t.Expect.Matches {
+		fmt.Println("Calling matches on ", match)
 		checkResult, got := match.Check(t.Body)
 		if checkResult == false {
 			return false, fmt.Errorf("(%s):%s: Json Match: expected (%s) got (%s)", t.ID, t.Name, match.Value, got)
@@ -286,18 +291,8 @@ func (t *TestCase) GetPermissions() (included, excluded []string) {
 
 // Various helpers - main to dump struct contents to console
 
-// Dump Manifest helper
-func (m *Manifest) Dump() {
-	fmt.Printf(m.String())
-}
-
 func (m *Manifest) String() string {
 	return fmt.Sprintf("MANIFEST\nName: %s\nDescription: %s\nRules: %d\n", m.Name, m.Description, len(m.Rules))
-}
-
-// Dump Rule helper
-func (r *Rule) Dump() {
-	fmt.Printf(r.String())
 }
 
 func (r *Rule) String() string {
