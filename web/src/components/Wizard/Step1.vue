@@ -1,11 +1,11 @@
 <template>
-  <div class="d-flex flex-column">
+  <div class="d-flex flex-column flex-fill">
     <h3>Start a new Test or Load Previous</h3>
-    <div class="d-flex align-items-start flex-column">
+    <div class="p-2 d-flex align-items-start flex-column">
       <p>Start a new test of v3.0 of the Open Banking Specifications</p>
       <b-button>New v3.0 Test</b-button>
     </div>
-    <div class="d-flex align-items-start flex-column">
+    <div class="p-2 d-flex align-items-start flex-column">
       <p>Import results from a v3.0 test</p>
       <b-form-file
         v-model="file"
