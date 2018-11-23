@@ -28,14 +28,14 @@
                         "status-code": 200,
                         "matches": [{
                             "description": "A json match on response body",
-                            "json": "Data.Account.Accountid",
-                            "value": "XYZ1231231231231"
+                            "json": "Data.Account.0.AccountId",
+                            "value": "500000000000000000000001"
                         }],
                         "contextPut": {
                             "matches": [{
                                 "name": "AccountId",                                
                                 "description": "A json match to extract vaiable to context",                                
-                                "json": "Data.Account.Accountid"
+                                "json": "Data.Account.1.AccountId"
                             }]
                         }
 
@@ -64,8 +64,8 @@
                         "status-code": 200,
                         "matches": [{
                             "description": "A json match on response body",
-                            "json": "Data.Account.Accountid",
-                            "value": "XYZ1231231231231"
+                            "json": "Data.Account.0.AccountId",
+                            "value": "500000000000000000000001"
                         }]
                     }
                 }

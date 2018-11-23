@@ -2,7 +2,6 @@ package model
 
 import (
 	"errors"
-	"io/ioutil"
 	"net/http"
 
 	"github.com/tidwall/gjson"
@@ -10,6 +9,7 @@ import (
 
 // ContextAccessor -
 type ContextAccessor struct {
+	Context *Context
 	Matches []Match `json:"matches,omitempty"`
 }
 
@@ -51,7 +51,6 @@ type Match struct {
 	Numeric      int64     `json:"numeric,omitempty"`       //Value to match against - numeric
 	Count        int64     `json:"count,omitempty"`         // Cont for JSON array match purposes
 	Length       int64     `json:"length,omitempty"`        // Body payload length for matching
-	Context      *Context  // allows easily getting/setting context variables as required
 }
 
 // Matcher captures the behaviour required to perform a match against a test case response using a number of different
@@ -65,50 +64,34 @@ type Matcher interface {
 // variable), a description (so if things go wrong we can accurately report) and an operation which results in
 // the a selection which is copied into the context variable
 // Note: the initial interation of this will just implement the JSON pattern/field matcher
-func (c *ContextAccessor) PutValues(resp *http.Response) (string, interface{}, error) {
+func (c *ContextAccessor) PutValues(tc *TestCase, ctx *Context) (string, error) {
 	for _, m := range c.Matches {
-		// Figure out match type
-		// Execute to move selected/data sample into
-
-		// Must have name - target context variable
-		// Must have description
-		if len(m.ContextName) == 0 || len(m.Description) == 0 {
-			return "", nil, errors.New("ContextName or Description is empty")
+		success := m.PutValue(tc.Body, ctx)
+		if !success {
+			return m.ContextName, errors.New("ContextPut variable check failed")
 		}
-
-		if len(m.JSON) == 0 {
-			return "", nil, errors.New("JSON target is empty")
-		}
-
-		m.Check(resp) // maybe not this ... but ...
-		// maybe m.PutValues - returns variable name, value, error code --- generically
 	}
-	return "", nil, nil
+	return "", nil
 }
 
 // Check a match function
-func (m *Match) Check(resp *http.Response) (bool, string) {
-	responseBody, _ := ioutil.ReadAll(resp.Body)
-	result := gjson.Get(string(responseBody), m.JSON)
+func (m *Match) Check(inputBuffer string) (bool, string) {
+	result := gjson.Get(inputBuffer, m.JSON)
 	return result.String() == m.Value, result.String()
 }
 
 // GetValue the value from the json match along with a context variable to put it into
-func (m *Match) GetValue(resp *http.Response) (interface{}, string) {
-	responseBody, _ := ioutil.ReadAll(resp.Body)
-	result := gjson.Get(string(responseBody), m.JSON)
+func (m *Match) GetValue(inputBuffer string) (interface{}, string) {
+	result := gjson.Get(inputBuffer, m.JSON)
 	return result.String(), m.ContextName
 }
 
 // PutValue puts the value from the json match along with a context variable to put it into
-func (m *Match) PutValue(resp *http.Response) bool {
-	responseBody, _ := ioutil.ReadAll(resp.Body)
-	result := gjson.Get(string(responseBody), m.JSON)
-	if m.Context != nil {
-		if len(m.ContextName) > 0 {
-			m.Context.Put(m.ContextName, result.String())
-			return true
-		}
+func (m *Match) PutValue(inputBuffer string, ctx *Context) bool {
+	result := gjson.Get(inputBuffer, m.JSON)
+	if len(m.ContextName) > 0 {
+		ctx.Put(m.ContextName, result.String())
+		return true
 	}
 	return false
 }
@@ -129,13 +112,3 @@ func (c *ContextAccessor) GetValues() error {
 	return nil
 
 }
-
-// func (c *ContextAccessor) PutValues() (string, interface{}, error) {
-
-// }
-
-// Maybe put errors in the context for collection by the rule and reporting back.
-// An slice of errors
-// Also need a testsequence name - which means a test case can appear in many test
-// sequences under the same rule
-// Maybe have a testcase error object

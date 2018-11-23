@@ -155,56 +155,49 @@ I want the results of one test case being used as input to the other testcase
 I want to use json pattern matching to extract the first returned AccountId from the first testcase and
 use that value as the accountid parameter for the second testcase
 */
-
 func TestChainedTestCases(t *testing.T) {
 	manifest, err := loadManifest("testdata/passAccountId.json")
 	require.NoError(t, err)
-	assert.Equal(t, manifest.Name, "Basic Swagger 2.0 test run")
 
-	for _, rule := range manifest.Rules { // Iterate over Rules
-		rule.Executor = &executor{}
-		for _, testcases := range rule.Tests {
-			ctx := Context{}
-			ctx.Put("{AccountId}", "1231231")
-			for _, testcase := range testcases {
-				fmt.Println("\n==============Dumping testcase =-->")
-				testcase.Dump()
+	rule := manifest.Rules[0]                    // get the first rule
+	rule.Executor = &executor{}                  // Allows rule testcase execution strategies to be dynamically added to rules
+	rulectx := Context{}                         // create a context to hold the passed parameters
+	tc01 := rule.Tests[0][0]                     // get the first testcase of the first rule
+	req, _ := tc01.Prepare(&rulectx)             // Prepare calls ApplyInput and ApplyContext on testcase
+	resp, err := rule.Execute(req, &tc01)        // send the request to be executed resulting in a response
+	result, err := tc01.Validate(resp, &rulectx) // Validate checks the match rules and processes any contextPuts present
+	assert.Nil(t, err)
+	assert.True(t, result) // match check succeeds
 
-				myReq, _ := testcase.Prepare(&ctx)          // Apply inputs, context - results on http object and context
-				resp, err := rule.Execute(myReq, &testcase) // execute the testcase
-				testcase.Validate(resp, &ctx)
-
-				_, _, _ = resp, err, myReq
-			}
-			_ = ctx
-		}
-		//rule.ProcessTestCases() // what does this even mean?
-		// take the first testcase array,
-		// is it a single testcase or multiple?
-		// if single ... process/run
-		// if multiple ... check that all requirements to run are met
-		//- like available context variables
-		//- like if an input variable is specificed - its used
-		//- like all input variables are available
-		//- like if an expects variable is specificed its used
-	}
-	fmt.Println("\n==============END =-->")
+	tc02 := rule.Tests[0][1]                    // get the second testcase of the first rule
+	req, err = tc02.Prepare(&rulectx)           // Prepare
+	resp, err = rule.Execute(req, &tc02)        // Execute
+	result, err = tc02.Validate(resp, &rulectx) // Validate checks the match rules and processes any contextPuts present
+	assert.True(t, result)
+	assert.Equal(t, "500000000000000000000007", rulectx.Get("AccountId"))
 }
 
 type executor struct {
 }
 
-var chaintest = []struct {
-	method   string
-	response *http.Response
-}{
-	{"GET /accounts", pkgutils.CreateHTTPResponse(200, "OK", string(getAccountResponse))},
-	{"GET /accounts/{AccountId}", pkgutils.CreateHTTPResponse(404, "OK", string(getAccountResponse))},
+func (e *executor) ExecuteTestCase(r *http.Request, t *TestCase, ctx *Context) (*http.Response, error) {
+	responseKey := t.Input.Method + " " + t.Input.Endpoint
+	return chainTest[responseKey](), nil
 }
 
-func (e *executor) ExecuteTestCase(r *http.Request, t *TestCase, ctx *Context) (*http.Response, error) {
-	// loop through table of responses !!!!
-	// map "GET /accounts" - parameterised result
-	resp := pkgutils.CreateHTTPResponse(200, "OK", string(getAccountResponse))
-	return resp, nil
+var chainTest = map[string]func() *http.Response{
+	"GET /accounts/":            httpAccountCall(),
+	"GET /accounts/{AccountId}": httpAccountIDCall(),
+}
+
+func httpAccountCall() func() *http.Response {
+	return func() *http.Response {
+		return pkgutils.CreateHTTPResponse(200, "OK", string(getAccountResponse))
+	}
+}
+
+func httpAccountIDCall() func() *http.Response {
+	return func() *http.Response {
+		return pkgutils.CreateHTTPResponse(200, "OK", string(getAccountResponse), "content-type", "klingon/text")
+	}
 }

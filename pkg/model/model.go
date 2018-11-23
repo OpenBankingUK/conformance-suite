@@ -8,7 +8,6 @@ import (
 	"net/url"
 
 	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/utils"
-	"github.com/tidwall/gjson"
 )
 
 // Manifest is the high level container for test suite definition
@@ -63,10 +62,12 @@ type TestCase struct {
 	Name       string        `json:"name,omitempty"`    // Name
 	Purpose    string        `json:"purpose,omitempty"` // Purpose of the testcase in simple words
 	Input      Input         `json:"input,omitempty"`   // Input Object
-	Context    Context       `json:"context,omitempty"` // Context Object
+	Context    Context       `json:"context,omitempty"` // Local Context Object
 	Expect     Expect        `json:"expect,omitempty"`  // Expected object
 	ParentRule *Rule         // Allows accessing parent Rule
 	Request    *http.Request // The request that's been generated in order to call the endpoint
+	Header     http.Header   // ResponseHeader
+	Body       string        // ResponseBody
 }
 
 // Prepare a Testcase for execution at and endpoint,
@@ -92,8 +93,13 @@ func (t *TestCase) Prepare(ctx *Context) (*http.Request, error) {
 //         false - validation unsuccessful
 //         error - adds detail to validation failure
 //         TODO - cater for returning multiple validation failures and explanations
-func (t *TestCase) Validate(resp *http.Response, ctx *Context) (bool, error) {
-	return false, nil
+//         NOTE: Vadiate will only return false if a check fails - no checks = true
+func (t *TestCase) Validate(resp *http.Response, rulectx *Context) (bool, error) {
+	responseBody, _ := ioutil.ReadAll(resp.Body)
+	t.Body = string(responseBody)
+	t.Header = resp.Header
+
+	return t.ApplyExpects(resp, rulectx)
 }
 
 // Input defines the content of the http request object used to execute the test case
@@ -172,8 +178,13 @@ func (t *TestCase) ApplyContext() (*http.Request, error) {
 
 // ApplyExpects runs the Expects section of the testcase to evaluate if the response from the system under test passes or fails
 // The Expects section of a testcase can contain multiple conditions that need to be met to pass a testcase
-// When a test failes, it the ApplyExpects that is responsible for reporting back information about the failure, why it occured, where it occured etc.
-func (t *TestCase) ApplyExpects(res *http.Response) (bool, error) {
+// When a test fails, ApplyExpects is responsible for reporting back information about the failure, why it occured, where it occured etc.
+//
+// The ApplyExpect section is also responsible for running and contextPut clauses.
+// contextPuts are responsible for updated context variables with values selected from the test case response
+// contextPuts will only be executed if the ApplyExpects standards match tests pass
+// if any of the ApplyExpects match tests fail - ApplyExpects returns false and contextPuts aren't executed
+func (t *TestCase) ApplyExpects(res *http.Response, rulectx *Context) (bool, error) {
 	if res == nil { // if we've not got a response object to check, always return false
 		return false, errors.New("nil http.Response - cannot process ApplyExpects")
 	}
@@ -181,19 +192,17 @@ func (t *TestCase) ApplyExpects(res *http.Response) (bool, error) {
 	if t.Expect.StatusCode != res.StatusCode { // Status codes don't match
 		return false, fmt.Errorf("(%s):%s: HTTP Status code does not match: expected %d got %d", t.ID, t.Name, t.Expect.StatusCode, res.StatusCode)
 	}
-	bodyBytes, _ := ioutil.ReadAll(res.Body)
-	defer res.Body.Close() // standard tidying
-	body := string(bodyBytes)
+
 	for _, match := range t.Expect.Matches {
-		jsonMatch := match.JSON // check if there is a JSON match to be satisifed
-		if len(jsonMatch) > 0 {
-			matched := gjson.Get(body, jsonMatch)
-			if matched.String() != match.Value { // check the value of the JSON match - is equal to the 'value' parameter of the match section within the testcase 'Expects' area
-				return false, fmt.Errorf("(%s):%s: Json Match: expected %s got %s", t.ID, t.Name, match.Value, matched.String())
-			}
+		checkResult, got := match.Check(t.Body)
+		if checkResult == false {
+			return false, fmt.Errorf("(%s):%s: Json Match: expected (%s) got (%s)", t.ID, t.Name, match.Value, got)
 		}
 	}
-	return true, nil
+
+	_, err := t.Expect.ContextPut.PutValues(t, rulectx)
+
+	return true, err
 }
 
 // Get the key form the Context map - currently assumes value converts easily to a string!
