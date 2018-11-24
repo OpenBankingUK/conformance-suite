@@ -21,7 +21,17 @@ func TestContextPutFromMatch(t *testing.T) {
 	resp := pkgutils.CreateHTTPResponse(200, "OK", simplejson)
 	bodyBytes, _ := ioutil.ReadAll(resp.Body)
 	assert.True(t, m.PutValue(string(bodyBytes), &ctx))
-	assert.Equal(t, ctx.Get(m.ContextName), ctx.Get(m.ContextName))
+	assert.Equal(t, ctx.Get(m.ContextName), "Prichard")
+}
+
+func TestContextGetFromContext(t *testing.T) {
+	ctx := Context{}
+	m := Match{JSON: "name.first", Description: "simple match test", ContextName: "FirstName"}
+	resp := pkgutils.CreateHTTPResponse(200, "OK", simplejson)
+	bodyBytes, _ := ioutil.ReadAll(resp.Body)
+	value, variable := m.GetValue(string(bodyBytes))
+	assert.Equal(t, "Janet", value)
+	assert.Equal(t, ctx.Get(m.ContextName), ctx.Get(variable))
 }
 
 // Create a testcase that defines the basic matchers

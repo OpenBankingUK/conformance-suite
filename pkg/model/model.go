@@ -198,7 +198,6 @@ func (t *TestCase) ApplyExpects(res *http.Response, rulectx *Context) (bool, err
 	}
 
 	for _, match := range t.Expect.Matches {
-		fmt.Println("Calling matches on ", match)
 		checkResult, got := match.Check(t.Body)
 		if checkResult == false {
 			return false, fmt.Errorf("(%s):%s: Json Match: expected (%s) got (%s)", t.ID, t.Name, match.Value, got)

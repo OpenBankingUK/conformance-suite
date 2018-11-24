@@ -2,7 +2,6 @@ package model
 
 import (
 	"errors"
-	"fmt"
 	"net/http"
 	"strings"
 
@@ -18,7 +17,7 @@ type ContextAccessor struct {
 // MatchType enumeration
 type MatchType int
 
-// MatchType enumeration
+// MatchType enumeration - this will be required when we extend to more than just BodyJSONValue
 const (
 	StatusCode MatchType = iota
 	HeaderValue
@@ -87,8 +86,6 @@ func (c *ContextAccessor) GetValues(tc *TestCase, ctx *Context) error {
 				if len(contextValue) > 0 {
 					if len(match.ReplaceEndpoint) > 0 {
 						result := strings.Replace(tc.Input.Endpoint, match.ReplaceEndpoint, contextValue, 1)
-						fmt.Println("Old endpoint", tc.Input.Endpoint)
-						fmt.Println("New endpoint", result)
 						tc.Input.Endpoint = result
 					}
 				}
