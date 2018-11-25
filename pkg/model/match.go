@@ -32,15 +32,21 @@ const (
 	BodyLength
 )
 
-// Match defines various types of request, and response payload pattern and field checking
+// Match defines various types of response payload pattern and field checking.
 // Match forms the basis for response validation outside of basic swagger/openapi schema validation
-// Match is also used as the basic for field extraction and replacement which enable parameter passing
-// between test cases via the context.Match// Match encapsulates a conditional statement that must 'match' in order to succeed.
-// Matches should -
-// - match using a specific JSON field and a value
-// - match using a Regex expression
-// - match a specific header field to a value
-// - match using a Regex expression on a header field
+// Match is also used as the basis for field extraction and replacement which enable parameter passing
+// between tests via the context.
+// Match encapsulates a conditional statement that must 'match' in order to succeed.
+// Matches can -
+// - match a specified header field value for exact match
+// - match a specified header field value using a regular expression
+// - check that a specified header field exists in the response
+// - check that a response body matches a regular expression
+// - check that a response body has a particular json field present using json matching
+// - check that a response body has a specific number of specified json array fields
+// - check that a response body has a specific value of a specified json field
+// - check that a response body has a specific json field and that the specific json field matches a regular expression
+// - check that a response body is a specified length
 type Match struct {
 	MatchType       MatchType `json:"match_type,omitempty"`        // Type of Match we're doing
 	Description     string    `json:"description,omitempty"`       // Description of the purpose of the match
@@ -54,7 +60,6 @@ type Match struct {
 	Count           int64     `json:"count,omitempty"`             // Cont for JSON array match purposes
 	BodyLength      *int64    `json:"body-length,omitempty"`       // Body payload length for matching
 	ReplaceEndpoint string    `json:"replaceInEndpoint,omitempty"` // allows substituion of resourceIds
-	ResultString    string    // On a failed match - contains the erroneous text for error logging
 }
 
 // PutValues is used by the 'contextPut' directive and essentially collects a set of matches whose purpose is
@@ -118,12 +123,6 @@ func (m *Match) PutValue(inputBuffer string, ctx *Context) bool {
 	}
 	return false
 }
-
-// Figure out match type -
-// Look at variables and determine the type
-// The for each time have a matching function
-// Could even have an array of functions with each one matching
-// a match type like the httpresponse pattern
 
 // GetType - returns the type of a match
 func (m *Match) GetType() MatchType {
@@ -269,7 +268,6 @@ func checkBodyRegex(m *Match, tc *TestCase) (bool, error) {
 func checkBodyJSONValue(m *Match, tc *TestCase) (bool, error) {
 	result := gjson.Get(tc.Body, m.JSON)
 	success := result.String() == m.Value
-	m.ResultString = result.String()
 	if !success {
 		return false, fmt.Errorf("JSON Match Failed - expected (%s) got (%s)", m.Value, result)
 	}

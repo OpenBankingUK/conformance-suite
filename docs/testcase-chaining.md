@@ -12,200 +12,136 @@ For test case chaining, the test sequence scope is involved as this exists for t
 
 In order to move a parameter between test cases, two directives have been introduced, **contextGet** and **contextPut**. **contextGet** is used in the situation where you **get** a variable from the context and insert the variable into the request payload. **contextPut** is used in the sutation where you **put** a variable into the context for later use.
 
-An example of each use case is below:-
+Its useful to examine a worked example of test case parameter chaining to understand how it works. 
+
+Consider the following json fragement which defines two test cases:
+
+- t0001
+- t0002
 
 ```json
+{
+    "@id": "t0001",
+    "name": "Get Accounts Basic",
+    "purpose": "Accesses the Accounts endpoint and retrieves a list of PSU accounts",
     "input": {
         "method": "GET",
-        "endpoint": "/accounts/{AccountId}",
-        "contextGet": [{
-            "name": "AccountId",
-            "purpose": "supplies the account number to be queried",
-            "replaceInEndpoint": "{AccountId}"
-        }]
-    }
-
-```
-
-```json
+        "endpoint": "/accounts/"
+    },
+    "context": {
+        "baseurl": "http://myaspsp"
+    },
     "expect": {
         "status-code": 200,
         "matches": [{
             "description": "A json match on response body",
-            "json": "Data.Account.Accountid",
-            "value": "XYZ1231231231231"
+            "json": "Data.Account.0.AccountId",
+            "value": "500000000000000000000001"
         }],
-        "contextPut": [{
+        "contextPut": {
             "matches": [{
                 "name": "AccountId",
-                "description": "A json match to extract vaiable to context",
-                "json": "Data.Account.Accountid"
+                "description": "A json match to extract variable to context",
+                "json": "Data.Account.1.AccountId"
             }]
+        }
+    }
+}, {
+    "@id": "t0002",
+    "name": "Get Accounts using AccountId",
+    "purpose": "Accesses the Accounts endpoint and retrieves a list of PSU accounts",
+    "input": {
+        "method": "GET",
+        "endpoint": "/accounts/{AccountId}",
+        "contextGet": {
+            "matches": [{
+                "name": "AccountId",
+                "description": "supplies the account number to be queried",
+                "replaceInEndpoint": "{AccountId}"
+            }]
+        }
+    },
+    "context": {
+        "baseurl": "http://myaspsp"
+    },
+    "expect": {
+        "status-code": 200,
+        "matches": [{
+            "description": "A json match on response body",
+            "json": "Data.Account.0.Account.0.Identification",
+            "value": "GB29PAPA20000390210099"
         }]
     }
-
+}]
 ```
 
-The structure of **contextGet** clauses is as follows:-
+Test case t0001 does the following:-
+
+- Makes an http GET call to resource endpoint /accounts/
+- Checks that the call response status code is 200
+- Examines the response body for the first occurance of the JSON field AccountId using the JSON match string "Data.Account.0.AccountId". In the response body, the matched field would appear as follows:-
 
 ```json
 {
-  "contextPut": {
-    "matches": [
-      {},
-      {},
-      {},
-      {}
-    ]
-  }
-}
+ "Data": {
+    "Account": [{
+                "AccountId": "500000000000000000000001",
 
 ```
 
+- The AccountId field is checked that it matches the value "500000000000000000000001"
+- If the matches are successful then the value of the JSON field expression "Data.Account.1.AccountId" is extracted from the response and put into the **context**
 
+```json
+{
+ "Data": {
+    "Account": [{
+                    "AccountId": "500000000000000000000001",
+                    "etc":"..."
+                }, {
+                    "AccountId": "500000000000000000000007",
+                    "etc":"..."
+                }]
+ }
 
-
-
-
-
-```go
-// Use cases
-
-/*
-As a developer I want to perform a test where I load some json which defines a manifest, rule and testcases
-I want the rule to manage the execution of the test that includes two test cases
-I want the testcases to communicate paramaters between themselves using a context
-I want the results of one test case being used as input to the other testcase
-I want to use json pattern matching to extract the first returned AccountId from the first testcase and
-use that value as the accountid parameter for the second testcase
-*/
-
-func TestChainedTestCases(t *testing.T) {
- manifest, err := loadManifest("testdata/passAccountId.json")
-require.NoError(t, err)
-assert.Equal(t, manifest.Name, "Basic Swagger 2.0 test run")
-
-defer gock.Off()
-gock.New("http://myaspsp").Get("/accounts").Reply(200).BodyString(string(getAccountResponse))
-
-for _, rule := range manifest.Rules { // Iterate over Rules
-  rule.Executor = executor{}
-    for _, testcases := range rule.Tests {
-      ctx := NewContext()
-      ctx.Put("{AccountId}", "1231231")
-      for _, testcase := range testcases {
-        fmt.Println("\n==============Dumping testcase =-->")
-        testcase.Dump()
-        ctx.Dump()
-
-        myReq, _ := testcase.Prepare(ctx, nil)      // Apply inputs, context - results on http object and context
-        resp, err := rule.Execute(myReq, &testcase) // execute the testcase
-        testcase.Validate(resp, ctx)
-
-        _, _, _ = resp, err, myReq
-        }
-        _ = ctx
-        }
-    // rule.ProcessTestCases() // what does this even mean?
-    // take the first testcase array,
-    // is it a single testcase or multiple?
-    // if single ... process/run
-    // if multiple ... check that all requirements to run are met
-    //- like available context variables
-    //- like if an input variable is specificed - its used
-    //- like all input variables are available
-    //- like if an expects variable is specificed its used
-  }
-  fmt.Println("\n==============END =-->")
-}
-
-type executor struct {
-}
-
-func (e *executor) ExecuteTestCase(r *http.Request, t *TestCase, ctx *Context) (*http.Response, error) {
-  return nil, nil
-}
-
-/*
-As a developer I'd like many types of matches in my toolkit
-- some matches simple match the response for success for failure
-- some matches match a value and put it in the context - for access by other testcases
-
-
-
-As a developer I'd like my testcase which uses accountid between testcases to be run against ozone bank
-
-    			  "expect": {
-                        "status-code": 200,
-                        "matches": [{
-                            "description": "A json match on response body",
-                            "json": "Data.Account.Accountid",
-                            "value": "@AccountId"   // store result in context - what if its not there? Match fails!!! with appropriate message
-                        }]
-                    }
-                    "input": {
-                        "method": "GET",
-                        "endpoint": "/accounts/{AccountId}",
-                        "contextGet": [{ // get a variable from the context and put it somewhere in the request
-                            "name": "AccountId", // index into context
-                            "purpose": "supplies the account number to be queried",
-							"replaceInEndpoint": "{AccountId}" // replace strategy, also replace with jsonexpression - SJSON friend
-							"replaceInBody": "{AccountId}" // replace strategy, also replace with jsonexpression - SJSON friend - after body constructed!!! (not get)
-							"replaceInHeader/put header?"
-							"replaceWithJson":"Data.OBresponse1.Field[3]" // build a response object and but this value in there
-							"rawJsonBody":"{}" // raw json to but in the request body - simply use this as the body rather than building
-                        }]
-                    },
-*/
-
-// Context Tests
-//
-// Put things into a context
-// Put and get strings from a context
-// Put and get numbers from a context
-// Put ang get structures from a context (deep vs shallow)
-// Read context from a configuration file
-//
-
-/*
-
-Test cases to handle looping through paginated output ... how?
-
-Expects {
-	pagecount indicator ... 1 of 6
-	// current page
-	// total pages
-	// logic while current page < total page and not error
-	// must be able to report currently page and total pages in any errors
-	// pagereader:Testcase
-	// firstpage:Testcase
-	// loopconstruct:Rule? ... so testcases dont know and run unmodified
-	// output feeds to input of same testcase until condition met
-	// status - match, fail, loop
-
-	Or ... changing parameter in context referred to by input section
-	update context parameter in expects section
-	repeat keyword in section
-	repeatUntil {
-		maxtimes: 10
-		Match[] - condition
-	}
-
-}
-
-
-///////////// TESTCASE GENERATION
-// iterate over swagger
-Get Endpoint/permission combinations
-.. so figure out all positive permission permutations
-end up with a list of structs that contains a permission + and method/endpoint tied to a testcase
-
-for each permissioned endpoint, identify which permission set it can be satisfied from.
-Figure out a set of rules for declarative testcase permission annotations + specifiy default if makes it clearer
-
-
-OpenAPI - what does it do, what does is provide, is it upto date and reliable, can it be used to enrich our
-our core model?
-
-*/
 ```
+
+- The JSON Expression "Data.Account.1.AccountId results in the AccountId value "500000000000000000000007" being inserted into the **context**
+- The AccountId value is then added to the **Context** under the name "AccountId".
+- The "AccountId" variable with value "500000000000000000000007" becomes avaiable to other test cases that use the same **context**.
+
+Test case t0002 then does the following:-
+
+- Accesses the value of "AccountId" in the context and retrieves the value
+- Uses the retrieved accountId of "500000000000000000000007" to perform an endpoint string replacement
+- Finds the string "{AccountId} in the test case endpoint and replaces the string with the value "500000000000000000000007"
+- Makes and HTTP GET call to resource endpoint /accounts/500000000000000000000007
+- Checks the HTTP response code is 200
+- Performs a JSON field match on the call response body
+- Uses the JSON pattern "Data.Account.0.Account.0.Identification" to check the value of response field "Identification", as shown in the following JSON response fragement
+
+```json
+{
+"Data": {
+    "Account": [
+        {
+            "AccountId": "500000000000000000000007",
+            "Currency": "GBP",
+            "Nickname": "xxxx0001",
+            "AccountType": "Business",
+            "AccountSubType": "CurrentAccount",
+            "Account": [
+                {
+                    "SchemeName": "IBAN",
+                    "Identification": "GB29PAPA20000390210099",
+```
+
+- Checks that the Identification field value matches "GB29PAPA20000390210099" as specified in the test case
+
+In summary, this simple example, uses declarative text to create two test cases which :-
+
+- Call an initial resource endpoint to get a list of resource id's
+- Checks that a specific AccountId exists in the returned list
+- Extracts a second AccountId rom the returned list and puts the AccountId value in the context
+- Runs a second test case which modifies its resource endpoint based on the AccountId retrieved from the previous call
+- Checks the value of a response field returned for the second AccountId
