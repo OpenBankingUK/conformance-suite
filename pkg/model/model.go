@@ -95,10 +95,11 @@ func (t *TestCase) Prepare(ctx *Context) (*http.Request, error) {
 //         TODO - cater for returning multiple validation failures and explanations
 //         NOTE: Vadiate will only return false if a check fails - no checks = true
 func (t *TestCase) Validate(resp *http.Response, rulectx *Context) (bool, error) {
-	responseBody, _ := ioutil.ReadAll(resp.Body)
-	t.Body = string(responseBody)
+	if len(t.Body) == 0 {
+		responseBody, _ := ioutil.ReadAll(resp.Body)
+		t.Body = string(responseBody)
+	}
 	t.Header = resp.Header
-
 	return t.ApplyExpects(resp, rulectx)
 }
 
@@ -198,9 +199,9 @@ func (t *TestCase) ApplyExpects(res *http.Response, rulectx *Context) (bool, err
 	}
 
 	for _, match := range t.Expect.Matches {
-		checkResult, got := match.Check(t.Body)
+		checkResult, got := match.Check(t)
 		if checkResult == false {
-			return false, fmt.Errorf("(%s):%s: Json Match: expected (%s) got (%s)", t.ID, t.Name, match.Value, got)
+			return false, got
 		}
 	}
 

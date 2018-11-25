@@ -2,7 +2,8 @@ package model
 
 import (
 	"errors"
-	"net/http"
+	"fmt"
+	"regexp"
 	"strings"
 
 	"github.com/tidwall/gjson"
@@ -19,7 +20,7 @@ type MatchType int
 
 // MatchType enumeration - this will be required when we extend to more than just BodyJSONValue
 const (
-	StatusCode MatchType = iota
+	UnknownMatchType MatchType = iota
 	HeaderValue
 	HeaderRegex
 	HeaderPresent
@@ -45,20 +46,15 @@ type Match struct {
 	Description     string    `json:"description,omitempty"`       // Description of the purpose of the match
 	ContextName     string    `json:"name,omitempty"`              // Context variable name
 	Header          string    `json:"header,omitempty"`            // Header value to examine
-	HeaderExists    string    `json:"header_exists,omitempty"`     // Header existence check
+	HeaderPresent   string    `json:"header-present,omitempty"`    // Header existence check
 	Regex           string    `json:"regex,omitempty"`             // Regular expression to be used
 	JSON            string    `json:"json,omitempty"`              // Json expression to be used
 	Value           string    `json:"value,omitempty"`             // Value to match against (string)
 	Numeric         int64     `json:"numeric,omitempty"`           //Value to match against - numeric
 	Count           int64     `json:"count,omitempty"`             // Cont for JSON array match purposes
-	Length          int64     `json:"length,omitempty"`            // Body payload length for matching
+	BodyLength      *int64    `json:"body-length,omitempty"`       // Body payload length for matching
 	ReplaceEndpoint string    `json:"replaceInEndpoint,omitempty"` // allows substituion of resourceIds
-}
-
-// Matcher captures the behaviour required to perform a match against a test case response using a number of different
-// criteria - see /docs/matches.md for more information about the matching model
-type Matcher interface {
-	Match(*http.Response) (interface{}, error)
+	ResultString    string    // On a failed match - contains the erroneous text for error logging
 }
 
 // PutValues is used by the 'contextPut' directive and essentially collects a set of matches whose purpose is
@@ -76,7 +72,12 @@ func (c *ContextAccessor) PutValues(tc *TestCase, ctx *Context) (string, error) 
 	return "", nil
 }
 
-// GetValues -
+// GetValues - checks for match elements in the contextGet section
+// For each valid element there need to be a ContextName which is the name of the
+// variable in the context we're trying to retrieve
+// Once we have retrieved a context variable, we need to know what to do with it.
+// Current we can ReplaceEndpoint - so basically do a string replace on our testcase endpoint
+// which for example allows us to replace {AccountId} with a real account id
 func (c *ContextAccessor) GetValues(tc *TestCase, ctx *Context) error {
 	for _, match := range c.Matches {
 		if len(match.ContextName) > 0 {
@@ -93,13 +94,13 @@ func (c *ContextAccessor) GetValues(tc *TestCase, ctx *Context) error {
 		}
 	}
 	return nil
-
 }
 
-// Check a match function
-func (m *Match) Check(inputBuffer string) (bool, string) {
-	result := gjson.Get(inputBuffer, m.JSON)
-	return result.String() == m.Value, result.String()
+// Check a match function - figures out which match type we have and
+// calls the appropraite match checking function
+func (m *Match) Check(tc *TestCase) (bool, error) {
+	matchType := m.GetType()
+	return matchFuncs[matchType](m, tc)
 }
 
 // GetValue the value from the json match along with a context variable to put it into
@@ -116,4 +117,206 @@ func (m *Match) PutValue(inputBuffer string, ctx *Context) bool {
 		return true
 	}
 	return false
+}
+
+// Figure out match type -
+// Look at variables and determine the type
+// The for each time have a matching function
+// Could even have an array of functions with each one matching
+// a match type like the httpresponse pattern
+
+// GetType - returns the type of a match
+func (m *Match) GetType() MatchType {
+
+	if m.MatchType != UnknownMatchType {
+		return m.MatchType
+	}
+
+	if fieldsPresent(m.Header, m.Value) { // note: below ordering matters
+		m.MatchType = HeaderValue
+		return HeaderValue
+	}
+	if fieldsPresent(m.Header, m.Regex) {
+		m.MatchType = HeaderRegex
+		return HeaderRegex
+	}
+	if fieldsPresent(m.HeaderPresent) {
+		m.MatchType = HeaderPresent
+		return HeaderPresent
+	}
+	if fieldsPresent(m.JSON, m.Regex) {
+		m.MatchType = BodyJSONRegex
+		return BodyJSONRegex
+	}
+
+	if fieldsPresent(m.Regex) {
+		m.MatchType = BodyRegex
+		return BodyRegex
+	}
+
+	if fieldsPresent(m.JSON, m.Value) {
+		m.MatchType = BodyJSONValue
+		return BodyJSONValue
+	}
+
+	if fieldsPresent(m.JSON) {
+		if m.Count > 0 {
+			m.MatchType = BodyJSONCount
+			return BodyJSONCount
+		}
+	}
+
+	if fieldsPresent(m.JSON) {
+		m.MatchType = BodyJSONPresent
+		return BodyJSONPresent
+	}
+
+	if m.BodyLength != nil {
+		m.MatchType = BodyLength
+		return BodyLength
+	}
+
+	return UnknownMatchType
+}
+
+func fieldsPresent(str ...string) bool {
+	result := true
+	for _, v := range str {
+		if len(v) == 0 {
+			result = false
+		}
+	}
+	return result
+}
+
+var matchFuncs = map[MatchType]func(*Match, *TestCase) (bool, error){
+	UnknownMatchType: defaultMatch,
+	HeaderValue:      checkHeaderValue,
+	HeaderRegex:      checkHeaderRegex,
+	HeaderPresent:    checkHeaderPresent,
+	BodyRegex:        checkBodyRegex,
+	BodyJSONPresent:  checkBodyJSONPresent,
+	BodyJSONCount:    checkBodyJSONCount,
+	BodyJSONValue:    checkBodyJSONValue,
+	BodyJSONRegex:    checkBodyJSONRegex,
+	BodyLength:       checkBodyLength,
+}
+
+func defaultMatch(m *Match, tc *TestCase) (bool, error) {
+	return false, errors.New("Unknown match type fails by default")
+}
+
+func checkHeaderValue(m *Match, tc *TestCase) (bool, error) {
+	var success bool
+	var actualHeader string
+	for head := range tc.Header {
+		success = strings.EqualFold(head, m.Header)
+		if success {
+			actualHeader = head
+			break
+		}
+	}
+
+	headerValue := tc.Header.Get(actualHeader)
+	success = m.Value == headerValue
+	if !success {
+		return false, fmt.Errorf("Header Value Match Failed - expected (%s) got (%s)", m.Value, headerValue)
+	}
+	return success, nil
+}
+
+func checkHeaderRegex(m *Match, tc *TestCase) (bool, error) {
+	var success bool
+	var actualHeader string
+	for head := range tc.Header {
+		success = strings.EqualFold(head, m.Header)
+		if success {
+			actualHeader = head
+			break
+		}
+	}
+
+	headerValue := tc.Header.Get(actualHeader)
+	regex := regexp.MustCompile(m.Regex)
+	success = regex.MatchString(headerValue)
+
+	if !success {
+		return false, fmt.Errorf("Header Regex Match Failed - regex (%s) failed on Header (%s) Value (%s)", m.Regex, m.Header, m.Value)
+	}
+	return success, nil
+}
+
+func checkHeaderPresent(m *Match, tc *TestCase) (bool, error) {
+	var success bool
+	for head := range tc.Header {
+		success = strings.EqualFold(head, m.HeaderPresent)
+		if success {
+			return success, nil
+		}
+	}
+	return false, fmt.Errorf("Header Present Match Failed - expected Header (%s) got nothing", m.HeaderPresent)
+}
+
+func checkBodyRegex(m *Match, tc *TestCase) (bool, error) {
+	regex := regexp.MustCompile(m.Regex)
+	success := regex.MatchString(tc.Body)
+	if !success {
+		return false, fmt.Errorf("Body Regex Match Failed - regex (%s) failed on Body", m.Regex)
+	}
+	return success, nil
+}
+
+func checkBodyJSONValue(m *Match, tc *TestCase) (bool, error) {
+	result := gjson.Get(tc.Body, m.JSON)
+	success := result.String() == m.Value
+	m.ResultString = result.String()
+	if !success {
+		return false, fmt.Errorf("JSON Match Failed - expected (%s) got (%s)", m.Value, result)
+	}
+	return success, nil
+}
+
+func checkBodyJSONPresent(m *Match, tc *TestCase) (bool, error) {
+	result := gjson.Get(tc.Body, m.JSON)
+	success := result.Exists()
+	if !success {
+		return false, fmt.Errorf("JSON Field Match Failed - no field present for pattern (%s)", m.JSON)
+	}
+	return success, nil
+}
+
+func checkBodyJSONCount(m *Match, tc *TestCase) (bool, error) {
+	result := gjson.Get(tc.Body, m.JSON)
+	if result.Int() != m.Count {
+		return false, fmt.Errorf("JSON Count Field Match Failed - found (%d) not (%d) occurances of pattern (%s)",
+			result.Int(), m.Count, m.JSON)
+	}
+	return true, nil
+}
+
+func checkBodyJSONRegex(m *Match, tc *TestCase) (bool, error) {
+	result := gjson.Get(tc.Body, m.JSON)
+	if len(result.String()) == 0 {
+		return false, fmt.Errorf("JSON Regex Match Failed - no field present for pattern (%s)", m.JSON)
+	}
+	regex := regexp.MustCompile(m.Regex)
+	success := regex.MatchString(result.String())
+	if !success {
+		return false, fmt.Errorf("JSON Regex Match Failed - selected field (%s) does not match regex (%s)",
+			result.String(), m.Regex)
+	}
+	return success, nil
+}
+
+func checkBodyLength(m *Match, tc *TestCase) (bool, error) {
+	success := len(tc.Body) == int(*m.BodyLength)
+	if !success {
+		return false, fmt.Errorf("Check Body Length - body length (%d) does not match expected length (%d)",
+			len(tc.Body), *m.BodyLength)
+	}
+	return success, nil
+}
+
+func checkUnimplemented(m *Match, tc *TestCase) (bool, error) {
+	return false, errors.New("Unimplemented match type fails by default")
 }

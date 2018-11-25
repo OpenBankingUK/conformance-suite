@@ -13,15 +13,24 @@ The following methods are available for checking a API http response and its con
 - Http Body - Json specific number of particualar fields present
 - Http Body - Json field content
 - Http Body - Json field with Regex applied
-- Http Body length
 
 The following json fragments show examples of each of the selection options :-
+
+#### Status Code
+
+Checks the HTTP Status code returned in the response
 
 ```json
     "expect": {
         "status-code": 200,
     }
 ```
+
+#### Header Value
+
+Check that the specified HTTP header is present in the response, and that it has the specifed value. 
+
+**Note**: All header checks are case in-sensitive as specified in RFC7230 Hypertext Transfer Protocol (HTTP/1.1) - https://tools.ietf.org/html/rfc7230#section-3.2
 
 ```json
     "expect": {
@@ -33,6 +42,10 @@ The following json fragments show examples of each of the selection options :-
     }
 ```
 
+#### Header Regex
+
+Check that the value of the specified http header matches the supplied regular expression
+
 ```json
     "expect": {
         "matches": [{
@@ -43,14 +56,22 @@ The following json fragments show examples of each of the selection options :-
     }
 ```
 
+#### Header Present
+
+Check that the specified http header is present in the response.
+
 ```json
     "expect": {
         "matches": [{
             "description": "check that a header is present",
-            "header-exists": "content-length"
+            "header-present": "content-length"
          }]
     }
 ```
+
+#### Body Regex
+
+Check that the response body matches the specified regular expression
 
 ```json
     "expect": {
@@ -61,6 +82,10 @@ The following json fragments show examples of each of the selection options :-
     }
 ```
 
+#### Body JSON Present
+
+Check that the JSON field specified exists in the response body
+
 ```json
     "expect": {
         "matches": [{
@@ -69,6 +94,10 @@ The following json fragments show examples of each of the selection options :-
         }],
     }
 ```
+
+#### Body JSON Count
+
+Check that the specified JSON field - which must be within a JSON array structure - exists the specified number of times in the response body
 
 ```json
     "expect": {
@@ -80,8 +109,9 @@ The following json fragments show examples of each of the selection options :-
     }
 ```
 
+#### Body JSON Value
 
-
+Check that the specified JSON response body field has the specified value
 
 ```json
     "expect": {
@@ -94,10 +124,30 @@ The following json fragments show examples of each of the selection options :-
     }
 ```
 
+#### Body JSON Regex
+
+Check that the specified JSON response body field matches the specified regular expression
+
 ```json
-    "matches": [{
-        "description": "Content length??",
-        "response-length": "Data.Account.Accountid",
-        "value": "0"
-    }],
+    "expect": {
+        "status-code": 200,
+        "matches": [{
+            "description": "A json match on response body",
+            "json": "Data.Account.Accountid",
+            "regex": "$*.^"
+        }],
+    }
+```
+
+#### Body Length
+
+Check that the response body has the expected length
+
+```json
+    "expect": {
+        "matches": [{
+            "description": "Check the length in bytes of the body is as specified",
+            "body-length": 0
+        }],
+    }
 ```
