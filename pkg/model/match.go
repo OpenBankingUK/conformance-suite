@@ -9,12 +9,6 @@ import (
 	"github.com/tidwall/gjson"
 )
 
-// ContextAccessor -
-type ContextAccessor struct {
-	Context *Context
-	Matches []Match `json:"matches,omitempty"`
-}
-
 // MatchType enumeration
 type MatchType int
 
@@ -60,6 +54,12 @@ type Match struct {
 	Count           int64     `json:"count,omitempty"`             // Cont for JSON array match purposes
 	BodyLength      *int64    `json:"body-length,omitempty"`       // Body payload length for matching
 	ReplaceEndpoint string    `json:"replaceInEndpoint,omitempty"` // allows substituion of resourceIds
+}
+
+// ContextAccessor - Manages access to matches for Put and Get value operations on a context
+type ContextAccessor struct {
+	Context *Context
+	Matches []Match `json:"matches,omitempty"`
 }
 
 // PutValues is used by the 'contextPut' directive and essentially collects a set of matches whose purpose is
