@@ -6,7 +6,9 @@ Vue.use(VueRouter);
 const router = new VueRouter({
   mode: 'history',
   base: process.env.BASE_URL,
-  linkExactActiveClass: 'ant-menu-item-selected',
+  // linkExactActiveClass: 'ant-menu-item-selected',
+  // linkActiveClass: 'active', // active class for non-exact links.
+  // linkExactActiveClass: 'active', // active class for *exact* links.
   routes: [
     {
       path: '/',
@@ -25,6 +27,11 @@ const router = new VueRouter({
       path: '/reports',
       name: 'Reporter',
       component: () => import(/* webpackChunkName: "reporter" */ './components/Reporter'),
+    },
+    {
+      path: '/wizard',
+      name: 'Wizard',
+      component: () => import(/* webpackChunkName: "wizard" */ './components/Wizard'),
     },
     {
       path: '*',

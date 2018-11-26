@@ -1,3 +1,5 @@
+import DiscoveryExample from './discovery-example.json';
+
 const example = {
   config: {
     accountAccessToken: 'access-token',
@@ -10,90 +12,10 @@ const example = {
     softwareStatementId: 'software-statement-id',
     targetHost: 'https://resourceserver.example.com/',
   },
-  discoveryModel: {
-    Data: {
-      PaymentInitiationAPI: [
-        {
-          Version: 'v1.1',
-          Links: {
-            CreateSingleImmediatePayment: 'https://rs.aspsp.ob.forgerock.financial:443/open-banking/v1.1/payments',
-            GetSingleImmediatePayment: 'https://rs.aspsp.ob.forgerock.financial:443/open-banking/v1.1/payments/{PaymentId}',
-            CreatePaymentSubmission: 'https://rs.aspsp.ob.forgerock.financial:443/open-banking/v1.1/payment-submissions',
-            GetPaymentSubmission: 'https://rs.aspsp.ob.forgerock.financial:443/open-banking/v1.1/payment-submissions/{PaymentSubmissionId}',
-          },
-        },
-        {
-          Version: 'v2.0',
-          Links: {
-            CreateSingleImmediatePayment: 'https://rs.aspsp.ob.forgerock.financial:443/open-banking/v2.0/payments',
-            GetSingleImmediatePayment: 'https://rs.aspsp.ob.forgerock.financial:443/open-banking/v2.0/payments/{PaymentId}',
-            CreatePaymentSubmission: 'https://rs.aspsp.ob.forgerock.financial:443/open-banking/v2.0/payment-submissions',
-            GetPaymentSubmission: 'https://rs.aspsp.ob.forgerock.financial:443/open-banking/v2.0/payment-submissions/{PaymentSubmissionId}',
-          },
-        },
-      ],
-      AccountAndTransactionAPI: [
-        {
-          Version: 'v1.1',
-          Links: {
-            CreateAccountRequest: 'https://rs.aspsp.ob.forgerock.financial:443/open-banking/v1.1/account-requests',
-            GetAccountRequest: 'https://rs.aspsp.ob.forgerock.financial:443/open-banking/v1.1/account-requests/{AccountRequestId}',
-            DeleteAccountRequest: 'https://rs.aspsp.ob.forgerock.financial:443/open-banking/v1.1/account-requests/{AccountRequestId}',
-            GetAccounts: 'https://rs.aspsp.ob.forgerock.financial:443/open-banking/v1.1/accounts',
-            GetAccount: 'https://rs.aspsp.ob.forgerock.financial:443/open-banking/v1.1/accounts/{AccountId}',
-            GetAccountTransactions: 'https://rs.aspsp.ob.forgerock.financial:443/open-banking/v1.1/accounts/{AccountId}/transactions',
-            GetAccountBeneficiaries: 'https://rs.aspsp.ob.forgerock.financial:443/open-banking/v1.1/accounts/{AccountId}/beneficiaries',
-            GetAccountBalances: 'https://rs.aspsp.ob.forgerock.financial:443/open-banking/v1.1/accounts/{AccountId}/balances',
-            GetAccountDirectDebits: 'https://rs.aspsp.ob.forgerock.financial:443/open-banking/v1.1/accounts/{AccountId}/direct-debits',
-            GetAccountStandingOrders: 'https://rs.aspsp.ob.forgerock.financial:443/open-banking/v1.1/accounts/{AccountId}/standing-orders',
-            GetAccountProduct: 'https://rs.aspsp.ob.forgerock.financial:443/open-banking/v1.1/accounts/{AccountId}/product',
-            GetStandingOrders: 'https://rs.aspsp.ob.forgerock.financial:443/open-banking/v1.1/standing-orders',
-            GetDirectDebits: 'https://rs.aspsp.ob.forgerock.financial:443/open-banking/v1.1/direct-debits',
-            GetBeneficiaries: 'https://rs.aspsp.ob.forgerock.financial:443/open-banking/v1.1/beneficiaries',
-            GetTransactions: 'https://rs.aspsp.ob.forgerock.financial:443/open-banking/v1.1/transactions',
-            GetBalances: 'https://rs.aspsp.ob.forgerock.financial:443/open-banking/v1.1/balances',
-            GetProducts: 'https://rs.aspsp.ob.forgerock.financial:443/open-banking/v1.1/products',
-          },
-        },
-        {
-          Version: 'v2.0',
-          Links: {
-            CreateAccountRequest: 'https://rs.aspsp.ob.forgerock.financial:443/open-banking/v2.0/account-requests',
-            GetAccountRequest: 'https://rs.aspsp.ob.forgerock.financial:443/open-banking/v2.0/account-requests/{AccountRequestId}',
-            DeleteAccountRequest: 'https://rs.aspsp.ob.forgerock.financial:443/open-banking/v2.0/account-requests/{AccountRequestId}',
-            GetAccounts: 'https://rs.aspsp.ob.forgerock.financial:443/open-banking/v2.0/accounts',
-            GetAccount: 'https://rs.aspsp.ob.forgerock.financial:443/open-banking/v2.0/accounts/{AccountId}',
-            GetAccountTransactions: 'https://rs.aspsp.ob.forgerock.financial:443/open-banking/v2.0/accounts/{AccountId}/transactions',
-            GetAccountBeneficiaries: 'https://rs.aspsp.ob.forgerock.financial:443/open-banking/v2.0/accounts/{AccountId}/beneficiaries',
-            GetAccountBalances: 'https://rs.aspsp.ob.forgerock.financial:443/open-banking/v2.0/accounts/{AccountId}/balances',
-            GetAccountDirectDebits: 'https://rs.aspsp.ob.forgerock.financial:443/open-banking/v2.0/accounts/{AccountId}/direct-debits',
-            GetAccountStandingOrders: 'https://rs.aspsp.ob.forgerock.financial:443/open-banking/v2.0/accounts/{AccountId}/standing-orders',
-            GetAccountProduct: 'https://rs.aspsp.ob.forgerock.financial:443/open-banking/v2.0/accounts/{AccountId}/product',
-            GetStandingOrders: 'https://rs.aspsp.ob.forgerock.financial:443/open-banking/v2.0/standing-orders',
-            GetDirectDebits: 'https://rs.aspsp.ob.forgerock.financial:443/open-banking/v2.0/direct-debits',
-            GetBeneficiaries: 'https://rs.aspsp.ob.forgerock.financial:443/open-banking/v2.0/beneficiaries',
-            GetTransactions: 'https://rs.aspsp.ob.forgerock.financial:443/open-banking/v2.0/transactions',
-            GetBalances: 'https://rs.aspsp.ob.forgerock.financial:443/open-banking/v2.0/balances',
-            GetProducts: 'https://rs.aspsp.ob.forgerock.financial:443/open-banking/v2.0/products',
-            GetAccountOffers: 'https://rs.aspsp.ob.forgerock.financial:443/open-banking/v2.0/accounts/{AccountId}/offers',
-            GetAccountParty: 'https://rs.aspsp.ob.forgerock.financial:443/open-banking/v2.0/accounts/{AccountId}/party',
-            GetAccountScheduledPayments: 'https://rs.aspsp.ob.forgerock.financial:443/open-banking/v2.0/accounts/{AccountId}/scheduled-payments',
-            GetAccountStatements: 'https://rs.aspsp.ob.forgerock.financial:443/open-banking/v2.0/accounts/{AccountId}/statements',
-            GetAccountStatement: 'https://rs.aspsp.ob.forgerock.financial:443/open-banking/v2.0/accounts/{AccountId}/statements/{StatementId}',
-            GetAccountStatementFile: 'https://rs.aspsp.ob.forgerock.financial:443/open-banking/v2.0/accounts/{AccountId}/statements/{StatementId}/file',
-            GetAccountStatementTransactions: 'https://rs.aspsp.ob.forgerock.financial:443/open-banking/v2.0/accounts/{AccountId}/statements/{StatementId}/transactions',
-            GetOffers: 'https://rs.aspsp.ob.forgerock.financial:443/open-banking/v2.0/offers',
-            GetParty: 'https://rs.aspsp.ob.forgerock.financial:443/open-banking/v2.0/party',
-            GetScheduledPayments: 'https://rs.aspsp.ob.forgerock.financial:443/open-banking/v2.0/scheduled-payments',
-            GetStatement: 'https://rs.aspsp.ob.forgerock.financial:443/open-banking/v2.0/statements',
-          },
-        },
-      ],
-    },
-  },
 };
 
 export default {
   main: example.config,
-  discoveryModel: example.discoveryModel,
+  discoveryModel: DiscoveryExample,
+  problems: null,
 };

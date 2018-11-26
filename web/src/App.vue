@@ -1,18 +1,18 @@
 <template>
-  <div id="app">
-    <component :is="layout">
-      <router-view/>
-    </component>
+  <div
+    id="app"
+    class="d-flex flex-column">
+    <router-view/>
   </div>
 </template>
 
-<script>
-import NavBar from './components/NavBar.vue';
+<style>
+</style>
 
+<script>
 export default {
   name: 'app',
   components: {
-    NavBar,
   },
   computed: {
     layout() {
