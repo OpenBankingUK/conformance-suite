@@ -5,6 +5,8 @@ import (
 	"os"
 	"time"
 
+	model "bitbucket.org/openbankingteam/conformance-suite/pkg/model"
+
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/server"
 	"github.com/sirupsen/logrus"
 	prefixed "github.com/x-cray/logrus-prefixed-formatter"
@@ -37,7 +39,7 @@ func init() {
 }
 
 func main() {
-	server := server.NewServer()
+	server := server.NewServer(model.NewConditionalityChecker())
 	server.HideBanner = true
 
 	address := fmt.Sprintf("0.0.0.0:%s", getPort())

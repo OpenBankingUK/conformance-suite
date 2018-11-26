@@ -2,6 +2,7 @@ package model
 
 import (
 	"encoding/json"
+	"flag"
 	"io/ioutil"
 	"os"
 
@@ -57,7 +58,11 @@ func GetPermissionFromName(name string) Permission {
 
 // loads permission data into modal permissions array structure
 func loadPermissions() error {
-	rawjson, err := ioutil.ReadFile("../../pkg/model/permissions.json")
+	file := "./pkg/model/permissions.json"
+	if flag.Lookup("test.v") != nil {
+		file = "../../pkg/model/permissions.json" // different path when running tests
+	}
+	rawjson, err := ioutil.ReadFile(file)
 	if err != nil {
 		return err
 	}

@@ -62,8 +62,9 @@ func Version() string {
 	return version
 }
 
-// FromJSONString ... TODO: Document.
-func FromJSONString(configStr string) (*Model, error) {
+// FromJSONString - used for testing.
+// In production, we use echo.Context Bind to load configuration from JSON in HTTP POST.
+func FromJSONString(checker model.ConditionalityChecker, configStr string) (*Model, error) {
 	discoveryConfig := &Model{}
 
 	err := json.Unmarshal([]byte(configStr), &discoveryConfig)
@@ -78,35 +79,39 @@ func FromJSONString(configStr string) (*Model, error) {
 		// errsMap := errs.Translate(nil)
 		return nil, err
 	}
-
-	if _, err := HasValidEndpoints(discoveryConfig); err != nil {
+	if _, err := HasValidEndpoints(checker, discoveryConfig); err != nil {
 		return nil, err
 	}
 
-	if _, err := HasMandatoryEndpoints(discoveryConfig); err != nil {
+	if _, err := HasMandatoryEndpoints(checker, discoveryConfig); err != nil {
 		return nil, err
 	}
 
 	return discoveryConfig, nil
 }
 
-// HasValidEndpoints - checks that all the endpoints defined in the discovery model are either mandatory, conditional or optional.
+// HasValidEndpoints - checks that all the endpoints defined in the discovery
+// model are either mandatory, conditional or optional.
 // Return false and errors indicating which endpoints are not valid.
-func HasValidEndpoints(discoveryConfig *Model) (bool, error) {
+func HasValidEndpoints(checker model.ConditionalityChecker, discoveryConfig *Model) (bool, error) {
 	errs := []string{}
 
 	for discoveryItemIndex, discoveryItem := range discoveryConfig.DiscoveryModel.DiscoveryItems {
-		// ignore if it isn't accounts as we don't have the definitions for payments just yet
-		if discoveryItem.APISpecification.Name != "Account and Transaction API Specification" {
+		schemaVersion := discoveryItem.APISpecification.SchemaVersion
+		specification, err := model.SpecificationIdentifierFromSchemaVersion(schemaVersion)
+		if err != nil {
+			warning := fmt.Sprintf("discoveryItemIndex=%d, "+err.Error(), discoveryItemIndex)
+			errs = append(errs, warning)
 			continue
 		}
 
 		for _, endpoint := range discoveryItem.Endpoints {
-			isOptional, _ := model.IsOptional(endpoint.Method, endpoint.Path)
-			isConditional, _ := model.IsConditional(endpoint.Method, endpoint.Path)
-			isMandatory, _ := model.IsMandatory(endpoint.Method, endpoint.Path)
-			isPresent := isOptional || isConditional || isMandatory
-
+			isPresent, err := checker.IsPresent(endpoint.Method, endpoint.Path, specification)
+			if err != nil {
+				warning := fmt.Sprintf("discoveryItemIndex=%d, "+err.Error(), discoveryItemIndex)
+				errs = append(errs, warning)
+				continue
+			}
 			if !isPresent {
 				err := fmt.Sprintf(
 					"discoveryItemIndex=%d, invalid endpoint Method=%s, Path=%s",
@@ -129,49 +134,36 @@ func HasValidEndpoints(discoveryConfig *Model) (bool, error) {
 // HasMandatoryEndpoints - checks that all the mandatory endpoints have been defined in each
 // discovery model, otherwise it returns a error with all the missing mandatory endpoints separated
 // by a newline.
-func HasMandatoryEndpoints(discoveryConfig *Model) (bool, error) {
+func HasMandatoryEndpoints(checker model.ConditionalityChecker, discoveryConfig *Model) (bool, error) {
 	errs := []string{}
 
-	// filter out non-mandatory endpoints, i.e., just store the mandatory endpoints.
-	// this is just for accounts at the moment, conditionality for payments has not be defined just yet.
-	mandatoryEndpoints := []model.Conditionality{}
-	endpoints := model.GetEndpointConditionality()
-	for _, endpoint := range endpoints {
-		isMandatory, err := model.IsMandatory(endpoint.Method, endpoint.Endpoint)
+	for discoveryItemIndex, discoveryItem := range discoveryConfig.DiscoveryModel.DiscoveryItems {
+		schemaVersion := discoveryItem.APISpecification.SchemaVersion
+		specification, err := model.SpecificationIdentifierFromSchemaVersion(schemaVersion)
 		if err != nil {
+			warning := fmt.Sprintf("discoveryItemIndex=%d, "+err.Error(), discoveryItemIndex)
+			errs = append(errs, warning)
 			continue
 		}
 
-		if isMandatory {
-			mandatoryEndpoints = append(mandatoryEndpoints, endpoint)
+		discoveryEndpoints := []model.Input{}
+		for _, endpoint := range discoveryItem.Endpoints {
+			discoveryEndpoints = append(discoveryEndpoints, model.Input{Endpoint: endpoint.Path, Method: endpoint.Method})
 		}
-	}
-
-	// check that each mandatory endpoint is included in the discovery model
-	for _, mandatoryEndpoint := range mandatoryEndpoints {
-		for discoveryItemIndex, discoveryItem := range discoveryConfig.DiscoveryModel.DiscoveryItems {
-			// ignore if it isn't accounts as we don't have the definitions for payments just yet
-			if discoveryItem.APISpecification.Name != "Account and Transaction API Specification" {
-				continue
-			}
-
-			isPresent := false
-			for _, endpoint := range discoveryItem.Endpoints {
-				isPresent = endpoint.Method == mandatoryEndpoint.Method && endpoint.Path == mandatoryEndpoint.Endpoint
-				if isPresent {
-					break
-				}
-			}
-
-			if !isPresent {
-				err := fmt.Sprintf(
-					"discoveryItemIndex=%d, missing mandatory endpoint Method=%s, Path=%s",
-					discoveryItemIndex,
-					mandatoryEndpoint.Method,
-					mandatoryEndpoint.Endpoint,
-				)
-				errs = append(errs, err)
-			}
+		missingMandatory, err := checker.MissingMandatory(discoveryEndpoints, specification)
+		if err != nil {
+			warning := fmt.Sprintf("discoveryItemIndex=%d, "+err.Error(), discoveryItemIndex)
+			errs = append(errs, warning)
+			continue
+		}
+		for _, mandatoryEndpoint := range missingMandatory {
+			err := fmt.Sprintf(
+				"discoveryItemIndex=%d, missing mandatory endpoint Method=%s, Path=%s",
+				discoveryItemIndex,
+				mandatoryEndpoint.Method,
+				mandatoryEndpoint.Endpoint,
+			)
+			errs = append(errs, err)
 		}
 	}
 

@@ -4,6 +4,8 @@ import (
 	"io/ioutil"
 	"testing"
 
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
+
 	"github.com/stretchr/testify/assert"
 )
 
@@ -15,6 +17,43 @@ type invalidTestCase struct {
 	name        string
 	config      string
 	expectedErr string
+}
+
+// conditionalityCheckerMock - implements model.ConditionalityChecker interface for tests
+type conditionalityCheckerMock struct {
+}
+
+// IsOptional - not used in discovery test
+func (c conditionalityCheckerMock) IsOptional(method, endpoint string, specification string) (bool, error) {
+	return false, nil
+}
+
+// Returns IsMandatory true for POST /account-access-consents, false for all other endpoint/methods.
+func (c conditionalityCheckerMock) IsMandatory(method, endpoint string, specification string) (bool, error) {
+	if method == "POST" && endpoint == "/account-access-consents" {
+		return true, nil
+	}
+	return false, nil
+}
+
+// IsConditional - not used in discovery test
+func (c conditionalityCheckerMock) IsConditional(method, endpoint string, specification string) (bool, error) {
+	return false, nil
+}
+
+// Returns IsPresent true for valid GET/POST/DELETE endpoints.
+func (c conditionalityCheckerMock) IsPresent(method, endpoint string, specification string) (bool, error) {
+	if method == "GET" || method == "POST" || method == "DELETE" {
+		return true, nil
+	}
+	return false, nil
+}
+
+// Returns that "POST" "/account-access-consent" is missing
+func (c conditionalityCheckerMock) MissingMandatory(endpoints []model.Input, specification string) ([]model.Input, error) {
+	missing := []model.Input{}
+	missing = append(missing, model.Input{Method: "POST", Endpoint: "/account-access-consents"})
+	return missing, nil
 }
 
 func TestDiscovery_FromJSONString_Invalid_Cases(t *testing.T) {
@@ -129,14 +168,11 @@ discoveryItemIndex=0, invalid endpoint Method=FAKE-METHOD2, Path=/fake-path2`,
 	}
 }
 			`,
-			expectedErr: `discoveryItemIndex=0, missing mandatory endpoint Method=POST, Path=/account-access-consents
-discoveryItemIndex=0, missing mandatory endpoint Method=GET, Path=/account-access-consents/{ConsentId}
-discoveryItemIndex=0, missing mandatory endpoint Method=DELETE, Path=/account-access-consents/{ConsentId}
-discoveryItemIndex=0, missing mandatory endpoint Method=GET, Path=/accounts
-discoveryItemIndex=0, missing mandatory endpoint Method=GET, Path=/accounts/{AccountId}
-discoveryItemIndex=0, missing mandatory endpoint Method=GET, Path=/accounts/{AccountId}/transactions`,
+			expectedErr: `discoveryItemIndex=0, missing mandatory endpoint Method=POST, Path=/account-access-consents`,
 		},
 	}
+
+	mockChecker := conditionalityCheckerMock{}
 
 	for _, testCaseEntry := range testCases {
 		// See: https://github.com/golang/go/wiki/CommonMistakes#using-goroutines-on-loop-iterator-variables
@@ -147,12 +183,12 @@ discoveryItemIndex=0, missing mandatory endpoint Method=GET, Path=/accounts/{Acc
 			t.Run(testCase.name, func(t *testing.T) {
 				assert := assert.New(t)
 
-				model, err := FromJSONString(testCase.config)
+				discoveryModel, err := FromJSONString(mockChecker, testCase.config)
 				// fmt.Println()
 				// fmt.Printf("%+v", err)
 				// fmt.Println()
 
-				assert.Nil(model)
+				assert.Nil(discoveryModel)
 				assert.EqualError(err, testCase.expectedErr)
 			})
 		}(testCaseEntry)
@@ -167,139 +203,93 @@ func TestDiscovery_FromJSONString_Valid(t *testing.T) {
 	assert.NotNil(discoveryExample)
 	config := string(discoveryExample)
 
-	modelExpected := &Model{
-		DiscoveryModel: ModelDiscovery{
-			Version: "v0.0.1",
-			DiscoveryItems: []ModelDiscoveryItem{
-				ModelDiscoveryItem{
-					APISpecification: ModelAPISpecification{
-						Name:          "Account and Transaction API Specification",
-						URL:           "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/642090641/Account+and+Transaction+API+Specification+-+v3.0",
-						Version:       "v3.0",
-						SchemaVersion: "https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.0.0/dist/account-info-swagger.json",
+	accountAPIDiscoveryItem := ModelDiscoveryItem{
+		APISpecification: ModelAPISpecification{
+			Name:          "Account and Transaction API Specification",
+			URL:           "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/642090641/Account+and+Transaction+API+Specification+-+v3.0",
+			Version:       "v3.0",
+			SchemaVersion: "https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.0.0/dist/account-info-swagger.json",
+		},
+		OpenidConfigurationURI: "https://as.aspsp.ob.forgerock.financial/oauth2/.well-known/openid-configuration",
+		ResourceBaseURI:        "https://rs.aspsp.ob.forgerock.financial:443/",
+		Endpoints: []ModelEndpoint{
+			ModelEndpoint{
+				Method:                "POST",
+				Path:                  "/account-access-consents",
+				ConditionalProperties: []ModelConditionalProperties(nil),
+			},
+			ModelEndpoint{
+				Method:                "GET",
+				Path:                  "/account-access-consents/{ConsentId}",
+				ConditionalProperties: []ModelConditionalProperties(nil),
+			},
+			ModelEndpoint{Method: "DELETE",
+				Path:                  "/account-access-consents/{ConsentId}",
+				ConditionalProperties: []ModelConditionalProperties(nil),
+			},
+			ModelEndpoint{Method: "GET",
+				Path:                  "/accounts/{AccountId}/product",
+				ConditionalProperties: []ModelConditionalProperties(nil),
+			},
+			ModelEndpoint{Method: "GET",
+				Path: "/accounts/{AccountId}/transactions",
+				ConditionalProperties: []ModelConditionalProperties{
+					ModelConditionalProperties{
+						Schema:   "OBTransaction3Detail",
+						Property: "Balance",
+						Path:     "Data.Transaction[*].Balance",
 					},
-					OpenidConfigurationURI: "https://as.aspsp.ob.forgerock.financial/oauth2/.well-known/openid-configuration",
-					ResourceBaseURI:        "https://rs.aspsp.ob.forgerock.financial:443/",
-					Endpoints: []ModelEndpoint{
-						ModelEndpoint{
-							Method:                "POST",
-							Path:                  "/account-access-consents",
-							ConditionalProperties: []ModelConditionalProperties(nil),
-						},
-						ModelEndpoint{
-							Method:                "GET",
-							Path:                  "/account-access-consents/{ConsentId}",
-							ConditionalProperties: []ModelConditionalProperties(nil),
-						},
-						ModelEndpoint{Method: "DELETE",
-							Path:                  "/account-access-consents/{ConsentId}",
-							ConditionalProperties: []ModelConditionalProperties(nil),
-						},
-						ModelEndpoint{Method: "GET",
-							Path:                  "/accounts/{AccountId}/product",
-							ConditionalProperties: []ModelConditionalProperties(nil),
-						},
-						ModelEndpoint{Method: "GET",
-							Path: "/accounts/{AccountId}/transactions",
-							ConditionalProperties: []ModelConditionalProperties{
-								ModelConditionalProperties{
-									Schema:   "OBTransaction3Detail",
-									Property: "Balance",
-									Path:     "Data.Transaction[*].Balance",
-								},
-								ModelConditionalProperties{
-									Schema:   "OBTransaction3Detail",
-									Property: "MerchantDetails",
-									Path:     "Data.Transaction[*].MerchantDetails",
-								},
-								ModelConditionalProperties{
-									Schema:   "OBTransaction3Basic",
-									Property: "TransactionReference",
-									Path:     "Data.Transaction[*].TransactionReference",
-								},
-								ModelConditionalProperties{
-									Schema:   "OBTransaction3Detail",
-									Property: "TransactionReference",
-									Path:     "Data.Transaction[*].TransactionReference",
-								},
-							},
-						},
-						ModelEndpoint{
-							Method:                "GET",
-							Path:                  "/accounts",
-							ConditionalProperties: []ModelConditionalProperties(nil),
-						},
-						ModelEndpoint{
-							Method:                "GET",
-							Path:                  "/accounts/{AccountId}",
-							ConditionalProperties: []ModelConditionalProperties(nil),
-						},
-						ModelEndpoint{
-							Method:                "GET",
-							Path:                  "/accounts/{AccountId}/balances",
-							ConditionalProperties: []ModelConditionalProperties(nil),
-						},
+					ModelConditionalProperties{
+						Schema:   "OBTransaction3Detail",
+						Property: "MerchantDetails",
+						Path:     "Data.Transaction[*].MerchantDetails",
 					},
-				},
-				ModelDiscoveryItem{
-					APISpecification: ModelAPISpecification{
-						Name:          "Payment Initiation API",
-						URL:           "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/645367011/Payment+Initiation+API+Specification+-+v3.0",
-						Version:       "v3.0",
-						SchemaVersion: "https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.0.0/dist/payment-initiation-swagger.json",
+					ModelConditionalProperties{
+						Schema:   "OBTransaction3Basic",
+						Property: "TransactionReference",
+						Path:     "Data.Transaction[*].TransactionReference",
 					},
-					OpenidConfigurationURI: "https://as.aspsp.ob.forgerock.financial/oauth2/.well-known/openid-configuration",
-					ResourceBaseURI:        "https://rs.aspsp.ob.forgerock.financial:443/",
-					Endpoints: []ModelEndpoint{ModelEndpoint{
-						Method: "POST",
-						Path:   "/domestic-payment-consents",
-						ConditionalProperties: []ModelConditionalProperties{
-							ModelConditionalProperties{
-								Schema:   "OBWriteDataDomesticConsentResponse1",
-								Property: "Charges",
-								Path:     "Data.Charges",
-							},
-						},
-					},
-						ModelEndpoint{Method: "GET",
-							Path: "/domestic-payment-consents/{ConsentId}",
-							ConditionalProperties: []ModelConditionalProperties{
-								ModelConditionalProperties{
-									Schema:   "OBWriteDataDomesticConsentResponse1",
-									Property: "Charges",
-									Path:     "Data.Charges",
-								},
-							},
-						},
-						ModelEndpoint{Method: "POST",
-							Path: "/domestic-payments",
-							ConditionalProperties: []ModelConditionalProperties{
-								ModelConditionalProperties{
-									Schema:   "OBWriteDataDomesticResponse1",
-									Property: "Charges",
-									Path:     "Data.Charges",
-								},
-							},
-						},
-						ModelEndpoint{Method: "GET",
-							Path: "/domestic-payments/{DomesticPaymentId}",
-							ConditionalProperties: []ModelConditionalProperties{
-								ModelConditionalProperties{
-									Schema:   "OBWriteDataDomesticResponse1",
-									Property: "Charges",
-									Path:     "Data.Charges",
-								},
-							},
-						},
+					ModelConditionalProperties{
+						Schema:   "OBTransaction3Detail",
+						Property: "TransactionReference",
+						Path:     "Data.Transaction[*].TransactionReference",
 					},
 				},
 			},
+			ModelEndpoint{
+				Method:                "GET",
+				Path:                  "/accounts",
+				ConditionalProperties: []ModelConditionalProperties(nil),
+			},
+			ModelEndpoint{
+				Method:                "GET",
+				Path:                  "/accounts/{AccountId}",
+				ConditionalProperties: []ModelConditionalProperties(nil),
+			},
+			ModelEndpoint{
+				Method:                "GET",
+				Path:                  "/accounts/{AccountId}/balances",
+				ConditionalProperties: []ModelConditionalProperties(nil),
+			},
 		},
 	}
-	modelActual, err := FromJSONString(config)
 
+	modelActual, err := FromJSONString(model.NewConditionalityChecker(), config)
 	assert.NoError(err)
-	assert.Exactly(modelExpected, modelActual)
+	assert.NotNil(modelActual.DiscoveryModel)
+	discoveryModel := modelActual.DiscoveryModel
+
+	t.Run("model has a version", func(t *testing.T) {
+		assert.Equal(discoveryModel.Version, "v0.0.1")
+	})
+
+	t.Run("model has correct number of discovery items", func(t *testing.T) {
+		assert.Equal(len(discoveryModel.DiscoveryItems), 2)
+	})
+
+	t.Run("model has correct discovery item contents", func(t *testing.T) {
+		assert.Equal(accountAPIDiscoveryItem, discoveryModel.DiscoveryItems[0])
+	})
 }
 
 func TestDiscovery_Version(t *testing.T) {
