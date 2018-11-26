@@ -1,6 +1,7 @@
 package discovery
 
 import (
+	"encoding/json"
 	"io/ioutil"
 	"testing"
 
@@ -54,6 +55,27 @@ func (c conditionalityCheckerMock) MissingMandatory(endpoints []model.Input, spe
 	missing := []model.Input{}
 	missing = append(missing, model.Input{Method: "POST", Endpoint: "/account-access-consents"})
 	return missing, nil
+}
+
+func loadDiscoveryExample(t *testing.T) *Model {
+	discoveryJSON, err := ioutil.ReadFile("../../docs/discovery-example.json")
+	assert.NoError(t, err)
+	assert.NotNil(t, discoveryJSON)
+
+	discovery := &Model{}
+	err = json.Unmarshal(discoveryJSON, &discovery)
+	assert.Nil(t, err)
+	return discovery
+}
+
+func TestValidate(t *testing.T) {
+	discovery := loadDiscoveryExample(t)
+
+	result, failures, err := Validate(model.NewConditionalityChecker(), discovery)
+
+	assert.Nil(t, err)
+	assert.Equal(t, failures, make([]string, 0))
+	assert.True(t, result)
 }
 
 func TestDiscovery_FromJSONString_Invalid_Cases(t *testing.T) {

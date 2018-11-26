@@ -62,6 +62,14 @@ func Version() string {
 	return version
 }
 
+// Validate - validates a discovery model, returns true when valid,
+// returns false and validation failure messages when not valid.
+func Validate(checker model.ConditionalityChecker, discoveryConfig *Model) (bool, []string, error) {
+	failures := make([]string, 0)
+
+	return true, failures, nil
+}
+
 // FromJSONString - used for testing.
 // In production, we use echo.Context Bind to load configuration from JSON in HTTP POST.
 func FromJSONString(checker model.ConditionalityChecker, configStr string) (*Model, error) {
