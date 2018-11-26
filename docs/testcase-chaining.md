@@ -49,7 +49,7 @@ Consider the following json fragment which defines two test cases:
 }, {
     "@id": "t0002",
     "name": "Get Accounts using AccountId",
-    "purpose": "Accesses the Accounts endpoint and retrieves a list of PSU accounts",
+    "description": "Retrieve account information for given AccountId",
     "input": {
         "method": "GET",
         "endpoint": "/accounts/{AccountId}",
