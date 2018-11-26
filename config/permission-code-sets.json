@@ -1,0 +1,95 @@
+{
+  "account-transaction-v3.0": [
+    {
+      "consent-endpoint": {
+        "method": "POST",
+        "endpoint": "/account-access-consents"
+      },
+      "permission-code-sets": {
+        "read-accounts-basic-only": [
+          "ReadAccountsBasic"
+        ],
+        "read-accounts-detail-only": [
+          "ReadAccountsDetail"
+        ],
+        "all-permissions-basic-variant-without-read-pan": [
+          "ReadAccountsBasic",
+          "ReadBalances",
+          "ReadBeneficiariesBasic",
+          "ReadDirectDebits",
+          "ReadOffers",
+          "ReadParty",
+          "ReadPartyPSU",
+          "ReadProducts",
+          "ReadScheduledPaymentsBasic",
+          "ReadStandingOrdersBasic",
+          "ReadStatementsBasic",
+          "ReadTransactionsBasic",
+          "ReadTransactionsCredits",
+          "ReadTransactionsDebits"
+        ],
+        "all-permissions-detail-variant-with-read-pan": [
+          "ReadAccountsDetail",
+          "ReadBalances",
+          "ReadBeneficiariesDetail",
+          "ReadDirectDebits",
+          "ReadOffers",
+          "ReadPAN",
+          "ReadParty",
+          "ReadPartyPSU",
+          "ReadProducts",
+          "ReadScheduledPaymentsDetail",
+          "ReadStandingOrdersDetail",
+          "ReadStatementsDetail",
+          "ReadTransactionsCredits",
+          "ReadTransactionsDebits",
+          "ReadTransactionsDetail"
+        ]
+      }
+    }
+  ],
+  "payment-initiation-v3.0": [
+    {
+      "consent-endpoint": {
+        "endpoint": "/domestic-payment-consents",
+        "method": "POST"
+      }
+    },
+    {
+      "consent-endpoint": {
+        "endpoint": "/domestic-scheduled-payment-consents",
+        "method": "POST"
+      }
+    },
+    {
+      "consent-endpoint": {
+        "endpoint": "/domestic-standing-order-consents",
+        "method": "POST"
+      }
+    },
+    {
+      "consent-endpoint": {
+        "endpoint": "/international-payment-consents",
+        "method": "POST"
+      }
+    },
+    {
+      "consent-endpoint": {
+        "endpoint": "/international-scheduled-payment-consents",
+        "method": "POST"
+      }
+    },
+    {
+      "consent-endpoint": {
+        "endpoint": "/international-standing-order-consents",
+        "method": "POST"
+      }
+    },
+    {
+      "consent-endpoint": {
+        "endpoint": "/file-payment-consents",
+        "method": "POST"
+      }
+    }
+  ]
+}

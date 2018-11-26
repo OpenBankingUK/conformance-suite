@@ -100,26 +100,67 @@ The following example demonstrates the situation where "permissions" aren't spec
 ```
 
 
-## Permission Sets
+## Permission code sets
 
-PermissionSets are used to define the permission requirements for running testcases against available access_token permissions.
+Permission code sets are used to define the permission requirements for running testcases against available access_token permissions.
 
-The initial release of the Functional Conformation test suite will use a small number of common predefined PermissionSets. The expectation is that a small number of access tokens will be supplied to the conformance suite as part of the configuration, that match the permission sets and therfore allow a predictable set of core tests to be run. Over time the flexibilty with which permissions can be expressed across test cases will be expanded.
+The initial release of the functional conformance suite will use a small number of common predefined permission code sets.
 
-As an example, the following JSON fragment defines two PermissionSets: "accounts-v3.0-all-basic-variant-without-read-pan", and "accounts-v3.0-all-detail-variant-without-read-pan".
+The expectation is that a small number of access tokens will be supplied to the
+conformance suite as part of the configuration, that match the consent endpoints
+and permission code sets to allow a predictable set of core tests to be run.
+Over time the flexibility with which permissions can be expressed across test cases will be expanded.
 
-```json
-{
-    "accounts-v3.0-all-basic-variant-without-read-pan": ["ReadAccountsBasic", "ReadBalances", "ReadBeneficiariesBasic",
-         "ReadDirectDebits", "ReadOffers", "ReadParty", "ReadPartyPSU", "ReadProducts", "ReadScheduledPaymentsBasic",
-          "ReadStandingOrdersBasic", "ReadStatementsBasic", "ReadTransactionsBasic", "ReadTransactionsCredits",
-           "ReadTransactionsDebits"],
-    "accounts-v3.0-all-detail-variant-without-read-pan": ["ReadAccountsDetail", "ReadBalances", "ReadBeneficiariesDetail",
-         "ReadDirectDebits", "ReadOffers", "ReadParty", "ReadPartyPSU", "ReadProducts", "ReadScheduledPaymentsDetail",
-         "ReadStandingOrdersDetail", "ReadStatementsDetail", "ReadTransactionsCredits", "ReadTransactionsDebits",
-          "ReadTransactionsDetail"]
-}
+### Permission code sets configuration file
+
+The `./config/permission-code-sets.json` configuration contains a list of the
+permission code sets available per API specification consent endpoint.
+
+Not all consent endpoints require permission codes to be passed. Consent
+endpoints that do not require permission codes are included in the configuration file without a
+`permission-code-sets` field set.
+
+To test a functional endpoint, the conformance suite requires an
+access token/`ConsentId` from a call to the appropriate consent endpoint.
+
+#### Account transaction access example
+
+To test Basic level access to debit and credit transactions via
+the `/transactions` endpoint:
+- An access token/`ConsentId` must be supplied from the
+  `/account-access-consents` endpoint.
+- Permission codes consented to must include `ReadTransactionsBasic`,
+  `ReadTransactionsDebits`, and `ReadTransactionsCredits`.
+- The conformance suite will match these permission codes to a relevant
+  permission code set associated with the `/account-access-consents` endpoint.
+- E.g. the matched permission set might be `all-permissions-basic-variant-without-read-pan`,
+  as represented by this JSON fragment:
+
 ```
+"all-permissions-basic-variant-without-read-pan": [
+  "ReadAccountsBasic",
+  "ReadBalances",
+  "ReadBeneficiariesBasic",
+  "ReadDirectDebits",
+  "ReadOffers",
+  "ReadParty",
+  "ReadPartyPSU",
+  "ReadProducts",
+  "ReadScheduledPaymentsBasic",
+  "ReadStandingOrdersBasic",
+  "ReadStatementsBasic",
+  "ReadTransactionsBasic",
+  "ReadTransactionsCredits",
+  "ReadTransactionsDebits"
+],
+```
+
+#### Payment initiation example
+
+To test initiating a domestic payment via the `/domestic-payment` endpoint:
+- An access token/`ConsentId` must be supplied from the `/domestic-payment-consents` endpoint.
+- No permission codes are needed for this consent endpoint.
+- So no permission code set lookup is required.
 
 ## Using Manifests, Rules, Test cases and Permissions Sets
 
