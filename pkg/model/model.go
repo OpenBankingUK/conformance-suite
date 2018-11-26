@@ -301,14 +301,16 @@ func (r *Rule) String() string {
 }
 
 // Dump - TestCase helper
-func (t *TestCase) Dump() {
-	fmt.Printf("TESTCASE\nID: %s\nName: %s\nPurpose: %s\n", t.ID, t.Name, t.Purpose)
-	fmt.Printf("Input: ")
-	pkgutils.DumpJSON(t.Input)
-	fmt.Printf("Context: ")
-	pkgutils.DumpJSON(t.Context)
-	fmt.Printf("Expect: ")
-	pkgutils.DumpJSON(t.Expect)
+func (t *TestCase) Dump(print bool) {
+	if print {
+		fmt.Printf("TESTCASE\nID: %s\nName: %s\nPurpose: %s\n", t.ID, t.Name, t.Purpose)
+		fmt.Printf("Input: ")
+		pkgutils.DumpJSON(t.Input)
+		fmt.Printf("Context: ")
+		pkgutils.DumpJSON(t.Context)
+		fmt.Printf("Expect: ")
+		pkgutils.DumpJSON(t.Expect)
+	}
 }
 
 // RunTests - runs all the tests for aTestRule

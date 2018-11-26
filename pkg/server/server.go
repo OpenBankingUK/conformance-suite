@@ -9,6 +9,8 @@ import (
 	"strings"
 	"time"
 
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
+
 	"bitbucket.org/openbankingteam/conformance-suite/appconfig"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
 	"bitbucket.org/openbankingteam/conformance-suite/proxy"
@@ -53,13 +55,15 @@ type Server struct {
 	proxy      *http.Server
 }
 
+var conditionalityChecker model.ConditionalityChecker
+
 // NewServer returns new echo.Echo server.
-func NewServer() *Server {
+func NewServer(checker model.ConditionalityChecker) *Server {
 	server := &Server{
 		Echo:  echo.New(),
 		proxy: nil,
 	}
-
+	conditionalityChecker = checker
 	// Write output to `/dev/null` if running under test mode.
 	if flag.Lookup("test.v") == nil {
 		// Normal run
@@ -226,7 +230,7 @@ func (s *Server) discoveryModelValidateHandler(c echo.Context) error {
 	if err := c.Bind(discoveryModel); err != nil {
 		return c.JSONPretty(http.StatusBadRequest, &ErrorResponse{
 			Error: err.Error(),
-		}, "    ")
+		}, "  ")
 	}
 
 	if err := c.Validate(discoveryModel); err != nil {
@@ -236,22 +240,22 @@ func (s *Server) discoveryModelValidateHandler(c echo.Context) error {
 
 		return c.JSONPretty(http.StatusBadRequest, &ErrorResponse{
 			Error: errsMap,
-		}, "    ")
+		}, "  ")
 	}
 
-	if _, err := discovery.HasValidEndpoints(discoveryModel); err != nil {
+	if _, err := discovery.HasValidEndpoints(conditionalityChecker, discoveryModel); err != nil {
 		return c.JSONPretty(http.StatusBadRequest, &ErrorResponse{
 			Error: err.Error(),
-		}, "    ")
+		}, "  ")
 	}
 
-	if _, err := discovery.HasMandatoryEndpoints(discoveryModel); err != nil {
+	if _, err := discovery.HasMandatoryEndpoints(conditionalityChecker, discoveryModel); err != nil {
 		return c.JSONPretty(http.StatusBadRequest, &ErrorResponse{
 			Error: err.Error(),
-		}, "    ")
+		}, "  ")
 	}
 
-	return c.JSONPretty(http.StatusOK, discoveryModel, "    ")
+	return c.JSONPretty(http.StatusOK, discoveryModel, "  ")
 }
 
 // Skipper ensures that all requests not prefixed with `/api` get sent
