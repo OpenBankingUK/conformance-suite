@@ -2,18 +2,18 @@
 
 The conformance suite matching model specifies how the suite and check the responses that are returned from API implementations.
 
-The following methods are available for checking a API http response and its contents:
+The following methods are available for checking a API HTTP response and its contents:
 
-- Http Status Code field
-- Http Header value comparison
-- Http Header value regex
-- Http Header present
-- Http Body regex
-- Http Body - Json field present
-- Http Body - Json specific number of particular fields present
-- Http Body - Json field content
-- Http Body - Json field with Regex applied
-- Http Body Length - Checks the expected response body length
+- HTTP Status Code field
+- HTTP Header value comparison
+- HTTP Header value regex
+- HTTP Header present
+- HTTP Body regex
+- HTTP Body - Json field present
+- HTTP Body - Json specific number of particular fields present
+- HTTP Body - Json field content
+- HTTP Body - Json field with Regex applied
+- HTTP Body Length - Checks the expected response body length
 
 The following json fragments show examples of each of the selection options :-
 
@@ -36,7 +36,7 @@ Check that the specified HTTP header is present in the response, and that it has
 ```json
     "expect": {
         "matches": [{
-            "description": "Example match an http header value",
+            "description": "Example match an HTTP header value",
             "header": "Content-Type",
             "value": "application/json"
         }],
@@ -104,7 +104,7 @@ Check that the specified JSON field - which must be within a JSON array structur
     "expect": {
         "matches": [{
             "description": "A json field count present",
-            "json": "Data.Account.[*]Accountid",
+            "json": "Data.Account.*.Accountid",
             "count": 4
         }],
     }
@@ -119,7 +119,7 @@ Check that the specified JSON response body field has the specified value
         "status-code": 200,
         "matches": [{
             "description": "A json match on response body",
-            "json": "Data.Account.Accountid",
+            "json": "Data.Account.0.Accountid",
             "value": "XYZ1231231231231"
         }],
     }
@@ -134,7 +134,7 @@ Check that the specified JSON response body field matches the specified regular 
         "status-code": 200,
         "matches": [{
             "description": "A json match on response body",
-            "json": "Data.Account.Accountid",
+            "json": "Data.Account.0.Accountid",
             "regex": "$*.^"
         }],
     }
