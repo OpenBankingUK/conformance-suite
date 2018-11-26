@@ -148,7 +148,7 @@ func TestCheckHeaderRegexMatchCaseInsensitive(t *testing.T) {
 }
 
 // check header regex mismatch is detected
-func TestCheckHeaderRegexMismat1ch(t *testing.T) {
+func TestCheckHeaderRegexMismatch(t *testing.T) {
 	m := Match{Description: "test", Header: "authorization", Regex: "^Basic\\s.*"}
 	tc := TestCase{Expect: Expect{Matches: []Match{m}, StatusCode: 200}}
 	resp := pkgutils.CreateHTTPResponse(200, "OK", statusok, "Authorization", "Basics YjMzODg4ZGMtYzg==")
@@ -197,7 +197,7 @@ func TestCheckBodyRegexMatch(t *testing.T) {
 }
 
 // check body regex mismatch is detect
-func TestCheckBodyRegexMismat1ch(t *testing.T) {
+func TestCheckBodyRegexMismatch(t *testing.T) {
 	m := Match{Description: "test", Regex: ".*London Bridge.*"}
 	tc := TestCase{Expect: Expect{Matches: []Match{m}, StatusCode: 200}}
 	resp := pkgutils.CreateHTTPResponse(200, "OK", "{\"status\":\"London !! Bridge\"}")
