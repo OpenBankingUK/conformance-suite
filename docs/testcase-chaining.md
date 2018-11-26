@@ -6,15 +6,15 @@ Data is transferred between test cases using the Context. Test cases have access
 1. test case scope - only visible to the test case
 2. test sequence scope - visible to any test case within the test sequence
 3. rule scope - visible to any test sequence within a rule, and all the test sequence's test cases
-4. global/manifiest scope - visible to all testing running - discovery information would typically be accessible via global scope
+4. global/manifest scope - visible to all testing running - discovery information would typically be accessible via global scope
 
-For test case chaining, the test sequence scope is involved as this exists for the duration of a test sequence and therefore enables parameters to be available after a test case has completed and before a subsequent testcase has started.
+For test case chaining, the test sequence scope is involved as this exists for the duration of a test sequence and therefore enables parameters to be available after a test case has completed and before a subsequent test case has started.
 
-In order to move a parameter between test cases, two directives have been introduced, **contextGet** and **contextPut**. **contextGet** is used in the situation where you **get** a variable from the context and insert the variable into the request payload. **contextPut** is used in the sutation where you **put** a variable into the context for later use.
+In order to move a parameter between test cases, two directives have been introduced, **contextGet** and **contextPut**. **contextGet** is used in the situation where you **get** a variable from the context and insert the variable into the request payload. **contextPut** is used in the situation where you **put** a variable into the context for later use.
 
-Its useful to examine a worked example of test case parameter chaining to understand how it works. 
+Its useful to examine a worked example of test case parameter chaining to understand how it works.
 
-Consider the following json fragement which defines two test cases:
+Consider the following json fragment which defines two test cases:
 
 - t0001
 - t0002
@@ -79,7 +79,7 @@ Test case t0001 does the following:-
 
 - Makes an http GET call to resource endpoint /accounts/
 - Checks that the call response status code is 200
-- Examines the response body for the first occurance of the JSON field AccountId using the JSON match string "Data.Account.0.AccountId". In the response body, the matched field would appear as follows:-
+- Examines the response body for the first occurrence of the JSON field AccountId using the JSON match string "Data.Account.0.AccountId". In the response body, the matched field would appear as follows:-
 
 ```json
 {
@@ -108,7 +108,7 @@ Test case t0001 does the following:-
 
 - The JSON Expression "Data.Account.1.AccountId results in the AccountId value "500000000000000000000007" being inserted into the **context**
 - The AccountId value is then added to the **Context** under the name "AccountId".
-- The "AccountId" variable with value "500000000000000000000007" becomes avaiable to other test cases that use the same **context**.
+- The "AccountId" variable with value "500000000000000000000007" becomes available to other test cases that use the same **context**.
 
 Test case t0002 then does the following:-
 

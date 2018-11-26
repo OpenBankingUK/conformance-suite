@@ -5,12 +5,12 @@ The conformance suite matching model specifies how the suite and check the respo
 The following methods are available for checking a API http response and its contents:
 
 - Http Status Code field
-- Http Header value comparision
+- Http Header value comparison
 - Http Header value regex
 - Http Header present
 - Http Body regex
 - Http Body - Json field present
-- Http Body - Json specific number of particualar fields present
+- Http Body - Json specific number of particular fields present
 - Http Body - Json field content
 - Http Body - Json field with Regex applied
 - Http Body Length - Checks the expected response body length
@@ -29,7 +29,7 @@ Checks the HTTP Status code returned in the response
 
 #### Header Value
 
-Check that the specified HTTP header is present in the response, and that it has the specifed value. 
+Check that the specified HTTP header is present in the response, and that it has the specified value.
 
 **Note**: All header checks are case in-sensitive as specified in RFC7230 Hypertext Transfer Protocol (HTTP/1.1) - https://tools.ietf.org/html/rfc7230#section-3.2
 
