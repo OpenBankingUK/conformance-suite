@@ -200,7 +200,7 @@ func TestTransactionsWithCorrectPermissions(t *testing.T) {
 	res, err := (&http.Client{}).Do(req)
 	assert.Nil(t, err)
 
-	result, err := tc.ApplyExpects(res)
+	result, err := tc.ApplyExpects(res, nil)
 	assert.Nil(t, err)
 	assert.Equal(t, result, true) // test validates ok
 
@@ -226,7 +226,7 @@ func TestTransctionWithoutCorrectPermissions(t *testing.T) {
 	res, err := (&http.Client{}).Do(req)
 	assert.Nil(t, err)
 
-	result, err := tc.ApplyExpects(res)
+	result, err := tc.ApplyExpects(res, nil)
 	assert.Nil(t, err)
 	assert.Equal(t, result, true) // test validates ok
 

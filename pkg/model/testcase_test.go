@@ -50,6 +50,39 @@ var (
 	    }
     }    
 	`)
+
+	account0007 = []byte(`
+	{
+		"Data": {
+			"Account": [
+				{
+					"AccountId": "500000000000000000000007",
+					"Currency": "GBP",
+					"Nickname": "xxxx0001",
+					"AccountType": "Business",
+					"AccountSubType": "CurrentAccount",
+					"Account": [
+						{
+							"SchemeName": "IBAN",
+							"Identification": "GB29PAPA20000390210099",
+							"Name": "Mario Carpentry"
+						}
+					],
+					"Servicer": {
+						"SchemeName": "BICFI",
+						"Identification": "PAPAUK00XXX"
+					}
+				}
+			]
+		},
+		"Links": {
+			"Self": "http://modelobank2018.o3bank.co.uk/open-banking/v2.0/accounts/500000000000000000000007"
+		},
+		"Meta": {
+			"TotalPages": 1
+		}
+	}`)
+
 	basicTestCase = []byte(`
 	{
         "@id": "#t1008",
@@ -159,7 +192,7 @@ func TestMockedTestCase(t *testing.T) {
 	assert.Nil(t, err)
 	assert.NotNil(t, res)
 
-	result, err := testcase.ApplyExpects(res)
+	result, err := testcase.ApplyExpects(res, nil)
 	assert.NoError(t, err)
 	assert.Equal(t, res.StatusCode, 200)
 	assert.Nil(t, err)
@@ -184,7 +217,7 @@ func TestResponseStatusCodeMismatch(t *testing.T) {
 	res, err := (&http.Client{}).Do(req)
 	assert.Nil(t, err)
 
-	result, err := testcase.ApplyExpects(res)
+	result, err := testcase.ApplyExpects(res, nil)
 	assert.NotNil(t, err)
 	fmt.Println(err)
 	assert.Equal(t, result, false)
@@ -208,7 +241,7 @@ func TestJsonExpectMatch(t *testing.T) {
 	res, err := (&http.Client{}).Do(req)
 	assert.Nil(t, err)
 
-	result, err := testcase.ApplyExpects(res)
+	result, err := testcase.Validate(res, nil)
 	assert.Nil(t, err)
 	assert.Equal(t, result, true)
 

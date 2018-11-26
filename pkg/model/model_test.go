@@ -4,8 +4,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"net/http"
 	"testing"
 
+	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/utils"
 	"github.com/go-openapi/loads"
 	"github.com/go-openapi/spec"
 	"github.com/stretchr/testify/assert"
@@ -82,6 +84,17 @@ func TestGenerateSwaggerTestCases(t *testing.T) {
 }
 
 // Utility to load Manifest Data Model containing all Rules, Tests and Conditions
+func loadManifest(filename string) (Manifest, error) {
+	plan, _ := ioutil.ReadFile(filename)
+	var i Manifest
+	err := json.Unmarshal(plan, &i)
+	if err != nil {
+		return i, err
+	}
+	return i, nil
+}
+
+// Utility to load Manifest Data Model containing all Rules, Tests and Conditions
 func loadModel() (Manifest, error) {
 	plan, _ := ioutil.ReadFile("testdata/testmanifest.json")
 	var m Manifest
@@ -132,4 +145,67 @@ func getOperations(props *spec.PathItem) map[string]*spec.Operation {
 		}
 	}
 	return ops
+}
+
+// Use cases
+
+/*
+As a developer I want to perform a test where I load some json which defines a manifest, rule and testcases
+I want the rule to manage the execution of the test that includes two test cases
+I want the testcases to communicate paramaters between themselves using a context
+I want the results of one test case being used as input to the other testcase
+I want to use json pattern matching to extract the first returned AccountId from the first testcase and
+use that value as the accountid parameter for the second testcase
+*/
+func TestChainedTestCases(t *testing.T) {
+	manifest, err := loadManifest("testdata/passAccountId.json")
+	require.NoError(t, err)
+
+	rule := manifest.Rules[0]                    // get the first rule
+	rule.Executor = &executor{}                  // Allows rule testcase execution strategies to be dynamically added to rules
+	rulectx := Context{}                         // create a context to hold the passed parameters
+	tc01 := rule.Tests[0][0]                     // get the first testcase of the first rule
+	req, _ := tc01.Prepare(&rulectx)             // Prepare calls ApplyInput and ApplyContext on testcase
+	resp, err := rule.Execute(req, &tc01)        // send the request to be executed resulting in a response
+	result, err := tc01.Validate(resp, &rulectx) // Validate checks response against the match rules and processes any contextPuts present
+
+	tc02 := rule.Tests[0][1]                    // get the second testcase of the first rule
+	req, err = tc02.Prepare(&rulectx)           // Prepare
+	resp, err = rule.Execute(req, &tc02)        // Execute
+	result, err = tc02.Validate(resp, &rulectx) // Validate checks the match rules and processes any contextPuts present
+	assert.True(t, result)
+	assert.Equal(t, "500000000000000000000007", rulectx.Get("AccountId"))
+	assert.Equal(t, "/accounts/500000000000000000000007", tc02.Input.Endpoint)
+}
+
+type executor struct {
+}
+
+func (e *executor) ExecuteTestCase(r *http.Request, t *TestCase, ctx *Context) (*http.Response, error) {
+	responseKey := t.Input.Method + " " + t.Input.Endpoint
+	return chainTest[responseKey](), nil
+}
+
+var chainTest = map[string]func() *http.Response{
+	"GET /accounts/":                         httpAccountCall(),
+	"GET /accounts/{AccountId}":              httpAccountIDCall(),
+	"GET /accounts/500000000000000000000007": httpAccountID007Call(),
+}
+
+func httpAccountCall() func() *http.Response {
+	return func() *http.Response {
+		return pkgutils.CreateHTTPResponse(200, "OK", string(getAccountResponse))
+	}
+}
+
+func httpAccountIDCall() func() *http.Response {
+	return func() *http.Response {
+		return pkgutils.CreateHTTPResponse(200, "OK", string(getAccountResponse), "content-type", "klingon/text")
+	}
+}
+
+func httpAccountID007Call() func() *http.Response {
+	return func() *http.Response {
+		return pkgutils.CreateHTTPResponse(200, "OK", string(account0007), "content-type", "klingon/text")
+	}
 }
