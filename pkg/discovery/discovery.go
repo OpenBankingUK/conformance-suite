@@ -126,13 +126,31 @@ func unmarshalDiscoveryJSON(discoveryJSON string) (*Model, error) {
 func hasValidAPISpecifications(discoveryConfig *Model) (bool, []string, error) {
 	errs := []string{}
 	for discoveryItemIndex, discoveryItem := range discoveryConfig.DiscoveryModel.DiscoveryItems {
+
 		schemaVersion := discoveryItem.APISpecification.SchemaVersion
-		_, err := model.SpecificationIdentifierFromSchemaVersion(schemaVersion)
+		specification, err := model.SpecificationFromSchemaVersion(schemaVersion)
 		if err != nil {
-			warning := fmt.Sprintf("Key: 'Model.DiscoveryModel.DiscoveryItems[%d].APISpecification.SchemaVersion' Error:'SchemaVersion' not supported by suite "+schemaVersion, discoveryItemIndex)
-			errs = append(errs, warning)
+			failure := fmt.Sprintf("Key: 'Model.DiscoveryModel.DiscoveryItems[%d].APISpecification.SchemaVersion' Error:'SchemaVersion' not supported by suite '%s'",
+				discoveryItemIndex, schemaVersion)
+			errs = append(errs, failure)
 			continue
 		}
+		if specification.Name != discoveryItem.APISpecification.Name {
+			failure := fmt.Sprintf("Key: 'Model.DiscoveryModel.DiscoveryItems[%d].APISpecification.Name' Error:'Name' should be '%s' when schemaVersion is '%s'",
+				discoveryItemIndex, specification.Name, schemaVersion)
+			errs = append(errs, failure)
+		}
+		if specification.Version != discoveryItem.APISpecification.Version {
+			failure := fmt.Sprintf("Key: 'Model.DiscoveryModel.DiscoveryItems[%d].APISpecification.Version' Error:'Version' should be '%s' when schemaVersion is '%s'",
+				discoveryItemIndex, specification.Version, schemaVersion)
+			errs = append(errs, failure)
+		}
+		if specification.URL != discoveryItem.APISpecification.URL {
+			failure := fmt.Sprintf("Key: 'Model.DiscoveryModel.DiscoveryItems[%d].APISpecification.URL' Error:'URL' should be '%s' when schemaVersion is '%s'",
+				discoveryItemIndex, specification.URL, schemaVersion)
+			errs = append(errs, failure)
+		}
+
 	}
 	if len(errs) > 0 {
 		return false, errs, nil

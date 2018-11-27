@@ -74,6 +74,9 @@ func testUnmarshalDiscoveryJSON(t *testing.T, discoveryJSON string) *Model {
 // discoveryStub - returns discovery JSON with given field stubbed with given value
 func discoveryStub(field string, value string) string {
 	version := "v0.0.1"
+	specName := "Account and Transaction API Specification"
+	specURL := "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/642090641/Account+and+Transaction+API+Specification+-+v3.0"
+	specVersion := "v3.0"
 	schemaVersion := "https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.0.0/dist/account-info-swagger.json"
 	endpoints := `, "endpoints": [
 		{
@@ -95,18 +98,20 @@ func discoveryStub(field string, value string) string {
 		} else {
 			endpoints = `, "endpoints": ` + value
 		}
+	case "specName":
+		specName = value
 	case "schemaVersion":
-		if value == "" {
-			schemaVersion = ""
-		} else {
-			schemaVersion = value
-		}
+		schemaVersion = value
+	case "specURL":
+		specURL = value
+	case "specVersion":
+		specVersion = value
 	}
 
 	apiSpecification := `"apiSpecification": {
-		"name": "Account and Transaction API Specification",
-		"url": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/642090641/Account+and+Transaction+API+Specification+-+v3.0",
-		"version": "v3.0",
+		"name": "` + specName + `",
+		"url": "` + specURL + `",
+		"version": "` + specVersion + `",
 		"schemaVersion": "` + schemaVersion + `"
 	},`
 	if field == "apiSpecification" {
@@ -204,7 +209,34 @@ func TestValidate(t *testing.T) {
 		testValidateFailures(t, conditionalityCheckerMock{}, &invalidTest{
 			discoveryJSON: discoveryStub("schemaVersion", "http://example.com/bad-schema"),
 			failures: []string{
-				"Key: 'Model.DiscoveryModel.DiscoveryItems[0].APISpecification.SchemaVersion' Error:'SchemaVersion' not supported by suite http://example.com/bad-schema",
+				"Key: 'Model.DiscoveryModel.DiscoveryItems[0].APISpecification.SchemaVersion' Error:'SchemaVersion' not supported by suite 'http://example.com/bad-schema'",
+			},
+		})
+	})
+
+	t.Run("when discoveryItem apiSpecification schemaVersion in suite config but Name field not matching returns failure", func(t *testing.T) {
+		testValidateFailures(t, conditionalityCheckerMock{isPresent: true}, &invalidTest{
+			discoveryJSON: discoveryStub("specName", "Bad Spec Name"),
+			failures: []string{
+				`Key: 'Model.DiscoveryModel.DiscoveryItems[0].APISpecification.Name' Error:'Name' should be 'Account and Transaction API Specification' when schemaVersion is 'https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.0.0/dist/account-info-swagger.json'`,
+			},
+		})
+	})
+
+	t.Run("when discoveryItem apiSpecification schemaVersion in suite config but Version field not matching returns failure", func(t *testing.T) {
+		testValidateFailures(t, conditionalityCheckerMock{isPresent: true}, &invalidTest{
+			discoveryJSON: discoveryStub("specVersion", "v9.9.9"),
+			failures: []string{
+				`Key: 'Model.DiscoveryModel.DiscoveryItems[0].APISpecification.Version' Error:'Version' should be 'v3.0' when schemaVersion is 'https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.0.0/dist/account-info-swagger.json'`,
+			},
+		})
+	})
+
+	t.Run("when discoveryItem apiSpecification schemaVersion in suite config but URL field not matching returns failure", func(t *testing.T) {
+		testValidateFailures(t, conditionalityCheckerMock{isPresent: true}, &invalidTest{
+			discoveryJSON: discoveryStub("specURL", "http://example.com/bad-url"),
+			failures: []string{
+				`Key: 'Model.DiscoveryModel.DiscoveryItems[0].APISpecification.URL' Error:'URL' should be 'https://openbanking.atlassian.net/wiki/spaces/DZ/pages/642090641/Account+and+Transaction+API+Specification+-+v3.0' when schemaVersion is 'https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.0.0/dist/account-info-swagger.json'`,
 			},
 		})
 	})

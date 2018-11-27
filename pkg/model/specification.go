@@ -12,11 +12,11 @@ import (
 	validator "gopkg.in/go-playground/validator.v9"
 )
 
-// Represents OB API specification.
+// Specification - Represents OB API specification.
 // Fields are from the APIReference JSON-LD schema, see: https://schema.org/APIReference
 // URL - URL of confluence specification file.
 // SchemaVersion - URL of OpenAPI/Swagger specification file.
-type specification struct {
+type Specification struct {
 	Identifier    string `json:"identifier,omitempty" validate:"required"`
 	Name          string `json:"name,omitempty" validate:"required"`
 	URL           string `json:"url,omitempty" validate:"required,url"`
@@ -24,7 +24,7 @@ type specification struct {
 	SchemaVersion string `json:"schemaVersion,omitempty" validate:"required,url"`
 }
 
-var specifications []specification
+var specifications []Specification
 
 // init - load and validate specification data from json file
 func init() {
@@ -67,10 +67,21 @@ func loadSpecifications(rawjson []byte) error {
 // SpecificationIdentifierFromSchemaVersion - returns specification identifier
 // for given schema version URL, or nil when there is no match.
 func SpecificationIdentifierFromSchemaVersion(schemaVersion string) (string, error) {
+	specification, err := SpecificationFromSchemaVersion(schemaVersion)
+	if err != nil {
+		return "", err
+	}
+	return specification.Identifier, nil
+}
+
+// SpecificationFromSchemaVersion - returns specification struct
+// for given schema version URL, or nil when there is no match.
+func SpecificationFromSchemaVersion(schemaVersion string) (Specification, error) {
+	var spec Specification
 	for _, specification := range specifications {
 		if specification.SchemaVersion == schemaVersion {
-			return specification.Identifier, nil
+			return specification, nil
 		}
 	}
-	return "", errors.New("No specification found for schema version: " + schemaVersion)
+	return spec, errors.New("No specification found for schema version: " + schemaVersion)
 }
