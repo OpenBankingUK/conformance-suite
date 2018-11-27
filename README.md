@@ -17,7 +17,7 @@ What's New:
 * NEW: [Test Case](docs/test-case-design.md) Design. The conformance suite provides a cross-platform, language agnostic representation of test cases. The primary purpose is to determine whether an implementer resource complies with requirements of specifications and conditions, regulations and standards.
 * NEW: [Discovery Configuration](docs/discovery.md) Design: Provides a configurable model that allows an implementer to describe information on endpoint availability, data structure.
 
-To provide feedback, please use the public [issue tracker](https://bitbucket.org/openbankingteam/conformance-suite/issues?status=new&status=open) or see the [CONTRIBUTING.md](CONTRIBUTING.md).
+To provide feedback, please use the public [issue tracker](https://bitbucket.org/openbankingteam/conformance-suite/issues) or see the [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Getting Started
 
@@ -35,7 +35,7 @@ In order to run this container you'll need docker installed.
 
 ## Support
 
-For support on using the suite contact the [Open Banking Service Desk](). To raise bugs please use the [issue tracker]().
+For support on using the suite contact the [Open Banking Service Desk](). To raise bugs please use the [issue tracker](https://bitbucket.org/openbankingteam/conformance-suite/issues).
 
 ## License
 
