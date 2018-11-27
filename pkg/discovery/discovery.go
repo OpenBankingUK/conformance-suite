@@ -86,38 +86,25 @@ func Validate(checker model.ConditionalityChecker, discovery *Model) (bool, []st
 		}
 	}
 
+	pass, messages, _ = HasMandatoryEndpoints(checker, discovery)
+	if !pass {
+		for _, message := range messages {
+			failures = append(failures, message)
+		}
+	}
+
 	if len(failures) > 0 {
 		return false, failures, nil
 	}
 	return true, failures, nil
 }
 
-// FromJSONString - used for testing.
+// unmarshalDiscoveryJSON - used for testing to get discovery model from JSON.
 // In production, we use echo.Context Bind to load configuration from JSON in HTTP POST.
-func FromJSONString(checker model.ConditionalityChecker, configStr string) (*Model, error) {
-	discoveryConfig := &Model{}
-
-	err := json.Unmarshal([]byte(configStr), &discoveryConfig)
-	if err != nil {
-		return nil, err
-	}
-
-	// returns nil or ValidationErrors ( []FieldError )
-	if err := validator.Struct(discoveryConfig); err != nil {
-		// // translate all error at once
-		// errs := err.(validator.ValidationErrors)
-		// errsMap := errs.Translate(nil)
-		return nil, err
-	}
-	if _, _, err := HasValidEndpoints(checker, discoveryConfig); err != nil {
-		return nil, err
-	}
-
-	if _, _, err := HasMandatoryEndpoints(checker, discoveryConfig); err != nil {
-		return nil, err
-	}
-
-	return discoveryConfig, nil
+func unmarshalDiscoveryJSON(discoveryJSON string) (*Model, error) {
+	discovery := &Model{}
+	err := json.Unmarshal([]byte(discoveryJSON), &discovery)
+	return discovery, err
 }
 
 // HasValidEndpoints - checks that all the endpoints defined in the discovery

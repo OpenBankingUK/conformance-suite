@@ -1,7 +1,6 @@
 package discovery
 
 import (
-	"encoding/json"
 	"io/ioutil"
 	"testing"
 
@@ -33,7 +32,8 @@ type invalidTest struct {
 
 // conditionalityCheckerMock - implements model.ConditionalityChecker interface for tests
 type conditionalityCheckerMock struct {
-	isPresent bool
+	isPresent        bool
+	missingMandatory []model.Input
 }
 
 // IsOptional - not used in discovery test
@@ -59,17 +59,14 @@ func (c conditionalityCheckerMock) IsPresent(method, endpoint string, specificat
 	return c.isPresent, nil
 }
 
-// Returns that "POST" "/account-access-consent" is missing
+// MissingMandatory - returns stubbed array of missing endpoints
 func (c conditionalityCheckerMock) MissingMandatory(endpoints []model.Input, specification string) ([]model.Input, error) {
-	missing := []model.Input{}
-	missing = append(missing, model.Input{Method: "POST", Endpoint: "/account-access-consents"})
-	return missing, nil
+	return c.missingMandatory, nil
 }
 
 // unmarshalDiscoveryJSON - returns discovery model
-func unmarshalDiscoveryJSON(t *testing.T, discoveryJSON string) *Model {
-	discovery := &Model{}
-	err := json.Unmarshal([]byte(discoveryJSON), &discovery)
+func testUnmarshalDiscoveryJSON(t *testing.T, discoveryJSON string) *Model {
+	discovery, err := unmarshalDiscoveryJSON(discoveryJSON)
 	assert.NoError(t, err)
 	return discovery
 }
@@ -129,7 +126,7 @@ func discoveryStub(field string, value string) string {
 
 // testValidateFailures - run Validate, and test validation failure expectations
 func testValidateFailures(t *testing.T, checker model.ConditionalityChecker, expected *invalidTest) {
-	discovery := unmarshalDiscoveryJSON(t, expected.discoveryJSON)
+	discovery := testUnmarshalDiscoveryJSON(t, expected.discoveryJSON)
 	result, failures, err := Validate(checker, discovery)
 	assert.Equal(t, expected.success, result)
 	assert.Equal(t, expected.err, err)
@@ -180,7 +177,8 @@ func TestValidate(t *testing.T) {
 	})
 
 	t.Run("when conditionality checker reports endpoints not present returns failures", func(t *testing.T) {
-		testValidateFailures(t, conditionalityCheckerMock{isPresent: false}, &invalidTest{
+		stubAllNotPresent := conditionalityCheckerMock{isPresent: false}
+		testValidateFailures(t, stubAllNotPresent, &invalidTest{
 			discoveryJSON: discoveryStub("", ""),
 			success:       false,
 			failures: []string{
@@ -191,73 +189,31 @@ func TestValidate(t *testing.T) {
 	})
 
 	t.Run("when conditionality checker reports endpoints present returns no failures", func(t *testing.T) {
-		testValidateFailures(t, conditionalityCheckerMock{isPresent: true}, &invalidTest{
+		stubAllPresent := conditionalityCheckerMock{isPresent: true}
+		testValidateFailures(t, stubAllPresent, &invalidTest{
 			discoveryJSON: discoveryStub("", ""),
 			success:       true,
 			failures:      []string{},
 		})
 	})
-}
 
-func TestDiscovery_FromJSONString_Invalid_Cases(t *testing.T) {
-	testCases := []invalidTestCase{
-		{
-			name:        `json_needs_to_be_valid`,
-			config:      ` `,
-			expectedErr: `unexpected end of JSON input`,
-		},
-		{
-			name: `endpoints_missing_mandatory_endpoints_accounts`,
-			config: `
-{
-	"discoveryModel": {
-		"version": "v0.0.1",
-		"discoveryItems": [
-			{
-				"apiSpecification": {
-					"name": "Account and Transaction API Specification",
-					"url": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/642090641/Account+and+Transaction+API+Specification+-+v3.0",
-					"version": "v3.0",
-					"schemaVersion": "https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.0.0/dist/account-info-swagger.json"
-				},
-				"openidConfigurationUri": "https://as.aspsp.ob.forgerock.financial/oauth2/.well-known/openid-configuration",
-				"resourceBaseUri": "https://rs.aspsp.ob.forgerock.financial:443/",
-				"endpoints": [
-					{
-						"method": "GET",
-						"path": "/accounts/{AccountId}/balances"
-					}
-				]
-			}
-		]
-	}
-}
-			`,
-			expectedErr: `discoveryItemIndex=0, missing mandatory endpoint Method=POST, Path=/account-access-consents`,
-		},
-	}
-
-	mockChecker := conditionalityCheckerMock{isPresent: true}
-
-	for _, testCaseEntry := range testCases {
-		// See: https://github.com/golang/go/wiki/CommonMistakes#using-goroutines-on-loop-iterator-variables
-		// for why we need this. Basically because we are running the tests in parallel using `t.Parallel`
-		// we cannot bind to `testCaseEntry` as  there is a very good chance that when you run this code
-		// you will see the last element being used all the time.
-		func(testCase invalidTestCase) {
-			t.Run(testCase.name, func(t *testing.T) {
-				assert := assert.New(t)
-
-				discoveryModel, err := FromJSONString(mockChecker, testCase.config)
-				// fmt.Println()
-				// fmt.Printf("%+v", err)
-				// fmt.Println()
-
-				assert.Nil(discoveryModel)
-				assert.EqualError(err, testCase.expectedErr)
-			})
-		}(testCaseEntry)
-	}
+	t.Run("when conditionality checker reports missing mandatory endpoints returns failures", func(t *testing.T) {
+		stubMissingMandatory := conditionalityCheckerMock{
+			isPresent: true,
+			missingMandatory: []model.Input{
+				model.Input{Method: "GET", Endpoint: "/account-access-consents/{ConsentId}"},
+				model.Input{Method: "DELETE", Endpoint: "/account-access-consents/{ConsentId}"},
+			},
+		}
+		testValidateFailures(t, stubMissingMandatory, &invalidTest{
+			discoveryJSON: discoveryStub("", ""),
+			success:       false,
+			failures: []string{
+				`discoveryItemIndex=0, missing mandatory endpoint Method=GET, Path=/account-access-consents/{ConsentId}`,
+				`discoveryItemIndex=0, missing mandatory endpoint Method=DELETE, Path=/account-access-consents/{ConsentId}`,
+			},
+		})
+	})
 }
 
 func TestDiscovery_FromJSONString_Valid(t *testing.T) {
@@ -339,7 +295,7 @@ func TestDiscovery_FromJSONString_Valid(t *testing.T) {
 		},
 	}
 
-	modelActual, err := FromJSONString(model.NewConditionalityChecker(), config)
+	modelActual, err := unmarshalDiscoveryJSON(config)
 	assert.NoError(err)
 	assert.NotNil(modelActual.DiscoveryModel)
 	discoveryModel := modelActual.DiscoveryModel
