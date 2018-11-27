@@ -1,20 +1,23 @@
-# Open Banking Functional Conformance Tool
+## Introduction
 
-The functional conformance suite is an open source tool that facilitates an ASPSP in testing their implementation of the Open Banking Specifications.
+The Functional Conformance Suite is an Open Source test tool provided by [Open Banking](https://www.openbanking.org.uk/). The goal of the suite is to provide an easy and comprehensive tool that enables implementers to test their interfaces/endpoints against the Functional API standard.
 
-**Warning:** This repository contains a **pre-alpha** release of the functional conformance tool and is not feature-complete! It aims to foster a community spirit and introduces some key concepts the suite will use:
+## Release Notes
 
+### v0.1.0-pre-alpha (30th November 2018)
 
-* [Test Cases](docs/test-case-design.md):
-    * The conformance suite provides a cross-platform, language agnostic representation of test cases. The primary purpose is to determine whether an ASPSP resource complies with requirements of specifications and conditions, regulations and standards.
-* [Discovery Configuration](docs/discovery.md):
-    * The conformance suite provides a configurable model that allows an ASPSP describe information on endpoint availability, data structure.
-* [Report Data Model]():
-    * The conformance suite provides a configurable model that allows an ASPSP describe information on endpoint availability, data structure and code lists.
+This **pre-alpha** build introduces some of the concepts to participants before the official release. We are working hard to foster an open and collaborative tool and welcome your feedback to help us develop the best tool.
 
-## Test List
+This release is not intended to be executable so please do **NOT** post bug reports about this version. 
 
-A full list of tests can be found in /testcases.
+Read the full [release notes](docs/releases/v0.1.0-pre-alpha.md)
+
+What's New:
+
+* NEW: [Test Case](docs/test-case-design.md) Design. The conformance suite provides a cross-platform, language agnostic representation of test cases. The primary purpose is to determine whether an implementer resource complies with requirements of specifications and conditions, regulations and standards.
+* NEW: [Discovery Configuration](docs/discovery.md) Design: Provides a configurable model that allows an implementer to describe information on endpoint availability, data structure.
+
+To provide feedback, please use the public [issue tracker](https://bitbucket.org/openbankingteam/conformance-suite/issues?status=new&status=open) or see the [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Getting Started
 
@@ -22,7 +25,7 @@ These instructions for running the suite using Make:
 
     make run_image
 
-### Prerequisities
+### Prerequisites
 
 In order to run this container you'll need docker installed.
 
@@ -40,11 +43,6 @@ This repository is subject to this MIT Open Licence. Please read our [LICENSE.md
 
 ## Contributing
 Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on our code of conduct, and the process for submitting pull requests to us.
-
-## Versioning
-We use [SemVer](https://semver.org/) for versioning. For the versions available, see the [tags]() on this repository.
-
-### Release History
 
 ## Useful links
 
