@@ -62,6 +62,13 @@ func Version() string {
 	return version
 }
 
+// SupportedVersions - returns map of supported versions
+func SupportedVersions() map[string]bool {
+	return map[string]bool{
+		Version(): true,
+	}
+}
+
 const fieldErrMsg = "Key: '%s' Error:Field validation for '%s' failed on the '%s' tag"
 
 // Validate - validates a discovery model, returns true when valid,
@@ -78,7 +85,10 @@ func Validate(checker model.ConditionalityChecker, discovery *Model) (bool, []st
 		}
 		return false, failures, nil
 	}
-
+	if !SupportedVersions()[discovery.DiscoveryModel.Version] {
+		failures = append(failures, `Key: 'Model.DiscoveryModel.Version' Error:Version `+
+			discovery.DiscoveryModel.Version+` not in list of supported versions`)
+	}
 	pass, messages, _ := HasValidEndpoints(checker, discovery)
 	if !pass {
 		for _, message := range messages {

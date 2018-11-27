@@ -136,20 +136,27 @@ func testValidateFailures(t *testing.T, checker model.ConditionalityChecker, exp
 // TestValidate - test Validate function
 func TestValidate(t *testing.T) {
 
-	t.Run("when version missing returns failure ", func(t *testing.T) {
+	t.Run("when version missing returns failure", func(t *testing.T) {
 		testValidateFailures(t, conditionalityCheckerMock{}, &invalidTest{
 			discoveryJSON: discoveryStub("version", ""),
-			success:       false,
 			failures: []string{
 				`Key: 'Model.DiscoveryModel.Version' Error:Field validation for 'Version' failed on the 'required' tag`,
 			},
 		})
 	})
 
-	t.Run("when discoveryItems missing returns failure ", func(t *testing.T) {
+	t.Run("when version not in discovery.SupportedVersions() returns failure", func(t *testing.T) {
+		testValidateFailures(t, conditionalityCheckerMock{isPresent: true}, &invalidTest{
+			discoveryJSON: discoveryStub("version", "v9.9.9"),
+			failures: []string{
+				`Key: 'Model.DiscoveryModel.Version' Error:Version v9.9.9 not in list of supported versions`,
+			},
+		})
+	})
+
+	t.Run("when discoveryItems missing returns failure", func(t *testing.T) {
 		testValidateFailures(t, conditionalityCheckerMock{}, &invalidTest{
 			discoveryJSON: discoveryStub("discoveryItems", ""),
-			success:       false,
 			failures: []string{
 				`Key: 'Model.DiscoveryModel.DiscoveryItems' Error:Field validation for 'DiscoveryItems' failed on the 'required' tag`,
 			},
@@ -159,7 +166,6 @@ func TestValidate(t *testing.T) {
 	t.Run("when discoveryItems is empty array returns failure", func(t *testing.T) {
 		testValidateFailures(t, conditionalityCheckerMock{}, &invalidTest{
 			discoveryJSON: discoveryStub("discoveryItems", "[]"),
-			success:       false,
 			failures: []string{
 				`Key: 'Model.DiscoveryModel.DiscoveryItems' Error:Field validation for 'DiscoveryItems' failed on the 'gt' tag`,
 			},
@@ -169,7 +175,6 @@ func TestValidate(t *testing.T) {
 	t.Run("when discoveryItems has empty endpoints array returns failure", func(t *testing.T) {
 		testValidateFailures(t, conditionalityCheckerMock{}, &invalidTest{
 			discoveryJSON: discoveryStub("endpoints", "[]"),
-			success:       false,
 			failures: []string{
 				`Key: 'Model.DiscoveryModel.DiscoveryItems[0].Endpoints' Error:Field validation for 'Endpoints' failed on the 'gt' tag`,
 			},
@@ -180,7 +185,6 @@ func TestValidate(t *testing.T) {
 		stubAllNotPresent := conditionalityCheckerMock{isPresent: false}
 		testValidateFailures(t, stubAllNotPresent, &invalidTest{
 			discoveryJSON: discoveryStub("", ""),
-			success:       false,
 			failures: []string{
 				`discoveryItemIndex=0, invalid endpoint Method=POST, Path=/account-access-consents`,
 				`discoveryItemIndex=0, invalid endpoint Method=GET, Path=/accounts/{AccountId}/balances`,
@@ -207,7 +211,6 @@ func TestValidate(t *testing.T) {
 		}
 		testValidateFailures(t, stubMissingMandatory, &invalidTest{
 			discoveryJSON: discoveryStub("", ""),
-			success:       false,
 			failures: []string{
 				`discoveryItemIndex=0, missing mandatory endpoint Method=GET, Path=/account-access-consents/{ConsentId}`,
 				`discoveryItemIndex=0, missing mandatory endpoint Method=DELETE, Path=/account-access-consents/{ConsentId}`,
