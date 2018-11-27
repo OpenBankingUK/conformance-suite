@@ -243,13 +243,13 @@ func (s *Server) discoveryModelValidateHandler(c echo.Context) error {
 		}, "  ")
 	}
 
-	if _, err := discovery.HasValidEndpoints(conditionalityChecker, discoveryModel); err != nil {
+	if _, _, err := discovery.HasValidEndpoints(conditionalityChecker, discoveryModel); err != nil {
 		return c.JSONPretty(http.StatusBadRequest, &ErrorResponse{
 			Error: err.Error(),
 		}, "  ")
 	}
 
-	if _, err := discovery.HasMandatoryEndpoints(conditionalityChecker, discoveryModel); err != nil {
+	if _, _, err := discovery.HasMandatoryEndpoints(conditionalityChecker, discoveryModel); err != nil {
 		return c.JSONPretty(http.StatusBadRequest, &ErrorResponse{
 			Error: err.Error(),
 		}, "  ")

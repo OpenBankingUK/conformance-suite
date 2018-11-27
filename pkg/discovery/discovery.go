@@ -79,6 +79,16 @@ func Validate(checker model.ConditionalityChecker, discovery *Model) (bool, []st
 		return false, failures, nil
 	}
 
+	pass, messages, _ := HasValidEndpoints(checker, discovery)
+	if !pass {
+		for _, message := range messages {
+			failures = append(failures, message)
+		}
+	}
+
+	if len(failures) > 0 {
+		return false, failures, nil
+	}
 	return true, failures, nil
 }
 
@@ -99,11 +109,11 @@ func FromJSONString(checker model.ConditionalityChecker, configStr string) (*Mod
 		// errsMap := errs.Translate(nil)
 		return nil, err
 	}
-	if _, err := HasValidEndpoints(checker, discoveryConfig); err != nil {
+	if _, _, err := HasValidEndpoints(checker, discoveryConfig); err != nil {
 		return nil, err
 	}
 
-	if _, err := HasMandatoryEndpoints(checker, discoveryConfig); err != nil {
+	if _, _, err := HasMandatoryEndpoints(checker, discoveryConfig); err != nil {
 		return nil, err
 	}
 
@@ -113,7 +123,7 @@ func FromJSONString(checker model.ConditionalityChecker, configStr string) (*Mod
 // HasValidEndpoints - checks that all the endpoints defined in the discovery
 // model are either mandatory, conditional or optional.
 // Return false and errors indicating which endpoints are not valid.
-func HasValidEndpoints(checker model.ConditionalityChecker, discoveryConfig *Model) (bool, error) {
+func HasValidEndpoints(checker model.ConditionalityChecker, discoveryConfig *Model) (bool, []string, error) {
 	errs := []string{}
 
 	for discoveryItemIndex, discoveryItem := range discoveryConfig.DiscoveryModel.DiscoveryItems {
@@ -145,16 +155,16 @@ func HasValidEndpoints(checker model.ConditionalityChecker, discoveryConfig *Mod
 	}
 
 	if len(errs) > 0 {
-		return false, fmt.Errorf("%s", strings.Join(errs, "\n"))
+		return false, errs, fmt.Errorf("%s", strings.Join(errs, "\n"))
 	}
 
-	return true, nil
+	return true, errs, nil
 }
 
 // HasMandatoryEndpoints - checks that all the mandatory endpoints have been defined in each
 // discovery model, otherwise it returns a error with all the missing mandatory endpoints separated
 // by a newline.
-func HasMandatoryEndpoints(checker model.ConditionalityChecker, discoveryConfig *Model) (bool, error) {
+func HasMandatoryEndpoints(checker model.ConditionalityChecker, discoveryConfig *Model) (bool, []string, error) {
 	errs := []string{}
 
 	for discoveryItemIndex, discoveryItem := range discoveryConfig.DiscoveryModel.DiscoveryItems {
@@ -188,8 +198,8 @@ func HasMandatoryEndpoints(checker model.ConditionalityChecker, discoveryConfig 
 	}
 
 	if len(errs) > 0 {
-		return false, fmt.Errorf("%s", strings.Join(errs, "\n"))
+		return false, errs, fmt.Errorf("%s", strings.Join(errs, "\n"))
 	}
 
-	return true, nil
+	return true, errs, nil
 }

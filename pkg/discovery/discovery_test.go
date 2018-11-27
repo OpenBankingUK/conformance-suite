@@ -79,6 +79,10 @@ func discoveryStub(field string, value string) string {
 	version := "v0.0.1"
 	endpoints := `, "endpoints": [
 		{
+			"method": "POST",
+			"path": "/account-access-consents"
+		},
+		{
 			"method": "GET",
 			"path": "/accounts/{AccountId}/balances"
 		}
@@ -172,6 +176,25 @@ func TestValidate(t *testing.T) {
 			failures: []string{
 				`Key: 'Model.DiscoveryModel.DiscoveryItems[0].Endpoints' Error:Field validation for 'Endpoints' failed on the 'gt' tag`,
 			},
+		})
+	})
+
+	t.Run("when conditionality checker reports endpoints not present returns failures", func(t *testing.T) {
+		testValidateFailures(t, conditionalityCheckerMock{isPresent: false}, &invalidTest{
+			discoveryJSON: discoveryStub("", ""),
+			success:       false,
+			failures: []string{
+				`discoveryItemIndex=0, invalid endpoint Method=POST, Path=/account-access-consents`,
+				`discoveryItemIndex=0, invalid endpoint Method=GET, Path=/accounts/{AccountId}/balances`,
+			},
+		})
+	})
+
+	t.Run("when conditionality checker reports endpoints present returns no failures", func(t *testing.T) {
+		testValidateFailures(t, conditionalityCheckerMock{isPresent: true}, &invalidTest{
+			discoveryJSON: discoveryStub("", ""),
+			success:       true,
+			failures:      []string{},
 		})
 	})
 }
