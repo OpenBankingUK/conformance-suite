@@ -7,7 +7,7 @@ import (
 
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
 
-	validator "gopkg.in/go-playground/validator.v9"
+	validation "gopkg.in/go-playground/validator.v9"
 )
 
 // Model ... TODO: Document.
@@ -53,7 +53,7 @@ type ModelConditionalProperties struct {
 
 var (
 	// use a single instance of Validate, it caches struct info
-	validate = validator.New()
+	validator = validation.New()
 )
 
 // Version returns the current version of the Discovery Model parser
@@ -62,10 +62,22 @@ func Version() string {
 	return version
 }
 
+const fieldErrMsg = "Key: '%s' Error:Field validation for '%s' failed on the '%s' tag"
+
 // Validate - validates a discovery model, returns true when valid,
 // returns false and validation failure messages when not valid.
-func Validate(checker model.ConditionalityChecker, discoveryConfig *Model) (bool, []string, error) {
+func Validate(checker model.ConditionalityChecker, discovery *Model) (bool, []string, error) {
 	failures := make([]string, 0)
+
+	if err := validator.Struct(discovery); err != nil {
+		errs := err.(validation.ValidationErrors)
+		for _, msg := range errs {
+			failure := validation.FieldError(msg)
+			message := fmt.Sprintf(fieldErrMsg, failure.Namespace(), failure.Field(), failure.Tag())
+			failures = append(failures, message)
+		}
+		return false, failures, nil
+	}
 
 	return true, failures, nil
 }
@@ -81,7 +93,7 @@ func FromJSONString(checker model.ConditionalityChecker, configStr string) (*Mod
 	}
 
 	// returns nil or ValidationErrors ( []FieldError )
-	if err := validate.Struct(discoveryConfig); err != nil {
+	if err := validator.Struct(discoveryConfig); err != nil {
 		// // translate all error at once
 		// errs := err.(validator.ValidationErrors)
 		// errsMap := errs.Translate(nil)
