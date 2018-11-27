@@ -232,29 +232,10 @@ func (s *Server) discoveryModelValidateHandler(c echo.Context) error {
 			Error: err.Error(),
 		}, "  ")
 	}
-
-	if err := c.Validate(discoveryModel); err != nil {
-		// translate all error at once
-		errs := err.(validator.ValidationErrors)
-		errsMap := errs.Translate(nil)
-
-		return c.JSONPretty(http.StatusBadRequest, &ErrorResponse{
-			Error: errsMap,
-		}, "  ")
+	ok, failures, _ := discovery.Validate(conditionalityChecker, discoveryModel)
+	if !ok {
+		return c.JSONPretty(http.StatusBadRequest, &ErrorResponse{Error: failures}, "  ")
 	}
-
-	if _, _, err := discovery.HasValidEndpoints(conditionalityChecker, discoveryModel); err != nil {
-		return c.JSONPretty(http.StatusBadRequest, &ErrorResponse{
-			Error: err.Error(),
-		}, "  ")
-	}
-
-	if _, _, err := discovery.HasMandatoryEndpoints(conditionalityChecker, discoveryModel); err != nil {
-		return c.JSONPretty(http.StatusBadRequest, &ErrorResponse{
-			Error: err.Error(),
-		}, "  ")
-	}
-
 	return c.JSONPretty(http.StatusOK, discoveryModel, "  ")
 }
 
