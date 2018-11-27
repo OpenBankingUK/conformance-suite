@@ -74,6 +74,7 @@ func testUnmarshalDiscoveryJSON(t *testing.T, discoveryJSON string) *Model {
 // discoveryStub - returns discovery JSON with given field stubbed with given value
 func discoveryStub(field string, value string) string {
 	version := "v0.0.1"
+	schemaVersion := "https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.0.0/dist/account-info-swagger.json"
 	endpoints := `, "endpoints": [
 		{
 			"method": "POST",
@@ -94,16 +95,31 @@ func discoveryStub(field string, value string) string {
 		} else {
 			endpoints = `, "endpoints": ` + value
 		}
+	case "schemaVersion":
+		if value == "" {
+			schemaVersion = ""
+		} else {
+			schemaVersion = value
+		}
+	}
+
+	apiSpecification := `"apiSpecification": {
+		"name": "Account and Transaction API Specification",
+		"url": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/642090641/Account+and+Transaction+API+Specification+-+v3.0",
+		"version": "v3.0",
+		"schemaVersion": "` + schemaVersion + `"
+	},`
+	if field == "apiSpecification" {
+		if value == "" {
+			apiSpecification = ""
+		} else {
+			apiSpecification = `"apiSpecification": ` + value + `,`
+		}
 	}
 
 	discoveryItems := `, "discoveryItems": [
 		{
-			"apiSpecification": {
-				"name": "Account and Transaction API Specification",
-				"url": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/642090641/Account+and+Transaction+API+Specification+-+v3.0",
-				"version": "v3.0",
-				"schemaVersion": "https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.0.0/dist/account-info-swagger.json"
-			},
+			` + apiSpecification + `
 			"openidConfigurationUri": "https://as.aspsp.ob.forgerock.financial/oauth2/.well-known/openid-configuration",
 			"resourceBaseUri": "https://rs.aspsp.ob.forgerock.financial:443/"` + endpoints + `
 		}
@@ -168,6 +184,27 @@ func TestValidate(t *testing.T) {
 			discoveryJSON: discoveryStub("discoveryItems", "[]"),
 			failures: []string{
 				`Key: 'Model.DiscoveryModel.DiscoveryItems' Error:Field validation for 'DiscoveryItems' failed on the 'gt' tag`,
+			},
+		})
+	})
+
+	t.Run("when discoveryItem missing apiSpecification returns failures", func(t *testing.T) {
+		testValidateFailures(t, conditionalityCheckerMock{}, &invalidTest{
+			discoveryJSON: discoveryStub("apiSpecification", ""),
+			failures: []string{
+				"Key: 'Model.DiscoveryModel.DiscoveryItems[0].APISpecification.Name' Error:Field validation for 'Name' failed on the 'required' tag",
+				"Key: 'Model.DiscoveryModel.DiscoveryItems[0].APISpecification.URL' Error:Field validation for 'URL' failed on the 'required' tag",
+				"Key: 'Model.DiscoveryModel.DiscoveryItems[0].APISpecification.Version' Error:Field validation for 'Version' failed on the 'required' tag",
+				"Key: 'Model.DiscoveryModel.DiscoveryItems[0].APISpecification.SchemaVersion' Error:Field validation for 'SchemaVersion' failed on the 'required' tag",
+			},
+		})
+	})
+
+	t.Run("when discoveryItem apiSpecification schemaVersion not in suite config returns failure", func(t *testing.T) {
+		testValidateFailures(t, conditionalityCheckerMock{}, &invalidTest{
+			discoveryJSON: discoveryStub("schemaVersion", "http://example.com/bad-schema"),
+			failures: []string{
+				"Key: 'Model.DiscoveryModel.DiscoveryItems[0].APISpecification.SchemaVersion' Error:'SchemaVersion' not supported by suite http://example.com/bad-schema",
 			},
 		})
 	})

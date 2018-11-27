@@ -89,7 +89,13 @@ func Validate(checker model.ConditionalityChecker, discovery *Model) (bool, []st
 		failures = append(failures, `Key: 'Model.DiscoveryModel.Version' Error:Version `+
 			discovery.DiscoveryModel.Version+` not in list of supported versions`)
 	}
-	pass, messages, _ := HasValidEndpoints(checker, discovery)
+	pass, messages, _ := hasValidAPISpecifications(discovery)
+	if !pass {
+		for _, message := range messages {
+			failures = append(failures, message)
+		}
+	}
+	pass, messages, _ = HasValidEndpoints(checker, discovery)
 	if !pass {
 		for _, message := range messages {
 			failures = append(failures, message)
@@ -117,6 +123,23 @@ func unmarshalDiscoveryJSON(discoveryJSON string) (*Model, error) {
 	return discovery, err
 }
 
+func hasValidAPISpecifications(discoveryConfig *Model) (bool, []string, error) {
+	errs := []string{}
+	for discoveryItemIndex, discoveryItem := range discoveryConfig.DiscoveryModel.DiscoveryItems {
+		schemaVersion := discoveryItem.APISpecification.SchemaVersion
+		_, err := model.SpecificationIdentifierFromSchemaVersion(schemaVersion)
+		if err != nil {
+			warning := fmt.Sprintf("Key: 'Model.DiscoveryModel.DiscoveryItems[%d].APISpecification.SchemaVersion' Error:'SchemaVersion' not supported by suite "+schemaVersion, discoveryItemIndex)
+			errs = append(errs, warning)
+			continue
+		}
+	}
+	if len(errs) > 0 {
+		return false, errs, nil
+	}
+	return true, errs, nil
+}
+
 // HasValidEndpoints - checks that all the endpoints defined in the discovery
 // model are either mandatory, conditional or optional.
 // Return false and errors indicating which endpoints are not valid.
@@ -127,9 +150,7 @@ func HasValidEndpoints(checker model.ConditionalityChecker, discoveryConfig *Mod
 		schemaVersion := discoveryItem.APISpecification.SchemaVersion
 		specification, err := model.SpecificationIdentifierFromSchemaVersion(schemaVersion)
 		if err != nil {
-			warning := fmt.Sprintf("discoveryItemIndex=%d, "+err.Error(), discoveryItemIndex)
-			errs = append(errs, warning)
-			continue
+			continue // err already added to failures in hasValidAPISpecifications
 		}
 
 		for _, endpoint := range discoveryItem.Endpoints {
@@ -168,9 +189,7 @@ func HasMandatoryEndpoints(checker model.ConditionalityChecker, discoveryConfig 
 		schemaVersion := discoveryItem.APISpecification.SchemaVersion
 		specification, err := model.SpecificationIdentifierFromSchemaVersion(schemaVersion)
 		if err != nil {
-			warning := fmt.Sprintf("discoveryItemIndex=%d, "+err.Error(), discoveryItemIndex)
-			errs = append(errs, warning)
-			continue
+			continue // err already added to failures in hasValidAPISpecifications
 		}
 
 		discoveryEndpoints := []model.Input{}
