@@ -1,8 +1,9 @@
-## Introduction
+![Open Banking Logo](docs/static_files/OBIE_logotype_blue_RGB.png "Open Banking")
 
 The Functional Conformance Suite is an Open Source test tool provided by [Open Banking](https://www.openbanking.org.uk/). The goal of the suite is to provide an easy and comprehensive tool that enables implementers to test their interfaces/endpoints against the Functional API standard.
 
-## Release Notes
+## Release Notes 
+[![Release](https://img.shields.io/github/release/docker/docker.svg)](https://github.com/docker/docker/releases/latest)
 
 ### v0.1.0-pre-alpha (30th November 2018)
 
@@ -37,7 +38,7 @@ In order to run this container you'll need docker installed.
 
 For support on using the suite contact the [Open Banking Service Desk](). To raise bugs please use the [issue tracker](https://bitbucket.org/openbankingteam/conformance-suite/issues).
 
-## License
+## Licensing
 
 This repository is subject to this MIT Open Licence. Please read our [LICENSE.md](LICENSE.md) for more information
 
