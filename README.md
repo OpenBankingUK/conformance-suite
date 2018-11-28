@@ -3,13 +3,12 @@
 The Functional Conformance Suite is an Open Source test tool provided by [Open Banking](https://www.openbanking.org.uk/). The goal of the suite is to provide an easy and comprehensive tool that enables implementers to test their interfaces/endpoints against the Functional API standard.
 
 ## Release Notes 
-[![Release](https://img.shields.io/github/release/docker/docker.svg)](https://github.com/docker/docker/releases/latest)
 
 ### v0.1.0-pre-alpha (30th November 2018)
 
 This **pre-alpha** build introduces some of the concepts to participants before the official release. We are working hard to foster an open and collaborative tool and welcome your feedback to help us develop the best tool.
 
-This release is not intended to be executable so please do **NOT** post bug reports about this version. 
+This release is not intended to be executable so please do **NOT** post bug reports about this version.
 
 Read the full [release notes](docs/releases/v0.1.0-pre-alpha.md)
 
@@ -20,11 +19,19 @@ What's New:
 
 To provide feedback, please use the public [issue tracker](https://bitbucket.org/openbankingteam/conformance-suite/issues) or see the [CONTRIBUTING.md](CONTRIBUTING.md).
 
-## Getting Started
+## Quickstart
 
-These instructions for running the suite using Make:
+Clone:
 
-    make run_image
+    1. git clone git@bitbucket.org:openbankingteam/conformance-suite.git && cd conformance-suite
+
+Run the Makefile:
+
+    2. make run_image
+
+You can also pull & run the latest Docker image:
+
+    docker run openbanking/conformance-suite
 
 ### Prerequisites
 
@@ -36,7 +43,7 @@ In order to run this container you'll need docker installed.
 
 ## Support
 
-For support on using the suite contact the [Open Banking Service Desk](). To raise bugs please use the [issue tracker](https://bitbucket.org/openbankingteam/conformance-suite/issues).
+For support on using the suite contact the [Open Banking Service Desk](https://openbanking.atlassian.net/servicedesk/customer/portals). To raise bugs or features please use the [issue tracker](https://bitbucket.org/openbankingteam/conformance-suite/issues).
 
 ## Licensing
 
