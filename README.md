@@ -1,6 +1,6 @@
 ![Open Banking Logo](https://bitbucket.org/openbankingteam/conformance-suite/raw/99b76db5f60bb4d790d6f32bffae29cbe95a3661/docs/static_files/OBIE_logotype_blue_RGB.PNG)
 
-The Functional Conformance Suite is an Open Source test tool provided by [Open Banking](https://www.openbanking.org.uk/). The goal of the suite is to provide an easy and comprehensive tool that enables implementers to test their interfaces/endpoints against the Functional API standard.
+The *Functional Conformance Suite* is an Open Source test tool provided by [Open Banking](https://www.openbanking.org.uk/). The goal of the suite is to provide an easy and comprehensive tool that enables implementers to test their interfaces/endpoints against the Functional API standard.
 
 ## Release Notes 
 * * *
@@ -25,15 +25,21 @@ To provide feedback, please use the public [issue tracker](https://bitbucket.org
 
 Clone:
 
-    git clone git@bitbucket.org:openbankingteam/conformance-suite.git && cd conformance-suite
+    
+    > git clone git@bitbucket.org:openbankingteam/conformance-suite.git && cd conformance-suite
+
 
 Run the Makefile:
 
-    make run_image
+
+    > make run_image
+
 
 You can also pull & run the latest Docker image:
 
-    docker run openbanking/conformance-suite
+
+    > docker run openbanking/conformance-suite
+
 
 ### Prerequisites
 
