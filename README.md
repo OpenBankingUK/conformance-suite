@@ -1,8 +1,9 @@
-![Open Banking Logo](https://bitbucket.org/openbankingteam/conformance-suite/raw/b976f11d1a3ebb9e07865cd3c35096dce5eff454/docs/static_files/OBIE_logotype_blue_RGB.PNG)
+![Open Banking Logo](https://bitbucket.org/openbankingteam/conformance-suite/raw/99b76db5f60bb4d790d6f32bffae29cbe95a3661/docs/static_files/OBIE_logotype_blue_RGB.PNG)
 
 The Functional Conformance Suite is an Open Source test tool provided by [Open Banking](https://www.openbanking.org.uk/). The goal of the suite is to provide an easy and comprehensive tool that enables implementers to test their interfaces/endpoints against the Functional API standard.
 
 ## Release Notes 
+* * *
 
 ### v0.1.0-pre-alpha (30th November 2018)
 
@@ -20,14 +21,15 @@ What's New:
 To provide feedback, please use the public [issue tracker](https://bitbucket.org/openbankingteam/conformance-suite/issues) or see the [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Quickstart
+* * *
 
 Clone:
 
-    1. git clone git@bitbucket.org:openbankingteam/conformance-suite.git && cd conformance-suite
+    git clone git@bitbucket.org:openbankingteam/conformance-suite.git && cd conformance-suite
 
 Run the Makefile:
 
-    2. make run_image
+    make run_image
 
 You can also pull & run the latest Docker image:
 
@@ -42,18 +44,23 @@ In order to run this container you'll need docker installed.
 * [Linux](https://docs.docker.com/linux/started/)
 
 ## Support
+* * *
 
 For support on using the suite contact the [Open Banking Service Desk](https://openbanking.atlassian.net/servicedesk/customer/portals). To raise bugs or features please use the [issue tracker](https://bitbucket.org/openbankingteam/conformance-suite/issues).
 
 ## Licensing
+* * *
 
 This repository is subject to this MIT Open Licence. Please read our [LICENSE.md](LICENSE.md) for more information
 
 ## Contributing
+* * *
 Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on our code of conduct, and the process for submitting pull requests to us.
 
 ## Useful links
+* * *
 
 For more information see the [Open Banking Developer Zone](https://openbanking.atlassian.net/wiki/spaces/DZ/overview).
 
 ## Acknowledgments
+* * *
