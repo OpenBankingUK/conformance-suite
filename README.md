@@ -66,7 +66,9 @@ Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on our code of conduc
 ## Useful links
 * * *
 
-For more information see the [Open Banking Developer Zone](https://openbanking.atlassian.net/wiki/spaces/DZ/overview).
+* Docker Hub [Conformance Suite](https://hub.docker.com/r/openbanking/conformance-suite/)
+* For more information see the [Open Banking Developer Zone](https://openbanking.atlassian.net/wiki/spaces/DZ/overview).
+
 
 ## Acknowledgments
 * * *
