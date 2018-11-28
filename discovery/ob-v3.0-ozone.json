@@ -37,22 +37,22 @@
                 {
                   "schema": "OBTransaction3Detail",
                   "property": "Balance",
-                  "path": "Data.Transaction[*].Balance"
+                  "path": "Data.Transaction.*.Balance"
                 },
                 {
                   "schema": "OBTransaction3Detail",
                   "property": "MerchantDetails",
-                  "path": "Data.Transaction[*].MerchantDetails"
+                  "path": "Data.Transaction.*.MerchantDetails"
                 },
                 {
                   "schema": "OBTransaction3Basic",
                   "property": "TransactionReference",
-                  "path": "Data.Transaction[*].TransactionReference"
+                  "path": "Data.Transaction.*.TransactionReference"
                 },
                 {
                   "schema": "OBTransaction3Detail",
                   "property": "TransactionReference",
-                  "path": "Data.Transaction[*].TransactionReference"
+                  "path": "Data.Transaction.*.TransactionReference"
                 }
               ]
             },
