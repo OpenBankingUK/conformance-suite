@@ -1,4 +1,4 @@
-![Open Banking Logo](docs/static_files/OBIE_logotype_blue_RGB.png "Open Banking")
+![Open Banking Logo](https://bitbucket.org/openbankingteam/conformance-suite/raw/b976f11d1a3ebb9e07865cd3c35096dce5eff454/docs/static_files/OBIE_logotype_blue_RGB.PNG)
 
 The Functional Conformance Suite is an Open Source test tool provided by [Open Banking](https://www.openbanking.org.uk/). The goal of the suite is to provide an easy and comprehensive tool that enables implementers to test their interfaces/endpoints against the Functional API standard.
 
