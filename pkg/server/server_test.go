@@ -215,6 +215,7 @@ func TestServer_Config_POST_Can_POST_Config(t *testing.T) {
 
 	// check the proxy is up now, we should hit the forgerock server
 	resp, err := http.Get(frontendProxy.String())
+	assert.NoError(err)
 	body, err := ioutil.ReadAll(resp.Body)
 	assert.NoError(err)
 	assert.Equal(http.StatusBadRequest, resp.StatusCode)
@@ -341,38 +342,53 @@ func TestServer_DiscoveryModel_POST_Validate_Returns_Request_Payload_When_Valid(
 	// remove trailing new line as it is will make the test fail
 	expected := strings.TrimSuffix(string(discoveryExample), "\n")
 
-	code, body, _ := request(http.MethodPost, "/api/discovery-model/validate", strings.NewReader(expected), server)
+	code, body, headers := request(http.MethodPost, "/api/discovery-model/validate",
+		strings.NewReader(expected), server)
 
 	// we should get back the config
 	assert.NotNil(body)
+	assert.Equal(headers["Content-Type"][0], "application/json; charset=UTF-8")
 	assert.Equal(expected, body.String())
 	assert.Equal(http.StatusOK, code)
 }
 
-// /api/discovery-model/validate - POST - When valid model returns request payload
-func TestServer_DiscoveryModel_POST_Validate_Returns_Errors_When_Invalid(t *testing.T) {
-	assert := assert.New(t)
+// /api/discovery-model/validate - POST - When invalid JSON returns error message
+func TestServer_DiscoveryModel_POST_Validate_Returns_Errors_When_Invalid_JSON(t *testing.T) {
+	modelJSON := `{ "bad-json" }`
+	expected := map[string]interface{}{
+		"error": "code=400, message=Syntax error: offset=14, error=invalid character '}' after object key",
+	}
 
+	testDiscoveryModelValidationFails(t, modelJSON, expected)
+}
+
+// /api/discovery-model/validate - POST - When incomplete model returns validation failures messages
+func TestServer_DiscoveryModel_POST_Validate_Returns_Errors_When_Incomplete(t *testing.T) {
+	modelJSON := `{}`
+	expected := map[string]interface{}{
+		"error": []interface{}{
+			"Key: 'Model.DiscoveryModel.Version' Error:Field validation for 'Version' failed on the 'required' tag",
+			"Key: 'Model.DiscoveryModel.DiscoveryItems' Error:Field validation for 'DiscoveryItems' failed on the 'required' tag",
+		},
+	}
+	testDiscoveryModelValidationFails(t, modelJSON, expected)
+}
+
+func testDiscoveryModelValidationFails(t *testing.T, modelJSON string, expected map[string]interface{}) {
+	assert := assert.New(t)
 	server := NewServer(conditionalityCheckerMock{})
 	defer func() {
 		if err := server.Shutdown(nil); err != nil {
 			logrus.Fatalf("Test=%s, Shutdown err=%s", t.Name(), err)
 		}
 	}()
-
-	modelJSON := `{}`
-	code, body, _ := request(http.MethodPost, "/api/discovery-model/validate", strings.NewReader(modelJSON), server)
-
-	// we should get an error back
-	expected := `{
-  "error": {
-    "Model.DiscoveryModel.DiscoveryItems": "Key: 'Model.DiscoveryModel.DiscoveryItems' Error:Field validation for 'DiscoveryItems' failed on the 'required' tag",
-    "Model.DiscoveryModel.Version": "Key: 'Model.DiscoveryModel.Version' Error:Field validation for 'Version' failed on the 'required' tag"
-  }
-}`
-
+	code, body, headers := request(http.MethodPost, "/api/discovery-model/validate",
+		strings.NewReader(modelJSON), server)
+	var actual interface{}
+	json.Unmarshal([]byte(body.String()), &actual)
 	assert.NotNil(body)
-	assert.Equal(expected, body.String())
+	assert.Equal(headers["Content-Type"][0], "application/json; charset=UTF-8")
+	assert.Equal(expected, actual)
 	assert.Equal(http.StatusBadRequest, code)
 }
 
