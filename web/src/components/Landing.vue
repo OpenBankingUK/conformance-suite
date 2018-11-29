@@ -11,11 +11,10 @@
       <b-jumbotron
         header="Oops!"
         lead="This release is not intended to be executable, come back soon.">
-        <p>This pre-alpha build introduces some of the concepts to 
-          participants beforethe official release. </p>
-        <p>We are working hard to foster an open and collaborative tool 
-          and welcome your feedback to help us develop the best tool.</p>
-       
+        <p>This pre-alpha build introduces some of the concepts to participants before the official release.</p>
+        <p>We are working hard to foster an open and collaborative tool
+        and welcome your feedback to help us develop the best tool.</p>
+
         <b-btn
           variant="primary"
           target="_blank"
@@ -36,6 +35,6 @@ export default {
     //     this.$router.push('/config', value);
     //   }
     // },
-  }
+  },
 };
 </script>
