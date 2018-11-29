@@ -58,7 +58,7 @@ import { FormWizard, TabContent } from 'vue-form-wizard';
 import 'vue-form-wizard/dist/vue-form-wizard.min.css';
 import 'themify-icons-scss/scss/themify-icons.scss';
 import Step1 from './Wizard/Step1.vue';
-import Step2 from './Wizard/Step2.vue';
+import DiscoveryConfig from './Wizard/DiscoveryConfig.vue';
 import Step3 from './Wizard/Step3.vue';
 import Step4 from './Wizard/Step4.vue';
 import Step5 from './Wizard/Step5.vue';
@@ -69,7 +69,7 @@ export default {
     FormWizard,
     TabContent,
     Step1,
-    Step2,
+    DiscoveryConfig,
     Step3,
     Step4,
     Step5,
@@ -86,7 +86,7 @@ export default {
         {
           title: 'Configuration',
           icon: 'ti-settings',
-          component: 'Step2',
+          component: 'DiscoveryConfig',
           hide: false,
         },
         {
