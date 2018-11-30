@@ -2,9 +2,7 @@ package server
 
 import (
 	"context"
-	"flag"
 	"fmt"
-	"io/ioutil"
 	"net/http"
 	"strings"
 	"time"
@@ -64,17 +62,7 @@ func NewServer(checker model.ConditionalityChecker) *Server {
 		proxy: nil,
 	}
 	conditionalityChecker = checker
-	// Write output to `/dev/null` if running under test mode.
-	if flag.Lookup("test.v") == nil {
-		// Normal run
-		server.Use(middleware.Logger())
-	} else {
-		// Running under test
-		// discard output when running in test mode
-		server.Use(middleware.LoggerWithConfig(middleware.LoggerConfig{
-			Output: ioutil.Discard,
-		}))
-	}
+	server.Use(middleware.Logger())
 	server.Use(middleware.Recover())
 	server.Use(middleware.GzipWithConfig(middleware.GzipConfig{
 		// level between 1-9

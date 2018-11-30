@@ -3,8 +3,6 @@ package model
 import (
 	"encoding/json"
 	"errors"
-	"flag"
-	"io/ioutil"
 	"os"
 
 	"github.com/sirupsen/logrus"
@@ -201,17 +199,8 @@ func findCondition(method, endpoint string, specification string) (Conditionalit
 
 // loadConditions - get Mandatory/Conditional/Optional data from json file
 func loadConditions() error {
-	file := "./pkg/model/conditionality.json"
-	if flag.Lookup("test.v") != nil {
-		file = "../../pkg/model/conditionality.json" // different path when running tests
-	}
-	rawjson, err := ioutil.ReadFile(file)
-	if err != nil {
-		return err
-	}
-
 	var loader map[string][]conditionLoader
-	if err := json.Unmarshal(rawjson, &loader); err != nil {
+	if err := json.Unmarshal(conditionalityStaticData, &loader); err != nil {
 		return err
 	}
 

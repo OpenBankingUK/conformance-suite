@@ -3,8 +3,6 @@ package model
 import (
 	"encoding/json"
 	"errors"
-	"flag"
-	"io/ioutil"
 	"os"
 
 	"github.com/sirupsen/logrus"
@@ -37,16 +35,7 @@ func init() {
 
 // loadDefaultSpecifications - load and validate specification data from json file
 func loadDefaultSpecifications() error {
-	file := "./config/specifications.json"
-	if flag.Lookup("test.v") != nil {
-		file = "../../config/specifications.json" // different path when running tests
-	}
-
-	rawjson, err := ioutil.ReadFile(file)
-	if err == nil {
-		err = loadSpecifications(rawjson)
-	}
-	return err
+	return loadSpecifications(specificationStaticData)
 }
 
 // loadDefaultSpecifications - load and validate specification data from json
