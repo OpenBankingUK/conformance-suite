@@ -2,8 +2,6 @@ package model
 
 import (
 	"encoding/json"
-	"flag"
-	"io/ioutil"
 	"os"
 
 	"github.com/sirupsen/logrus"
@@ -58,16 +56,7 @@ func GetPermissionFromName(name string) Permission {
 
 // loads permission data into modal permissions array structure
 func loadPermissions() error {
-	file := "./pkg/model/permissions.json"
-	if flag.Lookup("test.v") != nil {
-		file = "../../pkg/model/permissions.json" // different path when running tests
-	}
-	rawjson, err := ioutil.ReadFile(file)
-	if err != nil {
-		return err
-	}
-
-	if err := json.Unmarshal(rawjson, &permissions); err != nil {
+	if err := json.Unmarshal(permissionStaticData, &permissions); err != nil {
 		return err
 	}
 	return nil
