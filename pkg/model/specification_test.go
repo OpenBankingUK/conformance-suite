@@ -39,16 +39,16 @@ func assertSpecLoadError(t *testing.T, field string, value string, expected stri
 func TestLoadSpecifications_invalid(t *testing.T) {
 	defer loadDefaultSpecifications() // set config back to a valid state for next test
 
-	expected := "Key: 'specification.SchemaVersion' Error:Field validation for 'SchemaVersion' failed on the 'url' tag"
+	expected := "Key: 'Specification.SchemaVersion' Error:Field validation for 'SchemaVersion' failed on the 'url' tag"
 	assertSpecLoadError(t, "schemaVersion", "invalid-url", expected)
 
-	expected = "Key: 'specification.URL' Error:Field validation for 'URL' failed on the 'url' tag"
+	expected = "Key: 'Specification.URL' Error:Field validation for 'URL' failed on the 'url' tag"
 	assertSpecLoadError(t, "url", "invalid-url", expected)
 
-	expected = "Key: 'specification.URL' Error:Field validation for 'URL' failed on the 'required' tag"
+	expected = "Key: 'Specification.URL' Error:Field validation for 'URL' failed on the 'required' tag"
 	assertSpecLoadError(t, "url", "", expected)
 
-	expected = "Key: 'specification.Version' Error:Field validation for 'Version' failed on the 'required' tag"
+	expected = "Key: 'Specification.Version' Error:Field validation for 'Version' failed on the 'required' tag"
 	assertSpecLoadError(t, "version", "", expected)
 }
 

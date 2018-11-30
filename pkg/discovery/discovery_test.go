@@ -19,8 +19,21 @@ type invalidTestCase struct {
 	expectedErr string
 }
 
+// invalidTestCase
+// discoveryJSON - the discovery model JSON
+// failures - list of failures
+// err - the expected err
+type invalidTest struct {
+	discoveryJSON string
+	success       bool
+	failures      []string
+	err           error
+}
+
 // conditionalityCheckerMock - implements model.ConditionalityChecker interface for tests
 type conditionalityCheckerMock struct {
+	isPresent        bool
+	missingMandatory []model.Input
 }
 
 // IsOptional - not used in discovery test
@@ -41,158 +54,238 @@ func (c conditionalityCheckerMock) IsConditional(method, endpoint string, specif
 	return false, nil
 }
 
-// Returns IsPresent true for valid GET/POST/DELETE endpoints.
+// IsPresent - returns stubbed isPresent boolean value
 func (c conditionalityCheckerMock) IsPresent(method, endpoint string, specification string) (bool, error) {
-	if method == "GET" || method == "POST" || method == "DELETE" {
-		return true, nil
-	}
-	return false, nil
+	return c.isPresent, nil
 }
 
-// Returns that "POST" "/account-access-consent" is missing
+// MissingMandatory - returns stubbed array of missing endpoints
 func (c conditionalityCheckerMock) MissingMandatory(endpoints []model.Input, specification string) ([]model.Input, error) {
-	missing := []model.Input{}
-	missing = append(missing, model.Input{Method: "POST", Endpoint: "/account-access-consents"})
-	return missing, nil
+	return c.missingMandatory, nil
 }
 
-func TestDiscovery_FromJSONString_Invalid_Cases(t *testing.T) {
-	testCases := []invalidTestCase{
-		{
-			name:        `json_needs_to_be_valid`,
-			config:      ` `,
-			expectedErr: `unexpected end of JSON input`,
-		},
-		{
-			name:   `version_and_discoveryItems_array_needs_to_specified`,
-			config: `{}`,
-			expectedErr: `Key: 'Model.DiscoveryModel.Version' Error:Field validation for 'Version' failed on the 'required' tag
-Key: 'Model.DiscoveryModel.DiscoveryItems' Error:Field validation for 'DiscoveryItems' failed on the 'required' tag`,
-		},
-		{
-			name: `discoveryItems_array_needs_to_be_greater_than_one`,
-			config: `
-{
-  "discoveryModel": {
-	"version": "v0.0.1",
-	"discoveryItems": [
-	]
-  }
+// unmarshalDiscoveryJSON - returns discovery model
+func testUnmarshalDiscoveryJSON(t *testing.T, discoveryJSON string) *Model {
+	discovery, err := unmarshalDiscoveryJSON(discoveryJSON)
+	assert.NoError(t, err)
+	return discovery
 }
-			`,
-			expectedErr: `Key: 'Model.DiscoveryModel.DiscoveryItems' Error:Field validation for 'DiscoveryItems' failed on the 'gt' tag`,
+
+// discoveryStub - returns discovery JSON with given field stubbed with given value
+func discoveryStub(field string, value string) string {
+	version := "v0.0.1"
+	specName := "Account and Transaction API Specification"
+	specURL := "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/642090641/Account+and+Transaction+API+Specification+-+v3.0"
+	specVersion := "v3.0"
+	schemaVersion := "https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.0.0/dist/account-info-swagger.json"
+	endpoints := `, "endpoints": [
+		{
+			"method": "POST",
+			"path": "/account-access-consents"
 		},
 		{
-			name: `endpoints_needs_to_be_specified`,
-			config: `
-{
-	"discoveryModel": {
-		"version": "v0.0.1",
-		"discoveryItems": [
-			{
-				"apiSpecification": {
-					"name": "Account and Transaction API Specification",
-					"url": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/642090641/Account+and+Transaction+API+Specification+-+v3.0",
-					"version": "v3.0",
-					"schemaVersion": "https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.0.0/dist/account-info-swagger.json"
-				},
-				"openidConfigurationUri": "https://as.aspsp.ob.forgerock.financial/oauth2/.well-known/openid-configuration",
-				"resourceBaseUri": "https://rs.aspsp.ob.forgerock.financial:443/",
-				"endpoints": [
-				]
+			"method": "GET",
+			"path": "/accounts/{AccountId}/balances"
+		}
+	]`
+
+	switch field {
+	case "version":
+		version = value
+	case "endpoints":
+		if value == "" {
+			endpoints = ""
+		} else {
+			endpoints = `, "endpoints": ` + value
+		}
+	case "specName":
+		specName = value
+	case "schemaVersion":
+		schemaVersion = value
+	case "specURL":
+		specURL = value
+	case "specVersion":
+		specVersion = value
+	}
+
+	apiSpecification := `"apiSpecification": {
+		"name": "` + specName + `",
+		"url": "` + specURL + `",
+		"version": "` + specVersion + `",
+		"schemaVersion": "` + schemaVersion + `"
+	},`
+	if field == "apiSpecification" {
+		if value == "" {
+			apiSpecification = ""
+		} else {
+			apiSpecification = `"apiSpecification": ` + value + `,`
+		}
+	}
+
+	discoveryItems := `, "discoveryItems": [
+		{
+			` + apiSpecification + `
+			"openidConfigurationUri": "https://as.aspsp.ob.forgerock.financial/oauth2/.well-known/openid-configuration",
+			"resourceBaseUri": "https://rs.aspsp.ob.forgerock.financial:443/"` + endpoints + `
+		}
+	]`
+	if field == "discoveryItems" {
+		if value == "" {
+			discoveryItems = ""
+		} else {
+			discoveryItems = `, "discoveryItems": ` + value
+		}
+	}
+	return `
+		{
+			"discoveryModel": {
+				"version": "` + version + `"` +
+		discoveryItems + `
 			}
-		]
-	}
+	}`
 }
-			`,
-			expectedErr: `Key: 'Model.DiscoveryModel.DiscoveryItems[0].Endpoints' Error:Field validation for 'Endpoints' failed on the 'gt' tag`,
-		},
-		{
-			name: `endpoints_path_and_method_need_to_be_valid`,
-			config: `
-{
-	"discoveryModel": {
-		"version": "v0.0.1",
-		"discoveryItems": [
-			{
-				"apiSpecification": {
-					"name": "Account and Transaction API Specification",
-					"url": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/642090641/Account+and+Transaction+API+Specification+-+v3.0",
-					"version": "v3.0",
-					"schemaVersion": "https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.0.0/dist/account-info-swagger.json"
-				},
-				"openidConfigurationUri": "https://as.aspsp.ob.forgerock.financial/oauth2/.well-known/openid-configuration",
-				"resourceBaseUri": "https://rs.aspsp.ob.forgerock.financial:443/",
-				"endpoints": [
-					{
-						"method": "FAKE-METHOD",
-						"path": "/fake-path"
-					},
-					{
-						"method": "FAKE-METHOD2",
-						"path": "/fake-path2"
-					}
-				]
-			}
-		]
-	}
+
+// testValidateFailures - run Validate, and test validation failure expectations
+func testValidateFailures(t *testing.T, checker model.ConditionalityChecker, expected *invalidTest) {
+	discovery := testUnmarshalDiscoveryJSON(t, expected.discoveryJSON)
+	result, failures, err := Validate(checker, discovery)
+	assert.Equal(t, expected.success, result)
+	assert.Equal(t, expected.err, err)
+	assert.Equal(t, expected.failures, failures)
 }
-			`,
-			expectedErr: `discoveryItemIndex=0, invalid endpoint Method=FAKE-METHOD, Path=/fake-path
-discoveryItemIndex=0, invalid endpoint Method=FAKE-METHOD2, Path=/fake-path2`,
-		},
-		{
-			name: `endpoints_missing_mandatory_endpoints_accounts`,
-			config: `
-{
-	"discoveryModel": {
-		"version": "v0.0.1",
-		"discoveryItems": [
-			{
-				"apiSpecification": {
-					"name": "Account and Transaction API Specification",
-					"url": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/642090641/Account+and+Transaction+API+Specification+-+v3.0",
-					"version": "v3.0",
-					"schemaVersion": "https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.0.0/dist/account-info-swagger.json"
-				},
-				"openidConfigurationUri": "https://as.aspsp.ob.forgerock.financial/oauth2/.well-known/openid-configuration",
-				"resourceBaseUri": "https://rs.aspsp.ob.forgerock.financial:443/",
-				"endpoints": [
-					{
-						"method": "GET",
-						"path": "/accounts/{AccountId}/balances"
-					}
-				]
-			}
-		]
-	}
-}
-			`,
-			expectedErr: `discoveryItemIndex=0, missing mandatory endpoint Method=POST, Path=/account-access-consents`,
-		},
-	}
 
-	mockChecker := conditionalityCheckerMock{}
+// TestValidate - test Validate function
+func TestValidate(t *testing.T) {
 
-	for _, testCaseEntry := range testCases {
-		// See: https://github.com/golang/go/wiki/CommonMistakes#using-goroutines-on-loop-iterator-variables
-		// for why we need this. Basically because we are running the tests in parallel using `t.Parallel`
-		// we cannot bind to `testCaseEntry` as  there is a very good chance that when you run this code
-		// you will see the last element being used all the time.
-		func(testCase invalidTestCase) {
-			t.Run(testCase.name, func(t *testing.T) {
-				assert := assert.New(t)
+	t.Run("when version missing returns failure", func(t *testing.T) {
+		testValidateFailures(t, conditionalityCheckerMock{}, &invalidTest{
+			discoveryJSON: discoveryStub("version", ""),
+			failures: []string{
+				`Key: 'Model.DiscoveryModel.Version' Error:Field validation for 'Version' failed on the 'required' tag`,
+			},
+		})
+	})
 
-				discoveryModel, err := FromJSONString(mockChecker, testCase.config)
-				// fmt.Println()
-				// fmt.Printf("%+v", err)
-				// fmt.Println()
+	t.Run("when version not in discovery.SupportedVersions() returns failure", func(t *testing.T) {
+		testValidateFailures(t, conditionalityCheckerMock{isPresent: true}, &invalidTest{
+			discoveryJSON: discoveryStub("version", "v9.9.9"),
+			failures: []string{
+				`Key: 'Model.DiscoveryModel.Version' Error:Version v9.9.9 not in list of supported versions`,
+			},
+		})
+	})
 
-				assert.Nil(discoveryModel)
-				assert.EqualError(err, testCase.expectedErr)
-			})
-		}(testCaseEntry)
-	}
+	t.Run("when discoveryItems missing returns failure", func(t *testing.T) {
+		testValidateFailures(t, conditionalityCheckerMock{}, &invalidTest{
+			discoveryJSON: discoveryStub("discoveryItems", ""),
+			failures: []string{
+				`Key: 'Model.DiscoveryModel.DiscoveryItems' Error:Field validation for 'DiscoveryItems' failed on the 'required' tag`,
+			},
+		})
+	})
+
+	t.Run("when discoveryItems is empty array returns failure", func(t *testing.T) {
+		testValidateFailures(t, conditionalityCheckerMock{}, &invalidTest{
+			discoveryJSON: discoveryStub("discoveryItems", "[]"),
+			failures: []string{
+				`Key: 'Model.DiscoveryModel.DiscoveryItems' Error:Field validation for 'DiscoveryItems' failed on the 'gt' tag`,
+			},
+		})
+	})
+
+	t.Run("when discoveryItem missing apiSpecification returns failures", func(t *testing.T) {
+		testValidateFailures(t, conditionalityCheckerMock{}, &invalidTest{
+			discoveryJSON: discoveryStub("apiSpecification", ""),
+			failures: []string{
+				"Key: 'Model.DiscoveryModel.DiscoveryItems[0].APISpecification.Name' Error:Field validation for 'Name' failed on the 'required' tag",
+				"Key: 'Model.DiscoveryModel.DiscoveryItems[0].APISpecification.URL' Error:Field validation for 'URL' failed on the 'required' tag",
+				"Key: 'Model.DiscoveryModel.DiscoveryItems[0].APISpecification.Version' Error:Field validation for 'Version' failed on the 'required' tag",
+				"Key: 'Model.DiscoveryModel.DiscoveryItems[0].APISpecification.SchemaVersion' Error:Field validation for 'SchemaVersion' failed on the 'required' tag",
+			},
+		})
+	})
+
+	t.Run("when discoveryItem apiSpecification schemaVersion not in suite config returns failure", func(t *testing.T) {
+		testValidateFailures(t, conditionalityCheckerMock{}, &invalidTest{
+			discoveryJSON: discoveryStub("schemaVersion", "http://example.com/bad-schema"),
+			failures: []string{
+				"Key: 'Model.DiscoveryModel.DiscoveryItems[0].APISpecification.SchemaVersion' Error:'SchemaVersion' not supported by suite 'http://example.com/bad-schema'",
+			},
+		})
+	})
+
+	t.Run("when discoveryItem apiSpecification schemaVersion in suite config but Name field not matching returns failure", func(t *testing.T) {
+		testValidateFailures(t, conditionalityCheckerMock{isPresent: true}, &invalidTest{
+			discoveryJSON: discoveryStub("specName", "Bad Spec Name"),
+			failures: []string{
+				`Key: 'Model.DiscoveryModel.DiscoveryItems[0].APISpecification.Name' Error:'Name' should be 'Account and Transaction API Specification' when schemaVersion is 'https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.0.0/dist/account-info-swagger.json'`,
+			},
+		})
+	})
+
+	t.Run("when discoveryItem apiSpecification schemaVersion in suite config but Version field not matching returns failure", func(t *testing.T) {
+		testValidateFailures(t, conditionalityCheckerMock{isPresent: true}, &invalidTest{
+			discoveryJSON: discoveryStub("specVersion", "v9.9.9"),
+			failures: []string{
+				`Key: 'Model.DiscoveryModel.DiscoveryItems[0].APISpecification.Version' Error:'Version' should be 'v3.0' when schemaVersion is 'https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.0.0/dist/account-info-swagger.json'`,
+			},
+		})
+	})
+
+	t.Run("when discoveryItem apiSpecification schemaVersion in suite config but URL field not matching returns failure", func(t *testing.T) {
+		testValidateFailures(t, conditionalityCheckerMock{isPresent: true}, &invalidTest{
+			discoveryJSON: discoveryStub("specURL", "http://example.com/bad-url"),
+			failures: []string{
+				`Key: 'Model.DiscoveryModel.DiscoveryItems[0].APISpecification.URL' Error:'URL' should be 'https://openbanking.atlassian.net/wiki/spaces/DZ/pages/642090641/Account+and+Transaction+API+Specification+-+v3.0' when schemaVersion is 'https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.0.0/dist/account-info-swagger.json'`,
+			},
+		})
+	})
+
+	t.Run("when discoveryItems has empty endpoints array returns failure", func(t *testing.T) {
+		testValidateFailures(t, conditionalityCheckerMock{}, &invalidTest{
+			discoveryJSON: discoveryStub("endpoints", "[]"),
+			failures: []string{
+				`Key: 'Model.DiscoveryModel.DiscoveryItems[0].Endpoints' Error:Field validation for 'Endpoints' failed on the 'gt' tag`,
+			},
+		})
+	})
+
+	t.Run("when conditionality checker reports endpoints not present returns failures", func(t *testing.T) {
+		stubAllNotPresent := conditionalityCheckerMock{isPresent: false}
+		testValidateFailures(t, stubAllNotPresent, &invalidTest{
+			discoveryJSON: discoveryStub("", ""),
+			failures: []string{
+				`discoveryItemIndex=0, invalid endpoint Method=POST, Path=/account-access-consents`,
+				`discoveryItemIndex=0, invalid endpoint Method=GET, Path=/accounts/{AccountId}/balances`,
+			},
+		})
+	})
+
+	t.Run("when conditionality checker reports endpoints present returns no failures", func(t *testing.T) {
+		stubAllPresent := conditionalityCheckerMock{isPresent: true}
+		testValidateFailures(t, stubAllPresent, &invalidTest{
+			discoveryJSON: discoveryStub("", ""),
+			success:       true,
+			failures:      []string{},
+		})
+	})
+
+	t.Run("when conditionality checker reports missing mandatory endpoints returns failures", func(t *testing.T) {
+		stubMissingMandatory := conditionalityCheckerMock{
+			isPresent: true,
+			missingMandatory: []model.Input{
+				model.Input{Method: "GET", Endpoint: "/account-access-consents/{ConsentId}"},
+				model.Input{Method: "DELETE", Endpoint: "/account-access-consents/{ConsentId}"},
+			},
+		}
+		testValidateFailures(t, stubMissingMandatory, &invalidTest{
+			discoveryJSON: discoveryStub("", ""),
+			failures: []string{
+				`discoveryItemIndex=0, missing mandatory endpoint Method=GET, Path=/account-access-consents/{ConsentId}`,
+				`discoveryItemIndex=0, missing mandatory endpoint Method=DELETE, Path=/account-access-consents/{ConsentId}`,
+			},
+		})
+	})
 }
 
 func TestDiscovery_FromJSONString_Valid(t *testing.T) {
@@ -274,7 +367,7 @@ func TestDiscovery_FromJSONString_Valid(t *testing.T) {
 		},
 	}
 
-	modelActual, err := FromJSONString(model.NewConditionalityChecker(), config)
+	modelActual, err := unmarshalDiscoveryJSON(config)
 	assert.NoError(err)
 	assert.NotNil(modelActual.DiscoveryModel)
 	discoveryModel := modelActual.DiscoveryModel

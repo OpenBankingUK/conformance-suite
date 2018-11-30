@@ -20,6 +20,10 @@ What's New:
 
 To provide feedback, please use the public [issue tracker](https://bitbucket.org/openbankingteam/conformance-suite/issues) or see the [CONTRIBUTING.md](CONTRIBUTING.md).
 
+### v0.2.0-alpha (11th January 2019)
+
+Upcomming.
+
 ## Quickstart
 * * *
 
