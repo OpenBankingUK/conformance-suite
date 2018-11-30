@@ -180,7 +180,7 @@ func isConditional(method, endpoint string, specification string) (bool, error) 
 // model.Conditional - endpoint is conditional
 // model.Optional - endpoint is optional
 // model.UndefineCondition - we don't recognise the endpoint
-func GetConditionality(method, endpoint string, specification string) (ConditionEnum, error) {
+func GetConditionality(method, endpoint, specification string) (ConditionEnum, error) {
 	condition, err := findCondition(method, endpoint, specification)
 	if err != nil {
 		return UndefinedCondition, err
