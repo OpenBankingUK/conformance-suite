@@ -1,0 +1,48 @@
+clone:
+  depth: 1
+
+options:
+  docker: true
+
+definitions:
+  # caches:
+  #   cache-web: web/node_modules/
+  services:
+    docker:
+      memory: 2048
+
+pipelines:
+  default:
+    - parallel:
+        # build go app
+        - step:
+            name: go-test
+            image: golang:1.11-stretch
+            script:
+              - |
+                CGO_ENABLED=0
+                GOOS=linux
+                GOARCH=amd64
+              - make build
+              - make test
+
+        # lint and test the Vue.js app
+        - step:
+            name: web-lint-test
+            image: node:8.11.1-slim
+            # caches:
+            #   - cache-web
+            script:
+              - cd web/
+              - yarn install
+              - yarn lint
+              - yarn test:unit:coverage
+
+        # build docker image
+        - step:
+            name: docker-image-build
+            # caches:
+            #   - docker
+            script:
+              - make build_image
+              - docker images

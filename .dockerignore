@@ -1,0 +1,66 @@
+# Ignore everything but files required to build
+# the image:
+# * *.go
+# * go.mod
+# * go.sum
+# * Makefile
+# * web/
+#
+# Note: The last rule takes precedence that is why we start by ignoring
+# everything first and explicitly include the files that we need.
+
+# ignore everything
+*
+**/*
+
+# except go server and its dependencies
+!**/*.go
+!**/go.mod
+!**/go.sum
+!**/Makefile
+
+!**/*/*.go
+!**/*/*/*.go
+!**/appconfig
+!**/config
+!**/proxy
+!**/swagger
+# Go project layout structure: https://github.com/golang-standards/project-layout
+!**/pkg
+!**/pkg/**
+!**/pkg/**/*
+!**/internal
+!**/internal/**
+!**/internal/**/*
+
+# the server's dependencies
+!**/vendor
+!**/vendor/
+!**/vendor/**
+!**/vendor/**/*
+
+# except vue.js website
+!**/web
+!**/web/**/*
+
+# make sure:
+# * node_modules
+# * vue.js build dist dir
+# * coverage output
+# are all ignored
+node_modules
+**/node_modules
+web/node_modules
+**/web/node_modules
+web/dist
+**/web/dist
+web/coverage
+**/web/coverage
+
+# Make sure the symbolic linked dir is exclude. They should not get
+# sent into the build context but just to be sure we exclude them
+# in case future versions of docker decide to send symbolic linked
+# directories into the build context
+**/pkg/server/web
+**/pkg/server/web/**
+**/pkg/server/web/**/*

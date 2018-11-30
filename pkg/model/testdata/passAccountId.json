@@ -1,0 +1,75 @@
+{
+    "@context": "https://json-ld.org/test-suite/context.jsonld",
+    "@id": "",
+    "@type": "mf:Manifest",
+    "name": "Basic Swagger 2.0 test run",
+    "description": "Tests appropriate behaviour of the Open Banking Limited 2.0 Read/Write APIs",
+    "baseIri": "https://json-ld.org/test-suite/tests/",
+    "rules": [{
+        "@id": "#r0001",
+        "@type": ["jld:testsuiteRule"],
+        "name": "Get Accounts Basic Rule",
+        "purpose": "Accesses the Accounts endpoint and retrives a list of PSU accounts",
+        "specref": "Read Write 2.0 section subsection 1 point 1a",
+        "speclocation": "https://openbanking.org.uk/rw2.0spec/errata#1.1a",
+        "tests": [
+            [{
+                    "@id": "#t0001",
+                    "name": "Get Accounts Basic",
+                    "purpose": "Accesses the Accounts endpoint and retrieves a list of PSU accounts",
+                    "input": {
+                        "method": "GET",
+                        "endpoint": "/accounts/"
+                    },
+                    "context": {
+                        "baseurl":"http://myaspsp"
+                    },
+                    "expect": {
+                        "status-code": 200,
+                        "matches": [{
+                            "description": "A json match on response body",
+                            "json": "Data.Account.0.AccountId",
+                            "value": "500000000000000000000001"
+                        }],
+                        "contextPut": {
+                            "matches": [{
+                                "name": "AccountId",                                
+                                "description": "A json match to extract variable to context",                                
+                                "json": "Data.Account.1.AccountId"
+                            }]
+                        }
+
+                    }
+                },
+                {
+                    "@id": "#t0002",
+                    "name": "Get Accounts using AccountId",
+                    "purpose": "Accesses the Accounts endpoint and retrieves a list of PSU accounts",
+                    "input": {
+                        "method": "GET",
+                        "endpoint": "/accounts/{AccountId}",
+                        "contextGet": {
+                            "matches":                        
+                            [{
+                            "name": "AccountId",
+                            "description": "supplies the account number to be queried",
+                            "replaceInEndpoint": "{AccountId}"
+                            }]
+                        }
+                    },
+                    "context": {
+                        "baseurl":"http://myaspsp"
+                    },
+                    "expect": {
+                        "status-code": 200,
+                        "matches": [{
+                            "description": "A json match on response body",
+                            "json": "Data.Account.0.Account.0.Identification",
+                            "value": "GB29PAPA20000390210099"
+                        }]
+                    }
+                }
+            ]
+        ]
+    }]
+}

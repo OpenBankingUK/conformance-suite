@@ -1,0 +1,15 @@
+/* This file is for your main application css. */
+html,
+body,
+#app {
+  height: 100%;
+  margin: 0;
+}
+
+.h100 {
+  height: 100%;
+}
+
+.centered {
+  text-align: center;
+}
