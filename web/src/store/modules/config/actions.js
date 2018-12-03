@@ -35,11 +35,15 @@ export default {
     commit(types.DISCOVERY_MODEL_PROBLEMS, null);
   },
   async validateDiscoveryConfig({ commit, state }) {
-    const { success, problems } = await discovery.validateDiscoveryConfig(state.discoveryModel);
-    if (success) {
-      commit(types.DISCOVERY_MODEL_PROBLEMS, []);
-    } else {
-      commit(types.DISCOVERY_MODEL_PROBLEMS, problems);
+    try {
+      const { success, problems } = await discovery.validateDiscoveryConfig(state.discoveryModel);
+      if (success) {
+        commit(types.DISCOVERY_MODEL_PROBLEMS, null);
+      } else {
+        commit(types.DISCOVERY_MODEL_PROBLEMS, problems);
+      }
+    } catch (e) {
+      commit(types.DISCOVERY_MODEL_PROBLEMS, [e.message]);
     }
     return null;
   },

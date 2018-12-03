@@ -19,12 +19,12 @@ describe('validateDiscoveryConfig', () => {
         problems: [],
       });
     });
-    it('commits empty array of validation problem strings', async () => {
+    it('commits null validation problems', async () => {
       await actions.validateDiscoveryConfig({ commit, state });
-      expect(commit).toHaveBeenCalledWith(types.DISCOVERY_MODEL_PROBLEMS, []);
+      expect(commit).toHaveBeenCalledWith(types.DISCOVERY_MODEL_PROBLEMS, null);
     });
   });
-  describe('when validation fails', () => {
+  describe('when validation fails with problem messages', () => {
     const problems = [
       "Key: 'Model.DiscoveryModel.Version' Error:Field validation for 'Version' failed on the 'required' tag",
       "Key: 'Model.DiscoveryModel.DiscoveryItems' Error:Field validation for 'DiscoveryItems' failed on the 'required' tag",
@@ -39,6 +39,16 @@ describe('validateDiscoveryConfig', () => {
     it('commits array of validation problem strings', async () => {
       await actions.validateDiscoveryConfig({ commit, state });
       expect(commit).toHaveBeenCalledWith(types.DISCOVERY_MODEL_PROBLEMS, problems);
+    });
+  });
+  describe('when validation throws Error', () => {
+    beforeEach(() => {
+      commit = jest.fn();
+      discovery.validateDiscoveryConfig.mockRejectedValue(new Error('some error'));
+    });
+    it('commits Error message in problems array', async () => {
+      await actions.validateDiscoveryConfig({ commit, state });
+      expect(commit).toHaveBeenCalledWith(types.DISCOVERY_MODEL_PROBLEMS, ['some error']);
     });
   });
 });
