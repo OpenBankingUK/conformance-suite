@@ -1,8 +1,8 @@
 export default {
 
-  // Calls post API endpoint, returns response.
-  async post(path, obj) {
-    return window.fetch(path, {
+  // Async call to post API endpoint, returns promise.
+  post(path, obj) {
+    return fetch(path, {
       method: 'POST',
       headers: {
         Accept: 'application/json; charset=UTF-8',
