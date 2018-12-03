@@ -13,6 +13,10 @@
           },
           "openidConfigurationUri": "https://modelobankauth2018.o3bank.co.uk:4101/.well-known/openid-configuration",
           "resourceBaseUri": "https://modelobankauth2018.o3bank.co.uk:4101/open-banking/3.0/aisp",
+          "resourceIds":  {
+            "ConsentI11111d": "507c2dc9-a2fd-4980-b33c-777459b77cb",
+            "AccountId": "500000000000000000000001"
+          },
           "endpoints": [
             {
               "method": "POST",
