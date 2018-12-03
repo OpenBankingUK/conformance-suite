@@ -1,6 +1,7 @@
 import * as types from './mutation-types';
 import router from '../../../router';
 import DiscoveryExample from './discovery-example.json';
+import discovery from '../../../api/discovery';
 
 export default {
   setDiscoveryModel({ commit }, discoveryModel) {
@@ -33,52 +34,13 @@ export default {
     commit(types.DISCOVERY_MODEL_RESET, DiscoveryExample);
     commit(types.DISCOVERY_MODEL_PROBLEMS, null);
   },
-  validateDiscoveryConfig({ commit }) {
-    // TODO: Remove hardcoded `problems` and call backend instead.
-    const problems = `discoveryItemIndex=0, missing mandatory endpoint Method=POST, Path=/account-access-consents
-discoveryItemIndex=0, missing mandatory endpoint Method=GET, Path=/account-access-consents/{ConsentId}
-discoveryItemIndex=0, missing mandatory endpoint Method=DELETE, Path=/account-access-consents/{ConsentId}
-discoveryItemIndex=0, missing mandatory endpoint Method=GET, Path=/accounts
-discoveryItemIndex=0, missing mandatory endpoint Method=GET, Path=/accounts/{AccountId}
-discoveryItemIndex=0, missing mandatory endpoint Method=GET, Path=/accounts/{AccountId}/transactions
-discoveryItemIndex=0, missing mandatory endpoint Method=POST, Path=/account-access-consents
-discoveryItemIndex=0, missing mandatory endpoint Method=GET, Path=/account-access-consents/{ConsentId}
-discoveryItemIndex=0, missing mandatory endpoint Method=DELETE, Path=/account-access-consents/{ConsentId}
-discoveryItemIndex=0, missing mandatory endpoint Method=GET, Path=/accounts
-discoveryItemIndex=0, missing mandatory endpoint Method=GET, Path=/accounts/{AccountId}
-discoveryItemIndex=0, missing mandatory endpoint Method=GET, Path=/accounts/{AccountId}/transactions
-discoveryItemIndex=0, missing mandatory endpoint Method=POST, Path=/account-access-consents
-discoveryItemIndex=0, missing mandatory endpoint Method=GET, Path=/account-access-consents/{ConsentId}
-discoveryItemIndex=0, missing mandatory endpoint Method=DELETE, Path=/account-access-consents/{ConsentId}
-discoveryItemIndex=0, missing mandatory endpoint Method=GET, Path=/accounts
-discoveryItemIndex=0, missing mandatory endpoint Method=GET, Path=/accounts/{AccountId}
-discoveryItemIndex=0, missing mandatory endpoint Method=GET, Path=/accounts/{AccountId}/transactions
-discoveryItemIndex=0, missing mandatory endpoint Method=POST, Path=/account-access-consents
-discoveryItemIndex=0, missing mandatory endpoint Method=GET, Path=/account-access-consents/{ConsentId}
-discoveryItemIndex=0, missing mandatory endpoint Method=DELETE, Path=/account-access-consents/{ConsentId}
-discoveryItemIndex=0, missing mandatory endpoint Method=GET, Path=/accounts
-discoveryItemIndex=0, missing mandatory endpoint Method=GET, Path=/accounts/{AccountId}
-discoveryItemIndex=0, missing mandatory endpoint Method=GET, Path=/accounts/{AccountId}/transactions
-discoveryItemIndex=0, missing mandatory endpoint Method=POST, Path=/account-access-consents
-discoveryItemIndex=0, missing mandatory endpoint Method=GET, Path=/account-access-consents/{ConsentId}
-discoveryItemIndex=0, missing mandatory endpoint Method=DELETE, Path=/account-access-consents/{ConsentId}
-discoveryItemIndex=0, missing mandatory endpoint Method=GET, Path=/accounts
-discoveryItemIndex=0, missing mandatory endpoint Method=GET, Path=/accounts/{AccountId}
-discoveryItemIndex=0, missing mandatory endpoint Method=GET, Path=/accounts/{AccountId}/transactions
-discoveryItemIndex=0, missing mandatory endpoint Method=POST, Path=/account-access-consents
-discoveryItemIndex=0, missing mandatory endpoint Method=GET, Path=/account-access-consents/{ConsentId}
-discoveryItemIndex=0, missing mandatory endpoint Method=DELETE, Path=/account-access-consents/{ConsentId}
-discoveryItemIndex=0, missing mandatory endpoint Method=GET, Path=/accounts
-discoveryItemIndex=0, missing mandatory endpoint Method=GET, Path=/accounts/{AccountId}
-discoveryItemIndex=0, missing mandatory endpoint Method=GET, Path=/accounts/{AccountId}/transactions
-discoveryItemIndex=0, missing mandatory endpoint Method=POST, Path=/account-access-consents
-discoveryItemIndex=0, missing mandatory endpoint Method=GET, Path=/account-access-consents/{ConsentId}
-discoveryItemIndex=0, missing mandatory endpoint Method=DELETE, Path=/account-access-consents/{ConsentId}
-discoveryItemIndex=0, missing mandatory endpoint Method=GET, Path=/accounts
-discoveryItemIndex=0, missing mandatory endpoint Method=GET, Path=/accounts/{AccountId}
-discoveryItemIndex=0, missing mandatory endpoint Method=GET, Path=/accounts/{AccountId}/transactions`;
-    commit(types.DISCOVERY_MODEL_PROBLEMS, problems);
-
-    return Promise.resolve({});
+  async validateDiscoveryConfig({ commit, state }) {
+    const { success, problems } = await discovery.validateDiscoveryConfig(state.discoveryModel);
+    if (success) {
+      commit(types.DISCOVERY_MODEL_PROBLEMS, []);
+    } else {
+      commit(types.DISCOVERY_MODEL_PROBLEMS, problems);
+    }
+    return null;
   },
 };
