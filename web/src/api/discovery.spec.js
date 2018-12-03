@@ -1,7 +1,5 @@
 import discovery from './discovery';
 
-global.fetch = require('jest-fetch-mock');
-
 describe('validateDiscoveryConfig', () => {
   const discoveryModelStub = { };
 

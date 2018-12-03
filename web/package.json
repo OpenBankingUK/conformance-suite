@@ -46,12 +46,6 @@
     "vue-cli-plugin-build-watch": "^1.0.0",
     "vue-template-compiler": "^2.5.17"
   },
-  "jest": {
-    "automock": false,
-    "setupFiles": [
-      "./test/setupJest.js"
-    ]
-  },
   "gitHooks": {
     "pre-commit": "lint-staged"
   },
