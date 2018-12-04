@@ -16,12 +16,6 @@
   </b-container>
 </template>
 
-<style>
-.custom-file-input:lang(en)~.custom-file-label::after {
-    content: "Upload";
-}
-</style>
-
 <script>
 export default {
   name: 'Step1',
@@ -43,3 +37,9 @@ export default {
   },
 };
 </script>
+
+<style>
+.custom-file-input:lang(en)~.custom-file-label::after {
+    content: "Upload";
+}
+</style>

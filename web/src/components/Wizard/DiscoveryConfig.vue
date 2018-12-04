@@ -38,16 +38,6 @@
   </b-container>
 </template>
 
-<style>
-.editor {
-  border: 1px solid lightgrey;
-}
-.problems code {
-  max-height: 30vh;
-  overflow: scroll;
-}
-</style>
-
 <script>
 import 'brace';
 import 'brace/mode/json';
@@ -130,3 +120,13 @@ export default {
   },
 };
 </script>
+
+<style>
+.editor {
+  border: 1px solid lightgrey;
+}
+.problems code {
+  max-height: 30vh;
+  overflow: scroll;
+}
+</style>
