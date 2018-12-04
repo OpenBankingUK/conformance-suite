@@ -1,49 +1,47 @@
 <template>
-  <div class="d-flex flex-column flex-fill">
-    <h3>Configuration: API Discovery</h3>
-    <div class="d-flex flex-column editor-container flex-fill">
-      <AceEditor
-        :ref="editorName"
-        :name="editorName"
-        :fontSize="12"
-        :showPrintMargin="false"
-        :showGutter="true"
-        :highlightActiveLine="true"
-        :value="JSON.stringify(discoveryModel, null, 2)"
-        :onChange="onChange"
-        :editorProps="{$blockScrolling: Infinity}"
-        :focus="true"
-        mode="json"
-        theme="chrome"
-        class="editor"
-      />
-    </div>
-    <div
-      v-if="problems"
-      class="d-flex flex-column problems">
-      <h5>Problems</h5>
-      <code>{{ problems }}</code>
-    </div>
-    <b-button-group>
-      <b-button
-        variant="danger"
-        @click="onReset">Reset</b-button>
-      <b-button
-        variant="primary"
-        @click="onValidate">Validate</b-button>
-    </b-button-group>
-  </div>
+  <b-container>
+    <b-row>
+      <b-col cols="12">
+        <h3 class="mb-4">Configuration: API Discovery</h3>
+        <AceEditor
+          :ref="editorName"
+          :name="editorName"
+          :fontSize="12"
+          :showPrintMargin="false"
+          :showGutter="true"
+          :highlightActiveLine="true"
+          :value="JSON.stringify(discoveryModel, null, 2)"
+          :onChange="onChange"
+          :editorProps="{$blockScrolling: Infinity}"
+          :focus="true"
+          mode="json"
+          theme="chrome"
+          class="editor mb-4"
+          width="100%"
+        />
+        <div
+          v-if="problems"
+          class="mb-4">
+          <h5>Problems</h5>
+          <code>{{ problems }}</code>
+        </div>
+        <b-button-group>
+          <b-button
+            variant="danger"
+            @click="onReset">Reset</b-button>
+          <b-button
+            variant="primary"
+            @click="onValidate">Validate</b-button>
+        </b-button-group>
+      </b-col>
+    </b-row>
+  </b-container>
 </template>
 
 <style>
 .editor {
-  margin-top: 8px;
-  margin-bottom: 8px;
-  width: auto !important;
-  height: auto !important;
-  flex: 1;
+  border: 1px solid lightgrey;
 }
-
 .problems code {
   max-height: 30vh;
   overflow: scroll;
