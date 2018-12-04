@@ -1,8 +1,10 @@
 # Functional Conformance Suite Test case design
 
-The conformance suite provides a cross-platform, language agnostic representation of test cases. The main purpose is to determine whether an ASPSP resource complies with requirements of specifications and conditions, regulations and standards.
+The functional conformance suite provides a cross-platform, language agnostic representation of test cases. 
+The main purpose is to determine whether an ASPSP resource complies with requirements of specifications and conditions, regulations and standards.
 
-As an ASPSP, I want Test Case documentation so that I can understand and contribute.
+The use case this addresses is described **as an ASPSP, I want Test Case documentation so that I can understand and contribute.**  
+_N.B. For the rest of this file functional conformance is referred to as 'conformance'._
 
 ```json
 
@@ -17,7 +19,8 @@ As an ASPSP, I want Test Case documentation so that I can understand and contrib
 
 ## Manifest
 
-A Manifest defines all the rules and test cases to be run that cover the conformance to a specific set of specifications. The Manifest provides details of the specifications covered and links to all tests run as part of the conformance assessment
+A Manifest defines all the rules and test cases to be run that cover the conformance to a discrete set of specifications. 
+The Manifest provides details of the specifications covered and links to all tests run as part of the conformance assessment.
 
 Example
 
@@ -34,7 +37,8 @@ Example
 
 ## Rules
 
-A conformance Manifest consists of one or more rules. Each rule identifies a specific item in a specification which is under test. Each rule also contains one or more test cases used to determine adherence to the specification item under consideration.
+A conformance Manifest consists of one or more rules. Each rule identifies a specific item in a specification which is under test. 
+Each rule also contains one or more test cases used to determine adherence to the specification item under consideration.
 
 Example
 
@@ -51,7 +55,8 @@ Example
 
 ## Test Case
 
-A test case encapsulates a test against a specific endpoint in order to determine an expected outcome. The test case defines the expected outcomes using HTTP response status codes and an optional set of javacript and regular expression matching tools.
+A test case encapsulates a test against a specific endpoint in order to determine an expected outcome. 
+The test case defines the expected outcomes using HTTP response status codes and an optional set of javacript and regular expression matching tools.
 
 ```json
 
@@ -107,11 +112,12 @@ Example
 
 ## Context
 
-Contexts provide pools of information (properties) for test cases. There are 3 main context pools from which a testcase can draw information
+Contexts provide pools of information (properties) for test cases. There are 3 main context pools from which a testcase can draw information.
 
 ## Global Context
 
-The global context provides access to the Discovery Information provided by the ASPSP in order to define endpoints, certificates, tokens, etc. Informantion likely to be found in the global context includes :-
+The global context provides access to the Discovery Information provided by the ASPSP in order to define endpoints, certificates, tokens, etc. 
+Information likely to be found in the global context includes :-
 
 - ASPSP endpoints
 - Access tokens for specific permission mixes
@@ -123,11 +129,15 @@ The global context provides access to the Discovery Information provided by the 
 
 ## Section Context
 
-A section context provides access to a collection of common information that is applicable to a certain type of test. For example an access token with a specific permission mix, required by a particular set of test cases across multiple rules.
+A section context provides access to a collection of common information that is applicable to a certain type of test. 
+For example, an access token with a specific permission mix, required by a particular set of test cases across multiple rules.
 
 ## Local Context
 
-A rule can have multiple sequentially executed test cases. A local context provides a mechanism for passing the results of one test case to the input of the next test case as part of a rule test sequence. For example GET /Accounts would provide a list of AccountIDs, the first accountID returned could be passed via the local context as a parameter to the next test case which calls GET /Accounts/{accountID}/balances.
+A rule can have multiple sequentially executed test cases. 
+A local context provides a mechanism for passing the results of one test case to the input of the next test case as part of a rule test sequence. 
+For example GET /Accounts would provide a list of AccountIDs, the first accountID returned could be passed via the local context as a parameter 
+to the next test case which calls GET /Accounts/{accountID}/balances.
 
 Items that would typically be put in the local context include :-
 
@@ -138,7 +148,8 @@ Items that would typically be put in the local context include :-
 
 ## Response Matching
 
-In order to check conformance to a particular specification, the primary mechanism available is checking the response data returned from an ASPSP API implementation.
+In order to check conformance to a particular specification, the primary mechanism available is checking the response data returned 
+from an ASPSP API implementation.
 
 There are a number of matching options available via the test case framework in this space :-
 
@@ -164,17 +175,20 @@ There are four declarative matching options available within test cases:-
 
 - Token acquisition is decoupled
 - Tokens and discovery will be provided by via JSON objects
-- Conditionality and Optionality will be captured in discovery
+- Conditionality and optionality will be captured in discovery
 - Endpoints will be captured in discovery
 
 ## Additional Notes
 
-OpenAPI-Schema validation allows enabling and disabling validation for specific test cases 
-Also needs a swagger validation off mode, where swagger json validation checks aren't performed which allows defining custom json response validation
+OpenAPI-Schema validation allows enabling and disabling validation for specific test cases. 
+It also needs a swagger validation off mode, where swagger json validation checks are not performed, 
+which allows for defining custom json response validation.
 
 ## Auto-generated Test
 
-A number of test cases will be auto generated for the OpenAPI/Swagger json files. These test cases will have the OpenAPI-Schema validation feature enabled by default. For specific custom test cases, its possible to disable default schema-validation and provide a custom regex to perform the desired checks.
+A number of test cases will be auto generated for the OpenAPI/Swagger json files. 
+These test cases will have the OpenAPI-Schema validation feature enabled by default. 
+For specific custom test cases, its possible to disable default schema-validation and provide a custom regex to perform the desired checks.
 
 ## Key Features
 

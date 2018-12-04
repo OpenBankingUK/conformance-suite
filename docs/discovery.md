@@ -22,11 +22,11 @@ The discovery model defines in a JSON format endpoints implemented per
 specification and optional payload schema properties provided for online channel
 equivalence.
 
-The discovery model consists of an `discoveryModel` root object with these
+The discovery model consists of a `discoveryModel` root object with these
 properties:
 
 * `version` - version number of the discovery model format, e.g. "v0.0.1".
-* `discoveryItems` - an array of discovery items, see below for details.
+* `discoveryItems` - an array of discovery items (see below for details).
 
 #### Discovery version
 
@@ -44,13 +44,13 @@ version.
 Properties in each discovery item are:
 
 * `apiSpecification` - details of API specification
-* `openidConfigurationUri` - URI of openid configuration well-known endpoint
+* `openidConfigurationUri` - URI of the openid configuration well-known endpoint
 * `resourceBaseUri` - Base of resource URI, i.e. the part before "/open-banking/v3.0".
 * `endpoints` - Array of endpoint and method implementation details.
 
 #### API Specification
 
-The Discovery model records specification details in an unambiguous way:
+The discovery model records specification details in an unambiguous way:
 
 * `apiSpecification`
   * `name` - the `info.title` field from the Swagger/OpenAPI specification file
@@ -59,8 +59,7 @@ The Discovery model records specification details in an unambiguous way:
   * `schemaVersion` - URI identifier of the Swagger/OpenAPI specification file patch version
 
 The property names `url`, `version`, and `schemaVersion` are from the schema.org
-[APIReference schema](https://schema.org/APIReference) defined here:
-https://schema.org/APIReference
+[APIReference schema](https://schema.org/APIReference)
 
 Example
 
@@ -95,7 +94,7 @@ implemented by an ASPSP. This list includes:
 Properties in each endpoint definition include (mandatory properties marked with *):
   - `method`* - HTTP method, e.g. "GET" or "POST"
   - `path`* - endpoint path, e.g. "/account-access-consents"
-  - `conditionalProperties` - list of optional schema properties that an ASPSP attests it provides, more details in the next section.
+  - `conditionalProperties` - list of optional schema properties that an ASPSP attests it provides (more details in the next section).
 
 Example
 
@@ -123,11 +122,11 @@ Example
 
 ##### Required properties
 
-The specification lists some resource schema properties may occur `0..1`, or `0..*` times.
+The specification lists some resource schema properties that may occur `0..1`, or `0..*` times.
 
 When an ASPSP provides a `0..1`, `0..*` occurrence property via its online channel,
 it must attest that it provides those properties in its API implementation. An ASPSP must add
-such properties to a `conditionalProperties` properties list in the relevant endpoint definition.
+such properties to a `conditionalProperties` list in the relevant endpoint definition.
 
 The `conditionalProperties` list contains items. Each item states:
  * `schema` - schema definition name from the Swagger/OpenAPI specification, e.g. "OBTransaction3Detail"
@@ -173,5 +172,5 @@ as follows:
 
 ### Example file
 
-See ./docs/discovery-example.json for a [longer example file](./discovery-example.json).
-Note, this file is a nonnormative incomplete example of a discovery model.
+See [./docs/discovery-example.json](./discovery-example.json) for a longer example file.
+Note, this file is a non-normative incomplete example of a discovery model.

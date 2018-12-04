@@ -19,7 +19,7 @@ Read the full [release notes](docs/releases/v0.1.0-pre-alpha.md) (v0.1.0-pre-alp
 
 What's New:
 
-* NEW: [Test Case Design](docs/test-case-design.md) Design: The conformance suite provides a cross-platform, language agnostic representation of test cases. The primary purpose is to determine whether an implementer resource complies with requirements of specifications and conditions, regulations and standards.
+* NEW: [Test Case Design](docs/test-case-design.md) : The functional conformance suite provides a cross-platform, language agnostic representation of test cases. The primary purpose is to determine whether an implementer resource complies with requirements of specifications and conditions, regulations and standards.
 * NEW: [Discovery Design](docs/discovery.md): Provides a configurable model that allows an implementer to describe information on endpoint availability and data structure.
 
 ### v0.2.0-alpha (11th January 2019)
