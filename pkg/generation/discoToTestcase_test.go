@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"strings"
 	"testing"
+	"errors"
 
 	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/utils"
 
@@ -59,69 +60,109 @@ func getImplementedTestCases(disco *discovery.ModelDiscoveryItem) []model.TestCa
 	var testcases []model.TestCase
 	var testNo = 1000
 	endpoints := disco.Endpoints
+	doc, err := loadSpec(disco.APISpecification.SchemaVersion, false)	
+	if err != nil {
+		fmt.Println(err)
+		return testcases
+	}
+
+	// sp := doc.Spec()
+	// fmt.Printf("%s\n============================================>>>>>>>>>>>>>\n",sp.Info.Title)
+	// fmt.Println(sp.Info.Description)
+	// fmt.Printf("%#v\n",sp.Parameters)
+	// if true {
+	// 	return testcases
+	// }
+	
+
 	for _, v := range endpoints {
-		condition, err := getConditionality(v.Method, v.Path, disco.APISpecification.SchemaVersion)
-		if err != nil {
-			fmt.Printf("%s", err)
-			continue
-		}
-
-		// for path, props := range doc.Spec().Paths.Paths {
-		// 	_,_=path,props
-		//}
-
+		var responseCodes []int
+		var goodResponseCode int
+		condition := getConditionality(v.Method, v.Path, disco.APISpecification.SchemaVersion)
 		newpath := ReplaceResourceIds(disco, v.Path)
 		fmt.Printf("[%s] %s %s\n", condition, v.Method, newpath)
 
 		 for path, props := range doc.Spec().Paths.Paths {
+			for meth,op := range getOperations(&props) {
+				if (meth == v.Method) && (v.Path == path) {
+					responseCodes = getResponseCodes(op)					
+					fmt.Printf("Response Codes, %v\n", responseCodes)
+					goodResponseCode,_ = getGoodResponseCode(responseCodes)
+					fmt.Printf("Good Response Code %d",goodResponseCode)
 
-		// }
-
-		doc, err := loadSpec(disco.APISpecification.SchemaVersion, false)
-		for meth, op := range getOperations(&props) {
-			successStatus := 0
-			testNo++
-
-			for i := range op.OperationProps.Responses.ResponsesProps.StatusCodeResponses {
-				if i > 199 && i < 300 {
-					successStatus = i
+					opProps := op.OperationProps
+					fmt.Printf("\nOpProps: %#v\n",opProps)
+					fmt.Printf("\nID: %#v\n",opProps.ID)
+					fmt.Printf("Summary: %s\n",opProps.Summary)
+					break
 				}
-			}
+			}			  
+		 }
 
-			input := model.Input{Method: meth, Endpoint: newpath}
-			expect := model.Expect{StatusCode: successStatus, SchemaValidation: true}
-			testcase := model.TestCase{ID: fmt.Sprintf("#t%4.4d", testNo), Input: input, Expect: expect, Name: op.Description}
-			testcases = append(testcases, testcase)
-		}
+		// doc, err := loadSpec(disco.APISpecification.SchemaVersion, false)
+		// for meth, op := range getOperations(&props) {
+		// 	successStatus := 0
+		// 	testNo++
+
+		// 	for i := range op.OperationProps.Responses.ResponsesProps.StatusCodeResponses {
+		// 		if i > 199 && i < 300 {
+		// 			successStatus = i
+		// 		}
+		// 	}
+
+		// 	input := model.Input{Method: meth, Endpoint: newpath}
+		// 	expect := model.Expect{StatusCode: successStatus, SchemaValidation: true}
+		// 	testcase := model.TestCase{ID: fmt.Sprintf("#t%4.4d", testNo), Input: input, Expect: expect, Name: op.Description}
+		// 	testcases = append(testcases, testcase)
+		// }
 	}
-	}
+
+	_ = testNo
 
 	return testcases
 }
 
-func getConditionality(method, path, specification string) (string, error) {
+func getGoodResponseCode(codes []int) (int, error) {
+	for _,i := range codes {
+		if i > 199 && i < 300 {
+			return i,nil
+		}
+	}
+	return 0, errors.New("Cannot find good response code between 200 and 299")
+}
+
+
+// given an operation specification, return all resultcodes for that operation
+func getResponseCodes(op *spec.Operation) []int {
+	var result []int
+	for i := range op.OperationProps.Responses.ResponsesProps.StatusCodeResponses {
+		result = append(result,i)
+	}
+	return result
+}
+
+
+
+func getConditionality(method, path, specification string) (string) {
 	condition, err := model.GetConditionality(method, path, specification)
 	if err != nil {
-		return "", err
+		return "U"
 	}
 	switch condition {
 	case model.Mandatory:
-		return "M", nil
+		return "M"
 	case model.Conditional:
-		return "C", nil
+		return "C"
 	case model.Optional:
-		return "O", nil
+		return "O"
 	default:
-		return "U", nil
+		return "U"
 	}
 }
 
 func printImplemented(ditem discovery.ModelDiscoveryItem, endpoints []discovery.ModelEndpoint, spec string) {
 	for _, v := range endpoints {
-		condition, err := getConditionality(v.Method, v.Path, spec)
-		if err != nil {
-			fmt.Printf("%s", err)
-		}
+		condition := getConditionality(v.Method, v.Path, spec)
 		newpath := ReplaceResourceIds(&ditem, v.Path)
 		fmt.Printf("[%s] %s %s\n", condition, v.Method, newpath)
 	}
@@ -164,16 +205,14 @@ func printSpec(doc *loads.Document, base, spec string) {
 	for path, props := range doc.Spec().Paths.Paths {
 		for method := range getOperations(&props) {
 			newPath := base + path
-			condition, err := getConditionality(method, path, spec)
-			if err != nil {
-				fmt.Printf("%s", err)
-			}
+			condition := getConditionality(method, path, spec)
 			fmt.Printf("[%s] %s %s\n", condition, method, newPath) // give to testcase along with any conditionality?
 			// map disco
 		}
 	}
 }
 
+// loads an openapi specification via http or file
 func loadSpec(spec string, print bool) (*loads.Document, error) {
 	doc, err := loads.Spec(spec)
 	if print {
