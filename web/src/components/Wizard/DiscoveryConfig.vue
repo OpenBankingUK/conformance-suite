@@ -29,9 +29,6 @@
           <b-button
             variant="danger"
             @click="onReset">Reset</b-button>
-          <b-button
-            variant="primary"
-            @click="onValidate">Validate</b-button>
         </b-button-group>
       </b-col>
     </b-row>
@@ -83,10 +80,6 @@ export default {
     },
     onReset() {
       this.resetDiscoveryConfig();
-      this.resizeEditor();
-    },
-    async onValidate() {
-      await this.validateDiscoveryConfig();
       this.resizeEditor();
     },
     isValidJSON(json) {
