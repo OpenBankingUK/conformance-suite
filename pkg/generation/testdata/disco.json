@@ -14,7 +14,7 @@
           "openidConfigurationUri": "https://modelobankauth2018.o3bank.co.uk:4101/.well-known/openid-configuration",
           "resourceBaseUri": "https://modelobankauth2018.o3bank.co.uk:4101/open-banking/3.0/aisp",
           "resourceIds":  {
-            "ConsentI11111d": "507c2dc9-a2fd-4980-b33c-777459b77cb",
+            "ConsentId": "507c2dc9-a2fd-4980-b33c-777459b77cb",
             "AccountId": "500000000000000000000001"
           },
           "endpoints": [
@@ -83,6 +83,15 @@
           },
           "openidConfigurationUri": "https://modelobankauth2018.o3bank.co.uk:4101/.well-known/openid-configuration",
           "resourceBaseUri": "https://modelobankauth2018.o3bank.co.uk:4101/open-banking/3.0/pisp",
+          "resourceIds":  {
+            "ConsentId": "507c2dc9-a2fd-4980-b33c-777459b77cb",
+            "DomesticPaymentId": "PAYID0001010101",
+            "DomesticScheduledPaymentId":"DSCHEDP0001010101",
+            "DomesticStandingOrderId":"DSOI1123111223",
+            "InternationalScheduledPaymentId":"ISPID8882828",
+            "InternationalStandingOrderPaymentId":"ISOPID01010110",
+            "FilePaymentId":"FPID0001010"
+          },
           "endpoints": [
             {
               "method": "POST",
