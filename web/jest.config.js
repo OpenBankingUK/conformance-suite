@@ -1,4 +1,8 @@
 module.exports = {
+  automock: false,
+  setupFiles: [
+    './tests/setupJest.js',
+  ],
   moduleFileExtensions: [
     'js',
     'jsx',
