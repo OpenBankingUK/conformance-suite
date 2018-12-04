@@ -36,7 +36,6 @@
 .wizard-tab-content {
   padding: 0.5rem !important;
   margin: 0.5rem;
-  border: 1px solid rgba(0, 0, 0, 0.5);
 }
 
 .wizard-navigation {
