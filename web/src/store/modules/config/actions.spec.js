@@ -1,6 +1,57 @@
 import actions from './actions';
 import getters from './getters';
 import router from '../../../router';
+import * as types from './mutation-types';
+
+import discovery from '../../../api/discovery';
+
+jest.mock('../../../api/discovery');
+
+describe('validateDiscoveryConfig', () => {
+  const state = { discoveryModel: {} };
+  let commit;
+
+  describe('when validation passes', () => {
+    beforeEach(() => {
+      commit = jest.fn();
+      discovery.validateDiscoveryConfig.mockResolvedValue({
+        success: true,
+        problems: [],
+      });
+    });
+    it('commits null validation problems', async () => {
+      await actions.validateDiscoveryConfig({ commit, state });
+      expect(commit).toHaveBeenCalledWith(types.DISCOVERY_MODEL_PROBLEMS, null);
+    });
+  });
+  describe('when validation fails with problem messages', () => {
+    const problems = [
+      "Key: 'Model.DiscoveryModel.Version' Error:Field validation for 'Version' failed on the 'required' tag",
+      "Key: 'Model.DiscoveryModel.DiscoveryItems' Error:Field validation for 'DiscoveryItems' failed on the 'required' tag",
+    ];
+    beforeEach(() => {
+      commit = jest.fn();
+      discovery.validateDiscoveryConfig.mockResolvedValue({
+        success: false,
+        problems,
+      });
+    });
+    it('commits array of validation problem strings', async () => {
+      await actions.validateDiscoveryConfig({ commit, state });
+      expect(commit).toHaveBeenCalledWith(types.DISCOVERY_MODEL_PROBLEMS, problems);
+    });
+  });
+  describe('when validation throws Error', () => {
+    beforeEach(() => {
+      commit = jest.fn();
+      discovery.validateDiscoveryConfig.mockRejectedValue(new Error('some error'));
+    });
+    it('commits Error message in problems array', async () => {
+      await actions.validateDiscoveryConfig({ commit, state });
+      expect(commit).toHaveBeenCalledWith(types.DISCOVERY_MODEL_PROBLEMS, ['some error']);
+    });
+  });
+});
 
 describe('Config', () => {
   describe('actions', () => {

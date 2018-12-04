@@ -58,7 +58,7 @@ import { Ace as AceEditor } from 'vue2-brace-editor';
 import { mapGetters, mapActions } from 'vuex';
 
 export default {
-  name: 'Step2',
+  name: 'DiscoveryConfig',
   components: {
     AceEditor,
   },
