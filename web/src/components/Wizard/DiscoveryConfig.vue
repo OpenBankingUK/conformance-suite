@@ -82,6 +82,7 @@ export default {
       'setDiscoveryModel',
       'resetDiscoveryConfig',
       'validateDiscoveryConfig',
+      'setDiscoveryModelProblems',
     ]),
     // Gets called by top-level Wizard component in the validateStep function.
     async validate() {
@@ -103,7 +104,9 @@ export default {
     isValidJSON(json) {
       try {
         JSON.parse(json);
+        this.setDiscoveryModelProblems(null);
       } catch (e) {
+        this.setDiscoveryModelProblems([e.message]);
         return false;
       }
 

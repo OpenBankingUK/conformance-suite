@@ -34,6 +34,9 @@ export default {
     commit(types.DISCOVERY_MODEL_RESET, DiscoveryExample);
     commit(types.DISCOVERY_MODEL_PROBLEMS, null);
   },
+  setDiscoveryModelProblems({ commit }, problems) {
+    commit(types.DISCOVERY_MODEL_PROBLEMS, problems);
+  },
   async validateDiscoveryConfig({ commit, state }) {
     try {
       const { success, problems } = await discovery.validateDiscoveryConfig(state.discoveryModel);
