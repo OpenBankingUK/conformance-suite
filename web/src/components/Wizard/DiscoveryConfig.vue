@@ -3,6 +3,21 @@
     <b-row>
       <b-col cols="12">
         <h3 class="mb-4">Configuration: API Discovery</h3>
+        <div
+          v-if="problems"
+          class="mb-4">
+          <b-alert show>
+            Please fix these problems:
+            <ul>
+              <li
+                v-for="(problem, index) in problems"
+                :key="index"
+              >
+                {{ problem }}
+              </li>
+            </ul>
+          </b-alert>
+        </div>
         <AceEditor
           :ref="editorName"
           :name="editorName"
@@ -19,12 +34,6 @@
           class="editor mb-4"
           width="100%"
         />
-        <div
-          v-if="problems"
-          class="mb-4">
-          <h5>Problems</h5>
-          <code>{{ problems }}</code>
-        </div>
         <b-button-group>
           <b-button
             variant="danger"
