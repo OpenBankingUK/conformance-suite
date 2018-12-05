@@ -1,47 +1,43 @@
 <template>
-  <b-container>
-    <b-row>
-      <b-col cols="12">
-        <h3 class="mb-4">Configuration: API Discovery</h3>
-        <div
-          v-if="problems"
-          class="mb-4">
-          <b-alert show>
-            Please fix these problems:
-            <ul>
-              <li
-                v-for="(problem, index) in problems"
-                :key="index"
-              >
-                {{ problem }}
-              </li>
-            </ul>
-          </b-alert>
-        </div>
-        <AceEditor
-          :ref="editorName"
-          :name="editorName"
-          :fontSize="12"
-          :showPrintMargin="false"
-          :showGutter="true"
-          :highlightActiveLine="true"
-          :value="JSON.stringify(discoveryModel, null, 2)"
-          :onChange="onChange"
-          :editorProps="{$blockScrolling: Infinity}"
-          :focus="true"
-          mode="json"
-          theme="chrome"
-          class="editor mb-4"
-          width="100%"
-        />
-        <b-button-group>
-          <b-button
-            variant="danger"
-            @click="onReset">Reset</b-button>
-        </b-button-group>
-      </b-col>
-    </b-row>
-  </b-container>
+  <div class="d-flex flex-column flex-fill">
+    <h3 class="mb-4">Configuration: API Discovery</h3>
+    <div
+      v-if="problems"
+      class="mb-4">
+      <b-alert show>
+        Please fix these problems:
+        <ul>
+          <li
+            v-for="(problem, index) in problems"
+            :key="index"
+          >
+            {{ problem }}
+          </li>
+        </ul>
+      </b-alert>
+    </div>
+    <AceEditor
+      :ref="editorName"
+      :name="editorName"
+      :fontSize="12"
+      :showPrintMargin="false"
+      :showGutter="true"
+      :highlightActiveLine="true"
+      :value="JSON.stringify(discoveryModel, null, 2)"
+      :onChange="onChange"
+      :editorProps="{$blockScrolling: Infinity}"
+      :focus="true"
+      mode="json"
+      theme="chrome"
+      class="editor mb-4"
+      width="100%"
+    />
+    <b-button-group>
+      <b-button
+        variant="danger"
+        @click="onReset">Reset</b-button>
+    </b-button-group>
+  </div>
 </template>
 
 <script>
@@ -126,6 +122,9 @@ export default {
 <style>
 .editor {
   border: 1px solid lightgrey;
+  width: auto !important;
+  height: auto !important;
+  flex: 1;
 }
 .problems code {
   max-height: 30vh;
