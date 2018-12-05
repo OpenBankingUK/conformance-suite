@@ -2,7 +2,7 @@
     "discoveryModel": {
       "name": "custom",
       "description": "A custom discovery template",
-      "discovery-version": "v0.1.0",
+      "discoveryVersion": "v0.1.0",
       "discoveryItems": [
         {
           "apiSpecification": {
@@ -19,4 +19,3 @@
       ]
     }
   }
-  

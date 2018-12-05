@@ -17,8 +17,10 @@ type Model struct {
 
 // ModelDiscovery ... TODO: Document.
 type ModelDiscovery struct {
-	Version        string               `json:"version" validate:"required"`
-	DiscoveryItems []ModelDiscoveryItem `json:"discoveryItems" validate:"required,gt=0,dive"`
+	Name             string               `json:"name" validate:"required"`
+	Description      string               `json:"description" validate:"required"`
+	DiscoveryVersion string               `json:"discoveryVersion" validate:"required"`
+	DiscoveryItems   []ModelDiscoveryItem `json:"discoveryItems" validate:"required,gt=0,dive"`
 }
 
 // ModelDiscoveryItem ... TODO: Document.
@@ -85,9 +87,9 @@ func Validate(checker model.ConditionalityChecker, discovery *Model) (bool, []st
 		}
 		return false, failures, nil
 	}
-	if !SupportedVersions()[discovery.DiscoveryModel.Version] {
-		failures = append(failures, `Key: 'Model.DiscoveryModel.Version' Error:Version `+
-			discovery.DiscoveryModel.Version+` not in list of supported versions`)
+	if !SupportedVersions()[discovery.DiscoveryModel.DiscoveryVersion] {
+		failures = append(failures, `Key: 'Model.DiscoveryModel.DiscoveryVersion' Error:DiscoveryVersion `+
+			discovery.DiscoveryModel.DiscoveryVersion+` not in list of supported versions`)
 	}
 	pass, messages, _ := hasValidAPISpecifications(discovery)
 	if !pass {

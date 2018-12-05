@@ -1,8 +1,8 @@
 {
     "discoveryModel": {
-      "name": "ob-v3.0-generic",
-      "description": "An Open Banking UK generic discovery template for v3.0 of Accounts & Payments.",
-      "discovery-version": "v0.1.0",
+      "name": "ob-v3.0-ozone",
+      "description": "An Open Banking UK discovery template for v3.0 of Accounts and Payments with pre-populated model Bank (Ozone) data.",
+      "discoveryVersion": "v0.0.1",
       "discoveryItems": [
         {
           "apiSpecification": {
@@ -11,8 +11,8 @@
             "version": "v3.0",
             "schemaVersion": "https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.0.0/dist/account-info-swagger.json"
           },
-          "openidConfigurationUri": "",
-          "resourceBaseUri": "",
+          "openidConfigurationUri": "https://modelobankauth2018.o3bank.co.uk:4101/.well-known/openid-configuration",
+          "resourceBaseUri": "https://modelobank2018.o3bank.co.uk:4501/open-banking/v3.0/",
           "endpoints": [
             {
               "method": "POST",
@@ -77,8 +77,8 @@
             "version": "v3.0",
             "schemaVersion": "https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.0.0/dist/payment-initiation-swagger.json"
           },
-          "openidConfigurationUri": "",
-          "resourceBaseUri": "",
+          "openidConfigurationUri": "https://modelobankauth2018.o3bank.co.uk:4101/.well-known/openid-configuration",
+          "resourceBaseUri": "https://modelobank2018.o3bank.co.uk:4501/open-banking/v3.0/",
           "endpoints": [
             {
               "method": "POST",
@@ -237,4 +237,3 @@
       ]
     }
   }
-  

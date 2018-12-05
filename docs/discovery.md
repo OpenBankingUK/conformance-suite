@@ -25,7 +25,9 @@ equivalence.
 The discovery model consists of a `discoveryModel` root object with these
 properties:
 
-* `version` - version number of the discovery model format, e.g. "v0.0.1".
+* `name` - the name of the model, e.g. "ob-v3.0-ozone".
+* `description` - the description of the model, e.g. "An Open Banking UK discovery template for v3.0 of Accounts and Payments with pre-populated model Bank (Ozone) data.".
+* `discoveryVersion` - version number of the discovery model format, e.g. "v0.0.1".
 * `discoveryItems` - an array of discovery items (see below for details).
 
 #### Discovery version
@@ -66,7 +68,7 @@ Example
 ```json
 {
   "discoveryModel": {
-    "version": "v0.0.1",
+    "discoveryVersion": "v0.0.1",
     "discoveryItems": [
       {
         "apiSpecification": {

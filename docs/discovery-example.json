@@ -1,6 +1,8 @@
 {
   "discoveryModel": {
-    "version": "v0.0.1",
+    "name": "forgerock",
+    "description": "An Open Banking UK forgerock discovery template for v3.0 of Accounts and Payments.",
+    "discoveryVersion": "v0.0.1",
     "discoveryItems": [
       {
         "apiSpecification": {
