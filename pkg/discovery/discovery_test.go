@@ -323,11 +323,9 @@ func TestValidate(t *testing.T) {
 }
 
 func TestDiscovery_FromJSONString_Valid(t *testing.T) {
-	assert := assert.New(t)
-
 	discoveryExample, err := ioutil.ReadFile("../../docs/discovery-example.json")
-	assert.NoError(err)
-	assert.NotNil(discoveryExample)
+	assert.NoError(t, err)
+	assert.NotNil(t, discoveryExample)
 	config := string(discoveryExample)
 
 	accountAPIDiscoveryItem := ModelDiscoveryItem{
@@ -402,19 +400,22 @@ func TestDiscovery_FromJSONString_Valid(t *testing.T) {
 	}
 
 	modelActual, err := unmarshalDiscoveryJSON(config)
-	assert.NoError(err)
-	assert.NotNil(modelActual.DiscoveryModel)
+	assert.NoError(t, err)
+	assert.NotNil(t, modelActual.DiscoveryModel)
 	discoveryModel := modelActual.DiscoveryModel
 
 	t.Run("model has a version", func(t *testing.T) {
+		assert := assert.New(t)
 		assert.Equal(discoveryModel.DiscoveryVersion, "v0.0.1")
 	})
 
 	t.Run("model has correct number of discovery items", func(t *testing.T) {
+		assert := assert.New(t)
 		assert.Equal(len(discoveryModel.DiscoveryItems), 2)
 	})
 
 	t.Run("model has correct discovery item contents", func(t *testing.T) {
+		assert := assert.New(t)
 		assert.Equal(accountAPIDiscoveryItem, discoveryModel.DiscoveryItems[0])
 	})
 }
