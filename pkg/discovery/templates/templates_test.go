@@ -3,6 +3,7 @@ package templates
 import (
 	"encoding/json"
 	"io/ioutil"
+	"path/filepath"
 	"testing"
 
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
@@ -13,14 +14,9 @@ import (
 
 // Test that all the *.json discovery files parse correctly.
 func TestDiscoverySamples_Examples_Parse_Correctly(t *testing.T) {
-	// discoveryFiles, err := filepath.Glob("*.json")
-	// assert.NoError(t, err)
+	discoveryFiles, err := filepath.Glob("*.json")
+	assert.NoError(t, err)
 
-	discoveryFiles := []string{
-		// "custom.json",
-		"ob-v3.0-generic.json",
-		"ob-v3.0-ozone.json",
-	}
 	for _, discoveryFile := range discoveryFiles {
 		t.Run("Parses_Without_Error_"+discoveryFile, func(t *testing.T) {
 			assert := assert.New(t)
