@@ -1,24 +1,16 @@
 <template>
-  <div class="d-flex flex-column flex-fill">
-    <h3>Start a new Test or Load Previous</h3>
-    <div class="p-2 d-flex align-items-start flex-column">
-      <p>Start a new test of v3.0 of the Open Banking Specifications</p>
-      <b-button>New v3.0 Test</b-button>
-    </div>
-    <div class="p-2 d-flex align-items-start flex-column">
-      <p>Import results from a v3.0 test</p>
-      <b-form-file
-        v-model="file"
-        :state="Boolean(file)"/>
-    </div>
+  <div class="d-flex flex-column align-items-start">
+    <h3 class="mb-4">Start a new Test or Load Previous</h3>
+
+    <p>Start a new test of v3.0 of the Open Banking Specifications</p>
+    <b-button class="mb-4">New v3.0 Test</b-button>
+
+    <p>Import results from a v3.0 test</p>
+    <b-form-file
+      v-model="file"
+      :state="Boolean(file)"/>
   </div>
 </template>
-
-<style>
-.custom-file-input:lang(en)~.custom-file-label::after {
-    content: "Upload";
-}
-</style>
 
 <script>
 export default {
@@ -41,3 +33,9 @@ export default {
   },
 };
 </script>
+
+<style>
+.custom-file-input:lang(en)~.custom-file-label::after {
+    content: "Upload";
+}
+</style>

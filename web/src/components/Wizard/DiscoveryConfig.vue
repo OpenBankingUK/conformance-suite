@@ -1,54 +1,44 @@
 <template>
   <div class="d-flex flex-column flex-fill">
-    <h3>Configuration: API Discovery</h3>
-    <div class="d-flex flex-column editor-container flex-fill">
-      <AceEditor
-        :ref="editorName"
-        :name="editorName"
-        :fontSize="12"
-        :showPrintMargin="false"
-        :showGutter="true"
-        :highlightActiveLine="true"
-        :value="JSON.stringify(discoveryModel, null, 2)"
-        :onChange="onChange"
-        :editorProps="{$blockScrolling: Infinity}"
-        :focus="true"
-        mode="json"
-        theme="chrome"
-        class="editor"
-      />
-    </div>
+    <h3 class="mb-4">Configuration: API Discovery</h3>
     <div
       v-if="problems"
-      class="d-flex flex-column problems">
-      <h5>Problems</h5>
-      <code>{{ problems }}</code>
+      class="mb-4">
+      <b-alert show>
+        Please fix these problems:
+        <ul>
+          <li
+            v-for="(problem, index) in problems"
+            :key="index"
+          >
+            {{ problem }}
+          </li>
+        </ul>
+      </b-alert>
     </div>
+    <AceEditor
+      :ref="editorName"
+      :name="editorName"
+      :fontSize="12"
+      :showPrintMargin="false"
+      :showGutter="true"
+      :highlightActiveLine="true"
+      :value="JSON.stringify(discoveryModel, null, 2)"
+      :onChange="onChange"
+      :editorProps="{$blockScrolling: Infinity}"
+      :focus="true"
+      mode="json"
+      theme="chrome"
+      class="editor mb-4"
+      width="100%"
+    />
     <b-button-group>
       <b-button
         variant="danger"
         @click="onReset">Reset</b-button>
-      <b-button
-        variant="primary"
-        @click="onValidate">Validate</b-button>
     </b-button-group>
   </div>
 </template>
-
-<style>
-.editor {
-  margin-top: 8px;
-  margin-bottom: 8px;
-  width: auto !important;
-  height: auto !important;
-  flex: 1;
-}
-
-.problems code {
-  max-height: 30vh;
-  overflow: scroll;
-}
-</style>
 
 <script>
 import 'brace';
@@ -86,38 +76,21 @@ export default {
     ]),
     // Gets called by top-level Wizard component in the validateStep function.
     async validate() {
+      if (this.problems) {
+        return false;
+      }
       await this.validateDiscoveryConfig();
       if (this.problems) {
-        return Promise.resolve(false);
+        return false;
       }
-
-      return Promise.resolve(true);
+      return true;
     },
     onReset() {
       this.resetDiscoveryConfig();
       this.resizeEditor();
     },
-    async onValidate() {
-      await this.validateDiscoveryConfig();
-      this.resizeEditor();
-    },
-    isValidJSON(json) {
-      try {
-        JSON.parse(json);
-        this.setDiscoveryModelProblems(null);
-      } catch (e) {
-        this.setDiscoveryModelProblems([e.message]);
-        return false;
-      }
-
-      return true;
-    },
-    onChange(discoveryModel) {
-      if (!this.isValidJSON(discoveryModel)) {
-        return;
-      }
-
-      this.setDiscoveryModel(JSON.parse(discoveryModel));
+    onChange(editorString) {
+      this.setDiscoveryModel(editorString);
     },
     // Resize the editor to use available space in the parent container.
     // The editor does not dynamically resize itself to fill up available
@@ -132,3 +105,16 @@ export default {
   },
 };
 </script>
+
+<style>
+.editor {
+  border: 1px solid lightgrey;
+  width: auto !important;
+  height: auto !important;
+  flex: 1;
+}
+.problems code {
+  max-height: 30vh;
+  overflow: scroll;
+}
+</style>
