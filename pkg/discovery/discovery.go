@@ -10,12 +10,13 @@ import (
 	validation "gopkg.in/go-playground/validator.v9"
 )
 
-// Model ... TODO: Document.
+// Model - Top level struct holding discovery model.
 type Model struct {
 	DiscoveryModel ModelDiscovery `json:"discoveryModel" validate:"required,dive"`
 }
 
-// ModelDiscovery ... TODO: Document.
+// ModelDiscovery - Holds fields describing model, and array of discovery items.
+// For detailed documentation see ./doc/permissions.md file.
 type ModelDiscovery struct {
 	Name             string               `json:"name" validate:"required"`
 	Description      string               `json:"description" validate:"required"`
@@ -23,7 +24,7 @@ type ModelDiscovery struct {
 	DiscoveryItems   []ModelDiscoveryItem `json:"discoveryItems" validate:"required,gt=0,dive"`
 }
 
-// ModelDiscoveryItem ... TODO: Document.
+// ModelDiscoveryItem - Each discovery item contains information related to a particular specification version.
 type ModelDiscoveryItem struct {
 	APISpecification       ModelAPISpecification `json:"apiSpecification" validate:"required"`
 	OpenidConfigurationURI string                `json:"openidConfigurationUri" validate:"required,url"`
@@ -31,7 +32,7 @@ type ModelDiscoveryItem struct {
 	Endpoints              []ModelEndpoint       `json:"endpoints" validate:"required,gt=0,dive"`
 }
 
-// ModelAPISpecification ... TODO: Document.
+// ModelAPISpecification - Records API specification details.
 type ModelAPISpecification struct {
 	Name          string `json:"name" validate:"required"`
 	URL           string `json:"url" validate:"required,url"`
@@ -39,14 +40,14 @@ type ModelAPISpecification struct {
 	SchemaVersion string `json:"schemaVersion" validate:"required,url"`
 }
 
-// ModelEndpoint ... TODO: Document.
+// ModelEndpoint - Endpoint and methods that have been implemented by implementer.
 type ModelEndpoint struct {
 	Method                string                       `json:"method" validate:"required"`
 	Path                  string                       `json:"path" validate:"required,uri"`
 	ConditionalProperties []ModelConditionalProperties `json:"conditionalProperties,omitempty" validate:"dive"`
 }
 
-// ModelConditionalProperties ... TODO: Document.
+// ModelConditionalProperties - Conditional schema properties implemented by implementer.
 type ModelConditionalProperties struct {
 	Schema   string `json:"schema" validate:"required"`
 	Property string `json:"property" validate:"required"`
