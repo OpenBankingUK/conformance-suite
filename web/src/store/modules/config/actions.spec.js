@@ -53,6 +53,34 @@ describe('validateDiscoveryConfig', () => {
   });
 });
 
+describe('setDiscoveryModel', () => {
+  let commit;
+  beforeEach(() => {
+    commit = jest.fn();
+  });
+
+  describe('with invalid JSON string', () => {
+    it('commits problems', () => {
+      actions.setDiscoveryModel({ commit }, '{');
+      expect(commit).toHaveBeenCalledWith('DISCOVERY_MODEL_PROBLEMS', ['Unexpected end of JSON input']);
+    });
+    it('does not commit discovery model', () => {
+      actions.setDiscoveryModel({ commit }, '{');
+      expect(commit).not.toHaveBeenCalledWith('SET_DISCOVERY_MODEL', '{');
+    });
+  });
+  describe('with valid JSON string', () => {
+    it('commits parsed JSON', () => {
+      actions.setDiscoveryModel({ commit }, '{"a": 1}');
+      expect(commit).toHaveBeenCalledWith('SET_DISCOVERY_MODEL', { a: 1 });
+    });
+    it('commits null problems', () => {
+      actions.setDiscoveryModel({ commit }, '{"a": 1}');
+      expect(commit).toHaveBeenCalledWith('DISCOVERY_MODEL_PROBLEMS', null);
+    });
+  });
+});
+
 describe('Config', () => {
   describe('actions', () => {
     let dispatch;
@@ -63,12 +91,6 @@ describe('Config', () => {
       dispatch = jest.fn();
       commit = jest.fn();
       routerSpy = jest.spyOn(router, 'push');
-    });
-
-    it('setDiscoveryModel', () => {
-      const discoveryModel = '{"a": 1}';
-      actions.setDiscoveryModel({ commit }, discoveryModel);
-      expect(commit).toHaveBeenCalledWith('SET_DISCOVERY_MODEL', discoveryModel);
     });
 
     it('setConfig', () => {

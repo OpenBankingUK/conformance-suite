@@ -76,34 +76,21 @@ export default {
     ]),
     // Gets called by top-level Wizard component in the validateStep function.
     async validate() {
+      if (this.problems) {
+        return false;
+      }
       await this.validateDiscoveryConfig();
       if (this.problems) {
-        return Promise.resolve(false);
+        return false;
       }
-
-      return Promise.resolve(true);
+      return true;
     },
     onReset() {
       this.resetDiscoveryConfig();
       this.resizeEditor();
     },
-    isValidJSON(json) {
-      try {
-        JSON.parse(json);
-        this.setDiscoveryModelProblems(null);
-      } catch (e) {
-        this.setDiscoveryModelProblems([e.message]);
-        return false;
-      }
-
-      return true;
-    },
-    onChange(discoveryModel) {
-      if (!this.isValidJSON(discoveryModel)) {
-        return;
-      }
-
-      this.setDiscoveryModel(JSON.parse(discoveryModel));
+    onChange(editorString) {
+      this.setDiscoveryModel(editorString);
     },
     // Resize the editor to use available space in the parent container.
     // The editor does not dynamically resize itself to fill up available
