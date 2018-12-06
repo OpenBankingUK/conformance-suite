@@ -90,13 +90,15 @@ Example
 
 A discovery item contains a list of endpoint and methods that have been
 implemented by an ASPSP. This list includes:
+
   * all mandatory endpoints
   * conditional and optional endpoints implemented
 
 Properties in each endpoint definition include (mandatory properties marked with *):
-  - `method`* - HTTP method, e.g. "GET" or "POST"
-  - `path`* - endpoint path, e.g. "/account-access-consents"
-  - `conditionalProperties` - list of optional schema properties that an ASPSP attests it provides (more details in the next section).
+
+  * `method`* - HTTP method, e.g. "GET" or "POST"
+  * `path`* - endpoint path, e.g. "/account-access-consents"
+  * `conditionalProperties` - list of optional schema properties that an ASPSP attests it provides (more details in the next section).
 
 Example
 
@@ -131,9 +133,10 @@ it must attest that it provides those properties in its API implementation. An A
 such properties to a `conditionalProperties` list in the relevant endpoint definition.
 
 The `conditionalProperties` list contains items. Each item states:
+
  * `schema` - schema definition name from the Swagger/OpenAPI specification, e.g. "OBTransaction3Detail"
  * `property` - property name from schema, e.g. "Balance"
- * `path` - path to property expressed in [JSON Path](https://goessner.net/articles/JsonPath/) format, e.g. "Data.Transaction[* ].Balance"
+ * `path` - path to property expressed in [JSON dot notation](https://github.com/tidwall/gjson#path-syntax) format, e.g. Data.Transaction.*.Balance
 
 Example: for online channel equivalence an ASPSP provides account
 transaction data including `Balance`, `MerchantDetails`, `TransactionReference`.
@@ -149,22 +152,22 @@ as follows:
       {
         "schema": "OBTransaction3Detail",
         "property": "Balance",
-        "path": "Data.Transaction[*].Balance"
+        "path": "Data.Transaction.*.Balance"
       },
       {
         "schema": "OBTransaction3Detail",
         "property": "MerchantDetails",
-        "path": "Data.Transaction[*].MerchantDetails"
+        "path": "Data.Transaction.*.MerchantDetails"
       },
       {
         "schema": "OBTransaction3Basic",
         "property": "TransactionReference",
-        "path": "Data.Transaction[*].TransactionReference"
+        "path": "Data.Transaction.*.TransactionReference"
       },
       {
         "schema": "OBTransaction3Detail",
         "property": "TransactionReference",
-        "path": "Data.Transaction[*].TransactionReference"
+        "path": "Data.Transaction.*.TransactionReference"
       }
     ]
   },
@@ -172,7 +175,6 @@ as follows:
 ]
 ```
 
-### Example file
+### Templates
 
-See [./docs/discovery-example.json](./discovery-example.json) for a longer example file.
-Note, this file is a non-normative incomplete example of a discovery model.
+Discovery templates can be found in the [templates directory here](../pkg/discovery/templates).
