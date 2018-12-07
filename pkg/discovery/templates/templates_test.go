@@ -10,12 +10,13 @@ import (
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 // Test that all the *.json discovery files parse correctly.
 func TestDiscoverySamples_Examples_Parse_Correctly(t *testing.T) {
 	discoveryFiles, err := filepath.Glob("*.json")
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	for _, discoveryFile := range discoveryFiles {
 		t.Run("Parses_Without_Error_"+discoveryFile, func(t *testing.T) {

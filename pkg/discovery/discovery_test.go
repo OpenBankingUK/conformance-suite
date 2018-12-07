@@ -7,6 +7,7 @@ import (
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 // invalidTestCase
@@ -324,8 +325,8 @@ func TestValidate(t *testing.T) {
 
 func TestDiscovery_FromJSONString_Valid(t *testing.T) {
 	discoveryExample, err := ioutil.ReadFile("../../docs/discovery-example.json")
-	assert.NoError(t, err)
-	assert.NotNil(t, discoveryExample)
+	require.NoError(t, err)
+	require.NotNil(t, discoveryExample)
 	config := string(discoveryExample)
 
 	accountAPIDiscoveryItem := ModelDiscoveryItem{
