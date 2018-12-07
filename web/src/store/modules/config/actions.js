@@ -4,8 +4,14 @@ import DiscoveryExample from './discovery-example.json';
 import discovery from '../../../api/discovery';
 
 export default {
-  setDiscoveryModel({ commit }, discoveryModel) {
-    commit(types.SET_DISCOVERY_MODEL, discoveryModel);
+  setDiscoveryModel({ commit }, editorString) {
+    try {
+      const discoveryModel = JSON.parse(editorString);
+      commit(types.SET_DISCOVERY_MODEL, discoveryModel);
+      commit(types.DISCOVERY_MODEL_PROBLEMS, null);
+    } catch (e) {
+      commit(types.DISCOVERY_MODEL_PROBLEMS, [e.message]);
+    }
   },
   setConfig({ commit }, config) {
     commit(types.SET_CONFIG, config);
