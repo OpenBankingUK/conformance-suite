@@ -2,7 +2,7 @@
   "discoveryModel": {
     "name": "ob-v3.0-generic",
     "description": "An Open Banking UK generic discovery template for v3.0 of Accounts and Payments.",
-    "discoveryVersion": "v0.0.1",
+    "discoveryVersion": "v0.1.0",
     "discoveryItems": [
       {
         "apiSpecification": {
