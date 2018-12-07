@@ -1,20 +1,21 @@
-# Functional Conformance Suite Discovery design
+# Discovery - v0.1
 
-The Functional Conformance Suite provides a configurable discovery model that
-allows an ASPSP to describe information on endpoint availability, and data
-schema properties provided.
+The Functional Conformance Suite generates a set of tests that can be used to verify conformance to a set of specifications. To facilitate this, an implementer must describe their system using a Discovery file. This discovery file allows the Functional Conformance Suite to generate and run 'tests cases' to ensure conformance to a specification by running test cases and analysing the results.
 
-The suite uses this discovery information to configure which tests cases are run.
+Currently, the suite supports th se following standards:
 
-## Discovery Model
+* [Open Banking UK](https://www.openbanking.org.uk/customers/what-is-open-banking/)- Read/Write Data API Specifications v3.0/3.1 (alpha)
 
-The discovery model information per specification includes:
+## Discovery Templates
 
-* endpoint and methods implemented
-* optional/conditional properties provided for online channel equivalence
+The Functional Conformance Suite provides several discovery templates that can be used to help implementers describe a system.
 
-The main purpose is to determine whether an ASPSP resource complies with
-requirements of specifications and conditions, regulations, and standards.
+The following discovery templates are available:
+
+* [Open Banking](https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937656404/Read+Write+Data+API+Specification+-+v3.1) - Read/Write Data API Specifications v3.0/3.1 templates:
+* * Generic - a customizable template for implementers of the Open Banking v3.0/v3 to describe their API endpoints.
+* * Ozone -  a customizable template that is pre-populated with Ozone endpoints and data.
+* * ForgeRock -  a customizable template that is pre-populated with ForgeRock endpoints and data.
 
 ### Model format
 
