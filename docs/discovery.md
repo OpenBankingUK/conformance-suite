@@ -2,7 +2,7 @@
 
 The Functional Conformance Suite generates a set of tests that can be used to verify conformance to a set of specifications. To facilitate this, an implementer must describe their system using a Discovery file. This discovery file allows the Functional Conformance Suite to generate and run 'tests cases' to ensure conformance to a specification by running test cases and analysing the results.
 
-Currently, the suite supports th se following standards:
+Currently, the suite supports the following standards:
 
 * [Open Banking UK](https://www.openbanking.org.uk/customers/what-is-open-banking/)- Read/Write Data API Specifications v3.0/3.1 (alpha)
 
