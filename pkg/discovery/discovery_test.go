@@ -7,6 +7,7 @@ import (
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 // invalidTestCase
@@ -66,6 +67,8 @@ func (c conditionalityCheckerMock) MissingMandatory(endpoints []model.Input, spe
 
 // unmarshalDiscoveryJSON - returns discovery model
 func testUnmarshalDiscoveryJSON(t *testing.T, discoveryJSON string) *Model {
+	t.Helper()
+
 	discovery, err := unmarshalDiscoveryJSON(discoveryJSON)
 	assert.NoError(t, err)
 	return discovery
@@ -73,7 +76,9 @@ func testUnmarshalDiscoveryJSON(t *testing.T, discoveryJSON string) *Model {
 
 // discoveryStub - returns discovery JSON with given field stubbed with given value
 func discoveryStub(field string, value string) string {
-	version := "v0.0.1"
+	name := "ob-v3.0-generic"
+	description := "An Open Banking UK generic discovery template for v3.0 of Accounts and Payments."
+	version := "v0.1.0"
 	specName := "Account and Transaction API Specification"
 	specURL := "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/642090641/Account+and+Transaction+API+Specification+-+v3.0"
 	specVersion := "v3.0"
@@ -106,6 +111,14 @@ func discoveryStub(field string, value string) string {
 		specURL = value
 	case "specVersion":
 		specVersion = value
+	case "name":
+		if value == "" {
+			name = ""
+		}
+	case "description":
+		if value == "" {
+			description = ""
+		}
 	}
 
 	apiSpecification := `"apiSpecification": {
@@ -136,10 +149,13 @@ func discoveryStub(field string, value string) string {
 			discoveryItems = `, "discoveryItems": ` + value
 		}
 	}
+
 	return `
 		{
-			"discoveryModel": {
-				"version": "` + version + `"` +
+			"discoveryModel": {` +
+		`"name": "` + name + `",` +
+		`"description": "` + description + `",` +
+		`"discoveryVersion": "` + version + `"` +
 		discoveryItems + `
 			}
 	}`
@@ -147,6 +163,8 @@ func discoveryStub(field string, value string) string {
 
 // testValidateFailures - run Validate, and test validation failure expectations
 func testValidateFailures(t *testing.T, checker model.ConditionalityChecker, expected *invalidTest) {
+	t.Helper()
+
 	discovery := testUnmarshalDiscoveryJSON(t, expected.discoveryJSON)
 	result, failures, err := Validate(checker, discovery)
 	assert.Equal(t, expected.success, result)
@@ -156,12 +174,29 @@ func testValidateFailures(t *testing.T, checker model.ConditionalityChecker, exp
 
 // TestValidate - test Validate function
 func TestValidate(t *testing.T) {
+	t.Run("name missing returns failure", func(t *testing.T) {
+		testValidateFailures(t, conditionalityCheckerMock{}, &invalidTest{
+			discoveryJSON: discoveryStub("name", ""),
+			failures: []string{
+				`Key: 'Model.DiscoveryModel.Name' Error:Field validation for 'Name' failed on the 'required' tag`,
+			},
+		})
+	})
 
-	t.Run("when version missing returns failure", func(t *testing.T) {
+	t.Run("description missing returns failure", func(t *testing.T) {
+		testValidateFailures(t, conditionalityCheckerMock{}, &invalidTest{
+			discoveryJSON: discoveryStub("description", ""),
+			failures: []string{
+				`Key: 'Model.DiscoveryModel.Description' Error:Field validation for 'Description' failed on the 'required' tag`,
+			},
+		})
+	})
+
+	t.Run("when discoveryVersion missing returns failure", func(t *testing.T) {
 		testValidateFailures(t, conditionalityCheckerMock{}, &invalidTest{
 			discoveryJSON: discoveryStub("version", ""),
 			failures: []string{
-				`Key: 'Model.DiscoveryModel.Version' Error:Field validation for 'Version' failed on the 'required' tag`,
+				`Key: 'Model.DiscoveryModel.DiscoveryVersion' Error:Field validation for 'DiscoveryVersion' failed on the 'required' tag`,
 			},
 		})
 	})
@@ -170,7 +205,7 @@ func TestValidate(t *testing.T) {
 		testValidateFailures(t, conditionalityCheckerMock{isPresent: true}, &invalidTest{
 			discoveryJSON: discoveryStub("version", "v9.9.9"),
 			failures: []string{
-				`Key: 'Model.DiscoveryModel.Version' Error:Version v9.9.9 not in list of supported versions`,
+				`Key: 'Model.DiscoveryModel.DiscoveryVersion' Error:DiscoveryVersion v9.9.9 not in list of supported versions`,
 			},
 		})
 	})
@@ -289,11 +324,9 @@ func TestValidate(t *testing.T) {
 }
 
 func TestDiscovery_FromJSONString_Valid(t *testing.T) {
-	assert := assert.New(t)
-
 	discoveryExample, err := ioutil.ReadFile("../../docs/discovery-example.json")
-	assert.NoError(err)
-	assert.NotNil(discoveryExample)
+	require.NoError(t, err)
+	require.NotNil(t, discoveryExample)
 	config := string(discoveryExample)
 
 	accountAPIDiscoveryItem := ModelDiscoveryItem{
@@ -368,19 +401,22 @@ func TestDiscovery_FromJSONString_Valid(t *testing.T) {
 	}
 
 	modelActual, err := unmarshalDiscoveryJSON(config)
-	assert.NoError(err)
-	assert.NotNil(modelActual.DiscoveryModel)
+	assert.NoError(t, err)
+	assert.NotNil(t, modelActual.DiscoveryModel)
 	discoveryModel := modelActual.DiscoveryModel
 
 	t.Run("model has a version", func(t *testing.T) {
-		assert.Equal(discoveryModel.Version, "v0.0.1")
+		assert := assert.New(t)
+		assert.Equal(discoveryModel.DiscoveryVersion, "v0.1.0")
 	})
 
 	t.Run("model has correct number of discovery items", func(t *testing.T) {
+		assert := assert.New(t)
 		assert.Equal(len(discoveryModel.DiscoveryItems), 2)
 	})
 
 	t.Run("model has correct discovery item contents", func(t *testing.T) {
+		assert := assert.New(t)
 		assert.Equal(accountAPIDiscoveryItem, discoveryModel.DiscoveryItems[0])
 	})
 }
@@ -388,5 +424,5 @@ func TestDiscovery_FromJSONString_Valid(t *testing.T) {
 func TestDiscovery_Version(t *testing.T) {
 	assert := assert.New(t)
 
-	assert.Equal(Version(), "v0.0.1")
+	assert.Equal(Version(), "v0.1.0")
 }
