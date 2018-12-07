@@ -17,13 +17,13 @@ import (
 	"github.com/go-openapi/spec"
 )
 
-// GetImplementedTestCases takes a discovery Model and determines the implemented endpoints
+// GetImplementedTestCases takes a discovery Model and determines the implemented endpoints.
 // Currently this function is experimental - meaning it contains fmt.Printlns as an aid to understanding
 // and conceptualisation
-func GetImplementedTestCases(disco *discovery.ModelDiscoveryItem) []model.TestCase {
+func GetImplementedTestCases(disco *discovery.ModelDiscoveryItem, print bool, beginTestNo int) []model.TestCase {
 	var testcases []model.TestCase
-	var testNo = 1000
 	endpoints := disco.Endpoints
+	testNo := beginTestNo
 	doc, err := loadSpec(disco.APISpecification.SchemaVersion, false)
 	if err != nil {
 		fmt.Println(err)
@@ -35,7 +35,9 @@ func GetImplementedTestCases(disco *discovery.ModelDiscoveryItem) []model.TestCa
 		var goodResponseCode int
 		condition := getConditionality(v.Method, v.Path, disco.APISpecification.SchemaVersion)
 		newpath := replaceResourceIds(disco, v.Path)
-		fmt.Printf("[%s] %s %s\n", condition, v.Method, newpath)
+		if print {
+			fmt.Printf("[%s] %s %s\n", condition, v.Method, newpath)
+		}
 
 		for path, props := range doc.Spec().Paths.Paths {
 			for meth, op := range getOperations(&props) {
@@ -46,6 +48,7 @@ func GetImplementedTestCases(disco *discovery.ModelDiscoveryItem) []model.TestCa
 					expect := model.Expect{StatusCode: goodResponseCode, SchemaValidation: true}
 					testcase := model.TestCase{ID: fmt.Sprintf("#t%4.4d", testNo), Input: input, Expect: expect, Name: op.Summary}
 					testcases = append(testcases, testcase)
+					testNo++
 					break
 				}
 			}

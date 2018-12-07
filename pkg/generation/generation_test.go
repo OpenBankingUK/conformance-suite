@@ -34,10 +34,12 @@ func TestEnumerateOpenApiTestcases(t *testing.T) {
 func TestGenerateTestCases(t *testing.T) {
 	results := []model.TestCase{}
 	disco, _ := loadModelOBv3Ozone()
+	testNo := 1000
 
 	for _, v := range disco.DiscoveryModel.DiscoveryItems {
-		result := GetImplementedTestCases(&v)
+		result := GetImplementedTestCases(&v, false, testNo)
 		results = append(results, result...)
+		testNo += 1000
 	}
 
 	for _, tc := range results {
