@@ -164,11 +164,7 @@ func TestServer_ValidationRuns_POST_ValidationRuns_Returns_ValidationRunID(t *te
 	assert := assert.New(t)
 
 	server := NewServer(conditionalityCheckerMock{})
-	defer func() {
-		if err := server.Shutdown(nil); err != nil {
-			logrus.Fatalf("Test=%s, Shutdown err=%s", t.Name(), err)
-		}
-	}()
+	defer server.Shutdown(nil)
 
 	code, body, headerMap := request(http.MethodPost, "/api/validation-runs", nil, server)
 
@@ -188,11 +184,7 @@ func TestServer_Config_POST_Can_POST_Config(t *testing.T) {
 	assert := assert.New(t)
 
 	server := NewServer(conditionalityCheckerMock{})
-	defer func() {
-		if err := server.Shutdown(nil); err != nil {
-			logrus.Fatalf("Test=%s, Shutdown err=%s", t.Name(), err)
-		}
-	}()
+	defer server.Shutdown(nil)
 
 	// assert server isn't started before call
 	frontendProxy, _ := url.Parse("http://0.0.0.0:8989/open-banking/v2.0/accounts")
@@ -232,11 +224,7 @@ func TestServer_Config_POST_Cannot_POST_Config_Twice_Without_First_Deleting_It(t
 	assert := assert.New(t)
 
 	server := NewServer(conditionalityCheckerMock{})
-	defer func() {
-		if err := server.Shutdown(nil); err != nil {
-			logrus.Fatalf("Test=%s, Shutdown err=%s", t.Name(), err)
-		}
-	}()
+	defer server.Shutdown(nil)
 
 	// assert server isn't started before call
 	frontendProxy, _ := url.Parse("http://0.0.0.0:8989/open-banking/v2.0/accounts")
@@ -277,11 +265,7 @@ func TestServer_Config_DELETE_Stops_The_Proxy(t *testing.T) {
 	assert := assert.New(t)
 
 	server := NewServer(conditionalityCheckerMock{})
-	defer func() {
-		if err := server.Shutdown(nil); err != nil {
-			logrus.Fatalf("Test=%s, Shutdown err=%s", t.Name(), err)
-		}
-	}()
+	defer server.Shutdown(nil)
 
 	// assert server isn't started before call
 	frontendProxy, _ := url.Parse("http://0.0.0.0:8989/open-banking/v2.0/accounts")
@@ -330,11 +314,7 @@ func TestServer_DiscoveryModel_POST_Validate_Returns_Request_Payload_When_Valid(
 	assert := assert.New(t)
 
 	server := NewServer(conditionalityCheckerMock{})
-	defer func() {
-		if err := server.Shutdown(nil); err != nil {
-			logrus.Fatalf("Test=%s, Shutdown err=%s", t.Name(), err)
-		}
-	}()
+	defer server.Shutdown(nil)
 
 	discoveryExample, err := ioutil.ReadFile("../../docs/discovery-example.json")
 	assert.NoError(err)
@@ -367,25 +347,32 @@ func TestServer_DiscoveryModel_POST_Validate_Returns_Errors_When_Incomplete(t *t
 	modelJSON := `{}`
 	expected := map[string]interface{}{
 		"error": []interface{}{
-			"Key: 'Model.DiscoveryModel.Version' Error:Field validation for 'Version' failed on the 'required' tag",
-			"Key: 'Model.DiscoveryModel.DiscoveryItems' Error:Field validation for 'DiscoveryItems' failed on the 'required' tag",
+			`Key: 'Model.DiscoveryModel.Name' Error:Field validation for 'Name' failed on the 'required' tag`,
+			`Key: 'Model.DiscoveryModel.Description' Error:Field validation for 'Description' failed on the 'required' tag`,
+			`Key: 'Model.DiscoveryModel.DiscoveryVersion' Error:Field validation for 'DiscoveryVersion' failed on the 'required' tag`,
+			`Key: 'Model.DiscoveryModel.DiscoveryItems' Error:Field validation for 'DiscoveryItems' failed on the 'required' tag`,
 		},
 	}
+
 	testDiscoveryModelValidationFails(t, modelJSON, expected)
 }
 
 func testDiscoveryModelValidationFails(t *testing.T, modelJSON string, expected map[string]interface{}) {
+	t.Helper()
+
 	assert := assert.New(t)
 	server := NewServer(conditionalityCheckerMock{})
-	defer func() {
-		if err := server.Shutdown(nil); err != nil {
-			logrus.Fatalf("Test=%s, Shutdown err=%s", t.Name(), err)
-		}
-	}()
-	code, body, headers := request(http.MethodPost, "/api/discovery-model/validate",
-		strings.NewReader(modelJSON), server)
+	defer server.Shutdown(nil)
+
+	code, body, headers := request(
+		http.MethodPost,
+		"/api/discovery-model/validate",
+		strings.NewReader(modelJSON),
+		server)
+
 	var actual interface{}
 	json.Unmarshal([]byte(body.String()), &actual)
+
 	assert.NotNil(body)
 	assert.Equal(headers["Content-Type"][0], "application/json; charset=UTF-8")
 	assert.Equal(expected, actual)
