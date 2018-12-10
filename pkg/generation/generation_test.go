@@ -1,13 +1,17 @@
 package generation
 
 import (
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"testing"
 
 	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/utils"
 
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
 
+	"github.com/go-openapi/loads"
 	"github.com/stretchr/testify/require"
 )
 
@@ -44,5 +48,26 @@ func TestGenerateTestCases(t *testing.T) {
 
 	for _, tc := range results {
 		fmt.Println(string(pkgutils.DumpJSON(&tc)))
+	}
+}
+
+// Utility to load Manifest Data Model containing all Rules, Tests and Conditions
+func loadModelOBv3Ozone() (discovery.Model, error) {
+	filedata, _ := ioutil.ReadFile("testdata/disco.json")
+	var d discovery.Model
+	err := json.Unmarshal(filedata, &d)
+	if err != nil {
+		return discovery.Model{}, err
+	}
+	return d, nil
+}
+
+func printSpec(doc *loads.Document, base, spec string) {
+	for path, props := range doc.Spec().Paths.Paths {
+		for method := range getOperations(&props) {
+			newPath := base + path
+			condition := getConditionality(method, path, spec)
+			fmt.Printf("[%s] %s %s\n", condition, method, newPath) // give to testcase along with any conditionality?
+		}
 	}
 }

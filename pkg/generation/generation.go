@@ -7,7 +7,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io/ioutil"
 	"strings"
 
 	"github.com/sirupsen/logrus"
@@ -132,36 +131,18 @@ func printResourceIds(item *discovery.ModelDiscoveryItem) {
 	}
 }
 
-func printSpec(doc *loads.Document, base, spec string) {
-	for path, props := range doc.Spec().Paths.Paths {
-		for method := range getOperations(&props) {
-			newPath := base + path
-			condition := getConditionality(method, path, spec)
-			fmt.Printf("[%s] %s %s\n", condition, method, newPath) // give to testcase along with any conditionality?
-		}
-	}
-}
-
 // loads an openapi specification via http or file
 func loadSpec(spec string, print bool) (*loads.Document, error) {
 	doc, err := loads.Spec(spec)
+	if err != nil {
+		return nil, err
+	}
 	if print {
 		var jsondoc []byte
 		jsondoc, _ = json.MarshalIndent(doc.Spec(), "", "    ")
 		fmt.Println(string(jsondoc))
 	}
 	return doc, err
-}
-
-// Utility to load Manifest Data Model containing all Rules, Tests and Conditions
-func loadModelOBv3Ozone() (discovery.Model, error) {
-	filedata, _ := ioutil.ReadFile("testdata/disco.json")
-	var d discovery.Model
-	err := json.Unmarshal(filedata, &d)
-	if err != nil {
-		return discovery.Model{}, err
-	}
-	return d, nil
 }
 
 // Utilities to walk the swagger tree
