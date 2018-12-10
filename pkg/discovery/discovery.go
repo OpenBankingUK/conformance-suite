@@ -58,6 +58,16 @@ type ModelConditionalProperties struct {
 	Path     string `json:"path" validate:"required"`
 }
 
+// ValidationFailure - Records validation failure key and error.
+// e.g. ValidationFailure{
+//        Key:   "DiscoveryModel.Name",
+//        Error: "Field validation for 'Name' failed on the 'required' tag",
+//      }
+type ValidationFailure struct {
+	Key   string `json:"key"`
+	Error string `json:"error"`
+}
+
 var (
 	// use a single instance of Validate, it caches struct info
 	validator = validation.New()
@@ -76,25 +86,34 @@ func SupportedVersions() map[string]bool {
 	}
 }
 
-const fieldErrMsg = "Key: '%s' Error:Field validation for '%s' failed on the '%s' tag"
+const fieldErrMsg = "Field validation for '%s' failed on the '%s' tag"
+const versionErrMsg = "DiscoveryVersion '%s' not in list of supported versions"
 
 // Validate - validates a discovery model, returns true when valid,
-// returns false and validation failure messages when not valid.
-func Validate(checker model.ConditionalityChecker, discovery *Model) (bool, []string, error) {
-	failures := make([]string, 0)
+// returns false and array of ValidationFailure structs when not valid.
+func Validate(checker model.ConditionalityChecker, discovery *Model) (bool, []ValidationFailure, error) {
+	failures := make([]ValidationFailure, 0)
 
 	if err := validator.Struct(discovery); err != nil {
 		errs := err.(validation.ValidationErrors)
 		for _, msg := range errs {
-			failure := validation.FieldError(msg)
-			message := fmt.Sprintf(fieldErrMsg, failure.Namespace(), failure.Field(), failure.Tag())
-			failures = append(failures, message)
+			fieldError := validation.FieldError(msg)
+			key := strings.Replace(fieldError.Namespace(), "Model.DiscoveryModel", "DiscoveryModel", 1)
+			message := fmt.Sprintf(fieldErrMsg, fieldError.Field(), fieldError.Tag())
+			failure := ValidationFailure{
+				Key:   key,
+				Error: message,
+			}
+			failures = append(failures, failure)
 		}
 		return false, failures, nil
 	}
 	if !SupportedVersions()[discovery.DiscoveryModel.DiscoveryVersion] {
-		failures = append(failures, `Key: 'Model.DiscoveryModel.DiscoveryVersion' Error:DiscoveryVersion `+
-			discovery.DiscoveryModel.DiscoveryVersion+` not in list of supported versions`)
+		failure := ValidationFailure{
+			Key:   "DiscoveryModel.DiscoveryVersion",
+			Error: fmt.Sprintf(versionErrMsg, discovery.DiscoveryModel.DiscoveryVersion),
+		}
+		failures = append(failures, failure)
 	}
 	pass, messages, _ := hasValidAPISpecifications(discovery)
 	if !pass {
@@ -130,31 +149,39 @@ func unmarshalDiscoveryJSON(discoveryJSON string) (*Model, error) {
 	return discovery, err
 }
 
-func hasValidAPISpecifications(discoveryConfig *Model) (bool, []string, error) {
-	errs := []string{}
+func hasValidAPISpecifications(discoveryConfig *Model) (bool, []ValidationFailure, error) {
+	errs := []ValidationFailure{}
 	for discoveryItemIndex, discoveryItem := range discoveryConfig.DiscoveryModel.DiscoveryItems {
 
 		schemaVersion := discoveryItem.APISpecification.SchemaVersion
 		specification, err := model.SpecificationFromSchemaVersion(schemaVersion)
 		if err != nil {
-			failure := fmt.Sprintf("Key: 'Model.DiscoveryModel.DiscoveryItems[%d].APISpecification.SchemaVersion' Error:'SchemaVersion' not supported by suite '%s'",
-				discoveryItemIndex, schemaVersion)
+			failure := ValidationFailure{
+				Key:   fmt.Sprintf("DiscoveryModel.DiscoveryItems[%d].APISpecification.SchemaVersion", discoveryItemIndex),
+				Error: fmt.Sprintf("'SchemaVersion' not supported by suite '%s'", schemaVersion),
+			}
 			errs = append(errs, failure)
 			continue
 		}
 		if specification.Name != discoveryItem.APISpecification.Name {
-			failure := fmt.Sprintf("Key: 'Model.DiscoveryModel.DiscoveryItems[%d].APISpecification.Name' Error:'Name' should be '%s' when schemaVersion is '%s'",
-				discoveryItemIndex, specification.Name, schemaVersion)
+			failure := ValidationFailure{
+				Key:   fmt.Sprintf("DiscoveryModel.DiscoveryItems[%d].APISpecification.Name", discoveryItemIndex),
+				Error: fmt.Sprintf("'Name' should be '%s' when schemaVersion is '%s'", specification.Name, schemaVersion),
+			}
 			errs = append(errs, failure)
 		}
 		if specification.Version != discoveryItem.APISpecification.Version {
-			failure := fmt.Sprintf("Key: 'Model.DiscoveryModel.DiscoveryItems[%d].APISpecification.Version' Error:'Version' should be '%s' when schemaVersion is '%s'",
-				discoveryItemIndex, specification.Version, schemaVersion)
+			failure := ValidationFailure{
+				Key:   fmt.Sprintf("DiscoveryModel.DiscoveryItems[%d].APISpecification.Version", discoveryItemIndex),
+				Error: fmt.Sprintf("'Version' should be '%s' when schemaVersion is '%s'", specification.Version, schemaVersion),
+			}
 			errs = append(errs, failure)
 		}
 		if specification.URL != discoveryItem.APISpecification.URL {
-			failure := fmt.Sprintf("Key: 'Model.DiscoveryModel.DiscoveryItems[%d].APISpecification.URL' Error:'URL' should be '%s' when schemaVersion is '%s'",
-				discoveryItemIndex, specification.URL, schemaVersion)
+			failure := ValidationFailure{
+				Key:   fmt.Sprintf("DiscoveryModel.DiscoveryItems[%d].APISpecification.URL", discoveryItemIndex),
+				Error: fmt.Sprintf("'URL' should be '%s' when schemaVersion is '%s'", specification.URL, schemaVersion),
+			}
 			errs = append(errs, failure)
 		}
 
@@ -167,9 +194,9 @@ func hasValidAPISpecifications(discoveryConfig *Model) (bool, []string, error) {
 
 // HasValidEndpoints - checks that all the endpoints defined in the discovery
 // model are either mandatory, conditional or optional.
-// Return false and errors indicating which endpoints are not valid.
-func HasValidEndpoints(checker model.ConditionalityChecker, discoveryConfig *Model) (bool, []string, error) {
-	errs := []string{}
+// Return false and ValidationFailure structs indicating which endpoints are not valid.
+func HasValidEndpoints(checker model.ConditionalityChecker, discoveryConfig *Model) (bool, []ValidationFailure, error) {
+	failures := []ValidationFailure{}
 
 	for discoveryItemIndex, discoveryItem := range discoveryConfig.DiscoveryModel.DiscoveryItems {
 		schemaVersion := discoveryItem.APISpecification.SchemaVersion
@@ -178,37 +205,37 @@ func HasValidEndpoints(checker model.ConditionalityChecker, discoveryConfig *Mod
 			continue // err already added to failures in hasValidAPISpecifications
 		}
 
-		for _, endpoint := range discoveryItem.Endpoints {
+		for endpointIndex, endpoint := range discoveryItem.Endpoints {
 			isPresent, err := checker.IsPresent(endpoint.Method, endpoint.Path, specification)
 			if err != nil {
-				warning := fmt.Sprintf("discoveryItemIndex=%d, "+err.Error(), discoveryItemIndex)
-				errs = append(errs, warning)
+				failure := ValidationFailure{
+					Key:   fmt.Sprintf("DiscoveryModel.DiscoveryItems[%d].Endpoints[%d]", discoveryItemIndex, endpointIndex),
+					Error: err.Error(),
+				}
+				failures = append(failures, failure)
 				continue
 			}
 			if !isPresent {
-				err := fmt.Sprintf(
-					"discoveryItemIndex=%d, invalid endpoint Method=%s, Path=%s",
-					discoveryItemIndex,
-					endpoint.Method,
-					endpoint.Path,
-				)
-				errs = append(errs, err)
+				failure := ValidationFailure{
+					Key:   fmt.Sprintf("DiscoveryModel.DiscoveryItems[%d].Endpoints[%d]", discoveryItemIndex, endpointIndex),
+					Error: fmt.Sprintf("Invalid endpoint Method='%s', Path='%s'", endpoint.Method, endpoint.Path),
+				}
+				failures = append(failures, failure)
 			}
 		}
 	}
 
-	if len(errs) > 0 {
-		return false, errs, fmt.Errorf("%s", strings.Join(errs, "\n"))
+	if len(failures) > 0 {
+		return false, failures, nil
 	}
 
-	return true, errs, nil
+	return true, failures, nil
 }
 
 // HasMandatoryEndpoints - checks that all the mandatory endpoints have been defined in each
-// discovery model, otherwise it returns a error with all the missing mandatory endpoints separated
-// by a newline.
-func HasMandatoryEndpoints(checker model.ConditionalityChecker, discoveryConfig *Model) (bool, []string, error) {
-	errs := []string{}
+// discovery model, otherwise it returns ValidationFailure structs for each missing mandatory endpoint.
+func HasMandatoryEndpoints(checker model.ConditionalityChecker, discoveryConfig *Model) (bool, []ValidationFailure, error) {
+	failures := []ValidationFailure{}
 
 	for discoveryItemIndex, discoveryItem := range discoveryConfig.DiscoveryModel.DiscoveryItems {
 		schemaVersion := discoveryItem.APISpecification.SchemaVersion
@@ -223,24 +250,26 @@ func HasMandatoryEndpoints(checker model.ConditionalityChecker, discoveryConfig 
 		}
 		missingMandatory, err := checker.MissingMandatory(discoveryEndpoints, specification)
 		if err != nil {
-			warning := fmt.Sprintf("discoveryItemIndex=%d, "+err.Error(), discoveryItemIndex)
-			errs = append(errs, warning)
+			failure := ValidationFailure{
+				Key:   fmt.Sprintf("DiscoveryModel.DiscoveryItems[%d].Endpoints", discoveryItemIndex),
+				Error: err.Error(),
+			}
+			failures = append(failures, failure)
 			continue
 		}
 		for _, mandatoryEndpoint := range missingMandatory {
-			err := fmt.Sprintf(
-				"discoveryItemIndex=%d, missing mandatory endpoint Method=%s, Path=%s",
-				discoveryItemIndex,
-				mandatoryEndpoint.Method,
-				mandatoryEndpoint.Endpoint,
-			)
-			errs = append(errs, err)
+			failure := ValidationFailure{
+				Key: fmt.Sprintf("DiscoveryModel.DiscoveryItems[%d].Endpoints", discoveryItemIndex),
+				Error: fmt.Sprintf("Missing mandatory endpoint Method='%s', Path='%s'", mandatoryEndpoint.Method,
+					mandatoryEndpoint.Endpoint),
+			}
+			failures = append(failures, failure)
 		}
 	}
 
-	if len(errs) > 0 {
-		return false, errs, fmt.Errorf("%s", strings.Join(errs, "\n"))
+	if len(failures) > 0 {
+		return false, failures, nil
 	}
 
-	return true, errs, nil
+	return true, failures, nil
 }
