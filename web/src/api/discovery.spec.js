@@ -53,11 +53,12 @@ describe('validateDiscoveryConfig', () => {
   });
 });
 
-describe('annotations', () => {
+describe('annotationsAndMarkers', () => {
   describe('when no discoveryProblems', () => {
     it('returns empty array', async () => {
       const discoveryProblems = null;
-      expect(discovery.annotations(discoveryProblems, '')).toEqual([]);
+      const { annotations } = discovery.annotationsAndMarkers(discoveryProblems, '');
+      expect(annotations).toEqual([]);
     });
   });
 
@@ -75,7 +76,8 @@ describe('annotations', () => {
           error: 'Field validation for \'DiscoveryVersion\' failed on the \'required\' tag',
         },
       ];
-      expect(discovery.annotations(discoveryProblems, json)).toEqual([
+      const { annotations } = discovery.annotationsAndMarkers(discoveryProblems, json);
+      expect(annotations).toEqual([
         {
           row: 1,
           column: 8,
@@ -100,7 +102,8 @@ describe('annotations', () => {
           error: 'Unsupported discoveryVersion',
         },
       ];
-      expect(discovery.annotations(discoveryProblems, json)).toEqual([
+      const { annotations } = discovery.annotationsAndMarkers(discoveryProblems, json);
+      expect(annotations).toEqual([
         {
           row: 2,
           column: 10,

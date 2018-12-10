@@ -70,11 +70,14 @@ export default {
     discoveryModelString() {
       return JSON.stringify(this.discoveryModel, null, 2);
     },
-    problemAnnotations() {
-      return discovery.annotations(
+    problemAnnotationAndMarkers() {
+      return discovery.annotationsAndMarkers(
         this.discoveryProblems,
         this.discoveryModelString,
       );
+    },
+    problemAnnotations() {
+      return this.problemAnnotationAndMarkers.annotations;
     },
   },
   methods: {

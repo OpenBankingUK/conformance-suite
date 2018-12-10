@@ -23,9 +23,11 @@ export default {
     return { success: true, problems: [] };
   },
 
-  annotations(discoveryProblems, discoveryModelString) {
+  annotationsAndMarkers(discoveryProblems, discoveryModelString) {
     if (discoveryProblems === null) {
-      return [];
+      return {
+        annotations: [],
+      };
     }
     const paths = jsonLocation.parse(discoveryModelString);
     const locatableProblems = discoveryProblems.filter(p =>
@@ -33,7 +35,9 @@ export default {
       (paths[p.path] || paths[p.parent]));
 
     if (locatableProblems.length === 0) {
-      return [];
+      return {
+        annotations: [],
+      };
     }
     const annotations = locatableProblems.map((problem) => {
       const { path, parent, error } = problem;
@@ -44,6 +48,8 @@ export default {
         row, column, type: 'error', text: error,
       };
     });
-    return annotations;
+    return {
+      annotations,
+    };
   },
 };
