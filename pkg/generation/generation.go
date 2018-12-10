@@ -10,6 +10,8 @@ import (
 	"io/ioutil"
 	"strings"
 
+	"github.com/sirupsen/logrus"
+
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
 
@@ -43,7 +45,16 @@ func GetImplementedTestCases(disco *discovery.ModelDiscoveryItem, print bool, be
 			for meth, op := range getOperations(&props) {
 				if (meth == v.Method) && (v.Path == path) {
 					responseCodes = getResponseCodes(op)
-					goodResponseCode, _ = getGoodResponseCode(responseCodes)
+					goodResponseCode, err = getGoodResponseCode(responseCodes)
+					if err != nil {
+						logrus.WithFields(logrus.Fields{
+							"testcase": op.Summary,
+							"method":   meth,
+							"endpoint": newpath,
+							"err":      err,
+						}).Warn("Cannot get good response code")
+						continue
+					}
 					input := model.Input{Method: meth, Endpoint: newpath}
 					expect := model.Expect{StatusCode: goodResponseCode, SchemaValidation: true}
 					testcase := model.TestCase{ID: fmt.Sprintf("#t%4.4d", testNo), Input: input, Expect: expect, Name: op.Summary}

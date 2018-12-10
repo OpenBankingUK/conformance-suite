@@ -221,7 +221,7 @@ The above json Discovery file fragment would result in the following endpoint pa
 GET /accounts/5000000001
 ```
 
-So in summary, using the `resouceId` section of the discovery file is one way of specificying which resource id to use for detailed calls when a list of candidate resource calls are available.
+So in summary, using the `resouceIds` section of the discovery file is one way of specificying which resource id to use for detailed calls when a list of candidate resource calls are available.
 
 
 
