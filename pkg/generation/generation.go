@@ -36,7 +36,7 @@ func GetImplementedTestCases(disco *discovery.ModelDiscoveryItem, print bool, be
 		var responseCodes []int
 		var goodResponseCode int
 		condition := getConditionality(v.Method, v.Path, disco.APISpecification.SchemaVersion)
-		newpath := replaceResourceIds(disco, v.Path)
+		newpath := getResourceIds(disco, v.Path)
 		if print {
 			fmt.Printf("[%s] %s %s\n", condition, v.Method, newpath)
 		}
@@ -109,14 +109,14 @@ func getConditionality(method, path, specification string) string {
 func printImplemented(ditem discovery.ModelDiscoveryItem, endpoints []discovery.ModelEndpoint, spec string) {
 	for _, v := range endpoints {
 		condition := getConditionality(v.Method, v.Path, spec)
-		newpath := replaceResourceIds(&ditem, v.Path)
+		newpath := getResourceIds(&ditem, v.Path)
 		fmt.Printf("[%s] %s %s\n", condition, v.Method, newpath)
 	}
 }
 
 // helper to replace path name resource ids specificed between brackets e.g. `{AccountId}`
 // with the values "ResourceIds" section of the discovery model
-func replaceResourceIds(item *discovery.ModelDiscoveryItem, path string) string {
+func getResourceIds(item *discovery.ModelDiscoveryItem, path string) string {
 	newstr := path
 	for k, v := range item.ResourceIds {
 		key := strings.Join([]string{"{", k, "}"}, "")
