@@ -92,7 +92,7 @@ describe('annotationsAndMarkers', () => {
           startCol: 8,
           endRow: 1,
           endCol: 24,
-          className: 'error-marker',
+          className: 'ace_error-marker',
           type: 'background',
         },
       ]);
@@ -123,7 +123,7 @@ describe('annotationsAndMarkers', () => {
         },
       ]);
       expect(markers).toEqual([{
-        className: 'error-marker',
+        className: 'ace_error-marker',
         endCol: 28,
         endRow: 2,
         startCol: 10,

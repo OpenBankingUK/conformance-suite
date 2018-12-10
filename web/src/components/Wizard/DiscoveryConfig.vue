@@ -86,15 +86,29 @@ export default {
     },
     problemMarkers() {
       const { markers } = this.problemAnnotationAndMarkers;
+      const editorComponent = this.$children.filter(c => c.editor)[0];
+      if (!editorComponent) {
+        return markers;
+      }
+
+      const { editor } = editorComponent;
+      const session = editor.getSession();
+      const oldMarkers = session.getMarkers();
+      if (oldMarkers) {
+        // Bug in Brace editor using wrong Range function means we need to
+        // removeMarkers directly here.
+        const keys = Object.keys(oldMarkers);
+        const errorMarkerIds = keys.filter(k => oldMarkers[k].clazz === 'ace_error-marker');
+        errorMarkerIds.forEach(id => session.removeMarker(id));
+      }
       if (markers.length > 0) {
         // Bug in Brace editor using wrong Range function means we need to
         // addMarkers directly here, in order to use correct Range function:
-        const editorComponent = this.$children.filter(c => c.editor)[0];
         markers.forEach(({
           startRow, startCol, endRow, endCol, className, type, inFront = false,
         }) => {
           const range = new AceRange(startRow, startCol, endRow, endCol);
-          editorComponent.editor.getSession().addMarker(range, className, type, inFront);
+          session.addMarker(range, className, type, inFront);
         });
       }
 
