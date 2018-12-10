@@ -1,4 +1,4 @@
-import DiscoveryExample from './discovery-example.json';
+import DiscoveryExample from '../../../../../pkg/discovery/templates/ob-v3.0-ozone.json';
 
 const example = {
   config: {
