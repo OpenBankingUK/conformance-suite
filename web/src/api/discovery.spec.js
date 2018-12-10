@@ -57,8 +57,9 @@ describe('annotationsAndMarkers', () => {
   describe('when no discoveryProblems', () => {
     it('returns empty array', async () => {
       const discoveryProblems = null;
-      const { annotations } = discovery.annotationsAndMarkers(discoveryProblems, '');
+      const { annotations, markers } = discovery.annotationsAndMarkers(discoveryProblems, '');
       expect(annotations).toEqual([]);
+      expect(markers).toEqual([]);
     });
   });
 
@@ -76,13 +77,23 @@ describe('annotationsAndMarkers', () => {
           error: 'Field validation for \'DiscoveryVersion\' failed on the \'required\' tag',
         },
       ];
-      const { annotations } = discovery.annotationsAndMarkers(discoveryProblems, json);
+      const { annotations, markers } = discovery.annotationsAndMarkers(discoveryProblems, json);
       expect(annotations).toEqual([
         {
           row: 1,
           column: 8,
           type: 'error',
           text: discoveryProblems[0].error,
+        },
+      ]);
+      expect(markers).toEqual([
+        {
+          startRow: 1,
+          startCol: 8,
+          endRow: 1,
+          endCol: 24,
+          className: 'error-marker',
+          type: 'background',
         },
       ]);
     });
@@ -102,7 +113,7 @@ describe('annotationsAndMarkers', () => {
           error: 'Unsupported discoveryVersion',
         },
       ];
-      const { annotations } = discovery.annotationsAndMarkers(discoveryProblems, json);
+      const { annotations, markers } = discovery.annotationsAndMarkers(discoveryProblems, json);
       expect(annotations).toEqual([
         {
           row: 2,
@@ -111,6 +122,14 @@ describe('annotationsAndMarkers', () => {
           text: discoveryProblems[0].error,
         },
       ]);
+      expect(markers).toEqual([{
+        className: 'error-marker',
+        endCol: 28,
+        endRow: 2,
+        startCol: 10,
+        startRow: 2,
+        type: 'background',
+      }]);
     });
   });
 });

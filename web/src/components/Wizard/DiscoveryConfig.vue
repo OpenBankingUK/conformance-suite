@@ -47,6 +47,9 @@ import { Ace as AceEditor } from 'vue2-brace-editor';
 import { mapGetters, mapActions } from 'vuex';
 import discovery from '../../api/discovery';
 
+// Bug in Brace editor using wrong Range function means we need to require Range here:
+const AceRange = window.ace.acequire('ace/range').Range;
+
 export default {
   name: 'DiscoveryConfig',
   components: {
@@ -77,7 +80,25 @@ export default {
       );
     },
     problemAnnotations() {
+      // Trigger recalculation of problemMarkers
+      this.problemMarkers; // eslint-disable-line
       return this.problemAnnotationAndMarkers.annotations;
+    },
+    problemMarkers() {
+      const { markers } = this.problemAnnotationAndMarkers;
+      if (markers.length > 0) {
+        // Bug in Brace editor using wrong Range function means we need to
+        // addMarkers directly here, in order to use correct Range function:
+        const editorComponent = this.$children.filter(c => c.editor)[0];
+        markers.forEach(({
+          startRow, startCol, endRow, endCol, className, type, inFront = false,
+        }) => {
+          const range = new AceRange(startRow, startCol, endRow, endCol);
+          editorComponent.editor.getSession().addMarker(range, className, type, inFront);
+        });
+      }
+
+      return markers;
     },
   },
   methods: {
