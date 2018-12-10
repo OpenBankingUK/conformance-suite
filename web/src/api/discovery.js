@@ -1,4 +1,5 @@
 import api from './apiUtil';
+import jsonLocation from './jsonLocation';
 
 export default {
 
@@ -20,5 +21,28 @@ export default {
       }
     }
     return { success: true, problems: [] };
+  },
+
+  annotations(discoveryProblems, discoveryModelString) {
+    if (discoveryProblems === null) {
+      return [];
+    }
+    const paths = jsonLocation.parse(discoveryModelString);
+    const locatableProblems = discoveryProblems.filter(p =>
+      p.path &&
+      (paths[p.path] || paths[p.parent]));
+
+    if (locatableProblems.length === 0) {
+      return [];
+    }
+    const annotations = locatableProblems.map((problem) => {
+      const { path, parent, error } = problem;
+      const { column, line } = paths[path] || paths[parent];
+      const row = line - 1;
+      return {
+        row, column, type: 'error', text: error,
+      };
+    });
+    return annotations;
   },
 };

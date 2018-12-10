@@ -52,3 +52,62 @@ describe('validateDiscoveryConfig', () => {
     });
   });
 });
+
+describe('annotations', () => {
+  describe('when no discoveryProblems', () => {
+    it('returns empty array', async () => {
+      const discoveryProblems = null;
+      expect(discovery.annotations(discoveryProblems, '')).toEqual([]);
+    });
+  });
+
+  describe('when discoveryProblem at child location', () => {
+    it('returns annotation at parent location when child not present', () => {
+      const json = `{
+        "discoveryModel": {
+          "name": "example"
+        }
+      }`;
+      const discoveryProblems = [
+        {
+          path: 'discoveryModel.discoveryVersion',
+          parent: 'discoveryModel',
+          error: 'Field validation for \'DiscoveryVersion\' failed on the \'required\' tag',
+        },
+      ];
+      expect(discovery.annotations(discoveryProblems, json)).toEqual([
+        {
+          row: 1,
+          column: 8,
+          type: 'error',
+          text: discoveryProblems[0].error,
+        },
+      ]);
+    });
+  });
+
+  describe('when discoveryProblem at child location', () => {
+    it('returns annotation at child location when child present', () => {
+      const json = `{
+        "discoveryModel": {
+          "discoveryVersion": "9.9.9"
+        }
+      }`;
+      const discoveryProblems = [
+        {
+          path: 'discoveryModel.discoveryVersion',
+          parent: 'discoveryModel',
+          error: 'Unsupported discoveryVersion',
+        },
+      ];
+      expect(discovery.annotations(discoveryProblems, json)).toEqual([
+        {
+          row: 2,
+          column: 10,
+          type: 'error',
+          text: discoveryProblems[0].error,
+        },
+      ]);
+    });
+  });
+});

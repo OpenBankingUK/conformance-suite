@@ -8,11 +8,9 @@
         Please fix these problems:
         <ul>
           <li
-            v-for="(problem, index) in problems"
+            v-for="(problem, index) in discoveryProblems"
             :key="index"
-          >
-            {{ problem }}
-          </li>
+          >{{ problem.error }}</li>
         </ul>
       </b-alert>
     </div>
@@ -23,10 +21,11 @@
       :showPrintMargin="false"
       :showGutter="true"
       :highlightActiveLine="true"
-      :value="JSON.stringify(discoveryModel, null, 2)"
+      :value="discoveryModelString"
       :onChange="onChange"
       :editorProps="{$blockScrolling: Infinity}"
       :focus="true"
+      :annotations="problemAnnotations"
       mode="json"
       theme="chrome"
       class="editor mb-4"
@@ -46,6 +45,7 @@ import 'brace/mode/json';
 import 'brace/theme/chrome';
 import { Ace as AceEditor } from 'vue2-brace-editor';
 import { mapGetters, mapActions } from 'vuex';
+import discovery from '../../api/discovery';
 
 export default {
   name: 'DiscoveryConfig',
@@ -65,7 +65,17 @@ export default {
     ...mapGetters('config', {
       discoveryModel: 'getDiscoveryModel',
       problems: 'problems',
+      discoveryProblems: 'discoveryProblems',
     }),
+    discoveryModelString() {
+      return JSON.stringify(this.discoveryModel, null, 2);
+    },
+    problemAnnotations() {
+      return discovery.annotations(
+        this.discoveryProblems,
+        this.discoveryModelString,
+      );
+    },
   },
   methods: {
     ...mapActions('config', [
