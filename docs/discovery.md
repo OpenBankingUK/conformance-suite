@@ -176,7 +176,6 @@ as follows:
 ]
 ```
 
-<<<<<<< HEAD
 ### Resource IDs
 
 We've introduced a "resourceId" section to the discovery model which allows a tester to provide resource ids to be used when swagger/openapi calls are made. 
@@ -227,8 +226,5 @@ So in summary, using the `resouceId` section of the discovery file is one way of
 
 
 ### Example file
-=======
-### Templates
->>>>>>> develop
 
 Discovery templates can be found in the [templates directory here](../pkg/discovery/templates).
