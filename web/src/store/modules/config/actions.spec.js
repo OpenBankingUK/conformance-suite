@@ -26,8 +26,14 @@ describe('validateDiscoveryConfig', () => {
   });
   describe('when validation fails with problem messages', () => {
     const problems = [
-      "Key: 'Model.DiscoveryModel.Version' Error:Field validation for 'Version' failed on the 'required' tag",
-      "Key: 'Model.DiscoveryModel.DiscoveryItems' Error:Field validation for 'DiscoveryItems' failed on the 'required' tag",
+      {
+        key: 'DiscoveryModel.Version',
+        error: 'Field validation for \'Version\' failed on the \'required\' tag',
+      },
+      {
+        key: 'DiscoveryModel.DiscoveryItems',
+        error: 'Field validation for \'DiscoveryItems\' failed on the \'required\' tag',
+      },
     ];
     beforeEach(() => {
       commit = jest.fn();
@@ -48,7 +54,9 @@ describe('validateDiscoveryConfig', () => {
     });
     it('commits Error message in problems array', async () => {
       await actions.validateDiscoveryConfig({ commit, state });
-      expect(commit).toHaveBeenCalledWith(types.DISCOVERY_MODEL_PROBLEMS, ['some error']);
+      expect(commit).toHaveBeenCalledWith(types.DISCOVERY_MODEL_PROBLEMS, [
+        { key: null, error: 'some error' },
+      ]);
     });
   });
 });

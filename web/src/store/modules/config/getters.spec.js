@@ -6,8 +6,14 @@ describe('discoveryProblems', () => {
   beforeEach(() => {
     state = {
       problems: [
-        `Key: 'Model.DiscoveryModel.DiscoveryItems[0].APISpecification.Name' Error:Field validation for 'Name' failed on the 'required' tag`, // eslint-disable-line
-        'Unexpected token { in JSON at position 108',
+        {
+          key: 'DiscoveryModel.DiscoveryItems[0].APISpecification.Name',
+          error: 'Field validation for \'Name\' failed on the \'required\' tag',
+        },
+        {
+          key: null,
+          error: 'Unexpected token { in JSON at position 108',
+        },
       ],
     };
   });

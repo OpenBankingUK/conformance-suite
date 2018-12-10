@@ -52,7 +52,10 @@ export default {
         commit(types.DISCOVERY_MODEL_PROBLEMS, problems);
       }
     } catch (e) {
-      commit(types.DISCOVERY_MODEL_PROBLEMS, [e.message]);
+      commit(types.DISCOVERY_MODEL_PROBLEMS, [{
+        key: null,
+        error: e.message,
+      }]);
     }
     return null;
   },

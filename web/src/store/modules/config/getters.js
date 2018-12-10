@@ -1,20 +1,15 @@
 
 const lowercaseFirstLetter = string => string.charAt(0).toLowerCase() + string.slice(1);
 
-const parseProblem = (problem) => {
-  if (problem.indexOf('Key') !== -1 && problem.indexOf('Error') !== -1) {
-    const parts = problem.split('Error');
-
-    const path = parts[0]
-      .replace(/^Key: ?'?/, '')
-      .replace(/'? ?$/, '')
-      .replace(/^Model\./, '')
+// Converts problem key to discovery model JSON path.
+const parseProblem = ({ key, error }) => {
+  if (key && error) {
+    const path = key
       .replace('API', 'Api')
+      .replace('URL', 'Url')
       .split('.')
       .map(w => lowercaseFirstLetter(w))
       .join('.');
-
-    const error = parts[1].replace(/^:/, '');
 
     return {
       path,
@@ -23,7 +18,7 @@ const parseProblem = (problem) => {
   }
   return {
     path: null,
-    error: problem,
+    error,
   };
 };
 

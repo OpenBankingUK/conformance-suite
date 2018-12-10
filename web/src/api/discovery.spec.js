@@ -17,8 +17,14 @@ describe('validateDiscoveryConfig', () => {
 
   describe('when validation fails', () => {
     const expectedProblems = [
-      "Key: 'Model.DiscoveryModel.Version' Error:Field validation for 'Version' failed on the 'required' tag",
-      "Key: 'Model.DiscoveryModel.DiscoveryItems' Error:Field validation for 'DiscoveryItems' failed on the 'required' tag",
+      {
+        key: 'DiscoveryModel.Version',
+        error: 'Field validation for \'Version\' failed on the \'required\' tag',
+      },
+      {
+        key: 'DiscoveryModel.DiscoveryItems',
+        error: 'Field validation for \'DiscoveryItems\' failed on the \'required\' tag',
+      },
     ];
     it('returns success false, and array of validation problem strings', async () => {
       fetch.mockResponseOnce(
