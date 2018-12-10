@@ -80,12 +80,11 @@ func getGoodResponseCode(codes []int) (int, error) {
 }
 
 // given an operation specification, return all resultcodes for that operation
-func getResponseCodes(op *spec.Operation) []int {
-	var result []int
+func getResponseCodes(op *spec.Operation) (result []int) {
 	for i := range op.OperationProps.Responses.ResponsesProps.StatusCodeResponses {
 		result = append(result, i)
 	}
-	return result
+	return
 }
 
 // helper to annotate generation routines with conditionality inidicator
