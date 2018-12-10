@@ -1,6 +1,6 @@
 import * as types from './mutation-types';
 import router from '../../../router';
-import DiscoveryExample from './discovery-example.json';
+import DiscoveryExample from '../../../../../pkg/discovery/templates/ob-v3.0-ozone.json';
 import discovery from '../../../api/discovery';
 
 export default {

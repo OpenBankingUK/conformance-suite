@@ -19,6 +19,10 @@ RUN make build
 # Image to compile Single Page Application of the Vue.js site
 FROM node:8.11.1-slim as nodebuilder
 WORKDIR /app
+
+# This is to that JavaScript code can import the example discovery config
+# defined in the Go side using: '../../../../../pkg/discovery/templates/ob-v3.0-ozone.json'
+ADD pkg/discovery/templates/*.json /pkg/discovery/templates/
 ADD web .
 
 RUN yarn install \
