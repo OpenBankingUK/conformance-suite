@@ -139,7 +139,11 @@ func loadSpec(spec string, print bool) (*loads.Document, error) {
 	}
 	if print {
 		var jsondoc []byte
-		jsondoc, _ = json.MarshalIndent(doc.Spec(), "", "    ")
+		jsondoc, err = json.MarshalIndent(doc.Spec(), "", "    ")
+		if err != nil {
+			return nil, err
+		}
+
 		fmt.Println(string(jsondoc))
 	}
 	return doc, err
