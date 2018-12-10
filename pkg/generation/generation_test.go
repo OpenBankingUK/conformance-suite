@@ -37,7 +37,8 @@ func TestEnumerateOpenApiTestcases(t *testing.T) {
 // Its purpose is to exercise the discovery to test case mapping
 func TestGenerateTestCases(t *testing.T) {
 	results := []model.TestCase{}
-	disco, _ := loadModelOBv3Ozone()
+	disco, err := loadModelOBv3Ozone()
+	require.Nil(t, err)
 	testNo := 1000
 
 	for _, v := range disco.DiscoveryModel.DiscoveryItems {
