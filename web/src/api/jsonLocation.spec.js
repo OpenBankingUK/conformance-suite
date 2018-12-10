@@ -13,7 +13,10 @@ describe('parse', () => {
       expect(jsonLocation.parse(`{
         "discoveryModel": "example"
       }`)).toEqual({
-        'discoveryModel': { column: 8, line: 2 }, // eslint-disable-line
+        discoveryModel: {
+          end: { column: 24, line: 2 },
+          start: { column: 8, line: 2 },
+        },
       });
     });
   });
@@ -25,8 +28,14 @@ describe('parse', () => {
           "name": "example"
         }
       }`)).toEqual({
-        'discoveryModel': { column: 8, line: 2 }, // eslint-disable-line
-        'discoveryModel.name': { column: 10, line: 3 },
+        'discoveryModel': {  // eslint-disable-line
+          end: { column: 24, line: 2 },
+          start: { column: 8, line: 2 },
+        },
+        'discoveryModel.name': {
+          end: { column: 16, line: 3 },
+          start: { column: 10, line: 3 },
+        },
       });
     });
   });
@@ -40,10 +49,10 @@ describe('parse', () => {
           }]
         }
       }`)).toEqual({
-        'discoveryModel': { column: 8, line: 2 }, // eslint-disable-line
-        'discoveryModel.discoveryItems': { column: 10, line: 3 },
-        'discoveryModel.discoveryItems[0]': { column: 29, line: 3 },
-        'discoveryModel.discoveryItems[0].resourceBaseUri': { column: 12, line: 4 },
+        'discoveryModel': {end: { column: 24, line: 2 }, start: { column: 8, line: 2 } }, // eslint-disable-line
+        'discoveryModel.discoveryItems': { end: { column: 26, line: 3 }, start: { column: 10, line: 3 } },
+        'discoveryModel.discoveryItems[0]': { end: { column: 11, line: 5 }, start: { column: 29, line: 3 } },
+        'discoveryModel.discoveryItems[0].resourceBaseUri': { end: { column: 29, line: 4 }, start: { column: 12, line: 4 } },
       });
     });
   });

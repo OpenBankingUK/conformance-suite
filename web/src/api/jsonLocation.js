@@ -5,7 +5,7 @@ const addProperty = (paths, property, parents) => {
   const { loc } = property.key;
   parents = parents.concat([value]); // eslint-disable-line
   const key = parents.join('.');
-  paths[key] = loc.start; // eslint-disable-line
+  paths[key] = loc; // eslint-disable-line
 
   if (property.value.properties) {
     property.value.properties.forEach((p) => {
@@ -14,7 +14,7 @@ const addProperty = (paths, property, parents) => {
   } else if (property.value.elements) {
     property.value.elements.forEach((e, i) => {
       const elementKey = `${key}[${i}]`;
-      paths[elementKey] = e.loc.start; // eslint-disable-line
+      paths[elementKey] = e.loc; // eslint-disable-line
       e.properties.forEach((p) => {
         addProperty(paths, p, [elementKey]);
       });
@@ -24,9 +24,10 @@ const addProperty = (paths, property, parents) => {
 
 export default {
   // Uses esprima to parse JSON string and
-  // returns mapping of JSON path to start location column and line:
+  // returns mapping of JSON path to start and end location column and line:
   // e.g. {
-  //   "discoveryModel.discoveryItem[0].openidConfigurationUri": {"line":12,"column":8}
+  //   "discoveryModel.discoveryItem[0].openidConfigurationUri":
+  //      {"start":{"line":2,"column":8},"end":{"line":2,"column":24}}
   // }
   parse(string) {
     const tree = esprima.parseScript(`(${string})`, { loc: true });

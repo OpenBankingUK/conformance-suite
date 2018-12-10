@@ -37,7 +37,8 @@ export default {
     }
     const annotations = locatableProblems.map((problem) => {
       const { path, parent, error } = problem;
-      const { column, line } = paths[path] || paths[parent];
+      const { start } = paths[path] || paths[parent];
+      const { column, line } = start;
       const row = line - 1;
       return {
         row, column, type: 'error', text: error,
