@@ -26,13 +26,17 @@ type ModelDiscovery struct {
 
 // ModelDiscoveryItem - Each discovery item contains information related to a particular specification version.
 type ModelDiscoveryItem struct {
-	APISpecification       ModelAPISpecification `json:"apiSpecification" validate:"required"`
-	OpenidConfigurationURI string                `json:"openidConfigurationUri" validate:"required,url"`
-	ResourceBaseURI        string                `json:"resourceBaseUri" validate:"required,url"`
-	Endpoints              []ModelEndpoint       `json:"endpoints" validate:"required,gt=0,dive"`
+	APISpecification       ModelAPISpecification `json:"apiSpecification,omitempty" validate:"required"`
+	OpenidConfigurationURI string                `json:"openidConfigurationUri,omitempty" validate:"required,url"`
+	ResourceBaseURI        string                `json:"resourceBaseUri,omitempty" validate:"required,url"`
+	ResourceIds            ResourceIds           `json:"resourceIds,omitempty"`
+	Endpoints              []ModelEndpoint       `json:"endpoints,omitempty" validate:"required,gt=0,dive"`
 }
 
-// ModelAPISpecification - Records API specification details.
+// ResourceIds section allows the replacement of endpoint resourceid values with real data parameters like accountid
+type ResourceIds map[string]string
+
+// ModelAPISpecification ... TODO: Document.
 type ModelAPISpecification struct {
 	Name          string `json:"name" validate:"required"`
 	URL           string `json:"url" validate:"required,url"`

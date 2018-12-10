@@ -176,6 +176,55 @@ as follows:
 ]
 ```
 
-### Templates
+### Resource IDs
+
+We've introduced a "resourceId" section to the discovery model which allows a tester to provide resource ids to be used when swagger/openapi calls are made. 
+
+If we use Accounts as an example; to get a list of accounts the following endpoint is called:-
+
+```json
+GET /accounts
+```
+
+Once we have the list of accounts we can query an individual account using the following swagger definition
+
+```json
+GET /accounts/{AccountId}
+```
+
+Notice that the swagger definition includes the term `{AccountId}` in the endpoint path.
+
+The purpose of the Discovery resourceId section is to allow the replacement of resourceIds like `{AccountId}` with a resource ID that exists in the system under test.
+
+For example, if the account id `5000000001` exists in the system under test, and was to be used in the account detail call, the following `resourceId` section would be added next to the endpoint definitions in the discovery file.
+
+```json
+  "resourceIds":  {
+              "AccountId": "5000000001"
+          },
+  "endpoints":[
+            {
+              "method": "GET",
+              "path": "/accounts"
+            },
+            {
+              "method": "GET",
+              "path": "/accounts/{AccountId}"
+            }
+  ]
+
+```
+
+The above json Discovery file fragment would result in the following endpoint path being used in the generated test case:
+
+```json
+GET /accounts/5000000001
+```
+
+So in summary, using the `resouceIds` section of the discovery file is one way of specificying which resource id to use for detailed calls when a list of candidate resource calls are available.
+
+
+
+### Example file
 
 Discovery templates can be found in the [templates directory here](../pkg/discovery/templates).

@@ -58,8 +58,8 @@ type Match struct {
 
 // ContextAccessor - Manages access to matches for Put and Get value operations on a context
 type ContextAccessor struct {
-	Context *Context
-	Matches []Match `json:"matches,omitempty"`
+	Context *Context `json:"-"`
+	Matches []Match  `json:"matches,omitempty"`
 }
 
 // PutValues is used by the 'contextPut' directive and essentially collects a set of matches whose purpose is

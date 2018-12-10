@@ -41,7 +41,6 @@ type Rule struct {
 
 // TestCaseExecutor defines an interface capable of executing a testcase
 type TestCaseExecutor interface {
-	//ExecuteTestCase(r *http.Request, t *TestCase, ctx *Context) (*http.Response, error)
 	ExecuteTestCase(r *http.Request, t *TestCase, ctx *Context) (*http.Response, error)
 }
 
@@ -64,10 +63,10 @@ type TestCase struct {
 	Input      Input         `json:"input,omitempty"`   // Input Object
 	Context    Context       `json:"context,omitempty"` // Local Context Object
 	Expect     Expect        `json:"expect,omitempty"`  // Expected object
-	ParentRule *Rule         // Allows accessing parent Rule
-	Request    *http.Request // The request that's been generated in order to call the endpoint
-	Header     http.Header   // ResponseHeader
-	Body       string        // ResponseBody
+	ParentRule *Rule         `json:"-"`                 // Allows accessing parent Rule
+	Request    *http.Request `json:"-"`                 // The request that's been generated in order to call the endpoint
+	Header     http.Header   `json:"-"`                 // ResponseHeader
+	Body       string        `json:"-"`                 // ResponseBody
 }
 
 // Prepare a Testcase for execution at and endpoint,
