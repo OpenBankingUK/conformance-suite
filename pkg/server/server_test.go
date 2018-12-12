@@ -316,7 +316,7 @@ func TestServer_DiscoveryModel_POST_Validate_Returns_Request_Payload_When_Valid(
 	server := NewServer(conditionalityCheckerMock{})
 	defer server.Shutdown(nil)
 
-	discoveryExample, err := ioutil.ReadFile("../../docs/discovery-example.json")
+	discoveryExample, err := ioutil.ReadFile("../discovery/templates/ob-v3.0-ozone.json")
 	assert.NoError(err)
 	assert.NotNil(discoveryExample)
 	// remove trailing new line as it is will make the test fail

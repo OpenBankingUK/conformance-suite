@@ -324,7 +324,7 @@ func TestValidate(t *testing.T) {
 }
 
 func TestDiscovery_FromJSONString_Valid(t *testing.T) {
-	discoveryExample, err := ioutil.ReadFile("../../docs/discovery-example.json")
+	discoveryExample, err := ioutil.ReadFile("./templates/ob-v3.0-ozone.json")
 	require.NoError(t, err)
 	require.NotNil(t, discoveryExample)
 	config := string(discoveryExample)
@@ -336,8 +336,8 @@ func TestDiscovery_FromJSONString_Valid(t *testing.T) {
 			Version:       "v3.0",
 			SchemaVersion: "https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.0.0/dist/account-info-swagger.json",
 		},
-		OpenidConfigurationURI: "https://as.aspsp.ob.forgerock.financial/oauth2/.well-known/openid-configuration",
-		ResourceBaseURI:        "https://rs.aspsp.ob.forgerock.financial:443/",
+		OpenidConfigurationURI: "https://modelobankauth2018.o3bank.co.uk:4101/.well-known/openid-configuration",
+		ResourceBaseURI:        "https://modelobank2018.o3bank.co.uk:4501/open-banking/v3.0/",
 		Endpoints: []ModelEndpoint{
 			ModelEndpoint{
 				Method:                "POST",
@@ -363,22 +363,22 @@ func TestDiscovery_FromJSONString_Valid(t *testing.T) {
 					ModelConditionalProperties{
 						Schema:   "OBTransaction3Detail",
 						Property: "Balance",
-						Path:     "Data.Transaction[*].Balance",
+						Path:     "Data.Transaction.*.Balance",
 					},
 					ModelConditionalProperties{
 						Schema:   "OBTransaction3Detail",
 						Property: "MerchantDetails",
-						Path:     "Data.Transaction[*].MerchantDetails",
+						Path:     "Data.Transaction.*.MerchantDetails",
 					},
 					ModelConditionalProperties{
 						Schema:   "OBTransaction3Basic",
 						Property: "TransactionReference",
-						Path:     "Data.Transaction[*].TransactionReference",
+						Path:     "Data.Transaction.*.TransactionReference",
 					},
 					ModelConditionalProperties{
 						Schema:   "OBTransaction3Detail",
 						Property: "TransactionReference",
-						Path:     "Data.Transaction[*].TransactionReference",
+						Path:     "Data.Transaction.*.TransactionReference",
 					},
 				},
 			},
