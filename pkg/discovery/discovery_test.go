@@ -11,27 +11,6 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-// invalidTestCase
-// name - name of the test case.
-// config - the discovery model config.
-// err - the expected err
-type invalidTestCase struct {
-	name        string
-	config      string
-	expectedErr string
-}
-
-// invalidTestCase
-// discoveryJSON - the discovery model JSON
-// failures - list of ValidationFailure structs
-// err - the expected err
-type invalidTest struct {
-	discoveryJSON string
-	success       bool
-	failures      []ValidationFailure
-	err           error
-}
-
 // conditionalityCheckerMock - implements model.ConditionalityChecker interface for tests
 type conditionalityCheckerMock struct {
 	isPresent           bool
@@ -164,19 +143,31 @@ func discoveryStub(field string, value string) string {
 	}`
 }
 
-// testValidateFailures - run Validate, and test validation failure expectations
-func testValidateFailures(t *testing.T, checker model.ConditionalityChecker, expected *invalidTest) {
-	t.Helper()
-
-	discovery := testUnmarshalDiscoveryJSON(t, expected.discoveryJSON)
-	result, failures, err := Validate(checker, discovery)
-	assert.Equal(t, expected.success, result)
-	assert.Equal(t, expected.err, err)
-	assert.Equal(t, expected.failures, failures)
-}
-
 // TestValidate - test Validate function
 func TestValidate(t *testing.T) {
+
+	// invalidTestCase
+	// discoveryJSON - the discovery model JSON
+	// failures - list of ValidationFailure structs
+	// err - the expected err
+	type invalidTest struct {
+		discoveryJSON string
+		success       bool
+		failures      []ValidationFailure
+		err           error
+	}
+
+	// testValidateFailures - run Validate, and test validation failure expectations
+	testValidateFailures := func(t *testing.T, checker model.ConditionalityChecker, expected *invalidTest) {
+		t.Helper()
+
+		discovery := testUnmarshalDiscoveryJSON(t, expected.discoveryJSON)
+		result, failures, err := Validate(checker, discovery)
+		assert.Equal(t, expected.success, result)
+		assert.Equal(t, expected.err, err)
+		assert.Equal(t, expected.failures, failures)
+	}
+
 	t.Run("name missing returns failure", func(t *testing.T) {
 		testValidateFailures(t, conditionalityCheckerMock{}, &invalidTest{
 			discoveryJSON: discoveryStub("name", ""),
