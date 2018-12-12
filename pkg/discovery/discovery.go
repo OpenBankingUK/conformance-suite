@@ -97,50 +97,42 @@ func Validate(checker model.ConditionalityChecker, discovery *Model) (bool, []Va
 	failures := []ValidationFailure{}
 
 	if err := validator.Struct(discovery); err != nil {
-		errs := err.(validation.ValidationErrors)
-		for _, msg := range errs {
-			fieldError := validation.FieldError(msg)
-			key := strings.Replace(fieldError.Namespace(), "Model.DiscoveryModel", "DiscoveryModel", 1)
-			message := fmt.Sprintf(fieldErrMsgFormat, fieldError.Field(), fieldError.Tag())
-			failure := ValidationFailure{
-				Key:   key,
-				Error: message,
-			}
-			failures = append(failures, failure)
-		}
+		failures = appendStructValidationErrors(err.(validation.ValidationErrors), failures)
 		return false, failures, nil
 	}
-	if !SupportedVersions()[discovery.DiscoveryModel.DiscoveryVersion] {
-		failure := ValidationFailure{
-			Key:   "DiscoveryModel.DiscoveryVersion",
-			Error: fmt.Sprintf(versionErrMsgFormat, discovery.DiscoveryModel.DiscoveryVersion),
-		}
-		failures = append(failures, failure)
-	}
-	pass, messages := hasValidAPISpecifications(discovery)
-	if !pass {
-		for _, message := range messages {
-			failures = append(failures, message)
-		}
-	}
-	pass, messages = HasValidEndpoints(checker, discovery)
-	if !pass {
-		for _, message := range messages {
-			failures = append(failures, message)
-		}
-	}
-
-	pass, messages = HasMandatoryEndpoints(checker, discovery)
-	if !pass {
-		for _, message := range messages {
-			failures = append(failures, message)
-		}
-	}
-
+	failures = appendOtherValidationErrors(failures, checker, discovery, hasValidDiscoveryVersion)
+	failures = appendOtherValidationErrors(failures, checker, discovery, hasValidAPISpecifications)
+	failures = appendOtherValidationErrors(failures, checker, discovery, HasValidEndpoints)
+	failures = appendOtherValidationErrors(failures, checker, discovery, HasMandatoryEndpoints)
 	if len(failures) > 0 {
 		return false, failures, nil
 	}
 	return true, failures, nil
+}
+
+func appendStructValidationErrors(errs validation.ValidationErrors, failures []ValidationFailure) []ValidationFailure {
+	for _, msg := range errs {
+		fieldError := validation.FieldError(msg)
+		key := strings.Replace(fieldError.Namespace(), "Model.DiscoveryModel", "DiscoveryModel", 1)
+		message := fmt.Sprintf(fieldErrMsgFormat, fieldError.Field(), fieldError.Tag())
+		failure := ValidationFailure{
+			Key:   key,
+			Error: message,
+		}
+		failures = append(failures, failure)
+	}
+	return failures
+}
+
+func appendOtherValidationErrors(failures []ValidationFailure, checker model.ConditionalityChecker, discovery *Model,
+	validationFn func(checker model.ConditionalityChecker, discoveryConfig *Model) (bool, []ValidationFailure)) []ValidationFailure {
+	pass, newFailures := validationFn(checker, discovery)
+	if !pass {
+		for _, message := range newFailures {
+			failures = append(failures, message)
+		}
+	}
+	return failures;
 }
 
 // unmarshalDiscoveryJSON - used for testing to get discovery model from JSON.
@@ -151,7 +143,22 @@ func unmarshalDiscoveryJSON(discoveryJSON string) (*Model, error) {
 	return discovery, err
 }
 
-func hasValidAPISpecifications(discoveryConfig *Model) (bool, []ValidationFailure) {
+// checker passed to match function definition expectation in appendOtherValidationErrors function.
+func hasValidDiscoveryVersion(checker model.ConditionalityChecker, discovery *Model) (bool, []ValidationFailure) {
+	failures := []ValidationFailure{}
+	if !SupportedVersions()[discovery.DiscoveryModel.DiscoveryVersion] {
+		failure := ValidationFailure{
+			Key:   "DiscoveryModel.DiscoveryVersion",
+			Error: fmt.Sprintf(versionErrMsgFormat, discovery.DiscoveryModel.DiscoveryVersion),
+		}
+		failures = append(failures, failure)
+		return false, failures
+	}
+	return true, failures
+}
+
+// checker passed to match function definition expectation in appendOtherValidationErrors function.
+func hasValidAPISpecifications(checker model.ConditionalityChecker, discoveryConfig *Model) (bool, []ValidationFailure) {
 	failures := []ValidationFailure{}
 	for discoveryItemIndex, discoveryItem := range discoveryConfig.DiscoveryModel.DiscoveryItems {
 
