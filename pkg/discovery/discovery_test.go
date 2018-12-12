@@ -172,7 +172,7 @@ func TestValidate(t *testing.T) {
 		testValidateFailures(t, conditionalityCheckerMock{}, &invalidTest{
 			discoveryJSON: discoveryStub("name", ""),
 			failures: []ValidationFailure{
-				ValidationFailure{
+				{
 					Key:   "DiscoveryModel.Name",
 					Error: "Field validation for 'Name' failed on the 'required' tag",
 				},
@@ -184,7 +184,7 @@ func TestValidate(t *testing.T) {
 		testValidateFailures(t, conditionalityCheckerMock{}, &invalidTest{
 			discoveryJSON: discoveryStub("description", ""),
 			failures: []ValidationFailure{
-				ValidationFailure{
+				{
 					Key:   "DiscoveryModel.Description",
 					Error: "Field validation for 'Description' failed on the 'required' tag",
 				},
@@ -196,7 +196,7 @@ func TestValidate(t *testing.T) {
 		testValidateFailures(t, conditionalityCheckerMock{}, &invalidTest{
 			discoveryJSON: discoveryStub("version", ""),
 			failures: []ValidationFailure{
-				ValidationFailure{
+				{
 					Key:   "DiscoveryModel.DiscoveryVersion",
 					Error: "Field validation for 'DiscoveryVersion' failed on the 'required' tag",
 				},
@@ -207,7 +207,7 @@ func TestValidate(t *testing.T) {
 		testValidateFailures(t, conditionalityCheckerMock{isPresent: true}, &invalidTest{
 			discoveryJSON: discoveryStub("version", "v9.9.9"),
 			failures: []ValidationFailure{
-				ValidationFailure{
+				{
 					Key:   "DiscoveryModel.DiscoveryVersion",
 					Error: "DiscoveryVersion 'v9.9.9' not in list of supported versions",
 				},
@@ -218,7 +218,7 @@ func TestValidate(t *testing.T) {
 		testValidateFailures(t, conditionalityCheckerMock{}, &invalidTest{
 			discoveryJSON: discoveryStub("discoveryItems", ""),
 			failures: []ValidationFailure{
-				ValidationFailure{
+				{
 					Key:   "DiscoveryModel.DiscoveryItems",
 					Error: "Field validation for 'DiscoveryItems' failed on the 'required' tag",
 				},
@@ -229,7 +229,7 @@ func TestValidate(t *testing.T) {
 		testValidateFailures(t, conditionalityCheckerMock{}, &invalidTest{
 			discoveryJSON: discoveryStub("discoveryItems", "[]"),
 			failures: []ValidationFailure{
-				ValidationFailure{
+				{
 					Key:   "DiscoveryModel.DiscoveryItems",
 					Error: "Field validation for 'DiscoveryItems' failed on the 'gt' tag",
 				},
@@ -240,19 +240,19 @@ func TestValidate(t *testing.T) {
 		testValidateFailures(t, conditionalityCheckerMock{}, &invalidTest{
 			discoveryJSON: discoveryStub("apiSpecification", ""),
 			failures: []ValidationFailure{
-				ValidationFailure{
+				{
 					Key:   "DiscoveryModel.DiscoveryItems[0].APISpecification.Name",
 					Error: "Field validation for 'Name' failed on the 'required' tag",
 				},
-				ValidationFailure{
+				{
 					Key:   "DiscoveryModel.DiscoveryItems[0].APISpecification.URL",
 					Error: "Field validation for 'URL' failed on the 'required' tag",
 				},
-				ValidationFailure{
+				{
 					Key:   "DiscoveryModel.DiscoveryItems[0].APISpecification.Version",
 					Error: "Field validation for 'Version' failed on the 'required' tag",
 				},
-				ValidationFailure{
+				{
 					Key:   "DiscoveryModel.DiscoveryItems[0].APISpecification.SchemaVersion",
 					Error: "Field validation for 'SchemaVersion' failed on the 'required' tag",
 				},
@@ -263,7 +263,7 @@ func TestValidate(t *testing.T) {
 		testValidateFailures(t, conditionalityCheckerMock{}, &invalidTest{
 			discoveryJSON: discoveryStub("schemaVersion", "http://example.com/bad-schema"),
 			failures: []ValidationFailure{
-				ValidationFailure{
+				{
 					Key:   "DiscoveryModel.DiscoveryItems[0].APISpecification.SchemaVersion",
 					Error: "'SchemaVersion' not supported by suite 'http://example.com/bad-schema'",
 				},
@@ -274,7 +274,7 @@ func TestValidate(t *testing.T) {
 		testValidateFailures(t, conditionalityCheckerMock{isPresent: true}, &invalidTest{
 			discoveryJSON: discoveryStub("specName", "Bad Spec Name"),
 			failures: []ValidationFailure{
-				ValidationFailure{
+				{
 					Key:   "DiscoveryModel.DiscoveryItems[0].APISpecification.Name",
 					Error: "'Name' should be 'Account and Transaction API Specification' when schemaVersion is 'https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.0.0/dist/account-info-swagger.json'",
 				},
@@ -285,7 +285,7 @@ func TestValidate(t *testing.T) {
 		testValidateFailures(t, conditionalityCheckerMock{isPresent: true}, &invalidTest{
 			discoveryJSON: discoveryStub("specVersion", "v9.9.9"),
 			failures: []ValidationFailure{
-				ValidationFailure{
+				{
 					Key:   "DiscoveryModel.DiscoveryItems[0].APISpecification.Version",
 					Error: "'Version' should be 'v3.0' when schemaVersion is 'https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.0.0/dist/account-info-swagger.json'",
 				},
@@ -296,7 +296,7 @@ func TestValidate(t *testing.T) {
 		testValidateFailures(t, conditionalityCheckerMock{isPresent: true}, &invalidTest{
 			discoveryJSON: discoveryStub("specURL", "http://example.com/bad-url"),
 			failures: []ValidationFailure{
-				ValidationFailure{
+				{
 					Key:   "DiscoveryModel.DiscoveryItems[0].APISpecification.URL",
 					Error: "'URL' should be 'https://openbanking.atlassian.net/wiki/spaces/DZ/pages/642090641/Account+and+Transaction+API+Specification+-+v3.0' when schemaVersion is 'https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.0.0/dist/account-info-swagger.json'",
 				},
@@ -307,7 +307,7 @@ func TestValidate(t *testing.T) {
 		testValidateFailures(t, conditionalityCheckerMock{}, &invalidTest{
 			discoveryJSON: discoveryStub("endpoints", "[]"),
 			failures: []ValidationFailure{
-				ValidationFailure{
+				{
 					Key:   "DiscoveryModel.DiscoveryItems[0].Endpoints",
 					Error: "Field validation for 'Endpoints' failed on the 'gt' tag",
 				},
@@ -322,11 +322,11 @@ func TestValidate(t *testing.T) {
 		testValidateFailures(t, stubIsPresentError, &invalidTest{
 			discoveryJSON: discoveryStub("", ""),
 			failures: []ValidationFailure{
-				ValidationFailure{
+				{
 					Key:   "DiscoveryModel.DiscoveryItems[0].Endpoints[0]",
 					Error: "some error message",
 				},
-				ValidationFailure{
+				{
 					Key:   "DiscoveryModel.DiscoveryItems[0].Endpoints[1]",
 					Error: "some error message",
 				},
@@ -342,11 +342,11 @@ func TestValidate(t *testing.T) {
 		testValidateFailures(t, stubAllNotPresent, &invalidTest{
 			discoveryJSON: discoveryStub("", ""),
 			failures: []ValidationFailure{
-				ValidationFailure{
+				{
 					Key:   "DiscoveryModel.DiscoveryItems[0].Endpoints[0]",
 					Error: "Invalid endpoint Method='POST', Path='/account-access-consents'",
 				},
-				ValidationFailure{
+				{
 					Key:   "DiscoveryModel.DiscoveryItems[0].Endpoints[1]",
 					Error: "Invalid endpoint Method='GET', Path='/accounts/{AccountId}/balances'",
 				},
@@ -374,7 +374,7 @@ func TestValidate(t *testing.T) {
 		testValidateFailures(t, stubIsPresentError, &invalidTest{
 			discoveryJSON: discoveryStub("", ""),
 			failures: []ValidationFailure{
-				ValidationFailure{
+				{
 					Key:   "DiscoveryModel.DiscoveryItems[0].Endpoints",
 					Error: "the error message",
 				},
@@ -387,18 +387,18 @@ func TestValidate(t *testing.T) {
 		stubMissingMandatory := conditionalityCheckerMock{
 			isPresent: true,
 			missingMandatory: []model.Input{
-				model.Input{Method: "GET", Endpoint: "/account-access-consents/{ConsentId}"},
-				model.Input{Method: "DELETE", Endpoint: "/account-access-consents/{ConsentId}"},
+				{Method: "GET", Endpoint: "/account-access-consents/{ConsentId}"},
+				{Method: "DELETE", Endpoint: "/account-access-consents/{ConsentId}"},
 			},
 		}
 		testValidateFailures(t, stubMissingMandatory, &invalidTest{
 			discoveryJSON: discoveryStub("", ""),
 			failures: []ValidationFailure{
-				ValidationFailure{
+				{
 					Key:   "DiscoveryModel.DiscoveryItems[0].Endpoints",
 					Error: "Missing mandatory endpoint Method='GET', Path='/account-access-consents/{ConsentId}'",
 				},
-				ValidationFailure{
+				{
 					Key:   "DiscoveryModel.DiscoveryItems[0].Endpoints",
 					Error: "Missing mandatory endpoint Method='DELETE', Path='/account-access-consents/{ConsentId}'",
 				},
@@ -423,60 +423,60 @@ func TestDiscovery_FromJSONString_Valid(t *testing.T) {
 		OpenidConfigurationURI: "https://modelobankauth2018.o3bank.co.uk:4101/.well-known/openid-configuration",
 		ResourceBaseURI:        "https://modelobank2018.o3bank.co.uk:4501/open-banking/v3.0/",
 		Endpoints: []ModelEndpoint{
-			ModelEndpoint{
+			{
 				Method:                "POST",
 				Path:                  "/account-access-consents",
 				ConditionalProperties: []ModelConditionalProperties(nil),
 			},
-			ModelEndpoint{
+			{
 				Method:                "GET",
 				Path:                  "/account-access-consents/{ConsentId}",
 				ConditionalProperties: []ModelConditionalProperties(nil),
 			},
-			ModelEndpoint{Method: "DELETE",
+			{Method: "DELETE",
 				Path:                  "/account-access-consents/{ConsentId}",
 				ConditionalProperties: []ModelConditionalProperties(nil),
 			},
-			ModelEndpoint{Method: "GET",
+			{Method: "GET",
 				Path:                  "/accounts/{AccountId}/product",
 				ConditionalProperties: []ModelConditionalProperties(nil),
 			},
-			ModelEndpoint{Method: "GET",
+			{Method: "GET",
 				Path: "/accounts/{AccountId}/transactions",
 				ConditionalProperties: []ModelConditionalProperties{
-					ModelConditionalProperties{
+					{
 						Schema:   "OBTransaction3Detail",
 						Property: "Balance",
 						Path:     "Data.Transaction.*.Balance",
 					},
-					ModelConditionalProperties{
+					{
 						Schema:   "OBTransaction3Detail",
 						Property: "MerchantDetails",
 						Path:     "Data.Transaction.*.MerchantDetails",
 					},
-					ModelConditionalProperties{
+					{
 						Schema:   "OBTransaction3Basic",
 						Property: "TransactionReference",
 						Path:     "Data.Transaction.*.TransactionReference",
 					},
-					ModelConditionalProperties{
+					{
 						Schema:   "OBTransaction3Detail",
 						Property: "TransactionReference",
 						Path:     "Data.Transaction.*.TransactionReference",
 					},
 				},
 			},
-			ModelEndpoint{
+			{
 				Method:                "GET",
 				Path:                  "/accounts",
 				ConditionalProperties: []ModelConditionalProperties(nil),
 			},
-			ModelEndpoint{
+			{
 				Method:                "GET",
 				Path:                  "/accounts/{AccountId}",
 				ConditionalProperties: []ModelConditionalProperties(nil),
 			},
-			ModelEndpoint{
+			{
 				Method:                "GET",
 				Path:                  "/accounts/{AccountId}/balances",
 				ConditionalProperties: []ModelConditionalProperties(nil),

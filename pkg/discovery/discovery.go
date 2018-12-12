@@ -132,7 +132,7 @@ func appendOtherValidationErrors(failures []ValidationFailure, checker model.Con
 			failures = append(failures, message)
 		}
 	}
-	return failures;
+	return failures
 }
 
 // unmarshalDiscoveryJSON - used for testing to get discovery model from JSON.
