@@ -70,7 +70,10 @@ describe('setDiscoveryModel', () => {
   describe('with invalid JSON string', () => {
     it('commits problems', () => {
       actions.setDiscoveryModel({ commit }, '{');
-      expect(commit).toHaveBeenCalledWith('DISCOVERY_MODEL_PROBLEMS', ['Unexpected end of JSON input']);
+      expect(commit).toHaveBeenCalledWith('DISCOVERY_MODEL_PROBLEMS', [{
+        error: 'Unexpected end of JSON input',
+        key: null,
+      }]);
     });
     it('does not commit discovery model', () => {
       actions.setDiscoveryModel({ commit }, '{');

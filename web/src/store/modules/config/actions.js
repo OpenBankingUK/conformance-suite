@@ -10,7 +10,11 @@ export default {
       commit(types.SET_DISCOVERY_MODEL, discoveryModel);
       commit(types.DISCOVERY_MODEL_PROBLEMS, null);
     } catch (e) {
-      commit(types.DISCOVERY_MODEL_PROBLEMS, [e.message]);
+      const problems = [{
+        key: null,
+        error: e.message,
+      }];
+      commit(types.DISCOVERY_MODEL_PROBLEMS, problems);
     }
   },
   setConfig({ commit }, config) {
