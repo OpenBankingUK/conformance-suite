@@ -87,8 +87,10 @@ func SupportedVersions() map[string]bool {
 }
 
 const (
-	fieldErrMsgFormat   = "Field validation for '%s' failed on the '%s' tag"
-	versionErrMsgFormat = "DiscoveryVersion '%s' not in list of supported versions"
+	fieldErrMsgFormat     = "Field validation for '%s' failed on the '%s' tag"
+	versionErrMsgFormat   = "DiscoveryVersion '%s' not in list of supported versions"
+	requiredErrorFormat   = "Field '%s' is required"
+	emptyArrayErrorFormat = "Field '%s' cannot be empty"
 )
 
 // Validate - validates a discovery model, returns true when valid,
@@ -114,7 +116,15 @@ func appendStructValidationErrors(errs validation.ValidationErrors, failures []V
 	for _, msg := range errs {
 		fieldError := validation.FieldError(msg)
 		key := strings.Replace(fieldError.Namespace(), "Model.DiscoveryModel", "DiscoveryModel", 1)
-		message := fmt.Sprintf(fieldErrMsgFormat, fieldError.Field(), fieldError.Tag())
+		var message string
+		switch fieldError.Tag() {
+		default:
+			message = fmt.Sprintf(fieldErrMsgFormat, fieldError.Field(), fieldError.Tag())
+		case "required":
+			message = fmt.Sprintf(requiredErrorFormat, key)
+		case "gt":
+			message = fmt.Sprintf(emptyArrayErrorFormat, key)
+		}
 		failure := ValidationFailure{
 			Key:   key,
 			Error: message,

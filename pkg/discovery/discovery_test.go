@@ -174,7 +174,7 @@ func TestValidate(t *testing.T) {
 			failures: []ValidationFailure{
 				{
 					Key:   "DiscoveryModel.Name",
-					Error: "Field validation for 'Name' failed on the 'required' tag",
+					Error: "Field 'DiscoveryModel.Name' is required",
 				},
 			},
 		})
@@ -186,7 +186,7 @@ func TestValidate(t *testing.T) {
 			failures: []ValidationFailure{
 				{
 					Key:   "DiscoveryModel.Description",
-					Error: "Field validation for 'Description' failed on the 'required' tag",
+					Error: "Field 'DiscoveryModel.Description' is required",
 				},
 			},
 		})
@@ -198,7 +198,7 @@ func TestValidate(t *testing.T) {
 			failures: []ValidationFailure{
 				{
 					Key:   "DiscoveryModel.DiscoveryVersion",
-					Error: "Field validation for 'DiscoveryVersion' failed on the 'required' tag",
+					Error: "Field 'DiscoveryModel.DiscoveryVersion' is required",
 				},
 			}})
 	})
@@ -220,7 +220,7 @@ func TestValidate(t *testing.T) {
 			failures: []ValidationFailure{
 				{
 					Key:   "DiscoveryModel.DiscoveryItems",
-					Error: "Field validation for 'DiscoveryItems' failed on the 'required' tag",
+					Error: "Field 'DiscoveryModel.DiscoveryItems' is required",
 				},
 			}})
 	})
@@ -231,7 +231,7 @@ func TestValidate(t *testing.T) {
 			failures: []ValidationFailure{
 				{
 					Key:   "DiscoveryModel.DiscoveryItems",
-					Error: "Field validation for 'DiscoveryItems' failed on the 'gt' tag",
+					Error: "Field 'DiscoveryModel.DiscoveryItems' cannot be empty",
 				},
 			}})
 	})
@@ -242,19 +242,19 @@ func TestValidate(t *testing.T) {
 			failures: []ValidationFailure{
 				{
 					Key:   "DiscoveryModel.DiscoveryItems[0].APISpecification.Name",
-					Error: "Field validation for 'Name' failed on the 'required' tag",
+					Error: "Field 'DiscoveryModel.DiscoveryItems[0].APISpecification.Name' is required",
 				},
 				{
 					Key:   "DiscoveryModel.DiscoveryItems[0].APISpecification.URL",
-					Error: "Field validation for 'URL' failed on the 'required' tag",
+					Error: "Field 'DiscoveryModel.DiscoveryItems[0].APISpecification.URL' is required",
 				},
 				{
 					Key:   "DiscoveryModel.DiscoveryItems[0].APISpecification.Version",
-					Error: "Field validation for 'Version' failed on the 'required' tag",
+					Error: "Field 'DiscoveryModel.DiscoveryItems[0].APISpecification.Version' is required",
 				},
 				{
 					Key:   "DiscoveryModel.DiscoveryItems[0].APISpecification.SchemaVersion",
-					Error: "Field validation for 'SchemaVersion' failed on the 'required' tag",
+					Error: "Field 'DiscoveryModel.DiscoveryItems[0].APISpecification.SchemaVersion' is required",
 				},
 			}})
 	})
@@ -309,7 +309,7 @@ func TestValidate(t *testing.T) {
 			failures: []ValidationFailure{
 				{
 					Key:   "DiscoveryModel.DiscoveryItems[0].Endpoints",
-					Error: "Field validation for 'Endpoints' failed on the 'gt' tag",
+					Error: "Field 'DiscoveryModel.DiscoveryItems[0].Endpoints' cannot be empty",
 				},
 			}})
 	})
