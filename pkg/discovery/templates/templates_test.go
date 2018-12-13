@@ -33,7 +33,7 @@ func TestDiscoverySamples_Examples_Parse_Correctly(t *testing.T) {
 			result, failures, err := discovery.Validate(checker, discoveryModel)
 			assert.True(result)
 			assert.NoError(err)
-			assert.Equal([]string{}, failures)
+			assert.Equal([]discovery.ValidationFailure{}, failures)
 		})
 	}
 }

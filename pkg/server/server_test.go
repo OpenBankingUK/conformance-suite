@@ -347,10 +347,22 @@ func TestServer_DiscoveryModel_POST_Validate_Returns_Errors_When_Incomplete(t *t
 	modelJSON := `{}`
 	expected := map[string]interface{}{
 		"error": []interface{}{
-			`Key: 'Model.DiscoveryModel.Name' Error:Field validation for 'Name' failed on the 'required' tag`,
-			`Key: 'Model.DiscoveryModel.Description' Error:Field validation for 'Description' failed on the 'required' tag`,
-			`Key: 'Model.DiscoveryModel.DiscoveryVersion' Error:Field validation for 'DiscoveryVersion' failed on the 'required' tag`,
-			`Key: 'Model.DiscoveryModel.DiscoveryItems' Error:Field validation for 'DiscoveryItems' failed on the 'required' tag`,
+			map[string]interface{}{
+				"key":   "DiscoveryModel.Name",
+				"error": "Field 'DiscoveryModel.Name' is required",
+			},
+			map[string]interface{}{
+				"key":   "DiscoveryModel.Description",
+				"error": "Field 'DiscoveryModel.Description' is required",
+			},
+			map[string]interface{}{
+				"key":   "DiscoveryModel.DiscoveryVersion",
+				"error": "Field 'DiscoveryModel.DiscoveryVersion' is required",
+			},
+			map[string]interface{}{
+				"key":   "DiscoveryModel.DiscoveryItems",
+				"error": "Field 'DiscoveryModel.DiscoveryItems' is required",
+			},
 		},
 	}
 

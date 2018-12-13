@@ -1,4 +1,39 @@
 import api from './apiUtil';
+import jsonLocation from './jsonLocation';
+
+const BLANK_ANNOTATION_MARKER = {
+  annotations: [],
+  markers: [],
+};
+
+const calculateAnnotationsAndMarkers = (locatableProblems, paths) => {
+  const annotations = [];
+  const markers = [];
+  locatableProblems.forEach((problem) => {
+    const { path, parent, error } = problem;
+    const { start, end } = paths[path] || paths[parent];
+    const { column, line } = start;
+    const row = line - 1;
+    annotations.push({
+      row,
+      column,
+      type: 'error',
+      text: error,
+    });
+    markers.push({
+      startRow: row,
+      startCol: column,
+      endRow: end.line - 1,
+      endCol: end.column,
+      className: 'ace_error-marker',
+      type: 'background',
+    });
+  });
+  return {
+    annotations,
+    markers,
+  };
+};
 
 export default {
 
@@ -20,5 +55,20 @@ export default {
       }
     }
     return { success: true, problems: [] };
+  },
+
+  annotationsAndMarkers(discoveryProblems, discoveryModelString) {
+    if (discoveryProblems === null) {
+      return BLANK_ANNOTATION_MARKER;
+    }
+    const paths = jsonLocation.parse(discoveryModelString);
+    const locatableProblems = discoveryProblems.filter(p =>
+      p.path &&
+      (paths[p.path] || paths[p.parent]));
+
+    if (locatableProblems.length === 0) {
+      return BLANK_ANNOTATION_MARKER;
+    }
+    return calculateAnnotationsAndMarkers(locatableProblems, paths);
   },
 };
