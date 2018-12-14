@@ -1,6 +1,4 @@
 SHELL:=/bin/bash
-GOMAXPROCS:=12
-PARALLEL:=${GOMAXPROCS}
 # guarantee that go will not reach the network at all (e.g. GOPROXY=off)
 export GOPROXY:=off
 
@@ -12,7 +10,7 @@ run: init_web ## run binary directly without docker
 	@echo -e "\033[92m  ---> Starting web file watcher ... \033[0m"
 	cd web && FORCE_COLOR=1 NODE_DISABLE_COLORS=0 yarn build-watch &> $(shell pwd)/web/web.log &
 	@echo -e "\033[92m  ---> Starting server ... \033[0m"
-	PORT=8080 go run -mod=vendor main.go
+	PORT=8080 go run -mod=vendor cmd/server/main.go
 
 .PHONY: run_image
 run_image: ## run the docker image
@@ -26,9 +24,14 @@ run_image: ## run the docker image
 		"openbanking/conformance-suite:latest"
 
 .PHONY: build
-build: ## build the binary directly
+build: ## build the server binary directly
 	@echo -e "\033[92m  ---> Building ... \033[0m"
-	go build -mod=vendor
+	go build -mod=vendor -o server cmd/server/main.go
+
+.PHONY: build_cli
+build_cli: ## build the cli binary directly
+	@echo -e "\033[92m  ---> Building CLI ... \033[0m"
+	go build -mod=vendor -o fcs cmd/cli/main.go
 
 .PHONY: build_image
 build_image: ## build the docker image
@@ -68,7 +71,7 @@ test: ## run the go tests
 		mkdir -p $(shell pwd)/pkg/server/web; \
 		ln -s $(shell pwd)/web/public $(shell pwd)/pkg/server/web/dist; \
 	fi
-	GOMAXPROCS=${GOMAXPROCS} go test \
+	go test \
 		-mod=vendor \
 		-v \
 		-cover \
@@ -77,7 +80,7 @@ test: ## run the go tests
 .PHONY: test_coverage
 test_coverage: ## run the go tests then open up coverage report
 	@echo -e "\033[92m  ---> Testing wth coverage ... \033[0m"
-	-GOMAXPROCS=${GOMAXPROCS} go test \
+	go test \
 		-mod=vendor \
 		-v \
 		-cover \
