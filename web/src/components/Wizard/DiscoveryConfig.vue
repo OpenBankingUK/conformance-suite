@@ -151,10 +151,41 @@ export default {
       });
     },
   },
+  // Prevent user from progressing FORWARD only if the Discovery Config is invalid.
+  // They can navigate backwards, however.
+  //
+  // "The leave guard is usually used to prevent the user from accidentally leaving the route with unsaved edits. The navigation can be canceled by calling next(false)."
+  // See documentation: https://router.vuejs.org/guide/advanced/navigation-guards.html#in-component-guards
+  async beforeRouteLeave(to, from, next) {
+    const isBack = from.path === '/wizard/discovery-config' && to.path === '/wizard/step1';
+    const isNext = from.path === '/wizard/discovery-config' && to.path !== '/wizard/step1';
+
+    // Always allow user to go back from this page.
+    if (isBack) {
+      return next();
+    }
+
+    // Allow the user to only go forward if the discovery config is valid
+    if (isNext) {
+      const valid = await this.validate();
+      if (valid) {
+        return next();
+      }
+
+      return next(false);
+    }
+
+    // If we get into this state something is wrong so just log an error, and prevent navigation.
+    // Neither isBack or isNext is true.
+    console.error('component=%s, method=beforeRouteLeave: invalid state, vars=%o', this.$options.name, {
+      isBack, isNext, to, from,
+    });
+    return next(false);
+  },
 };
 </script>
 
-<style>
+<style scoped>
 .editor {
   border: 1px solid lightgrey;
   width: auto !important;

@@ -1,5 +1,5 @@
 <template>
-  <div class="d-flex flex-column align-items-start">
+  <div class="d-flex flex-column align-items-start flex-fill">
     <h3 class="mb-4">Start a new Test or Load Previous</h3>
 
     <p>Start a new test of v3.0 of the Open Banking Specifications</p>
@@ -15,6 +15,8 @@
 <script>
 export default {
   name: 'Step1',
+  components: {
+  },
   data() {
     return {
       file: null,

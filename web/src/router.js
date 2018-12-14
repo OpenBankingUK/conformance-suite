@@ -19,23 +19,46 @@ const router = new VueRouter({
       component: () => import(/* webpackChunkName: "landing" */ './components/Landing'),
     },
     {
-      path: '/config',
-      name: 'Config',
-      component: () => import(/* webpackChunkName: "config" */ './components/Config'),
-    },
-    {
-      path: '/reports',
-      name: 'Reporter',
-      component: () => import(/* webpackChunkName: "reporter" */ './components/Reporter'),
-    },
-    {
       path: '/wizard',
       name: 'Wizard',
+      redirect: '/wizard/step1',
       component: () => import(/* webpackChunkName: "wizard" */ './components/Wizard'),
+      children: [
+        {
+          path: '/wizard/step1',
+          name: 'Step1',
+          component: () => import(/* webpackChunkName: "wizard/step1" */ './components/Wizard/Step1'),
+        },
+        {
+          path: '/wizard/discovery-config',
+          name: 'DiscoveryConfig',
+          component: () => import(/* webpackChunkName: "wizard/discovery-config" */ './components/Wizard/DiscoveryConfig'),
+        },
+        {
+          path: '/wizard/configuration',
+          name: 'Configuration',
+          component: () => import(/* webpackChunkName: "wizard/configuration" */ './components/Wizard/Configuration'),
+        },
+        {
+          path: '/wizard/run-overview',
+          name: 'RunOverview',
+          component: () => import(/* webpackChunkName: "wizard/run-overview" */ './components/Wizard/RunOverview'),
+        },
+        {
+          path: '/wizard/summary',
+          name: 'Summary',
+          component: () => import(/* webpackChunkName: "wizard/summary" */ './components/Wizard/Summary'),
+        },
+        {
+          path: '/wizard/export',
+          name: 'Export',
+          component: () => import(/* webpackChunkName: "wizard/export" */ './components/Wizard/Export'),
+        },
+      ],
     },
     {
       path: '*',
-      meta: { layout: 'clean' },
+      name: 'NotFound',
       component: () => import(/* webpackChunkName: "not-found" */ './components/NotFound'),
     },
   ],

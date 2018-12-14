@@ -13,7 +13,6 @@
     "dev": "vue-cli-service build --mode development --modern --watch"
   },
   "dependencies": {
-    "ant-design-vue": "^1.1.6",
     "axios": "^0.18.0",
     "bootstrap": "^4.1.1",
     "bootstrap-vue": "^2.0.0-rc.11",
@@ -21,10 +20,8 @@
     "esprima": "^4.0.1",
     "lodash": "^4.17.11",
     "register-service-worker": "^1.0.0",
-    "themify-icons-scss": "^1.0.0",
     "vue": "^2.5.17",
     "vue-axios": "^2.1.4",
-    "vue-form-wizard": "^0.8.4",
     "vue-router": "^3.0.1",
     "vue2-brace-editor": "^2.0.2",
     "vuex": "^3.0.1",
