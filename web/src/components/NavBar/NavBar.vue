@@ -7,7 +7,7 @@
         <NavBarItem
           :no="1"
           route="/wizard/step1"
-          label="Start/Load Test" />
+          label="Start/Load Test"/>
         <NavBarItem
           :no="2"
           route="/wizard/discovery-config"
@@ -16,32 +16,43 @@
         <NavBarItem
           :no="3"
           route="/wizard/configuration"
-          label="Configuration" />
+          label="Configuration"/>
         <NavBarItem
           :no="4"
           route="/wizard/run-overview"
-          label="Run/Overview" />
+          label="Run/Overview"/>
         <NavBarItem
           :no="5"
           route="/wizard/summary"
-          label="Summary" />
+          label="Summary"/>
         <NavBarItem
           :no="6"
           route="/wizard/export"
-          label="Export" />
+          label="Export"/>
       </b-nav>
     </div>
     <div class="nav-section">
-      <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+      <h6
+        class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted"
+      >
         <span>Tools</span>
+        <plus-circle-icon/>
       </h6>
       <b-nav
         vertical
         class="mb-2">
-        <b-nav-item>Documentation</b-nav-item>
-        <b-nav-item>Bug Tracker</b-nav-item>
-        <b-nav-item>Website</b-nav-item>
-        <b-nav-item>Integrations</b-nav-item>
+        <b-nav-item
+          href="https://bitbucket.org/openbankingteam/conformance-suite/src/develop/README.md"
+          target="_blank"><file-text-icon class="icon-class"/> Documentation</b-nav-item>
+        <b-nav-item
+          href="https://bitbucket.org/openbankingteam/conformance-suite/issues"
+          target="_blank"><file-text-icon class="icon-class"/> Bug Tracker</b-nav-item>
+        <b-nav-item
+          href="https://bitbucket.org/openbankingteam/conformance-suite"
+          target="_blank"><file-text-icon class="icon-class"/> Website</b-nav-item>
+        <b-nav-item
+          disabled
+          target="_blank"><file-text-icon class="icon-class"/> Integrations</b-nav-item>
       </b-nav>
     </div>
   </div>
@@ -49,17 +60,33 @@
 
 <style scoped>
 .nav-section {
-  background: #FFFFFF;
+  background: #ffffff;
+}
+
+.sidebar-heading {
+  font-size: .75rem;
+  text-transform: uppercase;
+}
+
+.nav-item a {
+  color: #9E9E9E;
+}
+
+.icon-class {
+  margin-right: 4px;
 }
 </style>
 
 <script>
+import { PlusCircleIcon, FileTextIcon } from 'vue-feather-icons';
 import NavBarItem from './NavBarItem.vue';
 
 export default {
   name: 'NavBar',
   components: {
     NavBarItem,
+    PlusCircleIcon,
+    FileTextIcon,
   },
   // inheritAttrs: false,
   methods: {

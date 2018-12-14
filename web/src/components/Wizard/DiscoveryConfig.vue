@@ -177,9 +177,11 @@ export default {
 
     // If we get into this state something is wrong so just log an error, and prevent navigation.
     // Neither isBack or isNext is true.
+    // eslint-disable-next-line no-console
     console.error('component=%s, method=beforeRouteLeave: invalid state, vars=%o', this.$options.name, {
       isBack, isNext, to, from,
     });
+
     return next(false);
   },
 };
