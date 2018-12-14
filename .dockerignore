@@ -25,6 +25,11 @@
 !**/config
 !**/proxy
 !**/swagger
+
+!**/cmd
+!**/cmd/**
+!**/cmd/**/*
+
 # Go project layout structure: https://github.com/golang-standards/project-layout
 !**/pkg
 !**/pkg/**
