@@ -53,8 +53,16 @@ init_web: ./web/node_modules ## install node_modules when not present
 
 .PHONY: lint
 lint: ## lint the go code
+	@echo -e "\033[92m  ---> Vetting ... \033[0m"
+	go vet $(shell go list ./... | grep -v /vendor/)
 	@echo -e "\033[92m  ---> Linting ... \033[0m"
-	gofmt -e -s -w .
+	golint -min_confidence 1.0 -set_exit_status $(shell go list ./... | grep -v vendor)
+	@echo -e "\033[92m  ---> Formatting ... \033[0m"
+	@GO_PKGS="$(shell go list -f {{.Dir}} ./...)"; \
+	for PKG_DIR in $${GO_PKGS}; do \
+		echo -e "\033[92m  ---> Formatting $${PKG_DIR}/*.go ... \033[0m"; \
+		gofmt -e -s -w $${PKG_DIR}/*.go; \
+	done
 
 .PHONY: clean
 clean:
