@@ -13,7 +13,7 @@ ENV GOARCH=amd64
 
 WORKDIR /app
 
-COPY . .
+ADD . .
 
 RUN make build
 RUN make build_cli
