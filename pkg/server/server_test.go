@@ -102,7 +102,7 @@ func TestMain(m *testing.M) {
 }
 
 func TestServer(t *testing.T) {
-	server := NewServer(conditionalityCheckerMock{})
+	server := NewServer(NullLogger(), conditionalityCheckerMock{})
 
 	t.Run("NewServer() returns non-nil value", func(t *testing.T) {
 		assert.NotNil(t, server)
@@ -163,7 +163,7 @@ func TestServer(t *testing.T) {
 func TestServer_ValidationRuns_POST_ValidationRuns_Returns_ValidationRunID(t *testing.T) {
 	assert := assert.New(t)
 
-	server := NewServer(conditionalityCheckerMock{})
+	server := NewServer(NullLogger(), conditionalityCheckerMock{})
 	defer server.Shutdown(nil)
 
 	code, body, headerMap := request(http.MethodPost, "/api/validation-runs", nil, server)
@@ -183,7 +183,7 @@ func TestServer_ValidationRuns_POST_ValidationRuns_Returns_ValidationRunID(t *te
 func TestServer_Config_POST_Can_POST_Config(t *testing.T) {
 	assert := assert.New(t)
 
-	server := NewServer(conditionalityCheckerMock{})
+	server := NewServer(NullLogger(), conditionalityCheckerMock{})
 	defer server.Shutdown(nil)
 
 	// assert server isn't started before call
@@ -223,7 +223,7 @@ func TestServer_Config_POST_Can_POST_Config(t *testing.T) {
 func TestServer_Config_POST_Cannot_POST_Config_Twice_Without_First_Deleting_It(t *testing.T) {
 	assert := assert.New(t)
 
-	server := NewServer(conditionalityCheckerMock{})
+	server := NewServer(NullLogger(), conditionalityCheckerMock{})
 	defer server.Shutdown(nil)
 
 	// assert server isn't started before call
@@ -264,7 +264,7 @@ func TestServer_Config_POST_Cannot_POST_Config_Twice_Without_First_Deleting_It(t
 func TestServer_Config_DELETE_Stops_The_Proxy(t *testing.T) {
 	assert := assert.New(t)
 
-	server := NewServer(conditionalityCheckerMock{})
+	server := NewServer(NullLogger(), conditionalityCheckerMock{})
 	defer server.Shutdown(nil)
 
 	// assert server isn't started before call
@@ -313,7 +313,7 @@ func TestServer_Config_DELETE_Stops_The_Proxy(t *testing.T) {
 func TestServer_DiscoveryModel_POST_Validate_Returns_Request_Payload_When_Valid(t *testing.T) {
 	assert := assert.New(t)
 
-	server := NewServer(conditionalityCheckerMock{})
+	server := NewServer(NullLogger(), conditionalityCheckerMock{})
 	defer server.Shutdown(nil)
 
 	discoveryExample, err := ioutil.ReadFile("../discovery/templates/ob-v3.0-ozone.json")
@@ -373,7 +373,7 @@ func testDiscoveryModelValidationFails(t *testing.T, modelJSON string, expected 
 	t.Helper()
 
 	assert := assert.New(t)
-	server := NewServer(conditionalityCheckerMock{})
+	server := NewServer(NullLogger(), conditionalityCheckerMock{})
 	defer server.Shutdown(nil)
 
 	code, body, headers := request(
@@ -400,4 +400,10 @@ func request(method, path string, body io.Reader, server *Server) (int, *bytes.B
 	server.ServeHTTP(rec, req)
 
 	return rec.Code, rec.Body, rec.HeaderMap
+}
+
+func NullLogger() *logrus.Entry {
+	logger := logrus.New()
+	logger.Out = ioutil.Discard
+	return logger.WithField("app", "test")
 }
