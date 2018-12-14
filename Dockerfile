@@ -1,4 +1,4 @@
-# Image to compile go binary
+# Image to compile go binaries
 FROM golang:1.11-stretch as gobuilder
 # disable crosscompiling
 #
@@ -12,9 +12,11 @@ ENV GOOS=linux
 ENV GOARCH=amd64
 
 WORKDIR /app
+
 ADD . .
 
 RUN make build
+RUN make build_cli
 
 # Image to compile Single Page Application of the Vue.js site
 FROM node:8.11.1-slim as nodebuilder
@@ -33,9 +35,10 @@ FROM scratch
 LABEL MAINTAINER Open Banking
 WORKDIR /app
 
-COPY --from=gobuilder /app/conformance-suite /app/
+COPY --from=gobuilder /app/server /app/
+COPY --from=gobuilder /app/fcs /app/
 COPY --from=nodebuilder /app/dist /app/web/dist
 
 EXPOSE 8080
 
-ENTRYPOINT ["/app/conformance-suite"]
+ENTRYPOINT ["/app/server"]
