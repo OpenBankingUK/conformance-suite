@@ -129,17 +129,5 @@ describe('Config', () => {
       );
       expect(routerSpy).toHaveBeenCalledWith('/reports');
     });
-
-    it('updateDiscoveryModel', () => {
-      const discoveryModel = '{"a": 1}';
-      actions.updateDiscoveryModel({ commit }, discoveryModel);
-      expect(commit).toHaveBeenCalledWith('UPDATE_DISCOVERY_MODEL', discoveryModel);
-    });
-
-    it('deleteDiscoveryModel', () => {
-      const discoveryModel = '{"a": 1}';
-      actions.deleteDiscoveryModel({ commit }, discoveryModel);
-      expect(commit).toHaveBeenCalledWith('DELETE_DISCOVERY_MODEL', discoveryModel);
-    });
   });
 });

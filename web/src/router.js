@@ -21,13 +21,13 @@ const router = new VueRouter({
     {
       path: '/wizard',
       name: 'Wizard',
-      redirect: '/wizard/step1',
+      redirect: '/wizard/continue-or-start',
       component: () => import(/* webpackChunkName: "wizard" */ './components/Wizard'),
       children: [
         {
-          path: '/wizard/step1',
-          name: 'Step1',
-          component: () => import(/* webpackChunkName: "wizard/step1" */ './components/Wizard/Step1'),
+          path: '/wizard/continue-or-start',
+          name: 'ContinueOrStart',
+          component: () => import(/* webpackChunkName: "wizard/continue-or-start" */ './components/Wizard/ContinueOrStart'),
         },
         {
           path: '/wizard/discovery-config',

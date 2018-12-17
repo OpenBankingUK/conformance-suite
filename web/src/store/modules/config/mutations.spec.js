@@ -29,24 +29,5 @@ describe('Config', () => {
       mutations[types.SET_DISCOVERY_MODEL](state, discoveryModel);
       expect(state).toEqual(expectedState);
     });
-
-    it(`${types.UPLOAD_DISCOVERY_MODEL}`, () => {
-      const expectedState = {
-        discoveryModel: [discoveryModel],
-      };
-      mutations[types.UPDATE_DISCOVERY_MODEL](state, discoveryModel);
-      expect(state).toEqual(expectedState);
-    });
-
-    it(`${types.DELETE_DISCOVERY_MODEL}`, () => {
-      const initialState = {
-        discoveryModel: [discoveryModel],
-      };
-      const expectedState = {
-        discoveryModel: [],
-      };
-      mutations[types.DELETE_DISCOVERY_MODEL](initialState, discoveryModel);
-      expect(state).toEqual(expectedState);
-    });
   });
 });

@@ -18,7 +18,7 @@
         >More Info</b-btn>
         <b-btn
           variant="success"
-          to="/wizard/step1">Start a validation run</b-btn>
+          to="/wizard/continue-or-start">Start a validation run</b-btn>
       </div>
     </b-jumbotron>
   </div>

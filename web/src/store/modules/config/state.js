@@ -1,4 +1,17 @@
-import DiscoveryExample from '../../../../../pkg/discovery/templates/ob-v3.0-ozone.json';
+import OzoneTemplate from '../../../../../pkg/discovery/templates/ob-v3.0-ozone.json';
+import GenericTemplate from '../../../../../pkg/discovery/templates/ob-v3.0-generic.json';
+
+const templates = [
+  {
+    model: OzoneTemplate,
+    image: 'https://o3bank.files.wordpress.com/2017/10/o3logo.png?w=159',
+  },
+  {
+    model: GenericTemplate,
+    image: 'https://openbanking.atlassian.net/wiki/download/attachments/17236165/OBIE_logotype_blue_RGB.jpg',
+  },
+];
+const defaultTemplate = templates.find(t => t.model.discoveryModel.name === 'ob-v3.0-ozone');
 
 const example = {
   config: {
@@ -16,6 +29,7 @@ const example = {
 
 export default {
   main: example.config,
-  discoveryModel: DiscoveryExample,
+  discoveryTemplates: templates,
+  discoveryModel: JSON.parse(JSON.stringify(defaultTemplate.model)), // JSON parse to make copy of template model
   problems: null,
 };

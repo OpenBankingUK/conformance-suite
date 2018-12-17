@@ -2,7 +2,7 @@
   <div class="d-flex flex-row flex-fill">
     <NavBar/>
     <div class="d-flex flex-column flex-fill">
-      <router-view class="p-3 router-section"/>
+      <router-view class="d-flex flex-column flex-fill p-3 router-section"/>
       <WizardFooter/>
     </div>
   </div>
@@ -16,7 +16,7 @@
 
 <script>
 import NavBar from './NavBar/NavBar.vue';
-import Step1 from './Wizard/Step1.vue';
+import ContinueOrStart from './Wizard/ContinueOrStart.vue';
 import DiscoveryConfig from './Wizard/DiscoveryConfig.vue';
 import Configuration from './Wizard/Configuration.vue';
 import RunOverview from './Wizard/RunOverview.vue';
@@ -27,7 +27,7 @@ import WizardFooter from './Wizard/WizardFooter.vue';
 export default {
   name: 'Wizard',
   components: {
-    Step1,
+    ContinueOrStart,
     DiscoveryConfig,
     Configuration,
     RunOverview,

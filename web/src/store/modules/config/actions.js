@@ -1,6 +1,5 @@
 import * as types from './mutation-types';
 import router from '../../../router';
-import DiscoveryExample from '../../../../../pkg/discovery/templates/ob-v3.0-ozone.json';
 import discovery from '../../../api/discovery';
 
 export default {
@@ -32,17 +31,6 @@ export default {
       config: getters.getConfig,
     }, { root: true });
     router.push('/reports');
-  },
-  updateDiscoveryModel({ commit }, discoveryModel) {
-    commit(types.UPDATE_DISCOVERY_MODEL, discoveryModel);
-  },
-  deleteDiscoveryModel({ commit }, discoveryModel) {
-    commit(types.DELETE_DISCOVERY_MODEL, discoveryModel);
-  },
-  resetDiscoveryConfig({ commit }) {
-    // TODO: Maybe validate the default example ... not sure.
-    commit(types.DISCOVERY_MODEL_RESET, DiscoveryExample);
-    commit(types.DISCOVERY_MODEL_PROBLEMS, null);
   },
   setDiscoveryModelProblems({ commit }, problems) {
     commit(types.DISCOVERY_MODEL_PROBLEMS, problems);

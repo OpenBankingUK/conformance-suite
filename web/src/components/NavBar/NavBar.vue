@@ -6,7 +6,7 @@
         pills>
         <NavBarItem
           :no="1"
-          route="/wizard/step1"
+          route="/wizard/continue-or-start"
           label="Start/Load Test"/>
         <NavBarItem
           :no="2"

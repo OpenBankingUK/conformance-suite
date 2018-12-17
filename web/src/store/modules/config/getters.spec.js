@@ -61,8 +61,8 @@ describe('Config', () => {
       expect(getters.getConfig(state)).toEqual(state.main);
     });
 
-    it('getDiscoveryModel', () => {
-      expect(getters.getDiscoveryModel(state)).toEqual(state.discoveryModel);
+    it('discoveryModel', () => {
+      expect(getters.discoveryModel(state)).toEqual(state.discoveryModel);
     });
   });
 });

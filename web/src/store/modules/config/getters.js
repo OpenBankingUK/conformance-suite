@@ -27,7 +27,9 @@ const parseProblem = ({ key, error }) => {
 
 export default {
   getConfig: state => state.main,
-  getDiscoveryModel: state => state.discoveryModel,
+  discoveryModel: state => state.discoveryModel,
+  discoveryModelString: state => JSON.stringify(state.discoveryModel, null, 2),
+  discoveryTemplates: state => state.discoveryTemplates,
   problems: state => state.problems,
   discoveryProblems: state => (state.problems ? state.problems.map(p => parseProblem(p)) : null),
 };

@@ -28,7 +28,7 @@ export default {
   data() {
     // normal navigation
     const ROUTES = {
-      '/wizard/step1': '/wizard/discovery-config',
+      '/wizard/continue-or-start': '/wizard/discovery-config',
       '/wizard/discovery-config': '/wizard/configuration',
       '/wizard/configuration': '/wizard/run-overview',
       '/wizard/run-overview': '/wizard/summary',
@@ -36,15 +36,6 @@ export default {
     };
     // invert the ROUTES map, could do this manually but there is no point
     // as it is error-prone.
-    //
-    // Example output:
-    // const ROUTES_BACK = {
-    //   '/wizard/discovery-config': '/wizard/step1',
-    //   '/wizard/configuration': '/wizard/discovery-config',
-    //   '/wizard/run-overview': '/wizard/configuration',
-    //   '/wizard/summary': '/wizard/run-overview',
-    //   '/wizard/export': '/wizard/summary',
-    // };
     const ROUTES_INVERTED = _.invert(ROUTES);
 
     return {
@@ -56,16 +47,17 @@ export default {
     // disable back button if we are in the first step of the wizard
     isBackDisabled() {
       const { path } = this.$route;
-      if (path === '/wizard/step1') {
+      if (path === '/wizard/continue-or-start') {
         return true;
       }
 
       return false;
     },
-    // disable next button if we are the last step in the wizard
+    // disable next button when we are the last step in the wizard
+    // disable next button when we are on discovery template selection step
     isNextDisabled() {
       const { path } = this.$route;
-      if (path === '/wizard/export') {
+      if (path === '/wizard/export' || path === '/wizard/continue-or-start') {
         return true;
       }
 
@@ -73,25 +65,19 @@ export default {
     },
   },
   methods: {
-    onBack() {
-      const { ROUTES_BACK: ROUTES } = this;
-      const router = this.$router;
+    nextRoute() {
       const { path } = this.$route;
-
-      // find new route
-      const location = ROUTES[path];
-      // go to new route
-      router.push(location);
+      return this.ROUTES_NEXT[path];
+    },
+    previousRoute() {
+      const { path } = this.$route;
+      return this.ROUTES_BACK[path];
+    },
+    onBack() {
+      this.$router.push(this.previousRoute());
     },
     onNext() {
-      const { ROUTES_NEXT: ROUTES } = this;
-      const router = this.$router;
-      const { path } = this.$route;
-
-      // find new route
-      const location = ROUTES[path];
-      // go to new route
-      router.push(location);
+      this.$router.push(this.nextRoute());
     },
   },
 };

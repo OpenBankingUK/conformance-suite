@@ -1,6 +1,6 @@
 <template>
-  <div class="d-flex flex-column flex-fill">
-    <h3 class="mb-4">Configuration: API Discovery</h3>
+  <div>
+    <h2 class="pt-3 pb-2 mb-3">Configuration: API Discovery</h2>
     <div
       v-if="problems"
       class="mb-4">
@@ -31,11 +31,6 @@
       class="editor mb-4"
       width="100%"
     />
-    <b-button-group>
-      <b-button
-        variant="danger"
-        @click="onReset">Reset</b-button>
-    </b-button-group>
   </div>
 </template>
 
@@ -65,14 +60,11 @@ export default {
     },
   },
   computed: {
-    ...mapGetters('config', {
-      discoveryModel: 'getDiscoveryModel',
-      problems: 'problems',
-      discoveryProblems: 'discoveryProblems',
-    }),
-    discoveryModelString() {
-      return JSON.stringify(this.discoveryModel, null, 2);
-    },
+    ...mapGetters('config', [
+      'discoveryModelString',
+      'problems',
+      'discoveryProblems',
+    ]),
     problemAnnotationAndMarkers() {
       return discovery.annotationsAndMarkers(
         this.discoveryProblems,
@@ -118,7 +110,6 @@ export default {
   methods: {
     ...mapActions('config', [
       'setDiscoveryModel',
-      'resetDiscoveryConfig',
       'validateDiscoveryConfig',
       'setDiscoveryModelProblems',
     ]),
@@ -132,10 +123,6 @@ export default {
         return false;
       }
       return true;
-    },
-    onReset() {
-      this.resetDiscoveryConfig();
-      this.resizeEditor();
     },
     onChange(editorString) {
       this.setDiscoveryModel(editorString);
@@ -157,8 +144,8 @@ export default {
   // "The leave guard is usually used to prevent the user from accidentally leaving the route with unsaved edits. The navigation can be canceled by calling next(false)."
   // See documentation: https://router.vuejs.org/guide/advanced/navigation-guards.html#in-component-guards
   async beforeRouteLeave(to, from, next) {
-    const isBack = from.path === '/wizard/discovery-config' && to.path === '/wizard/step1';
-    const isNext = from.path === '/wizard/discovery-config' && to.path !== '/wizard/step1';
+    const isBack = from.path === '/wizard/discovery-config' && to.path === '/wizard/continue-or-start';
+    const isNext = from.path === '/wizard/discovery-config' && to.path !== '/wizard/continue-or-start';
 
     // Always allow user to go back from this page.
     if (isBack) {
