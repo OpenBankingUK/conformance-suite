@@ -103,6 +103,7 @@ typings/
 
 # Editor config
 .idea/
+.vscode/settings.json
 
 # Swagger/OpenAPI spec files
 .swagger/
