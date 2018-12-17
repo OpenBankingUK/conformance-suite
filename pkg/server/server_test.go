@@ -183,6 +183,8 @@ func TestServer_ValidationRuns_POST_ValidationRuns_Returns_ValidationRunID(t *te
 func TestServer_Config_POST_Can_POST_Config(t *testing.T) {
 	assert := assert.New(t)
 
+	mockedServer, mockedClient := test.MockHTTPServer(http.StatusBadRequest, "body", nil, nil)
+
 	server := NewServer(conditionalityCheckerMock{})
 	defer server.Shutdown(nil)
 
@@ -206,7 +208,7 @@ func TestServer_Config_POST_Can_POST_Config(t *testing.T) {
 	assert.Equal(http.StatusOK, rec.Code)
 
 	// check the proxy is up now, we should hit the forgerock server
-	resp, err := http.Get(frontendProxy.String())
+	resp, err := mockedClient.Get(frontendProxy.String())
 	assert.NoError(err)
 	body, err := ioutil.ReadAll(resp.Body)
 	assert.NoError(err)
@@ -214,11 +216,12 @@ func TestServer_Config_POST_Can_POST_Config(t *testing.T) {
 
 	// assert that the body matches a certain regex
 	assert.Regexp(
-		regexp.MustCompile(`^{"Code":"OBRI.FR.Request.Invalid","Id":".*","Message":"An error happened when parsing the request arguments","Errors":\[{"ErrorCode":"UK.OBIE.Header.Missing","Message":"Missing request header 'x-fapi-financial-id' for method parameter of type String","Url":"https://docs.ob.forgerock.financial/errors#UK.OBIE.Header.Missing"}\]}$`),
+		regexp.MustCompile(`body`),
 		string(body),
 	)
-}
 
+	mockedServer.Close()
+}
 // /api/config - POST - cannot POST config twice without first deleting it
 func TestServer_Config_POST_Cannot_POST_Config_Twice_Without_First_Deleting_It(t *testing.T) {
 	assert := assert.New(t)
