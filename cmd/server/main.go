@@ -39,7 +39,8 @@ func init() {
 }
 
 func main() {
-	server := server.NewServer(model.NewConditionalityChecker())
+	logger := logrus.WithField("app", "server")
+	server := server.NewServer(logger, model.NewConditionalityChecker())
 	server.HideBanner = true
 
 	address := fmt.Sprintf("0.0.0.0:%s", getPort())
