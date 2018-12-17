@@ -17,7 +17,7 @@ import (
 func TestWebSocketHandler_Handle(t *testing.T) {
 	assert := assert.New(t)
 
-	server := httptest.NewServer(NewServer(model.NewConditionalityChecker()))
+	server := httptest.NewServer(NewServer(NullLogger(), model.NewConditionalityChecker()))
 	defer server.Close()
 
 	// Convert http://127.0.0.1 to ws://127.0.0.
