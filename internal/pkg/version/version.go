@@ -29,14 +29,14 @@ const (
 // BitBucketAPIRepository full URL of the TAG API 2.0 for the Conformance Suite.
 var BitBucketAPIRepository = "https://api.bitbucket.org/2.0/repositories/openbankingteam/conformance-suite/refs/tags"
 
-// Tag structure used map responce of tags.
+// Tag structure used map response of tags.
 type Tag struct {
 	Name          string `json:"name"`
 	Date          string `json:"date"`
 	CommitMessage string `json:"message"`
 }
 
-// TagsAPIResponse structure to map responce.
+// TagsAPIResponse structure to map response.
 type TagsAPIResponse struct {
 	TagList []Tag `json:"values"`
 }
