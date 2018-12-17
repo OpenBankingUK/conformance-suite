@@ -1,4 +1,4 @@
-// Package version contains version information for Functional Conformance Suite
+// Package version contains version information for Functional Conformance Suite.
 package version
 
 import (
@@ -12,30 +12,31 @@ import (
 	"strings"
 )
 
-// Version
+//  Version returns the semantic version (see http://semver.org).
 const (
 	// Version must conform to the format expected, major, minor and patch.
 	major = "0"
 	minor = "1"
 	patch = "0"
-	// Version is the full string version of conformance suite.
+	// Version is the full string version of Conformance Suite.
 	Version = major + "." + minor + "." + patch
+	// VersionPrerelease is pre-release marker for the version. If this is "" (empty string)
+	// then it means that it is a final release. Otherwise, this is a pre-release
+	// such as "alpha", "beta", "rc1", etc.
+	VersionPrerelease = "pre-alpha"
 )
-
-// VersionPrerelease is pre-release marker for the version. If this is "" (empty string)
-// then it means that it is a final release. Otherwise, this is a pre-release
-// such as "alpha", "beta", "rc1", etc.
-const VersionPrerelease = "pre-alpha"
 
 // BitBucketAPIRepository full URL of the TAG API 2.0 for the Conformance Suite.
 var BitBucketAPIRepository = "https://api.bitbucket.org/2.0/repositories/openbankingteam/conformance-suite/refs/tags"
 
-// Tag structure.
+// Tag structure used map responce of tags.
 type Tag struct {
-	Name string `json:"name"`
+	Name          string `json:"name"`
+	Date          string `json:"date"`
+	CommitMessage string `json:"message"`
 }
 
-// TagsAPIResponse structure.
+// TagsAPIResponse structure to map responce.
 type TagsAPIResponse struct {
 	TagList []Tag `json:"values"`
 }
@@ -64,7 +65,9 @@ func GetHumanVersion() string {
 	return version
 }
 
-// Versionformatter takes a version number and returns just the numeric parts.
+// Versionformatter takes a string version number and returns just the numeric parts.
+// This function is used when trying to compare two string versions that 'could'
+// have non numerical properties.
 func Versionformatter(version string) string {
 	const maxByte = 1<<8 - 1
 	vo := make([]byte, 0, len(version)+8)
@@ -138,13 +141,17 @@ func UpdateWarningVersion(version string) (string, bool) {
 			message := fmt.Sprintf("Version v%s of the Conformance Suite is out-of-date, please update to v%s", versionLocal, versionRemote)
 			return message, true
 		}
-		fmt.Println(s.TagList[0].Name)
+		// If local and remote version match or is higher then return false update flag.
+		if versionLocal >= versionRemote {
+			message := fmt.Sprintf("Conformance Suite is running the latest version %s", GetHumanVersion())
+			return message, false
+		}
 
 	} else {
 		// handle anything else other than 200 OK.
 		return "Version check is univailable at this time.", false
 	}
 
-	return "Error", false
+	return "Version check is univailable at this time.", false
 
 }
