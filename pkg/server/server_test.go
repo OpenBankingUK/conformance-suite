@@ -5,6 +5,7 @@ package server
 // Starting and stopping proxy server at the same port cannot be done in parallel.
 
 import (
+	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/test"
 	"bytes"
 	"encoding/json"
 	"flag"
@@ -27,10 +28,12 @@ import (
 )
 
 var (
-	appConfigJSON = `{
+	appConfigJSON        = appConfigJSONWithUrl("https://rs.aspsp.ob.forgerock.financial:443")
+	appConfigJSONWithUrl = func(url string) string {
+		return `{
     "softwareStatementId": "5b5a2008b093465496d238fc",
     "keyId": "d6c3f49c-7112-4c5c-9c9d-84926e992c74",
-    "targetHost": "https://rs.aspsp.ob.forgerock.financial:443",
+    "targetHost": "` + url + `",
     "verbose": true,
     "specLocation": "../../swagger/rw20test.json",
     "bindAddress": ":8989",
@@ -54,6 +57,7 @@ var (
         "token_type": ""
     }
 }`
+	}
 )
 
 // conditionalityCheckerMock - implements model.ConditionalityChecker interface for tests
@@ -208,6 +212,9 @@ func TestServer_Config_POST_Creates_Proxy(t *testing.T) {
 func TestServer_Config_POST_Cannot_POST_Config_Twice_Without_First_Deleting_It(t *testing.T) {
 	assert := assert.New(t)
 
+	mockedServer, serverUrl := test.MockHTTPServer(http.StatusOK, "", nil, nil)
+	appConfig := appConfigJSONWithUrl(serverUrl)
+
 	server := NewServer(conditionalityCheckerMock{})
 	defer server.Shutdown(nil)
 
@@ -215,10 +222,11 @@ func TestServer_Config_POST_Cannot_POST_Config_Twice_Without_First_Deleting_It(t
 	frontendProxy, _ := url.Parse("http://0.0.0.0:8989/open-banking/v2.0/accounts")
 	_, err := http.Get(frontendProxy.String())
 	assert.Error(err)
+	assert.Nil(server.proxy)
 
 	// create the request to post the config
 	// this should start the proxy
-	req := httptest.NewRequest(http.MethodPost, "/api/config", strings.NewReader(appConfigJSON))
+	req := httptest.NewRequest(http.MethodPost, "/api/config", strings.NewReader(appConfig))
 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 	rec := httptest.NewRecorder()
 
@@ -226,12 +234,13 @@ func TestServer_Config_POST_Cannot_POST_Config_Twice_Without_First_Deleting_It(t
 	server.ServeHTTP(rec, req)
 
 	assert.NotNil(rec.Body)
-	assert.Equal(appConfigJSON, rec.Body.String())
+	assert.Equal(appConfig, rec.Body.String())
 	assert.Equal(http.StatusOK, rec.Code)
+	assert.NotNil(server.proxy)
 
 	// create another request to POST the config again
 	// this should fail because a DELETE need to happen first.
-	req = httptest.NewRequest(http.MethodPost, "/api/config", strings.NewReader(appConfigJSON))
+	req = httptest.NewRequest(http.MethodPost, "/api/config", strings.NewReader(appConfig))
 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 	rec = httptest.NewRecorder()
 	// do the request
@@ -243,6 +252,8 @@ func TestServer_Config_POST_Cannot_POST_Config_Twice_Without_First_Deleting_It(t
 		rec.Body.String(),
 	)
 	assert.Equal(http.StatusBadRequest, rec.Code)
+
+	mockedServer.Close()
 }
 
 // /api/config - DELETE - DELETE stops the proxy
