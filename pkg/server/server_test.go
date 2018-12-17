@@ -5,6 +5,7 @@ package server
 // Starting and stopping proxy server at the same port cannot be done in parallel.
 
 import (
+	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/test"
 	"bytes"
 	"encoding/json"
 	"flag"
@@ -15,7 +16,6 @@ import (
 	"net/http/httptest"
 	"net/url"
 	"os"
-	"regexp"
 	"strings"
 	"testing"
 
@@ -183,7 +183,7 @@ func TestServer_ValidationRuns_POST_ValidationRuns_Returns_ValidationRunID(t *te
 func TestServer_Config_POST_Can_POST_Config(t *testing.T) {
 	assert := assert.New(t)
 
-	mockedServer, mockedClient := test.MockHTTPServer(http.StatusBadRequest, "body", nil, nil)
+	mockedServer, mockedClient := test.MockHTTPServer(http.StatusBadRequest, `body`, nil, nil)
 
 	server := NewServer(conditionalityCheckerMock{})
 	defer server.Shutdown(nil)
@@ -213,15 +213,11 @@ func TestServer_Config_POST_Can_POST_Config(t *testing.T) {
 	body, err := ioutil.ReadAll(resp.Body)
 	assert.NoError(err)
 	assert.Equal(http.StatusBadRequest, resp.StatusCode)
-
-	// assert that the body matches a certain regex
-	assert.Regexp(
-		regexp.MustCompile(`body`),
-		string(body),
-	)
+	assert.Equal("body", string(body))
 
 	mockedServer.Close()
 }
+
 // /api/config - POST - cannot POST config twice without first deleting it
 func TestServer_Config_POST_Cannot_POST_Config_Twice_Without_First_Deleting_It(t *testing.T) {
 	assert := assert.New(t)

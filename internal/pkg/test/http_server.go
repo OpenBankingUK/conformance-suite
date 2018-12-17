@@ -7,9 +7,9 @@ import (
 	"net/url"
 )
 
-func MockHTTPServer(code int, body string, headerKey string, headerValue string, err error) (*httptest.Server, *http.Client) {
+func MockHTTPServer(code int, body string, headers map[string]string, err error) (*httptest.Server, *http.Client) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set(headerKey, headerValue)
+		addHeaders(w, headers)
 		w.WriteHeader(code)
 		fmt.Fprint(w, body)
 	}))
@@ -25,4 +25,8 @@ func MockHTTPServer(code int, body string, headerKey string, headerValue string,
 	return server, httpClient
 }
 
-
+func addHeaders(w http.ResponseWriter, headers map[string]string) {
+	for key, value := range headers {
+		w.Header().Set(key, value)
+	}
+}
