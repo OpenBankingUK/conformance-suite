@@ -17,6 +17,21 @@ func TestOutOfDateUpdateWarningVersion(t *testing.T) {
 	assert.Equal(t, true, flag)
 }
 
+// TestNoUpdateUpdateWarningVersion asserts no updated required boolean when
+// local version maches or is higher.
+func TestNoUpdateUpdateWarningVersion(t *testing.T) {
+	version := "v1000.0.0"
+	message := ""
+	flag := true
+	message, flag = UpdateWarningVersion(version)
+	assert.Equal(t, false, flag)
+	assert.Equal(t, "Conformance Suite is running the latest version "+GetHumanVersion(), message)
+	version = Version
+	_, flag = UpdateWarningVersion(version)
+	assert.Equal(t, false, flag)
+
+}
+
 // TestBadStatusUpdateWarningVersionFail asserts that an appropriate/correct
 // error message is return if BitBucket 40x status code is given.
 func TestBadStatusUpdateWarningVersionFail(t *testing.T) {
