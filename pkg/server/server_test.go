@@ -5,7 +5,6 @@ package server
 // Starting and stopping proxy server at the same port cannot be done in parallel.
 
 import (
-	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/test"
 	"bytes"
 	"encoding/json"
 	"flag"
@@ -180,18 +179,14 @@ func TestServer_ValidationRuns_POST_ValidationRuns_Returns_ValidationRunID(t *te
 }
 
 // /api/config - POST - can POST config
-func TestServer_Config_POST_Can_POST_Config(t *testing.T) {
+func TestServer_Config_POST_Creates_Proxy(t *testing.T) {
 	assert := assert.New(t)
-
-	mockedServer, mockedClient := test.MockHTTPServer(http.StatusBadRequest, `body`, nil, nil)
 
 	server := NewServer(conditionalityCheckerMock{})
 	defer server.Shutdown(nil)
 
 	// assert server isn't started before call
-	frontendProxy, _ := url.Parse("http://0.0.0.0:8989/open-banking/v2.0/accounts")
-	_, err := http.Get(frontendProxy.String())
-	assert.Error(err)
+	assert.Nil(server.proxy)
 
 	// create the request to post the config
 	// this should start the proxy
@@ -206,16 +201,7 @@ func TestServer_Config_POST_Can_POST_Config(t *testing.T) {
 	assert.NotNil(rec.Body)
 	assert.Equal(appConfigJSON, rec.Body.String())
 	assert.Equal(http.StatusOK, rec.Code)
-
-	// check the proxy is up now, we should hit the forgerock server
-	resp, err := mockedClient.Get(frontendProxy.String())
-	assert.NoError(err)
-	body, err := ioutil.ReadAll(resp.Body)
-	assert.NoError(err)
-	assert.Equal(http.StatusBadRequest, resp.StatusCode)
-	assert.Equal("body", string(body))
-
-	mockedServer.Close()
+	assert.NotNil(server.proxy)
 }
 
 // /api/config - POST - cannot POST config twice without first deleting it
