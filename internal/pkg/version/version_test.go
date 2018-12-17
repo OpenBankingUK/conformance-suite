@@ -6,19 +6,6 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-// func TestTimeConsuming(t *testing.T) {
-
-// 	fmt.Printf(GetHumanVersion())
-// 	fmt.Printf("    Hello ============")
-
-// 	assert.Equal(t, GetHumanVersion(), "")
-
-// 	if testing.Short() {
-// 		t.Skip("skipping test in short mode.")
-// 	}
-
-// }
-
 // TestOutOfDateUpdateWarningVersion asserts that given an outdated version of
 // the suite an update boolean is returned.
 func TestOutOfDateUpdateWarningVersion(t *testing.T) {
