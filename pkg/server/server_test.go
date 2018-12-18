@@ -6,7 +6,6 @@ package server
 
 import (
 	"bytes"
-	"encoding/json"
 	"flag"
 	"io"
 	"io/ioutil"
@@ -266,88 +265,6 @@ func TestServer_Config_DELETE_Stops_The_Proxy(t *testing.T) {
 		err.Error(),
 	)
 	assert.Nil(resp)
-}
-
-// /api/discovery-model/validate - POST - When valid model returns request payload
-func TestServer_DiscoveryModel_POST_Validate_Returns_Request_Payload_When_Valid(t *testing.T) {
-	assert := assert.New(t)
-
-	server := NewServer(NullLogger(), conditionalityCheckerMock{})
-	defer server.Shutdown(nil)
-
-	discoveryExample, err := ioutil.ReadFile("../discovery/templates/ob-v3.0-ozone.json")
-	assert.NoError(err)
-	assert.NotNil(discoveryExample)
-	// remove trailing new line as it is will make the test fail
-	expected := strings.TrimSuffix(string(discoveryExample), "\n")
-
-	code, body, headers := request(http.MethodPost, "/api/discovery-model/validate",
-		strings.NewReader(expected), server)
-
-	// we should get back the config
-	assert.NotNil(body)
-	assert.Equal(headers["Content-Type"][0], "application/json; charset=UTF-8")
-	assert.Equal(expected, body.String())
-	assert.Equal(http.StatusOK, code)
-}
-
-// /api/discovery-model/validate - POST - When invalid JSON returns error message
-func TestServer_DiscoveryModel_POST_Validate_Returns_Errors_When_Invalid_JSON(t *testing.T) {
-	modelJSON := `{ "bad-json" }`
-	expected := map[string]interface{}{
-		"error": "code=400, message=Syntax error: offset=14, error=invalid character '}' after object key",
-	}
-
-	testDiscoveryModelValidationFails(t, modelJSON, expected)
-}
-
-// /api/discovery-model/validate - POST - When incomplete model returns validation failures messages
-func TestServer_DiscoveryModel_POST_Validate_Returns_Errors_When_Incomplete(t *testing.T) {
-	modelJSON := `{}`
-	expected := map[string]interface{}{
-		"error": []interface{}{
-			map[string]interface{}{
-				"key":   "DiscoveryModel.Name",
-				"error": "Field 'DiscoveryModel.Name' is required",
-			},
-			map[string]interface{}{
-				"key":   "DiscoveryModel.Description",
-				"error": "Field 'DiscoveryModel.Description' is required",
-			},
-			map[string]interface{}{
-				"key":   "DiscoveryModel.DiscoveryVersion",
-				"error": "Field 'DiscoveryModel.DiscoveryVersion' is required",
-			},
-			map[string]interface{}{
-				"key":   "DiscoveryModel.DiscoveryItems",
-				"error": "Field 'DiscoveryModel.DiscoveryItems' is required",
-			},
-		},
-	}
-
-	testDiscoveryModelValidationFails(t, modelJSON, expected)
-}
-
-func testDiscoveryModelValidationFails(t *testing.T, modelJSON string, expected map[string]interface{}) {
-	t.Helper()
-
-	assert := assert.New(t)
-	server := NewServer(NullLogger(), conditionalityCheckerMock{})
-	defer server.Shutdown(nil)
-
-	code, body, headers := request(
-		http.MethodPost,
-		"/api/discovery-model/validate",
-		strings.NewReader(modelJSON),
-		server)
-
-	var actual interface{}
-	json.Unmarshal([]byte(body.String()), &actual)
-
-	assert.NotNil(body)
-	assert.Equal("application/json; charset=UTF-8", headers["Content-Type"][0])
-	assert.Equal(expected, actual)
-	assert.Equal(http.StatusBadRequest, code)
 }
 
 // Generic util function for making test requests.

@@ -7,7 +7,7 @@ describe('validateDiscoveryConfig', () => {
     it('returns success true, and empty array of validation problem strings', async () => {
       fetch.mockResponseOnce(
         JSON.stringify(discoveryModelStub),
-        { status: 200 },
+        { status: 201 },
       );
       const { success, problems } = await discovery.validateDiscoveryConfig(discoveryModelStub);
       expect(success).toBe(true);
@@ -47,7 +47,7 @@ describe('validateDiscoveryConfig', () => {
         expect.assertions(1);
         await discovery.validateDiscoveryConfig(discoveryModelStub);
       } catch (e) {
-        expect(e).toEqual(new Error('Expected 200 OK or 400 BadRequest Status.'));
+        expect(e).toEqual(new Error('Expected 201 OK or 400 BadRequest Status.'));
       }
     });
   });
