@@ -11,10 +11,10 @@ import (
 func TestOutOfDateUpdateWarningVersion(t *testing.T) {
 	// Use an old version to test.
 	version := "v0.0.0"
-	flag := false
 	// Asset that you get update boolean.
-	_, flag = UpdateWarningVersion(version)
+	_, flag, error := UpdateWarningVersion(version)
 	assert.Equal(t, true, flag)
+	assert.Equal(t, error, nil)
 }
 
 // TestNoUpdateUpdateWarningVersion asserts no updated required boolean when
@@ -23,11 +23,11 @@ func TestNoUpdateUpdateWarningVersion(t *testing.T) {
 	version := "v1000.0.0"
 	message := ""
 	flag := true
-	message, flag = UpdateWarningVersion(version)
+	message, flag, _ = UpdateWarningVersion(version)
 	assert.Equal(t, false, flag)
 	assert.Equal(t, "Conformance Suite is running the latest version "+GetHumanVersion(), message)
 	version = Version
-	_, flag = UpdateWarningVersion(version)
+	_, flag, _ = UpdateWarningVersion(version)
 	assert.Equal(t, false, flag)
 
 }
@@ -39,7 +39,39 @@ func TestBadStatusUpdateWarningVersionFail(t *testing.T) {
 	// Modify the API URL to bad status 404.
 	BitBucketAPIRepository = "https://api.bitbucket.org/2.0/repositories/openbankingteam/ooops/refs/tags"
 	// Check we get the appropriate error message.
-	message, _ = UpdateWarningVersion(Version)
+	message, _, _ = UpdateWarningVersion(Version)
 	assert.Equal(t, message, "Version check is univailable at this time.")
+
+}
+
+// TestHTTPErrorUpdateWarningVersion asserts the correct error message
+// is returned if BitBucket cannot return tags.
+func TestHTTPErrorUpdateWarningVersion(t *testing.T) {
+	// Update BitBucketAPIRepository to produce a no such host.
+	BitBucketAPIRepository = "https://.com"
+	message, flag, error := UpdateWarningVersion(Version)
+	// Assert that update fag is false.
+	assert.Equal(t, flag, false)
+	// Assert the default UI/Human error message is returned.
+	assert.Equal(t, message, "Version check is univailable at this time.")
+	// Asset that an error() is actually returned.
+	assert.NotEqual(t, error, nil)
+
+}
+
+// TestHaveVersionUpdateWarningVersion assert that if a version has
+// no length the correct error message is returned.
+func TestHaveVersionUpdateWarningVersion(t *testing.T) {
+	version := ""
+
+	message, flag, error := UpdateWarningVersion(version)
+	// Assert that update fag is false.
+	assert.Equal(t, flag, false)
+	// Assert the default UI/Human error message is returned.
+	assert.Equal(t, message, "Version check is univailable at this time.")
+	// Asset that an error() is actually returned.
+	assert.NotEqual(t, error, nil)
+	// Assert error message is correct.
+	assert.Errorf(t, error, "no version found")
 
 }
