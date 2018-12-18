@@ -22,6 +22,7 @@ require (
 	github.com/mgutz/ansi v0.0.0-20170206155736-9520e82c474b // indirect
 	github.com/nbio/st v0.0.0-20140626010706-e9e8d9816f32 // indirect
 	github.com/onsi/gomega v1.4.2 // indirect
+	github.com/pkg/errors v0.8.0
 	github.com/sirupsen/logrus v1.1.1
 	github.com/stretchr/testify v1.2.2
 	github.com/tidwall/gjson v1.1.3
