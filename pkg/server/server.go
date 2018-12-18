@@ -7,32 +7,43 @@ import (
 	"strings"
 	"time"
 
+	"github.com/pkg/errors"
+
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/authentication"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
 
 	"bitbucket.org/openbankingteam/conformance-suite/appconfig"
 	"bitbucket.org/openbankingteam/conformance-suite/proxy"
 
 	"github.com/go-openapi/loads"
-	"github.com/google/uuid"
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
 	"github.com/sirupsen/logrus"
 	"gopkg.in/go-playground/validator.v9"
 )
 
-// ValidationRunsResponse is the response to the `/api/validation-runs` endpoint.
-type ValidationRunsResponse struct {
-	ID string `json:"id"`
-}
-
-// ValidationRunsIDResponse is the response to the `/api/validation-runs/:id` endpoint.
-type ValidationRunsIDResponse struct {
-	Status string `json:"status"`
+// GlobalConfiguration holds:
+// * private signing key
+// * public signing key
+// * private transport key
+// * public transport key
+type GlobalConfiguration struct {
+	SigningPrivate   string `json:"signing_private"`
+	SigningPublic    string `json:"signing_public"`
+	TransportPrivate string `json:"transport_private"`
+	TransportPublic  string `json:"transport_public"`
 }
 
 // ErrorResponse wraps `error` into a JSON object.
 type ErrorResponse struct {
 	Error interface{} `json:"error"`
+}
+
+// NewErrorResponse - new error response.
+func NewErrorResponse(err error) *ErrorResponse {
+	return &ErrorResponse{
+		Error: err.Error(),
+	}
 }
 
 // CustomValidator used to validate incoming payloads (for now).
@@ -64,7 +75,12 @@ func NewServer(
 		proxy:  nil,
 		logger: logger,
 	}
-	server.Use(middleware.Logger())
+
+	// Use custom logger config so that log lines like below don't appear in the output:
+	// {"time":"2018-12-18T13:00:40.291032Z","id":"","remote_ip":"192.0.2.1","host":"example.com","method":"POST","uri":"/api/config/global?pretty","status":400, "latency":627320,"latency_human":"627.32µs","bytes_in":0,"bytes_out":137}
+	server.Use(middleware.LoggerWithConfig(middleware.LoggerConfig{
+		Output: logger.Writer(),
+	}))
 	server.Use(middleware.Recover())
 	server.Use(middleware.GzipWithConfig(middleware.GzipConfig{
 		// level between 1-9
@@ -96,14 +112,11 @@ func NewServer(
 	// serve WebSocket
 	api.GET("/ws", wsHandler.Handle)
 
-	// health check endpoint
-	api.GET("/health", server.healthHandler)
-	api.POST("/validation-runs", server.validationRunsHandler)
-	api.GET("/validation-runs/:id", server.validationRunsIDHandler)
-
 	// endpoints to post a config and setup the proxy server
 	api.POST("/config", server.configPostHandler)
 	api.DELETE("/config", server.configDeleteHandler)
+	// endpoint to post global configuration
+	api.POST("/config/global", server.configGlobalPostHandler)
 
 	// endpoints for discovery model
 	discoveryHandlers := newDiscoveryHandlers(checker)
@@ -140,33 +153,6 @@ func (s *Server) Shutdown(ctx context.Context) error {
 	}
 
 	return nil
-}
-
-// GET /api/health
-func (s *Server) healthHandler(c echo.Context) error {
-	return c.String(http.StatusOK, "OK")
-}
-
-// POST /api/validation-runs
-func (s *Server) validationRunsHandler(c echo.Context) error {
-	id, err := uuid.NewUUID()
-	if err != nil {
-		return c.JSONPretty(http.StatusNotAcceptable, &ErrorResponse{
-			Error: err.Error(),
-		}, "    ")
-	}
-
-	return c.JSONPretty(http.StatusAccepted, ValidationRunsResponse{
-		ID: id.String(),
-	}, "    ")
-}
-
-// GET /api/validation-runs/:id
-func (s *Server) validationRunsIDHandler(c echo.Context) error {
-	status := c.Param("id")
-	return c.JSONPretty(http.StatusOK, ValidationRunsIDResponse{
-		Status: status,
-	}, "    ")
 }
 
 // POST /api/config
@@ -218,6 +204,38 @@ func (s *Server) configDeleteHandler(c echo.Context) error {
 	s.logger.Debugf("Server:configDeleteHandler -> status=down proxy=%+v", s.proxy)
 
 	return c.NoContent(http.StatusOK)
+}
+
+// POST /api/config/global
+func (s *Server) configGlobalPostHandler(c echo.Context) error {
+	globalConfiguration := new(GlobalConfiguration)
+	if err := c.Bind(globalConfiguration); err != nil {
+		err := errors.Wrap(err, "error with Bind")
+		return c.JSON(http.StatusBadRequest, NewErrorResponse(err))
+	}
+	s.logger.Debugf("Server:configGlobalPostHandler -> globalConfiguration=%+v", globalConfiguration)
+
+	certificateSigning, err := authentication.NewCertificate(
+		globalConfiguration.SigningPublic,
+		globalConfiguration.SigningPrivate,
+	)
+	if err != nil {
+		err := errors.Wrap(err, "error with signing certificate")
+		return c.JSON(http.StatusBadRequest, NewErrorResponse(err))
+	}
+	s.logger.Debugf("Server:configGlobalPostHandler -> certificateSigning=%+v", certificateSigning)
+
+	certificateTransport, err := authentication.NewCertificate(
+		globalConfiguration.TransportPublic,
+		globalConfiguration.TransportPrivate,
+	)
+	if err != nil {
+		err := errors.Wrap(err, "error with transport certificate")
+		return c.JSON(http.StatusBadRequest, NewErrorResponse(err))
+	}
+	s.logger.Debugf("Server:configGlobalPostHandler -> certificateTransport=%+v", certificateTransport)
+
+	return c.JSON(http.StatusOK, globalConfiguration)
 }
 
 // Skipper ensures that all requests not prefixed with `/api` get sent

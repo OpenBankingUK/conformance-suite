@@ -5,11 +5,9 @@ package server
 // Starting and stopping proxy server at the same port cannot be done in parallel.
 
 import (
-	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/test"
 	"bytes"
 	"encoding/json"
 	"flag"
-	"fmt"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -19,9 +17,10 @@ import (
 	"strings"
 	"testing"
 
+	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/test"
+
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
 
-	"github.com/google/uuid"
 	"github.com/labstack/echo"
 	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
@@ -132,54 +131,9 @@ func TestServer(t *testing.T) {
 		assert.Equal(t, `{"message":"Not Found"}`, body.String())
 	})
 
-	t.Run("GET /api/health returns OK", func(t *testing.T) {
-		code, body, _ := request(http.MethodGet, "/api/health", nil, server)
-
-		assert.Equal(t, "OK", body.String())
-		assert.Equal(t, http.StatusOK, code)
-	})
-
-	t.Run("GET /api/validation-runs/${id} when successful returns OK with validation run ID in response", func(t *testing.T) {
-		assert := assert.New(t)
-		id := "c243d5b6-32f0-45ce-a516-1fc6bb6c3c9a"
-		code, body, headerMap := request(
-			http.MethodGet,
-			fmt.Sprintf("/api/validation-runs/%s", id),
-			nil,
-			server,
-		)
-
-		assert.NotNil(body)
-		responseBody := &ValidationRunsIDResponse{}
-		json.Unmarshal(body.Bytes(), &responseBody)
-		assert.Equal(id, responseBody.Status)
-		assert.Equal(echo.MIMEApplicationJSONCharsetUTF8, headerMap.Get(echo.HeaderContentType))
-		assert.Equal(http.StatusOK, code)
-	})
-
 	if err := server.Shutdown(nil); err != nil {
 		logrus.Fatalf("Test=%s, Shutdown err=%s", t.Name(), err)
 	}
-}
-
-// /api/validation-runs- POST when successful returns validation run ID in JSON and nil error
-func TestServer_ValidationRuns_POST_ValidationRuns_Returns_ValidationRunID(t *testing.T) {
-	assert := assert.New(t)
-
-	server := NewServer(NullLogger(), conditionalityCheckerMock{})
-	defer server.Shutdown(nil)
-
-	code, body, headerMap := request(http.MethodPost, "/api/validation-runs", nil, server)
-
-	assert.NotNil(body)
-	responseBody := &ValidationRunsResponse{}
-	json.Unmarshal(body.Bytes(), &responseBody)
-	id, err := uuid.Parse(responseBody.ID)
-
-	assert.NoError(err)
-	assert.Equal(id.String(), responseBody.ID)
-	assert.Equal(echo.MIMEApplicationJSONCharsetUTF8, headerMap.Get(echo.HeaderContentType))
-	assert.Equal(http.StatusAccepted, code)
 }
 
 // /api/config - POST - can POST config
@@ -391,7 +345,7 @@ func testDiscoveryModelValidationFails(t *testing.T, modelJSON string, expected 
 	json.Unmarshal([]byte(body.String()), &actual)
 
 	assert.NotNil(body)
-	assert.Equal(headers["Content-Type"][0], "application/json; charset=UTF-8")
+	assert.Equal("application/json; charset=UTF-8", headers["Content-Type"][0])
 	assert.Equal(expected, actual)
 	assert.Equal(http.StatusBadRequest, code)
 }
@@ -407,6 +361,7 @@ func request(method, path string, body io.Reader, server *Server) (int, *bytes.B
 	return rec.Code, rec.Body, rec.HeaderMap
 }
 
+// nullLogger - create a logger that discards output.
 func NullLogger() *logrus.Entry {
 	logger := logrus.New()
 	logger.Out = ioutil.Discard

@@ -3,7 +3,11 @@
 
 *.env*
 
-conformance-suite
+# ignore binaries generated from `go build`
+/server
+/conformance-suite
+/fcs
+
 web/dist
 # For testing purposes we symbolic link web/public to lib/server/web/dist
 # so that we can test out that static file are being served by the Echo web server.
