@@ -1,5 +1,9 @@
 # Discovery Specification - v0.1
 
+**Warning**: The Discovery Specification is in alpha and is subject to change without notice.
+
+** Contents **
+
 [TOC]
 
 ## Overview
@@ -21,7 +25,7 @@ The following discovery templates are available:
 * * Ozone -  a customizable template that is pre-populated with Ozone endpoints and data.
 * * ForgeRock -  a customizable template that is pre-populated with ForgeRock endpoints and data.
 
-### Model format
+## Model format
 
 The discovery model defines in a JSON format endpoints implemented per
 specification and optional payload schema properties provided for online channel
@@ -35,7 +39,7 @@ properties:
 * `discoveryVersion` - version number of the discovery model format, e.g. "v0.1.0".
 * `discoveryItems` - an array of discovery items (see below for details).
 
-#### Discovery version
+### Discovery version
 
 The version number is used to track changes to made to the discovery model.
 
@@ -43,7 +47,7 @@ The version number is formatted as MAJOR.MINOR.PATCH, following the
 [Semantic Versioning](https://semver.org/) approach to convey meaning about what
 has been modified from one version to the next. For details see: https://semver.org/
 
-#### Discovery item
+### Discovery item
 
 Each discovery item contains information related to a particular specification
 version.
@@ -55,7 +59,7 @@ Properties in each discovery item are:
 * `resourceBaseUri` - Base of resource URI, i.e. the part before "/open-banking/v3.0".
 * `endpoints` - Array of endpoint and method implementation details.
 
-#### API Specification
+### API Specification
 
 The discovery model records specification details in an unambiguous way:
 
@@ -91,7 +95,7 @@ Example
 }
 ```
 
-#### Endpoint and method
+### Endpoint and method
 
 A discovery item contains a list of endpoint and methods that have been
 implemented by an ASPSP. This list includes:
@@ -129,7 +133,7 @@ Example
 ]
 ```
 
-##### Required properties
+#### Required properties
 
 The specification lists some resource schema properties that may occur `0..1`, or `0..*` times.
 
@@ -180,7 +184,7 @@ as follows:
 ]
 ```
 
-### Resource IDs
+## Resource IDs
 
 We've introduced a "resourceId" section to the discovery model which allows a tester to provide resource ids to be used when swagger/openapi calls are made. 
 
@@ -229,6 +233,6 @@ So in summary, using the `resouceIds` section of the discovery file is one way o
 
 
 
-### Example file
+## Example file
 
 Discovery templates can be found in the [templates directory here](../pkg/discovery/templates).
