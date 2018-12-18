@@ -1,4 +1,8 @@
-# Discovery - v0.1
+# Discovery Specification - v0.1
+
+[TOC]
+
+## Overview
 
 The Functional Conformance Suite generates a set of tests that can be used to verify conformance to a set of specifications. To facilitate this, an implementer must describe their system using a Discovery file. This discovery file allows the Functional Conformance Suite to generate and run 'tests cases' to ensure conformance to a specification by running test cases and analysing the results.
 
