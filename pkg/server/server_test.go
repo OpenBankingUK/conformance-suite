@@ -5,6 +5,7 @@ package server
 // Starting and stopping proxy server at the same port cannot be done in parallel.
 
 import (
+	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/test"
 	"bytes"
 	"encoding/json"
 	"flag"
@@ -15,7 +16,6 @@ import (
 	"net/http/httptest"
 	"net/url"
 	"os"
-	"regexp"
 	"strings"
 	"testing"
 
@@ -28,10 +28,12 @@ import (
 )
 
 var (
-	appConfigJSON = `{
+	appConfigJSON        = appConfigJSONWithUrl("https://rs.aspsp.ob.forgerock.financial:443")
+	appConfigJSONWithUrl = func(url string) string {
+		return `{
     "softwareStatementId": "5b5a2008b093465496d238fc",
     "keyId": "d6c3f49c-7112-4c5c-9c9d-84926e992c74",
-    "targetHost": "https://rs.aspsp.ob.forgerock.financial:443",
+    "targetHost": "` + url + `",
     "verbose": true,
     "specLocation": "../../swagger/rw20test.json",
     "bindAddress": ":8989",
@@ -55,6 +57,7 @@ var (
         "token_type": ""
     }
 }`
+	}
 )
 
 // conditionalityCheckerMock - implements model.ConditionalityChecker interface for tests
@@ -180,20 +183,24 @@ func TestServer_ValidationRuns_POST_ValidationRuns_Returns_ValidationRunID(t *te
 }
 
 // /api/config - POST - can POST config
-func TestServer_Config_POST_Can_POST_Config(t *testing.T) {
+func TestServer_Config_POST_Creates_Proxy(t *testing.T) {
 	assert := assert.New(t)
 
 	server := NewServer(NullLogger(), conditionalityCheckerMock{})
 	defer server.Shutdown(nil)
 
+	mockedServer, serverUrl := test.MockHTTPServer(http.StatusBadRequest, "body", nil)
+	appConfig := appConfigJSONWithUrl(serverUrl)
+
 	// assert server isn't started before call
 	frontendProxy, _ := url.Parse("http://0.0.0.0:8989/open-banking/v2.0/accounts")
 	_, err := http.Get(frontendProxy.String())
 	assert.Error(err)
+	assert.Nil(server.proxy)
 
 	// create the request to post the config
 	// this should start the proxy
-	req := httptest.NewRequest(http.MethodPost, "/api/config", strings.NewReader(appConfigJSON))
+	req := httptest.NewRequest(http.MethodPost, "/api/config", strings.NewReader(appConfig))
 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 
 	rec := httptest.NewRecorder()
@@ -202,7 +209,7 @@ func TestServer_Config_POST_Can_POST_Config(t *testing.T) {
 	server.ServeHTTP(rec, req)
 
 	assert.NotNil(rec.Body)
-	assert.Equal(appConfigJSON, rec.Body.String())
+	assert.Equal(appConfig, rec.Body.String())
 	assert.Equal(http.StatusOK, rec.Code)
 
 	// check the proxy is up now, we should hit the forgerock server
@@ -211,12 +218,10 @@ func TestServer_Config_POST_Can_POST_Config(t *testing.T) {
 	body, err := ioutil.ReadAll(resp.Body)
 	assert.NoError(err)
 	assert.Equal(http.StatusBadRequest, resp.StatusCode)
+	assert.Equal("body", string(body))
+	assert.NotNil(server.proxy)
 
-	// assert that the body matches a certain regex
-	assert.Regexp(
-		regexp.MustCompile(`^{"Code":"OBRI.FR.Request.Invalid","Id":".*","Message":"An error happened when parsing the request arguments","Errors":\[{"ErrorCode":"UK.OBIE.Header.Missing","Message":"Missing request header 'x-fapi-financial-id' for method parameter of type String","Url":"https://docs.ob.forgerock.financial/errors#UK.OBIE.Header.Missing"}\]}$`),
-		string(body),
-	)
+	mockedServer.Close()
 }
 
 // /api/config - POST - cannot POST config twice without first deleting it
