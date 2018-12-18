@@ -1,8 +1,8 @@
 package test
 
 import (
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"gopkg.in/go-playground/assert.v1"
 	"io/ioutil"
 	"net/http"
 	"testing"
@@ -31,5 +31,6 @@ func TestMockHTTPServer_Adds_Headers(t *testing.T) {
 
 	assert.Equal(t, "value1", response.Header.Get("key1"))
 	assert.Equal(t, "value2", response.Header.Get("key2"))
+
 	server.Close()
 }
