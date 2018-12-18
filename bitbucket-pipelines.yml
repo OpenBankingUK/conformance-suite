@@ -5,9 +5,6 @@ options:
   docker: true
 
 definitions:
-#  caches:
-#    gomodules: $GOPATH/src/mod
-#    cache-web: web/node_modules/
   services:
     docker:
       memory: 2048
@@ -17,8 +14,6 @@ pipelines:
     - parallel:
         # build go app
         - step:
-#            caches:
-#              - gomodules
             name: go-test
             image: golang:1.11-stretch
             script:
