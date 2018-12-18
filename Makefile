@@ -51,18 +51,30 @@ init_web: ./web/node_modules ## install node_modules when not present
 ./web/node_modules:
 	cd web && yarn install
 
+.PHONY: devtools
+devtools: ## install dev tools
+	@echo -e "\033[92m  ---> Installing golint (golang.org/x/lint/golint) ... \033[0m"
+	GOPROXY= go get -u golang.org/x/lint/golint
+	@echo -e "\033[92m  ---> Installing gocyclo (github.com/fzipp/gocyclo) ... \033[0m"
+	GOPROXY= go get -u github.com/fzipp/gocyclo
+
 .PHONY: lint
 lint: ## lint the go code
 	@echo -e "\033[92m  ---> Vetting ... \033[0m"
-	go vet $(shell go list ./... | grep -v /vendor/)
+	GOPROXY= go vet $(shell go list ./... | grep -v /vendor/)
 	@echo -e "\033[92m  ---> Linting ... \033[0m"
-	golint -min_confidence 1.0 -set_exit_status $(shell go list ./... | grep -v vendor)
+	GOPROXY= golint -min_confidence 1.0 -set_exit_status $(shell go list ./... | grep -v vendor)
 	@echo -e "\033[92m  ---> Formatting ... \033[0m"
 	@GO_PKGS="$(shell go list -f {{.Dir}} ./...)"; \
 	for PKG_DIR in $${GO_PKGS}; do \
 		echo -e "\033[92m  ---> Formatting $${PKG_DIR}/*.go ... \033[0m"; \
 		gofmt -e -s -w $${PKG_DIR}/*.go; \
 	done
+
+.PHONY: cyclomatic
+cyclomatic: ## cyclomatic complexity checks
+	@echo -e "\033[92m  ---> Checking cyclomatic complexity ... \033[0m"
+	gocyclo -over 12 $(shell ls -d */ | grep -v vendor)
 
 .PHONY: clean
 clean:

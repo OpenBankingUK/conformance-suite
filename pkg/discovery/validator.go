@@ -9,6 +9,7 @@ type Validator interface {
 	Validate(*Model) (ValidationFailures, error)
 }
 
+// NewFuncValidator creates a Validator engine using functional implementation
 func NewFuncValidator(checker model.ConditionalityChecker) Validator {
 	return funcWrapperValidator{
 		validatorFunc:         Validate,
@@ -45,10 +46,13 @@ type ValidationFailure struct {
 	Error string `json:"error"`
 }
 
+// ValidationFailures represents a list of failures from a Validator engine
 type ValidationFailures []ValidationFailure
 
+// NoValidationFailures represents a return of no validation errors found
 var NoValidationFailures = ValidationFailures{}
 
+// Empty returns if there are validation failures present
 func (v ValidationFailures) Empty() bool {
 	return len(v) == 0
 }

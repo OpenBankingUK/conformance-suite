@@ -49,8 +49,8 @@ func (cv *CustomValidator) Validate(i interface{}) error {
 // Server wraps *echo.Echo and stores the proxy once configured.
 type Server struct {
 	*echo.Echo // Wrap (using composition) *echo.Echo, allows us to pretend Server is echo.Echo.
-	proxy  *http.Server
-	logger *logrus.Entry
+	proxy      *http.Server
+	logger     *logrus.Entry
 }
 
 // NewServer returns new echo.Echo server.
