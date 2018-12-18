@@ -6,7 +6,7 @@ import (
 	"net/http/httptest"
 )
 
-func MockHTTPServer(code int, body string, headers map[string]string, err error) (*httptest.Server, string) {
+func MockHTTPServer(code int, body string, headers map[string]string) (*httptest.Server, string) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		addHeaders(w, headers)
 		w.WriteHeader(code)

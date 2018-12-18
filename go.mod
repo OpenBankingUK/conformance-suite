@@ -30,7 +30,7 @@ require (
 	github.com/valyala/fasttemplate v0.0.0-20170224212429-dcecefd839c4 // indirect
 	github.com/x-cray/logrus-prefixed-formatter v0.5.2
 	golang.org/x/crypto v0.0.0-20181203042331-505ab145d0a9 // indirect
-	gopkg.in/go-playground/assert.v1 v1.2.1 // indirect
+	gopkg.in/go-playground/assert.v1 v1.2.1
 	gopkg.in/go-playground/validator.v9 v9.21.1
 	gopkg.in/h2non/gock.v1 v1.0.12
 )
