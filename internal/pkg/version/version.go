@@ -2,14 +2,14 @@
 package version
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"regexp"
 	"strings"
+
+	"github.com/pkg/errors"
 )
 
 //  Version returns the semantic version (see http://semver.org).
@@ -44,9 +44,6 @@ type TagsAPIResponse struct {
 func getTags(body []byte) (*TagsAPIResponse, error) {
 	var s = new(TagsAPIResponse)
 	err := json.Unmarshal(body, &s)
-	if err != nil {
-		fmt.Println("whoops:", err)
-	}
 	return s, err
 }
 
@@ -68,7 +65,7 @@ func GetHumanVersion() string {
 // Versionformatter takes a string version number and returns just the numeric parts.
 // This function is used when trying to compare two string versions that 'could'
 // have non numerical properties.
-func Versionformatter(version string) string {
+func Versionformatter(version string) (string, error) {
 	const maxByte = 1<<8 - 1
 	vo := make([]byte, 0, len(version)+8)
 	j := -1
@@ -88,7 +85,7 @@ func Versionformatter(version string) string {
 			continue
 		}
 		if vo[j]+1 > maxByte {
-			panic("VersionOrdinal: invalid version")
+			return "", fmt.Errorf("VersionOrdinal: invalid version")
 		}
 		vo = append(vo, b)
 		vo[j]++
@@ -97,61 +94,67 @@ func Versionformatter(version string) string {
 	reg, err := regexp.Compile("[^0-9.]")
 	// Raise any errors running the expression.
 	if err != nil {
-		log.Fatal(err)
-		fmt.Println("error")
+		return "", errors.Wrap(err, "could not format version number.")
+
 	}
 	processedString := reg.ReplaceAllString(string(vo), "")
 
-	return processedString
+	return processedString, nil
 }
 
 // UpdateWarningVersion takes a version number and checks it against the
 // latest tag version on Bitbucket, if a newer version is found it
 // returns a message and bool value that can be used to inform a user
 // a newer version is available for download.
-func UpdateWarningVersion(version string) (string, bool) {
-	var buf bytes.Buffer
+func UpdateWarningVersion(version string) (string, bool, error) {
+	// A default message that can be persented to an end user.
+	errorMessageUI := "Version check is univailable at this time."
 
-	// Some basic validation, check we have a version.
-	if len(version) != 0 {
-		fmt.Fprintf(&buf, " (%s)", Version)
+	// Some basic validation, check we have a version,
+	if len(version) == 0 {
+		return errorMessageUI, false, fmt.Errorf("no version found")
 	}
-
+	// Try to get the lastest tag using the BitBucket API.
 	resp, err := http.Get(BitBucketAPIRepository)
-
 	if err != nil {
-		// handle error
-		log.Fatal(err)
+		// If network error then return message, flag to NOT update and actual error.
+		return errorMessageUI, false, errors.Wrap(err, "Error: HTTP on GET to BitBucket API")
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode == http.StatusOK {
 		body, err := ioutil.ReadAll(resp.Body)
 		if err != nil {
-			panic(err.Error())
+			return errorMessageUI, false, errors.Wrap(err, "cannot read body API error.")
 		}
 
-		s, err := getTags([]byte(body))
+		s, _ := getTags([]byte(body))
+
+		if len(s.TagList) == 0 {
+			return errorMessageUI, false, fmt.Errorf("No Tags found")
+		}
+
+		latestTag := s.TagList[0].Name
 
 		// Format version string to compare.
-		versionLocal := Versionformatter(version)
-		versionRemote := Versionformatter(s.TagList[0].Name)
+		versionLocal, err := Versionformatter(version)
+		versionRemote, err := Versionformatter(latestTag)
 
 		if versionLocal < versionRemote {
-			message := fmt.Sprintf("Version v%s of the Conformance Suite is out-of-date, please update to v%s", versionLocal, versionRemote)
-			return message, true
+			errorMessageUI = fmt.Sprintf("Version v%s of the Conformance Suite is out-of-date, please update to v%s", versionLocal, versionRemote)
+			return errorMessageUI, true, nil
 		}
 		// If local and remote version match or is higher then return false update flag.
 		if versionLocal >= versionRemote {
-			message := fmt.Sprintf("Conformance Suite is running the latest version %s", GetHumanVersion())
-			return message, false
+			errorMessageUI = fmt.Sprintf("Conformance Suite is running the latest version %s", GetHumanVersion())
+			return errorMessageUI, false, nil
 		}
 
 	} else {
 		// handle anything else other than 200 OK.
-		return "Version check is univailable at this time.", false
+		return errorMessageUI, false, nil
 	}
 
-	return "Version check is univailable at this time.", false
+	return errorMessageUI, false, nil
 
 }
