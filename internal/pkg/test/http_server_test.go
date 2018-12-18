@@ -9,7 +9,7 @@ import (
 )
 
 func TestMockHTTPServer_Minimal_Usage(t *testing.T) {
-	server, url := MockHTTPServer(http.StatusOK, "body", nil)
+	server, url := HTTPServer(http.StatusOK, "body", nil)
 
 	response, err := http.Get(url)
 	require.NoError(t, err)
@@ -24,7 +24,7 @@ func TestMockHTTPServer_Minimal_Usage(t *testing.T) {
 
 func TestMockHTTPServer_Adds_Headers(t *testing.T) {
 	headers := map[string]string{"key1": "value1", "key2": "value2"}
-	server, url := MockHTTPServer(http.StatusOK, "body", headers)
+	server, url := HTTPServer(http.StatusOK, "body", headers)
 
 	response, err := http.Get(url)
 	require.NoError(t, err)

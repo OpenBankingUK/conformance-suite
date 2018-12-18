@@ -189,7 +189,7 @@ func TestServer_Config_POST_Creates_Proxy(t *testing.T) {
 	server := NewServer(NullLogger(), conditionalityCheckerMock{})
 	defer server.Shutdown(nil)
 
-	mockedServer, serverUrl := test.MockHTTPServer(http.StatusBadRequest, "body", nil)
+	mockedServer, serverUrl := test.HTTPServer(http.StatusBadRequest, "body", nil)
 	appConfig := appConfigJSONWithUrl(serverUrl)
 
 	// assert server isn't started before call

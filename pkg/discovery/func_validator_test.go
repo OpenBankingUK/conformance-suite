@@ -103,12 +103,28 @@ func discoveryStub(field string, value string) string {
 		}
 	}
 
+	apiSpecification := apiSpecificationStub(specName, specURL, specVersion, schemaVersion, field, value)
+
+	discoveryItems := discoveryItemsStub(apiSpecification, endpoints, field, value)
+
+	return `
+				{
+					"discoveryModel": {` +
+		`"name": "` + name + `",` +
+		`"description": "` + description + `",` +
+		`"discoveryVersion": "` + version + `"` +
+		discoveryItems + `
+					}
+			}`
+}
+
+func apiSpecificationStub(specName string, specURL string, specVersion string, schemaVersion string, field string, value string) string {
 	apiSpecification := `"apiSpecification": {
-		"name": "` + specName + `",
-		"url": "` + specURL + `",
-		"version": "` + specVersion + `",
-		"schemaVersion": "` + schemaVersion + `"
-	},`
+			"name": "` + specName + `",
+			"url": "` + specURL + `",
+			"version": "` + specVersion + `",
+			"schemaVersion": "` + schemaVersion + `"
+		},`
 	if field == "apiSpecification" {
 		if value == "" {
 			apiSpecification = ""
@@ -116,14 +132,17 @@ func discoveryStub(field string, value string) string {
 			apiSpecification = `"apiSpecification": ` + value + `,`
 		}
 	}
+	return apiSpecification
+}
 
+func discoveryItemsStub(apiSpecification string, endpoints string, field string, value string) string {
 	discoveryItems := `, "discoveryItems": [
-		{
-			` + apiSpecification + `
-			"openidConfigurationUri": "https://as.aspsp.ob.forgerock.financial/oauth2/.well-known/openid-configuration",
-			"resourceBaseUri": "https://rs.aspsp.ob.forgerock.financial:443/"` + endpoints + `
-		}
-	]`
+			{
+				` + apiSpecification + `
+				"openidConfigurationUri": "https://as.aspsp.ob.forgerock.financial/oauth2/.well-known/openid-configuration",
+				"resourceBaseUri": "https://rs.aspsp.ob.forgerock.financial:443/"` + endpoints + `
+			}
+		]`
 	if field == "discoveryItems" {
 		if value == "" {
 			discoveryItems = ""
@@ -131,16 +150,7 @@ func discoveryStub(field string, value string) string {
 			discoveryItems = `, "discoveryItems": ` + value
 		}
 	}
-
-	return `
-		{
-			"discoveryModel": {` +
-		`"name": "` + name + `",` +
-		`"description": "` + description + `",` +
-		`"discoveryVersion": "` + version + `"` +
-		discoveryItems + `
-			}
-	}`
+	return discoveryItems
 }
 
 // TestValidate - test Validate function

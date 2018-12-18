@@ -5,8 +5,9 @@ options:
   docker: true
 
 definitions:
-  # caches:
-  #   cache-web: web/node_modules/
+#  caches:
+#    gomodules: $GOPATH/src/mod
+#    cache-web: web/node_modules/
   services:
     docker:
       memory: 2048
@@ -16,6 +17,8 @@ pipelines:
     - parallel:
         # build go app
         - step:
+#            caches:
+#              - gomodules
             name: go-test
             image: golang:1.11-stretch
             script:
@@ -23,8 +26,11 @@ pipelines:
                 CGO_ENABLED=0
                 GOOS=linux
                 GOARCH=amd64
+              - make devtools
               - make build
+              - make lint
               - make test
+              - make cyclomatic
 
         # lint and test the Vue.js app
         - step:

@@ -57,5 +57,5 @@ func (d discoveryHandlers) persistDiscoveryModelHandler(c echo.Context) error {
 }
 
 func badRequestErrorResponse(c echo.Context, err interface{}) error {
-	return c.JSONPretty(http.StatusBadRequest, &ErrorResponse{Error: err,}, "  ")
+	return c.JSONPretty(http.StatusBadRequest, &ErrorResponse{Error: err}, "  ")
 }
