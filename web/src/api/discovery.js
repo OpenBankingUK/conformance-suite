@@ -39,11 +39,11 @@ export default {
 
   // Calls validate endpoint, returns {success, problemsArray}.
   async validateDiscoveryConfig(discoveryModel) {
-    const response = await api.post('/api/discovery-model/validate', discoveryModel);
+    const response = await api.post('/api/discovery-model', discoveryModel);
     const { status } = response;
 
-    if (status !== 200 && status !== 400) {
-      throw new Error('Expected 200 OK or 400 BadRequest Status.');
+    if (status !== 201 && status !== 400) {
+      throw new Error('Expected 201 OK or 400 BadRequest Status.');
     }
 
     const validationFailed = status === 400;

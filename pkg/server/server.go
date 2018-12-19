@@ -1,6 +1,8 @@
 package server
 
 import (
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/web"
 	"context"
 	"fmt"
 	"net/http"
@@ -32,18 +34,6 @@ type GlobalConfiguration struct {
 	SigningPublic    string `json:"signing_public"`
 	TransportPrivate string `json:"transport_private"`
 	TransportPublic  string `json:"transport_public"`
-}
-
-// ErrorResponse wraps `error` into a JSON object.
-type ErrorResponse struct {
-	Error interface{} `json:"error"`
-}
-
-// NewErrorResponse - new error response.
-func NewErrorResponse(err error) *ErrorResponse {
-	return &ErrorResponse{
-		Error: err.Error(),
-	}
 }
 
 // CustomValidator used to validate incoming payloads (for now).
@@ -99,6 +89,9 @@ func NewServer(
 
 	server.HideBanner = true
 
+	validatorEngine := discovery.NewFuncValidator(checker)
+	webJourney := web.NewWebJourney(validatorEngine)
+
 	// https://echo.labstack.com/guide/request#validate-data
 	validator := validator.New()
 	server.Validator = &CustomValidator{validator}
@@ -119,9 +112,8 @@ func NewServer(
 	api.POST("/config/global", server.configGlobalPostHandler)
 
 	// endpoints for discovery model
-	discoveryHandlers := newDiscoveryHandlers(checker)
-	api.POST("/discovery-model/validate", discoveryHandlers.discoveryModelValidateHandler)
-	api.POST("/discovery-model", discoveryHandlers.persistDiscoveryModelHandler)
+	discoveryHandlers := newDiscoveryHandlers(webJourney)
+	api.POST("/discovery-model", discoveryHandlers.setDiscoveryModelHandler)
 
 	server.logRoutes()
 

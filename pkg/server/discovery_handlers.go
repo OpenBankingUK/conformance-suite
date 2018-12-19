@@ -2,60 +2,37 @@ package server
 
 import (
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/web"
 	"github.com/labstack/echo"
 	"net/http"
 )
 
-var validDiscoveryModel *discovery.Model
-
 type discoveryHandlers struct {
-	validator discovery.Validator
+	webJourney web.Journey
 }
 
-func newDiscoveryHandlers(checker model.ConditionalityChecker) discoveryHandlers {
-	return discoveryHandlers{
-		discovery.NewFuncValidator(checker),
-	}
+func newDiscoveryHandlers(webJourney web.Journey) discoveryHandlers {
+	return discoveryHandlers{webJourney}
 }
 
-func (d discoveryHandlers) discoveryModelValidateHandler(c echo.Context) error {
+func (d discoveryHandlers) setDiscoveryModelHandler(c echo.Context) error {
 	discoveryModel := &discovery.Model{}
 	if err := c.Bind(discoveryModel); err != nil {
-		return badRequestErrorResponse(c, err.Error())
+		return c.JSON(http.StatusBadRequest, NewErrorResponse(err))
 	}
 
-	failures, err := d.validator.Validate(discoveryModel)
+	failures, err := d.webJourney.SetDiscoveryModel(discoveryModel)
 	if err != nil {
-		return badRequestErrorResponse(c, err.Error())
+		return c.JSON(http.StatusBadRequest, NewErrorResponse(err))
 	}
 
 	if !failures.Empty() {
-		return badRequestErrorResponse(c, failures)
+		return c.JSON(http.StatusBadRequest, validationFailuresResponse{failures})
 	}
-	return c.JSONPretty(http.StatusOK, discoveryModel, "  ")
+
+	return c.JSON(http.StatusCreated, discoveryModel)
 }
 
-func (d discoveryHandlers) persistDiscoveryModelHandler(c echo.Context) error {
-	discoveryModel := &discovery.Model{}
-	if err := c.Bind(discoveryModel); err != nil {
-		return badRequestErrorResponse(c, err.Error())
-	}
-
-	failures, err := d.validator.Validate(discoveryModel)
-	if err != nil {
-		return badRequestErrorResponse(c, err.Error())
-	}
-
-	if !failures.Empty() {
-		return badRequestErrorResponse(c, failures)
-	}
-
-	validDiscoveryModel = discoveryModel
-
-	return c.JSONPretty(http.StatusCreated, discoveryModel, "  ")
-}
-
-func badRequestErrorResponse(c echo.Context, err interface{}) error {
-	return c.JSONPretty(http.StatusBadRequest, &ErrorResponse{Error: err}, "  ")
+type validationFailuresResponse struct {
+	Error discovery.ValidationFailures `json:"error"`
 }

@@ -57,6 +57,8 @@ devtools: ## install dev tools
 	go get -u golang.org/x/lint/golint
 	@echo -e "\033[92m  ---> Installing gocyclo (github.com/fzipp/gocyclo) ... \033[0m"
 	go get -u github.com/fzipp/gocyclo
+	@echo -e "\033[92m  ---> Installing mockery (github.com/vektra/mockery) ... \033[0m"
+	go get -u github.com/vektra/mockery
 
 .PHONY: lint
 lint: ## lint the go code
@@ -74,6 +76,9 @@ lint: ## lint the go code
 cyclomatic: ## cyclomatic complexity checks
 	@echo -e "\033[92m  ---> Checking cyclomatic complexity ... \033[0m"
 	gocyclo -over 12 ${GO_PKGS_FOLDERS}
+
+.PHONY: qa
+qa: test lint cyclomatic ## run all known quality assurance tools
 
 .PHONY: clean
 clean:
