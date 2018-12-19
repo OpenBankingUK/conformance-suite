@@ -1,6 +1,6 @@
 SHELL:=/bin/bash
-# guarantee that go will not reach the network at all (e.g. GOPROXY=off)
-export GOPROXY:=off
+GO_PKGS:=$(shell go list ./...)
+GO_PKGS_FOLDERS=$(shell go list -f '{{.Dir}}/' ./...)
 
 .PHONY: all
 all: help
@@ -10,7 +10,7 @@ run: init_web ## run binary directly without docker
 	@echo -e "\033[92m  ---> Starting web file watcher ... \033[0m"
 	cd web && FORCE_COLOR=1 NODE_DISABLE_COLORS=0 yarn build-watch &> $(shell pwd)/web/web.log &
 	@echo -e "\033[92m  ---> Starting server ... \033[0m"
-	PORT=8080 go run -mod=vendor cmd/server/main.go
+	PORT=8080 go run cmd/server/main.go
 
 .PHONY: run_image
 run_image: ## run the docker image
@@ -26,12 +26,12 @@ run_image: ## run the docker image
 .PHONY: build
 build: ## build the server binary directly
 	@echo -e "\033[92m  ---> Building ... \033[0m"
-	go build -mod=vendor -o server cmd/server/main.go
+	go build -o server cmd/server/main.go
 
 .PHONY: build_cli
 build_cli: ## build the cli binary directly
 	@echo -e "\033[92m  ---> Building CLI ... \033[0m"
-	go build -mod=vendor -o fcs cmd/cli/main.go
+	go build -o fcs cmd/cli/main.go
 
 .PHONY: build_image
 build_image: ## build the docker image
@@ -44,7 +44,7 @@ build_image: ## build the docker image
 .PHONY: init
 init: ## initialise
 	@echo -e "\033[92m  ---> Initialising ... \033[0m"
-	go get -v ./...
+	go mod download
 
 init_web: ./web/node_modules ## install node_modules when not present
 
@@ -54,27 +54,26 @@ init_web: ./web/node_modules ## install node_modules when not present
 .PHONY: devtools
 devtools: ## install dev tools
 	@echo -e "\033[92m  ---> Installing golint (golang.org/x/lint/golint) ... \033[0m"
-	GOPROXY= go get -u golang.org/x/lint/golint
+	go get -u golang.org/x/lint/golint
 	@echo -e "\033[92m  ---> Installing gocyclo (github.com/fzipp/gocyclo) ... \033[0m"
-	GOPROXY= go get -u github.com/fzipp/gocyclo
+	go get -u github.com/fzipp/gocyclo
 
 .PHONY: lint
 lint: ## lint the go code
 	@echo -e "\033[92m  ---> Vetting ... \033[0m"
-	GOPROXY= go vet $(shell go list ./... | grep -v /vendor/)
+	go vet ${GO_PKGS}
 	@echo -e "\033[92m  ---> Linting ... \033[0m"
-	GOPROXY= golint -min_confidence 1.0 -set_exit_status $(shell go list ./... | grep -v vendor)
+	golint -min_confidence 1.0 -set_exit_status ${GO_PKGS}
 	@echo -e "\033[92m  ---> Formatting ... \033[0m"
-	@GO_PKGS="$(shell go list -f {{.Dir}} ./...)"; \
-	for PKG_DIR in $${GO_PKGS}; do \
-		echo -e "\033[92m  ---> Formatting $${PKG_DIR}/*.go ... \033[0m"; \
-		gofmt -e -s -w $${PKG_DIR}/*.go; \
+	@for GO_PKG_DIR in ${GO_PKGS_FOLDERS}; do \
+		echo -e "\033[92m  ---> Formatting $${GO_PKG_DIR}*.go ... \033[0m"; \
+		gofmt -e -s -w $${GO_PKG_DIR}*.go; \
 	done
 
 .PHONY: cyclomatic
 cyclomatic: ## cyclomatic complexity checks
 	@echo -e "\033[92m  ---> Checking cyclomatic complexity ... \033[0m"
-	gocyclo -over 12 $(shell ls -d */ | grep -v vendor)
+	gocyclo -over 12 ${GO_PKGS_FOLDERS}
 
 .PHONY: clean
 clean:
@@ -92,7 +91,6 @@ test: ## run the go tests
 		ln -s $(shell pwd)/web/public $(shell pwd)/pkg/server/web/dist; \
 	fi
 	go test \
-		-mod=vendor \
 		-v \
 		-cover \
 		./...
@@ -101,7 +99,6 @@ test: ## run the go tests
 test_coverage: ## run the go tests then open up coverage report
 	@echo -e "\033[92m  ---> Testing wth coverage ... \033[0m"
 	go test \
-		-mod=vendor \
 		-v \
 		-cover \
 		-coverprofile=$(shell pwd)/coverage.out \

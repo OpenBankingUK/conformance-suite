@@ -15,6 +15,7 @@ WORKDIR /app
 
 ADD . .
 
+RUN make init
 RUN make build
 RUN make build_cli
 
