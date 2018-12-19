@@ -38,12 +38,6 @@
 !**/internal/**
 !**/internal/**/*
 
-# the server's dependencies
-!**/vendor
-!**/vendor/
-!**/vendor/**
-!**/vendor/**/*
-
 # except vue.js website
 !**/web
 !**/web/**/*

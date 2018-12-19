@@ -3,7 +3,6 @@ module bitbucket.org/openbankingteam/conformance-suite
 require (
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/fatih/color v1.7.0
-	github.com/fzipp/gocyclo v0.0.0-20150627053110-6acd4345c835 // indirect
 	github.com/go-openapi/errors v0.17.2
 	github.com/go-openapi/loads v0.17.2
 	github.com/go-openapi/spec v0.17.2
@@ -31,9 +30,7 @@ require (
 	github.com/valyala/fasttemplate v0.0.0-20170224212429-dcecefd839c4 // indirect
 	github.com/x-cray/logrus-prefixed-formatter v0.5.2
 	golang.org/x/crypto v0.0.0-20181203042331-505ab145d0a9 // indirect
-	golang.org/x/lint v0.0.0-20181217174547-8f45f776aaf1 // indirect
-	golang.org/x/tools v0.0.0-20181218020041-13ba8ad772df // indirect
-	gopkg.in/go-playground/assert.v1 v1.2.1
+	gopkg.in/go-playground/assert.v1 v1.2.1 // indirect
 	gopkg.in/go-playground/validator.v9 v9.21.1
 	gopkg.in/h2non/gock.v1 v1.0.12
 )

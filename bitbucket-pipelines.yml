@@ -22,6 +22,7 @@ pipelines:
                 GOOS=linux
                 GOARCH=amd64
               - make devtools
+              - make init
               - make build
               - make lint
               - make test
