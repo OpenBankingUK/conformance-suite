@@ -2,7 +2,6 @@ package discovery
 
 import (
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
-	"encoding/json"
 	"fmt"
 	"strings"
 
@@ -84,14 +83,6 @@ func appendOtherValidationErrors(failures []ValidationFailure, checker model.Con
 		}
 	}
 	return failures
-}
-
-// unmarshalDiscoveryJSON - used for testing to get discovery model from JSON.
-// In production, we use echo.Context Bind to load configuration from JSON in HTTP POST.
-func unmarshalDiscoveryJSON(discoveryJSON string) (*Model, error) {
-	discovery := &Model{}
-	err := json.Unmarshal([]byte(discoveryJSON), &discovery)
-	return discovery, err
 }
 
 // checker passed to match function definition expectation in appendOtherValidationErrors function.

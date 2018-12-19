@@ -47,11 +47,11 @@ func (c conditionalityCheckerMock) MissingMandatory(endpoints []model.Input, spe
 	return c.missingMandatory, c.missingMandatoryErr
 }
 
-// unmarshalDiscoveryJSON - returns discovery model
+// UnmarshalDiscoveryJSON - returns discovery model
 func testUnmarshalDiscoveryJSON(t *testing.T, discoveryJSON string) *Model {
 	t.Helper()
 
-	discovery, err := unmarshalDiscoveryJSON(discoveryJSON)
+	discovery, err := UnmarshalDiscoveryJSON(discoveryJSON)
 	assert.NoError(t, err)
 	return discovery
 }
@@ -494,7 +494,7 @@ func TestDiscovery_FromJSONString_Valid(t *testing.T) {
 		},
 	}
 
-	modelActual, err := unmarshalDiscoveryJSON(config)
+	modelActual, err := UnmarshalDiscoveryJSON(config)
 	assert.NoError(t, err)
 	assert.NotNil(t, modelActual.DiscoveryModel)
 	discoveryModel := modelActual.DiscoveryModel

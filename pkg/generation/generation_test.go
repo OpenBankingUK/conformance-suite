@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"testing"
 
 	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/utils"
 
@@ -12,33 +11,17 @@ import (
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
 
 	"github.com/go-openapi/loads"
-	"github.com/stretchr/testify/require"
 )
 
-// This test case intentionally doesn't assert anything
+// This Example runs and verifies example code. See: https://golang.org/pkg/testing/#hdr-Examples
 // Its purpose is to exercise the discovery to test case mapping
-func TestEnumerateOpenApiTestcases(t *testing.T) {
-	dmodel, err := loadModelOBv3Ozone()
-	require.NoError(t, err)
-	for _, dItem := range dmodel.DiscoveryModel.DiscoveryItems {
-		fmt.Printf("\n=========================================\n%s\n=========================================", dItem.APISpecification.Name)
-		fmt.Printf("\n%s\n--------------\n", dItem.APISpecification.Version)
-		doc, err := loadSpec(dItem.APISpecification.SchemaVersion, false)
-		require.NoError(t, err)
-		printSpec(doc, dItem.ResourceBaseURI, dItem.APISpecification.Version) // print the endpoints in the spec
-		fmt.Printf("\nResourceIds\n-----------\n")
-		printResourceIds(&dItem)
-		fmt.Printf("\nImplemented\n--------------\n")
-		printImplemented(dItem, dItem.Endpoints, dItem.APISpecification.Version) // print what this org has implemeneted
-	}
-}
-
-// This test cases intentionally doesn't assert anything
-// Its purpose is to exercise the discovery to test case mapping
-func TestGenerateTestCases(t *testing.T) {
+func ExampleGetImplementedTestCases() {
 	results := []model.TestCase{}
 	disco, err := loadModelOBv3Ozone()
-	require.Nil(t, err)
+	if err != nil {
+		// This Example function fails when output does not match expectation below
+		fmt.Println(err.Error())
+	}
 	testNo := 1000
 
 	for _, v := range disco.DiscoveryModel.DiscoveryItems {
@@ -47,9 +30,22 @@ func TestGenerateTestCases(t *testing.T) {
 		testNo += 1000
 	}
 
-	for _, tc := range results {
-		fmt.Println(string(pkgutils.DumpJSON(&tc)))
-	}
+	fmt.Println(string(pkgutils.DumpJSON(results[0])))
+	// Output:
+	// {
+	//     "@id": "#t1000",
+	//     "name": "Create Account Access Consents",
+	//     "input": {
+	//         "method": "POST",
+	//         "endpoint": "/account-access-consents",
+	//         "contextGet": {}
+	//     },
+	//     "expect": {
+	//         "status-code": 201,
+	//         "schema-validation": true,
+	//         "contextPut": {}
+	//     }
+	// }
 }
 
 // Utility to load Manifest Data Model containing all Rules, Tests and Conditions
