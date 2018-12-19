@@ -24,7 +24,7 @@ func TestServerDiscoveryModelPOSTValidateReturnsRequestPayloadWhenValid(t *testi
 
 	// we should get back the config
 	assert.NotNil(body)
-	assert.Equal(headers["Content-Type"][0], "application/json; charset=UTF-8")
+	assert.Equal("application/json; charset=UTF-8", headers["Content-Type"][0])
 	assert.JSONEq(string(discoveryModel), body.String())
 	assert.Equal(http.StatusCreated, code)
 

@@ -9,7 +9,9 @@ import (
 	"testing"
 )
 
+
 func TestJourneySetDiscoveryModelValidatesModel(t *testing.T) {
+	// this is a global var/singleton so we need to reset it's state between tests
 	journeyInstance = nil
 	discoveryModel := &discovery.Model{}
 	validator := &mocks.Validator{}
@@ -24,6 +26,7 @@ func TestJourneySetDiscoveryModelValidatesModel(t *testing.T) {
 }
 
 func TestJourneySetDiscoveryModelHandlesErrorFromValidator(t *testing.T) {
+	// this is a global var/singleton so we need to reset it's state between tests
 	journeyInstance = nil
 	discoveryModel := &discovery.Model{}
 	validator := &mocks.Validator{}
@@ -39,6 +42,7 @@ func TestJourneySetDiscoveryModelHandlesErrorFromValidator(t *testing.T) {
 }
 
 func TestJourneySetDiscoveryModelReturnsFailuresFromValidator(t *testing.T) {
+	// this is a global var/singleton so we need to reset it's state between tests
 	journeyInstance = nil
 	discoveryModel := &discovery.Model{}
 	validator := &mocks.Validator{}
