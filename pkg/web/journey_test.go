@@ -42,11 +42,14 @@ func TestJourneySetDiscoveryModelHandlesErrorFromValidator(t *testing.T) {
 }
 
 func TestJourneySetDiscoveryModelReturnsFailuresFromValidator(t *testing.T) {
-	// this is a global var/singleton so we need to reset it's state between tests
 	journeyInstance = nil
 	discoveryModel := &discovery.Model{}
 	validator := &mocks.Validator{}
-	expectedFailures := discovery.ValidationFailures{}
+	failure := discovery.ValidationFailure{
+		Key:   "DiscoveryModel.Name",
+		Error: "Field 'Name' is required",
+	}
+	expectedFailures := discovery.ValidationFailures{failure}
 	validator.On("Validate", discoveryModel).Return(expectedFailures, nil)
 	journey := NewWebJourney(validator)
 
