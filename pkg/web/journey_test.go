@@ -11,47 +11,42 @@ import (
 	"testing"
 )
 
-func TestJourneySetDiscoveryModelValidatesModelAndGeneratesTestCases(t *testing.T) {
+func TestJourneySetDiscoveryModelValidatesModel(t *testing.T) {
+	// this is a global var/singleton so we need to reset it's state between tests
 	journeyInstance = nil
 	discoveryModel := &discovery.Model{}
 	validator := &mocks.Validator{}
 	validator.On("Validate", discoveryModel).Return(discovery.NoValidationFailures, nil)
-
-	discoveryModelInternal := discovery.ModelDiscovery{}
 	generator := &gmocks.Generator{}
-	expectedTestCases := []generation.SpecificationTestCases{}
-	generator.On("GenerateSpecificationTestCases", discoveryModelInternal).Return(expectedTestCases)
-
 	journey := NewWebJourney(generator, validator)
 
 	failures, err := journey.SetDiscoveryModel(discoveryModel)
-	require.NoError(t, err)
 
+	require.NoError(t, err)
 	assert.Equal(t, discovery.NoValidationFailures, failures)
-	assert.Equal(t, expectedTestCases, journey.TestCases())
 	validator.AssertExpectations(t)
 	generator.AssertExpectations(t)
 }
 
 func TestJourneySetDiscoveryModelHandlesErrorFromValidator(t *testing.T) {
+	// this is a global var/singleton so we need to reset it's state between tests
 	journeyInstance = nil
 	discoveryModel := &discovery.Model{}
 	validator := &mocks.Validator{}
 	expectedFailures := discovery.ValidationFailures{}
 	validator.On("Validate", discoveryModel).Return(expectedFailures, errors.New("validator error"))
-
 	generator := &gmocks.Generator{}
-
 	journey := NewWebJourney(generator, validator)
 
 	failures, err := journey.SetDiscoveryModel(discoveryModel)
-	require.Error(t, err)
 
+	require.Error(t, err)
 	assert.Equal(t, "error setting discovery model: validator error", err.Error())
 	assert.Nil(t, failures)
 }
 
 func TestJourneySetDiscoveryModelReturnsFailuresFromValidator(t *testing.T) {
+	// this is a global var/singleton so we need to reset it's state between tests
 	journeyInstance = nil
 	discoveryModel := &discovery.Model{}
 	validator := &mocks.Validator{}
@@ -61,13 +56,65 @@ func TestJourneySetDiscoveryModelReturnsFailuresFromValidator(t *testing.T) {
 	}
 	expectedFailures := discovery.ValidationFailures{failure}
 	validator.On("Validate", discoveryModel).Return(expectedFailures, nil)
-
 	generator := &gmocks.Generator{}
-
 	journey := NewWebJourney(generator, validator)
 
 	failures, err := journey.SetDiscoveryModel(discoveryModel)
-	require.NoError(t, err)
 
+	require.NoError(t, err)
 	assert.Equal(t, expectedFailures, failures)
+}
+
+func TestJourneyTestCasesCantGenerateIfDiscoveryNotSet(t *testing.T) {
+	// this is a global var/singleton so we need to reset it's state between tests
+	journeyInstance = nil
+	validator := &mocks.Validator{}
+	generator := &gmocks.Generator{}
+	journey := NewWebJourney(generator, validator)
+
+	testCases, err := journey.TestCases()
+
+	assert.Error(t, err)
+	assert.Nil(t, testCases)
+}
+
+func TestJourneyTestCasesGenerate(t *testing.T) {
+	// this is a global var/singleton so we need to reset it's state between tests
+	journeyInstance = nil
+	validator := &mocks.Validator{}
+	discoveryModel := &discovery.Model{}
+	validator.On("Validate", discoveryModel).Return(discovery.NoValidationFailures, nil)
+	expectedTestCases := []generation.SpecificationTestCases{}
+	generator := &gmocks.Generator{}
+	generator.On("GenerateSpecificationTestCases", discoveryModel.DiscoveryModel).Return(expectedTestCases)
+	journey := NewWebJourney(generator, validator)
+	journey.SetDiscoveryModel(discoveryModel)
+
+	testCases, err := journey.TestCases()
+
+	assert.NoError(t, err)
+	assert.Equal(t, expectedTestCases, testCases)
+}
+
+func TestJourneyTestCasesDoesntREGenerate(t *testing.T) {
+	// this is a global var/singleton so we need to reset it's state between tests
+	journeyInstance = nil
+	validator := &mocks.Validator{}
+	discoveryModel := &discovery.Model{}
+	validator.On("Validate", discoveryModel).Return(discovery.NoValidationFailures, nil)
+	expectedTestCases := []generation.SpecificationTestCases{}
+	generator := &gmocks.Generator{}
+	generator.On("GenerateSpecificationTestCases", discoveryModel.DiscoveryModel).
+		Return(expectedTestCases).Times(1)
+
+	journey := NewWebJourney(generator, validator)
+	journey.SetDiscoveryModel(discoveryModel)
+	firstRunTestCases, err := journey.TestCases()
+
+	testCases, err := journey.TestCases()
+
+	assert.NoError(t, err)
+	assert.Equal(t, expectedTestCases, testCases)
+	assert.Equal(t, firstRunTestCases, testCases)
+	generator.AssertExpectations(t)
 }

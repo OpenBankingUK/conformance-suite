@@ -9,7 +9,7 @@ import (
 // Journey represents all possible steps for a user test conformance web journey
 type Journey interface {
 	SetDiscoveryModel(discoveryModel *discovery.Model) (discovery.ValidationFailures, error)
-	TestCases() []generation.SpecificationTestCases
+	TestCases() ([]generation.SpecificationTestCases, error)
 }
 
 type journey struct {
@@ -44,10 +44,19 @@ func (wj *journey) SetDiscoveryModel(discoveryModel *discovery.Model) (discovery
 	}
 
 	wj.validDiscoveryModel = discoveryModel
-	wj.testCases = wj.generator.GenerateSpecificationTestCases(discoveryModel.DiscoveryModel)
+	wj.testCases = nil
+
 	return discovery.NoValidationFailures, nil
 }
 
-func (wj *journey) TestCases() []generation.SpecificationTestCases {
-	return wj.testCases
+var errDiscoveryModelNotSet = errors.New("error generation test cases, discovery model not set")
+
+func (wj *journey) TestCases() ([]generation.SpecificationTestCases, error) {
+	if wj.validDiscoveryModel == nil {
+		return nil, errDiscoveryModelNotSet
+	}
+	if wj.testCases == nil {
+		wj.testCases = wj.generator.GenerateSpecificationTestCases(wj.validDiscoveryModel.DiscoveryModel)
+	}
+	return wj.testCases, nil
 }

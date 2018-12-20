@@ -26,7 +26,7 @@ func TestGetTestCases(t *testing.T) {
 	// we should get back the test cases
 	assert.NotNil(body)
 	assert.Equal(http.StatusOK, code)
-	assert.Equal(headers["Content-Type"][0], "application/json; charset=UTF-8")
+	assert.Equal("application/json; charset=UTF-8", headers["Content-Type"][0])
 	assert.Contains(body.String(), `[{"apiSpecification":{"name":"Account and Transaction API Specification"`)
 	assert.Contains(body.String(), `"testCases":[{"@id":"#t1000","name":"Create Account Access Consents"`)
 

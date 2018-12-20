@@ -23,13 +23,6 @@ func testLoadDiscoveryModel(t *testing.T) *discovery.ModelDiscovery {
 	return &model.DiscoveryModel
 }
 
-func TestNewGenerator(t *testing.T) {
-	t.Run("returns Generator", func(t *testing.T) {
-		generator := generation.NewGenerator()
-		require.NotNil(t, generator)
-	})
-}
-
 func TestGenerateSpecificationTestCases(t *testing.T) {
 	discovery := *testLoadDiscoveryModel(t)
 	generator := generation.NewGenerator()

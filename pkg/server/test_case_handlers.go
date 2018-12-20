@@ -15,6 +15,9 @@ func newTestCaseHandlers(webJourney web.Journey) testCaseHandlers {
 }
 
 func (d testCaseHandlers) testCasesHandler(c echo.Context) error {
-	testCases := d.webJourney.TestCases()
+	testCases, err := d.webJourney.TestCases()
+	if err != nil {
+		c.JSON(http.StatusBadRequest, NewErrorResponse(err))
+	}
 	return c.JSON(http.StatusOK, testCases)
 }
