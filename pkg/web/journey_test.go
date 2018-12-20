@@ -11,7 +11,7 @@ import (
 	"testing"
 )
 
-func TestJourneySetDiscoveryModelValidatesModel(t *testing.T) {
+func TestJourneySetDiscoveryModelValidatesModelAndGeneratesTestCases(t *testing.T) {
 	journeyInstance = nil
 	discoveryModel := &discovery.Model{}
 	validator := &mocks.Validator{}
@@ -19,7 +19,8 @@ func TestJourneySetDiscoveryModelValidatesModel(t *testing.T) {
 
 	discoveryModelInternal := discovery.ModelDiscovery{}
 	generator := &gmocks.Generator{}
-	generator.On("GenerateSpecificationTestCases", discoveryModelInternal).Return([]generation.SpecificationTestCases{})
+	expectedTestCases := []generation.SpecificationTestCases{}
+	generator.On("GenerateSpecificationTestCases", discoveryModelInternal).Return(expectedTestCases)
 
 	journey := NewWebJourney(generator, validator)
 
@@ -27,7 +28,9 @@ func TestJourneySetDiscoveryModelValidatesModel(t *testing.T) {
 	require.NoError(t, err)
 
 	assert.Equal(t, discovery.NoValidationFailures, failures)
+	assert.Equal(t, expectedTestCases, journey.TestCases())
 	validator.AssertExpectations(t)
+	generator.AssertExpectations(t)
 }
 
 func TestJourneySetDiscoveryModelHandlesErrorFromValidator(t *testing.T) {
@@ -37,9 +40,7 @@ func TestJourneySetDiscoveryModelHandlesErrorFromValidator(t *testing.T) {
 	expectedFailures := discovery.ValidationFailures{}
 	validator.On("Validate", discoveryModel).Return(expectedFailures, errors.New("validator error"))
 
-	discoveryModelInternal := discovery.ModelDiscovery{}
 	generator := &gmocks.Generator{}
-	generator.On("GenerateSpecificationTestCases", discoveryModelInternal).Return([]generation.SpecificationTestCases{})
 
 	journey := NewWebJourney(generator, validator)
 
@@ -61,9 +62,7 @@ func TestJourneySetDiscoveryModelReturnsFailuresFromValidator(t *testing.T) {
 	expectedFailures := discovery.ValidationFailures{failure}
 	validator.On("Validate", discoveryModel).Return(expectedFailures, nil)
 
-	discoveryModelInternal := discovery.ModelDiscovery{}
 	generator := &gmocks.Generator{}
-	generator.On("GenerateSpecificationTestCases", discoveryModelInternal).Return([]generation.SpecificationTestCases{})
 
 	journey := NewWebJourney(generator, validator)
 
