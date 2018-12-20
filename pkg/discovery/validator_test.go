@@ -8,7 +8,7 @@ import (
 	"testing"
 )
 
-func TestWrapperValidateCallsValidatorFunWithChecker(t *testing.T) {
+func TestWrapperValidateCallsValidatorFuncWithChecker(t *testing.T) {
 	calledWith := false
 	conditionalityChecker := model.NewConditionalityChecker()
 	validator := funcWrapperValidator{
@@ -66,18 +66,18 @@ func TestWrapperValidateHandlesErrors(t *testing.T) {
 	assert.Error(t, err)
 }
 
-func TestValidatorNoFailuresReturnsEmpty(t *testing.T) {
+func TestValidationNoFailuresReturnsEmpty(t *testing.T) {
 	failures := ValidationFailures{}
 
 	assert.True(t, failures.Empty())
 }
 
-func TestValidatorFailuresReturnsNotEmpty(t *testing.T) {
+func TestValidationFailuresReturnsNotEmpty(t *testing.T) {
 	failures := ValidationFailures{ValidationFailure{}}
 
 	assert.False(t, failures.Empty())
 }
 
-func TestValidatorNoValidationFailuresReturnsEmpty(t *testing.T) {
+func TestValidationNoValidationFailuresReturnsEmpty(t *testing.T) {
 	assert.True(t, NoValidationFailures.Empty())
 }
