@@ -2,6 +2,7 @@ package web
 
 import (
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/generation"
 	"github.com/pkg/errors"
 )
 
@@ -11,6 +12,7 @@ type Journey interface {
 }
 
 type journey struct {
+	generator           generation.Generator
 	validator           discovery.Validator
 	validDiscoveryModel *discovery.Model
 }
@@ -19,9 +21,10 @@ var journeyInstance Journey
 
 // NewWebJourney creates an instance for a user journey, assumes one user only no concurrency
 // so a singleton is returned
-func NewWebJourney(validator discovery.Validator) Journey {
+func NewWebJourney(generator generation.Generator, validator discovery.Validator) Journey {
 	if journeyInstance == nil {
 		journeyInstance = &journey{
+			generator: generator,
 			validator: validator,
 		}
 	}

@@ -3,20 +3,25 @@ package web
 import (
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery/mocks"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/generation"
+	gmocks "bitbucket.org/openbankingteam/conformance-suite/pkg/generation/mocks"
 	"github.com/pkg/errors"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"testing"
 )
 
-
 func TestJourneySetDiscoveryModelValidatesModel(t *testing.T) {
-	// this is a global var/singleton so we need to reset it's state between tests
 	journeyInstance = nil
 	discoveryModel := &discovery.Model{}
 	validator := &mocks.Validator{}
 	validator.On("Validate", discoveryModel).Return(discovery.NoValidationFailures, nil)
-	journey := NewWebJourney(validator)
+
+	discoveryModelInternal := discovery.ModelDiscovery{}
+	generator := &gmocks.Generator{}
+	generator.On("GenerateSpecificationTestCases", discoveryModelInternal).Return([]generation.SpecificationTestCases{})
+
+	journey := NewWebJourney(generator, validator)
 
 	failures, err := journey.SetDiscoveryModel(discoveryModel)
 	require.NoError(t, err)
@@ -26,13 +31,17 @@ func TestJourneySetDiscoveryModelValidatesModel(t *testing.T) {
 }
 
 func TestJourneySetDiscoveryModelHandlesErrorFromValidator(t *testing.T) {
-	// this is a global var/singleton so we need to reset it's state between tests
 	journeyInstance = nil
 	discoveryModel := &discovery.Model{}
 	validator := &mocks.Validator{}
 	expectedFailures := discovery.ValidationFailures{}
 	validator.On("Validate", discoveryModel).Return(expectedFailures, errors.New("validator error"))
-	journey := NewWebJourney(validator)
+
+	discoveryModelInternal := discovery.ModelDiscovery{}
+	generator := &gmocks.Generator{}
+	generator.On("GenerateSpecificationTestCases", discoveryModelInternal).Return([]generation.SpecificationTestCases{})
+
+	journey := NewWebJourney(generator, validator)
 
 	failures, err := journey.SetDiscoveryModel(discoveryModel)
 	require.Error(t, err)
@@ -51,7 +60,12 @@ func TestJourneySetDiscoveryModelReturnsFailuresFromValidator(t *testing.T) {
 	}
 	expectedFailures := discovery.ValidationFailures{failure}
 	validator.On("Validate", discoveryModel).Return(expectedFailures, nil)
-	journey := NewWebJourney(validator)
+
+	discoveryModelInternal := discovery.ModelDiscovery{}
+	generator := &gmocks.Generator{}
+	generator.On("GenerateSpecificationTestCases", discoveryModelInternal).Return([]generation.SpecificationTestCases{})
+
+	journey := NewWebJourney(generator, validator)
 
 	failures, err := journey.SetDiscoveryModel(discoveryModel)
 	require.NoError(t, err)
