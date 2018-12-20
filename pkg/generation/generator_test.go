@@ -24,18 +24,16 @@ func testLoadDiscoveryModel(t *testing.T) *discovery.ModelDiscovery {
 }
 
 func TestNewGenerator(t *testing.T) {
-	discovery := *testLoadDiscoveryModel(t)
-
-	t.Run("returns Generator when given discovery model", func(t *testing.T) {
-		generator := generation.NewGenerator(discovery)
+	t.Run("returns Generator", func(t *testing.T) {
+		generator := generation.NewGenerator()
 		require.NotNil(t, generator)
 	})
 }
 
 func TestGenerateSpecificationTestCases(t *testing.T) {
 	discovery := *testLoadDiscoveryModel(t)
-	generator := generation.NewGenerator(discovery)
-	cases := generator.GenerateSpecificationTestCases()
+	generator := generation.NewGenerator()
+	cases := generator.GenerateSpecificationTestCases(discovery)
 
 	t.Run("returns slice of SpecificationTestCases, one per discovery item", func(t *testing.T) {
 		require.NotNil(t, cases)
@@ -73,8 +71,8 @@ func ExampleGenerator() {
 		fmt.Println(err.Error())
 	}
 	discovery := model.DiscoveryModel
-	generator := generation.NewGenerator(discovery)
-	cases := generator.GenerateSpecificationTestCases()
+	generator := generation.NewGenerator()
+	cases := generator.GenerateSpecificationTestCases(discovery)
 
 	specOneTestCase := string(pkgutils.DumpJSON(cases[0].TestCases[1]))
 	specTwoTestCase := string(pkgutils.DumpJSON(cases[1].TestCases[0]))
