@@ -9,7 +9,6 @@ import (
 	"testing"
 )
 
-
 func TestJourneySetDiscoveryModelValidatesModel(t *testing.T) {
 	// this is a global var/singleton so we need to reset it's state between tests
 	journeyInstance = nil
