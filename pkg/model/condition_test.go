@@ -53,7 +53,7 @@ var optionalData = []dataHolder{
 // in a package local manner, can be read
 func TestConditionality(t *testing.T) {
 	count := len(endpointConditionality["account-transaction-v3.0"])
-	result := count > 10 // check we have more than an arbitary number of conditions
+	result := count > 10 // check we have more than an arbitrary number of conditions
 	assert.Equal(t, result, true)
 }
 

@@ -126,7 +126,7 @@ func (set *PermissionSet) GetPermissions() []string {
 	return result
 }
 
-// IsSubset determines if the permissionSet passed in as a paramter
+// IsSubset determines if the permissionSet passed in as a parameter
 // is a subset of the target PermissionSet
 func (set *PermissionSet) IsSubset(sub *PermissionSet) bool {
 	for key := range sub.set {

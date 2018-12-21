@@ -248,7 +248,7 @@ func (s *Server) skipper(c echo.Context) bool {
 }
 
 // Run the proxy at the address specified by "bind"
-// Requests get sent to the target server identifyed by proxy.Target()
+// Requests get sent to the target server identified by proxy.Target()
 // configure some channels to handle shutdown/interrupts
 //
 // Return channel so that caller can block waiting

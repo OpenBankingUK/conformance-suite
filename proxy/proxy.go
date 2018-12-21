@@ -83,7 +83,7 @@ func New(s *spec.Swagger, reporter Reporter, opts ...Opts) (*Proxy, error) {
 
 // SetSpec - Marshalls the spec into a generic doc interface
 // for the purpose of validating the spec (if it won't marshall its broken)
-// The doc interface is useful in other scenarious within the proxy
+// The doc interface is useful in other scenarios within the proxy
 func (proxy *Proxy) SetSpec(spec *spec.Swagger) error {
 	// validate.NewSchemaValidator requires the spec as an interface{}
 	// That's why we Unmarshal(Marshal()) the document

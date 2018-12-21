@@ -104,15 +104,6 @@ func getConditionality(method, path, specification string) string {
 	}
 }
 
-// helper to walk through and display information from discovery
-func printImplemented(ditem discovery.ModelDiscoveryItem, endpoints []discovery.ModelEndpoint, spec string) {
-	for _, v := range endpoints {
-		condition := getConditionality(v.Method, v.Path, spec)
-		newpath := getResourceIds(&ditem, v.Path)
-		fmt.Printf("[%s] %s %s\n", condition, v.Method, newpath)
-	}
-}
-
 // helper to replace path name resource ids specificed between brackets e.g. `{AccountId}`
 // with the values "ResourceIds" section of the discovery model
 func getResourceIds(item *discovery.ModelDiscoveryItem, path string) string {
@@ -122,13 +113,6 @@ func getResourceIds(item *discovery.ModelDiscoveryItem, path string) string {
 		newstr = strings.Replace(newstr, key, v, 1)
 	}
 	return newstr
-}
-
-// help to dump out resourceIds to console
-func printResourceIds(item *discovery.ModelDiscoveryItem) {
-	for k, v := range item.ResourceIds {
-		fmt.Printf("%-30.30s %s\n", k, v)
-	}
 }
 
 // loads an openapi specification via http or file
