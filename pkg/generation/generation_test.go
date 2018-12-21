@@ -9,8 +9,6 @@ import (
 
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
-
-	"github.com/go-openapi/loads"
 )
 
 // This Example runs and verifies example code. See: https://golang.org/pkg/testing/#hdr-Examples
@@ -57,14 +55,4 @@ func loadModelOBv3Ozone() (discovery.Model, error) {
 		return discovery.Model{}, err
 	}
 	return d, nil
-}
-
-func printSpec(doc *loads.Document, base, spec string) {
-	for path, props := range doc.Spec().Paths.Paths {
-		for method := range getOperations(&props) {
-			newPath := base + path
-			condition := getConditionality(method, path, spec)
-			fmt.Printf("[%s] %s %s\n", condition, method, newPath) // give to testcase along with any conditionality?
-		}
-	}
 }

@@ -39,7 +39,7 @@ func (v funcWrapperValidator) Validate(model *Model) (ValidationFailures, error)
 // ValidationFailure - Records validation failure key and error.
 // e.g. ValidationFailure{
 //        Key:   "DiscoveryModel.Name",
-//        Error: "Field validation for 'Name' failed on the 'required' tag",
+//        Error: "Field 'Name' is required",
 //      }
 type ValidationFailure struct {
 	Key   string `json:"key"`

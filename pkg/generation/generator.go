@@ -13,28 +13,25 @@ type SpecificationTestCases struct {
 
 // Generator - generates test cases from discovery model
 type Generator interface {
-	GenerateSpecificationTestCases() []SpecificationTestCases
+	GenerateSpecificationTestCases(discovery discovery.ModelDiscovery) []SpecificationTestCases
 }
 
 // NewGenerator - returns implementation of Generator interface
-func NewGenerator(discovery discovery.ModelDiscovery) Generator {
-	return generator{discovery: discovery}
+func NewGenerator() Generator {
+	return generator{}
 }
 
 // generator - implements Generator interface
 type generator struct {
-	discovery discovery.ModelDiscovery
 }
 
 // GenerateSpecificationTestCases - generates test cases
-func (g generator) GenerateSpecificationTestCases() []SpecificationTestCases {
-	results := []SpecificationTestCases{}
+func (g generator) GenerateSpecificationTestCases(discovery discovery.ModelDiscovery) []SpecificationTestCases {
+	results := make([]SpecificationTestCases, len(discovery.DiscoveryItems))
 	// Assumes testNo is used as the base for all testcase IDs - to keep testcase IDs unique
 	testNo := 1000
-
-	for _, item := range g.discovery.DiscoveryItems {
-		result := generateSpecificationTestCases(item, testNo)
-		results = append(results, result)
+	for key, item := range discovery.DiscoveryItems {
+		results[key] = generateSpecificationTestCases(item, testNo)
 		testNo += 1000
 	}
 	return results

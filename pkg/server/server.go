@@ -2,6 +2,7 @@ package server
 
 import (
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/generation"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/web"
 	"context"
 	"fmt"
@@ -90,7 +91,8 @@ func NewServer(
 	server.HideBanner = true
 
 	validatorEngine := discovery.NewFuncValidator(checker)
-	webJourney := web.NewWebJourney(validatorEngine)
+	testGenerator := generation.NewGenerator()
+	webJourney := web.NewWebJourney(testGenerator, validatorEngine)
 
 	// https://echo.labstack.com/guide/request#validate-data
 	validator := validator.New()
@@ -114,6 +116,10 @@ func NewServer(
 	// endpoints for discovery model
 	discoveryHandlers := newDiscoveryHandlers(webJourney)
 	api.POST("/discovery-model", discoveryHandlers.setDiscoveryModelHandler)
+
+	// endpoints for test cases
+	testCaseHandlers := newTestCaseHandlers(webJourney)
+	api.GET("/test-cases", testCaseHandlers.testCasesHandler)
 
 	server.logRoutes()
 
