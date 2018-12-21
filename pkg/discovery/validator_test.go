@@ -63,7 +63,7 @@ func TestWrapperValidateHandlesErrors(t *testing.T) {
 	failures, err := validator.Validate(&Model{})
 
 	assert.Nil(t, failures)
-	assert.Error(t, err)
+	assert.EqualError(t, err, "some error")
 }
 
 func TestValidationNoFailuresReturnsEmpty(t *testing.T) {
