@@ -175,7 +175,7 @@ func TestChainedTestCases(t *testing.T) {
 	result, err = tc02.Validate(resp, &rulectx) // Validate checks the match rules and processes any contextPuts present
 	assert.True(t, result)
 	assert.Equal(t, "500000000000000000000007", rulectx.Get("AccountId"))
-	assert.Equal(t, "/accounts/500000000000000000000007", tc02.Input.Endpoint)
+	assert.Equal(t, "http://myaspsp/accounts/500000000000000000000007", tc02.Input.Endpoint)
 }
 
 type executor struct {
@@ -188,9 +188,9 @@ func (e *executor) ExecuteTestCase(r *resty.Request, t *TestCase, ctx *Context) 
 }
 
 var chainTest = map[string]func() *resty.Response{
-	"GET /accounts/":                         httpAccountCall(),
-	"GET /accounts/{AccountId}":              httpAccountIDCall(),
-	"GET /accounts/500000000000000000000007": httpAccountID007Call(),
+	"GET http://myaspsp/accounts/":                         httpAccountCall(),
+	"GET http://myaspsp/accounts/{AccountId}":              httpAccountIDCall(),
+	"GET http://myaspsp/accounts/500000000000000000000007": httpAccountID007Call(),
 }
 
 func httpAccountCall() func() *resty.Response {

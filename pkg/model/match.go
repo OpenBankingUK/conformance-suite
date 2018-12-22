@@ -440,6 +440,7 @@ func checkBodyJSONPresent(m *Match, tc *TestCase) (bool, error) {
 	if !success {
 		return false, fmt.Errorf("JSON Field Match Failed - no field present for pattern (%s)", m.JSON)
 	}
+	m.Result = result.String()
 	return success, nil
 }
 

@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"net/url"
 
 	resty "gopkg.in/resty.v1"
 
@@ -75,11 +74,16 @@ type TestCase struct {
 // results in a standard http request that encapsulates the testcase request
 // as defined in the test case object with any context inputs/replacements etc applied
 func (t *TestCase) Prepare(ctx *Context) (*resty.Request, error) {
+	err := t.ApplyContext(ctx)
+	if err != nil {
+		return nil, err
+	}
+
 	req, err := t.ApplyInput(ctx)
 	if err != nil {
 		return nil, err
 	}
-	req, err = t.ApplyContext() // Apply Context at end of creating request
+
 	return req, err
 }
 
@@ -153,7 +157,6 @@ type Expect struct {
 func (t *TestCase) ApplyInput(rulectx *Context) (*resty.Request, error) {
 	// NOTE: This is an initial implementation to get things moving - expect a lot of change in this function
 	var err error
-
 	err = t.Input.ContextGet.GetValues(t, rulectx)
 
 	if &t.Input.Endpoint == nil || &t.Input.Method == nil { // we don't have a value input object
@@ -179,16 +182,20 @@ func (t *TestCase) ApplyInput(rulectx *Context) (*resty.Request, error) {
 // ApplyContext, applys context parameters to the http object.
 // Context parameter typically involve variables that originaled in discovery
 // The functionality of ApplyContext will grow significantly over time.
-func (t *TestCase) ApplyContext() (*resty.Request, error) {
-	base := t.Context.Get("baseurl")
-	if base != nil {
-		urlWithBase, err := url.Parse(base.(string) + t.Input.Endpoint) // expand url in request to be full pathname including Discovery endpoint info from context
-		if err != nil {
-			return nil, errors.New("Error parsing context baseURL: (" + base.(string) + ")")
+func (t *TestCase) ApplyContext(rulectx *Context) error {
+	if rulectx != nil {
+		for k, v := range t.Context { // put testcase context values into rule context ...
+			rulectx.Put(k, v)
 		}
-		t.Request.URL = urlWithBase.String()
 	}
-	return t.Request, nil
+
+	base := t.Context.Get("baseurl") // "convention" puts baseurl as prefix to endpoint in testcase"
+	if base == nil {
+		return errors.New("cannot find base url for testcase")
+	}
+	t.Input.Endpoint = base.(string) + t.Input.Endpoint
+
+	return nil
 }
 
 // ApplyExpects runs the Expects section of the testcase to evaluate if the response from the system under test passes or fails
