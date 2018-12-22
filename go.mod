@@ -34,4 +34,6 @@ require (
 	gopkg.in/go-playground/assert.v1 v1.2.1 // indirect
 	gopkg.in/go-playground/validator.v9 v9.21.1
 	gopkg.in/h2non/gock.v1 v1.0.12
+	gopkg.in/resty.v0 v0.4.1
+	gopkg.in/resty.v1 v1.10.3
 )

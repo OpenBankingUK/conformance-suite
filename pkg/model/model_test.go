@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"net/http"
 	"testing"
 
 	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/utils"
@@ -12,6 +11,7 @@ import (
 	"github.com/go-openapi/spec"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	resty "gopkg.in/resty.v1"
 )
 
 func TestLoadModel(t *testing.T) {
@@ -181,31 +181,32 @@ func TestChainedTestCases(t *testing.T) {
 type executor struct {
 }
 
-func (e *executor) ExecuteTestCase(r *http.Request, t *TestCase, ctx *Context) (*http.Response, error) {
+func (e *executor) ExecuteTestCase(r *resty.Request, t *TestCase, ctx *Context) (*resty.Response, error) {
 	responseKey := t.Input.Method + " " + t.Input.Endpoint
+	fmt.Println("responsekey: ", responseKey)
 	return chainTest[responseKey](), nil
 }
 
-var chainTest = map[string]func() *http.Response{
+var chainTest = map[string]func() *resty.Response{
 	"GET /accounts/":                         httpAccountCall(),
 	"GET /accounts/{AccountId}":              httpAccountIDCall(),
 	"GET /accounts/500000000000000000000007": httpAccountID007Call(),
 }
 
-func httpAccountCall() func() *http.Response {
-	return func() *http.Response {
+func httpAccountCall() func() *resty.Response {
+	return func() *resty.Response {
 		return pkgutils.CreateHTTPResponse(200, "OK", string(getAccountResponse))
 	}
 }
 
-func httpAccountIDCall() func() *http.Response {
-	return func() *http.Response {
+func httpAccountIDCall() func() *resty.Response {
+	return func() *resty.Response {
 		return pkgutils.CreateHTTPResponse(200, "OK", string(getAccountResponse), "content-type", "klingon/text")
 	}
 }
 
-func httpAccountID007Call() func() *http.Response {
-	return func() *http.Response {
+func httpAccountID007Call() func() *resty.Response {
+	return func() *resty.Response {
 		return pkgutils.CreateHTTPResponse(200, "OK", string(account0007), "content-type", "klingon/text")
 	}
 }

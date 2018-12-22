@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"regexp"
+	"strconv"
 	"strings"
 
 	"github.com/tidwall/gjson"
@@ -17,6 +18,7 @@ const (
 	UnknownMatchType MatchType = iota
 	HeaderValue
 	HeaderRegex
+	HeaderRegexContext
 	HeaderPresent
 	BodyRegex
 	BodyJSONPresent
@@ -24,6 +26,7 @@ const (
 	BodyJSONValue
 	BodyJSONRegex
 	BodyLength
+	Authorisation
 )
 
 // Match defines various types of response payload pattern and field checking.
@@ -54,6 +57,8 @@ type Match struct {
 	Count           int64     `json:"count,omitempty"`             // Cont for JSON array match purposes
 	BodyLength      *int64    `json:"body-length,omitempty"`       // Body payload length for matching
 	ReplaceEndpoint string    `json:"replaceInEndpoint,omitempty"` // allows substituion of resourceIds
+	Authorisation   string    `json:"authorisation,omitempty"`     // allows substituion of resourceIds
+	Result          string    `json:"result,omitempty"`            // resulting string/match etc ..
 }
 
 // ContextAccessor - Manages access to matches for Put and Get value operations on a context
@@ -69,12 +74,14 @@ type ContextAccessor struct {
 // Note: the initial interation of this will just implement the JSON pattern/field matcher
 func (c *ContextAccessor) PutValues(tc *TestCase, ctx *Context) (string, error) {
 	for _, m := range c.Matches {
-		success := m.PutValue(tc.Body, ctx)
+		success := m.PutValue(tc, ctx)
 		if !success {
-			return m.ContextName, errors.New("ContextPut variable check failed")
+			msg := fmt.Sprintf("PutValues - failed Match [%s]", m.String())
+			return m.ContextName, errors.New("ContextAccessor " + msg)
 		}
 	}
 	return "", nil
+
 }
 
 // GetValues - checks for match elements in the contextGet section
@@ -101,6 +108,49 @@ func (c *ContextAccessor) GetValues(tc *TestCase, ctx *Context) error {
 	return nil
 }
 
+func (m *Match) String() string {
+	var b strings.Builder
+	if m.MatchType == UnknownMatchType {
+		m.MatchType = m.GetType()
+	}
+
+	b.WriteString(`MatchType: ` + matchTypeString[m.MatchType])
+	if m.Description != `` {
+		b.WriteString(` Description: ` + m.Description)
+	}
+	if m.ContextName != `` {
+		b.WriteString(` ContextName: ` + m.ContextName)
+	}
+	if m.Header != `` {
+		b.WriteString(` Header: ` + m.Header)
+	}
+	if m.HeaderPresent != `` {
+		b.WriteString(` HeaderPresent: ` + m.HeaderPresent)
+	}
+	if m.Regex != `` {
+		b.WriteString(` Regex: ` + m.Regex)
+	}
+	if m.JSON != `` {
+		b.WriteString(` JSON: ` + m.JSON)
+	}
+	if m.Value != `` {
+		b.WriteString(` Value: ` + m.Value)
+	}
+	if m.Numeric > 0 {
+		b.WriteString(` Numeric: ` + strconv.FormatInt(m.Numeric, 10))
+	}
+	if m.BodyLength != nil {
+		b.WriteString(` BodyLength: ` + strconv.FormatInt(*m.BodyLength, 10))
+	}
+	if m.ReplaceEndpoint != `` {
+		b.WriteString(` ReplaceEndpoint: ` + m.ReplaceEndpoint)
+	}
+	if m.Authorisation != `` {
+		b.WriteString(` Authorisation: ` + m.Authorisation)
+	}
+	return b.String()
+}
+
 // Check a match function - figures out which match type we have and
 // calls the appropraite match checking function
 func (m *Match) Check(tc *TestCase) (bool, error) {
@@ -115,26 +165,99 @@ func (m *Match) GetValue(inputBuffer string) (interface{}, string) {
 }
 
 // PutValue puts the value from the json match along with a context variable to put it into
-func (m *Match) PutValue(inputBuffer string, ctx *Context) bool {
-	result := gjson.Get(inputBuffer, m.JSON)
-	if len(m.ContextName) > 0 {
-		ctx.Put(m.ContextName, result.String())
-		return true
+func (m *Match) PutValue(tc *TestCase, ctx *Context) bool {
+	switch m.GetType() {
+	case BodyJSONPresent:
+		success, err := checkBodyJSONPresent(m, tc)
+		if err != nil {
+			//m.AppInfo(err.Error())
+			return false
+		}
+
+		if success {
+			if len(m.ContextName) > 0 {
+				//m.AppInfo(fmt.Sprintf("Putting [%s] into context with value [%s] ", m.ContextName, m.Result))
+				ctx.Put(m.ContextName, m.Result)
+				return true
+			}
+		} else {
+			//m.AppInfo(err.Error())
+			return false
+		}
+	case BodyJSONValue:
+		success, err := checkBodyJSONValue(m, tc)
+		if err != nil {
+			//m.AppInfo(err.Error())
+			return false
+		}
+		if success {
+			if len(m.ContextName) > 0 {
+				//m.AppInfo(fmt.Sprintf("Putting [%s] into context with value [%s] ", m.ContextName, m.Result))
+				ctx.Put(m.ContextName, m.Result)
+				return true
+			}
+		} else {
+			//m.AppInfo(err.Error())
+			return false
+		}
+
+	case Authorisation:
+		if strings.EqualFold("bearer", m.Authorisation) {
+			result, err := checkAuthorisation(m, tc)
+			if !result || err != nil {
+				//m.AppWarn("Put Authorisation Bearer Failed")
+				return false
+			}
+		}
+	case HeaderRegex:
+		success, err := checkHeaderRegex(m, tc)
+		if err != nil {
+			//m.AppInfo(err.Error())
+			return false
+		}
+		if success {
+			//m.AppInfo(fmt.Sprintf("Putting [%s] into context with value [%s] ", m.ContextName, m.Result))
+			ctx.Put(m.ContextName, m.Result)
+			return true
+		}
+	case HeaderRegexContext:
+		success, err := checkHeaderRegexContext(m, tc)
+		if err != nil {
+			//m.AppInfo(err.Error())
+			return false
+		}
+		if success {
+			//m.AppInfo(fmt.Sprintf("Putting [%s] into context with value [%s] ", m.ContextName, m.Result))
+			ctx.Put(m.ContextName, m.Result)
+			return true
+		}
 	}
+
 	return false
 }
 
 // GetType - returns the type of a match
 func (m *Match) GetType() MatchType {
 
-	if m.MatchType != UnknownMatchType {
+	if m.MatchType != UnknownMatchType { // only figure out match type if its the default
 		return m.MatchType
+	}
+
+	if fieldsPresent(m.Authorisation) {
+		m.MatchType = Authorisation
+		return Authorisation
 	}
 
 	if fieldsPresent(m.Header, m.Value) { // note: below ordering matters
 		m.MatchType = HeaderValue
 		return HeaderValue
 	}
+
+	if fieldsPresent(m.Header, m.Regex, m.ContextName) {
+		m.MatchType = HeaderRegexContext
+		return HeaderRegexContext
+	}
+
 	if fieldsPresent(m.Header, m.Regex) {
 		m.MatchType = HeaderRegex
 		return HeaderRegex
@@ -189,16 +312,33 @@ func fieldsPresent(str ...string) bool {
 }
 
 var matchFuncs = map[MatchType]func(*Match, *TestCase) (bool, error){
-	UnknownMatchType: defaultMatch,
-	HeaderValue:      checkHeaderValue,
-	HeaderRegex:      checkHeaderRegex,
-	HeaderPresent:    checkHeaderPresent,
-	BodyRegex:        checkBodyRegex,
-	BodyJSONPresent:  checkBodyJSONPresent,
-	BodyJSONCount:    checkBodyJSONCount,
-	BodyJSONValue:    checkBodyJSONValue,
-	BodyJSONRegex:    checkBodyJSONRegex,
-	BodyLength:       checkBodyLength,
+	UnknownMatchType:   defaultMatch,
+	HeaderValue:        checkHeaderValue,
+	HeaderRegexContext: checkHeaderRegexContext,
+	HeaderRegex:        checkHeaderRegex,
+	HeaderPresent:      checkHeaderPresent,
+	BodyRegex:          checkBodyRegex,
+	BodyJSONPresent:    checkBodyJSONPresent,
+	BodyJSONCount:      checkBodyJSONCount,
+	BodyJSONValue:      checkBodyJSONValue,
+	BodyJSONRegex:      checkBodyJSONRegex,
+	BodyLength:         checkBodyLength,
+	Authorisation:      checkAuthorisation,
+}
+
+var matchTypeString = map[MatchType]string{
+	UnknownMatchType:   "unknown",
+	HeaderValue:        "HeaderValue",
+	HeaderRegex:        "HeaderRegex",
+	HeaderPresent:      "HeaderPresent",
+	HeaderRegexContext: "HeaderRegexContext",
+	BodyRegex:          "BodyRegex",
+	BodyJSONPresent:    "BodyJSONPresent",
+	BodyJSONCount:      "BodyJSONCount",
+	BodyJSONValue:      "BodyJSONValue",
+	BodyJSONRegex:      "BodyJSONRegex",
+	BodyLength:         "BodyLength",
+	Authorisation:      "Authorisation",
 }
 
 func defaultMatch(m *Match, tc *TestCase) (bool, error) {
@@ -221,6 +361,26 @@ func checkHeaderValue(m *Match, tc *TestCase) (bool, error) {
 	if !success {
 		return false, fmt.Errorf("Header Value Match Failed - expected (%s) got (%s)", m.Value, headerValue)
 	}
+	return success, nil
+}
+
+func checkHeaderRegexContext(m *Match, tc *TestCase) (bool, error) {
+	var success bool
+	var actualHeader string
+	for head := range tc.Header {
+		success = strings.EqualFold(head, m.Header)
+		if success {
+			actualHeader = head
+			break
+		}
+	}
+	headerValue := tc.Header.Get(actualHeader)
+	regex := regexp.MustCompile(m.Regex)
+	result := regex.FindStringSubmatch(headerValue)
+	if len(result) < 2 {
+		return false, fmt.Errorf("Header Regex Context Match Failed - regex (%s) failed to find anything on Header (%s) value (%s)", m.Regex, m.Header, headerValue)
+	}
+	m.Result = result[1]
 	return success, nil
 }
 
@@ -313,6 +473,38 @@ func checkBodyLength(m *Match, tc *TestCase) (bool, error) {
 			len(tc.Body), *m.BodyLength)
 	}
 	return success, nil
+}
+
+func checkAuthorisation(m *Match, tc *TestCase) (bool, error) {
+	var success bool
+	var actualHeader string
+	for head := range tc.Header {
+		success = strings.EqualFold(head, "Authorisation") // uk spelling
+		if success {
+			actualHeader = head
+			break
+		}
+		success = strings.EqualFold(head, "Authorization") // us spelling
+		if success {
+			actualHeader = head
+			break
+		}
+	}
+
+	headerValue := tc.Header.Get(actualHeader)
+	if len(headerValue) == 0 {
+		return false, fmt.Errorf("Authorisation Bear Match Failed - no header value found")
+	}
+	success = m.Value == headerValue
+	idx := strings.Index(headerValue, "Bearer ")
+	if idx == -1 {
+		idx = strings.Index(headerValue, "bearer ")
+	}
+	if idx == -1 {
+		return false, fmt.Errorf("Authorisation Bear Match Failed - no header value found")
+	}
+	m.Authorisation = headerValue[idx+7:]
+	return true, nil
 }
 
 func checkUnimplemented(m *Match, tc *TestCase) (bool, error) {

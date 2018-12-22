@@ -1,9 +1,11 @@
 package model
 
 import (
+	"bytes"
 	"encoding/json"
-	"io/ioutil"
 	"testing"
+
+	resty "gopkg.in/resty.v1"
 
 	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/utils"
 	"github.com/stretchr/testify/assert"
@@ -20,18 +22,22 @@ func TestContextPutFromMatch(t *testing.T) {
 	ctx := Context{}
 	m := Match{JSON: "name.last", Description: "simple match test", ContextName: "LastName"}
 	resp := pkgutils.CreateHTTPResponse(200, "OK", simplejson)
-	bodyBytes, _ := ioutil.ReadAll(resp.Body)
-	assert.True(t, m.PutValue(string(bodyBytes), &ctx))
-	assert.Equal(t, ctx.Get(m.ContextName), "Prichard")
+	buf := new(bytes.Buffer)
+	buf.ReadFrom(resp.RawResponse.Body)
+	tc := TestCase{Body: buf.String()}
+	assert.True(t, m.PutValue(&tc, &ctx))
+	assert.Equal(t, "Prichard", ctx.Get(m.ContextName))
 }
 
 // JSON field match on response string, and return field value + context variable name for context insertion
 func TestContextGetFromContext(t *testing.T) {
+	resty.R()
 	ctx := Context{}
 	m := Match{JSON: "name.first", Description: "simple match test", ContextName: "FirstName"}
 	resp := pkgutils.CreateHTTPResponse(200, "OK", simplejson)
-	bodyBytes, _ := ioutil.ReadAll(resp.Body)
-	value, variable := m.GetValue(string(bodyBytes))
+	buf := new(bytes.Buffer)
+	buf.ReadFrom(resp.RawResponse.Body)
+	value, variable := m.GetValue(buf.String())
 	assert.Equal(t, "Janet", value)
 	assert.Equal(t, ctx.Get(m.ContextName), ctx.Get(variable))
 }
