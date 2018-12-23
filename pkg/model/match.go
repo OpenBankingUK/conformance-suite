@@ -44,6 +44,9 @@ const (
 // - check that a response body has a specific value of a specified json field
 // - check that a response body has a specific json field and that the specific json field matches a regular expression
 // - check that a response body is a specified length
+// - allow for replacment of endpoint text ... e.g. {AccountId}
+// - Authoriation: allow for manipulation of Bearer tokens in http headers
+// - Result: allow for capturing of match values for further processing - like putting into a context
 type Match struct {
 	MatchType       MatchType `json:"match_type,omitempty"`        // Type of Match we're doing
 	Description     string    `json:"description,omitempty"`       // Description of the purpose of the match
@@ -57,8 +60,8 @@ type Match struct {
 	Count           int64     `json:"count,omitempty"`             // Cont for JSON array match purposes
 	BodyLength      *int64    `json:"body-length,omitempty"`       // Body payload length for matching
 	ReplaceEndpoint string    `json:"replaceInEndpoint,omitempty"` // allows substituion of resourceIds
-	Authorisation   string    `json:"authorisation,omitempty"`     // allows substituion of resourceIds
-	Result          string    `json:"result,omitempty"`            // resulting string/match etc ..
+	Authorisation   string    `json:"authorisation,omitempty"`     // allows capturing of bearer tokens
+	Result          string    `json:"result,omitempty"`            // capturing match values
 }
 
 // ContextAccessor - Manages access to matches for Put and Get value operations on a context
@@ -81,7 +84,6 @@ func (c *ContextAccessor) PutValues(tc *TestCase, ctx *Context) (string, error) 
 		}
 	}
 	return "", nil
-
 }
 
 // GetValues - checks for match elements in the contextGet section
@@ -148,6 +150,10 @@ func (m *Match) String() string {
 	if m.Authorisation != `` {
 		b.WriteString(` Authorisation: ` + m.Authorisation)
 	}
+	if m.Result != `` {
+		b.WriteString(` Result: ` + m.Result)
+	}
+
 	return b.String()
 }
 
@@ -494,7 +500,7 @@ func checkAuthorisation(m *Match, tc *TestCase) (bool, error) {
 
 	headerValue := tc.Header.Get(actualHeader)
 	if len(headerValue) == 0 {
-		return false, fmt.Errorf("Authorisation Bear Match Failed - no header value found")
+		return false, fmt.Errorf("Authorisation Bearer Match Failed - no header value found")
 	}
 	success = m.Value == headerValue
 	idx := strings.Index(headerValue, "Bearer ")
@@ -502,9 +508,9 @@ func checkAuthorisation(m *Match, tc *TestCase) (bool, error) {
 		idx = strings.Index(headerValue, "bearer ")
 	}
 	if idx == -1 {
-		return false, fmt.Errorf("Authorisation Bear Match Failed - no header value found")
+		return false, fmt.Errorf("Authorisation Bearer Match value Failed - no header bearer value found")
 	}
-	m.Authorisation = headerValue[idx+7:]
+	m.Result = headerValue[idx+7:] // copy the token after 7 chars "Bearer "...
 	return true, nil
 }
 

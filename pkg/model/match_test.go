@@ -308,3 +308,48 @@ func TestCheckBodyLengthMismatch2(t *testing.T) {
 	assert.NotNil(t, err)
 	assert.False(t, result)
 }
+
+func TestMatchStringOutput(t *testing.T) {
+	var len int64 = 77
+	var num int64 = 88
+	var count int64 = 88
+	m := Match{Description: "test",
+		ContextName: "context", Header: "header", HeaderPresent: "presentheader",
+		Regex: "myregex", JSON: "myjson", Value: "myvalue", Numeric: num, Count: count, BodyLength: &len,
+		ReplaceEndpoint: "myreplace", Authorisation: "myauthorisation", Result: "myresult"}
+
+	assert.Equal(t, "MatchType: Authorisation Description: test ContextName: "+
+		"context Header: header HeaderPresent: presentheader Regex: myregex JSON: myjson "+
+		"Value: myvalue Numeric: 88 BodyLength: 77 ReplaceEndpoint: myreplace Authorisation: "+
+		"myauthorisation Result: myresult", m.String())
+
+}
+
+func TestCheckAuthorisation(t *testing.T) {
+	m := Match{Description: "AuthTest", Authorisation: "Bearer"}
+	tc := TestCase{Expect: Expect{Matches: []Match{m}, StatusCode: 200}}
+	resp := pkgutils.CreateHTTPResponse(200, "OK", "TheRainInSpain", "Authorization", "Bearer 1010110101010101")
+	result, err := tc.Validate(resp, nil)
+	assert.Equal(t, "1010110101010101", tc.Expect.Matches[0].Result)
+	assert.Nil(t, err)
+	assert.True(t, result)
+}
+func TestCheckAuthorisationNotPresent(t *testing.T) {
+	m := Match{Description: "AuthTest", Authorisation: "Bearer"}
+	tc := TestCase{Expect: Expect{Matches: []Match{m}, StatusCode: 200}}
+	resp := pkgutils.CreateHTTPResponse(200, "OK", "TheRainInSpain")
+	result, err := tc.Validate(resp, nil)
+	assert.Equal(t, "", tc.Expect.Matches[0].Result)
+	assert.NotNil(t, err)
+	assert.False(t, result)
+}
+
+func TestCheckAuthorisationIncorrectValue(t *testing.T) {
+	m := Match{Description: "AuthTest", Authorisation: "Bearer"}
+	tc := TestCase{Expect: Expect{Matches: []Match{m}, StatusCode: 200}}
+	resp := pkgutils.CreateHTTPResponse(200, "OK", "TheRainInSpain", "Authorisation", "Beardy 12312312")
+	result, err := tc.Validate(resp, nil)
+	assert.Equal(t, "", tc.Expect.Matches[0].Result)
+	assert.NotNil(t, err)
+	assert.False(t, result)
+}

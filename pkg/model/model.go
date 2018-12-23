@@ -215,8 +215,11 @@ func (t *TestCase) ApplyExpects(res *resty.Response, rulectx *Context) (bool, er
 		return false, fmt.Errorf("(%s):%s: HTTP Status code does not match: expected %d got %d", t.ID, t.Name, t.Expect.StatusCode, res.StatusCode())
 	}
 
-	for _, match := range t.Expect.Matches {
+	for i, match := range t.Expect.Matches {
 		checkResult, got := match.Check(t)
+		if len(match.Result) > 0 {
+			t.Expect.Matches[i] = match // if we update the result field - ensure this is reflect in the testcase
+		}
 		if checkResult == false {
 			return false, got
 		}
