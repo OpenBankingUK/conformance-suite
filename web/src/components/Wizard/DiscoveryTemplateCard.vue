@@ -6,12 +6,6 @@
     class="discovery-card mb-2"
     @click="selectDiscovery()"
   >
-    <b-popover
-      :target="name"
-      :title="name"
-      :content="`discovery version: ${discoveryVersion}`"
-      placement="bottom"
-      triggers="hover focus"/>
     <div class="card-image">
       <b-card-img
         :src="imgSrc"
