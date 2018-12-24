@@ -133,6 +133,13 @@ func (m *Match) String() string {
 	if m.Regex != `` {
 		b.WriteString(` Regex: ` + m.Regex)
 	}
+
+	m.string2(&b)
+
+	return b.String()
+}
+
+func (m *Match) string2(b *strings.Builder) *strings.Builder {
 	if m.JSON != `` {
 		b.WriteString(` JSON: ` + m.JSON)
 	}
@@ -154,8 +161,7 @@ func (m *Match) String() string {
 	if m.Result != `` {
 		b.WriteString(` Result: ` + m.Result)
 	}
-
-	return b.String()
+	return b
 }
 
 // Check a match function - figures out which match type we have and
@@ -173,29 +179,19 @@ func (m *Match) GetValue(inputBuffer string) (interface{}, string) {
 
 // PutValue puts the value from the json match along with a context variable to put it into
 func (m *Match) PutValue(tc *TestCase, ctx *Context) bool {
+	success := false
+	var err error
 	switch m.GetType() {
 	case BodyJSONPresent:
-		success, err := checkBodyJSONPresent(m, tc)
+		success, err = m.setContextFromBodyPresent(tc, ctx)
 		if err != nil {
+			// future reporting hook
 			return false
-		}
-
-		if success {
-			if len(m.ContextName) > 0 {
-				ctx.Put(m.ContextName, m.Result)
-				return true
-			}
 		}
 	case BodyJSONValue:
-		success, err := checkBodyJSONValue(m, tc)
+		success, err = m.setContextFromCheckBodyJSONValue(tc, ctx)
 		if err != nil {
 			return false
-		}
-		if success {
-			if len(m.ContextName) > 0 {
-				ctx.Put(m.ContextName, m.Result)
-				return true
-			}
 		}
 	case Authorisation:
 		if strings.EqualFold("bearer", m.Authorisation) {
@@ -219,7 +215,36 @@ func (m *Match) PutValue(tc *TestCase, ctx *Context) bool {
 		}
 	}
 
-	return false
+	return success
+}
+
+func (m *Match) setContextFromBodyPresent(tc *TestCase, ctx *Context) (bool, error) {
+	success, err := checkBodyJSONPresent(m, tc)
+	if err != nil {
+		return false, err
+	}
+
+	if success {
+		if len(m.ContextName) > 0 {
+			ctx.Put(m.ContextName, m.Result)
+			return true, nil
+		}
+	}
+	return false, nil
+}
+
+func (m *Match) setContextFromCheckBodyJSONValue(tc *TestCase, ctx *Context) (bool, error) {
+	success, err := checkBodyJSONValue(m, tc)
+	if err != nil {
+		return false, err
+	}
+	if success {
+		if len(m.ContextName) > 0 {
+			ctx.Put(m.ContextName, m.Result)
+			return true, nil
+		}
+	}
+	return false, nil
 }
 
 // GetType - returns the type of a match
@@ -234,20 +259,10 @@ func (m *Match) GetType() MatchType {
 		return Authorisation
 	}
 
-	if fieldsPresent(m.Header, m.Value) { // note: below ordering matters
-		m.MatchType = HeaderValue
-		return HeaderValue
+	if fieldsPresent(m.Header) { // simply for cyclomatic tests!
+		return m.getHeaderType()
 	}
 
-	if fieldsPresent(m.Header, m.Regex, m.ContextName) {
-		m.MatchType = HeaderRegexContext
-		return HeaderRegexContext
-	}
-
-	if fieldsPresent(m.Header, m.Regex) {
-		m.MatchType = HeaderRegex
-		return HeaderRegex
-	}
 	if fieldsPresent(m.HeaderPresent) {
 		m.MatchType = HeaderPresent
 		return HeaderPresent
@@ -282,6 +297,25 @@ func (m *Match) GetType() MatchType {
 	if m.BodyLength != nil {
 		m.MatchType = BodyLength
 		return BodyLength
+	}
+
+	return UnknownMatchType
+}
+
+func (m *Match) getHeaderType() MatchType {
+	if fieldsPresent(m.Header, m.Value) { // note: below ordering matters
+		m.MatchType = HeaderValue
+		return HeaderValue
+	}
+
+	if fieldsPresent(m.Header, m.Regex, m.ContextName) {
+		m.MatchType = HeaderRegexContext
+		return HeaderRegexContext
+	}
+
+	if fieldsPresent(m.Header, m.Regex) {
+		m.MatchType = HeaderRegex
+		return HeaderRegex
 	}
 
 	return UnknownMatchType
