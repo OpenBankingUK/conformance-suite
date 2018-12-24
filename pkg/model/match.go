@@ -75,15 +75,16 @@ type ContextAccessor struct {
 // variable), a description (so if things go wrong we can accurately report) and an operation which results in
 // the a selection which is copied into the context variable
 // Note: the initial interation of this will just implement the JSON pattern/field matcher
-func (c *ContextAccessor) PutValues(tc *TestCase, ctx *Context) (string, error) {
+func (c *ContextAccessor) PutValues(tc *TestCase, ctx *Context) error {
 	for _, m := range c.Matches {
 		success := m.PutValue(tc, ctx)
+		fmt.Printf("(%t) - %s\n", success, m.String())
 		if !success {
 			msg := fmt.Sprintf("PutValues - failed Match [%s]", m.String())
-			return m.ContextName, errors.New("ContextAccessor " + msg)
+			return errors.New("ContextAccessor " + msg)
 		}
 	}
-	return "", nil
+	return nil
 }
 
 // GetValues - checks for match elements in the contextGet section
@@ -176,64 +177,43 @@ func (m *Match) PutValue(tc *TestCase, ctx *Context) bool {
 	case BodyJSONPresent:
 		success, err := checkBodyJSONPresent(m, tc)
 		if err != nil {
-			//m.AppInfo(err.Error())
 			return false
 		}
 
 		if success {
 			if len(m.ContextName) > 0 {
-				//m.AppInfo(fmt.Sprintf("Putting [%s] into context with value [%s] ", m.ContextName, m.Result))
 				ctx.Put(m.ContextName, m.Result)
 				return true
 			}
-		} else {
-			//m.AppInfo(err.Error())
-			return false
 		}
 	case BodyJSONValue:
 		success, err := checkBodyJSONValue(m, tc)
 		if err != nil {
-			//m.AppInfo(err.Error())
 			return false
 		}
 		if success {
 			if len(m.ContextName) > 0 {
-				//m.AppInfo(fmt.Sprintf("Putting [%s] into context with value [%s] ", m.ContextName, m.Result))
 				ctx.Put(m.ContextName, m.Result)
 				return true
 			}
-		} else {
-			//m.AppInfo(err.Error())
-			return false
 		}
-
 	case Authorisation:
 		if strings.EqualFold("bearer", m.Authorisation) {
-			result, err := checkAuthorisation(m, tc)
-			if !result || err != nil {
-				//m.AppWarn("Put Authorisation Bearer Failed")
+			success, err := checkAuthorisation(m, tc)
+			if err != nil {
 				return false
 			}
-		}
-	case HeaderRegex:
-		success, err := checkHeaderRegex(m, tc)
-		if err != nil {
-			//m.AppInfo(err.Error())
-			return false
-		}
-		if success {
-			//m.AppInfo(fmt.Sprintf("Putting [%s] into context with value [%s] ", m.ContextName, m.Result))
 			ctx.Put(m.ContextName, m.Result)
-			return true
+			return success
 		}
 	case HeaderRegexContext:
 		success, err := checkHeaderRegexContext(m, tc)
+		fmt.Println("HeaderRegexContext entered")
 		if err != nil {
-			//m.AppInfo(err.Error())
 			return false
 		}
 		if success {
-			//m.AppInfo(fmt.Sprintf("Putting [%s] into context with value [%s] ", m.ContextName, m.Result))
+			fmt.Printf("Putting [%s] into context with value [%s] ", m.ContextName, m.Result)
 			ctx.Put(m.ContextName, m.Result)
 			return true
 		}
@@ -370,6 +350,19 @@ func checkHeaderValue(m *Match, tc *TestCase) (bool, error) {
 	return success, nil
 }
 
+// Allows capturing of a regex subfield expression in a header
+// For example with the following location header
+// "Location:https://x.y.z/auth?code=12345&redir=https://redir"
+// using the following match:
+//{
+//	"name": "xchange_code",
+//	"description": "Get the xchange code from the location redirect",
+//	"header": "Location",
+//	"regex": "code=(.*)&?.*"
+//  }
+//
+// Will extract the value of code "12345" and make it available in the match m.Result field
+//
 func checkHeaderRegexContext(m *Match, tc *TestCase) (bool, error) {
 	var success bool
 	var actualHeader string

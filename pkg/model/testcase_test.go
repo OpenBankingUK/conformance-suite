@@ -182,7 +182,14 @@ func TestJsonExpectMatch(t *testing.T) {
 
 	res := pkgutils.CreateHTTPResponse(200, "OK", string(getAccountResponse))
 
-	result, err := testcase.Validate(res, nil)
+	result, err := testcase.Validate(res, emptyContext)
 	assert.Nil(t, err)
 	assert.Equal(t, result, true)
+}
+
+func TestApplyInputNoGetMethod(t *testing.T) {
+	tc := TestCase{}
+	req, err := tc.Prepare(emptyContext)
+	assert.NotNil(t, err)
+	assert.Nil(t, req)
 }

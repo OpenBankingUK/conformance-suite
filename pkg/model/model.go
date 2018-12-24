@@ -7,8 +7,6 @@ import (
 	"net/http"
 
 	resty "gopkg.in/resty.v1"
-
-	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/utils"
 )
 
 // Manifest is the high level container for test suite definition
@@ -100,6 +98,9 @@ func (t *TestCase) Prepare(ctx *Context) (*resty.Request, error) {
 //         TODO - cater for returning multiple validation failures and explanations
 //         NOTE: Vadiate will only return false if a check fails - no checks = true
 func (t *TestCase) Validate(resp *resty.Response, rulectx *Context) (bool, error) {
+	if rulectx == nil {
+		return false, errors.New("error Valdate:rulectx == nil")
+	}
 	t.Body = resp.String()
 	if len(t.Body) == 0 { // The response body can only be read once from the raw response
 		// so we cache it in the testcase
@@ -158,12 +159,12 @@ func (t *TestCase) ApplyInput(rulectx *Context) (*resty.Request, error) {
 	// NOTE: This is an initial implementation to get things moving - expect a lot of change in this function
 	var err error
 	err = t.Input.ContextGet.GetValues(t, rulectx)
-
-	if &t.Input.Endpoint == nil || &t.Input.Method == nil { // we don't have a value input object
-		return nil, errors.New("Testcase Input empty")
+	if err != nil {
+		return nil, err
 	}
-	if t.Input.Method != "GET" { // Only get Supported Initially
-		return nil, errors.New("Testcase Method Only support GET currently")
+
+	if t.Input.Endpoint == "" || t.Input.Method == "" { // we don't have a value input object
+		return nil, errors.New("Testcase Input empty")
 	}
 
 	req := resty.R()
@@ -225,7 +226,10 @@ func (t *TestCase) ApplyExpects(res *resty.Response, rulectx *Context) (bool, er
 		}
 	}
 
-	_, err := t.Expect.ContextPut.PutValues(t, rulectx)
+	err := t.Expect.ContextPut.PutValues(t, rulectx)
+	if err != nil {
+		return false, err
+	}
 
 	return true, err
 }
@@ -238,14 +242,6 @@ func (c Context) Get(key string) interface{} {
 // Put a value indexed by 'key' into the context. The value can be any type
 func (c Context) Put(key string, value interface{}) {
 	c[key] = value
-}
-
-// NewTestCase creates an Context thats initialised correctly with a map structure
-// which holds the context parameters
-func NewTestCase() *TestCase {
-	var t TestCase
-	t.Context = make(map[string]interface{})
-	return &t
 }
 
 // GetIncludedPermission returns the list of permission names that need to be included
@@ -318,32 +314,6 @@ func (m *Manifest) String() string {
 func (r *Rule) String() string {
 	return fmt.Sprintf("RULE\nName: %s\nPurpose: %s\nSpecRef: %s\nSpec Location: %s\nTests: %d\n",
 		r.Name, r.Purpose, r.Specref, r.Speclocation, len(r.Tests))
-}
-
-// Dump - TestCase helper
-func (t *TestCase) Dump(print bool) {
-	if print {
-		fmt.Printf("TESTCASE\nID: %s\nName: %s\nPurpose: %s\n", t.ID, t.Name, t.Purpose)
-		fmt.Printf("Input: ")
-		pkgutils.DumpJSON(t.Input)
-		fmt.Printf("Context: ")
-		pkgutils.DumpJSON(t.Context)
-		fmt.Printf("Expect: ")
-		pkgutils.DumpJSON(t.Expect)
-	}
-}
-
-// RunTests - runs all the tests for aTestRule
-func (r *Rule) RunTests() {
-	for _, testSequence := range r.Tests {
-		for _, tester := range testSequence {
-			// testcase.ApplyInput
-			// testcase.ApplyContext
-			// testcase.ApplyExpects
-			_ = tester // placeholder
-			fmt.Println("Test Result: ", true)
-		}
-	}
 }
 
 // GetPermissionSets returns the inclusive and exclusive permission sets required

@@ -32,15 +32,6 @@ func TestLoadModel(t *testing.T) {
 	t.Run("rule has a Name", func(t *testing.T) {
 		assert.Equal(t, rule.Name, "Get Accounts Basic Rule")
 	})
-
-	t.Run("rule has a RunTests() function", func(t *testing.T) {
-		rule.RunTests() // Run Tests for a Rule
-	})
-
-	testcase := rule.Tests[0][0]
-	t.Run("testcase has Dump() function", func(t *testing.T) {
-		testcase.Dump(false)
-	})
 }
 
 // Enumerates all OpenAPI calls from swagger file
@@ -54,7 +45,6 @@ func TestEnumerateOpenApiTestcases(t *testing.T) {
 			newPath := base + path
 			assert.NotNil(t, meth)
 			assert.NotNil(t, newPath)
-			// fmt.Printf("Register %s %s\n", meth, newPath)
 		}
 	}
 }
@@ -120,7 +110,6 @@ func loadOpenAPI(print bool) (*loads.Document, error) {
 func dumpTestCases(testcases []TestCase) {
 	var model []byte
 	model, _ = json.MarshalIndent(testcases, "", "    ")
-	//fmt.Println(string(model))
 	_ = model
 
 }
