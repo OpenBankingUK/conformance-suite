@@ -44,9 +44,6 @@ export default {
     name() {
       return this.discoveryModel.name;
     },
-    discoveryVersion() {
-      return this.discoveryModel.discoveryVersion;
-    },
     text() {
       return this.discoveryModel.description;
     },
