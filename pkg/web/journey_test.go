@@ -12,8 +12,6 @@ import (
 )
 
 func TestJourneySetDiscoveryModelValidatesModel(t *testing.T) {
-	// this is a global var/singleton so we need to reset it's state between tests
-	journeyInstance = nil
 	discoveryModel := &discovery.Model{}
 	validator := &mocks.Validator{}
 	validator.On("Validate", discoveryModel).Return(discovery.NoValidationFailures, nil)
@@ -29,8 +27,6 @@ func TestJourneySetDiscoveryModelValidatesModel(t *testing.T) {
 }
 
 func TestJourneySetDiscoveryModelHandlesErrorFromValidator(t *testing.T) {
-	// this is a global var/singleton so we need to reset it's state between tests
-	journeyInstance = nil
 	discoveryModel := &discovery.Model{}
 	validator := &mocks.Validator{}
 	expectedFailures := discovery.ValidationFailures{}
@@ -46,8 +42,6 @@ func TestJourneySetDiscoveryModelHandlesErrorFromValidator(t *testing.T) {
 }
 
 func TestJourneySetDiscoveryModelReturnsFailuresFromValidator(t *testing.T) {
-	// this is a global var/singleton so we need to reset it's state between tests
-	journeyInstance = nil
 	discoveryModel := &discovery.Model{}
 	validator := &mocks.Validator{}
 	failure := discovery.ValidationFailure{
@@ -66,8 +60,6 @@ func TestJourneySetDiscoveryModelReturnsFailuresFromValidator(t *testing.T) {
 }
 
 func TestJourneyTestCasesCantGenerateIfDiscoveryNotSet(t *testing.T) {
-	// this is a global var/singleton so we need to reset it's state between tests
-	journeyInstance = nil
 	validator := &mocks.Validator{}
 	generator := &gmocks.Generator{}
 	journey := NewWebJourney(generator, validator)
@@ -79,8 +71,6 @@ func TestJourneyTestCasesCantGenerateIfDiscoveryNotSet(t *testing.T) {
 }
 
 func TestJourneyTestCasesGenerate(t *testing.T) {
-	// this is a global var/singleton so we need to reset it's state between tests
-	journeyInstance = nil
 	validator := &mocks.Validator{}
 	discoveryModel := &discovery.Model{}
 	validator.On("Validate", discoveryModel).Return(discovery.NoValidationFailures, nil)
@@ -97,8 +87,6 @@ func TestJourneyTestCasesGenerate(t *testing.T) {
 }
 
 func TestJourneyTestCasesDoesntREGenerate(t *testing.T) {
-	// this is a global var/singleton so we need to reset it's state between tests
-	journeyInstance = nil
 	validator := &mocks.Validator{}
 	discoveryModel := &discovery.Model{}
 	validator.On("Validate", discoveryModel).Return(discovery.NoValidationFailures, nil)

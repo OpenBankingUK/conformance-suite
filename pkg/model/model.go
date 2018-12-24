@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"net/http"
 
-	resty "gopkg.in/resty.v1"
+	"gopkg.in/resty.v1"
 )
 
 // Manifest is the high level container for test suite definition

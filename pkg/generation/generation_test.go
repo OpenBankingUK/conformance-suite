@@ -5,8 +5,6 @@ import (
 	"fmt"
 	"io/ioutil"
 
-	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/utils"
-
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
 )
@@ -28,7 +26,12 @@ func ExampleGetImplementedTestCases() {
 		testNo += 1000
 	}
 
-	fmt.Println(string(pkgutils.DumpJSON(results[0])))
+	data, err := json.MarshalIndent(results[0], "", "    ")
+	if err != nil {
+		fmt.Println(err.Error())
+	}
+
+	fmt.Println(string(data))
 	// Output:
 	// {
 	//     "@id": "#t1000",

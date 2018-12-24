@@ -1,11 +1,11 @@
 package model
 
 import (
+	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/test"
 	"encoding/json"
 	"io/ioutil"
 	"testing"
 
-	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/utils"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -190,7 +190,7 @@ func TestTransactionsWithCorrectPermissions(t *testing.T) {
 	assert.Equal(t, 0, len(excluded))
 	assert.Equal(t, included[0], "ReadTransactionsBasic")
 
-	res := pkgutils.CreateHTTPResponse(200, "OK", string(getAccountResponse))
+	res := test.CreateHTTPResponse(200, "OK", string(getAccountResponse))
 	result, err := tc.ApplyExpects(res, nil)
 	assert.Nil(t, err)
 	assert.Equal(t, result, true) // test validates ok
@@ -205,7 +205,7 @@ func TestTransctionWithoutCorrectPermissions(t *testing.T) {
 	assert.Equal(t, 2, len(excluded))
 	assert.Equal(t, excluded[0], "ReadTransactionsBasic")
 
-	res := pkgutils.CreateHTTPResponse(403, "OK", string(getAccountResponse))
+	res := test.CreateHTTPResponse(403, "OK", string(getAccountResponse))
 
 	result, err := tc.ApplyExpects(res, nil)
 	assert.Nil(t, err)
