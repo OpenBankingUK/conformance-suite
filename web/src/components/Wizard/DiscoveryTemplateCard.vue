@@ -13,9 +13,6 @@
       />
     </div>
     <p class="card-text">{{ text }}</p>
-    <a
-      href="#"
-      class="card-link">Select</a>
   </b-card>
 </template>
 
