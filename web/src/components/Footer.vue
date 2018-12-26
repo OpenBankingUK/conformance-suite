@@ -1,5 +1,5 @@
 <template>
-  <div class="footer-section d-flex flex-row-reverse"/>
+  <div class="footer-section d-flex flex-row-reverse">sssss</div>
 </template>
 
 <style scoped>

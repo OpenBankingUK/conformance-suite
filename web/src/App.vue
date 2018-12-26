@@ -2,15 +2,11 @@
   <div
     id="app"
     class="d-flex flex-column app">
-    <b-navbar
-      type="dark"
-      variant="dark">
-      <b-navbar-brand to="/">Functional Conformance Suite</b-navbar-brand>
-    </b-navbar>
+    <Header/>
     <div class="d-flex flex-column flex-fill">
       <router-view/>
+      <Footer/>
     </div>
-    <Footer/>
   </div>
 </template>
 
@@ -27,6 +23,7 @@
 </style>
 
 <script>
+import Header from './components/Header.vue';
 import Footer from './components/Footer.vue';
 import Wizard from './components/Wizard.vue';
 
@@ -35,6 +32,7 @@ export default {
   components: {
     Wizard,
     Footer,
+    Header,
   },
 };
 </script>

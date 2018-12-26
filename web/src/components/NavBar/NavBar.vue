@@ -1,5 +1,5 @@
 <template>
-  <div class="d-flex flex-column p-3">
+  <div class="d-flex flex-column p-3 navbar">
     <div class="nav-section">
       <b-nav
         vertical
@@ -59,8 +59,12 @@
 </template>
 
 <style scoped>
+.navbar {
+box-shadow: 6px 0 25px 0 rgba(38,50,56,.2);
+}
 .nav-section {
   background: #ffffff;
+  
 }
 
 .sidebar-heading {
