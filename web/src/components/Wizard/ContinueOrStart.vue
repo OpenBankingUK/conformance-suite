@@ -1,6 +1,6 @@
 <template>
   <div class="align-items-start">
-    <h2 class="pt-3 pb-2 mb-3">Continue or Start a New Test</h2>
+    <h2 class="pt-3 pb-2 mb-3">Continue or Select Disvovery Template</h2>
 
     <p>Upload a signed and compatible report to view the results or to rerun.</p>
     <b-button class="mb-4">Choose file</b-button>
