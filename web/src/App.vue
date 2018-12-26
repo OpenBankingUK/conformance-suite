@@ -5,7 +5,6 @@
     <Header/>
     <div class="d-flex flex-column flex-fill">
       <router-view/>
-      <Footer/>
     </div>
   </div>
 </template>
@@ -17,21 +16,16 @@
   font-family: 'Metropolis', 'Arial', sans-serif;
 }
 
-/* div {
-  border: 1px solid #F6F6F6;
-} */
 </style>
 
 <script>
 import Header from './components/Header.vue';
-import Footer from './components/Footer.vue';
 import Wizard from './components/Wizard.vue';
 
 export default {
   name: 'app',
   components: {
     Wizard,
-    Footer,
     Header,
   },
 };
