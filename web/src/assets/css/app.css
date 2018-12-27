@@ -14,7 +14,6 @@ body,
   text-align: center;
 }
 
-
 .panel {
   position: relative;
   margin: 10px;
@@ -40,18 +39,13 @@ body,
     justify-content: space-between;
     -ms-flex-wrap: wrap;
     flex-wrap: wrap;
-  
-
 }
-
 
 .panel .panel-body {
   padding: 20px;
     width: 100%;
     overflow-x: auto;
 }
-
-
 .panel .panel-body p {
     color: #616161;
     font-size: 0.9rem;
@@ -60,6 +54,4 @@ body,
 .panel .panel-heading h5 {
   margin: 0;
   font-size: 1.0rem;
-  
-
 }
