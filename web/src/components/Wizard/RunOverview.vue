@@ -1,9 +1,7 @@
 <template>
   <div class="d-flex flex-row flex-fill">
     <div class="d-flex align-items-start">
-      <div
-        class="panel w-100"
-        style="height:900px">
+      <div class="panel w-100" style="height:900px">
         <div class="panel-heading">
           <h5>Overview</h5>
         </div>
@@ -18,17 +16,13 @@
 
 <script>
 export default {
-  name: 'RunOverview',
-  components: {
-  },
+  name: "RunOverview",
+  components: {},
   data() {
-    return {
-    };
+    return {};
   },
-  computed: {
-  },
-  methods: {
-  },
+  computed: {},
+  methods: {}
 };
 </script>
 

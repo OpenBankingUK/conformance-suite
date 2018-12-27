@@ -1,29 +1,20 @@
 <template>
   <div class="d-flex flex-row flex-fill">
     <div class="d-flex align-items-start">
-      <div
-        class="panel w-100"
-        style="height:900px">
+      <div class="panel w-100" style="height:900px">
         <div class="panel-heading">
           <h5>Discovery {Discovery Name}</h5>
         </div>
         <div class="panel-body">
-          <div
-            v-if="problems"
-            class="mb-4">
-            <b-alert show>
-              Please fix these problems:
+          <div v-if="problems" class="mb-4">
+            <b-alert show>Please fix these problems:
               <ul>
-                <li
-                  v-for="(problem, index) in discoveryProblems"
-                  :key="index"
-                >{{ problem.error }}</li>
+                <li v-for="(problem, index) in discoveryProblems" :key="index">{{ problem.error }}</li>
               </ul>
             </b-alert>
           </div>
 
           <AceEditor
-
             :ref="editorName"
             :name="editorName"
             :fontSize="12"
@@ -39,11 +30,7 @@
             theme="chrome"
             class="editor panel-body"
             width="100%"
-
-
           />
-
-
         </div>
       </div>
     </div>
@@ -52,40 +39,40 @@
 
 
 <script>
-import 'brace';
-import 'brace/mode/json';
-import 'brace/theme/chrome';
-import { Ace as AceEditor } from 'vue2-brace-editor';
-import { mapGetters, mapActions } from 'vuex';
-import discovery from '../../api/discovery';
+import "brace";
+import "brace/mode/json";
+import "brace/theme/chrome";
+import { Ace as AceEditor } from "vue2-brace-editor";
+import { mapGetters, mapActions } from "vuex";
+import discovery from "../../api/discovery";
 
 // Bug in Brace editor using wrong Range function means we need to require Range here:
-const AceRange = window.ace.acequire('ace/range').Range;
+const AceRange = window.ace.acequire("ace/range").Range;
 
 export default {
-  name: 'DiscoveryConfig',
+  name: "DiscoveryConfig",
   components: {
-    AceEditor,
+    AceEditor
   },
   props: {
     editorName: {
       type: String,
       private: true,
       default() {
-        return 'discovery-config-editor';
-      },
-    },
+        return "discovery-config-editor";
+      }
+    }
   },
   computed: {
-    ...mapGetters('config', [
-      'discoveryModelString',
-      'problems',
-      'discoveryProblems',
+    ...mapGetters("config", [
+      "discoveryModelString",
+      "problems",
+      "discoveryProblems"
     ]),
     problemAnnotationAndMarkers() {
       return discovery.annotationsAndMarkers(
         this.discoveryProblems,
-        this.discoveryModelString,
+        this.discoveryModelString
       );
     },
     problemAnnotations() {
@@ -107,34 +94,38 @@ export default {
         // Bug in Brace editor using wrong Range function means we need to
         // removeMarkers directly here.
         const keys = Object.keys(oldMarkers);
-        const errorMarkerIds = keys.filter(k => oldMarkers[k].clazz === 'ace_error-marker');
+        const errorMarkerIds = keys.filter(
+          k => oldMarkers[k].clazz === "ace_error-marker"
+        );
         errorMarkerIds.forEach(id => session.removeMarker(id));
       }
       if (markers.length > 0) {
         // Bug in Brace editor using wrong Range function means we need to
         // addMarkers directly here, in order to use correct Range function:
-        markers.forEach(({
-          startRow,
-          startCol,
-          endRow,
-          endCol,
-          className,
-          type,
-          inFront = false,
-        }) => {
-          const range = new AceRange(startRow, startCol, endRow, endCol);
-          session.addMarker(range, className, type, inFront);
-        });
+        markers.forEach(
+          ({
+            startRow,
+            startCol,
+            endRow,
+            endCol,
+            className,
+            type,
+            inFront = false
+          }) => {
+            const range = new AceRange(startRow, startCol, endRow, endCol);
+            session.addMarker(range, className, type, inFront);
+          }
+        );
       }
 
       return markers;
-    },
+    }
   },
   methods: {
-    ...mapActions('config', [
-      'setDiscoveryModel',
-      'validateDiscoveryConfig',
-      'setDiscoveryModelProblems',
+    ...mapActions("config", [
+      "setDiscoveryModel",
+      "validateDiscoveryConfig",
+      "setDiscoveryModelProblems"
     ]),
     // Gets called by top-level Wizard component in the validateStep function.
     async validate() {
@@ -159,7 +150,7 @@ export default {
         const force = true;
         aceEditorComponent.editor.resize(force);
       });
-    },
+    }
   },
   // Prevent user from progressing FORWARD only if the Discovery Config is invalid.
   // They can navigate backwards, however.
@@ -168,11 +159,11 @@ export default {
   // See documentation: https://router.vuejs.org/guide/advanced/navigation-guards.html#in-component-guards
   async beforeRouteLeave(to, from, next) {
     const isBack =
-      from.path === '/wizard/discovery-config' &&
-      to.path === '/wizard/continue-or-start';
+      from.path === "/wizard/discovery-config" &&
+      to.path === "/wizard/continue-or-start";
     const isNext =
-      from.path === '/wizard/discovery-config' &&
-      to.path !== '/wizard/continue-or-start';
+      from.path === "/wizard/discovery-config" &&
+      to.path !== "/wizard/continue-or-start";
 
     // Always allow user to go back from this page.
     if (isBack) {
@@ -193,18 +184,18 @@ export default {
     // Neither isBack or isNext is true.
     // eslint-disable-next-line no-console
     console.error(
-      'component=%s, method=beforeRouteLeave: invalid state, vars=%o',
+      "component=%s, method=beforeRouteLeave: invalid state, vars=%o",
       this.$options.name,
       {
         isBack,
         isNext,
         to,
-        from,
-      },
+        from
+      }
     );
 
     return next(false);
-  },
+  }
 };
 </script>
 

@@ -7,38 +7,36 @@
     @click="selectDiscovery()"
   >
     <div class="card-image">
-      <b-card-img
-        :src="imgSrc"
-        :alt="name"/>
+      <b-card-img :src="imgSrc" :alt="name"/>
     </div>
     <p class="card-text">{{ text }}</p>
   </b-card>
 </template>
 
 <script>
-import { mapActions } from 'vuex';
+import { mapActions } from "vuex";
 
 export default {
-  name: 'DiscoveryTemplateCard',
+  name: "DiscoveryTemplateCard",
   props: {
     discoveryModel: {
       type: Object,
       private: true,
       default() {
         return null;
-      },
+      }
     },
     image: {
       type: String,
       private: true,
       default() {
         return null;
-      },
-    },
+      }
+    }
   },
   computed: {
     title() {
-      return '';
+      return "";
     },
     name() {
       return this.discoveryModel.name;
@@ -48,16 +46,18 @@ export default {
     },
     imgSrc() {
       return this.image;
-    },
+    }
   },
   methods: {
-    ...mapActions('config', ['setDiscoveryModel']),
+    ...mapActions("config", ["setDiscoveryModel"]),
     selectDiscovery() {
-      this.setDiscoveryModel(JSON.stringify({ discoveryModel: this.discoveryModel }));
+      this.setDiscoveryModel(
+        JSON.stringify({ discoveryModel: this.discoveryModel })
+      );
       // route to discovery configuration
-      this.$router.push('discovery-config');
-    },
-  },
+      this.$router.push("discovery-config");
+    }
+  }
 };
 </script>
 

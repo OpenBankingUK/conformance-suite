@@ -1,13 +1,7 @@
 <template>
   <div class="wizard-footer-section d-flex flex-row justify-content-between p-3">
-    <b-btn
-      :disabled="isBackDisabled"
-      variant="primary"
-      @click="onBack()">Back</b-btn>
-    <b-btn
-      :disabled="isNextDisabled"
-      variant="success"
-      @click="onNext()">Next</b-btn>
+    <b-btn :disabled="isBackDisabled" variant="primary" @click="onBack()">Back</b-btn>
+    <b-btn :disabled="isNextDisabled" variant="success" @click="onNext()">Next</b-btn>
   </div>
 </template>
 
@@ -19,20 +13,19 @@
 </style>
 
 <script>
-import * as _ from 'lodash';
+import * as _ from "lodash";
 
 export default {
-  name: 'WizardFooter',
-  components: {
-  },
+  name: "WizardFooter",
+  components: {},
   data() {
     // normal navigation
     const ROUTES = {
-      '/wizard/continue-or-start': '/wizard/discovery-config',
-      '/wizard/discovery-config': '/wizard/configuration',
-      '/wizard/configuration': '/wizard/run-overview',
-      '/wizard/run-overview': '/wizard/summary',
-      '/wizard/summary': '/wizard/export',
+      "/wizard/continue-or-start": "/wizard/discovery-config",
+      "/wizard/discovery-config": "/wizard/configuration",
+      "/wizard/configuration": "/wizard/run-overview",
+      "/wizard/run-overview": "/wizard/summary",
+      "/wizard/summary": "/wizard/export"
     };
     // invert the ROUTES map, could do this manually but there is no point
     // as it is error-prone.
@@ -40,14 +33,14 @@ export default {
 
     return {
       ROUTES_BACK: ROUTES_INVERTED,
-      ROUTES_NEXT: ROUTES,
+      ROUTES_NEXT: ROUTES
     };
   },
   computed: {
     // disable back button if we are in the first step of the wizard
     isBackDisabled() {
       const { path } = this.$route;
-      if (path === '/wizard/continue-or-start') {
+      if (path === "/wizard/continue-or-start") {
         return true;
       }
 
@@ -57,12 +50,12 @@ export default {
     // disable next button when we are on discovery template selection step
     isNextDisabled() {
       const { path } = this.$route;
-      if (path === '/wizard/export' || path === '/wizard/continue-or-start') {
+      if (path === "/wizard/export" || path === "/wizard/continue-or-start") {
         return true;
       }
 
       return false;
-    },
+    }
   },
   methods: {
     nextRoute() {
@@ -78,7 +71,7 @@ export default {
     },
     onNext() {
       this.$router.push(this.nextRoute());
-    },
-  },
+    }
+  }
 };
 </script>
