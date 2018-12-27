@@ -1,13 +1,34 @@
 <template>
   <div class="d-flex flex-column h-100 navbar">
     <div class="nav-section">
-      <b-nav vertical pills>
-        <NavBarItem :no="1" route="/wizard/continue-or-start" label="Start/Load Test"/>
-        <NavBarItem :no="2" route="/wizard/discovery-config" label="Discovery" exact/>
-        <NavBarItem :no="3" route="/wizard/configuration" label="Configuration"/>
-        <NavBarItem :no="4" route="/wizard/run-overview" label="Run/Overview"/>
-        <NavBarItem :no="5" route="/wizard/summary" label="Summary"/>
-        <NavBarItem :no="6" route="/wizard/export" label="Export"/>
+      <b-nav
+        vertical
+        pills>
+        <NavBarItem
+          :no="1"
+          route="/wizard/continue-or-start"
+          label="Start/Load Test"/>
+        <NavBarItem
+          :no="2"
+          route="/wizard/discovery-config"
+          label="Discovery"
+          exact/>
+        <NavBarItem
+          :no="3"
+          route="/wizard/configuration"
+          label="Configuration"/>
+        <NavBarItem
+          :no="4"
+          route="/wizard/run-overview"
+          label="Run/Overview"/>
+        <NavBarItem
+          :no="5"
+          route="/wizard/summary"
+          label="Summary"/>
+        <NavBarItem
+          :no="6"
+          route="/wizard/export"
+          label="Export"/>
       </b-nav>
     </div>
     <div class="nav-section">
@@ -17,7 +38,9 @@
         <span>Tools</span>
         <plus-circle-icon/>
       </h6>
-      <b-nav vertical class="mb-2">
+      <b-nav
+        vertical
+        class="mb-2">
         <b-nav-item
           href="https://bitbucket.org/openbankingteam/conformance-suite/src/develop/README.md"
           target="_blank"
@@ -30,10 +53,14 @@
         >
           <file-text-icon class="icon-class"/>Bug Tracker
         </b-nav-item>
-        <b-nav-item href="https://bitbucket.org/openbankingteam/conformance-suite" target="_blank">
+        <b-nav-item
+          href="https://bitbucket.org/openbankingteam/conformance-suite"
+          target="_blank">
           <file-text-icon class="icon-class"/>Website
         </b-nav-item>
-        <b-nav-item disabled target="_blank">
+        <b-nav-item
+          disabled
+          target="_blank">
           <file-text-icon class="icon-class"/>Integrations
         </b-nav-item>
       </b-nav>
@@ -66,17 +93,17 @@
 </style>
 
 <script>
-import { PlusCircleIcon, FileTextIcon } from "vue-feather-icons";
-import NavBarItem from "./NavBarItem.vue";
+import { PlusCircleIcon, FileTextIcon } from 'vue-feather-icons';
+import NavBarItem from './NavBarItem.vue';
 
 export default {
-  name: "NavBar",
+  name: 'NavBar',
   components: {
     NavBarItem,
     PlusCircleIcon,
-    FileTextIcon
+    FileTextIcon,
   },
   // inheritAttrs: false,
-  methods: {}
+  methods: {},
 };
 </script>

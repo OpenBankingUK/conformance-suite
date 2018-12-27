@@ -1,7 +1,9 @@
 <template>
   <div class="d-flex flex-row flex-fill">
     <div class="d-flex align-items-start">
-      <div class="panel w-50" style="height:300px">
+      <div
+        class="panel w-50"
+        style="height:300px">
         <div class="panel-heading">
           <h5>Functional Conformance Suite v1</h5>
         </div>
@@ -10,7 +12,9 @@
           <p>To start, upload a compatible report to view the results or select a discovery template to run a new test.</p>
         </div>
       </div>
-      <div class="panel w-50" style="height:300px">
+      <div
+        class="panel w-50"
+        style="height:300px">
         <div class="panel-heading">
           <h5>Continue Test</h5>
         </div>
@@ -43,17 +47,17 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex";
-import DiscoveryTemplateCard from "./DiscoveryTemplateCard.vue";
+import { mapGetters } from 'vuex';
+import DiscoveryTemplateCard from './DiscoveryTemplateCard.vue';
 
 export default {
-  name: "ContinueOrStart",
+  name: 'ContinueOrStart',
   components: {
-    DiscoveryTemplateCard
+    DiscoveryTemplateCard,
   },
   computed: {
-    ...mapGetters("config", ["discoveryTemplates"])
-  }
+    ...mapGetters('config', ['discoveryTemplates']),
+  },
 };
 </script>
 
