@@ -1,13 +1,12 @@
 package model
 
 import (
+	"bytes"
 	"errors"
 	"fmt"
-	"io/ioutil"
 	"net/http"
-	"net/url"
 
-	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/utils"
+	resty "gopkg.in/resty.v1"
 )
 
 // Manifest is the high level container for test suite definition
@@ -41,7 +40,7 @@ type Rule struct {
 
 // TestCaseExecutor defines an interface capable of executing a testcase
 type TestCaseExecutor interface {
-	ExecuteTestCase(r *http.Request, t *TestCase, ctx *Context) (*http.Response, error)
+	ExecuteTestCase(r *resty.Request, t *TestCase, ctx *Context) (*resty.Response, error)
 }
 
 // TestCase defines a test that will be run and needs to be passed as part of the conformance suite
@@ -56,28 +55,33 @@ type TestCaseExecutor interface {
 //     and therefore the testcase has passed
 //
 type TestCase struct {
-	ID         string        `json:"@id,omitempty"`     // JSONLD ID Reference
-	Type       []string      `json:"@type,omitempty"`   // JSONLD type array
-	Name       string        `json:"name,omitempty"`    // Name
-	Purpose    string        `json:"purpose,omitempty"` // Purpose of the testcase in simple words
-	Input      Input         `json:"input,omitempty"`   // Input Object
-	Context    Context       `json:"context,omitempty"` // Local Context Object
-	Expect     Expect        `json:"expect,omitempty"`  // Expected object
-	ParentRule *Rule         `json:"-"`                 // Allows accessing parent Rule
-	Request    *http.Request `json:"-"`                 // The request that's been generated in order to call the endpoint
-	Header     http.Header   `json:"-"`                 // ResponseHeader
-	Body       string        `json:"-"`                 // ResponseBody
+	ID         string         `json:"@id,omitempty"`     // JSONLD ID Reference
+	Type       []string       `json:"@type,omitempty"`   // JSONLD type array
+	Name       string         `json:"name,omitempty"`    // Name
+	Purpose    string         `json:"purpose,omitempty"` // Purpose of the testcase in simple words
+	Input      Input          `json:"input,omitempty"`   // Input Object
+	Context    Context        `json:"context,omitempty"` // Local Context Object
+	Expect     Expect         `json:"expect,omitempty"`  // Expected object
+	ParentRule *Rule          `json:"-"`                 // Allows accessing parent Rule
+	Request    *resty.Request `json:"-"`                 // The request that's been generated in order to call the endpoint
+	Header     http.Header    `json:"-"`                 // ResponseHeader
+	Body       string         `json:"-"`                 // ResponseBody
 }
 
 // Prepare a Testcase for execution at and endpoint,
 // results in a standard http request that encapsulates the testcase request
 // as defined in the test case object with any context inputs/replacements etc applied
-func (t *TestCase) Prepare(ctx *Context) (*http.Request, error) {
+func (t *TestCase) Prepare(ctx *Context) (*resty.Request, error) {
+	err := t.ApplyContext(ctx)
+	if err != nil {
+		return nil, err
+	}
+
 	req, err := t.ApplyInput(ctx)
 	if err != nil {
 		return nil, err
 	}
-	req, err = t.ApplyContext() // Apply Context at end of creating request
+
 	return req, err
 }
 
@@ -93,12 +97,21 @@ func (t *TestCase) Prepare(ctx *Context) (*http.Request, error) {
 //         error - adds detail to validation failure
 //         TODO - cater for returning multiple validation failures and explanations
 //         NOTE: Vadiate will only return false if a check fails - no checks = true
-func (t *TestCase) Validate(resp *http.Response, rulectx *Context) (bool, error) {
-	if len(t.Body) == 0 {
-		responseBody, _ := ioutil.ReadAll(resp.Body)
-		t.Body = string(responseBody)
+func (t *TestCase) Validate(resp *resty.Response, rulectx *Context) (bool, error) {
+	if rulectx == nil {
+		return false, errors.New("error Valdate:rulectx == nil")
 	}
-	t.Header = resp.Header
+	t.Body = resp.String()
+	if len(t.Body) == 0 { // The response body can only be read once from the raw response
+		// so we cache it in the testcase
+		// Check that there is a value body in the raw response of the resty response object
+		if resp != nil && (resp.RawResponse != nil) && (resp.RawResponse.Body != nil) {
+			buf := new(bytes.Buffer)
+			buf.ReadFrom(resp.RawResponse.Body)
+			t.Body = buf.String()
+		}
+	}
+	t.Header = resp.Header()
 	return t.ApplyExpects(resp, rulectx)
 }
 
@@ -142,22 +155,24 @@ type Expect struct {
 //     Rule - receives http response from endpoint and provides it back to testcase
 //     Testcase evaluates the http response object using its 'Expects' clause
 //     Testcase passes or fails depending on the 'Expects' outcome
-func (t *TestCase) ApplyInput(rulectx *Context) (*http.Request, error) {
+func (t *TestCase) ApplyInput(rulectx *Context) (*resty.Request, error) {
 	// NOTE: This is an initial implementation to get things moving - expect a lot of change in this function
 	var err error
-
 	err = t.Input.ContextGet.GetValues(t, rulectx)
-
-	if &t.Input.Endpoint == nil || &t.Input.Method == nil { // we don't have a value input object
-		return nil, errors.New("Testcase Input empty")
-	}
-	if t.Input.Method != "GET" { // Only get Supported Initially
-		return nil, errors.New("Testcase Method Only support GET currently")
-	}
-	req, err := http.NewRequest(t.Input.Method, t.Input.Endpoint, nil)
 	if err != nil {
 		return nil, err
 	}
+
+	if t.Input.Endpoint == "" || t.Input.Method == "" { // we don't have a value input object
+		return nil, errors.New("Testcase Input empty")
+	}
+
+	req := resty.R()
+	if req == nil {
+		return nil, errors.New("Cannot Create Resty Client in Testcase ApplyInput")
+	}
+	req.Method = t.Input.Method
+	req.URL = t.Input.Endpoint
 
 	t.Request = req // store the request in the testcase
 
@@ -168,16 +183,20 @@ func (t *TestCase) ApplyInput(rulectx *Context) (*http.Request, error) {
 // ApplyContext, applys context parameters to the http object.
 // Context parameter typically involve variables that originaled in discovery
 // The functionality of ApplyContext will grow significantly over time.
-func (t *TestCase) ApplyContext() (*http.Request, error) {
-	base := t.Context.Get("baseurl")
-	if base != nil {
-		urlWithBase, err := url.Parse(base.(string) + t.Input.Endpoint) // expand url in request to be full pathname including Discovery endpoint info from context
-		if err != nil {
-			return nil, errors.New("Error parsing context baseURL: (" + base.(string) + ")")
+func (t *TestCase) ApplyContext(rulectx *Context) error {
+	if rulectx != nil {
+		for k, v := range t.Context { // put testcase context values into rule context ...
+			rulectx.Put(k, v)
 		}
-		t.Request.URL = urlWithBase
 	}
-	return t.Request, nil
+
+	base := t.Context.Get("baseurl") // "convention" puts baseurl as prefix to endpoint in testcase"
+	if base == nil {
+		return errors.New("cannot find base url for testcase")
+	}
+	t.Input.Endpoint = base.(string) + t.Input.Endpoint
+
+	return nil
 }
 
 // ApplyExpects runs the Expects section of the testcase to evaluate if the response from the system under test passes or fails
@@ -188,23 +207,29 @@ func (t *TestCase) ApplyContext() (*http.Request, error) {
 // contextPuts are responsible for updated context variables with values selected from the test case response
 // contextPuts will only be executed if the ApplyExpects standards match tests pass
 // if any of the ApplyExpects match tests fail - ApplyExpects returns false and contextPuts aren't executed
-func (t *TestCase) ApplyExpects(res *http.Response, rulectx *Context) (bool, error) {
+func (t *TestCase) ApplyExpects(res *resty.Response, rulectx *Context) (bool, error) {
 	if res == nil { // if we've not got a response object to check, always return false
 		return false, errors.New("nil http.Response - cannot process ApplyExpects")
 	}
 
-	if t.Expect.StatusCode != res.StatusCode { // Status codes don't match
-		return false, fmt.Errorf("(%s):%s: HTTP Status code does not match: expected %d got %d", t.ID, t.Name, t.Expect.StatusCode, res.StatusCode)
+	if t.Expect.StatusCode != res.StatusCode() { // Status codes don't match
+		return false, fmt.Errorf("(%s):%s: HTTP Status code does not match: expected %d got %d", t.ID, t.Name, t.Expect.StatusCode, res.StatusCode())
 	}
 
-	for _, match := range t.Expect.Matches {
+	for i, match := range t.Expect.Matches {
 		checkResult, got := match.Check(t)
+		if len(match.Result) > 0 {
+			t.Expect.Matches[i] = match // if we update the result field - ensure this is reflect in the testcase
+		}
 		if checkResult == false {
 			return false, got
 		}
 	}
 
-	_, err := t.Expect.ContextPut.PutValues(t, rulectx)
+	err := t.Expect.ContextPut.PutValues(t, rulectx)
+	if err != nil {
+		return false, err
+	}
 
 	return true, err
 }
@@ -217,14 +242,6 @@ func (c Context) Get(key string) interface{} {
 // Put a value indexed by 'key' into the context. The value can be any type
 func (c Context) Put(key string, value interface{}) {
 	c[key] = value
-}
-
-// NewTestCase creates an Context thats initialised correctly with a map structure
-// which holds the context parameters
-func NewTestCase() *TestCase {
-	var t TestCase
-	t.Context = make(map[string]interface{})
-	return &t
 }
 
 // GetIncludedPermission returns the list of permission names that need to be included
@@ -299,32 +316,6 @@ func (r *Rule) String() string {
 		r.Name, r.Purpose, r.Specref, r.Speclocation, len(r.Tests))
 }
 
-// Dump - TestCase helper
-func (t *TestCase) Dump(print bool) {
-	if print {
-		fmt.Printf("TESTCASE\nID: %s\nName: %s\nPurpose: %s\n", t.ID, t.Name, t.Purpose)
-		fmt.Printf("Input: ")
-		pkgutils.DumpJSON(t.Input)
-		fmt.Printf("Context: ")
-		pkgutils.DumpJSON(t.Context)
-		fmt.Printf("Expect: ")
-		pkgutils.DumpJSON(t.Expect)
-	}
-}
-
-// RunTests - runs all the tests for aTestRule
-func (r *Rule) RunTests() {
-	for _, testSequence := range r.Tests {
-		for _, tester := range testSequence {
-			// testcase.ApplyInput
-			// testcase.ApplyContext
-			// testcase.ApplyExpects
-			_ = tester // placeholder
-			fmt.Println("Test Result: ", true)
-		}
-	}
-}
-
 // GetPermissionSets returns the inclusive and exclusive permission sets required
 // to run the tests under this rule.
 // Initially the granulatiy of permissionSets will be set at rule level, meaning that one
@@ -351,6 +342,6 @@ func (r *Rule) GetPermissionSets() (included, excluded []string) {
 // The http.Request at this point will contain the fully assembled request from a testcase point of view
 // - testcase will have likely pulled out appropriate access_tokens/permissions
 // - rule will have the opportunited to further decorate this request before passing on
-func (r *Rule) Execute(req *http.Request, tc *TestCase) (*http.Response, error) {
+func (r *Rule) Execute(req *resty.Request, tc *TestCase) (*resty.Response, error) {
 	return r.Executor.ExecuteTestCase(req, tc, &Context{})
 }

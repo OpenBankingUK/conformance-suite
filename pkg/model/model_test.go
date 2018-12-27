@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"net/http"
 	"testing"
 
 	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/utils"
@@ -12,6 +11,7 @@ import (
 	"github.com/go-openapi/spec"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	resty "gopkg.in/resty.v1"
 )
 
 func TestLoadModel(t *testing.T) {
@@ -32,15 +32,6 @@ func TestLoadModel(t *testing.T) {
 	t.Run("rule has a Name", func(t *testing.T) {
 		assert.Equal(t, rule.Name, "Get Accounts Basic Rule")
 	})
-
-	t.Run("rule has a RunTests() function", func(t *testing.T) {
-		rule.RunTests() // Run Tests for a Rule
-	})
-
-	testcase := rule.Tests[0][0]
-	t.Run("testcase has Dump() function", func(t *testing.T) {
-		testcase.Dump(false)
-	})
 }
 
 // Enumerates all OpenAPI calls from swagger file
@@ -54,7 +45,6 @@ func TestEnumerateOpenApiTestcases(t *testing.T) {
 			newPath := base + path
 			assert.NotNil(t, meth)
 			assert.NotNil(t, newPath)
-			// fmt.Printf("Register %s %s\n", meth, newPath)
 		}
 	}
 }
@@ -120,7 +110,6 @@ func loadOpenAPI(print bool) (*loads.Document, error) {
 func dumpTestCases(testcases []TestCase) {
 	var model []byte
 	model, _ = json.MarshalIndent(testcases, "", "    ")
-	//fmt.Println(string(model))
 	_ = model
 
 }
@@ -175,37 +164,38 @@ func TestChainedTestCases(t *testing.T) {
 	result, err = tc02.Validate(resp, &rulectx) // Validate checks the match rules and processes any contextPuts present
 	assert.True(t, result)
 	assert.Equal(t, "500000000000000000000007", rulectx.Get("AccountId"))
-	assert.Equal(t, "/accounts/500000000000000000000007", tc02.Input.Endpoint)
+	assert.Equal(t, "http://myaspsp/accounts/500000000000000000000007", tc02.Input.Endpoint)
 }
 
 type executor struct {
 }
 
-func (e *executor) ExecuteTestCase(r *http.Request, t *TestCase, ctx *Context) (*http.Response, error) {
+func (e *executor) ExecuteTestCase(r *resty.Request, t *TestCase, ctx *Context) (*resty.Response, error) {
 	responseKey := t.Input.Method + " " + t.Input.Endpoint
+	fmt.Println("responsekey: ", responseKey)
 	return chainTest[responseKey](), nil
 }
 
-var chainTest = map[string]func() *http.Response{
-	"GET /accounts/":                         httpAccountCall(),
-	"GET /accounts/{AccountId}":              httpAccountIDCall(),
-	"GET /accounts/500000000000000000000007": httpAccountID007Call(),
+var chainTest = map[string]func() *resty.Response{
+	"GET http://myaspsp/accounts/":                         httpAccountCall(),
+	"GET http://myaspsp/accounts/{AccountId}":              httpAccountIDCall(),
+	"GET http://myaspsp/accounts/500000000000000000000007": httpAccountID007Call(),
 }
 
-func httpAccountCall() func() *http.Response {
-	return func() *http.Response {
+func httpAccountCall() func() *resty.Response {
+	return func() *resty.Response {
 		return pkgutils.CreateHTTPResponse(200, "OK", string(getAccountResponse))
 	}
 }
 
-func httpAccountIDCall() func() *http.Response {
-	return func() *http.Response {
+func httpAccountIDCall() func() *resty.Response {
+	return func() *resty.Response {
 		return pkgutils.CreateHTTPResponse(200, "OK", string(getAccountResponse), "content-type", "klingon/text")
 	}
 }
 
-func httpAccountID007Call() func() *http.Response {
-	return func() *http.Response {
+func httpAccountID007Call() func() *resty.Response {
+	return func() *resty.Response {
 		return pkgutils.CreateHTTPResponse(200, "OK", string(account0007), "content-type", "klingon/text")
 	}
 }

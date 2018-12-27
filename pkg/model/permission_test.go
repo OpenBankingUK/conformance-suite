@@ -3,11 +3,9 @@ package model
 import (
 	"encoding/json"
 	"io/ioutil"
-	"net/http"
 	"testing"
 
-	gock "gopkg.in/h2non/gock.v1"
-
+	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/utils"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -183,8 +181,6 @@ func TestGetIncludedAndExcludedPermissionSetsFromTestcaseSequence(t *testing.T) 
 // and without relevant permissions
 
 func TestTransactionsWithCorrectPermissions(t *testing.T) {
-	defer gock.Off()
-	gock.New("http://myaspsp").Get("/transactions").Reply(200).BodyString(string(getAccountResponse))
 	tc := TestCase{}
 	err := json.Unmarshal(transactionTestcase01, &tc)
 	assert.NoError(t, err)
@@ -194,25 +190,13 @@ func TestTransactionsWithCorrectPermissions(t *testing.T) {
 	assert.Equal(t, 0, len(excluded))
 	assert.Equal(t, included[0], "ReadTransactionsBasic")
 
-	req, err := tc.Prepare(nil)
-	assert.Nil(t, err)
-
-	res, err := (&http.Client{}).Do(req)
-	assert.Nil(t, err)
-
+	res := pkgutils.CreateHTTPResponse(200, "OK", string(getAccountResponse))
 	result, err := tc.ApplyExpects(res, nil)
 	assert.Nil(t, err)
 	assert.Equal(t, result, true) // test validates ok
-
-	// Verify that we don't have pending mocks (gock specific)
-	assert.Equal(t, gock.IsDone(), true)
-
 }
 
 func TestTransctionWithoutCorrectPermissions(t *testing.T) {
-	defer gock.Off()
-	gock.New("http://myaspsp").Get("/transactions").Reply(403).BodyString(string(getAccountResponse))
-
 	tc := TestCase{}
 	err := json.Unmarshal(transactionTestcase02, &tc)
 	assert.NoError(t, err)
@@ -220,18 +204,12 @@ func TestTransctionWithoutCorrectPermissions(t *testing.T) {
 	assert.Equal(t, 0, len(included))
 	assert.Equal(t, 2, len(excluded))
 	assert.Equal(t, excluded[0], "ReadTransactionsBasic")
-	req, err := tc.Prepare(nil)
-	assert.Nil(t, err)
 
-	res, err := (&http.Client{}).Do(req)
-	assert.Nil(t, err)
+	res := pkgutils.CreateHTTPResponse(403, "OK", string(getAccountResponse))
 
 	result, err := tc.ApplyExpects(res, nil)
 	assert.Nil(t, err)
 	assert.Equal(t, result, true) // test validates ok
-
-	// Verify that we don't have pending mocks (gock specific)
-	assert.Equal(t, gock.IsDone(), true)
 }
 
 func loadPermissionTestData() (Manifest, error) {
