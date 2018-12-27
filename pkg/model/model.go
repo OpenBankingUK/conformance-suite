@@ -18,7 +18,7 @@ type Manifest struct {
 	ID          string    `json:"@id"`              // JSONLD ID reference
 	Type        string    `json:"@type"`            // JSONLD Type reference
 	Name        string    `json:"name"`             // Name of the manifiest
-	Description string    `json:"description"`      // Description of the Mainfest and what it contains
+	Description string    `json:"description"`      // Description of the Manifest and what it contains
 	BaseIri     string    `json:"baseIri"`          // Base Iri
 	Sections    []Context `json:"section_contexts"` // Section specific contexts
 	Rules       []Rule    `json:"rules"`            // All the rules in the Manifest
@@ -201,7 +201,7 @@ func (t *TestCase) ApplyContext(rulectx *Context) error {
 
 // ApplyExpects runs the Expects section of the testcase to evaluate if the response from the system under test passes or fails
 // The Expects section of a testcase can contain multiple conditions that need to be met to pass a testcase
-// When a test fails, ApplyExpects is responsible for reporting back information about the failure, why it occured, where it occured etc.
+// When a test fails, ApplyExpects is responsible for reporting back information about the failure, why it occurred, where it occurred etc.
 //
 // The ApplyExpect section is also responsible for running and contextPut clauses.
 // contextPuts are responsible for updated context variables with values selected from the test case response
@@ -272,7 +272,7 @@ func (t *TestCase) GetIncludedPermission() []string {
 				return []string{perms[0].Permission}
 			}
 		}
-		return []string{} // no defaults - no permisions
+		return []string{} // no defaults - no permissions
 	}
 
 	if t.Context["permissions"] == nil {
