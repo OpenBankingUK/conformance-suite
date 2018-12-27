@@ -7,7 +7,7 @@
         </div>
         <div class="panel-body">
           <p>The Functional Conformance Suite is an Open Source test tool provided by Open Banking. The goal of the suite is to provide an easy and comprehensive tool that enables implementers to test interfaces and data endpoints against the Functional API standard.</p>
-          <p>This pre-alpha build introduces some of the concepts to implementers before the official release. The aim is to foster an open and collaborative tool and support feedback to help develop the best possible tool.</p>
+          <p>To start, upload a compatible report to view the results or select a discovery template to run a new test.</p>
         </div>
       </div>
       <div class="panel w-50" style="height:300px">
