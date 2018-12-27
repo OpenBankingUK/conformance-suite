@@ -78,10 +78,8 @@ type ContextAccessor struct {
 func (c *ContextAccessor) PutValues(tc *TestCase, ctx *Context) error {
 	for _, m := range c.Matches {
 		success := m.PutValue(tc, ctx)
-		fmt.Printf("(%t) - %s\n", success, m.String())
 		if !success {
-			msg := fmt.Sprintf("PutValues - failed Match [%s]", m.String())
-			return errors.New("ContextAccessor " + msg)
+			return fmt.Errorf("error ContextAccessor PutValues - failed Match [%s]", m.String())
 		}
 	}
 	return nil
@@ -209,7 +207,6 @@ func (m *Match) PutValue(tc *TestCase, ctx *Context) bool {
 			return false
 		}
 		if success {
-			fmt.Printf("Putting [%s] into context with value [%s] ", m.ContextName, m.Result)
 			ctx.Put(m.ContextName, m.Result)
 			return true
 		}
