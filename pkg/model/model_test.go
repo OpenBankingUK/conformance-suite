@@ -1,17 +1,17 @@
 package model
 
 import (
+	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/test"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"testing"
 
-	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/utils"
 	"github.com/go-openapi/loads"
 	"github.com/go-openapi/spec"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	resty "gopkg.in/resty.v1"
+	"gopkg.in/resty.v1"
 )
 
 func TestLoadModel(t *testing.T) {
@@ -184,18 +184,18 @@ var chainTest = map[string]func() *resty.Response{
 
 func httpAccountCall() func() *resty.Response {
 	return func() *resty.Response {
-		return pkgutils.CreateHTTPResponse(200, "OK", string(getAccountResponse))
+		return test.CreateHTTPResponse(200, "OK", string(getAccountResponse))
 	}
 }
 
 func httpAccountIDCall() func() *resty.Response {
 	return func() *resty.Response {
-		return pkgutils.CreateHTTPResponse(200, "OK", string(getAccountResponse), "content-type", "klingon/text")
+		return test.CreateHTTPResponse(200, "OK", string(getAccountResponse), "content-type", "klingon/text")
 	}
 }
 
 func httpAccountID007Call() func() *resty.Response {
 	return func() *resty.Response {
-		return pkgutils.CreateHTTPResponse(200, "OK", string(account0007), "content-type", "klingon/text")
+		return test.CreateHTTPResponse(200, "OK", string(account0007), "content-type", "klingon/text")
 	}
 }

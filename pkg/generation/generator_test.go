@@ -1,13 +1,13 @@
 package generation_test
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"io/ioutil"
 	"testing"
 
-	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/utils"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/generation"
 )
@@ -58,8 +58,8 @@ func ExampleGenerator() {
 		// This Example function fails when output does not match expectation below
 		fmt.Println(err.Error())
 	}
-	json := string(template)
-	model, err := discovery.UnmarshalDiscoveryJSON(json)
+	data := string(template)
+	model, err := discovery.UnmarshalDiscoveryJSON(data)
 	if err != nil {
 		fmt.Println(err.Error())
 	}
@@ -67,10 +67,18 @@ func ExampleGenerator() {
 	generator := generation.NewGenerator()
 	cases := generator.GenerateSpecificationTestCases(discovery)
 
-	specOneTestCase := string(pkgutils.DumpJSON(cases[0].TestCases[1]))
-	specTwoTestCase := string(pkgutils.DumpJSON(cases[1].TestCases[0]))
-	fmt.Println(specOneTestCase)
-	fmt.Println(specTwoTestCase)
+	specOneTestCase, err := json.MarshalIndent(cases[0].TestCases[1], "", "    ")
+	if err != nil {
+		fmt.Println(err.Error())
+	}
+
+	specTwoTestCase, err := json.MarshalIndent(cases[1].TestCases[0], "", "    ")
+	if err != nil {
+		fmt.Println(err.Error())
+	}
+
+	fmt.Println(string(specOneTestCase))
+	fmt.Println(string(specTwoTestCase))
 	// Output:
 	// {
 	//     "@id": "#t1001",
