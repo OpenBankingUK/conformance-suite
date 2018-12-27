@@ -2,10 +2,10 @@
 
 The conformance suite matching model specifies primarily how the suite and check the responses that are returned from API implementations.
 
-Matching model construts are using three places within test case definitions
+Matching model construts are used in three places within test case definitions
 
 1. As part of the Matches section of a test cases Expect
-2. As part of the ContextGet to match variables retrived from the context
+2. As part of the ContextGet to match variables retrieved from the context
 3. As part of the ContextPut to match variables pushed into the context
 
 The following methods are available for checking a API HTTP response and its contents:
