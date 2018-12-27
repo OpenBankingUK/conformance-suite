@@ -405,7 +405,10 @@ func checkHeaderRegexContext(m *Match, tc *TestCase) (bool, error) {
 		}
 	}
 	headerValue := tc.Header.Get(actualHeader)
-	regex := regexp.MustCompile(m.Regex)
+	regex, err := regexp.Compile(m.Regex)
+	if err != nil {
+		return false, err
+	}
 	result := regex.FindStringSubmatch(headerValue)
 	if len(result) < 2 {
 		return false, fmt.Errorf("Header Regex Context Match Failed - regex (%s) failed to find anything on Header (%s) value (%s)", m.Regex, m.Header, headerValue)
@@ -426,7 +429,11 @@ func checkHeaderRegex(m *Match, tc *TestCase) (bool, error) {
 	}
 
 	headerValue := tc.Header.Get(actualHeader)
-	regex := regexp.MustCompile(m.Regex)
+	regex, err := regexp.Compile(m.Regex)
+	if err != nil {
+		return false, err
+	}
+
 	success = regex.MatchString(headerValue)
 
 	if !success {
@@ -447,7 +454,11 @@ func checkHeaderPresent(m *Match, tc *TestCase) (bool, error) {
 }
 
 func checkBodyRegex(m *Match, tc *TestCase) (bool, error) {
-	regex := regexp.MustCompile(m.Regex)
+	regex, err := regexp.Compile(m.Regex)
+	if err != nil {
+		return false, err
+	}
+
 	success := regex.MatchString(tc.Body)
 	if !success {
 		return false, fmt.Errorf("Body Regex Match Failed - regex (%s) failed on Body", m.Regex)
@@ -488,7 +499,11 @@ func checkBodyJSONRegex(m *Match, tc *TestCase) (bool, error) {
 	if len(result.String()) == 0 {
 		return false, fmt.Errorf("JSON Regex Match Failed - no field present for pattern (%s)", m.JSON)
 	}
-	regex := regexp.MustCompile(m.Regex)
+	regex, err := regexp.Compile(m.Regex)
+	if err != nil {
+		return false, err
+	}
+
 	success := regex.MatchString(result.String())
 	if !success {
 		return false, fmt.Errorf("JSON Regex Match Failed - selected field (%s) does not match regex (%s)",

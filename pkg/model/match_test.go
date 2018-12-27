@@ -166,6 +166,15 @@ func TestCheckHeaderRegexMismatch(t *testing.T) {
 	assert.False(t, result)
 }
 
+func TestCheckHeaderRegexCompileFail(t *testing.T) {
+	m := Match{Description: "test", Header: "Authorization", Regex: `[ ]\K(?<!\d`}
+	tc := TestCase{Expect: Expect{Matches: []Match{m}, StatusCode: 200}}
+	resp := pkgutils.CreateHTTPResponse(200, "OK", statusok, "Authorization", "Basic YjMzODg4ZGMtYzg==")
+	result, err := tc.Validate(resp, emptyContext)
+	assert.NotNil(t, err)
+	assert.False(t, result)
+}
+
 // check header present is detected
 func TestCheckHeaderPresentMatch(t *testing.T) {
 	m := Match{Description: "test", HeaderPresent: "authorization"}
@@ -186,7 +195,7 @@ func TestCheckHeaderPresentMatchCaseInsensitive(t *testing.T) {
 }
 
 // check header present fail is detected
-func TestCheckHeaderPresentMismat1ch(t *testing.T) {
+func TestCheckHeaderPresentMismatch(t *testing.T) {
 	m := Match{Description: "test", HeaderPresent: "authorization"}
 	tc := TestCase{Expect: Expect{Matches: []Match{m}, StatusCode: 200}}
 	resp := pkgutils.CreateHTTPResponse(200, "OK", statusok, "Security_token", "Basic YjMzODg4ZGMtYzg==")
@@ -210,6 +219,15 @@ func TestCheckBodyRegexMismatch(t *testing.T) {
 	m := Match{Description: "test", Regex: ".*London Bridge.*"}
 	tc := TestCase{Expect: Expect{Matches: []Match{m}, StatusCode: 200}}
 	resp := pkgutils.CreateHTTPResponse(200, "OK", "{\"status\":\"London !! Bridge\"}")
+	result, err := tc.Validate(resp, emptyContext)
+	assert.NotNil(t, err)
+	assert.False(t, result)
+}
+
+func TestCheckBodyRegexCompileError(t *testing.T) {
+	m := Match{Description: "test", Regex: ".*\\KLondon Bridge.*"}
+	tc := TestCase{Expect: Expect{Matches: []Match{m}, StatusCode: 200}}
+	resp := pkgutils.CreateHTTPResponse(200, "OK", "{\"status\":\"London Bridge\"}")
 	result, err := tc.Validate(resp, emptyContext)
 	assert.NotNil(t, err)
 	assert.False(t, result)
@@ -275,6 +293,15 @@ func TestCheckBodyJSONRegexMismatch(t *testing.T) {
 
 func TestCheckBodyJSONRegexMismatchJSONPattern(t *testing.T) {
 	m := Match{Description: "test", JSON: "banks.2.names", Regex: "^B.*s$"}
+	tc := TestCase{Expect: Expect{Matches: []Match{m}, StatusCode: 200}}
+	resp := pkgutils.CreateHTTPResponse(200, "OK", testbankjson)
+	result, err := tc.Validate(resp, emptyContext)
+	assert.NotNil(t, err)
+	assert.False(t, result)
+}
+
+func TestCheckBodyJSONRegexCompileFail(t *testing.T) {
+	m := Match{Description: "test", JSON: "banks.2.name", Regex: "^L.\\K*s$"}
 	tc := TestCase{Expect: Expect{Matches: []Match{m}, StatusCode: 200}}
 	resp := pkgutils.CreateHTTPResponse(200, "OK", testbankjson)
 	result, err := tc.Validate(resp, emptyContext)
@@ -362,11 +389,10 @@ func TestContextPutHeaderRegexContextSubFieldCapture(t *testing.T) {
 	c := Context{}
 	ctxPut := ContextAccessor{Context: &c, Matches: []Match{m}}
 	tc := TestCase{Expect: Expect{ContextPut: ctxPut, StatusCode: 200}}
-	fmt.Printf("type of match is %s\n", m.String())
+
 	resp := pkgutils.CreateHTTPResponse(200, "OK", "TheRainInSpain", "Location", "https://mysite/auth?code=1234&redir=here")
 	result, err := tc.Validate(resp, &c)
 	assert.True(t, result)
-	fmt.Printf("%#v\n", c)
 	assert.Equal(t, "1234", c.Get("mycode")) // code from location header now accessible in context
 	assert.Nil(t, err)
 }
@@ -376,12 +402,23 @@ func TestContextPutHeaderRegexContextSubFieldCaptureFail(t *testing.T) {
 	c := Context{}
 	ctxPut := ContextAccessor{Context: &c, Matches: []Match{m}}
 	tc := TestCase{Expect: Expect{ContextPut: ctxPut, StatusCode: 200}} // note: the "Match" lives in the contextPut obj
-	fmt.Printf("type of match is %s\n", m.String())
 	resp := pkgutils.CreateHTTPResponse(200, "OK", "TheRainInSpain", "Location", "https://mysite/auth?code=1234&redir=here")
 	result, err := tc.Validate(resp, &c)
 	assert.False(t, result)
 	assert.NotNil(t, err)
 	fmt.Println(err)
+}
+
+func TestContextPutHeaderRegexContextSubFieldCompileFaile(t *testing.T) {
+	m := Match{Description: "AuthCode xChange", Header: "Location", Regex: "code=\\K(.*)&+.*", ContextName: "mycode"}
+	c := Context{}
+	ctxPut := ContextAccessor{Context: &c, Matches: []Match{m}}
+	tc := TestCase{Expect: Expect{ContextPut: ctxPut, StatusCode: 200}}
+	fmt.Printf("type of match is %s\n", m.String())
+	resp := pkgutils.CreateHTTPResponse(200, "OK", "TheRainInSpain", "Location", "https://mysite/auth?code=1234&redir=here")
+	result, err := tc.Validate(resp, &c)
+	assert.False(t, result)
+	assert.NotNil(t, err)
 }
 
 // check contextPut BodyJSONPresent match is detected
