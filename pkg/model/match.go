@@ -215,7 +215,7 @@ func (m *Match) GetType() MatchType {
 		return Authorisation
 	}
 
-	if fieldsPresent(m.Header) { // simply for cyclomatic tests!
+	if fieldsPresent(m.Header) {
 		return m.getHeaderType()
 	}
 
