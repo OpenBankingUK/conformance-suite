@@ -1,10 +1,10 @@
 package model
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"regexp"
-	"strconv"
 	"strings"
 
 	"github.com/tidwall/gjson"
@@ -110,56 +110,15 @@ func (c *ContextAccessor) GetValues(tc *TestCase, ctx *Context) error {
 }
 
 func (m *Match) String() string {
-	var b strings.Builder
 	if m.MatchType == UnknownMatchType {
 		m.MatchType = m.GetType()
 	}
 
-	b.WriteString(`MatchType: ` + matchTypeString[m.MatchType])
-	if m.Description != `` {
-		b.WriteString(` Description: ` + m.Description)
+	by, err := json.Marshal(m)
+	if err != nil {
+		return fmt.Sprintf("error converting %s %s %s", matchTypeString[m.MatchType], m.Description, err.Error())
 	}
-	if m.ContextName != `` {
-		b.WriteString(` ContextName: ` + m.ContextName)
-	}
-	if m.Header != `` {
-		b.WriteString(` Header: ` + m.Header)
-	}
-	if m.HeaderPresent != `` {
-		b.WriteString(` HeaderPresent: ` + m.HeaderPresent)
-	}
-	if m.Regex != `` {
-		b.WriteString(` Regex: ` + m.Regex)
-	}
-
-	m.string2(&b)
-
-	return b.String()
-}
-
-func (m *Match) string2(b *strings.Builder) *strings.Builder {
-	if m.JSON != `` {
-		b.WriteString(` JSON: ` + m.JSON)
-	}
-	if m.Value != `` {
-		b.WriteString(` Value: ` + m.Value)
-	}
-	if m.Numeric > 0 {
-		b.WriteString(` Numeric: ` + strconv.FormatInt(m.Numeric, 10))
-	}
-	if m.BodyLength != nil {
-		b.WriteString(` BodyLength: ` + strconv.FormatInt(*m.BodyLength, 10))
-	}
-	if m.ReplaceEndpoint != `` {
-		b.WriteString(` ReplaceEndpoint: ` + m.ReplaceEndpoint)
-	}
-	if m.Authorisation != `` {
-		b.WriteString(` Authorisation: ` + m.Authorisation)
-	}
-	if m.Result != `` {
-		b.WriteString(` Result: ` + m.Result)
-	}
-	return b
+	return string(by)
 }
 
 // Check a match function - figures out which match type we have and

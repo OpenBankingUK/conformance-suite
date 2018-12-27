@@ -347,11 +347,8 @@ func TestMatchStringOutput(t *testing.T) {
 		ContextName: "context", Header: "header", HeaderPresent: "presentheader",
 		Regex: "myregex", JSON: "myjson", Value: "myvalue", Numeric: num, Count: count, BodyLength: &len,
 		ReplaceEndpoint: "myreplace", Authorisation: "myauthorisation", Result: "myresult"}
-
-	assert.Equal(t, "MatchType: Authorisation Description: test ContextName: "+
-		"context Header: header HeaderPresent: presentheader Regex: myregex JSON: myjson "+
-		"Value: myvalue Numeric: 88 BodyLength: 77 ReplaceEndpoint: myreplace Authorisation: "+
-		"myauthorisation Result: myresult", m.String())
+	assert.Equal(t, "{\"match_type\":11,\"description\":\"test\",\"name\":\"context\",\"header\":\"header\",\"header-present\":\"presentheader\",\"regex\":\"myregex\",\"json\":\"myjson\",\"value\":\"myvalue\",\"numeric\":88,\"count\":88,\"body-length\":77,\"replaceInEndpoint\":\"myreplace\",\"authorisation\":\"myauthorisation\",\"result\":\"myresult\"}",
+		m.String())
 
 }
 
