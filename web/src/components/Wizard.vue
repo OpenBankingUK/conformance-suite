@@ -1,9 +1,13 @@
 <template>
-  <div class="d-flex flex-row flex-fill">
-    <NavBar/>
-    <div class="d-flex flex-column flex-fill">
-      <router-view class="d-flex flex-column flex-fill p-3 router-section"/>
-      <WizardFooter/>
+  <div>
+    <div class="d-flex">
+      <div class="flex">
+        <NavBar/>
+      </div>
+      <div class="flex-fill">
+        <router-view class="d-flex flex-column flex-fill p-3 router-section"/>
+        <WizardFooter/>
+      </div>
     </div>
   </div>
 </template>
@@ -37,12 +41,9 @@ export default {
     WizardFooter,
   },
   data() {
-    return {
-    };
+    return {};
   },
-  computed: {
-  },
-  methods: {
-  },
+  computed: {},
+  methods: {},
 };
 </script>
