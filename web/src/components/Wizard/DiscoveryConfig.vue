@@ -5,7 +5,7 @@
         class="panel w-100"
         style="height:900px">
         <div class="panel-heading">
-          <h5>Discovery</h5>
+          <h5>Discovery {Discovery Name}</h5>
         </div>
         <div class="panel-body">
           <div

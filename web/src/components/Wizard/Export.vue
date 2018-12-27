@@ -1,7 +1,18 @@
 <template>
-  <div>
-    <h2 class="pt-3 pb-2 mb-3">Export</h2>
-    body
+  <div class="d-flex flex-row flex-fill">
+    <div class="d-flex align-items-start">
+      <div
+        class="panel w-100"
+        style="height:900px">
+        <div class="panel-heading">
+          <h5>Export</h5>
+        </div>
+        <div class="panel-body">
+          <p>body</p>
+          <p/>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 

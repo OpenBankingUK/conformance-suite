@@ -1,23 +1,30 @@
 <template>
-  <div>
-    <h2 class="pt-3 pb-2 mb-3">{{ this.$options.name }}</h2>
-    <div class="d-flex flex-column flex-fill">body</div>
+  <div class="d-flex flex-row flex-fill">
+    <div class="d-flex align-items-start">
+      <div
+        class="panel w-100"
+        style="height:900px">
+        <div class="panel-heading">
+          <h5>{{ this.$options.name }}</h5>
+        </div>
+        <div class="panel-body">
+          <p>body</p>
+          <p/>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
 export default {
   name: 'Configuration',
-  components: {
-  },
+  components: {},
   data() {
-    return {
-    };
+    return {};
   },
-  computed: {
-  },
-  methods: {
-  },
+  computed: {},
+  methods: {},
 };
 </script>
 
