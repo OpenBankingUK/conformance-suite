@@ -66,7 +66,7 @@ width: 190px
 }
 .nav-section {
   background: #ffffff;
-  
+
 }
 
 .sidebar-heading {
