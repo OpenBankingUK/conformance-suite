@@ -7,6 +7,7 @@ import (
 	"regexp"
 	"strings"
 
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/tracer"
 	"github.com/tidwall/gjson"
 )
 
@@ -79,7 +80,7 @@ func (c *ContextAccessor) PutValues(tc *TestCase, ctx *Context) error {
 	for _, m := range c.Matches {
 		success := m.PutValue(tc, ctx)
 		if !success {
-			return fmt.Errorf("error ContextAccessor PutValues - failed Match [%s]", m.String())
+			return errors.New(c.AppErr(fmt.Sprintf("error ContextAccessor PutValues - failed Match [%s]", m.String())))
 		}
 	}
 	return nil
@@ -95,7 +96,7 @@ func (c *ContextAccessor) GetValues(tc *TestCase, ctx *Context) error {
 	for _, match := range c.Matches {
 		if len(match.ContextName) > 0 {
 			value := ctx.Get(match.ContextName)
-			if value != nil {
+			if value != nil { // found a value
 				contextValue := value.(string)
 				if len(contextValue) > 0 {
 					if len(match.ReplaceEndpoint) > 0 {
@@ -103,10 +104,24 @@ func (c *ContextAccessor) GetValues(tc *TestCase, ctx *Context) error {
 						tc.Input.Endpoint = result
 					}
 				}
+			} else { // not found a value
+				return errors.New(c.AppErr(fmt.Sprintf("error GetValues failed for testcase %s:%s, match %s", tc.ID, tc.Name, match.String())))
 			}
 		}
 	}
 	return nil
+}
+
+// AppMsg - application level trace
+func (c *ContextAccessor) AppMsg(msg string) string {
+	tracer.AppMsg("ContextAccessor", msg, "")
+	return msg
+}
+
+// AppErr - application level trace error msg
+func (c *ContextAccessor) AppErr(msg string) string {
+	tracer.AppErr("ContextAccessor", msg, "")
+	return msg
 }
 
 func (m *Match) String() string {
@@ -114,11 +129,11 @@ func (m *Match) String() string {
 		m.MatchType = m.GetType()
 	}
 
-	by, err := json.Marshal(m)
+	btes, err := json.Marshal(m)
 	if err != nil {
-		return fmt.Sprintf("error converting %s %s %s", matchTypeString[m.MatchType], m.Description, err.Error())
+		return m.AppErr(fmt.Sprintf("error converting %s %s %s", matchTypeString[m.MatchType], m.Description, err.Error()))
 	}
-	return string(by)
+	return string(btes)
 }
 
 // Check a match function - figures out which match type we have and
@@ -275,6 +290,18 @@ func (m *Match) getHeaderType() MatchType {
 	}
 
 	return UnknownMatchType
+}
+
+// AppMsg - application level trace
+func (m *Match) AppMsg(msg string) string {
+	tracer.AppMsg("Match", msg, m.String())
+	return msg
+}
+
+// AppErr - application level trace error msg
+func (m *Match) AppErr(msg string) string {
+	tracer.AppErr("Match", msg, m.String())
+	return msg
 }
 
 func fieldsPresent(str ...string) bool {
