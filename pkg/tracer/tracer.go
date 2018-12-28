@@ -20,6 +20,14 @@ import (
 	"strings"
 )
 
+// Tracer info capture interface - capturing testcase execution info - expects to be extended/improved over time
+type Tracer interface {
+	AppMsg(objType, msg, serialisedObj string) // general application flow information
+	AppErr(objType, msg, serialisedObj string) // application errors
+	AppEntry(objType, msg string)              // function entry
+	AppExit(objType, msg string)               // function exit
+}
+
 var (
 	// ApplicationTrace channel
 	applicationTrace chan string

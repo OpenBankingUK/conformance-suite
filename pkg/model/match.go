@@ -131,7 +131,7 @@ func (m *Match) String() string {
 
 	btes, err := json.Marshal(m)
 	if err != nil {
-		return m.AppErr(fmt.Sprintf("error converting %s %s %s", matchTypeString[m.MatchType], m.Description, err.Error()))
+		return m.AppMsg(fmt.Sprintf("error converting %s %s %s", matchTypeString[m.MatchType], m.Description, err.Error()))
 	}
 	return string(btes)
 }
@@ -157,7 +157,7 @@ func (m *Match) PutValue(tc *TestCase, ctx *Context) bool {
 	case BodyJSONPresent:
 		success, err = m.setContextFromBodyPresent(tc, ctx)
 		if err != nil {
-			// future reporting hook
+			m.AppMsg(err.Error())
 			return false
 		}
 	case BodyJSONValue:
@@ -299,9 +299,9 @@ func (m *Match) AppMsg(msg string) string {
 }
 
 // AppErr - application level trace error msg
-func (m *Match) AppErr(msg string) string {
+func (m *Match) AppErr(msg string) error {
 	tracer.AppErr("Match", msg, m.String())
-	return msg
+	return errors.New(msg)
 }
 
 func fieldsPresent(str ...string) bool {
@@ -345,7 +345,7 @@ var matchTypeString = map[MatchType]string{
 }
 
 func defaultMatch(m *Match, tc *TestCase) (bool, error) {
-	return false, errors.New("Unknown match type fails by default")
+	return false, m.AppErr("Unknown match type fails by default")
 }
 
 func checkHeaderValue(m *Match, tc *TestCase) (bool, error) {
@@ -362,7 +362,7 @@ func checkHeaderValue(m *Match, tc *TestCase) (bool, error) {
 	headerValue := tc.Header.Get(actualHeader)
 	success = m.Value == headerValue
 	if !success {
-		return false, fmt.Errorf("Header Value Match Failed - expected (%s) got (%s)", m.Value, headerValue)
+		return false, m.AppErr(fmt.Sprintf("Header Value Match Failed - expected (%s) got (%s)", m.Value, headerValue))
 	}
 	return success, nil
 }
@@ -397,7 +397,7 @@ func checkHeaderRegexContext(m *Match, tc *TestCase) (bool, error) {
 	}
 	result := regex.FindStringSubmatch(headerValue)
 	if len(result) < 2 {
-		return false, fmt.Errorf("Header Regex Context Match Failed - regex (%s) failed to find anything on Header (%s) value (%s)", m.Regex, m.Header, headerValue)
+		return false, m.AppErr(fmt.Sprintf("Header Regex Context Match Failed - regex (%s) failed to find anything on Header (%s) value (%s)", m.Regex, m.Header, headerValue))
 	}
 	m.Result = result[1]
 	return success, nil
@@ -423,7 +423,7 @@ func checkHeaderRegex(m *Match, tc *TestCase) (bool, error) {
 	success = regex.MatchString(headerValue)
 
 	if !success {
-		return false, fmt.Errorf("Header Regex Match Failed - regex (%s) failed on Header (%s) Value (%s)", m.Regex, m.Header, m.Value)
+		return false, m.AppErr(fmt.Sprintf("Header Regex Match Failed - regex (%s) failed on Header (%s) Value (%s)", m.Regex, m.Header, m.Value))
 	}
 	return success, nil
 }
@@ -436,7 +436,7 @@ func checkHeaderPresent(m *Match, tc *TestCase) (bool, error) {
 			return success, nil
 		}
 	}
-	return false, fmt.Errorf("Header Present Match Failed - expected Header (%s) got nothing", m.HeaderPresent)
+	return false, m.AppErr(fmt.Sprintf("Header Present Match Failed - expected Header (%s) got nothing", m.HeaderPresent))
 }
 
 func checkBodyRegex(m *Match, tc *TestCase) (bool, error) {
@@ -447,7 +447,7 @@ func checkBodyRegex(m *Match, tc *TestCase) (bool, error) {
 
 	success := regex.MatchString(tc.Body)
 	if !success {
-		return false, fmt.Errorf("Body Regex Match Failed - regex (%s) failed on Body", m.Regex)
+		return false, m.AppErr(fmt.Sprintf("Body Regex Match Failed - regex (%s) failed on Body", m.Regex))
 	}
 	return success, nil
 }
@@ -456,7 +456,7 @@ func checkBodyJSONValue(m *Match, tc *TestCase) (bool, error) {
 	result := gjson.Get(tc.Body, m.JSON)
 	success := result.String() == m.Value
 	if !success {
-		return false, fmt.Errorf("JSON Match Failed - expected (%s) got (%s)", m.Value, result)
+		return false, m.AppErr(fmt.Sprintf("JSON Match Failed - expected (%s) got (%s)", m.Value, result))
 	}
 	return success, nil
 }
@@ -465,7 +465,7 @@ func checkBodyJSONPresent(m *Match, tc *TestCase) (bool, error) {
 	result := gjson.Get(tc.Body, m.JSON)
 	success := result.Exists()
 	if !success {
-		return false, fmt.Errorf("JSON Field Match Failed - no field present for pattern (%s)", m.JSON)
+		return false, m.AppErr(fmt.Sprintf("JSON Field Match Failed - no field present for pattern (%s)", m.JSON))
 	}
 	m.Result = result.String()
 	return success, nil
@@ -474,8 +474,7 @@ func checkBodyJSONPresent(m *Match, tc *TestCase) (bool, error) {
 func checkBodyJSONCount(m *Match, tc *TestCase) (bool, error) {
 	result := gjson.Get(tc.Body, m.JSON)
 	if result.Int() != m.Count {
-		return false, fmt.Errorf("JSON Count Field Match Failed - found (%d) not (%d) occurances of pattern (%s)",
-			result.Int(), m.Count, m.JSON)
+		return false, m.AppErr(fmt.Sprintf("JSON Count Field Match Failed - found (%d) not (%d) occurances of pattern (%s)", result.Int(), m.Count, m.JSON))
 	}
 	return true, nil
 }
@@ -483,7 +482,7 @@ func checkBodyJSONCount(m *Match, tc *TestCase) (bool, error) {
 func checkBodyJSONRegex(m *Match, tc *TestCase) (bool, error) {
 	result := gjson.Get(tc.Body, m.JSON)
 	if len(result.String()) == 0 {
-		return false, fmt.Errorf("JSON Regex Match Failed - no field present for pattern (%s)", m.JSON)
+		return false, m.AppErr(fmt.Sprintf("JSON Regex Match Failed - no field present for pattern (%s)", m.JSON))
 	}
 	regex, err := regexp.Compile(m.Regex)
 	if err != nil {
@@ -492,8 +491,7 @@ func checkBodyJSONRegex(m *Match, tc *TestCase) (bool, error) {
 
 	success := regex.MatchString(result.String())
 	if !success {
-		return false, fmt.Errorf("JSON Regex Match Failed - selected field (%s) does not match regex (%s)",
-			result.String(), m.Regex)
+		return false, m.AppErr(fmt.Sprintf("JSON Regex Match Failed - selected field (%s) does not match regex (%s)", result.String(), m.Regex))
 	}
 	return success, nil
 }
@@ -501,8 +499,7 @@ func checkBodyJSONRegex(m *Match, tc *TestCase) (bool, error) {
 func checkBodyLength(m *Match, tc *TestCase) (bool, error) {
 	success := len(tc.Body) == int(*m.BodyLength)
 	if !success {
-		return false, fmt.Errorf("Check Body Length - body length (%d) does not match expected length (%d)",
-			len(tc.Body), *m.BodyLength)
+		return false, m.AppErr(fmt.Sprintf("Check Body Length - body length (%d) does not match expected length (%d)", len(tc.Body), *m.BodyLength))
 	}
 	return success, nil
 }
@@ -525,7 +522,7 @@ func checkAuthorisation(m *Match, tc *TestCase) (bool, error) {
 
 	headerValue := tc.Header.Get(actualHeader)
 	if len(headerValue) == 0 {
-		return false, fmt.Errorf("Authorisation Bearer Match Failed - no header value found")
+		return false, m.AppErr(fmt.Sprintf("Authorisation Bearer Match Failed - no header value found"))
 	}
 	success = m.Value == headerValue
 	idx := strings.Index(headerValue, "Bearer ")
@@ -533,12 +530,12 @@ func checkAuthorisation(m *Match, tc *TestCase) (bool, error) {
 		idx = strings.Index(headerValue, "bearer ")
 	}
 	if idx == -1 {
-		return false, fmt.Errorf("Authorisation Bearer Match value Failed - no header bearer value found")
+		return false, m.AppErr(fmt.Sprintf("Authorisation Bearer Match value Failed - no header bearer value found"))
 	}
 	m.Result = headerValue[idx+7:] // copy the token after 7 chars "Bearer "...
 	return true, nil
 }
 
 func checkUnimplemented(m *Match, tc *TestCase) (bool, error) {
-	return false, errors.New("Unimplemented match type fails by default")
+	return false, m.AppErr("Unimplemented match type fails by default")
 }
