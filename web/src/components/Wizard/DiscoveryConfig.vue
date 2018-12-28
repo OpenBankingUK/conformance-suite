@@ -129,7 +129,9 @@ export default {
       'validateDiscoveryConfig',
       'setDiscoveryModelProblems',
     ]),
-    // Gets called by top-level Wizard component in the validateStep function.
+    /**
+     * Validates the Discovery Config.
+     */
     async validate() {
       if (this.problems) {
         return false;
@@ -182,8 +184,7 @@ export default {
       return next(false);
     }
 
-    // If we get into this state something is wrong so just log an error, and prevent navigation.
-    // Neither isBack or isNext is true.
+    // Neither isBack or isNext is true: If we get into this state something is wrong so just log an error, and prevent navigation.
     // eslint-disable-next-line no-console
     console.error(
       'component=%s, method=beforeRouteLeave: invalid state, vars=%o',

@@ -3,6 +3,7 @@ package server
 import (
 	"context"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"io/ioutil"
 	"net/http"
 	"strings"
@@ -11,7 +12,10 @@ import (
 
 func TestGetTestCases(t *testing.T) {
 	assert := assert.New(t)
-	server := NewServer(NullLogger(), conditionalityCheckerMock{})
+	server := NewServer(nullLogger(), conditionalityCheckerMock{})
+	defer func() {
+		require.NoError(t, server.Shutdown(context.TODO()))
+	}()
 
 	discoveryModel, err := ioutil.ReadFile("../discovery/templates/ob-v3.0-ozone.json")
 	assert.NoError(err)
@@ -29,6 +33,4 @@ func TestGetTestCases(t *testing.T) {
 	assert.Equal("application/json; charset=UTF-8", headers["Content-Type"][0])
 	assert.Contains(body.String(), `[{"apiSpecification":{"name":"Account and Transaction API Specification"`)
 	assert.Contains(body.String(), `"testCases":[{"@id":"#t1000","name":"Create Account Access Consents"`)
-
-	server.Shutdown(context.TODO())
 }

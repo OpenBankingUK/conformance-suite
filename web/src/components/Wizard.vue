@@ -15,6 +15,7 @@
 <style scoped>
 .router-section {
   background: #f6f6f6;
+  overflow-y: auto;
 }
 </style>
 
