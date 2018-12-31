@@ -32,4 +32,13 @@ export default {
   discoveryTemplates: templates,
   discoveryModel: JSON.parse(JSON.stringify(defaultTemplate.model)), // JSON parse to make copy of template model
   problems: null,
+  configuration: {
+    signing_private: '',
+    signing_public: '',
+    transport_private: '',
+    transport_public: '',
+  },
+  errors: {
+    configuration: [],
+  },
 };

@@ -19,18 +19,12 @@ type journey struct {
 	validDiscoveryModel *discovery.Model
 }
 
-var journeyInstance Journey
-
-// NewWebJourney creates an instance for a user journey, assumes one user only no concurrency
-// so a singleton is returned
+// NewWebJourney creates an instance for a user journey
 func NewWebJourney(generator generation.Generator, validator discovery.Validator) Journey {
-	if journeyInstance == nil {
-		journeyInstance = &journey{
-			generator: generator,
-			validator: validator,
-		}
+	return &journey{
+		generator: generator,
+		validator: validator,
 	}
-	return journeyInstance
 }
 
 func (wj *journey) SetDiscoveryModel(discoveryModel *discovery.Model) (discovery.ValidationFailures, error) {

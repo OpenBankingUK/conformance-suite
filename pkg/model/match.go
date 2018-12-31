@@ -60,7 +60,7 @@ type Match struct {
 	Numeric         int64     `json:"numeric,omitempty"`           //Value to match against - numeric
 	Count           int64     `json:"count,omitempty"`             // Cont for JSON array match purposes
 	BodyLength      *int64    `json:"body-length,omitempty"`       // Body payload length for matching
-	ReplaceEndpoint string    `json:"replaceInEndpoint,omitempty"` // allows substituion of resourceIds
+	ReplaceEndpoint string    `json:"replaceInEndpoint,omitempty"` // allows substitution of resourceIds
 	Authorisation   string    `json:"authorisation,omitempty"`     // allows capturing of bearer tokens
 	Result          string    `json:"result,omitempty"`            // capturing match values
 }
@@ -137,7 +137,7 @@ func (m *Match) String() string {
 }
 
 // Check a match function - figures out which match type we have and
-// calls the appropraite match checking function
+// calls the appropriate match checking function
 func (m *Match) Check(tc *TestCase) (bool, error) {
 	matchType := m.GetType()
 	return matchFuncs[matchType](m, tc)
@@ -534,8 +534,4 @@ func checkAuthorisation(m *Match, tc *TestCase) (bool, error) {
 	}
 	m.Result = headerValue[idx+7:] // copy the token after 7 chars "Bearer "...
 	return true, nil
-}
-
-func checkUnimplemented(m *Match, tc *TestCase) (bool, error) {
-	return false, m.AppErr("Unimplemented match type fails by default")
 }

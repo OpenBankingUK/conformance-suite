@@ -23,8 +23,7 @@ import * as _ from 'lodash';
 
 export default {
   name: 'WizardFooter',
-  components: {
-  },
+  components: {},
   data() {
     // normal navigation
     const ROUTES = {

@@ -32,4 +32,6 @@ export default {
   discoveryTemplates: state => state.discoveryTemplates,
   problems: state => state.problems,
   discoveryProblems: state => (state.problems ? state.problems.map(p => parseProblem(p)) : null),
+  configurationErrors: state => state.errors.configuration,
+  configuration: state => state.configuration,
 };

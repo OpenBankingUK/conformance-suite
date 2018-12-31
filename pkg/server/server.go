@@ -5,14 +5,10 @@ import (
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/generation"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/web"
 	"context"
-	"fmt"
 	"net/http"
 	"strings"
 	"time"
 
-	"github.com/pkg/errors"
-
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/authentication"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
 
 	"bitbucket.org/openbankingteam/conformance-suite/appconfig"
@@ -107,11 +103,12 @@ func NewServer(
 	// serve WebSocket
 	api.GET("/ws", wsHandler.Handle)
 
+	configHandlers := &configHandlers{server}
 	// endpoints to post a config and setup the proxy server
-	api.POST("/config", server.configPostHandler)
-	api.DELETE("/config", server.configDeleteHandler)
+	api.POST("/config", configHandlers.configPostHandler)
+	api.DELETE("/config", configHandlers.configDeleteHandler)
 	// endpoint to post global configuration
-	api.POST("/config/global", server.configGlobalPostHandler)
+	api.POST("/config/global", configHandlers.configGlobalPostHandler)
 
 	// endpoints for discovery model
 	discoveryHandlers := newDiscoveryHandlers(webJourney)
@@ -153,89 +150,6 @@ func (s *Server) Shutdown(ctx context.Context) error {
 	return nil
 }
 
-// POST /api/config
-func (s *Server) configPostHandler(c echo.Context) error {
-	appConfig := new(appconfig.AppConfig)
-	if err := c.Bind(appConfig); err != nil {
-		return c.JSONPretty(http.StatusBadRequest, &ErrorResponse{
-			Error: err.Error(),
-		}, "    ")
-	}
-	if err := c.Validate(appConfig); err != nil {
-		// translate all error at once
-		errs := err.(validator.ValidationErrors)
-		errsMap := errs.Translate(nil)
-
-		return c.JSONPretty(http.StatusBadRequest, errsMap, "    ")
-	}
-
-	s.logger.Debugf("Server:configPostHandler -> status=creating proxy")
-	proxy, err := createProxy(appConfig)
-	if err != nil {
-		return c.JSONPretty(http.StatusBadRequest, &ErrorResponse{
-			Error: err.Error(),
-		}, "    ")
-	}
-	s.proxy = proxy
-
-	s.logger.Debugf("Server:configPostHandler -> status=created proxy=%+v", s.proxy)
-
-	return c.JSONPretty(http.StatusOK, appConfig, "    ")
-}
-
-// DELETE /api/config
-func (s *Server) configDeleteHandler(c echo.Context) error {
-	if s.proxy == nil {
-		return c.JSONPretty(http.StatusBadRequest, &ErrorResponse{
-			Error: fmt.Errorf("proxy has not been configured").Error(),
-		}, "    ")
-	}
-
-	s.logger.Debugf("Server:configDeleteHandler -> status=destroying down proxy=%+v", s.proxy)
-	if err := s.proxy.Shutdown(nil); err != nil {
-		return c.JSONPretty(http.StatusBadRequest, &ErrorResponse{
-			Error: err.Error(),
-		}, "    ")
-	}
-
-	s.proxy = nil
-	s.logger.Debugf("Server:configDeleteHandler -> status=down proxy=%+v", s.proxy)
-
-	return c.NoContent(http.StatusOK)
-}
-
-// POST /api/config/global
-func (s *Server) configGlobalPostHandler(c echo.Context) error {
-	globalConfiguration := new(GlobalConfiguration)
-	if err := c.Bind(globalConfiguration); err != nil {
-		err := errors.Wrap(err, "error with Bind")
-		return c.JSON(http.StatusBadRequest, NewErrorResponse(err))
-	}
-	s.logger.Debugf("Server:configGlobalPostHandler -> globalConfiguration=%+v", globalConfiguration)
-
-	certificateSigning, err := authentication.NewCertificate(
-		globalConfiguration.SigningPublic,
-		globalConfiguration.SigningPrivate,
-	)
-	if err != nil {
-		err := errors.Wrap(err, "error with signing certificate")
-		return c.JSON(http.StatusBadRequest, NewErrorResponse(err))
-	}
-	s.logger.Debugf("Server:configGlobalPostHandler -> certificateSigning=%+v", certificateSigning)
-
-	certificateTransport, err := authentication.NewCertificate(
-		globalConfiguration.TransportPublic,
-		globalConfiguration.TransportPrivate,
-	)
-	if err != nil {
-		err := errors.Wrap(err, "error with transport certificate")
-		return c.JSON(http.StatusBadRequest, NewErrorResponse(err))
-	}
-	s.logger.Debugf("Server:configGlobalPostHandler -> certificateTransport=%+v", certificateTransport)
-
-	return c.JSON(http.StatusOK, globalConfiguration)
-}
-
 // Skipper ensures that all requests not prefixed with `/api` get sent
 // to the `middleware.Static` or `middleware.StaticWithConfig`.
 // E.g., ensure that `/api/validation-runs` does not get handled by the
@@ -248,7 +162,7 @@ func (s *Server) skipper(c echo.Context) bool {
 }
 
 // Run the proxy at the address specified by "bind"
-// Requests get sent to the target server identifyed by proxy.Target()
+// Requests get sent to the target server identified by proxy.Target()
 // configure some channels to handle shutdown/interrupts
 //
 // Return channel so that caller can block waiting

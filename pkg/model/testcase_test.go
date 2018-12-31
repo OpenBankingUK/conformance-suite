@@ -1,11 +1,11 @@
 package model
 
 import (
+	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/test"
 	"encoding/json"
 	"fmt"
 	"testing"
 
-	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/utils"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -132,7 +132,31 @@ func TestReadSingleTestCaseFromJsonBytes(t *testing.T) {
 	assert.Equal(t, "GET", testcase.Input.Method)
 	assert.Equal(t, "/accounts", testcase.Input.Endpoint)
 	assert.Equal(t, true, testcase.Expect.SchemaValidation)
-	pkgutils.DumpJSON(testcase)
+
+	data, err := json.MarshalIndent(testcase, "", "    ")
+	if err != nil {
+		fmt.Println(err.Error())
+	}
+
+	fmt.Println(string(data))
+	// Output:
+	// {
+	// 	"@id": "#t1008",
+	// 	"name": "Get a list of accounts",
+	//	"input": {
+	//	"method": "GET",
+	//		"endpoint": "/accounts",
+	//		"contextGet": {}
+	// },
+	//	"context": {
+	//	"baseurl": "http://myaspsp"
+	// },
+	//	"expect": {
+	//	"status-code": 200,
+	//		"schema-validation": true,
+	//		"contextPut": {}
+	// }
+	// }
 }
 
 // TestMockedTestCase - creates http request and response objects, sends them to a mocked
@@ -150,7 +174,7 @@ func TestMockedTestCase(t *testing.T) {
 	assert.Nil(t, err)
 	assert.NotNil(t, req)
 
-	res := pkgutils.CreateHTTPResponse(200, "OK", string(getAccountResponse))
+	res := test.CreateHTTPResponse(200, "OK", string(getAccountResponse))
 	result, err := testcase.ApplyExpects(res, nil)
 	assert.NoError(t, err)
 	assert.Equal(t, res.StatusCode(), 200)
@@ -165,7 +189,7 @@ func TestResponseStatusCodeMismatch(t *testing.T) {
 	err := json.Unmarshal(basicTestCase, &testcase)
 	assert.NoError(t, err)
 
-	res := pkgutils.CreateHTTPResponse(201, "OK", string(getAccountResponse))
+	res := test.CreateHTTPResponse(201, "OK", string(getAccountResponse))
 
 	result, err := testcase.ApplyExpects(res, nil)
 	assert.NotNil(t, err)
@@ -180,7 +204,7 @@ func TestJsonExpectMatch(t *testing.T) {
 	err := json.Unmarshal(jsonTestCase, &testcase)
 	assert.NoError(t, err)
 
-	res := pkgutils.CreateHTTPResponse(200, "OK", string(getAccountResponse))
+	res := test.CreateHTTPResponse(200, "OK", string(getAccountResponse))
 
 	result, err := testcase.Validate(res, emptyContext)
 	assert.Nil(t, err)

@@ -1,17 +1,17 @@
 package model
 
 import (
+	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/test"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"testing"
 
-	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/utils"
 	"github.com/go-openapi/loads"
 	"github.com/go-openapi/spec"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	resty "gopkg.in/resty.v1"
+	"gopkg.in/resty.v1"
 )
 
 func TestLoadModel(t *testing.T) {
@@ -141,7 +141,7 @@ func getOperations(props *spec.PathItem) map[string]*spec.Operation {
 /*
 As a developer I want to perform a test where I load some json which defines a manifest, rule and testcases
 I want the rule to manage the execution of the test that includes two test cases
-I want the testcases to communicate paramaters between themselves using a context
+I want the testcases to communicate parameters between themselves using a context
 I want the results of one test case being used as input to the other testcase
 I want to use json pattern matching to extract the first returned AccountId from the first testcase and
 use that value as the accountid parameter for the second testcase
@@ -184,18 +184,18 @@ var chainTest = map[string]func() *resty.Response{
 
 func httpAccountCall() func() *resty.Response {
 	return func() *resty.Response {
-		return pkgutils.CreateHTTPResponse(200, "OK", string(getAccountResponse))
+		return test.CreateHTTPResponse(200, "OK", string(getAccountResponse))
 	}
 }
 
 func httpAccountIDCall() func() *resty.Response {
 	return func() *resty.Response {
-		return pkgutils.CreateHTTPResponse(200, "OK", string(getAccountResponse), "content-type", "klingon/text")
+		return test.CreateHTTPResponse(200, "OK", string(getAccountResponse), "content-type", "klingon/text")
 	}
 }
 
 func httpAccountID007Call() func() *resty.Response {
 	return func() *resty.Response {
-		return pkgutils.CreateHTTPResponse(200, "OK", string(account0007), "content-type", "klingon/text")
+		return test.CreateHTTPResponse(200, "OK", string(account0007), "content-type", "klingon/text")
 	}
 }

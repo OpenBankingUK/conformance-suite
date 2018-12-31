@@ -1,19 +1,26 @@
+.DEFAULT_GOAL:=help
 SHELL:=/bin/bash
 GO_PKGS:=$(shell go list ./...)
 GO_PKGS_FOLDERS=$(shell go list -f '{{.Dir}}/' ./...)
 
 .PHONY: all
-all: help
+
+
+.PHONY: help
+help: ## Displays this help.
+	@awk 'BEGIN {FS = ":.*##"; printf "\nUsage:\n  make \033[36m<target>\033[0m\n"} /^[a-zA-Z_-]+:.*?##/ { printf "  \033[36m%-15s\033[0m %s\n", $$1, $$2 } /^##@/ { printf "\n\033[1m%s\033[0m\n", substr($$0, 5) } ' $(MAKEFILE_LIST)
+
+##@ Building & Running:
 
 .PHONY: run
-run: init_web ## run binary directly without docker
+run: init_web ## run binary directly without docker.
 	@echo -e "\033[92m  ---> Starting web file watcher ... \033[0m"
 	cd web && FORCE_COLOR=1 NODE_DISABLE_COLORS=0 yarn build-watch &> $(shell pwd)/web/web.log &
 	@echo -e "\033[92m  ---> Starting server ... \033[0m"
 	PORT=8080 go run cmd/server/main.go
 
 .PHONY: run_image
-run_image: ## run the docker image
+run_image: ## run the 'latest' docker image.
 	@echo -e "\033[92m  ---> Running image ... \033[0m"
 	docker run \
 		--rm \
@@ -24,44 +31,50 @@ run_image: ## run the docker image
 		"openbanking/conformance-suite:latest"
 
 .PHONY: build
-build: ## build the server binary directly
+build: ## build the server binary directly.
 	@echo -e "\033[92m  ---> Building ... \033[0m"
 	go build -o server cmd/server/main.go
 
 .PHONY: build_cli
-build_cli: ## build the cli binary directly
+build_cli: ## build the cli binary directly.
 	@echo -e "\033[92m  ---> Building CLI ... \033[0m"
 	go build -o fcs cmd/cli/main.go
 
 .PHONY: build_image
-build_image: ## build the docker image
+build_image: ## build the docker image.
 	@echo -e "\033[92m  ---> Building image ... \033[0m"
 	@# We could enable parallel builds for multi-staged builds with `DOCKER_BUILDKIT=1`
 	@# See: https://github.com/moby/moby/pull/37151
 	@#DOCKER_BUILDKIT=1
 	docker build ${DOCKER_BUILD_ARGS} -t "openbanking/conformance-suite:latest" .
 
+##@ Dependencies:
+
 .PHONY: init
-init: ## initialise
+init: ## initialise.
 	@echo -e "\033[92m  ---> Initialising ... \033[0m"
 	go mod download
 
-init_web: ./web/node_modules ## install node_modules when not present
+init_web: ./web/node_modules ## install node_modules when not present.
 
 ./web/node_modules:
 	cd web && yarn install
 
 .PHONY: devtools
-devtools: ## install dev tools
+devtools: ## install dev tools.
 	@echo -e "\033[92m  ---> Installing golint (golang.org/x/lint/golint) ... \033[0m"
 	go get -u golang.org/x/lint/golint
 	@echo -e "\033[92m  ---> Installing gocyclo (github.com/fzipp/gocyclo) ... \033[0m"
 	go get -u github.com/fzipp/gocyclo
 	@echo -e "\033[92m  ---> Installing mockery (github.com/vektra/mockery) ... \033[0m"
 	go get -u github.com/vektra/mockery
+	@echo -e "\033[92m  ---> Installing gometalinter (github.com/alecthomas/gometalinter) ... \033[0m"
+	curl -L https://git.io/vp6lP | BINDIR="$GOPATH/bin" sh
+
+##@ Cleanup:
 
 .PHONY: lint
-lint: ## lint the go code
+lint: ## lint the go code.
 	@echo -e "\033[92m  ---> Vetting ... \033[0m"
 	go vet ${GO_PKGS}
 	@echo -e "\033[92m  ---> Linting ... \033[0m"
@@ -73,20 +86,27 @@ lint: ## lint the go code
 	done
 
 .PHONY: cyclomatic
-cyclomatic: ## cyclomatic complexity checks
+cyclomatic: ## cyclomatic complexity checks.
 	@echo -e "\033[92m  ---> Checking cyclomatic complexity ... \033[0m"
 	gocyclo -over 12 ${GO_PKGS_FOLDERS}
 
+.PHONY: cyclomatic
+metalinter: ## other qa tools (linter). 
+	@echo -e "\033[92m  ---> Checking other qa tools ... \033[0m"
+	gometalinter --disable-all --enable=structcheck --enable=megacheck --enable=misspell -enable=vetshadow --enable=goconst --enable=nakedret --enable=deadcode --enable=unparam --deadline=30s --line-length=1747 --enable=lll ${GO_PKGS_FOLDERS}
+
 .PHONY: qa
-qa: test lint cyclomatic ## run all known quality assurance tools
+qa: test lint cyclomatic metalinter ## run all known quality assurance tools
 
 .PHONY: clean
 clean:
 	@echo -e "\033[92m  ---> Cleaning ... \033[0m"
 	go clean -i -r -cache -testcache -modcache
 
+##@ Testing:
+
 .PHONY: test
-test: ## run the go tests
+test: ## run the go tests.
 	@echo -e "\033[92m  ---> Testing ... \033[0m"
 	@# make symbolic link to ./web/public -> ./pkg/server/web/dist so that we can test out that
 	@# static files are being served by the Echo web server
@@ -101,7 +121,7 @@ test: ## run the go tests
 		./...
 
 .PHONY: test_coverage
-test_coverage: ## run the go tests then open up coverage report
+test_coverage: ## run the go tests then open up coverage report.
 	@echo -e "\033[92m  ---> Testing wth coverage ... \033[0m"
 	go test \
 		-v \
@@ -110,8 +130,3 @@ test_coverage: ## run the go tests then open up coverage report
 		./...
 	go tool cover \
 		-html=$(shell pwd)/coverage.out
-
-
-.PHONY: help
-help: ## print this help
-	@awk 'BEGIN {FS = ":.*?## "} /^[a-zA-Z_-]+:.*?## / {sub("\\\\n",sprintf("\n%22c"," "), $$2);printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}' $(MAKEFILE_LIST)

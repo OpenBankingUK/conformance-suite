@@ -51,5 +51,5 @@ func (r *LogReporter) Warning(req *http.Request, msg string) {
 	fmt.Printf("  WARNING: %s\n", msg)
 }
 
-// Report - generic implemetnation
+// Report - generic implementation
 func (r *LogReporter) Report() {}

@@ -61,7 +61,7 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 div.card-image {
   min-height: 140px;
   display: flex;

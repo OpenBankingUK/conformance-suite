@@ -11,23 +11,21 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
-	"net/url"
 	"os"
 	"strings"
 	"testing"
-
-	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/test"
 
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
 
 	"github.com/labstack/echo"
 	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 var (
-	appConfigJSON        = appConfigJSONWithUrl("https://rs.aspsp.ob.forgerock.financial:443")
-	appConfigJSONWithUrl = func(url string) string {
+	appConfigJSON        = appConfigJSONWithURL("https://rs.aspsp.ob.forgerock.financial:443")
+	appConfigJSONWithURL = func(url string) string {
 		return `{
     "softwareStatementId": "5b5a2008b093465496d238fc",
     "keyId": "d6c3f49c-7112-4c5c-9c9d-84926e992c74",
@@ -103,7 +101,7 @@ func TestMain(m *testing.M) {
 }
 
 func TestServer(t *testing.T) {
-	server := NewServer(NullLogger(), conditionalityCheckerMock{})
+	server := NewServer(nullLogger(), conditionalityCheckerMock{})
 
 	t.Run("NewServer() returns non-nil value", func(t *testing.T) {
 		assert.NotNil(t, server)
@@ -130,141 +128,7 @@ func TestServer(t *testing.T) {
 		assert.Equal(t, `{"message":"Not Found"}`, body.String())
 	})
 
-	if err := server.Shutdown(nil); err != nil {
-		logrus.Fatalf("Test=%s, Shutdown err=%s", t.Name(), err)
-	}
-}
-
-// /api/config - POST - can POST config
-func TestServer_Config_POST_Creates_Proxy(t *testing.T) {
-	assert := assert.New(t)
-
-	server := NewServer(NullLogger(), conditionalityCheckerMock{})
-	defer server.Shutdown(nil)
-
-	mockedServer, serverUrl := test.HTTPServer(http.StatusBadRequest, "body", nil)
-	appConfig := appConfigJSONWithUrl(serverUrl)
-
-	// assert server isn't started before call
-	frontendProxy, _ := url.Parse("http://0.0.0.0:8989/open-banking/v2.0/accounts")
-	_, err := http.Get(frontendProxy.String())
-	assert.Error(err)
-	assert.Nil(server.proxy)
-
-	// create the request to post the config
-	// this should start the proxy
-	req := httptest.NewRequest(http.MethodPost, "/api/config", strings.NewReader(appConfig))
-	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
-
-	rec := httptest.NewRecorder()
-
-	// do the request
-	server.ServeHTTP(rec, req)
-
-	assert.NotNil(rec.Body)
-	assert.Equal(appConfig, rec.Body.String())
-	assert.Equal(http.StatusOK, rec.Code)
-
-	// check the proxy is up now, we should hit the forgerock server
-	resp, err := http.Get(frontendProxy.String())
-	assert.NoError(err)
-	body, err := ioutil.ReadAll(resp.Body)
-	assert.NoError(err)
-	assert.Equal(http.StatusBadRequest, resp.StatusCode)
-	assert.Equal("body", string(body))
-	assert.NotNil(server.proxy)
-
-	mockedServer.Close()
-}
-
-// /api/config - POST - cannot POST config twice without first deleting it
-func TestServer_Config_POST_Cannot_POST_Config_Twice_Without_First_Deleting_It(t *testing.T) {
-	assert := assert.New(t)
-
-	server := NewServer(NullLogger(), conditionalityCheckerMock{})
-	defer server.Shutdown(nil)
-
-	// assert server isn't started before call
-	frontendProxy, _ := url.Parse("http://0.0.0.0:8989/open-banking/v2.0/accounts")
-	_, err := http.Get(frontendProxy.String())
-	assert.Error(err)
-
-	// create the request to post the config
-	// this should start the proxy
-	req := httptest.NewRequest(http.MethodPost, "/api/config", strings.NewReader(appConfigJSON))
-	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
-	rec := httptest.NewRecorder()
-
-	// do the request
-	server.ServeHTTP(rec, req)
-
-	assert.NotNil(rec.Body)
-	assert.Equal(appConfigJSON, rec.Body.String())
-	assert.Equal(http.StatusOK, rec.Code)
-
-	// create another request to POST the config again
-	// this should fail because a DELETE need to happen first.
-	req = httptest.NewRequest(http.MethodPost, "/api/config", strings.NewReader(appConfigJSON))
-	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
-	rec = httptest.NewRecorder()
-	// do the request
-	server.ServeHTTP(rec, req)
-
-	assert.NotNil(rec.Body)
-	assert.Equal(
-		"{\n    \"error\": \"listen tcp :8989: bind: address already in use\"\n}",
-		rec.Body.String(),
-	)
-	assert.Equal(http.StatusBadRequest, rec.Code)
-}
-
-// /api/config - DELETE - DELETE stops the proxy
-func TestServer_Config_DELETE_Stops_The_Proxy(t *testing.T) {
-	assert := assert.New(t)
-
-	server := NewServer(NullLogger(), conditionalityCheckerMock{})
-	defer server.Shutdown(nil)
-
-	// assert server isn't started before call
-	frontendProxy, _ := url.Parse("http://0.0.0.0:8989/open-banking/v2.0/accounts")
-	_, err := http.Get(frontendProxy.String())
-	assert.Error(err)
-
-	// create the request to post the config
-	// this should start the proxy
-	req := httptest.NewRequest(http.MethodPost, "/api/config", strings.NewReader(appConfigJSON))
-	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
-	rec := httptest.NewRecorder()
-
-	// do the request
-	server.ServeHTTP(rec, req)
-
-	assert.NotNil(rec.Body)
-	assert.Equal(appConfigJSON, rec.Body.String())
-	assert.Equal(http.StatusOK, rec.Code)
-
-	// create request to delete config
-	req = httptest.NewRequest(http.MethodDelete, "/api/config", nil)
-	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
-	rec = httptest.NewRecorder()
-	// do the request
-	server.ServeHTTP(rec, req)
-
-	assert.NotNil(rec.Body)
-	assert.Equal(
-		"",
-		rec.Body.String(),
-	)
-	assert.Equal(http.StatusOK, rec.Code)
-
-	// call proxy and assert it is no longer up
-	// check the proxy is up now, we should hit the forgerock server
-	resp, err := http.Get(frontendProxy.String())
-	assert.Equal(
-		`Get http://0.0.0.0:8989/open-banking/v2.0/accounts: dial tcp 0.0.0.0:8989: connect: connection refused`,
-		err.Error(),
-	)
-	assert.Nil(resp)
+	require.NoError(t, server.Shutdown(nil))
 }
 
 // Generic util function for making test requests.
@@ -279,7 +143,7 @@ func request(method, path string, body io.Reader, server *Server) (int, *bytes.B
 }
 
 // nullLogger - create a logger that discards output.
-func NullLogger() *logrus.Entry {
+func nullLogger() *logrus.Entry {
 	logger := logrus.New()
 	logger.Out = ioutil.Discard
 	return logger.WithField("app", "test")
