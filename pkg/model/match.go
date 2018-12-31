@@ -105,7 +105,7 @@ func (c *ContextAccessor) GetValues(tc *TestCase, ctx *Context) error {
 					}
 				}
 			} else { // not found a value
-				return errors.New(c.AppErr(fmt.Sprintf("error GetValues failed for testcase %s:%s, match %s", tc.ID, tc.Name, match.String())))
+				return errors.New(c.AppErr(fmt.Sprintf("error GetValues cannot find name %s in context for testcase %s:%s", match.ContextName, tc.ID, tc.Name)))
 			}
 		}
 	}

@@ -57,7 +57,7 @@ func AppMsg(objtype, msg, objdump string) {
 	if Silent {
 		return
 	}
-	applicationTrace <- fmt.Sprintf("%s[%s] %s", indent(), objtype, msg)
+	applicationTrace <- fmt.Sprintf("%s[%s]MSG %s", indent(), objtype, msg)
 }
 
 // AppErr - generic trace errpr fuction
@@ -65,7 +65,7 @@ func AppErr(objtype, msg, objdump string) {
 	if Silent {
 		return
 	}
-	applicationTrace <- fmt.Sprintf("%s[%s] %s", indent(), objtype, msg)
+	applicationTrace <- fmt.Sprintf("%s[%s]ERR %s", indent(), objtype, msg)
 }
 
 // AppEntry - application level trace

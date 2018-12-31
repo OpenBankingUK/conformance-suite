@@ -146,7 +146,7 @@ func TestMockedTestCase(t *testing.T) {
 	err := json.Unmarshal(basicTestCase, &testcase)
 	assert.NoError(t, err)
 
-	req, err := testcase.Prepare(nil)
+	req, err := testcase.Prepare(&Context{})
 	assert.Nil(t, err)
 	assert.NotNil(t, req)
 

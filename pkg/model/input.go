@@ -33,13 +33,18 @@ type Input struct {
 // CreateRequest is the main Input work horse which examines the various Input parameters and generates an
 // http.Request object which represents the request
 func (i *Input) CreateRequest(tc *TestCase, ctx *Context) (*resty.Request, error) {
-	i.AppMsg("CreateRequest")
 	var err error
 
+	if tc == nil {
+		return nil, errors.New(i.AppErr(fmt.Sprintf("error CreateRequest - Testcase is nil")))
+	}
+
+	if ctx == nil {
+		return nil, errors.New(i.AppErr(fmt.Sprintf("error CreateRequest - Context is nil")))
+	}
+
 	if i.Endpoint == "" || i.Method == "" { // we don't have a value input object
-		msg := "Testcase Input empty"
-		i.AppErr(msg)
-		return nil, errors.New(msg)
+		return nil, errors.New(i.AppErr(fmt.Sprintf("error empty Endpoint(%s) or Method(%s)", i.Endpoint, i.Method)))
 	}
 
 	if err = i.ContextGet.GetValues(tc, ctx); err != nil { // look for endpoint replacment strings
@@ -187,6 +192,8 @@ type consentIDTok struct {
 	Token obintentID `json:"id_token,omitempty"`
 }
 
+// Initial implementation of JWT creation with algorithm 'None'
+// Used only to support the PSU consent URL generation for headless consent flow
 func (i *Input) createAlgNoneJWT() (string, error) {
 	claims := jwt.MapClaims{}
 	claims["iss"] = i.Claims["iss"]
@@ -222,6 +229,7 @@ func (i *Input) createAlgNoneJWT() (string, error) {
 	return tokenString, nil
 }
 
+// take a JWT, generate a PSU consenturl
 func (i *Input) generateConsentURI(jwt string) string {
 	consent := i.Claims["aud"] + "/auth?" + "client_id=" + i.Claims["iss"] + "&response_type=" + i.Claims["response_type"] + "&scope=" + i.Claims["scope"] + "&request=" + jwt
 	return consent
