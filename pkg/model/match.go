@@ -524,7 +524,7 @@ func checkAuthorisation(m *Match, tc *TestCase) (bool, error) {
 	if len(headerValue) == 0 {
 		return false, m.AppErr(fmt.Sprintf("Authorisation Bearer Match Failed - no header value found"))
 	}
-	success = m.Value == headerValue
+
 	idx := strings.Index(headerValue, "Bearer ")
 	if idx == -1 {
 		idx = strings.Index(headerValue, "bearer ")

@@ -208,12 +208,13 @@ func (t *TestCase) ApplyExpects(res *resty.Response, rulectx *Context) (bool, er
 	}
 
 	t.AppMsg(fmt.Sprintf("Status check ok: expected [%d] got [%d]", t.Expect.StatusCode, res.StatusCode()))
-	for _, match := range t.Expect.Matches {
+	for k, match := range t.Expect.Matches {
 		checkResult, got := match.Check(t)
 		if checkResult == false {
 			return false, t.AppErr(fmt.Sprintf("ApplyExpects Returns False on match %s : %s", match.String(), got.Error()))
 		}
 		t.AppMsg(fmt.Sprintf("Checked Match: %s", match.Description))
+		t.Expect.Matches[k].Result = match.Result
 	}
 
 	if err := t.Expect.ContextPut.PutValues(t, rulectx); err != nil {

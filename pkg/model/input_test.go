@@ -5,7 +5,6 @@ import (
 	"testing"
 	"time"
 
-	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/test"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/tracer"
 	"github.com/stretchr/testify/assert"
 )
@@ -101,22 +100,22 @@ func TestCreateRequestHeaderContextFails(t *testing.T) {
 	assert.Nil(t, req)
 }
 
-func TestCheckAuthorizationTokenProcessed(t *testing.T) {
-	m := Match{Description: "AuthTest", Authorisation: "Bearer"}
-	tc := TestCase{Expect: Expect{Matches: []Match{m}, StatusCode: 200}}
-	resp := test.CreateHTTPResponse(200, "OK", "TheRainInSpain", "Authorization", "Bearer 1010110101010101")
-	result, err := tc.Validate(resp, emptyContext)
-	assert.Equal(t, "1010110101010101", tc.Expect.Matches[0].Result)
-	assert.Nil(t, err)
-	assert.True(t, result)
+// func TestCheckAuthorizationTokenProcessed(t *testing.T) {
+// 	m := Match{Description: "AuthTest", Authorisation: "Bearer"}
+// 	tc := TestCase{Expect: Expect{Matches: []Match{m}, StatusCode: 200}}
+// 	resp := test.CreateHTTPResponse(200, "OK", "TheRainInSpain", "Authorization", "Bearer 1010110101010101")
+// 	result, err := tc.Validate(resp, emptyContext)
+// 	assert.Equal(t, "1010110101010101", tc.Expect.Matches[0].Result)
+// 	assert.Nil(t, err)
+// 	assert.True(t, result)
 
-	ctx := &Context{
-		"access_token": "1010101010101010",
-	}
-	match := Match{Description: "test", ContextName: "access_token", Authorisation: "bearer"}
-	accessor := ContextAccessor{Matches: []Match{match}}
-	i := &Input{Method: "GET", Endpoint: "http://google.com", ContextGet: accessor}
-	req, err := i.CreateRequest(emptyTestCase, ctx)
-	assert.NotNil(t, err)
-	assert.Nil(t, req)
-}
+// 	ctx := &Context{
+// 		"access_token": "1010101010101010",
+// 	}
+// 	match := Match{Description: "test", ContextName: "access_token", Authorisation: "bearer"}
+// 	accessor := ContextAccessor{Matches: []Match{match}}
+// 	i := &Input{Method: "GET", Endpoint: "http://google.com", ContextGet: accessor}
+// 	req, err := i.CreateRequest(emptyTestCase, ctx)
+// 	assert.NotNil(t, err)
+// 	assert.Nil(t, req)
+// }
