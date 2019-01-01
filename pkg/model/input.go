@@ -148,12 +148,12 @@ func (i *Input) expandContextVariable(v string, ctx *Context) (string, error) {
 	}
 	contextValue := strings.TrimLeft(v, "$")
 	result := ctx.Get(contextValue)
+	if result == nil {
+		return v, errors.New(i.AppErr(fmt.Sprintf("Context value [%s] missing in context", contextValue)))
+	}
 	res, ok := result.(string)
 	if !ok {
 		return v, errors.New(i.AppErr(fmt.Sprintf("Context value [%s] - cannot convert result %v to string", contextValue, result)))
-	}
-	if len(res) < 1 {
-		return v, errors.New(i.AppErr(fmt.Sprintf("Context value [%s] missing in context", contextValue)))
 	}
 	return res, nil
 }
