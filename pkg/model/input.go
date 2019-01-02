@@ -35,15 +35,15 @@ func (i *Input) CreateRequest(tc *TestCase, ctx *Context) (*resty.Request, error
 	var err error
 
 	if tc == nil {
-		return nil, errors.New(i.AppErr(fmt.Sprintf("error CreateRequest - Testcase is nil")))
+		return nil, i.AppErr(fmt.Sprintf("error CreateRequest - Testcase is nil"))
 	}
 
 	if ctx == nil {
-		return nil, errors.New(i.AppErr(fmt.Sprintf("error CreateRequest - Context is nil")))
+		return nil, i.AppErr(fmt.Sprintf("error CreateRequest - Context is nil"))
 	}
 
 	if i.Endpoint == "" || i.Method == "" { // we don't have a value input object
-		return nil, errors.New(i.AppErr(fmt.Sprintf("error empty Endpoint(%s) or Method(%s)", i.Endpoint, i.Method)))
+		return nil, i.AppErr(fmt.Sprintf("error empty Endpoint(%s) or Method(%s)", i.Endpoint, i.Method))
 	}
 
 	if err = i.ContextGet.GetValues(tc, ctx); err != nil { // look for endpoint replacment strings
@@ -90,7 +90,7 @@ func (i *Input) setClaims(tc *TestCase, ctx *Context) error {
 			i.AppMsg("==> executing consenturl strategy")
 			token, err := i.createAlgNoneJWT()
 			if err != nil {
-				i.AppMsg(err.Error())
+				return i.AppErr(fmt.Sprintf("error creating AlgNoneJWT %s", err.Error()))
 			}
 			_ = token
 			i.AppMsg(fmt.Sprintf("jwt consent Token: %s", token))
@@ -127,7 +127,7 @@ func (i *Input) setHeaders(req *resty.Request, ctx *Context) error {
 	for k, v := range i.Headers { // set any input headers ("headers")
 		v, err := i.expandContextVariable(v, ctx)
 		if err != nil {
-			return errors.New(i.AppErr(fmt.Sprintf("setHeaders :%s", err.Error())))
+			return i.AppErr(fmt.Sprintf("setHeaders :%s", err.Error()))
 		}
 		req.SetHeader(k, v)
 	}
@@ -141,11 +141,11 @@ func (i *Input) expandContextVariable(v string, ctx *Context) (string, error) {
 	contextValue := strings.TrimLeft(v, "$")
 	result := ctx.Get(contextValue)
 	if result == nil {
-		return v, errors.New(i.AppErr(fmt.Sprintf("Context value [%s] missing in context", contextValue)))
+		return v, i.AppErr(fmt.Sprintf("Context value [%s] missing in context", contextValue))
 	}
 	res, ok := result.(string)
 	if !ok {
-		return v, errors.New(i.AppErr(fmt.Sprintf("Context value [%s] - cannot convert result %v to string", contextValue, result)))
+		return v, i.AppErr(fmt.Sprintf("Context value [%s] - cannot convert result %v to string", contextValue, result))
 	}
 	return res, nil
 }
@@ -157,16 +157,17 @@ func (i *Input) AppMsg(msg string) string {
 }
 
 // AppErr - application level trace error msg
-func (i *Input) AppErr(msg string) string {
+func (i *Input) AppErr(msg string) error {
 	tracer.AppErr("Input", fmt.Sprintf("%s", msg), i.String())
-	return msg
+	return errors.New(msg)
 }
 
 // String - object represetation
 func (i *Input) String() string {
 	bites, err := json.Marshal(i)
 	if err != nil {
-		return i.AppErr(fmt.Sprintf("error converting Input %s %s %s", i.Method, i.Endpoint, err.Error()))
+		// String() doesn't return error but still want to log as error to tracer ...
+		return i.AppErr(fmt.Sprintf("error converting Input %s %s %s", i.Method, i.Endpoint, err.Error())).Error()
 	}
 	return string(bites)
 }
@@ -219,10 +220,4 @@ func (i *Input) createAlgNoneJWT() (string, error) {
 	}
 	tokenString = tokenString + "."
 	return tokenString, nil
-}
-
-// take a JWT, generate a PSU consenturl
-func (i *Input) generateConsentURI(jwt string) string {
-	consent := i.Claims["aud"] + "/auth?" + "client_id=" + i.Claims["iss"] + "&response_type=" + i.Claims["response_type"] + "&scope=" + i.Claims["scope"] + "&request=" + jwt
-	return consent
 }

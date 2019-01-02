@@ -19,7 +19,7 @@ import (
 )
 
 func TestSimulatedChainedOzoneRequest(t *testing.T) {
-	tracer.Silent = true
+	tracer.Silent = false
 	executor := &ozoneResponder{}
 	chainedOzoneHeadlessAccounts(t, executor)
 }

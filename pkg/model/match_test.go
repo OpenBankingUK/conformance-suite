@@ -405,7 +405,6 @@ func TestContextPutHeaderRegexContextSubFieldCaptureFail(t *testing.T) {
 	result, err := tc.Validate(resp, &c)
 	assert.False(t, result)
 	assert.NotNil(t, err)
-	fmt.Println(err)
 }
 
 func TestContextPutHeaderRegexContextSubFieldCompileFaile(t *testing.T) {

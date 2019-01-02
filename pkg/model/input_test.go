@@ -1,6 +1,7 @@
 package model
 
 import (
+	"net/url"
 	"os"
 	"testing"
 
@@ -149,4 +150,49 @@ func TestInputBody(t *testing.T) {
 	assert.Nil(t, err)
 	assert.NotNil(t, req)
 	assert.Equal(t, "The Rain in Spain Falls Mainly on the Plain", req.Body.(string))
+}
+
+func TestInputClaims(t *testing.T) {
+	i := Input{Endpoint: "/accounts", Method: "POST",
+		Generation: map[string]string{
+			"strategy": "consenturl",
+		},
+		Claims: map[string]string{
+			"iss":          "8672384e-9a33-439f-8924-67bb14340d71",
+			"scope":        "openid accounts",
+			"redirect_url": "https://test.example.co.uk/redir",
+			"responseType": "code",
+		}}
+	ctx := Context{"baseurl": "http://mybaseurl"}
+	tc := TestCase{Input: i, Context: ctx}
+	req, err := tc.Prepare(emptyContext)
+	assert.Nil(t, err)
+	assert.NotNil(t, req)
+
+	m, _ := url.ParseQuery(req.URL)
+	assert.Equal(t, m["request"][0], "eyJhbGciOiJub25lIn0.eyJhdWQiOiIiLCJjbGFpbXMiOnsiaWRfdG9rZW4iOnsib3BlbmJhbmtpbmdfaW50ZW50X2lkIjp7ImVzc2VudGlhbCI6dHJ1ZSwidmFsdWUiOiIifX19LCJpc3MiOiI4NjcyMzg0ZS05YTMzLTQzOWYtODkyNC02N2JiMTQzNDBkNzEiLCJyZWRpcmVjdF91cmkiOiJodHRwczovL3Rlc3QuZXhhbXBsZS5jby51ay9yZWRpciIsInNjb3BlIjoib3BlbmlkIGFjY291bnRzIn0.")
+}
+
+func TestInputClaimsWithContextReplacementParameters(t *testing.T) {
+	i := Input{Endpoint: "/accounts", Method: "POST",
+		Generation: map[string]string{
+			"strategy": "consenturl",
+		},
+		Claims: map[string]string{
+			"aud":          "$baseurl",
+			"iss":          "8672384e-9a33-439f-8924-67bb14340d71",
+			"scope":        "openid accounts",
+			"redirect_url": "https://test.example.co.uk/redir",
+			"consentId":    "$consent_id",
+			"responseType": "code",
+		}}
+	ctx := Context{"baseurl": "http://mybaseurl", "consent_id": "myconsentid"}
+	tc := TestCase{Input: i, Context: ctx}
+	req, err := tc.Prepare(emptyContext)
+	assert.Nil(t, err)
+	assert.NotNil(t, req)
+
+	m, _ := url.ParseQuery(req.URL)
+	assert.Equal(t, m["request"][0], "eyJhbGciOiJub25lIn0.eyJhdWQiOiJodHRwOi8vbXliYXNldXJsIiwiY2xhaW1zIjp7ImlkX3Rva2VuIjp7Im9wZW5iYW5raW5nX2ludGVudF9pZCI6eyJlc3NlbnRpYWwiOnRydWUsInZhbHVlIjoibXljb25zZW50aWQifX19LCJpc3MiOiI4NjcyMzg0ZS05YTMzLTQzOWYtODkyNC02N2JiMTQzNDBkNzEiLCJyZWRpcmVjdF91cmkiOiJodHRwczovL3Rlc3QuZXhhbXBsZS5jby51ay9yZWRpciIsInNjb3BlIjoib3BlbmlkIGFjY291bnRzIn0.")
+
 }

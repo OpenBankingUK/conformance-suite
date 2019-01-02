@@ -80,7 +80,7 @@ func (c *ContextAccessor) PutValues(tc *TestCase, ctx *Context) error {
 	for _, m := range c.Matches {
 		success := m.PutValue(tc, ctx)
 		if !success {
-			return errors.New(c.AppErr(fmt.Sprintf("error ContextAccessor PutValues - failed Match [%s]", m.String())))
+			return c.AppErr(fmt.Sprintf("error ContextAccessor PutValues - failed Match [%s]", m.String()))
 		}
 	}
 	return nil
@@ -105,7 +105,7 @@ func (c *ContextAccessor) GetValues(tc *TestCase, ctx *Context) error {
 					}
 				}
 			} else { // not found a value
-				return errors.New(c.AppErr(fmt.Sprintf("error GetValues cannot find name %s in context for testcase %s:%s", match.ContextName, tc.ID, tc.Name)))
+				return c.AppErr(fmt.Sprintf("error GetValues cannot find name %s in context for testcase %s:%s", match.ContextName, tc.ID, tc.Name))
 			}
 		}
 	}
@@ -119,9 +119,9 @@ func (c *ContextAccessor) AppMsg(msg string) string {
 }
 
 // AppErr - application level trace error msg
-func (c *ContextAccessor) AppErr(msg string) string {
+func (c *ContextAccessor) AppErr(msg string) error {
 	tracer.AppErr("ContextAccessor", msg, "")
-	return msg
+	return errors.New(msg)
 }
 
 func (m *Match) String() string {
@@ -176,7 +176,6 @@ func (m *Match) PutValue(tc *TestCase, ctx *Context) bool {
 		}
 	case HeaderRegexContext:
 		success, err := checkHeaderRegexContext(m, tc)
-		fmt.Println("HeaderRegexContext entered")
 		if err != nil {
 			return false
 		}
