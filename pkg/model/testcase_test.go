@@ -1,10 +1,11 @@
 package model
 
 import (
-	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/test"
 	"encoding/json"
 	"fmt"
 	"testing"
+
+	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/test"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -193,7 +194,6 @@ func TestResponseStatusCodeMismatch(t *testing.T) {
 
 	result, err := testcase.ApplyExpects(res, nil)
 	assert.NotNil(t, err)
-	fmt.Println(err)
 	assert.Equal(t, result, false)
 
 }
