@@ -152,12 +152,12 @@ func (t *TestCase) ApplyInput(rulectx *Context) (*resty.Request, error) {
 	defer t.AppExit("ApplyInput exit")
 
 	if t.Input.Method == "" {
-		return nil, errors.New(t.AppMsg("error: TestCase input cannot have empty input.Method"))
+		return nil, t.AppErr("error: TestCase input cannot have empty input.Method")
 	}
 
 	req, err := t.Input.CreateRequest(t, rulectx)
 	if err != nil {
-		return nil, errors.New(t.AppMsg("createRequest: " + err.Error()))
+		return nil, t.AppErr("createRequest: " + err.Error())
 	}
 
 	t.Request = req // store the request in the testcase

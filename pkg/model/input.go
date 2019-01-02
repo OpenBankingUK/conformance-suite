@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"net/http"
 	"net/url"
 	"strings"
 
@@ -57,11 +56,6 @@ func (i *Input) CreateRequest(tc *TestCase, ctx *Context) (*resty.Request, error
 		return nil, err
 	}
 
-	if len(tc.Bearer) > 0 { // set in ContextGet->matches "authorisation":"bearer"
-		i.AppMsg(fmt.Sprintf("AddBearerToken %v", tc.Bearer))
-		req.SetAuthToken(tc.Bearer)
-	}
-
 	if err = i.setFormData(req, ctx); err != nil {
 		return nil, err
 	}
@@ -111,19 +105,17 @@ func (i *Input) setClaims(tc *TestCase, ctx *Context) error {
 }
 
 func (i *Input) setFormData(req *resty.Request, ctx *Context) error {
-	i.AppMsg(fmt.Sprintf("Check form data - %d items", len(i.FormData)))
-	if i.Method == http.MethodPost { // set any input form data ("formData")
-		if len(i.FormData) > 0 {
-			i.AppMsg(fmt.Sprintf("AddFormData %v", i.FormData))
-			for k, v := range i.FormData {
-				v, err := i.expandContextVariable(v, ctx)
-				if err != nil {
-					return err
-				}
-				i.FormData[k] = v
+	if len(i.FormData) > 0 {
+		i.AppMsg(fmt.Sprintf("AddFormData %v", i.FormData))
+		for k, v := range i.FormData {
+			v, err := i.expandContextVariable(v, ctx)
+			if err != nil {
+				i.AppErr("setFormdata - error setting contextVariable")
+				return err
 			}
-			req.SetFormData(i.FormData)
+			i.FormData[k] = v
 		}
+		req.SetFormData(i.FormData)
 	}
 	return nil
 }

@@ -10,7 +10,7 @@ import (
 	"strings"
 	"testing"
 
-	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/utils"
+	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/test"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/tracer"
 	"github.com/stretchr/testify/assert"
@@ -19,7 +19,7 @@ import (
 )
 
 func TestSimulatedChainedOzoneRequest(t *testing.T) {
-	tracer.Silent = false
+	tracer.Silent = true
 	executor := &ozoneResponder{}
 	chainedOzoneHeadlessAccounts(t, executor)
 }
@@ -137,12 +137,12 @@ func tokenEndpoint() func(r *resty.Request) *resty.Response {
 		appMsg("Grant type :" + grantType)
 		if grantType == "client_credentials" {
 			appMsg("Serve client_credentials")
-			response = pkgutils.CreateHTTPResponse(200, "OK", string(clientCredentialsResponse))
+			response = test.CreateHTTPResponse(200, "OK", string(clientCredentialsResponse))
 		}
 
 		if grantType == "authorization_code" {
 			appMsg("Serve authorization_code")
-			response = pkgutils.CreateHTTPResponse(200, "OK", string(authorizationCodeResponse))
+			response = test.CreateHTTPResponse(200, "OK", string(authorizationCodeResponse))
 		}
 		if response == nil {
 			appMsg("OMG !!!! Response == nil ")
@@ -154,7 +154,7 @@ func tokenEndpoint() func(r *resty.Request) *resty.Response {
 
 func accountAccessConsents() func(r *resty.Request) *resty.Response {
 	return func(r *resty.Request) *resty.Response {
-		return pkgutils.CreateHTTPResponse(201, "OK", string(accountAccessConsentsResponse), "content-type", "klingon/text")
+		return test.CreateHTTPResponse(201, "OK", string(accountAccessConsentsResponse), "content-type", "klingon/text")
 	}
 }
 
@@ -162,7 +162,7 @@ func getAccounts() func(r *resty.Request) *resty.Response {
 	return func(r *resty.Request) *resty.Response {
 		appMsg("GetAccounts")
 		appMsg(fmt.Sprintf("Request: %#v", r))
-		return pkgutils.CreateHTTPResponse(200, "OK", string(getAccountsResponse), "content-type", "klingon/text")
+		return test.CreateHTTPResponse(200, "OK", string(getAccountsResponse), "content-type", "klingon/text")
 	}
 }
 
