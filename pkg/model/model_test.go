@@ -1,11 +1,12 @@
 package model
 
 import (
-	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/test"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"testing"
+
+	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/test"
 
 	"github.com/go-openapi/loads"
 	"github.com/go-openapi/spec"
@@ -172,7 +173,6 @@ type executor struct {
 
 func (e *executor) ExecuteTestCase(r *resty.Request, t *TestCase, ctx *Context) (*resty.Response, error) {
 	responseKey := t.Input.Method + " " + t.Input.Endpoint
-	fmt.Println("responsekey: ", responseKey)
 	return chainTest[responseKey](), nil
 }
 

@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/tracer"
 	"gopkg.in/resty.v1"
 )
 
@@ -66,14 +67,17 @@ type TestCase struct {
 	Request    *resty.Request `json:"-"`                 // The request that's been generated in order to call the endpoint
 	Header     http.Header    `json:"-"`                 // ResponseHeader
 	Body       string         `json:"-"`                 // ResponseBody
+	Bearer     string         `json:"bearer,omitempty"`  // Bear token if presented
 }
 
 // Prepare a Testcase for execution at and endpoint,
 // results in a standard http request that encapsulates the testcase request
 // as defined in the test case object with any context inputs/replacements etc applied
 func (t *TestCase) Prepare(ctx *Context) (*resty.Request, error) {
-	err := t.ApplyContext(ctx)
-	if err != nil {
+	t.AppEntry("Prepare Entry")
+	defer t.AppExit("Prepare Exit")
+
+	if err := t.ApplyContext(ctx); err != nil { // Apply Context at end of creating request - get/put values into contexts
 		return nil, err
 	}
 
@@ -82,7 +86,7 @@ func (t *TestCase) Prepare(ctx *Context) (*resty.Request, error) {
 		return nil, err
 	}
 
-	return req, err
+	return req, nil
 }
 
 // Validate takes the http response that results as a consequence of sending the testcase http
@@ -99,7 +103,7 @@ func (t *TestCase) Prepare(ctx *Context) (*resty.Request, error) {
 //         NOTE: Vadiate will only return false if a check fails - no checks = true
 func (t *TestCase) Validate(resp *resty.Response, rulectx *Context) (bool, error) {
 	if rulectx == nil {
-		return false, errors.New("error Valdate:rulectx == nil")
+		return false, t.AppErr("error Valdate:rulectx == nil")
 	}
 	t.Body = resp.String()
 	if len(t.Body) == 0 { // The response body can only be read once from the raw response
@@ -113,18 +117,6 @@ func (t *TestCase) Validate(resp *resty.Response, rulectx *Context) (bool, error
 	}
 	t.Header = resp.Header()
 	return t.ApplyExpects(resp, rulectx)
-}
-
-// Input defines the content of the http request object used to execute the test case
-// Input is built up typically from the openapi/swagger definition of the method/endpoint for a particualar
-// specification. Additional properties/fields/headers can be added or change in order to setup the http
-// request object of the specific test case. Once setup correctly,the testcase gives the http request object
-// to the parent Rule which determine how to execute the requestion object. On execution an http response object
-// is received and passed back to the testcase for validation using the Expects object.
-type Input struct {
-	Method     string          `json:"method,omitempty"`     // http Method that this test case uses
-	Endpoint   string          `json:"endpoint,omitempty"`   // resource endpoint where the http object needs to be sent to get a response
-	ContextGet ContextAccessor `json:"contextGet,omitempty"` // Allows retrieval of context variables an input parameters
 }
 
 // Context is intended to handle two types of object and make them available to various parts of the suite including
@@ -156,26 +148,19 @@ type Expect struct {
 //     Testcase evaluates the http response object using its 'Expects' clause
 //     Testcase passes or fails depending on the 'Expects' outcome
 func (t *TestCase) ApplyInput(rulectx *Context) (*resty.Request, error) {
-	// NOTE: This is an initial implementation to get things moving - expect a lot of change in this function
-	var err error
-	err = t.Input.ContextGet.GetValues(t, rulectx)
+	t.AppEntry("ApplyInput entry")
+	defer t.AppExit("ApplyInput exit")
+
+	if t.Input.Method == "" {
+		return nil, t.AppErr("error: TestCase input cannot have empty input.Method")
+	}
+
+	req, err := t.Input.CreateRequest(t, rulectx)
 	if err != nil {
-		return nil, err
+		return nil, t.AppErr("createRequest: " + err.Error())
 	}
-
-	if t.Input.Endpoint == "" || t.Input.Method == "" { // we don't have a value input object
-		return nil, errors.New("Testcase Input empty")
-	}
-
-	req := resty.R()
-	if req == nil {
-		return nil, errors.New("Cannot Create Resty Client in Testcase ApplyInput")
-	}
-	req.Method = t.Input.Method
-	req.URL = t.Input.Endpoint
 
 	t.Request = req // store the request in the testcase
-
 	return req, err
 }
 
@@ -184,6 +169,9 @@ func (t *TestCase) ApplyInput(rulectx *Context) (*resty.Request, error) {
 // Context parameter typically involve variables that originaled in discovery
 // The functionality of ApplyContext will grow significantly over time.
 func (t *TestCase) ApplyContext(rulectx *Context) error {
+	t.AppEntry("ApplyContext entry")
+	defer t.AppExit("ApplyContext exit")
+
 	if rulectx != nil {
 		for k, v := range t.Context { // put testcase context values into rule context ...
 			rulectx.Put(k, v)
@@ -192,7 +180,7 @@ func (t *TestCase) ApplyContext(rulectx *Context) error {
 
 	base := t.Context.Get("baseurl") // "convention" puts baseurl as prefix to endpoint in testcase"
 	if base == nil {
-		return errors.New("cannot find base url for testcase")
+		return t.AppErr("cannot find base url for testcase")
 	}
 	t.Input.Endpoint = base.(string) + t.Input.Endpoint
 
@@ -208,30 +196,32 @@ func (t *TestCase) ApplyContext(rulectx *Context) error {
 // contextPuts will only be executed if the ApplyExpects standards match tests pass
 // if any of the ApplyExpects match tests fail - ApplyExpects returns false and contextPuts aren't executed
 func (t *TestCase) ApplyExpects(res *resty.Response, rulectx *Context) (bool, error) {
+	t.AppEntry("ApplyExpects entry")
+	defer t.AppExit("ApplyExpects exit")
+
 	if res == nil { // if we've not got a response object to check, always return false
-		return false, errors.New("nil http.Response - cannot process ApplyExpects")
+		return false, t.AppErr("nil http.Response - cannot process ApplyExpects")
 	}
 
 	if t.Expect.StatusCode != res.StatusCode() { // Status codes don't match
-		return false, fmt.Errorf("(%s):%s: HTTP Status code does not match: expected %d got %d", t.ID, t.Name, t.Expect.StatusCode, res.StatusCode())
+		return false, t.AppErr(fmt.Sprintf("(%s):%s: HTTP Status code does not match: expected %d got %d", t.ID, t.Name, t.Expect.StatusCode, res.StatusCode()))
 	}
 
-	for i, match := range t.Expect.Matches {
+	t.AppMsg(fmt.Sprintf("Status check ok: expected [%d] got [%d]", t.Expect.StatusCode, res.StatusCode()))
+	for k, match := range t.Expect.Matches {
 		checkResult, got := match.Check(t)
-		if len(match.Result) > 0 {
-			t.Expect.Matches[i] = match // if we update the result field - ensure this is reflect in the testcase
-		}
 		if checkResult == false {
-			return false, got
+			return false, t.AppErr(fmt.Sprintf("ApplyExpects Returns False on match %s : %s", match.String(), got.Error()))
 		}
+		t.AppMsg(fmt.Sprintf("Checked Match: %s", match.Description))
+		t.Expect.Matches[k].Result = match.Result
 	}
 
-	err := t.Expect.ContextPut.PutValues(t, rulectx)
-	if err != nil {
-		return false, err
+	if err := t.Expect.ContextPut.PutValues(t, rulectx); err != nil {
+		return false, t.AppErr("ApplyExpects Returns FALSE " + err.Error())
 	}
 
-	return true, err
+	return true, nil
 }
 
 // Get the key form the Context map - currently assumes value converts easily to a string!
@@ -303,6 +293,30 @@ func (t *TestCase) GetPermissions() (included, excluded []string) {
 	included = t.GetIncludedPermission()
 	excluded = t.GetExcludedPermissions()
 	return
+}
+
+// AppMsg - application level trace
+func (t *TestCase) AppMsg(msg string) string {
+	tracer.AppMsg("TestCase", msg, "")
+	return msg
+}
+
+// AppErr - application level trace error msg
+func (t *TestCase) AppErr(msg string) error {
+	tracer.AppErr("TestCase", msg, "")
+	return errors.New(msg)
+}
+
+// AppEntry - application level trace error msg
+func (t *TestCase) AppEntry(msg string) string {
+	tracer.AppEntry("TestCase", msg)
+	return msg
+}
+
+// AppExit - application level trace error msg
+func (t *TestCase) AppExit(msg string) string {
+	tracer.AppExit("TestCase", msg)
+	return msg
 }
 
 // Various helpers - main to dump struct contents to console

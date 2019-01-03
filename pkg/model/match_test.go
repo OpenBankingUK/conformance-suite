@@ -1,11 +1,12 @@
 package model
 
 import (
-	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/test"
 	"bytes"
 	"encoding/json"
 	"fmt"
 	"testing"
+
+	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/test"
 
 	"gopkg.in/resty.v1"
 
@@ -20,6 +21,7 @@ const simplejson = `{"name":{"first":"Janet","last":"Prichard"},"age":47}`
 // send response to match object
 // have match object parse response and extract json field into context parameter
 var emptyContext = &Context{}
+var emptyTestCase = &TestCase{}
 
 func TestContextPutFromMatch(t *testing.T) {
 	ctx := Context{}
@@ -403,7 +405,6 @@ func TestContextPutHeaderRegexContextSubFieldCaptureFail(t *testing.T) {
 	result, err := tc.Validate(resp, &c)
 	assert.False(t, result)
 	assert.NotNil(t, err)
-	fmt.Println(err)
 }
 
 func TestContextPutHeaderRegexContextSubFieldCompileFaile(t *testing.T) {

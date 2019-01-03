@@ -1,10 +1,11 @@
 package model
 
 import (
-	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/test"
 	"encoding/json"
 	"fmt"
 	"testing"
+
+	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/test"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -170,7 +171,7 @@ func TestMockedTestCase(t *testing.T) {
 	err := json.Unmarshal(basicTestCase, &testcase)
 	assert.NoError(t, err)
 
-	req, err := testcase.Prepare(nil)
+	req, err := testcase.Prepare(&Context{})
 	assert.Nil(t, err)
 	assert.NotNil(t, req)
 
@@ -193,7 +194,6 @@ func TestResponseStatusCodeMismatch(t *testing.T) {
 
 	result, err := testcase.ApplyExpects(res, nil)
 	assert.NotNil(t, err)
-	fmt.Println(err)
 	assert.Equal(t, result, false)
 
 }
