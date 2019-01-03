@@ -112,8 +112,6 @@ func consentIDFlow() func(r *resty.Request) *resty.Response {
 		response := &resty.Response{
 			RawResponse: &raw,
 		}
-		//appMsg(fmt.Sprintf("RESPONSE: %#v", response.RawResponse))
-		//appMsg(fmt.Sprintf("Response: (%s)", response.String()))
 		return response
 	}
 }
@@ -125,7 +123,11 @@ func tokenEndpoint() func(r *resty.Request) *resty.Response {
 
 		if r.RawRequest != nil {
 			buf := new(bytes.Buffer)
-			buf.ReadFrom(r.RawRequest.Body)
+			_, err := buf.ReadFrom(r.RawRequest.Body)
+			if err != nil {
+				appErr("Error reading Request Body")
+				return nil
+			}
 			newStr := buf.String()
 			appMsg("rawBody: " + newStr)
 		} else {
