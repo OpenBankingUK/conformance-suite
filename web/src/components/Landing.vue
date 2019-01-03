@@ -24,11 +24,11 @@
   </div>
 </template>
 
-<style scoped>
-</style>
-
 <script>
 export default {
   name: 'Landing',
 };
 </script>
+
+<style scoped>
+</style>

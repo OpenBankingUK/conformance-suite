@@ -43,7 +43,6 @@
   </div>
 </template>
 
-
 <script>
 import 'brace';
 import 'brace/mode/json';

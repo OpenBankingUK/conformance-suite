@@ -8,25 +8,6 @@
   </b-nav-item>
 </template>
 
-<style scoped>
-/* Make it match branding guidelines:
-"A simple guide to the
-Open Banking brand
-Version 1  July 2017" */
-.badge-primary,
-.nav-link.active {
-  background-color: #6180c3 !important;
-}
-
-.nav-link.active {
-  opacity: 0.7;
-}
-
-.nav-link:not(.active) > .label {
-  color: #6180c3;
-}
-</style>
-
 <script>
 export default {
   name: 'NavBarItem',
@@ -62,3 +43,22 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+/* Make it match branding guidelines:
+"A simple guide to the
+Open Banking brand
+Version 1  July 2017" */
+.badge-primary,
+.nav-link.active {
+  background-color: #6180c3 !important;
+}
+
+.nav-link.active {
+  opacity: 0.7;
+}
+
+.nav-link:not(.active) > .label {
+  color: #6180c3;
+}
+</style>

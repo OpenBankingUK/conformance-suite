@@ -9,13 +9,6 @@
   </div>
 </template>
 
-<style lang="scss">
-@import 'assets/css/fonts.css';
-.app {
-  font-family: 'Metropolis', 'Arial', sans-serif;
-}
-
-</style>
 <script>
 import Header from './components/Header.vue';
 import Wizard from './components/Wizard.vue';
@@ -28,3 +21,12 @@ export default {
   },
 };
 </script>
+
+<style>
+@import "~@/assets/css/app.css";
+@import "~@/assets/css/fonts.css";
+
+.app {
+  font-family: 'Metropolis', 'Arial', sans-serif;
+}
+</style>

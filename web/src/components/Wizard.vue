@@ -12,13 +12,6 @@
   </div>
 </template>
 
-<style scoped>
-.router-section {
-  background: #f6f6f6;
-  overflow-y: auto;
-}
-</style>
-
 <script>
 import NavBar from './NavBar/NavBar.vue';
 import ContinueOrStart from './Wizard/ContinueOrStart.vue';
@@ -48,3 +41,10 @@ export default {
   methods: {},
 };
 </script>
+
+<style scoped>
+.router-section {
+  background: #f6f6f6;
+  overflow-y: auto;
+}
+</style>

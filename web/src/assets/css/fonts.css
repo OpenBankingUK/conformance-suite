@@ -1,4 +1,36 @@
 @font-face {
+    font-family: 'Metropolis';
+    src: local('Metropolis Regular'), local('Metropolis-Regular'),
+        url('~@/assets/fonts/metropolis/Metropolis-Regular.woff2') format('woff2');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Metropolis';
+    src: local('Metropolis Bold'), local('Metropolis-Bold'),
+        url('~@/assets/fonts/metropolis/Metropolis-Bold.woff2') format('woff2');
+    font-weight: bold;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Metropolis';
+    src: local('Metropolis Medium'), local('Metropolis-Medium'),
+        url('~@/assets/fonts/metropolis/Metropolis-Medium.woff2') format('woff2');
+    font-weight: 500;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Metropolis';
+    src: local('Metropolis Light'), local('Metropolis-Light'),
+        url('~@/assets/fonts/metropolis/Metropolis-Light.woff2') format('woff2');
+    font-weight: 300;
+    font-style: normal;
+}
+
+@font-face {
     font-family: 'Metropolis Extra';
     src: local('Metropolis Extra Light'), local('Metropolis-ExtraLight'),
         url('~@/assets/fonts/metropolis/Metropolis-ExtraLight.woff2') format('woff2');
@@ -28,38 +60,6 @@
         url('~@/assets/fonts/metropolis/Metropolis-ExtraLightItalic.woff2') format('woff2');
     font-weight: 200;
     font-style: italic;
-}
-
-@font-face {
-    font-family: 'Metropolis';
-    src: local('Metropolis Light'), local('Metropolis-Light'),
-        url('~@/assets/fonts/metropolis/Metropolis-Light.woff2') format('woff2');
-    font-weight: 300;
-    font-style: normal;
-}
-
-@font-face {
-    font-family: 'Metropolis';
-    src: local('Metropolis Regular'), local('Metropolis-Regular'),
-        url('~@/assets/fonts/metropolis/Metropolis-Regular.woff2') format('woff2');
-    font-weight: normal;
-    font-style: normal;
-}
-
-@font-face {
-    font-family: 'Metropolis';
-    src: local('Metropolis Bold'), local('Metropolis-Bold'),
-        url('~@/assets/fonts/metropolis/Metropolis-Bold.woff2') format('woff2');
-    font-weight: bold;
-    font-style: normal;
-}
-
-@font-face {
-    font-family: 'Metropolis';
-    src: local('Metropolis Medium'), local('Metropolis-Medium'),
-        url('~@/assets/fonts/metropolis/Metropolis-Medium.woff2') format('woff2');
-    font-weight: 500;
-    font-style: normal;
 }
 
 @font-face {

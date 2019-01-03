@@ -1,9 +1,10 @@
 package discovery
 
 import (
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
 	"fmt"
 	"strings"
+
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
 
 	validation "gopkg.in/go-playground/validator.v9"
 )

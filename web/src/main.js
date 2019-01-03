@@ -1,24 +1,18 @@
 import Vue from 'vue';
-import BootstrapVue from 'bootstrap-vue';
-// import axios from 'axios';
-// import VueAxios from 'vue-axios';
+import BootstrapVue from 'bootstrap-vue/dist/bootstrap-vue.esm.min';
 
 /* global fetch */
 import 'whatwg-fetch';
 
-import 'bootstrap/dist/css/bootstrap.css';
-import 'bootstrap-vue/dist/bootstrap-vue.css';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import 'bootstrap-vue/dist/bootstrap-vue.min.css';
 
 import App from './App.vue';
 import router from './router';
 import store from './store/';
 import './registerServiceWorker';
 
-import './assets/css/app.css';
-
 Vue.use(BootstrapVue);
-// Vue.use(VueAxios, axios);
-// Vue.use(Antd);
 
 Vue.config.productionTip = false;
 

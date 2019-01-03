@@ -1,9 +1,10 @@
 package server
 
 import (
+	"testing"
+
 	"github.com/pkg/errors"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 func TestNewErrorResponse(t *testing.T) {

@@ -251,14 +251,16 @@ export default {
 };
 </script>
 
-<!-- The `style` cannot have the `scoped` attribute/property set. When `scoped` is set, the Bootstrap component do not have the styles specified applied. -->
-<style>
-.custom-file-input:lang(en) ~ .custom-file-label::after {
+<style scoped>
+/* See note on `/deep/` selector: https://vue-loader.vuejs.org/guide/scoped-css.html#deep-selectors */
+
+/* Instead of "Browse" we want "Upload" */
+.b-form-group.form-group .custom-file-input:lang(en) /deep/ .custom-file-label::after {
   content: "Upload";
 }
 
 /* Ensure line breaks (\n) in the form group description are honoured. */
-.b-form-group.form-group .form-text.text-muted {
+.b-form-group.form-group /deep/ .form-text.text-muted {
   white-space: pre-line;
 }
 </style>

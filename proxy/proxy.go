@@ -190,7 +190,7 @@ type validatorFunc func(Response, *spec.Operation) error
 // Validate -
 func (proxy *Proxy) Validate(resp Response, op *spec.Operation) error {
 	if _, ok := op.Responses.StatusCodeResponses[resp.Status()]; !ok {
-		return fmt.Errorf("Server Status %d not defined by the spec", resp.Status())
+		return fmt.Errorf("server Status %d not defined by the spec", resp.Status())
 	}
 
 	var validators = []validatorFunc{

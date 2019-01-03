@@ -1,10 +1,11 @@
 package server
 
 import (
+	"net/http"
+
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/web"
 	"github.com/labstack/echo"
-	"net/http"
 )
 
 type discoveryHandlers struct {

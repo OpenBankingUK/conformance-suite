@@ -11,13 +11,6 @@
   </div>
 </template>
 
-<style scoped>
-.wizard-footer-section {
-  background: #ffffff;
-  border: 1px solid rgba(0, 0, 0, 0.125);
-}
-</style>
-
 <script>
 import * as _ from 'lodash';
 
@@ -81,3 +74,10 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+.wizard-footer-section {
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.125);
+}
+</style>

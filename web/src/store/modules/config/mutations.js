@@ -33,4 +33,11 @@ export default {
   [types.CLEAR_CONFIGURATION_ERRORS](state) {
     state.errors.configuration = [];
   },
+
+  [types.SET_TEST_CASES](state, testCases) {
+    state.testCases = testCases;
+  },
+  [types.SET_TEST_CASES_ERROR](state, errors) {
+    state.errors.testCases = errors;
+  },
 };

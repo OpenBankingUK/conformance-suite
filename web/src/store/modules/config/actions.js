@@ -101,4 +101,20 @@ export default {
       return false;
     }
   },
+  /**
+   * Calls /api/test-cases to get all the test cases, then sets the
+   * retrieved test cases in the store.
+   */
+  async computeTestCases({ commit }) {
+    try {
+      const testCases = await api.computeTestCases();
+      commit(types.SET_TEST_CASES, testCases);
+      commit(types.SET_TEST_CASES_ERROR, []);
+    } catch (err) {
+      commit(types.SET_TEST_CASES, []);
+      commit(types.SET_TEST_CASES_ERROR, [
+        err,
+      ]);
+    }
+  },
 };

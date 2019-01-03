@@ -1,9 +1,15 @@
 import discovery from './discovery';
 
+const INPUT_PREFIX = '/api';
+
 export default {
-  // eslint-disable-next-line camelcase
+  /**
+   * Call POST /api/config/global
+   * @param {*} configuration Object containing signing_private,
+   * signing_public, transport_private and transport_public fields.
+   */
   async validateConfiguration(configuration) {
-    const input = '/api/config/global';
+    const input = `${INPUT_PREFIX}/config/global`;
     const init = {
       method: 'POST',
       headers: {
@@ -17,9 +23,30 @@ export default {
 
     // `fetch` does not throw an error even when status is not 200.
     // See: https://github.com/whatwg/fetch/issues/18
-    //
-    // Not too sure about the last check for I've commented it out for now.
-    if (response.status !== 201 /* || !response.ok */) {
+    if (response.status !== 201) {
+      throw data;
+    }
+
+    return data;
+  },
+  /**
+   * Call GET /api/test-cases
+   */
+  async computeTestCases() {
+    const input = `${INPUT_PREFIX}/test-cases`;
+    const init = {
+      method: 'GET',
+      headers: {
+        Accept: 'application/json; charset=UTF-8',
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+    };
+    const response = await fetch(input, init);
+    const data = await response.json();
+
+    // `fetch` does not throw an error even when status is not 200.
+    // See: https://github.com/whatwg/fetch/issues/18
+    if (response.status !== 200) {
       throw data;
     }
 

@@ -4,6 +4,11 @@
   </b-navbar>
 </template>
 
+<script>
+export default {
+  name: 'Header',
+};
+</script>
 
 <style scoped>
 .navbar {
@@ -16,9 +21,3 @@
   font-size: 1rem;
 }
 </style>
-
-<script>
-export default {
-  name: 'Header',
-};
-</script>

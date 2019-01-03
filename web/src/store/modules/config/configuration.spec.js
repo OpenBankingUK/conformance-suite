@@ -13,13 +13,12 @@ import actions from './actions';
 import mutations from './mutations';
 import getters from './getters';
 import state from './state';
-import * as types from './mutation-types';
 
 import api from '../../../api';
 // https://jestjs.io/docs/en/mock-functions#mocking-modules
 jest.mock('../../../api');
 
-describe('configuration', () => {
+describe('config/configuration', () => {
   /**
    * Creates a real store so we don't have to mock things out.
    */
@@ -32,7 +31,6 @@ describe('configuration', () => {
       actions,
       mutations,
       getters,
-      types,
     });
   };
 

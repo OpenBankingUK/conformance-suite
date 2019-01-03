@@ -15,6 +15,9 @@ pkg/server/web
 pkg/server/web/
 pkg/server/web/dist
 
+# Editor config
+.vscode/
+
 ### .gitignore for go: https://github.com/github/gitignore/blob/master/Go.gitignore ###
 # Binaries for programs and plugins
 *.exe

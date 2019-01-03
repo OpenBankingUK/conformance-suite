@@ -68,6 +68,22 @@
   </div>
 </template>
 
+<script>
+import { PlusCircleIcon, FileTextIcon } from 'vue-feather-icons';
+import NavBarItem from './NavBarItem.vue';
+
+export default {
+  name: 'NavBar',
+  components: {
+    NavBarItem,
+    PlusCircleIcon,
+    FileTextIcon,
+  },
+  // inheritAttrs: false,
+  methods: {},
+};
+</script>
+
 <style scoped>
 .navbar {
   box-shadow: 6px 0 25px 0 rgba(38, 50, 56, 0.2);
@@ -91,19 +107,3 @@
   margin-right: 4px;
 }
 </style>
-
-<script>
-import { PlusCircleIcon, FileTextIcon } from 'vue-feather-icons';
-import NavBarItem from './NavBarItem.vue';
-
-export default {
-  name: 'NavBar',
-  components: {
-    NavBarItem,
-    PlusCircleIcon,
-    FileTextIcon,
-  },
-  // inheritAttrs: false,
-  methods: {},
-};
-</script>

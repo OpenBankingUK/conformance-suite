@@ -1,9 +1,10 @@
 package server
 
 import (
+	"net/http"
+
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/web"
 	"github.com/labstack/echo"
-	"net/http"
 )
 
 type testCaseHandlers struct {
