@@ -168,9 +168,12 @@ func getAccounts() func(r *resty.Request) *resty.Response {
 
 // Utility to load Manifest Data Model containing all Rules, Tests and Conditions
 func loadManifest(filename string) (model.Manifest, error) {
-	plan, _ := ioutil.ReadFile(filename)
+	plan, err := ioutil.ReadFile(filename)
+	if err != nil {
+		return model.Manifest{}, err
+	}
 	var i model.Manifest
-	err := json.Unmarshal(plan, &i)
+	err = json.Unmarshal(plan, &i)
 	if err != nil {
 		return i, err
 	}
