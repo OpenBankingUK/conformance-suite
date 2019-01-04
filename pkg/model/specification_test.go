@@ -1,68 +1,47 @@
 package model
 
 import (
+	"encoding/json"
+	"flag"
+	"github.com/stretchr/testify/require"
+	"io/ioutil"
+	"path/filepath"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 )
 
-func specsFixture(values map[string]string) []byte {
-	schemaVersion, ok := values["schemaVersion"]
-	if !ok {
-		schemaVersion = "https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.0.0/dist/account-info-swagger.json"
-	}
-	url, ok := values["url"]
-	if !ok {
-		url = "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/642090641/Account+and+Transaction+API+Specification+-+v3.0"
-	}
-	version, ok := values["version"]
-	if !ok {
-		version = "v3.0"
-	}
-	return []byte(`[
-		  {
-		    "identifier": "account-transaction-v3.0",
-		    "name": "Account and Transaction API Specification",
-		    "url": "` + url + `",
-		    "version": "` + version + `",
-		    "schemaVersion": "` + schemaVersion + `"
-		  }
-		]`)
-}
-
-func assertSpecLoadError(t *testing.T, field string, value string, expected string) {
-	config := specsFixture(map[string]string{field: value})
-	err := loadSpecifications(config)
-	assert.Equal(t, expected, err.Error())
-}
-
-func TestLoadSpecifications_invalid(t *testing.T) {
-	defer loadDefaultSpecifications() // set config back to a valid state for next test
-
-	expected := "Key: 'Specification.SchemaVersion' Error:Field validation for 'SchemaVersion' failed on the 'url' tag"
-	assertSpecLoadError(t, "schemaVersion", "invalid-url", expected)
-
-	expected = "Key: 'Specification.URL' Error:Field validation for 'URL' failed on the 'url' tag"
-	assertSpecLoadError(t, "url", "invalid-url", expected)
-
-	expected = "Key: 'Specification.URL' Error:Field validation for 'URL' failed on the 'required' tag"
-	assertSpecLoadError(t, "url", "", expected)
-
-	expected = "Key: 'Specification.Version' Error:Field validation for 'Version' failed on the 'required' tag"
-	assertSpecLoadError(t, "version", "", expected)
-}
+var update = flag.Bool("update", false, "update .golden files")
 
 func TestSpecificationIdentifierFromSchemaVersion(t *testing.T) {
-	t.Run("returns specification identifier when given valid schema version URL", func(t *testing.T) {
-		specification, err := SpecificationIdentifierFromSchemaVersion("https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.0.0/dist/account-info-swagger.json")
-		assert.Nil(t, err)
-		assert.Equal(t, specification, "account-transaction-v3.0")
+	t.Run("returns specifications identifier when given valid schema version URL", func(t *testing.T) {
+		specification, err := SpecificationFromSchemaVersion("https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.0.0/dist/account-info-swagger.json")
+		require.NoError(t, err)
+		assert.Equal(t, specification.Identifier, "account-transaction-v3.0")
 	})
 
 	t.Run("returns error when given invalid schema version URL", func(t *testing.T) {
 		schemaVersion := "https://example.com/invalid"
-		specification, err := SpecificationIdentifierFromSchemaVersion(schemaVersion)
-		assert.Equal(t, err.Error(), "No specification found for schema version: "+schemaVersion)
-		assert.Equal(t, specification, "")
+		specification, err := SpecificationFromSchemaVersion(schemaVersion)
+		require.Error(t, err)
+		assert.EqualError(t, err, "no specifications found for schema version: "+schemaVersion)
+		assert.Equal(t, specification.Identifier, "")
 	})
+}
+
+func TestOzoneSpecificationHasNotChanged(t *testing.T) {
+	expected, err := json.MarshalIndent(specifications, "", "    ")
+	require.NoError(t, err)
+
+	goldenFile := filepath.Join("testdata", "ozone_spec.golden")
+	if *update {
+		t.Log("update golden file")
+		err := ioutil.WriteFile(goldenFile, expected, 0644)
+		require.NoError(t, err, "failed to update golden file")
+	}
+
+	spec, err := ioutil.ReadFile(goldenFile)
+	require.NoError(t, err, "failed reading .golden")
+
+	assert.JSONEq(t, string(expected), string(spec))
 }

@@ -13,7 +13,7 @@ import (
 )
 
 // Input defines the content of the http request object used to execute the test case
-// Input is built up typically from the openapi/swagger definition of the method/endpoint for a particualar
+// Input is built up typically from the openapi/swagger definition of the method/endpoint for a particular
 // specification. Additional properties/fields/headers can be added or change in order to setup the http
 // request object of the specific test case. Once setup correctly,the testcase gives the http request object
 // to the parent Rule which determine how to execute the requestion object. On execution an http response object

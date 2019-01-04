@@ -18,7 +18,7 @@ type ConditionEnum int
 const (
 	// Mandatory - required
 	Mandatory ConditionEnum = iota
-	// Conditional on a regulartory requirement
+	// Conditional on a regulatory requirement
 	Conditional
 	// Optional at the implementors discretion
 	Optional
@@ -68,7 +68,7 @@ func (checker conditionalityChecker) IsPresent(method, endpoint string, specific
 	if err != nil {
 		return false, nil
 	}
-	return (optional || mandatory || conditional), nil
+	return optional || mandatory || conditional, nil
 }
 
 // IsOptional - returns true if the method/endpoint mix is optional

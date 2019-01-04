@@ -11,8 +11,8 @@ The basic naive implementation consists of:-
  - AppEntry - which effectively indents the messages for easy trace reading in the initial implementation
  - AppExit - which reduces an indentation level on function return
 
- So the idea is to produce and initial trace which some strucuture as a starting point for a richer execution flow capture
- to feed reporting, so a user can follow what executed, and knows exactly where an error occured and why.
+ So the idea is to produce and initial trace which some structure as a starting point for a richer execution flow capture
+ to feed reporting, so a user can follow what executed, and knows exactly where an error occurred and why.
 
 */
 import (

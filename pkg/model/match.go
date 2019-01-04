@@ -473,7 +473,7 @@ func checkBodyJSONPresent(m *Match, tc *TestCase) (bool, error) {
 func checkBodyJSONCount(m *Match, tc *TestCase) (bool, error) {
 	result := gjson.Get(tc.Body, m.JSON)
 	if result.Int() != m.Count {
-		return false, m.AppErr(fmt.Sprintf("JSON Count Field Match Failed - found (%d) not (%d) occurances of pattern (%s)", result.Int(), m.Count, m.JSON))
+		return false, m.AppErr(fmt.Sprintf("JSON Count Field Match Failed - found (%d) not (%d) occurrences of pattern (%s)", result.Int(), m.Count, m.JSON))
 	}
 	return true, nil
 }

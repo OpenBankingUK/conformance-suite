@@ -129,7 +129,7 @@ func hasValidAPISpecifications(_ model.ConditionalityChecker, discoveryConfig *M
 			}
 			failures = append(failures, failure)
 		}
-		if specification.URL != discoveryItem.APISpecification.URL {
+		if specification.URL.String() != discoveryItem.APISpecification.URL {
 			failure := ValidationFailure{
 				Key:   fmt.Sprintf("DiscoveryModel.DiscoveryItems[%d].APISpecification.URL", discoveryItemIndex),
 				Error: fmt.Sprintf("'URL' should be '%s' when schemaVersion is '%s'", specification.URL, schemaVersion),
@@ -152,13 +152,13 @@ func HasValidEndpoints(checker model.ConditionalityChecker, discoveryConfig *Mod
 
 	for discoveryItemIndex, discoveryItem := range discoveryConfig.DiscoveryModel.DiscoveryItems {
 		schemaVersion := discoveryItem.APISpecification.SchemaVersion
-		specification, err := model.SpecificationIdentifierFromSchemaVersion(schemaVersion)
+		specification, err := model.SpecificationFromSchemaVersion(schemaVersion)
 		if err != nil {
 			continue // err already added to failures in hasValidAPISpecifications
 		}
 
 		for endpointIndex, endpoint := range discoveryItem.Endpoints {
-			isPresent, err := checker.IsPresent(endpoint.Method, endpoint.Path, specification)
+			isPresent, err := checker.IsPresent(endpoint.Method, endpoint.Path, specification.Identifier)
 			if err != nil {
 				failure := ValidationFailure{
 					Key:   fmt.Sprintf("DiscoveryModel.DiscoveryItems[%d].Endpoints[%d]", discoveryItemIndex, endpointIndex),
@@ -191,7 +191,7 @@ func HasMandatoryEndpoints(checker model.ConditionalityChecker, discoveryConfig 
 
 	for discoveryItemIndex, discoveryItem := range discoveryConfig.DiscoveryModel.DiscoveryItems {
 		schemaVersion := discoveryItem.APISpecification.SchemaVersion
-		specification, err := model.SpecificationIdentifierFromSchemaVersion(schemaVersion)
+		specification, err := model.SpecificationFromSchemaVersion(schemaVersion)
 		if err != nil {
 			continue // err already added to failures in hasValidAPISpecifications
 		}
@@ -200,7 +200,7 @@ func HasMandatoryEndpoints(checker model.ConditionalityChecker, discoveryConfig 
 		for _, endpoint := range discoveryItem.Endpoints {
 			discoveryEndpoints = append(discoveryEndpoints, model.Input{Endpoint: endpoint.Path, Method: endpoint.Method})
 		}
-		missingMandatory, err := checker.MissingMandatory(discoveryEndpoints, specification)
+		missingMandatory, err := checker.MissingMandatory(discoveryEndpoints, specification.Identifier)
 		if err != nil {
 			failure := ValidationFailure{
 				Key:   fmt.Sprintf("DiscoveryModel.DiscoveryItems[%d].Endpoints", discoveryItemIndex),
