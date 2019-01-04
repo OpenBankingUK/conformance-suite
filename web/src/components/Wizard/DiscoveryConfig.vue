@@ -1,13 +1,12 @@
 <template>
   <div class="d-flex flex-row flex-fill">
-    <div class="d-flex align-items-start">
+    <div class="d-flex flex-column align-items-start">
       <div
-        class="panel w-100"
-        style="height:900px">
+        class="d-flex flex-column panel w-100 wizard-step-panel">
         <div class="panel-heading">
-          <h5>Discovery {Discovery Name}</h5>
+          <h5>Discovery {{ name }}</h5>
         </div>
-        <div class="panel-body">
+        <div class="d-flex flex-column flex-fill panel-body">
           <div
             v-if="problems"
             class="mb-4">
@@ -44,6 +43,7 @@
 </template>
 
 <script>
+import * as _ from 'lodash';
 import 'brace';
 import 'brace/mode/json';
 import 'brace/theme/chrome';
@@ -70,10 +70,17 @@ export default {
   },
   computed: {
     ...mapGetters('config', [
+      'discoveryModel',
       'discoveryModelString',
       'problems',
       'discoveryProblems',
     ]),
+    /**
+     * The name of the discovery template selected.
+     */
+    name() {
+      return _.get(this, 'discoveryModel.discoveryModel.name', '');
+    },
     problemAnnotationAndMarkers() {
       return discovery.annotationsAndMarkers(
         this.discoveryProblems,
@@ -202,11 +209,16 @@ export default {
 </script>
 
 <style scoped>
+.wizard-step-panel {
+  height: 900px;
+}
+
 .editor {
   border: 1px solid lightgrey;
   width: auto !important;
   flex: 1;
 }
+
 .problems code {
   max-height: 30vh;
   overflow: scroll;

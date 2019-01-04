@@ -14,10 +14,12 @@ export default {
 .navbar {
   background: linear-gradient(90deg, #6180c3, #6180c3);
   box-shadow: 0 6px 25px 0 rgba(38, 50, 56, 0.2);
+  height: 50px;
 }
 
 .navbar-brand {
   color: #ffffff;
   font-size: 1rem;
+  height: 34px;
 }
 </style>

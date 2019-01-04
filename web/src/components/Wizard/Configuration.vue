@@ -2,8 +2,7 @@
   <div class="d-flex flex-row flex-fill">
     <div class="d-flex align-items-start">
       <div
-        class="panel w-100"
-        style="height: 900px">
+        class="panel w-100 wizard-step-panel">
         <div class="panel-heading">
           <h5>{{ this.$options.name }}</h5>
         </div>
@@ -252,6 +251,10 @@ export default {
 </script>
 
 <style scoped>
+.wizard-step-panel {
+  height: 900px;
+}
+
 /* See note on `/deep/` selector: https://vue-loader.vuejs.org/guide/scoped-css.html#deep-selectors */
 
 /* Instead of "Browse" we want "Upload" */

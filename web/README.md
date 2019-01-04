@@ -1,5 +1,9 @@
 # web
 
+## Contents
+
+[TOC]
+
 ## Project setup
 ```
 yarn install
@@ -68,3 +72,63 @@ To start the app run `make serve_web` in the root of the application. Phoenix wi
 
 ### Test the app
 In a separate terminal you can run `npm t` in `apps/compliance_web/assets`. This will run all the tests. To run the tests in watch mode append `-- --watch`, for instance: `npm t -- --watch`. To see the code coverage you can append `-- --coverage`. It's possible to combine both flags: `npm t -- --watch --coverage`. You can also see the code coverage in the `coverage` folder: `open apps/compliance_web/assets/coverage/lcov-report/index.html` to open in a browser.
+
+---
+
+## assets
+
+## inline fonts and images
+`web/vue.config.js`: inlines the fonts and images into the app. If we don't want to inline the
+fonts and images into the final app, simply remove this file.
+
+```js
+/**
+ * https://cli.vuejs.org/config/#vue-config-js
+ */
+
+// vue.config.js
+module.exports = {
+  // options...
+
+  // https://cli.vuejs.org/config/#devserver
+  // https://webpack.js.org/configuration/dev-server/
+  //
+  // These settings control the server that is started when you do `yarn serve`.
+  devServer: {
+    clientLogLevel: 'info',
+    compress: true,
+    overlay: {
+      warnings: false,
+      errors: true,
+    },
+    open: 'Google Chrome',
+  },
+
+  // https://cli.vuejs.org/config/#runtimecompiler
+  runtimeCompiler: true,
+
+  // https://cli.vuejs.org/config/#chainwebpack
+  chainWebpack: (config) => {
+    // Inline fonts and imags so we don't do another fetch for them.
+    // If we set `limit` to zero, all the fonts and images are inlined.
+    // Explanation can be found in:
+    // * https://cli.vuejs.org/guide/webpack.html#replacing-loaders-of-a-rule
+    // * https://github.com/vuejs/vue-cli/issues/3215
+
+    config.module.rule('fonts').use('url-loader').tap((opts) => {
+      const options = Object.assign(opts, { limit: 0 });
+      return options;
+    });
+
+    config.module.rule('images').use('url-loader').tap((opts) => {
+      const options = Object.assign(opts, { limit: 0 });
+      return options;
+    });
+  },
+
+  // https://cli.vuejs.org/config/#css-sourcemap
+  css: {
+    sourceMap: true,
+  },
+};
+```

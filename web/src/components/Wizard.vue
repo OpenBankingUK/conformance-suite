@@ -14,23 +14,11 @@
 
 <script>
 import NavBar from './NavBar/NavBar.vue';
-import ContinueOrStart from './Wizard/ContinueOrStart.vue';
-import DiscoveryConfig from './Wizard/DiscoveryConfig.vue';
-import Configuration from './Wizard/Configuration.vue';
-import RunOverview from './Wizard/RunOverview.vue';
-import Summary from './Wizard/Summary.vue';
-import Export from './Wizard/Export.vue';
 import WizardFooter from './Wizard/WizardFooter.vue';
 
 export default {
   name: 'Wizard',
   components: {
-    ContinueOrStart,
-    DiscoveryConfig,
-    Configuration,
-    RunOverview,
-    Summary,
-    Export,
     NavBar,
     WizardFooter,
   },

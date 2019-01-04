@@ -11,12 +11,10 @@
 
 <script>
 import Header from './components/Header.vue';
-import Wizard from './components/Wizard.vue';
 
 export default {
   name: 'app',
   components: {
-    Wizard,
     Header,
   },
 };
