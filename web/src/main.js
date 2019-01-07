@@ -10,11 +10,11 @@ import 'bootstrap-vue/dist/bootstrap-vue.min.css';
 import App from './App.vue';
 import router from './router';
 import store from './store/';
-import './registerServiceWorker';
 
 Vue.use(BootstrapVue);
 
-Vue.config.productionTip = false;
+// Don't warn about using the dev version of Vue in development.
+Vue.config.productionTip = process.env.NODE_ENV === 'production';
 
 new Vue({
   router,

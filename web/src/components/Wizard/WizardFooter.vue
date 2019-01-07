@@ -1,5 +1,5 @@
 <template>
-  <div class="wizard-footer-section d-flex flex-row justify-content-between p-3">
+  <div class="d-flex flex-row justify-content-between p-3">
     <b-btn
       :disabled="isBackDisabled"
       variant="primary"
@@ -76,8 +76,4 @@ export default {
 </script>
 
 <style scoped>
-.wizard-footer-section {
-  background: #ffffff;
-  border: 1px solid rgba(0, 0, 0, 0.125);
-}
 </style>

@@ -2,7 +2,9 @@
   <div
     id="app"
     class="d-flex flex-column app">
-    <Header/>
+    <div class="header-section">
+      <Header/>
+    </div>
     <div class="d-flex flex-column flex-fill">
       <router-view/>
     </div>
@@ -25,6 +27,10 @@ export default {
 @import "~@/assets/css/fonts.css";
 
 .app {
-  font-family: 'Metropolis', 'Arial', sans-serif;
+  font-family: "Metropolis", "Arial", sans-serif;
+}
+
+.header-section {
+  height: 50px;
 }
 </style>

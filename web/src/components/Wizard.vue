@@ -6,7 +6,6 @@
       </div>
       <div class="flex-fill">
         <router-view class="d-flex flex-column flex-fill p-3 router-section"/>
-        <WizardFooter/>
       </div>
     </div>
   </div>
@@ -14,13 +13,11 @@
 
 <script>
 import NavBar from './NavBar/NavBar.vue';
-import WizardFooter from './Wizard/WizardFooter.vue';
 
 export default {
   name: 'Wizard',
   components: {
     NavBar,
-    WizardFooter,
   },
   data() {
     return {};
@@ -34,5 +31,10 @@ export default {
 .router-section {
   background: #f6f6f6;
   overflow-y: auto;
+}
+
+.router-section /deep/ .wizard-step.panel {
+  min-height: 900px;
+  padding-bottom: 0;
 }
 </style>

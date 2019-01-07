@@ -27,13 +27,6 @@ pipelines:
               - make lint
               - make test
               - make cyclomatic
-              # Ensure that `go mod tidy` does not change `go.sum` or `go.mod`.
-              # `go mod tidy`: "add missing and remove unused modules".
-              # If anything has changed, the diff will print it.
-              - |
-                go mod tidy
-                git --no-pager diff
-                [[ 0 -eq $(git status --porcelain go.sum go.mod | wc -l) ]]
 
         # lint and test the Vue.js app
         - step:

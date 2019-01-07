@@ -1,8 +1,7 @@
 <template>
   <div class="d-flex flex-row flex-fill">
-    <div class="d-flex flex-column align-items-start">
-      <div
-        class="d-flex flex-column panel w-100 wizard-step-panel">
+    <div class="d-flex align-items-start">
+      <div class="d-flex flex-column panel w-100 wizard-step">
         <div class="panel-heading">
           <h5>Discovery {{ name }}</h5>
         </div>
@@ -37,6 +36,7 @@
             width="100%"
           />
         </div>
+        <WizardFooter/>
       </div>
     </div>
   </div>
@@ -49,6 +49,8 @@ import 'brace/mode/json';
 import 'brace/theme/chrome';
 import { Ace as AceEditor } from 'vue2-brace-editor';
 import { mapGetters, mapActions } from 'vuex';
+
+import WizardFooter from './WizardFooter.vue';
 import discovery from '../../api/discovery';
 
 // Bug in Brace editor using wrong Range function means we need to require Range here:
@@ -57,6 +59,7 @@ const AceRange = window.ace.acequire('ace/range').Range;
 export default {
   name: 'DiscoveryConfig',
   components: {
+    WizardFooter,
     AceEditor,
   },
   props: {
@@ -209,10 +212,6 @@ export default {
 </script>
 
 <style scoped>
-.wizard-step-panel {
-  height: 900px;
-}
-
 .editor {
   border: 1px solid lightgrey;
   width: auto !important;

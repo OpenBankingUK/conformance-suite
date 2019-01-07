@@ -1,12 +1,11 @@
 <template>
   <div class="d-flex flex-row flex-fill">
     <div class="d-flex align-items-start">
-      <div
-        class="panel w-100 wizard-step-panel">
+      <div class="d-flex flex-column panel w-100 wizard-step">
         <div class="panel-heading">
           <h5>{{ this.$options.name }}</h5>
         </div>
-        <div class="panel-body">
+        <div class="flex-fill panel-body">
           <div class="d-flex flex-column flex-fill">
             <b-form>
               <!-- Signing certificates -->
@@ -107,6 +106,7 @@
             </div>
           </div>
         </div>
+        <WizardFooter/>
       </div>
     </div>
   </div>
@@ -116,9 +116,13 @@
 import * as _ from 'lodash';
 import { mapGetters, mapActions } from 'vuex';
 
+import WizardFooter from './WizardFooter.vue';
+
 export default {
   name: 'Configuration',
-  components: {},
+  components: {
+    WizardFooter,
+  },
   data() {
     return {
       files: {
@@ -251,10 +255,6 @@ export default {
 </script>
 
 <style scoped>
-.wizard-step-panel {
-  height: 900px;
-}
-
 /* See note on `/deep/` selector: https://vue-loader.vuejs.org/guide/scoped-css.html#deep-selectors */
 
 /* Instead of "Browse" we want "Upload" */
@@ -267,4 +267,3 @@ export default {
   white-space: pre-line;
 }
 </style>
-
