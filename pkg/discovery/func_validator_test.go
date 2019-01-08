@@ -447,8 +447,75 @@ func TestDiscovery_FromJSONString_Valid(t *testing.T) {
 				Path:                  "/account-access-consents/{ConsentId}",
 				ConditionalProperties: []ModelConditionalProperties(nil),
 			},
-			{Method: "GET",
+
+			{
+				Method:                "GET",
+				Path:                  "/accounts",
+				ConditionalProperties: []ModelConditionalProperties(nil),
+			},
+			{
+				Method:                "GET",
+				Path:                  "/accounts/{AccountId}",
+				ConditionalProperties: []ModelConditionalProperties(nil),
+			},
+			{
+				Method:                "GET",
+				Path:                  "/accounts/{AccountId}/balances",
+				ConditionalProperties: []ModelConditionalProperties(nil),
+			},
+			{
+				Method:                "GET",
+				Path:                  "/accounts/{AccountId}/beneficiaries",
+				ConditionalProperties: []ModelConditionalProperties(nil),
+			},
+			{
+				Method:                "GET",
+				Path:                  "/accounts/{AccountId}/direct-debits",
+				ConditionalProperties: []ModelConditionalProperties(nil),
+			},
+			{
+				Method:                "GET",
+				Path:                  "/accounts/{AccountId}/offers",
+				ConditionalProperties: []ModelConditionalProperties(nil),
+			},
+			{
+				Method:                "GET",
+				Path:                  "/accounts/{AccountId}/party",
+				ConditionalProperties: []ModelConditionalProperties(nil),
+			},
+			{
+				Method:                "GET",
 				Path:                  "/accounts/{AccountId}/product",
+				ConditionalProperties: []ModelConditionalProperties(nil),
+			},
+			{
+				Method:                "GET",
+				Path:                  "/accounts/{AccountId}/scheduled-payments",
+				ConditionalProperties: []ModelConditionalProperties(nil),
+			},
+			{
+				Method:                "GET",
+				Path:                  "/accounts/{AccountId}/standing-orders",
+				ConditionalProperties: []ModelConditionalProperties(nil),
+			},
+			{
+				Method:                "GET",
+				Path:                  "/accounts/{AccountId}/statements",
+				ConditionalProperties: []ModelConditionalProperties(nil),
+			},
+			{
+				Method:                "GET",
+				Path:                  "/accounts/{AccountId}/statements/{StatementId}",
+				ConditionalProperties: []ModelConditionalProperties(nil),
+			},
+			{
+				Method:                "GET",
+				Path:                  "/accounts/{AccountId}/statements/{StatementId}/file",
+				ConditionalProperties: []ModelConditionalProperties(nil),
+			},
+			{
+				Method:                "GET",
+				Path:                  "/accounts/{AccountId}/statements/{StatementId}/transactions",
 				ConditionalProperties: []ModelConditionalProperties(nil),
 			},
 			{Method: "GET",
@@ -478,17 +545,52 @@ func TestDiscovery_FromJSONString_Valid(t *testing.T) {
 			},
 			{
 				Method:                "GET",
-				Path:                  "/accounts",
+				Path:                  "/balances",
 				ConditionalProperties: []ModelConditionalProperties(nil),
 			},
 			{
 				Method:                "GET",
-				Path:                  "/accounts/{AccountId}",
+				Path:                  "/beneficiaries",
 				ConditionalProperties: []ModelConditionalProperties(nil),
 			},
 			{
 				Method:                "GET",
-				Path:                  "/accounts/{AccountId}/balances",
+				Path:                  "/direct-debits",
+				ConditionalProperties: []ModelConditionalProperties(nil),
+			},
+			{
+				Method:                "GET",
+				Path:                  "/offers",
+				ConditionalProperties: []ModelConditionalProperties(nil),
+			},
+			{
+				Method:                "GET",
+				Path:                  "/party",
+				ConditionalProperties: []ModelConditionalProperties(nil),
+			},
+			{
+				Method:                "GET",
+				Path:                  "/products",
+				ConditionalProperties: []ModelConditionalProperties(nil),
+			},
+			{
+				Method:                "GET",
+				Path:                  "/scheduled-payments",
+				ConditionalProperties: []ModelConditionalProperties(nil),
+			},
+			{
+				Method:                "GET",
+				Path:                  "/standing-orders",
+				ConditionalProperties: []ModelConditionalProperties(nil),
+			},
+			{
+				Method:                "GET",
+				Path:                  "/statements",
+				ConditionalProperties: []ModelConditionalProperties(nil),
+			},
+			{
+				Method:                "GET",
+				Path:                  "/transactions",
 				ConditionalProperties: []ModelConditionalProperties(nil),
 			},
 		},

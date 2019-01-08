@@ -42,7 +42,7 @@ func TestGenerateSpecificationTestCases(t *testing.T) {
 	})
 
 	t.Run("returns each SpecificationTestCases with generated TestCases", func(t *testing.T) {
-		expectedCount := []int{8, 31}
+		expectedCount := []int{28, 31}
 		for i, specificationCases := range cases {
 			assert.Len(t, specificationCases.TestCases, expectedCount[i])
 		}
