@@ -273,5 +273,12 @@ describe('config/configuration', () => {
 
       expect(store.getters.configurationErrors).toEqual([]);
     });
+
+    it('setConfigurationErrors sets errors', async () => {
+      const error = new Error('e');
+      const store = createRealStore();
+      await store.dispatch('setConfigurationErrors', [error]);
+      expect(store.getters.configurationErrors).toEqual([error]);
+    });
   });
 });

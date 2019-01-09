@@ -101,6 +101,10 @@ export default {
       return false;
     }
   },
+  // Sets array of Error objects
+  setConfigurationErrors({ commit }, errors) {
+    commit(types.SET_CONFIGURATION_ERRORS, errors);
+  },
   /**
    * Calls /api/test-cases to get all the test cases, then sets the
    * retrieved test cases in the store.

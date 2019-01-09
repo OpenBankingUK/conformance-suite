@@ -46,7 +46,6 @@ export default {
   data() {
     return {
       certificate: null,
-      error: null,
     };
   },
   computed: {
@@ -59,10 +58,7 @@ export default {
   },
   methods: {
     ...mapActions('config', [
-      'setConfigurationSigningPrivate',
-      'setConfigurationSigningPublic',
-      'setConfigurationTransportPrivate',
-      'setConfigurationTransportPublic',
+      'setConfigurationErrors',
     ]),
     /**
      * Get a description of the file uploaded (when one is selected).
@@ -111,7 +107,7 @@ export default {
      */
     async onFileChanged(file, setterMethodNameSuffix) {
       // Clear previous error.
-      this.error = null;
+      this.setConfigurationErrors([]);
 
       // Compute the method name we need to call in the Vuex store, e.g., could be one of the below:
       // * setConfigurationSigningPrivate
@@ -125,7 +121,7 @@ export default {
           const data = await this.readFile(file);
           setConfigurationMethod(data);
         } catch (err) {
-          this.error = err.toString();
+          this.setConfigurationErrors([err]);
         }
       } else {
         // If no file selected assume they want to clear out the previous file.
