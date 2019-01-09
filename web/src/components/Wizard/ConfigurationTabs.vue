@@ -7,44 +7,16 @@
         </div>
         <div class="flex-fill panel-body">
           <div class="d-flex flex-column flex-fill">
-            <b-form>
-              <!--
-              maybe limit file selection to these file types:
-              * .key: application/x-iwork-keynote-sffkey
-              -->
-              <ConfigurationFormFile
-                id="signing_private"
-                setterMethodNameSuffix="SigningPrivate"
-                label="Private Signing Certificate (.key):"
-              />
-              <!--
-              maybe limit file selection to these file types:
-              * .pem: application/x-x509-ca-cert
-              -->
-              <ConfigurationFormFile
-                id="signing_public"
-                setterMethodNameSuffix="SigningPublic"
-                label="Public Signing Certificate (.pem):"
-              />
-              <!--
-              maybe limit file selection to these file types:
-              * .key: application/x-iwork-keynote-sffkey
-              -->
-              <ConfigurationFormFile
-                id="transport_private"
-                setterMethodNameSuffix="TransportPrivate"
-                label="Private Transport Certificate (.key):"
-              />
-              <!--
-              maybe limit file selection to these file types:
-              * .pem: application/x-x509-ca-cert
-              -->
-              <ConfigurationFormFile
-                id="transport_public"
-                setterMethodNameSuffix="TransportPublic"
-                label="Public Transport Certificate (.pem):"
-              />
-            </b-form>
+            <b-tabs>
+              <b-tab
+                title="Form"
+                active>
+                <ConfigurationForm/>
+              </b-tab>
+              <b-tab title="JSON" >
+                <div class="p-3">placeholder</div>
+              </b-tab>
+            </b-tabs>
             <div v-if="configurationErrors.length > 0">
               <h2 class="pt-3 pb-2 mb-3">Errors</h2>
               <b-alert
@@ -66,13 +38,13 @@
 import * as _ from 'lodash';
 import { mapGetters, mapActions } from 'vuex';
 
-import ConfigurationFormFile from './ConfigurationFormFile.vue';
+import ConfigurationForm from './ConfigurationForm.vue';
 import WizardFooter from './WizardFooter.vue';
 
 export default {
   name: 'ConfigurationTabs',
   components: {
-    ConfigurationFormFile,
+    ConfigurationForm,
     WizardFooter,
   },
   computed: {
