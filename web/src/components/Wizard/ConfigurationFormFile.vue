@@ -39,7 +39,7 @@ export default {
     },
     placeholder: {
       type: String,
-      required: true,
+      required: false,
       default: 'Choose a file...',
     },
   },
@@ -110,23 +110,22 @@ export default {
       this.setConfigurationErrors([]);
 
       // Compute the method name we need to call in the Vuex store, e.g., could be one of the below:
-      // * setConfigurationSigningPrivate
-      // * setConfigurationSigningPublic
-      const setConfigurationMethodName = `setConfiguration${setterMethodNameSuffix}`;
-      const setConfigurationMethod = this[setConfigurationMethodName];
+      // * config/setConfigurationSigningPrivate
+      // * config/setConfigurationSigningPublic
+      const setConfigurationMethodName = `config/setConfiguration${setterMethodNameSuffix}`;
 
       if (file) {
         // If file is set, read the file then set the value in the store.
         try {
           const data = await this.readFile(file);
-          setConfigurationMethod(data);
+          this.$store.dispatch(setConfigurationMethodName, data);
         } catch (err) {
           this.setConfigurationErrors([err]);
         }
       } else {
         // If no file selected assume they want to clear out the previous file.
         const data = '';
-        setConfigurationMethod(data);
+        this.$store.dispatch(setConfigurationMethodName, data);
       }
     },
   },
