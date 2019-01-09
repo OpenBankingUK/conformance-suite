@@ -6,7 +6,7 @@ import store from './store/';
 import Wizard from './components/Wizard.vue';
 import ContinueOrStart from './components/Wizard/ContinueOrStart.vue';
 import DiscoveryConfig from './components/Wizard/DiscoveryConfig.vue';
-import Configuration from './components/Wizard/Configuration.vue';
+import ConfigurationTabs from './components/Wizard/ConfigurationTabs.vue';
 import RunOverview from './components/Wizard/RunOverview.vue';
 import Summary from './components/Wizard/Summary.vue';
 import Export from './components/Wizard/Export.vue';
@@ -39,7 +39,7 @@ const router = new VueRouter({
         {
           path: '/wizard/configuration',
           name: 'Configuration',
-          component: Configuration,
+          component: ConfigurationTabs,
         },
         {
           path: '/wizard/run-overview',

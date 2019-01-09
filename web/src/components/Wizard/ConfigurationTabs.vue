@@ -3,7 +3,7 @@
     <div class="d-flex align-items-start">
       <div class="d-flex flex-column panel w-100 wizard-step">
         <div class="panel-heading">
-          <h5>{{ this.$options.name }}</h5>
+          <h5>Configuration</h5>
         </div>
         <div class="flex-fill panel-body">
           <div class="d-flex flex-column flex-fill">
@@ -70,7 +70,7 @@ import ConfigurationFormFile from './ConfigurationFormFile.vue';
 import WizardFooter from './WizardFooter.vue';
 
 export default {
-  name: 'Configuration',
+  name: 'ConfigurationTabs',
   components: {
     ConfigurationFormFile,
     WizardFooter,
