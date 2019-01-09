@@ -30,10 +30,12 @@ export default {
   },
 
   testCases: [],
+  testCaseResults: {},
 
   errors: {
     configuration: [],
     testCases: [],
+    testCaseResults: [],
   },
 
   wizard: {

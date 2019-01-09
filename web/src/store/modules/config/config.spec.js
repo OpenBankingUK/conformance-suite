@@ -407,5 +407,88 @@ describe('web/src/store/modules/config', () => {
         expect(store.getters.testCases).toEqual([]);
       });
     });
+
+    it('config/errors.testCaseResults is initially empty', async () => {
+      const store = createRealStore();
+
+      expect(store.getters.errors.testCaseResults).toEqual([]);
+    });
+
+    it('config/testCaseResults is initially empty', async () => {
+      const store = createRealStore();
+
+      expect(store.state.testCaseResults).toEqual({});
+    });
+
+    describe('config/computeTestCaseResults', () => {
+      const ERROR_RESPONSE = {
+        error: 'error generation test cases, discovery model not set',
+      };
+
+      const OK_RESPONSE = {"response": "api response"};
+
+      afterEach(() => {
+        jest.resetAllMocks();
+      });
+
+      it('config/computeTestCaseResults sets config/testCaseResults, if successful', async () => {
+        const store = createRealStore();
+
+        expect(store.getters.errors.testCaseResults).toEqual([]);
+        expect(store.state.testCaseResults).toEqual({});
+
+        api.computeTestCaseResults.mockResolvedValueOnce(OK_RESPONSE);
+        await store.dispatch('computeTestCaseResults');
+        expect(store.getters.errors.testCaseResults).toEqual([]);
+        expect(store.state.testCaseResults).toEqual(OK_RESPONSE);
+      });
+
+      it('config/computeTestCaseResults sets config/errors.computeTestCaseResults, if unsuccessful', async () => {
+        const store = createRealStore();
+
+        expect(store.getters.errors.testCaseResults).toEqual([]);
+        expect(store.state.testCaseResults).toEqual({});
+
+        api.computeTestCaseResults.mockRejectedValueOnce(ERROR_RESPONSE);
+        await store.dispatch('computeTestCaseResults');
+        expect(store.getters.errors.testCaseResults).toEqual([ERROR_RESPONSE]);
+        expect(store.state.testCaseResults).toEqual({});
+      });
+
+      it('config/computeTestCaseResults sets config/testCaseResults and clears config/errors.testCaseResults, if successful', async () => {
+        const store = createRealStore();
+
+        expect(store.getters.errors.testCaseResults).toEqual([]);
+        expect(store.state.testCaseResults).toEqual({});
+
+        api.computeTestCaseResults.mockRejectedValueOnce(ERROR_RESPONSE);
+        await store.dispatch('computeTestCaseResults');
+        expect(store.getters.errors.testCaseResults).toEqual([ERROR_RESPONSE]);
+        expect(store.state.testCaseResults).toEqual({});
+
+        api.computeTestCaseResults.mockResolvedValueOnce(OK_RESPONSE);
+        await store.dispatch('computeTestCaseResults');
+        expect(store.getters.errors.testCaseResults).toEqual([]);
+        expect(store.state.testCaseResults).toEqual(OK_RESPONSE);
+      });
+
+      it('config/computeTestCaseResults clears config/testCaseResults and sets config/errors.testCaseResults, if unsuccessful', async () => {
+        const store = createRealStore();
+
+        expect(store.getters.errors.testCaseResults).toEqual([]);
+        expect(store.state.testCaseResults).toEqual({});
+
+        api.computeTestCaseResults.mockResolvedValueOnce(OK_RESPONSE);
+        await store.dispatch('computeTestCaseResults');
+        expect(store.getters.errors.testCaseResults).toEqual([]);
+        expect(store.state.testCaseResults).toEqual(OK_RESPONSE);
+
+        api.computeTestCaseResults.mockRejectedValueOnce(ERROR_RESPONSE);
+        await store.dispatch('computeTestCaseResults');
+        expect(store.getters.errors.testCaseResults).toEqual([ERROR_RESPONSE]);
+        expect(store.state.testCaseResults).toEqual({});
+      });
+    });
+
   });
 });
