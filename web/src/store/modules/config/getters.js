@@ -1,3 +1,4 @@
+import constants from './constants';
 
 const lowercaseFirstLetter = string => string.charAt(0).toLowerCase() + string.slice(1);
 
@@ -26,7 +27,6 @@ const parseProblem = ({ key, error }) => {
 };
 
 export default {
-  getConfig: state => state.main,
   discoveryModel: state => state.discoveryModel,
   discoveryModelString: state => JSON.stringify(state.discoveryModel, null, 2),
   discoveryTemplates: state => state.discoveryTemplates,
@@ -36,4 +36,19 @@ export default {
   testCases: state => state.testCases,
   errors: state => state.errors,
   configurationErrors: state => state.errors.configuration,
+  /**
+   * Computes what the user can navigate to based on the current step they are on.
+   */
+  navigation: (state) => {
+    const { step } = state.wizard;
+    const navigation = {
+      '/wizard/continue-or-start': step > 0,
+      '/wizard/discovery-config': step > constants.WIZARD.STEP_ONE,
+      '/wizard/configuration': step > constants.WIZARD.STEP_TWO,
+      '/wizard/run-overview': step > constants.WIZARD.STEP_THREE,
+      '/wizard/summary': step > constants.WIZARD.STEP_FOUR,
+      '/wizard/export': step > constants.WIZARD.STEP_FIVE,
+    };
+    return navigation;
+  },
 };

@@ -1,5 +1,4 @@
 export default {
-
   // Async call to post API endpoint, returns promise.
   post(path, obj) {
     return fetch(path, {

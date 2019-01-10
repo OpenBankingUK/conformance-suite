@@ -1,3 +1,4 @@
+import constants from './constants';
 import OzoneTemplate from '../../../../../pkg/discovery/templates/ob-v3.0-ozone.json';
 import GenericTemplate from '../../../../../pkg/discovery/templates/ob-v3.0-generic.json';
 import OzoneTemplateImg from './images/o3logo_159x159.png';
@@ -15,26 +16,10 @@ const templates = [
     image: GenericTemplateImg,
   },
 ];
-const defaultTemplate = templates.find(t => t.model.discoveryModel.name === 'ob-v3.0-ozone');
-
-const example = {
-  config: {
-    accountAccessToken: 'access-token',
-    certificateSigning: '-----BEGIN PRIVATE KEY----------END PRIVATE KEY-----',
-    certificateTransport: '-----BEGIN PRIVATE KEY----------END PRIVATE KEY-----',
-    clientScopes: 'AuthoritiesReadAccess ASPSPReadAccess TPPReadAccess',
-    keyId: 'key-id',
-    privateKeySigning: '-----BEGIN PRIVATE KEY----------END PRIVATE KEY-----',
-    privateKeyTransport: '-----BEGIN PRIVATE KEY----------END PRIVATE KEY-----',
-    softwareStatementId: 'software-statement-id',
-    targetHost: 'https://resourceserver.example.com/',
-  },
-};
 
 export default {
-  main: example.config,
   discoveryTemplates: templates,
-  discoveryModel: JSON.parse(JSON.stringify(defaultTemplate.model)), // JSON parse to make copy of template model
+  discoveryModel: null,
   problems: null,
 
   configuration: {
@@ -49,5 +34,9 @@ export default {
   errors: {
     configuration: [],
     testCases: [],
+  },
+
+  wizard: {
+    step: constants.WIZARD.STEP_ONE,
   },
 };

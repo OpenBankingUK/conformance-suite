@@ -2,9 +2,6 @@ import Vue from 'vue';
 import * as types from './mutation-types';
 
 export default {
-  [types.SET_CONFIG](state, config) {
-    state.main = config;
-  },
   [types.SET_DISCOVERY_MODEL](state, discoveryModel) {
     Vue.set(state, 'discoveryModel', discoveryModel);
   },
@@ -39,5 +36,9 @@ export default {
   },
   [types.SET_TEST_CASES_ERROR](state, errors) {
     state.errors.testCases = errors;
+  },
+
+  [types.SET_WIZARD_STEP](state, step) {
+    state.wizard.step = step;
   },
 };

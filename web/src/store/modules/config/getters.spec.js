@@ -57,10 +57,6 @@ describe('Config', () => {
   });
 
   describe('getters', () => {
-    it('getConfig', () => {
-      expect(getters.getConfig(state)).toEqual(state.main);
-    });
-
     it('discoveryModel', () => {
       expect(getters.discoveryModel(state)).toEqual(state.discoveryModel);
     });

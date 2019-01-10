@@ -1,7 +1,10 @@
 <template>
-  <b-nav-item :to="route">
+  <b-nav-item
+    :to="route"
+    :disabled="isRouteDisabled"
+    exact>
     <b-badge
-      :variant="isActiveRoute(route)"
+      :variant="computeVariant"
       pill>{{ no }}</b-badge>
     <span>&nbsp;</span>
     <span class="label">{{ label }}</span>
@@ -9,36 +12,47 @@
 </template>
 
 <script>
+import { createNamespacedHelpers } from 'vuex';
+
+const { mapGetters } = createNamespacedHelpers('config');
+
 export default {
   name: 'NavBarItem',
-  // inheritAttrs: false,
   props: {
     route: {
       type: String,
       required: true,
-      private: true,
     },
     no: {
       type: Number,
       required: true,
-      private: true,
     },
     label: {
       type: String,
       required: true,
-      private: true,
     },
   },
-  methods: {
-    // see: https://getbootstrap.com/docs/4.0/components/badge/#pill-badges
-    // this method determines what colour badge to display
-    // when it is the active route.
-    isActiveRoute(routeName) {
-      if (this.$route.path === routeName) {
+  computed: {
+    ...mapGetters([
+      'navigation',
+    ]),
+    /**
+     * Determines what colour badge to display when it is the active route.
+     * See: https://getbootstrap.com/docs/4.0/components/badge/#pill-badges
+     */
+    computeVariant() {
+      if (this.$route.path === this.route) {
         return 'success';
       }
 
       return 'primary';
+    },
+    /**
+     * Determines if this route is disabled.
+     */
+    isRouteDisabled() {
+      const disabled = !this.navigation[this.route];
+      return disabled;
     },
   },
 };
@@ -59,5 +73,9 @@ export default {
 
 .nav-link:not(.active) > .label {
   color: #6180c3;
+}
+
+.nav-link.disabled {
+  opacity: 0.35;
 }
 </style>

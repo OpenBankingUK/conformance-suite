@@ -36,7 +36,6 @@ const calculateAnnotationsAndMarkers = (locatableProblems, paths) => {
 };
 
 export default {
-
   // Calls validate endpoint, returns {success, problemsArray}.
   async validateDiscoveryConfig(discoveryModel) {
     const response = await api.post('/api/discovery-model', discoveryModel);

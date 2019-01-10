@@ -1,59 +1,98 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
+import has from 'lodash/has';
+import store from './store/';
+
+import Wizard from './components/Wizard.vue';
+import ContinueOrStart from './components/Wizard/ContinueOrStart.vue';
+import DiscoveryConfig from './components/Wizard/DiscoveryConfig.vue';
+import Configuration from './components/Wizard/Configuration.vue';
+import RunOverview from './components/Wizard/RunOverview.vue';
+import Summary from './components/Wizard/Summary.vue';
+import Export from './components/Wizard/Export.vue';
+import NotFound from './components/NotFound.vue';
 
 Vue.use(VueRouter);
 
 const router = new VueRouter({
+  // Use the HTML5 history API, so that routes look normal
+  // (e.g. `/about`) instead of using a hash (e.g. `/#/about`).
   mode: 'history',
   base: process.env.BASE_URL,
-  // linkExactActiveClass: 'ant-menu-item-selected',
-  // linkActiveClass: 'active', // active class for non-exact links.
-  // linkExactActiveClass: 'active', // active class for *exact* links.
   routes: [
     {
       path: '/',
       name: 'Wizard',
       redirect: '/wizard/continue-or-start',
-      component: () => import(/* webpackChunkName: "wizard" */ './components/Wizard'),
+      component: Wizard,
       children: [
         {
           path: '/wizard/continue-or-start',
           name: 'ContinueOrStart',
-          component: () => import(/* webpackChunkName: "wizard/continue-or-start" */ './components/Wizard/ContinueOrStart'),
+          component: ContinueOrStart,
         },
         {
           path: '/wizard/discovery-config',
           name: 'DiscoveryConfig',
-          component: () => import(/* webpackChunkName: "wizard/discovery-config" */ './components/Wizard/DiscoveryConfig'),
+          component: DiscoveryConfig,
         },
         {
           path: '/wizard/configuration',
           name: 'Configuration',
-          component: () => import(/* webpackChunkName: "wizard/configuration" */ './components/Wizard/Configuration'),
+          component: Configuration,
         },
         {
           path: '/wizard/run-overview',
           name: 'RunOverview',
-          component: () => import(/* webpackChunkName: "wizard/run-overview" */ './components/Wizard/RunOverview'),
+          component: RunOverview,
         },
         {
           path: '/wizard/summary',
           name: 'Summary',
-          component: () => import(/* webpackChunkName: "wizard/summary" */ './components/Wizard/Summary'),
+          component: Summary,
         },
         {
           path: '/wizard/export',
           name: 'Export',
-          component: () => import(/* webpackChunkName: "wizard/export" */ './components/Wizard/Export'),
+          component: Export,
         },
       ],
     },
+    // ---
+    // Handle 404s
+    // ---
+    {
+      path: '/404',
+      name: '404',
+      component: NotFound,
+    },
     {
       path: '*',
-      name: 'NotFound',
-      component: () => import(/* webpackChunkName: "not-found" */ './components/NotFound'),
+      redirect: '404',
     },
   ],
+});
+
+/**
+ * Prevent access to a route if the previous step has not been completed.
+ * Example: If an attempt to go to the `/wizard/run-overview` route is made whilst the current, `step`,
+ * is `1` we redirect to landing page (`/`). This tends to happen when the User refreshes the page.
+ */
+router.beforeEach((to, from, next) => {
+  const { path } = to;
+  const navigation = store.getters['config/navigation'];
+
+  // If it is not a wizard-related path (e.g., `/404`), ignore it.
+  if (!has(navigation, path)) {
+    return next();
+  }
+
+  const viewable = navigation[path];
+  if (viewable) {
+    return next();
+  }
+
+  return next('/');
 });
 
 export default router;

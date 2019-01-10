@@ -1,6 +1,6 @@
 .DEFAULT_GOAL:=help
 SHELL:=/bin/bash
-GO_PKGS:=$(shell go list ./...)
+GO_PKGS=$(shell go list ./...)
 GO_PKGS_FOLDERS=$(shell go list -f '{{.Dir}}/' ./...)
 
 .PHONY: all
@@ -13,11 +13,15 @@ help: ## Displays this help.
 ##@ Building & Running:
 
 .PHONY: run
+run: WEB_LOG_FILE:=$(shell pwd)/web/web.log
 run: init_web ## run binary directly without docker.
-	@echo -e "\033[92m  ---> Starting web file watcher ... \033[0m"
-	cd web && FORCE_COLOR=1 NODE_DISABLE_COLORS=0 yarn build-watch &> $(shell pwd)/web/web.log &
-	@echo -e "\033[92m  ---> Starting server ... \033[0m"
-	PORT=8080 go run cmd/server/main.go
+	@if [[ -f "${WEB_LOG_FILE}" ]]; then rm "${WEB_LOG_FILE}"; fi
+	@./scripts/run_web.sh &> "${WEB_LOG_FILE}" &
+	@./scripts/run_server.sh
+
+.PHONY: run_parallel
+run_parallel: init_web ## run binary directly with logging without docker
+	parallel -j2 --linebuffer --verbose --tag ::: ./scripts/run_web.sh ./scripts/run_server.sh
 
 .PHONY: run_image
 run_image: ## run the 'latest' docker image.
@@ -91,7 +95,7 @@ cyclomatic: ## cyclomatic complexity checks.
 	gocyclo -over 12 ${GO_PKGS_FOLDERS}
 
 .PHONY: cyclomatic
-metalinter: ## other qa tools (linter). 
+metalinter: ## other qa tools (linter).
 	@echo -e "\033[92m  ---> Checking other qa tools ... \033[0m"
 	gometalinter --disable-all --enable=structcheck --enable=megacheck --enable=misspell -enable=vetshadow --enable=goconst --enable=nakedret --enable=deadcode --enable=unparam --deadline=30s --line-length=1747 --enable=lll ${GO_PKGS_FOLDERS}
 
