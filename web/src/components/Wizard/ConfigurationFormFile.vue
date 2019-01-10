@@ -20,7 +20,7 @@
 import { mapGetters, mapActions } from 'vuex';
 
 export default {
-  name: 'Configuration',
+  name: 'ConfigurationFormFile',
   props: {
     id: {
       type: String,
