@@ -11,10 +11,11 @@
               <b-tab
                 title="Form"
                 active>
-                <ConfigurationForm/>
+                <ConfigurationForm />
               </b-tab>
-              <b-tab title="JSON" >
-                <div class="p-3">placeholder</div>
+              <b-tab
+                title="JSON" >
+                <ConfigurationJsonEditor />
               </b-tab>
             </b-tabs>
             <div v-if="configurationErrors.length > 0">
@@ -39,12 +40,14 @@ import * as _ from 'lodash';
 import { mapGetters, mapActions } from 'vuex';
 
 import ConfigurationForm from './ConfigurationForm.vue';
+import ConfigurationJsonEditor from './ConfigurationJsonEditor.vue';
 import WizardFooter from './WizardFooter.vue';
 
 export default {
   name: 'ConfigurationTabs',
   components: {
     ConfigurationForm,
+    ConfigurationJsonEditor,
     WizardFooter,
   },
   computed: {
