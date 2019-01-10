@@ -2,6 +2,7 @@ package server
 
 import (
 	"context"
+	"errors"
 	"net/http"
 	"strings"
 	"time"
@@ -104,7 +105,7 @@ func NewServer(
 	// serve WebSocket
 	api.GET("/ws", wsHandler.Handle)
 
-	configHandlers := &configHandlers{server}
+	configHandlers := &configHandlers{server, webJourney}
 	// endpoints to post a config and setup the proxy server
 	api.POST("/config", configHandlers.configPostHandler)
 	api.DELETE("/config", configHandlers.configDeleteHandler)
@@ -137,7 +138,7 @@ func (s *Server) logRoutes() {
 // Shutdown the server and the proxy if it is alive
 func (s *Server) Shutdown(ctx context.Context) error {
 	if s.proxy != nil {
-		if err := s.proxy.Shutdown(nil); err != nil {
+		if err := s.proxy.Shutdown(context.TODO()); err != nil {
 			s.logger.Errorln("Server:Shutdown -> s.proxy.Shutdown err=", err)
 			return err
 		}
@@ -145,6 +146,7 @@ func (s *Server) Shutdown(ctx context.Context) error {
 
 	if s.Echo == nil {
 		s.logger.Errorf("Server:Shutdown -> s.Echo=%p\n", s.Echo)
+		return errors.New(`e.Echo == nil in Server:Shutdown`)
 	}
 
 	if err := s.Echo.Shutdown(ctx); err != nil {
