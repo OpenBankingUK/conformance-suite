@@ -71,15 +71,20 @@ describe('validateDiscoveryConfig', () => {
     property: 'discoveryModel',
     successMutation: types.SET_DISCOVERY_MODEL,
     errorMutation: types.DISCOVERY_MODEL_PROBLEMS,
+    expectedErrors: [{
+      error: 'Unexpected end of JSON input',
+      key: null,
+    }],
   },
   {
     action: 'setConfigurationJSON',
     property: 'configuration',
     successMutation: types.SET_CONFIGURATION,
-    errorMutation: types.CONFIGURATION_PROBLEMS,
+    errorMutation: types.SET_CONFIGURATION_ERRORS,
+    expectedErrors: ['Unexpected end of JSON input'],
   },
 ].forEach(({
-  action, property, successMutation, errorMutation,
+  action, property, successMutation, errorMutation, expectedErrors,
 }) => {
   describe(action, () => {
     const state = {
@@ -100,10 +105,7 @@ describe('validateDiscoveryConfig', () => {
     describe('with invalid JSON string', () => {
       it('commits problems', () => {
         actions[action]({ commit, state }, '{');
-        expect(commit).toHaveBeenCalledWith(errorMutation, [{
-          error: 'Unexpected end of JSON input',
-          key: null,
-        }]);
+        expect(commit).toHaveBeenCalledWith(errorMutation, expectedErrors);
       });
 
       it('does not commit value', () => {

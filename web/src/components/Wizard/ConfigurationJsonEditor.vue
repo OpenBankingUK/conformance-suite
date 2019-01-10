@@ -3,7 +3,7 @@
     <JsonEditor
       :jsonString="configurationJsonString"
       editorName="configuration-editor"
-      setChangeFunctionName=""
+      setChangeFunctionName="config/setConfigurationJSON"
     />
   </div>
 </template>

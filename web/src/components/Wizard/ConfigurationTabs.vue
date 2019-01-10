@@ -20,7 +20,7 @@
                 <ConfigurationJsonEditor v-if="tabIndex == 1"/>
               </b-tab>
             </b-tabs>
-            <div v-if="configurationErrors.length > 0">
+            <div v-if="configurationErrors && configurationErrors.length > 0">
               <h2 class="pt-3 pb-2 mb-3">Errors</h2>
               <b-alert
                 v-for="(err, index) in configurationErrors"

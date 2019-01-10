@@ -8,8 +8,7 @@ import api from '../../../api';
 export default {
   setDiscoveryModel({ commit, state }, editorString) {
     const value = JSON.stringify(state.discoveryModel);
-    const other = editorString;
-    if (_.isEqual(value, other)) {
+    if (_.isEqual(value, editorString)) {
       return;
     }
 
@@ -56,22 +55,17 @@ export default {
   },
   setConfigurationJSON({ commit, state }, editorString) {
     const value = JSON.stringify(state.configuration);
-    const other = editorString;
-    if (_.isEqual(value, other)) {
+    if (_.isEqual(value, editorString)) {
       return;
     }
 
     try {
       const config = JSON.parse(editorString);
       commit(types.SET_CONFIGURATION, config);
-      commit(types.CONFIGURATION_PROBLEMS, null);
+      commit(types.SET_CONFIGURATION_ERRORS, null);
       commit(types.SET_WIZARD_STEP, constants.WIZARD.STEP_THREE);
     } catch (e) {
-      const problems = [{
-        key: null,
-        error: e.message,
-      }];
-      commit(types.CONFIGURATION_PROBLEMS, problems);
+      commit(types.SET_CONFIGURATION_ERRORS, [e.message]);
       commit(types.SET_WIZARD_STEP, constants.WIZARD.STEP_TWO);
     }
   },

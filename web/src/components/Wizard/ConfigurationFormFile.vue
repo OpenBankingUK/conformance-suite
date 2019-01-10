@@ -117,7 +117,7 @@ export default {
           const data = await this.readFile(file);
           this.$store.dispatch(setConfigurationMethodName, data);
         } catch (err) {
-          this.setConfigurationErrors([err]);
+          this.setConfigurationErrors([err.message]);
         }
       } else {
         // If no file selected assume they want to clear out the previous file.
