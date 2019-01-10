@@ -20,7 +20,7 @@ import (
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
 	"github.com/sirupsen/logrus"
-	"gopkg.in/go-playground/validator.v9"
+	validator "gopkg.in/go-playground/validator.v9"
 )
 
 // GlobalConfiguration holds:
@@ -49,8 +49,8 @@ func (cv *CustomValidator) Validate(i interface{}) error {
 // Server wraps *echo.Echo and stores the proxy once configured.
 type Server struct {
 	*echo.Echo // Wrap (using composition) *echo.Echo, allows us to pretend Server is echo.Echo.
-	proxy  *http.Server
-	logger *logrus.Entry
+	proxy      *http.Server
+	logger     *logrus.Entry
 }
 
 // NewServer returns new echo.Echo server.
@@ -119,6 +119,10 @@ func NewServer(
 	// endpoints for test cases
 	testCaseHandlers := newTestCaseHandlers(webJourney)
 	api.GET("/test-cases", testCaseHandlers.testCasesHandler)
+
+	// endpoints for initiating a test run
+	runHandlers := &runHandlers{webJourney}
+	api.POST("/run/start", runHandlers.runStartPostHandler)
 
 	// endpoints for reporting
 	reportingEndpoints := newReportingEndpoints(webJourney)
