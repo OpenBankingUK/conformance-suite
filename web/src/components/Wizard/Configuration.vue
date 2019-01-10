@@ -14,7 +14,7 @@
               -->
               <ConfigurationFormFile
                 id="signing_private"
-                field="SigningPrivate"
+                setterMethodNameSuffix="SigningPrivate"
                 label="Private Signing Certificate (.key):"
               />
               <!--
@@ -23,7 +23,7 @@
               -->
               <ConfigurationFormFile
                 id="signing_public"
-                field="SigningPublic"
+                setterMethodNameSuffix="SigningPublic"
                 label="Public Signing Certificate (.pem):"
               />
               <!--
@@ -32,7 +32,7 @@
               -->
               <ConfigurationFormFile
                 id="transport_private"
-                field="TransportPrivate"
+                setterMethodNameSuffix="TransportPrivate"
                 label="Private Transport Certificate (.key):"
               />
               <!--
@@ -41,7 +41,7 @@
               -->
               <ConfigurationFormFile
                 id="transport_public"
-                field="TransportPublic"
+                setterMethodNameSuffix="TransportPublic"
                 label="Public Transport Certificate (.pem):"
               />
             </b-form>

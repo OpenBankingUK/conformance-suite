@@ -11,7 +11,7 @@
       :state="isValid"
       :placeholder="placeholder"
       capture
-      @input="(file) => { onFileChanged(file, field) }"
+      @input="(file) => { onFileChanged(file) }"
     />
   </b-form-group>
 </template>
@@ -25,17 +25,14 @@ export default {
     id: {
       type: String,
       required: true,
-      default: null,
     },
-    field: {
+    setterMethodNameSuffix: {
       type: String,
       required: true,
-      default: null,
     },
     label: {
       type: String,
       required: true,
-      default: null,
     },
     placeholder: {
       type: String,
@@ -105,14 +102,14 @@ export default {
      * When a file is selected, read its content and set the value in the store.
      * See: https://stackoverflow.com/questions/45179061/file-input-on-change-in-vue-js
      */
-    async onFileChanged(file, setterMethodNameSuffix) {
+    async onFileChanged(file) {
       // Clear previous error.
       this.setConfigurationErrors([]);
 
       // Compute the method name we need to call in the Vuex store, e.g., could be one of the below:
       // * config/setConfigurationSigningPrivate
       // * config/setConfigurationSigningPublic
-      const setConfigurationMethodName = `config/setConfiguration${setterMethodNameSuffix}`;
+      const setConfigurationMethodName = `config/setConfiguration${this.setterMethodNameSuffix}`;
 
       if (file) {
         // If file is set, read the file then set the value in the store.
