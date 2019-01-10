@@ -18,7 +18,7 @@ type Manifest struct {
 	Context     string    `json:"@context"`         // JSONLD contest reference
 	ID          string    `json:"@id"`              // JSONLD ID reference
 	Type        string    `json:"@type"`            // JSONLD Type reference
-	Name        string    `json:"name"`             // Name of the manifiest
+	Name        string    `json:"name"`             // Name of the manifest
 	Description string    `json:"description"`      // Description of the Manifest and what it contains
 	BaseIri     string    `json:"baseIri"`          // Base Iri
 	Sections    []Context `json:"section_contexts"` // Section specific contexts
@@ -100,7 +100,7 @@ func (t *TestCase) Prepare(ctx *Context) (*resty.Request, error) {
 //         false - validation unsuccessful
 //         error - adds detail to validation failure
 //         TODO - cater for returning multiple validation failures and explanations
-//         NOTE: Vadiate will only return false if a check fails - no checks = true
+//         NOTE: Validate will only return false if a check fails - no checks = true
 func (t *TestCase) Validate(resp *resty.Response, rulectx *Context) (bool, error) {
 	if rulectx == nil {
 		return false, t.AppErr("error Valdate:rulectx == nil")
@@ -122,7 +122,7 @@ func (t *TestCase) Validate(resp *resty.Response, rulectx *Context) (bool, error
 // Context is intended to handle two types of object and make them available to various parts of the suite including
 // testcases. The first set are objects created as a result of the discovery phase, which capture discovery model
 // information like endpoints and conditional implementation indicators. The other set of data is information passed
-// between a sequeuence of test cases, for example AccountId - extracted from the output of one testcase (/Accounts) and fed in
+// between a sequence of test cases, for example AccountId - extracted from the output of one testcase (/Accounts) and fed in
 // as part of the input of another testcase for example (/Accounts/{AccountId}/transactions}
 type Context map[string]interface{}
 
@@ -165,8 +165,8 @@ func (t *TestCase) ApplyInput(rulectx *Context) (*resty.Request, error) {
 }
 
 // ApplyContext - at the end of ApplyInputs on the testcase - we have an initial http request object
-// ApplyContext, applys context parameters to the http object.
-// Context parameter typically involve variables that originaled in discovery
+// ApplyContext, applies context parameters to the http object.
+// Context parameter typically involve variables that originated in discovery
 // The functionality of ApplyContext will grow significantly over time.
 func (t *TestCase) ApplyContext(rulectx *Context) error {
 	t.AppEntry("ApplyContext entry")
@@ -236,7 +236,6 @@ func (c Context) Put(key string, value interface{}) {
 
 // GetIncludedPermission returns the list of permission names that need to be included
 // in the access token for this testcase. See permission model docs for more information
-//
 func (t *TestCase) GetIncludedPermission() []string {
 	var result []string
 	if t.Context["permissions"] != nil {
@@ -254,12 +253,12 @@ func (t *TestCase) GetIncludedPermission() []string {
 		if len(perms) > 1 { // need to figure out default
 			for _, p := range perms { // find default permission
 				if p.Default == true {
-					return []string{p.Permission}
+					return []string{string(p.Code)}
 				}
 			}
 		} else {
 			if len(perms) > 0 { // only one permission so return that
-				return []string{perms[0].Permission}
+				return []string{string(perms[0].Code)}
 			}
 		}
 		return []string{} // no defaults - no permissions
@@ -288,7 +287,7 @@ func (t *TestCase) GetExcludedPermissions() []string {
 	return result
 }
 
-// GetPermissions returns a list of Permission objects associated with a testcase
+// GetPermissions returns a list of Code objects associated with a testcase
 func (t *TestCase) GetPermissions() (included, excluded []string) {
 	included = t.GetIncludedPermission()
 	excluded = t.GetExcludedPermissions()
@@ -332,7 +331,7 @@ func (r *Rule) String() string {
 
 // GetPermissionSets returns the inclusive and exclusive permission sets required
 // to run the tests under this rule.
-// Initially the granulatiy of permissionSets will be set at rule level, meaning that one
+// Initially the granularity of permissionSets will be set at rule level, meaning that one
 // included set and one excluded set will cover all the testcases with a rule.
 // In future iterations it may be desirable to have per testSequence permissionSets as this
 // would allow a finer grained mix of negative permission testing
@@ -352,10 +351,10 @@ func (r *Rule) GetPermissionSets() (included, excluded []string) {
 
 // Execute the testcase
 // For the rule this effectively equates to sending the assembled http request from
-// the testcase to an endpoint (typically ASPSP implemetation) and getting an http.Response
+// the testcase to an endpoint (typically ASPSP implementation) and getting an http.Response
 // The http.Request at this point will contain the fully assembled request from a testcase point of view
 // - testcase will have likely pulled out appropriate access_tokens/permissions
-// - rule will have the opportunited to further decorate this request before passing on
+// - rule will have the opportunity to further decorate this request before passing on
 func (r *Rule) Execute(req *resty.Request, tc *TestCase) (*resty.Response, error) {
 	return r.Executor.ExecuteTestCase(req, tc, &Context{})
 }

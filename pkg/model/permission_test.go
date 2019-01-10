@@ -3,7 +3,9 @@ package model
 import (
 	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/test"
 	"encoding/json"
+	"github.com/stretchr/testify/require"
 	"io/ioutil"
+	"path/filepath"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -21,14 +23,6 @@ func TestPermissionListReturned(t *testing.T) {
 	list := GetPermissionsForEndpoint("/accounts/{AccountId}/transactions")
 	count := len(list)
 	assert.Equal(t, 4, count) // get 4 permissions return that refer to /accounts/{AccountId}/transactions
-}
-
-// For a specified permission name, get the permission object to which it refers
-func TestSpecifiedPermissionName(t *testing.T) {
-	perm := GetPermissionFromName("ReadTransactionsDetail")
-	assert.Equal(t, "ReadTransactionsDetail", perm.Permission)
-	perm = GetPermissionFromName("SugarCoatedApple")
-	assert.Equal(t, len(perm.Endpoints), 0)
 }
 
 // feature/refapp_466_add_permissions_to_testcase
@@ -220,6 +214,23 @@ func loadPermissionTestData() (Manifest, error) {
 		return Manifest{}, err
 	}
 	return m, nil
+}
+
+func TestPermissionsHaveNotChanged(t *testing.T) {
+	expected, err := json.MarshalIndent(permissions, "", "    ")
+	require.NoError(t, err)
+
+	goldenFile := filepath.Join("testdata", "permissions.golden")
+	if *update {
+		t.Log("update golden file")
+		err := ioutil.WriteFile(goldenFile, expected, 0644)
+		require.NoError(t, err, "failed to update golden file")
+	}
+
+	perms, err := ioutil.ReadFile(goldenFile)
+	require.NoError(t, err, "failed reading .golden")
+
+	assert.JSONEq(t, string(expected), string(perms))
 }
 
 // Permissionset Test cases

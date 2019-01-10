@@ -29,7 +29,7 @@ func TestSpecificationIdentifierFromSchemaVersion(t *testing.T) {
 	})
 }
 
-func TestOzoneSpecificationHasNotChanged(t *testing.T) {
+func TestSpecificationHasNotChanged(t *testing.T) {
 	expected, err := json.MarshalIndent(specifications, "", "    ")
 	require.NoError(t, err)
 

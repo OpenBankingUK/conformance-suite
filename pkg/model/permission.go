@@ -1,30 +1,15 @@
 package model
 
-import (
-	"encoding/json"
-	"os"
-
-	"github.com/sirupsen/logrus"
-)
+// Code is a string representing a OB access permission
+type Code string
 
 // Permission holds endpoint permission data
 type Permission struct {
-	Permission          string   `json:"permission,omitempty"`
-	Endpoints           []string `json:"endpoints,omitempty"`
-	Default             bool     `json:"default,omitempty"`
-	RequiredPermissions []string `json:"required_permissions,omitempty"`
-	Optional            []string `json:"optional,omitempty"`
-}
-
-// EndpointConditionality - Store of endpoint conditionality
-var permissions []Permission
-
-func init() {
-	err := loadPermissions()
-	if err != nil {
-		logrus.Error(err)
-		os.Exit(1) // Abort if we can't read the config
-	}
+	Code              Code
+	Endpoints         []string
+	Default           bool
+	RequiredOneOrMore []Code
+	Optional          []Code
 }
 
 // GetPermissionsForEndpoint returns a list of permissions that are accepted by the specified endpoint
@@ -41,25 +26,6 @@ func GetPermissionsForEndpoint(endpoint string) []Permission {
 		}
 	}
 	return endpointPermissions
-}
-
-// GetPermissionFromName returns a permission if a matching permission name is found
-// or and empty permission if an entry with a matching name is not found
-func GetPermissionFromName(name string) Permission {
-	for _, p := range permissions {
-		if name == p.Permission {
-			return p
-		}
-	}
-	return Permission{}
-}
-
-// loads permission data into modal permissions array structure
-func loadPermissions() error {
-	if err := json.Unmarshal(permissionStaticData, &permissions); err != nil {
-		return err
-	}
-	return nil
 }
 
 // Permission Set Handling
