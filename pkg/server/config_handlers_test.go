@@ -1,6 +1,7 @@
 package server
 
 import (
+	"context"
 	"encoding/json"
 	"io/ioutil"
 	"net/http"
@@ -12,17 +13,16 @@ import (
 	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/test"
 
 	"github.com/labstack/echo"
-	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
 // /api/config - POST - can POST config
 func TestServerConfigPOSTCreatesProxy(t *testing.T) {
-	assert := assert.New(t)
+	require := require.New(t)
 
 	server := NewServer(nullLogger(), conditionalityCheckerMock{})
 	defer func() {
-		require.NoError(t, server.Shutdown(nil))
+		require.NoError(server.Shutdown(context.TODO()))
 	}()
 
 	mockedServer, serverURL := test.HTTPServer(http.StatusBadRequest, "body", nil)
@@ -31,8 +31,8 @@ func TestServerConfigPOSTCreatesProxy(t *testing.T) {
 	// assert server isn't started before call
 	frontendProxy, _ := url.Parse("http://0.0.0.0:8989/open-banking/v2.0/accounts")
 	_, err := http.Get(frontendProxy.String())
-	assert.Error(err)
-	assert.Nil(server.proxy)
+	require.Error(err)
+	require.Nil(server.proxy)
 
 	// create the request to post the config
 	// this should start the proxy
@@ -44,35 +44,35 @@ func TestServerConfigPOSTCreatesProxy(t *testing.T) {
 	// do the request
 	server.ServeHTTP(rec, req)
 
-	assert.NotNil(rec.Body)
-	assert.JSONEq(appConfig, rec.Body.String())
-	assert.Equal(http.StatusOK, rec.Code)
+	require.NotNil(rec.Body)
+	require.JSONEq(appConfig, rec.Body.String())
+	require.Equal(http.StatusOK, rec.Code)
 
 	// check the proxy is up now, we should hit the forgerock server
 	resp, err := http.Get(frontendProxy.String())
-	assert.NoError(err)
+	require.NoError(err)
 	body, err := ioutil.ReadAll(resp.Body)
-	assert.NoError(err)
-	assert.Equal(http.StatusBadRequest, resp.StatusCode)
-	assert.Equal("body", string(body))
-	assert.NotNil(server.proxy)
+	require.NoError(err)
+	require.Equal(http.StatusBadRequest, resp.StatusCode)
+	require.Equal("body", string(body))
+	require.NotNil(server.proxy)
 
 	mockedServer.Close()
 }
 
 // /api/config - POST - cannot POST config twice without first deleting it
 func TestServerConfigPOSTCannotPOSTConfigTwiceWithoutFirstDeletingIt(t *testing.T) {
-	assert := assert.New(t)
+	require := require.New(t)
 
 	server := NewServer(nullLogger(), conditionalityCheckerMock{})
 	defer func() {
-		require.NoError(t, server.Shutdown(nil))
+		require.NoError(server.Shutdown(context.TODO()))
 	}()
 
 	// assert server isn't started before call
 	frontendProxy, _ := url.Parse("http://0.0.0.0:8989/open-banking/v2.0/accounts")
 	_, err := http.Get(frontendProxy.String())
-	assert.Error(err)
+	require.Error(err)
 
 	// create the request to post the config
 	// this should start the proxy
@@ -83,9 +83,9 @@ func TestServerConfigPOSTCannotPOSTConfigTwiceWithoutFirstDeletingIt(t *testing.
 	// do the request
 	server.ServeHTTP(rec, req)
 
-	assert.NotNil(rec.Body)
-	assert.JSONEq(appConfigJSON, rec.Body.String())
-	assert.Equal(http.StatusOK, rec.Code)
+	require.NotNil(rec.Body)
+	require.JSONEq(appConfigJSON, rec.Body.String())
+	require.Equal(http.StatusOK, rec.Code)
 
 	// create another request to POST the config again
 	// this should fail because a DELETE need to happen first.
@@ -95,27 +95,27 @@ func TestServerConfigPOSTCannotPOSTConfigTwiceWithoutFirstDeletingIt(t *testing.
 	// do the request
 	server.ServeHTTP(rec, req)
 
-	assert.NotNil(rec.Body)
-	assert.JSONEq(
+	require.NotNil(rec.Body)
+	require.JSONEq(
 		`{"error":"listen tcp :8989: bind: address already in use"}`,
 		rec.Body.String(),
 	)
-	assert.Equal(http.StatusBadRequest, rec.Code)
+	require.Equal(http.StatusBadRequest, rec.Code)
 }
 
 // /api/config - DELETE - DELETE stops the proxy
 func TestServerConfigDELETEStopsTheProxy(t *testing.T) {
-	assert := assert.New(t)
+	require := require.New(t)
 
 	server := NewServer(nullLogger(), conditionalityCheckerMock{})
 	defer func() {
-		require.NoError(t, server.Shutdown(nil))
+		require.NoError(server.Shutdown(context.TODO()))
 	}()
 
 	// assert server isn't started before call
 	frontendProxy, _ := url.Parse("http://0.0.0.0:8989/open-banking/v2.0/accounts")
 	_, err := http.Get(frontendProxy.String())
-	assert.Error(err)
+	require.Error(err)
 
 	// create the request to post the config
 	// this should start the proxy
@@ -126,9 +126,9 @@ func TestServerConfigDELETEStopsTheProxy(t *testing.T) {
 	// do the request
 	server.ServeHTTP(rec, req)
 
-	assert.NotNil(rec.Body)
-	assert.JSONEq(appConfigJSON, rec.Body.String())
-	assert.Equal(http.StatusOK, rec.Code)
+	require.NotNil(rec.Body)
+	require.JSONEq(appConfigJSON, rec.Body.String())
+	require.Equal(http.StatusOK, rec.Code)
 
 	// create request to delete config
 	req = httptest.NewRequest(http.MethodDelete, "/api/config", nil)
@@ -137,21 +137,21 @@ func TestServerConfigDELETEStopsTheProxy(t *testing.T) {
 	// do the request
 	server.ServeHTTP(rec, req)
 
-	assert.NotNil(rec.Body)
-	assert.Equal(
+	require.NotNil(rec.Body)
+	require.Equal(
 		"",
 		rec.Body.String(),
 	)
-	assert.Equal(http.StatusOK, rec.Code)
+	require.Equal(http.StatusOK, rec.Code)
 
 	// call proxy and assert it is no longer up
 	// check the proxy is up now, we should hit the forgerock server
 	resp, err := http.Get(frontendProxy.String())
-	assert.Equal(
+	require.Equal(
 		`Get http://0.0.0.0:8989/open-banking/v2.0/accounts: dial tcp 0.0.0.0:8989: connect: connection refused`,
 		err.Error(),
 	)
-	assert.Nil(resp)
+	require.Nil(resp)
 }
 
 // TestServerConfigGlobalPostValid - tests /api/config/global
@@ -160,7 +160,7 @@ func TestServerConfigGlobalPostValid(t *testing.T) {
 
 	server := NewServer(nullLogger(), conditionalityCheckerMock{})
 	defer func() {
-		require.NoError(server.Shutdown(nil))
+		require.NoError(server.Shutdown(context.TODO()))
 	}()
 	require.NotNil(server)
 
@@ -241,7 +241,7 @@ func TestServerConfigGlobalPostInvalidSigning(t *testing.T) {
 
 	server := NewServer(nullLogger(), conditionalityCheckerMock{})
 	defer func() {
-		require.NoError(server.Shutdown(nil))
+		require.NoError(server.Shutdown(context.TODO()))
 	}()
 	require.NotNil(server)
 
@@ -307,7 +307,7 @@ func TestServerConfigGlobalPostInvalidTransport(t *testing.T) {
 
 	server := NewServer(nullLogger(), conditionalityCheckerMock{})
 	defer func() {
-		require.NoError(server.Shutdown(nil))
+		require.NoError(server.Shutdown(context.TODO()))
 	}()
 	require.NotNil(server)
 
