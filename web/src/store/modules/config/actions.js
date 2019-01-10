@@ -54,7 +54,27 @@ export default {
     }
     return null;
   },
+  setConfigurationJSON({ commit, state }, editorString) {
+    const value = JSON.stringify(state.configuration);
+    const other = editorString;
+    if (_.isEqual(value, other)) {
+      return;
+    }
 
+    try {
+      const config = JSON.parse(editorString);
+      commit(types.SET_CONFIGURATION, config);
+      commit(types.CONFIGURATION_PROBLEMS, null);
+      commit(types.SET_WIZARD_STEP, constants.WIZARD.STEP_THREE);
+    } catch (e) {
+      const problems = [{
+        key: null,
+        error: e.message,
+      }];
+      commit(types.CONFIGURATION_PROBLEMS, problems);
+      commit(types.SET_WIZARD_STEP, constants.WIZARD.STEP_TWO);
+    }
+  },
   setConfigurationSigningPrivate({ commit, state }, signingPrivate) {
     if (_.isEqual(state.configuration.signing_private, signingPrivate)) {
       return;

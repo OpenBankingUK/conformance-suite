@@ -69,43 +69,58 @@ describe('validateDiscoveryConfig', () => {
   {
     action: 'setDiscoveryModel',
     property: 'discoveryModel',
-    successMutation: 'SET_DISCOVERY_MODEL',
-    errorMutation: 'DISCOVERY_MODEL_PROBLEMS',
+    successMutation: types.SET_DISCOVERY_MODEL,
+    errorMutation: types.DISCOVERY_MODEL_PROBLEMS,
   },
-].forEach((scenario) => {
-  describe(scenario.action, () => {
+  {
+    action: 'setConfigurationJSON',
+    property: 'configuration',
+    successMutation: types.SET_CONFIGURATION,
+    errorMutation: types.CONFIGURATION_PROBLEMS,
+  },
+].forEach(({
+  action, property, successMutation, errorMutation,
+}) => {
+  describe(action, () => {
     const state = {
-      [scenario.property]: {},
+      [property]: {},
     };
     let commit;
     beforeEach(() => {
       commit = jest.fn();
     });
 
+    describe('with JSON string equal to current state', () => {
+      it('does not commit value', () => {
+        actions[action]({ commit, state }, '{}');
+        expect(commit).not.toHaveBeenCalledWith(successMutation, '{}');
+      });
+    });
+
     describe('with invalid JSON string', () => {
       it('commits problems', () => {
-        actions[scenario.action]({ commit, state }, '{');
-        expect(commit).toHaveBeenCalledWith(scenario.errorMutation, [{
+        actions[action]({ commit, state }, '{');
+        expect(commit).toHaveBeenCalledWith(errorMutation, [{
           error: 'Unexpected end of JSON input',
           key: null,
         }]);
       });
 
       it('does not commit value', () => {
-        actions[scenario.action]({ commit, state }, '{');
-        expect(commit).not.toHaveBeenCalledWith(scenario.successMutation, '{');
+        actions[action]({ commit, state }, '{');
+        expect(commit).not.toHaveBeenCalledWith(successMutation, '{');
       });
     });
 
     describe('with valid JSON string', () => {
       it('commits parsed JSON', () => {
-        actions[scenario.action]({ commit, state }, '{"a": 1}');
-        expect(commit).toHaveBeenCalledWith(scenario.successMutation, { a: 1 });
+        actions[action]({ commit, state }, '{"a": 1}');
+        expect(commit).toHaveBeenCalledWith(successMutation, { a: 1 });
       });
 
       it('commits null problems', () => {
-        actions[scenario.action]({ commit, state }, '{"a": 1}');
-        expect(commit).toHaveBeenCalledWith(scenario.errorMutation, null);
+        actions[action]({ commit, state }, '{"a": 1}');
+        expect(commit).toHaveBeenCalledWith(errorMutation, null);
       });
     });
   });
