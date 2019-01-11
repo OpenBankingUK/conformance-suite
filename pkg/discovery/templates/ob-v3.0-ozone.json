@@ -104,16 +104,10 @@
               "content-type": "application/json",
               "accept": "*/*",
               "x-fapi-interaction-id": "$interaction_id",
-              "x-fapi-financial-id": "$financial_id"
+              "x-fapi-financial-id": "$financial_id",
+              "authorisation": "bearer $access_token"
             },
-            "bodyData": "$permission_payload",
-            "contextGet": {
-              "matches": [{
-                "name": "access_token",
-                "description": "retrieves access_token from context - uses as bearer token",
-                "authorisation": "bearer"
-              }]
-            }
+            "bodyData": "$permission_payload"
           },
           "context": {
             "baseurl": "$resource_server"
@@ -150,12 +144,6 @@
               "redirect_url": "$redirect_url",
               "consentId": "$consent_id",
               "responseType": "code"
-            },
-            "contextGet": {
-              "matches": [{
-                "name": "consent_id",
-                "description": "gets the consentid from PostAccountRequest"
-              }]
             }
           },
           "context": {
