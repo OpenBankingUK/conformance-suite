@@ -142,10 +142,29 @@ export default {
       const testCases = await api.computeTestCases();
       commit(types.SET_TEST_CASES, testCases);
       commit(types.SET_TEST_CASES_ERROR, []);
+      commit(types.SET_WIZARD_STEP, constants.WIZARD.STEP_FIVE);
     } catch (err) {
       commit(types.SET_TEST_CASES, []);
       commit(types.SET_TEST_CASES_ERROR, [err]);
       commit(types.SET_WIZARD_STEP, constants.WIZARD.STEP_FOUR);
+    }
+  },
+  /**
+   * Calls /api/report to get all the test cases, then sets the
+   * retrieved test cases in the store.
+   */
+  async computeTestCaseResults({ commit }) {
+    try {
+      const testCaseResults = await api.computeTestCaseResults();
+      commit(types.SET_TEST_CASE_RESULTS, testCaseResults);
+      commit(types.SET_TEST_CASE_RESULTS_ERROR, []);
+      commit(types.SET_WIZARD_STEP, constants.WIZARD.STEP_SIX);
+    } catch (err) {
+      commit(types.SET_TEST_CASE_RESULTS, {});
+      commit(types.SET_TEST_CASE_RESULTS_ERROR, [
+        err,
+      ]);
+      commit(types.SET_WIZARD_STEP, constants.WIZARD.STEP_FIVE);
     }
   },
 };
