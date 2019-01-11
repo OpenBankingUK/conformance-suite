@@ -1,7 +1,6 @@
 package generation_test
 
 import (
-	"fmt"
 	"io/ioutil"
 	"testing"
 
@@ -49,7 +48,6 @@ func TestGenerateSpecificationTestCases(t *testing.T) {
 			if specificationCases.Specification.Name == "CustomTest-GetOzoneToken" {
 				continue
 			}
-			fmt.Printf("%d len\n", len(specificationCases.TestCases))
 			assert.Len(t, specificationCases.TestCases, expectedCount[i])
 		}
 	})

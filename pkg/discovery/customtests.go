@@ -4,12 +4,11 @@ import (
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
 )
 
-// CustomTestJSONReader used to read and make sense of the custom test json
-type CustomTestJSONReader struct {
+// CustomTest used to read and make sense of the custom test json
+type CustomTest struct {
 	ID           string            `json:"@id,omitempty"`                   // JSONLD ID Reference
 	Name         string            `json:"name,omitempty"`                  // Name
 	Description  string            `json:"description,omitempty"`           // Purpose of the testcase in simple words
-	Order        string            `json:"order,omitempty"`                 // beforeRun,afterRun,beforeRule, "afterRule", "afterRun", "beforeTest", "afterTest"]
 	Replacements map[string]string `json:"replacementParameters,omitempty"` // replacement parameters
 	Sequence     []model.TestCase  `json:"testSequence,omitempty"`          // TestCase to be run as part of this custom test
 }
@@ -28,7 +27,7 @@ func generateSpecificationTestCases(model *ModelDiscovery) []SpecificationTestCa
 	return results
 }
 
-func getCustomTestCases(discoReader *CustomTestJSONReader) SpecificationTestCases {
+func getCustomTestCases(discoReader *CustomTest) SpecificationTestCases {
 	spec := ModelAPISpecification{Name: discoReader.Name}
 	specTestCases := SpecificationTestCases{Specification: spec}
 	testcases := []model.TestCase{}
