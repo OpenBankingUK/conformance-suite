@@ -12,10 +12,11 @@ type Model struct {
 // ModelDiscovery - Holds fields describing model, and array of discovery items.
 // For detailed documentation see ./doc/permissions.md file.
 type ModelDiscovery struct {
-	Name             string               `json:"name" validate:"required"`
-	Description      string               `json:"description" validate:"required"`
-	DiscoveryVersion string               `json:"discoveryVersion" validate:"required"`
-	DiscoveryItems   []ModelDiscoveryItem `json:"discoveryItems" validate:"required,gt=0,dive"`
+	Name             string                 `json:"name" validate:"required"`
+	Description      string                 `json:"description" validate:"required"`
+	DiscoveryVersion string                 `json:"discoveryVersion" validate:"required"`
+	DiscoveryItems   []ModelDiscoveryItem   `json:"discoveryItems" validate:"required,gt=0,dive"`
+	CustomTests      []CustomTestJSONReader `json:"customTests"`
 }
 
 // ModelDiscoveryItem - Each discovery item contains information related to a particular specification version.
