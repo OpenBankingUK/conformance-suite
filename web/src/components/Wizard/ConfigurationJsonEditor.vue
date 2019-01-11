@@ -1,7 +1,7 @@
 <template>
   <div class="p-3">
     <JsonEditor
-      :jsonString="configurationJsonString"
+      :jsonString="configurationString"
       editorName="configuration-editor"
       setChangeFunctionName="config/setConfigurationJSON"
     />
@@ -9,9 +9,10 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
-
+import { createNamespacedHelpers } from 'vuex';
 import JsonEditor from './JsonEditor.vue';
+
+const { mapGetters } = createNamespacedHelpers('config');
 
 export default {
   name: 'ConfigurationJsonEditor',
@@ -19,12 +20,9 @@ export default {
     JsonEditor,
   },
   computed: {
-    ...mapGetters('config', [
+    ...mapGetters([
       'configurationString',
     ]),
-    configurationJsonString() {
-      return this.configurationString;
-    },
   },
 };
 </script>
