@@ -9,12 +9,12 @@
           <div class="d-flex flex-column flex-fill">
             <b-tabs v-model="tabIndex">
               <b-tab
-                title="Form"
+                title="Form view"
                 active>
                 <ConfigurationForm />
               </b-tab>
               <b-tab
-                title="JSON" >
+                title="JSON view" >
                 <!-- We use v-if to ensure editor renders fresh each toggle to
                      render updates. Otherwise updates do not show on editor. -->
                 <ConfigurationJsonEditor v-if="tabIndex == 1"/>

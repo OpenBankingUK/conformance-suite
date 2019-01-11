@@ -1,17 +1,18 @@
 <template>
   <b-form-group
     :id="`#{id}_group`"
-    :description="getFormGroupDescription(id)"
+    :description="description"
     :label="label"
     :label-for="id"
   >
     <b-form-file
       :id="id"
-      v-model="certificate"
+      :ref="id"
+      v-model="file"
       :state="isValid"
       :placeholder="placeholder"
       capture
-      @input="(file) => { onFileChanged(file) }"
+      @input="() => { onFileChanged() }"
     />
   </b-form-group>
 </template>
@@ -42,7 +43,8 @@ export default {
   },
   data() {
     return {
-      certificate: null,
+      file: null,
+      data: '',
     };
   },
   computed: {
@@ -50,21 +52,21 @@ export default {
       'configuration',
     ]),
     isValid() {
-      return Boolean(this.configuration[this.id]);
+      const contents = this.configuration[this.id];
+      if (contents !== this.data) {
+        // Clear file, as JSON editor has changed contents
+        this.clearFile();
+      }
+      return Boolean(contents);
     },
-  },
-  methods: {
-    ...mapActions('config', [
-      'setConfigurationErrors',
-    ]),
     /**
-     * Get a description of the file uploaded (when one is selected).
+     * Description of the file uploaded (when one is selected).
      * Returns the size and last modification date.
+     * Else returns contents length from vuex store.
      */
-    getFormGroupDescription(fileName) {
-      const file = this.certificate;
-      const contents = this.configuration[fileName];
-      if (file) {
+    description() {
+      const contents = this.configuration[this.id];
+      if (this.file && (contents === '' || contents === this.data)) {
         // File (HTML API) contains these fields:
         // lastModified: 1545301720780
         // lastModifiedDate: Thu Dec 20 2018 10:28:40 GMT+0000 (Greenwich Mean Time) {}
@@ -73,16 +75,24 @@ export default {
         // type: "application/x-iwork-keynote-sffkey"
         // webkitRelativePath: ""
         return [
-          `Size: ${file.size} bytes`,
-          `Last modified: ${file.lastModifiedDate}`,
+          `Size: ${this.file.size} bytes`,
+          `Last modified: ${this.file.lastModifiedDate}`,
         ].join('\n');
       } else if (contents) {
         return [
-          `Length: ${contents.length}`,
+          `Size: ${contents.length} bytes`,
         ].join('\n');
       }
 
       return '';
+    },
+  },
+  methods: {
+    ...mapActions('config', [
+      'setConfigurationErrors',
+    ]),
+    clearFile() {
+      this.$refs[this.id].reset();
     },
     /**
      * readFile turns FileReader API into a Promise-based one,
@@ -102,27 +112,26 @@ export default {
      * When a file is selected, read its content and set the value in the store.
      * See: https://stackoverflow.com/questions/45179061/file-input-on-change-in-vue-js
      */
-    async onFileChanged(file) {
+    async onFileChanged() {
       // Clear previous error.
       this.setConfigurationErrors([]);
-
       // Compute the method name we need to call in the Vuex store, e.g., could be one of the below:
       // * config/setConfigurationSigningPrivate
       // * config/setConfigurationSigningPublic
       const setConfigurationMethodName = `config/setConfiguration${this.setterMethodNameSuffix}`;
 
-      if (file) {
+      if (this.file) {
         // If file is set, read the file then set the value in the store.
         try {
-          const data = await this.readFile(file);
-          this.$store.dispatch(setConfigurationMethodName, data);
+          this.data = await this.readFile(this.file);
+          this.$store.dispatch(setConfigurationMethodName, this.data);
         } catch (err) {
           this.setConfigurationErrors([err.message]);
         }
       } else {
         // If no file selected assume they want to clear out the previous file.
-        const data = '';
-        this.$store.dispatch(setConfigurationMethodName, data);
+        this.data = '';
+        this.$store.dispatch(setConfigurationMethodName, this.data);
       }
     },
   },
