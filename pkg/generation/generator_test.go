@@ -31,19 +31,26 @@ func TestGenerateSpecificationTestCases(t *testing.T) {
 
 	t.Run("returns slice of SpecificationTestCases, one per discovery item", func(t *testing.T) {
 		require.NotNil(t, cases)
-		assert.Equal(t, len(discovery.DiscoveryItems), len(cases))
+		assert.Equal(t, len(discovery.DiscoveryItems), len(cases)-1)
 	})
 
 	t.Run("returns each SpecificationTestCases with a Specification matching discovery item", func(t *testing.T) {
 		for i, specificationCases := range cases {
+			if specificationCases.Specification.Name == "CustomTest-GetOzoneToken" {
+				continue
+			}
 			expectedSpec := discovery.DiscoveryItems[i].APISpecification
 			assert.Equal(t, expectedSpec, specificationCases.Specification)
 		}
 	})
 
 	t.Run("returns each SpecificationTestCases with generated TestCases", func(t *testing.T) {
-		expectedCount := []int{28, 31}
+		expectedCount := []int{8}
 		for i, specificationCases := range cases {
+			if specificationCases.Specification.Name == "CustomTest-GetOzoneToken" {
+				continue
+			}
+			fmt.Printf("%d len\n", len(specificationCases.TestCases))
 			assert.Len(t, specificationCases.TestCases, expectedCount[i])
 		}
 	})
