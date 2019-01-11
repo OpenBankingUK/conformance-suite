@@ -107,14 +107,14 @@ func Versionformatter(version string) (string, error) {
 // returns a message and bool value that can be used to inform a user
 // a newer version is available for download.
 func UpdateWarningVersion(version string) (string, bool, error) {
-	// A default message that can be persented to an end user.
-	errorMessageUI := "Version check is univailable at this time."
+	// A default message that can be presented to an end user.
+	errorMessageUI := "Version check is unavailable at this time."
 
 	// Some basic validation, check we have a version,
 	if len(version) == 0 {
 		return errorMessageUI, false, fmt.Errorf("no version found")
 	}
-	// Try to get the lastest tag using the BitBucket API.
+	// Try to get the latest tag using the BitBucket API.
 	resp, err := http.Get(BitBucketAPIRepository)
 	if err != nil {
 		// If network error then return message, flag to NOT update and actual error.
