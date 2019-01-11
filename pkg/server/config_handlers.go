@@ -7,7 +7,6 @@ import (
 	"github.com/pkg/errors"
 
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/authentication"
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/web"
 
 	"bitbucket.org/openbankingteam/conformance-suite/appconfig"
 
@@ -17,7 +16,7 @@ import (
 
 type configHandlers struct {
 	server     *Server
-	webJourney web.Journey
+	webJourney Journey
 }
 
 // POST /api/config
