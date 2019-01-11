@@ -14,6 +14,7 @@ type runHandlers struct {
 // POST /api/run/start
 func (h *runHandlers) runStartPostHandler(c echo.Context) error {
 	result := map[string]interface{}{}
+	result["status"] = "executing"
 
 	// TODO: do something with certificates ...
 	h.webJourney.CertificateSigning()

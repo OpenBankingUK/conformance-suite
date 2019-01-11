@@ -425,7 +425,7 @@ describe('web/src/store/modules/config', () => {
         error: 'error generation test cases, discovery model not set',
       };
 
-      const OK_RESPONSE = {"response": "api response"};
+      const OK_RESPONSE = { response: 'api response' };
 
       afterEach(() => {
         jest.resetAllMocks();
@@ -489,6 +489,5 @@ describe('web/src/store/modules/config', () => {
         expect(store.state.testCaseResults).toEqual({});
       });
     });
-
   });
 });

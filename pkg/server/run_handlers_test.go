@@ -35,7 +35,7 @@ func TestServerRunStartPost(t *testing.T) {
 
 	require.NotNil(body)
 
-	bodyExpected := `{}`
+	bodyExpected := `{ "status": "executing" }`
 	bodyActual := body.String()
 	// do not use `require.Equal`.
 	require.JSONEq(bodyExpected, bodyActual)

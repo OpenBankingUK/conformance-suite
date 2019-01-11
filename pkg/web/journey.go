@@ -76,20 +76,20 @@ func (wj *journey) RunTests() (reporting.Result, error) {
 	return wj.reportService.Run(wj.testCases)
 }
 
-func (wj *journey) CertificateSigning() authentication.Certificate {
-	return wj.certificateSigning
-}
-
-func (wj *journey) CertificateTransport() authentication.Certificate {
-	return wj.certificateTransport
-}
-
 func (wj *journey) SetCertificateSigning(certificateSigning authentication.Certificate) Journey {
 	wj.certificateSigning = certificateSigning
 	return wj
 }
 
+func (wj *journey) CertificateSigning() authentication.Certificate {
+	return wj.certificateSigning
+}
+
 func (wj *journey) SetCertificateTransport(certificateTransport authentication.Certificate) Journey {
 	wj.certificateTransport = certificateTransport
 	return wj
+}
+
+func (wj *journey) CertificateTransport() authentication.Certificate {
+	return wj.certificateTransport
 }
