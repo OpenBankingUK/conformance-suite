@@ -75,6 +75,9 @@ describe('validateDiscoveryConfig', () => {
       error: 'Unexpected end of JSON input',
       key: null,
     }],
+    initialState: {},
+    validJSON: '{"a": 1}',
+    expectedState: { a: 1 },
   },
   {
     action: 'setConfigurationJSON',
@@ -82,13 +85,27 @@ describe('validateDiscoveryConfig', () => {
     successMutation: types.SET_CONFIGURATION,
     errorMutation: types.SET_CONFIGURATION_ERRORS,
     expectedErrors: ['Unexpected end of JSON input'],
+    initialState: {
+      signing_private: '',
+      signing_public: '',
+      transport_private: '',
+      transport_public: '',
+    },
+    validJSON: '{"a": 1, "signing_private": "test"}',
+    expectedState: {
+      signing_private: 'test',
+      signing_public: '',
+      transport_private: '',
+      transport_public: '',
+    },
   },
 ].forEach(({
-  action, property, successMutation, errorMutation, expectedErrors,
+  action, property, successMutation, errorMutation, expectedErrors, initialState,
+  validJSON, expectedState,
 }) => {
   describe(action, () => {
     const state = {
-      [property]: {},
+      [property]: initialState,
     };
     let commit;
     beforeEach(() => {
@@ -116,12 +133,12 @@ describe('validateDiscoveryConfig', () => {
 
     describe('with valid JSON string', () => {
       it('commits parsed JSON', () => {
-        actions[action]({ commit, state }, '{"a": 1}');
-        expect(commit).toHaveBeenCalledWith(successMutation, { a: 1 });
+        actions[action]({ commit, state }, validJSON);
+        expect(commit).toHaveBeenCalledWith(successMutation, expectedState);
       });
 
       it('commits null problems', () => {
-        actions[action]({ commit, state }, '{"a": 1}');
+        actions[action]({ commit, state }, validJSON);
         expect(commit).toHaveBeenCalledWith(errorMutation, null);
       });
     });

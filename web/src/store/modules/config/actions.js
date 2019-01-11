@@ -61,7 +61,15 @@ export default {
 
     try {
       const config = JSON.parse(editorString);
-      commit(types.SET_CONFIGURATION, config);
+      const merged = _.merge(_.clone(state.configuration), config);
+      const validKeys = [
+        'signing_private',
+        'signing_public',
+        'transport_private',
+        'transport_public',
+      ];
+      const newConfig = _.pick(merged, validKeys);
+      commit(types.SET_CONFIGURATION, newConfig);
       commit(types.SET_CONFIGURATION_ERRORS, null);
       commit(types.SET_WIZARD_STEP, constants.WIZARD.STEP_THREE);
     } catch (e) {
