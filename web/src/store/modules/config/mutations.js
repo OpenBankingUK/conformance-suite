@@ -10,8 +10,7 @@ export default {
   },
 
   [types.SET_CONFIGURATION](state, configuration) {
-    // Use Vue.set to trigger view updates. See: https://vuejs.org/v2/api/#Vue-set
-    Vue.set(state, 'configuration', configuration);
+    state.configuration = configuration;
   },
   [types.SET_CONFIGURATION_SIGNING_PRIVATE](state, signingPrivate) {
     state.configuration.signing_private = signingPrivate;
