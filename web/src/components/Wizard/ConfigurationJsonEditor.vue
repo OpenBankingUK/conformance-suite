@@ -1,7 +1,10 @@
 <template>
-  <div class="p-3">
+  <div
+    id="config-editor"
+    class="p-3">
     <JsonEditor
       :jsonString="configurationString"
+      :wrapEnabled="true"
       editorName="configuration-editor"
       setChangeFunctionName="config/setConfigurationJSON"
     />
@@ -28,4 +31,7 @@ export default {
 </script>
 
 <style scoped>
+#config-editor {
+  height: 650px;
+}
 </style>

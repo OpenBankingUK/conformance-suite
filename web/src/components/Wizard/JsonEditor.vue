@@ -11,9 +11,11 @@
     :editorProps="{$blockScrolling: Infinity}"
     :focus="true"
     :annotations="problemAnnotations"
+    :wrapEnabled="wrapEnabled"
     mode="json"
     theme="chrome"
     class="editor panel-body"
+    height="100%"
     width="100%"
   />
 </template>
@@ -45,9 +47,12 @@ export default {
     problemAnnotations: {
       type: Array,
       required: false,
-      default() {
-        return null;
-      },
+      default: null,
+    },
+    wrapEnabled: {
+      type: Boolean,
+      required: false,
+      default: false,
     },
   },
   methods: {
