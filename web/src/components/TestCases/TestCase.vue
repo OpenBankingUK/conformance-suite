@@ -58,21 +58,37 @@ export default {
     testCase: {
       type: Object,
       required: true,
-      private: true,
     },
-    // Fields to display in the table.
+    /**
+     * Fields to display in the table.
+     * See documentation: https://bootstrap-vue.js.org/docs/components/table#fields-column-definitions-
+     */
     fields: {
-      type: Array,
-      private: true,
-      default: () => [
-        '@id',
-        'name',
-      ],
+      type: Object,
+      default: () => ({
+        '@id': {
+          tdClass: 'table-data-breakable',
+        },
+        name: {
+          tdClass: 'table-data-breakable',
+        },
+        'input.method': {
+          tdClass: 'table-data-breakable',
+        },
+        'input.endpoint': {
+          tdClass: 'table-data-breakable',
+        },
+        'expect.status-code': {
+          tdClass: 'table-data-breakable',
+        },
+      }),
     },
-    // Fields to display in API Specification Table
+    /**
+     * Fields to display in API Specification Table.
+     * See documentation: https://bootstrap-vue.js.org/docs/components/table#fields-column-definitions-
+     */
     fieldsApiSpecification: {
       type: Object,
-      private: true,
       default: () => ({
         name: {
           tdClass: 'table-data-breakable',
@@ -104,7 +120,7 @@ export default {
  * This rule ensures values such as 'https://openbanking.atlassian.net/wiki/spaces/DZ/pages/642090641/Account+and+Transaction+API+Specification+-+v3.0'
  * in the table are broken into separate lines.
  */
-.b-table /deep/ .table-data-breakable {
+.test-case /deep/ .table-data-breakable {
   word-break: break-all;
 }
 </style>
