@@ -4,15 +4,14 @@ import (
 	"net/http"
 
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/web"
 	"github.com/labstack/echo"
 )
 
 type discoveryHandlers struct {
-	webJourney web.Journey
+	webJourney Journey
 }
 
-func newDiscoveryHandlers(webJourney web.Journey) discoveryHandlers {
+func newDiscoveryHandlers(webJourney Journey) discoveryHandlers {
 	return discoveryHandlers{webJourney}
 }
 

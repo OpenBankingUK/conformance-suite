@@ -9,7 +9,6 @@ import (
 
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/generation"
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/web"
 
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
 
@@ -90,7 +89,7 @@ func NewServer(
 
 	validatorEngine := discovery.NewFuncValidator(checker)
 	testGenerator := generation.NewGenerator()
-	webJourney := web.NewWebJourney(testGenerator, validatorEngine)
+	webJourney := NewWebJourney(testGenerator, validatorEngine)
 
 	// https://echo.labstack.com/guide/request#validate-data
 	validator := validator.New()
