@@ -68,6 +68,19 @@ func GetImplementedTestCases(disco *discovery.ModelDiscoveryItem, print bool, be
 	return testcases
 }
 
+// GetCustomTestCases retrieves custom tests from the discovery file
+func GetCustomTestCases(discoReader *discovery.CustomTestJSONReader) SpecificationTestCases {
+	spec := discovery.ModelAPISpecification{Name: discoReader.Name}
+	specTestCases := SpecificationTestCases{Specification: spec}
+	testcases := []model.TestCase{}
+
+	for _, testcase := range discoReader.Sequence {
+		testcases = append(testcases, testcase)
+	}
+	specTestCases.TestCases = testcases
+	return specTestCases
+}
+
 // check if a response code is in the range 200-299 - therefore a 'good' response code
 func getGoodResponseCode(codes []int) (int, error) {
 	for _, i := range codes {

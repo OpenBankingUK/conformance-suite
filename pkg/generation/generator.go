@@ -28,6 +28,11 @@ type generator struct {
 // GenerateSpecificationTestCases - generates test cases
 func (g generator) GenerateSpecificationTestCases(discovery discovery.ModelDiscovery) []SpecificationTestCases {
 	results := make([]SpecificationTestCases, len(discovery.DiscoveryItems))
+
+	for _, customTest := range discovery.CustomTests { // assume ordering is prerun ...  ...
+		results = append(results, GetCustomTestCases(&customTest))
+	}
+
 	// Assumes testNo is used as the base for all testcase IDs - to keep testcase IDs unique
 	testNo := 1000
 	for key, item := range discovery.DiscoveryItems {
