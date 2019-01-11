@@ -23,7 +23,7 @@ export default {
         error: e.message,
       }];
       commit(types.DISCOVERY_MODEL_PROBLEMS, problems);
-      commit(types.SET_WIZARD_STEP, constants.WIZARD.STEP_ONE);
+      commit(types.SET_WIZARD_STEP, constants.WIZARD.STEP_TWO);
     }
   },
   setDiscoveryModelProblems({ commit }, problems) {
@@ -74,7 +74,7 @@ export default {
       commit(types.SET_WIZARD_STEP, constants.WIZARD.STEP_THREE);
     } catch (e) {
       commit(types.SET_CONFIGURATION_ERRORS, [e.message]);
-      commit(types.SET_WIZARD_STEP, constants.WIZARD.STEP_TWO);
+      commit(types.SET_WIZARD_STEP, constants.WIZARD.STEP_THREE);
     }
   },
   setConfigurationSigningPrivate({ commit, state }, signingPrivate) {
