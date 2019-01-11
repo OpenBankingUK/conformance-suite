@@ -69,7 +69,7 @@ func GetImplementedTestCases(disco *discovery.ModelDiscoveryItem, print bool, be
 }
 
 // GetCustomTestCases retrieves custom tests from the discovery file
-func GetCustomTestCases(discoReader *discovery.CustomTestJSONReader) SpecificationTestCases {
+func GetCustomTestCases(discoReader *discovery.CustomTest) SpecificationTestCases {
 	spec := discovery.ModelAPISpecification{Name: discoReader.Name}
 	specTestCases := SpecificationTestCases{Specification: spec}
 	testcases := []model.TestCase{}
