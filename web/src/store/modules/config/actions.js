@@ -137,12 +137,16 @@ export default {
    * retrieved test cases in the store.
    * Route: `/wizard/run-overview`.
    */
-  async computeTestCases({ commit }) {
+  async computeTestCases({ commit, state }) {
     try {
       const testCases = await api.computeTestCases();
+      if (_.isEqual(testCases, state.testCases)) {
+        return;
+      }
+
       commit(types.SET_TEST_CASES, testCases);
       commit(types.SET_TEST_CASES_ERROR, []);
-      commit(types.SET_WIZARD_STEP, constants.WIZARD.STEP_FIVE);
+      commit(types.SET_WIZARD_STEP, constants.WIZARD.STEP_FOUR);
     } catch (err) {
       commit(types.SET_TEST_CASES, []);
       commit(types.SET_TEST_CASES_ERROR, [err]);
@@ -164,6 +168,20 @@ export default {
       commit(types.SET_TEST_CASE_RESULTS_ERROR, [
         err,
       ]);
+    }
+  },
+  /**
+   * Step 5: Calls `/api/run/start`.
+   * Route: `/wizard/run-overview`.
+   */
+  async executeTestCases({ commit }) {
+    try {
+      const execution = await api.executeTestCases();
+      commit(types.SET_EXECUTION_RESULTS, execution);
+      commit(types.SET_EXECUTION_ERROR, []);
+      commit(types.SET_WIZARD_STEP, constants.WIZARD.STEP_FIVE);
+    } catch (err) {
+      commit(types.SET_EXECUTION_ERROR, [err]);
       commit(types.SET_WIZARD_STEP, constants.WIZARD.STEP_FIVE);
     }
   },

@@ -27,7 +27,6 @@
 
 <script>
 import { createNamespacedHelpers } from 'vuex';
-import * as _ from 'lodash';
 
 import WizardFooter from './WizardFooter.vue';
 import TestCases from '../TestCases/TestCases.vue';
@@ -48,7 +47,7 @@ export default {
       'testCases',
     ]),
     errors() {
-      return this.$store.getters['config/errors'].testCases;
+      return this.$store.state.config.errors.testCases;
     },
     hasErrors() {
       return this.errors && this.errors.length > 0;
@@ -57,14 +56,11 @@ export default {
   methods: {
     ...mapActions([
       'computeTestCases',
+      'executeTestCases',
     ]),
-    async onCompute() {
-      await this.computeTestCases();
-    },
   },
   /**
    * Fetch all the test cases when we navigate to this route.
-   *
    * Docs: https://router.vuejs.org/guide/advanced/navigation-guards.html#in-component-guards
    */
   beforeRouteEnter(to, from, next) {
@@ -73,23 +69,19 @@ export default {
     });
   },
   /**
-   * Prevent user from going forward if there is an error with test case generation.
-   *
+   * Prevent user from going forward if there is an error with test case generation, and
+   * execute the test cases if the route being navigated to is `/wizard/summary`.
    * Docs: https://router.vuejs.org/guide/advanced/navigation-guards.html#in-component-guards
    */
   async beforeRouteLeave(to, from, next) {
-    const nextRoutes = [
-      '/wizard/summary',
-      '/wizard/export',
-    ];
-    const isNext = _.includes(nextRoutes, to.path);
-
+    const isNext = to.path === '/wizard/summary';
     if (isNext) {
       if (this.hasErrors) {
         // prevent going forward if there is an error
         return next(false);
       }
 
+      await this.executeTestCases();
       return next();
     }
 
