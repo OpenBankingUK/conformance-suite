@@ -19,15 +19,25 @@ const (
 	minor = "1"
 	patch = "0"
 	// Version is the full string version of Conformance Suite.
-	Version = major + "." + minor + "." + patch
+	FullVersion = major + "." + minor + "." + patch
 	// VersionPrerelease is pre-release marker for the version. If this is "" (empty string)
 	// then it means that it is a final release. Otherwise, this is a pre-release
 	// such as "alpha", "beta", "rc1", etc.
-	VersionPrerelease = "pre-alpha"
+	Prerelease = "pre-alpha"
 )
 
-// BitBucketAPIRepository full URL of the TAG API 2.0 for the Conformance Suite.
-var BitBucketAPIRepository = "https://api.bitbucket.org/2.0/repositories/openbankingteam/conformance-suite/refs/tags"
+// Version helper with capability to get release versions from source control repository
+type Version struct {
+	// bitBucketAPIRepository full URL of the TAG API 2.0 for the Conformance Suite.
+	bitBucketAPIRepository string
+}
+
+// New returns a new instance of Version. bitBucketAPIRepository
+func New(bitBucketAPIRepository string) Version {
+		return Version{
+		bitBucketAPIRepository: bitBucketAPIRepository,
+	}
+}
 
 // Tag structure used map response of tags.
 type Tag struct {
@@ -49,9 +59,9 @@ func getTags(body []byte) (*TagsAPIResponse, error) {
 
 // GetHumanVersion composes the parts of the version in a way that's suitable
 // for displaying to humans.
-func GetHumanVersion() string {
-	version := "v" + Version
-	release := VersionPrerelease
+func (v Version) GetHumanVersion() string {
+	version := "v" + FullVersion
+	release := Prerelease
 
 	if release != "" {
 		if !strings.HasSuffix(version, "-"+release) {
@@ -65,7 +75,7 @@ func GetHumanVersion() string {
 // Versionformatter takes a string version number and returns just the numeric parts.
 // This function is used when trying to compare two string versions that 'could'
 // have non numerical properties.
-func Versionformatter(version string) (string, error) {
+func (v Version) Versionformatter(version string) (string, error) {
 	const maxByte = 1<<8 - 1
 	vo := make([]byte, 0, len(version)+8)
 	j := -1
@@ -106,7 +116,7 @@ func Versionformatter(version string) (string, error) {
 // latest tag version on Bitbucket, if a newer version is found it
 // returns a message and bool value that can be used to inform a user
 // a newer version is available for download.
-func UpdateWarningVersion(version string) (string, bool, error) {
+func (v Version) UpdateWarningVersion(version string) (string, bool, error) {
 	// A default message that can be presented to an end user.
 	errorMessageUI := "Version check is unavailable at this time."
 
@@ -115,7 +125,7 @@ func UpdateWarningVersion(version string) (string, bool, error) {
 		return errorMessageUI, false, fmt.Errorf("no version found")
 	}
 	// Try to get the latest tag using the BitBucket API.
-	resp, err := http.Get(BitBucketAPIRepository)
+	resp, err := http.Get(v.bitBucketAPIRepository)
 	if err != nil {
 		// If network error then return message, flag to NOT update and actual error.
 		return errorMessageUI, false, errors.Wrap(err, "Error: HTTP on GET to BitBucket API")
@@ -137,8 +147,8 @@ func UpdateWarningVersion(version string) (string, bool, error) {
 		latestTag := s.TagList[0].Name
 
 		// Format version string to compare.
-		versionLocal, err := Versionformatter(version)
-		versionRemote, err := Versionformatter(latestTag)
+		versionLocal, err := v.Versionformatter(version)
+		versionRemote, err := v.Versionformatter(latestTag)
 
 		if versionLocal < versionRemote {
 			errorMessageUI = fmt.Sprintf("Version v%s of the Conformance Suite is out-of-date, please update to v%s", versionLocal, versionRemote)
@@ -146,7 +156,7 @@ func UpdateWarningVersion(version string) (string, bool, error) {
 		}
 		// If local and remote version match or is higher then return false update flag.
 		if versionLocal >= versionRemote {
-			errorMessageUI = fmt.Sprintf("Conformance Suite is running the latest version %s", GetHumanVersion())
+			errorMessageUI = fmt.Sprintf("Conformance Suite is running the latest version %s", v.GetHumanVersion())
 			return errorMessageUI, false, nil
 		}
 
