@@ -14,7 +14,7 @@ import (
 // TestCaseExecutor defines an interface capable of executing a testcase
 type TestCaseExecutor interface {
 	ExecuteTestCase(r *resty.Request, t *model.TestCase, ctx *model.Context) (*resty.Response, error)
-	SetCertificates(certificateSigning, certificationTransport authentication.Certificate)
+	SetCertificates(certificateSigning, certificationTransport authentication.Certificate) error
 }
 
 // RunDefinition captures all the information required to run the test cases
@@ -28,6 +28,46 @@ type RunDefinition struct {
 // RunTestCases runs the testCases
 func RunTestCases(defn *RunDefinition) (reporting.Result, error) {
 	fmt.Println("Up and Running -- execution those test cases!!!")
+	executor, err := MakeExecutor()
+	if err != nil {
+		return reporting.Result{}, err
+	}
+	executor.SetCertificates(defn.SigningCert, defn.TransportCert)
 
-	return reporting.Result{}, nil
+	return runTests(defn, executor)
+}
+
+func runTests(defn *RunDefinition, executor *Executor) (reporting.Result, error) {
+	rulectx := &model.Context{}
+
+	reportTestResults := []reporting.Test{}
+	reportSpecs := []reporting.Specification{reporting.Specification{Tests: reportTestResults}}
+	reportResult := reporting.Result{Specifications: reportSpecs}
+
+	for _, spec := range defn.SpecTests {
+		for _, testcase := range spec.TestCases {
+			req, err := testcase.Prepare(rulectx)
+			if err != nil {
+				return reporting.Result{}, err
+			}
+
+			resp, err := executor.ExecuteTestCase(req, &testcase, rulectx)
+			if err != nil {
+				return reporting.Result{}, err
+			}
+
+			result, err := testcase.Validate(resp, rulectx)
+			if err != nil {
+				return reporting.Result{}, err
+			}
+			reportTestResults = append(reportTestResults, makeTestResult(&testcase, result))
+		}
+	}
+
+	fmt.Printf("%#v\n", reportResult)
+	return reportResult, nil
+}
+
+func makeTestResult(tc *model.TestCase, result bool) reporting.Test {
+	return reporting.Test{Name: tc.Name, Endpoint: tc.Input.Method + " " + tc.Input.Endpoint, Pass: result}
 }

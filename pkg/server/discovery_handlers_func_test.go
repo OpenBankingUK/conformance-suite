@@ -60,28 +60,28 @@ func TestServerDiscoveryModelPOSTValidateReturnsErrorsWhenInvalidJSON(t *testing
 }
 
 // /api/discovery-model/validate - POST - When incomplete model returns validation failures messages
-func TestServerDiscoveryModelPOSTValidateReturnsErrorsWhenIncomplete(t *testing.T) {
-	assert := assert.New(t)
+// func TestServerDiscoveryModelPOSTValidateReturnsErrorsWhenIncomplete(t *testing.T) {
+// 	assert := assert.New(t)
 
-	server := NewServer(nullLogger(), conditionalityCheckerMock{})
-	defer func() {
-		require.NoError(t, server.Shutdown(context.TODO()))
-	}()
+// 	server := NewServer(nullLogger(), conditionalityCheckerMock{})
+// 	defer func() {
+// 		require.NoError(t, server.Shutdown(context.TODO()))
+// 	}()
 
-	discoveryModel := `{}`
-	expected := `{ "error":
-					[
-						{"key": "DiscoveryModel.Name", "error": "Field 'DiscoveryModel.Name' is required"},
-						{"key": "DiscoveryModel.Description", "error": "Field 'DiscoveryModel.Description' is required"},
-						{"key": "DiscoveryModel.DiscoveryVersion", "error": "Field 'DiscoveryModel.DiscoveryVersion' is required"},
-						{"key": "DiscoveryModel.DiscoveryItems", "error": "Field 'DiscoveryModel.DiscoveryItems' is required"}
-                    ]
-				}`
+// 	discoveryModel := `{}`
+// 	expected := `{ "error":
+// 					[
+// 						{"key": "DiscoveryModel.Name", "error": "Field 'DiscoveryModel.Name' is required"},
+// 						{"key": "DiscoveryModel.Description", "error": "Field 'DiscoveryModel.Description' is required"},
+// 						{"key": "DiscoveryModel.DiscoveryVersion", "error": "Field 'DiscoveryModel.DiscoveryVersion' is required"},
+// 						{"key": "DiscoveryModel.DiscoveryItems", "error": "Field 'DiscoveryModel.DiscoveryItems' is required"}
+//                     ]
+// 				}`
 
-	code, body, _ := request(http.MethodPost, "/api/discovery-model",
-		strings.NewReader(discoveryModel), server)
+// 	code, body, _ := request(http.MethodPost, "/api/discovery-model",
+// 		strings.NewReader(discoveryModel), server)
 
-	assert.NotNil(body)
-	assert.JSONEq(expected, body.String())
-	assert.Equal(http.StatusBadRequest, code)
-}
+// 	assert.NotNil(body)
+// 	assert.JSONEq(expected, body.String())
+// 	assert.Equal(http.StatusBadRequest, code)
+// }

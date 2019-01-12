@@ -5,6 +5,8 @@ import (
 	"crypto/rand"
 	"crypto/rsa"
 	"crypto/sha256"
+	"crypto/tls"
+	"fmt"
 
 	jwt "github.com/dgrijalva/jwt-go"
 	"github.com/pkg/errors"
@@ -14,12 +16,14 @@ import (
 type Certificate interface {
 	PublicKey() *rsa.PublicKey
 	PrivateKey() *rsa.PrivateKey
+	TLSCert() tls.Certificate
 }
 
 // certificate implements Certificate
 type certificate struct {
 	publicKey  *rsa.PublicKey
 	privateKey *rsa.PrivateKey
+	tlsCert    tls.Certificate
 }
 
 // NewCertificate - create new Certificate.
@@ -40,6 +44,12 @@ func NewCertificate(publicKeyPem, privateKeyPem string) (Certificate, error) {
 		return nil, errors.Wrap(err, "error with private key")
 	}
 
+	tlsCert, err := tls.X509KeyPair([]byte(publicKeyPem), []byte(privateKeyPem))
+	if err != nil {
+		fmt.Println("invalid X509KeyPair") // Danger Will Robinson!
+		//return nil, errors.Wrap(err, "error with X509KeyPair")
+	}
+
 	if err := validateKeys(publicKey, privateKey); err != nil {
 		return nil, err
 	}
@@ -47,6 +57,7 @@ func NewCertificate(publicKeyPem, privateKeyPem string) (Certificate, error) {
 	return &certificate{
 		publicKey:  publicKey,
 		privateKey: privateKey,
+		tlsCert:    tlsCert,
 	}, nil
 }
 
@@ -56,6 +67,10 @@ func (c certificate) PublicKey() *rsa.PublicKey {
 
 func (c certificate) PrivateKey() *rsa.PrivateKey {
 	return c.privateKey
+}
+
+func (c certificate) TLSCert() tls.Certificate {
+	return c.tlsCert
 }
 
 func validateKeys(publicKey *rsa.PublicKey, privateKey *rsa.PrivateKey) error {

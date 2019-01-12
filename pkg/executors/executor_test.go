@@ -20,8 +20,16 @@ import (
 )
 
 func TestSimulatedChainedOzoneRequest(t *testing.T) {
-	tracer.Silent = false
 	executor := &ozoneResponder{}
+	chainedOzoneHeadlessAccounts(t, executor)
+}
+
+func TestLiveChainedRequest(t *testing.T) {
+	executor, err := MakeExecutor()
+	if err != nil {
+		t.Log("No certs found in environment - skipping matls tests requiring certs from environment")
+		return
+	}
 	chainedOzoneHeadlessAccounts(t, executor)
 }
 
@@ -56,7 +64,8 @@ func chainedOzoneHeadlessAccounts(t *testing.T, executor TestCaseExecutor) {
 type ozoneResponder struct {
 }
 
-func (o *ozoneResponder) SetCertificates(certificateSigning, certificationTransport authentication.Certificate) {
+func (o *ozoneResponder) SetCertificates(certificateSigning, certificationTransport authentication.Certificate) error {
+	return nil
 }
 
 // ExecuteTestCase signature makes this an instance of  TestCaseExecutor
