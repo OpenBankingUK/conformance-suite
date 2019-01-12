@@ -16,14 +16,14 @@ import (
 const (
 	// Version must conform to the format expected, major, minor and patch.
 	major = "0"
-	minor = "1"
+	minor = "2"
 	patch = "0"
 	// Version is the full string version of Conformance Suite.
 	Version = major + "." + minor + "." + patch
 	// VersionPrerelease is pre-release marker for the version. If this is "" (empty string)
 	// then it means that it is a final release. Otherwise, this is a pre-release
 	// such as "alpha", "beta", "rc1", etc.
-	VersionPrerelease = "pre-alpha"
+	VersionPrerelease = "alpha"
 )
 
 // BitBucketAPIRepository full URL of the TAG API 2.0 for the Conformance Suite.
@@ -107,14 +107,14 @@ func Versionformatter(version string) (string, error) {
 // returns a message and bool value that can be used to inform a user
 // a newer version is available for download.
 func UpdateWarningVersion(version string) (string, bool, error) {
-	// A default message that can be persented to an end user.
-	errorMessageUI := "Version check is univailable at this time."
+	// A default message that can be presented to an end user.
+	errorMessageUI := "Version check is unavailable at this time."
 
 	// Some basic validation, check we have a version,
 	if len(version) == 0 {
 		return errorMessageUI, false, fmt.Errorf("no version found")
 	}
-	// Try to get the lastest tag using the BitBucket API.
+	// Try to get the latest tag using the BitBucket API.
 	resp, err := http.Get(BitBucketAPIRepository)
 	if err != nil {
 		// If network error then return message, flag to NOT update and actual error.

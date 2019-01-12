@@ -9,7 +9,8 @@
         </div>
         <div class="panel-body">
           <p>The Functional Conformance Suite is an Open Source test tool provided by Open Banking. The goal of the suite is to provide an easy and comprehensive tool that enables implementers to test interfaces and data endpoints against the Functional API standard.</p>
-          <p>To start, upload a compatible report to view the results or select a discovery template to run a new test.</p>
+          <p>This <strong>v0.2.0-alpha</strong> release introduces an example Discovery Template to demonstrate the headless flow for Ozone Model Bank for v3.0 of the OBIE  Accounts and Transactions specifications.</p>
+          <p>N.B. This release is not intended to be run in sandbox or production</p>
         </div>
       </div>
       <div
@@ -20,7 +21,7 @@
         </div>
         <div class="panel-body">
           <p>Upload a signed and compatible report to view the results or to rerun.</p>
-          <b-button class="mb-4">Choose file</b-button>
+          <b-button class="mb-4">Unavailable</b-button>
         </div>
       </div>
     </div>
