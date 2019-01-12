@@ -29,19 +29,13 @@ type Manifest struct {
 // Rule also identifies all the tests that must be passed in order to show that the rule
 // implementation in conformant with the specific section in the referenced specification
 type Rule struct {
-	ID           string           `json:"@id"`             // JSONLD ID reference
-	Type         []string         `json:"@type,omitempty"` // JSONLD type reference
-	Name         string           `json:"name"`            // A short meaningful name for this rule
-	Purpose      string           `json:"purpose"`         // The purpose of this rule
-	Specref      string           `json:"specref"`         // Description of area of spec/name/version/section under test
-	Speclocation string           `json:"speclocation"`    // specific http reference to location in spec under test covered by this rule
-	Tests        [][]TestCase     `json:"tests"`           // Tests - allows for many testcases - array of arrays - to be associated with this rule
-	Executor     TestCaseExecutor // TestCaseExecutor interface allow different testcase execution strategies
-}
-
-// TestCaseExecutor defines an interface capable of executing a testcase
-type TestCaseExecutor interface {
-	ExecuteTestCase(r *resty.Request, t *TestCase, ctx *Context) (*resty.Response, error)
+	ID           string       `json:"@id"`             // JSONLD ID reference
+	Type         []string     `json:"@type,omitempty"` // JSONLD type reference
+	Name         string       `json:"name"`            // A short meaningful name for this rule
+	Purpose      string       `json:"purpose"`         // The purpose of this rule
+	Specref      string       `json:"specref"`         // Description of area of spec/name/version/section under test
+	Speclocation string       `json:"speclocation"`    // specific http reference to location in spec under test covered by this rule
+	Tests        [][]TestCase `json:"tests"`           // Tests - allows for many testcases - array of arrays - to be associated with this rule
 }
 
 // TestCase defines a test that will be run and needs to be passed as part of the conformance suite
@@ -347,14 +341,4 @@ func (r *Rule) GetPermissionSets() (included, excluded []string) {
 	}
 
 	return includedSet.GetPermissions(), excludedSet.GetPermissions()
-}
-
-// Execute the testcase
-// For the rule this effectively equates to sending the assembled http request from
-// the testcase to an endpoint (typically ASPSP implementation) and getting an http.Response
-// The http.Request at this point will contain the fully assembled request from a testcase point of view
-// - testcase will have likely pulled out appropriate access_tokens/permissions
-// - rule will have the opportunity to further decorate this request before passing on
-func (r *Rule) Execute(req *resty.Request, tc *TestCase) (*resty.Response, error) {
-	return r.Executor.ExecuteTestCase(req, tc, &Context{})
 }

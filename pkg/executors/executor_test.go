@@ -11,6 +11,7 @@ import (
 	"testing"
 
 	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/test"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/authentication"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/tracer"
 	"github.com/stretchr/testify/assert"
@@ -19,16 +20,15 @@ import (
 )
 
 func TestSimulatedChainedOzoneRequest(t *testing.T) {
-	tracer.Silent = true
+	tracer.Silent = false
 	executor := &ozoneResponder{}
 	chainedOzoneHeadlessAccounts(t, executor)
 }
 
-func chainedOzoneHeadlessAccounts(t *testing.T, executor model.TestCaseExecutor) {
+func chainedOzoneHeadlessAccounts(t *testing.T, executor TestCaseExecutor) {
 	manifest, err := loadManifest("testdata/ozoneconnect.json")
 	require.NoError(t, err)
 	for _, rule := range manifest.Rules {
-		rule.Executor = executor
 		rulectx := &model.Context{}
 		for _, sequence := range rule.Tests {
 			for _, testcase := range sequence {
@@ -37,7 +37,7 @@ func chainedOzoneHeadlessAccounts(t *testing.T, executor model.TestCaseExecutor)
 				assert.Nil(t, err)
 				assert.NotNil(t, req)
 				if err == nil {
-					resp, err := rule.Execute(req, &testcase)
+					resp, err := executor.ExecuteTestCase(req, &testcase, rulectx)
 					require.Nil(t, err)
 					require.NotNil(t, resp)
 					if resp != nil {
@@ -54,6 +54,9 @@ func chainedOzoneHeadlessAccounts(t *testing.T, executor model.TestCaseExecutor)
 }
 
 type ozoneResponder struct {
+}
+
+func (o *ozoneResponder) SetCertificates(certificateSigning, certificationTransport authentication.Certificate) {
 }
 
 // ExecuteTestCase signature makes this an instance of  TestCaseExecutor

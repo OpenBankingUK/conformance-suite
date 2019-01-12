@@ -3,6 +3,7 @@ package server
 import (
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/authentication"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/executors"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/generation"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/reporting"
 
@@ -13,6 +14,7 @@ var errDiscoveryModelNotSet = errors.New("error generation test cases, discovery
 
 // Journey represents all possible steps for a user test conformance web journey
 type Journey interface {
+	DiscoveryModel() *discovery.Model
 	SetDiscoveryModel(discoveryModel *discovery.Model) (discovery.ValidationFailures, error)
 	TestCases() ([]generation.SpecificationTestCases, error)
 	RunTests() (reporting.Result, error)
@@ -59,6 +61,10 @@ func (wj *journey) SetDiscoveryModel(discoveryModel *discovery.Model) (discovery
 	return discovery.NoValidationFailures, nil
 }
 
+func (wj *journey) DiscoveryModel() *discovery.Model {
+	return wj.validDiscoveryModel
+}
+
 func (wj *journey) TestCases() ([]generation.SpecificationTestCases, error) {
 	if wj.validDiscoveryModel == nil {
 		return nil, errDiscoveryModelNotSet
@@ -73,7 +79,21 @@ func (wj *journey) RunTests() (reporting.Result, error) {
 	if wj.testCases == nil {
 		return reporting.Result{}, errTestCasesNotSet
 	}
-	return wj.reportService.Run(wj.testCases)
+
+	specTestCases, err := wj.TestCases()
+	if err != nil {
+		return reporting.Result{}, err
+	}
+
+	runDefinition := executors.RunDefinition{
+		DiscoModel:    wj.DiscoveryModel(),
+		SpecTests:     specTestCases,
+		SigningCert:   wj.CertificateSigning(),
+		TransportCert: wj.CertificateTransport(),
+	}
+
+	// initially execute synchronously
+	return executors.RunTestCases(&runDefinition)
 }
 
 func (wj *journey) SetCertificateSigning(certificateSigning authentication.Certificate) Journey {
