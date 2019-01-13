@@ -8,6 +8,7 @@ import (
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/generation"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/reporting"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/tracer"
 	resty "gopkg.in/resty.v1"
 )
 
@@ -27,13 +28,9 @@ type RunDefinition struct {
 
 // RunTestCases runs the testCases
 func RunTestCases(defn *RunDefinition) (reporting.Result, error) {
-	fmt.Println("Up and Running -- execution those test cases!!!")
-	executor, err := MakeExecutor()
-	if err != nil {
-		return reporting.Result{}, err
-	}
+	tracer.Silent = false
+	executor := MakeExecutor()
 	executor.SetCertificates(defn.SigningCert, defn.TransportCert)
-
 	return runTests(defn, executor)
 }
 
@@ -43,6 +40,8 @@ func runTests(defn *RunDefinition, executor *Executor) (reporting.Result, error)
 	reportTestResults := []reporting.Test{}
 	reportSpecs := []reporting.Specification{reporting.Specification{Tests: reportTestResults}}
 	reportResult := reporting.Result{Specifications: reportSpecs}
+
+	fmt.Println("RUN TEST LOOP :- ")
 
 	for _, spec := range defn.SpecTests {
 		for _, testcase := range spec.TestCases {

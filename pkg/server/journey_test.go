@@ -164,8 +164,8 @@ func TestJourneyRunTestCases(t *testing.T) {
 	_, err = journey.TestCases()
 	require.NoError(t, err)
 
-	result, err := journey.RunTests()
-	_ = result
+	//result, err := journey.RunTests()
+	//_ = result
 	//assert.NoError(t, err)
 	noResult := []reporting.Specification([]reporting.Specification{})
 	//assert.Equal(t, noResult, result.Specifications)

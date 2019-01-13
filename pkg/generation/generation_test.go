@@ -38,8 +38,7 @@ func ExampleGetImplementedTestCases() {
 	//     "name": "Create Account Access Consents",
 	//     "input": {
 	//         "method": "POST",
-	//         "endpoint": "/account-access-consents",
-	//         "contextGet": {}
+	//         "endpoint": "/account-access-consents"
 	//     },
 	//     "expect": {
 	//         "status-code": 201,

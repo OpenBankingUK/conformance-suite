@@ -5,6 +5,8 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"regexp"
+	"strings"
 
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/tracer"
 	"gopkg.in/resty.v1"
@@ -341,4 +343,102 @@ func (r *Rule) GetPermissionSets() (included, excluded []string) {
 	}
 
 	return includedSet.GetPermissions(), excludedSet.GetPermissions()
+}
+
+// ReplaceField -
+func ReplaceField(source string, ctx map[string]string) (string, error) {
+	field, isReplacement, err := getReplacementField(source)
+	if err != nil {
+		return "", err
+	}
+	if !isReplacement {
+		return source, nil
+	}
+	replacement := ctx[field]
+	if replacement == "" {
+		return "", nil
+	}
+
+	result := strings.Replace(source, field, replacement, 1)
+	return result, nil
+}
+
+// ReplaceContextField -
+func ReplaceContextField(source string, ctx *Context) (string, error) {
+	fmt.Printf("ctx: %#v\n", ctx)
+	fmt.Printf("source: %s\n", source)
+	field, isReplacement, err := getReplacementField(source)
+	fmt.Printf("field: %s\n", field)
+	fmt.Printf("isReplacement: %t\n", isReplacement)
+	if err != nil {
+		return "", err
+	}
+	if !isReplacement {
+		return source, nil
+	}
+
+	if len(field) == 0 {
+		return source, errors.New("field not found in context " + field)
+	}
+	replacement := ctx.Get(field)
+	contextField, ok := replacement.(string)
+	fmt.Printf("contextField: %s\n", contextField)
+	fmt.Printf("len contextField: %d\n", len(contextField))
+	if !ok {
+		return "", err
+	}
+	if len(contextField) == 0 {
+		return "", errors.New("replacement not found in context: " + source)
+	}
+	result := strings.Replace(source, "$"+field, contextField, 1)
+	return result, nil
+}
+
+// GetReplacementField examines the input string and returns the first character
+// sequence beginning with '$' and ending with whitespace. '$$' sequence acts as an escape value
+// A zero length string is return if now Replacement Fields are found
+func getReplacementField(stringToCheck string) (string, bool, error) {
+	index := strings.Index(stringToCheck, "$")
+	if index == -1 {
+		return stringToCheck, false, nil
+	}
+	singleDollar, err := regexp.Compile(`[^\$]?\$(\w*)`)
+	if err != nil {
+		return "", false, err
+	}
+	result := singleDollar.FindStringSubmatch(stringToCheck)
+	if result == nil {
+		return "", false, nil
+	}
+	return result[len(result)-1], true, nil
+}
+
+// ShrinkDoubleDollar -  shrink $$ down to $ in stringToCheck
+func ShrinkDoubleDollar(stringToCheck string) (string, error) {
+	doubleDollar, err := regexp.Compile(`\s+(\$\$)\w+`)
+	if err != nil {
+		return "", err
+	}
+	result := doubleDollar.FindAllStringSubmatchIndex(stringToCheck, -1)
+	if result == nil {
+		return "", nil
+	}
+
+	var ending = stringToCheck[result[1][1]:]
+	for i := len(result) - 1; i >= 0; i-- {
+		start := result[i][0]
+		end := result[i][1]
+		ending = stringToCheck[start:start+1] + stringToCheck[start+2:end] + ending
+	}
+	if result[0][0] > 0 {
+		ending = stringToCheck[0:result[0][0]] + ending
+	}
+
+	return ending, nil
+}
+
+func replaceAtIndex(in string, r rune, i int) string {
+	out := []rune(in)
+	out[i] = r
+	return string(out)
 }
