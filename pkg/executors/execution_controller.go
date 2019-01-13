@@ -1,8 +1,6 @@
 package executors
 
 import (
-	"fmt"
-
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/authentication"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/generation"
@@ -28,7 +26,7 @@ type RunDefinition struct {
 
 // RunTestCases runs the testCases
 func RunTestCases(defn *RunDefinition) (reporting.Result, error) {
-	tracer.Silent = false
+	tracer.Silent = true
 	executor := MakeExecutor()
 	executor.SetCertificates(defn.SigningCert, defn.TransportCert)
 	return runTests(defn, executor)
@@ -41,15 +39,12 @@ func runTests(defn *RunDefinition, executor *Executor) (reporting.Result, error)
 	reportSpecs := []reporting.Specification{reporting.Specification{Tests: reportTestResults}}
 	reportResult := reporting.Result{Specifications: reportSpecs}
 
-	fmt.Println("RUN TEST LOOP :- ")
-
 	for _, spec := range defn.SpecTests {
 		for _, testcase := range spec.TestCases {
 			req, err := testcase.Prepare(rulectx)
 			if err != nil {
 				return reporting.Result{}, err
 			}
-
 			resp, err := executor.ExecuteTestCase(req, &testcase, rulectx)
 			if err != nil {
 				return reporting.Result{}, err
@@ -62,8 +57,6 @@ func runTests(defn *RunDefinition, executor *Executor) (reporting.Result, error)
 			reportTestResults = append(reportTestResults, makeTestResult(&testcase, result))
 		}
 	}
-
-	fmt.Printf("%#v\n", reportResult)
 	return reportResult, nil
 }
 

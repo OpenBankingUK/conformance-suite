@@ -150,7 +150,6 @@ func (t *TestCase) ApplyInput(rulectx *Context) (*resty.Request, error) {
 	if t.Input.Method == "" {
 		return nil, t.AppErr("error: TestCase input cannot have empty input.Method")
 	}
-
 	req, err := t.Input.CreateRequest(t, rulectx)
 	if err != nil {
 		return nil, t.AppErr("createRequest: " + err.Error())
@@ -365,25 +364,18 @@ func ReplaceField(source string, ctx map[string]string) (string, error) {
 
 // ReplaceContextField -
 func ReplaceContextField(source string, ctx *Context) (string, error) {
-	fmt.Printf("ctx: %#v\n", ctx)
-	fmt.Printf("source: %s\n", source)
 	field, isReplacement, err := getReplacementField(source)
-	fmt.Printf("field: %s\n", field)
-	fmt.Printf("isReplacement: %t\n", isReplacement)
 	if err != nil {
 		return "", err
 	}
 	if !isReplacement {
 		return source, nil
 	}
-
 	if len(field) == 0 {
 		return source, errors.New("field not found in context " + field)
 	}
 	replacement := ctx.Get(field)
 	contextField, ok := replacement.(string)
-	fmt.Printf("contextField: %s\n", contextField)
-	fmt.Printf("len contextField: %d\n", len(contextField))
 	if !ok {
 		return "", err
 	}

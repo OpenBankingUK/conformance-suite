@@ -181,6 +181,7 @@ func (m *Match) PutValue(tc *TestCase, ctx *Context) bool {
 		}
 		if success {
 			ctx.Put(m.ContextName, m.Result)
+			tc.Context.Put(m.ContextName, m.Result)
 			return true
 		}
 	}

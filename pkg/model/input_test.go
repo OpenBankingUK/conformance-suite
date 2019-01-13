@@ -1,18 +1,12 @@
 package model
 
 import (
+	"fmt"
 	"net/url"
-	"os"
 	"testing"
 
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/tracer"
 	"github.com/stretchr/testify/assert"
 )
-
-func TestMain(m *testing.M) {
-	tracer.Silent = true
-	os.Exit(m.Run())
-}
 
 func TestCreateRequestEmptyEndpointOrMethod(t *testing.T) {
 	i := &Input{}
@@ -210,5 +204,28 @@ func TestInputClaimsWithContextReplacementParameters(t *testing.T) {
 
 	m, _ := url.ParseQuery(req.URL)
 	assert.Equal(t, m["request"][0], "eyJhbGciOiJub25lIn0.eyJhdWQiOiJodHRwOi8vbXliYXNldXJsIiwiY2xhaW1zIjp7ImlkX3Rva2VuIjp7Im9wZW5iYW5raW5nX2ludGVudF9pZCI6eyJlc3NlbnRpYWwiOnRydWUsInZhbHVlIjoibXljb25zZW50aWQifX19LCJpc3MiOiI4NjcyMzg0ZS05YTMzLTQzOWYtODkyNC02N2JiMTQzNDBkNzEiLCJyZWRpcmVjdF91cmkiOiJodHRwczovL3Rlc3QuZXhhbXBsZS5jby51ay9yZWRpciIsInNjb3BlIjoib3BlbmlkIGFjY291bnRzIn0.")
+
+}
+
+func TestInputClaimsConsentId(t *testing.T) {
+	ctx := Context{"consent_id": "aac-fee2b8eb-ce1b-48f1-af7f-dc8f576d53dc", "xchange_code": "10e9d80b-10d4-4abd-9fe0-15789cc512b5", "baseurl": "https://modelobankauth2018.o3bank.co.uk:4101", "access_token": "18d5a754-0b76-4a8f-9c68-dc5caaf812e2"}
+	_ = ctx
+	i := Input{Endpoint: "/accounts", Method: "POST",
+		Generation: map[string]string{
+			"strategy": "consenturl",
+		},
+		Claims: map[string]string{
+			"aud":          "$baseurl",
+			"iss":          "8672384e-9a33-439f-8924-67bb14340d71",
+			"scope":        "openid accounts",
+			"redirect_url": "https://test.example.co.uk/redir",
+			"consentId":    "$consent_id",
+			"responseType": "code",
+		}}
+	tc := TestCase{Input: i, Context: ctx}
+	res, err := i.CreateRequest(&tc, &ctx)
+	assert.NoError(t, err, "create request should succeed")
+	assert.NotNil(t, res)
+	fmt.Printf("%s\n", i.String())
 
 }

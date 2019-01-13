@@ -74,13 +74,12 @@ func (i *Input) CreateRequest(tc *TestCase, ctx *Context) (*resty.Request, error
 }
 
 func (i *Input) setClaims(tc *TestCase, ctx *Context) error {
-	var err error
 	for k, v := range i.Claims {
-		i.Claims[k], err = ReplaceContextField(v, ctx)
+		value, err := ReplaceContextField(v, ctx)
 		if err != nil {
 			return i.AppErr(fmt.Sprintf("setClaims Replace Context value %s :%s", v, err.Error()))
 		}
-
+		i.Claims[k] = value
 		i.AppMsg(fmt.Sprintf("Claims [%s:%s]", k, i.Claims[k]))
 	}
 
@@ -91,7 +90,6 @@ func (i *Input) setClaims(tc *TestCase, ctx *Context) error {
 			if err != nil {
 				return i.AppErr(fmt.Sprintf("error creating AlgNoneJWT %s", err.Error()))
 			}
-			_ = token
 			i.AppMsg(fmt.Sprintf("jwt consent Token: %s", token))
 			consent := i.Claims["aud"] + "/auth?" + "client_id=" + i.Claims["iss"] + "&response_type=" + i.Claims["responseType"] + "&scope=" + url.QueryEscape(i.Claims["scope"]) + "&request=" + token
 
@@ -152,7 +150,7 @@ func (i *Input) AppErr(msg string) error {
 
 // String - object represetation
 func (i *Input) String() string {
-	bites, err := json.Marshal(i)
+	bites, err := json.MarshalIndent(i, "", "    ")
 	if err != nil {
 		// String() doesn't return error but still want to log as error to tracer ...
 		return i.AppErr(fmt.Sprintf("error converting Input %s %s %s", i.Method, i.Endpoint, err.Error())).Error()

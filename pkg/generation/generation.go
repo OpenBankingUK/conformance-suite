@@ -78,7 +78,16 @@ func GetCustomTestCases(discoReader *discovery.CustomTest) SpecificationTestCase
 		testcases = append(testcases, testcase)
 	}
 	specTestCases.TestCases = testcases
+	dumpTestCases(testcases)
 	return specTestCases
+}
+
+func dumpTestCases(testcases []model.TestCase) {
+	var model []byte
+	model, _ = json.MarshalIndent(testcases, "", "    ")
+	_ = model
+	fmt.Println(string(model[:]))
+
 }
 
 // check if a response code is in the range 200-299 - therefore a 'good' response code
