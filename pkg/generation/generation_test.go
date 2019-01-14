@@ -21,7 +21,7 @@ func ExampleGetImplementedTestCases() {
 	testNo := 1000
 
 	for _, v := range disco.DiscoveryModel.DiscoveryItems {
-		result := GetImplementedTestCases(&v, false, testNo)
+		result := GetImplementedTestCases(&v, testNo)
 		results = append(results, result...)
 		testNo += 1000
 	}

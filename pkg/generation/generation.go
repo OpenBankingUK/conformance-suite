@@ -21,24 +21,20 @@ import (
 // GetImplementedTestCases takes a discovery Model and determines the implemented endpoints.
 // Currently this function is experimental - meaning it contains fmt.Printlns as an aid to understanding
 // and conceptualisation
-func GetImplementedTestCases(disco *discovery.ModelDiscoveryItem, print bool, beginTestNo int) []model.TestCase {
+func GetImplementedTestCases(disco *discovery.ModelDiscoveryItem, beginTestNo int) []model.TestCase {
 	var testcases []model.TestCase
 	endpoints := disco.Endpoints
 	testNo := beginTestNo
 	doc, err := loadSpec(disco.APISpecification.SchemaVersion, false)
 	if err != nil {
-		fmt.Println(err)
+		logrus.Errorln(err)
 		return testcases
 	}
 
 	for _, v := range endpoints {
 		var responseCodes []int
 		var goodResponseCode int
-		condition := getConditionality(v.Method, v.Path, disco.APISpecification.SchemaVersion)
 		newpath := getResourceIds(disco, v.Path)
-		if print {
-			fmt.Printf("[%s] %s %s\n", condition, v.Method, newpath)
-		}
 
 		for path, props := range doc.Spec().Paths.Paths {
 			for meth, op := range getOperations(&props) {
@@ -54,9 +50,18 @@ func GetImplementedTestCases(disco *discovery.ModelDiscoveryItem, print bool, be
 						}).Warn("Cannot get good response code")
 						continue
 					}
-					input := model.Input{Method: meth, Endpoint: newpath}
+					headers := map[string]string{
+						"authorization":         "Bearer $access_token",
+						"X-Fapi-Financial-Id":   "0015800001041RHAAY",
+						"X-Fapi-Interaction-Id": "b4405450-febe-11e8-80a5-0fcebb1574e1",
+						"Content-Type":          "application/json",
+						"User-Agent":            "Open Banking Conformance Suite v0.2.0-alpha",
+						"Accept":                "*/*",
+					}
+					input := model.Input{Method: meth, Endpoint: newpath, Headers: headers}
 					expect := model.Expect{StatusCode: goodResponseCode, SchemaValidation: true}
-					testcase := model.TestCase{ID: fmt.Sprintf("#t%4.4d", testNo), Input: input, Expect: expect, Name: op.Summary}
+					context := model.Context{"baseurl": disco.ResourceBaseURI}
+					testcase := model.TestCase{ID: fmt.Sprintf("#t%4.4d", testNo), Input: input, Context: context, Expect: expect, Name: op.Summary}
 					testcases = append(testcases, testcase)
 					testNo++
 					break

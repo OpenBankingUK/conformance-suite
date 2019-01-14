@@ -35,14 +35,14 @@ func (g generator) GenerateSpecificationTestCases(discovery discovery.ModelDisco
 
 	// Assumes testNo is used as the base for all testcase IDs - to keep testcase IDs unique
 	testNo := 1000
-	for key, item := range discovery.DiscoveryItems {
-		results[key] = generateSpecificationTestCases(item, testNo)
+	for _, item := range discovery.DiscoveryItems {
+		results = append(results, generateSpecificationTestCases(item, testNo))
 		testNo += 1000
 	}
 	return results
 }
 
 func generateSpecificationTestCases(item discovery.ModelDiscoveryItem, testNo int) SpecificationTestCases {
-	testCases := GetImplementedTestCases(&item, false, testNo)
+	testCases := GetImplementedTestCases(&item, testNo)
 	return SpecificationTestCases{Specification: item.APISpecification, TestCases: testCases}
 }
