@@ -15,7 +15,8 @@ import (
 )
 
 type configHandlers struct {
-	server *Server
+	server     *Server
+	webJourney Journey
 }
 
 // POST /api/config
@@ -82,7 +83,6 @@ func (h *configHandlers) configGlobalPostHandler(c echo.Context) error {
 			NewErrorResponse(errors.Wrap(err, "error with Bind")),
 		)
 	}
-	h.server.logger.Debugf("Server:configGlobalPostHandler -> globalConfiguration=%+v", globalConfiguration)
 
 	certificateSigning, err := authentication.NewCertificate(
 		globalConfiguration.SigningPublic,
@@ -94,7 +94,7 @@ func (h *configHandlers) configGlobalPostHandler(c echo.Context) error {
 			NewErrorResponse(errors.Wrap(err, "error with signing certificate")),
 		)
 	}
-	h.server.logger.Debugf("Server:configGlobalPostHandler -> certificateSigning=%+v", certificateSigning)
+	h.webJourney.SetCertificateSigning(certificateSigning)
 
 	certificateTransport, err := authentication.NewCertificate(
 		globalConfiguration.TransportPublic,
@@ -106,7 +106,7 @@ func (h *configHandlers) configGlobalPostHandler(c echo.Context) error {
 			NewErrorResponse(errors.Wrap(err, "error with transport certificate")),
 		)
 	}
-	h.server.logger.Debugf("Server:configGlobalPostHandler -> certificateTransport=%+v", certificateTransport)
+	h.webJourney.SetCertificateTransport(certificateTransport)
 
 	return c.JSON(http.StatusCreated, globalConfiguration)
 }

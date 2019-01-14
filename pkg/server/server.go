@@ -2,13 +2,13 @@ package server
 
 import (
 	"context"
+	"errors"
 	"net/http"
 	"strings"
 	"time"
 
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/generation"
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/web"
 
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
 
@@ -19,7 +19,7 @@ import (
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
 	"github.com/sirupsen/logrus"
-	"gopkg.in/go-playground/validator.v9"
+	validator "gopkg.in/go-playground/validator.v9"
 )
 
 // GlobalConfiguration holds:
@@ -48,8 +48,8 @@ func (cv *CustomValidator) Validate(i interface{}) error {
 // Server wraps *echo.Echo and stores the proxy once configured.
 type Server struct {
 	*echo.Echo // Wrap (using composition) *echo.Echo, allows us to pretend Server is echo.Echo.
-	proxy  *http.Server
-	logger *logrus.Entry
+	proxy      *http.Server
+	logger     *logrus.Entry
 }
 
 // NewServer returns new echo.Echo server.
@@ -89,7 +89,7 @@ func NewServer(
 
 	validatorEngine := discovery.NewFuncValidator(checker)
 	testGenerator := generation.NewGenerator()
-	webJourney := web.NewWebJourney(testGenerator, validatorEngine)
+	webJourney := NewWebJourney(testGenerator, validatorEngine)
 
 	// https://echo.labstack.com/guide/request#validate-data
 	validator := validator.New()
@@ -104,7 +104,7 @@ func NewServer(
 	// serve WebSocket
 	api.GET("/ws", wsHandler.Handle)
 
-	configHandlers := &configHandlers{server}
+	configHandlers := &configHandlers{server, webJourney}
 	// endpoints to post a config and setup the proxy server
 	api.POST("/config", configHandlers.configPostHandler)
 	api.DELETE("/config", configHandlers.configDeleteHandler)
@@ -118,6 +118,10 @@ func NewServer(
 	// endpoints for test cases
 	testCaseHandlers := newTestCaseHandlers(webJourney)
 	api.GET("/test-cases", testCaseHandlers.testCasesHandler)
+
+	// endpoints for initiating a test run
+	runHandlers := &runHandlers{webJourney}
+	api.POST("/run/start", runHandlers.runStartPostHandler)
 
 	// endpoints for reporting
 	reportingEndpoints := newReportingEndpoints(webJourney)
@@ -137,7 +141,7 @@ func (s *Server) logRoutes() {
 // Shutdown the server and the proxy if it is alive
 func (s *Server) Shutdown(ctx context.Context) error {
 	if s.proxy != nil {
-		if err := s.proxy.Shutdown(nil); err != nil {
+		if err := s.proxy.Shutdown(context.TODO()); err != nil {
 			s.logger.Errorln("Server:Shutdown -> s.proxy.Shutdown err=", err)
 			return err
 		}
@@ -145,6 +149,7 @@ func (s *Server) Shutdown(ctx context.Context) error {
 
 	if s.Echo == nil {
 		s.logger.Errorf("Server:Shutdown -> s.Echo=%p\n", s.Echo)
+		return errors.New(`e.Echo == nil in Server:Shutdown`)
 	}
 
 	if err := s.Echo.Shutdown(ctx); err != nil {
