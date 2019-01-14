@@ -17,23 +17,11 @@
               </ul>
             </b-alert>
           </div>
-
-          <AceEditor
-            :ref="editorName"
-            :name="editorName"
-            :fontSize="12"
-            :showPrintMargin="false"
-            :showGutter="true"
-            :highlightActiveLine="true"
-            :value="discoveryModelString"
-            :onChange="onChange"
-            :editorProps="{$blockScrolling: Infinity}"
-            :focus="true"
-            :annotations="problemAnnotations"
-            mode="json"
-            theme="chrome"
-            class="editor panel-body"
-            width="100%"
+          <JsonEditor
+            :problemAnnotations="problemAnnotations"
+            :jsonString="discoveryModelString"
+            editorName="discovery-config-editor"
+            setChangeFunctionName="config/setDiscoveryModel"
           />
         </div>
         <WizardFooter/>
@@ -44,12 +32,9 @@
 
 <script>
 import * as _ from 'lodash';
-import 'brace';
-import 'brace/mode/json';
-import 'brace/theme/chrome';
-import { Ace as AceEditor } from 'vue2-brace-editor';
 import { mapGetters, mapActions } from 'vuex';
 
+import JsonEditor from './JsonEditor.vue';
 import WizardFooter from './WizardFooter.vue';
 import discovery from '../../api/discovery';
 
@@ -60,16 +45,7 @@ export default {
   name: 'DiscoveryConfig',
   components: {
     WizardFooter,
-    AceEditor,
-  },
-  props: {
-    editorName: {
-      type: String,
-      private: true,
-      default() {
-        return 'discovery-config-editor';
-      },
-    },
+    JsonEditor,
   },
   computed: {
     ...mapGetters('config', [
@@ -151,19 +127,6 @@ export default {
       }
       return true;
     },
-    onChange(editorString) {
-      this.setDiscoveryModel(editorString);
-    },
-    // Resize the editor to use available space in the parent container.
-    // The editor does not dynamically resize itself to fill up available
-    // height so this is necessary.
-    resizeEditor() {
-      const aceEditorComponent = this.$refs[this.editorName];
-      this.$nextTick(() => {
-        const force = true;
-        aceEditorComponent.editor.resize(force);
-      });
-    },
   },
   // Prevent user from progressing FORWARD only if the Discovery Config is invalid.
   // They can navigate backwards, however.
@@ -212,14 +175,4 @@ export default {
 </script>
 
 <style scoped>
-.editor {
-  border: 1px solid lightgrey;
-  width: auto !important;
-  flex: 1;
-}
-
-.problems code {
-  max-height: 30vh;
-  overflow: scroll;
-}
 </style>

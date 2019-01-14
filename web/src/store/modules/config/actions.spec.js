@@ -65,48 +65,82 @@ describe('validateDiscoveryConfig', () => {
   });
 });
 
-describe('setDiscoveryModel', () => {
-  let commit;
-  beforeEach(() => {
-    commit = jest.fn();
-  });
-
-  describe('with invalid JSON string', () => {
-    it('commits problems', () => {
-      const state = {
-        discoveryModel: {},
-      };
-      actions.setDiscoveryModel({ commit, state }, '{');
-      expect(commit).toHaveBeenCalledWith('DISCOVERY_MODEL_PROBLEMS', [{
-        error: 'Unexpected end of JSON input',
-        key: null,
-      }]);
+[
+  {
+    action: 'setDiscoveryModel',
+    property: 'discoveryModel',
+    successMutation: types.SET_DISCOVERY_MODEL,
+    errorMutation: types.DISCOVERY_MODEL_PROBLEMS,
+    expectedErrors: [{
+      error: 'Unexpected end of JSON input',
+      key: null,
+    }],
+    initialState: {},
+    validJSON: '{"a": 1}',
+    expectedState: { a: 1 },
+  },
+  {
+    action: 'setConfigurationJSON',
+    property: 'configuration',
+    successMutation: types.SET_CONFIGURATION,
+    errorMutation: types.SET_CONFIGURATION_ERRORS,
+    expectedErrors: ['Unexpected end of JSON input'],
+    initialState: {
+      signing_private: '',
+      signing_public: '',
+      transport_private: '',
+      transport_public: '',
+    },
+    validJSON: '{"a": 1, "signing_private": "test"}',
+    expectedState: {
+      signing_private: 'test',
+      signing_public: '',
+      transport_private: '',
+      transport_public: '',
+    },
+  },
+].forEach(({
+  action, property, successMutation, errorMutation, expectedErrors, initialState,
+  validJSON, expectedState,
+}) => {
+  describe(action, () => {
+    const state = {
+      [property]: initialState,
+    };
+    let commit;
+    beforeEach(() => {
+      commit = jest.fn();
     });
 
-    it('does not commit discovery model', () => {
-      const state = {
-        discoveryModel: {},
-      };
-      actions.setDiscoveryModel({ commit, state }, '{');
-      expect(commit).not.toHaveBeenCalledWith('SET_DISCOVERY_MODEL', '{');
-    });
-  });
-
-  describe('with valid JSON string', () => {
-    it('commits parsed JSON', () => {
-      const state = {
-        discoveryModel: {},
-      };
-      actions.setDiscoveryModel({ commit, state }, '{"a": 1}');
-      expect(commit).toHaveBeenCalledWith('SET_DISCOVERY_MODEL', { a: 1 });
+    describe('with JSON string equal to current state', () => {
+      it('does not commit value', () => {
+        actions[action]({ commit, state }, '{}');
+        expect(commit).not.toHaveBeenCalledWith(successMutation, '{}');
+      });
     });
 
-    it('commits null problems', () => {
-      const state = {
-        discoveryModel: {},
-      };
-      actions.setDiscoveryModel({ commit, state }, '{"a": 1}');
-      expect(commit).toHaveBeenCalledWith('DISCOVERY_MODEL_PROBLEMS', null);
+    describe('with invalid JSON string', () => {
+      it('commits problems', () => {
+        actions[action]({ commit, state }, '{');
+        expect(commit).toHaveBeenCalledWith(errorMutation, expectedErrors);
+      });
+
+      it('does not commit value', () => {
+        actions[action]({ commit, state }, '{');
+        expect(commit).not.toHaveBeenCalledWith(successMutation, '{');
+      });
+    });
+
+    describe('with valid JSON string', () => {
+      it('commits parsed JSON', () => {
+        actions[action]({ commit, state }, validJSON);
+        expect(commit).toHaveBeenCalledWith(successMutation, expectedState);
+      });
+
+      it('commits null problems', () => {
+        actions[action]({ commit, state }, validJSON);
+        expect(commit).toHaveBeenCalledWith(errorMutation, null);
+      });
     });
   });
 });
