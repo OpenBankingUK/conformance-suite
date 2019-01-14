@@ -2,7 +2,7 @@
     "discoveryModel": {
       "name": "ob-v3.0-ozone",
       "description": "An Open Banking UK discovery template for v3.0 of Accounts & Payments with pre-populated model Bank (Ozone) data.",
-      "discovery-version": "v0.1.0",
+      "discovery-version": "v0.2.0",
       "discoveryItems": [
         {
           "apiSpecification": {

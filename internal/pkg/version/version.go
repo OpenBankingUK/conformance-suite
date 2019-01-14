@@ -1,4 +1,4 @@
-// Package version contains version information for Functional Conformance Suite.
+	// Package version contains version information for Functional Conformance Suite.
 package version
 
 import (
@@ -16,14 +16,14 @@ import (
 const (
 	// Version must conform to the format expected, major, minor and patch.
 	major = "0"
-	minor = "1"
+	minor = "2"
 	patch = "0"
 	// Version is the full string version of Conformance Suite.
 	FullVersion = major + "." + minor + "." + patch
 	// VersionPrerelease is pre-release marker for the version. If this is "" (empty string)
 	// then it means that it is a final release. Otherwise, this is a pre-release
 	// such as "alpha", "beta", "rc1", etc.
-	Prerelease = "pre-alpha"
+	Prerelease = "alpha"
 )
 
 // Version helper with capability to get release versions from source control repository

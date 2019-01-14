@@ -2,13 +2,11 @@ package discovery
 
 import (
 	"errors"
-	"io/ioutil"
 	"testing"
 
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 )
 
 // conditionalityCheckerMock - implements model.ConditionalityChecker interface for tests
@@ -60,7 +58,7 @@ func testUnmarshalDiscoveryJSON(t *testing.T, discoveryJSON string) *Model {
 func discoveryStub(field string, value string) string {
 	name := "ob-v3.0-generic"
 	description := "An Open Banking UK generic discovery template for v3.0 of Accounts and Payments."
-	version := "v0.1.0"
+	version := "v0.2.0"
 	specName := "Account and Transaction API Specification"
 	specURL := "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/642090641/Account+and+Transaction+API+Specification+-+v3.0"
 	specVersion := "v3.0"
@@ -417,208 +415,8 @@ func TestValidate(t *testing.T) {
 	})
 }
 
-func TestDiscovery_FromJSONString_Valid(t *testing.T) {
-	discoveryExample, err := ioutil.ReadFile("./templates/ob-v3.0-ozone.json")
-	require.NoError(t, err)
-	require.NotNil(t, discoveryExample)
-	config := string(discoveryExample)
-
-	accountAPIDiscoveryItem := ModelDiscoveryItem{
-		APISpecification: ModelAPISpecification{
-			Name:          "Account and Transaction API Specification",
-			URL:           "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/642090641/Account+and+Transaction+API+Specification+-+v3.0",
-			Version:       "v3.0",
-			SchemaVersion: "https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.0.0/dist/account-info-swagger.json",
-		},
-		OpenidConfigurationURI: "https://modelobankauth2018.o3bank.co.uk:4101/.well-known/openid-configuration",
-		ResourceBaseURI:        "https://modelobank2018.o3bank.co.uk:4501/open-banking/v3.0/",
-		Endpoints: []ModelEndpoint{
-			{
-				Method:                "POST",
-				Path:                  "/account-access-consents",
-				ConditionalProperties: []ModelConditionalProperties(nil),
-			},
-			{
-				Method:                "GET",
-				Path:                  "/account-access-consents/{ConsentId}",
-				ConditionalProperties: []ModelConditionalProperties(nil),
-			},
-			{Method: "DELETE",
-				Path:                  "/account-access-consents/{ConsentId}",
-				ConditionalProperties: []ModelConditionalProperties(nil),
-			},
-
-			{
-				Method:                "GET",
-				Path:                  "/accounts",
-				ConditionalProperties: []ModelConditionalProperties(nil),
-			},
-			{
-				Method:                "GET",
-				Path:                  "/accounts/{AccountId}",
-				ConditionalProperties: []ModelConditionalProperties(nil),
-			},
-			{
-				Method:                "GET",
-				Path:                  "/accounts/{AccountId}/balances",
-				ConditionalProperties: []ModelConditionalProperties(nil),
-			},
-			{
-				Method:                "GET",
-				Path:                  "/accounts/{AccountId}/beneficiaries",
-				ConditionalProperties: []ModelConditionalProperties(nil),
-			},
-			{
-				Method:                "GET",
-				Path:                  "/accounts/{AccountId}/direct-debits",
-				ConditionalProperties: []ModelConditionalProperties(nil),
-			},
-			{
-				Method:                "GET",
-				Path:                  "/accounts/{AccountId}/offers",
-				ConditionalProperties: []ModelConditionalProperties(nil),
-			},
-			{
-				Method:                "GET",
-				Path:                  "/accounts/{AccountId}/party",
-				ConditionalProperties: []ModelConditionalProperties(nil),
-			},
-			{
-				Method:                "GET",
-				Path:                  "/accounts/{AccountId}/product",
-				ConditionalProperties: []ModelConditionalProperties(nil),
-			},
-			{
-				Method:                "GET",
-				Path:                  "/accounts/{AccountId}/scheduled-payments",
-				ConditionalProperties: []ModelConditionalProperties(nil),
-			},
-			{
-				Method:                "GET",
-				Path:                  "/accounts/{AccountId}/standing-orders",
-				ConditionalProperties: []ModelConditionalProperties(nil),
-			},
-			{
-				Method:                "GET",
-				Path:                  "/accounts/{AccountId}/statements",
-				ConditionalProperties: []ModelConditionalProperties(nil),
-			},
-			{
-				Method:                "GET",
-				Path:                  "/accounts/{AccountId}/statements/{StatementId}",
-				ConditionalProperties: []ModelConditionalProperties(nil),
-			},
-			{
-				Method:                "GET",
-				Path:                  "/accounts/{AccountId}/statements/{StatementId}/file",
-				ConditionalProperties: []ModelConditionalProperties(nil),
-			},
-			{
-				Method:                "GET",
-				Path:                  "/accounts/{AccountId}/statements/{StatementId}/transactions",
-				ConditionalProperties: []ModelConditionalProperties(nil),
-			},
-			{Method: "GET",
-				Path: "/accounts/{AccountId}/transactions",
-				ConditionalProperties: []ModelConditionalProperties{
-					{
-						Schema:   "OBTransaction3Detail",
-						Property: "Balance",
-						Path:     "Data.Transaction.*.Balance",
-					},
-					{
-						Schema:   "OBTransaction3Detail",
-						Property: "MerchantDetails",
-						Path:     "Data.Transaction.*.MerchantDetails",
-					},
-					{
-						Schema:   "OBTransaction3Basic",
-						Property: "TransactionReference",
-						Path:     "Data.Transaction.*.TransactionReference",
-					},
-					{
-						Schema:   "OBTransaction3Detail",
-						Property: "TransactionReference",
-						Path:     "Data.Transaction.*.TransactionReference",
-					},
-				},
-			},
-			{
-				Method:                "GET",
-				Path:                  "/balances",
-				ConditionalProperties: []ModelConditionalProperties(nil),
-			},
-			{
-				Method:                "GET",
-				Path:                  "/beneficiaries",
-				ConditionalProperties: []ModelConditionalProperties(nil),
-			},
-			{
-				Method:                "GET",
-				Path:                  "/direct-debits",
-				ConditionalProperties: []ModelConditionalProperties(nil),
-			},
-			{
-				Method:                "GET",
-				Path:                  "/offers",
-				ConditionalProperties: []ModelConditionalProperties(nil),
-			},
-			{
-				Method:                "GET",
-				Path:                  "/party",
-				ConditionalProperties: []ModelConditionalProperties(nil),
-			},
-			{
-				Method:                "GET",
-				Path:                  "/products",
-				ConditionalProperties: []ModelConditionalProperties(nil),
-			},
-			{
-				Method:                "GET",
-				Path:                  "/scheduled-payments",
-				ConditionalProperties: []ModelConditionalProperties(nil),
-			},
-			{
-				Method:                "GET",
-				Path:                  "/standing-orders",
-				ConditionalProperties: []ModelConditionalProperties(nil),
-			},
-			{
-				Method:                "GET",
-				Path:                  "/statements",
-				ConditionalProperties: []ModelConditionalProperties(nil),
-			},
-			{
-				Method:                "GET",
-				Path:                  "/transactions",
-				ConditionalProperties: []ModelConditionalProperties(nil),
-			},
-		},
-	}
-
-	modelActual, err := UnmarshalDiscoveryJSON(config)
-	assert.NoError(t, err)
-	assert.NotNil(t, modelActual.DiscoveryModel)
-	discoveryModel := modelActual.DiscoveryModel
-
-	t.Run("model has a version", func(t *testing.T) {
-		assert := assert.New(t)
-		assert.Equal(discoveryModel.DiscoveryVersion, "v0.1.0")
-	})
-
-	t.Run("model has correct number of discovery items", func(t *testing.T) {
-		assert := assert.New(t)
-		assert.Equal(len(discoveryModel.DiscoveryItems), 2)
-	})
-
-	t.Run("model has correct discovery item contents", func(t *testing.T) {
-		assert := assert.New(t)
-		assert.Equal(accountAPIDiscoveryItem, discoveryModel.DiscoveryItems[0])
-	})
-}
-
 func TestDiscovery_Version(t *testing.T) {
 	assert := assert.New(t)
 
-	assert.Equal(Version(), "v0.1.0")
+	assert.Equal(Version(), "v0.2.0")
 }

@@ -75,5 +75,28 @@ export default {
 
     return data;
   },
+  /**
+   * Calls POST `/api/run/start`.
+   */
+  async executeTestCases() {
+    const input = `${INPUT_PREFIX}/run/start`;
+    const init = {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json; charset=UTF-8',
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+    };
+    const response = await fetch(input, init);
+    const data = await response.json();
+
+    // `fetch` does not throw an error even when status is not 201.
+    // See: https://github.com/whatwg/fetch/issues/18
+    if (response.status !== 201) {
+      throw data;
+    }
+
+    return data;
+  },
   ...discovery,
 };

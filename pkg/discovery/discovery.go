@@ -16,6 +16,7 @@ type ModelDiscovery struct {
 	Description      string               `json:"description" validate:"required"`
 	DiscoveryVersion string               `json:"discoveryVersion" validate:"required"`
 	DiscoveryItems   []ModelDiscoveryItem `json:"discoveryItems" validate:"required,gt=0,dive"`
+	CustomTests      []CustomTest         `json:"customTests" validate:"-"`
 }
 
 // ModelDiscoveryItem - Each discovery item contains information related to a particular specification version.
@@ -23,7 +24,7 @@ type ModelDiscoveryItem struct {
 	APISpecification       ModelAPISpecification `json:"apiSpecification,omitempty" validate:"required"`
 	OpenidConfigurationURI string                `json:"openidConfigurationUri,omitempty" validate:"required,url"`
 	ResourceBaseURI        string                `json:"resourceBaseUri,omitempty" validate:"required,url"`
-	ResourceIds            ResourceIds           `json:"resourceIds,omitempty"`
+	ResourceIds            ResourceIds           `json:"resourceIds,omitempty" validate:"-"`
 	Endpoints              []ModelEndpoint       `json:"endpoints,omitempty" validate:"required,gt=0,dive"`
 }
 

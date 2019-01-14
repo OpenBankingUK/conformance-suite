@@ -3,15 +3,14 @@ package server
 import (
 	"net/http"
 
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/web"
 	"github.com/labstack/echo"
 )
 
 type reportingEndpoints struct {
-	webJourney web.Journey
+	webJourney Journey
 }
 
-func newReportingEndpoints(webJourney web.Journey) reportingEndpoints {
+func newReportingEndpoints(webJourney Journey) reportingEndpoints {
 	return reportingEndpoints{webJourney}
 }
 

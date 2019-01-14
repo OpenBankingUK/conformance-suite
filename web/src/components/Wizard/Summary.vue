@@ -16,8 +16,11 @@
             </b-alert>
           </div>
 
-          <TestCaseResults :test-case-results="testCaseResults"
-                           v-else-if="!hasErrors"/>
+          <TestCaseResults
+            v-else-if="!hasErrors"
+            :test-case-results="testCaseResults"/>
+
+          <p>{{ JSON.stringify(execution) }}</p>
         </div>
         <WizardFooter/>
       </div>
@@ -46,6 +49,7 @@ export default {
   computed: {
     ...mapState({
       testCaseResults: 'testCaseResults',
+      execution: 'execution',
     }),
     errors() {
       return this.$store.getters['config/errors'].testCases;
