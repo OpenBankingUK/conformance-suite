@@ -1,4 +1,4 @@
-	// Package version contains version information for Functional Conformance Suite.
+// Package version contains version information for Functional Conformance Suite.
 package version
 
 import (
@@ -34,7 +34,7 @@ type Version struct {
 
 // New returns a new instance of Version. bitBucketAPIRepository
 func New(bitBucketAPIRepository string) Version {
-		return Version{
+	return Version{
 		bitBucketAPIRepository: bitBucketAPIRepository,
 	}
 }
