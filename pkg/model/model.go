@@ -344,24 +344,6 @@ func (r *Rule) GetPermissionSets() (included, excluded []string) {
 	return includedSet.GetPermissions(), excludedSet.GetPermissions()
 }
 
-// ReplaceField -
-func ReplaceField(source string, ctx map[string]string) (string, error) {
-	field, isReplacement, err := getReplacementField(source)
-	if err != nil {
-		return "", err
-	}
-	if !isReplacement {
-		return source, nil
-	}
-	replacement := ctx[field]
-	if replacement == "" {
-		return "", nil
-	}
-
-	result := strings.Replace(source, field, replacement, 1)
-	return result, nil
-}
-
 // ReplaceContextField -
 func ReplaceContextField(source string, ctx *Context) (string, error) {
 	field, isReplacement, err := getReplacementField(source)
@@ -377,10 +359,10 @@ func ReplaceContextField(source string, ctx *Context) (string, error) {
 	replacement := ctx.Get(field)
 	contextField, ok := replacement.(string)
 	if !ok {
-		return "", err
+		return source, err
 	}
 	if len(contextField) == 0 {
-		return "", errors.New("replacement not found in context: " + source)
+		return source, errors.New("replacement not found in context: " + source)
 	}
 	result := strings.Replace(source, "$"+field, contextField, 1)
 	return result, nil
@@ -389,6 +371,7 @@ func ReplaceContextField(source string, ctx *Context) (string, error) {
 // GetReplacementField examines the input string and returns the first character
 // sequence beginning with '$' and ending with whitespace. '$$' sequence acts as an escape value
 // A zero length string is return if now Replacement Fields are found
+// returns a boolean to indicate if the field contains a field beginning with a $
 func getReplacementField(stringToCheck string) (string, bool, error) {
 	index := strings.Index(stringToCheck, "$")
 	if index == -1 {
@@ -405,32 +388,31 @@ func getReplacementField(stringToCheck string) (string, bool, error) {
 	return result[len(result)-1], true, nil
 }
 
-// ShrinkDoubleDollar -  shrink $$ down to $ in stringToCheck
-func ShrinkDoubleDollar(stringToCheck string) (string, error) {
-	doubleDollar, err := regexp.Compile(`\s+(\$\$)\w+`)
-	if err != nil {
-		return "", err
-	}
-	result := doubleDollar.FindAllStringSubmatchIndex(stringToCheck, -1)
-	if result == nil {
-		return "", nil
+// ProcessReplacementFields prefixed by '$' in the testcase Input and Context sections
+// Call to pre-process custom test cases from discovery model
+func (t *TestCase) ProcessReplacementFields(rep map[string]string) {
+	ctx := Context{}
+	for k, v := range rep {
+		ctx.Put(k, v)
 	}
 
-	var ending = stringToCheck[result[1][1]:]
-	for i := len(result) - 1; i >= 0; i-- {
-		start := result[i][0]
-		end := result[i][1]
-		ending = stringToCheck[start:start+1] + stringToCheck[start+2:end] + ending
-	}
-	if result[0][0] > 0 {
-		ending = stringToCheck[0:result[0][0]] + ending
-	}
+	t.Input.Endpoint, _ = ReplaceContextField(t.Input.Endpoint, &ctx) // errors if field not present in context - which is ok for this function
+	t.Input.RequestBody, _ = ReplaceContextField(t.Input.RequestBody, &ctx)
 
-	return ending, nil
-}
-
-func replaceAtIndex(in string, r rune, i int) string {
-	out := []rune(in)
-	out[i] = r
-	return string(out)
+	for k := range t.Input.FormData {
+		t.Input.FormData[k], _ = ReplaceContextField(t.Input.FormData[k], &ctx)
+	}
+	for k := range t.Input.Headers {
+		t.Input.Headers[k], _ = ReplaceContextField(t.Input.Headers[k], &ctx)
+	}
+	for k := range t.Input.Claims {
+		t.Input.Claims[k], _ = ReplaceContextField(t.Input.Claims[k], &ctx)
+	}
+	for k := range t.Context {
+		param, ok := t.Context[k].(string)
+		if !ok {
+			continue
+		}
+		t.Context[k], _ = ReplaceContextField(param, &ctx)
+	}
 }

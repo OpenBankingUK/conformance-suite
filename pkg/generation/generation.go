@@ -73,21 +73,12 @@ func GetCustomTestCases(discoReader *discovery.CustomTest) SpecificationTestCase
 	spec := discovery.ModelAPISpecification{Name: discoReader.Name}
 	specTestCases := SpecificationTestCases{Specification: spec}
 	testcases := []model.TestCase{}
-
 	for _, testcase := range discoReader.Sequence {
+		testcase.ProcessReplacementFields(discoReader.Replacements)
 		testcases = append(testcases, testcase)
 	}
 	specTestCases.TestCases = testcases
-	dumpTestCases(testcases)
 	return specTestCases
-}
-
-func dumpTestCases(testcases []model.TestCase) {
-	var model []byte
-	model, _ = json.MarshalIndent(testcases, "", "    ")
-	_ = model
-	fmt.Println(string(model[:]))
-
 }
 
 // check if a response code is in the range 200-299 - therefore a 'good' response code
