@@ -1,6 +1,6 @@
 <template>
   <b-form-group
-    :id="`#{id}_group`"
+    :id="groupId"
     :description="description"
     :label="label"
     :label-for="id"
@@ -51,6 +51,9 @@ export default {
     ...mapGetters('config', [
       'configuration',
     ]),
+    groupId() {
+      return `${this.id}_group`;
+    },
     isValid() {
       const contents = this.configuration[this.id];
       if (contents !== this.data) {
@@ -74,14 +77,16 @@ export default {
         // size: 891
         // type: "application/x-iwork-keynote-sffkey"
         // webkitRelativePath: ""
-        return [
-          `Size: ${this.file.size} bytes`,
-          `Last modified: ${this.file.lastModifiedDate}`,
-        ].join('\n');
+        const size = `Size: ${this.file.size} bytes`;
+        if (this.file.lastModifiedDate) {
+          return [
+            size,
+            `Last modified: ${this.file.lastModifiedDate}`,
+          ].join('\n');
+        }
+        return size;
       } else if (contents) {
-        return [
-          `Size: ${contents.length} bytes`,
-        ].join('\n');
+        return `Size: ${contents.length} bytes`;
       }
 
       return '';
@@ -92,7 +97,9 @@ export default {
       'setConfigurationErrors',
     ]),
     clearFile() {
-      this.$refs[this.id].reset();
+      if (this.$refs[this.id] && this.$refs[this.id].reset) {
+        this.$refs[this.id].reset();
+      }
     },
     /**
      * readFile turns FileReader API into a Promise-based one,
