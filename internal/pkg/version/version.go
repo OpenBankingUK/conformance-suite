@@ -72,10 +72,10 @@ func (v Version) GetHumanVersion() string {
 	return version
 }
 
-// Versionformatter takes a string version number and returns just the numeric parts.
+// VersionFormatter takes a string version number and returns just the numeric parts.
 // This function is used when trying to compare two string versions that 'could'
 // have non numerical properties.
-func (v Version) Versionformatter(version string) (string, error) {
+func (v Version) VersionFormatter(version string) (string, error) {
 	const maxByte = 1<<8 - 1
 	vo := make([]byte, 0, len(version)+8)
 	j := -1
@@ -128,9 +128,8 @@ func (v Version) UpdateWarningVersion(version string) (string, bool, error) {
 	resp, err := http.Get(v.bitBucketAPIRepository)
 	if err != nil {
 		// If network error then return message, flag to NOT update and actual error.
-		return errorMessageUI, false, errors.Wrap(err, "Error: HTTP on GET to BitBucket API")
+		return errorMessageUI, false, errors.Wrap(err, "HTTP on GET to BitBucket API")
 	}
-	defer resp.Body.Close()
 
 	if resp.StatusCode == http.StatusOK {
 		body, err := ioutil.ReadAll(resp.Body)
@@ -138,17 +137,22 @@ func (v Version) UpdateWarningVersion(version string) (string, bool, error) {
 			return errorMessageUI, false, errors.Wrap(err, "cannot read body API error.")
 		}
 
+		err = resp.Body.Close()
+		if err != nil {
+			return errorMessageUI, false, errors.Wrap(err, "error on update warning version")
+		}
+
 		s, _ := getTags([]byte(body))
 
 		if len(s.TagList) == 0 {
-			return errorMessageUI, false, fmt.Errorf("No Tags found")
+			return errorMessageUI, false, fmt.Errorf("no Tags found")
 		}
 
 		latestTag := s.TagList[0].Name
 
 		// Format version string to compare.
-		versionLocal, err := v.Versionformatter(version)
-		versionRemote, err := v.Versionformatter(latestTag)
+		versionLocal, err := v.VersionFormatter(version)
+		versionRemote, err := v.VersionFormatter(latestTag)
 
 		if versionLocal < versionRemote {
 			errorMessageUI = fmt.Sprintf("Version v%s of the Conformance Suite is out-of-date, please update to v%s", versionLocal, versionRemote)
