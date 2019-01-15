@@ -19,6 +19,5 @@ func (h *runHandlers) runStartPostHandler(c echo.Context) error {
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, NewErrorResponse(err))
 	}
-	_ = report
-	return c.JSON(http.StatusCreated, result)
+	return c.JSON(http.StatusCreated, report)
 }

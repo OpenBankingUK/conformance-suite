@@ -1,14 +1,11 @@
 package executors
 
 import (
-	"strings"
-
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/authentication"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/generation"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/reporting"
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/tracer"
 	"github.com/sirupsen/logrus"
 	resty "gopkg.in/resty.v1"
 )
@@ -29,13 +26,8 @@ type RunDefinition struct {
 
 // RunTestCases runs the testCases
 func RunTestCases(defn *RunDefinition) (reporting.Result, error) {
-	tracer.Silent = true
 	executor := MakeExecutor()
 	executor.SetCertificates(defn.SigningCert, defn.TransportCert)
-	return runTests(defn, executor)
-}
-
-func runTests(defn *RunDefinition, executor *Executor) (reporting.Result, error) {
 	rulectx := &model.Context{}
 
 	reportTestResults := []reporting.Test{}
@@ -45,30 +37,35 @@ func runTests(defn *RunDefinition, executor *Executor) (reporting.Result, error)
 	for _, spec := range defn.SpecTests {
 		logrus.Println("running " + spec.Specification.Name)
 		for _, testcase := range spec.TestCases {
-			if spec.Specification.Name == "Account and Transaction API Specification" &&
-				strings.Contains(testcase.Input.Endpoint, "/account-access-consents") {
-				continue
-			}
 			req, err := testcase.Prepare(rulectx)
 			if err != nil {
+				reportTestResults = append(reportTestResults, makeTestResult(&testcase, false))
 				logrus.Error(err)
-				return reporting.Result{}, err
+				return reportResult, err
 			}
 			resp, err := executor.ExecuteTestCase(req, &testcase, rulectx)
 			if err != nil {
 				logrus.Error(err)
+				reportTestResults = append(reportTestResults, makeTestResult(&testcase, false))
 				continue
-				//return reporting.Result{}, err
 			}
 
 			result, err := testcase.Validate(resp, rulectx)
 			if err != nil {
 				logrus.Error(err)
-				return reporting.Result{}, err
+				reportTestResults = append(reportTestResults, makeTestResult(&testcase, false))
+				return reportResult, err
 			}
 			reportTestResults = append(reportTestResults, makeTestResult(&testcase, result))
+			logrus.WithFields(logrus.Fields{
+				"testcase":   testcase.Name,
+				"method":     testcase.Input.Method,
+				"endpoint":   testcase.Input.Endpoint,
+				"statuscode": testcase.Expect.StatusCode,
+			}).Info("PASS")
 		}
 	}
+
 	logrus.Println("runTests OK")
 	return reportResult, nil
 }

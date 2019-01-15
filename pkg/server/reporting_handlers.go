@@ -16,7 +16,6 @@ func newReportingEndpoints(webJourney Journey) reportingEndpoints {
 }
 
 func (d reportingEndpoints) handler(c echo.Context) error {
-	//result, err := d.webJourney.RunTests()
 	var err error
 	result := reporting.Result{}
 	if err != nil {

@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io/ioutil"
 	"strings"
 
 	"github.com/sirupsen/logrus"
@@ -21,14 +22,14 @@ import (
 // GetImplementedTestCases takes a discovery Model and determines the implemented endpoints.
 // Currently this function is experimental - meaning it contains fmt.Printlns as an aid to understanding
 // and conceptualisation
-func GetImplementedTestCases(disco *discovery.ModelDiscoveryItem, beginTestNo int) []model.TestCase {
+func GetImplementedTestCases(disco *discovery.ModelDiscoveryItem, beginTestNo int, globalReplacements map[string]string) []model.TestCase {
 	var testcases []model.TestCase
 	endpoints := disco.Endpoints
 	testNo := beginTestNo
 	doc, err := loadSpec(disco.APISpecification.SchemaVersion, false)
 	if err != nil {
 		logrus.Errorln(err)
-		return testcases
+		return nil
 	}
 
 	for _, v := range endpoints {
@@ -47,8 +48,8 @@ func GetImplementedTestCases(disco *discovery.ModelDiscoveryItem, beginTestNo in
 							"method":   meth,
 							"endpoint": newpath,
 							"err":      err,
-						}).Warn("Cannot get good response code")
-						continue
+						}).Error("Cannot get good response code")
+						return nil
 					}
 					headers := map[string]string{
 						"authorization":         "Bearer $access_token",
@@ -58,10 +59,36 @@ func GetImplementedTestCases(disco *discovery.ModelDiscoveryItem, beginTestNo in
 						"User-Agent":            "Open Banking Conformance Suite v0.2.0-alpha",
 						"Accept":                "*/*",
 					}
+
+					if strings.Contains(newpath, "account-access-consents") { // consent endpoints require a different access_token + custom chain
+						headers["authorization"] = "Bearer $client_access_token"
+						logrus.Println("GET TEMPLATED TEST CASE: " + newpath)
+						customTestCases, err := getTemplatedTestCases(newpath)
+						if err != nil {
+							logrus.WithFields(logrus.Fields{
+								"testcase": op.Summary,
+								"method":   meth,
+								"endpoint": newpath,
+								"err":      err,
+							}).Warn("error getting Templated TestCase")
+							return nil
+						}
+						for i := range customTestCases {
+							customTestCases[i].ProcessReplacementFields(globalReplacements)
+						}
+						if customTestCases != nil {
+							testcases = append(testcases, customTestCases...)
+							testNo++
+						}
+
+						continue
+					}
+
 					input := model.Input{Method: meth, Endpoint: newpath, Headers: headers}
 					expect := model.Expect{StatusCode: goodResponseCode, SchemaValidation: true}
 					context := model.Context{"baseurl": disco.ResourceBaseURI}
 					testcase := model.TestCase{ID: fmt.Sprintf("#t%4.4d", testNo), Input: input, Context: context, Expect: expect, Name: op.Summary}
+					testcase.ProcessReplacementFields(globalReplacements)
 					testcases = append(testcases, testcase)
 					testNo++
 					break
@@ -69,8 +96,38 @@ func GetImplementedTestCases(disco *discovery.ModelDiscoveryItem, beginTestNo in
 			}
 		}
 	}
-
+	dumpTestCases(testcases)
 	return testcases
+}
+
+func dumpTestCases(tcs []model.TestCase) {
+	b, err := json.MarshalIndent(tcs, "", "  ")
+	if err != nil {
+		logrus.Errorln(err)
+	}
+	logrus.Println(string(b))
+}
+
+func getTemplatedTestCases(path string) (tc []model.TestCase, err error) {
+	if path == "/account-access-consents" {
+		tc, err = loadTestCaseTemplate("account_consent.json")
+		return tc, err
+	}
+	return tc, nil
+}
+
+func loadTestCaseTemplate(filename string) ([]model.TestCase, error) {
+	filedata, err := ioutil.ReadFile("templates/" + filename)
+	if err != nil {
+		logrus.Error("Cannot read: templates/" + filename + " " + err.Error())
+		return nil, err
+	}
+	testcases := []model.TestCase{}
+	err = json.Unmarshal(filedata, &testcases)
+	if err != nil {
+		return testcases, err
+	}
+	return testcases, nil
 }
 
 // GetCustomTestCases retrieves custom tests from the discovery file
