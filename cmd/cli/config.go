@@ -6,6 +6,7 @@ import (
 	"os"
 )
 
+// Config stores all cli configuration values
 type Config struct {
 	Welcome string
 }
@@ -20,17 +21,17 @@ func mustReadViperEnvConfig() Config {
 }
 
 const (
-	EnvKeyWelcome = "welcome"
+	envKeyWelcome = "welcome"
 )
 
 func readViperEnvConfig() (Config, error) {
 	config := viper.New()
 	config.SetEnvPrefix("fcs")
-	err := config.BindEnv(EnvKeyWelcome)
+	err := config.BindEnv(envKeyWelcome)
 	if err != nil {
 		return Config{}, err
 	}
 	return Config{
-		Welcome: config.GetString(EnvKeyWelcome),
+		Welcome: config.GetString(envKeyWelcome),
 	}, nil
 }
