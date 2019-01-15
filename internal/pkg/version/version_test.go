@@ -2,6 +2,7 @@ package version
 
 import (
 	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/test"
+	"github.com/stretchr/testify/require"
 	"net/http"
 	"testing"
 
@@ -27,10 +28,12 @@ func TestOutOfDateUpdateWarningVersion(t *testing.T) {
 
 	// Use an old version to test.
 	version := "v0.0.0"
-	// Asset that you get update boolean.
-	_, flag, error := v.UpdateWarningVersion(version)
+
+	// Assert that you get update boolean.
+	_, flag, err := v.UpdateWarningVersion(version)
+
+	require.NoError(t, err)
 	assert.Equal(t, true, flag)
-	assert.Equal(t, error, nil)
 }
 
 // TestNoUpdateUpdateWarningVersion asserts no updated required boolean when
@@ -51,15 +54,14 @@ func TestNoUpdateUpdateWarningVersion(t *testing.T) {
 	v := New(serverURL)
 
 	version := "v1000.0.0"
-	message := ""
-	flag := true
-	message, flag, _ = v.UpdateWarningVersion(version)
+	message, flag, err := v.UpdateWarningVersion(version)
+
+	require.NoError(t, err)
 	assert.Equal(t, false, flag)
 	assert.Equal(t, "Conformance Suite is running the latest version "+v.GetHumanVersion(), message)
 	version = FullVersion
 	_, flag, _ = v.UpdateWarningVersion(version)
 	assert.Equal(t, false, flag)
-
 }
 
 // TestBadStatusUpdateWarningVersionFail asserts that an appropriate/correct
@@ -92,13 +94,13 @@ func TestHTTPErrorUpdateWarningVersion(t *testing.T) {
 	// Version helper
 	// Update BitBucketAPIRepository to produce a no such host.
 	v := New("https://.com")
-	message, flag, error := v.UpdateWarningVersion(FullVersion)
+	message, flag, err := v.UpdateWarningVersion(FullVersion)
 	// Assert that update fag is false.
 	assert.Equal(t, flag, false)
 	// Assert the default UI/Human error message is returned.
 	assert.Equal(t, message, "Version check is unavailable at this time.")
-	// Asset that an error() is actually returned.
-	assert.NotEqual(t, error, nil)
+	// Assert that an error() is actually returned.
+	assert.EqualError(t, err, "HTTP on GET to BitBucket API: Get https://.com: dial tcp: lookup .com: no such host")
 
 }
 
@@ -111,14 +113,14 @@ func TestHaveVersionUpdateWarningVersion(t *testing.T) {
 	// Update BitBucketAPIRepository to produce a no such host.
 	v := New("https://api.bitbucket.org/2.0/repositories/openbankingteam/conformance-suite/refs/tags")
 
-	message, flag, error := v.UpdateWarningVersion(version)
+	message, flag, err := v.UpdateWarningVersion(version)
 	// Assert that update fag is false.
 	assert.Equal(t, flag, false)
 	// Assert the default UI/Human error message is returned.
 	assert.Equal(t, message, "Version check is unavailable at this time.")
-	// Asset that an error() is actually returned.
-	assert.NotEqual(t, error, nil)
+	// Assert that an error() is actually returned.
+	assert.NotEqual(t, err, nil)
 	// Assert error message is correct.
-	assert.Errorf(t, error, "no version found")
+	assert.Errorf(t, err, "no version found")
 
 }

@@ -27,7 +27,13 @@ func createRootCommand() *cobra.Command {
 		Use:   "version",
 		Short: "Print the version number of FCS CLI",
 		Run: func(cmd *cobra.Command, args []string) {
-			fmt.Printf("FCS CLI version: %s\n", version.Version)
+			versionChecker := version.New("https://api.bitbucket.org/2.0/repositories/openbankingteam/conformance-suite/refs/tags")
+			fmt.Printf("FCS CLI version: %s\n", versionChecker.GetHumanVersion())
+
+			uiMessage, shouldUpdate, err := versionChecker.UpdateWarningVersion(versionChecker.GetHumanVersion())
+			if err == nil && shouldUpdate {
+				fmt.Println(uiMessage)
+			}
 		},
 	}
 
