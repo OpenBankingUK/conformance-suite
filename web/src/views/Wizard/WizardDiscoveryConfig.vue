@@ -17,14 +17,14 @@
               </ul>
             </b-alert>
           </div>
-          <JsonEditor
-            :problemAnnotations="problemAnnotations"
-            :jsonString="discoveryModelString"
-            editorName="discovery-config-editor"
-            setChangeFunctionName="config/setDiscoveryModel"
+          <TheJsonEditor
+            :problem-annotations="problemAnnotations"
+            :json-string="discoveryModelString"
+            editor-name="discovery-config-editor"
+            set-change-function-name="config/setDiscoveryModel"
           />
         </div>
-        <WizardFooter/>
+        <TheWizardFooter/>
       </div>
     </div>
   </div>
@@ -34,18 +34,18 @@
 import * as _ from 'lodash';
 import { mapGetters, mapActions } from 'vuex';
 
-import JsonEditor from './JsonEditor.vue';
-import WizardFooter from './WizardFooter.vue';
+import TheJsonEditor from '../../components/Wizard/TheJsonEditor.vue';
+import TheWizardFooter from '../../components/Wizard/TheWizardFooter.vue';
 import discovery from '../../api/discovery';
 
 // Bug in Brace editor using wrong Range function means we need to require Range here:
 const AceRange = window.ace.acequire('ace/range').Range;
 
 export default {
-  name: 'DiscoveryConfig',
+  name: 'WizardDiscoveryConfig',
   components: {
-    WizardFooter,
-    JsonEditor,
+    TheWizardFooter,
+    TheJsonEditor,
   },
   computed: {
     ...mapGetters('config', [

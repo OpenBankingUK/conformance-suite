@@ -2,25 +2,25 @@
   <div
     id="config-editor"
     class="p-3">
-    <JsonEditor
-      :jsonString="configurationString"
-      :wrapEnabled="true"
-      editorName="configuration-editor"
-      setChangeFunctionName="config/setConfigurationJSON"
+    <TheJsonEditor
+      :json-string="configurationString"
+      :wrap-enabled="true"
+      editor-name="configuration-editor"
+      set-change-function-name="config/setConfigurationJSON"
     />
   </div>
 </template>
 
 <script>
 import { createNamespacedHelpers } from 'vuex';
-import JsonEditor from './JsonEditor.vue';
+import TheJsonEditor from './TheJsonEditor.vue';
 
 const { mapGetters } = createNamespacedHelpers('config');
 
 export default {
-  name: 'ConfigurationJsonEditor',
+  name: 'TheConfigurationJsonEditor',
   components: {
-    JsonEditor,
+    TheJsonEditor,
   },
   computed: {
     ...mapGetters([

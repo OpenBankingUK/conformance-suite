@@ -23,14 +23,12 @@ export default {
   props: {
     discoveryModel: {
       type: Object,
-      private: true,
       default() {
         return null;
       },
     },
     image: {
       type: String,
-      private: true,
       default() {
         return null;
       },

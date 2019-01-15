@@ -22,7 +22,7 @@
 
           <p>{{ JSON.stringify(execution) }}</p>
         </div>
-        <WizardFooter/>
+        <TheWizardFooter/>
       </div>
     </div>
   </div>
@@ -32,15 +32,15 @@
 import { createNamespacedHelpers } from 'vuex';
 import * as _ from 'lodash';
 
-import WizardFooter from './WizardFooter.vue';
-import TestCaseResults from '../TestCaseResults/TestCaseResults.vue';
+import TheWizardFooter from '../../components/Wizard/TheWizardFooter.vue';
+import TestCaseResults from '../../components/Wizard/TestCaseResults/TestCaseResults.vue';
 
 const { mapActions, mapState } = createNamespacedHelpers('config');
 
 export default {
-  name: 'Summary',
+  name: 'WizardSummary',
   components: {
-    WizardFooter,
+    TheWizardFooter,
     TestCaseResults,
   },
   data() {

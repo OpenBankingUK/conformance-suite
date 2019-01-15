@@ -15,7 +15,7 @@
 import * as _ from 'lodash';
 
 export default {
-  name: 'WizardFooter',
+  name: 'TheWizardFooter',
   components: {},
   data() {
     // normal navigation

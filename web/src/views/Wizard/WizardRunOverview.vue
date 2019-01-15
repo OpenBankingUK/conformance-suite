@@ -19,7 +19,7 @@
             v-else-if="!hasErrors"
             :test-cases="testCases"/>
         </div>
-        <WizardFooter/>
+        <TheWizardFooter/>
       </div>
     </div>
   </div>
@@ -28,15 +28,15 @@
 <script>
 import { createNamespacedHelpers } from 'vuex';
 
-import WizardFooter from './WizardFooter.vue';
-import TestCases from '../TestCases/TestCases.vue';
+import TheWizardFooter from '../../components/Wizard/TheWizardFooter.vue';
+import TestCases from '../../components/Wizard/TestCases/TestCases.vue';
 
 const { mapActions, mapGetters } = createNamespacedHelpers('config');
 
 export default {
-  name: 'RunOverview',
+  name: 'WizardRunOverview',
   components: {
-    WizardFooter,
+    TheWizardFooter,
     TestCases,
   },
   data() {

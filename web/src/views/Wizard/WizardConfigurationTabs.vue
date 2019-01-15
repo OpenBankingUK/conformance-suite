@@ -11,13 +11,13 @@
               <b-tab
                 title="Form view"
                 active>
-                <ConfigurationForm />
+                <TheConfigurationForm />
               </b-tab>
               <b-tab
                 title="JSON view" >
                 <!-- We use v-if to ensure editor renders fresh each toggle to
                      render updates. Otherwise updates do not show on editor. -->
-                <ConfigurationJsonEditor v-if="tabIndex == 1"/>
+                <TheConfigurationJsonEditor v-if="tabIndex == 1"/>
               </b-tab>
             </b-tabs>
             <div v-if="configurationErrors && configurationErrors.length > 0">
@@ -31,7 +31,7 @@
             </div>
           </div>
         </div>
-        <WizardFooter/>
+        <TheWizardFooter/>
       </div>
     </div>
   </div>
@@ -41,16 +41,16 @@
 import * as _ from 'lodash';
 import { mapGetters, mapActions } from 'vuex';
 
-import ConfigurationForm from './ConfigurationForm.vue';
-import ConfigurationJsonEditor from './ConfigurationJsonEditor.vue';
-import WizardFooter from './WizardFooter.vue';
+import TheConfigurationForm from '../../components/Wizard/TheConfigurationForm.vue';
+import TheConfigurationJsonEditor from '../../components/Wizard/TheConfigurationJsonEditor.vue';
+import TheWizardFooter from '../../components/Wizard/TheWizardFooter.vue';
 
 export default {
-  name: 'ConfigurationTabs',
+  name: 'WizardConfigurationTabs',
   components: {
-    ConfigurationForm,
-    ConfigurationJsonEditor,
-    WizardFooter,
+    TheConfigurationForm,
+    TheConfigurationJsonEditor,
+    TheWizardFooter,
   },
   data() {
     return {

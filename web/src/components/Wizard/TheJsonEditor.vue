@@ -2,16 +2,16 @@
   <AceEditor
     :ref="editorName"
     :name="editorName"
-    :fontSize="12"
-    :showPrintMargin="false"
-    :showGutter="true"
-    :highlightActiveLine="true"
+    :font-size="12"
+    :show-print-margin="false"
+    :show-gutter="true"
+    :highlight-active-line="true"
     :value="jsonString"
-    :onChange="onChange"
-    :editorProps="{$blockScrolling: Infinity}"
+    :on-change="onChange"
+    :editor-props="{$blockScrolling: Infinity}"
     :focus="true"
     :annotations="problemAnnotations"
-    :wrapEnabled="wrapEnabled"
+    :wrap-enabled="wrapEnabled"
     mode="json"
     theme="chrome"
     class="editor panel-body"
@@ -27,7 +27,7 @@ import 'brace/theme/chrome';
 import { Ace as AceEditor } from 'vue2-brace-editor';
 
 export default {
-  name: 'JsonEditor',
+  name: 'TheJsonEditor',
   components: {
     AceEditor,
   },

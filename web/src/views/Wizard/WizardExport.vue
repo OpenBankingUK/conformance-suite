@@ -8,19 +8,19 @@
         <div class="flex-fill panel-body">
           <p>body</p>
         </div>
-        <WizardFooter/>
+        <TheWizardFooter/>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import WizardFooter from './WizardFooter.vue';
+import TheWizardFooter from '../../components/Wizard/TheWizardFooter.vue';
 
 export default {
-  name: 'Export',
+  name: 'WizardExport',
   components: {
-    WizardFooter,
+    TheWizardFooter,
   },
   data() {
     return {};
