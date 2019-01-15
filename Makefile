@@ -42,7 +42,7 @@ build: ## build the server binary directly.
 .PHONY: build_cli
 build_cli: ## build the cli binary directly.
 	@echo -e "\033[92m  ---> Building CLI ... \033[0m"
-	go build -o fcs cmd/cli/main.go
+	go build -o fcs cmd/cli/*
 
 .PHONY: build_image
 build_image: ## build the docker image.
