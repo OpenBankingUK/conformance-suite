@@ -7,6 +7,7 @@ import (
 )
 
 func main() {
+	mustReadViperEnvConfig()
 	rootCmd := createRootCommand()
 	if err := rootCmd.Execute(); err != nil {
 		fmt.Println(err)
@@ -29,7 +30,6 @@ func createRootCommand() *cobra.Command {
 		Short: "Print the version number of FCS CLI",
 		Run:   versionCmdWrapper.run,
 	}
-
 	root.AddCommand(versionCmd)
 
 	return root
