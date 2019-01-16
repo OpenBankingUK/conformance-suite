@@ -154,21 +154,4 @@ export default {
   setConfigurationErrors({ commit }, errors) {
     commit(types.SET_CONFIGURATION_ERRORS, errors);
   },
-  /**
-   * Calls /api/report to get all the test cases, then sets the
-   * retrieved test cases in the store.
-   */
-  async computeTestCaseResults({ commit }) {
-    try {
-      const testCaseResults = await api.computeTestCaseResults();
-      commit(types.SET_TEST_CASE_RESULTS, testCaseResults);
-      commit(types.SET_TEST_CASE_RESULTS_ERROR, []);
-      commit(types.SET_WIZARD_STEP, constants.WIZARD.STEP_SIX);
-    } catch (err) {
-      commit(types.SET_TEST_CASE_RESULTS, {});
-      commit(types.SET_TEST_CASE_RESULTS_ERROR, [
-        err,
-      ]);
-    }
-  },
 };

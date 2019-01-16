@@ -29,8 +29,6 @@ export default {
     transport_public: '',
   },
 
-  testCaseResults: {},
-
   errors: {
     configuration: [],
     testCases: [],

@@ -46,10 +46,6 @@ export default {
     state.wizard.step = step;
   },
 
-  [types.SET_TEST_CASE_RESULTS](state, testCaseResults) {
-    state.testCaseResults = testCaseResults;
-  },
-
   [types.SET_TEST_CASE_RESULTS_ERROR](state, errors) {
     state.errors.testCaseResults = errors;
   },
