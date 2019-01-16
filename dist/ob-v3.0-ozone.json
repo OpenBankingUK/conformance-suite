@@ -1,0 +1,199 @@
+{
+  "discoveryModel": {
+    "name": "ob-v3.0-ozone",
+    "description": "An Open Banking UK discovery template for v3.0 of Accounts and Payments with pre-populated model Bank (Ozone) data.",
+    "discoveryVersion": "v0.2.0",
+    "discoveryItems": [{
+      "apiSpecification": {
+        "name": "Account and Transaction API Specification",
+        "url": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/642090641/Account+and+Transaction+API+Specification+-+v3.0",
+        "version": "v3.0",
+        "schemaVersion": "https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.0.0/dist/account-info-swagger.json"
+      },
+      "openidConfigurationUri": "https://modelobankauth2018.o3bank.co.uk:4101/.well-known/openid-configuration",
+      "resourceBaseUri": "https://modelobank2018.o3bank.co.uk:4501/open-banking/v3.0/",
+      "resourceIds": {
+        "AccountId": "500000000000000000000001",
+        "ConsentId": "$consent_id"
+      },
+      "endpoints": [{
+          "method": "POST",
+          "path": "/account-access-consents"
+        },
+        {
+          "method": "GET",
+          "path": "/account-access-consents/{ConsentId}"
+        },
+        {
+          "method": "DELETE",
+          "path": "/account-access-consents/{ConsentId}"
+        },
+        {
+          "method": "GET",
+          "path": "/accounts/{AccountId}/product"
+        },
+        {
+          "method": "GET",
+          "path": "/accounts/{AccountId}/transactions"
+        },
+        {
+          "method": "GET",
+          "path": "/accounts"
+        },
+        {
+          "method": "GET",
+          "path": "/accounts/{AccountId}"
+        },
+        {
+          "method": "GET",
+          "path": "/accounts/{AccountId}/balances"
+        }
+      ]
+    }],
+    "customTests": [{
+      "name": "CustomTest-GetOzoneToken",
+      "description": "testcase sequence to retrieve an ozone token",
+      "order": "beforeRun",
+      "replacementParameters":{
+          "client_id":"",
+          "fapi_financial_id":"",
+          "basic_authentication":"",
+          "token_endpoint":"",
+          "authorisation_endpoint":"",
+          "resource_server":"",
+          "redirect_url":"",
+          "permission_payload":""
+      },
+      "testSequence": [{
+          "@id": "#ct0001",
+          "name": "ClientCredential Grant",
+          "input": {
+            "method": "POST",
+            "endpoint": "/token",
+            "headers": {
+              "content-type": "application/x-www-form-urlencoded",
+              "accept": "*/*",
+              "authorization": "Basic $basic_authentication"
+            },
+            "formData": {
+              "grant_type": "client_credentials",
+              "scope": "accounts openid"
+            }
+          },
+          "context": {
+            "baseurl": "$token_endpoint"
+          },
+          "expect": {
+            "status-code": 200,
+            "contextPut": {
+              "matches": [{
+                "name": "access_token",
+                "description": "Access Token",
+                "json": "access_token"
+              }]
+            }
+          }
+        },
+        {
+          "@id": "#ct0002",
+          "name": "PostAccount Request",
+          "input": {
+            "method": "POST",
+            "endpoint": "/open-banking/v3.0/aisp/account-access-consents",
+            "headers": {
+              "content-type": "application/json",
+              "accept": "*/*",
+              "x-fapi-interaction-id": "$interaction_id",
+              "x-fapi-financial-id": "$financial_id",
+              "authorisation": "bearer $access_token"
+            },
+            "bodyData": "$permission_payload"
+          },
+          "context": {
+            "baseurl": "$resource_server"
+          },
+          "expect": {
+            "status-code": 201,
+            "matches": [{
+              "description": "Check we get Status:AwaitingAuthorisation",
+              "json": "Data.Status",
+              "value": "AwaitingAuthorisation"
+            }],
+            "contextPut": {
+              "matches": [{
+                "name": "consent_id",
+                "description": "gets the consentid from PostAccountRequest ",
+                "json": "Data.ConsentId"
+              }]
+            }
+          }
+        },
+        {
+          "@id": "#ct0003",
+          "name": "Ozone Headless Consent Flow",
+          "input": {
+            "method": "GET",
+            "endpoint": "/auth?clientid",
+            "generation": {
+              "strategy": "consenturl"
+            },
+            "claims": {
+              "aud": "$authorisation_endpoint",
+              "iss": "$client_id",
+              "scope": "openid accounts",
+              "redirect_url": "$redirect_url",
+              "consentId": "$consent_id",
+              "responseType": "code"
+            }
+          },
+          "context": {
+            "baseurl": "$authorisation_endpoint"
+          },
+          "expect": {
+            "status-code": 302,
+            "contextPut": {
+              "matches": [{
+                "name": "xchange_code",
+                "description": "Get the xchange code from the location redirect header on hitting consent url for headless",
+                "header": "Location",
+                "regex": "code=(.*)&?.*"
+              }]
+            }
+          }
+        },
+        {
+          "@id": "#ct0004",
+          "name": "code xchange",
+          "input": {
+            "method": "POST",
+            "endpoint": "/token",
+            "headers": {
+              "content-type": "application/x-www-form-urlencoded",
+              "authorization": "Basic $basic_authentication",
+              "accept": "*/*"
+            },
+            "formData": {
+              "code": "$xchange_code",
+              "grant_type": "authorization_code",
+              "redirect_uri": "$redirect_url",
+              "scope": "accounts"
+            }
+          },
+          "context": {
+            "baseurl": "$token_endpoint"
+          },
+          "expect": {
+            "status-code": 200,
+            "contextPut": {
+              "matches": [{
+                "name": "access_token",
+                "description": "The accounts access token",
+                "json": "access_token"
+              }]
+            }
+          }
+        }
+      ]
+    }]
+  }
+}
