@@ -6,6 +6,8 @@ import (
 	"os"
 )
 
+const banner = "FCS - Functional Conformance Suite"
+
 func main() {
 	mustReadViperEnvConfig()
 	rootCmd := createRootCommand()
@@ -15,22 +17,13 @@ func main() {
 	}
 }
 
-const bitBucketRepository = "https://api.bitbucket.org/2.0/repositories/openbankingteam/conformance-suite/refs/tags"
-
 func createRootCommand() *cobra.Command {
 	root := &cobra.Command{
 		Use:   "fcs",
 		Short: "Functional Conformance Suite CLI",
 		Long:  `To use with pipelines and reproducible test runs`,
 	}
-
-	versionCmdWrapper := newVersionCommand(bitBucketRepository)
-	versionCmd := &cobra.Command{
-		Use:   "version",
-		Short: "Print the version number of FCS CLI",
-		Run:   versionCmdWrapper.run,
-	}
-	root.AddCommand(versionCmd)
-
+	root.AddCommand(versionCmd())
+	root.AddCommand(generatorCmd())
 	return root
 }
