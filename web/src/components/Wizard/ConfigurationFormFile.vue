@@ -11,6 +11,7 @@
       v-model="file"
       :state="isValid"
       :placeholder="placeholder"
+      :accept="acceptedExtensions"
       capture
       @input="() => { onFileChanged() }"
     />
@@ -45,6 +46,10 @@ export default {
     return {
       file: null,
       data: '',
+      fileValidation: {
+        valid: false,
+        extension: '',
+      },
     };
   },
   computed: {
@@ -60,31 +65,61 @@ export default {
         // Clear file, as JSON editor has changed contents
         this.clearFile();
       }
-      return Boolean(contents);
+
+      if (this.file) {
+        switch (this.id) {
+          case 'signing_private':
+          case 'transport_private':
+            return this.file.name.endsWith('.key');
+          case 'signing_public':
+          case 'transport_public':
+            return this.file.name.endsWith('.pem');
+          default:
+            return false;
+        }
+      } else {
+        return false;
+      }
+    },
+    acceptedExtensions() {
+      switch (this.id) {
+        case 'signing_private':
+        case 'transport_private':
+          return '.key';
+        case 'signing_public':
+        case 'transport_public':
+          return '.pem';
+        default:
+          break;
+      }
+      return '';
     },
     /**
-     * Description of the file uploaded (when one is selected).
-     * Returns the size and last modification date.
-     * Else returns contents length from vuex store.
-     */
+         * Description of the file uploaded (when one is selected).
+         * Returns the size and last modification date.
+         * Else returns contents length from vuex store.
+         */
     description() {
       const contents = this.configuration[this.id];
+      const extError = extension => ['Invalid file format', `Require file with extension ${extension}`].join('\n');
+      const fileInfo = f =>
+      // File (HTML API) contains these fields:
+      // lastModified: 1545301720780
+      // lastModifiedDate: Thu Dec 20 2018 10:28:40 GMT+0000 (Greenwich Mean Time) {}
+      // name: "transport_private.key"
+      // size: 891
+      // type: "application/x-iwork-keynote-sffkey"
+      // webkitRelativePath: ""
+        [
+          `Size: ${f.size} bytes`,
+          `Last modified: ${f.lastModifiedDate}`,
+        ].join('\n');
+
       if (this.file && (contents === '' || contents === this.data)) {
-        // File (HTML API) contains these fields:
-        // lastModified: 1545301720780
-        // lastModifiedDate: Thu Dec 20 2018 10:28:40 GMT+0000 (Greenwich Mean Time) {}
-        // name: "transport_private.key"
-        // size: 891
-        // type: "application/x-iwork-keynote-sffkey"
-        // webkitRelativePath: ""
-        const size = `Size: ${this.file.size} bytes`;
-        if (this.file.lastModifiedDate) {
-          return [
-            size,
-            `Last modified: ${this.file.lastModifiedDate}`,
-          ].join('\n');
+        if (this.fileValidation.valid) {
+          return fileInfo(this.file);
         }
-        return size;
+        return extError(this.fileValidation.extension);
       } else if (contents) {
         return `Size: ${contents.length} bytes`;
       }
@@ -102,10 +137,10 @@ export default {
       }
     },
     /**
-     * readFile turns FileReader API into a Promise-based one,
-     * returning a resolved Promise with the contents of the file
-     * when it has been loaded.
-     */
+         * readFile turns FileReader API into a Promise-based one,
+         * returning a resolved Promise with the contents of the file
+         * when it has been loaded.
+         */
     readFile(file) {
       return new Promise((resolve, reject) => {
         const reader = new FileReader();
@@ -116,9 +151,9 @@ export default {
       });
     },
     /**
-     * When a file is selected, read its content and set the value in the store.
-     * See: https://stackoverflow.com/questions/45179061/file-input-on-change-in-vue-js
-     */
+         * When a file is selected, read its content and set the value in the store.
+         * See: https://stackoverflow.com/questions/45179061/file-input-on-change-in-vue-js
+         */
     async onFileChanged() {
       // Clear previous error.
       this.setConfigurationErrors([]);
@@ -128,6 +163,30 @@ export default {
       const setConfigurationMethodName = `config/setConfiguration${this.setterMethodNameSuffix}`;
 
       if (this.file) {
+        switch (this.id) {
+          case 'signing_private':
+          case 'transport_private':
+            if (!this.file.name.endsWith('.key')) {
+              this.fileValidation.valid = false;
+              this.fileValidation.extension = '.key';
+            } else {
+              this.fileValidation.valid = true;
+            }
+            break;
+          case 'signing_public':
+          case 'transport_public':
+            if (!this.file.name.endsWith('.pem')) {
+              this.fileValidation.valid = false;
+              this.fileValidation.extension = '.pem';
+            } else {
+              this.fileValidation.valid = true;
+            }
+            break;
+          default:
+            this.fileValidation.valid = true;
+            break;
+        }
+
         // If file is set, read the file then set the value in the store.
         try {
           this.data = await this.readFile(this.file);
