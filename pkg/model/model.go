@@ -349,7 +349,6 @@ func (r *Rule) GetPermissionSets() (included, excluded []string) {
 // ReplaceContextField -
 func ReplaceContextField(source string, ctx *Context) (string, error) {
 	field, isReplacement, err := getReplacementField(source)
-	fmt.Printf("%s %s %t : field length %d\n", source, field, isReplacement, len(field))
 	if err != nil {
 		return "", err
 	}

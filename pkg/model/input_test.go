@@ -1,7 +1,6 @@
 package model
 
 import (
-	"fmt"
 	"net/url"
 	"testing"
 
@@ -223,6 +222,4 @@ func TestInputClaimsConsentId(t *testing.T) {
 	res, err := i.CreateRequest(&tc, &ctx)
 	assert.NoError(t, err, "create request should succeed")
 	assert.NotNil(t, res)
-	fmt.Printf("%s\n", i.String())
-
 }

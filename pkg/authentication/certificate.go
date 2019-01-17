@@ -6,10 +6,10 @@ import (
 	"crypto/rsa"
 	"crypto/sha256"
 	"crypto/tls"
-	"fmt"
 
 	jwt "github.com/dgrijalva/jwt-go"
 	"github.com/pkg/errors"
+	"github.com/sirupsen/logrus"
 )
 
 // Certificate - create new Certificate.
@@ -46,8 +46,7 @@ func NewCertificate(publicKeyPem, privateKeyPem string) (Certificate, error) {
 
 	tlsCert, err := tls.X509KeyPair([]byte(publicKeyPem), []byte(privateKeyPem))
 	if err != nil {
-		fmt.Println("invalid X509KeyPair") // Danger Will Robinson!
-		//return nil, errors.Wrap(err, "error with X509KeyPair")
+		logrus.Warn("invalid X509KeyPair")
 	}
 
 	if err := validateKeys(publicKey, privateKey); err != nil {

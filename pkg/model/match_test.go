@@ -3,7 +3,6 @@ package model
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"testing"
 
 	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/test"
@@ -402,7 +401,6 @@ func TestContextPutHeaderRegexContextSubFieldCompileFaile(t *testing.T) {
 	c := Context{}
 	ctxPut := ContextAccessor{Context: &c, Matches: []Match{m}}
 	tc := TestCase{Expect: Expect{ContextPut: ctxPut, StatusCode: 200}}
-	fmt.Printf("type of match is %s\n", m.String())
 	resp := test.CreateHTTPResponse(200, "OK", "TheRainInSpain", "Location", "https://mysite/auth?code=1234&redir=here")
 	result, err := tc.Validate(resp, &c)
 	assert.False(t, result)
