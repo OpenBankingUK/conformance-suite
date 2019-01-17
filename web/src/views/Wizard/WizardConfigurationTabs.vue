@@ -3,49 +3,24 @@
     <div class="d-flex align-items-start">
       <div class="d-flex flex-column panel w-100 wizard-step">
         <div class="panel-heading">
-          <h5>{{ this.$options.name }}</h5>
+          <h5>Configuration</h5>
         </div>
         <div class="flex-fill panel-body">
           <div class="d-flex flex-column flex-fill">
-            <b-form>
-              <!--
-              maybe limit file selection to these file types:
-              * .key: application/x-iwork-keynote-sffkey
-              -->
-              <ConfigurationFormFile
-                id="signing_private"
-                setterMethodNameSuffix="SigningPrivate"
-                label="Private Signing Certificate (.key):"
-              />
-              <!--
-              maybe limit file selection to these file types:
-              * .pem: application/x-x509-ca-cert
-              -->
-              <ConfigurationFormFile
-                id="signing_public"
-                setterMethodNameSuffix="SigningPublic"
-                label="Public Signing Certificate (.pem):"
-              />
-              <!--
-              maybe limit file selection to these file types:
-              * .key: application/x-iwork-keynote-sffkey
-              -->
-              <ConfigurationFormFile
-                id="transport_private"
-                setterMethodNameSuffix="TransportPrivate"
-                label="Private Transport Certificate (.key):"
-              />
-              <!--
-              maybe limit file selection to these file types:
-              * .pem: application/x-x509-ca-cert
-              -->
-              <ConfigurationFormFile
-                id="transport_public"
-                setterMethodNameSuffix="TransportPublic"
-                label="Public Transport Certificate (.pem):"
-              />
-            </b-form>
-            <div v-if="configurationErrors.length > 0">
+            <b-tabs v-model="tabIndex">
+              <b-tab
+                title="Form view"
+                active>
+                <TheConfigurationForm />
+              </b-tab>
+              <b-tab
+                title="JSON view" >
+                <!-- We use v-if to ensure editor renders fresh each toggle to
+                     render updates. Otherwise updates do not show on editor. -->
+                <TheConfigurationJsonEditor v-if="tabIndex == 1"/>
+              </b-tab>
+            </b-tabs>
+            <div v-if="configurationErrors && configurationErrors.length > 0">
               <h2 class="pt-3 pb-2 mb-3">Errors</h2>
               <b-alert
                 v-for="(err, index) in configurationErrors"
@@ -56,7 +31,7 @@
             </div>
           </div>
         </div>
-        <WizardFooter/>
+        <TheWizardFooter/>
       </div>
     </div>
   </div>
@@ -66,14 +41,21 @@
 import * as _ from 'lodash';
 import { mapGetters, mapActions } from 'vuex';
 
-import ConfigurationFormFile from './ConfigurationFormFile.vue';
-import WizardFooter from './WizardFooter.vue';
+import TheConfigurationForm from '../../components/Wizard/TheConfigurationForm.vue';
+import TheConfigurationJsonEditor from '../../components/Wizard/TheConfigurationJsonEditor.vue';
+import TheWizardFooter from '../../components/Wizard/TheWizardFooter.vue';
 
 export default {
-  name: 'Configuration',
+  name: 'WizardConfigurationTabs',
   components: {
-    ConfigurationFormFile,
-    WizardFooter,
+    TheConfigurationForm,
+    TheConfigurationJsonEditor,
+    TheWizardFooter,
+  },
+  data() {
+    return {
+      tabIndex: 0,
+    };
   },
   computed: {
     ...mapGetters('config', [

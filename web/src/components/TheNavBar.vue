@@ -4,28 +4,28 @@
       <b-nav
         vertical
         pills>
-        <NavBarItem
+        <TheNavBarItem
           :no="1"
           route="/wizard/continue-or-start"
           label="Start/Load Test"/>
-        <NavBarItem
+        <TheNavBarItem
           :no="2"
           route="/wizard/discovery-config"
           label="Discovery"
           exact/>
-        <NavBarItem
+        <TheNavBarItem
           :no="3"
           route="/wizard/configuration"
           label="Configuration"/>
-        <NavBarItem
+        <TheNavBarItem
           :no="4"
           route="/wizard/run-overview"
           label="Run/Overview"/>
-        <NavBarItem
+        <TheNavBarItem
           :no="5"
           route="/wizard/summary"
           label="Summary"/>
-        <NavBarItem
+        <TheNavBarItem
           :no="6"
           route="/wizard/export"
           label="Export"/>
@@ -71,12 +71,12 @@
 
 <script>
 import { PlusCircleIcon, FileTextIcon } from 'vue-feather-icons';
-import NavBarItem from './NavBarItem.vue';
+import TheNavBarItem from './TheNavBarItem.vue';
 
 export default {
-  name: 'NavBar',
+  name: 'TheNavBar',
   components: {
-    NavBarItem,
+    TheNavBarItem,
     PlusCircleIcon,
     FileTextIcon,
   },

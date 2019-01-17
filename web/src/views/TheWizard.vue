@@ -2,7 +2,7 @@
   <div>
     <div class="d-flex">
       <div class="flex">
-        <NavBar/>
+        <TheNavBar/>
       </div>
       <div class="flex-fill">
         <router-view class="d-flex flex-column flex-fill p-3 router-section"/>
@@ -12,12 +12,12 @@
 </template>
 
 <script>
-import NavBar from './NavBar/NavBar.vue';
+import TheNavBar from '../components/TheNavBar.vue';
 
 export default {
-  name: 'Wizard',
+  name: 'TheWizard',
   components: {
-    NavBar,
+    TheNavBar,
   },
   data() {
     return {};

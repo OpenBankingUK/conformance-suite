@@ -3,14 +3,14 @@ import VueRouter from 'vue-router';
 import has from 'lodash/has';
 import store from './store/';
 
-import Wizard from './components/Wizard.vue';
-import ContinueOrStart from './components/Wizard/ContinueOrStart.vue';
-import DiscoveryConfig from './components/Wizard/DiscoveryConfig.vue';
-import Configuration from './components/Wizard/Configuration.vue';
-import RunOverview from './components/Wizard/RunOverview.vue';
-import Summary from './components/Wizard/Summary.vue';
-import Export from './components/Wizard/Export.vue';
-import NotFound from './components/NotFound.vue';
+import TheWizard from './views/TheWizard.vue';
+import WizardContinueOrStart from './views/Wizard/WizardContinueOrStart.vue';
+import WizardDiscoveryConfig from './views/Wizard/WizardDiscoveryConfig.vue';
+import WizardConfigurationTabs from './views/Wizard/WizardConfigurationTabs.vue';
+import WizardRunOverview from './views/Wizard/WizardRunOverview.vue';
+import WizardSummary from './views/Wizard/WizardSummary.vue';
+import WizardExport from './views/Wizard/WizardExport.vue';
+import NotFound from './views/NotFound.vue';
 
 Vue.use(VueRouter);
 
@@ -22,39 +22,39 @@ const router = new VueRouter({
   routes: [
     {
       path: '/',
-      name: 'Wizard',
+      name: 'TheWizard',
       redirect: '/wizard/continue-or-start',
-      component: Wizard,
+      component: TheWizard,
       children: [
         {
           path: '/wizard/continue-or-start',
-          name: 'ContinueOrStart',
-          component: ContinueOrStart,
+          name: 'WizardContinueOrStart',
+          component: WizardContinueOrStart,
         },
         {
           path: '/wizard/discovery-config',
-          name: 'DiscoveryConfig',
-          component: DiscoveryConfig,
+          name: 'WizardDiscoveryConfig',
+          component: WizardDiscoveryConfig,
         },
         {
           path: '/wizard/configuration',
-          name: 'Configuration',
-          component: Configuration,
+          name: 'WizardConfigurationTabs',
+          component: WizardConfigurationTabs,
         },
         {
           path: '/wizard/run-overview',
-          name: 'RunOverview',
-          component: RunOverview,
+          name: 'WizardRunOverview',
+          component: WizardRunOverview,
         },
         {
           path: '/wizard/summary',
-          name: 'Summary',
-          component: Summary,
+          name: 'WizardSummary',
+          component: WizardSummary,
         },
         {
           path: '/wizard/export',
-          name: 'Export',
-          component: Export,
+          name: 'WizardExport',
+          component: WizardExport,
         },
       ],
     },
@@ -63,7 +63,7 @@ const router = new VueRouter({
     // ---
     {
       path: '/404',
-      name: '404',
+      name: 'NotFound',
       component: NotFound,
     },
     {

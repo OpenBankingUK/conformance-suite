@@ -9,6 +9,9 @@ export default {
     state.problems = problems;
   },
 
+  [types.SET_CONFIGURATION](state, configuration) {
+    state.configuration = configuration;
+  },
   [types.SET_CONFIGURATION_SIGNING_PRIVATE](state, signingPrivate) {
     state.configuration.signing_private = signingPrivate;
   },

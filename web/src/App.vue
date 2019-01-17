@@ -3,7 +3,7 @@
     id="app"
     class="d-flex flex-column app">
     <div class="header-section">
-      <Header/>
+      <TheHeader/>
     </div>
     <div class="d-flex flex-column flex-fill">
       <router-view/>
@@ -12,17 +12,17 @@
 </template>
 
 <script>
-import Header from './components/Header.vue';
+import TheHeader from './components/TheHeader.vue';
 
 export default {
   name: 'app',
   components: {
-    Header,
+    TheHeader,
   },
 };
 </script>
 
-<style>
+<style scoped>
 @import "~@/assets/css/app.css";
 @import "~@/assets/css/fonts.css";
 

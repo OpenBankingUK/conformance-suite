@@ -10,7 +10,6 @@
 </template>
 
 <script>
-
 import TestCaseResult from './TestCaseResult.vue';
 
 export default {
@@ -20,29 +19,28 @@ export default {
   },
   props: {
     // {
-    //   "id": "00000000-0000-0000-0000-000000000000",
-    //   "specifications": [
-    //   {
-    //     "name": "spec name",
-    //     "version": "spec version",
-    //     "url": "url",
-    //     "schemaVersion": "spec schema version",
-    //     "pass": true,
-    //     "tests": [
-    //       {
-    //         "name": "test name",
-    //         "id": "test id",
-    //         "endpoint": "test endpoint",
-    //         "pass": true
-    //       }
-    //     ]
-    //   }
-    // ]
+    //   id: '00000000-0000-0000-0000-000000000000',
+    //   specifications: [
+    //     {
+    //       name: 'spec name',
+    //       version: 'spec version',
+    //       url: 'url',
+    //       schemaVersion: 'spec schema version',
+    //       pass: true,
+    //       tests: [
+    //         {
+    //           name: 'test name',
+    //           id: 'test id',
+    //           endpoint: 'test endpoint',
+    //           pass: true,
+    //         },
+    //       ],
+    //     },
+    //   ],
     // }
     testCaseResults: {
       type: Object,
       required: true,
-      private: true,
     },
   },
   data() {

@@ -17,26 +17,14 @@
               </ul>
             </b-alert>
           </div>
-
-          <AceEditor
-            :ref="editorName"
-            :name="editorName"
-            :fontSize="12"
-            :showPrintMargin="false"
-            :showGutter="true"
-            :highlightActiveLine="true"
-            :value="discoveryModelString"
-            :onChange="onChange"
-            :editorProps="{$blockScrolling: Infinity}"
-            :focus="true"
-            :annotations="problemAnnotations"
-            mode="json"
-            theme="chrome"
-            class="editor panel-body"
-            width="100%"
+          <TheJsonEditor
+            :problem-annotations="problemAnnotations"
+            :json-string="discoveryModelString"
+            editor-name="discovery-config-editor"
+            set-change-function-name="config/setDiscoveryModel"
           />
         </div>
-        <WizardFooter/>
+        <TheWizardFooter/>
       </div>
     </div>
   </div>
@@ -44,32 +32,20 @@
 
 <script>
 import * as _ from 'lodash';
-import 'brace';
-import 'brace/mode/json';
-import 'brace/theme/chrome';
-import { Ace as AceEditor } from 'vue2-brace-editor';
 import { mapGetters, mapActions } from 'vuex';
 
-import WizardFooter from './WizardFooter.vue';
+import TheJsonEditor from '../../components/Wizard/TheJsonEditor.vue';
+import TheWizardFooter from '../../components/Wizard/TheWizardFooter.vue';
 import discovery from '../../api/discovery';
 
 // Bug in Brace editor using wrong Range function means we need to require Range here:
 const AceRange = window.ace.acequire('ace/range').Range;
 
 export default {
-  name: 'DiscoveryConfig',
+  name: 'WizardDiscoveryConfig',
   components: {
-    WizardFooter,
-    AceEditor,
-  },
-  props: {
-    editorName: {
-      type: String,
-      private: true,
-      default() {
-        return 'discovery-config-editor';
-      },
-    },
+    TheWizardFooter,
+    TheJsonEditor,
   },
   computed: {
     ...mapGetters('config', [
@@ -151,19 +127,6 @@ export default {
       }
       return true;
     },
-    onChange(editorString) {
-      this.setDiscoveryModel(editorString);
-    },
-    // Resize the editor to use available space in the parent container.
-    // The editor does not dynamically resize itself to fill up available
-    // height so this is necessary.
-    resizeEditor() {
-      const aceEditorComponent = this.$refs[this.editorName];
-      this.$nextTick(() => {
-        const force = true;
-        aceEditorComponent.editor.resize(force);
-      });
-    },
   },
   // Prevent user from progressing FORWARD only if the Discovery Config is invalid.
   // They can navigate backwards, however.
@@ -212,14 +175,4 @@ export default {
 </script>
 
 <style scoped>
-.editor {
-  border: 1px solid lightgrey;
-  width: auto !important;
-  flex: 1;
-}
-
-.problems code {
-  max-height: 30vh;
-  overflow: scroll;
-}
 </style>

@@ -29,8 +29,12 @@ func TestServerRunStartPost(t *testing.T) {
 		server)
 
 	// do assertions
+<<<<<<< HEAD
 	//require.Equal(http.StatusCreated, code)
 	_ = code
+=======
+	require.Equal(http.StatusCreated, code)
+>>>>>>> develop
 	require.Len(headers, 2)
 	require.Equal("application/json; charset=UTF-8", headers["Content-Type"][0])
 
@@ -39,6 +43,10 @@ func TestServerRunStartPost(t *testing.T) {
 	bodyExpected := `{ "status": "executing" }`
 	bodyActual := body.String()
 	// do not use `require.Equal`.
+<<<<<<< HEAD
 	//require.JSONEq(bodyExpected, bodyActual)
 	_, _ = bodyExpected, bodyActual
+=======
+	require.JSONEq(bodyExpected, bodyActual)
+>>>>>>> develop
 }

@@ -37,7 +37,7 @@
             <DiscoveryTemplateCard
               v-for="(template, index) in discoveryTemplates"
               :key="index"
-              :discoveryModel="template.model.discoveryModel"
+              :discovery-model="template.model.discoveryModel"
               :image="template.image"
             />
           </b-card-group>
@@ -49,10 +49,10 @@
 
 <script>
 import { mapGetters } from 'vuex';
-import DiscoveryTemplateCard from './DiscoveryTemplateCard.vue';
+import DiscoveryTemplateCard from '../../components/Wizard/DiscoveryTemplateCard.vue';
 
 export default {
-  name: 'ContinueOrStart',
+  name: 'WizardContinueOrStart',
   components: {
     DiscoveryTemplateCard,
   },

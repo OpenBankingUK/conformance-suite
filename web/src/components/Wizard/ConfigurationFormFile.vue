@@ -1,17 +1,18 @@
 <template>
   <b-form-group
-    :id="`#{id}_group`"
-    :description="getFormGroupDescription(id)"
+    :id="groupId"
+    :description="description"
     :label="label"
     :label-for="id"
   >
     <b-form-file
       :id="id"
-      v-model="certificate"
+      :ref="id"
+      v-model="file"
       :state="isValid"
       :placeholder="placeholder"
       capture
-      @input="(file) => { onFileChanged(file) }"
+      @input="() => { onFileChanged() }"
     />
   </b-form-group>
 </template>
@@ -42,29 +43,33 @@ export default {
   },
   data() {
     return {
-      certificate: null,
+      file: null,
+      data: '',
     };
   },
   computed: {
     ...mapGetters('config', [
       'configuration',
     ]),
-    isValid() {
-      return Boolean(this.configuration[this.id]);
+    groupId() {
+      return `${this.id}_group`;
     },
-  },
-  methods: {
-    ...mapActions('config', [
-      'setConfigurationErrors',
-    ]),
+    isValid() {
+      const contents = this.configuration[this.id];
+      if (contents !== this.data) {
+        // Clear file, as JSON editor has changed contents
+        this.clearFile();
+      }
+      return Boolean(contents);
+    },
     /**
-     * Get a description of the file uploaded (when one is selected).
+     * Description of the file uploaded (when one is selected).
      * Returns the size and last modification date.
+     * Else returns contents length from vuex store.
      */
-    getFormGroupDescription(fileName) {
-      const file = this.certificate;
-      const contents = this.configuration[fileName];
-      if (file) {
+    description() {
+      const contents = this.configuration[this.id];
+      if (this.file && (contents === '' || contents === this.data)) {
         // File (HTML API) contains these fields:
         // lastModified: 1545301720780
         // lastModifiedDate: Thu Dec 20 2018 10:28:40 GMT+0000 (Greenwich Mean Time) {}
@@ -72,17 +77,29 @@ export default {
         // size: 891
         // type: "application/x-iwork-keynote-sffkey"
         // webkitRelativePath: ""
-        return [
-          `Size: ${file.size} bytes`,
-          `Last modified: ${file.lastModifiedDate}`,
-        ].join('\n');
+        const size = `Size: ${this.file.size} bytes`;
+        if (this.file.lastModifiedDate) {
+          return [
+            size,
+            `Last modified: ${this.file.lastModifiedDate}`,
+          ].join('\n');
+        }
+        return size;
       } else if (contents) {
-        return [
-          `Length: ${contents.length}`,
-        ].join('\n');
+        return `Size: ${contents.length} bytes`;
       }
 
       return '';
+    },
+  },
+  methods: {
+    ...mapActions('config', [
+      'setConfigurationErrors',
+    ]),
+    clearFile() {
+      if (this.$refs[this.id] && this.$refs[this.id].reset) {
+        this.$refs[this.id].reset();
+      }
     },
     /**
      * readFile turns FileReader API into a Promise-based one,
@@ -102,27 +119,26 @@ export default {
      * When a file is selected, read its content and set the value in the store.
      * See: https://stackoverflow.com/questions/45179061/file-input-on-change-in-vue-js
      */
-    async onFileChanged(file) {
+    async onFileChanged() {
       // Clear previous error.
       this.setConfigurationErrors([]);
-
       // Compute the method name we need to call in the Vuex store, e.g., could be one of the below:
       // * config/setConfigurationSigningPrivate
       // * config/setConfigurationSigningPublic
       const setConfigurationMethodName = `config/setConfiguration${this.setterMethodNameSuffix}`;
 
-      if (file) {
+      if (this.file) {
         // If file is set, read the file then set the value in the store.
         try {
-          const data = await this.readFile(file);
-          this.$store.dispatch(setConfigurationMethodName, data);
+          this.data = await this.readFile(this.file);
+          this.$store.dispatch(setConfigurationMethodName, this.data);
         } catch (err) {
-          this.setConfigurationErrors([err]);
+          this.setConfigurationErrors([err.message]);
         }
       } else {
         // If no file selected assume they want to clear out the previous file.
-        const data = '';
-        this.$store.dispatch(setConfigurationMethodName, data);
+        this.data = '';
+        this.$store.dispatch(setConfigurationMethodName, this.data);
       }
     },
   },

@@ -33,6 +33,7 @@ export default {
   problems: state => state.problems,
   discoveryProblems: state => (state.problems ? state.problems.map(p => parseProblem(p)) : null),
   configuration: state => state.configuration,
+  configurationString: state => JSON.stringify(state.configuration, null, 2),
   testCases: state => state.testCases,
   errors: state => state.errors,
   configurationErrors: state => state.errors.configuration,

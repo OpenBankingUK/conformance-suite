@@ -8,8 +8,7 @@ import api from '../../../api';
 export default {
   setDiscoveryModel({ commit, state }, editorString) {
     const value = JSON.stringify(state.discoveryModel);
-    const other = editorString;
-    if (_.isEqual(value, other)) {
+    if (_.isEqual(value, editorString)) {
       return;
     }
 
@@ -24,7 +23,7 @@ export default {
         error: e.message,
       }];
       commit(types.DISCOVERY_MODEL_PROBLEMS, problems);
-      commit(types.SET_WIZARD_STEP, constants.WIZARD.STEP_ONE);
+      commit(types.SET_WIZARD_STEP, constants.WIZARD.STEP_TWO);
     }
   },
   setDiscoveryModelProblems({ commit }, problems) {
@@ -54,7 +53,30 @@ export default {
     }
     return null;
   },
+  setConfigurationJSON({ commit, state }, editorString) {
+    const value = JSON.stringify(state.configuration);
+    if (_.isEqual(value, editorString)) {
+      return;
+    }
 
+    try {
+      const config = JSON.parse(editorString);
+      const merged = _.merge(_.clone(state.configuration), config);
+      const validKeys = [
+        'signing_private',
+        'signing_public',
+        'transport_private',
+        'transport_public',
+      ];
+      const newConfig = _.pick(merged, validKeys);
+      commit(types.SET_CONFIGURATION, newConfig);
+      commit(types.SET_CONFIGURATION_ERRORS, null);
+      commit(types.SET_WIZARD_STEP, constants.WIZARD.STEP_THREE);
+    } catch (e) {
+      commit(types.SET_CONFIGURATION_ERRORS, [e.message]);
+      commit(types.SET_WIZARD_STEP, constants.WIZARD.STEP_THREE);
+    }
+  },
   setConfigurationSigningPrivate({ commit, state }, signingPrivate) {
     if (_.isEqual(state.configuration.signing_private, signingPrivate)) {
       return;

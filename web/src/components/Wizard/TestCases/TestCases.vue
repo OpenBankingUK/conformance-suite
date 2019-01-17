@@ -21,7 +21,6 @@ export default {
     testCases: {
       type: Array,
       required: true,
-      private: true,
     },
   },
   data() {
