@@ -45,16 +45,29 @@ func RunTestCases(defn *RunDefinition) (reporting.Result, error) {
 			}
 			resp, err := executor.ExecuteTestCase(req, &testcase, rulectx)
 			if err != nil {
-				logrus.Error(err)
+				logrus.WithFields(logrus.Fields{
+					"testcase":   testcase.Name,
+					"method":     testcase.Input.Method,
+					"endpoint":   testcase.Input.Endpoint,
+					"err":        err.Error(),
+					"statuscode": testcase.Expect.StatusCode,
+				}).Info("FAIL")
 				reportTestResults = append(reportTestResults, makeTestResult(&testcase, false))
 				continue
 			}
 
 			result, err := testcase.Validate(resp, rulectx)
 			if err != nil {
-				logrus.Error(err)
+				logrus.WithFields(logrus.Fields{
+					"testcase":   testcase.Name,
+					"method":     testcase.Input.Method,
+					"endpoint":   testcase.Input.Endpoint,
+					"err":        err.Error(),
+					"statuscode": testcase.Expect.StatusCode,
+				}).Info("FAIL")
+
 				reportTestResults = append(reportTestResults, makeTestResult(&testcase, false))
-				return reportResult, err
+				continue
 			}
 			reportTestResults = append(reportTestResults, makeTestResult(&testcase, result))
 			logrus.WithFields(logrus.Fields{

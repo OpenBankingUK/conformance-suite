@@ -23,8 +23,8 @@ func TestServerGetReportBadRequestIfNoDiscoveryModelSet(t *testing.T) {
 
 	assert.NotNil(body)
 	assert.Equal("application/json; charset=UTF-8", headers["Content-Type"][0])
-	assert.Equal(http.StatusBadRequest, code)
-	assert.JSONEq(body.String(), `{"error":"error running test cases, test cases not set"}`)
+	assert.Equal(http.StatusOK, code)
+	assert.JSONEq(`{"id":"00000000-0000-0000-0000-000000000000","specifications":null}`, body.String())
 }
 
 func TestServerGetReport(t *testing.T) {

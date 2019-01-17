@@ -5,6 +5,7 @@ import (
 	"crypto/x509"
 	"errors"
 	"fmt"
+	"net/http"
 
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/authentication"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
@@ -36,7 +37,7 @@ func (e *Executor) ExecuteTestCase(r *resty.Request, t *model.TestCase, ctx *mod
 	e.appMsg(fmt.Sprintf("Request: %#v", r))
 	resp, err := r.Execute(r.Method, r.URL)
 	if err != nil {
-		if resp.StatusCode() == 302 { // catch redirects and pass back as good response
+		if resp.StatusCode() == http.StatusFound { // catch status code 302 redirects and pass back as good response
 			return resp, nil
 		}
 	}
@@ -83,7 +84,7 @@ func (e *Executor) setupTLSCertificate(tlsCert tls.Certificate) error {
 	}
 	tlsConfig.BuildNameToCertificate()
 	resty.SetTLSClientConfig(tlsConfig)
-	resty.SetDebug(true)
+	resty.SetDebug(false)
 	return nil
 
 }
