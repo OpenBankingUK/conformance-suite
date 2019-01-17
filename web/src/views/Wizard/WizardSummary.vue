@@ -48,9 +48,7 @@ export default {
     return {};
   },
   computed: {
-    ...mapGetters(
-      ['execution']
-    ),
+    ...mapGetters(['execution']),
     ...mapState({
       testCaseResults: 'testCaseResults',
     }),
