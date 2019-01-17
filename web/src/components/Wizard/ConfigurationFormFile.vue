@@ -11,7 +11,7 @@
       v-model="file"
       :state="isValid"
       :placeholder="placeholder"
-      :accept="acceptedExtensions"
+      :accept="validExtension"
       capture
       @input="() => { onFileChanged() }"
     />
@@ -41,15 +41,16 @@ export default {
       required: false,
       default: 'Choose a file...',
     },
+    validExtension: {
+      type: String,
+      required: true,
+    },
   },
   data() {
     return {
       file: null,
       data: '',
-      fileValidation: {
-        valid: false,
-        extension: '',
-      },
+      validFile: false,
     };
   },
   computed: {
@@ -67,32 +68,9 @@ export default {
       }
 
       if (this.file) {
-        switch (this.id) {
-          case 'signing_private':
-          case 'transport_private':
-            return this.file.name.endsWith('.key');
-          case 'signing_public':
-          case 'transport_public':
-            return this.file.name.endsWith('.pem');
-          default:
-            return false;
-        }
-      } else {
-        return false;
+        return this.file.name.endsWith(this.validExtension);
       }
-    },
-    acceptedExtensions() {
-      switch (this.id) {
-        case 'signing_private':
-        case 'transport_private':
-          return '.key';
-        case 'signing_public':
-        case 'transport_public':
-          return '.pem';
-        default:
-          break;
-      }
-      return '';
+      return false;
     },
     /**
          * Description of the file uploaded (when one is selected).
@@ -101,25 +79,11 @@ export default {
          */
     description() {
       const contents = this.configuration[this.id];
-      const extError = extension => ['Invalid file format', `Require file with extension ${extension}`].join('\n');
-      const fileInfo = f =>
-      // File (HTML API) contains these fields:
-      // lastModified: 1545301720780
-      // lastModifiedDate: Thu Dec 20 2018 10:28:40 GMT+0000 (Greenwich Mean Time) {}
-      // name: "transport_private.key"
-      // size: 891
-      // type: "application/x-iwork-keynote-sffkey"
-      // webkitRelativePath: ""
-        [
-          `Size: ${f.size} bytes`,
-          `Last modified: ${f.lastModifiedDate}`,
-        ].join('\n');
-
       if (this.file && (contents === '' || contents === this.data)) {
-        if (this.fileValidation.valid) {
-          return fileInfo(this.file);
+        if (this.validFile) {
+          return this.fileInfo();
         }
-        return extError(this.fileValidation.extension);
+        return this.extError(this.validExtension);
       } else if (contents) {
         return `Size: ${contents.length} bytes`;
       }
@@ -131,6 +95,19 @@ export default {
     ...mapActions('config', [
       'setConfigurationErrors',
     ]),
+    extError(extension) {
+      return ['Invalid file format', `Require file with extension ${extension}`].join('\n');
+    },
+    fileInfo() {
+      const size = `Size: ${this.file.size} bytes`;
+      if (this.file.lastModifiedDate) {
+        return [
+          size,
+          `Last modified: ${this.file.lastModifiedDate}`,
+        ].join('\n');
+      }
+      return size;
+    },
     clearFile() {
       if (this.$refs[this.id] && this.$refs[this.id].reset) {
         this.$refs[this.id].reset();
@@ -163,29 +140,7 @@ export default {
       const setConfigurationMethodName = `config/setConfiguration${this.setterMethodNameSuffix}`;
 
       if (this.file) {
-        switch (this.id) {
-          case 'signing_private':
-          case 'transport_private':
-            if (!this.file.name.endsWith('.key')) {
-              this.fileValidation.valid = false;
-              this.fileValidation.extension = '.key';
-            } else {
-              this.fileValidation.valid = true;
-            }
-            break;
-          case 'signing_public':
-          case 'transport_public':
-            if (!this.file.name.endsWith('.pem')) {
-              this.fileValidation.valid = false;
-              this.fileValidation.extension = '.pem';
-            } else {
-              this.fileValidation.valid = true;
-            }
-            break;
-          default:
-            this.fileValidation.valid = true;
-            break;
-        }
+        this.validFile = this.file.name.endsWith(this.validExtension);
 
         // If file is set, read the file then set the value in the store.
         try {

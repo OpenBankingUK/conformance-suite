@@ -9,6 +9,7 @@
         id="signing_private"
         setter-method-name-suffix="SigningPrivate"
         label="Private Signing Certificate (.key):"
+        validExtension=".key"
       />
       <!--
               maybe limit file selection to these file types:
@@ -18,6 +19,7 @@
         id="signing_public"
         setter-method-name-suffix="SigningPublic"
         label="Public Signing Certificate (.pem):"
+        validExtension=".pem"
       />
       <!--
               maybe limit file selection to these file types:
@@ -27,6 +29,7 @@
         id="transport_private"
         setter-method-name-suffix="TransportPrivate"
         label="Private Transport Certificate (.key):"
+        validExtension=".key"
       />
       <!--
               maybe limit file selection to these file types:
@@ -36,6 +39,7 @@
         id="transport_public"
         setter-method-name-suffix="TransportPublic"
         label="Public Transport Certificate (.pem):"
+        validExtension=".pem"
       />
     </b-form>
   </div>
