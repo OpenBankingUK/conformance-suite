@@ -116,97 +116,97 @@ describe('ConfigurationFormFile.vue', () => {
   });
 
   it('.key file provided for signing_private file selection - .key required', () => {
-      const wrapper = component({ storeConfigValue: 'testCert' }, 'signing_private', '.key');
-      wrapper.setData({
-          data: 'testCert',
-          file: { name: 'file.key', size: 99, lastModifiedDate: Date() },
-          validFile: true,
-      });
-      const { description } = wrapper.vm;
-      expect(description).toContain('Size: ');
-      expect(description).toContain('Last modified: ');
+    const wrapper = component({ storeConfigValue: 'testCert' }, 'signing_private', '.key');
+    wrapper.setData({
+      data: 'testCert',
+      file: { name: 'file.key', size: 99, lastModifiedDate: Date() },
+      validFile: true,
+    });
+    const { description } = wrapper.vm;
+    expect(description).toContain('Size: ');
+    expect(description).toContain('Last modified: ');
   });
 
   it('.key file provided for signing_public file selection - .pem required', () => {
-      const wrapper = component({ storeConfigValue: 'testCert' }, 'signing_public', '.pem');
-      wrapper.setData({
-          data: 'testCert',
-          file: { name: 'file.key', size: 99, lastModifiedDate: Date() },
-          validFile: false,
-      });
-      const { description } = wrapper.vm;
-      expect(description).toContain('Require file with extension .pem');
+    const wrapper = component({ storeConfigValue: 'testCert' }, 'signing_public', '.pem');
+    wrapper.setData({
+      data: 'testCert',
+      file: { name: 'file.key', size: 99, lastModifiedDate: Date() },
+      validFile: false,
+    });
+    const { description } = wrapper.vm;
+    expect(description).toContain('Require file with extension .pem');
   });
 
-    it('.pem file provided for signing_public file selection - .pem required', () => {
-        const wrapper = component({ storeConfigValue: 'testCert' }, 'signing_private', '.pem');
-        wrapper.setData({
-            data: 'testCert',
-            file: { name: 'file.pem', size: 99, lastModifiedDate: Date() },
-            validFile: true,
-        });
-        const { description } = wrapper.vm;
-        expect(description).toContain('Size: ');
-        expect(description).toContain('Last modified: ');
+  it('.pem file provided for signing_public file selection - .pem required', () => {
+    const wrapper = component({ storeConfigValue: 'testCert' }, 'signing_private', '.pem');
+    wrapper.setData({
+      data: 'testCert',
+      file: { name: 'file.pem', size: 99, lastModifiedDate: Date() },
+      validFile: true,
     });
+    const { description } = wrapper.vm;
+    expect(description).toContain('Size: ');
+    expect(description).toContain('Last modified: ');
+  });
 
-    it('.pem file provided for signing_private file selection - .key required', () => {
-        const wrapper = component({ storeConfigValue: 'testCert' }, 'signing_private', '.key');
-        wrapper.setData({
-            data: 'testCert',
-            file: { name: 'file.pem', size: 99, lastModifiedDate: Date() },
-            validFile: false,
-        });
-        const { description } = wrapper.vm;
-        expect(description).toContain('Require file with extension .key');
-        expect(description).toContain('Invalid file format');
+  it('.pem file provided for signing_private file selection - .key required', () => {
+    const wrapper = component({ storeConfigValue: 'testCert' }, 'signing_private', '.key');
+    wrapper.setData({
+      data: 'testCert',
+      file: { name: 'file.pem', size: 99, lastModifiedDate: Date() },
+      validFile: false,
     });
+    const { description } = wrapper.vm;
+    expect(description).toContain('Require file with extension .key');
+    expect(description).toContain('Invalid file format');
+  });
 
-    it('.key file provided for transport_private file selection - .key required', () => {
-        const wrapper = component({ storeConfigValue: 'testCert' }, 'transport_private', '.key');
-        wrapper.setData({
-            data: 'testCert',
-            file: { name: 'file.key', size: 99, lastModifiedDate: Date() },
-            validFile: true,
-        });
-        const { description } = wrapper.vm;
-        expect(description).toContain('Size: ');
-        expect(description).toContain('Last modified: ');
+  it('.key file provided for transport_private file selection - .key required', () => {
+    const wrapper = component({ storeConfigValue: 'testCert' }, 'transport_private', '.key');
+    wrapper.setData({
+      data: 'testCert',
+      file: { name: 'file.key', size: 99, lastModifiedDate: Date() },
+      validFile: true,
     });
+    const { description } = wrapper.vm;
+    expect(description).toContain('Size: ');
+    expect(description).toContain('Last modified: ');
+  });
 
-    it('.key file provided for transport_public file selection - .pem required', () => {
-        const wrapper = component({ storeConfigValue: 'testCert' }, 'transport_private', '.pem');
-        wrapper.setData({
-            data: 'testCert',
-            file: { name: 'file.key', size: 99, lastModifiedDate: Date() },
-            validFile: false,
-        });
-        const { description } = wrapper.vm;
-        expect(description).toContain('Require file with extension .pem');
-        expect(description).toContain('Invalid file format');
+  it('.key file provided for transport_public file selection - .pem required', () => {
+    const wrapper = component({ storeConfigValue: 'testCert' }, 'transport_private', '.pem');
+    wrapper.setData({
+      data: 'testCert',
+      file: { name: 'file.key', size: 99, lastModifiedDate: Date() },
+      validFile: false,
     });
+    const { description } = wrapper.vm;
+    expect(description).toContain('Require file with extension .pem');
+    expect(description).toContain('Invalid file format');
+  });
 
-    it('.pem file provided for transport_public file selection - .pem required', () => {
-        const wrapper = component({ storeConfigValue: 'testCert' }, 'transport_public', '.pem');
-        wrapper.setData({
-            data: 'testCert',
-            file: { name: 'file.pem', size: 99, lastModifiedDate: Date() },
-            validFile: true,
-        });
-        const { description } = wrapper.vm;
-        expect(description).toContain('Size: ');
-        expect(description).toContain('Last modified: ');
+  it('.pem file provided for transport_public file selection - .pem required', () => {
+    const wrapper = component({ storeConfigValue: 'testCert' }, 'transport_public', '.pem');
+    wrapper.setData({
+      data: 'testCert',
+      file: { name: 'file.pem', size: 99, lastModifiedDate: Date() },
+      validFile: true,
     });
+    const { description } = wrapper.vm;
+    expect(description).toContain('Size: ');
+    expect(description).toContain('Last modified: ');
+  });
 
-    it('.pem file provided for transport_private file selection - .key required', () => {
-        const wrapper = component({ storeConfigValue: 'testCert' }, 'transport_private', '.key');
-        wrapper.setData({
-            data: 'testCert',
-            file: { name: 'file.pem', size: 99, lastModifiedDate: Date() },
-            validFile: false,
-        });
-        const { description } = wrapper.vm;
-        expect(description).toContain('Require file with extension .key');
-        expect(description).toContain('Invalid file format');
+  it('.pem file provided for transport_private file selection - .key required', () => {
+    const wrapper = component({ storeConfigValue: 'testCert' }, 'transport_private', '.key');
+    wrapper.setData({
+      data: 'testCert',
+      file: { name: 'file.pem', size: 99, lastModifiedDate: Date() },
+      validFile: false,
     });
+    const { description } = wrapper.vm;
+    expect(description).toContain('Require file with extension .key');
+    expect(description).toContain('Invalid file format');
+  });
 });
