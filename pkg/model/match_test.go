@@ -493,6 +493,6 @@ func TestContextPutAuthorisationFail(t *testing.T) {
 	assert.NotNil(t, err)
 	assert.False(t, success)
 	ctxToken, exist := c.Get("token")
-	assert.True(t, exist)
+	assert.False(t, exist)
 	assert.Equal(t, nil, ctxToken)
 }
