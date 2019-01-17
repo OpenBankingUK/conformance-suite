@@ -1,3 +1,5 @@
+import api from './apiUtil';
+
 const TESTCASES_URL = '/api/test-cases';
 const EXECUTE_URL = '/api//run/start';
 
@@ -6,14 +8,7 @@ export default {
    * Call GET /api/test-cases
    */
   async computeTestCases() {
-    const init = {
-      method: 'GET',
-      headers: {
-        Accept: 'application/json; charset=UTF-8',
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
-    };
-    const response = await fetch(TESTCASES_URL, init);
+    const response = await api.get(TESTCASES_URL);
     const data = await response.json();
 
     // `fetch` does not throw an error even when status is not 200.
@@ -28,14 +23,7 @@ export default {
    * Calls POST `/api/run/start`.
    */
   async executeTestCases() {
-    const init = {
-      method: 'POST',
-      headers: {
-        Accept: 'application/json; charset=UTF-8',
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
-    };
-    const response = await fetch(EXECUTE_URL, init);
+    const response = await api.post(EXECUTE_URL);
     const data = await response.json();
 
     // `fetch` does not throw an error even when status is not 201.

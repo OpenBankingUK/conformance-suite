@@ -1,3 +1,5 @@
+import api from './apiUtil';
+
 const REPORT_URL = '/api/report';
 
 export default {
@@ -5,14 +7,7 @@ export default {
    * Call GET /api/report
    */
   async computeTestCaseResults() {
-    const init = {
-      method: 'GET',
-      headers: {
-        Accept: 'application/json; charset=UTF-8',
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
-    };
-    const response = await fetch(REPORT_URL, init);
+    const response = await api.get(REPORT_URL);
     const data = await response.json();
 
     // `fetch` does not throw an error even when status is not 200.
