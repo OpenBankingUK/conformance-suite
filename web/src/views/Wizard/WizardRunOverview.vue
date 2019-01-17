@@ -31,7 +31,7 @@ import { createNamespacedHelpers } from 'vuex';
 import TheWizardFooter from '../../components/Wizard/TheWizardFooter.vue';
 import TestCases from '../../components/Wizard/TestCases/TestCases.vue';
 
-const { mapActions, mapGetters } = createNamespacedHelpers('config');
+const { mapActions, mapGetters } = createNamespacedHelpers('testcases');
 
 export default {
   name: 'WizardRunOverview',

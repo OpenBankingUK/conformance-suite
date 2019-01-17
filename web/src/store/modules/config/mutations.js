@@ -34,26 +34,16 @@ export default {
     state.errors.configuration = [];
   },
 
-  [types.SET_TEST_CASES](state, testCases) {
-    state.testCases = testCases;
-  },
   [types.SET_TEST_CASES_ERROR](state, errors) {
     state.errors.testCases = errors;
   },
 
-  [types.SET_EXECUTION_RESULTS](state, execution) {
-    state.execution = execution;
-  },
   [types.SET_EXECUTION_ERROR](state, errors) {
     state.errors.execution = errors;
   },
 
   [types.SET_WIZARD_STEP](state, step) {
     state.wizard.step = step;
-  },
-
-  [types.SET_TEST_CASE_RESULTS](state, testCaseResults) {
-    state.testCaseResults = testCaseResults;
   },
 
   [types.SET_TEST_CASE_RESULTS_ERROR](state, errors) {
