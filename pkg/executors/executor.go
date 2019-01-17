@@ -41,6 +41,8 @@ func (e *Executor) ExecuteTestCase(r *resty.Request, t *model.TestCase, ctx *mod
 			return resp, nil
 		}
 	}
+	t.ResponseTime = resp.Time()
+	t.ResponseSize = len(resp.Body())
 	e.appMsg(fmt.Sprintf("Response: (%s)", resp.String()))
 	return resp, err
 }

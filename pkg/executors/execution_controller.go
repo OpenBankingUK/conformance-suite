@@ -1,6 +1,8 @@
 package executors
 
 import (
+	"fmt"
+
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/authentication"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/generation"
@@ -46,11 +48,13 @@ func RunTestCases(defn *RunDefinition) (reporting.Result, error) {
 			resp, err := executor.ExecuteTestCase(req, &testcase, rulectx)
 			if err != nil {
 				logrus.WithFields(logrus.Fields{
-					"testcase":   testcase.Name,
-					"method":     testcase.Input.Method,
-					"endpoint":   testcase.Input.Endpoint,
-					"err":        err.Error(),
-					"statuscode": testcase.Expect.StatusCode,
+					"testcase":     testcase.Name,
+					"method":       testcase.Input.Method,
+					"endpoint":     testcase.Input.Endpoint,
+					"err":          err.Error(),
+					"statuscode":   testcase.Expect.StatusCode,
+					"responsetime": fmt.Sprintf("%v", testcase.ResponseTime),
+					"responsesize": testcase.ResponseSize,
 				}).Info("FAIL")
 				reportTestResults = append(reportTestResults, makeTestResult(&testcase, false))
 				continue
@@ -59,11 +63,13 @@ func RunTestCases(defn *RunDefinition) (reporting.Result, error) {
 			result, err := testcase.Validate(resp, rulectx)
 			if err != nil {
 				logrus.WithFields(logrus.Fields{
-					"testcase":   testcase.Name,
-					"method":     testcase.Input.Method,
-					"endpoint":   testcase.Input.Endpoint,
-					"err":        err.Error(),
-					"statuscode": testcase.Expect.StatusCode,
+					"testcase":     testcase.Name,
+					"method":       testcase.Input.Method,
+					"endpoint":     testcase.Input.Endpoint,
+					"err":          err.Error(),
+					"statuscode":   testcase.Expect.StatusCode,
+					"responsetime": fmt.Sprintf("%v", testcase.ResponseTime),
+					"responsesize": testcase.ResponseSize,
 				}).Info("FAIL")
 
 				reportTestResults = append(reportTestResults, makeTestResult(&testcase, false))
@@ -71,10 +77,12 @@ func RunTestCases(defn *RunDefinition) (reporting.Result, error) {
 			}
 			reportTestResults = append(reportTestResults, makeTestResult(&testcase, result))
 			logrus.WithFields(logrus.Fields{
-				"testcase":   testcase.Name,
-				"method":     testcase.Input.Method,
-				"endpoint":   testcase.Input.Endpoint,
-				"statuscode": testcase.Expect.StatusCode,
+				"testcase":     testcase.Name,
+				"method":       testcase.Input.Method,
+				"endpoint":     testcase.Input.Endpoint,
+				"statuscode":   testcase.Expect.StatusCode,
+				"responsetime": fmt.Sprintf("%v", testcase.ResponseTime),
+				"responsesize": testcase.ResponseSize,
 			}).Info("PASS")
 		}
 	}

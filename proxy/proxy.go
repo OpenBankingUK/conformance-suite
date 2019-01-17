@@ -292,7 +292,6 @@ func validateHeaderValue(key, value string, spec *spec.Header) error {
 		return fmt.Errorf("%s in headers is missing", key)
 	}
 
-	// TODO: Implement the rest of the format validators
 	switch spec.Format {
 	case "int32":
 		_, err := swag.ConvertInt32(value)
