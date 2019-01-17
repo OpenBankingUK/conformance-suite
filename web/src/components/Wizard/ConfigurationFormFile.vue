@@ -70,7 +70,7 @@ export default {
       if (this.file) {
         return this.file.name.endsWith(this.validExtension);
       }
-      return false;
+      return Boolean(contents);
     },
     /**
          * Description of the file uploaded (when one is selected).
