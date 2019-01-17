@@ -1,5 +1,4 @@
 import * as types from './mutation-types';
-import * as configTypes from '../config/mutation-types';
 import constants from '../config/constants';
 
 import api from '../../../api';
@@ -13,11 +12,11 @@ export default {
     try {
       const testCaseResults = await api.computeTestCaseResults();
       commit(types.SET_TEST_CASE_RESULTS, testCaseResults);
-      dispatch(configTypes.SET_TEST_CASE_RESULTS_ERROR, []);
-      dispatch(configTypes.SET_WIZARD_STEP, constants.WIZARD.STEP_SIX);
+      dispatch('config/setTestCaseResultsErrors', []);
+      dispatch('config/setWizardStep', constants.WIZARD.STEP_SIX);
     } catch (err) {
       commit(types.SET_TEST_CASE_RESULTS, {});
-      dispatch(configTypes.SET_TEST_CASE_RESULTS_ERROR, [
+      dispatch('config/setTestCaseResultsErrors', [
         err,
       ]);
     }

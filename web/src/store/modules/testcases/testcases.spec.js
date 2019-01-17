@@ -86,7 +86,7 @@ describe('store/modules/testcases', () => {
 
       api.computeTestCases.mockResolvedValueOnce(OK_RESPONSE);
       await actions.computeTestCases(store);
-      expect(dispatch).toHaveBeenCalledWith('SET_TEST_CASES_ERROR', []);
+      expect(dispatch).toHaveBeenCalledWith('config/setTestCaseErrors', []);
       expect(store.getters.testCases).toEqual(OK_RESPONSE);
     });
 
@@ -97,7 +97,7 @@ describe('store/modules/testcases', () => {
 
       api.computeTestCases.mockRejectedValueOnce(ERROR_RESPONSE);
       await actions.computeTestCases(store);
-      expect(dispatch).toHaveBeenCalledWith('SET_TEST_CASES_ERROR', [ERROR_RESPONSE]);
+      expect(dispatch).toHaveBeenCalledWith('config/setTestCaseErrors', [ERROR_RESPONSE]);
       expect(store.getters.testCases).toEqual([]);
     });
 
@@ -108,12 +108,12 @@ describe('store/modules/testcases', () => {
 
       api.computeTestCases.mockRejectedValueOnce(ERROR_RESPONSE);
       await actions.computeTestCases(store);
-      expect(dispatch).toHaveBeenCalledWith('SET_TEST_CASES_ERROR', [ERROR_RESPONSE]);
+      expect(dispatch).toHaveBeenCalledWith('config/setTestCaseErrors', [ERROR_RESPONSE]);
       expect(store.getters.testCases).toEqual([]);
 
       api.computeTestCases.mockResolvedValueOnce(OK_RESPONSE);
       await actions.computeTestCases(store);
-      expect(dispatch).toHaveBeenCalledWith('SET_TEST_CASES_ERROR', []);
+      expect(dispatch).toHaveBeenCalledWith('config/setTestCaseErrors', []);
       expect(store.getters.testCases).toEqual(OK_RESPONSE);
     });
 
@@ -124,12 +124,12 @@ describe('store/modules/testcases', () => {
 
       api.computeTestCases.mockResolvedValueOnce(OK_RESPONSE);
       await actions.computeTestCases(store);
-      expect(dispatch).toHaveBeenCalledWith('SET_TEST_CASES_ERROR', []);
+      expect(dispatch).toHaveBeenCalledWith('config/setTestCaseErrors', []);
       expect(store.getters.testCases).toEqual(OK_RESPONSE);
 
       api.computeTestCases.mockRejectedValueOnce(ERROR_RESPONSE);
       await actions.computeTestCases(store);
-      expect(dispatch).toHaveBeenCalledWith('SET_TEST_CASES_ERROR', [ERROR_RESPONSE]);
+      expect(dispatch).toHaveBeenCalledWith('config/setTestCaseErrors', [ERROR_RESPONSE]);
       expect(store.getters.testCases).toEqual([]);
     });
   });
