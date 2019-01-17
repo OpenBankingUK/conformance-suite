@@ -154,4 +154,16 @@ export default {
   setConfigurationErrors({ commit }, errors) {
     commit(types.SET_CONFIGURATION_ERRORS, errors);
   },
+  setTestCaseErrors({ commit }, errors) {
+    commit(types.SET_TEST_CASES_ERROR, errors);
+  },
+  setExecutionErrors({ commit }, errors) {
+    commit(types.SET_EXECUTION_ERROR, errors);
+  },
+  setTestCaseResultsErrors({ commit }, errors) {
+    commit(types.SET_TEST_CASE_RESULTS_ERROR, errors);
+  },
+  setWizardStep({ commit }, step) {
+    commit(types.SET_WIZARD_STEP, step);
+  },
 };

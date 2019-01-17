@@ -62,7 +62,7 @@ describe('store/modules/results', () => {
 
       api.computeTestCaseResults.mockResolvedValueOnce(OK_RESPONSE);
       await actions.computeTestCaseResults(store);
-      expect(dispatch).toHaveBeenCalledWith('SET_TEST_CASE_RESULTS_ERROR', []);
+      expect(dispatch).toHaveBeenCalledWith('config/setTestCaseResultsErrors', []);
 
       expect(store.state.testCaseResults).toEqual(OK_RESPONSE);
     });
@@ -74,7 +74,7 @@ describe('store/modules/results', () => {
 
       api.computeTestCaseResults.mockRejectedValueOnce(ERROR_RESPONSE);
       await actions.computeTestCaseResults(store);
-      expect(dispatch).toHaveBeenCalledWith('SET_TEST_CASE_RESULTS_ERROR', [ERROR_RESPONSE]);
+      expect(dispatch).toHaveBeenCalledWith('config/setTestCaseResultsErrors', [ERROR_RESPONSE]);
 
       expect(store.state.testCaseResults).toEqual({});
     });
@@ -86,12 +86,12 @@ describe('store/modules/results', () => {
 
       api.computeTestCaseResults.mockRejectedValueOnce(ERROR_RESPONSE);
       await actions.computeTestCaseResults(store);
-      expect(dispatch).toHaveBeenCalledWith('SET_TEST_CASE_RESULTS_ERROR', [ERROR_RESPONSE]);
+      expect(dispatch).toHaveBeenCalledWith('config/setTestCaseResultsErrors', [ERROR_RESPONSE]);
       expect(store.state.testCaseResults).toEqual({});
 
       api.computeTestCaseResults.mockResolvedValueOnce(OK_RESPONSE);
       await actions.computeTestCaseResults(store);
-      expect(dispatch).toHaveBeenCalledWith('SET_TEST_CASE_RESULTS_ERROR', []);
+      expect(dispatch).toHaveBeenCalledWith('config/setTestCaseResultsErrors', []);
       expect(store.state.testCaseResults).toEqual(OK_RESPONSE);
     });
 
@@ -102,12 +102,12 @@ describe('store/modules/results', () => {
 
       api.computeTestCaseResults.mockResolvedValueOnce(OK_RESPONSE);
       await actions.computeTestCaseResults(store);
-      expect(dispatch).toHaveBeenCalledWith('SET_TEST_CASE_RESULTS_ERROR', []);
+      expect(dispatch).toHaveBeenCalledWith('config/setTestCaseResultsErrors', []);
       expect(store.state.testCaseResults).toEqual(OK_RESPONSE);
 
       api.computeTestCaseResults.mockRejectedValueOnce(ERROR_RESPONSE);
       await actions.computeTestCaseResults(store);
-      expect(dispatch).toHaveBeenCalledWith('SET_TEST_CASE_RESULTS_ERROR', [ERROR_RESPONSE]);
+      expect(dispatch).toHaveBeenCalledWith('config/setTestCaseResultsErrors', [ERROR_RESPONSE]);
       expect(store.state.testCaseResults).toEqual({});
     });
   });
