@@ -24,9 +24,7 @@ func versionCmd() *cobra.Command {
 }
 
 func newVersionCommand(bitBucketRepository string) VersionCommand {
-	return VersionCommand{
-		version.NewBitBucket(bitBucketRepository),
-	}
+	return newVersionCommandWithOptions(version.NewBitBucket(bitBucketRepository))
 }
 
 func newVersionCommandWithOptions(versionChecker version.Checker) VersionCommand {

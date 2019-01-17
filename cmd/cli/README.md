@@ -19,6 +19,13 @@ FCS_WELCOME=Placeholder
 To check available options with command with out any arguments
 
 ```bash
-fcs
+./fcs
 ```
 
+To use one of the existing templates to generate test cases:
+
+```bash 
+./fcs generate --filename pkg/discovery/templates/ob-v3.0-generic.json --output ob-v3.0-generic-testcases.json
+```
+
+You can omit `--output` flag and it will write to standard output.

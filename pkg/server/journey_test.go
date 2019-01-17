@@ -43,7 +43,7 @@ func TestJourneySetDiscoveryModelValidatesModel(t *testing.T) {
 	validator := &mocks.Validator{}
 	validator.On("Validate", discoveryModel).Return(discovery.NoValidationFailures, nil)
 	generator := &gmocks.Generator{}
-	journey := NewWebJourney(generator, validator)
+	journey := NewJourney(generator, validator)
 
 	failures, err := journey.SetDiscoveryModel(discoveryModel)
 
@@ -59,7 +59,7 @@ func TestJourneySetDiscoveryModelHandlesErrorFromValidator(t *testing.T) {
 	expectedFailures := discovery.ValidationFailures{}
 	validator.On("Validate", discoveryModel).Return(expectedFailures, errors.New("validator error"))
 	generator := &gmocks.Generator{}
-	journey := NewWebJourney(generator, validator)
+	journey := NewJourney(generator, validator)
 
 	failures, err := journey.SetDiscoveryModel(discoveryModel)
 
@@ -78,7 +78,7 @@ func TestJourneySetDiscoveryModelReturnsFailuresFromValidator(t *testing.T) {
 	expectedFailures := discovery.ValidationFailures{failure}
 	validator.On("Validate", discoveryModel).Return(expectedFailures, nil)
 	generator := &gmocks.Generator{}
-	journey := NewWebJourney(generator, validator)
+	journey := NewJourney(generator, validator)
 
 	failures, err := journey.SetDiscoveryModel(discoveryModel)
 
@@ -89,7 +89,7 @@ func TestJourneySetDiscoveryModelReturnsFailuresFromValidator(t *testing.T) {
 func TestJourneyTestCasesCantGenerateIfDiscoveryNotSet(t *testing.T) {
 	validator := &mocks.Validator{}
 	generator := &gmocks.Generator{}
-	journey := NewWebJourney(generator, validator)
+	journey := NewJourney(generator, validator)
 
 	testCases, err := journey.TestCases()
 
@@ -104,7 +104,7 @@ func TestJourneyTestCasesGenerate(t *testing.T) {
 	expectedTestCases := []generation.SpecificationTestCases{}
 	generator := &gmocks.Generator{}
 	generator.On("GenerateSpecificationTestCases", discoveryModel.DiscoveryModel).Return(expectedTestCases)
-	journey := NewWebJourney(generator, validator)
+	journey := NewJourney(generator, validator)
 	_, err := journey.SetDiscoveryModel(discoveryModel)
 	require.NoError(t, err)
 
@@ -123,7 +123,7 @@ func TestJourneyTestCasesDoesntREGenerate(t *testing.T) {
 	generator.On("GenerateSpecificationTestCases", discoveryModel.DiscoveryModel).
 		Return(expectedTestCases).Times(1)
 
-	journey := NewWebJourney(generator, validator)
+	journey := NewJourney(generator, validator)
 	_, err := journey.SetDiscoveryModel(discoveryModel)
 	require.NoError(t, err)
 	firstRunTestCases, err := journey.TestCases()
@@ -140,7 +140,7 @@ func TestJourneyTestCasesDoesntREGenerate(t *testing.T) {
 func TestJourneyRunTestCasesCantRunIfNoTestCases(t *testing.T) {
 	validator := &mocks.Validator{}
 	generator := &gmocks.Generator{}
-	journey := NewWebJourney(generator, validator)
+	journey := NewJourney(generator, validator)
 
 	result, err := journey.RunTests()
 
@@ -157,7 +157,7 @@ func TestJourneyRunTestCases(t *testing.T) {
 	generator.On("GenerateSpecificationTestCases", discoveryModel.DiscoveryModel).
 		Return(testCases).Times(1)
 
-	journey := NewWebJourney(generator, validator)
+	journey := NewJourney(generator, validator)
 	_, err := journey.SetDiscoveryModel(discoveryModel)
 	require.NoError(t, err)
 
@@ -177,7 +177,7 @@ func TestJourneySetCertificateSigning(t *testing.T) {
 
 	validator := &mocks.Validator{}
 	generator := &gmocks.Generator{}
-	journey := NewWebJourney(generator, validator)
+	journey := NewJourney(generator, validator)
 
 	require.Nil(journey.CertificateSigning())
 
@@ -195,7 +195,7 @@ func TestJourneySetCertificateTransport(t *testing.T) {
 
 	validator := &mocks.Validator{}
 	generator := &gmocks.Generator{}
-	journey := NewWebJourney(generator, validator)
+	journey := NewJourney(generator, validator)
 
 	require.Nil(journey.CertificateTransport())
 

@@ -93,7 +93,7 @@ func NewServer(
 
 	validatorEngine := discovery.NewFuncValidator(checker)
 	testGenerator := generation.NewGenerator()
-	webJourney := NewWebJourney(testGenerator, validatorEngine)
+	webJourney := NewJourney(testGenerator, validatorEngine)
 
 	// https://echo.labstack.com/guide/request#validate-data
 	validator := validator.New()
