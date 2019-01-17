@@ -151,20 +151,22 @@ func TestChainedTestCases(t *testing.T) {
 	manifest, err := loadManifest("testdata/passAccountId.json")
 	require.NoError(t, err)
 
-	rule := manifest.Rules[0]                    // get the first rule
-	rule.Executor = &executor{}                  // Allows rule testcase execution strategies to be dynamically added to rules
-	rulectx := Context{}                         // create a context to hold the passed parameters
-	tc01 := rule.Tests[0][0]                     // get the first testcase of the first rule
-	req, _ := tc01.Prepare(&rulectx)             // Prepare calls ApplyInput and ApplyContext on testcase
-	resp, err := rule.Execute(req, &tc01)        // send the request to be executed resulting in a response
-	result, err := tc01.Validate(resp, &rulectx) // Validate checks response against the match rules and processes any contextPuts present
+	rule := manifest.Rules[0]                                   // get the first rule
+	executor := &executor{}                                     // Allows rule testcase execution strategies to be dynamically added to rules
+	rulectx := Context{}                                        // create a context to hold the passed parameters
+	tc01 := rule.Tests[0][0]                                    // get the first testcase of the first rule
+	req, _ := tc01.Prepare(&rulectx)                            // Prepare calls ApplyInput and ApplyContext on testcase
+	resp, err := executor.ExecuteTestCase(req, &tc01, &rulectx) // send the request to be executed resulting in a response
+	result, err := tc01.Validate(resp, &rulectx)                // Validate checks response against the match rules and processes any contextPuts present
 
-	tc02 := rule.Tests[0][1]                    // get the second testcase of the first rule
-	req, err = tc02.Prepare(&rulectx)           // Prepare
-	resp, err = rule.Execute(req, &tc02)        // Execute
-	result, err = tc02.Validate(resp, &rulectx) // Validate checks the match rules and processes any contextPuts present
+	tc02 := rule.Tests[0][1]                                   // get the second testcase of the first rule
+	req, err = tc02.Prepare(&rulectx)                          // Prepare
+	resp, err = executor.ExecuteTestCase(req, &tc02, &rulectx) // Execute
+	result, err = tc02.Validate(resp, &rulectx)                // Validate checks the match rules and processes any contextPuts present
 	assert.True(t, result)
-	assert.Equal(t, "500000000000000000000007", rulectx.Get("AccountId"))
+	acctid, exist := rulectx.Get("AccountId")
+	assert.True(t, exist)
+	assert.Equal(t, "500000000000000000000007", acctid)
 	assert.Equal(t, "http://myaspsp/accounts/500000000000000000000007", tc02.Input.Endpoint)
 }
 

@@ -5,6 +5,8 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"regexp"
+	"strings"
 
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/tracer"
 	"gopkg.in/resty.v1"
@@ -29,19 +31,13 @@ type Manifest struct {
 // Rule also identifies all the tests that must be passed in order to show that the rule
 // implementation in conformant with the specific section in the referenced specification
 type Rule struct {
-	ID           string           `json:"@id"`             // JSONLD ID reference
-	Type         []string         `json:"@type,omitempty"` // JSONLD type reference
-	Name         string           `json:"name"`            // A short meaningful name for this rule
-	Purpose      string           `json:"purpose"`         // The purpose of this rule
-	Specref      string           `json:"specref"`         // Description of area of spec/name/version/section under test
-	Speclocation string           `json:"speclocation"`    // specific http reference to location in spec under test covered by this rule
-	Tests        [][]TestCase     `json:"tests"`           // Tests - allows for many testcases - array of arrays - to be associated with this rule
-	Executor     TestCaseExecutor // TestCaseExecutor interface allow different testcase execution strategies
-}
-
-// TestCaseExecutor defines an interface capable of executing a testcase
-type TestCaseExecutor interface {
-	ExecuteTestCase(r *resty.Request, t *TestCase, ctx *Context) (*resty.Response, error)
+	ID           string       `json:"@id"`             // JSONLD ID reference
+	Type         []string     `json:"@type,omitempty"` // JSONLD type reference
+	Name         string       `json:"name"`            // A short meaningful name for this rule
+	Purpose      string       `json:"purpose"`         // The purpose of this rule
+	Specref      string       `json:"specref"`         // Description of area of spec/name/version/section under test
+	Speclocation string       `json:"speclocation"`    // specific http reference to location in spec under test covered by this rule
+	Tests        [][]TestCase `json:"tests"`           // Tests - allows for many testcases - array of arrays - to be associated with this rule
 }
 
 // TestCase defines a test that will be run and needs to be passed as part of the conformance suite
@@ -154,7 +150,6 @@ func (t *TestCase) ApplyInput(rulectx *Context) (*resty.Request, error) {
 	if t.Input.Method == "" {
 		return nil, t.AppErr("error: TestCase input cannot have empty input.Method")
 	}
-
 	req, err := t.Input.CreateRequest(t, rulectx)
 	if err != nil {
 		return nil, t.AppErr("createRequest: " + err.Error())
@@ -178,8 +173,8 @@ func (t *TestCase) ApplyContext(rulectx *Context) error {
 		}
 	}
 
-	base := t.Context.Get("baseurl") // "convention" puts baseurl as prefix to endpoint in testcase"
-	if base == nil {
+	base, exist := t.Context.Get("baseurl") // "convention" puts baseurl as prefix to endpoint in testcase"
+	if !exist {
 		return t.AppErr("cannot find base url for testcase")
 	}
 	t.Input.Endpoint = base.(string) + t.Input.Endpoint
@@ -213,8 +208,9 @@ func (t *TestCase) ApplyExpects(res *resty.Response, rulectx *Context) (bool, er
 		if checkResult == false {
 			return false, t.AppErr(fmt.Sprintf("ApplyExpects Returns False on match %s : %s", match.String(), got.Error()))
 		}
-		t.AppMsg(fmt.Sprintf("Checked Match: %s", match.Description))
+
 		t.Expect.Matches[k].Result = match.Result
+		t.AppMsg(fmt.Sprintf("Checked Match: %s: result: %s", match.Description, t.Expect.Matches[k].Result))
 	}
 
 	if err := t.Expect.ContextPut.PutValues(t, rulectx); err != nil {
@@ -225,8 +221,9 @@ func (t *TestCase) ApplyExpects(res *resty.Response, rulectx *Context) (bool, er
 }
 
 // Get the key form the Context map - currently assumes value converts easily to a string!
-func (c Context) Get(key string) interface{} {
-	return c[key]
+func (c Context) Get(key string) (interface{}, bool) {
+	value, exist := c[key]
+	return value, exist
 }
 
 // Put a value indexed by 'key' into the context. The value can be any type
@@ -349,12 +346,75 @@ func (r *Rule) GetPermissionSets() (included, excluded []string) {
 	return includedSet.GetPermissions(), excludedSet.GetPermissions()
 }
 
-// Execute the testcase
-// For the rule this effectively equates to sending the assembled http request from
-// the testcase to an endpoint (typically ASPSP implementation) and getting an http.Response
-// The http.Request at this point will contain the fully assembled request from a testcase point of view
-// - testcase will have likely pulled out appropriate access_tokens/permissions
-// - rule will have the opportunity to further decorate this request before passing on
-func (r *Rule) Execute(req *resty.Request, tc *TestCase) (*resty.Response, error) {
-	return r.Executor.ExecuteTestCase(req, tc, &Context{})
+// ReplaceContextField -
+func ReplaceContextField(source string, ctx *Context) (string, error) {
+	field, isReplacement, err := getReplacementField(source)
+	if err != nil {
+		return "", err
+	}
+	if !isReplacement {
+		return source, nil
+	}
+	if len(field) == 0 {
+		return source, errors.New("field not found in context " + field)
+	}
+	replacement, exist := ctx.Get(field)
+	if !exist {
+		return source, errors.New("replacement not found in context: " + source)
+	}
+	contextField, ok := replacement.(string)
+	if !ok {
+		return source, errors.New("replacement is not of type string: " + source)
+	}
+	result := strings.Replace(source, "$"+field, contextField, 1)
+	return result, nil
+}
+
+// GetReplacementField examines the input string and returns the first character
+// sequence beginning with '$' and ending with whitespace. '$$' sequence acts as an escape value
+// A zero length string is return if now Replacement Fields are found
+// returns a boolean to indicate if the field contains a field beginning with a $
+func getReplacementField(stringToCheck string) (string, bool, error) {
+	index := strings.Index(stringToCheck, "$")
+	if index == -1 {
+		return stringToCheck, false, nil
+	}
+	singleDollar, err := regexp.Compile(`[^\$]?\$(\w*)`)
+	if err != nil {
+		return "", false, err
+	}
+	result := singleDollar.FindStringSubmatch(stringToCheck)
+	if result == nil {
+		return "", false, nil
+	}
+	return result[len(result)-1], true, nil
+}
+
+// ProcessReplacementFields prefixed by '$' in the testcase Input and Context sections
+// Call to pre-process custom test cases from discovery model
+func (t *TestCase) ProcessReplacementFields(rep map[string]string) {
+	ctx := Context{}
+	for k, v := range rep {
+		ctx.Put(k, v)
+	}
+
+	t.Input.Endpoint, _ = ReplaceContextField(t.Input.Endpoint, &ctx) // errors if field not present in context - which is ok for this function
+	t.Input.RequestBody, _ = ReplaceContextField(t.Input.RequestBody, &ctx)
+
+	for k := range t.Input.FormData {
+		t.Input.FormData[k], _ = ReplaceContextField(t.Input.FormData[k], &ctx)
+	}
+	for k := range t.Input.Headers {
+		t.Input.Headers[k], _ = ReplaceContextField(t.Input.Headers[k], &ctx)
+	}
+	for k := range t.Input.Claims {
+		t.Input.Claims[k], _ = ReplaceContextField(t.Input.Claims[k], &ctx)
+	}
+	for k := range t.Context {
+		param, ok := t.Context[k].(string)
+		if !ok {
+			continue
+		}
+		t.Context[k], _ = ReplaceContextField(param, &ctx)
+	}
 }

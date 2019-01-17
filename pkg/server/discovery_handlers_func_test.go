@@ -1,13 +1,14 @@
 package server
 
 import (
-	versionmock "bitbucket.org/openbankingteam/conformance-suite/internal/pkg/version/mocks"
 	"context"
-	"github.com/stretchr/testify/mock"
 	"io/ioutil"
 	"net/http"
 	"strings"
 	"testing"
+
+	versionmock "bitbucket.org/openbankingteam/conformance-suite/internal/pkg/version/mocks"
+	"github.com/stretchr/testify/mock"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"

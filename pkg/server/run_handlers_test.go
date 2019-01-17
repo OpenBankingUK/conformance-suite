@@ -40,13 +40,13 @@ func TestServerRunStartPost(t *testing.T) {
 		server)
 
 	// do assertions
-	require.Equal(http.StatusCreated, code)
+	require.Equal(http.StatusBadRequest, code)
 	require.Len(headers, 2)
 	require.Equal("application/json; charset=UTF-8", headers["Content-Type"][0])
 
 	require.NotNil(body)
 
-	bodyExpected := `{ "status": "executing" }`
+	bodyExpected := `{ "error": "error running test cases, test cases not set" }`
 	bodyActual := body.String()
 	// do not use `require.Equal`.
 	require.JSONEq(bodyExpected, bodyActual)

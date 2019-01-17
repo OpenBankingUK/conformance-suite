@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io/ioutil"
 	"strings"
 
 	"github.com/sirupsen/logrus"
@@ -21,24 +22,20 @@ import (
 // GetImplementedTestCases takes a discovery Model and determines the implemented endpoints.
 // Currently this function is experimental - meaning it contains fmt.Printlns as an aid to understanding
 // and conceptualisation
-func GetImplementedTestCases(disco *discovery.ModelDiscoveryItem, print bool, beginTestNo int) []model.TestCase {
+func GetImplementedTestCases(disco *discovery.ModelDiscoveryItem, beginTestNo int, globalReplacements map[string]string) []model.TestCase {
 	var testcases []model.TestCase
 	endpoints := disco.Endpoints
 	testNo := beginTestNo
 	doc, err := loadSpec(disco.APISpecification.SchemaVersion, false)
 	if err != nil {
-		fmt.Println(err)
-		return testcases
+		logrus.Errorln(err)
+		return nil
 	}
 
 	for _, v := range endpoints {
 		var responseCodes []int
 		var goodResponseCode int
-		condition := getConditionality(v.Method, v.Path, disco.APISpecification.SchemaVersion)
 		newpath := getResourceIds(disco, v.Path)
-		if print {
-			fmt.Printf("[%s] %s %s\n", condition, v.Method, newpath)
-		}
 
 		for path, props := range doc.Spec().Paths.Paths {
 			for meth, op := range getOperations(&props) {
@@ -51,12 +48,45 @@ func GetImplementedTestCases(disco *discovery.ModelDiscoveryItem, print bool, be
 							"method":   meth,
 							"endpoint": newpath,
 							"err":      err,
-						}).Warn("Cannot get good response code")
+						}).Error("Cannot get good response code")
+						return nil
+					}
+					headers := map[string]string{
+						"authorization":         "Bearer $access_token",
+						"X-Fapi-Financial-Id":   "$fapi_financial_id",
+						"X-Fapi-Interaction-Id": "b4405450-febe-11e8-80a5-0fcebb1574e1",
+						"Content-Type":          "application/json",
+						"User-Agent":            "Open Banking Conformance Suite v0.2.0-alpha",
+						"Accept":                "*/*",
+					}
+
+					if strings.Contains(newpath, "account-access-consents") { // consent endpoints require a different access_token + custom chain
+						headers["authorization"] = "Bearer $client_access_token"
+						customTestCases, err := getTemplatedTestCases(newpath)
+						if err != nil {
+							logrus.WithFields(logrus.Fields{
+								"testcase": op.Summary,
+								"method":   meth,
+								"endpoint": newpath,
+								"err":      err,
+							}).Warn("error getting Templated TestCase")
+							return nil
+						}
+						for i := range customTestCases {
+							customTestCases[i].ProcessReplacementFields(globalReplacements)
+						}
+						if customTestCases != nil {
+							testcases = append(testcases, customTestCases...)
+							testNo++
+						}
 						continue
 					}
-					input := model.Input{Method: meth, Endpoint: newpath}
+
+					input := model.Input{Method: meth, Endpoint: newpath, Headers: headers}
 					expect := model.Expect{StatusCode: goodResponseCode, SchemaValidation: true}
-					testcase := model.TestCase{ID: fmt.Sprintf("#t%4.4d", testNo), Input: input, Expect: expect, Name: op.Summary}
+					context := model.Context{"baseurl": disco.ResourceBaseURI}
+					testcase := model.TestCase{ID: fmt.Sprintf("#t%4.4d", testNo), Input: input, Context: context, Expect: expect, Name: op.Summary}
+					testcase.ProcessReplacementFields(globalReplacements)
 					testcases = append(testcases, testcase)
 					testNo++
 					break
@@ -64,8 +94,27 @@ func GetImplementedTestCases(disco *discovery.ModelDiscoveryItem, print bool, be
 			}
 		}
 	}
-
 	return testcases
+}
+
+func getTemplatedTestCases(path string) (tc []model.TestCase, err error) {
+	if path == "/account-access-consents" {
+		filedata, err := ioutil.ReadFile("templates/account_consent.json")
+		if err != nil {
+			filedata, err = ioutil.ReadFile("../../templates/account_consent.json") // handle testing
+			if err != nil {
+				logrus.Error("Cannot read: templates/account_consent " + err.Error())
+				return nil, err
+			}
+		}
+		testcases := []model.TestCase{}
+		err = json.Unmarshal(filedata, &testcases)
+		if err != nil {
+			return testcases, err
+		}
+		return testcases, nil
+	}
+	return tc, nil
 }
 
 // GetCustomTestCases retrieves custom tests from the discovery file
@@ -73,8 +122,8 @@ func GetCustomTestCases(discoReader *discovery.CustomTest) SpecificationTestCase
 	spec := discovery.ModelAPISpecification{Name: discoReader.Name}
 	specTestCases := SpecificationTestCases{Specification: spec}
 	testcases := []model.TestCase{}
-
 	for _, testcase := range discoReader.Sequence {
+		testcase.ProcessReplacementFields(discoReader.Replacements)
 		testcases = append(testcases, testcase)
 	}
 	specTestCases.TestCases = testcases

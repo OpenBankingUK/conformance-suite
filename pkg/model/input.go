@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"net/url"
-	"strings"
 
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/tracer"
 	jwt "github.com/dgrijalva/jwt-go"
@@ -21,7 +20,6 @@ import (
 type Input struct {
 	Method      string            `json:"method,omitempty"`     // http Method that this test case uses
 	Endpoint    string            `json:"endpoint,omitempty"`   // resource endpoint where the http object needs to be sent to get a response
-	ContextGet  ContextAccessor   `json:"contextGet,omitempty"` // Allows retrieval of context variables an input parameters
 	Headers     map[string]string `json:"headers,omitempty"`    // Allows for provision of specific http headers
 	FormData    map[string]string `json:"formData,omitempty"`   // Allow for provision of http form data
 	RequestBody string            `json:"bodyData,omitempty"`   // Optional request body raw data
@@ -46,11 +44,12 @@ func (i *Input) CreateRequest(tc *TestCase, ctx *Context) (*resty.Request, error
 		return nil, i.AppErr(fmt.Sprintf("error empty Endpoint(%s) or Method(%s)", i.Endpoint, i.Method))
 	}
 
-	if err = i.ContextGet.GetValues(tc, ctx); err != nil { // look for endpoint replacment strings
+	req := resty.R() // create basic request that will be sent to endpoint
+
+	tc.Input.Endpoint, err = ReplaceContextField(tc.Input.Endpoint, ctx)
+	if err != nil {
 		return nil, err
 	}
-
-	req := resty.R() // create basic request that will be sent to endpoint
 
 	if err = i.setHeaders(req, ctx); err != nil {
 		return nil, err
@@ -75,13 +74,12 @@ func (i *Input) CreateRequest(tc *TestCase, ctx *Context) (*resty.Request, error
 }
 
 func (i *Input) setClaims(tc *TestCase, ctx *Context) error {
-	var err error
 	for k, v := range i.Claims {
-		i.Claims[k], err = i.expandContextVariable(v, ctx)
+		value, err := ReplaceContextField(v, ctx)
 		if err != nil {
-			return err
+			return i.AppErr(fmt.Sprintf("setClaims Replace Context value %s :%s", v, err.Error()))
 		}
-
+		i.Claims[k] = value
 		i.AppMsg(fmt.Sprintf("Claims [%s:%s]", k, i.Claims[k]))
 	}
 
@@ -92,7 +90,6 @@ func (i *Input) setClaims(tc *TestCase, ctx *Context) error {
 			if err != nil {
 				return i.AppErr(fmt.Sprintf("error creating AlgNoneJWT %s", err.Error()))
 			}
-			_ = token
 			i.AppMsg(fmt.Sprintf("jwt consent Token: %s", token))
 			consent := i.Claims["aud"] + "/auth?" + "client_id=" + i.Claims["iss"] + "&response_type=" + i.Claims["responseType"] + "&scope=" + url.QueryEscape(i.Claims["scope"]) + "&request=" + token
 
@@ -108,12 +105,14 @@ func (i *Input) setFormData(req *resty.Request, ctx *Context) error {
 	if len(i.FormData) > 0 {
 		i.AppMsg(fmt.Sprintf("AddFormData %v", i.FormData))
 		for k, v := range i.FormData {
-			v, err := i.expandContextVariable(v, ctx)
+			value, err := ReplaceContextField(v, ctx)
 			if err != nil {
-				i.AppErr("setFormdata - error setting contextVariable")
-				return err
+				return i.AppErr(fmt.Sprintf("setFormdata Replace Context value %s :%s", v, err.Error()))
 			}
-			i.FormData[k] = v
+			if len(value) == 0 {
+				return i.AppErr(fmt.Sprintf("setFormdata Replace Context value %s - empty", v))
+			}
+			i.FormData[k] = value
 		}
 		req.SetFormData(i.FormData)
 	}
@@ -125,29 +124,16 @@ func (i *Input) setHeaders(req *resty.Request, ctx *Context) error {
 		i.AppMsg(fmt.Sprintf("SetHeaders %v", i.Headers))
 	}
 	for k, v := range i.Headers { // set any input headers ("headers")
-		v, err := i.expandContextVariable(v, ctx)
+		value, err := ReplaceContextField(v, ctx)
 		if err != nil {
-			return i.AppErr(fmt.Sprintf("setHeaders :%s", err.Error()))
+			return i.AppErr(fmt.Sprintf("setHeaders Replaced Context value %s :%s", v, err.Error()))
 		}
-		req.SetHeader(k, v)
+		if len(value) == 0 {
+			return i.AppErr(fmt.Sprintf("setHeaders Replaced Context value %s:%s not found in context", k, v))
+		}
+		req.SetHeader(k, value)
 	}
 	return nil
-}
-
-func (i *Input) expandContextVariable(v string, ctx *Context) (string, error) {
-	if !strings.Contains(v, "$") {
-		return v, nil
-	}
-	contextValue := strings.TrimLeft(v, "$")
-	result := ctx.Get(contextValue)
-	if result == nil {
-		return v, i.AppErr(fmt.Sprintf("Context value [%s] missing in context", contextValue))
-	}
-	res, ok := result.(string)
-	if !ok {
-		return v, i.AppErr(fmt.Sprintf("Context value [%s] - cannot convert result %v to string", contextValue, result))
-	}
-	return res, nil
 }
 
 // AppMsg - application level trace
@@ -164,7 +150,7 @@ func (i *Input) AppErr(msg string) error {
 
 // String - object represetation
 func (i *Input) String() string {
-	bites, err := json.Marshal(i)
+	bites, err := json.MarshalIndent(i, "", "    ")
 	if err != nil {
 		// String() doesn't return error but still want to log as error to tracer ...
 		return i.AppErr(fmt.Sprintf("error converting Input %s %s %s", i.Method, i.Endpoint, err.Error())).Error()

@@ -28,21 +28,24 @@ type generator struct {
 // GenerateSpecificationTestCases - generates test cases
 func (g generator) GenerateSpecificationTestCases(discovery discovery.ModelDiscovery) []SpecificationTestCases {
 	results := make([]SpecificationTestCases, len(discovery.DiscoveryItems))
+	globalReplacements := make(map[string]string)
 
-	for _, customTest := range discovery.CustomTests { // assume ordering is prerun ...  ...
+	for _, customTest := range discovery.CustomTests { // assume ordering is prerun i.e. customtest run before other tests
 		results = append(results, GetCustomTestCases(&customTest))
+		for k, v := range customTest.Replacements {
+			globalReplacements[k] = v
+		}
 	}
 
 	// Assumes testNo is used as the base for all testcase IDs - to keep testcase IDs unique
 	testNo := 1000
-	for key, item := range discovery.DiscoveryItems {
-		results[key] = generateSpecificationTestCases(item, testNo)
+	for _, item := range discovery.DiscoveryItems {
+		results = append(results, generateSpecificationTestCases(item, testNo, globalReplacements))
 		testNo += 1000
 	}
 	return results
 }
 
-func generateSpecificationTestCases(item discovery.ModelDiscoveryItem, testNo int) SpecificationTestCases {
-	testCases := GetImplementedTestCases(&item, false, testNo)
-	return SpecificationTestCases{Specification: item.APISpecification, TestCases: testCases}
+func generateSpecificationTestCases(item discovery.ModelDiscoveryItem, testNo int, gobalReplacements map[string]string) SpecificationTestCases {
+	return SpecificationTestCases{Specification: item.APISpecification, TestCases: GetImplementedTestCases(&item, testNo, gobalReplacements)}
 }

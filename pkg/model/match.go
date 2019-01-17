@@ -86,32 +86,6 @@ func (c *ContextAccessor) PutValues(tc *TestCase, ctx *Context) error {
 	return nil
 }
 
-// GetValues - checks for match elements in the contextGet section
-// For each valid element there need to be a ContextName which is the name of the
-// variable in the context we're trying to retrieve
-// Once we have retrieved a context variable, we need to know what to do with it.
-// Current we can ReplaceEndpoint - so basically do a string replace on our testcase endpoint
-// which for example allows us to replace {AccountId} with a real account id
-func (c *ContextAccessor) GetValues(tc *TestCase, ctx *Context) error {
-	for _, match := range c.Matches {
-		if len(match.ContextName) > 0 {
-			value := ctx.Get(match.ContextName)
-			if value != nil { // found a value
-				contextValue := value.(string)
-				if len(contextValue) > 0 {
-					if len(match.ReplaceEndpoint) > 0 {
-						result := strings.Replace(tc.Input.Endpoint, match.ReplaceEndpoint, contextValue, 1)
-						tc.Input.Endpoint = result
-					}
-				}
-			} else { // not found a value
-				return c.AppErr(fmt.Sprintf("error GetValues cannot find name %s in context for testcase %s:%s", match.ContextName, tc.ID, tc.Name))
-			}
-		}
-	}
-	return nil
-}
-
 // AppMsg - application level trace
 func (c *ContextAccessor) AppMsg(msg string) string {
 	tracer.AppMsg("ContextAccessor", msg, "")
@@ -181,6 +155,7 @@ func (m *Match) PutValue(tc *TestCase, ctx *Context) bool {
 		}
 		if success {
 			ctx.Put(m.ContextName, m.Result)
+			tc.Context.Put(m.ContextName, m.Result)
 			return true
 		}
 	}
