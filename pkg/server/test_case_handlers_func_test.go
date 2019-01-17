@@ -32,6 +32,6 @@ func TestGetTestCases(t *testing.T) {
 	assert.NotNil(body)
 	assert.Equal(http.StatusOK, code)
 	assert.Equal("application/json; charset=UTF-8", headers["Content-Type"][0])
-	assert.Contains(body.String(), `[{"apiSpecification":{"name":"Account and Transaction API Specification"`)
-	assert.Contains(body.String(), `"testCases":[{"@id":"#t1000","name":"Create Account Access Consents"`)
+	assert.Contains(body.String(), `{"apiSpecification":{"name":"CustomTest-GetOzoneToken","url":""`)
+	assert.Contains(body.String(), `testCases":[{"@id":"#co0001","name":"Post Account Consent"`)
 }
