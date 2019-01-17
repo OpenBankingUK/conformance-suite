@@ -5,10 +5,8 @@ package server
 // Starting and stopping proxy server at the same port cannot be done in parallel.
 
 import (
-	versionmock "bitbucket.org/openbankingteam/conformance-suite/internal/pkg/version/mocks"
 	"bytes"
 	"flag"
-	"github.com/stretchr/testify/mock"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -16,6 +14,9 @@ import (
 	"os"
 	"strings"
 	"testing"
+
+	versionmock "bitbucket.org/openbankingteam/conformance-suite/internal/pkg/version/mocks"
+	"github.com/stretchr/testify/mock"
 
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
 
