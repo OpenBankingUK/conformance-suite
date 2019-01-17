@@ -32,11 +32,12 @@ func newGeneratorCmdWrapper() GeneratorCommand {
 	validatorEngine := discovery.NewFuncValidator(checker)
 	testGenerator := generation.NewGenerator()
 	journey := server.NewJourney(testGenerator, validatorEngine)
-	return newGeneratorCmdWrapperWithOptions(journey)
+	generator := newGenerator(journey)
+	return newGeneratorCmdWrapperWithOptions(generator)
 }
 
-func newGeneratorCmdWrapperWithOptions(journey server.Journey) GeneratorCommand {
-	return GeneratorCommand{newGenerator(journey)}
+func newGeneratorCmdWrapperWithOptions(generator Generator) GeneratorCommand {
+	return GeneratorCommand{generator}
 }
 
 func (g GeneratorCommand) run(cmd *cobra.Command, _ []string) {

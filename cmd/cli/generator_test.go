@@ -17,11 +17,11 @@ func TestGenerator(t *testing.T) {
 	journey.On("SetDiscoveryModel", &discovery.Model{}).Return(discovery.NoValidationFailures, nil)
 	journey.On("TestCases").Return([]generation.SpecificationTestCases{}, nil)
 	g := newGenerator(journey)
-
 	input := `{}`
 	output := &bytes.Buffer{}
 
 	err := g.Generate(strings.NewReader(input), output)
+
 	require.NoError(t, err)
 	assert.Equal(t, "[]", output.String())
 	journey.AssertExpectations(t)
@@ -30,11 +30,11 @@ func TestGenerator(t *testing.T) {
 func TestGeneratorHandlesWrongInput(t *testing.T) {
 	journey := &mocks.Journey{}
 	g := newGenerator(journey)
-
 	input := `hannah montana`
 	output := &bytes.Buffer{}
 
 	err := g.Generate(strings.NewReader(input), output)
+
 	assert.EqualError(t, err, "error parsing discovery model json: invalid character 'h' looking for beginning of value")
 }
 
@@ -42,11 +42,11 @@ func TestGeneratorHandlesSetDiscoveryModelErr(t *testing.T) {
 	journey := &mocks.Journey{}
 	journey.On("SetDiscoveryModel", &discovery.Model{}).Return(discovery.NoValidationFailures, errors.New("booboo"))
 	g := newGenerator(journey)
-
 	input := `{}`
 	output := &bytes.Buffer{}
 
 	err := g.Generate(strings.NewReader(input), output)
+
 	assert.EqualError(t, err, "error setting discovery model: booboo")
 }
 
@@ -55,11 +55,11 @@ func TestGeneratorHandlesFailuresFromSetDiscovery(t *testing.T) {
 	failures := discovery.ValidationFailures{{Key: "key", Error: "something wrong with this world"}}
 	journey.On("SetDiscoveryModel", &discovery.Model{}).Return(failures, nil)
 	g := newGenerator(journey)
-
 	input := `{}`
 	output := &bytes.Buffer{}
 
 	err := g.Generate(strings.NewReader(input), output)
+
 	assert.EqualError(t, err, "error validating discovery model\nkey: something wrong with this world\n")
 }
 
@@ -68,7 +68,6 @@ func TestGeneratorHandlesErrFromTestCases(t *testing.T) {
 	journey.On("SetDiscoveryModel", &discovery.Model{}).Return(discovery.NoValidationFailures, nil)
 	journey.On("TestCases").Return([]generation.SpecificationTestCases{}, errors.New("more booboo"))
 	g := newGenerator(journey)
-
 	input := `{}`
 	output := &bytes.Buffer{}
 
@@ -81,11 +80,11 @@ func TestGeneratorHandlesErrWriteToOutput(t *testing.T) {
 	journey.On("SetDiscoveryModel", &discovery.Model{}).Return(discovery.NoValidationFailures, nil)
 	journey.On("TestCases").Return([]generation.SpecificationTestCases{}, nil)
 	g := newGenerator(journey)
-
 	input := strings.NewReader(`{}`)
 	output := &brokenBuffer{}
 
 	err := g.Generate(input, output)
+	
 	assert.EqualError(t, err, "error writing results to output: booboo")
 }
 
