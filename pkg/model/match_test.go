@@ -8,8 +8,6 @@ import (
 
 	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/test"
 
-	"gopkg.in/resty.v1"
-
 	"github.com/stretchr/testify/assert"
 )
 
@@ -31,20 +29,9 @@ func TestContextPutFromMatch(t *testing.T) {
 	buf.ReadFrom(resp.RawResponse.Body)
 	tc := TestCase{Body: buf.String()}
 	assert.True(t, m.PutValue(&tc, &ctx))
-	assert.Equal(t, "Prichard", ctx.Get(m.ContextName))
-}
-
-// JSON field match on response string, and return field value + context variable name for context insertion
-func TestContextGetFromContext(t *testing.T) {
-	resty.R()
-	ctx := Context{}
-	m := Match{JSON: "name.first", Description: "simple match test", ContextName: "FirstName"}
-	resp := test.CreateHTTPResponse(200, "OK", simplejson)
-	buf := new(bytes.Buffer)
-	buf.ReadFrom(resp.RawResponse.Body)
-	value, variable := m.GetValue(buf.String())
-	assert.Equal(t, "Janet", value)
-	assert.Equal(t, ctx.Get(m.ContextName), ctx.Get(variable))
+	ctxvalue, exists := ctx.Get(m.ContextName)
+	assert.True(t, exists)
+	assert.Equal(t, "Prichard", ctxvalue)
 }
 
 // Create a testcase that defines the basic matchers
@@ -385,14 +372,17 @@ func TestCheckAuthorisationIncorrectValue(t *testing.T) {
 
 func TestContextPutHeaderRegexContextSubFieldCapture(t *testing.T) {
 	m := Match{Description: "AuthCode xChange", Header: "Location", Regex: "code=(.*)&+.*", ContextName: "mycode"}
-	c := Context{}
-	ctxPut := ContextAccessor{Context: &c, Matches: []Match{m}}
-	tc := TestCase{Expect: Expect{ContextPut: ctxPut, StatusCode: 200}}
+	ctx := Context{}
+	ctxPut := ContextAccessor{Context: &ctx, Matches: []Match{m}}
+	tc := TestCase{Context: Context{}, Expect: Expect{ContextPut: ctxPut, StatusCode: 200}}
 
 	resp := test.CreateHTTPResponse(200, "OK", "TheRainInSpain", "Location", "https://mysite/auth?code=1234&redir=here")
-	result, err := tc.Validate(resp, &c)
+	result, err := tc.Validate(resp, &ctx)
 	assert.True(t, result)
-	assert.Equal(t, "1234", c.Get("mycode")) // code from location header now accessible in context
+	ctxCode, exists := ctx.Get("mycode")
+	assert.True(t, exists)
+	assert.True(t, exists)
+	assert.Equal(t, "1234", ctxCode) // code from location header now accessible in context
 	assert.Nil(t, err)
 }
 
@@ -430,7 +420,9 @@ func TestContextPutCheckBodyJsonMatch(t *testing.T) {
 	result, err := tc.Validate(resp, &c)
 	assert.Nil(t, err)
 	assert.True(t, result)
-	assert.Equal(t, "Tower Bridge", c.Get("attractions")) // check body value now in context
+	ctxAttract, exists := c.Get("attractions")
+	assert.True(t, exists)
+	assert.Equal(t, "Tower Bridge", ctxAttract) // check body value now in context
 }
 
 func TestContextPutCheckBodyJsonMatchMismatch(t *testing.T) {
@@ -488,7 +480,9 @@ func TestContextPutAuthorisation(t *testing.T) {
 	success, err := tc.Validate(resp, &c)
 	assert.Nil(t, err)
 	assert.True(t, success)
-	assert.Equal(t, "10101011010", c.Get("token"))
+	ctxToken, exist := c.Get("token")
+	assert.True(t, exist)
+	assert.Equal(t, "10101011010", ctxToken)
 }
 
 func TestContextPutAuthorisationFail(t *testing.T) {
@@ -500,5 +494,7 @@ func TestContextPutAuthorisationFail(t *testing.T) {
 	success, err := tc.Validate(resp, &c)
 	assert.NotNil(t, err)
 	assert.False(t, success)
-	assert.Equal(t, nil, c.Get("token"))
+	ctxToken, exist := c.Get("token")
+	assert.True(t, exist)
+	assert.Equal(t, nil, ctxToken)
 }

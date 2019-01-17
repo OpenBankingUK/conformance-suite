@@ -96,17 +96,14 @@ func TestSetBearerAuthTokenFromContext(t *testing.T) {
 	}
 }
 
-func TestCreateRequestHeaderContextFails(t *testing.T) {
-	headers := map[string]string{
-		"Myheader": "$replacement",
-	}
+func TestCreateHeaderContextMissingForReplacement(t *testing.T) {
 	ctx := Context{
 		"nomatch": "myNewValue",
 	}
-	i := &Input{Method: "GET", Endpoint: "http://google.com", Headers: headers}
-	req, err := i.CreateRequest(emptyTestCase, &ctx)
+	result, err := ReplaceContextField("$replacement", &ctx)
 	assert.NotNil(t, err)
-	assert.Nil(t, req)
+	assert.Equal(t, "$replacement", result)
+
 }
 
 // func TestCheckAuthorizationTokenProcessed(t *testing.T) {

@@ -164,7 +164,9 @@ func TestChainedTestCases(t *testing.T) {
 	resp, err = executor.ExecuteTestCase(req, &tc02, &rulectx) // Execute
 	result, err = tc02.Validate(resp, &rulectx)                // Validate checks the match rules and processes any contextPuts present
 	assert.True(t, result)
-	assert.Equal(t, "500000000000000000000007", rulectx.Get("AccountId"))
+	acctid, exist := rulectx.Get("AccountId")
+	assert.True(t, exist)
+	assert.Equal(t, "500000000000000000000007", acctid)
 	assert.Equal(t, "http://myaspsp/accounts/500000000000000000000007", tc02.Input.Endpoint)
 }
 

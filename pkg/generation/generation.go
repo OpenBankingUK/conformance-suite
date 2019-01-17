@@ -53,7 +53,7 @@ func GetImplementedTestCases(disco *discovery.ModelDiscoveryItem, beginTestNo in
 					}
 					headers := map[string]string{
 						"authorization":         "Bearer $access_token",
-						"X-Fapi-Financial-Id":   "0015800001041RHAAY",
+						"X-Fapi-Financial-Id":   "$fapi_financial_id",
 						"X-Fapi-Interaction-Id": "b4405450-febe-11e8-80a5-0fcebb1574e1",
 						"Content-Type":          "application/json",
 						"User-Agent":            "Open Banking Conformance Suite v0.2.0-alpha",
@@ -62,7 +62,6 @@ func GetImplementedTestCases(disco *discovery.ModelDiscoveryItem, beginTestNo in
 
 					if strings.Contains(newpath, "account-access-consents") { // consent endpoints require a different access_token + custom chain
 						headers["authorization"] = "Bearer $client_access_token"
-						logrus.Println("GET TEMPLATED TEST CASE: " + newpath)
 						customTestCases, err := getTemplatedTestCases(newpath)
 						if err != nil {
 							logrus.WithFields(logrus.Fields{
@@ -80,7 +79,6 @@ func GetImplementedTestCases(disco *discovery.ModelDiscoveryItem, beginTestNo in
 							testcases = append(testcases, customTestCases...)
 							testNo++
 						}
-
 						continue
 					}
 
@@ -96,38 +94,27 @@ func GetImplementedTestCases(disco *discovery.ModelDiscoveryItem, beginTestNo in
 			}
 		}
 	}
-	dumpTestCases(testcases)
 	return testcases
-}
-
-func dumpTestCases(tcs []model.TestCase) {
-	b, err := json.MarshalIndent(tcs, "", "  ")
-	if err != nil {
-		logrus.Errorln(err)
-	}
-	logrus.Println(string(b))
 }
 
 func getTemplatedTestCases(path string) (tc []model.TestCase, err error) {
 	if path == "/account-access-consents" {
-		tc, err = loadTestCaseTemplate("account_consent.json")
-		return tc, err
+		filedata, err := ioutil.ReadFile("templates/account_consent.json")
+		if err != nil {
+			filedata, err = ioutil.ReadFile("../../templates/account_consent.json") // handle testing
+			if err != nil {
+				logrus.Error("Cannot read: templates/account_consent " + err.Error())
+				return nil, err
+			}
+		}
+		testcases := []model.TestCase{}
+		err = json.Unmarshal(filedata, &testcases)
+		if err != nil {
+			return testcases, err
+		}
+		return testcases, nil
 	}
 	return tc, nil
-}
-
-func loadTestCaseTemplate(filename string) ([]model.TestCase, error) {
-	filedata, err := ioutil.ReadFile("templates/" + filename)
-	if err != nil {
-		logrus.Error("Cannot read: templates/" + filename + " " + err.Error())
-		return nil, err
-	}
-	testcases := []model.TestCase{}
-	err = json.Unmarshal(filedata, &testcases)
-	if err != nil {
-		return testcases, err
-	}
-	return testcases, nil
 }
 
 // GetCustomTestCases retrieves custom tests from the discovery file

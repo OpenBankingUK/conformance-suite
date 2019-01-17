@@ -173,8 +173,8 @@ func (t *TestCase) ApplyContext(rulectx *Context) error {
 		}
 	}
 
-	base := t.Context.Get("baseurl") // "convention" puts baseurl as prefix to endpoint in testcase"
-	if base == nil {
+	base, exist := t.Context.Get("baseurl") // "convention" puts baseurl as prefix to endpoint in testcase"
+	if !exist {
 		return t.AppErr("cannot find base url for testcase")
 	}
 	t.Input.Endpoint = base.(string) + t.Input.Endpoint
@@ -208,8 +208,9 @@ func (t *TestCase) ApplyExpects(res *resty.Response, rulectx *Context) (bool, er
 		if checkResult == false {
 			return false, t.AppErr(fmt.Sprintf("ApplyExpects Returns False on match %s : %s", match.String(), got.Error()))
 		}
-		t.AppMsg(fmt.Sprintf("Checked Match: %s", match.Description))
+
 		t.Expect.Matches[k].Result = match.Result
+		t.AppMsg(fmt.Sprintf("Checked Match: %s: result: %s", match.Description, t.Expect.Matches[k].Result))
 	}
 
 	if err := t.Expect.ContextPut.PutValues(t, rulectx); err != nil {
@@ -220,8 +221,9 @@ func (t *TestCase) ApplyExpects(res *resty.Response, rulectx *Context) (bool, er
 }
 
 // Get the key form the Context map - currently assumes value converts easily to a string!
-func (c Context) Get(key string) interface{} {
-	return c[key]
+func (c Context) Get(key string) (interface{}, bool) {
+	value, exist := c[key]
+	return value, exist
 }
 
 // Put a value indexed by 'key' into the context. The value can be any type
@@ -347,6 +349,7 @@ func (r *Rule) GetPermissionSets() (included, excluded []string) {
 // ReplaceContextField -
 func ReplaceContextField(source string, ctx *Context) (string, error) {
 	field, isReplacement, err := getReplacementField(source)
+	fmt.Printf("%s %s %t : field length %d\n", source, field, isReplacement, len(field))
 	if err != nil {
 		return "", err
 	}
@@ -356,13 +359,13 @@ func ReplaceContextField(source string, ctx *Context) (string, error) {
 	if len(field) == 0 {
 		return source, errors.New("field not found in context " + field)
 	}
-	replacement := ctx.Get(field)
+	replacement, exist := ctx.Get(field)
+	if !exist {
+		return source, errors.New("replacement not found in context: " + source)
+	}
 	contextField, ok := replacement.(string)
 	if !ok {
-		return source, err
-	}
-	if len(contextField) == 0 {
-		return source, errors.New("replacement not found in context: " + source)
+		return source, errors.New("replacement is not of type string: " + source)
 	}
 	result := strings.Replace(source, "$"+field, contextField, 1)
 	return result, nil
