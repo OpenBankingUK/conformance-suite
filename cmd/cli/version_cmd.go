@@ -8,6 +8,11 @@ import (
 
 const bitBucketRepository = "https://api.bitbucket.org/2.0/repositories/openbankingteam/conformance-suite/refs/tags"
 
+// VersionCommand VersionCommand
+type VersionCommand struct {
+	versionChecker version.Checker
+}
+
 func versionCmd() *cobra.Command {
 	versionCmdWrapper := newVersionCommand(bitBucketRepository)
 	versionCmd := &cobra.Command{
@@ -18,23 +23,19 @@ func versionCmd() *cobra.Command {
 	return versionCmd
 }
 
-type versionCommand struct {
-	versionChecker version.Version
-}
-
-func newVersionCommand(bitBucketRepository string) versionCommand {
-	return versionCommand{
-		version.New(bitBucketRepository),
+func newVersionCommand(bitBucketRepository string) VersionCommand {
+	return VersionCommand{
+		version.NewBitBucket(bitBucketRepository),
 	}
 }
 
-func newVersionCommandWithOptions(versionChecker version.Version) versionCommand {
-	return versionCommand{
+func newVersionCommandWithOptions(versionChecker version.Checker) VersionCommand {
+	return VersionCommand{
 		versionChecker,
 	}
 }
 
-func (v versionCommand) run(_ *cobra.Command, _ []string) {
+func (v VersionCommand) run(_ *cobra.Command, _ []string) {
 	fmt.Println(banner)
 	softwareVersion := v.versionChecker.GetHumanVersion()
 	uiMessage, _, _ := v.versionChecker.UpdateWarningVersion(softwareVersion)

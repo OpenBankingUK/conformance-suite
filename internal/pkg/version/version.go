@@ -12,29 +12,37 @@ import (
 	"github.com/pkg/errors"
 )
 
-//  Version returns the semantic version (see http://semver.org).
+//  Checker returns the semantic version (see http://semver.org).
 const (
-	// Version must conform to the format expected, major, minor and patch.
+	// Checker must conform to the format expected, major, minor and patch.
 	major = "0"
 	minor = "2"
 	patch = "0"
-	// Version is the full string version of Conformance Suite.
+	// Checker is the full string version of Conformance Suite.
 	FullVersion = major + "." + minor + "." + patch
 	// VersionPrerelease is pre-release marker for the version. If this is "" (empty string)
 	// then it means that it is a final release. Otherwise, this is a pre-release
 	// such as "alpha", "beta", "rc1", etc.
-	Prerelease = "alpha"
+	Prerelease             = "alpha"
+	BitBucketAPIRepository = "https://api.bitbucket.org/2.0/repositories/openbankingteam/conformance-suite/refs/tags"
 )
 
-// Version helper with capability to get release versions from source control repository
-type Version struct {
+// Checker defines functionality to reason about the current version of the software and if updates are available
+type Checker interface {
+	GetHumanVersion() string
+	VersionFormatter(version string) (string, error)
+	UpdateWarningVersion(version string) (string, bool, error)
+}
+
+// BitBucket helper with capability to get release versions from source control repository
+type BitBucket struct {
 	// bitBucketAPIRepository full URL of the TAG API 2.0 for the Conformance Suite.
 	bitBucketAPIRepository string
 }
 
-// New returns a new instance of Version. bitBucketAPIRepository
-func New(bitBucketAPIRepository string) Version {
-	return Version{
+// NewBitBucket returns a new instance of Checker.
+func NewBitBucket(bitBucketAPIRepository string) BitBucket {
+	return BitBucket{
 		bitBucketAPIRepository: bitBucketAPIRepository,
 	}
 }
@@ -59,7 +67,7 @@ func getTags(body []byte) (*TagsAPIResponse, error) {
 
 // GetHumanVersion composes the parts of the version in a way that's suitable
 // for displaying to humans.
-func (v Version) GetHumanVersion() string {
+func (v BitBucket) GetHumanVersion() string {
 	version := "v" + FullVersion
 	release := Prerelease
 
@@ -75,7 +83,7 @@ func (v Version) GetHumanVersion() string {
 // VersionFormatter takes a string version number and returns just the numeric parts.
 // This function is used when trying to compare two string versions that 'could'
 // have non numerical properties.
-func (v Version) VersionFormatter(version string) (string, error) {
+func (v BitBucket) VersionFormatter(version string) (string, error) {
 	const maxByte = 1<<8 - 1
 	vo := make([]byte, 0, len(version)+8)
 	j := -1
@@ -116,7 +124,7 @@ func (v Version) VersionFormatter(version string) (string, error) {
 // latest tag version on Bitbucket, if a newer version is found it
 // returns a message and bool value that can be used to inform a user
 // a newer version is available for download.
-func (v Version) UpdateWarningVersion(version string) (string, bool, error) {
+func (v BitBucket) UpdateWarningVersion(version string) (string, bool, error) {
 	// A default message that can be presented to an end user.
 	errorMessageUI := "Version check is unavailable at this time."
 

@@ -1,6 +1,7 @@
 package server
 
 import (
+	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/version"
 	"context"
 	"errors"
 	"net/http"
@@ -19,7 +20,7 @@ import (
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
 	"github.com/sirupsen/logrus"
-	validator "gopkg.in/go-playground/validator.v9"
+	"gopkg.in/go-playground/validator.v9"
 )
 
 // GlobalConfiguration holds:
@@ -50,18 +51,21 @@ type Server struct {
 	*echo.Echo // Wrap (using composition) *echo.Echo, allows us to pretend Server is echo.Echo.
 	proxy      *http.Server
 	logger     *logrus.Entry
+	version    version.Checker
 }
 
 // NewServer returns new echo.Echo server.
 func NewServer(
 	logger *logrus.Entry,
 	checker model.ConditionalityChecker,
+	version version.Checker,
 ) *Server {
 
 	server := &Server{
-		Echo:   echo.New(),
-		proxy:  nil,
-		logger: logger,
+		Echo:    echo.New(),
+		proxy:   nil,
+		logger:  logger,
+		version: version,
 	}
 
 	// Use custom logger config so that log lines like below don't appear in the output:
@@ -126,6 +130,10 @@ func NewServer(
 	// endpoints for reporting
 	reportingEndpoints := newReportingEndpoints(webJourney)
 	api.GET("/report", reportingEndpoints.handler)
+
+	// endpoints for utility function such as version/update checking.
+	utilityEndpoints := newUtilityEndpoints(version)
+	api.GET("/version", utilityEndpoints.versionCheck)
 
 	server.logRoutes()
 

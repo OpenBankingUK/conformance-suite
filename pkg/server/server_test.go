@@ -5,8 +5,10 @@ package server
 // Starting and stopping proxy server at the same port cannot be done in parallel.
 
 import (
+	versionmock "bitbucket.org/openbankingteam/conformance-suite/internal/pkg/version/mocks"
 	"bytes"
 	"flag"
+	"github.com/stretchr/testify/mock"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -101,7 +103,16 @@ func TestMain(m *testing.M) {
 }
 
 func TestServer(t *testing.T) {
-	server := NewServer(nullLogger(), conditionalityCheckerMock{})
+	// Setup Version mock
+	humanVersion := "0.1.2-RC1"
+	warningMsg := "Version v0.1.2 of the Conformance Suite is out-of-date, please update to v0.1.3"
+	formatted := "0.1.2"
+	v := &versionmock.Version{}
+	v.On("GetHumanVersion").Return(humanVersion)
+	v.On("UpdateWarningVersion", mock.AnythingOfType("string")).Return(warningMsg, true, nil)
+	v.On("VersionFormatter", mock.AnythingOfType("string")).Return(formatted, nil)
+
+	server := NewServer(nullLogger(), conditionalityCheckerMock{}, v)
 
 	t.Run("NewServer() returns non-nil value", func(t *testing.T) {
 		assert.NotNil(t, server)

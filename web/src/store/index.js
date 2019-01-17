@@ -3,6 +3,8 @@ import Vuex from 'vuex';
 import createLogger from 'vuex/dist/logger';
 
 import config from './modules/config';
+import results from './modules/results';
+import testcases from './modules/testcases';
 
 Vue.use(Vuex);
 
@@ -13,6 +15,8 @@ const plugins = process.env.NODE_ENV !== 'production' ? [createLogger()] : [];
 export default new Vuex.Store({
   modules: {
     config,
+    results,
+    testcases,
   },
   strict,
   plugins,

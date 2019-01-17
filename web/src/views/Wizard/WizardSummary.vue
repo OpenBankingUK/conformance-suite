@@ -35,6 +35,7 @@ import * as _ from 'lodash';
 import TheWizardFooter from '../../components/Wizard/TheWizardFooter.vue';
 import TestCaseResults from '../../components/Wizard/TestCaseResults/TestCaseResults.vue';
 
+const { mapGetters } = createNamespacedHelpers('testcases');
 const { mapActions, mapState } = createNamespacedHelpers('config');
 
 export default {
@@ -47,9 +48,11 @@ export default {
     return {};
   },
   computed: {
+    ...mapGetters(
+      ['execution']
+    ),
     ...mapState({
       testCaseResults: 'testCaseResults',
-      execution: 'execution',
     }),
     errors() {
       return this.$store.getters['config/errors'].testCases;

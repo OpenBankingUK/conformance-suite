@@ -7,6 +7,9 @@ import (
 	"strings"
 	"testing"
 
+	versionmock "bitbucket.org/openbankingteam/conformance-suite/internal/pkg/version/mocks"
+	"github.com/stretchr/testify/mock"
+
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -20,7 +23,16 @@ import (
 func disableTestServerDiscoveryModelPOSTValidateReturnsRequestPayloadWhenValid(t *testing.T) {
 	assert := assert.New(t)
 
-	server := NewServer(nullLogger(), conditionalityCheckerMock{})
+	humanVersion := "0.1.2-RC1"
+	warningMsg := "Version v0.1.2 of the Conformance Suite is out-of-date, please update to v0.1.3"
+	formatted := "0.1.2"
+
+	v := &versionmock.Version{}
+	v.On("GetHumanVersion").Return(humanVersion)
+	v.On("UpdateWarningVersion", mock.AnythingOfType("string")).Return(warningMsg, true, nil)
+	v.On("VersionFormatter", mock.AnythingOfType("string")).Return(formatted, nil)
+
+	server := NewServer(nullLogger(), conditionalityCheckerMock{}, v)
 	defer func() {
 		require.NoError(t, server.Shutdown(context.TODO()))
 	}()
@@ -43,7 +55,16 @@ func disableTestServerDiscoveryModelPOSTValidateReturnsRequestPayloadWhenValid(t
 func TestServerDiscoveryModelPOSTValidateReturnsErrorsWhenInvalidJSON(t *testing.T) {
 	assert := assert.New(t)
 
-	server := NewServer(nullLogger(), conditionalityCheckerMock{})
+	humanVersion := "0.1.2-RC1"
+	warningMsg := "Version v0.1.2 of the Conformance Suite is out-of-date, please update to v0.1.3"
+	formatted := "0.1.2"
+
+	v := &versionmock.Version{}
+	v.On("GetHumanVersion").Return(humanVersion)
+	v.On("UpdateWarningVersion", mock.AnythingOfType("string")).Return(warningMsg, true, nil)
+	v.On("VersionFormatter", mock.AnythingOfType("string")).Return(formatted, nil)
+
+	server := NewServer(nullLogger(), conditionalityCheckerMock{}, v)
 	defer func() {
 		require.NoError(t, server.Shutdown(context.TODO()))
 	}()
@@ -60,28 +81,37 @@ func TestServerDiscoveryModelPOSTValidateReturnsErrorsWhenInvalidJSON(t *testing
 }
 
 // /api/discovery-model/validate - POST - When incomplete model returns validation failures messages
-// func TestServerDiscoveryModelPOSTValidateReturnsErrorsWhenIncomplete(t *testing.T) {
-// 	assert := assert.New(t)
+func TestServerDiscoveryModelPOSTValidateReturnsErrorsWhenIncomplete(t *testing.T) {
+	assert := assert.New(t)
 
-// 	server := NewServer(nullLogger(), conditionalityCheckerMock{})
-// 	defer func() {
-// 		require.NoError(t, server.Shutdown(context.TODO()))
-// 	}()
+	humanVersion := "0.1.2-RC1"
+	warningMsg := "Version v0.1.2 of the Conformance Suite is out-of-date, please update to v0.1.3"
+	formatted := "0.1.2"
 
-// 	discoveryModel := `{}`
-// 	expected := `{ "error":
-// 					[
-// 						{"key": "DiscoveryModel.Name", "error": "Field 'DiscoveryModel.Name' is required"},
-// 						{"key": "DiscoveryModel.Description", "error": "Field 'DiscoveryModel.Description' is required"},
-// 						{"key": "DiscoveryModel.DiscoveryVersion", "error": "Field 'DiscoveryModel.DiscoveryVersion' is required"},
-// 						{"key": "DiscoveryModel.DiscoveryItems", "error": "Field 'DiscoveryModel.DiscoveryItems' is required"}
-//                     ]
-// 				}`
+	v := &versionmock.Version{}
+	v.On("GetHumanVersion").Return(humanVersion)
+	v.On("UpdateWarningVersion", mock.AnythingOfType("string")).Return(warningMsg, true, nil)
+	v.On("VersionFormatter", mock.AnythingOfType("string")).Return(formatted, nil)
 
-// 	code, body, _ := request(http.MethodPost, "/api/discovery-model",
-// 		strings.NewReader(discoveryModel), server)
+	server := NewServer(nullLogger(), conditionalityCheckerMock{}, v)
+	defer func() {
+		require.NoError(t, server.Shutdown(context.TODO()))
+	}()
 
-// 	assert.NotNil(body)
-// 	assert.JSONEq(expected, body.String())
-// 	assert.Equal(http.StatusBadRequest, code)
-// }
+	discoveryModel := `{}`
+	expected := `{ "error":
+					[
+						{"key": "DiscoveryModel.Name", "error": "Field 'DiscoveryModel.Name' is required"},
+						{"key": "DiscoveryModel.Description", "error": "Field 'DiscoveryModel.Description' is required"},
+						{"key": "DiscoveryModel.DiscoveryVersion", "error": "Field 'DiscoveryModel.DiscoveryVersion' is required"},
+						{"key": "DiscoveryModel.DiscoveryItems", "error": "Field 'DiscoveryModel.DiscoveryItems' is required"}
+                    ]
+				}`
+
+	code, body, _ := request(http.MethodPost, "/api/discovery-model",
+		strings.NewReader(discoveryModel), server)
+
+	assert.NotNil(body)
+	assert.JSONEq(expected, body.String())
+	assert.Equal(http.StatusBadRequest, code)
+}

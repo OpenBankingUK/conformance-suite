@@ -1,5 +1,22 @@
 <template>
   <div class="d-flex flex-row flex-fill">
+    <b-alert
+      v-if="updateError"
+      variant="danger"
+      show>
+      {{ updateError }}
+    </b-alert>
+    <b-alert
+      v-else-if="updateInfo.update"
+      variant="danger"
+      show>
+      {{ updateInfo.message }}
+      <br>
+      <br>
+      See <a
+        href="https://bitbucket.org/openbankingteam/conformance-suite/src/develop/README.md"
+        target="_blank">https://bitbucket.org/openbankingteam/conformance-suite/src/develop/README.md</a> for more information.
+    </b-alert>
     <div class="d-flex align-items-start">
       <div
         class="panel w-50"
@@ -56,8 +73,44 @@ export default {
   components: {
     DiscoveryTemplateCard,
   },
+  data() {
+    return {
+      updateInfo: {},
+      updateError: null,
+    };
+  },
   computed: {
     ...mapGetters('config', ['discoveryTemplates']),
+  },
+  mounted() {
+    this.checkUpdates();
+  },
+  methods: {
+    async checkUpdates() {
+      try {
+        // Version check here
+        const input = '/api/version';
+        const init = {
+          method: 'GET',
+          headers: {
+            Accept: 'application/json; charset=UTF-8',
+            'Content-Type': 'application/json; charset=UTF-8',
+          },
+        };
+        const response = await fetch(input, init);
+        const data = await response.json();
+
+        // `fetch` does not throw an error even when status is not 200.
+        // See: https://github.com/whatwg/fetch/issues/18
+        if (response.status !== 200) {
+          this.updateError = `Failed to check for updates. Got ${response.status} from server.`;
+        } else {
+          this.updateInfo = data;
+        }
+      } catch (err) {
+        this.updateError = `Failed to check for updates: ${err}.`;
+      }
+    },
   },
 };
 </script>

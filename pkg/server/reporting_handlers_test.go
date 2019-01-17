@@ -7,14 +7,25 @@ import (
 	"strings"
 	"testing"
 
+	versionmock "bitbucket.org/openbankingteam/conformance-suite/internal/pkg/version/mocks"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 )
 
 func TestServerGetReportBadRequestIfNoDiscoveryModelSet(t *testing.T) {
 	assert := assert.New(t)
 
-	server := NewServer(nullLogger(), conditionalityCheckerMock{})
+	// Setup Version mock
+	humanVersion := "0.1.2-RC1"
+	warningMsg := "Version v0.1.2 of the Conformance Suite is out-of-date, please update to v0.1.3"
+	formatted := "0.1.2"
+	v := &versionmock.Version{}
+	v.On("GetHumanVersion").Return(humanVersion)
+	v.On("UpdateWarningVersion", mock.AnythingOfType("string")).Return(warningMsg, true, nil)
+	v.On("VersionFormatter", mock.AnythingOfType("string")).Return(formatted, nil)
+
+	server := NewServer(nullLogger(), conditionalityCheckerMock{}, v)
 	defer func() {
 		require.NoError(t, server.Shutdown(context.TODO()))
 	}()
@@ -31,7 +42,16 @@ func TestServerGetReport(t *testing.T) {
 	assert := assert.New(t)
 	require := require.New(t)
 
-	server := NewServer(nullLogger(), conditionalityCheckerMock{})
+	// Setup Version mock
+	humanVersion := "0.1.2-RC1"
+	warningMsg := "Version v0.1.2 of the Conformance Suite is out-of-date, please update to v0.1.3"
+	formatted := "0.1.2"
+	v := &versionmock.Version{}
+	v.On("GetHumanVersion").Return(humanVersion)
+	v.On("UpdateWarningVersion", mock.AnythingOfType("string")).Return(warningMsg, true, nil)
+	v.On("VersionFormatter", mock.AnythingOfType("string")).Return(formatted, nil)
+
+	server := NewServer(nullLogger(), conditionalityCheckerMock{}, v)
 	defer func() {
 		require.NoError(server.Shutdown(context.TODO()))
 	}()

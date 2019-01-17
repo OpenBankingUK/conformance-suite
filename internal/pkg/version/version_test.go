@@ -23,8 +23,8 @@ func TestOutOfDateUpdateWarningVersion(t *testing.T) {
 	mockedServer, serverURL := test.HTTPServer(http.StatusOK, mockResponse, nil)
 	defer mockedServer.Close()
 
-	// Version helper
-	v := New(serverURL)
+	// Checker helper
+	v := NewBitBucket(serverURL)
 
 	// Use an old version to test.
 	version := "v0.0.0"
@@ -37,7 +37,7 @@ func TestOutOfDateUpdateWarningVersion(t *testing.T) {
 }
 
 // TestNoUpdateUpdateWarningVersion asserts no updated required boolean when
-// local version maches or is higher.
+// local version matches or is higher.
 func TestNoUpdateUpdateWarningVersion(t *testing.T) {
 	mockResponse := `
 {
@@ -50,8 +50,8 @@ func TestNoUpdateUpdateWarningVersion(t *testing.T) {
 	mockedServer, serverURL := test.HTTPServer(http.StatusOK, mockResponse, nil)
 	defer mockedServer.Close()
 
-	// Version helper
-	v := New(serverURL)
+	// Checker helper
+	v := NewBitBucket(serverURL)
 
 	version := "v1000.0.0"
 	message, flag, err := v.UpdateWarningVersion(version)
@@ -78,8 +78,8 @@ func TestBadStatusUpdateWarningVersionFail(t *testing.T) {
 	mockedServer, serverURL := test.HTTPServer(http.StatusBadRequest, mockResponse, nil)
 	defer mockedServer.Close()
 
-	// Version helper
-	v := New(serverURL)
+	// Checker helper
+	v := NewBitBucket(serverURL)
 
 	message := ""
 	// Check we get the appropriate error message.
@@ -91,9 +91,9 @@ func TestBadStatusUpdateWarningVersionFail(t *testing.T) {
 // TestHTTPErrorUpdateWarningVersion asserts the correct error message
 // is returned if BitBucket cannot return tags.
 func TestHTTPErrorUpdateWarningVersion(t *testing.T) {
-	// Version helper
+	// Checker helper
 	// Update BitBucketAPIRepository to produce a no such host.
-	v := New("https://.com")
+	v := NewBitBucket("https://.com")
 	message, flag, err := v.UpdateWarningVersion(FullVersion)
 	// Assert that update fag is false.
 	assert.Equal(t, flag, false)
@@ -109,9 +109,9 @@ func TestHTTPErrorUpdateWarningVersion(t *testing.T) {
 func TestHaveVersionUpdateWarningVersion(t *testing.T) {
 	version := ""
 
-	// Version helper
+	// Checker helper
 	// Update BitBucketAPIRepository to produce a no such host.
-	v := New("https://api.bitbucket.org/2.0/repositories/openbankingteam/conformance-suite/refs/tags")
+	v := NewBitBucket("https://api.bitbucket.org/2.0/repositories/openbankingteam/conformance-suite/refs/tags")
 
 	message, flag, err := v.UpdateWarningVersion(version)
 	// Assert that update fag is false.
