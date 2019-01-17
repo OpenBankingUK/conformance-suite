@@ -1,10 +1,12 @@
 package server
 
 import (
+	versionmock "bitbucket.org/openbankingteam/conformance-suite/internal/pkg/version/mocks"
+	"github.com/stretchr/testify/mock"
 	"strings"
 	"testing"
 
-	model "bitbucket.org/openbankingteam/conformance-suite/pkg/model"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
 
 	"net/http/httptest"
 
@@ -17,7 +19,16 @@ import (
 func TestServerWebSocketHandlerHandle(t *testing.T) {
 	require := require.New(t)
 
-	echoServer := NewServer(nullLogger(), model.NewConditionalityChecker())
+	// Setup Version mock
+	humanVersion := "0.1.2-RC1"
+	warningMsg := "Version v0.1.2 of the Conformance Suite is out-of-date, please update to v0.1.3"
+	formatted := "0.1.2"
+	v := &versionmock.Version{}
+	v.On("GetHumanVersion").Return(humanVersion)
+	v.On("UpdateWarningVersion", mock.AnythingOfType("string")).Return(warningMsg, true, nil)
+	v.On("VersionFormatter", mock.AnythingOfType("string")).Return(formatted, nil)
+
+	echoServer := NewServer(nullLogger(), model.NewConditionalityChecker(), v)
 	webServer := httptest.NewServer(echoServer)
 	defer func() {
 		require.NoError(echoServer.Shutdown(nil))

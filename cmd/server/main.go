@@ -1,15 +1,17 @@
 package main
 
 import (
+	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/version"
 	"fmt"
+	"github.com/pkg/errors"
 	"os"
 	"time"
 
-	model "bitbucket.org/openbankingteam/conformance-suite/pkg/model"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
 
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/server"
 	"github.com/sirupsen/logrus"
-	prefixed "github.com/x-cray/logrus-prefixed-formatter"
+	"github.com/x-cray/logrus-prefixed-formatter"
 )
 
 const (
@@ -40,11 +42,27 @@ func init() {
 
 func main() {
 	logger := logrus.WithField("app", "server")
-	server := server.NewServer(logger, model.NewConditionalityChecker())
+	ver := version.NewBitBucket(version.BitBucketAPIRepository)
+	server := server.NewServer(logger, model.NewConditionalityChecker(), ver)
 	server.HideBanner = true
 
+	versionInfo(ver, logger)
+
 	address := fmt.Sprintf("0.0.0.0:%s", getPort())
-	logrus.Infof("address -> http://%s", address)
+	logger.Infof("address -> http://%s", address)
 
 	server.Logger.Fatal(server.Start(address))
+}
+
+func versionInfo(ver version.BitBucket, logger *logrus.Entry) {
+	v, err := ver.VersionFormatter(version.FullVersion)
+	if err != nil {
+		logger.Error(errors.Wrap(err, "version.VersionFormatter()"))
+	}
+	msg, _, err := ver.UpdateWarningVersion(v)
+	if err != nil {
+		logger.Error(errors.Wrap(err, "version.UpdateWarningVersion()"))
+	} else {
+		logger.Info(msg)
+	}
 }

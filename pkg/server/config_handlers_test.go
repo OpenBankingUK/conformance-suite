@@ -1,8 +1,10 @@
 package server
 
 import (
+	versionmock "bitbucket.org/openbankingteam/conformance-suite/internal/pkg/version/mocks"
 	"context"
 	"encoding/json"
+	"github.com/stretchr/testify/mock"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
@@ -20,7 +22,16 @@ import (
 func TestServerConfigPOSTCreatesProxy(t *testing.T) {
 	require := require.New(t)
 
-	server := NewServer(nullLogger(), conditionalityCheckerMock{})
+	// Setup Version mock
+	humanVersion := "0.1.2-RC1"
+	warningMsg := "Version v0.1.2 of the Conformance Suite is out-of-date, please update to v0.1.3"
+	formatted := "0.1.2"
+	v := &versionmock.Version{}
+	v.On("GetHumanVersion").Return(humanVersion)
+	v.On("UpdateWarningVersion", mock.AnythingOfType("string")).Return(warningMsg, true, nil)
+	v.On("VersionFormatter", mock.AnythingOfType("string")).Return(formatted, nil)
+
+	server := NewServer(nullLogger(), conditionalityCheckerMock{}, v)
 	defer func() {
 		require.NoError(server.Shutdown(context.TODO()))
 	}()
@@ -64,7 +75,17 @@ func TestServerConfigPOSTCreatesProxy(t *testing.T) {
 func TestServerConfigPOSTCannotPOSTConfigTwiceWithoutFirstDeletingIt(t *testing.T) {
 	require := require.New(t)
 
-	server := NewServer(nullLogger(), conditionalityCheckerMock{})
+	// Version helper
+	humanVersion := "0.1.2-RC1"
+	warningMsg := "Version v0.1.2 of the Conformance Suite is out-of-date, please update to v0.1.3"
+	formatted := "0.1.2"
+
+	v := &versionmock.Version{}
+	v.On("GetHumanVersion").Return(humanVersion)
+	v.On("UpdateWarningVersion", mock.AnythingOfType("string")).Return(warningMsg, true, nil)
+	v.On("VersionFormatter", mock.AnythingOfType("string")).Return(formatted, nil)
+
+	server := NewServer(nullLogger(), conditionalityCheckerMock{}, v)
 	defer func() {
 		require.NoError(server.Shutdown(context.TODO()))
 	}()
@@ -107,7 +128,17 @@ func TestServerConfigPOSTCannotPOSTConfigTwiceWithoutFirstDeletingIt(t *testing.
 func TestServerConfigDELETEStopsTheProxy(t *testing.T) {
 	require := require.New(t)
 
-	server := NewServer(nullLogger(), conditionalityCheckerMock{})
+	// Version helper
+	humanVersion := "0.1.2-RC1"
+	warningMsg := "Version v0.1.2 of the Conformance Suite is out-of-date, please update to v0.1.3"
+	formatted := "0.1.2"
+
+	v := &versionmock.Version{}
+	v.On("GetHumanVersion").Return(humanVersion)
+	v.On("UpdateWarningVersion", mock.AnythingOfType("string")).Return(warningMsg, true, nil)
+	v.On("VersionFormatter", mock.AnythingOfType("string")).Return(formatted, nil)
+
+	server := NewServer(nullLogger(), conditionalityCheckerMock{}, v)
 	defer func() {
 		require.NoError(server.Shutdown(context.TODO()))
 	}()
@@ -158,7 +189,17 @@ func TestServerConfigDELETEStopsTheProxy(t *testing.T) {
 func TestServerConfigGlobalPostValid(t *testing.T) {
 	require := require.New(t)
 
-	server := NewServer(nullLogger(), conditionalityCheckerMock{})
+	// Version helper
+	humanVersion := "0.1.2-RC1"
+	warningMsg := "Version v0.1.2 of the Conformance Suite is out-of-date, please update to v0.1.3"
+	formatted := "0.1.2"
+
+	v := &versionmock.Version{}
+	v.On("GetHumanVersion").Return(humanVersion)
+	v.On("UpdateWarningVersion", mock.AnythingOfType("string")).Return(warningMsg, true, nil)
+	v.On("VersionFormatter", mock.AnythingOfType("string")).Return(formatted, nil)
+
+	server := NewServer(nullLogger(), conditionalityCheckerMock{}, v)
 	defer func() {
 		require.NoError(server.Shutdown(context.TODO()))
 	}()
@@ -239,7 +280,17 @@ oYi+1hqp1fIekaxsyQIDAQAB
 func TestServerConfigGlobalPostInvalidSigning(t *testing.T) {
 	require := require.New(t)
 
-	server := NewServer(nullLogger(), conditionalityCheckerMock{})
+	// Version helper
+	humanVersion := "0.1.2-RC1"
+	warningMsg := "Version v0.1.2 of the Conformance Suite is out-of-date, please update to v0.1.3"
+	formatted := "0.1.2"
+
+	v := &versionmock.Version{}
+	v.On("GetHumanVersion").Return(humanVersion)
+	v.On("UpdateWarningVersion", mock.AnythingOfType("string")).Return(warningMsg, true, nil)
+	v.On("VersionFormatter", mock.AnythingOfType("string")).Return(formatted, nil)
+
+	server := NewServer(nullLogger(), conditionalityCheckerMock{}, v)
 	defer func() {
 		require.NoError(server.Shutdown(context.TODO()))
 	}()
@@ -305,7 +356,17 @@ oYi+1hqp1fIekaxsyQIDAQAB
 func TestServerConfigGlobalPostInvalidTransport(t *testing.T) {
 	require := require.New(t)
 
-	server := NewServer(nullLogger(), conditionalityCheckerMock{})
+	// Version helper
+	humanVersion := "0.1.2-RC1"
+	warningMsg := "Version v0.1.2 of the Conformance Suite is out-of-date, please update to v0.1.3"
+	formatted := "0.1.2"
+
+	v := &versionmock.Version{}
+	v.On("GetHumanVersion").Return(humanVersion)
+	v.On("UpdateWarningVersion", mock.AnythingOfType("string")).Return(warningMsg, true, nil)
+	v.On("VersionFormatter", mock.AnythingOfType("string")).Return(formatted, nil)
+
+	server := NewServer(nullLogger(), conditionalityCheckerMock{}, v)
 	defer func() {
 		require.NoError(server.Shutdown(context.TODO()))
 	}()
