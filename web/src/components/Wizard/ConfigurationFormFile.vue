@@ -11,6 +11,7 @@
       v-model="file"
       :state="isValid"
       :placeholder="placeholder"
+      :accept="validExtension"
       capture
       @input="() => { onFileChanged() }"
     />
@@ -40,11 +41,16 @@ export default {
       required: false,
       default: 'Choose a file...',
     },
+    validExtension: {
+      type: String,
+      required: true,
+    },
   },
   data() {
     return {
       file: null,
       data: '',
+      validFile: false,
     };
   },
   computed: {
@@ -60,31 +66,24 @@ export default {
         // Clear file, as JSON editor has changed contents
         this.clearFile();
       }
+
+      if (this.file) {
+        return this.file.name.endsWith(this.validExtension);
+      }
       return Boolean(contents);
     },
     /**
-     * Description of the file uploaded (when one is selected).
-     * Returns the size and last modification date.
-     * Else returns contents length from vuex store.
-     */
+         * Description of the file uploaded (when one is selected).
+         * Returns the size and last modification date.
+         * Else returns contents length from vuex store.
+         */
     description() {
       const contents = this.configuration[this.id];
       if (this.file && (contents === '' || contents === this.data)) {
-        // File (HTML API) contains these fields:
-        // lastModified: 1545301720780
-        // lastModifiedDate: Thu Dec 20 2018 10:28:40 GMT+0000 (Greenwich Mean Time) {}
-        // name: "transport_private.key"
-        // size: 891
-        // type: "application/x-iwork-keynote-sffkey"
-        // webkitRelativePath: ""
-        const size = `Size: ${this.file.size} bytes`;
-        if (this.file.lastModifiedDate) {
-          return [
-            size,
-            `Last modified: ${this.file.lastModifiedDate}`,
-          ].join('\n');
+        if (this.validFile) {
+          return this.fileInfo();
         }
-        return size;
+        return this.extError(this.validExtension);
       } else if (contents) {
         return `Size: ${contents.length} bytes`;
       }
@@ -96,16 +95,29 @@ export default {
     ...mapActions('config', [
       'setConfigurationErrors',
     ]),
+    extError(extension) {
+      return ['Invalid file format', `Require file with extension ${extension}`].join('\n');
+    },
+    fileInfo() {
+      const size = `Size: ${this.file.size} bytes`;
+      if (this.file.lastModifiedDate) {
+        return [
+          size,
+          `Last modified: ${this.file.lastModifiedDate}`,
+        ].join('\n');
+      }
+      return size;
+    },
     clearFile() {
       if (this.$refs[this.id] && this.$refs[this.id].reset) {
         this.$refs[this.id].reset();
       }
     },
     /**
-     * readFile turns FileReader API into a Promise-based one,
-     * returning a resolved Promise with the contents of the file
-     * when it has been loaded.
-     */
+         * readFile turns FileReader API into a Promise-based one,
+         * returning a resolved Promise with the contents of the file
+         * when it has been loaded.
+         */
     readFile(file) {
       return new Promise((resolve, reject) => {
         const reader = new FileReader();
@@ -116,9 +128,9 @@ export default {
       });
     },
     /**
-     * When a file is selected, read its content and set the value in the store.
-     * See: https://stackoverflow.com/questions/45179061/file-input-on-change-in-vue-js
-     */
+         * When a file is selected, read its content and set the value in the store.
+         * See: https://stackoverflow.com/questions/45179061/file-input-on-change-in-vue-js
+         */
     async onFileChanged() {
       // Clear previous error.
       this.setConfigurationErrors([]);
@@ -128,6 +140,8 @@ export default {
       const setConfigurationMethodName = `config/setConfiguration${this.setterMethodNameSuffix}`;
 
       if (this.file) {
+        this.validFile = this.file.name.endsWith(this.validExtension);
+
         // If file is set, read the file then set the value in the store.
         try {
           this.data = await this.readFile(this.file);
