@@ -46,6 +46,22 @@ func (_m *Journey) CertificateTransport() authentication.Certificate {
 	return r0
 }
 
+// DiscoveryModel provides a mock function with given fields:
+func (_m *Journey) DiscoveryModel() *discovery.Model {
+	ret := _m.Called()
+
+	var r0 *discovery.Model
+	if rf, ok := ret.Get(0).(func() *discovery.Model); ok {
+		r0 = rf()
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*discovery.Model)
+		}
+	}
+
+	return r0
+}
+
 // RunTests provides a mock function with given fields:
 func (_m *Journey) RunTests() (reporting.Result, error) {
 	ret := _m.Called()
