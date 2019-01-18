@@ -5,10 +5,8 @@
       :fields="fields"
       head-variant="dark"
       caption-top
-      striped
       hover
       small
-      fixed
       responsive
     >
       <template slot="table-caption">
@@ -18,7 +16,24 @@
           :fields="fieldsSpecification"
           small
           fixed
-          stacked/>
+          stacked>
+          <!-- format url column as anchor. -->
+          <template
+            slot="url"
+            slot-scope="data">
+            <a
+              :href="data.value"
+              target="_blank">{{ data.value }}</a>
+          </template>
+          <!-- format schemaVersion column as anchor. -->
+          <template
+            slot="schemaVersion"
+            slot-scope="data">
+            <a
+              :href="data.value"
+              target="_blank">{{ data.value }}</a>
+          </template>
+        </b-table>
       </template>
     </b-table>
   </div>
@@ -100,6 +115,10 @@ export default {
 </script>
 
 <style scoped>
+.test-case {
+  font-size: 12px;
+}
+
 /**
  * Don't remove the `/deep/` here.
  * This rule ensures values such as 'https://openbanking.atlassian.net/wiki/spaces/DZ/pages/642090641/Account+and+Transaction+API+Specification+-+v3.0'
