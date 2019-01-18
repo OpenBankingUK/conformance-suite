@@ -36,8 +36,8 @@ type journey struct {
 	certificateTransport authentication.Certificate
 }
 
-// NewWebJourney creates an instance for a user journey
-func NewWebJourney(generator generation.Generator, validator discovery.Validator) Journey {
+// NewJourney creates an instance for a user journey
+func NewJourney(generator generation.Generator, validator discovery.Validator) Journey {
 	return &journey{
 		generator:     generator,
 		validator:     validator,
