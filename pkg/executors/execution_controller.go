@@ -30,7 +30,9 @@ type RunDefinition struct {
 func RunTestCases(defn *RunDefinition) (reporting.Result, error) {
 	executor := MakeExecutor()
 	executor.SetCertificates(defn.SigningCert, defn.TransportCert)
+
 	rulectx := &model.Context{}
+	rulectx.Put("SigingCert", defn.SigningCert)
 
 	reportTestResults := []reporting.Test{}
 	reportSpecs := []reporting.Specification{reporting.Specification{Tests: reportTestResults}}

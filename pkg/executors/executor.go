@@ -86,24 +86,22 @@ func (e *Executor) setupTLSCertificate(tlsCert tls.Certificate) error {
 	}
 	tlsConfig.BuildNameToCertificate()
 	resty.SetTLSClientConfig(tlsConfig)
-	resty.SetDebug(false)
 	return nil
-
 }
 
 func (e *Executor) appMsg(msg string) {
-	tracer.AppMsg("OZONE", msg, "")
+	tracer.AppMsg("Executor", msg, "")
 }
 
 func (e *Executor) appErr(msg string) error {
-	tracer.AppErr("OZONE", msg, "")
+	tracer.AppErr("Executor", msg, "")
 	return errors.New(msg)
 }
 
 func (e *Executor) appEntry(msg string) {
-	tracer.AppEntry("OZONE", msg)
+	tracer.AppEntry("Executor", msg)
 }
 
 func (e *Executor) appExit(msg string) {
-	tracer.AppExit("OZONE", msg)
+	tracer.AppExit("Executor", msg)
 }

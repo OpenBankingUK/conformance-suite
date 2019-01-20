@@ -6,6 +6,8 @@ import (
 	"time"
 
 	model "bitbucket.org/openbankingteam/conformance-suite/pkg/model"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/tracer"
+	resty "gopkg.in/resty.v1"
 
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/server"
 	"github.com/sirupsen/logrus"
@@ -34,8 +36,10 @@ func init() {
 		DisableTimestamp: false,
 		ForceFormatting:  true,
 	})
-	logrus.SetLevel(logrus.InfoLevel)
+	logrus.SetLevel(logrus.DebugLevel)
 	logrus.StandardLogger().SetNoLock()
+	tracer.Silent = false
+	resty.SetDebug(false)
 }
 
 func main() {
