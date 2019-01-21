@@ -1,6 +1,6 @@
 <template>
   <div class="d-flex flex-column align-items-stretch h-100 navbar">
-    <div class="nav-section px-1">
+    <div class="nav-section px-1 flex-fill">
       <b-nav
         vertical
         pills>
@@ -19,14 +19,10 @@
           label="Configuration"/>
         <TheNavBarItem
           :no="4"
-          route="/wizard/run-overview"
+          route="/wizard/overview-run"
           label="Run/Overview"/>
         <TheNavBarItem
           :no="5"
-          route="/wizard/summary"
-          label="Summary"/>
-        <TheNavBarItem
-          :no="6"
           route="/wizard/export"
           label="Export"/>
       </b-nav>

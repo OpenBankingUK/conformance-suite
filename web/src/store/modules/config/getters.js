@@ -45,9 +45,8 @@ export default {
       '/wizard/continue-or-start': step > 0,
       '/wizard/discovery-config': step > constants.WIZARD.STEP_ONE,
       '/wizard/configuration': step > constants.WIZARD.STEP_TWO,
-      '/wizard/run-overview': step > constants.WIZARD.STEP_THREE,
-      '/wizard/summary': step > constants.WIZARD.STEP_FOUR,
-      '/wizard/export': step > constants.WIZARD.STEP_FIVE,
+      '/wizard/overview-run': step > constants.WIZARD.STEP_THREE,
+      '/wizard/export': step > constants.WIZARD.STEP_FOUR,
     };
     return navigation;
   },

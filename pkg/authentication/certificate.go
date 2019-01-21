@@ -46,7 +46,7 @@ func NewCertificate(publicKeyPem, privateKeyPem string) (Certificate, error) {
 
 	tlsCert, err := tls.X509KeyPair([]byte(publicKeyPem), []byte(privateKeyPem))
 	if err != nil {
-		logrus.Warn("invalid X509KeyPair")
+		logrus.Warnln("tls.X509KeyPair, err=", err)
 	}
 
 	if err := validateKeys(publicKey, privateKey); err != nil {
