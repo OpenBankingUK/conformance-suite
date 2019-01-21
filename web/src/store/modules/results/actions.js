@@ -12,13 +12,13 @@ export default {
     try {
       const testCaseResults = await api.computeTestCaseResults();
       commit(types.SET_TEST_CASE_RESULTS, testCaseResults);
-      dispatch('config/setTestCaseResultsErrors', []);
-      dispatch('config/setWizardStep', constants.WIZARD.STEP_SIX);
+      dispatch('config/setTestCaseResultsErrors', [], { root: true });
+      dispatch('config/setWizardStep', constants.WIZARD.STEP_SIX, { root: true });
     } catch (err) {
       commit(types.SET_TEST_CASE_RESULTS, {});
       dispatch('config/setTestCaseResultsErrors', [
         err,
-      ]);
+      ], { root: true });
     }
   },
 };

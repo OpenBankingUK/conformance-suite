@@ -18,13 +18,12 @@ export default {
       }
 
       commit(types.SET_TEST_CASES, testCases);
-      dispatch('config/setTestCaseErrors', []);
-      dispatch('config/setWizardStep', constants.WIZARD.STEP_FOUR);
+      dispatch('config/setTestCaseErrors', [], { root: true });
     } catch (err) {
       commit(types.SET_TEST_CASES, []);
-      dispatch('config/setTestCaseErrors', [err]);
-      dispatch('config/setWizardStep', constants.WIZARD.STEP_FOUR);
+      dispatch('config/setTestCaseErrors', [err], { root: true });
     }
+    dispatch('config/setWizardStep', constants.WIZARD.STEP_FOUR, { root: true });
   },
   /**
    * Step 5: Calls `/api/run/start`.
@@ -34,11 +33,10 @@ export default {
     try {
       const execution = await api.executeTestCases();
       commit(types.SET_EXECUTION_RESULTS, execution);
-      dispatch('config/setExecutionErrors', []);
-      dispatch('config/setWizardStep', constants.WIZARD.STEP_FIVE);
+      dispatch('config/setExecutionErrors', [], { root: true });
     } catch (err) {
-      dispatch('config/setExecutionErrors', [err]);
-      dispatch('config/setWizardStep', constants.WIZARD.STEP_FIVE);
+      dispatch('config/setExecutionErrors', [err], { root: true });
     }
+    dispatch('config/setWizardStep', constants.WIZARD.STEP_FIVE, { root: true });
   },
 };

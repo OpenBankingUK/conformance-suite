@@ -14,6 +14,7 @@ import mutations from './mutations';
 import getters from './getters';
 import state from './state';
 
+import constants from '../config/constants';
 import api from '../../../api';
 // https://jestjs.io/docs/en/mock-functions#mocking-modules
 jest.mock('../../../api');
@@ -62,7 +63,8 @@ describe('store/modules/results', () => {
 
       api.computeTestCaseResults.mockResolvedValueOnce(OK_RESPONSE);
       await actions.computeTestCaseResults(store);
-      expect(dispatch).toHaveBeenCalledWith('config/setTestCaseResultsErrors', []);
+      expect(dispatch).toHaveBeenCalledWith('config/setTestCaseResultsErrors', [], { root: true });
+      expect(dispatch).toHaveBeenCalledWith('config/setWizardStep', constants.WIZARD.STEP_SIX, { root: true });
 
       expect(store.state.testCaseResults).toEqual(OK_RESPONSE);
     });
@@ -74,7 +76,7 @@ describe('store/modules/results', () => {
 
       api.computeTestCaseResults.mockRejectedValueOnce(ERROR_RESPONSE);
       await actions.computeTestCaseResults(store);
-      expect(dispatch).toHaveBeenCalledWith('config/setTestCaseResultsErrors', [ERROR_RESPONSE]);
+      expect(dispatch).toHaveBeenCalledWith('config/setTestCaseResultsErrors', [ERROR_RESPONSE], { root: true });
 
       expect(store.state.testCaseResults).toEqual({});
     });
@@ -86,12 +88,12 @@ describe('store/modules/results', () => {
 
       api.computeTestCaseResults.mockRejectedValueOnce(ERROR_RESPONSE);
       await actions.computeTestCaseResults(store);
-      expect(dispatch).toHaveBeenCalledWith('config/setTestCaseResultsErrors', [ERROR_RESPONSE]);
+      expect(dispatch).toHaveBeenCalledWith('config/setTestCaseResultsErrors', [ERROR_RESPONSE], { root: true });
       expect(store.state.testCaseResults).toEqual({});
 
       api.computeTestCaseResults.mockResolvedValueOnce(OK_RESPONSE);
       await actions.computeTestCaseResults(store);
-      expect(dispatch).toHaveBeenCalledWith('config/setTestCaseResultsErrors', []);
+      expect(dispatch).toHaveBeenCalledWith('config/setTestCaseResultsErrors', [], { root: true });
       expect(store.state.testCaseResults).toEqual(OK_RESPONSE);
     });
 
@@ -102,12 +104,12 @@ describe('store/modules/results', () => {
 
       api.computeTestCaseResults.mockResolvedValueOnce(OK_RESPONSE);
       await actions.computeTestCaseResults(store);
-      expect(dispatch).toHaveBeenCalledWith('config/setTestCaseResultsErrors', []);
+      expect(dispatch).toHaveBeenCalledWith('config/setTestCaseResultsErrors', [], { root: true });
       expect(store.state.testCaseResults).toEqual(OK_RESPONSE);
 
       api.computeTestCaseResults.mockRejectedValueOnce(ERROR_RESPONSE);
       await actions.computeTestCaseResults(store);
-      expect(dispatch).toHaveBeenCalledWith('config/setTestCaseResultsErrors', [ERROR_RESPONSE]);
+      expect(dispatch).toHaveBeenCalledWith('config/setTestCaseResultsErrors', [ERROR_RESPONSE], { root: true });
       expect(store.state.testCaseResults).toEqual({});
     });
   });

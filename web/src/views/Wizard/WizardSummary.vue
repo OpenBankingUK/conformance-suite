@@ -36,7 +36,7 @@ import TheWizardFooter from '../../components/Wizard/TheWizardFooter.vue';
 import TestCaseResults from '../../components/Wizard/TestCaseResults/TestCaseResults.vue';
 
 const { mapGetters } = createNamespacedHelpers('testcases');
-const { mapActions, mapState } = createNamespacedHelpers('config');
+const { mapActions, mapState } = createNamespacedHelpers('results');
 
 export default {
   name: 'WizardSummary',
