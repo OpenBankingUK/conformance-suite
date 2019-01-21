@@ -4,6 +4,7 @@ import createLogger from 'vuex/dist/logger';
 
 import config from './modules/config';
 import testcases from './modules/testcases';
+import status from './modules/status';
 
 Vue.use(Vuex);
 
@@ -15,6 +16,7 @@ export default new Vuex.Store({
   modules: {
     config,
     testcases,
+    status,
   },
   strict,
   plugins,
