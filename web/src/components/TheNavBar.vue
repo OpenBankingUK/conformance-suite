@@ -1,6 +1,6 @@
 <template>
-  <div class="d-flex flex-column h-100 navbar">
-    <div class="nav-section">
+  <div class="d-flex flex-column align-items-stretch h-100 navbar">
+    <div class="nav-section px-1">
       <b-nav
         vertical
         pills>
@@ -32,12 +32,33 @@
       </b-nav>
     </div>
 
-    <div class="nav-section">
+    <div class="nav-section specifications">
       <h6
         class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted"
       >
+        <span>Specifications</span>
+        <plus-circle-icon class="icon-class"/>
+      </h6>
+      <b-nav
+        vertical
+        class="mb-2">
+        <b-nav-item
+          v-for="(specification, index) in specifications"
+          :key="index"
+          :href="specification.swaggerUIURL"
+          target="_blank"
+        >
+          <i class="swagger-icon icon-class"/>{{ specification.label }}
+        </b-nav-item>
+      </b-nav>
+    </div>
+
+    <div class="nav-section tools">
+      <h6
+        class="sidebar-heading d-flex justify-content-between align-items-center px-3 mb-1 text-muted"
+      >
         <span>Tools</span>
-        <plus-circle-icon/>
+        <plus-circle-icon class="icon-class"/>
       </h6>
       <b-nav
         vertical
@@ -70,8 +91,10 @@
 </template>
 
 <script>
+import map from 'lodash/map';
 import { PlusCircleIcon, FileTextIcon } from 'vue-feather-icons';
 import TheNavBarItem from './TheNavBarItem.vue';
+import Specifications from '../../../pkg/model/testdata/ozone_spec.golden.json';
 
 export default {
   name: 'TheNavBar',
@@ -80,7 +103,21 @@ export default {
     PlusCircleIcon,
     FileTextIcon,
   },
-  methods: {},
+  data() {
+    const specifications = map(Specifications, specification => ({
+      label: `${specification.Name} (${specification.Version})`,
+      swaggerUIURL: `/swagger/${specification.Identifier}/${specification.Version}/docs`,
+      wikiURL: `${specification.URL.Scheme}://${specification.URL.Host}${specification.URL.Path}`,
+      specificationURL: `${specification.SchemaVersion.Scheme}://${specification.SchemaVersion.Host}${specification.SchemaVersion.Path}`,
+      _specification: specification,
+    }));
+
+    return {
+      specifications,
+    };
+  },
+  methods: {
+  },
 };
 </script>
 
@@ -88,7 +125,7 @@ export default {
 .navbar {
   box-shadow: 6px 0 25px 0 rgba(38, 50, 56, 0.2);
   padding: 30px 0 0 0;
-  width: 190px;
+  width: 256px;
 }
 .nav-section {
   background: #ffffff;
@@ -105,5 +142,21 @@ export default {
 
 .icon-class {
   margin-right: 4px;
+}
+
+.nav-section.specifications,
+.nav-section.tools {
+  font-size: 12px;
+}
+
+.icon-class {
+  height: 16px;
+  width: 16px;
+}
+
+.swagger-icon {
+  background-image: url('~@/assets/images/swagger/favicon-16x16.png');
+  display: inline-block;
+  vertical-align: middle;
 }
 </style>

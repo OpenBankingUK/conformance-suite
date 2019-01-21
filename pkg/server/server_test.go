@@ -6,6 +6,7 @@ package server
 
 import (
 	"bytes"
+	"context"
 	"flag"
 	"io"
 	"io/ioutil"
@@ -15,6 +16,7 @@ import (
 	"strings"
 	"testing"
 
+	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/version"
 	versionmock "bitbucket.org/openbankingteam/conformance-suite/internal/pkg/version/mocks"
 	"github.com/stretchr/testify/mock"
 
@@ -140,7 +142,7 @@ func TestServer(t *testing.T) {
 	// 	assert.Equal(t, `{"message":"Not Found"}`, body.String())
 	// })
 
-	require.NoError(t, server.Shutdown(nil))
+	require.NoError(t, server.Shutdown(context.TODO()))
 }
 
 // Generic util function for making test requests.
@@ -159,4 +161,19 @@ func nullLogger() *logrus.Entry {
 	logger := logrus.New()
 	logger.Out = ioutil.Discard
 	return logger.WithField("app", "test")
+}
+
+// mockVersionChecker - returns mock version checker.
+func mockVersionChecker() version.Checker {
+	// Setup Version mock
+	humanVersion := "0.1.2-RC1"
+	warningMsg := "Version v0.1.2 of the Conformance Suite is out-of-date, please update to v0.1.3"
+	formatted := "0.1.2"
+
+	v := &versionmock.Version{}
+	v.On("GetHumanVersion").Return(humanVersion)
+	v.On("UpdateWarningVersion", mock.AnythingOfType("string")).Return(warningMsg, true, nil)
+	v.On("VersionFormatter", mock.AnythingOfType("string")).Return(formatted, nil)
+
+	return v
 }

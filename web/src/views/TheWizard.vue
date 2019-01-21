@@ -1,6 +1,6 @@
 <template>
-  <div>
-    <div class="d-flex">
+  <div class="d-flex flex-column flex-fill">
+    <div class="d-flex flex-fill">
       <div class="flex">
         <TheNavBar/>
       </div>

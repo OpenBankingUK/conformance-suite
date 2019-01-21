@@ -6,7 +6,7 @@
       <TheHeader/>
     </div>
     <div class="d-flex flex-column flex-fill">
-      <router-view/>
+      <router-view class="d-flex flex-column flex-fill"/>
     </div>
   </div>
 </template>

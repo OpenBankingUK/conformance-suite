@@ -3,12 +3,12 @@ package model
 import (
 	"encoding/json"
 	"flag"
-	"github.com/stretchr/testify/require"
 	"io/ioutil"
 	"path/filepath"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 var update = flag.Bool("update", false, "update .golden files")
@@ -33,7 +33,7 @@ func TestSpecificationHasNotChanged(t *testing.T) {
 	expected, err := json.MarshalIndent(specifications, "", "    ")
 	require.NoError(t, err)
 
-	goldenFile := filepath.Join("testdata", "ozone_spec.golden")
+	goldenFile := filepath.Join("testdata", "ozone_spec.golden.json")
 	if *update {
 		t.Log("update golden file")
 		err := ioutil.WriteFile(goldenFile, expected, 0644)
