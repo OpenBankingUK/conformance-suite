@@ -21,6 +21,7 @@
     "register-service-worker": "^1.0.0",
     "vue": "^2.5.17",
     "vue-feather-icons": "^4.7.1",
+    "vue-notification-bell": "^0.8.11",
     "vue-router": "^3.0.1",
     "vue2-brace-editor": "^2.0.2",
     "vuex": "^3.0.1",
