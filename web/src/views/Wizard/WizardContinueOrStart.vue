@@ -68,6 +68,8 @@
 import { mapGetters } from 'vuex';
 import DiscoveryTemplateCard from '../../components/Wizard/DiscoveryTemplateCard.vue';
 
+import api from '../../api/apiUtil';
+
 export default {
   name: 'WizardContinueOrStart',
   components: {
@@ -89,15 +91,7 @@ export default {
     async checkUpdates() {
       try {
         // Version check here
-        const input = '/api/version';
-        const init = {
-          method: 'GET',
-          headers: {
-            Accept: 'application/json; charset=UTF-8',
-            'Content-Type': 'application/json; charset=UTF-8',
-          },
-        };
-        const response = await fetch(input, init);
+        const response = await api.get('/api/version');
         const data = await response.json();
 
         // `fetch` does not throw an error even when status is not 200.
