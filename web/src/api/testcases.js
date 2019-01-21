@@ -1,7 +1,7 @@
 import api from './apiUtil';
 
 const TESTCASES_URL = '/api/test-cases';
-const EXECUTE_URL = '/api//run/start';
+const EXECUTE_URL = '/api/run/start';
 
 export default {
   /**
