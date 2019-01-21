@@ -229,14 +229,15 @@ func TestInputClaimsConsentId(t *testing.T) {
 }
 
 func TestClaimsJWTBearer(t *testing.T) {
+	cert, _ := authentication.NewCertificate(selfsignedDummypub, selfsignedDummykey)
 	ctx := Context{
-		"consent_id":        "aac-fee2b8eb-ce1b-48f1-af7f-dc8f576d53dc",
-		"xchange_code":      "10e9d80b-10d4-4abd-9fe0-15789cc512b5",
-		"baseurl":           "https://matls-sso.openbankingtest.org.uk",
-		"access_token":      "18d5a754-0b76-4a8f-9c68-dc5caaf812e2",
-		"client_id":         "12312",
-		"scope":             "AuthoritiesReadAccess ASPSPReadAccess TPPReadAll",
-		"PrivateSigningKey": KeySigning,
+		"consent_id":   "aac-fee2b8eb-ce1b-48f1-af7f-dc8f576d53dc",
+		"xchange_code": "10e9d80b-10d4-4abd-9fe0-15789cc512b5",
+		"baseurl":      "https://matls-sso.openbankingtest.org.uk",
+		"access_token": "18d5a754-0b76-4a8f-9c68-dc5caaf812e2",
+		"client_id":    "12312",
+		"scope":        "AuthoritiesReadAccess ASPSPReadAccess TPPReadAll",
+		"SigningCert":  cert,
 	}
 	i := Input{Endpoint: "/as/token.oauth2", Method: "POST",
 		Generation: map[string]string{
@@ -254,77 +255,81 @@ func TestClaimsJWTBearer(t *testing.T) {
 			"scope":                 "$scope",
 		},
 	}
-
 	tc := TestCase{Input: i, Context: ctx}
 	res, err := i.CreateRequest(&tc, &ctx)
 	require.NoError(t, err, "create request should succeed")
 	assert.NotNil(t, res)
-	for k, v := range res.FormData {
-		fmt.Printf("%27.27s:\t%s\n", k, v)
-	}
-	assert.True(t, len(res.FormData["client_assrtion"]) > 0, "client assertion should be populated with signed jwt")
+	jwtbearer, exists := ctx.Get("jwtbearer")
+	assert.True(t, exists)
+	assert.True(t, len(jwtbearer.(string)) > 20)
 }
 
-func TestCertStuff(t *testing.T) {
-
-	cert, err := authentication.NewCertificate(signpub, signkey)
+func TestJWTSignRS256(t *testing.T) {
+	cert, err := authentication.NewCertificate(selfsignedDummypub, selfsignedDummykey)
 	require.NoError(t, err)
 	require.NotNil(t, cert)
 
-	//privateKey := []byte(KeySigning)
 	alg := jwt.GetSigningMethod("RS256")
 	if alg == nil {
 		fmt.Printf("Couldn't find signing method: %v\n", alg)
 	}
-	// key, err := jwt.ParseRSAPrivateKeyFromPEM([]byte(signkey))
-	// if err != nil {
-	// 	fmt.Println("error : ", err)
-	// }
 	claims := jwt.MapClaims{}
 	claims["iat"] = time.Now().Unix()
 	token := jwt.NewWithClaims(alg, claims) // create new token
 	token.Header["kid"] = "mykeyid"
-
 	prikey := cert.PrivateKey()
 	tokenString, err := token.SignedString(prikey) // sign the token - get as encoded string
 	if err != nil {
 		fmt.Println("error signing jwt: ", err)
 	}
-	fmt.Println(tokenString)
+	assert.True(t, len(tokenString) > 30)
 
 }
 
-// KeySigning -
-var KeySigning = `
------BEGIN PRIVATE KEY-----
-MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDAfrw8ClTBLkzD
-lCEQlrpZgS5ERl5bihQUiiNy6JxRtozwF/sQqp4T4IoqMR4FD37nmHjtIK/SPLnN
-Bwn/PzBPpHm7U1kKSjoAM/FnS6O+2FrrdkTDmrwyg04J29EXH2ckmIAAUsEtUMcN
-GBBCga2Qa2+hq2Weom/imrmRQDe4gSljVZrL2AgeZnO/6jHdQSaslMsiRpIWOwvV
-ZubdQ2vNocQdgElKu9afWRZya0vF+HufqpqvZ52kPyq9RHe/YE+OY72MmJF+bymi
-r3ZYCyy9UW3wmM8soYjM+7uly7Z6hcDSy2Kpu+plHn/Qv9gd4sBXznA4iMeaGUcP
-TJb7WkThAgMBAAECggEAR9UDWURhrFUiwDkevZoBoDTclw3LWE2GgMOrxs2Wx8df
-gJjyT53br38zD9uUYD8QFEyJk7OG6OVQUHo3+NATrySpaIYJzBU236yCgRFw4V7L
-TuKrdnLfl9n33SXyOLa3PqjJ21UGUWq7XN+F8cuCgUoWNjZHjZMAPYePh+x23ppu
-Fb96S5ZP6nPPEbN1f8G2n4Ea1tfYpFw4Iq6gPea1OMGII3xl5ngkMeOaDNwqYhYb
-ixBs2kI0eAIVVDcPx8X5CbAcWeCznGc2zW4aiAt3MLPjWqq9hlypoig+8GjRCGzT
-Ut/lBJhMRgSe1YMuhBLeGmbr5cNWzUcENAvJ0CLCoQKBgQDx3Z/6V30HP06Kb/08
-Nbjv1JIRDH3O+H5iF5I979HYeMzBrBcTw4eDdctfIUDqubpEOyVvhl11S/V2kclA
-Pibf+0wTh9Tae1wGlrxlhSycrrzu7xG+oBazsj3hX70CAa9o5NWdvh40bgWOr7lA
-81lO2Isgrrti9uVqxhxQwA4I4wKBgQDLvoMhN82xjz+BagbYJLwmwKZAPZ4PHC3A
-cnnE2ZuU2CcmvA/CBIDWXXnT87pXBF26b94ajR8bQgcSph4jKujeCLz96FKwbTr2
-8xxEbaVf8f3ilzHlk+OD+HirieQmGOQfJ8rPgjZykgLd7gFwpwwO9gpiP10MCCKC
-pk9deIyaawKBgHBE9N6Kv+GeVEHUjBLnyQmifY7mYnuxQ1EbKeoQKTM3l6wKyseE
-yqGOCzIESJLsVXcYkV78WuN4t98q+uUUNI1ho8WpFne4LVZtn9PsBnJQdije1jjL
-LN6KzUiRXTXSPG8PUc0gE/s4WuIJ1Y89pmYABEzObvMYMhPnE/uzupALAoGAGc9C
-cTzOc8W/t7ckstDEfOw+ozirAyMAsLZPsp4WVV6kZwW/wUYsw/sHadAgNNG6xdlR
-+28RF7TfjH86ph3Tbf0RY+DASNUteQcG96wkHOlczg11Jq37TkZ1ktVe72yLyV6T
-FIJcP1s7vb1etVST9Hk6i4OXV+TX6lEDEMYqmY0CgYEAvmfQ7D9ygrK62ysv5zCD
-CFLMJDQVz/msm49UrBSK8wlLjCVPEsJe1/l0dESufES3NsbEXRZTqgQAZH15T0Mu
-QrrRwdoLowUS4kEFKYH/emkjJKZQlCu0ccPJdiwZcuhePCyDo9uwSboSIhGoyvvb
-12X8lr0o/RRVim7kHI9PI44=
------END PRIVATE KEY-----
+var selfsignedDummykey = `-----BEGIN RSA PRIVATE KEY-----
+MIIEpAIBAAKCAQEA8Gl2x9KsmqwdmZd+BdZYtDWHNRXtPd/kwiR6luU+4w76T+9m
+lmePXqALi7aSyvYQDLeffR8+2dSGcdwvkf6bDWZNeMRXl7Z1jsk+xFN91mSYNk1n
+R6N1EsDTK2KXlZZyaTmpu/5p8SxwDO34uE5AaeESeM3RVqqOgRcXskmp/atwUMC+
+qLfuXPoNSjKguWdcuZwJxbjJbqbvF5/zXISEoKly5iGK+11eDRcX2Rp8yRpOhO84
+LtSpC21QTkMSK8VA4O3e1tOW+DXaJb3QtzwocTb+wXTw74agwvcAQP9yDilgR1t6
+fdqeGrW4Y25bDulXlsD+S6PzhVo+EVPq1T3RJQIDAQABAoIBADZfQ9Pxm8PnhVJF
+ZuUfEzS+nnOtH9jMmEooQel6s3xa2NXXSRZfGZfHDpVsl0p72CloJhQASxCs9jMu
+HzwfnyWqq37SuRTA2VmPvjhcwasJWTt+ygrztvikz52SUMIuInYV6oNwCLnY2Qaz
+k3rrh7nqg2j684tsS4p6lItoCaArA5xcQwxn6librK/NzHzLaXN0zLufn4WYuPMc
+3NTuZWY6EYqbyHbuiwrsZGin8JKw+bqfG6OEtt5GVJbzmacjQrVTEnEcJNO8Pe3H
+bC/ZczFBb9Vsznfp0EICKf/OZVen7zSZ58+l3zg/+h0A8Z1D4jbWkXWDS3dYiAQU
+g2C9x8kCgYEA/sllVEZXyCduyUvP7nVYPasBHKbIuS8G/cIKfwy+Wd1ZhKg4JgIy
+5nhERYfOJeDwSoQUYxJSZoCgnByc4jx3kSX4oyTdKdT+yj1Sma38GONRm3Erxany
+aZvw40cj5vCn8iGl6hsSpqWWiHWizEyO+XvctfMaFq5vOQxgjTF4Yw8CgYEA8Y6L
+VlZxByVO7kQwZXdJ1zEtu1YzZyw95kiHmnxHdOqhstDV9mwtcDLD12CYR2LVweT/
+ndTTU4U3q1z/Zuo1t1HYvTHU4ss/4GBCskO0JIKFPDr2KdfUiDGn6eMWNmoQ35zU
+Z2zfi3BMtX2dbobX+dBDyh+ZJf21zKsyujp/eIsCgYEA6poU9IGE6KbuiumEv6RL
+KRVhg7lLD8Dupg/azFu2llaLy+t9L/pMVgydiIxg1F4HxAVUJFlFiF6eBMEP7/0P
+d5ZIGCikgJVAOoY2nY0nmN8PUJrnXC19KaNOLmhd9ZLYgcpb1HEzPkEwl9wBmC5S
+ZASaGOuMtR/PB++Oo9PObx8CgYEAjwcdH+kdEeMYYmKD2YCRe1bGQlefJib/G9y0
+VlfiI6tORUf8eOXC3d1hMqUiZZpzAVTrufOrkZeex9vP6oshdUOENzpLWGKKlvvI
+Yi9OehPCelBbM5l1YZMtXoK0w1F4Xj9JUVgY4UKEWS5gynITbfrQON0O3HzmaaKw
+7a33jlMCgYBXA5OvGOav/uMQ45SiYf8KhyNx2gQqQlvSeF9z8yDqmHr2epoAVoEu
+nuz0bzQ7ARNqBkWLQ4bqzwy0aKXlcvbIMBaVXyfQTiwzwWAZsAWr6WHPlvWDP6mP
+1vAUje5xEMtsIwj6UnkJ3OpPVVeJ56aKQIxg6QU2ROrWYDccx4gg0g==
+-----END RSA PRIVATE KEY-----`
+var selfsignedDummypub = `-----BEGIN CERTIFICATE-----
+MIIDBzCCAe+gAwIBAgIJAOze8GNkMIMMMA0GCSqGSIb3DQEBBQUAMBoxGDAWBgNV
+BAMMD3d3dy5leGFtcGxlLmNvbTAeFw0xOTAxMjExMzUyMjFaFw0yOTAxMTgxMzUy
+MjFaMBoxGDAWBgNVBAMMD3d3dy5leGFtcGxlLmNvbTCCASIwDQYJKoZIhvcNAQEB
+BQADggEPADCCAQoCggEBAPBpdsfSrJqsHZmXfgXWWLQ1hzUV7T3f5MIkepblPuMO
++k/vZpZnj16gC4u2ksr2EAy3n30fPtnUhnHcL5H+mw1mTXjEV5e2dY7JPsRTfdZk
+mDZNZ0ejdRLA0ytil5WWcmk5qbv+afEscAzt+LhOQGnhEnjN0VaqjoEXF7JJqf2r
+cFDAvqi37lz6DUoyoLlnXLmcCcW4yW6m7xef81yEhKCpcuYhivtdXg0XF9kafMka
+ToTvOC7UqQttUE5DEivFQODt3tbTlvg12iW90Lc8KHE2/sF08O+GoML3AED/cg4p
+YEdben3anhq1uGNuWw7pV5bA/kuj84VaPhFT6tU90SUCAwEAAaNQME4wHQYDVR0O
+BBYEFG3WDJMv5wa4QvWwxcJpNU/RTBp/MB8GA1UdIwQYMBaAFG3WDJMv5wa4QvWw
+xcJpNU/RTBp/MAwGA1UdEwQFMAMBAf8wDQYJKoZIhvcNAQEFBQADggEBALDYGYv6
+0KoSAbQamSOZT6h2LBJj/AbGV+W9ffUDW6OuJ1C7sa7sDki2HQgz7vfS0BtrKY/q
+tszfZqWKlx8AFbLhusMcv3gc6Dv4Onod90EaIKuRU+sElo1BEak5asY4oHru5GIK
+QxGi8GkcwKSwnxSrkKQz8xXcL+P3daOmaAUQDo6JPqxYE4DNsQ3HRtkCj9kTUk8+
+ppJAzXoBrutQz7e2daEXHUNc+1+KcD+se5cmvK2cJg6vk1vpgY1kjXdLQr1CySxJ
+XgfLm2jJfzMF/L5RX5Vdnon6x4ufi7e/3fOThjlhLRXMOkhlb0E+wSYP0NvLA12E
+rjs761ndZ9Qrb0s=
+-----END CERTIFICATE-----
 `
-
-var signkey = "-----BEGIN PRIVATE KEY-----\nMIIEvwIBADANBgkqhkiG9w0BAQEFAASCBKkwggSlAgEAAoIBAQCrFv8OQRO8f7xS\n19fvpZ5rHFYU8odwFQWZ/78aTa+F0yhfFce8yTydgHi2UsDvY3ehUopWXmXOst+B\n00/0m+QTqNSIi9+2UymOvOOJDyrfJS572Mf5LLx+WOjNeMFtxGPElYY2e94icsmm\ngTWtwsaMyGrW7I2sdjHYcH/+qQhJNblOZLFcJBCkL9ORz48Y4wqZ+HGyk2TC4fWJ\nirt403sWmC8XQt0WJFedcDqafZxWkJ0sJK3JoIboXftIkMj5z5Yryd1+Bhrxav2W\naqnzLHbXYekfT++l5rEgkI3abeJeBzZmKlV/juREV+Hwu4gatTgW4YL8IopI+eoc\nIQUw3RlvAgMBAAECggEBAJckcZ3+D5lunsfwtmqXPSQSnFlVCCET8Sbir8hk6LKo\nn/mgHBvDCzF41Sr8YEUa8gwqBtvV+Mppatod+3x0W0Ci3V7jcnZ3cTcP11K1e4I2\nLqJqF/8gbkSP9tnN29NEs35vOWnYc5yrG0lkzC786rpkMz47K803fUFf4TLv0Moa\noUfPQQljI0T2BfATPryElmN3lq6BTp17KcUVlsnCrAFLBtrBFtsZpfQPKuq+DMH8\n/z1brPTo1ZBCHTMd2+bo7NiEvuG89KO8zo8oLOqe8F5xPnQDsU2Uq2AaJUyZsKsr\neI76ttI7EV2eHlyHwev9oN7gHEcpEGGz5HLbAnrIi4ECgYEA38s2ISatEVMwz/4E\nRyEkLplkp6XWrioX3E/FMyvPFf1JygHn8rhcF6e5MBL4ApLr1Gdz4WHaQbdhVRLW\nccyavG0Kzv9vvzSNSNoPgRAaQ+QgHiThyfEyewID8fUn6CQ5gsADTqDeXHgmbw5v\nc+ROrPO4/N5C/xFdkXyXi1clcYkCgYEAw7YeJWmfaLHF6GsuA7uYbjy4vs8v1Q8b\nWvwDB8Fj8wlJQ9eFo9AAfU7eoQA/kBJXswnVXV1QSa3Sh8PqvHdLDHb3RKiPHSiS\nofhbCRvmUoPkqt74gYfS10LajIN4Jkev5oqC1N1oYy7IOsT7C2NKt92AxHvfgq4P\nADG9PVXvzTcCgYEAuQTiXYoCL36drneNxdiqdzQuOUQsNpVqYKQ6ntGrRbzAUpg8\n0TiGOrBZtFsaW9ZnzpUxArbJoOchOxp13GOR0hI8i2I3Wtbxr7dIdiV/8X0a6JEJ\nctFMMNI7vMA4G/5G5cglc84fyEc1Tz+Z+TBZszdUSwreTM5oky10hKiptjECgYEA\nvhLEqm8va32kCPr3AJcUDpQYlPAhs1ntpmq1ArY2vRYaurG5UAQ2RXzwyQq1sNWv\nqOl2+CslS7lui36iHpH5KEzuDxdpjtcVugq7V1hqU19XGQBd92cTRQ7ftLIGYZ8j\n3dJOCDBULmeD/VfLvR6ctX+BjNIFnCQx221zLfulXvcCgYBTMw8aVGKLPcwsxma9\nLC72wxhJJUyfhUaENKDDfzsVlQhDRAbqDkAwOKiNOFwI49rIIl1lk7hbfUki3HFh\nT8y309FOGeoxKsaNxM/kgChfWTimu74Dg9TY9bnfYSBgE2kQjBnHVwmB+z52cHPZ\nEw5MsQIXT0BRKZCkg9oGdAQ+JA==\n-----END PRIVATE KEY-----\n"
-var signpub = "-----BEGIN CERTIFICATE-----\nMIIFLTCCBBWgAwIBAgIEWcVcgTANBgkqhkiG9w0BAQsFADBTMQswCQYDVQQGEwJH\nQjEUMBIGA1UEChMLT3BlbkJhbmtpbmcxLjAsBgNVBAMTJU9wZW5CYW5raW5nIFBy\nZS1Qcm9kdWN0aW9uIElzc3VpbmcgQ0EwHhcNMTgxMTI5MTI0NzU0WhcNMTkxMjI5\nMTMxNzU0WjBhMQswCQYDVQQGEwJHQjEUMBIGA1UEChMLT3BlbkJhbmtpbmcxGzAZ\nBgNVBAsTEjAwMTU4MDAwMDEwNDFSZEFBSTEfMB0GA1UEAxMWN2w0WWR3VmdVRVR4\nVjJQakxZaDNzYzCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAKsW/w5B\nE7x/vFLX1++lnmscVhTyh3AVBZn/vxpNr4XTKF8Vx7zJPJ2AeLZSwO9jd6FSilZe\nZc6y34HTT/Sb5BOo1IiL37ZTKY6844kPKt8lLnvYx/ksvH5Y6M14wW3EY8SVhjZ7\n3iJyyaaBNa3CxozIatbsjax2Mdhwf/6pCEk1uU5ksVwkEKQv05HPjxjjCpn4cbKT\nZMLh9YmKu3jTexaYLxdC3RYkV51wOpp9nFaQnSwkrcmghuhd+0iQyPnPlivJ3X4G\nGvFq/ZZqqfMsdtdh6R9P76XmsSCQjdpt4l4HNmYqVX+O5ERX4fC7iBq1OBbhgvwi\nikj56hwhBTDdGW8CAwEAAaOCAfkwggH1MA4GA1UdDwEB/wQEAwIGwDAVBgNVHSUE\nDjAMBgorBgEEAYI3CgMMMIHgBgNVHSAEgdgwgdUwgdIGCysGAQQBqHWBBgFkMIHC\nMCoGCCsGAQUFBwIBFh5odHRwOi8vb2IudHJ1c3Rpcy5jb20vcG9saWNpZXMwgZMG\nCCsGAQUFBwICMIGGDIGDVXNlIG9mIHRoaXMgQ2VydGlmaWNhdGUgY29uc3RpdHV0\nZXMgYWNjZXB0YW5jZSBvZiB0aGUgT3BlbkJhbmtpbmcgUm9vdCBDQSBDZXJ0aWZp\nY2F0aW9uIFBvbGljaWVzIGFuZCBDZXJ0aWZpY2F0ZSBQcmFjdGljZSBTdGF0ZW1l\nbnQwbQYIKwYBBQUHAQEEYTBfMCYGCCsGAQUFBzABhhpodHRwOi8vb2IudHJ1c3Rp\ncy5jb20vb2NzcDA1BggrBgEFBQcwAoYpaHR0cDovL29iLnRydXN0aXMuY29tL29i\nX3BwX2lzc3VpbmdjYS5jcnQwOgYDVR0fBDMwMTAvoC2gK4YpaHR0cDovL29iLnRy\ndXN0aXMuY29tL29iX3BwX2lzc3VpbmdjYS5jcmwwHwYDVR0jBBgwFoAUUHORxiFy\n03f0/gASBoFceXluP1AwHQYDVR0OBBYEFBa6IGX7vYGp8TzyKXpeuWmK6S7YMA0G\nCSqGSIb3DQEBCwUAA4IBAQAsRlvcU19yW5Yh6SyeeUT/dbwFyh2fyclbbKToeawt\nkCxh4Icbl5hGocjaYuKyKOvTx2Y3FtkUYL+gnPeCMkNiZTN/08Bp+fqqk/a/6F65\nNP6AZIKzqkk5D2Dgl2gOsyS7SOCIMFTIkwm/aya4Bq3h9DFs8DZSyviujxux/LT8\nZTFlfnMhKWHLzgyANj86Nni8E/ParrJvrf0lieH1ObdMZfcm1Z/JwQSfYN9emyDr\nfjtMZdIbd/u9vN4nJs744MfJvqJP7nTXnGczMRBLIHNSqacQqmQ+RtkxV4l+YoPf\nBJD1GWVYohnEWIe05b1dQbV1s/x2k0kUdWjRFNHkwodc\n-----END CERTIFICATE-----\n"

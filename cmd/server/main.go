@@ -39,7 +39,7 @@ func init() {
 	logrus.SetLevel(logrus.DebugLevel)
 	logrus.StandardLogger().SetNoLock()
 	tracer.Silent = false
-	resty.SetDebug(false)
+	resty.SetDebug(true)
 }
 
 func main() {

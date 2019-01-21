@@ -248,11 +248,11 @@ func (i *Input) createAlgRS256JWT(ctx *Context) (string, error) {
 
 	pk, ok := ctx.Get("SigningCert")
 	if !ok {
-		return "", i.AppErr(fmt.Sprintf("input, couldn't find `PrivateSigningKey` in context"))
+		return "", i.AppErr(fmt.Sprintf("input, couldn't find `SigningCert` in context"))
 	}
 	cert, ok := pk.(authentication.Certificate)
 	if !ok {
-		return "", i.AppErr(fmt.Sprintf("input, cannot convert `PrivateSigningKey` to certificate"))
+		return "", i.AppErr(fmt.Sprintf("input, cannot convert `SigningCert` to certificate"))
 	}
 	tokenString, err := token.SignedString(cert.PrivateKey()) // sign the token - get as encoded string
 	if err != nil {

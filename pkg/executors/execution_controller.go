@@ -32,7 +32,7 @@ func RunTestCases(defn *RunDefinition) (reporting.Result, error) {
 	executor.SetCertificates(defn.SigningCert, defn.TransportCert)
 
 	rulectx := &model.Context{}
-	rulectx.Put("SigingCert", defn.SigningCert)
+	rulectx.Put("SigningCert", defn.SigningCert)
 
 	reportTestResults := []reporting.Test{}
 	reportSpecs := []reporting.Specification{reporting.Specification{Tests: reportTestResults}}
@@ -89,7 +89,6 @@ func RunTestCases(defn *RunDefinition) (reporting.Result, error) {
 		}
 	}
 
-	logrus.Println("runTests OK")
 	return reportResult, nil
 }
 

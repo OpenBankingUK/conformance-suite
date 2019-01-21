@@ -391,32 +391,3 @@ func getReplacementField(stringToCheck string) (string, bool, error) {
 	}
 	return result[len(result)-1], true, nil
 }
-
-// ProcessReplacementFields prefixed by '$' in the testcase Input and Context sections
-// Call to pre-process custom test cases from discovery model
-func (t *TestCase) ProcessReplacementFields(rep map[string]string) {
-	ctx := Context{}
-	for k, v := range rep {
-		ctx.Put(k, v)
-	}
-
-	t.Input.Endpoint, _ = ReplaceContextField(t.Input.Endpoint, &ctx) // errors if field not present in context - which is ok for this function
-	t.Input.RequestBody, _ = ReplaceContextField(t.Input.RequestBody, &ctx)
-
-	for k := range t.Input.FormData {
-		t.Input.FormData[k], _ = ReplaceContextField(t.Input.FormData[k], &ctx)
-	}
-	for k := range t.Input.Headers {
-		t.Input.Headers[k], _ = ReplaceContextField(t.Input.Headers[k], &ctx)
-	}
-	for k := range t.Input.Claims {
-		t.Input.Claims[k], _ = ReplaceContextField(t.Input.Claims[k], &ctx)
-	}
-	for k := range t.Context {
-		param, ok := t.Context[k].(string)
-		if !ok {
-			continue
-		}
-		t.Context[k], _ = ReplaceContextField(param, &ctx)
-	}
-}
