@@ -6,8 +6,9 @@ import (
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/generation"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/reporting"
+	"github.com/google/uuid"
 	"github.com/sirupsen/logrus"
-	resty "gopkg.in/resty.v1"
+	"gopkg.in/resty.v1"
 )
 
 // TestCaseExecutor defines an interface capable of executing a testcase
@@ -28,20 +29,19 @@ type RunDefinition struct {
 func RunTestCases(defn *RunDefinition) (reporting.Result, error) {
 	executor := MakeExecutor()
 	executor.SetCertificates(defn.SigningCert, defn.TransportCert)
+
 	rulectx := &model.Context{}
-
-	reportTestResults := []reporting.Test{}
-	reportSpecs := []reporting.Specification{reporting.Specification{Tests: reportTestResults}}
-	reportResult := reporting.Result{Specifications: reportSpecs}
-
+	reportSpecs := []reporting.Specification{}
 	for _, spec := range defn.SpecTests {
+		reportTestResults := []reporting.Test{}
 		logrus.Println("running " + spec.Specification.Name)
 		for _, testcase := range spec.TestCases {
 			req, err := testcase.Prepare(rulectx)
 			if err != nil {
-				reportTestResults = append(reportTestResults, makeTestResult(&testcase, false))
 				logrus.Error(err)
-				return reportResult, err
+				reportTestResults = append(reportTestResults, makeTestResult(testcase, false))
+				reportSpecs = append(reportSpecs, makeSpecResult(spec.Specification, reportTestResults))
+				return makeReportResult(reportSpecs), err
 			}
 			resp, err := executor.ExecuteTestCase(req, &testcase, rulectx)
 			if err != nil {
@@ -52,7 +52,8 @@ func RunTestCases(defn *RunDefinition) (reporting.Result, error) {
 					"err":        err.Error(),
 					"statuscode": testcase.Expect.StatusCode,
 				}).Info("FAIL")
-				reportTestResults = append(reportTestResults, makeTestResult(&testcase, false))
+				reportTestResults = append(reportTestResults, makeTestResult(testcase, false))
+				reportSpecs = append(reportSpecs, makeSpecResult(spec.Specification, reportTestResults))
 				continue
 			}
 
@@ -66,10 +67,11 @@ func RunTestCases(defn *RunDefinition) (reporting.Result, error) {
 					"statuscode": testcase.Expect.StatusCode,
 				}).Info("FAIL")
 
-				reportTestResults = append(reportTestResults, makeTestResult(&testcase, false))
+				reportTestResults = append(reportTestResults, makeTestResult(testcase, false))
+				reportSpecs = append(reportSpecs, makeSpecResult(spec.Specification, reportTestResults))
 				continue
 			}
-			reportTestResults = append(reportTestResults, makeTestResult(&testcase, result))
+			reportTestResults = append(reportTestResults, makeTestResult(testcase, result))
 			logrus.WithFields(logrus.Fields{
 				"testcase":   testcase.Name,
 				"method":     testcase.Input.Method,
@@ -77,12 +79,34 @@ func RunTestCases(defn *RunDefinition) (reporting.Result, error) {
 				"statuscode": testcase.Expect.StatusCode,
 			}).Info("PASS")
 		}
+		reportSpecs = append(reportSpecs, makeSpecResult(spec.Specification, reportTestResults))
 	}
-
 	logrus.Println("runTests OK")
-	return reportResult, nil
+	return makeReportResult(reportSpecs), nil
 }
 
-func makeTestResult(tc *model.TestCase, result bool) reporting.Test {
-	return reporting.Test{Name: tc.Name, Endpoint: tc.Input.Method + " " + tc.Input.Endpoint, Pass: result}
+func makeTestResult(tc model.TestCase, result bool) reporting.Test {
+	return reporting.Test{
+		Id:       tc.ID,
+		Name:     tc.Name,
+		Endpoint: tc.Input.Method + " " + tc.Input.Endpoint,
+		Pass:     result,
+	}
+}
+
+func makeSpecResult(spec discovery.ModelAPISpecification, testResults []reporting.Test) reporting.Specification {
+	return reporting.Specification{
+		Name:          spec.Name,
+		Version:       spec.Version,
+		URL:           spec.URL,
+		SchemaVersion: spec.SchemaVersion,
+		Tests:         testResults,
+	}
+}
+
+func makeReportResult(specsResults []reporting.Specification) reporting.Result {
+	return reporting.Result{
+		Id:             uuid.New(),
+		Specifications: specsResults,
+	}
 }
