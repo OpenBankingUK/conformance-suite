@@ -27,7 +27,7 @@ type generator struct {
 
 // GenerateSpecificationTestCases - generates test cases
 func (g generator) GenerateSpecificationTestCases(discovery discovery.ModelDiscovery) []SpecificationTestCases {
-	results := make([]SpecificationTestCases, len(discovery.DiscoveryItems))
+	results := []SpecificationTestCases{}
 	globalReplacements := make(map[string]string)
 
 	for _, customTest := range discovery.CustomTests { // assume ordering is prerun i.e. customtest run before other tests
