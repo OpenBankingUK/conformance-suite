@@ -2,6 +2,8 @@ package reporting
 
 import "github.com/google/uuid"
 
+var NoResult = Result{}
+
 // Result of a full test run
 type Result struct {
 	Id             uuid.UUID       `json:"id"`
