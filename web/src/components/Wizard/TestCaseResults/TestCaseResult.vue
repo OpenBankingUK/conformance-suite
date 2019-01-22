@@ -115,10 +115,6 @@ export default {
 </script>
 
 <style scoped>
-.test-case {
-  font-size: 12px;
-}
-
 /**
  * Don't remove the `/deep/` here.
  * This rule ensures values such as 'https://openbanking.atlassian.net/wiki/spaces/DZ/pages/642090641/Account+and+Transaction+API+Specification+-+v3.0'

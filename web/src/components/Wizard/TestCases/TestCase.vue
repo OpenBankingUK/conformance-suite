@@ -129,10 +129,6 @@ export default {
 </script>
 
 <style scoped>
-.test-case {
-  font-size: 12px;
-}
-
 /*
  * Don't remove the `/deep/` here.
  *
