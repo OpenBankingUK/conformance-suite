@@ -24,9 +24,8 @@ pipelines:
               - make devtools
               - make init
               - make build
-              - make lint
               - make test
-              - make cyclomatic
+              - make lint
 
         # lint and test the Vue.js app
         - step:

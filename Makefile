@@ -1,7 +1,5 @@
 .DEFAULT_GOAL:=help
 SHELL:=/bin/bash
-GO_PKGS=$(shell go list ./...)
-GO_PKGS_FOLDERS=$(shell go list -f '{{.Dir}}/' ./...)
 
 .PHONY: all
 
@@ -66,41 +64,20 @@ init_web: ./web/node_modules ## install node_modules when not present.
 
 .PHONY: devtools
 devtools: ## install dev tools.
-	@echo -e "\033[92m  ---> Installing golint (golang.org/x/lint/golint) ... \033[0m"
-	go get -u golang.org/x/lint/golint
-	@echo -e "\033[92m  ---> Installing gocyclo (github.com/fzipp/gocyclo) ... \033[0m"
-	go get -u github.com/fzipp/gocyclo
 	@echo -e "\033[92m  ---> Installing mockery (github.com/vektra/mockery) ... \033[0m"
 	go get -u github.com/vektra/mockery
-	@echo -e "\033[92m  ---> Installing gometalinter (github.com/alecthomas/gometalinter) ... \033[0m"
-	curl -L https://git.io/vp6lP | BINDIR="$GOPATH/bin" sh
+	@echo -e "\033[92m  ---> Installing golangci-lint (https://github.com/golangci/golangci-lint) ... \033[0m"
+	curl -sfL "https://install.goreleaser.com/github.com/golangci/golangci-lint.sh" | sh -s -- -b $(shell go env GOPATH)/bin v1.12.5
 
 ##@ Cleanup:
 
 .PHONY: lint
 lint: ## lint the go code.
-	@echo -e "\033[92m  ---> Vetting ... \033[0m"
-	go vet ${GO_PKGS}
-	@echo -e "\033[92m  ---> Linting ... \033[0m"
-	golint -min_confidence 1.0 -set_exit_status ${GO_PKGS}
-	@echo -e "\033[92m  ---> Formatting ... \033[0m"
-	@for GO_PKG_DIR in ${GO_PKGS_FOLDERS}; do \
-		echo -e "\033[92m  ---> Formatting $${GO_PKG_DIR}*.go ... \033[0m"; \
-		gofmt -e -s -w $${GO_PKG_DIR}*.go; \
-	done
-
-.PHONY: cyclomatic
-cyclomatic: ## cyclomatic complexity checks.
-	@echo -e "\033[92m  ---> Checking cyclomatic complexity ... \033[0m"
-	gocyclo -over 12 ${GO_PKGS_FOLDERS}
-
-.PHONY: cyclomatic
-metalinter: ## other qa tools (linter).
 	@echo -e "\033[92m  ---> Checking other qa tools ... \033[0m"
-	gometalinter --disable-all --enable=structcheck --enable=megacheck --enable=misspell -enable=vetshadow --enable=goconst --enable=nakedret --enable=deadcode --enable=unparam --deadline=30s --line-length=1747 --enable=lll ${GO_PKGS_FOLDERS}
+	golangci-lint run --config ./.golangci.yml --new ./...
 
 .PHONY: qa
-qa: test lint cyclomatic metalinter ## run all known quality assurance tools
+qa: test lint ## run all known quality assurance tools
 
 .PHONY: clean
 clean:
