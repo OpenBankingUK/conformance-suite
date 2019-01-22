@@ -10,6 +10,7 @@ import (
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/authentication"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/tracer"
+	"github.com/sirupsen/logrus"
 	resty "gopkg.in/resty.v1"
 )
 
@@ -33,14 +34,20 @@ func (e *Executor) SetCertificates(certificateSigning, certificationTransport au
 
 // ExecuteTestCase - makes this a generic executor
 func (e *Executor) ExecuteTestCase(r *resty.Request, t *model.TestCase, ctx *model.Context) (*resty.Response, error) {
-	e.appMsg("Execute Testcase")
-	e.appMsg(fmt.Sprintf("Request: %#v", r))
+	e.appMsg(fmt.Sprintf("Execute Testcase: %s: %s", t.ID, t.Name))
 	resp, err := r.Execute(r.Method, r.URL)
 	if err != nil {
 		if resp.StatusCode() == http.StatusFound { // catch status code 302 redirects and pass back as good response
+			t.ResponseTime = resp.Time()
+			t.ResponseSize = len(resp.Body())
+			header := resp.Header()
+			logrus.Printf("redirection headers: %#v\n", header)
+			e.appMsg(fmt.Sprintf("Response: (%s)", resp.String()))
 			return resp, nil
 		}
 	}
+	t.ResponseTime = resp.Time()
+	t.ResponseSize = len(resp.Body())
 	e.appMsg(fmt.Sprintf("Response: (%s)", resp.String()))
 	return resp, err
 }
@@ -84,24 +91,22 @@ func (e *Executor) setupTLSCertificate(tlsCert tls.Certificate) error {
 	}
 	tlsConfig.BuildNameToCertificate()
 	resty.SetTLSClientConfig(tlsConfig)
-	resty.SetDebug(false)
 	return nil
-
 }
 
 func (e *Executor) appMsg(msg string) {
-	tracer.AppMsg("OZONE", msg, "")
+	tracer.AppMsg("Executor", msg, "")
 }
 
 func (e *Executor) appErr(msg string) error {
-	tracer.AppErr("OZONE", msg, "")
+	tracer.AppErr("Executor", msg, "")
 	return errors.New(msg)
 }
 
 func (e *Executor) appEntry(msg string) {
-	tracer.AppEntry("OZONE", msg)
+	tracer.AppEntry("Executor", msg)
 }
 
 func (e *Executor) appExit(msg string) {
-	tracer.AppExit("OZONE", msg)
+	tracer.AppExit("Executor", msg)
 }

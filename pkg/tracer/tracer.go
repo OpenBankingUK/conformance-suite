@@ -18,6 +18,8 @@ The basic naive implementation consists of:-
 import (
 	"fmt"
 	"strings"
+
+	"github.com/sirupsen/logrus"
 )
 
 // Tracer info capture interface - capturing testcase execution info - expects to be extended/improved over time
@@ -48,7 +50,8 @@ func init() {
 func appTraceLisener() {
 	for {
 		msg := <-applicationTrace
-		fmt.Println(msg)
+		//fmt.Println(msg)
+		_ = msg
 	}
 }
 
@@ -57,7 +60,9 @@ func AppMsg(objtype, msg, objdump string) {
 	if Silent {
 		return
 	}
-	applicationTrace <- fmt.Sprintf("%s[%s]MSG %s", indent(), objtype, msg)
+	appmsg := fmt.Sprintf("%s[%s] %s", "" /*indent()*/, objtype, msg)
+	logrus.Println(appmsg)
+	applicationTrace <- appmsg
 }
 
 // AppErr - generic trace errpr fuction
@@ -65,7 +70,9 @@ func AppErr(objtype, msg, objdump string) {
 	if Silent {
 		return
 	}
-	applicationTrace <- fmt.Sprintf("%s[%s]ERR %s", indent(), objtype, msg)
+	errmsg := fmt.Sprintf("%s[%s] %s", "" /*indent()*/, objtype, msg)
+	logrus.Errorf(errmsg)
+	applicationTrace <- errmsg
 }
 
 // AppEntry - application level trace
