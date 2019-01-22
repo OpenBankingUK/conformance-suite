@@ -5,7 +5,12 @@ import (
 	"errors"
 	"fmt"
 	"net/url"
+	"time"
 
+	"github.com/google/uuid"
+	"github.com/sirupsen/logrus"
+
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/authentication"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/tracer"
 	jwt "github.com/dgrijalva/jwt-go"
 	resty "gopkg.in/resty.v1"
@@ -55,16 +60,16 @@ func (i *Input) CreateRequest(tc *TestCase, ctx *Context) (*resty.Request, error
 		return nil, err
 	}
 
+	if err = i.setClaims(tc, ctx); err != nil {
+		return nil, err
+	}
+
 	if err = i.setFormData(req, ctx); err != nil {
 		return nil, err
 	}
 
 	if len(i.RequestBody) > 0 { // set any input raw request body ("bodyData")
-		req.SetBody(i.RequestBody)
-	}
-
-	if err = i.setClaims(tc, ctx); err != nil {
-		return nil, err
+		i.setBody(req, ctx)
 	}
 
 	req.Method = tc.Input.Method
@@ -74,6 +79,8 @@ func (i *Input) CreateRequest(tc *TestCase, ctx *Context) (*resty.Request, error
 }
 
 func (i *Input) setClaims(tc *TestCase, ctx *Context) error {
+	i.AppMsg("setClaims Entry")
+	defer i.AppMsg("setCliams Exit")
 	for k, v := range i.Claims {
 		value, err := ReplaceContextField(v, ctx)
 		if err != nil {
@@ -84,7 +91,8 @@ func (i *Input) setClaims(tc *TestCase, ctx *Context) error {
 	}
 
 	if len(i.Claims) > 0 { // create JWT from claims - put in context?
-		if i.Generation["strategy"] == "consenturl" {
+		switch i.Generation["strategy"] {
+		case "consenturl":
 			i.AppMsg("==> executing consenturl strategy")
 			token, err := i.createAlgNoneJWT()
 			if err != nil {
@@ -93,9 +101,19 @@ func (i *Input) setClaims(tc *TestCase, ctx *Context) error {
 			i.AppMsg(fmt.Sprintf("jwt consent Token: %s", token))
 			consent := i.Claims["aud"] + "/auth?" + "client_id=" + i.Claims["iss"] + "&response_type=" + i.Claims["responseType"] + "&scope=" + url.QueryEscape(i.Claims["scope"]) + "&request=" + token
 
-			tc.Input.Endpoint = consent
+			tc.Input.Endpoint = consent // Result - set jwt token in endpoint url
 			i.AppMsg("consent url: " + tc.Input.Endpoint)
+		case "jwt-bearer":
+			i.AppMsg("==> executing jwt-bearer strategy")
+			token, err := i.createAlgRS256JWT(ctx)
+			if err != nil {
+				return i.AppErr(fmt.Sprintf("error creating AlgRS256JWT %s", err.Error()))
+			}
+			i.AppMsg(fmt.Sprintf("jwt-bearer Token: %s", token))
+			ctx.Put("jwtbearer", token) // Result - set jwt-bearer token in context
 		}
+	} else {
+		i.AppMsg("no claims to set!")
 	}
 
 	return nil
@@ -133,6 +151,27 @@ func (i *Input) setHeaders(req *resty.Request, ctx *Context) error {
 		}
 		req.SetHeader(k, value)
 	}
+	return nil
+}
+
+func (i *Input) setBody(req *resty.Request, ctx *Context) error {
+	value := i.RequestBody
+
+	for {
+		val2, err := ReplaceContextField(value, ctx)
+		if err != nil {
+			return i.AppErr(fmt.Sprintf("setBody Replaced Context value %s :%s", val2, err.Error()))
+		}
+		if len(val2) == 0 {
+			return i.AppErr(fmt.Sprintf("setBody Replaced Context value %s : %s not found in context", value, i.RequestBody))
+		}
+		if val2 == value {
+			break
+		}
+		value = val2
+	}
+
+	req.SetBody(value)
 	return nil
 }
 
@@ -205,5 +244,41 @@ func (i *Input) createAlgNoneJWT() (string, error) {
 		return "", err
 	}
 	tokenString = tokenString + "."
+	return tokenString, nil
+}
+
+func (i *Input) createAlgRS256JWT(ctx *Context) (string, error) {
+	uuid := uuid.New()
+	claims := jwt.MapClaims{}
+	claims["iss"] = i.Claims["iss"]
+	claims["sub"] = i.Claims["iss"]
+	claims["scope"] = i.Claims["scope"]
+	claims["aud"] = i.Claims["aud"]
+	claims["iat"] = time.Now().Unix()
+	claims["exp"] = time.Now().Add(time.Minute * time.Duration(60)).Unix()
+	claims["jti"] = uuid
+
+	alg := jwt.GetSigningMethod("RS256")
+	if alg == nil {
+		msg := fmt.Sprintf("couldn't find RS256 signing method: %v", alg)
+		logrus.Errorf(msg)
+		return "", errors.New(msg)
+	}
+	token := jwt.NewWithClaims(alg, claims) // create new token
+	token.Header["kid"] = i.Claims["kid"]
+
+	pk, ok := ctx.Get("SigningCert")
+	if !ok {
+		return "", i.AppErr(fmt.Sprintf("input, couldn't find `SigningCert` in context"))
+	}
+	cert, ok := pk.(authentication.Certificate)
+	if !ok {
+		return "", i.AppErr(fmt.Sprintf("input, cannot convert `SigningCert` to certificate"))
+	}
+	tokenString, err := token.SignedString(cert.PrivateKey()) // sign the token - get as encoded string
+	if err != nil {
+		return "", i.AppErr(fmt.Sprintf("error siging jwt: %s", err.Error()))
+	}
+	logrus.Debugf("\nCreated JWT:\n-------------\n%s\n", tokenString)
 	return tokenString, nil
 }

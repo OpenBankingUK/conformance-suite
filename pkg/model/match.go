@@ -117,12 +117,6 @@ func (m *Match) Check(tc *TestCase) (bool, error) {
 	return matchFuncs[matchType](m, tc)
 }
 
-// GetValue the value from the json match along with a context variable to put it into
-func (m *Match) GetValue(inputBuffer string) (interface{}, string) {
-	result := gjson.Get(inputBuffer, m.JSON)
-	return result.String(), m.ContextName
-}
-
 // PutValue puts the value from the json match along with a context variable to put it into
 func (m *Match) PutValue(tc *TestCase, ctx *Context) bool {
 	success := false
@@ -155,12 +149,28 @@ func (m *Match) PutValue(tc *TestCase, ctx *Context) bool {
 		}
 		if success {
 			ctx.Put(m.ContextName, m.Result)
-			tc.Context.Put(m.ContextName, m.Result)
 			return true
 		}
+	case BodyRegex:
+		return handleBodyRegex(tc, m, ctx)
+
 	}
 
 	return success
+}
+
+func handleBodyRegex(tc *TestCase, m *Match, ctx *Context) bool {
+	success, err := checkBodyRegex(m, tc)
+	if err != nil {
+		return false
+	}
+	if success {
+		if len(m.ContextName) > 0 {
+			ctx.Put(m.ContextName, m.Result)
+			return true
+		}
+	}
+	return true
 }
 
 func (m *Match) setContextFromBodyPresent(tc *TestCase, ctx *Context) (bool, error) {
@@ -418,10 +428,15 @@ func checkBodyRegex(m *Match, tc *TestCase) (bool, error) {
 	if err != nil {
 		return false, err
 	}
-
 	success := regex.MatchString(tc.Body)
 	if !success {
 		return false, m.AppErr(fmt.Sprintf("Body Regex Match Failed - regex (%s) failed on Body", m.Regex))
+	}
+	if len(m.ContextName) > 0 {
+		regexMatch := regex.FindStringSubmatch(tc.Body)
+		if len(regexMatch) > 0 {
+			m.Result = regexMatch[0]
+		}
 	}
 	return success, nil
 }

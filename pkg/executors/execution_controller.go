@@ -1,6 +1,8 @@
 package executors
 
 import (
+	"fmt"
+
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/authentication"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/generation"
@@ -31,6 +33,13 @@ func RunTestCases(defn *RunDefinition) (reporting.Result, error) {
 	executor.SetCertificates(defn.SigningCert, defn.TransportCert)
 
 	rulectx := &model.Context{}
+	rulectx.Put("SigningCert", defn.SigningCert)
+	for _, customTest := range defn.DiscoModel.DiscoveryModel.CustomTests { // Load CustomTest parameters into Context
+		for k, v := range customTest.Replacements {
+			rulectx.Put(k, v)
+		}
+	}
+
 	reportSpecs := []reporting.Specification{}
 	for _, spec := range defn.SpecTests {
 		reportTestResults := []reporting.Test{}
@@ -46,11 +55,13 @@ func RunTestCases(defn *RunDefinition) (reporting.Result, error) {
 			resp, err := executor.ExecuteTestCase(req, &testcase, rulectx)
 			if err != nil {
 				logrus.WithFields(logrus.Fields{
-					"testcase":   testcase.Name,
-					"method":     testcase.Input.Method,
-					"endpoint":   testcase.Input.Endpoint,
-					"err":        err.Error(),
-					"statuscode": testcase.Expect.StatusCode,
+					"testcase":     testcase.Name,
+					"method":       testcase.Input.Method,
+					"endpoint":     testcase.Input.Endpoint,
+					"err":          err.Error(),
+					"statuscode":   testcase.Expect.StatusCode,
+					"responsetime": fmt.Sprintf("%v", testcase.ResponseTime),
+					"responsesize": testcase.ResponseSize,
 				}).Info("FAIL")
 				reportTestResults = append(reportTestResults, makeTestResult(testcase, false))
 				reportSpecs = append(reportSpecs, makeSpecResult(spec.Specification, reportTestResults))
@@ -60,11 +71,13 @@ func RunTestCases(defn *RunDefinition) (reporting.Result, error) {
 			result, err := testcase.Validate(resp, rulectx)
 			if err != nil {
 				logrus.WithFields(logrus.Fields{
-					"testcase":   testcase.Name,
-					"method":     testcase.Input.Method,
-					"endpoint":   testcase.Input.Endpoint,
-					"err":        err.Error(),
-					"statuscode": testcase.Expect.StatusCode,
+					"testcase":     testcase.Name,
+					"method":       testcase.Input.Method,
+					"endpoint":     testcase.Input.Endpoint,
+					"err":          err.Error(),
+					"statuscode":   testcase.Expect.StatusCode,
+					"responsetime": fmt.Sprintf("%v", testcase.ResponseTime),
+					"responsesize": testcase.ResponseSize,
 				}).Info("FAIL")
 
 				reportTestResults = append(reportTestResults, makeTestResult(testcase, false))
@@ -73,15 +86,16 @@ func RunTestCases(defn *RunDefinition) (reporting.Result, error) {
 			}
 			reportTestResults = append(reportTestResults, makeTestResult(testcase, result))
 			logrus.WithFields(logrus.Fields{
-				"testcase":   testcase.Name,
-				"method":     testcase.Input.Method,
-				"endpoint":   testcase.Input.Endpoint,
-				"statuscode": testcase.Expect.StatusCode,
+				"testcase":     testcase.Name,
+				"method":       testcase.Input.Method,
+				"endpoint":     testcase.Input.Endpoint,
+				"statuscode":   testcase.Expect.StatusCode,
+				"responsetime": fmt.Sprintf("%v", testcase.ResponseTime),
+				"responsesize": testcase.ResponseSize,
 			}).Info("PASS")
 		}
 		reportSpecs = append(reportSpecs, makeSpecResult(spec.Specification, reportTestResults))
 	}
-	logrus.Println("runTests OK")
 	return makeReportResult(reportSpecs), nil
 }
 

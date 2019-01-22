@@ -212,6 +212,31 @@ func TestCheckBodyRegexMismatch(t *testing.T) {
 	assert.False(t, result)
 }
 
+func TestCheckBodyRegexWithContextPut(t *testing.T) {
+	m := Match{Description: "test", Regex: ".*", ContextName: "mybody"}
+	ctx := Context{}
+	ca := ContextAccessor{Context: &Context{}, Matches: []Match{m}}
+	tc := TestCase{Expect: Expect{StatusCode: 200, ContextPut: ca}, Context: Context{}}
+	resp := test.CreateHTTPResponse(200, "OK", "{\"status\":\"London !! Bridge\"}")
+	result, err := tc.Validate(resp, &ctx)
+	assert.Nil(t, err)
+	assert.True(t, result)
+	value, exists := ctx.Get("mybody")
+	assert.True(t, exists)
+	assert.Equal(t, value, "{\"status\":\"London !! Bridge\"}")
+}
+
+func TestCheckBodyRegexWithContextPutBadRegex(t *testing.T) {
+	m := Match{Description: "test", Regex: "x.*", ContextName: "mybody"}
+	ctx := Context{}
+	ca := ContextAccessor{Context: &Context{}, Matches: []Match{m}}
+	tc := TestCase{Expect: Expect{StatusCode: 200, ContextPut: ca}}
+	resp := test.CreateHTTPResponse(200, "OK", "{\"status\":\"London !! Bridge\"}")
+	result, err := tc.Validate(resp, &ctx)
+	assert.NotNil(t, err)
+	assert.False(t, result)
+}
+
 func TestCheckBodyRegexCompileError(t *testing.T) {
 	m := Match{Description: "test", Regex: ".*\\KLondon Bridge.*"}
 	tc := TestCase{Expect: Expect{Matches: []Match{m}, StatusCode: 200}}
