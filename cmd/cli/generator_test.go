@@ -84,7 +84,7 @@ func TestGeneratorHandlesErrWriteToOutput(t *testing.T) {
 	output := &brokenBuffer{}
 
 	err := g.Generate(input, output)
-	
+
 	assert.EqualError(t, err, "error writing results to output: booboo")
 }
 

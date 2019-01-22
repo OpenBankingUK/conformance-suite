@@ -152,19 +152,25 @@ func (m *Match) PutValue(tc *TestCase, ctx *Context) bool {
 			return true
 		}
 	case BodyRegex:
-		success, err := checkBodyRegex(m, tc)
-		if err != nil {
-			return false
-		}
-		if success {
-			if len(m.ContextName) > 0 {
-				ctx.Put(m.ContextName, m.Result)
-				return true
-			}
-		}
+		return handleBodyRegex(tc, m, ctx)
+
 	}
 
 	return success
+}
+
+func handleBodyRegex(tc *TestCase, m *Match, ctx *Context) bool {
+	success, err := checkBodyRegex(m, tc)
+	if err != nil {
+		return false
+	}
+	if success {
+		if len(m.ContextName) > 0 {
+			ctx.Put(m.ContextName, m.Result)
+			return true
+		}
+	}
+	return true
 }
 
 func (m *Match) setContextFromBodyPresent(tc *TestCase, ctx *Context) (bool, error) {
