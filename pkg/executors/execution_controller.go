@@ -7,9 +7,8 @@ import (
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/reporting"
 	"github.com/google/uuid"
-	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
-	resty "gopkg.in/resty.v1"
+	"gopkg.in/resty.v1"
 )
 
 // TestCaseExecutor defines an interface capable of executing a testcase
@@ -29,10 +28,7 @@ type RunDefinition struct {
 // RunTestCases runs the testCases
 func RunTestCases(defn *RunDefinition) (reporting.Result, error) {
 	executor := MakeExecutor()
-	err := executor.SetCertificates(defn.SigningCert, defn.TransportCert)
-	if err != nil {
-		return reporting.NoResult, errors.Wrap(err, "running test cases")
-	}
+	executor.SetCertificates(defn.SigningCert, defn.TransportCert)
 
 	rulectx := &model.Context{}
 	reportSpecs := []reporting.Specification{}
@@ -43,7 +39,9 @@ func RunTestCases(defn *RunDefinition) (reporting.Result, error) {
 			req, err := testcase.Prepare(rulectx)
 			if err != nil {
 				logrus.Error(err)
-				return reporting.NoResult, err
+				reportTestResults = append(reportTestResults, makeTestResult(testcase, false))
+				reportSpecs = append(reportSpecs, makeSpecResult(spec.Specification, reportTestResults))
+				return makeReportResult(reportSpecs), err
 			}
 			resp, err := executor.ExecuteTestCase(req, &testcase, rulectx)
 			if err != nil {
@@ -84,11 +82,7 @@ func RunTestCases(defn *RunDefinition) (reporting.Result, error) {
 		reportSpecs = append(reportSpecs, makeSpecResult(spec.Specification, reportTestResults))
 	}
 	logrus.Println("runTests OK")
-	reportResult := reporting.Result{
-		Id:             uuid.New(),
-		Specifications: reportSpecs,
-	}
-	return reportResult, nil
+	return makeReportResult(reportSpecs), nil
 }
 
 func makeTestResult(tc model.TestCase, result bool) reporting.Test {
@@ -107,5 +101,12 @@ func makeSpecResult(spec discovery.ModelAPISpecification, testResults []reportin
 		URL:           spec.URL,
 		SchemaVersion: spec.SchemaVersion,
 		Tests:         testResults,
+	}
+}
+
+func makeReportResult(specsResults []reporting.Specification) reporting.Result {
+	return reporting.Result{
+		Id:             uuid.New(),
+		Specifications: specsResults,
 	}
 }

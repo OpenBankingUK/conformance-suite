@@ -2,9 +2,6 @@ package reporting
 
 import "github.com/google/uuid"
 
-// NoResult represents and empty result when an error occurs
-var NoResult = Result{}
-
 // Result of a full test run
 type Result struct {
 	Id             uuid.UUID       `json:"id"`
