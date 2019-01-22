@@ -1,13 +1,8 @@
 <template>
   <div class="d-flex flex-row flex-fill">
+    <TheErrorStatus />
     <b-alert
-      v-if="updateError"
-      variant="danger"
-      show>
-      {{ updateError }}
-    </b-alert>
-    <b-alert
-      v-else-if="updateInfo.update"
+      v-if="updateInfo.update"
       variant="danger"
       show>
       {{ updateInfo.message }}
@@ -65,8 +60,9 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
-import DiscoveryTemplateCard from '../../components/Wizard/DiscoveryTemplateCard.vue';
+import { mapActions, mapGetters } from 'vuex';
+import DiscoveryTemplateCard from '@/components/Wizard/DiscoveryTemplateCard.vue';
+import TheErrorStatus from '@/components/TheErrorStatus.vue';
 
 import api from '../../api/apiUtil';
 
@@ -74,11 +70,11 @@ export default {
   name: 'WizardContinueOrStart',
   components: {
     DiscoveryTemplateCard,
+    TheErrorStatus,
   },
   data() {
     return {
       updateInfo: {},
-      updateError: null,
     };
   },
   computed: {
@@ -88,6 +84,7 @@ export default {
     this.checkUpdates();
   },
   methods: {
+    ...mapActions('status', ['setErrors']),
     async checkUpdates() {
       try {
         // Version check here
@@ -97,12 +94,14 @@ export default {
         // `fetch` does not throw an error even when status is not 200.
         // See: https://github.com/whatwg/fetch/issues/18
         if (response.status !== 200) {
-          this.updateError = `Failed to check for updates. Got ${response.status} from server.`;
+          const updateError = `Failed to check for updates. Got ${response.status} from server.`;
+          this.setErrors([updateError]);
         } else {
           this.updateInfo = data;
         }
       } catch (err) {
-        this.updateError = `Failed to check for updates: ${err}.`;
+        const updateError = `Failed to check for updates: ${err}.`;
+        this.setErrors([updateError]);
       }
     },
   },
