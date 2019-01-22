@@ -33,6 +33,11 @@ func RunTestCases(defn *RunDefinition) (reporting.Result, error) {
 
 	rulectx := &model.Context{}
 	rulectx.Put("SigningCert", defn.SigningCert)
+	for _, customTest := range defn.DiscoModel.DiscoveryModel.CustomTests { // Load CustomTest parameters into Context
+		for k, v := range customTest.Replacements {
+			rulectx.Put(k, v)
+		}
+	}
 
 	reportTestResults := []reporting.Test{}
 	reportSpecs := []reporting.Specification{reporting.Specification{Tests: reportTestResults}}

@@ -286,7 +286,58 @@ func TestJWTSignRS256(t *testing.T) {
 
 }
 
-var selfsignedDummykey = `-----BEGIN RSA PRIVATE KEY-----
+func TestBodyLiteral(t *testing.T) {
+	ctx := Context{
+		"replacebody": "this is my body",
+	}
+
+	i := Input{Method: "POST", Endpoint: "https://google.com", RequestBody: "This is my literal body"}
+	tc := TestCase{Input: i}
+	req, err := tc.Prepare(&ctx)
+	assert.Nil(t, err)
+	assert.Equal(t, "This is my literal body", req.Body)
+}
+
+func TestBodyReplacement(t *testing.T) {
+	ctx := Context{
+		"replacebody": "this is my body",
+	}
+
+	i := Input{Method: "POST", Endpoint: "https://google.com", RequestBody: "$replacebody"}
+	tc := TestCase{Input: i}
+	req, err := tc.Prepare(&ctx)
+	assert.Nil(t, err)
+	assert.Equal(t, "this is my body", req.Body)
+}
+
+func TestBodyTwoReplacements(t *testing.T) {
+	ctx := Context{
+		"replacebody": "this is my body",
+		"replace2":    "and this is my heart",
+	}
+
+	i := Input{Method: "POST", Endpoint: "https://google.com", RequestBody: "$replacebody $replace2"}
+	tc := TestCase{Input: i}
+	req, err := tc.Prepare(&ctx)
+	assert.Nil(t, err)
+	assert.Equal(t, "this is my body and this is my heart", req.Body)
+}
+
+func TestPaymentBodyReplace(t *testing.T) {
+	ctx := Context{
+		"initiation":                "{\"InstructionIdentification\":\"SIDP01\",\"EndToEndIdentification\":\"FRESCO.21302.GFX.20\",\"InstructedAmount\":{\"Amount\":\"15.00\",\"Currency\":\"GBP\"},\"CreditorAccount\":{\"SchemeName\":\"SortCodeAccountNumber\",\"Identification\":\"20000319470104\",\"Name\":\"Messers Simplex & Co\"}}",
+		"consent_id":                "sdp-1-b5bbdb18-eeb1-4c11-919d-9a237c8f1c7d",
+		"domestic_payment_template": "{\"Data\": {\"ConsentId\": \"$consent_id\",\"Initiation\":$initiation },\"Risk\":{}}",
+	}
+
+	i := Input{Method: "POST", Endpoint: "https://google.com", RequestBody: "$domestic_payment_template"}
+	tc := TestCase{Input: i}
+	req, err := tc.Prepare(&ctx)
+	assert.Nil(t, err)
+	assert.Equal(t, "{\"Data\": {\"ConsentId\": \"sdp-1-b5bbdb18-eeb1-4c11-919d-9a237c8f1c7d\",\"Initiation\":{\"InstructionIdentification\":\"SIDP01\",\"EndToEndIdentification\":\"FRESCO.21302.GFX.20\",\"InstructedAmount\":{\"Amount\":\"15.00\",\"Currency\":\"GBP\"},\"CreditorAccount\":{\"SchemeName\":\"SortCodeAccountNumber\",\"Identification\":\"20000319470104\",\"Name\":\"Messers Simplex & Co\"}} },\"Risk\":{}}", req.Body)
+}
+
+var selfsignedDummykey = `-----BEGIN RSA PRIVATE KEY----- 
 MIIEpAIBAAKCAQEA8Gl2x9KsmqwdmZd+BdZYtDWHNRXtPd/kwiR6luU+4w76T+9m
 lmePXqALi7aSyvYQDLeffR8+2dSGcdwvkf6bDWZNeMRXl7Z1jsk+xFN91mSYNk1n
 R6N1EsDTK2KXlZZyaTmpu/5p8SxwDO34uE5AaeESeM3RVqqOgRcXskmp/atwUMC+

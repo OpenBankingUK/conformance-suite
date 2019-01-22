@@ -10,6 +10,7 @@ import (
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/authentication"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/tracer"
+	"github.com/sirupsen/logrus"
 	resty "gopkg.in/resty.v1"
 )
 
@@ -37,6 +38,11 @@ func (e *Executor) ExecuteTestCase(r *resty.Request, t *model.TestCase, ctx *mod
 	resp, err := r.Execute(r.Method, r.URL)
 	if err != nil {
 		if resp.StatusCode() == http.StatusFound { // catch status code 302 redirects and pass back as good response
+			t.ResponseTime = resp.Time()
+			t.ResponseSize = len(resp.Body())
+			header := resp.Header()
+			logrus.Printf("redirection headers: %#v\n", header)
+			e.appMsg(fmt.Sprintf("Response: (%s)", resp.String()))
 			return resp, nil
 		}
 	}

@@ -69,7 +69,7 @@ func (i *Input) CreateRequest(tc *TestCase, ctx *Context) (*resty.Request, error
 	}
 
 	if len(i.RequestBody) > 0 { // set any input raw request body ("bodyData")
-		req.SetBody(i.RequestBody)
+		i.setBody(req, ctx)
 	}
 
 	req.Method = tc.Input.Method
@@ -151,6 +151,27 @@ func (i *Input) setHeaders(req *resty.Request, ctx *Context) error {
 		}
 		req.SetHeader(k, value)
 	}
+	return nil
+}
+
+func (i *Input) setBody(req *resty.Request, ctx *Context) error {
+	value := i.RequestBody
+
+	for {
+		val2, err := ReplaceContextField(value, ctx)
+		if err != nil {
+			return i.AppErr(fmt.Sprintf("setBody Replaced Context value %s :%s", val2, err.Error()))
+		}
+		if len(val2) == 0 {
+			return i.AppErr(fmt.Sprintf("setBody Replaced Context value %s : %s not found in context", value, i.RequestBody))
+		}
+		if val2 == value {
+			break
+		}
+		value = val2
+	}
+
+	req.SetBody(value)
 	return nil
 }
 
