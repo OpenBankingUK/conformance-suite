@@ -7,7 +7,7 @@
     <b-btn
       :disabled="isNextDisabled"
       variant="success"
-      @click="onNext()">Next</b-btn>
+      @click="onNext()">{{ nextLabel }}</b-btn>
   </div>
 </template>
 
@@ -17,14 +17,20 @@ import * as _ from 'lodash';
 export default {
   name: 'TheWizardFooter',
   components: {},
+  props: {
+    nextLabel: {
+      type: String,
+      required: false,
+      default: () => 'Next',
+    },
+  },
   data() {
     // normal navigation
     const ROUTES = {
       '/wizard/continue-or-start': '/wizard/discovery-config',
       '/wizard/discovery-config': '/wizard/configuration',
-      '/wizard/configuration': '/wizard/run-overview',
-      '/wizard/run-overview': '/wizard/summary',
-      '/wizard/summary': '/wizard/export',
+      '/wizard/configuration': '/wizard/overview-run',
+      '/wizard/overview-run': '/wizard/export',
     };
     // invert the ROUTES map, could do this manually but there is no point
     // as it is error-prone.

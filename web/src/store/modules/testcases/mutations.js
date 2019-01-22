@@ -7,4 +7,7 @@ export default {
   [types.SET_TEST_CASES](state, testCases) {
     state.testCases = testCases;
   },
+  [types.SET_HAS_RUN_STARTED](state, hasRunStarted) {
+    state.hasRunStarted = hasRunStarted;
+  },
 };

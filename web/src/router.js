@@ -7,8 +7,7 @@ import TheWizard from './views/TheWizard.vue';
 import WizardContinueOrStart from './views/Wizard/WizardContinueOrStart.vue';
 import WizardDiscoveryConfig from './views/Wizard/WizardDiscoveryConfig.vue';
 import WizardConfigurationTabs from './views/Wizard/WizardConfigurationTabs.vue';
-import WizardRunOverview from './views/Wizard/WizardRunOverview.vue';
-import WizardSummary from './views/Wizard/WizardSummary.vue';
+import WizardOverviewRun from './views/Wizard/WizardOverviewRun.vue';
 import WizardExport from './views/Wizard/WizardExport.vue';
 import NotFound from './views/NotFound.vue';
 
@@ -42,14 +41,9 @@ const router = new VueRouter({
           component: WizardConfigurationTabs,
         },
         {
-          path: '/wizard/run-overview',
-          name: 'WizardRunOverview',
-          component: WizardRunOverview,
-        },
-        {
-          path: '/wizard/summary',
-          name: 'WizardSummary',
-          component: WizardSummary,
+          path: '/wizard/overview-run',
+          name: 'WizardOverviewRun',
+          component: WizardOverviewRun,
         },
         {
           path: '/wizard/export',
@@ -75,7 +69,7 @@ const router = new VueRouter({
 
 /**
  * Prevent access to a route if the previous step has not been completed.
- * Example: If an attempt to go to the `/wizard/run-overview` route is made whilst the current, `step`,
+ * Example: If an attempt to go to the `/wizard/overview-run` route is made whilst the current, `step`,
  * is `1` we redirect to landing page (`/`). This tends to happen when the User refreshes the page.
  */
 router.beforeEach((to, from, next) => {

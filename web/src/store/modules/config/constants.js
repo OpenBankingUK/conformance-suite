@@ -6,11 +6,9 @@ export default {
     STEP_TWO: 2,
     /** `/wizard/configuration` */
     STEP_THREE: 3,
-    /** `/wizard/run-overview` */
+    /** `/wizard/overview-run` */
     STEP_FOUR: 4,
-    /** `/wizard/summary` */
-    STEP_FIVE: 5,
     /** `/wizard/export` */
-    STEP_SIX: 6,
+    STEP_FIVE: 5,
   },
 };
