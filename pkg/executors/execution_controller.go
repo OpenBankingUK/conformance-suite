@@ -109,18 +109,22 @@ func makeTestResult(tc model.TestCase, result bool) reporting.Test {
 }
 
 func makeSpecResult(spec discovery.ModelAPISpecification, testResults []reporting.Test) reporting.Specification {
-	pass := true
-	for _, test := range testResults {
-		pass = pass && test.Pass
-	}
 	return reporting.Specification{
 		Name:          spec.Name,
 		Version:       spec.Version,
 		URL:           spec.URL,
 		SchemaVersion: spec.SchemaVersion,
-		Pass:          pass,
+		Pass:          allPass(testResults),
 		Tests:         testResults,
 	}
+}
+
+func allPass(testResults []reporting.Test) bool {
+	pass := true
+	for _, test := range testResults {
+		pass = pass && test.Pass
+	}
+	return pass
 }
 
 func makeReportResult(specsResults []reporting.Specification) reporting.Result {
