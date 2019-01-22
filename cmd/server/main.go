@@ -39,7 +39,7 @@ func init() {
 		DisableTimestamp: false,
 		ForceFormatting:  true,
 	})
-	logrus.SetLevel(logrus.DebugLevel)
+	logrus.SetLevel(logrus.InfoLevel)
 	logrus.StandardLogger().SetNoLock()
 	tracer.Silent = true
 	resty.SetDebug(false)
