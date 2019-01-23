@@ -1,24 +1,25 @@
 package main
 
 import (
-	"bitbucket.org/openbankingteam/conformance-suite/cmd/cli/mocks"
 	"bytes"
 	"encoding/hex"
 	"fmt"
-	"github.com/spf13/cobra"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/mock"
-	"github.com/stretchr/testify/require"
 	"math/rand"
 	"os"
 	"path/filepath"
 	"testing"
+
+	"bitbucket.org/openbankingteam/conformance-suite/cmd/cli/mocks"
+	"github.com/spf13/cobra"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/require"
 )
 
 func ExampleGeneratorCommand_runNoFilename() {
 	generator := &mocks.Generator{}
 	generatorCmdWrapper := newGeneratorCmdWrapperWithOptions(generator)
-	root := rootCommand(generatorCmdWrapper.run)
+	root := newRootCommand(generatorCmdWrapper.run)
 
 	_, err := executeCommand(root, "generate")
 	if err != nil {
@@ -33,9 +34,9 @@ func TestGeneratorCommand(t *testing.T) {
 	generator := &mocks.Generator{}
 	generator.On("Generate", mock.Anything, mock.Anything).Return(nil)
 	generatorCmdWrapper := newGeneratorCmdWrapperWithOptions(generator)
-	root := rootCommand(generatorCmdWrapper.run)
+	root := newRootCommand(generatorCmdWrapper.run)
 
-	_, err := executeCommand(root, "generate", "--filename", "config.go")
+	_, err := executeCommand(root, "generate", "--filename", "generator_cmd_test.go")
 
 	require.NoError(t, err)
 }
@@ -45,7 +46,7 @@ func TestGeneratorWritesToFile(t *testing.T) {
 	generator.On(
 		"Generate", mock.Anything, mock.Anything).Return(nil)
 	generatorCmdWrapper := newGeneratorCmdWrapperWithOptions(generator)
-	root := rootCommand(generatorCmdWrapper.run)
+	root := newRootCommand(generatorCmdWrapper.run)
 	output := tempFileName("fcs", "json")
 
 	_, err := executeCommand(

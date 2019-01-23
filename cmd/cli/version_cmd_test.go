@@ -1,6 +1,9 @@
 package main
 
 import (
+	"fmt"
+	"os"
+
 	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/version/mocks"
 	"github.com/stretchr/testify/mock"
 )
@@ -16,7 +19,11 @@ func ExampleVersionCommand() {
 	v.On("VersionFormatter", mock.AnythingOfType("string")).Return(formatted, nil)
 
 	versionCommand := newVersionCommandWithOptions(v)
-	versionCommand.run(nil, nil)
+	err := versionCommand.run(nil, nil)
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
 	// Output:
 	// FCS - Functional Conformance Suite
 	// Version v0.1.2 of the Conformance Suite is out-of-date, please update to v0.1.3
