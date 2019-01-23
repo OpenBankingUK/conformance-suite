@@ -1,3 +1,4 @@
+import * as _ from 'lodash';
 import api from './apiUtil';
 import jsonLocation from './jsonLocation';
 
@@ -35,14 +36,12 @@ const calculateAnnotationsAndMarkers = (locatableProblems, paths) => {
   };
 };
 
-const lowercaseFirstLetter = string => string.charAt(0).toLowerCase() + string.slice(1);
-
 const formatProblems = problems => problems.map(({ key, error }) => {
   const reformattedKey = key
     .replace('API', 'Api')
     .replace('URL', 'Url')
     .split('.')
-    .map(w => lowercaseFirstLetter(w))
+    .map(w => _.lowerFirst(w))
     .join('.');
   const reformatted = error.replace(key, reformattedKey);
   return {

@@ -1,6 +1,5 @@
+import * as _ from 'lodash';
 import constants from './constants';
-
-const lowercaseFirstLetter = string => string.charAt(0).toLowerCase() + string.slice(1);
 
 // Converts problem key to discovery model JSON path.
 const parseProblem = ({ key, error }) => {
@@ -9,7 +8,7 @@ const parseProblem = ({ key, error }) => {
       .replace('API', 'Api')
       .replace('URL', 'Url')
       .split('.')
-      .map(w => lowercaseFirstLetter(w));
+      .map(w => _.lowerFirst(w));
 
     const path = parts.join('.');
     const parent = parts.slice(0, -1).join('.');
