@@ -61,6 +61,9 @@ export default {
     ...mapActions('config', [
       'validateConfiguration',
     ]),
+    ...mapActions('status', [
+      'clearErrors',
+    ]),
     /**
      * Validates the configuration.
      */
@@ -91,7 +94,7 @@ export default {
 
       return next(false);
     }
-
+    this.clearErrors();
     return next();
   },
 };

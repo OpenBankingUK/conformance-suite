@@ -105,6 +105,9 @@ export default {
       'setDiscoveryModel',
       'validateDiscoveryConfig',
     ]),
+    ...mapActions('status', [
+      'clearErrors',
+    ]),
     /**
      * Validates the Discovery Config.
      */
@@ -134,6 +137,7 @@ export default {
 
     // Always allow user to go back from this page.
     if (isBack) {
+      this.clearErrors();
       return next();
     }
 

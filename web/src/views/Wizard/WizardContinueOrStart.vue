@@ -84,7 +84,10 @@ export default {
     this.checkUpdates();
   },
   methods: {
-    ...mapActions('status', ['setErrors']),
+    ...mapActions('status', [
+      'clearErrors',
+      'setErrors',
+    ]),
     async checkUpdates() {
       try {
         // Version check here
@@ -104,6 +107,10 @@ export default {
         this.setErrors([updateError]);
       }
     },
+  },
+  beforeRouteLeave(to, from, next) {
+    this.clearErrors();
+    return next();
   },
 };
 </script>
