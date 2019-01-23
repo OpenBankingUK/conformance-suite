@@ -261,33 +261,4 @@ describe('web/src/store/modules/config', () => {
       });
     });
   });
-
-  describe('config/testCases', () => {
-    /**
-     * Creates a real store so we don't have to mock things out.
-     */
-    const createRealStore = () => {
-      const localVue = createLocalVue();
-      localVue.use(Vuex);
-
-      return new Vuex.Store({
-        state: cloneDeep(state),
-        actions,
-        mutations,
-        getters,
-      });
-    };
-
-    it('config/errors.testCases is initially empty', async () => {
-      const store = createRealStore();
-
-      expect(store.getters.errors.testCases).toEqual([]);
-    });
-
-    it('config/errors.testCaseResults is initially empty', async () => {
-      const store = createRealStore();
-
-      expect(store.getters.errors.testCaseResults).toEqual([]);
-    });
-  });
 });

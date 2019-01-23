@@ -6,22 +6,15 @@
           <h5>Overview</h5>
         </div>
         <div class="flex-fill panel-body">
-          <div v-if="hasErrors">
-            <h2 class="pt-3 pb-2 mb-3">Errors</h2>
-            <b-alert
-              v-for="(err, index) in errors"
-              :key="index"
-              show
-              variant="danger">{{ err }}</b-alert>
-          </div>
-
+          <TheErrorStatus />
           <TestCases
-            v-else-if="!hasErrors"
+            if="!hasErrors"
             :test-cases="testCases"/>
           <hr>
           <TestCaseResults
             v-if="hasTestCaseResults"
             :test-case-results="execution"/>
+          <TheErrorStatus />
         </div>
         <TheWizardFooter :next-label="computeNextLabel"/>
       </div>
@@ -37,10 +30,12 @@ import { createNamespacedHelpers } from 'vuex';
 import TheWizardFooter from '../../components/Wizard/TheWizardFooter.vue';
 import TestCases from '../../components/Wizard/TestCases/TestCases.vue';
 import TestCaseResults from '../../components/Wizard/TestCaseResults/TestCaseResults.vue';
+import TheErrorStatus from '@/components/TheErrorStatus.vue';
+
+import { mapGetters } from 'vuex';
 
 const {
   mapActions,
-  mapGetters,
   mapState,
 } = createNamespacedHelpers('testcases');
 
@@ -50,21 +45,19 @@ export default {
     TheWizardFooter,
     TestCases,
     TestCaseResults,
+    TheErrorStatus,
   },
   computed: {
-    ...mapGetters([
+    ...mapGetters('testcases', [
       'testCases',
+    ]),
+    ...mapGetters('status', [
+      'hasErrors',
     ]),
     ...mapState({
       execution: 'execution',
       hasRunStarted: 'hasRunStarted',
     }),
-    errors() {
-      return this.$store.state.config.errors.testCases;
-    },
-    hasErrors() {
-      return this.errors && this.errors.length > 0;
-    },
     hasTestCaseResults() {
       return !_.isEmpty(this.execution);
     },

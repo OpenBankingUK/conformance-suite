@@ -34,8 +34,6 @@ export default {
   discoveryProblems: state => (state.problems ? state.problems.map(p => parseProblem(p)) : null),
   configuration: state => state.configuration,
   configurationString: state => JSON.stringify(state.configuration, null, 2),
-  errors: state => state.errors,
-  configurationErrors: state => state.errors.configuration,
   /**
    * Computes what the user can navigate to based on the current step they are on.
    */

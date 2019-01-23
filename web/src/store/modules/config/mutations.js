@@ -25,19 +25,7 @@ export default {
     state.configuration.transport_public = transportPublic;
   },
 
-  [types.SET_TEST_CASES_ERROR](state, errors) {
-    state.errors.testCases = errors;
-  },
-
-  [types.SET_EXECUTION_ERROR](state, errors) {
-    state.errors.execution = errors;
-  },
-
   [types.SET_WIZARD_STEP](state, step) {
     state.wizard.step = step;
-  },
-
-  [types.SET_TEST_CASE_RESULTS_ERROR](state, errors) {
-    state.errors.testCaseResults = errors;
   },
 };
