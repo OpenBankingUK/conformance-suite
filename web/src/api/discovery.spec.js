@@ -16,19 +16,29 @@ describe('validateDiscoveryConfig', () => {
   });
 
   describe('when validation fails', () => {
-    const expectedProblems = [
+    const errorsResponse = [
       {
         key: 'DiscoveryModel.Version',
-        error: 'Field validation for \'Version\' failed on the \'required\' tag',
+        error: "Field 'DiscoveryModel.Version' is required",
       },
       {
         key: 'DiscoveryModel.DiscoveryItems',
-        error: 'Field validation for \'DiscoveryItems\' failed on the \'required\' tag',
+        error: "Field 'DiscoveryModel.DiscoveryItems' is required",
+      },
+    ];
+    const expectedProblems = [
+      {
+        key: 'DiscoveryModel.Version',
+        error: "Field 'discoveryModel.version' is required",
+      },
+      {
+        key: 'DiscoveryModel.DiscoveryItems',
+        error: "Field 'discoveryModel.discoveryItems' is required",
       },
     ];
     it('returns success false, and array of validation problem strings', async () => {
       fetch.mockResponseOnce(
-        JSON.stringify({ error: expectedProblems }),
+        JSON.stringify({ error: errorsResponse }),
         { status: 400 },
       );
       const { success, problems } = await discovery.validateDiscoveryConfig(discoveryModelStub);
@@ -74,7 +84,7 @@ describe('annotationsAndMarkers', () => {
         {
           path: 'discoveryModel.discoveryVersion',
           parent: 'discoveryModel',
-          error: 'Field validation for \'DiscoveryVersion\' failed on the \'required\' tag',
+          error: "Field 'discoveryModel.discoveryVersion' is required",
         },
       ];
       const { annotations, markers } = discovery.annotationsAndMarkers(discoveryProblems, json);

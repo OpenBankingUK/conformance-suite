@@ -35,6 +35,22 @@ const calculateAnnotationsAndMarkers = (locatableProblems, paths) => {
   };
 };
 
+const lowercaseFirstLetter = string => string.charAt(0).toLowerCase() + string.slice(1);
+
+const formatProblems = problems => problems.map(({ key, error }) => {
+  const reformattedKey = key
+    .replace('API', 'Api')
+    .replace('URL', 'Url')
+    .split('.')
+    .map(w => lowercaseFirstLetter(w))
+    .join('.');
+  const reformatted = error.replace(key, reformattedKey);
+  return {
+    key,
+    error: reformatted,
+  };
+});
+
 export default {
   // Calls validate endpoint, returns {success, problemsArray}.
   async validateDiscoveryConfig(discoveryModel) {
@@ -49,7 +65,7 @@ export default {
     if (validationFailed) {
       const json = await response.json();
       if (json.error) {
-        const problems = json.error;
+        const problems = formatProblems(json.error);
         return { success: false, problems };
       }
     }
