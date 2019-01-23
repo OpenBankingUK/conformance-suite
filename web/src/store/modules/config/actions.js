@@ -6,7 +6,7 @@ import discovery from '../../../api/discovery';
 import api from '../../../api';
 
 export default {
-  setDiscoveryModel({ commit, state }, editorString) {
+  setDiscoveryModel({ commit, dispatch, state }, editorString) {
     const value = JSON.stringify(state.discoveryModel);
     if (_.isEqual(value, editorString)) {
       return;
@@ -16,6 +16,7 @@ export default {
       const discoveryModel = JSON.parse(editorString);
       commit(types.SET_DISCOVERY_MODEL, discoveryModel);
       commit(types.DISCOVERY_MODEL_PROBLEMS, null);
+      dispatch('status/clearErrors', null, { root: true });
       commit(types.SET_WIZARD_STEP, constants.WIZARD.STEP_TWO);
     } catch (e) {
       const problems = [{
@@ -23,25 +24,24 @@ export default {
         error: e.message,
       }];
       commit(types.DISCOVERY_MODEL_PROBLEMS, problems);
+      dispatch('status/setErrors', [e.message], { root: true });
       commit(types.SET_WIZARD_STEP, constants.WIZARD.STEP_TWO);
     }
-  },
-  setDiscoveryModelProblems({ commit }, problems) {
-    commit(types.DISCOVERY_MODEL_PROBLEMS, problems);
-    commit(types.SET_WIZARD_STEP, constants.WIZARD.STEP_TWO);
   },
   /**
    * Step 2: validate the Discovery Config.
    * Route: `/wizard/discovery-config`.
    */
-  async validateDiscoveryConfig({ commit, state }) {
+  async validateDiscoveryConfig({ commit, dispatch, state }) {
     try {
       const { success, problems } = await discovery.validateDiscoveryConfig(state.discoveryModel);
       if (success) {
         commit(types.DISCOVERY_MODEL_PROBLEMS, null);
+        dispatch('status/clearErrors', null, { root: true });
         commit(types.SET_WIZARD_STEP, constants.WIZARD.STEP_THREE);
       } else {
         commit(types.DISCOVERY_MODEL_PROBLEMS, problems);
+        dispatch('status/setErrors', problems.map(p => p.error), { root: true });
         commit(types.SET_WIZARD_STEP, constants.WIZARD.STEP_TWO);
       }
     } catch (e) {
@@ -49,11 +49,12 @@ export default {
         key: null,
         error: e.message,
       }]);
+      dispatch('status/setErrors', [e.message], { root: true });
       commit(types.SET_WIZARD_STEP, constants.WIZARD.STEP_TWO);
     }
     return null;
   },
-  setConfigurationJSON({ commit, state }, editorString) {
+  setConfigurationJSON({ commit, dispatch, state }, editorString) {
     const value = JSON.stringify(state.configuration);
     if (_.isEqual(value, editorString)) {
       return;
@@ -70,10 +71,10 @@ export default {
       ];
       const newConfig = _.pick(merged, validKeys);
       commit(types.SET_CONFIGURATION, newConfig);
-      commit(types.SET_CONFIGURATION_ERRORS, null);
+      dispatch('status/clearErrors', null, { root: true });
       commit(types.SET_WIZARD_STEP, constants.WIZARD.STEP_THREE);
     } catch (e) {
-      commit(types.SET_CONFIGURATION_ERRORS, [e.message]);
+      dispatch('status/setErrors', [e.message], { root: true });
       commit(types.SET_WIZARD_STEP, constants.WIZARD.STEP_THREE);
     }
   },
@@ -113,23 +114,24 @@ export default {
    * Step 3: Validate the configuration.
    * Route: `/wizard/configuration`.
    */
-  async validateConfiguration({ commit, state }) {
-    commit(types.CLEAR_CONFIGURATION_ERRORS);
+  async validateConfiguration({ commit, dispatch, state }) {
+    dispatch('status/clearErrors', null, { root: true });
 
+    const errors = [];
     if (_.isEmpty(state.configuration.signing_private)) {
-      commit(types.ADD_CONFIGURATION_ERRORS, 'Signing Private Certificate (.key) empty');
+      errors.push('Signing Private Certificate (.key) empty');
     }
     if (_.isEmpty(state.configuration.signing_public)) {
-      commit(types.ADD_CONFIGURATION_ERRORS, 'Signing Public Certificate (.pem) empty');
+      errors.push('Signing Public Certificate (.pem) empty');
     }
     if (_.isEmpty(state.configuration.transport_private)) {
-      commit(types.ADD_CONFIGURATION_ERRORS, 'Transport Private Certificate (.key) empty');
+      errors.push('Transport Private Certificate (.key) empty');
     }
     if (_.isEmpty(state.configuration.transport_public)) {
-      commit(types.ADD_CONFIGURATION_ERRORS, 'Transport Public Certificate (.pem) empty');
+      errors.push('Transport Public Certificate (.pem) empty');
     }
-
-    if (!_.isEmpty(state.errors.configuration)) {
+    if (!_.isEmpty(errors)) {
+      dispatch('status/setErrors', errors, { root: true });
       return false;
     }
 
@@ -142,17 +144,11 @@ export default {
 
       return true;
     } catch (err) {
-      commit(types.SET_CONFIGURATION_ERRORS, [err]);
+      dispatch('status/setErrors', [err], { root: true });
       commit(types.SET_WIZARD_STEP, constants.WIZARD.STEP_THREE);
 
       return false;
     }
-  },
-  /**
-   * Sets array of Error objects.
-   */
-  setConfigurationErrors({ commit }, errors) {
-    commit(types.SET_CONFIGURATION_ERRORS, errors);
   },
   setTestCaseErrors({ commit }, errors) {
     commit(types.SET_TEST_CASES_ERROR, errors);

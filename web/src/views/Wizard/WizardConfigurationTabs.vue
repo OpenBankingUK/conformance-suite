@@ -20,15 +20,7 @@
                 <TheConfigurationJsonEditor v-if="tabIndex == 1"/>
               </b-tab>
             </b-tabs>
-            <div v-if="configurationErrors && configurationErrors.length > 0">
-              <h2 class="pt-3 pb-2 mb-3">Errors</h2>
-              <b-alert
-                v-for="(err, index) in configurationErrors"
-                :key="index"
-                show
-                variant="danger"
-              >{{ err }}</b-alert>
-            </div>
+            <TheErrorStatus />
           </div>
         </div>
         <TheWizardFooter/>
@@ -41,15 +33,17 @@
 import * as _ from 'lodash';
 import { mapGetters, mapActions } from 'vuex';
 
-import TheConfigurationForm from '../../components/Wizard/TheConfigurationForm.vue';
-import TheConfigurationJsonEditor from '../../components/Wizard/TheConfigurationJsonEditor.vue';
-import TheWizardFooter from '../../components/Wizard/TheWizardFooter.vue';
+import TheConfigurationForm from '@/components/Wizard/TheConfigurationForm.vue';
+import TheConfigurationJsonEditor from '@/components/Wizard/TheConfigurationJsonEditor.vue';
+import TheErrorStatus from '@/components/TheErrorStatus.vue';
+import TheWizardFooter from '@/components/Wizard/TheWizardFooter.vue';
 
 export default {
   name: 'WizardConfigurationTabs',
   components: {
     TheConfigurationForm,
     TheConfigurationJsonEditor,
+    TheErrorStatus,
     TheWizardFooter,
   },
   data() {

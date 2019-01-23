@@ -20,26 +20,24 @@ jest.mock('../../../api');
 
 describe('web/src/store/modules/config', () => {
   describe('config/configuration', () => {
-  /**
-   * Creates a real store so we don't have to mock things out.
-   */
+    let dispatch;
+    /**
+    * Creates a real store so we don't have to mock things out.
+    */
     const createRealStore = () => {
       const localVue = createLocalVue();
       localVue.use(Vuex);
-
-      return new Vuex.Store({
+      const store = new Vuex.Store({
         state: cloneDeep(state),
         actions,
         mutations,
         getters,
       });
+      dispatch = jest.fn();
+      store.dispatch = dispatch;
+
+      return store;
     };
-
-    it('configurationErrors initially empty', async () => {
-      const store = createRealStore();
-
-      expect(store.getters.configurationErrors).toEqual([]);
-    });
 
     it('configuration.{signing_private,signing_public,transport_private,transport_public} initially empty', async () => {
       const store = createRealStore();
@@ -56,7 +54,7 @@ describe('web/src/store/modules/config', () => {
       const store = createRealStore();
 
       const signingPrivate = 'signingPrivate';
-      await store.dispatch('setConfigurationSigningPrivate', signingPrivate);
+      await actions.setConfigurationSigningPrivate(store, signingPrivate);
 
       expect(store.getters.configuration).toEqual({
         signing_private: signingPrivate,
@@ -70,7 +68,7 @@ describe('web/src/store/modules/config', () => {
       const store = createRealStore();
 
       const signingPublic = 'signingPublic';
-      await store.dispatch('setConfigurationSigningPublic', signingPublic);
+      await actions.setConfigurationSigningPublic(store, signingPublic);
 
       expect(store.getters.configuration).toEqual({
         signing_private: '',
@@ -84,7 +82,7 @@ describe('web/src/store/modules/config', () => {
       const store = createRealStore();
 
       const transportPrivate = 'transportPrivate';
-      await store.dispatch('setConfigurationTransportPrivate', transportPrivate);
+      await actions.setConfigurationTransportPrivate(store, transportPrivate);
 
       expect(store.getters.configuration).toEqual({
         signing_private: '',
@@ -98,7 +96,7 @@ describe('web/src/store/modules/config', () => {
       const store = createRealStore();
 
       const transportPublic = 'transportPublic';
-      await store.dispatch('setConfigurationTransportPublic', transportPublic);
+      await actions.setConfigurationTransportPublic(store, transportPublic);
 
       expect(store.getters.configuration).toEqual({
         signing_private: '',
@@ -116,85 +114,80 @@ describe('web/src/store/modules/config', () => {
       it('setConfigurationSigningPrivate not called before validateConfiguration', async () => {
         const store = createRealStore();
 
-        expect(store.getters.configurationErrors).toEqual([]);
-        await store.dispatch('setConfigurationSigningPublic', 'setConfigurationSigningPublic');
-        await store.dispatch('setConfigurationTransportPrivate', 'setConfigurationTransportPrivate');
-        await store.dispatch('setConfigurationTransportPublic', 'setConfigurationTransportPublic');
-        expect(store.getters.configurationErrors).toEqual([]);
+        await actions.setConfigurationSigningPublic(store, 'setConfigurationSigningPublic');
+        await actions.setConfigurationTransportPrivate(store, 'setConfigurationTransportPrivate');
+        await actions.setConfigurationTransportPublic(store, 'setConfigurationTransportPublic');
 
-        const valid = await store.dispatch('validateConfiguration');
+        const valid = await actions.validateConfiguration(store);
         expect(valid).toEqual(false);
 
-        expect(store.getters.configurationErrors).toEqual([
+        const errors = [
           'Signing Private Certificate (.key) empty',
-        ]);
+        ];
+        expect(dispatch).toHaveBeenCalledWith('status/setErrors', errors, { root: true });
       });
 
       it('setConfigurationSigningPublic not called before validateConfiguration', async () => {
         const store = createRealStore();
 
-        expect(store.getters.configurationErrors).toEqual([]);
-        await store.dispatch('setConfigurationSigningPrivate', 'setConfigurationSigningPrivate');
-        await store.dispatch('setConfigurationTransportPrivate', 'setConfigurationTransportPrivate');
-        await store.dispatch('setConfigurationTransportPublic', 'setConfigurationTransportPublic');
-        expect(store.getters.configurationErrors).toEqual([]);
+        await actions.setConfigurationSigningPrivate(store, 'setConfigurationSigningPrivate');
+        await actions.setConfigurationTransportPrivate(store, 'setConfigurationTransportPrivate');
+        await actions.setConfigurationTransportPublic(store, 'setConfigurationTransportPublic');
 
-        const valid = await store.dispatch('validateConfiguration');
+        const valid = await actions.validateConfiguration(store);
         expect(valid).toEqual(false);
 
-        expect(store.getters.configurationErrors).toEqual([
+        const errors = [
           'Signing Public Certificate (.pem) empty',
-        ]);
+        ];
+        expect(dispatch).toHaveBeenCalledWith('status/setErrors', errors, { root: true });
       });
 
       it('setConfigurationTransportPrivate not called before validateConfiguration', async () => {
         const store = createRealStore();
 
-        expect(store.getters.configurationErrors).toEqual([]);
-        await store.dispatch('setConfigurationSigningPublic', 'setConfigurationSigningPublic');
-        await store.dispatch('setConfigurationSigningPrivate', 'setConfigurationSigningPrivate');
-        await store.dispatch('setConfigurationTransportPublic', 'setConfigurationTransportPublic');
-        expect(store.getters.configurationErrors).toEqual([]);
+        await actions.setConfigurationSigningPublic(store, 'setConfigurationSigningPublic');
+        await actions.setConfigurationSigningPrivate(store, 'setConfigurationSigningPrivate');
+        await actions.setConfigurationTransportPublic(store, 'setConfigurationTransportPublic');
 
-        const valid = await store.dispatch('validateConfiguration');
+        const valid = await actions.validateConfiguration(store);
         expect(valid).toEqual(false);
 
-        expect(store.getters.configurationErrors).toEqual([
+        const errors = [
           'Transport Private Certificate (.key) empty',
-        ]);
+        ];
+        expect(dispatch).toHaveBeenCalledWith('status/setErrors', errors, { root: true });
       });
 
       it('setConfigurationTransportPublic not called before validateConfiguration', async () => {
         const store = createRealStore();
 
-        expect(store.getters.configurationErrors).toEqual([]);
-        await store.dispatch('setConfigurationSigningPublic', 'setConfigurationSigningPublic');
-        await store.dispatch('setConfigurationSigningPrivate', 'setConfigurationSigningPrivate');
-        await store.dispatch('setConfigurationTransportPrivate', 'setConfigurationTransportPrivate');
-        expect(store.getters.configurationErrors).toEqual([]);
+        await actions.setConfigurationSigningPublic(store, 'setConfigurationSigningPublic');
+        await actions.setConfigurationSigningPrivate(store, 'setConfigurationSigningPrivate');
+        await actions.setConfigurationTransportPrivate(store, 'setConfigurationTransportPrivate');
 
-        const valid = await store.dispatch('validateConfiguration');
+        const valid = await actions.validateConfiguration(store);
         expect(valid).toEqual(false);
 
-        expect(store.getters.configurationErrors).toEqual([
+        const errors = [
           'Transport Public Certificate (.pem) empty',
-        ]);
+        ];
+        expect(dispatch).toHaveBeenCalledWith('status/setErrors', errors, { root: true });
       });
 
       it('setConfigurationSigningPrivate, setConfigurationSigningPublic, setConfigurationTransportPrivate and setConfigurationTransportPublic not called before validateConfiguration', async () => {
         const store = createRealStore();
 
-        expect(store.getters.configurationErrors).toEqual([]);
-
-        const valid = await store.dispatch('validateConfiguration');
+        const valid = await actions.validateConfiguration(store);
         expect(valid).toEqual(false);
 
-        expect(store.getters.configurationErrors).toEqual([
+        const errors = [
           'Signing Private Certificate (.key) empty',
           'Signing Public Certificate (.pem) empty',
           'Transport Private Certificate (.key) empty',
           'Transport Public Certificate (.pem) empty',
-        ]);
+        ];
+        expect(dispatch).toHaveBeenCalledWith('status/setErrors', errors, { root: true });
       });
 
       it('setConfigurationSigningPrivate, setConfigurationSigningPublic, setConfigurationTransportPrivate and setConfigurationTransportPublic called before validateConfiguration', async () => {
@@ -207,17 +200,13 @@ describe('web/src/store/modules/config', () => {
 
         const store = createRealStore();
 
-        expect(store.getters.configurationErrors).toEqual([]);
-        await store.dispatch('setConfigurationSigningPublic', 'setConfigurationSigningPublic');
-        await store.dispatch('setConfigurationSigningPrivate', 'setConfigurationSigningPrivate');
-        await store.dispatch('setConfigurationTransportPrivate', 'setConfigurationTransportPrivate');
-        await store.dispatch('setConfigurationTransportPublic', 'setConfigurationTransportPublic');
-        expect(store.getters.configurationErrors).toEqual([]);
+        await actions.setConfigurationSigningPublic(store, 'setConfigurationSigningPublic');
+        await actions.setConfigurationSigningPrivate(store, 'setConfigurationSigningPrivate');
+        await actions.setConfigurationTransportPrivate(store, 'setConfigurationTransportPrivate');
+        await actions.setConfigurationTransportPublic(store, 'setConfigurationTransportPublic');
 
-        const valid = await store.dispatch('validateConfiguration');
+        const valid = await actions.validateConfiguration(store);
         expect(valid).toEqual(true);
-
-        expect(store.getters.configurationErrors).toEqual([]);
       });
 
       it('setConfigurationSigningPrivate, setConfigurationSigningPublic, setConfigurationTransportPrivate and setConfigurationTransportPublic called with invalid values before validateConfiguration', async () => {
@@ -228,19 +217,15 @@ describe('web/src/store/modules/config', () => {
 
         const store = createRealStore();
 
-        expect(store.getters.configurationErrors).toEqual([]);
-        await store.dispatch('setConfigurationSigningPublic', 'not_a_certificate');
-        await store.dispatch('setConfigurationSigningPrivate', 'not_a_certificate');
-        await store.dispatch('setConfigurationTransportPrivate', 'not_a_certificate');
-        await store.dispatch('setConfigurationTransportPublic', 'not_a_certificate');
-        expect(store.getters.configurationErrors).toEqual([]);
+        await actions.setConfigurationSigningPublic(store, 'not_a_certificate');
+        await actions.setConfigurationSigningPrivate(store, 'not_a_certificate');
+        await actions.setConfigurationTransportPrivate(store, 'not_a_certificate');
+        await actions.setConfigurationTransportPublic(store, 'not_a_certificate');
 
-        const valid = await store.dispatch('validateConfiguration');
+        const valid = await actions.validateConfiguration(store);
         expect(valid).toEqual(false);
 
-        expect(store.getters.configurationErrors).toEqual([
-          errorResponse,
-        ]);
+        expect(dispatch).toHaveBeenCalledWith('status/setErrors', [errorResponse], { root: true });
       });
 
       it('validateConfiguration clears previous errors', async () => {
@@ -248,14 +233,15 @@ describe('web/src/store/modules/config', () => {
 
         // This will generate an error because we have not called any of the methods
         // that sets the values for the configuration.
-        expect(store.getters.configurationErrors).toEqual([]);
-        expect(await store.dispatch('validateConfiguration')).toEqual(false);
-        expect(store.getters.configurationErrors).toEqual([
+
+        expect(await actions.validateConfiguration(store)).toEqual(false);
+        const errors = [
           'Signing Private Certificate (.key) empty',
           'Signing Public Certificate (.pem) empty',
           'Transport Private Certificate (.key) empty',
           'Transport Public Certificate (.pem) empty',
-        ]);
+        ];
+        expect(dispatch).toHaveBeenCalledWith('status/setErrors', errors, { root: true });
 
         api.validateConfiguration.mockResolvedValue({
           signing_private: 'does_not_matter_what_the_value_is',
@@ -264,23 +250,14 @@ describe('web/src/store/modules/config', () => {
           transport_public: 'does_not_matter_what_the_value_is',
         });
 
-        await store.dispatch('setConfigurationSigningPublic', 'setConfigurationSigningPublic');
-        await store.dispatch('setConfigurationSigningPrivate', 'setConfigurationSigningPrivate');
-        await store.dispatch('setConfigurationTransportPrivate', 'setConfigurationTransportPrivate');
-        await store.dispatch('setConfigurationTransportPublic', 'setConfigurationTransportPublic');
+        await actions.setConfigurationSigningPublic(store, 'setConfigurationSigningPublic');
+        await actions.setConfigurationSigningPrivate(store, 'setConfigurationSigningPrivate');
+        await actions.setConfigurationTransportPrivate(store, 'setConfigurationTransportPrivate');
+        await actions.setConfigurationTransportPublic(store, 'setConfigurationTransportPublic');
         // This will clear out the previous errors, and will result in configurationErrors
         // being empty since they are not any errors.
-        expect(await store.dispatch('validateConfiguration')).toEqual(true);
-
-        expect(store.getters.configurationErrors).toEqual([]);
-      });
-
-      it('setConfigurationErrors sets errors', async () => {
-        const error = new Error('e');
-        const store = createRealStore();
-
-        await store.dispatch('setConfigurationErrors', [error]);
-        expect(store.getters.configurationErrors).toEqual([error]);
+        expect(await actions.validateConfiguration(store)).toEqual(true);
+        expect(dispatch).toHaveBeenCalledWith('status/clearErrors', null, { root: true });
       });
     });
   });

@@ -24,15 +24,6 @@ export default {
   [types.SET_CONFIGURATION_TRANSPORT_PUBLIC](state, transportPublic) {
     state.configuration.transport_public = transportPublic;
   },
-  [types.SET_CONFIGURATION_ERRORS](state, errors) {
-    state.errors.configuration = errors;
-  },
-  [types.ADD_CONFIGURATION_ERRORS](state, errors) {
-    state.errors.configuration.push(errors);
-  },
-  [types.CLEAR_CONFIGURATION_ERRORS](state) {
-    state.errors.configuration = [];
-  },
 
   [types.SET_TEST_CASES_ERROR](state, errors) {
     state.errors.testCases = errors;
