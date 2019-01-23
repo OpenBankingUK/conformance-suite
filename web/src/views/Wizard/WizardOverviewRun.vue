@@ -8,8 +8,8 @@
         <div class="flex-fill panel-body">
           <TheErrorStatus />
           <TestCases
-            if="!hasErrors"
-            :test-cases="testCases"/>
+            :test-cases="testCases"
+            if="!hasErrors"/>
           <hr>
           <TestCaseResults
             v-if="hasTestCaseResults"
@@ -25,14 +25,12 @@
 <script>
 import * as _ from 'lodash';
 
-import { createNamespacedHelpers } from 'vuex';
+import { createNamespacedHelpers, mapGetters } from 'vuex';
 
-import TheWizardFooter from '../../components/Wizard/TheWizardFooter.vue';
-import TestCases from '../../components/Wizard/TestCases/TestCases.vue';
-import TestCaseResults from '../../components/Wizard/TestCaseResults/TestCaseResults.vue';
+import TheWizardFooter from '@/components/Wizard/TheWizardFooter.vue';
+import TestCases from '@/components/Wizard/TestCases/TestCases.vue';
+import TestCaseResults from '@/components/Wizard/TestCaseResults/TestCaseResults.vue';
 import TheErrorStatus from '@/components/TheErrorStatus.vue';
-
-import { mapGetters } from 'vuex';
 
 const {
   mapActions,
