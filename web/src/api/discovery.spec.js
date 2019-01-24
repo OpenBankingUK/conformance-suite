@@ -25,6 +25,14 @@ describe('validateDiscoveryConfig', () => {
         key: 'DiscoveryModel.DiscoveryItems',
         error: "Field 'DiscoveryModel.DiscoveryItems' is required",
       },
+      {
+        key: 'DiscoveryModel.DiscoveryItems[0].APISpecification.Name',
+        error: "Field 'DiscoveryModel.DiscoveryItems[0].APISpecification.Name' is required",
+      },
+      {
+        key: 'DiscoveryModel.DiscoveryItems[0].APISpecification.URL',
+        error: "Field 'DiscoveryModel.DiscoveryItems[0].APISpecification.URL' is required",
+      },
     ];
     const expectedProblems = [
       {
@@ -34,6 +42,14 @@ describe('validateDiscoveryConfig', () => {
       {
         key: 'DiscoveryModel.DiscoveryItems',
         error: "Field 'discoveryModel.discoveryItems' is required",
+      },
+      {
+        key: 'DiscoveryModel.DiscoveryItems[0].APISpecification.Name',
+        error: "Field 'discoveryModel.discoveryItems[0].apiSpecification.name' is required",
+      },
+      {
+        key: 'DiscoveryModel.DiscoveryItems[0].APISpecification.URL',
+        error: "Field 'discoveryModel.discoveryItems[0].apiSpecification.url' is required",
       },
     ];
     it('returns success false, and array of validation problem strings', async () => {
