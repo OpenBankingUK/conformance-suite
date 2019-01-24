@@ -1,13 +1,14 @@
 package main
 
 import (
+	"fmt"
+	"os"
+
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/generation"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/server"
-	"fmt"
 	"github.com/spf13/cobra"
-	"os"
 )
 
 func generatorCmd(runFunc cobraCmdRunFunc) *cobra.Command {
@@ -17,8 +18,9 @@ func generatorCmd(runFunc cobraCmdRunFunc) *cobra.Command {
 		Long:  "Generated test cases will output to standard output.",
 		Run:   runFunc,
 	}
-	generatorCmd.Flags().String("filename", "", "Discovery filename")
-	generatorCmd.Flags().String("output", "", "Output filename, defaults to stdout")
+	generatorCmd.Flags().StringP("filename", "f", "", "Discovery filename")
+	generatorCmd.Flags().StringP("output", "o", "", "Output filename, defaults to stdout")
+
 	return generatorCmd
 }
 
