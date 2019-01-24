@@ -24,7 +24,8 @@ describe('ConfigurationFormFile.vue', () => {
     };
 
     actions = {
-      setConfigurationErrors: jest.fn(),
+      clearErrors: jest.fn(),
+      setErrors: jest.fn(),
     };
 
     return new Vuex.Store({

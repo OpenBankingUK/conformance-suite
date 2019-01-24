@@ -29,13 +29,6 @@ export default {
     transport_public: '',
   },
 
-  errors: {
-    configuration: [],
-    testCases: [],
-    testCaseResults: [],
-    execution: [],
-  },
-
   wizard: {
     step: constants.WIZARD.STEP_ONE,
   },

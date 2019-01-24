@@ -1,3 +1,4 @@
+import * as _ from 'lodash';
 import api from './apiUtil';
 import jsonLocation from './jsonLocation';
 
@@ -35,6 +36,20 @@ const calculateAnnotationsAndMarkers = (locatableProblems, paths) => {
   };
 };
 
+const formatProblems = problems => problems.map(({ key, error }) => {
+  const reformattedKey = key
+    .replace('API', 'Api')
+    .replace('URL', 'Url')
+    .split('.')
+    .map(w => _.lowerFirst(w))
+    .join('.');
+  const reformatted = error.replace(key, reformattedKey);
+  return {
+    key,
+    error: reformatted,
+  };
+});
+
 export default {
   // Calls validate endpoint, returns {success, problemsArray}.
   async validateDiscoveryConfig(discoveryModel) {
@@ -49,7 +64,7 @@ export default {
     if (validationFailed) {
       const json = await response.json();
       if (json.error) {
-        const problems = json.error;
+        const problems = formatProblems(json.error);
         return { success: false, problems };
       }
     }

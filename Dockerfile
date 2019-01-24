@@ -1,3 +1,6 @@
+FROM alpine:latest as certs
+RUN apk --update add ca-certificates
+
 # Image to compile go binaries
 FROM golang:1.11-stretch as gobuilder
 # disable crosscompiling
@@ -36,6 +39,8 @@ RUN yarn install \
 # Final image to run the binary
 FROM scratch
 LABEL MAINTAINER Open Banking
+COPY --from=certs /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
+
 WORKDIR /app
 
 COPY --from=gobuilder /app/server /app/

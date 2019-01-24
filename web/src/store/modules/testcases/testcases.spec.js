@@ -87,7 +87,7 @@ describe('store/modules/testcases', () => {
 
       api.computeTestCases.mockResolvedValueOnce(OK_RESPONSE);
       await actions.computeTestCases(store);
-      expect(dispatch).toHaveBeenCalledWith('config/setTestCaseErrors', [], { root: true });
+      expect(dispatch).toHaveBeenCalledWith('status/clearErrors', null, { root: true });
       expect(dispatch).toHaveBeenCalledWith('config/setWizardStep', constants.WIZARD.STEP_FOUR, { root: true });
       expect(store.getters.testCases).toEqual(OK_RESPONSE);
     });
@@ -99,7 +99,7 @@ describe('store/modules/testcases', () => {
 
       api.computeTestCases.mockRejectedValueOnce(ERROR_RESPONSE);
       await actions.computeTestCases(store);
-      expect(dispatch).toHaveBeenCalledWith('config/setTestCaseErrors', [ERROR_RESPONSE], { root: true });
+      expect(dispatch).toHaveBeenCalledWith('status/setErrors', [ERROR_RESPONSE], { root: true });
       expect(dispatch).toHaveBeenCalledWith('config/setWizardStep', constants.WIZARD.STEP_FOUR, { root: true });
       expect(store.getters.testCases).toEqual([]);
     });
@@ -111,13 +111,13 @@ describe('store/modules/testcases', () => {
 
       api.computeTestCases.mockRejectedValueOnce(ERROR_RESPONSE);
       await actions.computeTestCases(store);
-      expect(dispatch).toHaveBeenCalledWith('config/setTestCaseErrors', [ERROR_RESPONSE], { root: true });
+      expect(dispatch).toHaveBeenCalledWith('status/setErrors', [ERROR_RESPONSE], { root: true });
       expect(dispatch).toHaveBeenCalledWith('config/setWizardStep', constants.WIZARD.STEP_FOUR, { root: true });
       expect(store.getters.testCases).toEqual([]);
 
       api.computeTestCases.mockResolvedValueOnce(OK_RESPONSE);
       await actions.computeTestCases(store);
-      expect(dispatch).toHaveBeenCalledWith('config/setTestCaseErrors', [], { root: true });
+      expect(dispatch).toHaveBeenCalledWith('status/clearErrors', null, { root: true });
       expect(dispatch).toHaveBeenCalledWith('config/setWizardStep', constants.WIZARD.STEP_FOUR, { root: true });
       expect(store.getters.testCases).toEqual(OK_RESPONSE);
     });
@@ -129,13 +129,13 @@ describe('store/modules/testcases', () => {
 
       api.computeTestCases.mockResolvedValueOnce(OK_RESPONSE);
       await actions.computeTestCases(store);
-      expect(dispatch).toHaveBeenCalledWith('config/setTestCaseErrors', [], { root: true });
+      expect(dispatch).toHaveBeenCalledWith('status/clearErrors', null, { root: true });
       expect(dispatch).toHaveBeenCalledWith('config/setWizardStep', constants.WIZARD.STEP_FOUR, { root: true });
       expect(store.getters.testCases).toEqual(OK_RESPONSE);
 
       api.computeTestCases.mockRejectedValueOnce(ERROR_RESPONSE);
       await actions.computeTestCases(store);
-      expect(dispatch).toHaveBeenCalledWith('config/setTestCaseErrors', [ERROR_RESPONSE], { root: true });
+      expect(dispatch).toHaveBeenCalledWith('status/setErrors', [ERROR_RESPONSE], { root: true });
       expect(dispatch).toHaveBeenCalledWith('config/setWizardStep', constants.WIZARD.STEP_FOUR, { root: true });
       expect(store.getters.testCases).toEqual([]);
     });
