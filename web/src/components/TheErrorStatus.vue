@@ -1,7 +1,7 @@
 <template>
   <div
     v-if="hasErrors"
-    id="error-status">
+    class="error-status">
     <b-alert
       v-for="(err, index) in errorMessages"
       :key="index"

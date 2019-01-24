@@ -49,12 +49,12 @@ describe('TheErrorStatus.vue', () => {
 
   it('does not render when no errors', () => {
     const wrapper = component(stateNoErrors);
-    expect(wrapper.find('#error-status').exists()).toBe(false);
+    expect(wrapper.find('.error-status').exists()).toBe(false);
   });
 
   it('renders when errors', () => {
     const wrapper = component(stateWithErrors);
-    expect(wrapper.find('#error-status').exists()).toBe(true);
+    expect(wrapper.find('.error-status').exists()).toBe(true);
   });
 
   it('displays error messages when errors', () => {
