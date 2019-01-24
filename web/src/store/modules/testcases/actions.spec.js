@@ -23,7 +23,7 @@ describe('executeTestCases', () => {
       await actions.executeTestCases({ commit, dispatch, state });
       expect(commit).toHaveBeenCalledWith(types.SET_HAS_RUN_STARTED, true);
       expect(commit).toHaveBeenCalledWith(types.SET_EXECUTION_RESULTS, result);
-      expect(dispatch).toHaveBeenCalledWith('config/setExecutionErrors', [], { root: true });
+      expect(dispatch).toHaveBeenCalledWith('status/clearErrors', null, { root: true });
       expect(dispatch).toHaveBeenCalledWith('config/setWizardStep', constants.WIZARD.STEP_FIVE, { root: true });
     });
   });
@@ -40,7 +40,8 @@ describe('executeTestCases', () => {
     it('sets Error', async () => {
       await actions.executeTestCases({ commit, dispatch, state });
       expect(commit).toHaveBeenCalledWith(types.SET_HAS_RUN_STARTED, false);
-      expect(dispatch).toHaveBeenCalledWith('config/setExecutionErrors', [error], { root: true });
+      expect(dispatch).toHaveBeenCalledWith('status/setErrors', [error], { root: true });
+
       expect(dispatch).toHaveBeenCalledWith('config/setWizardStep', constants.WIZARD.STEP_FIVE, { root: true });
     });
   });

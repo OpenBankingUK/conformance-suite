@@ -92,8 +92,9 @@ export default {
     },
   },
   methods: {
-    ...mapActions('config', [
-      'setConfigurationErrors',
+    ...mapActions('status', [
+      'clearErrors',
+      'setErrors',
     ]),
     extError(extension) {
       return ['Invalid file format', `Require file with extension ${extension}`].join('\n');
@@ -133,7 +134,7 @@ export default {
          */
     async onFileChanged() {
       // Clear previous error.
-      this.setConfigurationErrors([]);
+      this.clearErrors();
       // Compute the method name we need to call in the Vuex store, e.g., could be one of the below:
       // * config/setConfigurationSigningPrivate
       // * config/setConfigurationSigningPublic
@@ -147,7 +148,7 @@ export default {
           this.data = await this.readFile(this.file);
           this.$store.dispatch(setConfigurationMethodName, this.data);
         } catch (err) {
-          this.setConfigurationErrors([err.message]);
+          this.setErrors([err.message]);
         }
       } else {
         // If no file selected assume they want to clear out the previous file.

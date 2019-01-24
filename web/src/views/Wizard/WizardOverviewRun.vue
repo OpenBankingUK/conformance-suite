@@ -6,22 +6,15 @@
           <h5>Overview</h5>
         </div>
         <div class="flex-fill panel-body">
-          <div v-if="hasErrors">
-            <h2 class="pt-3 pb-2 mb-3">Errors</h2>
-            <b-alert
-              v-for="(err, index) in errors"
-              :key="index"
-              show
-              variant="danger">{{ err }}</b-alert>
-          </div>
-
+          <TheErrorStatus />
           <TestCases
-            v-else-if="!hasErrors"
-            :test-cases="testCases"/>
+            :test-cases="testCases"
+            if="!hasErrors"/>
           <hr>
           <TestCaseResults
             v-if="hasTestCaseResults"
             :test-case-results="execution"/>
+          <TheErrorStatus />
         </div>
         <TheWizardFooter :next-label="computeNextLabel"/>
       </div>
@@ -32,15 +25,14 @@
 <script>
 import * as _ from 'lodash';
 
-import { createNamespacedHelpers } from 'vuex';
+import { createNamespacedHelpers, mapGetters, mapActions } from 'vuex';
 
-import TheWizardFooter from '../../components/Wizard/TheWizardFooter.vue';
-import TestCases from '../../components/Wizard/TestCases/TestCases.vue';
-import TestCaseResults from '../../components/Wizard/TestCaseResults/TestCaseResults.vue';
+import TheWizardFooter from '@/components/Wizard/TheWizardFooter.vue';
+import TestCases from '@/components/Wizard/TestCases/TestCases.vue';
+import TestCaseResults from '@/components/Wizard/TestCaseResults/TestCaseResults.vue';
+import TheErrorStatus from '@/components/TheErrorStatus.vue';
 
 const {
-  mapActions,
-  mapGetters,
   mapState,
 } = createNamespacedHelpers('testcases');
 
@@ -50,21 +42,19 @@ export default {
     TheWizardFooter,
     TestCases,
     TestCaseResults,
+    TheErrorStatus,
   },
   computed: {
-    ...mapGetters([
+    ...mapGetters('testcases', [
       'testCases',
+    ]),
+    ...mapGetters('status', [
+      'hasErrors',
     ]),
     ...mapState({
       execution: 'execution',
       hasRunStarted: 'hasRunStarted',
     }),
-    errors() {
-      return this.$store.state.config.errors.testCases;
-    },
-    hasErrors() {
-      return this.errors && this.errors.length > 0;
-    },
     hasTestCaseResults() {
       return !_.isEmpty(this.execution);
     },
@@ -77,9 +67,12 @@ export default {
     },
   },
   methods: {
-    ...mapActions([
+    ...mapActions('testcases', [
       'computeTestCases',
       'executeTestCases',
+    ]),
+    ...mapActions('status', [
+      'clearErrors',
     ]),
   },
   /**
@@ -121,6 +114,8 @@ export default {
       return next();
     }
 
+    // Clear errors before going to a prior step
+    this.clearErrors();
     return next();
   },
 };

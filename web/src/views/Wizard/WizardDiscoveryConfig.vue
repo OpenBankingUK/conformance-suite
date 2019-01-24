@@ -6,17 +6,7 @@
           <h5>Discovery {{ name }}</h5>
         </div>
         <div class="d-flex flex-column flex-fill panel-body">
-          <div
-            v-if="problems"
-            class="mb-4">
-            <b-alert show>Please fix these problems:
-              <ul>
-                <li
-                  v-for="(problem, index) in discoveryProblems"
-                  :key="index">{{ problem.error }}</li>
-              </ul>
-            </b-alert>
-          </div>
+          <TheErrorStatus />
           <TheJsonEditor
             :problem-annotations="problemAnnotations"
             :json-string="discoveryModelString"
@@ -34,6 +24,7 @@
 import * as _ from 'lodash';
 import { mapGetters, mapActions } from 'vuex';
 
+import TheErrorStatus from '@/components/TheErrorStatus.vue';
 import TheJsonEditor from '../../components/Wizard/TheJsonEditor.vue';
 import TheWizardFooter from '../../components/Wizard/TheWizardFooter.vue';
 import discovery from '../../api/discovery';
@@ -44,6 +35,7 @@ const AceRange = window.ace.acequire('ace/range').Range;
 export default {
   name: 'WizardDiscoveryConfig',
   components: {
+    TheErrorStatus,
     TheWizardFooter,
     TheJsonEditor,
   },
@@ -112,7 +104,9 @@ export default {
     ...mapActions('config', [
       'setDiscoveryModel',
       'validateDiscoveryConfig',
-      'setDiscoveryModelProblems',
+    ]),
+    ...mapActions('status', [
+      'clearErrors',
     ]),
     /**
      * Validates the Discovery Config.
@@ -143,6 +137,7 @@ export default {
 
     // Always allow user to go back from this page.
     if (isBack) {
+      this.clearErrors();
       return next();
     }
 
