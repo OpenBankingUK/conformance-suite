@@ -1,5 +1,8 @@
 <template>
   <div class="test-case border p-2 mt-2">
+    <b-badge
+      :variant="testResult.pass ? 'success' : 'danger'"
+      tag="h6">{{ testResult.pass ? 'Pass': 'Fail' }}</b-badge>
     <b-table
       :items="testResult.tests"
       :fields="fields"
@@ -42,23 +45,22 @@
 <script>
 export default {
   name: 'TestCaseResult',
-  components: {},
   props: {
     // {
-    //   name: 'spec name',
-    //   version: 'spec version',
-    //   url: 'url',
-    //   schemaVersion: 'spec schema version',
-    //   pass: true,
-    //   tests: [
-    //     {
-    //       name: 'test name',
-    //       id: 'test id',
-    //       endpoint: 'test endpoint',
-    //       pass: true,
-    //     },
-    //   ],
-    // }
+    //     "name": "CustomTest-GetOzoneToken",
+    //     "version": "",
+    //     "url": "",
+    //     "schemaVersion": "",
+    //     "pass": false,
+    //     "tests": [
+    //         {
+    //             "name": "ClientCredential Grant",
+    //             "id": "#ct0001",
+    //             "endpoint": "POST https://modelobank2018.o3bank.co.uk:4201/token",
+    //             "pass": true
+    //         }
+    //     ]
+    // },
     testResult: {
       type: Object,
       required: true,
@@ -71,13 +73,13 @@ export default {
       type: Object,
       default: () => ({
         id: {
-          tdClass: 'table-data-breakable',
         },
         name: {
+        },
+        endpoint: {
           tdClass: 'table-data-breakable',
         },
         pass: {
-          tdClass: 'table-data-breakable',
         },
       }),
     },
@@ -106,19 +108,10 @@ export default {
       }),
     },
   },
-  data() {
-    return {};
-  },
-  computed: {},
-  methods: {},
 };
 </script>
 
 <style scoped>
-.test-case {
-  font-size: 12px;
-}
-
 /**
  * Don't remove the `/deep/` here.
  * This rule ensures values such as 'https://openbanking.atlassian.net/wiki/spaces/DZ/pages/642090641/Account+and+Transaction+API+Specification+-+v3.0'

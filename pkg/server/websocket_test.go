@@ -1,10 +1,12 @@
 package server
 
 import (
-	versionmock "bitbucket.org/openbankingteam/conformance-suite/internal/pkg/version/mocks"
-	"github.com/stretchr/testify/mock"
+	"context"
 	"strings"
 	"testing"
+
+	versionmock "bitbucket.org/openbankingteam/conformance-suite/internal/pkg/version/mocks"
+	"github.com/stretchr/testify/mock"
 
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
 
@@ -31,7 +33,7 @@ func TestServerWebSocketHandlerHandle(t *testing.T) {
 	echoServer := NewServer(nullLogger(), model.NewConditionalityChecker(), v)
 	webServer := httptest.NewServer(echoServer)
 	defer func() {
-		require.NoError(echoServer.Shutdown(nil))
+		require.NoError(echoServer.Shutdown(context.TODO()))
 	}()
 	defer webServer.Close()
 

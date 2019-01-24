@@ -14,6 +14,7 @@ import mutations from './mutations';
 import getters from './getters';
 import state from './state';
 
+import constants from '../config/constants';
 import api from '../../../api';
 // https://jestjs.io/docs/en/mock-functions#mocking-modules
 jest.mock('../../../api');
@@ -86,18 +87,20 @@ describe('store/modules/testcases', () => {
 
       api.computeTestCases.mockResolvedValueOnce(OK_RESPONSE);
       await actions.computeTestCases(store);
-      expect(dispatch).toHaveBeenCalledWith('config/setTestCaseErrors', []);
+      expect(dispatch).toHaveBeenCalledWith('config/setTestCaseErrors', [], { root: true });
+      expect(dispatch).toHaveBeenCalledWith('config/setWizardStep', constants.WIZARD.STEP_FOUR, { root: true });
       expect(store.getters.testCases).toEqual(OK_RESPONSE);
     });
 
-    it('testcases/computeTestCases sets testcases/errors.testCases, if unsuccessful', async () => {
+    it('testcases/computeTestCases sets config/errors.testCases, if unsuccessful', async () => {
       const store = createRealStore();
 
       expect(store.getters.testCases).toEqual([]);
 
       api.computeTestCases.mockRejectedValueOnce(ERROR_RESPONSE);
       await actions.computeTestCases(store);
-      expect(dispatch).toHaveBeenCalledWith('config/setTestCaseErrors', [ERROR_RESPONSE]);
+      expect(dispatch).toHaveBeenCalledWith('config/setTestCaseErrors', [ERROR_RESPONSE], { root: true });
+      expect(dispatch).toHaveBeenCalledWith('config/setWizardStep', constants.WIZARD.STEP_FOUR, { root: true });
       expect(store.getters.testCases).toEqual([]);
     });
 
@@ -108,12 +111,14 @@ describe('store/modules/testcases', () => {
 
       api.computeTestCases.mockRejectedValueOnce(ERROR_RESPONSE);
       await actions.computeTestCases(store);
-      expect(dispatch).toHaveBeenCalledWith('config/setTestCaseErrors', [ERROR_RESPONSE]);
+      expect(dispatch).toHaveBeenCalledWith('config/setTestCaseErrors', [ERROR_RESPONSE], { root: true });
+      expect(dispatch).toHaveBeenCalledWith('config/setWizardStep', constants.WIZARD.STEP_FOUR, { root: true });
       expect(store.getters.testCases).toEqual([]);
 
       api.computeTestCases.mockResolvedValueOnce(OK_RESPONSE);
       await actions.computeTestCases(store);
-      expect(dispatch).toHaveBeenCalledWith('config/setTestCaseErrors', []);
+      expect(dispatch).toHaveBeenCalledWith('config/setTestCaseErrors', [], { root: true });
+      expect(dispatch).toHaveBeenCalledWith('config/setWizardStep', constants.WIZARD.STEP_FOUR, { root: true });
       expect(store.getters.testCases).toEqual(OK_RESPONSE);
     });
 
@@ -124,12 +129,14 @@ describe('store/modules/testcases', () => {
 
       api.computeTestCases.mockResolvedValueOnce(OK_RESPONSE);
       await actions.computeTestCases(store);
-      expect(dispatch).toHaveBeenCalledWith('config/setTestCaseErrors', []);
+      expect(dispatch).toHaveBeenCalledWith('config/setTestCaseErrors', [], { root: true });
+      expect(dispatch).toHaveBeenCalledWith('config/setWizardStep', constants.WIZARD.STEP_FOUR, { root: true });
       expect(store.getters.testCases).toEqual(OK_RESPONSE);
 
       api.computeTestCases.mockRejectedValueOnce(ERROR_RESPONSE);
       await actions.computeTestCases(store);
-      expect(dispatch).toHaveBeenCalledWith('config/setTestCaseErrors', [ERROR_RESPONSE]);
+      expect(dispatch).toHaveBeenCalledWith('config/setTestCaseErrors', [ERROR_RESPONSE], { root: true });
+      expect(dispatch).toHaveBeenCalledWith('config/setWizardStep', constants.WIZARD.STEP_FOUR, { root: true });
       expect(store.getters.testCases).toEqual([]);
     });
   });

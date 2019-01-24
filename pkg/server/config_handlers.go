@@ -1,14 +1,14 @@
 package server
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 
 	"github.com/pkg/errors"
 
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/authentication"
-
 	"bitbucket.org/openbankingteam/conformance-suite/appconfig"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/authentication"
 
 	"github.com/labstack/echo"
 	validator "gopkg.in/go-playground/validator.v9"
@@ -61,7 +61,7 @@ func (h *configHandlers) configDeleteHandler(c echo.Context) error {
 	}
 
 	h.server.logger.Debugf("Server:configDeleteHandler -> status=destroying down proxy=%+v", h.server.proxy)
-	if err := h.server.proxy.Shutdown(nil); err != nil {
+	if err := h.server.proxy.Shutdown(context.TODO()); err != nil {
 		return c.JSON(
 			http.StatusBadRequest,
 			NewErrorResponse(err),

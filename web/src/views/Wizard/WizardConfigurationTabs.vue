@@ -83,8 +83,7 @@ export default {
    */
   async beforeRouteLeave(to, from, next) {
     const nextRoutes = [
-      '/wizard/run-overview',
-      '/wizard/summary',
+      '/wizard/overview-run',
       '/wizard/export',
     ];
     const isNext = from.path === '/wizard/configuration' && _.includes(nextRoutes, to.path);

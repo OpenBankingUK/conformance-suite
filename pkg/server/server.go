@@ -1,26 +1,24 @@
 package server
 
 import (
-	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/version"
 	"context"
 	"errors"
 	"net/http"
 	"strings"
 	"time"
 
+	"bitbucket.org/openbankingteam/conformance-suite/appconfig"
+	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/version"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/generation"
-
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
-
-	"bitbucket.org/openbankingteam/conformance-suite/appconfig"
 	"bitbucket.org/openbankingteam/conformance-suite/proxy"
 
 	"github.com/go-openapi/loads"
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
 	"github.com/sirupsen/logrus"
-	"gopkg.in/go-playground/validator.v9"
+	validator "gopkg.in/go-playground/validator.v9"
 )
 
 // GlobalConfiguration holds:
@@ -67,8 +65,9 @@ func NewServer(
 		logger:  logger,
 		version: version,
 	}
+	server.HideBanner = true
 
-	// Use custom logger config so that log lines like below don't appear in the output:
+	// Use custom logger config so that we can control where log lines like below get sent to - either /dev/null or stdout.
 	// {"time":"2018-12-18T13:00:40.291032Z","id":"","remote_ip":"192.0.2.1","host":"example.com","method":"POST","uri":"/api/config/global?pretty","status":400, "latency":627320,"latency_human":"627.32µs","bytes_in":0,"bytes_out":137}
 	server.Use(middleware.LoggerWithConfig(middleware.LoggerConfig{
 		Output: logger.Writer(),
@@ -89,7 +88,10 @@ func NewServer(
 		Browse:  false,
 	}))
 
-	server.HideBanner = true
+	// swagger ui endpoints
+	for path, handler := range swaggerHandlers(logger) {
+		server.GET(path, handler)
+	}
 
 	validatorEngine := discovery.NewFuncValidator(checker)
 	testGenerator := generation.NewGenerator()
@@ -141,15 +143,17 @@ func NewServer(
 }
 
 func (s *Server) logRoutes() {
+	// TODO: pass in server route via constructor. Hardcoded for now.
+	basePath := "http://0.0.0.0:8080"
 	for _, route := range s.Routes() {
-		s.logger.Debugf("route -> path=%+v, method=%+v", route.Path, route.Method)
+		s.logger.Infof("route -> path=%s%+v, method=%+v", basePath, route.Path, route.Method)
 	}
 }
 
 // Shutdown the server and the proxy if it is alive
 func (s *Server) Shutdown(ctx context.Context) error {
 	if s.proxy != nil {
-		if err := s.proxy.Shutdown(context.TODO()); err != nil {
+		if err := s.proxy.Shutdown(ctx); err != nil {
 			s.logger.Errorln("Server:Shutdown -> s.proxy.Shutdown err=", err)
 			return err
 		}
@@ -168,15 +172,13 @@ func (s *Server) Shutdown(ctx context.Context) error {
 	return nil
 }
 
-// Skipper ensures that all requests not prefixed with `/api` get sent
+// Skipper ensures that all requests not prefixed with `/api` or `/swagger` get sent
 // to the `middleware.Static` or `middleware.StaticWithConfig`.
-// E.g., ensure that `/api/validation-runs` does not get handled by the
-// the static middleware.
-//
-// Anything not prefix by `/api` will get get handled by
-// `middleware.Static` or `middleware.StaticWithConfig`
+// E.g., ensure that `/api/validation-runs` or `/swagger/docs` does not get
+// handled by the the static middleware.
 func (s *Server) skipper(c echo.Context) bool {
-	return strings.HasPrefix(c.Path(), "/api")
+	skip := strings.HasPrefix(c.Path(), "/api") || strings.HasPrefix(c.Path(), "/swagger")
+	return skip
 }
 
 // Run the proxy at the address specified by "bind"

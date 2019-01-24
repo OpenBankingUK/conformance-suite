@@ -23,9 +23,11 @@ RUN make build_cli
 FROM node:8.11.1-slim as nodebuilder
 WORKDIR /app
 
-# This is to that JavaScript code can import the example discovery config
-# defined in the Go side using: '../../../../../pkg/discovery/templates/ob-v3.0-ozone.json'
+# This is to that JavaScript code can import code defined in the Go side, e.g.,
+# '../../../../../pkg/discovery/templates/ob-v3.0-ozone.json'
+# '../../../pkg/model/testdata/ozone_spec.golden.json'
 ADD pkg/discovery/templates/*.json /pkg/discovery/templates/
+ADD pkg/model/testdata/*.json /pkg/model/testdata/
 ADD web .
 
 RUN yarn install \

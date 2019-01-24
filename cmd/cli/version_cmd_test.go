@@ -16,7 +16,10 @@ func ExampleVersionCommand() {
 	v.On("VersionFormatter", mock.AnythingOfType("string")).Return(formatted, nil)
 
 	versionCommand := newVersionCommandWithOptions(v)
-	versionCommand.run(nil, nil)
+	err := versionCommand.run(nil, nil)
+	if err != nil {
+		return
+	}
 	// Output:
 	// FCS - Functional Conformance Suite
 	// Version v0.1.2 of the Conformance Suite is out-of-date, please update to v0.1.3

@@ -58,6 +58,13 @@ var (
 	}
 )
 
+// Specifications - get a clone of the `specifications` array.
+func Specifications() []Specification {
+	clone := make([]Specification, len(specifications))
+	copy(clone, specifications)
+	return clone
+}
+
 // SpecificationFromSchemaVersion - returns specification struct
 // for given schema version URL, or nil when there is no match.
 func SpecificationFromSchemaVersion(schemaVersion string) (Specification, error) {
