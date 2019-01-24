@@ -25,7 +25,7 @@
 <script>
 import * as _ from 'lodash';
 
-import { createNamespacedHelpers, mapGetters } from 'vuex';
+import { createNamespacedHelpers, mapGetters, mapActions } from 'vuex';
 
 import TheWizardFooter from '@/components/Wizard/TheWizardFooter.vue';
 import TestCases from '@/components/Wizard/TestCases/TestCases.vue';
@@ -33,7 +33,6 @@ import TestCaseResults from '@/components/Wizard/TestCaseResults/TestCaseResults
 import TheErrorStatus from '@/components/TheErrorStatus.vue';
 
 const {
-  mapActions,
   mapState,
 } = createNamespacedHelpers('testcases');
 
@@ -68,9 +67,12 @@ export default {
     },
   },
   methods: {
-    ...mapActions([
+    ...mapActions('testcases', [
       'computeTestCases',
       'executeTestCases',
+    ]),
+    ...mapActions('status', [
+      'clearErrors',
     ]),
   },
   /**
@@ -112,6 +114,8 @@ export default {
       return next();
     }
 
+    // Clear errors before going to a prior step
+    this.clearErrors();
     return next();
   },
 };
