@@ -1,9 +1,6 @@
 package main
 
 import (
-	"fmt"
-	"os"
-
 	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/version/mocks"
 	"github.com/stretchr/testify/mock"
 )
@@ -21,8 +18,7 @@ func ExampleVersionCommand() {
 	versionCommand := newVersionCommandWithOptions(v)
 	err := versionCommand.run(nil, nil)
 	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
+		return
 	}
 	// Output:
 	// FCS - Functional Conformance Suite

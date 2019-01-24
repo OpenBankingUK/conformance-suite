@@ -64,16 +64,6 @@ func initConfig() {
 		fmt.Println(err)
 		os.Exit(1)
 	}
-
-	printConfig()
-}
-
-func printConfig() {
-	fmt.Println("Configuration")
-	fmt.Println("  Server")
-	fmt.Println("    Port:", configuration.Server.Port)
-
-	fmt.Println()
 }
 
 func setConfigDefaults() {
