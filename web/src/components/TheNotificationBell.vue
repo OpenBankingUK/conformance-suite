@@ -44,7 +44,20 @@ export default {
 
       let result = '<ul>';
       for (let i = 0; i < this.notifications.length; i += 1) {
-        result += `<li>${this.notifications[i]}</li>`;
+        const n = this.notifications[i];
+
+        let target = null;
+        let url = null;
+        if (n.extURL) {
+          url = n.extURL;
+          target = '_blank';
+        } else if (n.infoURL) {
+          url = n.infoURL;
+          target = '_self';
+        }
+        const infoLink = url ? ` <a href="${url}" target="${target}">More info</a>` : '';
+
+        result += `<li>${n.message}${infoLink}</li>`;
       }
       return `${result}</ul>`;
     },
