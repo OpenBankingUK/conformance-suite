@@ -1,4 +1,5 @@
 import actions from './actions';
+import getters from './getters';
 import * as types from './mutation-types';
 
 const stateWithErrors = {
@@ -9,7 +10,18 @@ const stateWithErrors = {
 };
 
 const stateNoErrors = {
-  errors: [],
+    errors: [],
+};
+
+const stateWithNotifications = {
+  notifications: [{
+      message: "sample-message",
+      extURL: "https://www.example",
+  }],
+};
+
+const stateNoNotifications = {
+  notifications: [],
 };
 
 describe('setErrors', () => {
@@ -51,4 +63,45 @@ describe('clearErrors', () => {
     actions.clearErrors({ commit, state: stateWithErrors });
     expect(commit).toHaveBeenCalledWith(types.SET_ERRORS, []);
   });
+});
+
+describe('pushNotification', () => {
+    let commit;
+
+    beforeEach(() => {
+        commit = jest.fn();
+    });
+
+    it('notification count increments by 1 upon pushing a notification', () => {
+        let n = stateWithNotifications.notifications[0];
+        actions.pushNotification({ commit, state: stateNoNotifications }, n);
+        expect(commit).toHaveBeenCalledWith(types.PUSH_NOTIFICATION, n);
+    });
+
+    it('does not commit if notification is null, when pushing a notification', () => {
+        actions.pushNotification({ commit, state: stateNoNotifications }, null);
+        expect(commit).not.toHaveBeenCalledWith(types.PUSH_NOTIFICATION, null);
+    });
+});
+
+describe('clearNotifications', () => {
+    let commit;
+
+    beforeEach(() => {
+        commit = jest.fn();
+    });
+
+    it('clearing notifications results in 0 notifications', () => {
+        actions.clearNotifications({commit, state: stateWithNotifications})
+        expect(commit).toHaveBeenCalledWith(types.SET_NOTIFICATIONS, []);
+    });
+    it('does not commit when no notifications present', () => {
+        actions.clearNotifications({ commit, state: stateNoNotifications });
+        expect(commit).not.toHaveBeenCalledWith(types.SET_NOTIFICATIONS, []);
+    });
+
+    it('commits empty array when errors present', () => {
+        actions.clearNotifications({ commit, state: stateWithNotifications });
+        expect(commit).toHaveBeenCalledWith(types.SET_NOTIFICATIONS, []);
+    });
 });

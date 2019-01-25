@@ -12,7 +12,7 @@ export default {
     }
   },
   pushNotification({ commit, state }, notification) {
-    if (state.notifications) {
+    if (state.notifications && notification) {
       commit(types.PUSH_NOTIFICATION, notification);
     }
   },
