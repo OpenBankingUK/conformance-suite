@@ -8,7 +8,6 @@ import (
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery/mocks"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/generation"
 	gmocks "bitbucket.org/openbankingteam/conformance-suite/pkg/generation/mocks"
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/reporting"
 	"github.com/pkg/errors"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -142,35 +141,9 @@ func TestJourneyRunTestCasesCantRunIfNoTestCases(t *testing.T) {
 	generator := &gmocks.Generator{}
 	journey := NewJourney(generator, validator)
 
-	result, err := journey.RunTests()
+	err := journey.RunTests()
 
-	assert.EqualError(t, err, "error running test cases, test cases not set")
-	assert.Equal(t, reporting.Result{}, result)
-}
-
-func TestJourneyRunTestCases(t *testing.T) {
-	validator := &mocks.Validator{}
-	discoveryModel := &discovery.Model{}
-	validator.On("Validate", discoveryModel).Return(discovery.NoValidationFailures, nil)
-	testCases := []generation.SpecificationTestCases{}
-	generator := &gmocks.Generator{}
-	generator.On("GenerateSpecificationTestCases", discoveryModel.DiscoveryModel).
-		Return(testCases).Times(1)
-
-	journey := NewJourney(generator, validator)
-	_, err := journey.SetDiscoveryModel(discoveryModel)
-	require.NoError(t, err)
-
-	_, err = journey.TestCases()
-	require.NoError(t, err)
-
-	//result, err := journey.RunTests()
-	//_ = result
-	//assert.NoError(t, err)
-	noResult := []reporting.Specification([]reporting.Specification{})
-	//assert.Equal(t, noResult, result.Specifications)
-	_ = noResult
-	generator.AssertExpectations(t)
+	assert.EqualError(t, err, "error discovery model not set")
 }
 
 func TestJourneySetCertificateSigning(t *testing.T) {

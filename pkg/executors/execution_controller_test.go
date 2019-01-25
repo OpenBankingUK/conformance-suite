@@ -1,53 +1,48 @@
 package executors
 
 import (
+	mocks2 "bitbucket.org/openbankingteam/conformance-suite/pkg/authentication/mocks"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/reporting"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/executors/mocks"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
-func TestAllPass(t *testing.T) {
-	testResults := []reporting.Test{
-		{Pass: true},
-		{Pass: true},
-		{Pass: true},
-	}
+func TestNewTestCaseRunner(t *testing.T) {
+	controller := &mocks.DaemonController{}
+	definition := RunDefinition{}
+	runner := NewTestCaseRunner(definition, controller)
 
-	assert.True(t, allPass(testResults))
+	assert.NotNil(t, runner.mux)
+	assert.Equal(t, definition, runner.definition)
+	assert.Equal(t, controller, runner.daemonController)
+	assert.False(t, runner.running)
 }
 
-func TestAllPassFalse(t *testing.T) {
-	testResults := []reporting.Test{
-		{Pass: true},
-		{Pass: false},
-		{Pass: true},
+func TestMakeRuleContext(t *testing.T) {
+	controller := &mocks.DaemonController{}
+	cert := &mocks2.Certificate{}
+	definition := RunDefinition{
+		SigningCert: cert,
+		DiscoModel: &discovery.Model{
+			DiscoveryModel: discovery.ModelDiscovery{
+				CustomTests: []discovery.CustomTest{
+					{
+						Replacements: map[string]string{"key": "value"},
+					},
+				},
+			},
+		},
 	}
+	runner := NewTestCaseRunner(definition, controller)
 
-	assert.False(t, allPass(testResults))
-}
+	ctx := runner.makeRuleCtx()
 
-func TestAllPassEmpty(t *testing.T) {
-	testResults := []reporting.Test{}
+	value, ok := ctx.Get("SigningCert")
+	assert.True(t, ok)
+	assert.Equal(t, cert, value)
 
-	assert.True(t, allPass(testResults))
-}
-
-func TestMakeSpecResult(t *testing.T) {
-	tests := []reporting.Test{{Pass: false}}
-	spec := discovery.ModelAPISpecification{
-		Name:          "Name",
-		SchemaVersion: "SchemaVersion",
-		URL:           "URL",
-		Version:       "Version",
-	}
-
-	reportSpec := makeSpecResult(spec, tests)
-
-	assert.Equal(t, "Name", reportSpec.Name)
-	assert.Equal(t, "SchemaVersion", reportSpec.SchemaVersion)
-	assert.Equal(t, "URL", reportSpec.URL)
-	assert.Equal(t, "Version", reportSpec.Version)
-	assert.Len(t, reportSpec.Tests, 1)
-	assert.False(t, reportSpec.Pass)
+	value, ok = ctx.Get("key")
+	assert.True(t, ok)
+	assert.Equal(t, "value", value)
 }

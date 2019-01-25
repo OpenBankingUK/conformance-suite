@@ -10,7 +10,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-// TestServerRunStartPost - tests /api/run/start
+// TestServerRunStartPost - tests /api/run
 func TestServerRunStartPost(t *testing.T) {
 	require := require.New(t)
 
@@ -29,13 +29,9 @@ func TestServerRunStartPost(t *testing.T) {
 	}()
 	require.NotNil(server)
 
-	// make the request
-	//
-	// `?pretty` makes the JSON more readable in the event of a failure
-	// see the example: https://echo.labstack.com/guide/response#json-pretty
 	code, body, headers := request(
 		http.MethodPost,
-		"/api/run/start?pretty",
+		"/api/run",
 		nil,
 		server)
 
@@ -46,8 +42,7 @@ func TestServerRunStartPost(t *testing.T) {
 
 	require.NotNil(body)
 
-	bodyExpected := `{ "error": "error running test cases, test cases not set" }`
+	bodyExpected := `{ "error": "error discovery model not set" }`
 	bodyActual := body.String()
-	// do not use `require.Equal`.
 	require.JSONEq(bodyExpected, bodyActual)
 }

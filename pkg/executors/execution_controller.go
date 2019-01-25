@@ -1,23 +1,17 @@
 package executors
 
 import (
-	"fmt"
-
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/authentication"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/executors/results"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/generation"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/reporting"
+	"fmt"
 	"github.com/google/uuid"
+	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
-	"gopkg.in/resty.v1"
+	"sync"
 )
-
-// TestCaseExecutor defines an interface capable of executing a testcase
-type TestCaseExecutor interface {
-	ExecuteTestCase(r *resty.Request, t *model.TestCase, ctx *model.Context) (*resty.Response, error)
-	SetCertificates(certificateSigning, certificationTransport authentication.Certificate) error
-}
 
 // RunDefinition captures all the information required to run the test cases
 type RunDefinition struct {
@@ -27,109 +21,128 @@ type RunDefinition struct {
 	TransportCert authentication.Certificate
 }
 
+type TestCaseRunner struct {
+	executor         *Executor
+	definition       RunDefinition
+	daemonController DaemonController
+	logger           *logrus.Entry
+	mux              *sync.Mutex
+	running          bool
+}
+
+func NewTestCaseRunner(definition RunDefinition, daemonController DaemonController) *TestCaseRunner {
+	return &TestCaseRunner{
+		executor:         NewExecutor(),
+		definition:       definition,
+		daemonController: daemonController,
+		logger:           logrus.New().WithField("module", "TestCaseRunner"),
+		mux:              &sync.Mutex{},
+		running:          false,
+	}
+}
+
 // RunTestCases runs the testCases
-func RunTestCases(defn *RunDefinition) (reporting.Result, error) {
-	executor := MakeExecutor()
-	executor.SetCertificates(defn.SigningCert, defn.TransportCert)
+func (r *TestCaseRunner) RunTestCases() error {
+	r.mux.Lock()
+	defer r.mux.Unlock()
+	if r.running == true {
+		return errors.New("test cases runner already running")
+	}
+	r.running = true
 
-	rulectx := &model.Context{}
-	rulectx.Put("SigningCert", defn.SigningCert)
-	for _, customTest := range defn.DiscoModel.DiscoveryModel.CustomTests { // Load CustomTest parameters into Context
+	go r.runTestCasesAsync()
+
+	return nil
+}
+
+func (r *TestCaseRunner) runTestCasesAsync() {
+	r.executor.SetCertificates(r.definition.SigningCert, r.definition.TransportCert)
+	ruleCtx := r.makeRuleCtx()
+	ctxLogger := r.logger.WithField("id", uuid.New())
+	ctxLogger.Info("running async test")
+	for _, spec := range r.definition.SpecTests {
+		err := r.executeSpecTests(spec, ruleCtx, ctxLogger)
+		if err != nil {
+			r.daemonController.Errors() <- err
+		}
+	}
+	r.setNotRunning()
+}
+
+func (r *TestCaseRunner) setNotRunning() {
+	r.mux.Lock()
+	r.running = false
+	r.mux.Unlock()
+}
+
+func (r *TestCaseRunner) makeRuleCtx() *model.Context {
+	ruleCtx := &model.Context{}
+	ruleCtx.Put("SigningCert", r.definition.SigningCert)
+	for _, customTest := range r.definition.DiscoModel.DiscoveryModel.CustomTests {
 		for k, v := range customTest.Replacements {
-			rulectx.Put(k, v)
+			ruleCtx.Put(k, v)
 		}
 	}
+	return ruleCtx
+}
 
-	reportSpecs := []reporting.Specification{}
-	for _, spec := range defn.SpecTests {
-		reportTestResults := []reporting.Test{}
-		logrus.Println("running " + spec.Specification.Name)
-		for _, testcase := range spec.TestCases {
-			req, err := testcase.Prepare(rulectx)
-			if err != nil {
-				logrus.Error(err)
-				reportTestResults = append(reportTestResults, makeTestResult(testcase, false))
-				reportSpecs = append(reportSpecs, makeSpecResult(spec.Specification, reportTestResults))
-				return makeReportResult(reportSpecs), err
-			}
-			resp, err := executor.ExecuteTestCase(req, &testcase, rulectx)
-			if err != nil {
-				logrus.WithFields(logrus.Fields{
-					"testcase":     testcase.Name,
-					"method":       testcase.Input.Method,
-					"endpoint":     testcase.Input.Endpoint,
-					"err":          err.Error(),
-					"statuscode":   testcase.Expect.StatusCode,
-					"responsetime": fmt.Sprintf("%v", testcase.ResponseTime),
-					"responsesize": testcase.ResponseSize,
-				}).Info("FAIL")
-				reportTestResults = append(reportTestResults, makeTestResult(testcase, false))
-				reportSpecs = append(reportSpecs, makeSpecResult(spec.Specification, reportTestResults))
-				continue
-			}
-
-			result, err := testcase.Validate(resp, rulectx)
-			if err != nil {
-				logrus.WithFields(logrus.Fields{
-					"testcase":     testcase.Name,
-					"method":       testcase.Input.Method,
-					"endpoint":     testcase.Input.Endpoint,
-					"err":          err.Error(),
-					"statuscode":   testcase.Expect.StatusCode,
-					"responsetime": fmt.Sprintf("%v", testcase.ResponseTime),
-					"responsesize": testcase.ResponseSize,
-				}).Info("FAIL")
-
-				reportTestResults = append(reportTestResults, makeTestResult(testcase, false))
-				reportSpecs = append(reportSpecs, makeSpecResult(spec.Specification, reportTestResults))
-				continue
-			}
-			reportTestResults = append(reportTestResults, makeTestResult(testcase, result))
-			logrus.WithFields(logrus.Fields{
-				"testcase":     testcase.Name,
-				"method":       testcase.Input.Method,
-				"endpoint":     testcase.Input.Endpoint,
-				"statuscode":   testcase.Expect.StatusCode,
-				"responsetime": fmt.Sprintf("%v", testcase.ResponseTime),
-				"responsesize": testcase.ResponseSize,
-			}).Info("PASS")
+func (r *TestCaseRunner) executeSpecTests(spec generation.SpecificationTestCases, ruleCtx *model.Context, ctxLogger *logrus.Entry) error {
+	ctxLogger = ctxLogger.WithField("spec", spec.Specification.Name)
+	for _, testcase := range spec.TestCases {
+		if r.daemonController.ShouldStop() {
+			ctxLogger.Info("stop test run received, aborting runner")
+			return nil
 		}
-		reportSpecs = append(reportSpecs, makeSpecResult(spec.Specification, reportTestResults))
+		testResult, err := r.executeTest(testcase, ruleCtx, ctxLogger)
+		r.daemonController.Results() <- testResult
+		if err != nil {
+			return err
+		}
 	}
-	return makeReportResult(reportSpecs), nil
+	return nil
 }
 
-func makeTestResult(tc model.TestCase, result bool) reporting.Test {
-	return reporting.Test{
-		Id:       tc.ID,
-		Name:     tc.Name,
-		Endpoint: tc.Input.Method + " " + tc.Input.Endpoint,
-		Pass:     result,
-	}
-}
+func (r *TestCaseRunner) executeTest(testcase model.TestCase, ruleCtx *model.Context, ctxLogger *logrus.Entry) (results.Test, error) {
+	ctxLogger = ctxLogger.WithFields(logrus.Fields{
+		"testcase": testcase.Name,
+		"method":   testcase.Input.Method,
+		"endpoint": testcase.Input.Endpoint,
+	})
 
-func makeSpecResult(spec discovery.ModelAPISpecification, testResults []reporting.Test) reporting.Specification {
-	return reporting.Specification{
-		Name:          spec.Name,
-		Version:       spec.Version,
-		URL:           spec.URL,
-		SchemaVersion: spec.SchemaVersion,
-		Pass:          allPass(testResults),
-		Tests:         testResults,
+	req, err := testcase.Prepare(ruleCtx)
+	if err != nil {
+		logrus.Error(err)
+		return results.NewTestFailResult(testcase.ID), err
 	}
-}
 
-func allPass(testResults []reporting.Test) bool {
-	pass := true
-	for _, test := range testResults {
-		pass = pass && test.Pass
+	resp, err := r.executor.ExecuteTestCase(req, &testcase, ruleCtx)
+	if err != nil {
+		ctxLogger.WithFields(logrus.Fields{
+			"err":          err.Error(),
+			"statuscode":   testcase.Expect.StatusCode,
+			"responsetime": fmt.Sprintf("%v", testcase.ResponseTime),
+			"responsesize": testcase.ResponseSize,
+			"result":       "FAIL",
+		}).Info("test result")
+		return results.NewTestFailResult(testcase.ID), err
 	}
-	return pass
-}
 
-func makeReportResult(specsResults []reporting.Specification) reporting.Result {
-	return reporting.Result{
-		Id:             uuid.New(),
-		Specifications: specsResults,
+	result, err := testcase.Validate(resp, ruleCtx)
+	if err != nil {
+		ctxLogger.WithFields(logrus.Fields{
+			"err":          err.Error(),
+			"statuscode":   testcase.Expect.StatusCode,
+			"responsetime": fmt.Sprintf("%v", testcase.ResponseTime),
+			"result":       "FAIL",
+		}).Info("test result")
+		return results.NewTestFailResult(testcase.ID), err
 	}
+
+	ctxLogger.WithFields(logrus.Fields{
+		"statuscode":   testcase.Expect.StatusCode,
+		"responsetime": fmt.Sprintf("%v", testcase.ResponseTime),
+		"result":       "PASS",
+	}).Info("test result")
+
+	return results.NewTestResult(testcase.ID, result), nil
 }

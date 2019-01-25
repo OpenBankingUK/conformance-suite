@@ -135,13 +135,6 @@ func TestServer(t *testing.T) {
 		assert.Equal(t, http.StatusOK, code)
 	})
 
-	// t.Run("returns {\"message\":\"Not Found\"} when file does not exist", func(t *testing.T) {
-	// 	code, body, _ := request(http.MethodGet, "/NotFound.ico", nil, server)
-
-	// 	assert.Equal(t, http.StatusNotFound, code)
-	// 	assert.Equal(t, `{"message":"Not Found"}`, body.String())
-	// })
-
 	require.NoError(t, server.Shutdown(context.TODO()))
 }
 
