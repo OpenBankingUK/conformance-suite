@@ -3,7 +3,6 @@
     <b-navbar-brand to="/">Conformance Suite</b-navbar-brand>
     <TheNotificationBell />
   </b-navbar>
-
 </template>
 
 <script>

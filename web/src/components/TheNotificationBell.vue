@@ -12,7 +12,6 @@
   />
 </template>
 
-
 <script>
 import NotificationBell from 'vue-notification-bell';
 import { createNamespacedHelpers } from 'vuex';
@@ -64,7 +63,3 @@ export default {
   },
 };
 </script>
-
-<style scoped>
-
-</style>
