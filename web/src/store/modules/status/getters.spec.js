@@ -12,13 +12,13 @@ const stateNoErrors = {
 };
 
 const stateNotifications = {
-    notifications: [{
-        message: "sample-message",
-        extURL: "https://www.example",
-    }],
-}
+  notifications: [{
+    message: 'sample-message',
+    extURL: 'https://www.example',
+  }],
+};
 
-const stateNoNotifications = { notifications: []};
+const stateNoNotifications = { notifications: [] };
 
 describe('errorMessages', () => {
   it('returns array of error messages when errors', () => {
@@ -46,25 +46,25 @@ describe('hasErrors', () => {
 });
 
 describe('hasNotifications', () => {
-    it('true when notifications present', () => {
-      const flag = getters.hasNotifications(stateNotifications)
-        expect(flag).toBe(true);
-    });
+  it('true when notifications present', () => {
+    const flag = getters.hasNotifications(stateNotifications);
+    expect(flag).toBe(true);
+  });
 
-    it('false when notifications present', () => {
-      const flag = getters.hasNotifications(stateNoNotifications)
-      expect(flag).toBe(false);
-    });
+  it('false when notifications present', () => {
+    const flag = getters.hasNotifications(stateNoNotifications);
+    expect(flag).toBe(false);
+  });
 });
 
 describe('notifications', () => {
-    it('returns array of notifications when notifications present', () => {
-      const list = getters.notifications(stateNoNotifications);
-        expect(list[0]).toEqual(stateNoNotifications.notifications[0]);
-    });
+  it('returns array of notifications when notifications present', () => {
+    const list = getters.notifications(stateNoNotifications);
+    expect(list[0]).toEqual(stateNoNotifications.notifications[0]);
+  });
 
-    it('returns empty array of notifications when no notifications present', () => {
-      const list = getters.notifications(stateNoNotifications);
-      expect(list).toEqual([]);
-    });
+  it('returns empty array of notifications when no notifications present', () => {
+    const list = getters.notifications(stateNoNotifications);
+    expect(list).toEqual([]);
+  });
 });
