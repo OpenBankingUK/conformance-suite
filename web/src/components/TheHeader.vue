@@ -1,67 +1,19 @@
 <template>
   <b-navbar>
     <b-navbar-brand to="/">Conformance Suite</b-navbar-brand>
-    <notification-bell
-      v-b-popover.click.blur.bottomleft.html="notifications"
-      id="notifyPopover"
-      ref="notify-bell"
-      :size="25"
-      :count="count"
-      :animated="true"
-      title="Notifications"
-      tabindex="0"
-      iconColor="#fff"
-    />
+    <TheNotificationBell />
   </b-navbar>
 
 </template>
 
 <script>
-import NotificationBell from 'vue-notification-bell';
-import { createNamespacedHelpers } from 'vuex';
-
-const { mapGetters } = createNamespacedHelpers('status');
+import TheNotificationBell from '@/components/TheNotificationBell.vue';
 
 export default {
   name: 'TheHeader',
   components: {
-    NotificationBell,
+    TheNotificationBell,
   },
-  data() {
-    return {
-      unreadNotifications: 0,
-    };
-  },
-  computed: {
-      ...mapGetters([
-          'hasNotifications',
-          'notifications',
-      ]),
-    count() {
-        return this.notifications.length;
-    },
-    // notificationText() {
-    //   if (this.notifications.length === 0) {
-    //     return 'There are no notifications';
-    //   }
-    //
-    //   let result = '<ul>';
-    //   for (let i = 0; i < this.notifications.length; i += 1) {
-    //     result += `<li>${this.notifications[i]}</li>`;
-    //   }
-    //   return `${result}</ul>`;
-    // },
-  },
-  // methods: {
-  //   pushNotification(message) {
-  //     this.notifications.push(message);
-  //     this.unreadNotifications += 1;
-  //   },
-  //   shown() {
-  //     this.unreadNotifications = 0;
-  //   },
-  // },
-
 };
 </script>
 

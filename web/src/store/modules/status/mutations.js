@@ -8,6 +8,6 @@ export default {
     state.notifications = notifications;
   },
   [types.PUSH_NOTIFICATION](state, notification) {
-      state.notifications.push(notification);
+    state.notifications.push(notification);
   },
 };
