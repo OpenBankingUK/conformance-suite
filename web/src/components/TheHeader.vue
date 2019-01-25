@@ -2,7 +2,7 @@
   <b-navbar>
     <b-navbar-brand to="/">Conformance Suite</b-navbar-brand>
     <notification-bell
-      v-b-popover.click.blur.bottomleft.html="notificationText"
+      v-b-popover.click.blur.bottomleft.html="notifications"
       id="notifyPopover"
       ref="notify-bell"
       :size="25"
@@ -18,6 +18,9 @@
 
 <script>
 import NotificationBell from 'vue-notification-bell';
+import { createNamespacedHelpers } from 'vuex';
+
+const { mapGetters } = createNamespacedHelpers('status');
 
 export default {
   name: 'TheHeader',
@@ -27,34 +30,37 @@ export default {
   data() {
     return {
       unreadNotifications: 0,
-      notifications: [],
     };
   },
   computed: {
+      ...mapGetters([
+          'hasNotifications',
+          'notifications',
+      ]),
     count() {
-      return this.unreadNotifications;
+        return this.notifications.length;
     },
-    notificationText() {
-      if (this.notifications.length === 0) {
-        return 'There are no notifications';
-      }
-
-      let result = '<ul>';
-      for (let i = 0; i < this.notifications.length; i += 1) {
-        result += `<li>${this.notifications[i]}</li>`;
-      }
-      return `${result}</ul>`;
-    },
+    // notificationText() {
+    //   if (this.notifications.length === 0) {
+    //     return 'There are no notifications';
+    //   }
+    //
+    //   let result = '<ul>';
+    //   for (let i = 0; i < this.notifications.length; i += 1) {
+    //     result += `<li>${this.notifications[i]}</li>`;
+    //   }
+    //   return `${result}</ul>`;
+    // },
   },
-  methods: {
-    pushNotification(message) {
-      this.notifications.push(message);
-      this.unreadNotifications += 1;
-    },
-    shown() {
-      this.unreadNotifications = 0;
-    },
-  },
+  // methods: {
+  //   pushNotification(message) {
+  //     this.notifications.push(message);
+  //     this.unreadNotifications += 1;
+  //   },
+  //   shown() {
+  //     this.unreadNotifications = 0;
+  //   },
+  // },
 
 };
 </script>

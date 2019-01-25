@@ -87,9 +87,12 @@ export default {
     ...mapActions('status', [
       'clearErrors',
       'setErrors',
+      'pushNotification',
     ]),
     async checkUpdates() {
       try {
+        this.pushNotification('this is a test notification');
+
         // Version check here
         const response = await api.get('/api/version');
         const data = await response.json();

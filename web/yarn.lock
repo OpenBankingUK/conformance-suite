@@ -6251,7 +6251,7 @@ lodash.uniq@^4.5.0:
   resolved "https://registry.yarnpkg.com/lodash.uniq/-/lodash.uniq-4.5.0.tgz#d0225373aeb652adc1bc82e4945339a842754773"
   integrity sha1-0CJTc662Uq3BvILklFM5qEJ1R3M=
 
-lodash@4.x, lodash@^4.13.1, lodash@^4.17.10, lodash@^4.17.11, lodash@^4.17.3, lodash@^4.17.4, lodash@^4.17.5, lodash@^4.2.0, lodash@^4.3.0:
+lodash@4.x, lodash@^4.13.1, lodash@^4.17.10, lodash@^4.17.11, lodash@^4.17.3, lodash@^4.17.4, lodash@^4.17.5, lodash@^4.2.0, lodash@^4.3.0, lodash@latest:
   version "4.17.11"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.11.tgz#b39ea6229ef607ecd89e2c8df12536891cac9b8d"
   integrity sha512-cQKh8igo5QUhZ7lg38DYWAxMvjSAKG0A8wGSVimP07SIUEK2UO+arSRKbRZWtelMtN5V0Hkwh5ryOto/SshYIg==
@@ -6981,6 +6981,11 @@ obuf@^1.0.0, obuf@^1.1.1:
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/obuf/-/obuf-1.1.2.tgz#09bea3343d41859ebd446292d11c9d4db619084e"
   integrity sha512-PX1wu0AmAdPqOL1mWhqmlOd8kOIZQwGZw6rh7uby9fTc5lhaOWFLX3I6R1hrF9k3zUY40e6igsLGkDXK92LJNg==
+
+odometer@^0.4.8:
+  version "0.4.8"
+  resolved "https://registry.yarnpkg.com/odometer/-/odometer-0.4.8.tgz#2f6703bf4c6b384c278236d04d4bc8171abe4374"
+  integrity sha1-L2cDv0xrOEwngjbQTUvIFxq+Q3Q=
 
 on-finished@~2.3.0:
   version "2.3.0"
@@ -9627,6 +9632,22 @@ vue-loader@^15.4.2:
     loader-utils "^1.1.0"
     vue-hot-reload-api "^2.3.0"
     vue-style-loader "^4.1.0"
+
+vue-notification-bell@^0.8.11:
+  version "0.8.11"
+  resolved "https://registry.yarnpkg.com/vue-notification-bell/-/vue-notification-bell-0.8.11.tgz#535760e19b2cb03614269b3cdbf571b451217682"
+  integrity sha512-OZYiTIF46zhHQ4UvpsMGJrHU1mw5k4d1TFsXlLHtCeTKBU6/q/IgnojLzzxWMDFpdGWO+nBt2g5Dr4z1ivM5sg==
+  dependencies:
+    odometer "^0.4.8"
+    vue "^2.5.17"
+    vue-odometer "^1.0.1"
+
+vue-odometer@^1.0.1:
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/vue-odometer/-/vue-odometer-1.0.2.tgz#ccd43c4a6edae2c432959ea4bd63ece2cfe01a34"
+  integrity sha512-xQj1kdRrQDGhjZ9nb66I6wykR9lG5yvy74PLBpTHw7raGqahBgZOCvPWvC4nol8B8bJQeFWmpCBUidVjtouyng==
+  dependencies:
+    lodash latest
 
 vue-router@^3.0.1:
   version "3.0.1"
