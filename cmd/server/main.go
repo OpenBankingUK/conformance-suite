@@ -64,9 +64,9 @@ func versionInfo(ver version.BitBucket, logger *logrus.Entry) {
 }
 
 func getEnvOrDefault(key, defaultValue string) string {
-	port, found := os.LookupEnv(key)
+	value, found := os.LookupEnv(key)
 	if !found {
 		return defaultValue
 	}
-	return port
+	return value
 }

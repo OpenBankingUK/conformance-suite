@@ -39,7 +39,7 @@ func (rc *daemonController) Stop() {
 }
 
 // ShouldStop indicates that the daemon should stop
-// this should be invoked often my the background routine and stop
+// this should be invoked often by the background routine and stop
 // if this true
 func (rc *daemonController) ShouldStop() bool {
 	rc.mx.Lock()
