@@ -42,22 +42,20 @@ export default {
       }
 
       let result = '<ul>';
-      for (let i = 0; i < this.notifications.length; i += 1) {
-        const n = this.notifications[i];
+      this.notifications.forEach((n) => {
+          let target = null;
+          let url = null;
+          if (n.extURL) {
+              url = n.extURL;
+              target = '_blank';
+          } else if (n.infoURL) {
+              url = n.infoURL;
+              target = '_self';
+          }
+          const infoLink = url ? ` <a href="${url}" target="${target}">More info</a>` : '';
 
-        let target = null;
-        let url = null;
-        if (n.extURL) {
-          url = n.extURL;
-          target = '_blank';
-        } else if (n.infoURL) {
-          url = n.infoURL;
-          target = '_self';
-        }
-        const infoLink = url ? ` <a href="${url}" target="${target}">More info</a>` : '';
-
-        result += `<li>${n.message}${infoLink}</li>`;
-      }
+          result += `<li>${n.message}${infoLink}</li>`;
+      });
       return `${result}</ul>`;
     },
   },
