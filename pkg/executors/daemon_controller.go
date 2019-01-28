@@ -8,21 +8,21 @@ import (
 type DaemonController interface {
 	Stop()
 	ShouldStop() bool
-	Results() chan results.Test
+	Results() chan results.TestCase
 	Errors() chan error
 }
 
 // daemonController manages routine running tests
 // allowing to stop and collect results/errors
 type daemonController struct {
-	resultChan chan results.Test
+	resultChan chan results.TestCase
 	errorsChan chan error
 	mx         *sync.Mutex
 	shouldStop bool
 }
 
 // NewDaemonController new instance to control a background routine
-func NewDaemonController(resultChan chan results.Test, errorsChan chan error) *daemonController {
+func NewDaemonController(resultChan chan results.TestCase, errorsChan chan error) *daemonController {
 	return &daemonController{
 		resultChan: resultChan,
 		errorsChan: errorsChan,
@@ -48,7 +48,7 @@ func (rc *daemonController) ShouldStop() bool {
 	return shouldStop
 }
 
-func (rc *daemonController) Results() chan results.Test {
+func (rc *daemonController) Results() chan results.TestCase {
 	return rc.resultChan
 }
 

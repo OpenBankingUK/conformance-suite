@@ -1,19 +1,19 @@
 package results
 
-// Test result for a run
-type Test struct {
+// TestCase result for a run
+type TestCase struct {
 	Id   string `json:"id"`
 	Pass bool   `json:"pass"`
 }
 
-// NewTestFailResult returns a failed test
-func NewTestFailResult(id string) Test {
-	return NewTestResult(id, false)
+// NewTestCaseFail returns a failed test
+func NewTestCaseFail(id string) TestCase {
+	return NewTestCaseResult(id, false)
 }
 
-// NewTestResult return a new Test instance
-func NewTestResult(id string, pass bool) Test {
-	return Test{
+// NewTestCaseResult return a new TestCase instance
+func NewTestCaseResult(id string, pass bool) TestCase {
+	return TestCase{
 		Id:   id,
 		Pass: pass,
 	}

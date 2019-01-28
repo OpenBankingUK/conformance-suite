@@ -7,7 +7,7 @@ import (
 )
 
 func TestNewDaemonController(t *testing.T) {
-	testChan := make(chan results.Test, 100)
+	testChan := make(chan results.TestCase, 100)
 	errorChan := make(chan error, 100)
 
 	controller := NewDaemonController(testChan, errorChan)
@@ -20,7 +20,7 @@ func TestNewDaemonController(t *testing.T) {
 }
 
 func TestDaemonControllerStops(t *testing.T) {
-	testChan := make(chan results.Test, 100)
+	testChan := make(chan results.TestCase, 100)
 	errorChan := make(chan error, 100)
 	controller := NewDaemonController(testChan, errorChan)
 

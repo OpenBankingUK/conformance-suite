@@ -27,15 +27,15 @@ func (_m *DaemonController) Errors() chan error {
 }
 
 // Results provides a mock function with given fields:
-func (_m *DaemonController) Results() chan results.Test {
+func (_m *DaemonController) Results() chan results.TestCase {
 	ret := _m.Called()
 
-	var r0 chan results.Test
-	if rf, ok := ret.Get(0).(func() chan results.Test); ok {
+	var r0 chan results.TestCase
+	if rf, ok := ret.Get(0).(func() chan results.TestCase); ok {
 		r0 = rf()
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(chan results.Test)
+			r0 = ret.Get(0).(chan results.TestCase)
 		}
 	}
 

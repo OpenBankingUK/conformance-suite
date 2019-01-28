@@ -87,10 +87,10 @@ func newStoppedEvent() StoppedEvent {
 }
 
 type ResultEvent struct {
-	Test results.Test `json:"test"`
+	Test results.TestCase `json:"test"`
 }
 
-func newResultEvent(testResult results.Test) ResultEvent {
+func newResultEvent(testResult results.TestCase) ResultEvent {
 	return ResultEvent{testResult}
 }
 

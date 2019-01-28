@@ -40,7 +40,7 @@ type journey struct {
 // NewJourney creates an instance for a user journey
 func NewJourney(generator generation.Generator, validator discovery.Validator) Journey {
 	daemonController := executors.NewDaemonController(
-		make(chan results.Test, 100),
+		make(chan results.TestCase, 100),
 		make(chan error, 100),
 	)
 	return &journey{

@@ -102,7 +102,7 @@ func (r *TestCaseRunner) executeSpecTests(spec generation.SpecificationTestCases
 	return nil
 }
 
-func (r *TestCaseRunner) executeTest(testcase model.TestCase, ruleCtx *model.Context, ctxLogger *logrus.Entry) (results.Test, error) {
+func (r *TestCaseRunner) executeTest(testcase model.TestCase, ruleCtx *model.Context, ctxLogger *logrus.Entry) (results.TestCase, error) {
 	ctxLogger = ctxLogger.WithFields(logrus.Fields{
 		"testcase": testcase.Name,
 		"method":   testcase.Input.Method,
@@ -112,7 +112,7 @@ func (r *TestCaseRunner) executeTest(testcase model.TestCase, ruleCtx *model.Con
 	req, err := testcase.Prepare(ruleCtx)
 	if err != nil {
 		logrus.Error(err)
-		return results.NewTestFailResult(testcase.ID), err
+		return results.NewTestCaseFail(testcase.ID), err
 	}
 
 	resp, err := r.executor.ExecuteTestCase(req, &testcase, ruleCtx)
@@ -124,7 +124,7 @@ func (r *TestCaseRunner) executeTest(testcase model.TestCase, ruleCtx *model.Con
 			"responsesize": testcase.ResponseSize,
 			"result":       "FAIL",
 		}).Info("test result")
-		return results.NewTestFailResult(testcase.ID), err
+		return results.NewTestCaseFail(testcase.ID), err
 	}
 
 	result, err := testcase.Validate(resp, ruleCtx)
@@ -135,7 +135,7 @@ func (r *TestCaseRunner) executeTest(testcase model.TestCase, ruleCtx *model.Con
 			"responsetime": fmt.Sprintf("%v", testcase.ResponseTime),
 			"result":       "FAIL",
 		}).Info("test result")
-		return results.NewTestFailResult(testcase.ID), err
+		return results.NewTestCaseFail(testcase.ID), err
 	}
 
 	ctxLogger.WithFields(logrus.Fields{
@@ -144,5 +144,5 @@ func (r *TestCaseRunner) executeTest(testcase model.TestCase, ruleCtx *model.Con
 		"result":       "PASS",
 	}).Info("test result")
 
-	return results.NewTestResult(testcase.ID, result), nil
+	return results.NewTestCaseResult(testcase.ID, result), nil
 }
