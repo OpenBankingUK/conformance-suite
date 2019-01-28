@@ -76,9 +76,8 @@ func (t *TestCase) Prepare(ctx *Context) (*resty.Request, error) {
 	t.AppEntry("Prepare Entry")
 	defer t.AppExit("Prepare Exit")
 
-	if err := t.ApplyContext(ctx); err != nil { // Apply Context at end of creating request - get/put values into contexts
-		return nil, err
-	}
+	// Apply Context at end of creating request - get/put values into contexts
+	t.ApplyContext(ctx)
 
 	req, err := t.ApplyInput(ctx)
 	if err != nil {
@@ -109,7 +108,10 @@ func (t *TestCase) Validate(resp *resty.Response, rulectx *Context) (bool, error
 		// Check that there is a value body in the raw response of the resty response object
 		if resp != nil && (resp.RawResponse != nil) && (resp.RawResponse.Body != nil) {
 			buf := new(bytes.Buffer)
-			buf.ReadFrom(resp.RawResponse.Body)
+			_, err := buf.ReadFrom(resp.RawResponse.Body)
+			if err != nil {
+				return false, err
+			}
 			t.Body = buf.String()
 		}
 	}
@@ -165,7 +167,7 @@ func (t *TestCase) ApplyInput(rulectx *Context) (*resty.Request, error) {
 // ApplyContext, applies context parameters to the http object.
 // Context parameter typically involve variables that originated in discovery
 // The functionality of ApplyContext will grow significantly over time.
-func (t *TestCase) ApplyContext(rulectx *Context) error {
+func (t *TestCase) ApplyContext(rulectx *Context) {
 	t.AppEntry("ApplyContext entry")
 	defer t.AppExit("ApplyContext exit")
 
@@ -178,11 +180,9 @@ func (t *TestCase) ApplyContext(rulectx *Context) error {
 	base, exist := t.Context.Get("baseurl") // "convention" puts baseurl as prefix to endpoint in testcase"
 	if !exist {
 		t.AppMsg("no base url - using only input.Endpoint")
-		return nil
+		return
 	}
 	t.Input.Endpoint = base.(string) + t.Input.Endpoint
-
-	return nil
 }
 
 // ApplyExpects runs the Expects section of the testcase to evaluate if the response from the system under test passes or fails
@@ -373,6 +373,8 @@ func ReplaceContextField(source string, ctx *Context) (string, error) {
 	return result, nil
 }
 
+var singleDollarRegex = regexp.MustCompile(`[^\$]?\$(\w*)`)
+
 // GetReplacementField examines the input string and returns the first character
 // sequence beginning with '$' and ending with whitespace. '$$' sequence acts as an escape value
 // A zero length string is return if now Replacement Fields are found
@@ -382,11 +384,7 @@ func getReplacementField(stringToCheck string) (string, bool, error) {
 	if index == -1 {
 		return stringToCheck, false, nil
 	}
-	singleDollar, err := regexp.Compile(`[^\$]?\$(\w*)`)
-	if err != nil {
-		return "", false, err
-	}
-	result := singleDollar.FindStringSubmatch(stringToCheck)
+	result := singleDollarRegex.FindStringSubmatch(stringToCheck)
 	if result == nil {
 		return "", false, nil
 	}

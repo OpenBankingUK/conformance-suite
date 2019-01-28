@@ -21,6 +21,15 @@ type daemonController struct {
 	shouldStop bool
 }
 
+// NewBufferedDaemonController new instance to control a background routine with 100 objects
+// buffer in result and error channels
+func NewBufferedDaemonController() *daemonController {
+	return NewDaemonController(
+		make(chan results.TestCase, 100),
+		make(chan error, 100),
+	)
+}
+
 // NewDaemonController new instance to control a background routine
 func NewDaemonController(resultChan chan results.TestCase, errorsChan chan error) *daemonController {
 	return &daemonController{

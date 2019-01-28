@@ -153,15 +153,15 @@ func TestJourneySetCertificateSigning(t *testing.T) {
 	generator := &gmocks.Generator{}
 	journey := NewJourney(generator, validator)
 
-	require.Nil(journey.CertificateSigning())
+	require.Nil(journey.certificateSigning)
 
 	certificateSigning, err := authentication.NewCertificate(publicCertValid, privateCertValid)
 	require.NoError(err)
 	require.NotNil(certificateSigning)
 
-	journey.SetCertificateSigning(certificateSigning)
+	journey.SetCertificates(certificateSigning, nil)
 
-	require.Equal(certificateSigning, journey.CertificateSigning())
+	require.Equal(certificateSigning, journey.certificateSigning)
 }
 
 func TestJourneySetCertificateTransport(t *testing.T) {
@@ -171,13 +171,13 @@ func TestJourneySetCertificateTransport(t *testing.T) {
 	generator := &gmocks.Generator{}
 	journey := NewJourney(generator, validator)
 
-	require.Nil(journey.CertificateTransport())
+	require.Nil(journey.certificateTransport)
 
 	certificateTransport, err := authentication.NewCertificate(publicCertValid, privateCertValid)
 	require.NoError(err)
 	require.NotNil(certificateTransport)
 
-	journey.SetCertificateTransport(certificateTransport)
+	journey.SetCertificates(nil, certificateTransport)
 
-	require.Equal(certificateTransport, journey.CertificateTransport())
+	require.Equal(certificateTransport, journey.certificateTransport)
 }

@@ -4,7 +4,6 @@ import (
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/authentication"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/executors"
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/executors/results"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/generation"
 	"github.com/pkg/errors"
 )
@@ -19,13 +18,8 @@ type Journey interface {
 	RunTests() error
 	StopTestRun()
 	Results() executors.DaemonController
-	SetCertificateSigning(authentication.Certificate)
-	CertificateSigning() authentication.Certificate
-	SetCertificateTransport(authentication.Certificate)
-	CertificateTransport() authentication.Certificate
+	SetCertificates(signing, transport authentication.Certificate)
 }
-
-var errTestCasesNotSet = errors.New("error running test cases, test cases not set")
 
 type journey struct {
 	generator            generation.Generator
@@ -38,15 +32,11 @@ type journey struct {
 }
 
 // NewJourney creates an instance for a user journey
-func NewJourney(generator generation.Generator, validator discovery.Validator) Journey {
-	daemonController := executors.NewDaemonController(
-		make(chan results.TestCase, 100),
-		make(chan error, 100),
-	)
+func NewJourney(generator generation.Generator, validator discovery.Validator) *journey {
 	return &journey{
 		generator:        generator,
 		validator:        validator,
-		daemonController: daemonController,
+		daemonController: executors.NewBufferedDaemonController(),
 	}
 }
 
@@ -84,14 +74,6 @@ func (wj *journey) TestCases() ([]generation.SpecificationTestCases, error) {
 }
 
 func (wj *journey) RunTests() error {
-	if wj.validDiscoveryModel == nil {
-		return errDiscoveryModelNotSet
-	}
-
-	if wj.testCases == nil {
-		return errTestCasesNotSet
-	}
-
 	specTestCases, err := wj.TestCases()
 	if err != nil {
 		return err
@@ -100,8 +82,8 @@ func (wj *journey) RunTests() error {
 	runDefinition := executors.RunDefinition{
 		DiscoModel:    wj.validDiscoveryModel,
 		SpecTests:     specTestCases,
-		SigningCert:   wj.CertificateSigning(),
-		TransportCert: wj.CertificateTransport(),
+		SigningCert:   wj.certificateSigning,
+		TransportCert: wj.certificateTransport,
 	}
 
 	runner := executors.NewTestCaseRunner(runDefinition, wj.daemonController)
@@ -121,18 +103,7 @@ func (wj *journey) StopTestRun() {
 	wj.daemonController.Stop()
 }
 
-func (wj *journey) SetCertificateSigning(certificateSigning authentication.Certificate) {
-	wj.certificateSigning = certificateSigning
-}
-
-func (wj *journey) CertificateSigning() authentication.Certificate {
-	return wj.certificateSigning
-}
-
-func (wj *journey) SetCertificateTransport(certificateTransport authentication.Certificate) {
-	wj.certificateTransport = certificateTransport
-}
-
-func (wj *journey) CertificateTransport() authentication.Certificate {
-	return wj.certificateTransport
+func (wj *journey) SetCertificates(signing, transport authentication.Certificate) {
+	wj.certificateSigning = signing
+	wj.certificateTransport = transport
 }
