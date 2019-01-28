@@ -3,11 +3,9 @@ package server
 import (
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/executors/results"
 	"github.com/gorilla/websocket"
+	"github.com/labstack/echo"
 	"github.com/sirupsen/logrus"
 	"net/http"
-	"time"
-
-	"github.com/labstack/echo"
 )
 
 type runHandlers struct {
@@ -42,7 +40,6 @@ func (h *runHandlers) listenResultWebSocket(c echo.Context) error {
 
 	daemon := h.journey.Results()
 	for {
-		time.Sleep(5 * time.Second)
 		if daemon.ShouldStop() {
 			if err := ws.WriteJSON(newStoppedEvent()); err != nil {
 				logrus.WithError(err).Error("WebSocketHandler:Handle -> WriteJSON")
