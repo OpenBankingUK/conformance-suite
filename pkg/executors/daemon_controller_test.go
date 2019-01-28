@@ -14,7 +14,7 @@ func TestNewDaemonController(t *testing.T) {
 
 	assert.Equal(t, testChan, controller.Results())
 	assert.Equal(t, errorChan, controller.Errors())
-	assert.NotNil(t, controller.mx)
+	assert.NotNil(t, controller.stopLock)
 	assert.False(t, controller.shouldStop)
 	assert.False(t, controller.ShouldStop())
 }

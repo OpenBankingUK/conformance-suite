@@ -13,7 +13,7 @@ func TestNewTestCaseRunner(t *testing.T) {
 	definition := RunDefinition{}
 	runner := NewTestCaseRunner(definition, controller)
 
-	assert.NotNil(t, runner.mux)
+	assert.NotNil(t, runner.runningLock)
 	assert.Equal(t, definition, runner.definition)
 	assert.Equal(t, controller, runner.daemonController)
 	assert.False(t, runner.running)

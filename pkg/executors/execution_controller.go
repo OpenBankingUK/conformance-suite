@@ -26,7 +26,7 @@ type TestCaseRunner struct {
 	definition       RunDefinition
 	daemonController DaemonController
 	logger           *logrus.Entry
-	mux              *sync.Mutex
+	runningLock      *sync.Mutex
 	running          bool
 }
 
@@ -36,15 +36,15 @@ func NewTestCaseRunner(definition RunDefinition, daemonController DaemonControll
 		definition:       definition,
 		daemonController: daemonController,
 		logger:           logrus.New().WithField("module", "TestCaseRunner"),
-		mux:              &sync.Mutex{},
+		runningLock:      &sync.Mutex{},
 		running:          false,
 	}
 }
 
 // RunTestCases runs the testCases
 func (r *TestCaseRunner) RunTestCases() error {
-	r.mux.Lock()
-	defer r.mux.Unlock()
+	r.runningLock.Lock()
+	defer r.runningLock.Unlock()
 	if r.running == true {
 		return errors.New("test cases runner already running")
 	}
@@ -70,9 +70,9 @@ func (r *TestCaseRunner) runTestCasesAsync() {
 }
 
 func (r *TestCaseRunner) setNotRunning() {
-	r.mux.Lock()
+	r.runningLock.Lock()
 	r.running = false
-	r.mux.Unlock()
+	r.runningLock.Unlock()
 }
 
 func (r *TestCaseRunner) makeRuleCtx() *model.Context {

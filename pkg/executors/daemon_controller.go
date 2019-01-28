@@ -17,7 +17,7 @@ type DaemonController interface {
 type daemonController struct {
 	resultChan chan results.TestCase
 	errorsChan chan error
-	mx         *sync.Mutex
+	stopLock   *sync.Mutex
 	shouldStop bool
 }
 
@@ -26,25 +26,25 @@ func NewDaemonController(resultChan chan results.TestCase, errorsChan chan error
 	return &daemonController{
 		resultChan: resultChan,
 		errorsChan: errorsChan,
-		mx:         &sync.Mutex{},
+		stopLock:   &sync.Mutex{},
 		shouldStop: false,
 	}
 }
 
 // Stop tell the daemon to stop
 func (rc *daemonController) Stop() {
-	rc.mx.Lock()
+	rc.stopLock.Lock()
 	rc.shouldStop = true
-	rc.mx.Unlock()
+	rc.stopLock.Unlock()
 }
 
 // ShouldStop indicates that the daemon should stop
 // this should be invoked often by the background routine and stop
 // if this true
 func (rc *daemonController) ShouldStop() bool {
-	rc.mx.Lock()
+	rc.stopLock.Lock()
 	shouldStop := rc.shouldStop
-	rc.mx.Unlock()
+	rc.stopLock.Unlock()
 	return shouldStop
 }
 
