@@ -37,7 +37,7 @@ export default {
       return this.notifications.length;
     },
     notificationText() {
-      if (this.notifications.length === 0) {
+      if (!this.hasNotifications) {
         return 'There are no notifications';
       }
 
