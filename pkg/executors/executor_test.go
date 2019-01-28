@@ -24,11 +24,6 @@ func TestSimulatedChainedOzoneRequest(t *testing.T) {
 	chainedOzoneHeadlessAccounts(t, executor)
 }
 
-func testLiveChainedRequest(t *testing.T) {
-	executor := MakeExecutor()
-	chainedOzoneHeadlessAccounts(t, executor)
-}
-
 func chainedOzoneHeadlessAccounts(t *testing.T, executor TestCaseExecutor) {
 	manifest, err := loadManifest("testdata/ozoneconnect.json")
 	require.NoError(t, err)

@@ -14,8 +14,14 @@ import (
 	resty "gopkg.in/resty.v1"
 )
 
-// MakeExecutor creates an executor
-func MakeExecutor() *Executor {
+// TestCaseExecutor defines an interface capable of executing a testcase
+type TestCaseExecutor interface {
+	ExecuteTestCase(r *resty.Request, t *model.TestCase, ctx *model.Context) (*resty.Response, error)
+	SetCertificates(certificateSigning, certificationTransport authentication.Certificate) error
+}
+
+// NewExecutor creates an executor
+func NewExecutor() *Executor {
 	return &Executor{}
 }
 

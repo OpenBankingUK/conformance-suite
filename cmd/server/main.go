@@ -8,27 +8,16 @@ import (
 	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/version"
 	"github.com/pkg/errors"
 
-	model "bitbucket.org/openbankingteam/conformance-suite/pkg/model"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/tracer"
-	resty "gopkg.in/resty.v1"
+	"gopkg.in/resty.v1"
 
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/server"
 	"github.com/sirupsen/logrus"
 	"github.com/x-cray/logrus-prefixed-formatter"
 )
 
-const (
-	defaultPort = "8080"
-)
-
-func getPort() string {
-	port := os.Getenv("PORT")
-	if port != "" {
-		return port
-	}
-
-	return defaultPort
-}
+const defaultPort = "8080"
 
 func init() {
 	logrus.SetFormatter(&prefixed.TextFormatter{
@@ -48,15 +37,17 @@ func init() {
 func main() {
 	logger := logrus.WithField("app", "server")
 	ver := version.NewBitBucket(version.BitBucketAPIRepository)
-	server := server.NewServer(logger, model.NewConditionalityChecker(), ver)
-	server.HideBanner = true
+
+	echoServer := server.NewServer(logger, model.NewConditionalityChecker(), ver)
+	echoServer.HideBanner = true
 
 	versionInfo(ver, logger)
 
-	address := fmt.Sprintf("0.0.0.0:%s", getPort())
+	address := fmt.Sprintf("0.0.0.0:%s", getEnvOrDefault("PORT", defaultPort))
 	logger.Infof("address -> http://%s", address)
+	server.RoutesInfo(echoServer, logger)
 
-	server.Logger.Fatal(server.Start(address))
+	logger.Fatal(echoServer.Start(address))
 }
 
 func versionInfo(ver version.BitBucket, logger *logrus.Entry) {
@@ -70,4 +61,12 @@ func versionInfo(ver version.BitBucket, logger *logrus.Entry) {
 	} else {
 		logger.Info(msg)
 	}
+}
+
+func getEnvOrDefault(key, defaultValue string) string {
+	value, found := os.LookupEnv(key)
+	if !found {
+		return defaultValue
+	}
+	return value
 }
