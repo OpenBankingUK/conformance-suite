@@ -10,6 +10,7 @@ import WizardConfigurationTabs from './views/Wizard/WizardConfigurationTabs.vue'
 import WizardOverviewRun from './views/Wizard/WizardOverviewRun.vue';
 import WizardExport from './views/Wizard/WizardExport.vue';
 import NotFound from './views/NotFound.vue';
+import ConformanceSuiteCallback from './views/ConformanceSuiteCallback/ConformanceSuiteCallback.vue';
 
 Vue.use(VueRouter);
 
@@ -51,6 +52,11 @@ const router = new VueRouter({
           component: WizardExport,
         },
       ],
+    },
+    {
+      path: '/conformancesuite/callback',
+      name: 'ConformanceSuiteCallback',
+      component: ConformanceSuiteCallback,
     },
     // ---
     // Handle 404s

@@ -19,6 +19,7 @@
     "esprima": "^4.0.1",
     "lodash": "^4.17.11",
     "register-service-worker": "^1.0.0",
+    "urijs": "^1.19.1",
     "vue": "^2.5.17",
     "vue-feather-icons": "^4.7.1",
     "vue-router": "^3.0.1",
@@ -29,6 +30,7 @@
   "devDependencies": {
     "@babel/runtime": "7.0.0-beta.55",
     "@types/lodash": "^4.14.119",
+    "@types/urijs": "^1.15.38",
     "@vue/cli-plugin-babel": "^3.0.5",
     "@vue/cli-plugin-eslint": "^3.0.5",
     "@vue/cli-plugin-unit-jest": "^3.0.5",
@@ -38,6 +40,7 @@
     "babel-core": "7.0.0-bridge.0",
     "babel-eslint": "^10.0.1",
     "babel-jest": "^23.0.1",
+    "flush-promises": "^1.0.2",
     "jest-fetch-mock": "^2.0.1",
     "lint-staged": "^7.2.2",
     "vue-cli-plugin-build-watch": "^1.0.0",

@@ -138,6 +138,62 @@ func TestServer(t *testing.T) {
 	require.NoError(t, server.Shutdown(context.TODO()))
 }
 
+// TestServerConformanceSuiteCallback - Test that `/conformancesuite/callback` returns `./web/dist/index.html`.
+func TestServerConformanceSuiteCallback(t *testing.T) {
+	require := require.New(t)
+
+	server := NewServer(nullLogger(), conditionalityCheckerMock{}, mockVersionChecker())
+	defer func() {
+		require.NoError(server.Shutdown(context.TODO()))
+	}()
+	require.NotNil(server)
+
+	// read the file we expect to be served.
+	bytes, err := ioutil.ReadFile("./web/dist/index.html")
+	require.NoError(err)
+	bodyExpected := string(bytes)
+
+	code, body, headers := request(
+		http.MethodGet,
+		`/conformancesuite/callback`,
+		nil,
+		server)
+
+	// do assertions.
+	require.Equal(http.StatusOK, code)
+	require.Len(headers, 5)
+	require.Equal("text/html; charset=utf-8", headers["Content-Type"][0])
+	require.NotNil(body)
+
+	bodyActual := body.String()
+	require.Equal(bodyExpected, bodyActual)
+}
+
+func TestServerSkipper(t *testing.T) {
+	require := require.New(t)
+
+	echo := echo.New()
+	context := echo.AcquireContext()
+	defer func() {
+		echo.ReleaseContext(context)
+	}()
+
+	paths := map[string]bool{
+		"/index.html":                false,
+		"/index.js":                  false,
+		"/conformancesuite/callback": false,
+		"/ipa":                       false,
+		"/reggaws":                   false,
+		"/api":                       true,
+		"/swagger":                   true,
+	}
+	for path, shouldSkip := range paths {
+		context.SetPath(path)         // set path on the Context
+		isSkipped := skipper(context) // check if the `skipper` skips the path
+		require.Equal(shouldSkip, isSkipped)
+	}
+}
+
 // Generic util function for making test requests.
 func request(method, path string, body io.Reader, server *Server) (int, *bytes.Buffer, http.Header) {
 	req := httptest.NewRequest(method, path, body)

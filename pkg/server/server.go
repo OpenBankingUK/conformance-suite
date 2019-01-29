@@ -1,15 +1,16 @@
 package server
 
 import (
+	"context"
+	"errors"
+	"net/http"
+	"strings"
+
 	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/version"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/generation"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
-	"context"
-	"errors"
 	"github.com/gorilla/websocket"
-	"net/http"
-	"strings"
 
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
@@ -19,9 +20,9 @@ import (
 // Server wraps *echo.Echo and stores the proxy once configured.
 type Server struct {
 	*echo.Echo // Wrap (using composition) *echo.Echo, allows us to pretend Server is echo.Echo.
-	proxy   *http.Server
-	logger  *logrus.Entry
-	version version.Checker
+	proxy      *http.Server
+	logger     *logrus.Entry
+	version    version.Checker
 }
 
 // NewServer returns new echo.Echo server.
@@ -37,7 +38,6 @@ func NewServer(
 		logger:  logger,
 		version: version,
 	}
-	server.HideBanner = true
 
 	// Use custom logger config so that we can control where log lines like below get sent to - either /dev/null or stdout.
 	// {"time":"2018-12-18T13:00:40.291032Z","id":"","remote_ip":"192.0.2.1","host":"example.com","method":"POST","uri":"/api/config/global?pretty","status":400, "latency":627320,"latency_human":"627.32µs","bytes_in":0,"bytes_out":137}
@@ -51,9 +51,10 @@ func NewServer(
 		// 9 indicates the slowest compression method (best compression)
 		Level: 5,
 	}))
+
 	// serve Vue.js site
 	server.Use(middleware.StaticWithConfig(middleware.StaticConfig{
-		Skipper: server.skipper,
+		Skipper: skipper,
 		Root:    "web/dist",
 		Index:   "index.html",
 		HTML5:   true,
@@ -61,7 +62,7 @@ func NewServer(
 	}))
 
 	registerRoutes(server, logger, checker, version)
-	
+
 	return server
 }
 
@@ -104,6 +105,13 @@ func registerRoutes(server *Server, logger *logrus.Entry, checker model.Conditio
 	// endpoints for utility function such as version/update checking.
 	utilityEndpoints := newUtilityEndpoints(version)
 	api.GET("/version", utilityEndpoints.versionCheck)
+
+	// endpoints for validating and storing the token retrieved in `/conformancesuite/callback`
+	// `pkg/server/assets/main.js` calls into this endpoint.
+	redirectHandlers := &redirectHandlers{logger.WithField("module", "redirectHandlers")}
+	api.POST("/redirect/fragment/ok", redirectHandlers.postFragmentOKHandler)
+	api.POST("/redirect/query/ok", redirectHandlers.postQueryOKHandler)
+	api.POST("/redirect/error", redirectHandlers.postErrorHandler)
 }
 
 // Shutdown the server and the proxy if it is alive
@@ -128,13 +136,22 @@ func (s *Server) Shutdown(ctx context.Context) error {
 	return nil
 }
 
-// Skipper ensures that all requests not prefixed with `/api` or `/swagger` get sent
-// to the `middleware.Static` or `middleware.StaticWithConfig`.
-// E.g., ensure that `/api/validation-runs` or `/swagger/docs` does not get
-// handled by the the static middleware.
-func (s *Server) skipper(c echo.Context) bool {
-	skip := strings.HasPrefix(c.Path(), "/api") || strings.HasPrefix(c.Path(), "/swagger")
-	return skip
+// skipper - ensures that all requests not prefixed with any string in `pathsToSkip` is skipped.
+// E.g., ensure that `/api/validation-runs` or `/swagger/docs` is not handled by the static middleware.
+func skipper(c echo.Context) bool {
+	pathsToSkip := []string{
+		"/api",
+		"/swagger",
+	}
+
+	path := c.Path()
+	for _, pathToSkip := range pathsToSkip {
+		if strings.HasPrefix(path, pathToSkip) {
+			return true
+		}
+	}
+
+	return false
 }
 
 // NewWebSocketUpgrader creates a new websocket.Ugprader.
