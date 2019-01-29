@@ -17,6 +17,7 @@
 
 <script>
 import { mapActions } from 'vuex';
+import api from '@/api/apiUtil';
 
 export default {
   name: 'DiscoveryTemplateCard',
@@ -34,6 +35,11 @@ export default {
       },
     },
   },
+  data() {
+    return {
+      imgSrc: null,
+    };
+  },
   computed: {
     title() {
       return '';
@@ -44,9 +50,10 @@ export default {
     text() {
       return this.discoveryModel.description;
     },
-    imgSrc() {
-      return this.image;
-    },
+  },
+  async created() {
+    const exists = await this.imageExists(this.image);
+    this.imgSrc = exists ? this.image : '/no-image-discovery-icon.png';
   },
   methods: {
     ...mapActions('config', ['setDiscoveryModel']),
@@ -54,6 +61,14 @@ export default {
       this.setDiscoveryModel(JSON.stringify({ discoveryModel: this.discoveryModel }));
       // route to discovery configuration
       this.$router.push('discovery-config');
+    },
+    async imageExists(image) {
+      try {
+        const response = await api.get(image);
+        return response.status === 200;
+      } catch (e) {
+        return false;
+      }
     },
   },
 };
