@@ -19,6 +19,16 @@ func TestNewDaemonController(t *testing.T) {
 	assert.False(t, controller.ShouldStop())
 }
 
+func TestNewBufferedDaemonController(t *testing.T) {
+	controller := NewBufferedDaemonController()
+
+	assert.NotNil(t, controller.Results())
+	assert.NotNil(t, controller.Errors())
+	assert.NotNil(t, controller.stopLock)
+	assert.False(t, controller.shouldStop)
+	assert.False(t, controller.ShouldStop())
+}
+
 func TestDaemonControllerStops(t *testing.T) {
 	testChan := make(chan results.TestCase, 100)
 	errorChan := make(chan error, 100)

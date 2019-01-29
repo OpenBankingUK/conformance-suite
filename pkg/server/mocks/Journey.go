@@ -98,14 +98,9 @@ func (_m *Journey) RunTests() error {
 	return r0
 }
 
-// SetCertificateSigning provides a mock function with given fields: _a0
-func (_m *Journey) SetCertificateSigning(_a0 authentication.Certificate) {
-	_m.Called(_a0)
-}
-
-// SetCertificateTransport provides a mock function with given fields: _a0
-func (_m *Journey) SetCertificateTransport(_a0 authentication.Certificate) {
-	_m.Called(_a0)
+// SetCertificates provides a mock function with given fields: signing, transport
+func (_m *Journey) SetCertificates(signing authentication.Certificate, transport authentication.Certificate) {
+	_m.Called(signing, transport)
 }
 
 // SetDiscoveryModel provides a mock function with given fields: discoveryModel

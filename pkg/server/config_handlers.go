@@ -185,7 +185,6 @@ func (h *configHandlers) configGlobalPostHandler(c echo.Context) error {
 			NewErrorResponse(errors.Wrap(err, "error with signing certificate")),
 		)
 	}
-	h.webJourney.SetCertificateSigning(certificateSigning)
 
 	certificateTransport, err := authentication.NewCertificate(
 		globalConfiguration.TransportPublic,
@@ -197,7 +196,7 @@ func (h *configHandlers) configGlobalPostHandler(c echo.Context) error {
 			NewErrorResponse(errors.Wrap(err, "error with transport certificate")),
 		)
 	}
-	h.webJourney.SetCertificateTransport(certificateTransport)
+	h.webJourney.SetCertificates(certificateSigning, certificateTransport)
 
 	return c.JSON(http.StatusCreated, globalConfiguration)
 }

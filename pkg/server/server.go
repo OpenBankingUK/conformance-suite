@@ -38,6 +38,7 @@ func NewServer(
 		logger:  logger,
 		version: version,
 	}
+	server.Validator = newEchoValidatorAdapter()
 
 	// Use custom logger config so that we can control where log lines like below get sent to - either /dev/null or stdout.
 	// {"time":"2018-12-18T13:00:40.291032Z","id":"","remote_ip":"192.0.2.1","host":"example.com","method":"POST","uri":"/api/config/global?pretty","status":400, "latency":627320,"latency_human":"627.32µs","bytes_in":0,"bytes_out":137}
@@ -76,8 +77,6 @@ func registerRoutes(server *Server, logger *logrus.Entry, checker model.Conditio
 	testGenerator := generation.NewGenerator()
 	journey := NewJourney(testGenerator, validatorEngine)
 
-	server.Validator = newCustomValidator()
-
 	// anything prefixed with api
 	api := server.Group("/api")
 
@@ -97,7 +96,7 @@ func registerRoutes(server *Server, logger *logrus.Entry, checker model.Conditio
 	api.GET("/test-cases", testCaseHandlers.testCasesHandler)
 
 	// endpoints for test runner
-	runHandlers := newRunHandlers(journey, NewWebSocketUpgrader())
+	runHandlers := newRunHandlers(journey, NewWebSocketUpgrader(), logger)
 	api.POST("/run", runHandlers.runStartPostHandler)
 	api.GET("/run", runHandlers.listenResultWebSocket)
 	api.DELETE("/run", runHandlers.stopRunHandler)

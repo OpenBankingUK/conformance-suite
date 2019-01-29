@@ -11,12 +11,14 @@ import (
 type runHandlers struct {
 	journey  Journey
 	upgrader *websocket.Upgrader
+	logger   *logrus.Entry
 }
 
-func newRunHandlers(journey Journey, upgrader *websocket.Upgrader) *runHandlers {
+func newRunHandlers(journey Journey, upgrader *websocket.Upgrader, logger *logrus.Entry) *runHandlers {
 	return &runHandlers{
 		journey:  journey,
 		upgrader: upgrader,
+		logger:   logger,
 	}
 }
 
@@ -32,43 +34,54 @@ func (h *runHandlers) runStartPostHandler(c echo.Context) error {
 
 // listenResultWebSocket creates a socket connection to listen for test run results
 func (h *runHandlers) listenResultWebSocket(c echo.Context) error {
+	logger := h.logger.WithField("handler", "listen_results")
+
 	ws, err := h.upgrader.Upgrade(c.Response(), c.Request(), nil)
 	if err != nil {
-		logrus.WithError(err).Error("WebSocketHandler:Handle -> Upgrade")
+		logger.WithError(err).Error("list result websocket")
 		return err
 	}
+	defer func() {
+		err := ws.Close()
+		if err != nil {
+			logger.WithError(err).Error("closing websocket")
+		}
+	}()
 
 	daemon := h.journey.Results()
 	for {
 		if daemon.ShouldStop() {
+			logger.Info("sending stop event")
 			if err := ws.WriteJSON(newStoppedEvent()); err != nil {
-				logrus.WithError(err).Error("WebSocketHandler:Handle -> WriteJSON")
+				logger.WithError(err).Error("writing json to websocket")
 			}
-			return ws.Close()
 		}
 
 		select {
 		case result, ok := <-daemon.Results():
-			if ok == false {
-				logrus.Error("error reading from result channel")
+			if !ok {
+				logger.Error("error reading from result channel")
 				break
 			}
+			logger.WithField("testId", result.Id).Info("sending result event")
 			if err := ws.WriteJSON(newResultEvent(result)); err != nil {
-				logrus.WithError(err).Error("WebSocketHandler:Handle -> WriteJSON")
+				logger.WithError(err).Error("writing json to websocket")
 				break
 			}
 
 		case err, ok := <-daemon.Errors():
-			if ok == false {
+			if !ok {
 				logrus.Error("error reading from errors channel")
 				break
 			}
-			if err := ws.WriteJSON(newErrorEvent(err)); err != nil {
-				logrus.WithError(err).Error("WebSocketHandler:Handle -> WriteJSON")
-				break
+			logger.Info("sending error event")
+			if err != nil {
+				if err := ws.WriteJSON(newErrorEvent(err)); err != nil {
+					logger.WithError(err).Error("writing json to websocket")
+					break
+				}
 			}
 		}
-
 	}
 }
 
@@ -95,9 +108,9 @@ func newResultEvent(testResult results.TestCase) ResultEvent {
 }
 
 type ErrorEvent struct {
-	Error error `json:"error"`
+	Error string `json:"error"`
 }
 
 func newErrorEvent(err error) ErrorEvent {
-	return ErrorEvent{err}
+	return ErrorEvent{err.Error()}
 }

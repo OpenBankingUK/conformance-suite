@@ -45,7 +45,7 @@ func NewTestCaseRunner(definition RunDefinition, daemonController DaemonControll
 func (r *TestCaseRunner) RunTestCases() error {
 	r.runningLock.Lock()
 	defer r.runningLock.Unlock()
-	if r.running == true {
+	if r.running {
 		return errors.New("test cases runner already running")
 	}
 	r.running = true
@@ -141,8 +141,13 @@ func (r *TestCaseRunner) executeTest(testcase model.TestCase, ruleCtx *model.Con
 	ctxLogger.WithFields(logrus.Fields{
 		"statuscode":   testcase.Expect.StatusCode,
 		"responsetime": fmt.Sprintf("%v", testcase.ResponseTime),
-		"result":       "PASS",
+		"result":       passText[result],
 	}).Info("test result")
 
 	return results.NewTestCaseResult(testcase.ID, result), nil
+}
+
+var passText = map[bool]string{
+	true:  "PASS",
+	false: "FAIL",
 }
