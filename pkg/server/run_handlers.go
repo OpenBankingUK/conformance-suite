@@ -51,6 +51,7 @@ func (h *runHandlers) listenResultWebSocket(c echo.Context) error {
 	daemon := h.journey.Results()
 	for {
 		if daemon.ShouldStop() {
+			logger.Info("sending stop event")
 			if err := ws.WriteJSON(newStoppedEvent()); err != nil {
 				logger.WithError(err).Error("writing json to websocket")
 			}
@@ -62,6 +63,7 @@ func (h *runHandlers) listenResultWebSocket(c echo.Context) error {
 				logger.Error("error reading from result channel")
 				break
 			}
+			logger.WithField("testId", result.Id).Info("sending result event")
 			if err := ws.WriteJSON(newResultEvent(result)); err != nil {
 				logger.WithError(err).Error("writing json to websocket")
 				break
@@ -72,6 +74,7 @@ func (h *runHandlers) listenResultWebSocket(c echo.Context) error {
 				logrus.Error("error reading from errors channel")
 				break
 			}
+			logger.Info("sending error event")
 			if err != nil {
 				if err := ws.WriteJSON(newErrorEvent(err)); err != nil {
 					logger.WithError(err).Error("writing json to websocket")
