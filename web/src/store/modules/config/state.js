@@ -1,15 +1,6 @@
 import constants from './constants';
-import OzoneTemplate from '../../../../../pkg/discovery/templates/ob-v3.0-ozone.json';
-import GenericTemplate from '../../../../../pkg/discovery/templates/ob-v3.0-generic.json';
 
-const templates = [
-  {
-    model: OzoneTemplate,
-  },
-  {
-    model: GenericTemplate,
-  },
-];
+const templates = [];
 
 export default {
   discoveryTemplates: templates,

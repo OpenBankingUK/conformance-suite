@@ -25,16 +25,10 @@ const parseProblem = ({ key, error }) => {
   };
 };
 
-const addImages = discoveryTemplates => discoveryTemplates.map((template) => {
-  const { name } = template.model.discoveryModel;
-  const customImage = `/${name}.png`;
-  return { model: template.model, image: customImage };
-});
-
 export default {
   discoveryModel: state => state.discoveryModel,
   discoveryModelString: state => JSON.stringify(state.discoveryModel, null, 2),
-  discoveryTemplates: state => addImages(state.discoveryTemplates),
+  discoveryTemplates: state => state.discoveryTemplates,
   problems: state => state.problems,
   discoveryProblems: state => (state.problems ? state.problems.map(p => parseProblem(p)) : null),
   configuration: state => state.configuration,

@@ -2,18 +2,12 @@
  * https://cli.vuejs.org/config/#vue-config-js
  */
 
-const CopyWebpackPlugin = require('copy-webpack-plugin');
-
 // vue.config.js
 module.exports = {
 
   // https://cli.vuejs.org/guide/webpack.html
   configureWebpack: {
     plugins: [
-      new CopyWebpackPlugin([{
-        from: 'src/assets/images',
-        to: '',
-      }]),
     ],
   },
 

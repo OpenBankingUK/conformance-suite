@@ -11,6 +11,7 @@ describe('discoveryTemplates', () => {
           model: {
             discoveryModel: { name },
           },
+          image: 'imageData',
         },
       ],
     };
@@ -19,7 +20,7 @@ describe('discoveryTemplates', () => {
   it('returns template with image set to PNG matching template name', async () => {
     const list = await getters.discoveryTemplates(state);
     expect(list[0].model).toEqual(state.discoveryTemplates[0].model);
-    expect(list[0].image).toEqual(`/${name}.png`);
+    expect(list[0].image).toEqual('imageData');
   });
 });
 

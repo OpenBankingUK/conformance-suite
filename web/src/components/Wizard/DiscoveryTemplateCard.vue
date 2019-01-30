@@ -8,7 +8,7 @@
   >
     <div class="card-image">
       <b-card-img
-        :src="imgSrc"
+        :src="image"
         :alt="name"/>
     </div>
     <p class="card-text">{{ text }}</p>
@@ -35,11 +35,6 @@ export default {
       },
     },
   },
-  data() {
-    return {
-      imgSrc: null,
-    };
-  },
   computed: {
     title() {
       return '';
@@ -51,24 +46,12 @@ export default {
       return this.discoveryModel.description;
     },
   },
-  async created() {
-    const exists = await this.imageExists(this.image);
-    this.imgSrc = exists ? this.image : '/no-image-discovery-icon.png';
-  },
   methods: {
     ...mapActions('config', ['setDiscoveryModel']),
     selectDiscovery() {
       this.setDiscoveryModel(JSON.stringify({ discoveryModel: this.discoveryModel }));
       // route to discovery configuration
       this.$router.push('discovery-config');
-    },
-    async imageExists(image) {
-      try {
-        const response = await api.get(image);
-        return response.status === 200;
-      } catch (e) {
-        return false;
-      }
     },
   },
 };
