@@ -69,13 +69,13 @@ func (h *runHandlers) listenResultWebSocket(c echo.Context) error {
 			writeTimeout := time.Now().Add(time.Second)
 			err := ws.SetWriteDeadline(writeTimeout)
 			if err != nil {
-				// we don't care about the error, just means the ws client has dropped the connection
-				// and we want to close this gopher handler
-				return err
+				// we cannot return error here, if we do echo will try to write the error to conn
+				// and we closed the ws with a defer func 
+				return nil
 			}
 			if err := ws.WriteMessage(websocket.PingMessage, nil); err != nil {
 				// same as above
-				return err
+				return nil
 			}
 		case result, ok := <-daemon.Results():
 			if !ok {
