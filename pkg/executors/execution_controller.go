@@ -61,10 +61,7 @@ func (r *TestCaseRunner) runTestCasesAsync() {
 	ctxLogger := r.logger.WithField("id", uuid.New())
 	ctxLogger.Info("running async test")
 	for _, spec := range r.definition.SpecTests {
-		err := r.executeSpecTests(spec, ruleCtx, ctxLogger)
-		if err != nil {
-			r.daemonController.Errors() <- err
-		}
+		r.executeSpecTests(spec, ruleCtx, ctxLogger)
 	}
 	r.setNotRunning()
 }
@@ -86,68 +83,61 @@ func (r *TestCaseRunner) makeRuleCtx() *model.Context {
 	return ruleCtx
 }
 
-func (r *TestCaseRunner) executeSpecTests(spec generation.SpecificationTestCases, ruleCtx *model.Context, ctxLogger *logrus.Entry) error {
+func (r *TestCaseRunner) executeSpecTests(spec generation.SpecificationTestCases, ruleCtx *model.Context, ctxLogger *logrus.Entry) {
 	ctxLogger = ctxLogger.WithField("spec", spec.Specification.Name)
 	for _, testcase := range spec.TestCases {
 		if r.daemonController.ShouldStop() {
 			ctxLogger.Info("stop test run received, aborting runner")
-			return nil
+			return
 		}
-		testResult, err := r.executeTest(testcase, ruleCtx, ctxLogger)
+		testResult := r.executeTest(testcase, ruleCtx, ctxLogger)
 		r.daemonController.Results() <- testResult
-		if err != nil {
-			return err
-		}
 	}
-	return nil
 }
 
-func (r *TestCaseRunner) executeTest(testcase model.TestCase, ruleCtx *model.Context, ctxLogger *logrus.Entry) (results.TestCase, error) {
-	ctxLogger = ctxLogger.WithFields(logrus.Fields{
-		"testcase": testcase.Name,
-		"method":   testcase.Input.Method,
-		"endpoint": testcase.Input.Endpoint,
-	})
+func (r *TestCaseRunner) executeTest(tc model.TestCase, ruleCtx *model.Context, ctxLogger *logrus.Entry) results.TestCase {
+	ctxLogger = logWithTestCase(r.logger, tc)
 
-	req, err := testcase.Prepare(ruleCtx)
+	req, err := tc.Prepare(ruleCtx)
 	if err != nil {
-		logrus.Error(err)
-		return results.NewTestCaseFail(testcase.ID), err
+		ctxLogger.WithError(err).Error("preparing executing test")
+		return results.NewTestCaseFail(tc.ID, results.NoMetrics, err)
 	}
 
-	resp, err := r.executor.ExecuteTestCase(req, &testcase, ruleCtx)
+	resp, metrics, err := r.executor.ExecuteTestCase(req, &tc, ruleCtx)
+	ctxLogger = logWithMetrics(ctxLogger, metrics)
 	if err != nil {
-		ctxLogger.WithFields(logrus.Fields{
-			"err":          err.Error(),
-			"statuscode":   testcase.Expect.StatusCode,
-			"responsetime": fmt.Sprintf("%v", testcase.ResponseTime),
-			"responsesize": testcase.ResponseSize,
-			"result":       "FAIL",
-		}).Info("test result")
-		return results.NewTestCaseFail(testcase.ID), err
+		ctxLogger.WithError(err).WithField("result", "FAIL").Info("test result")
+		return results.NewTestCaseFail(tc.ID, metrics, err)
 	}
 
-	result, err := testcase.Validate(resp, ruleCtx)
+	result, err := tc.Validate(resp, ruleCtx)
 	if err != nil {
-		ctxLogger.WithFields(logrus.Fields{
-			"err":          err.Error(),
-			"statuscode":   testcase.Expect.StatusCode,
-			"responsetime": fmt.Sprintf("%v", testcase.ResponseTime),
-			"result":       "FAIL",
-		}).Info("test result")
-		return results.NewTestCaseFail(testcase.ID), err
+		ctxLogger.WithError(err).WithField("result", passText[result]).Info("test result")
+		return results.NewTestCaseFail(tc.ID, metrics, err)
 	}
 
-	ctxLogger.WithFields(logrus.Fields{
-		"statuscode":   testcase.Expect.StatusCode,
-		"responsetime": fmt.Sprintf("%v", testcase.ResponseTime),
-		"result":       passText[result],
-	}).Info("test result")
-
-	return results.NewTestCaseResult(testcase.ID, result), nil
+	ctxLogger.WithError(err).WithField("result", passText[result]).Info("test result")
+	return results.NewTestCaseResult(tc.ID, result, metrics, err)
 }
 
 var passText = map[bool]string{
 	true:  "PASS",
 	false: "FAIL",
+}
+
+func logWithTestCase(logger *logrus.Entry, tc model.TestCase) *logrus.Entry {
+	return logger.WithFields(logrus.Fields{
+		"testcase":   tc.Name,
+		"method":     tc.Input.Method,
+		"endpoint":   tc.Input.Endpoint,
+		"statuscode": tc.Expect.StatusCode,
+	})
+}
+
+func logWithMetrics(logger *logrus.Entry, metrics results.Metrics) *logrus.Entry {
+	return logger.WithFields(logrus.Fields{
+		"responsetime": fmt.Sprintf("%v", metrics.ResponseTime),
+		"responsesize": metrics.ResponseSize,
+	})
 }

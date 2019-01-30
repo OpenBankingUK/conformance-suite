@@ -6,6 +6,7 @@ import (
 	"github.com/labstack/echo"
 	"github.com/sirupsen/logrus"
 	"net/http"
+	"time"
 )
 
 type runHandlers struct {
@@ -28,29 +29,34 @@ func (h *runHandlers) runStartPostHandler(c echo.Context) error {
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, NewErrorResponse(err))
 	}
-
 	return c.NoContent(http.StatusCreated)
 }
 
 // listenResultWebSocket creates a socket connection to listen for test run results
 func (h *runHandlers) listenResultWebSocket(c echo.Context) error {
-	logger := h.logger.WithField("handler", "listen_results")
+	logger := h.logger.WithField("handler", "listenResultWebSocket")
+	logger.Debug("client connected")
 
+	var err error
 	ws, err := h.upgrader.Upgrade(c.Response(), c.Request(), nil)
 	if err != nil {
 		logger.WithError(err).Error("list result websocket")
 		return err
 	}
 	defer func() {
+		logger.Debug("client disconnected")
 		err := ws.Close()
 		if err != nil {
 			logger.WithError(err).Error("closing websocket")
 		}
 	}()
 
+	pingFrequency := time.Second * 2
+	pingTicker := time.NewTicker(pingFrequency)
 	daemon := h.journey.Results()
 	for {
 		if daemon.ShouldStop() {
+			daemon.Stopped()
 			logger.Info("sending stop event")
 			if err := ws.WriteJSON(newStoppedEvent()); err != nil {
 				logger.WithError(err).Error("writing json to websocket")
@@ -58,6 +64,19 @@ func (h *runHandlers) listenResultWebSocket(c echo.Context) error {
 		}
 
 		select {
+		case <-pingTicker.C:
+			logger.Debug("pinging websocket client")
+			writeTimeout := time.Now().Add(time.Second)
+			err := ws.SetWriteDeadline(writeTimeout)
+			if err != nil {
+				// we don't care about the error, just means the ws client has dropped the connection
+				// and we want to close this gopher handler
+				return err
+			}
+			if err := ws.WriteMessage(websocket.PingMessage, nil); err != nil {
+				// same as above
+				return err
+			}
 		case result, ok := <-daemon.Results():
 			if !ok {
 				logger.Error("error reading from result channel")
@@ -67,19 +86,6 @@ func (h *runHandlers) listenResultWebSocket(c echo.Context) error {
 			if err := ws.WriteJSON(newResultEvent(result)); err != nil {
 				logger.WithError(err).Error("writing json to websocket")
 				break
-			}
-
-		case err, ok := <-daemon.Errors():
-			if !ok {
-				logrus.Error("error reading from errors channel")
-				break
-			}
-			logger.Info("sending error event")
-			if err != nil {
-				if err := ws.WriteJSON(newErrorEvent(err)); err != nil {
-					logger.WithError(err).Error("writing json to websocket")
-					break
-				}
 			}
 		}
 	}
@@ -105,12 +111,4 @@ type ResultEvent struct {
 
 func newResultEvent(testResult results.TestCase) ResultEvent {
 	return ResultEvent{testResult}
-}
-
-type ErrorEvent struct {
-	Error string `json:"error"`
-}
-
-func newErrorEvent(err error) ErrorEvent {
-	return ErrorEvent{err.Error()}
 }

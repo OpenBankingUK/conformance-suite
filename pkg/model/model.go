@@ -1,16 +1,14 @@
 package model
 
 import (
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/tracer"
 	"bytes"
 	"errors"
 	"fmt"
+	"gopkg.in/resty.v1"
 	"net/http"
 	"regexp"
 	"strings"
-	"time"
-
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/tracer"
-	"gopkg.in/resty.v1"
 )
 
 // Manifest is the high level container for test suite definition
@@ -65,8 +63,6 @@ type TestCase struct {
 	Header       http.Header    `json:"-"`                 // ResponseHeader
 	Body         string         `json:"-"`                 // ResponseBody
 	Bearer       string         `json:"bearer,omitempty"`  // Bear token if presented
-	ResponseTime time.Duration  `json:"-"`                 // Http Response Time
-	ResponseSize int            `json:"-"`                 // Size of the HTTP Response body
 }
 
 // Prepare a Testcase for execution at and endpoint,
@@ -79,12 +75,7 @@ func (t *TestCase) Prepare(ctx *Context) (*resty.Request, error) {
 	// Apply Context at end of creating request - get/put values into contexts
 	t.ApplyContext(ctx)
 
-	req, err := t.ApplyInput(ctx)
-	if err != nil {
-		return nil, err
-	}
-
-	return req, nil
+	return t.ApplyInput(ctx)
 }
 
 // Validate takes the http response that results as a consequence of sending the testcase http

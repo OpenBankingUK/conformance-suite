@@ -6,6 +6,7 @@ import (
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/executors"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/generation"
 	"github.com/pkg/errors"
+	"sync"
 )
 
 var errDiscoveryModelNotSet = errors.New("error discovery model not set")
@@ -22,12 +23,14 @@ type Journey interface {
 }
 
 type journey struct {
-	generator            generation.Generator
+	generator        generation.Generator
+	validator        discovery.Validator
+	daemonController executors.DaemonController
+
+	journeyLock          *sync.Mutex
 	testCases            []generation.SpecificationTestCases
-	validator            discovery.Validator
 	validDiscoveryModel  *discovery.Model
 	certificateSigning   authentication.Certificate
-	daemonController     executors.DaemonController
 	certificateTransport authentication.Certificate
 }
 
@@ -37,6 +40,7 @@ func NewJourney(generator generation.Generator, validator discovery.Validator) *
 		generator:        generator,
 		validator:        validator,
 		daemonController: executors.NewBufferedDaemonController(),
+		journeyLock:      &sync.Mutex{},
 	}
 }
 
@@ -50,13 +54,17 @@ func (wj *journey) SetDiscoveryModel(discoveryModel *discovery.Model) (discovery
 		return failures, nil
 	}
 
+	wj.journeyLock.Lock()
 	wj.validDiscoveryModel = discoveryModel
 	wj.testCases = nil
+	wj.journeyLock.Unlock()
 
 	return discovery.NoValidationFailures, nil
 }
 
 func (wj *journey) DiscoveryModel() (*discovery.Model, error) {
+	wj.journeyLock.Lock()
+	defer wj.journeyLock.Unlock()
 	if wj.validDiscoveryModel == nil {
 		return nil, errDiscoveryModelNotSet
 	}
@@ -64,6 +72,8 @@ func (wj *journey) DiscoveryModel() (*discovery.Model, error) {
 }
 
 func (wj *journey) TestCases() ([]generation.SpecificationTestCases, error) {
+	wj.journeyLock.Lock()
+	defer wj.journeyLock.Unlock()
 	if wj.validDiscoveryModel == nil {
 		return nil, errDiscoveryModelNotSet
 	}
@@ -87,12 +97,7 @@ func (wj *journey) RunTests() error {
 	}
 
 	runner := executors.NewTestCaseRunner(runDefinition, wj.daemonController)
-	err = runner.RunTestCases()
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return runner.RunTestCases()
 }
 
 func (wj *journey) Results() executors.DaemonController {
@@ -104,6 +109,8 @@ func (wj *journey) StopTestRun() {
 }
 
 func (wj *journey) SetCertificates(signing, transport authentication.Certificate) {
+	wj.journeyLock.Lock()
 	wj.certificateSigning = signing
 	wj.certificateTransport = transport
+	wj.journeyLock.Unlock()
 }
