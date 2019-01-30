@@ -1,17 +1,6 @@
 <template>
   <div class="d-flex flex-row flex-fill">
     <TheErrorStatus />
-    <b-alert
-      v-if="updateInfo.update"
-      variant="danger"
-      show>
-      {{ updateInfo.message }}
-      <br>
-      <br>
-      See <a
-        href="https://bitbucket.org/openbankingteam/conformance-suite/src/develop/README.md"
-        target="_blank">https://bitbucket.org/openbankingteam/conformance-suite/src/develop/README.md</a> for more information.
-    </b-alert>
     <div class="d-flex align-items-start">
       <div
         class="panel w-50"
@@ -72,11 +61,6 @@ export default {
     DiscoveryTemplateCard,
     TheErrorStatus,
   },
-  data() {
-    return {
-      updateInfo: {},
-    };
-  },
   computed: {
     ...mapGetters('config', ['discoveryTemplates']),
   },
@@ -87,6 +71,7 @@ export default {
     ...mapActions('status', [
       'clearErrors',
       'setErrors',
+      'pushNotification',
     ]),
     async checkUpdates() {
       try {
@@ -99,8 +84,12 @@ export default {
         if (response.status !== 200) {
           const updateError = `Failed to check for updates. Got ${response.status} from server.`;
           this.setErrors([updateError]);
-        } else {
-          this.updateInfo = data;
+        } else if (data.update) {
+          const note = {
+            extURL: 'https://bitbucket.org/openbankingteam/conformance-suite/src/develop/README.md',
+            message: data.message,
+          };
+          this.pushNotification(note);
         }
       } catch (err) {
         const updateError = `Failed to check for updates: ${err}.`;

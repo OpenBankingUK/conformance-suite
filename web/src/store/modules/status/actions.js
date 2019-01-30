@@ -11,4 +11,14 @@ export default {
       commit(types.SET_ERRORS, errors);
     }
   },
+  pushNotification({ commit, state }, notification) {
+    if (state.notifications && notification) {
+      commit(types.PUSH_NOTIFICATION, notification);
+    }
+  },
+  clearNotifications({ commit, state }) {
+    if (state.notifications && state.notifications.length > 0) {
+      commit(types.SET_NOTIFICATIONS, []);
+    }
+  },
 };

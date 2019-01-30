@@ -1,12 +1,18 @@
 <template>
   <b-navbar>
     <b-navbar-brand to="/">Conformance Suite</b-navbar-brand>
+    <TheNotificationBell />
   </b-navbar>
 </template>
 
 <script>
+import TheNotificationBell from '@/components/TheNotificationBell.vue';
+
 export default {
   name: 'TheHeader',
+  components: {
+    TheNotificationBell,
+  },
 };
 </script>
 
