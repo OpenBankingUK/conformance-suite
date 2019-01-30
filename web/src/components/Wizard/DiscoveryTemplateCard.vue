@@ -17,7 +17,6 @@
 
 <script>
 import { mapActions } from 'vuex';
-import api from '@/api/apiUtil';
 
 export default {
   name: 'DiscoveryTemplateCard',

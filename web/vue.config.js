@@ -4,13 +4,6 @@
 
 // vue.config.js
 module.exports = {
-
-  // https://cli.vuejs.org/guide/webpack.html
-  configureWebpack: {
-    plugins: [
-    ],
-  },
-
   // options...
 
   // https://cli.vuejs.org/config/#devserver
