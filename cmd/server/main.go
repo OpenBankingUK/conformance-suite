@@ -1,8 +1,8 @@
 package main
 
 import (
+	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/os"
 	"fmt"
-	"os"
 	"time"
 
 	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/version"
@@ -28,14 +28,15 @@ func init() {
 		DisableTimestamp: false,
 		ForceFormatting:  true,
 	})
-	logrus.SetLevel(logrus.InfoLevel)
+	logLevel := logrusLogLevel(os.GetEnvOrDefault("LOG_LEVEL", "INFO"))
+	logrus.SetLevel(logLevel)
 	logrus.StandardLogger().SetNoLock()
 	tracer.Silent = true
 	resty.SetDebug(false)
 }
 
 func main() {
-	logger := logrus.WithField("app", "server")
+	logger := logrus.StandardLogger().WithField("app", "server")
 	ver := version.NewBitBucket(version.BitBucketAPIRepository)
 
 	echoServer := server.NewServer(logger, model.NewConditionalityChecker(), ver)
@@ -43,7 +44,7 @@ func main() {
 
 	versionInfo(ver, logger)
 
-	address := fmt.Sprintf("0.0.0.0:%s", getEnvOrDefault("PORT", defaultPort))
+	address := fmt.Sprintf("0.0.0.0:%s", os.GetEnvOrDefault("PORT", defaultPort))
 	logger.Infof("address -> http://%s", address)
 	server.RoutesInfo(echoServer, logger)
 
@@ -54,19 +55,31 @@ func versionInfo(ver version.BitBucket, logger *logrus.Entry) {
 	v, err := ver.VersionFormatter(version.FullVersion)
 	if err != nil {
 		logger.Error(errors.Wrap(err, "version.VersionFormatter()"))
+		return
 	}
 	msg, _, err := ver.UpdateWarningVersion(v)
 	if err != nil {
 		logger.Error(errors.Wrap(err, "version.UpdateWarningVersion()"))
-	} else {
-		logger.Info(msg)
+		return
 	}
+	logger.Info(msg)
 }
 
-func getEnvOrDefault(key, defaultValue string) string {
-	value, found := os.LookupEnv(key)
-	if !found {
-		return defaultValue
+func logrusLogLevel(level string) logrus.Level {
+	switch level {
+	case "PANIC":
+		return logrus.PanicLevel
+	case "FATAL":
+		return logrus.FatalLevel
+	case "ERROR":
+		return logrus.ErrorLevel
+	case "WARN":
+		return logrus.WarnLevel
+	case "DEBUG":
+		return logrus.DebugLevel
+	case "INFO":
+		fallthrough
+	default:
+		return logrus.InfoLevel
 	}
-	return value
 }

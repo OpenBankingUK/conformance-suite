@@ -8,15 +8,14 @@ import (
 type DaemonController interface {
 	Stop()
 	ShouldStop() bool
+	Stopped()
 	Results() chan results.TestCase
-	Errors() chan error
 }
 
 // daemonController manages routine running tests
 // allowing to stop and collect results/errors
 type daemonController struct {
 	resultChan chan results.TestCase
-	errorsChan chan error
 	stopLock   *sync.Mutex
 	shouldStop bool
 }
@@ -24,17 +23,15 @@ type daemonController struct {
 // NewBufferedDaemonController new instance to control a background routine with 100 objects
 // buffer in result and error channels
 func NewBufferedDaemonController() *daemonController {
-	return NewDaemonController(
-		make(chan results.TestCase, 100),
-		make(chan error, 100),
-	)
+	const chanBufferSize = 100
+	return NewDaemonController(make(chan results.TestCase, chanBufferSize))
+
 }
 
 // NewDaemonController new instance to control a background routine
-func NewDaemonController(resultChan chan results.TestCase, errorsChan chan error) *daemonController {
+func NewDaemonController(resultChan chan results.TestCase) *daemonController {
 	return &daemonController{
 		resultChan: resultChan,
-		errorsChan: errorsChan,
 		stopLock:   &sync.Mutex{},
 		shouldStop: false,
 	}
@@ -44,6 +41,13 @@ func NewDaemonController(resultChan chan results.TestCase, errorsChan chan error
 func (rc *daemonController) Stop() {
 	rc.stopLock.Lock()
 	rc.shouldStop = true
+	rc.stopLock.Unlock()
+}
+
+// Stopped tell the daemon service has stopped
+func (rc *daemonController) Stopped() {
+	rc.stopLock.Lock()
+	rc.shouldStop = false
 	rc.stopLock.Unlock()
 }
 
@@ -59,8 +63,4 @@ func (rc *daemonController) ShouldStop() bool {
 
 func (rc *daemonController) Results() chan results.TestCase {
 	return rc.resultChan
-}
-
-func (rc *daemonController) Errors() chan error {
-	return rc.errorsChan
 }

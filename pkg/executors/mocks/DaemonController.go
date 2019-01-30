@@ -10,22 +10,6 @@ type DaemonController struct {
 	mock.Mock
 }
 
-// Errors provides a mock function with given fields:
-func (_m *DaemonController) Errors() chan error {
-	ret := _m.Called()
-
-	var r0 chan error
-	if rf, ok := ret.Get(0).(func() chan error); ok {
-		r0 = rf()
-	} else {
-		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(chan error)
-		}
-	}
-
-	return r0
-}
-
 // Results provides a mock function with given fields:
 func (_m *DaemonController) Results() chan results.TestCase {
 	ret := _m.Called()
@@ -58,5 +42,10 @@ func (_m *DaemonController) ShouldStop() bool {
 
 // Stop provides a mock function with given fields:
 func (_m *DaemonController) Stop() {
+	_m.Called()
+}
+
+// Stopped provides a mock function with given fields:
+func (_m *DaemonController) Stopped() {
 	_m.Called()
 }

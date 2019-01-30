@@ -1,6 +1,7 @@
 package executors
 
 import (
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/executors/results"
 	"crypto/tls"
 	"crypto/x509"
 	"errors"
@@ -39,23 +40,23 @@ func (e *Executor) SetCertificates(certificateSigning, certificationTransport au
 }
 
 // ExecuteTestCase - makes this a generic executor
-func (e *Executor) ExecuteTestCase(r *resty.Request, t *model.TestCase, ctx *model.Context) (*resty.Response, error) {
+func (e *Executor) ExecuteTestCase(r *resty.Request, t *model.TestCase, ctx *model.Context) (*resty.Response, results.Metrics, error) {
 	e.appMsg(fmt.Sprintf("Execute Testcase: %s: %s", t.ID, t.Name))
 	resp, err := r.Execute(r.Method, r.URL)
 	if err != nil {
 		if resp.StatusCode() == http.StatusFound { // catch status code 302 redirects and pass back as good response
-			t.ResponseTime = resp.Time()
-			t.ResponseSize = len(resp.Body())
 			header := resp.Header()
 			logrus.Printf("redirection headers: %#v\n", header)
 			e.appMsg(fmt.Sprintf("Response: (%s)", resp.String()))
-			return resp, nil
+			return resp, metrics(t, resp), nil
 		}
 	}
-	t.ResponseTime = resp.Time()
-	t.ResponseSize = len(resp.Body())
 	e.appMsg(fmt.Sprintf("Response: (%s)", resp.String()))
-	return resp, err
+	return resp, metrics(t, resp), err
+}
+
+func metrics(testCase *model.TestCase, response *resty.Response) results.Metrics {
+	return results.NewMetricsFromRestyResponse(testCase, response)
 }
 
 func (e *Executor) setupTLSCertificate(tlsCert tls.Certificate) error {
