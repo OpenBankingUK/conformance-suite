@@ -88,6 +88,8 @@ func discoveryStub(field string, value string) string {
 		specName = value
 	case "schemaVersion":
 		schemaVersion = value
+	case "tokenAcquisition":
+		tokenAcquisition = value
 	case "specURL":
 		specURL = value
 	case "specVersion":
