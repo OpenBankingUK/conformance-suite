@@ -224,6 +224,27 @@ func TestValidate(t *testing.T) {
 			}})
 	})
 
+	t.Run("ensure that `psu`, `headless`, `store` are supported tokenAcquisition values", func(t *testing.T) {
+		methods := []string{"psu", "headless", "store"}
+		for _, method := range methods {
+			testValidateFailures(t, conditionalityCheckerMock{isPresent: true}, &invalidTest{
+				discoveryJSON: discoveryStub("tokenAcquisition", method),
+				success: true,
+				failures: []ValidationFailure{}})
+		}
+	})
+
+	t.Run("when tokenAcquisition provided is not in SupportedTokenAcquisitions() returns failure", func(t *testing.T) {
+		testValidateFailures(t, conditionalityCheckerMock{isPresent: true}, &invalidTest{
+			discoveryJSON: discoveryStub("tokenAcquisition", "foo"),
+			failures: []ValidationFailure{
+				{
+					Key:   "DiscoveryModel.TokenAcquisition",
+					Error: "TokenAcquisition 'foo' not in list of supported methods",
+				},
+			}})
+	})
+
 	t.Run("when discoveryItems missing returns failure", func(t *testing.T) {
 		testValidateFailures(t, conditionalityCheckerMock{}, &invalidTest{
 			discoveryJSON: discoveryStub("discoveryItems", ""),
