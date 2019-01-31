@@ -16,7 +16,7 @@ var (
 
 // Version returns the current version of the Discovery Model parser
 func Version() string {
-	version := "v0.2.0"
+	version := "v0.2.1"
 	return version
 }
 
@@ -27,11 +27,17 @@ func SupportedVersions() map[string]bool {
 	}
 }
 
+// SupportedTokenAcquisitions returns a collection of supported token acquisition methods
+func SupportedTokenAcquisitions() []string {
+	return []string{"psu", "headless", "store"}
+}
+
 const (
-	fieldErrMsgFormat     = "Field validation for '%s' failed on the '%s' tag"
-	versionErrMsgFormat   = "DiscoveryVersion '%s' not in list of supported versions"
-	requiredErrorFormat   = "Field '%s' is required"
-	emptyArrayErrorFormat = "Field '%s' cannot be empty"
+	fieldErrMsgFormat            = "Field validation for '%s' failed on the '%s' tag"
+	versionErrMsgFormat          = "DiscoveryVersion '%s' not in list of supported versions"
+	tokenAcquisitionErrMsgFormat = "TokenAcquisition '%s' not in list of supported methods"
+	requiredErrorFormat          = "Field '%s' is required"
+	emptyArrayErrorFormat        = "Field '%s' cannot be empty"
 )
 
 // Validate - validates a discovery model, returns true when valid,
@@ -44,6 +50,7 @@ func Validate(checker model.ConditionalityChecker, discovery *Model) (bool, []Va
 		return false, failures, nil
 	}
 	failures = appendOtherValidationErrors(failures, checker, discovery, hasValidDiscoveryVersion)
+	failures = appendOtherValidationErrors(failures, checker, discovery, hasValidTokenAcquisitionMethod)
 	failures = appendOtherValidationErrors(failures, checker, discovery, hasValidAPISpecifications)
 	failures = appendOtherValidationErrors(failures, checker, discovery, HasValidEndpoints)
 	failures = appendOtherValidationErrors(failures, checker, discovery, HasMandatoryEndpoints)
@@ -98,6 +105,24 @@ func hasValidDiscoveryVersion(_ model.ConditionalityChecker, discovery *Model) (
 		return false, failures
 	}
 	return true, failures
+}
+
+// checker passed to match function definition expectation in appendOtherValidationErrors function.
+func hasValidTokenAcquisitionMethod(_ model.ConditionalityChecker, discovery *Model) (bool, []ValidationFailure) {
+	var failures []ValidationFailure
+
+	for _, method := range SupportedTokenAcquisitions() {
+		if method == discovery.DiscoveryModel.TokenAcquisition {
+			return true, failures
+		}
+	}
+
+	failure := ValidationFailure{
+		Key:   "DiscoveryModel.TokenAcquisition",
+		Error: fmt.Sprintf(tokenAcquisitionErrMsgFormat, discovery.DiscoveryModel.TokenAcquisition),
+	}
+	failures = append(failures, failure)
+	return false, failures
 }
 
 // checker passed to match function definition expectation in appendOtherValidationErrors function.

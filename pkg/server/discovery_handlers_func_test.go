@@ -104,6 +104,7 @@ func TestServerDiscoveryModelPOSTValidateReturnsErrorsWhenIncomplete(t *testing.
 						{"key": "DiscoveryModel.Name", "error": "Field 'DiscoveryModel.Name' is required"},
 						{"key": "DiscoveryModel.Description", "error": "Field 'DiscoveryModel.Description' is required"},
 						{"key": "DiscoveryModel.DiscoveryVersion", "error": "Field 'DiscoveryModel.DiscoveryVersion' is required"},
+						{"key": "DiscoveryModel.TokenAcquisition", "error": "Field 'DiscoveryModel.TokenAcquisition' is required"},
 						{"key": "DiscoveryModel.DiscoveryItems", "error": "Field 'DiscoveryModel.DiscoveryItems' is required"}
                     ]
 				}`

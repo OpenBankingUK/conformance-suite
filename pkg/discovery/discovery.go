@@ -15,6 +15,7 @@ type ModelDiscovery struct {
 	Name             string               `json:"name" validate:"required"`
 	Description      string               `json:"description" validate:"required"`
 	DiscoveryVersion string               `json:"discoveryVersion" validate:"required"`
+	TokenAcquisition string               `json:"tokenAcquisition" validate:"required"`
 	DiscoveryItems   []ModelDiscoveryItem `json:"discoveryItems" validate:"required,dive"`
 	CustomTests      []CustomTest         `json:"customTests" validate:"-"`
 }

@@ -58,7 +58,8 @@ func testUnmarshalDiscoveryJSON(t *testing.T, discoveryJSON string) *Model {
 func discoveryStub(field string, value string) string {
 	name := "ob-v3.0-generic"
 	description := "An Open Banking UK generic discovery template for v3.0 of Accounts and Payments."
-	version := "v0.2.0"
+	version := "v0.2.1"
+	tokenAcquisition := "psu"
 	specName := "Account and Transaction API Specification"
 	specURL := "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/642090641/Account+and+Transaction+API+Specification+-+v3.0"
 	specVersion := "v3.0"
@@ -87,6 +88,8 @@ func discoveryStub(field string, value string) string {
 		specName = value
 	case "schemaVersion":
 		schemaVersion = value
+	case "tokenAcquisition":
+		tokenAcquisition = value
 	case "specURL":
 		specURL = value
 	case "specVersion":
@@ -110,7 +113,8 @@ func discoveryStub(field string, value string) string {
 					"discoveryModel": {` +
 		`"name": "` + name + `",` +
 		`"description": "` + description + `",` +
-		`"discoveryVersion": "` + version + `"` +
+		`"discoveryVersion": "` + version + `",` +
+		`"tokenAcquisition": "` + tokenAcquisition + `"` +
 		discoveryItems + `
 					}
 			}`
@@ -218,6 +222,27 @@ func TestValidate(t *testing.T) {
 				{
 					Key:   "DiscoveryModel.DiscoveryVersion",
 					Error: "DiscoveryVersion 'v9.9.9' not in list of supported versions",
+				},
+			}})
+	})
+
+	t.Run("ensure that `psu`, `headless`, `store` are supported tokenAcquisition values", func(t *testing.T) {
+		methods := []string{"psu", "headless", "store"}
+		for _, method := range methods {
+			testValidateFailures(t, conditionalityCheckerMock{isPresent: true}, &invalidTest{
+				discoveryJSON: discoveryStub("tokenAcquisition", method),
+				success: true,
+				failures: []ValidationFailure{}})
+		}
+	})
+
+	t.Run("when tokenAcquisition provided is not in SupportedTokenAcquisitions() returns failure", func(t *testing.T) {
+		testValidateFailures(t, conditionalityCheckerMock{isPresent: true}, &invalidTest{
+			discoveryJSON: discoveryStub("tokenAcquisition", "foo"),
+			failures: []ValidationFailure{
+				{
+					Key:   "DiscoveryModel.TokenAcquisition",
+					Error: "TokenAcquisition 'foo' not in list of supported methods",
 				},
 			}})
 	})
@@ -418,5 +443,5 @@ func TestValidate(t *testing.T) {
 func TestDiscovery_Version(t *testing.T) {
 	assert := assert.New(t)
 
-	assert.Equal(Version(), "v0.2.0")
+	assert.Equal(Version(), "v0.2.1")
 }

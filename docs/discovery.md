@@ -1,4 +1,4 @@
-# Discovery Specification - v0.2.0
+# Discovery Specification - v0.2.1
 
 **Warning**: The Discovery Specification is in alpha and is subject to change without notice.
 
@@ -38,7 +38,8 @@ Name             | Occurrence | Path | Description
 discoveryModel   | 1..1       | discoveryModel |
 name             | 1..1       | discoveryModel.name | Name of the model, e.g. "ob-v3.0-ozone".
 description      | 1..1       | discoveryModel.description | Description of the model, e.g. "An Open Banking UK discovery template for v3.0 of Accounts and Payments with pre-populated model Bank (Ozone) data."
-discoveryVersion | 1..1       | discoveryModel.discoveryVersion | Version of the discovery model format, e.g. "v0.2.0"
+discoveryVersion | 1..1       | discoveryModel.discoveryVersion | Version of the discovery model format, e.g. "v0.2.1"
+tokenAcquisition | 1..1       | discoveryModel.tokenAcquisition | Define how access tokens will be acquired, e.g. "headless", "psu", "store"
 discoveryItems   | 1..n       | discoveryModel.discoveryItems.* | List of items. Each item contains information related to a particular specification version.
 apiSpecification | 1..1       | discoveryModel.discoveryItems.*.apiSpecification | Details of API specification
 name             | 1..1       | discoveryModel.discoveryItems.*.apiSpecification.name | The `info.title` field from the Swagger/OpenAPI specification file
@@ -63,6 +64,18 @@ The version number is formatted as MAJOR.MINOR.PATCH, following the
 [Semantic Versioning](https://semver.org/) approach to convey meaning about what
 has been modified from one version to the next. For details see: https://semver.org/
 
+### Token Acquisition
+
+The Token Acquisition field informs the application how it shall acquire access tokens to access endpoints under test.
+The following values are valid `psu`, `headless`, `store`
+
+* `psu` - tokens are acquired following the "[Hybrid Flow](https://openbanking.atlassian.net/wiki/spaces/DZ/pages/641992418/Read+Write+Data+API+Specification+-+v3.0#Read/WriteDataAPISpecification-v3.0-GrantTypesforidentifyingtheTPPandPSU)" authorisation method.
+This process involves directing the PSU to the ASPSP's authorisation pages, requiring manual effort from the PSU.
+* `headless` - Similar to `psu`, except the PSU is not required to intervene and perform any actions. This mode of operation enables developers to integrate
+the operation of this suite into their build tooling e.g. continuous integration/deployment (CI/CD), thus removing the manual element from `psu`. 
+* `store` - As a final step to to the `psu` and `headless` methods, an access token is generated and used to access the protected endpoints.
+The access tokens for use in this method would typically be generated in a developer/application management portal hosted by the ASPS. 
+
 ### Discovery item
 
 Each discovery item contains information related to a particular specification
@@ -81,7 +94,7 @@ Non-normative example
 ```json
 {
   "discoveryModel": {
-    "discoveryVersion": "v0.2.0",
+    "discoveryVersion": "v0.2.1",
     "discoveryItems": [
       {
         "apiSpecification": {

@@ -3,6 +3,7 @@
       "name": "ob-v3.0-ozone",
       "description": "An Open Banking UK discovery template for v3.0 of Accounts and Payments with pre-populated model Bank (Ozone) data.",
       "discoveryVersion": "v0.2.0",
+      "tokenAcquisition": "headless",
       "discoveryItems": [{
         "apiSpecification": {
           "name": "Account and Transaction API Specification",
@@ -209,4 +210,3 @@
       }]
     }
   }
-  
