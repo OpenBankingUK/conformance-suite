@@ -2,18 +2,28 @@
   <div class="test-case border p-2 mt-2">
     <b-table
       :items="testCase.testCases"
-      :fields="fields"
+      :fields="tableFields"
       head-variant="dark"
       caption-top
       hover
       small
       responsive
     >
+      <!-- format status column as Bootstrap badge. -->
+      <template
+        slot="meta.status"
+        slot-scope="data">
+        <b-badge
+          :variant="data.value === 'PASSED' ? 'success' : (data.value === 'FAILED' ? 'danger' : (data.value === 'PENDING' ? 'info' : 'secondary'))"
+          tag="h6"
+        >{{ data.value }}</b-badge>
+      </template>
+
       <template slot="table-caption">
         <h6>API Specification</h6>
         <b-table
           :items="[ testCase.apiSpecification ]"
-          :fields="fieldsApiSpecification"
+          :fields="apiSpecificationTableFields"
           small
           fixed
           stacked
@@ -41,6 +51,8 @@
 </template>
 
 <script>
+
+
 export default {
   name: 'TestCase',
   components: {},
@@ -78,11 +90,10 @@ export default {
      * Fields to display in the table.
      * See documentation: https://bootstrap-vue.js.org/docs/components/table#fields-column-definitions-
      */
-    fields: {
+    tableFields: {
       type: Object,
       default: () => ({
         '@id': {
-          tdClass: 'table-data-breakable',
         },
         name: {
           tdClass: 'table-data-breakable',
@@ -96,26 +107,29 @@ export default {
         'expect.status-code': {
           tdClass: 'table-data-breakable',
         },
+        'meta.status': {
+          label: 'Status',
+        },
       }),
     },
     /**
      * Fields to display in API Specification Table.
      * See documentation: https://bootstrap-vue.js.org/docs/components/table#fields-column-definitions-
      */
-    fieldsApiSpecification: {
+    apiSpecificationTableFields: {
       type: Object,
       default: () => ({
         name: {
-          tdClass: 'table-data-breakable',
+          tdClass: 'table-data-breakable api-specification-table',
         },
         url: {
-          tdClass: 'table-data-breakable',
+          tdClass: 'table-data-breakable api-specification-table',
         },
         version: {
-          tdClass: 'table-data-breakable',
+          tdClass: 'table-data-breakable api-specification-table',
         },
         schemaVersion: {
-          tdClass: 'table-data-breakable',
+          tdClass: 'table-data-breakable api-specification-table',
         },
       }),
     },
@@ -137,5 +151,9 @@ export default {
  */
 .test-case /deep/ .table-data-breakable {
   word-break: break-all;
+}
+
+.test-case /deep/ .api-specification-table {
+  grid-template-columns: 20% auto !important;
 }
 </style>

@@ -1,5 +1,8 @@
 export default {
-  execution: [],
   testCases: [],
   hasRunStarted: false,
+  ws: {
+    connection: null,
+    messages: [],
+  },
 };

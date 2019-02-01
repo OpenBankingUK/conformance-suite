@@ -1,12 +1,15 @@
 package server
 
 import (
+	"fmt"
+	"net/http"
+
+	"time"
+
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/executors/results"
 	"github.com/gorilla/websocket"
 	"github.com/labstack/echo"
 	"github.com/sirupsen/logrus"
-	"net/http"
-	"time"
 )
 
 type runHandlers struct {
@@ -32,17 +35,17 @@ func (h *runHandlers) runStartPostHandler(c echo.Context) error {
 	return c.NoContent(http.StatusCreated)
 }
 
-// listenResultWebSocket creates a socket connection to listen for test run results
+// listenResultWebSocket - /api/run/ws
+// creates a socket connection to listen for test run results.
 func (h *runHandlers) listenResultWebSocket(c echo.Context) error {
-	logger := h.logger.WithField("handler", "listenResultWebSocket")
-	logger.Debug("client connected")
-
-	var err error
 	ws, err := h.upgrader.Upgrade(c.Response(), c.Request(), nil)
+	logger := h.logger.WithField("handler", "listenResultWebSocket").WithField("websocket", fmt.Sprintf("%p", ws))
+
 	if err != nil {
-		logger.WithError(err).Error("list result websocket")
+		logger.Error(err)
 		return err
 	}
+
 	defer func() {
 		logger.Debug("client disconnected")
 		err := ws.Close()
@@ -51,8 +54,11 @@ func (h *runHandlers) listenResultWebSocket(c echo.Context) error {
 		}
 	}()
 
+	logger.Debug("client connected")
+
 	pingFrequency := time.Second * 2
 	pingTicker := time.NewTicker(pingFrequency)
+
 	daemon := h.journey.Results()
 	for {
 		if daemon.ShouldStop() {
@@ -60,6 +66,7 @@ func (h *runHandlers) listenResultWebSocket(c echo.Context) error {
 			logger.Info("sending stop event")
 			if err := ws.WriteJSON(newStoppedEvent()); err != nil {
 				logger.WithError(err).Error("writing json to websocket")
+				break
 			}
 		}
 
@@ -70,7 +77,7 @@ func (h *runHandlers) listenResultWebSocket(c echo.Context) error {
 			err := ws.SetWriteDeadline(writeTimeout)
 			if err != nil {
 				// we cannot return error here, if we do echo will try to write the error to conn
-				// and we closed the ws with a defer func 
+				// and we closed the ws with a defer func
 				return nil
 			}
 			if err := ws.WriteMessage(websocket.PingMessage, nil); err != nil {
@@ -89,6 +96,8 @@ func (h *runHandlers) listenResultWebSocket(c echo.Context) error {
 			}
 		}
 	}
+
+	return nil
 }
 
 // stopHandler sends signal to stop running test

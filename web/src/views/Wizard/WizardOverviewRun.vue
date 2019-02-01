@@ -6,15 +6,12 @@
           <h5>Overview</h5>
         </div>
         <div class="flex-fill panel-body">
-          <TheErrorStatus />
+          <TheErrorStatus/>
           <TestCases
             :test-cases="testCases"
             if="!hasErrors"/>
           <hr>
-          <TestCaseResults
-            v-if="hasTestCaseResults"
-            :test-case-results="execution"/>
-          <TheErrorStatus />
+          <TheErrorStatus/>
         </div>
         <TheWizardFooter :next-label="computeNextLabel"/>
       </div>
@@ -23,14 +20,11 @@
 </template>
 
 <script>
-import * as _ from 'lodash';
-
 import { createNamespacedHelpers, mapGetters, mapActions } from 'vuex';
 
-import TheWizardFooter from '@/components/Wizard/TheWizardFooter.vue';
-import TestCases from '@/components/Wizard/TestCases/TestCases.vue';
-import TestCaseResults from '@/components/Wizard/TestCaseResults/TestCaseResults.vue';
 import TheErrorStatus from '@/components/TheErrorStatus.vue';
+import TestCases from '@/components/Wizard/TestCases/TestCases.vue';
+import TheWizardFooter from '@/components/Wizard/TheWizardFooter.vue';
 
 const {
   mapState,
@@ -39,27 +33,24 @@ const {
 export default {
   name: 'WizardRunOverview',
   components: {
-    TheWizardFooter,
-    TestCases,
-    TestCaseResults,
     TheErrorStatus,
+    TestCases,
+    TheWizardFooter,
   },
   computed: {
-    ...mapGetters('testcases', [
-      'testCases',
-    ]),
     ...mapGetters('status', [
       'hasErrors',
     ]),
     ...mapState({
-      execution: 'execution',
+      testCases: 'testCases',
       hasRunStarted: 'hasRunStarted',
     }),
-    hasTestCaseResults() {
-      return !_.isEmpty(this.execution);
+    areTestsCompleted() {
+      // TODO: Wait for backend to send completed message.
+      return false;
     },
     computeNextLabel() {
-      if (!this.hasRunStarted || !this.hasTestCaseResults) {
+      if (!this.hasRunStarted || !this.areTestsCompleted) {
         return 'Run';
       }
 
@@ -105,8 +96,8 @@ export default {
         return next(false);
       }
 
-      // If there are no results prevent navigation.
-      if (!this.hasTestCaseResults) {
+      // If tests have not completed, prevent navigation.
+      if (!this.areTestsCompleted) {
         return next(false);
       }
 

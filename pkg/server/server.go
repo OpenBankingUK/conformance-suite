@@ -98,7 +98,7 @@ func registerRoutes(server *Server, logger *logrus.Entry, checker model.Conditio
 	// endpoints for test runner
 	runHandlers := newRunHandlers(journey, NewWebSocketUpgrader(), logger)
 	api.POST("/run", runHandlers.runStartPostHandler)
-	api.GET("/run", runHandlers.listenResultWebSocket)
+	api.GET("/run/ws", runHandlers.listenResultWebSocket)
 	api.DELETE("/run", runHandlers.stopRunHandler)
 
 	// endpoints for utility function such as version/update checking.

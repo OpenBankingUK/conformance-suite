@@ -1,7 +1,7 @@
 import api from './apiUtil';
 
 const TESTCASES_URL = '/api/test-cases';
-const EXECUTE_URL = '/api/run/start';
+const EXECUTE_URL = '/api/run';
 
 export default {
   /**
@@ -20,11 +20,11 @@ export default {
     return data;
   },
   /**
-   * Calls POST `/api/run/start`.
+   * Calls POST `/api/run`.
    */
   async executeTestCases() {
     const response = await api.post(EXECUTE_URL);
-    const data = await response.json();
+    const data = await response.text();
 
     // `fetch` does not throw an error even when status is not 201.
     // See: https://github.com/whatwg/fetch/issues/18

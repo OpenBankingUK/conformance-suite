@@ -8,19 +8,16 @@
         <div class="flex-fill panel-body">
           <div class="d-flex flex-column flex-fill">
             <b-tabs v-model="tabIndex">
-              <b-tab
-                title="Form view"
-                active>
-                <TheConfigurationForm />
+              <b-tab title="Form view">
+                <TheConfigurationForm/>
               </b-tab>
-              <b-tab
-                title="JSON view" >
+              <b-tab title="JSON view">
                 <!-- We use v-if to ensure editor renders fresh each toggle to
-                     render updates. Otherwise updates do not show on editor. -->
+                render updates. Otherwise updates do not show on editor.-->
                 <TheConfigurationJsonEditor v-if="tabIndex == 1"/>
               </b-tab>
             </b-tabs>
-            <TheErrorStatus />
+            <TheErrorStatus/>
           </div>
         </div>
         <TheWizardFooter/>
@@ -48,7 +45,7 @@ export default {
   },
   data() {
     return {
-      tabIndex: 0,
+      tabIndex: 1,
     };
   },
   computed: {
