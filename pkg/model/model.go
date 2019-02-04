@@ -1,14 +1,15 @@
 package model
 
 import (
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/tracer"
 	"bytes"
 	"errors"
 	"fmt"
-	"gopkg.in/resty.v1"
 	"net/http"
 	"regexp"
 	"strings"
+
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/tracer"
+	"gopkg.in/resty.v1"
 )
 
 // Manifest is the high level container for test suite definition
@@ -51,18 +52,18 @@ type Rule struct {
 //     and therefore the testcase has passed
 //
 type TestCase struct {
-	ID           string         `json:"@id,omitempty"`     // JSONLD ID Reference
-	Type         []string       `json:"@type,omitempty"`   // JSONLD type array
-	Name         string         `json:"name,omitempty"`    // Name
-	Purpose      string         `json:"purpose,omitempty"` // Purpose of the testcase in simple words
-	Input        Input          `json:"input,omitempty"`   // Input Object
-	Context      Context        `json:"context,omitempty"` // Local Context Object
-	Expect       Expect         `json:"expect,omitempty"`  // Expected object
-	ParentRule   *Rule          `json:"-"`                 // Allows accessing parent Rule
-	Request      *resty.Request `json:"-"`                 // The request that's been generated in order to call the endpoint
-	Header       http.Header    `json:"-"`                 // ResponseHeader
-	Body         string         `json:"-"`                 // ResponseBody
-	Bearer       string         `json:"bearer,omitempty"`  // Bear token if presented
+	ID         string         `json:"@id,omitempty"`     // JSONLD ID Reference
+	Type       []string       `json:"@type,omitempty"`   // JSONLD type array
+	Name       string         `json:"name,omitempty"`    // Name
+	Purpose    string         `json:"purpose,omitempty"` // Purpose of the testcase in simple words
+	Input      Input          `json:"input,omitempty"`   // Input Object
+	Context    Context        `json:"context,omitempty"` // Local Context Object
+	Expect     Expect         `json:"expect,omitempty"`  // Expected object
+	ParentRule *Rule          `json:"-"`                 // Allows accessing parent Rule
+	Request    *resty.Request `json:"-"`                 // The request that's been generated in order to call the endpoint
+	Header     http.Header    `json:"-"`                 // ResponseHeader
+	Body       string         `json:"-"`                 // ResponseBody
+	Bearer     string         `json:"bearer,omitempty"`  // Bear token if presented
 }
 
 // Prepare a Testcase for execution at and endpoint,
@@ -97,13 +98,16 @@ func (t *TestCase) Validate(resp *resty.Response, rulectx *Context) (bool, error
 	if len(t.Body) == 0 { // The response body can only be read once from the raw response
 		// so we cache it in the testcase
 		// Check that there is a value body in the raw response of the resty response object
-		if resp != nil && (resp.RawResponse != nil) && (resp.RawResponse.Body != nil) {
-			buf := new(bytes.Buffer)
-			_, err := buf.ReadFrom(resp.RawResponse.Body)
-			if err != nil {
-				return false, err
+		// Also - if the response is a redirect (302/StatusFound) then we continue as we'll have no body.
+		if resp != nil && resp.StatusCode() != http.StatusFound {
+			if resp != nil && (resp.RawResponse != nil) && (resp.RawResponse.Body != nil) {
+				buf := new(bytes.Buffer)
+				_, err := buf.ReadFrom(resp.RawResponse.Body)
+				if err != nil {
+					return false, t.AppErr("Validate: " + err.Error())
+				}
+				t.Body = buf.String()
 			}
-			t.Body = buf.String()
 		}
 	}
 	t.Header = resp.Header()
