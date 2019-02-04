@@ -7,8 +7,8 @@ export default {
   /**
    * Call GET /api/test-cases
    */
-  async computeTestCases() {
-    const response = await api.get(TESTCASES_URL);
+  async computeTestCases(setShowLoading) {
+    const response = await api.get(TESTCASES_URL, setShowLoading);
     const data = await response.json();
 
     // `fetch` does not throw an error even when status is not 200.
@@ -22,8 +22,8 @@ export default {
   /**
    * Calls POST `/api/run`.
    */
-  async executeTestCases() {
-    const response = await api.post(EXECUTE_URL);
+  async executeTestCases(setShowLoading) {
+    const response = await api.post(EXECUTE_URL, setShowLoading);
     const data = await response.text();
 
     // `fetch` does not throw an error even when status is not 201.
