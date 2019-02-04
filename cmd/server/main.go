@@ -1,9 +1,10 @@
 package main
 
 import (
-	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/os"
 	"fmt"
 	"time"
+
+	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/os"
 
 	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/version"
 	"github.com/pkg/errors"
@@ -31,8 +32,8 @@ func init() {
 	logLevel := logrusLogLevel(os.GetEnvOrDefault("LOG_LEVEL", "INFO"))
 	logrus.SetLevel(logLevel)
 	logrus.StandardLogger().SetNoLock()
-	tracer.Silent = true
-	resty.SetDebug(false)
+	tracer.Silent = os.GetEnvOrDefault("TRACER", "off") == "off"
+	resty.SetDebug(os.GetEnvOrDefault("HTTP_TRACE", "off") == "DEBUG")
 }
 
 func main() {
