@@ -45,7 +45,7 @@ if (process.env.NODE_ENV === 'test') {
 const requireTemplates = require.context('../../../../../pkg/discovery/templates/', false, /.+\.json$/);
 const discoveryTemplates = requireTemplates.keys().map(file => requireTemplates(file));
 
-const requireImages = require.context('../../../assets/images/', false, /.+\.png$/);
+const requireImages = require.context('./images/', false, /.+\.png$/);
 const discoveryImages = {};
 requireImages.keys().forEach(file => discoveryImages[file] = requireImages(file)); // eslint-disable-line
 
