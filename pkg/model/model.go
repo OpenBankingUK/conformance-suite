@@ -51,18 +51,18 @@ type Rule struct {
 //     and therefore the testcase has passed
 //
 type TestCase struct {
-	ID           string         `json:"@id,omitempty"`     // JSONLD ID Reference
-	Type         []string       `json:"@type,omitempty"`   // JSONLD type array
-	Name         string         `json:"name,omitempty"`    // Name
-	Purpose      string         `json:"purpose,omitempty"` // Purpose of the testcase in simple words
-	Input        Input          `json:"input,omitempty"`   // Input Object
-	Context      Context        `json:"context,omitempty"` // Local Context Object
-	Expect       Expect         `json:"expect,omitempty"`  // Expected object
-	ParentRule   *Rule          `json:"-"`                 // Allows accessing parent Rule
-	Request      *resty.Request `json:"-"`                 // The request that's been generated in order to call the endpoint
-	Header       http.Header    `json:"-"`                 // ResponseHeader
-	Body         string         `json:"-"`                 // ResponseBody
-	Bearer       string         `json:"bearer,omitempty"`  // Bear token if presented
+	ID         string         `json:"@id,omitempty"`     // JSONLD ID Reference
+	Type       []string       `json:"@type,omitempty"`   // JSONLD type array
+	Name       string         `json:"name,omitempty"`    // Name
+	Purpose    string         `json:"purpose,omitempty"` // Purpose of the testcase in simple words
+	Input      Input          `json:"input,omitempty"`   // Input Object
+	Context    Context        `json:"context,omitempty"` // Local Context Object
+	Expect     Expect         `json:"expect,omitempty"`  // Expected object
+	ParentRule *Rule          `json:"-"`                 // Allows accessing parent Rule
+	Request    *resty.Request `json:"-"`                 // The request that's been generated in order to call the endpoint
+	Header     http.Header    `json:"-"`                 // ResponseHeader
+	Body       string         `json:"-"`                 // ResponseBody
+	Bearer     string         `json:"bearer,omitempty"`  // Bear token if presented
 }
 
 // Prepare a Testcase for execution at and endpoint,

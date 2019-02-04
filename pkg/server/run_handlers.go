@@ -70,7 +70,7 @@ func (h *runHandlers) listenResultWebSocket(c echo.Context) error {
 			err := ws.SetWriteDeadline(writeTimeout)
 			if err != nil {
 				// we cannot return error here, if we do echo will try to write the error to conn
-				// and we closed the ws with a defer func 
+				// and we closed the ws with a defer func
 				return nil
 			}
 			if err := ws.WriteMessage(websocket.PingMessage, nil); err != nil {
