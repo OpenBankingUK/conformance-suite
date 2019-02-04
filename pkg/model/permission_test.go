@@ -6,220 +6,175 @@ import (
 	"path/filepath"
 	"testing"
 
-	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/test"
 	"github.com/stretchr/testify/require"
 
 	"github.com/stretchr/testify/assert"
 )
 
-// check we have some permissions loaded from the configuration
-func TestPermissionJsonRead(t *testing.T) {
-	count := len(permissions)
-	result := count > 10
-	assert.True(t, true, result)
+func TestDefaultForEndpointErrNoDefaults(t *testing.T) {
+	var data []permission
+	r := newStandardPermissionsWithOptions(data)
+
+	_, err := r.defaultForEndpoint("/home")
+
+	assert.EqualError(t, err, "no default permissions found")
 }
 
-// Get the list of permissions associated with this an endpoint
-func TestPermissionListReturned(t *testing.T) {
-	list := GetPermissionsForEndpoint("/accounts/{AccountId}/transactions")
-	count := len(list)
-	assert.Equal(t, 4, count) // get 4 permissions return that refer to /accounts/{AccountId}/transactions
-}
-
-// feature/refapp_466_add_permissions_to_testcase
-var (
-	permissionTestcase01 = []byte(`
-	{
-        "@id": "#t1008",
-        "name": "Transaction Test with Permissions",
-        "input": {
-            "method": "GET",
-            "endpoint": "/accounts"
-        },
-        "context": {
-			"permissions":["ReadTransactionsBasic","ReadTransactionDetail","ReadTransactionsCredits"],
-			"permissions_excluded":["ReadTransactionsDebits"]
+func TestDefaultForEndpointOneFoundDefaults(t *testing.T) {
+	data := []permission{
+		{
+			Code:      "read",
+			Default:   false,
+			Endpoints: []string{"/home"},
 		},
-        "expect": {
-            "status-code": 200
-        }
-    }
-	`)
-)
+	}
+	r := newStandardPermissionsWithOptions(data)
 
-// Read a testcase with permissions and check that they are all retrieved
-func TestIncludedAndExcludedPermissions(t *testing.T) {
-	tc := TestCase{}
-	err := json.Unmarshal(permissionTestcase01, &tc)
-	assert.NoError(t, err)
-	included, excluded := tc.GetPermissions()
-	assert.Equal(t, len(included), 3)
-	assert.Equal(t, len(excluded), 1)
-}
+	perms, err := r.defaultForEndpoint("/home")
 
-// A conformance suite testcase needs to know how to emit the permissions that it contains
-// A rule needs to know how to emit the permissionSet that a testcase sequence contains
-// A collection of permissions not required should also be expressed
-// - so two sets - in inclusion set and an exclusion set
-
-var (
-	permissionTestcase02 = []byte(`
-	{
-        "@id": "#t1008",
-        "name": "Transaction Test with Permissions",
-        "input": {
-            "method": "GET",
-            "endpoint": "/transactions"
-        },
-        "context": {
-		},
-        "expect": {
-            "status-code": 200
-        }
-    }
-	`)
-)
-
-// figure out the default permission for /transactions
-func TestGetDefaultPermissionsForEndpoint(t *testing.T) {
-	tc := TestCase{}
-	err := json.Unmarshal(permissionTestcase02, &tc)
-	assert.NoError(t, err)
-	included, excluded := tc.GetPermissions()
-	assert.Equal(t, len(included), 1)
-	assert.Equal(t, len(excluded), 0)
-	assert.Equal(t, included[0], "ReadTransactionsBasic")
-}
-
-var (
-	excludedPermissionsOnlyTestcase = []byte(`
-	{
-        "@id": "#t1008",
-        "name": "Transaction Test with Permissions",
-        "input": {
-            "method": "GET",
-            "endpoint": "/accounts"
-        },
-        "context": {
-			"permissions_excluded":["ReadTransactionsDebits","DummyPermission"]
-		},
-        "expect": {
-            "status-code": 200
-        }
-    }
-	`)
-)
-
-// checks that when we just define
-func TestExcludedPermissionsOnlyForTestcase(t *testing.T) {
-	tc := TestCase{}
-	err := json.Unmarshal(excludedPermissionsOnlyTestcase, &tc)
-	assert.NoError(t, err)
-	included, excluded := tc.GetPermissions()
-	assert.Equal(t, len(included), 0)
-	assert.Equal(t, len(excluded), 2)
-	assert.Equal(t, excluded[1], "DummyPermission")
-}
-
-var (
-	transactionTestcase01 = []byte(`
-	{
-        "@id": "#t1008",
-        "name": "Transaction Test with Permissions",
-        "input": {
-            "method": "GET",
-            "endpoint": "/transactions"
-        },
-        "context": {
-			"baseurl":"http://myaspsp",
-			"permissions":["ReadTransactionsBasic","ReadTransactionsCredits","ReadTransactionsDebits"]
-		},
-        "expect": {
-            "status-code": 200
-        }
-    }
-	`)
-)
-
-var (
-	transactionTestcase02 = []byte(`
-	{
-        "@id": "#t1010",
-        "name": "Transaction Test with Permissions",
-        "input": {
-            "method": "GET",
-            "endpoint": "/transactions"
-        },
-        "context": {
-			"baseurl":"http://myaspsp",
-			"permissions_excluded":["ReadTransactionsBasic","ReadTransactionDetail"]
-		},
-        "expect": {
-            "status-code": 403
-        }
-    }
-	`)
-)
-
-// Checks that a rule can retrieve the permissionSets for both included and excluded permissions
-// from a series of test cases defined in a manifest
-func TestGetIncludedAndExcludedPermissionSetsFromTestcaseSequence(t *testing.T) {
-	m := loadPermissionTestData(t) // from testdata/permissionTestData.json
-
-	rule := m.Rules[0]
-	includedSet, excludedSet := rule.GetPermissionSets()
-	assert.Equal(t, 3, len(includedSet))
-	assert.Equal(t, 2, len(excludedSet))
-}
-
-// two testcases to show /transcates with relevant permission
-// and without relevant permissions
-
-func TestTransactionsWithCorrectPermissions(t *testing.T) {
-	tc := TestCase{}
-	err := json.Unmarshal(transactionTestcase01, &tc)
-	assert.NoError(t, err)
-
-	included, excluded := tc.GetPermissions()
-	assert.Equal(t, 3, len(included))
-	assert.Equal(t, 0, len(excluded))
-	assert.Equal(t, included[0], "ReadTransactionsBasic")
-
-	res := test.CreateHTTPResponse(200, "OK", string(getAccountResponse))
-	result, err := tc.ApplyExpects(res, nil)
-	assert.Nil(t, err)
-	assert.Equal(t, result, true) // test validates ok
-}
-
-func TestTransctionWithoutCorrectPermissions(t *testing.T) {
-	tc := TestCase{}
-	err := json.Unmarshal(transactionTestcase02, &tc)
-	assert.NoError(t, err)
-	included, excluded := tc.GetPermissions()
-	assert.Equal(t, 0, len(included))
-	assert.Equal(t, 2, len(excluded))
-	assert.Equal(t, excluded[0], "ReadTransactionsBasic")
-
-	res := test.CreateHTTPResponse(403, "OK", string(getAccountResponse))
-
-	result, err := tc.ApplyExpects(res, nil)
-	assert.Nil(t, err)
-	assert.Equal(t, result, true) // test validates ok
-}
-
-func loadPermissionTestData(t *testing.T) Manifest {
-	t.Helper()
-
-	plan, err := ioutil.ReadFile("testdata/permissionTestData.json")
 	require.NoError(t, err)
-
-	var m Manifest
-	require.NoError(t, json.Unmarshal(plan, &m))
-	return m
+	assert.Equal(t, Code("read"), perms)
 }
 
-func TestPermissionsHaveNotChanged(t *testing.T) {
-	expected, err := json.MarshalIndent(permissions, "", "    ")
+func TestDefaultForEndpointUsesDefault(t *testing.T) {
+	data := []permission{
+		{
+			Code:      "read",
+			Default:   false,
+			Endpoints: []string{"/home"},
+		},
+		{
+			Code:      "write",
+			Default:   true,
+			Endpoints: []string{"/home"},
+		},
+	}
+	r := newStandardPermissionsWithOptions(data)
+
+	perms, err := r.defaultForEndpoint("/home")
+
+	require.NoError(t, err)
+	assert.Equal(t, Code("write"), perms)
+}
+
+func TestDefaultForErrIfNoDefaultAndMoreThenOne(t *testing.T) {
+	data := []permission{
+		{
+			Code:      "read",
+			Default:   false,
+			Endpoints: []string{"/home"},
+		},
+		{
+			Code:      "write",
+			Default:   false,
+			Endpoints: []string{"/home"},
+		},
+	}
+	r := newStandardPermissionsWithOptions(data)
+
+	perms, err := r.defaultForEndpoint("/home")
+
+	assert.EqualError(t, err, "no default permission found, but found more then one")
+	assert.Equal(t, Code(""), perms)
+}
+
+func TestDefaultForTwoDefaultsReturnFirst(t *testing.T) {
+	data := []permission{
+		{
+			Code:      "write",
+			Default:   true,
+			Endpoints: []string{"/home"},
+		},
+		{
+			Code:      "read",
+			Default:   true,
+			Endpoints: []string{"/home"},
+		},
+	}
+	r := newStandardPermissionsWithOptions(data)
+
+	perms, err := r.defaultForEndpoint("/home")
+
+	require.NoError(t, err)
+	assert.Equal(t, Code("write"), perms)
+}
+
+func TestPermissionsForEndpoint(t *testing.T) {
+	data := []permission{
+		{
+			Code:      "a",
+			Endpoints: []string{"/home"},
+		},
+	}
+	r := newStandardPermissionsWithOptions(data)
+
+	search := r.permissionsForEndpoint("/home")
+
+	assert.Len(t, search, 1)
+	assert.Equal(t, Code("a"), search[0].Code)
+}
+
+func TestPermissionsForEndpointMultiplePerms(t *testing.T) {
+	data := []permission{
+		{
+			Code:      "a",
+			Endpoints: []string{"/home"},
+		},
+		{
+			Code:      "b",
+			Endpoints: []string{"/home"},
+		},
+	}
+	r := newStandardPermissionsWithOptions(data)
+
+	search := r.permissionsForEndpoint("/home")
+
+	assert.Len(t, search, 2)
+	assert.Equal(t, Code("a"), search[0].Code)
+	assert.Equal(t, Code("b"), search[1].Code)
+}
+
+func TestPermissionsForEndpointDifferentEndpoints(t *testing.T) {
+	data := []permission{
+		{
+			Code:      "a",
+			Endpoints: []string{"/home"},
+		},
+		{
+			Code:      "b",
+			Endpoints: []string{"/home2"},
+		},
+	}
+	r := newStandardPermissionsWithOptions(data)
+
+	search := r.permissionsForEndpoint("/home")
+
+	assert.Len(t, search, 1)
+	assert.Equal(t, Code("a"), search[0].Code)
+}
+
+func TestPermissionsForEndpointMultipleEndpointsURL(t *testing.T) {
+	data := []permission{
+		{
+			Code:      "a",
+			Endpoints: []string{"/home"},
+		},
+		{
+			Code:      "b",
+			Endpoints: []string{"/home2", "/home"},
+		},
+	}
+	r := newStandardPermissionsWithOptions(data)
+
+	search := r.permissionsForEndpoint("/home")
+
+	assert.Len(t, search, 2)
+	assert.Equal(t, Code("a"), search[0].Code)
+	assert.Equal(t, Code("b"), search[1].Code)
+}
+
+func TestStaticPermissionsHaveNotChanged(t *testing.T) {
+	expected, err := json.MarshalIndent(staticApiPermissions, "", "    ")
 	require.NoError(t, err)
 
 	goldenFile := filepath.Join("testdata", "permissions.golden")
@@ -232,49 +187,4 @@ func TestPermissionsHaveNotChanged(t *testing.T) {
 	require.NoError(t, err, "failed reading .golden")
 
 	assert.JSONEq(t, string(expected), string(perms))
-}
-
-// Permissionset Test cases
-
-func TestGetSetPermissionSetNames(t *testing.T) {
-	p := NewPermissionSet("test", []string{"ReadTransactionsBasic", "ReadTransactionsCredits", "ReadTransactionsDebits"})
-	assert.Equal(t, "test", p.GetName())
-	p.SetName("anothertest")
-	assert.Equal(t, "anothertest", p.GetName())
-}
-
-func TestGetPermissionFromSet(t *testing.T) {
-	p := NewPermissionSet("test", []string{"ReadTransactionsBasic", "ReadTransactionsCredits", "ReadTransactionsDebits"})
-	permission := p.Get("ReadTransactionsDebits")
-	assert.True(t, permission)
-	permission = p.Get("nonexistent")
-	assert.False(t, permission)
-}
-
-func TestRemovePermissionFromSet(t *testing.T) {
-	p := NewPermissionSet("test", []string{"ReadTransactionsBasic", "ReadTransactionsCredits", "ReadTransactionsDebits"})
-	permission := p.Get("ReadTransactionsDebits")
-	assert.True(t, permission)
-	p.Remove("ReadTransactionsDebits")
-	assert.False(t, p.Get("ReadTransactionsDebit"))
-}
-
-func TestPermissionSetSubSet(t *testing.T) {
-	superset := NewPermissionSet("super", []string{"ReadTransactionsBasic", "ReadTransactionsCredits", "ReadTransactionsDebits"})
-	subset := NewPermissionSet("sub", []string{"ReadTransactionsDebits"})
-	issubset := superset.IsSubset(subset)
-	assert.True(t, issubset)
-	subset2 := NewPermissionSet("notsub", []string{"ReadTransactionsDebits_1"})
-	issubset = superset.IsSubset(subset2)
-	assert.False(t, issubset)
-}
-
-func TestPermissionSetUnion(t *testing.T) {
-	set1 := NewPermissionSet("set1", []string{"ReadTransactionsBasic", "ReadTransactionsCredits", "ReadTransactionsDebits"})
-	set2 := NewPermissionSet("set2", []string{"ReadProducts", "ReadOffers", "ReadPartyPSU"})
-	assert.False(t, set1.IsSubset(set2))
-	assert.False(t, set2.IsSubset(set1))
-	union := set1.Union(set2)
-	assert.True(t, union.IsSubset(set1))
-	assert.True(t, union.IsSubset(set2))
 }

@@ -6,6 +6,7 @@ import (
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/executors/results"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/generation"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/permissions"
 	"fmt"
 	"github.com/google/uuid"
 	"github.com/pkg/errors"
@@ -26,6 +27,7 @@ type TestCaseRunner struct {
 	definition       RunDefinition
 	daemonController DaemonController
 	logger           *logrus.Entry
+	resolver         func(groups []permissions.Group) permissions.CodeSetResultSet
 	runningLock      *sync.Mutex
 	running          bool
 }
@@ -36,6 +38,7 @@ func NewTestCaseRunner(definition RunDefinition, daemonController DaemonControll
 		definition:       definition,
 		daemonController: daemonController,
 		logger:           logrus.New().WithField("module", "TestCaseRunner"),
+		resolver:         permissions.Resolver,
 		runningLock:      &sync.Mutex{},
 		running:          false,
 	}
@@ -50,9 +53,23 @@ func (r *TestCaseRunner) RunTestCases() error {
 	}
 	r.running = true
 
+	codeSets := r.permissionSets()
+	r.logger.WithField("size", len(codeSets)).Info("code sets required")
+
 	go r.runTestCasesAsync()
 
 	return nil
+}
+
+// permissionSets calls resolver to get list of permission sets required to run all test cases
+func (r *TestCaseRunner) permissionSets() permissions.CodeSetResultSet {
+	var groups []permissions.Group
+	for _, spec := range r.definition.SpecTests {
+		for _, tc := range spec.TestCases {
+			groups = append(groups, model.NewPermissionGroup(tc))
+		}
+	}
+	return r.resolver(groups)
 }
 
 func (r *TestCaseRunner) runTestCasesAsync() {

@@ -3,7 +3,7 @@ package permissions
 // Permission Set Handling
 
 // PermissionSet contains a collection of permission names with the intention
-// of using this structure to determine whether specific permissions are included
+// of using this structure to determine whether specific permissions are Included
 // in the set.
 type PermissionSet struct {
 	name string

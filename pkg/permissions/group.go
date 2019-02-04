@@ -1,13 +1,23 @@
 package permissions
 
-type group struct {
-	included CodeSet
-	excluded CodeSet
+// Group represents a test and it's context permission set config
+type Group struct {
+	TestId   TestId
+	Included CodeSet
+	Excluded CodeSet
 }
 
-type groupSet []*group
+func NewGroup(testId string, included, excluded CodeSet) Group {
+	return Group{
+		TestId:   TestId(testId),
+		Included: included,
+		Excluded: excluded,
+	}
+}
 
-func (gs groupSet) firstCompatible(aGroup *group) (*group, bool) {
+type groupSet []*Group
+
+func (gs groupSet) firstCompatible(aGroup *Group) (*Group, bool) {
 	for _, group := range gs {
 		if aGroup.isCompatible(group) && group.isCompatible(aGroup) {
 			return group, true
@@ -16,7 +26,7 @@ func (gs groupSet) firstCompatible(aGroup *group) (*group, bool) {
 	return nil, false
 }
 
-func (g *group) isSatisfiedByAnyOf(groups []*group) bool {
+func (g *Group) isSatisfiedByAnyOf(groups []*Group) bool {
 	for _, group := range groups {
 		if g.isSatisfiedBy(group) {
 			return true
@@ -25,31 +35,27 @@ func (g *group) isSatisfiedByAnyOf(groups []*group) bool {
 	return false
 }
 
-func (g *group) isSatisfiedBy(group *group) bool {
-	if !group.included.HasAll(g.included) {
+func (g *Group) isSatisfiedBy(group *Group) bool {
+	if !group.Included.HasAll(g.Included) {
 		return false
 	}
 
-	if group.included.HasAny(g.excluded) {
-		return false
-	}
-
-	return true
-}
-
-func (g *group) isCompatible(group *group) bool {
-	if group.included.HasAny(g.excluded) {
-		return false
-	}
-
-	if g.excluded.HasAny(group.included) {
+	if group.Included.HasAny(g.Excluded) {
 		return false
 	}
 
 	return true
 }
 
-func (g *group) add(g2 *group) {
-	g.included = g.included.Union(g2.included)
-	g.excluded = g.excluded.Union(g2.excluded)
+func (g *Group) isCompatible(group *Group) bool {
+	if group.Included.HasAny(g.Excluded) {
+		return false
+	}
+
+	return true
+}
+
+func (g *Group) add(g2 *Group) {
+	g.Included = g.Included.Union(g2.Included)
+	g.Excluded = g.Excluded.Union(g2.Excluded)
 }
