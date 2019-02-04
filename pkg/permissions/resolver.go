@@ -1,5 +1,6 @@
 package permissions
 
+// Resolver find minimal codeSet required to satisfy a set group of permissions (endpoints)
 func Resolver(groups []group) []CodeSet {
 	if len(groups) == 0 {
 		return NoCodeSet
