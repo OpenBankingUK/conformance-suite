@@ -3,10 +3,13 @@ package permissions
 // Code is a string representing a OB access permission
 type Code string
 
+// CodeSet is a set of OB code permissions
 type CodeSet []Code
 
+// NoCodeSet represents a no permissions
 var NoCodeSet []CodeSet
 
+// Has cheack if a set Has a code
 func (c CodeSet) Has(searchCode Code) bool {
 	for _, code := range c {
 		if code == searchCode {
@@ -16,8 +19,9 @@ func (c CodeSet) Has(searchCode Code) bool {
 	return false
 }
 
-func (c CodeSet) HasAll(codes []Code) bool {
-	for _, code := range codes {
+// HasAll check is a set has all codes in other set
+func (c CodeSet) HasAll(otherSet CodeSet) bool {
+	for _, code := range otherSet {
 		if !c.Has(code) {
 			return false
 		}
@@ -25,24 +29,26 @@ func (c CodeSet) HasAll(codes []Code) bool {
 	return true
 }
 
-func (c CodeSet) Equals(codes CodeSet) bool {
-	if len(codes) != len(c) {
+// Equals check if 2 sets have the SAME codes
+func (c CodeSet) Equals(otherSet CodeSet) bool {
+	if len(otherSet) != len(c) {
 		return false
 	}
 
-	if !c.HasAll(codes) {
+	if !c.HasAll(otherSet) {
 		return false
 	}
 
-	if !codes.HasAll(c) {
+	if !otherSet.HasAll(c) {
 		return false
 	}
 
 	return true
 }
 
-func (c CodeSet) HasAny(codes []Code) bool {
-	for _, code := range codes {
+// HasAny checks if has any of the codes of other set
+func (c CodeSet) HasAny(otherSet CodeSet) bool {
+	for _, code := range otherSet {
 		if c.Has(code) {
 			return true
 		}
@@ -50,14 +56,15 @@ func (c CodeSet) HasAny(codes []Code) bool {
 	return false
 }
 
-func (c CodeSet) Union(c2 CodeSet) CodeSet {
+// Union returns a new set with all Code from 2 sets
+func (c CodeSet) Union(otherSet CodeSet) CodeSet {
 	union := CodeSet{}
 	for _, code := range c {
 		if !union.Has(code) {
 			union = append(union, code)
 		}
 	}
-	for _, code := range c2 {
+	for _, code := range otherSet {
 		if !union.Has(code) {
 			union = append(union, code)
 		}
