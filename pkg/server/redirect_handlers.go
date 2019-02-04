@@ -55,6 +55,8 @@ type redirectHandlers struct {
 
 // postFragmentOKHandler - POST /api/redirect/fragment/ok
 func (h *redirectHandlers) postFragmentOKHandler(c echo.Context) error {
+	logger := h.logger.WithField("handler", "postFragmentOKHandler")
+
 	fragment := new(RedirectFragment)
 	if err := c.Bind(fragment); err != nil {
 		return err
@@ -67,10 +69,10 @@ func (h *redirectHandlers) postFragmentOKHandler(c echo.Context) error {
 	t, _ := jwt.ParseWithClaims(fragment.IDToken, claim, nil)
 
 	if !t.Valid {
-		logrus.Warn("token not valid")
+		logger.Warn("token not valid")
 	}
 
-	cHash := h.calculateCHash(fragment.Code, true)
+	cHash := calculateCHash(fragment.Code, true)
 	if cHash == claim.CHash {
 		return c.JSON(http.StatusOK, fragment)
 	}
@@ -79,6 +81,8 @@ func (h *redirectHandlers) postFragmentOKHandler(c echo.Context) error {
 
 // postQueryOKHandler - POST /redirect/query/ok
 func (h *redirectHandlers) postQueryOKHandler(c echo.Context) error {
+	logger := h.logger.WithField("handler", "postQueryOKHandler")
+
 	query := new(RedirectQuery)
 	if err := c.Bind(query); err != nil {
 		return err
@@ -91,10 +95,10 @@ func (h *redirectHandlers) postQueryOKHandler(c echo.Context) error {
 	t, _ := jwt.ParseWithClaims(query.IDToken, claim, nil)
 
 	if !t.Valid {
-		logrus.Warn("token not valid")
+		logger.Warn("token not valid")
 	}
 
-	cHash := h.calculateCHash(query.Code, true)
+	cHash := calculateCHash(query.Code, true)
 	if cHash == claim.CHash {
 		return c.JSON(http.StatusOK, query)
 	}
@@ -114,7 +118,7 @@ func (h *redirectHandlers) postErrorHandler(c echo.Context) error {
 // calculateCHash calculates the code hash (c_hash) value
 // as described in section 3.3.2.11 (ID Token) https://openid.net/specs/openid-connect-core-1_0.html#HybridIDToken
 // There is an option to trim the `==` from the end of the base64url encoded string, by setting `trim=true`
-func (h *redirectHandlers) calculateCHash(code string, trim bool) string {
+func calculateCHash(code string, trim bool) string {
 	digest := sha256.Sum256([]byte(code))
 	left := digest[0 : len(digest)/2]
 	b64 := base64.URLEncoding.EncodeToString(left)
