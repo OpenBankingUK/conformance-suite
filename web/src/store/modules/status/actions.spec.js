@@ -12,17 +12,6 @@ const stateNoErrors = {
   errors: [],
 };
 
-const stateWithNotifications = {
-  notifications: [{
-    message: 'sample-message',
-    extURL: 'https://www.example',
-  }],
-};
-
-const stateNoNotifications = {
-  notifications: [],
-};
-
 describe('setErrors', () => {
   let commit;
 
@@ -64,6 +53,17 @@ describe('clearErrors', () => {
   });
 });
 
+const stateWithNotifications = {
+  notifications: [{
+    message: 'sample-message',
+    extURL: 'https://www.example',
+  }],
+};
+
+const stateNoNotifications = {
+  notifications: [],
+};
+
 describe('pushNotification', () => {
   let commit;
 
@@ -102,5 +102,19 @@ describe('clearNotifications', () => {
   it('commits empty array when errors present', () => {
     actions.clearNotifications({ commit, state: stateWithNotifications });
     expect(commit).toHaveBeenCalledWith(types.SET_NOTIFICATIONS, []);
+  });
+});
+
+describe('setShowLoading', () => {
+  let commit;
+
+  beforeEach(() => {
+    commit = jest.fn();
+  });
+
+  it('commits showLoading flag', () => {
+    const state = { showLoading: false };
+    actions.setShowLoading({ commit, state }, true);
+    expect(commit).toHaveBeenCalledWith(types.SET_SHOW_LOADING, true);
   });
 });

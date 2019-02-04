@@ -11,6 +11,9 @@ export default {
       commit(types.SET_ERRORS, errors);
     }
   },
+  setShowLoading({ commit }, showLoading) {
+    commit(types.SET_SHOW_LOADING, showLoading);
+  },
   pushNotification({ commit, state }, notification) {
     if (state.notifications && notification) {
       commit(types.PUSH_NOTIFICATION, notification);

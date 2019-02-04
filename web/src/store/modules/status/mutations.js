@@ -10,4 +10,7 @@ export default {
   [types.PUSH_NOTIFICATION](state, notification) {
     state.notifications.push(notification);
   },
+  [types.SET_SHOW_LOADING](state, showLoading) {
+    state.showLoading = showLoading;
+  },
 };
