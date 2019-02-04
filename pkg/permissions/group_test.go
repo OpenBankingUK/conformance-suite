@@ -97,7 +97,7 @@ func TestGroupIsSatisfiedByAnyOfFindsFirstOne(t *testing.T) {
 	assert.True(t, groupUnderTest.isSatisfiedByAnyOf(groups))
 }
 
-func TestGroup_Union(t *testing.T) {
+func TestGroup_Add(t *testing.T) {
 	group1 := &group{
 		included: []Code{"ReadAccountsBasic-1"},
 		excluded: []Code{"ReadAccountsDetail-1"},
@@ -108,7 +108,7 @@ func TestGroup_Union(t *testing.T) {
 		excluded: []Code{"ReadAccountsDetail-2"},
 	}
 
-	group1.Union(group2)
+	group1.add(group2)
 
 	assert.Equal(t, CodeSet{"ReadAccountsBasic-1", "ReadAccountsBasic-2"}, group1.included)
 	assert.Equal(t, CodeSet{"ReadAccountsDetail-1", "ReadAccountsDetail-2"}, group1.excluded)

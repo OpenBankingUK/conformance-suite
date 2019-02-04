@@ -56,7 +56,7 @@ func (c CodeSet) HasAny(otherSet CodeSet) bool {
 	return false
 }
 
-// Union returns a new set with all Code from 2 sets
+// add returns a new set with all Code from 2 sets
 func (c CodeSet) Union(otherSet CodeSet) CodeSet {
 	union := CodeSet{}
 	for _, code := range c {

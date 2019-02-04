@@ -49,7 +49,7 @@ func (g *group) isCompatible(group *group) bool {
 	return true
 }
 
-func (g *group) Union(g2 *group) {
+func (g *group) add(g2 *group) {
 	g.included = g.included.Union(g2.included)
 	g.excluded = g.excluded.Union(g2.excluded)
 }

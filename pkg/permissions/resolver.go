@@ -25,7 +25,7 @@ func Resolver(groups []group) []CodeSet {
 			continue
 		}
 
-		group.Union(&config)
+		group.add(&config)
 	}
 
 	return mapToCodeSets(groupsFound)

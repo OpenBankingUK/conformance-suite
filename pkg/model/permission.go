@@ -58,7 +58,7 @@ func (set *PermissionSet) SetName(s string) {
 	set.name = s
 }
 
-// Add a string to a PermissionSet
+// add a string to a PermissionSet
 func (set *PermissionSet) Add(s string) bool {
 	_, found := set.set[s]
 	set.set[s] = true
@@ -104,7 +104,7 @@ func (set *PermissionSet) IsSubset(sub *PermissionSet) bool {
 	return true
 }
 
-// Union returns a new PermissionSet named "union" which is the union
+// add returns a new PermissionSet named "union" which is the union
 // of the receiver and parameter permissionSets
 func (set *PermissionSet) Union(u *PermissionSet) *PermissionSet {
 	ps := NewPermissionSet("union", []string{})
