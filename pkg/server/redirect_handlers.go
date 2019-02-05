@@ -3,10 +3,10 @@ package server
 import (
 	"crypto/sha256"
 	"encoding/base64"
+	"errors"
 	"fmt"
 	"github.com/dgrijalva/jwt-go"
 	"net/http"
-	"strings"
 
 	"github.com/labstack/echo"
 	"github.com/sirupsen/logrus"
@@ -56,8 +56,6 @@ type redirectHandlers struct {
 
 // postFragmentOKHandler - POST /api/redirect/fragment/ok
 func (h *redirectHandlers) postFragmentOKHandler(c echo.Context) error {
-	logger := h.logger.WithField("handler", "postFragmentOKHandler")
-
 	fragment := new(RedirectFragment)
 	if err := c.Bind(fragment); err != nil {
 		return err
@@ -69,23 +67,20 @@ func (h *redirectHandlers) postFragmentOKHandler(c echo.Context) error {
 	// as it will always be error("no Keyfunc was provided")
 	t, _ := jwt.ParseWithClaims(fragment.IDToken, claim, nil)
 
-	if !t.Valid {
-		logger.Warn("token not valid")
+	cHash, err := calculateCHash(t.Header["alg"].(string), fragment.Code)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, NewErrorResponse(err))
 	}
-
-	cHash := calculateCHash(fragment.Code, true)
 	if cHash == claim.CHash {
 		return c.JSON(http.StatusOK, nil)
 	}
 
-	resp := NewErrorResponse(fmt.Errorf("calculated c_hash `%s` does not equal expected c_hash `%s`", cHash, claim.CHash))
+	resp := NewErrorResponse(errors.New("c_hash invalid"))
 	return c.JSON(http.StatusBadRequest, resp)
 }
 
 // postQueryOKHandler - POST /redirect/query/ok
 func (h *redirectHandlers) postQueryOKHandler(c echo.Context) error {
-	logger := h.logger.WithField("handler", "postQueryOKHandler")
-
 	query := new(RedirectQuery)
 	if err := c.Bind(query); err != nil {
 		return err
@@ -97,16 +92,15 @@ func (h *redirectHandlers) postQueryOKHandler(c echo.Context) error {
 	// as it will always be error("no Keyfunc was provided")
 	t, _ := jwt.ParseWithClaims(query.IDToken, claim, nil)
 
-	if !t.Valid {
-		logger.Warn("token not valid")
+	cHash, err := calculateCHash(t.Header["alg"].(string), query.Code)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, NewErrorResponse(err))
 	}
-
-	cHash := calculateCHash(query.Code, true)
 	if cHash == claim.CHash {
 		return c.JSON(http.StatusOK, nil)
 	}
 
-	resp := NewErrorResponse(fmt.Errorf("calculated c_hash `%s` does not equal expected c_hash `%s`", cHash, claim.CHash))
+	resp := NewErrorResponse(errors.New("c_hash invalid"))
 	return c.JSON(http.StatusBadRequest, resp)
 }
 
@@ -122,15 +116,26 @@ func (h *redirectHandlers) postErrorHandler(c echo.Context) error {
 
 // calculateCHash calculates the code hash (c_hash) value
 // as described in section 3.3.2.11 (ID Token) https://openid.net/specs/openid-connect-core-1_0.html#HybridIDToken
-// There is an option to trim the `==` from the end of the base64url encoded string, by setting `trim=true`
-func calculateCHash(code string, trim bool) string {
-	digest := sha256.Sum256([]byte(code))
-	left := digest[0 : len(digest)/2]
-	b64 := base64.URLEncoding.EncodeToString(left)
+// List of valid algorithms https://tools.ietf.org/html/rfc7518#section-3.1 as referenced by OBIE in Security Profile Implementers draft:
+// https://openbanking.atlassian.net/wiki/spaces/DZ/pages/83919096/Open+Banking+Security+Profile+-+Implementer+s+Draft+v1.1.2#OpenBankingSecurityProfile-Implementer'sDraftv1.1.2-Step2:FormtheJOSEHeader
+func calculateCHash(alg string, code string) (string, error) {
+	var digest []byte
 
-	if trim {
-		return strings.Trim(b64, "=")
+	switch alg {
+	// These are currently mentioned by OBIE, are there others?
+	case "ES256", "HS256", "PS256", "RS256":
+		d := sha256.Sum256([]byte(code))
+		//left most 256 bits.. 256/8 = 32bytes
+		// no need to validate length as sha256.Sum256 returns fixed length
+		digest = []byte(d[0:32])
+	case "none":
+		// Using the algorithm "none" https://tools.ietf.org/html/rfc7518#section-3.6
+		d := sha256.Sum256([]byte{})
+		digest = []byte(d[0:32])
+	default:
+		return "", fmt.Errorf("%s algorithm not supported", alg)
 	}
 
-	return b64
+	left := digest[0 : len(digest)/2]
+	return base64.RawURLEncoding.EncodeToString(left), nil
 }

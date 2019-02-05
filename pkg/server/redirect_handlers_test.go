@@ -2,6 +2,7 @@ package server
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"strings"
 	"testing"
@@ -9,8 +10,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-// TestTableItem holds variables for each test run
-type TestTableItem struct {
+type testTableItem struct {
 	label              	 string
 	endpoint           	 string
 	httpStatusExpected 	 int
@@ -28,7 +28,7 @@ func TestRedirectHandlersFragmentOK(t *testing.T) {
 	require.NotNil(server)
 
 	// Valid code and c_hash combination
-	testItemOK := TestTableItem{
+	testItemOK := testTableItem{
 		label:              "fragment ok",
 		endpoint:           `/api/redirect/fragment/ok`,
 		httpStatusExpected: http.StatusOK,
@@ -44,11 +44,11 @@ func TestRedirectHandlersFragmentOK(t *testing.T) {
 	}
 
 	// c_hash will not match calculated c_hash due to invalid `code`
-	testItemInvalidCode := TestTableItem{
+	testItemInvalidCode := testTableItem{
 		label:              "fragment invalid code",
 		endpoint:           "/api/redirect/fragment/ok",
 		httpStatusExpected: http.StatusBadRequest,
-		responseBodyExpected: "{\"error\":\"calculated c_hash `Scli9Z1BOsMPd3VjeC_2Kg` does not equal expected c_hash `1lkuHAniRCfVMKlDsJqM3A`\"}",
+		responseBodyExpected: `{"error":"c_hash invalid"}`,
 		requestBody: `
 {
     "code": "---invalid code---",
@@ -61,11 +61,11 @@ func TestRedirectHandlersFragmentOK(t *testing.T) {
 
 	// Note c_hash is manipulated (invalid) in JWT, meaning invalid signature as a result
 	// if signature validation is implemented this test shall fail.
-	testItemInvalidCHash := TestTableItem{
+	testItemInvalidCHash := testTableItem{
 		label:              "fragment invalid c_hash",
 		endpoint:           "/api/redirect/fragment/ok",
 		httpStatusExpected: http.StatusBadRequest,
-		responseBodyExpected: "{\"error\":\"calculated c_hash `1lkuHAniRCfVMKlDsJqM3A` does not equal expected c_hash `bad-c_hash`\"}",
+		responseBodyExpected: `{"error":"c_hash invalid"}`,
 		requestBody: `
 {
     "code": "a052c795-742d-415a-843f-8a4939d740d1",
@@ -76,7 +76,7 @@ func TestRedirectHandlersFragmentOK(t *testing.T) {
 	`,
 	}
 
-	ttData := []TestTableItem{
+	ttData := []testTableItem{
 		testItemOK,
 		testItemInvalidCode,
 		testItemInvalidCHash,
@@ -112,7 +112,7 @@ func TestRedirectHandlersQueryOK(t *testing.T) {
 	require.NotNil(server)
 
 	// valid code and c_hash combination
-	testItemOK := TestTableItem{
+	testItemOK := testTableItem{
 		label:              "query ok",
 		endpoint:           `/api/redirect/query/ok`,
 		httpStatusExpected: http.StatusOK,
@@ -128,11 +128,11 @@ func TestRedirectHandlersQueryOK(t *testing.T) {
 	}
 
 	// invalid value for `code`
-	testItemInvalidCode := TestTableItem{
+	testItemInvalidCode := testTableItem{
 		label:              "query invalid code",
 		endpoint:           `/api/redirect/query/ok`,
 		httpStatusExpected: http.StatusBadRequest,
-		responseBodyExpected: "{\"error\":\"calculated c_hash `Scli9Z1BOsMPd3VjeC_2Kg` does not equal expected c_hash `1lkuHAniRCfVMKlDsJqM3A`\"}",
+		responseBodyExpected: `{"error":"c_hash invalid"}`,
 		requestBody: `
 {
     "code": "---invalid code---",
@@ -144,11 +144,11 @@ func TestRedirectHandlersQueryOK(t *testing.T) {
 	}
 
 	// invalid value for `c_hash` inside the `id_token` field
-	testItemInvalidCHash := TestTableItem{
+	testItemInvalidCHash := testTableItem{
 		label:              "query invalid c_hash",
 		endpoint:           `/api/redirect/query/ok`,
 		httpStatusExpected: http.StatusBadRequest,
-		responseBodyExpected: "{\"error\":\"calculated c_hash `1lkuHAniRCfVMKlDsJqM3A` does not equal expected c_hash `bad-c_hash`\"}",
+		responseBodyExpected: `{"error":"c_hash invalid"}`,
 		requestBody: `
 {
     "code": "a052c795-742d-415a-843f-8a4939d740d1",
@@ -159,7 +159,7 @@ func TestRedirectHandlersQueryOK(t *testing.T) {
 	`,
 	}
 
-	ttData := []TestTableItem{
+	ttData := []testTableItem{
 		testItemOK,
 		testItemInvalidCode,
 		testItemInvalidCHash,
@@ -217,4 +217,72 @@ func TestRedirectHandlersError(t *testing.T) {
 
 	bodyActual := body.String()
 	require.JSONEq(bodyExpected, bodyActual)
+}
+
+func TestCalculateCHash(t *testing.T) {
+	require := require.New(t)
+
+	tt := []struct{
+		label string
+		code string
+		alg string
+		expectedHash string
+		expectedError error
+
+	}{
+		{
+			label: "ES256 empty code",
+			code: "",
+			alg: "ES256",
+			expectedHash: "47DEQpj8HBSa-_TImW-5JA",
+		},
+		{
+			label: "ES256 code valid",
+			code: "80bf17a3-e617-4983-9d62-b50bd8e6fce4",
+			alg: "ES256",
+			expectedHash: "EE_Bf-grXWv5GGhs5FZ0ug",
+		},
+		{
+			label: "HS256 code valid",
+			code: "80bf17a3-e617-4983-9d62-b50bd8e6fce4",
+			alg: "HS256",
+			expectedHash: "EE_Bf-grXWv5GGhs5FZ0ug",
+		},
+		{
+			label: "PS256 code valid",
+			code: "80bf17a3-e617-4983-9d62-b50bd8e6fce4",
+			alg: "PS256",
+			expectedHash: "EE_Bf-grXWv5GGhs5FZ0ug",
+		},
+		{
+			label: "RS256 code valid",
+			code: "80bf17a3-e617-4983-9d62-b50bd8e6fce4",
+			alg: "RS256",
+			expectedHash: "EE_Bf-grXWv5GGhs5FZ0ug",
+		},
+		{
+			label: "algorithm not supported",
+			code: "80bf17a3-e617-4983-9d62-b50bd8e6fce4",
+			alg: "bad-algorithm",
+			expectedHash: "",
+			expectedError: fmt.Errorf("bad-algorithm algorithm not supported"),
+		},
+		{
+			label: "none algorithm",
+			code: "80bf17a3-e617-4983-9d62-b50bd8e6fce4",
+			alg: "none",
+			expectedHash: "47DEQpj8HBSa-_TImW-5JA",
+		},
+
+	}
+
+	for _, tti := range tt {
+		cHash, err := calculateCHash(tti.alg, tti.code)
+		require.Equal(tti.expectedHash, cHash, tti.label)
+
+		if tti.expectedError != nil {
+			require.Equal(tti.expectedError, err, tti.label)
+		}
+
+	}
 }
