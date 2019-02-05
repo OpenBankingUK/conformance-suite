@@ -31,9 +31,9 @@ func TestDiscoverySamples_Examples_Parse_Correctly(t *testing.T) {
 
 			checker := model.NewConditionalityChecker()
 			result, failures, err := discovery.Validate(checker, discoveryModel)
+			require.NoError(t, err)
+			require.Equal(t, []discovery.ValidationFailure{}, failures)
 			assert.True(result)
-			assert.NoError(err)
-			assert.Equal([]discovery.ValidationFailure{}, failures)
 		})
 	}
 }
