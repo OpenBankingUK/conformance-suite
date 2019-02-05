@@ -76,6 +76,8 @@ func (h *redirectHandlers) postFragmentOKHandler(c echo.Context) error {
 	if cHash == claim.CHash {
 		return c.JSON(http.StatusOK, fragment)
 	}
+
+	h.logger.Info("Calculated c_hash value not equal expected value")
 	return c.JSON(http.StatusBadRequest, fragment)
 }
 
@@ -102,6 +104,8 @@ func (h *redirectHandlers) postQueryOKHandler(c echo.Context) error {
 	if cHash == claim.CHash {
 		return c.JSON(http.StatusOK, query)
 	}
+
+	h.logger.Info("Calculated c_hash value not equal expected value")
 	return c.JSON(http.StatusBadRequest, query)
 }
 
