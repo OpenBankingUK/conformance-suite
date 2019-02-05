@@ -1,18 +1,17 @@
 package executors
 
 import (
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/authentication"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/executors/results"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/tracer"
 	"crypto/tls"
 	"crypto/x509"
 	"errors"
 	"fmt"
-	"net/http"
-
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/authentication"
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/tracer"
 	"github.com/sirupsen/logrus"
-	resty "gopkg.in/resty.v1"
+	"gopkg.in/resty.v1"
+	"net/http"
 )
 
 // TestCaseExecutor defines an interface capable of executing a testcase
