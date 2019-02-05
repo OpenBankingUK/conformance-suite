@@ -24,6 +24,9 @@ export default {
   [types.SET_CONFIGURATION_TRANSPORT_PUBLIC](state, transportPublic) {
     state.configuration.transport_public = transportPublic;
   },
+  [types.SET_DISCOVERY_TEMPLATES](state, templates) {
+    state.discoveryTemplates = templates;
+  },
 
   [types.SET_WIZARD_STEP](state, step) {
     state.wizard.step = step;

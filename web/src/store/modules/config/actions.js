@@ -5,7 +5,20 @@ import constants from './constants';
 import discovery from '../../../api/discovery';
 import api from '../../../api';
 
+const findImageData = (model, images) => {
+  const { name } = model.discoveryModel;
+  const customImage = `./${name}.png`;
+  return images[customImage] || images['./no-image-discovery-icon.png'];
+};
+
 export default {
+  setDiscoveryTemplates({ commit }, { discoveryTemplates, discoveryImages }) {
+    const templates = discoveryTemplates.map(template => ({
+      model: template,
+      image: findImageData(template, discoveryImages),
+    }));
+    commit(types.SET_DISCOVERY_TEMPLATES, templates);
+  },
   setDiscoveryModel({ commit, dispatch, state }, editorString) {
     const value = JSON.stringify(state.discoveryModel);
     if (_.isEqual(value, editorString)) {

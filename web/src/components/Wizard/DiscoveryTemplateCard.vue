@@ -8,7 +8,7 @@
   >
     <div class="card-image">
       <b-card-img
-        :src="imgSrc"
+        :src="image"
         :alt="name"/>
     </div>
     <p class="card-text">{{ text }}</p>
@@ -43,9 +43,6 @@ export default {
     },
     text() {
       return this.discoveryModel.description;
-    },
-    imgSrc() {
-      return this.image;
     },
   },
   methods: {

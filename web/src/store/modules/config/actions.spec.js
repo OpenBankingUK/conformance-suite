@@ -5,6 +5,50 @@ import discovery from '../../../api/discovery';
 
 jest.mock('../../../api/discovery');
 
+describe('setDiscoveryTemplates', () => {
+  let commit;
+
+  beforeEach(() => {
+    commit = jest.fn();
+  });
+
+  const name = 'ob-v3.0-random';
+
+  it('commits discovery template with matched image', async () => {
+    const matchingImage = `./${name}.png`;
+    const discoveryImages = {};
+    discoveryImages[matchingImage] = 'mockImage';
+    const discoveryTemplates = [{ discoveryModel: { name } }];
+
+    const data = { discoveryTemplates, discoveryImages };
+    await actions.setDiscoveryTemplates({ commit }, data);
+    expect(commit).toHaveBeenCalledWith(types.SET_DISCOVERY_TEMPLATES, [
+      {
+        model: discoveryTemplates[0],
+        image: 'mockImage',
+      },
+    ]);
+  });
+
+  it('commits discovery template with no-image default when no matching image', async () => {
+    const nonMatchingImage = './an-image.png';
+    const defaultImage = './no-image-discovery-icon.png';
+    const discoveryImages = {};
+    discoveryImages[nonMatchingImage] = 'mockImage';
+    discoveryImages[defaultImage] = 'defaultImage';
+    const discoveryTemplates = [{ discoveryModel: { name } }];
+
+    const data = { discoveryTemplates, discoveryImages };
+    await actions.setDiscoveryTemplates({ commit }, data);
+    expect(commit).toHaveBeenCalledWith(types.SET_DISCOVERY_TEMPLATES, [
+      {
+        model: discoveryTemplates[0],
+        image: 'defaultImage',
+      },
+    ]);
+  });
+});
+
 describe('validateDiscoveryConfig', () => {
   const state = { discoveryModel: {} };
   let commit;

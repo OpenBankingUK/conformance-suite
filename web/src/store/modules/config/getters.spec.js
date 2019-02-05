@@ -1,5 +1,29 @@
 import getters from './getters';
 
+describe('discoveryTemplates', () => {
+  let state;
+  const name = 'ob-v3.0-random';
+
+  beforeEach(() => {
+    state = {
+      discoveryTemplates: [
+        {
+          model: {
+            discoveryModel: { name },
+          },
+          image: 'imageData',
+        },
+      ],
+    };
+  });
+
+  it('returns template with image set to PNG matching template name', async () => {
+    const list = await getters.discoveryTemplates(state);
+    expect(list[0].model).toEqual(state.discoveryTemplates[0].model);
+    expect(list[0].image).toEqual('imageData');
+  });
+});
+
 describe('discoveryProblems', () => {
   let state;
 
