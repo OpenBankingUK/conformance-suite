@@ -11,10 +11,11 @@ import (
 
 // TestTableItem holds variables for each test run
 type TestTableItem struct {
-	label              string
-	endpoint           string
-	httpStatusExpected int
-	bodyExpected       string
+	label              	 string
+	endpoint           	 string
+	httpStatusExpected 	 int
+	requestBody        	 string
+	responseBodyExpected string
 }
 
 func TestRedirectHandlersFragmentOK(t *testing.T) {
@@ -31,7 +32,8 @@ func TestRedirectHandlersFragmentOK(t *testing.T) {
 		label:              "fragment ok",
 		endpoint:           `/api/redirect/fragment/ok`,
 		httpStatusExpected: http.StatusOK,
-		bodyExpected: `
+		responseBodyExpected: "null",
+		requestBody:`
 {
     "code": "a052c795-742d-415a-843f-8a4939d740d1",
     "scope": "openid accounts",
@@ -46,7 +48,8 @@ func TestRedirectHandlersFragmentOK(t *testing.T) {
 		label:              "fragment invalid code",
 		endpoint:           "/api/redirect/fragment/ok",
 		httpStatusExpected: http.StatusBadRequest,
-		bodyExpected: `
+		responseBodyExpected: "{\"error\":\"calculated c_hash `Scli9Z1BOsMPd3VjeC_2Kg` does not equal expected c_hash `1lkuHAniRCfVMKlDsJqM3A`\"}",
+		requestBody: `
 {
     "code": "---invalid code---",
     "scope": "openid accounts",
@@ -62,7 +65,8 @@ func TestRedirectHandlersFragmentOK(t *testing.T) {
 		label:              "fragment invalid c_hash",
 		endpoint:           "/api/redirect/fragment/ok",
 		httpStatusExpected: http.StatusBadRequest,
-		bodyExpected: `
+		responseBodyExpected: "{\"error\":\"calculated c_hash `1lkuHAniRCfVMKlDsJqM3A` does not equal expected c_hash `bad-c_hash`\"}",
+		requestBody: `
 {
     "code": "a052c795-742d-415a-843f-8a4939d740d1",
     "scope": "openid accounts",
@@ -83,7 +87,7 @@ func TestRedirectHandlersFragmentOK(t *testing.T) {
 		code, body, headers := request(
 			http.MethodPost,
 			ttItem.endpoint,
-			strings.NewReader(ttItem.bodyExpected),
+			strings.NewReader(ttItem.requestBody),
 			server,
 		)
 
@@ -94,7 +98,7 @@ func TestRedirectHandlersFragmentOK(t *testing.T) {
 		require.NotNil(body, ttItem.label)
 
 		bodyActual := body.String()
-		require.JSONEq(ttItem.bodyExpected, bodyActual, ttItem.label)
+		require.Equal(ttItem.responseBodyExpected, bodyActual, ttItem.label)
 	}
 }
 
@@ -112,7 +116,8 @@ func TestRedirectHandlersQueryOK(t *testing.T) {
 		label:              "query ok",
 		endpoint:           `/api/redirect/query/ok`,
 		httpStatusExpected: http.StatusOK,
-		bodyExpected: `
+		responseBodyExpected: "null",
+		requestBody:`
 {
     "code": "a052c795-742d-415a-843f-8a4939d740d1",
     "scope": "openid accounts",
@@ -127,9 +132,10 @@ func TestRedirectHandlersQueryOK(t *testing.T) {
 		label:              "query invalid code",
 		endpoint:           `/api/redirect/query/ok`,
 		httpStatusExpected: http.StatusBadRequest,
-		bodyExpected: `
+		responseBodyExpected: "{\"error\":\"calculated c_hash `Scli9Z1BOsMPd3VjeC_2Kg` does not equal expected c_hash `1lkuHAniRCfVMKlDsJqM3A`\"}",
+		requestBody: `
 {
-    "code": "invalid-code",
+    "code": "---invalid code---",
     "scope": "openid accounts",
     "id_token": "eyJ0eXAiOiJKV1QiLCJraWQiOiJGb2w3SXBkS2VMWm16S3RDRWdpMUxEaFNJek09IiwiYWxnIjoiRVMyNTYifQ.eyJzdWIiOiJtYmFuYSIsImF1ZGl0VHJhY2tpbmdJZCI6IjY5YzZkZmUzLWM4MDEtNGRkMi05Mjc1LTRjNWVhNzdjZWY1NS0xMDMzMDgyIiwiaXNzIjoiaHR0cHM6Ly9tYXRscy5hcy5hc3BzcC5vYi5mb3JnZXJvY2suZmluYW5jaWFsL29hdXRoMi9vcGVuYmFua2luZyIsInRva2VuTmFtZSI6ImlkX3Rva2VuIiwibm9uY2UiOiI1YTZiMGQ3ODMyYTlmYjRmODBmMTE3MGEiLCJhY3IiOiJ1cm46b3BlbmJhbmtpbmc6cHNkMjpzY2EiLCJhdWQiOiI1NGY2NDMwOS00MzNkLTQ2MTAtOTVkMi02M2QyZjUyNTM0MTIiLCJjX2hhc2giOiIxbGt1SEFuaVJDZlZNS2xEc0pxTTNBIiwib3BlbmJhbmtpbmdfaW50ZW50X2lkIjoiQTY5MDA3Nzc1LTcwZGQtNGIyMi1iZmM1LTlkNTI0YTkxZjk4MCIsInNfaGFzaCI6ImZ0OWRrQTdTWXdlb2hlZXpjOGFHeEEiLCJhenAiOiI1NGY2NDMwOS00MzNkLTQ2MTAtOTVkMi02M2QyZjUyNTM0MTIiLCJhdXRoX3RpbWUiOjE1Mzk5NDM3NzUsInJlYWxtIjoiL29wZW5iYW5raW5nIiwiZXhwIjoxNTQwMDMwMTgxLCJ0b2tlblR5cGUiOiJKV1RUb2tlbiIsImlhdCI6MTUzOTk0Mzc4MX0.8bm69KPVQIuvcTlC-p0FGcplTV1LnmtacHybV2PTb2uEgMgrL3JNA0jpT2OYO73r3zPC41mNQlMDvVOUn78osQ",
     "state": "5a6b0d7832a9fb4f80f1170a"
@@ -142,7 +148,8 @@ func TestRedirectHandlersQueryOK(t *testing.T) {
 		label:              "query invalid c_hash",
 		endpoint:           `/api/redirect/query/ok`,
 		httpStatusExpected: http.StatusBadRequest,
-		bodyExpected: `
+		responseBodyExpected: "{\"error\":\"calculated c_hash `1lkuHAniRCfVMKlDsJqM3A` does not equal expected c_hash `bad-c_hash`\"}",
+		requestBody: `
 {
     "code": "a052c795-742d-415a-843f-8a4939d740d1",
     "scope": "openid accounts",
@@ -163,7 +170,7 @@ func TestRedirectHandlersQueryOK(t *testing.T) {
 		code, body, headers := request(
 			http.MethodPost,
 			ttItem.endpoint,
-			strings.NewReader(ttItem.bodyExpected),
+			strings.NewReader(ttItem.requestBody),
 			server,
 		)
 
@@ -174,7 +181,7 @@ func TestRedirectHandlersQueryOK(t *testing.T) {
 		require.NotNil(body, ttItem.label)
 
 		bodyActual := body.String()
-		require.JSONEq(ttItem.bodyExpected, bodyActual, ttItem.label)
+		require.JSONEq(ttItem.responseBodyExpected, bodyActual, ttItem.label)
 	}
 }
 

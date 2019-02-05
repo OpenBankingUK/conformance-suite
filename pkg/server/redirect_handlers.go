@@ -3,6 +3,7 @@ package server
 import (
 	"crypto/sha256"
 	"encoding/base64"
+	"fmt"
 	"github.com/dgrijalva/jwt-go"
 	"net/http"
 	"strings"
@@ -74,11 +75,11 @@ func (h *redirectHandlers) postFragmentOKHandler(c echo.Context) error {
 
 	cHash := calculateCHash(fragment.Code, true)
 	if cHash == claim.CHash {
-		return c.JSON(http.StatusOK, fragment)
+		return c.JSON(http.StatusOK, nil)
 	}
 
-	h.logger.Info("Calculated c_hash value not equal expected value")
-	return c.JSON(http.StatusBadRequest, fragment)
+	resp := NewErrorResponse(fmt.Errorf("calculated c_hash `%s` does not equal expected c_hash `%s`", cHash, claim.CHash))
+	return c.JSON(http.StatusBadRequest, resp)
 }
 
 // postQueryOKHandler - POST /redirect/query/ok
@@ -102,11 +103,11 @@ func (h *redirectHandlers) postQueryOKHandler(c echo.Context) error {
 
 	cHash := calculateCHash(query.Code, true)
 	if cHash == claim.CHash {
-		return c.JSON(http.StatusOK, query)
+		return c.JSON(http.StatusOK, nil)
 	}
 
-	h.logger.Info("Calculated c_hash value not equal expected value")
-	return c.JSON(http.StatusBadRequest, query)
+	resp := NewErrorResponse(fmt.Errorf("calculated c_hash `%s` does not equal expected c_hash `%s`", cHash, claim.CHash))
+	return c.JSON(http.StatusBadRequest, resp)
 }
 
 // postErrorHandler - POST /api/redirect/error
