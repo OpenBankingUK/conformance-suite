@@ -26,7 +26,7 @@ func (u utilityEndpoints) versionCheck(c echo.Context) error {
 	vf, err := u.version.VersionFormatter(version.FullVersion)
 	if err != nil {
 		err = errors.Wrap(err, "format version")
-		c.JSON(http.StatusInternalServerError, NewErrorResponse(err))
+		return c.JSON(http.StatusInternalServerError, NewErrorResponse(err))
 	}
 
 	msg, update, err := u.version.UpdateWarningVersion(vf)
