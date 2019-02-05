@@ -193,7 +193,7 @@ func (t *TestCase) ApplyExpects(res *resty.Response, rulectx *Context) (bool, er
 		return false, t.AppErr(fmt.Sprintf("(%s):%s: HTTP Status code does not match: expected %d got %d", t.ID, t.Name, t.Expect.StatusCode, res.StatusCode()))
 	}
 
-	t.AppMsg(fmt.Sprintf("Status check ok: expected [%d] got [%d]", t.Expect.StatusCode, res.StatusCode()))
+	t.AppMsg(fmt.Sprintf("Status check isReplacement: expected [%d] got [%d]", t.Expect.StatusCode, res.StatusCode()))
 	for k, match := range t.Expect.Matches {
 		checkResult, got := match.Check(t)
 		if checkResult == false {
@@ -296,7 +296,7 @@ func (t *TestCase) ProcessReplacementFields(rep map[string]string) {
 		ctx.Put(k, v)
 	}
 
-	t.Input.Endpoint, _ = ReplaceContextField(t.Input.Endpoint, &ctx) // errors if field not present in context - which is ok for this function
+	t.Input.Endpoint, _ = ReplaceContextField(t.Input.Endpoint, &ctx) // errors if field not present in context - which is isReplacement for this function
 	t.Input.RequestBody, _ = ReplaceContextField(t.Input.RequestBody, &ctx)
 
 	for k := range t.Input.FormData {
