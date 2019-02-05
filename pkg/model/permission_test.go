@@ -1,12 +1,13 @@
 package model
 
 import (
-	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/test"
 	"encoding/json"
-	"github.com/stretchr/testify/require"
 	"io/ioutil"
 	"path/filepath"
 	"testing"
+
+	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/test"
+	"github.com/stretchr/testify/require"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -150,7 +151,7 @@ var (
             "endpoint": "/transactions"
         },
         "context": {
-			"baseurl":"http://myaspsp",			
+			"baseurl":"http://myaspsp",
 			"permissions_excluded":["ReadTransactionsBasic","ReadTransactionDetail"]
 		},
         "expect": {
@@ -163,8 +164,8 @@ var (
 // Checks that a rule can retrieve the permissionSets for both included and excluded permissions
 // from a series of test cases defined in a manifest
 func TestGetIncludedAndExcludedPermissionSetsFromTestcaseSequence(t *testing.T) {
-	m, err := loadPermissionTestData() // from testdata/permissionTestData.json
-	assert.Nil(t, err)
+	m := loadPermissionTestData(t) // from testdata/permissionTestData.json
+
 	rule := m.Rules[0]
 	includedSet, excludedSet := rule.GetPermissionSets()
 	assert.Equal(t, 3, len(includedSet))
@@ -206,14 +207,15 @@ func TestTransctionWithoutCorrectPermissions(t *testing.T) {
 	assert.Equal(t, result, true) // test validates ok
 }
 
-func loadPermissionTestData() (Manifest, error) {
-	plan, _ := ioutil.ReadFile("testdata/permissionTestData.json")
+func loadPermissionTestData(t *testing.T) Manifest {
+	t.Helper()
+
+	plan, err := ioutil.ReadFile("testdata/permissionTestData.json")
+	require.NoError(t, err)
+
 	var m Manifest
-	err := json.Unmarshal(plan, &m)
-	if err != nil {
-		return Manifest{}, err
-	}
-	return m, nil
+	require.NoError(t, json.Unmarshal(plan, &m))
+	return m
 }
 
 func TestPermissionsHaveNotChanged(t *testing.T) {
@@ -223,8 +225,7 @@ func TestPermissionsHaveNotChanged(t *testing.T) {
 	goldenFile := filepath.Join("testdata", "permissions.golden")
 	if *update {
 		t.Log("update golden file")
-		err := ioutil.WriteFile(goldenFile, expected, 0644)
-		require.NoError(t, err, "failed to update golden file")
+		require.NoError(t, ioutil.WriteFile(goldenFile, expected, 0644), "failed to update golden file")
 	}
 
 	perms, err := ioutil.ReadFile(goldenFile)

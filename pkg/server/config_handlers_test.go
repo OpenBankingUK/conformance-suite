@@ -1,16 +1,17 @@
 package server
 
 import (
-	versionmock "bitbucket.org/openbankingteam/conformance-suite/internal/pkg/version/mocks"
 	"context"
 	"encoding/json"
-	"github.com/stretchr/testify/mock"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
 	"strings"
 	"testing"
+
+	versionmock "bitbucket.org/openbankingteam/conformance-suite/internal/pkg/version/mocks"
+	"github.com/stretchr/testify/mock"
 
 	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/test"
 
@@ -40,8 +41,11 @@ func TestServerConfigPOSTCreatesProxy(t *testing.T) {
 	appConfig := appConfigJSONWithURL(serverURL)
 
 	// assert server isn't started before call
-	frontendProxy, _ := url.Parse("http://0.0.0.0:8989/open-banking/v2.0/accounts")
-	_, err := http.Get(frontendProxy.String())
+	frontendProxy, err := url.Parse("http://0.0.0.0:8989/open-banking/v2.0/accounts")
+	require.NoError(err)
+
+	res, err := http.Get(frontendProxy.String())
+	require.Nil(res)
 	require.Error(err)
 	require.Nil(server.proxy)
 
@@ -91,8 +95,11 @@ func TestServerConfigPOSTCannotPOSTConfigTwiceWithoutFirstDeletingIt(t *testing.
 	}()
 
 	// assert server isn't started before call
-	frontendProxy, _ := url.Parse("http://0.0.0.0:8989/open-banking/v2.0/accounts")
-	_, err := http.Get(frontendProxy.String())
+	frontendProxy, err := url.Parse("http://0.0.0.0:8989/open-banking/v2.0/accounts")
+	require.NoError(err)
+
+	res, err := http.Get(frontendProxy.String())
+	require.Nil(res)
 	require.Error(err)
 
 	// create the request to post the config
@@ -144,8 +151,11 @@ func TestServerConfigDELETEStopsTheProxy(t *testing.T) {
 	}()
 
 	// assert server isn't started before call
-	frontendProxy, _ := url.Parse("http://0.0.0.0:8989/open-banking/v2.0/accounts")
-	_, err := http.Get(frontendProxy.String())
+	frontendProxy, err := url.Parse("http://0.0.0.0:8989/open-banking/v2.0/accounts")
+	require.NoError(err)
+
+	res, err := http.Get(frontendProxy.String())
+	require.Nil(res)
 	require.Error(err)
 
 	// create the request to post the config

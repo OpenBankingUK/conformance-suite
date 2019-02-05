@@ -261,7 +261,7 @@ func (i *Input) createAlgRS256JWT(ctx *Context) (string, error) {
 	alg := jwt.GetSigningMethod("RS256")
 	if alg == nil {
 		msg := fmt.Sprintf("couldn't find RS256 signing method: %v", alg)
-		logrus.Errorf(msg)
+		logrus.Error(msg)
 		return "", errors.New(msg)
 	}
 	token := jwt.NewWithClaims(alg, claims) // create new token

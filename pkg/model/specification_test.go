@@ -36,8 +36,7 @@ func TestSpecificationHasNotChanged(t *testing.T) {
 	goldenFile := filepath.Join("testdata", "ozone_spec.golden.json")
 	if *update {
 		t.Log("update golden file")
-		err := ioutil.WriteFile(goldenFile, expected, 0644)
-		require.NoError(t, err, "failed to update golden file")
+		require.NoError(t, ioutil.WriteFile(goldenFile, expected, 0644), "failed to update golden file")
 	}
 
 	spec, err := ioutil.ReadFile(goldenFile)
