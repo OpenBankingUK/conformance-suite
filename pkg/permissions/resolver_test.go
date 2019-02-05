@@ -635,3 +635,35 @@ func TestMapCodeSets(t *testing.T) {
 	}
 	assert.Equal(t, expected, results)
 }
+
+func TestMapCodeSetsWrongMatch(t *testing.T) {
+	groups := []Group{
+		{TestId: "1", Included: CodeSet{"a"}},
+		{TestId: "2", Included: CodeSet{"a", "b"}},
+		{TestId: "3", Included: CodeSet{"b"}, Excluded: CodeSet{"a"}},
+		{TestId: "4", Included: CodeSet{"a"}, Excluded: CodeSet{"b"}},
+	}
+	groupsFound := []*Group{
+		{Included: CodeSet{"a"}, Excluded: CodeSet{"b"}},
+		{Included: CodeSet{"b"}, Excluded: CodeSet{"a"}},
+		{Included: CodeSet{"a", "b"}},
+	}
+
+	results := mapToCodeSets(groups, groupsFound)
+
+	expected := []CodeSetResult{
+		{
+			CodeSet: CodeSet{"a"},
+			TestIds: []TestId{"1", "4"},
+		},
+		{
+			CodeSet: CodeSet{"b"},
+			TestIds: []TestId{"3"},
+		},
+		{
+			CodeSet: CodeSet{"a", "b"},
+			TestIds: []TestId{"1", "2"},
+		},
+	}
+	assert.Equal(t, expected, results)
+}
