@@ -1,10 +1,12 @@
 package model
 
+import "github.com/pkg/errors"
+
 // Code is a string representing a OB access permission
 type Code string
 
-// Permission holds endpoint permission data
-type Permission struct {
+// permission holds endpoint permission data
+type permission struct {
 	Code              Code
 	Endpoints         []string
 	Default           bool
@@ -12,13 +14,49 @@ type Permission struct {
 	Optional          []Code
 }
 
-// GetPermissionsForEndpoint returns a list of permissions that are accepted by the specified endpoint
-// no indication of whats mandatory/optional is given, you have to examine the individual permissions
-// returned for that information
-// if not entries are found a permission array with zero entries is returned
-func GetPermissionsForEndpoint(endpoint string) []Permission {
-	var endpointPermissions = []Permission{}
-	for _, p := range permissions {
+type standardPermissions struct {
+	permissions []permission
+}
+
+func newStandardPermissions() standardPermissions {
+	return standardPermissions{
+		permissions: staticApiPermissions,
+	}
+}
+
+func newStandardPermissionsWithOptions(data []permission) standardPermissions {
+	return standardPermissions{
+		permissions: data,
+	}
+}
+
+// defaultForEndpoint finds the default permission for and endpoint
+// either marked as default or it only has one permission
+func (sp standardPermissions) defaultForEndpoint(endpoint string) (Code, error) {
+	perms := sp.permissionsForEndpoint(endpoint)
+
+	if len(perms) == 0 {
+		return Code(""), errors.New("no default permissions found")
+	}
+
+	// only one permission so always DEFAULT
+	if len(perms) == 1 {
+		return perms[0].Code, nil
+	}
+
+	for _, p := range perms {
+		if p.Default == true {
+			return p.Code, nil
+		}
+	}
+
+	return Code(""), errors.New("no default permission found, but found more then one")
+}
+
+// permissionsForEndpoint returns a list of Permissions required by an endpoint
+func (sp standardPermissions) permissionsForEndpoint(endpoint string) []permission {
+	var endpointPermissions []permission
+	for _, p := range sp.permissions {
 		for _, e := range p.Endpoints {
 			if e == endpoint {
 				endpointPermissions = append(endpointPermissions, p)
@@ -28,91 +66,231 @@ func GetPermissionsForEndpoint(endpoint string) []Permission {
 	return endpointPermissions
 }
 
-// Permission Set Handling
-
-// PermissionSet contains a collection of permission names with the intention
-// of using this structure to determine whether specific permissions are included
-// in the set.
-type PermissionSet struct {
-	name string
-	set  map[string]bool
-}
-
-// NewPermissionSet create a new permission set of an array of string permission
-// names
-func NewPermissionSet(name string, strPermissions []string) *PermissionSet {
-	var set PermissionSet
-	set.name = name
-	set.set = make(map[string]bool)
-	set.AddPermissions(strPermissions)
-	return &set
-}
-
-// GetName returns the name associated with this permission set
-func (set *PermissionSet) GetName() string {
-	return set.name
-}
-
-// SetName sets the name associated with this permission set
-func (set *PermissionSet) SetName(s string) {
-	set.name = s
-}
-
-// Add a string to a PermissionSet
-func (set *PermissionSet) Add(s string) bool {
-	_, found := set.set[s]
-	set.set[s] = true
-	return !found // return false if already existed
-}
-
-// AddPermissions - adds permission strings from a slice
-func (set *PermissionSet) AddPermissions(ss []string) {
-	for _, s := range ss {
-		set.Add(s)
-	}
-}
-
-// Get a permission from the PermissionSet
-func (set *PermissionSet) Get(s string) bool {
-	_, found := set.set[s]
-	return found // true if already exists
-}
-
-// Remove a value from the PermissionSet
-func (set *PermissionSet) Remove(s string) {
-	delete(set.set, s)
-}
-
-// GetPermissions returns a string array of the permissions in a permissionSet
-func (set *PermissionSet) GetPermissions() []string {
-	var result []string
-	for k := range set.set {
-		result = append(result, k)
-	}
-	return result
-}
-
-// IsSubset determines if the permissionSet passed in as a parameter
-// is a subset of the target PermissionSet
-func (set *PermissionSet) IsSubset(sub *PermissionSet) bool {
-	for key := range sub.set {
-		found := set.Get(key)
-		if !found {
-			return false
-		}
-	}
-	return true
-}
-
-// Union returns a new PermissionSet named "union" which is the union
-// of the receiver and parameter permissionSets
-func (set *PermissionSet) Union(u *PermissionSet) *PermissionSet {
-	ps := NewPermissionSet("union", []string{})
-	for k := range set.set {
-		ps.Add(k)
-	}
-	for _, v := range u.GetPermissions() {
-		ps.Add(v)
-	}
-	return ps
+// staticApiPermission is the standard for OB permission
+// accesses to account endpoints
+var staticApiPermissions = []permission{
+	{
+		Code: "ReadAccountsBasic",
+		Endpoints: []string{
+			"/accounts",
+			"/accounts/{AccountId}",
+		},
+		Default:           true,
+		RequiredOneOrMore: []Code{},
+		Optional:          []Code{},
+	},
+	{
+		Code: "ReadAccountsDetail",
+		Endpoints: []string{
+			"/accounts",
+			"/accounts/{AccountId}",
+		},
+		Default:           false,
+		RequiredOneOrMore: []Code{},
+		Optional:          []Code{},
+	},
+	{
+		Code: "ReadBalances",
+		Endpoints: []string{
+			"/balances",
+			"/accounts/{AccountId}/balances",
+		},
+		Default:           false,
+		RequiredOneOrMore: []Code{},
+		Optional:          []Code{},
+	},
+	{
+		Code: "ReadBeneficiariesBasic",
+		Endpoints: []string{
+			"/beneficiaries",
+			"/accounts/{AccountId}/beneficiaries",
+		},
+		Default:           true,
+		RequiredOneOrMore: []Code{},
+		Optional:          []Code{},
+	},
+	{
+		Code: "ReadBeneficiariesDetail",
+		Endpoints: []string{
+			"/beneficiaries",
+			"/accounts/{AccountId}/beneficiaries",
+		},
+		Default:           false,
+		RequiredOneOrMore: []Code{},
+		Optional:          []Code{},
+	},
+	{
+		Code: "ReadDirectDebits",
+		Endpoints: []string{
+			"/direct-debits",
+			"/accounts/{AccountId}/direct-debits",
+		},
+		Default:           false,
+		RequiredOneOrMore: []Code{},
+		Optional:          []Code{},
+	},
+	{
+		Code: "ReadStandingOrdersBasic",
+		Endpoints: []string{
+			"/standing-orders",
+			"/accounts/{AccountId}/standing-orders",
+		},
+		Default:           true,
+		RequiredOneOrMore: []Code{},
+		Optional:          []Code{},
+	},
+	{
+		Code: "ReadStandingOrdersDetail",
+		Endpoints: []string{
+			"/standing-orders",
+			"/accounts/{AccountId}/standing-orders",
+		},
+		Default:           false,
+		RequiredOneOrMore: []Code{},
+		Optional:          []Code{},
+	},
+	{
+		Code: "ReadTransactionsBasic",
+		Endpoints: []string{
+			"/transactions",
+			"/accounts/{AccountId}/transactions",
+			"/accounts/{AccountId}/statements/{StatementId}/transactions",
+		},
+		Default: true,
+		RequiredOneOrMore: []Code{
+			"ReadTransactionsCredits",
+			"ReadTransactionsDebits",
+		},
+		Optional: []Code{"ReadPAN"},
+	},
+	{
+		Code: "ReadTransactionsDetail",
+		Endpoints: []string{
+			"/transactions",
+			"/accounts/{AccountId}/transactions",
+			"/accounts/{AccountId}/statements/{StatementId}/transactions",
+		},
+		Default: false,
+		RequiredOneOrMore: []Code{
+			"ReadTransactionsCredits",
+			"ReadTransactionsDebits",
+		},
+		Optional: []Code{"ReadPAN"},
+	},
+	{
+		Code: "ReadTransactionsCredits",
+		Endpoints: []string{
+			"/transactions",
+			"/accounts/{AccountId}/transactions",
+			"/accounts/{AccountId}/statements/{StatementId}/transactions",
+		},
+		Default: false,
+		RequiredOneOrMore: []Code{
+			"ReadTransactionsBasic",
+			"ReadTransactionsDetail",
+		},
+		Optional: []Code{"ReadPAN"},
+	},
+	{
+		Code: "ReadTransactionsDebits",
+		Endpoints: []string{
+			"/transactions",
+			"/accounts/{AccountId}/transactions",
+			"/accounts/{AccountId}/statements/{StatementId}/transactions",
+		},
+		Default: false,
+		RequiredOneOrMore: []Code{
+			"ReadTransactionsBasic",
+			"ReadTransactionsDetail",
+		},
+		Optional: []Code{"ReadPAN"},
+	},
+	{
+		Code: "ReadStatementsBasic",
+		Endpoints: []string{
+			"/statements",
+			"/accounts/{AccountId}/statements",
+		},
+		Default:           false,
+		RequiredOneOrMore: []Code{},
+		Optional:          []Code{},
+	},
+	{
+		Code: "ReadStatementsDetail",
+		Endpoints: []string{
+			"/statements",
+			"/accounts/{AccountId}/statements",
+			"/accounts/{AccountId}/statements/{StatementId}/file",
+		},
+		Default:           false,
+		RequiredOneOrMore: []Code{},
+		Optional:          []Code{},
+	},
+	{
+		Code: "ReadProducts",
+		Endpoints: []string{
+			"/products",
+			"/accounts/{AccountId}/product",
+		},
+		Default:           false,
+		RequiredOneOrMore: []Code{},
+		Optional:          []Code{},
+	},
+	{
+		Code: "ReadOffers",
+		Endpoints: []string{
+			"/offers",
+			"/accounts/{AccountId}/offers",
+		},
+		Default:           false,
+		RequiredOneOrMore: []Code{},
+		Optional:          []Code{},
+	},
+	{
+		Code: "ReadParty",
+		Endpoints: []string{
+			"/accounts/{AccountId}/party",
+		},
+		Default:           false,
+		RequiredOneOrMore: []Code{},
+		Optional:          []Code{},
+	},
+	{
+		Code: "ReadPartyPSU",
+		Endpoints: []string{
+			"/party",
+		},
+		Default:           false,
+		RequiredOneOrMore: []Code{},
+		Optional:          []Code{},
+	},
+	{
+		Code: "ReadScheduledPaymentsBasic",
+		Endpoints: []string{
+			"/scheduled-payments",
+			"/accounts/{AccountId}/scheduled-payments",
+		},
+		Default:           true,
+		RequiredOneOrMore: []Code{},
+		Optional:          []Code{},
+	},
+	{
+		Code: "ReadScheduledPaymentsDetail",
+		Endpoints: []string{
+			"/scheduled-payments",
+			"/accounts/{AccountId}/scheduled-payments",
+		},
+		Default:           false,
+		RequiredOneOrMore: []Code{},
+		Optional:          []Code{},
+	}, {
+		Code: "ReadPAN",
+		Endpoints: []string{
+			"",
+			"",
+		},
+		Default:           false,
+		RequiredOneOrMore: []Code{},
+		Optional:          []Code{},
+	},
 }
