@@ -1,28 +1,10 @@
 
-const fetchWithTimeout = (path, fetchTimeout, options) => {
-  let didTimeOut = false;
-
-  return new Promise(async (resolve, reject) => {
-    const timeout = setTimeout(() => {
-      didTimeOut = true;
-      reject(new Error(`Request timed out: ${path} ${JSON.stringify(options)}`));
-    }, fetchTimeout);
-
-    try {
-      const response = await fetch(path, options);
-      clearTimeout(timeout); // Clear the timeout as cleanup
-      if (!didTimeOut) {
-        resolve(response);
-      }
-    } catch (err) {
-      clearTimeout(timeout); // Clear the timeout as cleanup
-      console.log(`Fetch failed: ${path} ${JSON.stringify(options)}`, err); // eslint-disable-line
-      if (!didTimeOut) {
-        reject(err);
-      }
-    }
-  });
-};
+const fetchWithTimeout = (url, timeout, options) => Promise.race([
+  fetch(url, options),
+  new Promise((_, reject) =>
+    setTimeout(() =>
+      reject(new Error(`Request timed out: ${url} ${JSON.stringify(options)}`)), timeout)),
+]);
 
 const FETCH_TIMEOUT = 30000; // 30 seconds
 
