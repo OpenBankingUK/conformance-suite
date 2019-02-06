@@ -4,7 +4,7 @@ var (
 	// Get /accounts example json response from ozone
 	conditionalityStaticData = []byte(
 		`{
-      "account-transaction-v3.0": [
+      "account-transaction-v3.1": [
         {
           "condition": "mandatory",
           "method": "POST",
@@ -146,7 +146,7 @@ var (
           "endpoint": "/statements"
         }
       ],
-      "payment-initiation-v3.0": [
+      "payment-initiation-v3.1": [
         {
           "endpoint": "/domestic-payment-consents",
           "method": "POST",
@@ -154,6 +154,11 @@ var (
         },
         {
           "endpoint": "/domestic-payment-consents/{ConsentId}",
+          "method": "GET",
+          "condition": "mandatory"
+        },
+        {
+          "endpoint": "/domestic-payment-consents/{ConsentId}/funds-confirmation",
           "method": "GET",
           "condition": "mandatory"
         },
@@ -218,6 +223,11 @@ var (
           "condition": "conditional"
         },
         {
+          "endpoint": "/international-payment-consents/{ConsentId}/funds-confirmation",
+          "method": "GET",
+          "condition": "conditional"
+        },
+        {
           "endpoint": "/international-payments",
           "method": "POST",
           "condition": "conditional"
@@ -234,6 +244,11 @@ var (
         },
         {
           "endpoint": "/international-scheduled-payment-consents/{ConsentId}",
+          "method": "GET",
+          "condition": "conditional"
+        },
+        {
+          "endpoint": "/international-scheduled-payment-consents/{ConsentId}/funds-confirmation",
           "method": "GET",
           "condition": "conditional"
         },
