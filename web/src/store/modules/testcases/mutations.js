@@ -1,6 +1,8 @@
 import * as _ from 'lodash';
 import * as types from './mutation-types';
 
+const moment = require('moment');
+
 export default {
   [types.SET_TEST_CASES](state, testCases) {
     state.testCases = testCases;
@@ -18,7 +20,6 @@ export default {
     ];
   },
   [types.UPDATE_TEST_CASE](state, update) {
-    const moment = require('moment');
     const { id, pass, metrics } = update.test;
     const predicate = { '@id': id };
 
@@ -28,7 +29,7 @@ export default {
 
     if (testCase) {
       testCase.meta.status = pass ? 'PASSED' : 'FAILED';
-      testCase.meta.metrics.responseTime = moment().startOf('day').milliseconds(metrics.response/1000000).format('mm[m]ss[.]SSS[s]');
+      testCase.meta.metrics.responseTime = moment().startOf('day').milliseconds(metrics.response / 1000000).format('mm[m]ss[.]SSS[s]');
       testCase.meta.metrics.responseSize = metrics.response_size;
     } else {
       // eslint-disable-next-line no-console
