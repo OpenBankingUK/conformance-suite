@@ -20,8 +20,8 @@ The Functional Conformance Suite provides several discovery templates that can b
 
 The following discovery templates are available:
 
-* [Open Banking](https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937656404/Read+Write+Data+API+Specification+-+v3.1) - Read/Write Data API Specifications v3.0/3.1 templates:
- * Generic - a customizable template for implementers of the Open Banking v3.0/v3 to describe their API endpoints.
+* [Open Banking](https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937656404/Read+Write+Data+API+Specification+-+v3.1) - Read/Write Data API Specifications v3.0/v3.1 templates:
+ * Generic - a customizable template for implementers of the Open Banking v3.0/v3.1 to describe their API endpoints.
  * Ozone -  a customizable template that is pre-populated with Ozone endpoints and data.
  * ForgeRock -  a customizable template that is pre-populated with ForgeRock endpoints and data.
 
@@ -69,12 +69,12 @@ has been modified from one version to the next. For details see: https://semver.
 The Token Acquisition field informs the application how it shall acquire access tokens to access endpoints under test.
 The following values are valid `psu`, `headless`, `store`
 
-* `psu` - tokens are acquired following the "[Hybrid Flow](https://openbanking.atlassian.net/wiki/spaces/DZ/pages/641992418/Read+Write+Data+API+Specification+-+v3.0#Read/WriteDataAPISpecification-v3.0-GrantTypesforidentifyingtheTPPandPSU)" authorisation method.
+* `psu` - tokens are acquired following the "[Hybrid Flow](https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937656404/Read+Write+Data+API+Specification+-+v3.1#Read/WriteDataAPISpecification-v3.1-GrantTypesforidentifyingtheTPPandPSU)" authorisation method.
 This process involves directing the PSU to the ASPSP's authorisation pages, requiring manual effort from the PSU.
 * `headless` - Similar to `psu`, except the PSU is not required to intervene and perform any actions. This mode of operation enables developers to integrate
-the operation of this suite into their build tooling e.g. continuous integration/deployment (CI/CD), thus removing the manual element from `psu`. 
+the operation of this suite into their build tooling e.g. continuous integration/deployment (CI/CD), thus removing the manual element from `psu`.
 * `store` - As a final step to to the `psu` and `headless` methods, an access token is generated and used to access the protected endpoints.
-The access tokens for use in this method would typically be generated in a developer/application management portal hosted by the ASPS. 
+The access tokens for use in this method would typically be generated in a developer/application management portal hosted by the ASPS.
 
 ### Discovery item
 

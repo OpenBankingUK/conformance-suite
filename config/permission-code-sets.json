@@ -1,5 +1,5 @@
 {
-  "account-transaction-v3.0": [
+  "account-transaction-v3.1": [
     {
       "consent-endpoint": {
         "method": "POST",
@@ -48,7 +48,7 @@
       }
     }
   ],
-  "payment-initiation-v3.0": [
+  "payment-initiation-v3.1": [
     {
       "consent-endpoint": {
         "endpoint": "/domestic-payment-consents",

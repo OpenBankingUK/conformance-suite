@@ -56,14 +56,14 @@ func testUnmarshalDiscoveryJSON(t *testing.T, discoveryJSON string) *Model {
 
 // discoveryStub - returns discovery JSON with given field stubbed with given value
 func discoveryStub(field string, value string) string {
-	name := "ob-v3.0-generic"
-	description := "An Open Banking UK generic discovery template for v3.0 of Accounts and Payments."
+	name := "ob-v3.1-generic"
+	description := "An Open Banking UK generic discovery template for v3.1 of Accounts and Payments."
 	version := "v0.2.1"
 	tokenAcquisition := "psu"
 	specName := "Account and Transaction API Specification"
-	specURL := "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/642090641/Account+and+Transaction+API+Specification+-+v3.0"
-	specVersion := "v3.0"
-	schemaVersion := "https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.0.0/dist/account-info-swagger.json"
+	specURL := "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937820271/Account+and+Transaction+API+Specification+-+v3.1"
+	specVersion := "v3.1"
+	schemaVersion := "https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.0/dist/account-info-swagger.json"
 	endpoints := `, "endpoints": [
 		{
 			"method": "POST",
@@ -309,7 +309,7 @@ func TestValidate(t *testing.T) {
 			failures: []ValidationFailure{
 				{
 					Key:   "DiscoveryModel.DiscoveryItems[0].APISpecification.Name",
-					Error: "'Name' should be 'Account and Transaction API Specification' when schemaVersion is 'https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.0.0/dist/account-info-swagger.json'",
+					Error: "'Name' should be 'Account and Transaction API Specification' when schemaVersion is 'https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.0/dist/account-info-swagger.json'",
 				},
 			}})
 	})
@@ -320,7 +320,7 @@ func TestValidate(t *testing.T) {
 			failures: []ValidationFailure{
 				{
 					Key:   "DiscoveryModel.DiscoveryItems[0].APISpecification.Version",
-					Error: "'Version' should be 'v3.0' when schemaVersion is 'https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.0.0/dist/account-info-swagger.json'",
+					Error: "'Version' should be 'v3.1' when schemaVersion is 'https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.0/dist/account-info-swagger.json'",
 				},
 			}})
 	})
@@ -331,7 +331,7 @@ func TestValidate(t *testing.T) {
 			failures: []ValidationFailure{
 				{
 					Key:   "DiscoveryModel.DiscoveryItems[0].APISpecification.URL",
-					Error: "'URL' should be 'https://openbanking.atlassian.net/wiki/spaces/DZ/pages/642090641/Account+and+Transaction+API+Specification+-+v3.0' when schemaVersion is 'https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.0.0/dist/account-info-swagger.json'",
+					Error: "'URL' should be 'https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937820271/Account+and+Transaction+API+Specification+-+v3.1' when schemaVersion is 'https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.0/dist/account-info-swagger.json'",
 				},
 			}})
 	})
