@@ -114,7 +114,7 @@ export default {
           label: 'Response Time',
         },
         'meta.metrics.responseSize': {
-          label: 'Response Size',
+          label: 'Response Body Size',
         },
       }),
     },
