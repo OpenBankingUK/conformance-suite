@@ -1,18 +1,18 @@
 {
   "discoveryModel": {
-    "name": "ob-v3.0-forgerock",
-    "description": "An Open Banking UK discovery template for v3.0 of Accounts and Payments with pre-populated model Bank (ForgeRock) data.",
+    "name": "ob-v3.1-forgerock",
+    "description": "An Open Banking UK discovery template for v3.1 of Accounts and Payments with pre-populated model Bank (ForgeRock) data.",
     "discoveryVersion": "v0.2.1",
     "tokenAcquisition": "psu",
     "discoveryItems": [{
       "apiSpecification": {
         "name": "Account and Transaction API Specification",
-        "url": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/642090641/Account+and+Transaction+API+Specification+-+v3.0",
-        "version": "v3.0",
-        "schemaVersion": "https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.0.0/dist/account-info-swagger.json"
+        "url": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937820271/Account+and+Transaction+API+Specification+-+v3.1",
+        "version": "v3.1",
+        "schemaVersion": "https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.0/dist/account-info-swagger.json"
       },
       "openidConfigurationUri": "https://as.aspsp.ob.forgerock.financial/oauth2/.well-known/openid-configuration",
-      "resourceBaseUri": "https://rs.aspsp.ob.forgerock.financial/open-banking/v3.0/",
+      "resourceBaseUri": "https://rs.aspsp.ob.forgerock.financial/open-banking/v3.1/",
       "resourceIds": {
         "AccountId": "055bdf14-9b5d-42b5-bdb3-c3e118ecee02",
         "ConsentId": "$consent_id"
@@ -157,12 +157,12 @@
     {
       "apiSpecification": {
         "name": "Payment Initiation API",
-        "url": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/645367011/Payment+Initiation+API+Specification+-+v3.0",
-        "version": "v3.0",
-        "schemaVersion": "https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.0.0/dist/payment-initiation-swagger.json"
+        "url": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937754701/Payment+Initiation+API+Specification+-+v3.1",
+        "version": "v3.1",
+        "schemaVersion": "https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.0/dist/payment-initiation-swagger.json"
       },
       "openidConfigurationUri": "https://as.aspsp.ob.forgerock.financial/oauth2/.well-known/openid-configuration",
-      "resourceBaseUri": "https://rs.aspsp.ob.forgerock.financial/open-banking/v3.0/",
+      "resourceBaseUri": "https://rs.aspsp.ob.forgerock.financial/open-banking/v3.1/",
       "endpoints": [
         {
           "method": "POST",
@@ -185,6 +185,10 @@
               "path": "Data.Charges"
             }
           ]
+        },
+        {
+          "method": "GET",
+          "path": "/domestic-payment-consents/{ConsentId}/funds-confirmation"
         },
         {
           "method": "POST",
@@ -249,6 +253,10 @@
           "path": "/international-payment-consents/{ConsentId}"
         },
         {
+          "method": "GET",
+          "path": "/international-payment-consents/{ConsentId}/funds-confirmation"
+        },
+        {
           "method": "POST",
           "path": "/international-payments"
         },
@@ -263,6 +271,10 @@
         {
           "method": "GET",
           "path": "/international-scheduled-payment-consents/{ConsentId}"
+        },
+        {
+          "method": "GET",
+          "path": "/international-scheduled-payment-consents/{ConsentId}/funds-confirmation"
         },
         {
           "method": "POST",
