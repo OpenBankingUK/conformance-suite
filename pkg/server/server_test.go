@@ -16,14 +16,12 @@ import (
 	"testing"
 	"time"
 
-	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/version"
-	versionmock "bitbucket.org/openbankingteam/conformance-suite/internal/pkg/version/mocks"
+	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/version/mocks"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
 
 	"github.com/labstack/echo"
 	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 )
 
@@ -72,16 +70,7 @@ func TestMain(m *testing.M) {
 }
 
 func TestServer(t *testing.T) {
-	// Setup Version mock
-	humanVersion := "0.1.2-RC1"
-	warningMsg := "Version v0.1.2 of the Conformance Suite is out-of-date, please update to v0.1.3"
-	formatted := "0.1.2"
-	v := &versionmock.Version{}
-	v.On("GetHumanVersion").Return(humanVersion)
-	v.On("UpdateWarningVersion", mock.AnythingOfType("string")).Return(warningMsg, true, nil)
-	v.On("VersionFormatter", mock.AnythingOfType("string")).Return(formatted, nil)
-
-	server := NewServer(nullLogger(), conditionalityCheckerMock{}, v)
+	server := NewServer(nullLogger(), conditionalityCheckerMock{}, &mocks.Version{})
 
 	t.Run("NewServer() returns non-nil value", func(t *testing.T) {
 		assert.NotNil(t, server)
@@ -108,7 +97,7 @@ func TestServer(t *testing.T) {
 func TestServerConformanceSuiteCallback(t *testing.T) {
 	require := require.New(t)
 
-	server := NewServer(nullLogger(), conditionalityCheckerMock{}, mockVersionChecker())
+	server := NewServer(nullLogger(), conditionalityCheckerMock{}, &mocks.Version{})
 	defer func() {
 		require.NoError(server.Shutdown(context.TODO()))
 	}()
@@ -173,7 +162,7 @@ func TestServerHTTPS(t *testing.T) {
 	}
 	client := &http.Client{Transport: transport}
 
-	server := NewServer(nullLogger(), conditionalityCheckerMock{}, mockVersionChecker())
+	server := NewServer(nullLogger(), conditionalityCheckerMock{}, &mocks.Version{})
 	defer func() {
 		require.NoError(server.Shutdown(context.TODO()))
 	}()
@@ -192,7 +181,9 @@ func TestServerHTTPS(t *testing.T) {
 	require.Equal(http.StatusOK, res.StatusCode)
 
 	require.NotNil(res.Body)
-	defer res.Body.Close()
+	defer func() {
+		require.NoError(res.Body.Close())
+	}()
 	bodyActual, err := ioutil.ReadAll(res.Body)
 	require.NoError(err)
 
@@ -218,19 +209,4 @@ func nullLogger() *logrus.Entry {
 	logger := logrus.New()
 	logger.Out = ioutil.Discard
 	return logger.WithField("app", "test")
-}
-
-// mockVersionChecker - returns mock version checker.
-func mockVersionChecker() version.Checker {
-	// Setup Version mock
-	humanVersion := "0.1.2-RC1"
-	warningMsg := "Version v0.1.2 of the Conformance Suite is out-of-date, please update to v0.1.3"
-	formatted := "0.1.2"
-
-	v := &versionmock.Version{}
-	v.On("GetHumanVersion").Return(humanVersion)
-	v.On("UpdateWarningVersion", mock.AnythingOfType("string")).Return(warningMsg, true, nil)
-	v.On("VersionFormatter", mock.AnythingOfType("string")).Return(formatted, nil)
-
-	return v
 }

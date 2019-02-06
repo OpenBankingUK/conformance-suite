@@ -17,8 +17,8 @@ import (
 // Server - wraps *echo.Echo.
 type Server struct {
 	*echo.Echo // Wrap (using composition) *echo.Echo, allows us to pretend Server is echo.Echo.
-	logger     *logrus.Entry
-	version    version.Checker
+	logger  *logrus.Entry
+	version version.Checker
 }
 
 // NewServer returns new echo.Echo server.
@@ -70,7 +70,7 @@ func registerRoutes(server *Server, logger *logrus.Entry, checker model.Conditio
 	// anything prefixed with api
 	api := server.Group("/api")
 
-	configHandlers := &configHandlers{journey}
+	configHandlers := &configHandlers{logger: logger, journey: journey}
 	// endpoint to post global configuration
 	api.POST("/config/global", configHandlers.configGlobalPostHandler)
 

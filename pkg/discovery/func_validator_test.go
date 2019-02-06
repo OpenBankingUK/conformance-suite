@@ -305,7 +305,7 @@ func TestValidate(t *testing.T) {
 
 	t.Run("when discoveryItem apiSpecification schemaVersion in suite config but Name field not matching returns failure", func(t *testing.T) {
 		testValidateFailures(t, conditionalityCheckerMock{isPresent: true}, &invalidTest{
-			discoveryJSON: discoveryStub("specName", "Bad Spec Name"),
+			discoveryJSON: discoveryStub("specName", "Bad SpecConsentRequirements Name"),
 			failures: []ValidationFailure{
 				{
 					Key:   "DiscoveryModel.DiscoveryItems[0].APISpecification.Name",

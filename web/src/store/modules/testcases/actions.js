@@ -43,11 +43,11 @@ export default {
     try {
       const setShowLoading = flag => dispatch('status/setShowLoading', flag, { root: true });
       const testCases = await api.computeTestCases(setShowLoading);
-      if (_.isEqual(testCases, state.testCases)) {
+      if (_.isEqual(testCases.specCases, state.testCases)) {
         return;
       }
 
-      commit(types.SET_TEST_CASES, testCases);
+      commit(types.SET_TEST_CASES, testCases.specCases);
       commit(types.SET_TEST_CASES_STATUS, 'NOT_STARTED');
       dispatch('status/clearErrors', null, { root: true });
     } catch (err) {
