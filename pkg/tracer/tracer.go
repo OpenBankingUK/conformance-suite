@@ -71,7 +71,7 @@ func AppErr(objtype, msg, objdump string) {
 		return
 	}
 	errmsg := fmt.Sprintf("%s[%s] %s", "" /*indent()*/, objtype, msg)
-	logrus.Errorf(errmsg)
+	logrus.Error(errmsg)
 	applicationTrace <- errmsg
 }
 

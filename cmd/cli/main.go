@@ -49,7 +49,7 @@ func initConfig() {
 	viper.SetConfigType("json")                            // or viper.SetConfigType("yaml")
 	viper.AddConfigPath("../config/")                      /// path to look for the config file in
 	viper.AddConfigPath("./config/")                       // optionally look for config here.
-	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_")) // so that FCS_SERVER_PORT=9090 becomes FCS_SERVER.PORT=9090
+	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_")) // so that FCS_SERVER_PORT=443 becomes FCS_SERVER.PORT=443
 	viper.AutomaticEnv()                                   // read in environment variables that match, e.g., FCS_PORT=80 ./fcs
 
 	setConfigDefaults()
@@ -67,5 +67,5 @@ func initConfig() {
 }
 
 func setConfigDefaults() {
-	viper.SetDefault("SERVER.PORT", "8080")
+	viper.SetDefault("SERVER.PORT", "443")
 }

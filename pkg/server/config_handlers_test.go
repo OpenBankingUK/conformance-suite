@@ -3,213 +3,18 @@ package server
 import (
 	"context"
 	"encoding/json"
-	"io/ioutil"
 	"net/http"
-	"net/http/httptest"
-	"net/url"
 	"strings"
 	"testing"
 
-	versionmock "bitbucket.org/openbankingteam/conformance-suite/internal/pkg/version/mocks"
-	"github.com/stretchr/testify/mock"
-
-	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/test"
-
-	"github.com/labstack/echo"
 	"github.com/stretchr/testify/require"
 )
-
-// /api/config - POST - can POST config
-func TestServerConfigPOSTCreatesProxy(t *testing.T) {
-	require := require.New(t)
-
-	// Setup Version mock
-	humanVersion := "0.1.2-RC1"
-	warningMsg := "Version v0.1.2 of the Conformance Suite is out-of-date, please update to v0.1.3"
-	formatted := "0.1.2"
-	v := &versionmock.Version{}
-	v.On("GetHumanVersion").Return(humanVersion)
-	v.On("UpdateWarningVersion", mock.AnythingOfType("string")).Return(warningMsg, true, nil)
-	v.On("VersionFormatter", mock.AnythingOfType("string")).Return(formatted, nil)
-
-	server := NewServer(nullLogger(), conditionalityCheckerMock{}, v)
-	defer func() {
-		require.NoError(server.Shutdown(context.TODO()))
-	}()
-
-	mockedServer, serverURL := test.HTTPServer(http.StatusBadRequest, "body", nil)
-	appConfig := appConfigJSONWithURL(serverURL)
-
-	// assert server isn't started before call
-	frontendProxy, err := url.Parse("http://0.0.0.0:8989/open-banking/v2.0/accounts")
-	require.NoError(err)
-
-	res, err := http.Get(frontendProxy.String())
-	require.Nil(res)
-	require.Error(err)
-	require.Nil(server.proxy)
-
-	// create the request to post the config
-	// this should start the proxy
-	req := httptest.NewRequest(http.MethodPost, "/api/config", strings.NewReader(appConfig))
-	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
-
-	rec := httptest.NewRecorder()
-
-	// do the request
-	server.ServeHTTP(rec, req)
-
-	require.NotNil(rec.Body)
-	require.JSONEq(appConfig, rec.Body.String())
-	require.Equal(http.StatusOK, rec.Code)
-
-	// check the proxy is up now, we should hit the forgerock server
-	resp, err := http.Get(frontendProxy.String())
-	require.NoError(err)
-	body, err := ioutil.ReadAll(resp.Body)
-	require.NoError(err)
-	require.Equal(http.StatusBadRequest, resp.StatusCode)
-	require.Equal("body", string(body))
-	require.NotNil(server.proxy)
-
-	mockedServer.Close()
-}
-
-// /api/config - POST - cannot POST config twice without first deleting it
-func TestServerConfigPOSTCannotPOSTConfigTwiceWithoutFirstDeletingIt(t *testing.T) {
-	require := require.New(t)
-
-	// Version helper
-	humanVersion := "0.1.2-RC1"
-	warningMsg := "Version v0.1.2 of the Conformance Suite is out-of-date, please update to v0.1.3"
-	formatted := "0.1.2"
-
-	v := &versionmock.Version{}
-	v.On("GetHumanVersion").Return(humanVersion)
-	v.On("UpdateWarningVersion", mock.AnythingOfType("string")).Return(warningMsg, true, nil)
-	v.On("VersionFormatter", mock.AnythingOfType("string")).Return(formatted, nil)
-
-	server := NewServer(nullLogger(), conditionalityCheckerMock{}, v)
-	defer func() {
-		require.NoError(server.Shutdown(context.TODO()))
-	}()
-
-	// assert server isn't started before call
-	frontendProxy, err := url.Parse("http://0.0.0.0:8989/open-banking/v2.0/accounts")
-	require.NoError(err)
-
-	res, err := http.Get(frontendProxy.String())
-	require.Nil(res)
-	require.Error(err)
-
-	// create the request to post the config
-	// this should start the proxy
-	req := httptest.NewRequest(http.MethodPost, "/api/config", strings.NewReader(appConfigJSON))
-	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
-	rec := httptest.NewRecorder()
-
-	// do the request
-	server.ServeHTTP(rec, req)
-
-	require.NotNil(rec.Body)
-	require.JSONEq(appConfigJSON, rec.Body.String())
-	require.Equal(http.StatusOK, rec.Code)
-
-	// create another request to POST the config again
-	// this should fail because a DELETE need to happen first.
-	req = httptest.NewRequest(http.MethodPost, "/api/config", strings.NewReader(appConfigJSON))
-	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
-	rec = httptest.NewRecorder()
-	// do the request
-	server.ServeHTTP(rec, req)
-
-	require.NotNil(rec.Body)
-	require.JSONEq(
-		`{"error":"listen tcp :8989: bind: address already in use"}`,
-		rec.Body.String(),
-	)
-	require.Equal(http.StatusBadRequest, rec.Code)
-}
-
-// /api/config - DELETE - DELETE stops the proxy
-func TestServerConfigDELETEStopsTheProxy(t *testing.T) {
-	require := require.New(t)
-
-	// Version helper
-	humanVersion := "0.1.2-RC1"
-	warningMsg := "Version v0.1.2 of the Conformance Suite is out-of-date, please update to v0.1.3"
-	formatted := "0.1.2"
-
-	v := &versionmock.Version{}
-	v.On("GetHumanVersion").Return(humanVersion)
-	v.On("UpdateWarningVersion", mock.AnythingOfType("string")).Return(warningMsg, true, nil)
-	v.On("VersionFormatter", mock.AnythingOfType("string")).Return(formatted, nil)
-
-	server := NewServer(nullLogger(), conditionalityCheckerMock{}, v)
-	defer func() {
-		require.NoError(server.Shutdown(context.TODO()))
-	}()
-
-	// assert server isn't started before call
-	frontendProxy, err := url.Parse("http://0.0.0.0:8989/open-banking/v2.0/accounts")
-	require.NoError(err)
-
-	res, err := http.Get(frontendProxy.String())
-	require.Nil(res)
-	require.Error(err)
-
-	// create the request to post the config
-	// this should start the proxy
-	req := httptest.NewRequest(http.MethodPost, "/api/config", strings.NewReader(appConfigJSON))
-	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
-	rec := httptest.NewRecorder()
-
-	// do the request
-	server.ServeHTTP(rec, req)
-
-	require.NotNil(rec.Body)
-	require.JSONEq(appConfigJSON, rec.Body.String())
-	require.Equal(http.StatusOK, rec.Code)
-
-	// create request to delete config
-	req = httptest.NewRequest(http.MethodDelete, "/api/config", nil)
-	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
-	rec = httptest.NewRecorder()
-	// do the request
-	server.ServeHTTP(rec, req)
-
-	require.NotNil(rec.Body)
-	require.Equal(
-		"",
-		rec.Body.String(),
-	)
-	require.Equal(http.StatusOK, rec.Code)
-
-	// call proxy and assert it is no longer up
-	// check the proxy is up now, we should hit the forgerock server
-	resp, err := http.Get(frontendProxy.String())
-	require.Equal(
-		`Get http://0.0.0.0:8989/open-banking/v2.0/accounts: dial tcp 0.0.0.0:8989: connect: connection refused`,
-		err.Error(),
-	)
-	require.Nil(resp)
-}
 
 // TestServerConfigGlobalPostValid - tests /api/config/global
 func TestServerConfigGlobalPostValid(t *testing.T) {
 	require := require.New(t)
 
-	// Version helper
-	humanVersion := "0.1.2-RC1"
-	warningMsg := "Version v0.1.2 of the Conformance Suite is out-of-date, please update to v0.1.3"
-	formatted := "0.1.2"
-
-	v := &versionmock.Version{}
-	v.On("GetHumanVersion").Return(humanVersion)
-	v.On("UpdateWarningVersion", mock.AnythingOfType("string")).Return(warningMsg, true, nil)
-	v.On("VersionFormatter", mock.AnythingOfType("string")).Return(formatted, nil)
-
-	server := NewServer(nullLogger(), conditionalityCheckerMock{}, v)
+	server := NewServer(nullLogger(), conditionalityCheckerMock{}, mockVersionChecker())
 	defer func() {
 		require.NoError(server.Shutdown(context.TODO()))
 	}()
@@ -282,7 +87,6 @@ oYi+1hqp1fIekaxsyQIDAQAB
 
 	bodyExpected := string(globalConfigurationJSON)
 	bodyActual := body.String()
-	// do not use `require.Equal`.
 	require.JSONEq(bodyExpected, bodyActual)
 }
 
@@ -290,17 +94,7 @@ oYi+1hqp1fIekaxsyQIDAQAB
 func TestServerConfigGlobalPostInvalidSigning(t *testing.T) {
 	require := require.New(t)
 
-	// Version helper
-	humanVersion := "0.1.2-RC1"
-	warningMsg := "Version v0.1.2 of the Conformance Suite is out-of-date, please update to v0.1.3"
-	formatted := "0.1.2"
-
-	v := &versionmock.Version{}
-	v.On("GetHumanVersion").Return(humanVersion)
-	v.On("UpdateWarningVersion", mock.AnythingOfType("string")).Return(warningMsg, true, nil)
-	v.On("VersionFormatter", mock.AnythingOfType("string")).Return(formatted, nil)
-
-	server := NewServer(nullLogger(), conditionalityCheckerMock{}, v)
+	server := NewServer(nullLogger(), conditionalityCheckerMock{}, mockVersionChecker())
 	defer func() {
 		require.NoError(server.Shutdown(context.TODO()))
 	}()
@@ -358,7 +152,6 @@ oYi+1hqp1fIekaxsyQIDAQAB
 	}
 	`
 	bodyActual := body.String()
-	// do not use `require.Equal`.
 	require.JSONEq(bodyExpected, bodyActual)
 }
 
@@ -366,17 +159,7 @@ oYi+1hqp1fIekaxsyQIDAQAB
 func TestServerConfigGlobalPostInvalidTransport(t *testing.T) {
 	require := require.New(t)
 
-	// Version helper
-	humanVersion := "0.1.2-RC1"
-	warningMsg := "Version v0.1.2 of the Conformance Suite is out-of-date, please update to v0.1.3"
-	formatted := "0.1.2"
-
-	v := &versionmock.Version{}
-	v.On("GetHumanVersion").Return(humanVersion)
-	v.On("UpdateWarningVersion", mock.AnythingOfType("string")).Return(warningMsg, true, nil)
-	v.On("VersionFormatter", mock.AnythingOfType("string")).Return(formatted, nil)
-
-	server := NewServer(nullLogger(), conditionalityCheckerMock{}, v)
+	server := NewServer(nullLogger(), conditionalityCheckerMock{}, mockVersionChecker())
 	defer func() {
 		require.NoError(server.Shutdown(context.TODO()))
 	}()
@@ -434,6 +217,5 @@ oYi+1hqp1fIekaxsyQIDAQAB
 	}
 	`
 	bodyActual := body.String()
-	// do not use `require.Equal`.
 	require.JSONEq(bodyExpected, bodyActual)
 }

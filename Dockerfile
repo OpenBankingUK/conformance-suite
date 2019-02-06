@@ -45,8 +45,10 @@ WORKDIR /app
 
 COPY --from=gobuilder /app/server /app/
 COPY --from=gobuilder /app/fcs /app/
+COPY --from=gobuilder /app/certs /app/certs
+COPY --from=gobuilder /app/templates /app/templates
 COPY --from=nodebuilder /app/dist /app/web/dist
 
-EXPOSE 8080
+EXPOSE 443
 
 ENTRYPOINT ["/app/server"]

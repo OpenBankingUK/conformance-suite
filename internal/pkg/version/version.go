@@ -178,5 +178,4 @@ func (v BitBucket) UpdateWarningVersion(version string) (string, bool, error) {
 	}
 
 	return errorMessageUI, false, nil
-
 }

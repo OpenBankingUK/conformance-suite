@@ -1,27 +1,33 @@
 package main
 
 import (
-	"fmt"
 	"time"
 
 	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/os"
-
 	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/version"
-	"github.com/pkg/errors"
-
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/tracer"
-	"gopkg.in/resty.v1"
-
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/server"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/tracer"
+
+	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
-	"github.com/x-cray/logrus-prefixed-formatter"
+	prefixed "github.com/x-cray/logrus-prefixed-formatter"
+
+	resty "gopkg.in/resty.v1"
 )
 
-const defaultPort = "8080"
+var (
+	logger = logrus.StandardLogger()
+)
+
+const (
+	certFile = "./certs/conformancesuite_cert.pem"
+	keyFile  = "./certs/conformancesuite_key.pem"
+)
 
 func init() {
-	logrus.SetFormatter(&prefixed.TextFormatter{
+	logger.SetNoLock()
+	logger.SetFormatter(&prefixed.TextFormatter{
 		DisableColors:    false,
 		ForceColors:      true,
 		TimestampFormat:  time.RFC3339,
@@ -29,27 +35,28 @@ func init() {
 		DisableTimestamp: false,
 		ForceFormatting:  true,
 	})
-	logLevel := logrusLogLevel(os.GetEnvOrDefault("LOG_LEVEL", "INFO"))
-	logrus.SetLevel(logLevel)
-	logrus.StandardLogger().SetNoLock()
+	level, err := logrus.ParseLevel(os.GetEnvOrDefault("LOG_LEVEL", "INFO"))
+	if err != nil {
+		logger.Fatal(err)
+	}
+	logger.SetLevel(level)
+
 	tracer.Silent = os.GetEnvOrDefault("TRACER", "off") == "off"
 	resty.SetDebug(os.GetEnvOrDefault("HTTP_TRACE", "off") == "DEBUG")
 }
 
 func main() {
-	logger := logrus.StandardLogger().WithField("app", "server")
+	logger := logger.WithField("app", "server")
 	ver := version.NewBitBucket(version.BitBucketAPIRepository)
-
-	echoServer := server.NewServer(logger, model.NewConditionalityChecker(), ver)
-	echoServer.HideBanner = true
 
 	versionInfo(ver, logger)
 
-	address := fmt.Sprintf("0.0.0.0:%s", os.GetEnvOrDefault("PORT", defaultPort))
-	logger.Infof("address -> http://%s", address)
+	echoServer := server.NewServer(logger, model.NewConditionalityChecker(), ver)
+	echoServer.HideBanner = true
 	server.RoutesInfo(echoServer, logger)
 
-	logger.Fatal(echoServer.Start(address))
+	logger.Info("listening on https://0.0.0.0")
+	logger.Fatal(echoServer.StartTLS(":443", certFile, keyFile))
 }
 
 func versionInfo(ver version.BitBucket, logger *logrus.Entry) {
@@ -64,23 +71,4 @@ func versionInfo(ver version.BitBucket, logger *logrus.Entry) {
 		return
 	}
 	logger.Info(msg)
-}
-
-func logrusLogLevel(level string) logrus.Level {
-	switch level {
-	case "PANIC":
-		return logrus.PanicLevel
-	case "FATAL":
-		return logrus.FatalLevel
-	case "ERROR":
-		return logrus.ErrorLevel
-	case "WARN":
-		return logrus.WarnLevel
-	case "DEBUG":
-		return logrus.DebugLevel
-	case "INFO":
-		fallthrough
-	default:
-		return logrus.InfoLevel
-	}
 }

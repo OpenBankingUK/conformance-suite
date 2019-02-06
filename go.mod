@@ -3,19 +3,16 @@ module bitbucket.org/openbankingteam/conformance-suite
 require (
 	github.com/BurntSushi/toml v0.3.1 // indirect
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
-	github.com/fatih/color v1.7.0
-	github.com/go-openapi/errors v0.17.2
+	github.com/go-openapi/errors v0.17.2 // indirect
 	github.com/go-openapi/loads v0.17.2
 	github.com/go-openapi/runtime v0.0.0-20180920151709-4f900dc2ade9
 	github.com/go-openapi/spec v0.17.2
-	github.com/go-openapi/strfmt v0.17.2
-	github.com/go-openapi/swag v0.17.2
-	github.com/go-openapi/validate v0.17.2
+	github.com/go-openapi/strfmt v0.17.2 // indirect
+	github.com/go-openapi/swag v0.17.2 // indirect
+	github.com/go-openapi/validate v0.17.2 // indirect
 	github.com/go-playground/locales v0.12.1 // indirect
 	github.com/go-playground/universal-translator v0.16.0 // indirect
 	github.com/google/uuid v1.0.0
-	github.com/gorilla/context v1.1.1 // indirect
-	github.com/gorilla/mux v1.6.2
 	github.com/gorilla/websocket v1.4.0
 	github.com/inconshreveable/mousetrap v1.0.0 // indirect
 	github.com/labstack/echo v3.2.1+incompatible

@@ -44,17 +44,17 @@ func newGeneratorCmdWrapperWithOptions(generator Generator) GeneratorCommand {
 
 func (g GeneratorCommand) run(cmd *cobra.Command, _ []string) {
 	// check if input (discovery model) filename if provided
-	filenameFlag := cmd.Flag("filename")
-	if filenameFlag == nil || filenameFlag.Value.String() == "" {
+	filenameFlag, err := cmd.Flags().GetString("filename")
+	if err != nil || filenameFlag == "" {
 		fmt.Println("You need to provide a discovery filename.")
 		return
 	}
 
 	// set where to write results (testcases) defaults to stdout, flag output to choose a file
 	output := os.Stdout
-	outputFlag := cmd.Flag("output")
-	if outputFlag != nil && outputFlag.Value.String() != "" {
-		file, err := os.Create(outputFlag.Value.String())
+	outputFlag, err := cmd.Flags().GetString("output")
+	if err == nil && outputFlag != "" {
+		file, err := os.Create(outputFlag)
 		if err != nil {
 			exitError(err, "Error creating output file")
 		}
@@ -67,7 +67,7 @@ func (g GeneratorCommand) run(cmd *cobra.Command, _ []string) {
 		}()
 	}
 
-	input, err := os.Open(filenameFlag.Value.String())
+	input, err := os.Open(filenameFlag)
 	if err != nil {
 		exitError(err, "Error running generation command, opening input file")
 	}
