@@ -7,16 +7,27 @@
     <b-btn
       :disabled="isNextDisabled"
       variant="success"
-      @click="onNext()">{{ nextLabel }}</b-btn>
+      @click="onNext()">
+      <b-spinner
+        v-if="showLoading"
+        small />
+      <span class="next-label">{{ nextLabel }}</span>
+    </b-btn>
   </div>
 </template>
 
 <script>
 import * as _ from 'lodash';
+import { createNamespacedHelpers } from 'vuex';
+import BSpinner from '@/components/BSpinner';
+
+const { mapGetters } = createNamespacedHelpers('status');
 
 export default {
   name: 'TheWizardFooter',
-  components: {},
+  components: {
+    BSpinner,
+  },
   props: {
     nextLabel: {
       type: String,
@@ -42,6 +53,9 @@ export default {
     };
   },
   computed: {
+    ...mapGetters([
+      'showLoading',
+    ]),
     // disable back button if we are in the first step of the wizard
     isBackDisabled() {
       const { path } = this.$route;
@@ -51,11 +65,12 @@ export default {
 
       return false;
     },
+    // disable next button when showLoading is true
     // disable next button when we are the last step in the wizard
     // disable next button when we are on discovery template selection step
     isNextDisabled() {
       const { path } = this.$route;
-      if (path === '/wizard/export' || path === '/wizard/continue-or-start') {
+      if (this.showLoading || path === '/wizard/export' || path === '/wizard/continue-or-start') {
         return true;
       }
 
@@ -82,4 +97,8 @@ export default {
 </script>
 
 <style scoped>
+.next-label {
+  margin-left: 7px;
+  margin-right: 7px;
+}
 </style>

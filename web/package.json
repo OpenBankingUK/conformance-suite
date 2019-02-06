@@ -22,6 +22,7 @@
     "urijs": "^1.19.1",
     "vue": "^2.5.17",
     "vue-feather-icons": "^4.7.1",
+    "vue-functional-data-merge": "^2.0.7",
     "vue-notification-bell": "^0.8.11",
     "vue-router": "^3.0.1",
     "vue2-brace-editor": "^2.0.2",

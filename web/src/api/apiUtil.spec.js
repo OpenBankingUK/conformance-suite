@@ -1,5 +1,7 @@
 import api from './apiUtil';
 
+let setShowLoading;
+
 describe('api.get', () => {
   const expectedOptions = {
     method: 'GET',
@@ -12,6 +14,7 @@ describe('api.get', () => {
   const data = { some: 'data' };
 
   beforeEach(() => {
+    setShowLoading = jest.fn();
     fetch.resetMocks();
     fetch.mockResponseOnce(JSON.stringify(data), { status: 200 });
   });
@@ -30,6 +33,17 @@ describe('api.get', () => {
       expect(err).toBeFalsy();
     }
   });
+
+  it('calls setShowLoading function when setShowLoading provided', async () => {
+    try {
+      await api.get(url, setShowLoading);
+    } catch (err) {
+      expect(err).toBeFalsy();
+    }
+    expect(setShowLoading.mock.calls.length).toEqual(2);
+    expect(setShowLoading.mock.calls[0][0]).toEqual(true);
+    expect(setShowLoading.mock.calls[1][0]).toEqual(false);
+  });
 });
 
 describe('api.post', () => {
@@ -45,6 +59,7 @@ describe('api.post', () => {
   const data = { some: 'data' };
 
   beforeEach(() => {
+    setShowLoading = jest.fn();
     fetch.resetMocks();
     fetch.mockResponseOnce(JSON.stringify(data), { status: 200 });
   });
@@ -61,6 +76,7 @@ describe('api.post', () => {
       expect(err).toBeFalsy();
     }
   });
+
   it('calls fetch with null body when called without data', async () => {
     try {
       const response = await api.post(url);
@@ -72,5 +88,16 @@ describe('api.post', () => {
     } catch (err) {
       expect(err).toBeFalsy();
     }
+  });
+
+  it('calls setShowLoading function when setShowLoading provided', async () => {
+    try {
+      await api.post(url, data, setShowLoading);
+    } catch (err) {
+      expect(err).toBeFalsy();
+    }
+    expect(setShowLoading.mock.calls.length).toEqual(2);
+    expect(setShowLoading.mock.calls[0][0]).toEqual(true);
+    expect(setShowLoading.mock.calls[1][0]).toEqual(false);
   });
 });

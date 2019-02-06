@@ -11,7 +11,10 @@ describe('computeTestCases', () => {
   },
   };
 
+  let setShowLoading;
+
   beforeEach(() => {
+    setShowLoading = jest.fn();
     fetch.resetMocks();
   });
 
@@ -45,7 +48,7 @@ describe('computeTestCases', () => {
     fetch.mockResponseOnce(JSON.stringify(data), { status: 200 });
 
     try {
-      const response = await testcases.computeTestCases(data);
+      const response = await testcases.computeTestCases(setShowLoading);
       expect(response).toEqual(data);
 
       // assert on the times called and arguments given to fetch
@@ -68,7 +71,7 @@ describe('computeTestCases', () => {
     fetch.mockResponseOnce(JSON.stringify(data), { status: 400 });
 
     try {
-      const response = await testcases.computeTestCases(data);
+      const response = await testcases.computeTestCases(setShowLoading);
       // Should not get here.
       expect(response).toBeFalsy();
     } catch (err) {
