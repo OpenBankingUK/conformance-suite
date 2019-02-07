@@ -191,7 +191,7 @@ func TestPermissionsSetsEmpty(t *testing.T) {
 	generator := &gmocks.Generator{}
 	journey := NewJourney(generator, validator)
 
-	results := journey.permissionSpecTokens()
+	results := journey.permissionSpecConsents()
 
 	assert.Len(t, results, 0)
 }
@@ -218,7 +218,7 @@ func TestPermissionsShouldPassAllTestsToResolver(t *testing.T) {
 		},
 	}
 
-	specTokens := journey.permissionSpecTokens()
+	specTokens := journey.permissionSpecConsents()
 
 	assert.Len(t, specTokens, 1)
 	assert.Len(t, specTokens[0].NamedPermissions, 2)

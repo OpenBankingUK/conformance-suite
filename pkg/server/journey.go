@@ -91,23 +91,23 @@ func (wj *journey) TestCases() (TestCasesRun, error) {
 		wj.specTestCases = wj.generator.GenerateSpecificationTestCases(wj.validDiscoveryModel.DiscoveryModel)
 	}
 
-	tokens := wj.permissionSpecTokens()
+	tokens := wj.permissionSpecConsents()
 
 	return TestCasesRun{wj.specTestCases, tokens}, nil
 }
 
-// permissionSpecTokens calls resolver to get list of permission sets required to run all test cases
-func (wj *journey) permissionSpecTokens() []model.SpecConsentRequirements {
-	var tokens []model.SpecConsentRequirements
+// permissionSpecConsents calls resolver to get list of permission sets required to run all test cases
+func (wj *journey) permissionSpecConsents() []model.SpecConsentRequirements {
+	var specConsentRequirements []model.SpecConsentRequirements
 	for _, spec := range wj.specTestCases {
 		var groups []permissions.Group
 		for _, tc := range spec.TestCases {
 			groups = append(groups, model.NewPermissionGroup(tc))
 		}
 		resultSet := wj.resolver(groups)
-		tokens = append(tokens, model.NewSpecConsentRequirements(resultSet, spec.Specification.Name))
+		specConsentRequirements = append(specConsentRequirements, model.NewSpecConsentRequirements(resultSet, spec.Specification.Name))
 	}
-	return tokens
+	return specConsentRequirements
 }
 
 func (wj *journey) RunTests() error {

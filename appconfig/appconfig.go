@@ -48,7 +48,7 @@ type AppConfig struct {
 	KeyID                 string      `json:"keyId" form:"keyId" query:"keyId" validate:"required"`                                           // Signing cert key id
 	TargetHost            string      `json:"targetHost" form:"targetHost" query:"targetHost" validate:"required"`                            // Host to proxy against
 	Verbose               bool        `json:"verbose" form:"verbose" query:"verbose" validate:"required"`                                     // verbose output
-	Spec                  string      `json:"specLocation" form:"specLocation" query:"specLocation" validate:"required"`                      // SpecConsentRequirements location
+	Spec                  string      `json:"specLocation" form:"specLocation" query:"specLocation" validate:"required"`                      // Spec location
 	Bind                  string      `json:"bindAddress" form:"bindAddress" query:"bindAddress" validate:"required"`                         // bind address
 	CertTransport         string      `json:"certTransport" form:"certTransport" query:"certTransport" validate:"required"`
 	CertSigning           string      `json:"certSigning" form:"certSigning" query:"certSigning" validate:"required"`
