@@ -55,6 +55,41 @@ var (
 			Version:       "v3.1",
 			SchemaVersion: mustParseURL("https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.0/dist/event-notifications-swagger.json"),
 		},
+		{
+			Identifier:    "account-transaction-v3.0",
+			Name:          "Account and Transaction API Specification",
+			URL:           mustParseURL("https://openbanking.atlassian.net/wiki/spaces/DZ/pages/642090641/Account+and+Transaction+API+Specification+-+v3.0"),
+			Version:       "v3.0",
+			SchemaVersion: mustParseURL("https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.0.0/dist/account-info-swagger.json"),
+		},
+		{
+			Identifier:    "payment-initiation-v3.0",
+			Name:          "Payment Initiation API",
+			URL:           mustParseURL("https://openbanking.atlassian.net/wiki/spaces/DZ/pages/645367011/Payment+Initiation+API+Specification+-+v3.0"),
+			Version:       "v3.0",
+			SchemaVersion: mustParseURL("https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.0.0/dist/payment-initiation-swagger.json"),
+		},
+		{
+			Identifier:    "confirmation-funds-v3.0",
+			Name:          "Confirmation of Funds API Specification",
+			URL:           mustParseURL("https://openbanking.atlassian.net/wiki/spaces/DZ/pages/645203467/Confirmation+of+Funds+API+Specification+-+v3.0"),
+			Version:       "v3.0",
+			SchemaVersion: mustParseURL("https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.0.0/dist/confirmation-funds-swagger.json"),
+		},
+		{
+			Identifier:    "event-notification-aspsp-v3.0",
+			Name:          "Event Notification API Specification - ASPSP Endpoints",
+			URL:           mustParseURL("https://openbanking.atlassian.net/wiki/spaces/DZ/pages/645367055/Event+Notification+API+Specification+-+v3.0"),
+			Version:       "v3.0",
+			SchemaVersion: mustParseURL("https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.0.0/dist/callback-urls-swagger.yaml"),
+		},
+		{
+			Identifier:    "event-notification-tpp-v3.0",
+			Name:          "Event Notification API Specification - TPP Endpoints",
+			URL:           mustParseURL("https://openbanking.atlassian.net/wiki/spaces/DZ/pages/645367055/Event+Notification+API+Specification+-+v3.0"),
+			Version:       "v3.0",
+			SchemaVersion: mustParseURL("https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.0.0/dist/event-notifications-swagger.yaml"),
+		},
 	}
 )
 
