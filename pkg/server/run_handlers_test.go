@@ -3,7 +3,6 @@ package server
 import (
 	versionmock "bitbucket.org/openbankingteam/conformance-suite/internal/pkg/version/mocks"
 	"context"
-	"github.com/stretchr/testify/mock"
 	"net/http"
 	"testing"
 
@@ -14,16 +13,7 @@ import (
 func TestServerRunStartPost(t *testing.T) {
 	require := require.New(t)
 
-	// Setup Version mock
-	humanVersion := "0.1.2-RC1"
-	warningMsg := "Version v0.1.2 of the Conformance Suite is out-of-date, please update to v0.1.3"
-	formatted := "0.1.2"
-	v := &versionmock.Version{}
-	v.On("GetHumanVersion").Return(humanVersion)
-	v.On("UpdateWarningVersion", mock.AnythingOfType("string")).Return(warningMsg, true, nil)
-	v.On("VersionFormatter", mock.AnythingOfType("string")).Return(formatted, nil)
-
-	server := NewServer(nullLogger(), conditionalityCheckerMock{}, v)
+	server := NewServer(nullLogger(), conditionalityCheckerMock{}, &versionmock.Version{})
 	defer func() {
 		require.NoError(server.Shutdown(context.TODO()))
 	}()

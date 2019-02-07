@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/authentication"
-	jwt "github.com/dgrijalva/jwt-go"
+	"github.com/dgrijalva/jwt-go"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )

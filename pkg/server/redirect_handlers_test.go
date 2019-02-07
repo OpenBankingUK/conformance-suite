@@ -1,6 +1,7 @@
 package server
 
 import (
+	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/version/mocks"
 	"context"
 	"net/http"
 	"strings"
@@ -12,7 +13,7 @@ import (
 func TestRedirectHandlersFragmentOK(t *testing.T) {
 	require := require.New(t)
 
-	server := NewServer(nullLogger(), conditionalityCheckerMock{}, mockVersionChecker())
+	server := NewServer(nullLogger(), conditionalityCheckerMock{}, &mocks.Version{})
 	defer func() {
 		require.NoError(server.Shutdown(context.TODO()))
 	}()
@@ -47,7 +48,7 @@ func TestRedirectHandlersFragmentOK(t *testing.T) {
 func TestRedirectHandlersQueryOK(t *testing.T) {
 	require := require.New(t)
 
-	server := NewServer(nullLogger(), conditionalityCheckerMock{}, mockVersionChecker())
+	server := NewServer(nullLogger(), conditionalityCheckerMock{}, &mocks.Version{})
 	defer func() {
 		require.NoError(server.Shutdown(context.TODO()))
 	}()
@@ -80,7 +81,7 @@ func TestRedirectHandlersQueryOK(t *testing.T) {
 func TestRedirectHandlersError(t *testing.T) {
 	require := require.New(t)
 
-	server := NewServer(nullLogger(), conditionalityCheckerMock{}, mockVersionChecker())
+	server := NewServer(nullLogger(), conditionalityCheckerMock{}, &mocks.Version{})
 	defer func() {
 		require.NoError(server.Shutdown(context.TODO()))
 	}()

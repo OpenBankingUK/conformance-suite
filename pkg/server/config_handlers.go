@@ -1,6 +1,7 @@
 package server
 
 import (
+	"github.com/sirupsen/logrus"
 	"net/http"
 
 	"github.com/labstack/echo"
@@ -10,7 +11,8 @@ import (
 )
 
 type configHandlers struct {
-	webJourney Journey
+	logger  *logrus.Entry
+	journey Journey
 }
 
 type GlobalConfiguration struct {
@@ -51,7 +53,7 @@ func (h *configHandlers) configGlobalPostHandler(c echo.Context) error {
 			NewErrorResponse(errors.Wrap(err, "error with transport certificate")),
 		)
 	}
-	h.webJourney.SetCertificates(certificateSigning, certificateTransport)
+	h.journey.SetCertificates(certificateSigning, certificateTransport)
 
 	return c.JSON(http.StatusCreated, globalConfiguration)
 }
