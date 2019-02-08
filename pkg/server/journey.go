@@ -1,6 +1,7 @@
 package server
 
 import (
+	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/names"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/authentication"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/executors"
@@ -98,6 +99,7 @@ func (wj *journey) TestCases() (TestCasesRun, error) {
 
 // permissionSpecConsents calls resolver to get list of permission sets required to run all test cases
 func (wj *journey) permissionSpecConsents() []model.SpecConsentRequirements {
+	nameGenerator := names.NewSententialPrefixedName("to")
 	var specConsentRequirements []model.SpecConsentRequirements
 	for _, spec := range wj.specTestCases {
 		var groups []permissions.Group
@@ -105,7 +107,8 @@ func (wj *journey) permissionSpecConsents() []model.SpecConsentRequirements {
 			groups = append(groups, model.NewPermissionGroup(tc))
 		}
 		resultSet := wj.resolver(groups)
-		specConsentRequirements = append(specConsentRequirements, model.NewSpecConsentRequirements(resultSet, spec.Specification.Name))
+		consentRequirements := model.NewSpecConsentRequirements(nameGenerator, resultSet, spec.Specification.Name)
+		specConsentRequirements = append(specConsentRequirements, consentRequirements)
 	}
 	return specConsentRequirements
 }

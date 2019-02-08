@@ -1,10 +1,8 @@
 package model
 
 import (
+	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/names"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/permissions"
-	"math/rand"
-	"strconv"
-	"time"
 )
 
 type NamedPermission struct {
@@ -32,31 +30,14 @@ type SpecConsentRequirements struct {
 	NamedPermissions NamedPermissions `json:"namedPermissions"`
 }
 
-func NewSpecConsentRequirements(result permissions.CodeSetResultSet, specId string) SpecConsentRequirements {
-	tokens := NamedPermissions{}
-	tokenNamePrefix := "to-" + randomString(3) + "-"
-	for i, resultSet := range result {
-		token := newNamedPermission(prefixedNumber(i, tokenNamePrefix), resultSet)
-		tokens = append(tokens, token)
+func NewSpecConsentRequirements(nameGenerator names.Generator, result permissions.CodeSetResultSet, specId string) SpecConsentRequirements {
+	namedPermissions := NamedPermissions{}
+	for _, resultSet := range result {
+		namedPermission := newNamedPermission(nameGenerator.Generate(), resultSet)
+		namedPermissions = append(namedPermissions, namedPermission)
 	}
 	return SpecConsentRequirements{
 		Identifier:       specId,
-		NamedPermissions: tokens,
+		NamedPermissions: namedPermissions,
 	}
-}
-
-// prefixedNumber returns a number prefixed by a string
-func prefixedNumber(next int, prefix string) string {
-	return prefix + strconv.Itoa(next)
-}
-
-var letterRunes = []rune("abcdefghijklmnopqrstuvwxyz")
-
-func randomString(n int) string {
-	rand.Seed(time.Now().UnixNano())
-	b := make([]rune, n)
-	for i := range b {
-		b[i] = letterRunes[rand.Intn(len(letterRunes))]
-	}
-	return string(b)
 }

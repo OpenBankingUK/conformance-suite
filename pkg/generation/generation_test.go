@@ -9,12 +9,6 @@ import (
 	"testing"
 )
 
-func TestTestCaseName(t *testing.T) {
-	assert.Equal(t, "#t0001", testCaseName(1))
-	assert.Equal(t, "#t0000", testCaseName(0))
-	assert.Equal(t, "#t10001", testCaseName(10001))
-}
-
 func TestGetGoodResponseCode(t *testing.T) {
 	tcs := []struct {
 		codes        []int

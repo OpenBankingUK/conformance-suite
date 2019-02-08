@@ -223,7 +223,7 @@ func TestPermissionsShouldPassAllTestsToResolver(t *testing.T) {
 	assert.Len(t, specTokens, 1)
 	assert.Len(t, specTokens[0].NamedPermissions, 2)
 	// token name expected in format to-{3 letters}-{sequence number}
-	matchName := regexp.MustCompile(`to-\w{3}-\d+`)
+	matchName := regexp.MustCompile(`to\w{4}`)
 	assert.Regexp(t, matchName, specTokens[0].NamedPermissions[0].Name)
 	assert.Regexp(t, matchName, specTokens[0].NamedPermissions[1].Name)
 }
