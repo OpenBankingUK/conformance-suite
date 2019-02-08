@@ -66,7 +66,7 @@ func TestGetResponseCodes(t *testing.T) {
 
 	result := getResponseCodes(op)
 
-	assert.Equal(t, []int{200, 300}, result)
+	assert.EqualValues(t, []int{300, 200}, result)
 }
 
 func TestGetResourceIds(t *testing.T) {
