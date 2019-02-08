@@ -68,9 +68,9 @@ func TestRedirectHandlersFragmentOK(t *testing.T) {
 		responseBodyExpected: `{"error":"c_hash invalid"}`,
 		requestBody: `
 {
-    "code": "a052c795-742d-415a-843f-8a4939d740d1",
+    "code": "80bf17a3-e617-4983-9d62-b50bd8e6fce4",
     "scope": "openid accounts",
-    "id_token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJtYmFuYSIsImF1ZGl0VHJhY2tpbmdJZCI6IjY5YzZkZmUzLWM4MDEtNGRkMi05Mjc1LTRjNWVhNzdjZWY1NS0xMDMzMDgyIiwiaXNzIjoiaHR0cHM6Ly9tYXRscy5hcy5hc3BzcC5vYi5mb3JnZXJvY2suZmluYW5jaWFsL29hdXRoMi9vcGVuYmFua2luZyIsInRva2VuTmFtZSI6ImlkX3Rva2VuIiwibm9uY2UiOiI1YTZiMGQ3ODMyYTlmYjRmODBmMTE3MGEiLCJhY3IiOiJ1cm46b3BlbmJhbmtpbmc6cHNkMjpzY2EiLCJhdWQiOiI1NGY2NDMwOS00MzNkLTQ2MTAtOTVkMi02M2QyZjUyNTM0MTIiLCJjX2hhc2giOiJiYWQtY19oYXNoIiwib3BlbmJhbmtpbmdfaW50ZW50X2lkIjoiQTY5MDA3Nzc1LTcwZGQtNGIyMi1iZmM1LTlkNTI0YTkxZjk4MCIsInNfaGFzaCI6ImZ0OWRrQTdTWXdlb2hlZXpjOGFHeEEiLCJhenAiOiI1NGY2NDMwOS00MzNkLTQ2MTAtOTVkMi02M2QyZjUyNTM0MTIiLCJhdXRoX3RpbWUiOjE1Mzk5NDM3NzUsInJlYWxtIjoiL29wZW5iYW5raW5nIiwiZXhwIjoxNTQ5MzEzODk3LCJ0b2tlblR5cGUiOiJKV1RUb2tlbiIsImlhdCI6MTUzOTk0Mzc4MSwianRpIjoiNTY5NDgxMDEtYjY0NS00NjFkLThhNzUtYTgzNmZiMGVmODAzIn0.GGWSIW6SI2XXZkfIZq6QJ5O-j6BHZbqOGvCWxOaNypU",
+    "id_token": "eyJhbGciOiJQUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL2p3dC1pZHAuZXhhbXBsZS5jb20iLCJzdWIiOiJtYWlsdG86bWlrZUBleGFtcGxlLmNvbSIsIm5iZiI6MTU0OTU1NjY0MiwiZXhwIjoxNTQ5NTYwMjQyLCJpYXQiOjE1NDk1NTY2NDIsImp0aSI6ImlkMTIzNDU2IiwidHlwIjoiaHR0cHM6Ly9leGFtcGxlLmNvbS9yZWdpc3RlciIsICJjX2hhc2giOiAiaW52YWxpZC1jX2hhc2gifQ.CG8bb_wT7EetLsE3SB8W30K3z_be14ZNXsjWQiklXkqImE-aWFvCqruwh-3aAG5xvaQ_u6T5mj7jaK-ZX93v591FsMPmX1MWyUYNfJp5MsPsWUfzZX69Us5UAqOgZ2zxu662prcE8fVqsL-GB-boVR_0e1SUj4NjKhiEHCNVYe-SGclRSZPvjRf0ymQBacmFz84kLqFVZYTXJFkufXd09FUopnNVK-aK2aCc39TaxzxFwwLaAW_iOtJnzHUtnNdF1OUW5MLTeJYd7hPg0Oq5hPUtz2h2XLVl76ERdJYNWNa1yws4gaWE9PaDgNu-mYbfEZVIHnB28XkB7d6BaCW-GQ",
     "state": "5a6b0d7832a9fb4f80f1170a"
 }
 	`,
@@ -153,7 +153,7 @@ func TestRedirectHandlersQueryOK(t *testing.T) {
 {
     "code": "a052c795-742d-415a-843f-8a4939d740d1",
     "scope": "openid accounts",
-    "id_token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJtYmFuYSIsImF1ZGl0VHJhY2tpbmdJZCI6IjY5YzZkZmUzLWM4MDEtNGRkMi05Mjc1LTRjNWVhNzdjZWY1NS0xMDMzMDgyIiwiaXNzIjoiaHR0cHM6Ly9tYXRscy5hcy5hc3BzcC5vYi5mb3JnZXJvY2suZmluYW5jaWFsL29hdXRoMi9vcGVuYmFua2luZyIsInRva2VuTmFtZSI6ImlkX3Rva2VuIiwibm9uY2UiOiI1YTZiMGQ3ODMyYTlmYjRmODBmMTE3MGEiLCJhY3IiOiJ1cm46b3BlbmJhbmtpbmc6cHNkMjpzY2EiLCJhdWQiOiI1NGY2NDMwOS00MzNkLTQ2MTAtOTVkMi02M2QyZjUyNTM0MTIiLCJjX2hhc2giOiJiYWQtY19oYXNoIiwib3BlbmJhbmtpbmdfaW50ZW50X2lkIjoiQTY5MDA3Nzc1LTcwZGQtNGIyMi1iZmM1LTlkNTI0YTkxZjk4MCIsInNfaGFzaCI6ImZ0OWRrQTdTWXdlb2hlZXpjOGFHeEEiLCJhenAiOiI1NGY2NDMwOS00MzNkLTQ2MTAtOTVkMi02M2QyZjUyNTM0MTIiLCJhdXRoX3RpbWUiOjE1Mzk5NDM3NzUsInJlYWxtIjoiL29wZW5iYW5raW5nIiwiZXhwIjoxNTQ5MzEzODk3LCJ0b2tlblR5cGUiOiJKV1RUb2tlbiIsImlhdCI6MTUzOTk0Mzc4MSwianRpIjoiNTY5NDgxMDEtYjY0NS00NjFkLThhNzUtYTgzNmZiMGVmODAzIn0.GGWSIW6SI2XXZkfIZq6QJ5O-j6BHZbqOGvCWxOaNypU",
+    "id_token": "eyJhbGciOiJQUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL2p3dC1pZHAuZXhhbXBsZS5jb20iLCJzdWIiOiJtYWlsdG86bWlrZUBleGFtcGxlLmNvbSIsIm5iZiI6MTU0OTU1NjY0MiwiZXhwIjoxNTQ5NTYwMjQyLCJpYXQiOjE1NDk1NTY2NDIsImp0aSI6ImlkMTIzNDU2IiwidHlwIjoiaHR0cHM6Ly9leGFtcGxlLmNvbS9yZWdpc3RlciIsICJjX2hhc2giOiAiaW52YWxpZC1jX2hhc2gifQ.CG8bb_wT7EetLsE3SB8W30K3z_be14ZNXsjWQiklXkqImE-aWFvCqruwh-3aAG5xvaQ_u6T5mj7jaK-ZX93v591FsMPmX1MWyUYNfJp5MsPsWUfzZX69Us5UAqOgZ2zxu662prcE8fVqsL-GB-boVR_0e1SUj4NjKhiEHCNVYe-SGclRSZPvjRf0ymQBacmFz84kLqFVZYTXJFkufXd09FUopnNVK-aK2aCc39TaxzxFwwLaAW_iOtJnzHUtnNdF1OUW5MLTeJYd7hPg0Oq5hPUtz2h2XLVl76ERdJYNWNa1yws4gaWE9PaDgNu-mYbfEZVIHnB28XkB7d6BaCW-GQ",
     "state": "5a6b0d7832a9fb4f80f1170a"
 }
 	`,
@@ -243,21 +243,9 @@ func TestCalculateCHash(t *testing.T) {
 			expectedHash: "EE_Bf-grXWv5GGhs5FZ0ug",
 		},
 		{
-			label: "HS256 code valid",
-			code: "80bf17a3-e617-4983-9d62-b50bd8e6fce4",
-			alg: "HS256",
-			expectedHash: "EE_Bf-grXWv5GGhs5FZ0ug",
-		},
-		{
 			label: "PS256 code valid",
 			code: "80bf17a3-e617-4983-9d62-b50bd8e6fce4",
 			alg: "PS256",
-			expectedHash: "EE_Bf-grXWv5GGhs5FZ0ug",
-		},
-		{
-			label: "RS256 code valid",
-			code: "80bf17a3-e617-4983-9d62-b50bd8e6fce4",
-			alg: "RS256",
 			expectedHash: "EE_Bf-grXWv5GGhs5FZ0ug",
 		},
 		{
@@ -266,12 +254,6 @@ func TestCalculateCHash(t *testing.T) {
 			alg: "bad-algorithm",
 			expectedHash: "",
 			expectedError: fmt.Errorf("bad-algorithm algorithm not supported"),
-		},
-		{
-			label: "none algorithm",
-			code: "80bf17a3-e617-4983-9d62-b50bd8e6fce4",
-			alg: "none",
-			expectedHash: "47DEQpj8HBSa-_TImW-5JA",
 		},
 
 	}

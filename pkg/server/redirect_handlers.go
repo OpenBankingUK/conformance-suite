@@ -116,21 +116,17 @@ func (h *redirectHandlers) postErrorHandler(c echo.Context) error {
 
 // calculateCHash calculates the code hash (c_hash) value
 // as described in section 3.3.2.11 (ID Token) https://openid.net/specs/openid-connect-core-1_0.html#HybridIDToken
-// List of valid algorithms https://tools.ietf.org/html/rfc7518#section-3.1 as referenced by OBIE in Security Profile Implementers draft:
+// List of valid algorithms https://openid.net/specs/openid-financial-api-part-2.html#jws-algorithm-considerations
+// At the time of writing, the list shows "PS256", "ES256"
 // https://openbanking.atlassian.net/wiki/spaces/DZ/pages/83919096/Open+Banking+Security+Profile+-+Implementer+s+Draft+v1.1.2#OpenBankingSecurityProfile-Implementer'sDraftv1.1.2-Step2:FormtheJOSEHeader
 func calculateCHash(alg string, code string) (string, error) {
 	var digest []byte
 
 	switch alg {
-	// These are currently mentioned by OBIE, are there others?
-	case "ES256", "HS256", "PS256", "RS256":
+	case "ES256", "PS256":
 		d := sha256.Sum256([]byte(code))
 		//left most 256 bits.. 256/8 = 32bytes
 		// no need to validate length as sha256.Sum256 returns fixed length
-		digest = []byte(d[0:32])
-	case "none":
-		// Using the algorithm "none" https://tools.ietf.org/html/rfc7518#section-3.6
-		d := sha256.Sum256([]byte{})
 		digest = []byte(d[0:32])
 	default:
 		return "", fmt.Errorf("%s algorithm not supported", alg)
