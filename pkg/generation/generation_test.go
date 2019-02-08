@@ -5,6 +5,7 @@ import (
 	"github.com/go-openapi/spec"
 	"github.com/pkg/errors"
 	"github.com/stretchr/testify/assert"
+	"sort"
 	"testing"
 )
 
@@ -65,8 +66,10 @@ func TestGetResponseCodes(t *testing.T) {
 	}
 
 	result := getResponseCodes(op)
+	sort.Ints(result)
 
-	assert.EqualValues(t, []int{300, 200}, result)
+	expected := []int{200, 300}
+	assert.Equal(t, expected, result)
 }
 
 func TestGetResourceIds(t *testing.T) {
