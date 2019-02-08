@@ -1,7 +1,6 @@
 import * as _ from 'lodash';
+import * as moment from 'moment';
 import * as types from './mutation-types';
-
-const moment = require('moment');
 
 export default {
   [types.SET_TEST_CASES](state, testCases) {
