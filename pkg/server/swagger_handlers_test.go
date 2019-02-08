@@ -1,6 +1,7 @@
 package server
 
 import (
+	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/version/mocks"
 	"context"
 	"fmt"
 	"net/http"
@@ -30,7 +31,7 @@ func TestServerSwaggerHandlers(t *testing.T) {
 func TestServerSwaggerHandlersServesUI(t *testing.T) {
 	require := require.New(t)
 
-	server := NewServer(nullLogger(), conditionalityCheckerMock{}, mockVersionChecker())
+	server := NewServer(nullLogger(), conditionalityCheckerMock{}, &mocks.Version{})
 	defer func() {
 		require.NoError(server.Shutdown(context.TODO()))
 	}()

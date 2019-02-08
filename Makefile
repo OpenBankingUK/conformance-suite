@@ -14,12 +14,12 @@ help: ## Displays this help.
 run: WEB_LOG_FILE:=$(shell pwd)/web/web.log
 run: init_web ## run binary directly without docker.
 	@if [[ -f "${WEB_LOG_FILE}" ]]; then rm "${WEB_LOG_FILE}"; fi
-	@./scripts/run_web.sh &> "${WEB_LOG_FILE}" &
-	@./scripts/run_server.sh
+	@./scripts/web &> "${WEB_LOG_FILE}" &
+	@./scripts/server
 
 .PHONY: run_parallel
 run_parallel: init_web ## run binary directly with logging without docker
-	parallel -j2 --linebuffer --verbose --tag ::: ./scripts/run_web.sh ./scripts/run_server.sh
+	cd scripts && parallel -j2 --linebuffer --verbose --tag ::: ./web ./server
 
 .PHONY: run_image
 run_image: ## run the 'latest' docker image.
@@ -27,9 +27,7 @@ run_image: ## run the 'latest' docker image.
 	docker run \
 		--rm \
 		-it \
-		-p 8080:8080 \
-		-v $(shell pwd)/config:/app/config:ro \
-		-v $(shell pwd)/swagger:/app/swagger:ro \
+		-p 443:443 \
 		"openbanking/conformance-suite:latest"
 
 .PHONY: build

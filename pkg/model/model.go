@@ -114,13 +114,6 @@ func (t *TestCase) Validate(resp *resty.Response, rulectx *Context) (bool, error
 	return t.ApplyExpects(resp, rulectx)
 }
 
-// Context is intended to handle two types of object and make them available to various parts of the suite including
-// testcases. The first set are objects created as a result of the discovery phase, which capture discovery model
-// information like endpoints and conditional implementation indicators. The other set of data is information passed
-// between a sequence of test cases, for example AccountId - extracted from the output of one testcase (/Accounts) and fed in
-// as part of the input of another testcase for example (/Accounts/{AccountId}/transactions}
-type Context map[string]interface{}
-
 // Expect defines a structure for expressing testcase result expectations.
 type Expect struct {
 	StatusCode       int  `json:"status-code,omitempty"`       // Http response code
@@ -200,7 +193,7 @@ func (t *TestCase) ApplyExpects(res *resty.Response, rulectx *Context) (bool, er
 		return false, t.AppErr(fmt.Sprintf("(%s):%s: HTTP Status code does not match: expected %d got %d", t.ID, t.Name, t.Expect.StatusCode, res.StatusCode()))
 	}
 
-	t.AppMsg(fmt.Sprintf("Status check ok: expected [%d] got [%d]", t.Expect.StatusCode, res.StatusCode()))
+	t.AppMsg(fmt.Sprintf("Status check isReplacement: expected [%d] got [%d]", t.Expect.StatusCode, res.StatusCode()))
 	for k, match := range t.Expect.Matches {
 		checkResult, got := match.Check(t)
 		if checkResult == false {
@@ -216,77 +209,6 @@ func (t *TestCase) ApplyExpects(res *resty.Response, rulectx *Context) (bool, er
 	}
 
 	return true, nil
-}
-
-// Get the key form the Context map - currently assumes value converts easily to a string!
-func (c Context) Get(key string) (interface{}, bool) {
-	value, exist := c[key]
-	return value, exist
-}
-
-// Put a value indexed by 'key' into the context. The value can be any type
-func (c Context) Put(key string, value interface{}) {
-	c[key] = value
-}
-
-// GetIncludedPermission returns the list of permission names that need to be included
-// in the access token for this testcase. See permission model docs for more information
-func (t *TestCase) GetIncludedPermission() []string {
-	var result []string
-	if t.Context["permissions"] != nil {
-		permissionArray := t.Context["permissions"].([]interface{})
-		for _, permissionName := range permissionArray {
-			result = append(result, permissionName.(string))
-		}
-		return result
-	}
-
-	// for defaults to apply there should be no permissions no permissions_excluded specified
-	if t.Context["permissions"] == nil && t.Context["permissions_excluded"] == nil {
-		// Attempt to get default permissions
-		perms := GetPermissionsForEndpoint(t.Input.Endpoint)
-		if len(perms) > 1 { // need to figure out default
-			for _, p := range perms { // find default permission
-				if p.Default == true {
-					return []string{string(p.Code)}
-				}
-			}
-		} else {
-			if len(perms) > 0 { // only one permission so return that
-				return []string{string(perms[0].Code)}
-			}
-		}
-		return []string{} // no defaults - no permissions
-	}
-
-	if t.Context["permissions"] == nil {
-		return []string{}
-	}
-	return result
-}
-
-// GetExcludedPermissions return a list of excluded permissions
-func (t *TestCase) GetExcludedPermissions() []string {
-	var permissionArray []interface{}
-	var result []string
-	if t.Context["permissions_excluded"] == nil {
-		return []string{}
-	}
-	permissionArray = t.Context["permissions_excluded"].([]interface{})
-	if permissionArray == nil {
-		return []string{}
-	}
-	for _, permissionName := range permissionArray {
-		result = append(result, permissionName.(string))
-	}
-	return result
-}
-
-// GetPermissions returns a list of Code objects associated with a testcase
-func (t *TestCase) GetPermissions() (included, excluded []string) {
-	included = t.GetIncludedPermission()
-	excluded = t.GetExcludedPermissions()
-	return
 }
 
 // AppMsg - application level trace
@@ -322,26 +244,6 @@ func (m *Manifest) String() string {
 func (r *Rule) String() string {
 	return fmt.Sprintf("RULE\nName: %s\nPurpose: %s\nSpecRef: %s\nSpec Location: %s\nTests: %d\n",
 		r.Name, r.Purpose, r.Specref, r.Speclocation, len(r.Tests))
-}
-
-// GetPermissionSets returns the inclusive and exclusive permission sets required
-// to run the tests under this rule.
-// Initially the granularity of permissionSets will be set at rule level, meaning that one
-// included set and one excluded set will cover all the testcases with a rule.
-// In future iterations it may be desirable to have per testSequence permissionSets as this
-// would allow a finer grained mix of negative permission testing
-func (r *Rule) GetPermissionSets() (included, excluded []string) {
-	includedSet := NewPermissionSet("included", []string{})
-	excludedSet := NewPermissionSet("excluded", []string{})
-	for _, testSequence := range r.Tests {
-		for _, test := range testSequence {
-			i, x := test.GetPermissions()
-			includedSet.AddPermissions(i)
-			excludedSet.AddPermissions(x)
-		}
-	}
-
-	return includedSet.GetPermissions(), excludedSet.GetPermissions()
 }
 
 // ReplaceContextField -
@@ -394,7 +296,7 @@ func (t *TestCase) ProcessReplacementFields(rep map[string]string) {
 		ctx.Put(k, v)
 	}
 
-	t.Input.Endpoint, _ = ReplaceContextField(t.Input.Endpoint, &ctx) // errors if field not present in context - which is ok for this function
+	t.Input.Endpoint, _ = ReplaceContextField(t.Input.Endpoint, &ctx) // errors if field not present in context - which is isReplacement for this function
 	t.Input.RequestBody, _ = ReplaceContextField(t.Input.RequestBody, &ctx)
 
 	for k := range t.Input.FormData {

@@ -1,10 +1,13 @@
 package server
 
 import (
+	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/names"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/authentication"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/executors"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/generation"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/permissions"
 	"github.com/pkg/errors"
 	"sync"
 )
@@ -15,7 +18,7 @@ var errDiscoveryModelNotSet = errors.New("error discovery model not set")
 type Journey interface {
 	DiscoveryModel() (*discovery.Model, error)
 	SetDiscoveryModel(discoveryModel *discovery.Model) (discovery.ValidationFailures, error)
-	TestCases() ([]generation.SpecificationTestCases, error)
+	TestCases() (TestCasesRun, error)
 	RunTests() error
 	StopTestRun()
 	Results() executors.DaemonController
@@ -23,12 +26,12 @@ type Journey interface {
 }
 
 type journey struct {
-	generator        generation.Generator
-	validator        discovery.Validator
-	daemonController executors.DaemonController
-
+	generator            generation.Generator
+	validator            discovery.Validator
+	daemonController     executors.DaemonController
+	resolver             func(groups []permissions.Group) permissions.CodeSetResultSet
 	journeyLock          *sync.Mutex
-	testCases            []generation.SpecificationTestCases
+	specTestCases        []generation.SpecificationTestCases
 	validDiscoveryModel  *discovery.Model
 	certificateSigning   authentication.Certificate
 	certificateTransport authentication.Certificate
@@ -40,6 +43,7 @@ func NewJourney(generator generation.Generator, validator discovery.Validator) *
 		generator:        generator,
 		validator:        validator,
 		daemonController: executors.NewBufferedDaemonController(),
+		resolver:         permissions.Resolver,
 		journeyLock:      &sync.Mutex{},
 	}
 }
@@ -56,7 +60,7 @@ func (wj *journey) SetDiscoveryModel(discoveryModel *discovery.Model) (discovery
 
 	wj.journeyLock.Lock()
 	wj.validDiscoveryModel = discoveryModel
-	wj.testCases = nil
+	wj.specTestCases = nil
 	wj.journeyLock.Unlock()
 
 	return discovery.NoValidationFailures, nil
@@ -71,27 +75,54 @@ func (wj *journey) DiscoveryModel() (*discovery.Model, error) {
 	return wj.validDiscoveryModel, nil
 }
 
-func (wj *journey) TestCases() ([]generation.SpecificationTestCases, error) {
+// TestCasesRun represents all specs and their test and a list of tokens
+// required to run those tests
+type TestCasesRun struct {
+	TestCases               []generation.SpecificationTestCases `json:"specCases"`
+	SpecConsentRequirements []model.SpecConsentRequirements     `json:"specTokens"`
+}
+
+func (wj *journey) TestCases() (TestCasesRun, error) {
 	wj.journeyLock.Lock()
 	defer wj.journeyLock.Unlock()
 	if wj.validDiscoveryModel == nil {
-		return nil, errDiscoveryModelNotSet
+		return TestCasesRun{}, errDiscoveryModelNotSet
 	}
-	if wj.testCases == nil {
-		wj.testCases = wj.generator.GenerateSpecificationTestCases(wj.validDiscoveryModel.DiscoveryModel)
+	if wj.specTestCases == nil {
+		wj.specTestCases = wj.generator.GenerateSpecificationTestCases(wj.validDiscoveryModel.DiscoveryModel)
 	}
-	return wj.testCases, nil
+
+	tokens := wj.permissionSpecConsents()
+
+	return TestCasesRun{wj.specTestCases, tokens}, nil
+}
+
+// permissionSpecConsents calls resolver to get list of permission sets required to run all test cases
+func (wj *journey) permissionSpecConsents() []model.SpecConsentRequirements {
+	nameGenerator := names.NewSententialPrefixedName("to")
+	var specConsentRequirements []model.SpecConsentRequirements
+	for _, spec := range wj.specTestCases {
+		var groups []permissions.Group
+		for _, tc := range spec.TestCases {
+			groups = append(groups, model.NewPermissionGroup(tc))
+		}
+		resultSet := wj.resolver(groups)
+		consentRequirements := model.NewSpecConsentRequirements(nameGenerator, resultSet, spec.Specification.Name)
+		specConsentRequirements = append(specConsentRequirements, consentRequirements)
+	}
+	return specConsentRequirements
 }
 
 func (wj *journey) RunTests() error {
-	specTestCases, err := wj.TestCases()
+	specTestCasesRun, err := wj.TestCases()
 	if err != nil {
 		return err
 	}
 
 	runDefinition := executors.RunDefinition{
 		DiscoModel:    wj.validDiscoveryModel,
-		SpecTests:     specTestCases,
+		SpecTests:     specTestCasesRun.TestCases,
+		SpecTokens:    []model.SpecConsentRequirements{},
 		SigningCert:   wj.certificateSigning,
 		TransportCert: wj.certificateTransport,
 	}

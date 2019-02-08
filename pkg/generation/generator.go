@@ -1,6 +1,7 @@
 package generation
 
 import (
+	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/names"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
 )
@@ -37,15 +38,13 @@ func (g generator) GenerateSpecificationTestCases(discovery discovery.ModelDisco
 		}
 	}
 
-	// Assumes testNo is used as the base for all testcase IDs - to keep testcase IDs unique
-	testNo := 1000
+	nameGenerator := names.NewSententialPrefixedName("#t")
 	for _, item := range discovery.DiscoveryItems {
-		results = append(results, generateSpecificationTestCases(item, testNo, globalReplacements))
-		testNo += 1000
+		results = append(results, generateSpecificationTestCases(item, nameGenerator, globalReplacements))
 	}
 	return results
 }
 
-func generateSpecificationTestCases(item discovery.ModelDiscoveryItem, testNo int, gobalReplacements map[string]string) SpecificationTestCases {
-	return SpecificationTestCases{Specification: item.APISpecification, TestCases: GetImplementedTestCases(&item, testNo, gobalReplacements)}
+func generateSpecificationTestCases(item discovery.ModelDiscoveryItem, nameGenerator names.Generator, gobalReplacements map[string]string) SpecificationTestCases {
+	return SpecificationTestCases{Specification: item.APISpecification, TestCases: GetImplementedTestCases(&item, nameGenerator, gobalReplacements)}
 }

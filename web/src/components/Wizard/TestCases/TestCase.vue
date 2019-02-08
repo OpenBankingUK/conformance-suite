@@ -28,6 +28,24 @@
           fixed
           stacked
         >
+          <template
+            slot="name"
+            slot-scope="data">
+            <a
+              :href="data.item.url"
+              target="_blank">
+              {{ data.item.name }}
+            </a>
+          </template>
+          <template
+            slot="schema"
+            slot-scope="data">
+            <a
+              :href="data.item.schemaVersion"
+              target="_blank">
+              {{ data.item.version }}
+            </a>
+          </template>
           <!-- format url column as anchor. -->
           <template
             slot="url"
@@ -128,13 +146,7 @@ export default {
         name: {
           tdClass: 'table-data-breakable api-specification-table',
         },
-        url: {
-          tdClass: 'table-data-breakable api-specification-table',
-        },
-        version: {
-          tdClass: 'table-data-breakable api-specification-table',
-        },
-        schemaVersion: {
+        schema: {
           tdClass: 'table-data-breakable api-specification-table',
         },
       }),

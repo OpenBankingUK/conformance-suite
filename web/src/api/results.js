@@ -6,8 +6,8 @@ export default {
   /**
    * Call GET /api/report
    */
-  async computeTestCaseResults() {
-    const response = await api.get(REPORT_URL);
+  async computeTestCaseResults(setShowLoading) {
+    const response = await api.get(REPORT_URL, setShowLoading);
     const data = await response.json();
 
     // `fetch` does not throw an error even when status is not 200.

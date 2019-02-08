@@ -6,10 +6,10 @@ type Code string
 // CodeSet is a set of OB code permissions
 type CodeSet []Code
 
-// NoCodeSet represents a no permissions
-var NoCodeSet []CodeSet
+// NoCodeSet represents empty or no permissions set
+var NoCodeSet CodeSet
 
-// Has cheack if a set Has a code
+// Has check if a set Has a code
 func (c CodeSet) Has(searchCode Code) bool {
 	for _, code := range c {
 		if code == searchCode {
@@ -36,10 +36,6 @@ func (c CodeSet) Equals(otherSet CodeSet) bool {
 	}
 
 	if !c.HasAll(otherSet) {
-		return false
-	}
-
-	if !otherSet.HasAll(c) {
 		return false
 	}
 

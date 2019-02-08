@@ -47,7 +47,8 @@ export default {
    */
   async validateDiscoveryConfig({ commit, dispatch, state }) {
     try {
-      const { success, problems } = await discovery.validateDiscoveryConfig(state.discoveryModel);
+      const setShowLoading = flag => dispatch('status/setShowLoading', flag, { root: true });
+      const { success, problems } = await discovery.validateDiscoveryConfig(state.discoveryModel, setShowLoading);
       if (success) {
         commit(types.DISCOVERY_MODEL_PROBLEMS, null);
         dispatch('status/clearErrors', null, { root: true });
@@ -152,7 +153,8 @@ export default {
       // NB: We do not care what value this method call returns as long
       // as it does not throw, we know the configuration is valid.
       const { configuration } = state;
-      await api.validateConfiguration(configuration);
+      const setShowLoading = flag => dispatch('status/setShowLoading', flag, { root: true });
+      await api.validateConfiguration(configuration, setShowLoading);
       commit(types.SET_WIZARD_STEP, constants.WIZARD.STEP_FOUR);
 
       return true;

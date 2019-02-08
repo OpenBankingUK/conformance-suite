@@ -4,6 +4,7 @@ package generation
 // As such the code is necessarily 'experimental' and subject to change.
 
 import (
+	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/names"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -19,13 +20,14 @@ import (
 	"github.com/go-openapi/spec"
 )
 
+const httpUserAgent = "Open Banking Conformance Suite v0.2.x"
+
 // GetImplementedTestCases takes a discovery Model and determines the implemented endpoints.
 // Currently this function is experimental - meaning it contains fmt.Printlns as an aid to understanding
 // and conceptualisation
-func GetImplementedTestCases(disco *discovery.ModelDiscoveryItem, beginTestNo int, globalReplacements map[string]string) []model.TestCase {
+func GetImplementedTestCases(disco *discovery.ModelDiscoveryItem, nameGenerator names.Generator, globalReplacements map[string]string) []model.TestCase {
 	var testcases []model.TestCase
 	endpoints := disco.Endpoints
-	testNo := beginTestNo
 	doc, err := loadSpec(disco.APISpecification.SchemaVersion, false)
 	if err != nil {
 		logrus.Errorln(err)
@@ -39,6 +41,7 @@ func GetImplementedTestCases(disco *discovery.ModelDiscoveryItem, beginTestNo in
 
 		for path, props := range doc.Spec().Paths.Paths {
 			for meth, op := range getOperations(&props) {
+				testId := nameGenerator.Generate()
 				if (meth == v.Method) && (v.Path == path) {
 					responseCodes = getResponseCodes(op)
 					goodResponseCode, err = getGoodResponseCode(responseCodes)
@@ -51,12 +54,13 @@ func GetImplementedTestCases(disco *discovery.ModelDiscoveryItem, beginTestNo in
 						}).Error("Cannot get good response code")
 						return nil
 					}
+
 					headers := map[string]string{
 						"authorization":         "Bearer $access_token",
 						"X-Fapi-Financial-Id":   "$fapi_financial_id",
 						"X-Fapi-Interaction-Id": "b4405450-febe-11e8-80a5-0fcebb1574e1",
 						"Content-Type":          "application/json",
-						"User-Agent":            "Open Banking Conformance Suite v0.2.0-alpha",
+						"User-Agent":            httpUserAgent,
 						"Accept":                "*/*",
 					}
 
@@ -77,7 +81,6 @@ func GetImplementedTestCases(disco *discovery.ModelDiscoveryItem, beginTestNo in
 						}
 						if customTestCases != nil {
 							testcases = append(testcases, customTestCases...)
-							testNo++
 						}
 						continue
 					}
@@ -85,10 +88,9 @@ func GetImplementedTestCases(disco *discovery.ModelDiscoveryItem, beginTestNo in
 					input := model.Input{Method: meth, Endpoint: newpath, Headers: headers}
 					expect := model.Expect{StatusCode: goodResponseCode, SchemaValidation: true}
 					context := model.Context{"baseurl": disco.ResourceBaseURI}
-					testcase := model.TestCase{ID: fmt.Sprintf("#t%4.4d", testNo), Input: input, Context: context, Expect: expect, Name: op.Summary}
+					testcase := model.TestCase{ID: testId, Input: input, Context: context, Expect: expect, Name: op.Summary}
 					testcase.ProcessReplacementFields(globalReplacements)
 					testcases = append(testcases, testcase)
-					testNo++
 					break
 				}
 			}
@@ -146,24 +148,6 @@ func getResponseCodes(op *spec.Operation) (result []int) {
 		result = append(result, i)
 	}
 	return
-}
-
-// helper to annotate generation routines with conditionality inidicator
-func getConditionality(method, path, specification string) string {
-	condition, err := model.GetConditionality(method, path, specification)
-	if err != nil {
-		return "U"
-	}
-	switch condition {
-	case model.Mandatory:
-		return "M"
-	case model.Conditional:
-		return "C"
-	case model.Optional:
-		return "O"
-	default:
-		return "U"
-	}
 }
 
 // helper to replace path name resource ids specificed between brackets e.g. `{AccountId}`
