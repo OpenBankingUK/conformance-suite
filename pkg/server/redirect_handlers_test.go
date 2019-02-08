@@ -11,10 +11,10 @@ import (
 )
 
 type testTableItem struct {
-	label              	 string
-	endpoint           	 string
-	httpStatusExpected 	 int
-	requestBody        	 string
+	label                string
+	endpoint             string
+	httpStatusExpected   int
+	requestBody          string
 	responseBodyExpected string
 }
 
@@ -29,11 +29,11 @@ func TestRedirectHandlersFragmentOK(t *testing.T) {
 
 	// Valid code and c_hash combination
 	testItemOK := testTableItem{
-		label:              "fragment ok",
-		endpoint:           `/api/redirect/fragment/ok`,
-		httpStatusExpected: http.StatusOK,
+		label:                "fragment ok",
+		endpoint:             `/api/redirect/fragment/ok`,
+		httpStatusExpected:   http.StatusOK,
 		responseBodyExpected: "null",
-		requestBody:`
+		requestBody: `
 {
     "code": "a052c795-742d-415a-843f-8a4939d740d1",
     "scope": "openid accounts",
@@ -45,9 +45,9 @@ func TestRedirectHandlersFragmentOK(t *testing.T) {
 
 	// c_hash will not match calculated c_hash due to invalid `code`
 	testItemInvalidCode := testTableItem{
-		label:              "fragment invalid code",
-		endpoint:           "/api/redirect/fragment/ok",
-		httpStatusExpected: http.StatusBadRequest,
+		label:                "fragment invalid code",
+		endpoint:             "/api/redirect/fragment/ok",
+		httpStatusExpected:   http.StatusBadRequest,
 		responseBodyExpected: `{"error":"c_hash invalid"}`,
 		requestBody: `
 {
@@ -62,9 +62,9 @@ func TestRedirectHandlersFragmentOK(t *testing.T) {
 	// Note c_hash is manipulated (invalid) in JWT, meaning invalid signature as a result
 	// if signature validation is implemented this test shall fail.
 	testItemInvalidCHash := testTableItem{
-		label:              "fragment invalid c_hash",
-		endpoint:           "/api/redirect/fragment/ok",
-		httpStatusExpected: http.StatusBadRequest,
+		label:                "fragment invalid c_hash",
+		endpoint:             "/api/redirect/fragment/ok",
+		httpStatusExpected:   http.StatusBadRequest,
 		responseBodyExpected: `{"error":"c_hash invalid"}`,
 		requestBody: `
 {
@@ -113,11 +113,11 @@ func TestRedirectHandlersQueryOK(t *testing.T) {
 
 	// valid code and c_hash combination
 	testItemOK := testTableItem{
-		label:              "query ok",
-		endpoint:           `/api/redirect/query/ok`,
-		httpStatusExpected: http.StatusOK,
+		label:                "query ok",
+		endpoint:             `/api/redirect/query/ok`,
+		httpStatusExpected:   http.StatusOK,
 		responseBodyExpected: "null",
-		requestBody:`
+		requestBody: `
 {
     "code": "a052c795-742d-415a-843f-8a4939d740d1",
     "scope": "openid accounts",
@@ -129,9 +129,9 @@ func TestRedirectHandlersQueryOK(t *testing.T) {
 
 	// invalid value for `code`
 	testItemInvalidCode := testTableItem{
-		label:              "query invalid code",
-		endpoint:           `/api/redirect/query/ok`,
-		httpStatusExpected: http.StatusBadRequest,
+		label:                "query invalid code",
+		endpoint:             `/api/redirect/query/ok`,
+		httpStatusExpected:   http.StatusBadRequest,
 		responseBodyExpected: `{"error":"c_hash invalid"}`,
 		requestBody: `
 {
@@ -145,9 +145,9 @@ func TestRedirectHandlersQueryOK(t *testing.T) {
 
 	// invalid value for `c_hash` inside the `id_token` field
 	testItemInvalidCHash := testTableItem{
-		label:              "query invalid c_hash",
-		endpoint:           `/api/redirect/query/ok`,
-		httpStatusExpected: http.StatusBadRequest,
+		label:                "query invalid c_hash",
+		endpoint:             `/api/redirect/query/ok`,
+		httpStatusExpected:   http.StatusBadRequest,
 		responseBodyExpected: `{"error":"c_hash invalid"}`,
 		requestBody: `
 {
@@ -222,40 +222,38 @@ func TestRedirectHandlersError(t *testing.T) {
 func TestCalculateCHash(t *testing.T) {
 	require := require.New(t)
 
-	tt := []struct{
-		label string
-		code string
-		alg string
-		expectedHash string
+	tt := []struct {
+		label         string
+		code          string
+		alg           string
+		expectedHash  string
 		expectedError error
-
 	}{
 		{
-			label: "ES256 empty code",
-			code: "",
-			alg: "ES256",
+			label:        "ES256 empty code",
+			code:         "",
+			alg:          "ES256",
 			expectedHash: "47DEQpj8HBSa-_TImW-5JA",
 		},
 		{
-			label: "ES256 code valid",
-			code: "80bf17a3-e617-4983-9d62-b50bd8e6fce4",
-			alg: "ES256",
+			label:        "ES256 code valid",
+			code:         "80bf17a3-e617-4983-9d62-b50bd8e6fce4",
+			alg:          "ES256",
 			expectedHash: "EE_Bf-grXWv5GGhs5FZ0ug",
 		},
 		{
-			label: "PS256 code valid",
-			code: "80bf17a3-e617-4983-9d62-b50bd8e6fce4",
-			alg: "PS256",
+			label:        "PS256 code valid",
+			code:         "80bf17a3-e617-4983-9d62-b50bd8e6fce4",
+			alg:          "PS256",
 			expectedHash: "EE_Bf-grXWv5GGhs5FZ0ug",
 		},
 		{
-			label: "algorithm not supported",
-			code: "80bf17a3-e617-4983-9d62-b50bd8e6fce4",
-			alg: "bad-algorithm",
-			expectedHash: "",
+			label:         "algorithm not supported",
+			code:          "80bf17a3-e617-4983-9d62-b50bd8e6fce4",
+			alg:           "bad-algorithm",
+			expectedHash:  "",
 			expectedError: fmt.Errorf("bad-algorithm algorithm not supported"),
 		},
-
 	}
 
 	for _, tti := range tt {
