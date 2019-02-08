@@ -28,8 +28,6 @@ run_image: ## run the 'latest' docker image.
 		--rm \
 		-it \
 		-p 443:443 \
-		-v $(shell pwd)/config:/app/config:ro \
-		-v $(shell pwd)/swagger:/app/swagger:ro \
 		"openbanking/conformance-suite:latest"
 
 .PHONY: build
