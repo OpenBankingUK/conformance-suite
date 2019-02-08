@@ -1,6 +1,7 @@
 package model
 
 import (
+	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/names"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/permissions"
 	"github.com/stretchr/testify/assert"
 	"testing"
@@ -36,23 +37,10 @@ func TestNewSpecConsentRequirements(t *testing.T) {
 			CodeSet: permissions.CodeSet{"b"},
 		},
 	}
+	nameGenerator := names.NewSententialPrefixedName("to")
 
-	specTokens := NewSpecConsentRequirements(codeSetResult, "id")
+	specTokens := NewSpecConsentRequirements(nameGenerator, codeSetResult, "id")
 
 	assert.Equal(t, "id", specTokens.Identifier)
 	assert.Len(t, specTokens.NamedPermissions, 2)
-}
-
-func TestPrefixedNumber(t *testing.T) {
-	assert.Equal(t, "to0", prefixedNumber(0, "to"))
-	assert.Equal(t, "to1", prefixedNumber(1, "to"))
-	assert.Equal(t, "to99", prefixedNumber(99, "to"))
-	assert.Equal(t, "99", prefixedNumber(99, ""))
-}
-func TestRandomString(t *testing.T) {
-	randomStringResult := randomString(5)
-	assert.Len(t, randomStringResult, 5)
-
-	randomStringResult2 := randomString(5)
-	assert.NotEqual(t, randomStringResult, randomStringResult2)
 }
