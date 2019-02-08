@@ -1,9 +1,6 @@
 package server
 
 import (
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/permissions"
-	"regexp"
 	"testing"
 
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/authentication"
@@ -96,14 +93,14 @@ func TestJourneyTestCasesCantGenerateIfDiscoveryNotSet(t *testing.T) {
 	testCases, err := journey.TestCases()
 
 	assert.Error(t, err)
-	assert.Equal(t, TestCasesRun{}, testCases)
+	assert.Equal(t, generation.TestCasesRun{}, testCases)
 }
 
 func TestJourneyTestCasesGenerate(t *testing.T) {
 	validator := &mocks.Validator{}
 	discoveryModel := &discovery.Model{}
 	validator.On("Validate", discoveryModel).Return(discovery.NoValidationFailures, nil)
-	expectedTestCases := []generation.SpecificationTestCases{}
+	expectedTestCases := generation.TestCasesRun{}
 	generator := &gmocks.Generator{}
 	generator.On("GenerateSpecificationTestCases", discoveryModel.DiscoveryModel).Return(expectedTestCases)
 	journey := NewJourney(generator, validator)
@@ -114,14 +111,14 @@ func TestJourneyTestCasesGenerate(t *testing.T) {
 
 	assert.NoError(t, err)
 
-	assert.Equal(t, expectedTestCases, testCasesRun.TestCases)
+	assert.Equal(t, expectedTestCases, testCasesRun)
 }
 
 func TestJourneyTestCasesDoesntREGenerate(t *testing.T) {
 	validator := &mocks.Validator{}
 	discoveryModel := &discovery.Model{}
 	validator.On("Validate", discoveryModel).Return(discovery.NoValidationFailures, nil)
-	expectedTestCases := []generation.SpecificationTestCases{}
+	expectedTestCases := generation.TestCasesRun{}
 	generator := &gmocks.Generator{}
 	generator.On("GenerateSpecificationTestCases", discoveryModel.DiscoveryModel).
 		Return(expectedTestCases).Times(1)
@@ -135,7 +132,7 @@ func TestJourneyTestCasesDoesntREGenerate(t *testing.T) {
 	testCases, err := journey.TestCases()
 
 	assert.NoError(t, err)
-	assert.Equal(t, expectedTestCases, testCases.TestCases)
+	assert.Equal(t, expectedTestCases, testCases)
 	assert.Equal(t, firstRunTestCases.TestCases, testCases.TestCases)
 	generator.AssertExpectations(t)
 }
@@ -184,46 +181,4 @@ func TestJourneySetCertificateTransport(t *testing.T) {
 	journey.SetCertificates(nil, certificateTransport)
 
 	require.Equal(certificateTransport, journey.certificateTransport)
-}
-
-func TestPermissionsSetsEmpty(t *testing.T) {
-	validator := &mocks.Validator{}
-	generator := &gmocks.Generator{}
-	journey := NewJourney(generator, validator)
-
-	results := journey.permissionSpecConsents()
-
-	assert.Len(t, results, 0)
-}
-
-func TestPermissionsShouldPassAllTestsToResolver(t *testing.T) {
-	validator := &mocks.Validator{}
-	generator := &gmocks.Generator{}
-	journey := NewJourney(generator, validator)
-	journey.resolver = func(groups []permissions.Group) permissions.CodeSetResultSet {
-		return permissions.CodeSetResultSet{
-			{
-				TestIds: []permissions.TestId{"1"},
-			},
-			{
-				TestIds: []permissions.TestId{"2"},
-			},
-		}
-	}
-	journey.specTestCases = []generation.SpecificationTestCases{
-		{
-			TestCases: []model.TestCase{
-				{ID: "1"},
-			},
-		},
-	}
-
-	specTokens := journey.permissionSpecConsents()
-
-	assert.Len(t, specTokens, 1)
-	assert.Len(t, specTokens[0].NamedPermissions, 2)
-	// token name expected in format to-{3 letters}-{sequence number}
-	matchName := regexp.MustCompile(`to\w{4}`)
-	assert.Regexp(t, matchName, specTokens[0].NamedPermissions[0].Name)
-	assert.Regexp(t, matchName, specTokens[0].NamedPermissions[1].Name)
 }

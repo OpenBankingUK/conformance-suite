@@ -4,7 +4,6 @@ import (
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/generation"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/server"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/server/mocks"
 	"bytes"
 	"errors"
@@ -17,7 +16,7 @@ import (
 func TestGenerator(t *testing.T) {
 	journey := &mocks.Journey{}
 	journey.On("SetDiscoveryModel", &discovery.Model{}).Return(discovery.NoValidationFailures, nil)
-	testCaseRun := server.TestCasesRun{TestCases: []generation.SpecificationTestCases{}, SpecConsentRequirements: []model.SpecConsentRequirements{}}
+	testCaseRun := generation.TestCasesRun{TestCases: []generation.SpecificationTestCases{}, SpecConsentRequirements: []model.SpecConsentRequirements{}}
 	journey.On("TestCases").Return(testCaseRun, nil)
 	g := newGenerator(journey)
 	input := `{}`
@@ -69,7 +68,7 @@ func TestGeneratorHandlesFailuresFromSetDiscovery(t *testing.T) {
 func TestGeneratorHandlesErrFromTestCases(t *testing.T) {
 	journey := &mocks.Journey{}
 	journey.On("SetDiscoveryModel", &discovery.Model{}).Return(discovery.NoValidationFailures, nil)
-	testCaseRun := server.TestCasesRun{TestCases: []generation.SpecificationTestCases{}, SpecConsentRequirements: []model.SpecConsentRequirements{}}
+	testCaseRun := generation.TestCasesRun{TestCases: []generation.SpecificationTestCases{}, SpecConsentRequirements: []model.SpecConsentRequirements{}}
 	journey.On("TestCases").Return(testCaseRun, errors.New("more booboo"))
 	g := newGenerator(journey)
 	input := `{}`
@@ -82,7 +81,7 @@ func TestGeneratorHandlesErrFromTestCases(t *testing.T) {
 func TestGeneratorHandlesErrWriteToOutput(t *testing.T) {
 	journey := &mocks.Journey{}
 	journey.On("SetDiscoveryModel", &discovery.Model{}).Return(discovery.NoValidationFailures, nil)
-	testCaseRun := server.TestCasesRun{TestCases: []generation.SpecificationTestCases{}, SpecConsentRequirements: []model.SpecConsentRequirements{}}
+	testCaseRun := generation.TestCasesRun{TestCases: []generation.SpecificationTestCases{}, SpecConsentRequirements: []model.SpecConsentRequirements{}}
 	journey.On("TestCases").Return(testCaseRun, nil)
 	g := newGenerator(journey)
 	input := strings.NewReader(`{}`)

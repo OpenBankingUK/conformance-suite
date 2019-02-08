@@ -51,7 +51,7 @@ func (i *Input) CreateRequest(tc *TestCase, ctx *Context) (*resty.Request, error
 
 	req := resty.R() // create basic request that will be sent to endpoint
 
-	tc.Input.Endpoint, err = ReplaceContextField(tc.Input.Endpoint, ctx)
+	tc.Input.Endpoint, err = replaceContextField(tc.Input.Endpoint, ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -82,7 +82,7 @@ func (i *Input) setClaims(tc *TestCase, ctx *Context) error {
 	i.AppMsg("setClaims Entry")
 	defer i.AppMsg("setCliams Exit")
 	for k, v := range i.Claims {
-		value, err := ReplaceContextField(v, ctx)
+		value, err := replaceContextField(v, ctx)
 		if err != nil {
 			return i.AppErr(fmt.Sprintf("setClaims Replace Context value %s :%s", v, err.Error()))
 		}
@@ -123,7 +123,7 @@ func (i *Input) setFormData(req *resty.Request, ctx *Context) error {
 	if len(i.FormData) > 0 {
 		i.AppMsg(fmt.Sprintf("AddFormData %v", i.FormData))
 		for k, v := range i.FormData {
-			value, err := ReplaceContextField(v, ctx)
+			value, err := replaceContextField(v, ctx)
 			if err != nil {
 				return i.AppErr(fmt.Sprintf("setFormdata Replace Context value %s :%s", v, err.Error()))
 			}
@@ -142,7 +142,7 @@ func (i *Input) setHeaders(req *resty.Request, ctx *Context) error {
 		i.AppMsg(fmt.Sprintf("SetHeaders %v", i.Headers))
 	}
 	for k, v := range i.Headers { // set any input headers ("headers")
-		value, err := ReplaceContextField(v, ctx)
+		value, err := replaceContextField(v, ctx)
 		if err != nil {
 			return i.AppErr(fmt.Sprintf("setHeaders Replaced Context value %s :%s", v, err.Error()))
 		}
@@ -158,7 +158,7 @@ func (i *Input) setBody(req *resty.Request, ctx *Context) error {
 	value := i.RequestBody
 
 	for {
-		val2, err := ReplaceContextField(value, ctx)
+		val2, err := replaceContextField(value, ctx)
 		if err != nil {
 			return i.AppErr(fmt.Sprintf("setBody Replaced Context value %s :%s", val2, err.Error()))
 		}

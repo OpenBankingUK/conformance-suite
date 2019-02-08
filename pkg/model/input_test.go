@@ -104,7 +104,7 @@ func TestCreateHeaderContextMissingForReplacement(t *testing.T) {
 	ctx := Context{
 		"nomatch": "myNewValue",
 	}
-	result, err := ReplaceContextField("$replacement", &ctx)
+	result, err := replaceContextField("$replacement", &ctx)
 	assert.NotNil(t, err)
 	assert.Equal(t, "$replacement", result)
 

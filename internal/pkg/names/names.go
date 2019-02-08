@@ -13,7 +13,7 @@ type sequencialPrefixedName struct {
 	next   int
 }
 
-func NewSententialPrefixedName(prefix string) Generator {
+func NewSequentialPrefixedName(prefix string) Generator {
 	return &sequencialPrefixedName{
 		prefix: prefix,
 		format: "%s%4.4d",

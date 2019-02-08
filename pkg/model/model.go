@@ -165,12 +165,17 @@ func (t *TestCase) ApplyContext(rulectx *Context) {
 		}
 	}
 
-	base, exist := t.Context.Get("baseurl") // "convention" puts baseurl as prefix to endpoint in testcase"
-	if !exist {
+	baseUrl, err := t.Context.GetString("baseurl")
+	if err == ErrNotFound {
 		t.AppMsg("no base url - using only input.Endpoint")
 		return
+	} else if err != nil {
+		t.AppMsg("error getting baseUrl from ctx using only default in input.Endpoint")
+		return
 	}
-	t.Input.Endpoint = base.(string) + t.Input.Endpoint
+
+	// "convention" puts baseurl as prefix to endpoint in testcase"
+	t.Input.Endpoint = baseUrl + t.Input.Endpoint
 }
 
 // ApplyExpects runs the Expects section of the testcase to evaluate if the response from the system under test passes or fails
@@ -246,12 +251,9 @@ func (r *Rule) String() string {
 		r.Name, r.Purpose, r.Specref, r.Speclocation, len(r.Tests))
 }
 
-// ReplaceContextField -
-func ReplaceContextField(source string, ctx *Context) (string, error) {
-	field, isReplacement, err := getReplacementField(source)
-	if err != nil {
-		return "", err
-	}
+// replaceContextField
+func replaceContextField(source string, ctx *Context) (string, error) {
+	field, isReplacement := getReplacementField(source)
 	if !isReplacement {
 		return source, nil
 	}
@@ -276,16 +278,21 @@ var singleDollarRegex = regexp.MustCompile(`[^\$]?\$(\w*)`)
 // sequence beginning with '$' and ending with whitespace. '$$' sequence acts as an escape value
 // A zero length string is return if now Replacement Fields are found
 // returns a boolean to indicate if the field contains a field beginning with a $
-func getReplacementField(stringToCheck string) (string, bool, error) {
-	index := strings.Index(stringToCheck, "$")
-	if index == -1 {
-		return stringToCheck, false, nil
+func getReplacementField(value string) (string, bool) {
+	isReplacement := isReplacementField(value)
+	if !isReplacement {
+		return value, false
 	}
-	result := singleDollarRegex.FindStringSubmatch(stringToCheck)
+	result := singleDollarRegex.FindStringSubmatch(value)
 	if result == nil {
-		return "", false, nil
+		return "", false
 	}
-	return result[len(result)-1], true, nil
+	return result[len(result)-1], true
+}
+
+func isReplacementField(value string) bool {
+	index := strings.Index(value, "$")
+	return index != -1
 }
 
 // ProcessReplacementFields prefixed by '$' in the testcase Input and Context sections
@@ -296,23 +303,23 @@ func (t *TestCase) ProcessReplacementFields(rep map[string]string) {
 		ctx.Put(k, v)
 	}
 
-	t.Input.Endpoint, _ = ReplaceContextField(t.Input.Endpoint, &ctx) // errors if field not present in context - which is isReplacement for this function
-	t.Input.RequestBody, _ = ReplaceContextField(t.Input.RequestBody, &ctx)
+	t.Input.Endpoint, _ = replaceContextField(t.Input.Endpoint, &ctx) // errors if field not present in context - which is isReplacement for this function
+	t.Input.RequestBody, _ = replaceContextField(t.Input.RequestBody, &ctx)
 
 	for k := range t.Input.FormData {
-		t.Input.FormData[k], _ = ReplaceContextField(t.Input.FormData[k], &ctx)
+		t.Input.FormData[k], _ = replaceContextField(t.Input.FormData[k], &ctx)
 	}
 	for k := range t.Input.Headers {
-		t.Input.Headers[k], _ = ReplaceContextField(t.Input.Headers[k], &ctx)
+		t.Input.Headers[k], _ = replaceContextField(t.Input.Headers[k], &ctx)
 	}
 	for k := range t.Input.Claims {
-		t.Input.Claims[k], _ = ReplaceContextField(t.Input.Claims[k], &ctx)
+		t.Input.Claims[k], _ = replaceContextField(t.Input.Claims[k], &ctx)
 	}
 	for k := range t.Context {
 		param, ok := t.Context[k].(string)
 		if !ok {
 			continue
 		}
-		t.Context[k], _ = ReplaceContextField(param, &ctx)
+		t.Context[k], _ = replaceContextField(param, &ctx)
 	}
 }
