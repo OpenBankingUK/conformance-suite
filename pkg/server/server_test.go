@@ -171,11 +171,11 @@ func TestServerHTTPS(t *testing.T) {
 
 	// Start HTTPS server
 	go func() {
-		require.EqualError(server.StartTLS(":443", certFile, keyFile), "http: Server closed")
+		require.EqualError(server.StartTLS(":8443", certFile, keyFile), "http: Server closed")
 	}()
 	time.Sleep(100 * time.Millisecond)
 
-	res, err := client.Get("https://localhost/")
+	res, err := client.Get("https://localhost:8443/")
 	require.NoError(err)
 	require.NotNil(res)
 	require.Equal(http.StatusOK, res.StatusCode)

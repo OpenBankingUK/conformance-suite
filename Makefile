@@ -27,13 +27,13 @@ run_image: ## run the 'latest' docker image.
 	docker run \
 		--rm \
 		-it \
-		-p 443:443 \
+		-p 8443:8443 \
 		"openbanking/conformance-suite:latest"
 
 .PHONY: build
 build: ## build the server binary directly.
 	@echo -e "\033[92m  ---> Building ... \033[0m"
-	go build -o server cmd/server/*.go
+	go build -o fcs_server cmd/fcs_server/*.go
 
 .PHONY: build_cli
 build_cli: ## build the cli binary directly.

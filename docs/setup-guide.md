@@ -14,7 +14,7 @@ The fastest way to get up and running is by running the docker image.
     docker run \
             --rm \
             -it \
-            -p 443:443 \
+            -p 8443:8443 \
             "openbanking/conformance-suite:latest"
 
 Functional Conformance Suite should now be available on your localhost @ https://localhost
