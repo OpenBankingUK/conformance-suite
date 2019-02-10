@@ -15,6 +15,7 @@
         slot-scope="row">
         <b-badge
           :variant="row.value === 'PASSED' ? 'success' : (row.value === 'FAILED' ? 'danger' : (row.value === 'PENDING' ? 'info' : 'secondary'))"
+          :class="row.value === 'FAILED' ? 'clickable' : ''"
           tag="h6"
           @click.stop="toggleError(row)"
         >{{ row.value }}</b-badge>
@@ -158,7 +159,7 @@ export default {
   },
   computed: {},
   methods: {
-      toggleError(row) {
+    toggleError(row) {
       if (row.item.error) {
         row.toggleDetails();
       }
@@ -177,6 +178,7 @@ export default {
   .test-case /deep/ .table-data-breakable {
     word-break: break-all;
   }
+  .clickable { cursor: pointer; }
 
   .test-case /deep/ .api-specification-table {
     grid-template-columns: 20% auto !important;
