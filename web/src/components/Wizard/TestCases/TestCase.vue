@@ -25,8 +25,8 @@
         slot="row-details"
         slot-scope="row">
         <b-card>
-          <strong>Test ID:</strong> {{ row.item.id }}<br/>
-          <strong>Error:</strong> {{ row.item.error }}<br/>
+          <strong>Test ID:</strong> {{ row.item.id }}<br>
+          <strong>Error:</strong> {{ row.item.error }}<br>
         </b-card>
       </template>
 

@@ -37,6 +37,7 @@ export default {
       testCase.meta.metrics.responseSize = `${metrics.response_size}B`;
       testCase.error = fail;
       if (fail) {
+        // eslint-disable-next-line no-underscore-dangle
         testCase._rowVariant = 'danger';
       }
     } else {
