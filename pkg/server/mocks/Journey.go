@@ -13,27 +13,32 @@ type Journey struct {
 	mock.Mock
 }
 
-// DiscoveryModel provides a mock function with given fields:
-func (_m *Journey) DiscoveryModel() (*discovery.Model, error) {
+// AllTokenCollected provides a mock function with given fields:
+func (_m *Journey) AllTokenCollected() bool {
 	ret := _m.Called()
 
-	var r0 *discovery.Model
-	if rf, ok := ret.Get(0).(func() *discovery.Model); ok {
+	var r0 bool
+	if rf, ok := ret.Get(0).(func() bool); ok {
 		r0 = rf()
 	} else {
-		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*discovery.Model)
-		}
+		r0 = ret.Get(0).(bool)
 	}
 
-	var r1 error
-	if rf, ok := ret.Get(1).(func() error); ok {
-		r1 = rf()
+	return r0
+}
+
+// CollectToken provides a mock function with given fields: token
+func (_m *Journey) CollectToken(token string) error {
+	ret := _m.Called(token)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(string) error); ok {
+		r0 = rf(token)
 	} else {
-		r1 = ret.Error(1)
+		r0 = ret.Error(0)
 	}
 
-	return r0, r1
+	return r0
 }
 
 // Results provides a mock function with given fields:

@@ -5,18 +5,30 @@ import (
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/executors"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/generation"
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
 	"github.com/pkg/errors"
 	"sync"
 )
 
-var errDiscoveryModelNotSet = errors.New("error discovery model not set")
+var (
+	errDiscoveryModelNotSet        = errors.New("error discovery model not set")
+	errTestCasesNotGenerated       = errors.New("error test cases not generated")
+	errNotFinishedCollectingTokens = errors.New("error not finished collecting tokens")
+)
 
-// Journey represents all possible steps for a user test conformance web journey
+// Journey represents all possible steps for a user test conformance journey
+//
+// Happy path journey would look like:
+// 1. SetCertificates - sets configuration to run test cases
+// 2. SetDiscoveryModel - this validates and if successful set this as your discovery model
+// 3. TestCases - Generates test cases, generates permission set requirements to run tests and starts a token collector
+// 4. RunTest - Runs triggers a background run on all generated test from previous steps, needs all token to be already collected
+// 5. Results - returns a background process control, so we can monitor on finished tests
+//
 type Journey interface {
-	DiscoveryModel() (*discovery.Model, error)
 	SetDiscoveryModel(discoveryModel *discovery.Model) (discovery.ValidationFailures, error)
 	TestCases() (generation.TestCasesRun, error)
+	CollectToken(token string) error
+	AllTokenCollected() bool
 	RunTests() error
 	StopTestRun()
 	Results() executors.DaemonController
@@ -31,6 +43,8 @@ type journey struct {
 	journeyLock           *sync.Mutex
 	testCasesRun          generation.TestCasesRun
 	testCasesRunGenerated bool
+	collector             executors.Collector
+	allCollected          bool
 	validDiscoveryModel   *discovery.Model
 	certificateSigning    authentication.Certificate
 	certificateTransport  authentication.Certificate
@@ -43,6 +57,7 @@ func NewJourney(generator generation.Generator, validator discovery.Validator) *
 		validator:             validator,
 		daemonController:      executors.NewBufferedDaemonController(),
 		journeyLock:           &sync.Mutex{},
+		allCollected:          false,
 		testCasesRunGenerated: false,
 	}
 }
@@ -59,44 +74,68 @@ func (wj *journey) SetDiscoveryModel(discoveryModel *discovery.Model) (discovery
 
 	wj.journeyLock.Lock()
 	wj.validDiscoveryModel = discoveryModel
-	wj.testCasesRun = generation.NoTestCasesRun
+	wj.testCasesRunGenerated = false
+	wj.allCollected = false
 	wj.journeyLock.Unlock()
 
 	return discovery.NoValidationFailures, nil
 }
 
-func (wj *journey) DiscoveryModel() (*discovery.Model, error) {
-	wj.journeyLock.Lock()
-	defer wj.journeyLock.Unlock()
-	if wj.validDiscoveryModel == nil {
-		return nil, errDiscoveryModelNotSet
-	}
-	return wj.validDiscoveryModel, nil
-}
-
 func (wj *journey) TestCases() (generation.TestCasesRun, error) {
 	wj.journeyLock.Lock()
 	defer wj.journeyLock.Unlock()
+
 	if wj.validDiscoveryModel == nil {
 		return generation.TestCasesRun{}, errDiscoveryModelNotSet
 	}
+
 	if !wj.testCasesRunGenerated {
 		wj.testCasesRun = wj.generator.GenerateSpecificationTestCases(wj.validDiscoveryModel.DiscoveryModel)
+		wj.collector = executors.NewCollector(wj.testCasesRun.SpecConsentRequirements, wj.doneCollectionCallback)
 		wj.testCasesRunGenerated = true
+		wj.allCollected = false
 	}
+
 	return wj.testCasesRun, nil
 }
 
+func (wj *journey) CollectToken(token string) error {
+	wj.journeyLock.Lock()
+	defer wj.journeyLock.Unlock()
+
+	if !wj.testCasesRunGenerated {
+		return errTestCasesNotGenerated
+	}
+
+	return wj.collector.Collect("setName", token)
+}
+
+func (wj *journey) AllTokenCollected() bool {
+	wj.journeyLock.Lock()
+	defer wj.journeyLock.Unlock()
+
+	return wj.allCollected
+}
+
+func (wj *journey) doneCollectionCallback() {
+	wj.journeyLock.Lock()
+	wj.allCollected = true
+	wj.collector.Tokens()
+	wj.journeyLock.Unlock()
+}
+
 func (wj *journey) RunTests() error {
-	specTestCasesRun, err := wj.TestCases()
-	if err != nil {
-		return err
+	if !wj.testCasesRunGenerated {
+		return errTestCasesNotGenerated
+	}
+
+	if !wj.allCollected {
+		return errNotFinishedCollectingTokens
 	}
 
 	runDefinition := executors.RunDefinition{
 		DiscoModel:    wj.validDiscoveryModel,
-		SpecTests:     specTestCasesRun.TestCases,
-		SpecTokens:    []model.SpecConsentRequirements{},
+		TestCaseRun:   wj.testCasesRun,
 		SigningCert:   wj.certificateSigning,
 		TransportCert: wj.certificateTransport,
 	}
