@@ -18,6 +18,30 @@
           tag="h6"
         >{{ data.value }}</b-badge>
       </template>
+      <template
+        slot="show_details"
+        slot-scope="row">
+        <b-button
+          v-if="row.item.error"
+          v-model="row.detailsShowing"
+          @click.stop="row.toggleDetails">
+          <i
+            v-if="row.item._showDetails"
+            class="fa fa-minus-square">-</i>
+          <i
+            v-else
+            class="fa fa-plus-square">+</i>
+        </b-button>
+      </template>
+
+      <template
+        slot="row-details"
+        slot-scope="row">
+        <b-card>
+          The following error occurred during test execution:<br>
+          {{ row.item.error }}
+        </b-card>
+      </template>
 
       <template slot="table-caption">
         <h6>API Specification</h6>
@@ -87,14 +111,17 @@ export default {
       required: true,
     },
     /**
-     * Fields to display in the table.
-     * See documentation: https://bootstrap-vue.js.org/docs/components/table#fields-column-definitions-
-     */
+             * Fields to display in the table.
+             * See documentation: https://bootstrap-vue.js.org/docs/components/table#fields-column-definitions-
+             */
     tableFields: {
       type: Object,
       default: () => ({
-        '@id': {
+        show_details: {
+          label: '',
+          tdClass: 'table-data-breakable',
         },
+        '@id': {},
         name: {
           tdClass: 'table-data-breakable',
         },
@@ -119,9 +146,9 @@ export default {
       }),
     },
     /**
-     * Fields to display in API Specification Table.
-     * See documentation: https://bootstrap-vue.js.org/docs/components/table#fields-column-definitions-
-     */
+             * Fields to display in API Specification Table.
+             * See documentation: https://bootstrap-vue.js.org/docs/components/table#fields-column-definitions-
+             */
     apiSpecificationTableFields: {
       type: Object,
       default: () => ({
@@ -149,17 +176,17 @@ export default {
 </script>
 
 <style scoped>
-/*
- * Don't remove the `/deep/` here.
- *
- * This rule ensures values such as 'https://openbanking.atlassian.net/wiki/spaces/DZ/pages/642090641/Account+and+Transaction+API+Specification+-+v3.0'
- * in the table are broken into separate lines.
- */
-.test-case /deep/ .table-data-breakable {
-  word-break: break-all;
-}
+  /*
+   * Don't remove the `/deep/` here.
+   *
+   * This rule ensures values such as 'https://openbanking.atlassian.net/wiki/spaces/DZ/pages/642090641/Account+and+Transaction+API+Specification+-+v3.0'
+   * in the table are broken into separate lines.
+   */
+  .test-case /deep/ .table-data-breakable {
+    word-break: break-all;
+  }
 
-.test-case /deep/ .api-specification-table {
-  grid-template-columns: 20% auto !important;
-}
+  .test-case /deep/ .api-specification-table {
+    grid-template-columns: 20% auto !important;
+  }
 </style>
