@@ -25,8 +25,8 @@
         slot="row-details"
         slot-scope="row">
         <b-card>
-          The following error occurred during test execution:<br>
-          {{ row.item.error }}
+          <strong>Test ID:</strong> {{ row.item.id }}<br/>
+          <strong>Error:</strong> {{ row.item.error }}<br/>
         </b-card>
       </template>
 
