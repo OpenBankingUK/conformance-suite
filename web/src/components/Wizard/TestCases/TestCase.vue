@@ -12,26 +12,12 @@
       <!-- format status column as Bootstrap badge. -->
       <template
         slot="meta.status"
-        slot-scope="data">
-        <b-badge
-          :variant="data.value === 'PASSED' ? 'success' : (data.value === 'FAILED' ? 'danger' : (data.value === 'PENDING' ? 'info' : 'secondary'))"
-          tag="h6"
-        >{{ data.value }}</b-badge>
-      </template>
-      <template
-        slot="show_details"
         slot-scope="row">
-        <b-button
-          v-if="row.item.error"
-          v-model="row.detailsShowing"
-          @click.stop="row.toggleDetails">
-          <i
-            v-if="row.item._showDetails"
-            class="fa fa-minus-square">-</i>
-          <i
-            v-else
-            class="fa fa-plus-square">+</i>
-        </b-button>
+        <b-badge
+          :variant="row.value === 'PASSED' ? 'success' : (row.value === 'FAILED' ? 'danger' : (row.value === 'PENDING' ? 'info' : 'secondary'))"
+          tag="h6"
+          @click.stop="toggleError(row)"
+        >{{ row.value }}</b-badge>
       </template>
 
       <template
@@ -171,7 +157,13 @@ export default {
     return {};
   },
   computed: {},
-  methods: {},
+  methods: {
+      toggleError(row) {
+      if (row.item.error) {
+        row.toggleDetails();
+      }
+    },
+  },
 };
 </script>
 
