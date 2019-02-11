@@ -36,6 +36,8 @@ export default {
       testCase.meta.metrics.responseSize = `${metrics.response_size}B`;
       testCase.error = fail;
       if (fail) {
+        // Set the row variant, for alternate styling.
+        // https://bootstrap-vue.js.org/docs/components/table/#items-record-data-
         // eslint-disable-next-line no-underscore-dangle
         testCase._rowVariant = 'danger';
       }
