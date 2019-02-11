@@ -41,7 +41,6 @@ func GetImplementedTestCases(disco *discovery.ModelDiscoveryItem, nameGenerator 
 
 		for path, props := range doc.Spec().Paths.Paths {
 			for meth, op := range getOperations(&props) {
-				testId := nameGenerator.Generate()
 				if (meth == v.Method) && (v.Path == path) {
 					responseCodes = getResponseCodes(op)
 					goodResponseCode, err = getGoodResponseCode(responseCodes)
@@ -88,7 +87,7 @@ func GetImplementedTestCases(disco *discovery.ModelDiscoveryItem, nameGenerator 
 					input := model.Input{Method: meth, Endpoint: newpath, Headers: headers}
 					expect := model.Expect{StatusCode: goodResponseCode, SchemaValidation: true}
 					context := model.Context{"baseurl": disco.ResourceBaseURI}
-					testcase := model.TestCase{ID: testId, Input: input, Context: context, Expect: expect, Name: op.Summary}
+					testcase := model.TestCase{ID: nameGenerator.Generate(), Input: input, Context: context, Expect: expect, Name: op.Summary}
 					testcase.ProcessReplacementFields(globalReplacements)
 					testcases = append(testcases, testcase)
 					break
@@ -100,23 +99,24 @@ func GetImplementedTestCases(disco *discovery.ModelDiscoveryItem, nameGenerator 
 }
 
 func getTemplatedTestCases(path string) (tc []model.TestCase, err error) {
-	if path == "/account-access-consents" {
-		filedata, err := ioutil.ReadFile("templates/account_consent.json")
-		if err != nil {
-			filedata, err = ioutil.ReadFile("../../templates/account_consent.json") // handle testing
-			if err != nil {
-				logrus.Error("Cannot read: templates/account_consent " + err.Error())
-				return nil, err
-			}
-		}
-		testcases := []model.TestCase{}
-		err = json.Unmarshal(filedata, &testcases)
-		if err != nil {
-			return testcases, err
-		}
-		return testcases, nil
+	if !isAccountAccessConsentEndpoint(path) {
+		return tc, nil
 	}
-	return tc, nil
+
+	filedata, err := ioutil.ReadFile("templates/account_consent.json")
+	if err != nil {
+		filedata, err = ioutil.ReadFile("../../templates/account_consent.json") // handle testing
+		if err != nil {
+			logrus.Error("Cannot read: templates/account_consent " + err.Error())
+			return nil, err
+		}
+	}
+	testcases := []model.TestCase{}
+	err = json.Unmarshal(filedata, &testcases)
+	if err != nil {
+		return testcases, err
+	}
+	return testcases, nil
 }
 
 // GetCustomTestCases retrieves custom tests from the discovery file

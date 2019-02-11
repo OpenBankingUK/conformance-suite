@@ -5,15 +5,34 @@ import (
 	"testing"
 )
 
-func TestContextGetString(t *testing.T) {
+func TestContextGetPutString(t *testing.T) {
 	context := Context{}
-	context.Put("string", "a string")
+	context.PutString("string", "a string")
 
-	get, ok := context.Get("string")
+	get, err := context.GetString("string")
 
-	assert.True(t, ok)
-	assert.IsType(t, string(""), get)
+	assert.NoError(t, err)
 	assert.Equal(t, "a string", get)
+}
+
+func TestContextGetPutStringNotFound(t *testing.T) {
+	context := Context{}
+
+	get, err := context.GetString("non existing key")
+
+	assert.Error(t, err)
+	assert.IsType(t, ErrNotFound, err)
+	assert.Equal(t, "", get)
+}
+
+func TestContextGetStringHandlesCast(t *testing.T) {
+	context := Context{}
+	context.Put("wrong", 1)
+
+	get, err := context.GetString("wrong")
+
+	assert.EqualError(t, err, "error casting key to string")
+	assert.Equal(t, "", get)
 }
 
 func TestContextGetInt(t *testing.T) {

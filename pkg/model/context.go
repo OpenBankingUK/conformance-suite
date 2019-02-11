@@ -17,9 +17,33 @@ func (c Context) Get(key string) (interface{}, bool) {
 	return value, exist
 }
 
+var ErrNotFound = errors.New("error key not found")
+
+// GetString get the string value associated with key
+func (c Context) GetString(key string) (string, error) {
+	value, exist := c[key]
+	if !exist {
+		return "", ErrNotFound
+	}
+
+	valueStr, ok := value.(string)
+	if !ok {
+		return "", errors.New("error casting key to string")
+	}
+
+	return valueStr, nil
+}
+
 // Put a value indexed by 'key' into the context. The value can be any type
 func (c Context) Put(key string, value interface{}) {
 	c[key] = value
+}
+
+// Put a value indexed by 'key' into the context. The value can be any type
+func (c Context) PutString(key string, value string) {
+	var interfaceValue interface{}
+	interfaceValue = value
+	c[key] = interfaceValue
 }
 
 // PutStringSlice puts a slice of strings into context

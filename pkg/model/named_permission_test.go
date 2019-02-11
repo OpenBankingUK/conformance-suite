@@ -37,7 +37,7 @@ func TestNewSpecConsentRequirements(t *testing.T) {
 			CodeSet: permissions.CodeSet{"b"},
 		},
 	}
-	nameGenerator := names.NewSententialPrefixedName("to")
+	nameGenerator := names.NewSequentialPrefixedName("to")
 
 	specTokens := NewSpecConsentRequirements(nameGenerator, codeSetResult, "id")
 
