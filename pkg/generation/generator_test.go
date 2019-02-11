@@ -14,7 +14,7 @@ import (
 
 func testLoadDiscoveryModel(t *testing.T) *discovery.ModelDiscovery {
 	t.Helper()
-	template, err := ioutil.ReadFile("../discovery/templates/ob-v3.0-generic.json")
+	template, err := ioutil.ReadFile("../discovery/templates/ob-v3.1-generic.json")
 	require.NoError(t, err)
 	require.NotNil(t, template)
 	json := string(template)

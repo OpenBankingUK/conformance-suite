@@ -19,7 +19,7 @@ func TestGetTestCases(t *testing.T) {
 		require.NoError(t, server.Shutdown(context.TODO()))
 	}()
 
-	discoveryModel, err := ioutil.ReadFile("../discovery/templates/ob-v3.0-ozone.json")
+	discoveryModel, err := ioutil.ReadFile("../discovery/templates/ob-v3.1-ozone.json")
 	assert.NoError(err)
 	assert.NotNil(discoveryModel)
 

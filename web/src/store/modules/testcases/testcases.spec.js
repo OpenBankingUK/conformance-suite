@@ -38,9 +38,9 @@ describe('store/modules/testcases', () => {
       {
         apiSpecification: {
           name: 'Account and Transaction API Specification',
-          url: 'https://openbanking.atlassian.net/wiki/spaces/DZ/pages/642090641/Account+and+Transaction+API+Specification+-+v3.0',
-          version: 'v3.0',
-          schemaVersion: 'https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.0.0/dist/account-info-swagger.json',
+          url: 'https://openbanking.atlassian.net/wiki/spaces/DZ/pages/642090641/Account+and+Transaction+API+Specification+-+v3.1',
+          version: 'v3.1',
+          schemaVersion: 'https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.0/dist/account-info-swagger.json',
         },
         testCases: [
           {

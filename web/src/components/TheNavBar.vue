@@ -90,7 +90,7 @@
 import map from 'lodash/map';
 import { PlusCircleIcon, FileTextIcon } from 'vue-feather-icons';
 import TheNavBarItem from './TheNavBarItem.vue';
-import Specifications from '../../../pkg/model/testdata/ozone_spec.golden.json';
+import Specifications from '../../../pkg/model/testdata/spec-config.golden.json';
 
 export default {
   name: 'TheNavBar',

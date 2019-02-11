@@ -9,10 +9,10 @@ import (
 )
 
 // ConditionEnum models endpoint conditionality based on:
-// Account and Transaction API Specification - v3.0 - Section 4 Endpoints
-// https://openbanking.atlassian.net/wiki/spaces/DZ/pages/642090641/Account+and+Transaction+API+Specification+-+v3.0#AccountandTransactionAPISpecification-v3.0-Endpoints
+// Account and Transaction API Specification - v3.1 - Section 4 Endpoints
+// https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937820271/Account+and+Transaction+API+Specification+-+v3.1#AccountandTransactionAPISpecification-v3.1-Endpoints
 // Also see "Categorisation of Implementation Requirements" section of the following document
-// https://openbanking.atlassian.net/wiki/spaces/DZ/pages/641992418/Read+Write+Data+API+Specification+-+v3.0#Read/WriteDataAPISpecification-v3.0-CategorisationofImplementationRequirements
+// https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937656404/Read+Write+Data+API+Specification+-+v3.1#Read/WriteDataAPISpecification-v3.1-CategorisationofImplementationRequirements
 type ConditionEnum int
 
 const (
