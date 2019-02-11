@@ -19,7 +19,9 @@ export default {
     ];
   },
   [types.UPDATE_TEST_CASE](state, update) {
-    const { id, pass, metrics } = update.test;
+    const {
+      id, pass, metrics, fail,
+    } = update.test;
     const predicate = { '@id': id };
 
     // Assume that each testCase has a globally unique id, then find the matching testCase.
@@ -27,10 +29,18 @@ export default {
     const testCase = _.find(testCases, predicate);
 
     if (testCase) {
+      testCase.id = id;
       testCase.meta.status = pass ? 'PASSED' : 'FAILED';
       const responseSeconds = moment.duration(metrics.response_time / 1000000).asSeconds().toFixed(6);
       testCase.meta.metrics.responseTime = `${responseSeconds}s`;
       testCase.meta.metrics.responseSize = `${metrics.response_size}B`;
+      testCase.error = fail;
+      if (fail) {
+        // Set the row variant, for alternate styling.
+        // https://bootstrap-vue.js.org/docs/components/table/#items-record-data-
+        // eslint-disable-next-line no-underscore-dangle
+        testCase._rowVariant = 'danger';
+      }
     } else {
       // eslint-disable-next-line no-console
       console.error('Failed to find testCase, testCases=%o, predicate=%o, update=%o', testCases, predicate, update);

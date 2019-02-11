@@ -12,11 +12,22 @@
       <!-- format status column as Bootstrap badge. -->
       <template
         slot="meta.status"
-        slot-scope="data">
+        slot-scope="row">
         <b-badge
-          :variant="data.value === 'PASSED' ? 'success' : (data.value === 'FAILED' ? 'danger' : (data.value === 'PENDING' ? 'info' : 'secondary'))"
+          :variant="row.value === 'PASSED' ? 'success' : (row.value === 'FAILED' ? 'danger' : (row.value === 'PENDING' ? 'info' : 'secondary'))"
+          :class="row.value === 'FAILED' ? 'clickable' : ''"
           tag="h6"
-        >{{ data.value }}</b-badge>
+          @click.stop="toggleError(row)"
+        >{{ row.value }}</b-badge>
+      </template>
+
+      <template
+        slot="row-details"
+        slot-scope="row">
+        <b-card>
+          <strong>Test ID:</strong> {{ row.item.id }}<br>
+          <strong>Error:</strong> {{ row.item.error }}<br>
+        </b-card>
       </template>
 
       <template slot="table-caption">
@@ -111,8 +122,11 @@ export default {
     tableFields: {
       type: Object,
       default: () => ({
-        '@id': {
+        show_details: {
+          label: '',
+          tdClass: 'table-data-breakable',
         },
+        '@id': {},
         name: {
           tdClass: 'table-data-breakable',
         },
@@ -156,22 +170,29 @@ export default {
     return {};
   },
   computed: {},
-  methods: {},
+  methods: {
+    toggleError(row) {
+      if (row.item.error) {
+        row.toggleDetails();
+      }
+    },
+  },
 };
 </script>
 
 <style scoped>
-/*
- * Don't remove the `/deep/` here.
- *
- * This rule ensures values such as 'https://openbanking.atlassian.net/wiki/spaces/DZ/pages/642090641/Account+and+Transaction+API+Specification+-+v3.0'
- * in the table are broken into separate lines.
- */
-.test-case /deep/ .table-data-breakable {
-  word-break: break-all;
-}
+  /*
+   * Don't remove the `/deep/` here.
+   *
+   * This rule ensures values such as 'https://openbanking.atlassian.net/wiki/spaces/DZ/pages/642090641/Account+and+Transaction+API+Specification+-+v3.0'
+   * in the table are broken into separate lines.
+   */
+  .test-case /deep/ .table-data-breakable {
+    word-break: break-all;
+  }
+  .clickable { cursor: pointer; }
 
-.test-case /deep/ .api-specification-table {
-  grid-template-columns: 20% auto !important;
-}
+  .test-case /deep/ .api-specification-table {
+    grid-template-columns: 20% auto !important;
+  }
 </style>

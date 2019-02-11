@@ -78,8 +78,6 @@ type TestCasesRun struct {
 	SpecConsentRequirements []model.SpecConsentRequirements `json:"specTokens"`
 }
 
-var NoTestCasesRun = TestCasesRun{}
-
 func generateSpecificationTestCases(item discovery.ModelDiscoveryItem, nameGenerator names.Generator, globalReplacements map[string]string) SpecificationTestCases {
 	return SpecificationTestCases{Specification: item.APISpecification, TestCases: GetImplementedTestCases(&item, nameGenerator, globalReplacements)}
 }

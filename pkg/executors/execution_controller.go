@@ -17,8 +17,7 @@ import (
 // RunDefinition captures all the information required to run the test cases
 type RunDefinition struct {
 	DiscoModel    *discovery.Model
-	SpecTests     []generation.SpecificationTestCases
-	SpecTokens    []model.SpecConsentRequirements
+	TestCaseRun   generation.TestCasesRun
 	SigningCert   authentication.Certificate
 	TransportCert authentication.Certificate
 }
@@ -72,7 +71,7 @@ func (r *TestCaseRunner) runTestCasesAsync() {
 	ctxLogger.Debug(fmt.Sprintf("context: %#v", ruleCtx), ctxLogger)
 
 	ctxLogger.Info("running async test")
-	for _, spec := range r.definition.SpecTests {
+	for _, spec := range r.definition.TestCaseRun.TestCases {
 		r.executeSpecTests(spec, ruleCtx, ctxLogger)
 	}
 	r.setNotRunning()
