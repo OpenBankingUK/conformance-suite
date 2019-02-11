@@ -32,7 +32,7 @@ export default {
       testCase.id = id;
       testCase.meta.status = pass ? 'PASSED' : 'FAILED';
       const responseSeconds = moment.duration(metrics.response_time / 1000000).asMilliseconds().toFixed(0);
-      testCase.meta.metrics.responseTime = `${responseSeconds}ms`;
+      testCase.meta.metrics.responseTime = `${responseSeconds.toLocaleString()}ms`;
       testCase.meta.metrics.responseSize = `${metrics.response_size.toLocaleString()}`;
       testCase.error = fail;
       if (fail) {
