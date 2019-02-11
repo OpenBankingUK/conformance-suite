@@ -61,7 +61,7 @@ func AppMsg(objtype, msg, objdump string) {
 		return
 	}
 	appmsg := fmt.Sprintf("%s[%s] %s", "" /*indent()*/, objtype, msg)
-	logrus.Println(appmsg)
+	logrus.Debugln(appmsg)
 	applicationTrace <- appmsg
 }
 

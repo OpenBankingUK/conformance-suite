@@ -72,7 +72,7 @@ func (h *runHandlers) listenResultWebSocket(c echo.Context) error {
 
 		select {
 		case <-pingTicker.C:
-			logger.Debug("pinging websocket client")
+			//logger.Debug("pinging websocket client")
 			writeTimeout := time.Now().Add(time.Second)
 			err := ws.SetWriteDeadline(writeTimeout)
 			if err != nil {
