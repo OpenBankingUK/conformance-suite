@@ -21,6 +21,7 @@ var (
 // 1. SetCertificates - sets configuration to run test cases
 // 2. SetDiscoveryModel - this validates and if successful set this as your discovery model
 // 3. TestCases - Generates test cases, generates permission set requirements to run tests and starts a token collector
+// 3.1 CollectToken - collects all tokens required to RunTest
 // 4. RunTest - Runs triggers a background run on all generated test from previous steps, needs all token to be already collected
 // 5. Results - returns a background process control, so we can monitor on finished tests
 //
