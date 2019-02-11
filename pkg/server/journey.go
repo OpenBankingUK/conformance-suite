@@ -28,7 +28,7 @@ var (
 type Journey interface {
 	SetDiscoveryModel(discoveryModel *discovery.Model) (discovery.ValidationFailures, error)
 	TestCases() (generation.TestCasesRun, error)
-	CollectToken(token string) error
+	CollectToken(setName, token string) error
 	AllTokenCollected() bool
 	RunTests() error
 	StopTestRun()
@@ -92,7 +92,8 @@ func (wj *journey) TestCases() (generation.TestCasesRun, error) {
 
 	if !wj.testCasesRunGenerated {
 		wj.testCasesRun = wj.generator.GenerateSpecificationTestCases(wj.validDiscoveryModel.DiscoveryModel)
-		wj.collector = executors.NewCollector(wj.testCasesRun.SpecConsentRequirements, wj.doneCollectionCallback)
+		// replace this with a NewCollector to a real implementation
+		wj.collector = executors.NewNullCollector(wj.doneCollectionCallback)
 		wj.testCasesRunGenerated = true
 		wj.allCollected = false
 	}
@@ -100,7 +101,7 @@ func (wj *journey) TestCases() (generation.TestCasesRun, error) {
 	return wj.testCasesRun, nil
 }
 
-func (wj *journey) CollectToken(token string) error {
+func (wj *journey) CollectToken(setName, token string) error {
 	wj.journeyLock.Lock()
 	defer wj.journeyLock.Unlock()
 
@@ -108,7 +109,7 @@ func (wj *journey) CollectToken(token string) error {
 		return errTestCasesNotGenerated
 	}
 
-	return wj.collector.Collect("setName", token)
+	return wj.collector.Collect(setName, token)
 }
 
 func (wj *journey) AllTokenCollected() bool {
@@ -121,11 +122,13 @@ func (wj *journey) AllTokenCollected() bool {
 func (wj *journey) doneCollectionCallback() {
 	wj.journeyLock.Lock()
 	wj.allCollected = true
-	wj.collector.Tokens()
 	wj.journeyLock.Unlock()
 }
 
 func (wj *journey) RunTests() error {
+	wj.journeyLock.Lock()
+	defer wj.journeyLock.Unlock()
+
 	if !wj.testCasesRunGenerated {
 		return errTestCasesNotGenerated
 	}

@@ -27,13 +27,13 @@ func (_m *Journey) AllTokenCollected() bool {
 	return r0
 }
 
-// CollectToken provides a mock function with given fields: token
-func (_m *Journey) CollectToken(token string) error {
-	ret := _m.Called(token)
+// CollectToken provides a mock function with given fields: setName, token
+func (_m *Journey) CollectToken(setName string, token string) error {
+	ret := _m.Called(setName, token)
 
 	var r0 error
-	if rf, ok := ret.Get(0).(func(string) error); ok {
-		r0 = rf(token)
+	if rf, ok := ret.Get(0).(func(string, string) error); ok {
+		r0 = rf(setName, token)
 	} else {
 		r0 = ret.Error(0)
 	}
