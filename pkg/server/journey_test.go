@@ -144,7 +144,7 @@ func TestJourneyRunTestCasesCantRunIfNoTestCases(t *testing.T) {
 
 	err := journey.RunTests()
 
-	assert.EqualError(t, err, "error discovery model not set")
+	assert.EqualError(t, err, "error test cases not generated")
 }
 
 func TestJourneySetCertificateSigning(t *testing.T) {

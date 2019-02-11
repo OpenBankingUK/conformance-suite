@@ -32,7 +32,7 @@ func TestServerRunStartPost(t *testing.T) {
 
 	require.NotNil(body)
 
-	bodyExpected := `{ "error": "error discovery model not set" }`
+	bodyExpected := `{ "error": "error test cases not generated" }`
 	bodyActual := body.String()
 	require.JSONEq(bodyExpected, bodyActual)
 }
