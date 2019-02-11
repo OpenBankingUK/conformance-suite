@@ -128,6 +128,12 @@ export default {
         'meta.status': {
           label: 'Status',
         },
+        'meta.metrics.responseTime': {
+          label: 'Response Time',
+        },
+        'meta.metrics.responseSize': {
+          label: 'Response Body Size',
+        },
       }),
     },
     /**

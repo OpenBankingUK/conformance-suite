@@ -48,7 +48,7 @@ export default {
       }
 
       commit(types.SET_TEST_CASES, testCases.specCases);
-      commit(types.SET_TEST_CASES_STATUS, 'NOT_STARTED');
+      commit(types.SET_TEST_CASES_STATUS, '');
       dispatch('status/clearErrors', null, { root: true });
     } catch (err) {
       commit(types.SET_TEST_CASES, []);

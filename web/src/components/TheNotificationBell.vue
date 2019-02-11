@@ -9,6 +9,7 @@
     title="Notifications"
     tabindex="0"
     iconColor="#fff"
+    class="notification-bell"
   />
 </template>
 
@@ -61,3 +62,10 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+.notification-bell {
+  margin-right: 8px;
+  outline : none;
+}
+</style>
