@@ -22,9 +22,14 @@
 !**/*/*.go
 !**/*/*/*.go
 !**/appconfig
+!**/certs
+!**/certs/**/*
 !**/config
-!**/proxy
+!**/config/**/*.json
 !**/swagger
+!**/swagger/**/*.json
+!**/templates
+!**/templates/**/*.json
 
 !**/cmd
 !**/cmd/**

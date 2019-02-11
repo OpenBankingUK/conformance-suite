@@ -33,32 +33,34 @@ describe('store/modules/testcases', () => {
     jest.resetAllMocks();
   });
 
-  const OK_RESPONSE = [
-    {
-      apiSpecification: {
-        name: 'Account and Transaction API Specification',
-        url: 'https://openbanking.atlassian.net/wiki/spaces/DZ/pages/642090641/Account+and+Transaction+API+Specification+-+v3.0',
-        version: 'v3.0',
-        schemaVersion: 'https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.0.0/dist/account-info-swagger.json',
-      },
-      testCases: [
-        {
-          '@id': '#t1000',
-          name: 'Create Account Access Consents',
-          input: {
-            method: 'POST',
-            endpoint: '/account-access-consents',
-            contextGet: {},
-          },
-          expect: {
-            'status-code': 201,
-            'schema-validation': true,
-            contextPut: {},
-          },
+  const OK_RESPONSE = {
+    specCases: [
+      {
+        apiSpecification: {
+          name: 'Account and Transaction API Specification',
+          url: 'https://openbanking.atlassian.net/wiki/spaces/DZ/pages/642090641/Account+and+Transaction+API+Specification+-+v3.0',
+          version: 'v3.0',
+          schemaVersion: 'https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.0.0/dist/account-info-swagger.json',
         },
-      ],
-    },
-  ];
+        testCases: [
+          {
+            '@id': '#t1000',
+            name: 'Create Account Access Consents',
+            input: {
+              method: 'POST',
+              endpoint: '/account-access-consents',
+              contextGet: {},
+            },
+            expect: {
+              'status-code': 201,
+              'schema-validation': true,
+              contextPut: {},
+            },
+          },
+        ],
+      },
+    ],
+  };
 
   let dispatch;
   /**
@@ -90,7 +92,7 @@ describe('store/modules/testcases', () => {
     };
 
     // Add additional `meta.status` field to each individual testCase in `OK_RESPONSE`.
-    const EXPECTED_TESTCASES_STATE = _.map(OK_RESPONSE, (spec) => {
+    const EXPECTED_TESTCASES_STATE = _.map(OK_RESPONSE.specCases, (spec) => {
       const testCases = _.map(spec.testCases, testCase => _.merge({}, testCase, { meta: { status: '', metrics: { responseSize: '', responseTime: '' } } }));
       return _.merge({}, spec, { testCases });
     });
@@ -164,11 +166,11 @@ describe('store/modules/testcases', () => {
 
   describe('testcases/executeTestCases', () => {
     // Add additional `meta.status` field to each individual testCase in `OK_RESPONSE`.
-    const EXPECTED_TESTCASES_STATE_PENDING = _.map(OK_RESPONSE, (spec) => {
+    const EXPECTED_TESTCASES_STATE_PENDING = _.map(OK_RESPONSE.specCases, (spec) => {
       const testCases = _.map(spec.testCases, testCase => _.merge({}, testCase, { meta: { status: 'PENDING', metrics: { responseSize: '', responseTime: '' } } }));
       return _.merge({}, spec, { testCases });
     });
-    const EXPECTED_TESTCASES_STATE_NOT_STARTED = _.map(OK_RESPONSE, (spec) => {
+    const EXPECTED_TESTCASES_STATE_NOT_STARTED = _.map(OK_RESPONSE.specCases, (spec) => {
       const testCases = _.map(spec.testCases, testCase => _.merge({}, testCase, { meta: { status: '', metrics: { responseSize: '', responseTime: '' } } }));
       return _.merge({}, spec, { testCases });
     });

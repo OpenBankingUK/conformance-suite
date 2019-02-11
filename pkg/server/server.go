@@ -1,40 +1,30 @@
 package server
 
 import (
-	"context"
-	"errors"
-	"net/http"
 	"strings"
 
 	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/version"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/generation"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
-	"github.com/gorilla/websocket"
 
+	"github.com/gorilla/websocket"
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
 	"github.com/sirupsen/logrus"
 )
 
-// Server wraps *echo.Echo and stores the proxy once configured.
+// Server - wraps *echo.Echo.
 type Server struct {
 	*echo.Echo // Wrap (using composition) *echo.Echo, allows us to pretend Server is echo.Echo.
-	proxy      *http.Server
-	logger     *logrus.Entry
-	version    version.Checker
+	logger  *logrus.Entry
+	version version.Checker
 }
 
 // NewServer returns new echo.Echo server.
-func NewServer(
-	logger *logrus.Entry,
-	checker model.ConditionalityChecker,
-	version version.Checker,
-) *Server {
-
+func NewServer(logger *logrus.Entry, checker model.ConditionalityChecker, version version.Checker) *Server {
 	server := &Server{
 		Echo:    echo.New(),
-		proxy:   nil,
 		logger:  logger,
 		version: version,
 	}
@@ -80,10 +70,7 @@ func registerRoutes(server *Server, logger *logrus.Entry, checker model.Conditio
 	// anything prefixed with api
 	api := server.Group("/api")
 
-	configHandlers := &configHandlers{server, journey}
-	// endpoints to post a config and setup the proxy server
-	api.POST("/config", configHandlers.configPostHandler)
-	api.DELETE("/config", configHandlers.configDeleteHandler)
+	configHandlers := &configHandlers{logger: logger, journey: journey}
 	// endpoint to post global configuration
 	api.POST("/config/global", configHandlers.configGlobalPostHandler)
 
@@ -111,28 +98,6 @@ func registerRoutes(server *Server, logger *logrus.Entry, checker model.Conditio
 	api.POST("/redirect/fragment/ok", redirectHandlers.postFragmentOKHandler)
 	api.POST("/redirect/query/ok", redirectHandlers.postQueryOKHandler)
 	api.POST("/redirect/error", redirectHandlers.postErrorHandler)
-}
-
-// Shutdown the server and the proxy if it is alive
-func (s *Server) Shutdown(ctx context.Context) error {
-	if s.proxy != nil {
-		if err := s.proxy.Shutdown(ctx); err != nil {
-			s.logger.Errorln("Server:Shutdown -> s.proxy.Shutdown err=", err)
-			return err
-		}
-	}
-
-	if s.Echo == nil {
-		s.logger.Errorf("Server:Shutdown -> s.Echo=%p\n", s.Echo)
-		return errors.New(`e.Echo == nil in Server:Shutdown`)
-	}
-
-	if err := s.Echo.Shutdown(ctx); err != nil {
-		s.logger.Errorln("Server:Shutdown -> s.Echo.Shutdown err=", err)
-		return err
-	}
-
-	return nil
 }
 
 // skipper - ensures that all requests not prefixed with any string in `pathsToSkip` is skipped.

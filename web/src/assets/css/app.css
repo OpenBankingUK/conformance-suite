@@ -55,3 +55,43 @@ html, body, #app {
   margin: 0;
   font-size: 1.0rem;
 }
+
+/*
+  Spinner
+
+  Copy of Bootstrap 4.2 Spinner SCSS from Bootstrap master branch:
+  https://github.com/twbs/bootstrap/blob/v4-dev/scss/_spinners.scss
+
+  Can be removed when next release of Bootstrap-Vue is made and we have upgraded.
+*/
+
+@keyframes spinner-border {
+  to { transform: rotate(360deg); }
+}
+
+.spinner-border {
+  display: inline-block;
+  width: 2rem;
+  height: 2rem;
+  vertical-align: text-bottom;
+  border: .25em solid currentColor;
+    border-top-width: 0.25em;
+    border-right-color: currentcolor;
+    border-right-width: 0.25em;
+    border-bottom-width: 0.25em;
+    border-left-width: 0.25em;
+  border-right-color: transparent;
+  border-radius: 50%;
+  -webkit-animation: spinner-border .75s linear infinite;
+  animation: spinner-border .75s linear infinite;
+}
+
+.spinner-border-sm {
+  width: 1rem;
+  height: 1rem;
+  border-width: .2em;
+}
+
+/*
+  /Spinner
+*/

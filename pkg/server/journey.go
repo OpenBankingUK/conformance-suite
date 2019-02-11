@@ -5,6 +5,7 @@ import (
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/executors"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/generation"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
 	"github.com/pkg/errors"
 	"sync"
 )
@@ -15,7 +16,7 @@ var errDiscoveryModelNotSet = errors.New("error discovery model not set")
 type Journey interface {
 	DiscoveryModel() (*discovery.Model, error)
 	SetDiscoveryModel(discoveryModel *discovery.Model) (discovery.ValidationFailures, error)
-	TestCases() ([]generation.SpecificationTestCases, error)
+	TestCases() (generation.TestCasesRun, error)
 	RunTests() error
 	StopTestRun()
 	Results() executors.DaemonController
@@ -27,20 +28,22 @@ type journey struct {
 	validator        discovery.Validator
 	daemonController executors.DaemonController
 
-	journeyLock          *sync.Mutex
-	testCases            []generation.SpecificationTestCases
-	validDiscoveryModel  *discovery.Model
-	certificateSigning   authentication.Certificate
-	certificateTransport authentication.Certificate
+	journeyLock           *sync.Mutex
+	testCasesRun          generation.TestCasesRun
+	testCasesRunGenerated bool
+	validDiscoveryModel   *discovery.Model
+	certificateSigning    authentication.Certificate
+	certificateTransport  authentication.Certificate
 }
 
 // NewJourney creates an instance for a user journey
 func NewJourney(generator generation.Generator, validator discovery.Validator) *journey {
 	return &journey{
-		generator:        generator,
-		validator:        validator,
-		daemonController: executors.NewBufferedDaemonController(),
-		journeyLock:      &sync.Mutex{},
+		generator:             generator,
+		validator:             validator,
+		daemonController:      executors.NewBufferedDaemonController(),
+		journeyLock:           &sync.Mutex{},
+		testCasesRunGenerated: false,
 	}
 }
 
@@ -56,7 +59,7 @@ func (wj *journey) SetDiscoveryModel(discoveryModel *discovery.Model) (discovery
 
 	wj.journeyLock.Lock()
 	wj.validDiscoveryModel = discoveryModel
-	wj.testCases = nil
+	wj.testCasesRun = generation.NoTestCasesRun
 	wj.journeyLock.Unlock()
 
 	return discovery.NoValidationFailures, nil
@@ -71,27 +74,29 @@ func (wj *journey) DiscoveryModel() (*discovery.Model, error) {
 	return wj.validDiscoveryModel, nil
 }
 
-func (wj *journey) TestCases() ([]generation.SpecificationTestCases, error) {
+func (wj *journey) TestCases() (generation.TestCasesRun, error) {
 	wj.journeyLock.Lock()
 	defer wj.journeyLock.Unlock()
 	if wj.validDiscoveryModel == nil {
-		return nil, errDiscoveryModelNotSet
+		return generation.TestCasesRun{}, errDiscoveryModelNotSet
 	}
-	if wj.testCases == nil {
-		wj.testCases = wj.generator.GenerateSpecificationTestCases(wj.validDiscoveryModel.DiscoveryModel)
+	if !wj.testCasesRunGenerated {
+		wj.testCasesRun = wj.generator.GenerateSpecificationTestCases(wj.validDiscoveryModel.DiscoveryModel)
+		wj.testCasesRunGenerated = true
 	}
-	return wj.testCases, nil
+	return wj.testCasesRun, nil
 }
 
 func (wj *journey) RunTests() error {
-	specTestCases, err := wj.TestCases()
+	specTestCasesRun, err := wj.TestCases()
 	if err != nil {
 		return err
 	}
 
 	runDefinition := executors.RunDefinition{
 		DiscoModel:    wj.validDiscoveryModel,
-		SpecTests:     specTestCases,
+		SpecTests:     specTestCasesRun.TestCases,
+		SpecTokens:    []model.SpecConsentRequirements{},
 		SigningCert:   wj.certificateSigning,
 		TransportCert: wj.certificateTransport,
 	}

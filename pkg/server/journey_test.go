@@ -93,31 +93,32 @@ func TestJourneyTestCasesCantGenerateIfDiscoveryNotSet(t *testing.T) {
 	testCases, err := journey.TestCases()
 
 	assert.Error(t, err)
-	assert.Nil(t, testCases)
+	assert.Equal(t, generation.TestCasesRun{}, testCases)
 }
 
 func TestJourneyTestCasesGenerate(t *testing.T) {
 	validator := &mocks.Validator{}
 	discoveryModel := &discovery.Model{}
 	validator.On("Validate", discoveryModel).Return(discovery.NoValidationFailures, nil)
-	expectedTestCases := []generation.SpecificationTestCases{}
+	expectedTestCases := generation.TestCasesRun{}
 	generator := &gmocks.Generator{}
 	generator.On("GenerateSpecificationTestCases", discoveryModel.DiscoveryModel).Return(expectedTestCases)
 	journey := NewJourney(generator, validator)
 	_, err := journey.SetDiscoveryModel(discoveryModel)
 	require.NoError(t, err)
 
-	testCases, err := journey.TestCases()
+	testCasesRun, err := journey.TestCases()
 
 	assert.NoError(t, err)
-	assert.Equal(t, expectedTestCases, testCases)
+
+	assert.Equal(t, expectedTestCases, testCasesRun)
 }
 
 func TestJourneyTestCasesDoesntREGenerate(t *testing.T) {
 	validator := &mocks.Validator{}
 	discoveryModel := &discovery.Model{}
 	validator.On("Validate", discoveryModel).Return(discovery.NoValidationFailures, nil)
-	expectedTestCases := []generation.SpecificationTestCases{}
+	expectedTestCases := generation.TestCasesRun{}
 	generator := &gmocks.Generator{}
 	generator.On("GenerateSpecificationTestCases", discoveryModel.DiscoveryModel).
 		Return(expectedTestCases).Times(1)
@@ -132,7 +133,7 @@ func TestJourneyTestCasesDoesntREGenerate(t *testing.T) {
 
 	assert.NoError(t, err)
 	assert.Equal(t, expectedTestCases, testCases)
-	assert.Equal(t, firstRunTestCases, testCases)
+	assert.Equal(t, firstRunTestCases.TestCases, testCases.TestCases)
 	generator.AssertExpectations(t)
 }
 
