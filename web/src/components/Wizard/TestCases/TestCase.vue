@@ -98,9 +98,9 @@ export default {
       required: true,
     },
     /**
-             * Fields to display in the table.
-             * See documentation: https://bootstrap-vue.js.org/docs/components/table#fields-column-definitions-
-             */
+     * Fields to display in the table.
+     * See documentation: https://bootstrap-vue.js.org/docs/components/table#fields-column-definitions-
+     */
     tableFields: {
       type: Object,
       default: () => ({
@@ -133,9 +133,9 @@ export default {
       }),
     },
     /**
-             * Fields to display in API Specification Table.
-             * See documentation: https://bootstrap-vue.js.org/docs/components/table#fields-column-definitions-
-             */
+     * Fields to display in API Specification Table.
+     * See documentation: https://bootstrap-vue.js.org/docs/components/table#fields-column-definitions-
+     */
     apiSpecificationTableFields: {
       type: Object,
       default: () => ({
