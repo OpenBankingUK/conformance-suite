@@ -76,11 +76,13 @@ func (h *runHandlers) listenResultWebSocket(c echo.Context) error {
 			writeTimeout := time.Now().Add(time.Second)
 			err := ws.SetWriteDeadline(writeTimeout)
 			if err != nil {
+				logger.Debug("writing ping failed dropped connection")
 				// we cannot return error here, if we do echo will try to write the error to conn
 				// and we closed the ws with a defer func
 				return nil
 			}
 			if err := ws.WriteMessage(websocket.PingMessage, nil); err != nil {
+				logger.Debug("writing ping failed dropped connection")
 				// same as above
 				return nil
 			}
