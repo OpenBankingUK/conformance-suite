@@ -147,7 +147,8 @@ export default {
           label: 'Response Time',
         },
         'meta.metrics.responseSize': {
-          label: 'Response Body Size',
+          tdClass: 'response-size',
+          label: 'Response Bytes',
         },
       }),
     },
@@ -197,7 +198,7 @@ export default {
     grid-template-columns: 20% auto !important;
   }
 
-  .test-case /deep/ .response-time {
+  .test-case /deep/ .response-time, .test-case /deep/ .response-size {
     text-align: center;
   }
 </style>
