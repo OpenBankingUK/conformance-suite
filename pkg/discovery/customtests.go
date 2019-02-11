@@ -11,6 +11,7 @@ type CustomTest struct {
 	Description  string            `json:"description,omitempty"`           // Purpose of the testcase in simple words
 	Replacements map[string]string `json:"replacementParameters,omitempty"` // replacement parameters
 	Sequence     []model.TestCase  `json:"testSequence,omitempty"`          // TestCase to be run as part of this custom test
+	Execution    []string          `json:"execution,omitempty"`             // list of objects to execute
 }
 
 // SpecificationTestCases - test cases generated for a specification

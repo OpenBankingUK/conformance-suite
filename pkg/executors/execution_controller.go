@@ -1,16 +1,17 @@
 package executors
 
 import (
+	"fmt"
+	"sync"
+
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/authentication"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/executors/results"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/generation"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
-	"fmt"
 	"github.com/google/uuid"
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
-	"sync"
 )
 
 // RunDefinition captures all the information required to run the test cases
@@ -60,11 +61,96 @@ func (r *TestCaseRunner) runTestCasesAsync() {
 	r.executor.SetCertificates(r.definition.SigningCert, r.definition.TransportCert)
 	ruleCtx := r.makeRuleCtx()
 	ctxLogger := r.logger.WithField("id", uuid.New())
+
+	ctxLogger.Debug("running pre-ExecutionCustomComponents")
+	err := r.preExecuteCustomComponents(ruleCtx, ctxLogger)
+	if err != nil {
+		errResult := results.NewTestCaseFail("PreExecuteComponet", results.Metrics{}, err)
+		r.daemonController.Results() <- errResult
+		return
+	}
+	ctxLogger.Debug(fmt.Sprintf("context: %#v", ruleCtx), ctxLogger)
+
 	ctxLogger.Info("running async test")
 	for _, spec := range r.definition.SpecTests {
 		r.executeSpecTests(spec, ruleCtx, ctxLogger)
 	}
 	r.setNotRunning()
+}
+
+func (r *TestCaseRunner) preExecuteCustomComponents(ctx *model.Context, ctxLogger *logrus.Entry) error {
+	ctxLogger.Debug("preExecution Custom Components")
+
+	executionUnits, err := r.getExecutionUnits(ctxLogger)
+	if err != nil {
+		ctxLogger.Debug("failed to get Execution Units: " + err.Error())
+		return err
+	}
+	if len(executionUnits) == 0 {
+		ctxLogger.Debug("no ExecutionUnits")
+		return nil
+	}
+	//TODO: move registry creation and component initialisation up a level or two
+	//TODO: consider component reentrancy, use in multiple threads
+	reg := model.NewRegistry()
+	comp, err := model.LoadComponent("tokenProviderComponent.json")
+	if err != nil {
+		ctxLogger.Debug("Load Model Failed: " + err.Error())
+		return err
+	}
+	reg.Add(comp.Name, &comp)
+	for _, unitName := range executionUnits {
+		// Execute components
+		ctxLogger.Debug("process execution unit :" + unitName)
+		comp, exists := reg.Get(unitName)
+		if !exists {
+			msg := "component execution error: component (%s) does not exist: " + unitName
+			ctxLogger.Debug(msg)
+			return errors.New(msg)
+		}
+
+		cmp, ok := comp.(*model.Component)
+		if !ok {
+			msg := "component execution error: component (%s) cannot cast registry value:" + unitName
+			ctxLogger.Debug(msg)
+			return errors.New(msg)
+		}
+
+		err := cmp.ValidateParameters(ctx) // correct parameters for component exist in context
+		if err != nil {
+			msg := fmt.Sprintf("component execution error: component (%s) cannot ValidateParameters: %s", unitName, err.Error())
+			ctxLogger.Debug(msg)
+			return errors.New(msg)
+		}
+		cmp.ProcessReplacementFields(*ctx)
+		r.executeComponentTests(cmp, ctx, ctxLogger)
+	}
+	return nil
+}
+
+func (r *TestCaseRunner) getExecutionUnits(ctxLogger *logrus.Entry) ([]string, error) {
+	var units []string
+	for _, customTest := range r.definition.DiscoModel.DiscoveryModel.CustomTests {
+		for _, executionUnit := range customTest.Execution {
+			ctxLogger.Debug("Execution unit: " + executionUnit)
+			units = append(units, executionUnit)
+		}
+	}
+	return units, nil
+}
+
+func (r *TestCaseRunner) executeComponentTests(comp *model.Component, ruleCtx *model.Context, ctxLogger *logrus.Entry) {
+	ctxLogger = ctxLogger.WithField("component", comp.Name)
+	ctxLogger.Debugln("execute component Tests...")
+	for _, testcase := range comp.Tests {
+		if r.daemonController.ShouldStop() {
+			ctxLogger.Debugln("stop component test run received, aborting runner")
+			return
+		}
+		ctxLogger.Debugln("executing testcase: " + testcase.Name)
+		testResult := r.executeTest(testcase, ruleCtx, ctxLogger)
+		r.daemonController.Results() <- testResult
+	}
 }
 
 func (r *TestCaseRunner) setNotRunning() {
