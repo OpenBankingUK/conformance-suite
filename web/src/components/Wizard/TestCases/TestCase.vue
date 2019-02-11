@@ -143,6 +143,7 @@ export default {
           label: 'Status',
         },
         'meta.metrics.responseTime': {
+          tdClass: 'response-time',
           label: 'Response Time',
         },
         'meta.metrics.responseSize': {
@@ -194,5 +195,9 @@ export default {
 
   .test-case /deep/ .api-specification-table {
     grid-template-columns: 20% auto !important;
+  }
+
+  .test-case /deep/ .response-time {
+    text-align: center;
   }
 </style>
