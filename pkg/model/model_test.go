@@ -201,3 +201,34 @@ func httpAccountID007Call() func() *resty.Response {
 		return test.CreateHTTPResponse(200, "OK", string(account0007), "content-type", "klingon/text")
 	}
 }
+
+func TestGetReplacementField(t *testing.T) {
+	testCases := []struct {
+		stringToCheck string
+		value         string
+		isReplacement bool
+		err           error
+	}{
+		{
+			stringToCheck: "$hello",
+			value:         "hello",
+			isReplacement: true,
+			err:           nil,
+		},
+		{
+			stringToCheck: "hello",
+			value:         "hello",
+			isReplacement: false,
+			err:           nil,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run("", func(t *testing.T) {
+			value, isReplacement := getReplacementField(tc.stringToCheck)
+			assert.Equal(t, tc.value, value)
+			assert.Equal(t, tc.isReplacement, isReplacement)
+		})
+	}
+
+}

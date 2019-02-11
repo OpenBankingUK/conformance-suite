@@ -3,6 +3,7 @@ package main
 import (
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/generation"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/server/mocks"
 	"bytes"
 	"errors"
@@ -15,7 +16,8 @@ import (
 func TestGenerator(t *testing.T) {
 	journey := &mocks.Journey{}
 	journey.On("SetDiscoveryModel", &discovery.Model{}).Return(discovery.NoValidationFailures, nil)
-	journey.On("TestCases").Return([]generation.SpecificationTestCases{}, nil)
+	testCaseRun := generation.TestCasesRun{TestCases: []generation.SpecificationTestCases{}, SpecConsentRequirements: []model.SpecConsentRequirements{}}
+	journey.On("TestCases").Return(testCaseRun, nil)
 	g := newGenerator(journey)
 	input := `{}`
 	output := &bytes.Buffer{}
@@ -23,7 +25,7 @@ func TestGenerator(t *testing.T) {
 	err := g.Generate(strings.NewReader(input), output)
 
 	require.NoError(t, err)
-	assert.Equal(t, "[]", output.String())
+	assert.JSONEq(t, `{"specCases": [], "specTokens": []}`, output.String())
 	journey.AssertExpectations(t)
 }
 
@@ -66,7 +68,8 @@ func TestGeneratorHandlesFailuresFromSetDiscovery(t *testing.T) {
 func TestGeneratorHandlesErrFromTestCases(t *testing.T) {
 	journey := &mocks.Journey{}
 	journey.On("SetDiscoveryModel", &discovery.Model{}).Return(discovery.NoValidationFailures, nil)
-	journey.On("TestCases").Return([]generation.SpecificationTestCases{}, errors.New("more booboo"))
+	testCaseRun := generation.TestCasesRun{TestCases: []generation.SpecificationTestCases{}, SpecConsentRequirements: []model.SpecConsentRequirements{}}
+	journey.On("TestCases").Return(testCaseRun, errors.New("more booboo"))
 	g := newGenerator(journey)
 	input := `{}`
 	output := &bytes.Buffer{}
@@ -78,7 +81,8 @@ func TestGeneratorHandlesErrFromTestCases(t *testing.T) {
 func TestGeneratorHandlesErrWriteToOutput(t *testing.T) {
 	journey := &mocks.Journey{}
 	journey.On("SetDiscoveryModel", &discovery.Model{}).Return(discovery.NoValidationFailures, nil)
-	journey.On("TestCases").Return([]generation.SpecificationTestCases{}, nil)
+	testCaseRun := generation.TestCasesRun{TestCases: []generation.SpecificationTestCases{}, SpecConsentRequirements: []model.SpecConsentRequirements{}}
+	journey.On("TestCases").Return(testCaseRun, nil)
 	g := newGenerator(journey)
 	input := strings.NewReader(`{}`)
 	output := &brokenBuffer{}

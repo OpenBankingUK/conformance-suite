@@ -17,6 +17,7 @@ import (
 type RunDefinition struct {
 	DiscoModel    *discovery.Model
 	SpecTests     []generation.SpecificationTestCases
+	SpecTokens    []model.SpecConsentRequirements
 	SigningCert   authentication.Certificate
 	TransportCert authentication.Certificate
 }

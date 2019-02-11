@@ -52,8 +52,8 @@ const formatProblems = problems => problems.map(({ key, error }) => {
 
 export default {
   // Calls validate endpoint, returns {success, problemsArray}.
-  async validateDiscoveryConfig(discoveryModel) {
-    const response = await api.post('/api/discovery-model', discoveryModel);
+  async validateDiscoveryConfig(discoveryModel, setShowLoading) {
+    const response = await api.post('/api/discovery-model', discoveryModel, setShowLoading);
     const { status } = response;
 
     if (status !== 201 && status !== 400) {

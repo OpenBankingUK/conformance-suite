@@ -64,6 +64,7 @@ export default {
     ]),
     ...mapActions('status', [
       'clearErrors',
+      'setShowLoading',
     ]),
   },
   /**
@@ -91,7 +92,7 @@ export default {
 
       // Execute and compute results once.
       if (!this.hasRunStarted) {
-        await this.executeTestCases();
+        await this.executeTestCases(this.setShowLoading);
 
         return next(false);
       }

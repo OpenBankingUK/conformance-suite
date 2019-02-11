@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/authentication"
-	jwt "github.com/dgrijalva/jwt-go"
+	"github.com/dgrijalva/jwt-go"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -104,7 +104,7 @@ func TestCreateHeaderContextMissingForReplacement(t *testing.T) {
 	ctx := Context{
 		"nomatch": "myNewValue",
 	}
-	result, err := ReplaceContextField("$replacement", &ctx)
+	result, err := replaceContextField("$replacement", &ctx)
 	assert.NotNil(t, err)
 	assert.Equal(t, "$replacement", result)
 

@@ -76,7 +76,7 @@ func TestNoMatchOnStatusCode(t *testing.T) {
 	assert.False(t, result)
 }
 
-const statusok = `{"status":"ok"}`
+const statusok = `{"status":"isReplacement"}`
 
 // check header value match is detected
 func TestMatchResponseHeaderValue(t *testing.T) {

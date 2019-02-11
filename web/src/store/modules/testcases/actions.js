@@ -41,12 +41,13 @@ export default {
    */
   async computeTestCases({ commit, dispatch, state }) {
     try {
-      const testCases = await api.computeTestCases();
-      if (_.isEqual(testCases, state.testCases)) {
+      const setShowLoading = flag => dispatch('status/setShowLoading', flag, { root: true });
+      const testCases = await api.computeTestCases(setShowLoading);
+      if (_.isEqual(testCases.specCases, state.testCases)) {
         return;
       }
 
-      commit(types.SET_TEST_CASES, testCases);
+      commit(types.SET_TEST_CASES, testCases.specCases);
       commit(types.SET_TEST_CASES_STATUS, '');
       dispatch('status/clearErrors', null, { root: true });
     } catch (err) {
@@ -60,20 +61,24 @@ export default {
    * Route: `/wizard/overview-run`.
    */
   async executeTestCases({ commit, dispatch }) {
+    const setShowLoading = flag => dispatch('status/setShowLoading', flag, { root: true });
     try {
       commit(types.SET_HAS_RUN_STARTED, true);
 
-      await api.executeTestCases();
+      await api.executeTestCases(setShowLoading);
       dispatch('status/clearErrors', null, { root: true });
       commit(types.SET_TEST_CASES_STATUS, 'PENDING');
 
+      setShowLoading(true);
       const wsConnection = await createWebSocketConnection();
       commit(types.SET_WEBSOCKET_CONNECTION, wsConnection);
 
       wsConnection.onerror = (ev) => {
+        setShowLoading(false);
         dispatch('status/setErrors', [ev], { root: true });
       };
       wsConnection.onmessage = (ev) => {
+        setShowLoading(false);
         const { data } = ev;
         const update = JSON.parse(data);
 
@@ -85,6 +90,7 @@ export default {
         }
       };
     } catch (err) {
+      setShowLoading(false);
       commit(types.SET_HAS_RUN_STARTED, false);
       dispatch('status/setErrors', [err], { root: true });
     }

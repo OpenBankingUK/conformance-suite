@@ -13,38 +13,6 @@ type Journey struct {
 	mock.Mock
 }
 
-// CertificateSigning provides a mock function with given fields:
-func (_m *Journey) CertificateSigning() authentication.Certificate {
-	ret := _m.Called()
-
-	var r0 authentication.Certificate
-	if rf, ok := ret.Get(0).(func() authentication.Certificate); ok {
-		r0 = rf()
-	} else {
-		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(authentication.Certificate)
-		}
-	}
-
-	return r0
-}
-
-// CertificateTransport provides a mock function with given fields:
-func (_m *Journey) CertificateTransport() authentication.Certificate {
-	ret := _m.Called()
-
-	var r0 authentication.Certificate
-	if rf, ok := ret.Get(0).(func() authentication.Certificate); ok {
-		r0 = rf()
-	} else {
-		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(authentication.Certificate)
-		}
-	}
-
-	return r0
-}
-
 // DiscoveryModel provides a mock function with given fields:
 func (_m *Journey) DiscoveryModel() (*discovery.Model, error) {
 	ret := _m.Called()
@@ -132,16 +100,14 @@ func (_m *Journey) StopTestRun() {
 }
 
 // TestCases provides a mock function with given fields:
-func (_m *Journey) TestCases() ([]generation.SpecificationTestCases, error) {
+func (_m *Journey) TestCases() (generation.TestCasesRun, error) {
 	ret := _m.Called()
 
-	var r0 []generation.SpecificationTestCases
-	if rf, ok := ret.Get(0).(func() []generation.SpecificationTestCases); ok {
+	var r0 generation.TestCasesRun
+	if rf, ok := ret.Get(0).(func() generation.TestCasesRun); ok {
 		r0 = rf()
 	} else {
-		if ret.Get(0) != nil {
-			r0 = ret.Get(0).([]generation.SpecificationTestCases)
-		}
+		r0 = ret.Get(0).(generation.TestCasesRun)
 	}
 
 	var r1 error
