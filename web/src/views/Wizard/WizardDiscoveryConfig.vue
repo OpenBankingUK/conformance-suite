@@ -24,7 +24,7 @@
 import * as _ from 'lodash';
 import { mapGetters, mapActions } from 'vuex';
 
-import TheErrorStatus from '@/components/TheErrorStatus.vue';
+import TheErrorStatus from '../../components/TheErrorStatus.vue';
 import TheJsonEditor from '../../components/Wizard/TheJsonEditor.vue';
 import TheWizardFooter from '../../components/Wizard/TheWizardFooter.vue';
 import discovery from '../../api/discovery';

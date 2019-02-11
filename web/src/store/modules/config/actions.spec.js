@@ -1,9 +1,9 @@
 import actions from './actions';
 import * as types from './mutation-types';
 
-import discovery from '../../../api/discovery';
+import api from '../../../api';
 
-jest.mock('../../../api/discovery');
+jest.mock('../../../api');
 
 describe('setDiscoveryTemplates', () => {
   let commit;
@@ -58,10 +58,20 @@ describe('validateDiscoveryConfig', () => {
     beforeEach(() => {
       commit = jest.fn();
       dispatch = jest.fn();
-      discovery.validateDiscoveryConfig.mockResolvedValue({
+      api.validateDiscoveryConfig.mockReturnValueOnce({
         success: true,
         problems: [],
+        response: {
+          token_endpoints: {
+            'schema_version=https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.0.0/dist/account-info-swagger.json': 'https://modelobank2018.o3bank.co.uk:4201/token',
+            'schema_version=https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.0.0/dist/payment-initiation-swagger.json': 'https://modelobank2018.o3bank.co.uk:4201/token',
+          },
+        },
       });
+    });
+
+    afterEach(() => {
+      jest.resetAllMocks();
     });
 
     it('commits null validation problems', async () => {
@@ -90,10 +100,14 @@ describe('validateDiscoveryConfig', () => {
     beforeEach(() => {
       commit = jest.fn();
       dispatch = jest.fn();
-      discovery.validateDiscoveryConfig.mockResolvedValue({
+      api.validateDiscoveryConfig.mockReturnValueOnce({
         success: false,
         problems,
       });
+    });
+
+    afterEach(() => {
+      jest.resetAllMocks();
     });
 
     it('commits array of validation problem strings', async () => {
@@ -112,7 +126,11 @@ describe('validateDiscoveryConfig', () => {
     beforeEach(() => {
       commit = jest.fn();
       dispatch = jest.fn();
-      discovery.validateDiscoveryConfig.mockRejectedValue(new Error('some error'));
+      api.validateDiscoveryConfig.mockRejectedValueOnce(new Error('some error'));
+    });
+
+    afterEach(() => {
+      jest.resetAllMocks();
     });
 
     it('commits Error message in problems array', async () => {

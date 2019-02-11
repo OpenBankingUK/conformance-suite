@@ -2,7 +2,7 @@ import * as _ from 'lodash';
 import * as types from './mutation-types';
 import constants from './constants';
 
-import discovery from '../../../api/discovery';
+// import discovery from '../../../api/discovery';
 import api from '../../../api';
 
 const findImageData = (model, images) => {
@@ -48,9 +48,12 @@ export default {
   async validateDiscoveryConfig({ commit, dispatch, state }) {
     try {
       const setShowLoading = flag => dispatch('status/setShowLoading', flag, { root: true });
-      const { success, problems } = await discovery.validateDiscoveryConfig(state.discoveryModel, setShowLoading);
+      const { success, problems, response } = await api.validateDiscoveryConfig(state.discoveryModel, setShowLoading);
       if (success) {
         commit(types.DISCOVERY_MODEL_PROBLEMS, null);
+        const tokenEndpoint = _.first(_.values(response.token_endpoints));
+        commit(types.SET_TOKEN_ENDPOINT, tokenEndpoint);
+
         dispatch('status/clearErrors', null, { root: true });
         commit(types.SET_WIZARD_STEP, constants.WIZARD.STEP_THREE);
       } else {
@@ -68,6 +71,7 @@ export default {
     }
     return null;
   },
+
   setConfigurationJSON({ commit, dispatch, state }, editorString) {
     const value = JSON.stringify(state.configuration);
     if (_.isEqual(value, editorString)) {
@@ -82,6 +86,10 @@ export default {
         'signing_public',
         'transport_private',
         'transport_public',
+        'client_id',
+        'token_endpoint',
+        'x_fapi_financial_id',
+        'redirect_url',
       ];
       const newConfig = _.pick(merged, validKeys);
       commit(types.SET_CONFIGURATION, newConfig);
@@ -144,6 +152,23 @@ export default {
     if (_.isEmpty(state.configuration.transport_public)) {
       errors.push('Transport Public Certificate (.pem) empty');
     }
+
+    if (_.isEmpty(state.configuration.client_id)) {
+      errors.push('Client ID empty');
+    }
+    if (_.isEmpty(state.configuration.client_secret)) {
+      errors.push('Client Secret empty');
+    }
+    if (_.isEmpty(state.configuration.token_endpoint)) {
+      errors.push('Token Endpoint empty');
+    }
+    if (_.isEmpty(state.configuration.x_fapi_financial_id)) {
+      errors.push('x-fapi-financial-id empty');
+    }
+    if (_.isEmpty(state.configuration.redirect_url)) {
+      errors.push('Redirect URL empty');
+    }
+
     if (!_.isEmpty(errors)) {
       dispatch('status/setErrors', errors, { root: true });
       return false;
@@ -154,6 +179,7 @@ export default {
       // as it does not throw, we know the configuration is valid.
       const { configuration } = state;
       const setShowLoading = flag => dispatch('status/setShowLoading', flag, { root: true });
+
       await api.validateConfiguration(configuration, setShowLoading);
       commit(types.SET_WIZARD_STEP, constants.WIZARD.STEP_FOUR);
 

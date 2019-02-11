@@ -1,11 +1,22 @@
 package server
 
 import (
+	"encoding/json"
+	"fmt"
 	"net/http"
 
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/authentication"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
 	"github.com/labstack/echo"
 )
+
+type PostDiscoveryModelResponse struct {
+	TokenEndpoints map[string]string `json:"token_endpoints"`
+}
+
+type validationFailuresResponse struct {
+	Error discovery.ValidationFailures `json:"error"`
+}
 
 type discoveryHandlers struct {
 	webJourney Journey
@@ -30,9 +41,38 @@ func (d discoveryHandlers) setDiscoveryModelHandler(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, validationFailuresResponse{failures})
 	}
 
-	return c.JSON(http.StatusCreated, discoveryModel)
+	failures = discovery.ValidationFailures{}
+	response := PostDiscoveryModelResponse{
+		TokenEndpoints: map[string]string{},
+	}
+	for discoveryItemIndex, discoveryItem := range discoveryModel.DiscoveryModel.DiscoveryItems {
+		key := fmt.Sprintf("schema_version=%s", discoveryItem.APISpecification.SchemaVersion)
+
+		url := discoveryItem.OpenidConfigurationURI
+		resp, err := http.Get(url)
+		if err != nil {
+			failures = append(failures, newOpenidConfigurationURIFailure(discoveryItemIndex, err))
+		} else {
+			defer resp.Body.Close()
+
+			config := authentication.OpenIDConfiguration{}
+			if err := json.NewDecoder(resp.Body).Decode(&config); err != nil {
+				failures = append(failures, newOpenidConfigurationURIFailure(discoveryItemIndex, err))
+			}
+
+			response.TokenEndpoints[key] = config.TokenEndpoint
+		}
+	}
+
+	if !failures.Empty() {
+		return c.JSON(http.StatusBadRequest, validationFailuresResponse{failures})
+	}
+	return c.JSON(http.StatusCreated, response)
 }
 
-type validationFailuresResponse struct {
-	Error discovery.ValidationFailures `json:"error"`
+func newOpenidConfigurationURIFailure(discoveryItemIndex int, err error) discovery.ValidationFailure {
+	return discovery.ValidationFailure{
+		Key:   fmt.Sprintf("DiscoveryModel.DiscoveryItems[%d].OpenidConfigurationURI", discoveryItemIndex),
+		Error: err.Error(),
+	}
 }

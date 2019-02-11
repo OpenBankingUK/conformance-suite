@@ -1,14 +1,14 @@
 package server
 
 import (
-	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/version/mocks"
 	"context"
 	"fmt"
 	"net/http"
 	"strings"
 	"testing"
 
-	"github.com/stretchr/testify/require"
+	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/test"
+	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/version/mocks"
 )
 
 type testTableItem struct {
@@ -20,7 +20,7 @@ type testTableItem struct {
 }
 
 func TestRedirectHandlersFragmentOK(t *testing.T) {
-	require := require.New(t)
+	require := test.NewRequire(t)
 
 	server := NewServer(nullLogger(), conditionalityCheckerMock{}, &mocks.Version{})
 	defer func() {
@@ -104,7 +104,7 @@ func TestRedirectHandlersFragmentOK(t *testing.T) {
 }
 
 func TestRedirectHandlersQueryOK(t *testing.T) {
-	require := require.New(t)
+	require := test.NewRequire(t)
 
 	server := NewServer(nullLogger(), conditionalityCheckerMock{}, &mocks.Version{})
 	defer func() {
@@ -187,7 +187,7 @@ func TestRedirectHandlersQueryOK(t *testing.T) {
 }
 
 func TestRedirectHandlersError(t *testing.T) {
-	require := require.New(t)
+	require := test.NewRequire(t)
 
 	server := NewServer(nullLogger(), conditionalityCheckerMock{}, &mocks.Version{})
 	defer func() {
@@ -221,7 +221,7 @@ func TestRedirectHandlersError(t *testing.T) {
 }
 
 func TestCalculateCHash(t *testing.T) {
-	require := require.New(t)
+	require := test.NewRequire(t)
 
 	tt := []struct {
 		label         string

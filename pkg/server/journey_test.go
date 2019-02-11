@@ -3,13 +3,13 @@ package server
 import (
 	"testing"
 
+	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/test"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/authentication"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery/mocks"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/generation"
 	gmocks "bitbucket.org/openbankingteam/conformance-suite/pkg/generation/mocks"
 	"github.com/pkg/errors"
-	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
@@ -38,6 +38,8 @@ G6aFKaqQfOXKCyWoUiVknQJAXrlgySFci/2ueKlIE1QqIiLSZ8V8OlpFLRnb1pzI
 )
 
 func TestJourneySetDiscoveryModelValidatesModel(t *testing.T) {
+	assert := test.NewAssert(t)
+
 	discoveryModel := &discovery.Model{}
 	validator := &mocks.Validator{}
 	validator.On("Validate", discoveryModel).Return(discovery.NoValidationFailures, nil)
@@ -47,12 +49,14 @@ func TestJourneySetDiscoveryModelValidatesModel(t *testing.T) {
 	failures, err := journey.SetDiscoveryModel(discoveryModel)
 
 	require.NoError(t, err)
-	assert.Equal(t, discovery.NoValidationFailures, failures)
+	assert.Equal(discovery.NoValidationFailures, failures)
 	validator.AssertExpectations(t)
 	generator.AssertExpectations(t)
 }
 
 func TestJourneySetDiscoveryModelHandlesErrorFromValidator(t *testing.T) {
+	assert := test.NewAssert(t)
+
 	discoveryModel := &discovery.Model{}
 	validator := &mocks.Validator{}
 	expectedFailures := discovery.ValidationFailures{}
@@ -63,11 +67,13 @@ func TestJourneySetDiscoveryModelHandlesErrorFromValidator(t *testing.T) {
 	failures, err := journey.SetDiscoveryModel(discoveryModel)
 
 	require.Error(t, err)
-	assert.Equal(t, "error setting discovery model: validator error", err.Error())
-	assert.Nil(t, failures)
+	assert.Equal("error setting discovery model: validator error", err.Error())
+	assert.Nil(failures)
 }
 
 func TestJourneySetDiscoveryModelReturnsFailuresFromValidator(t *testing.T) {
+	assert := test.NewAssert(t)
+
 	discoveryModel := &discovery.Model{}
 	validator := &mocks.Validator{}
 	failure := discovery.ValidationFailure{
@@ -82,21 +88,25 @@ func TestJourneySetDiscoveryModelReturnsFailuresFromValidator(t *testing.T) {
 	failures, err := journey.SetDiscoveryModel(discoveryModel)
 
 	require.NoError(t, err)
-	assert.Equal(t, expectedFailures, failures)
+	assert.Equal(expectedFailures, failures)
 }
 
 func TestJourneyTestCasesCantGenerateIfDiscoveryNotSet(t *testing.T) {
+	assert := test.NewAssert(t)
+
 	validator := &mocks.Validator{}
 	generator := &gmocks.Generator{}
 	journey := NewJourney(generator, validator)
 
 	testCases, err := journey.TestCases()
 
-	assert.Error(t, err)
-	assert.Equal(t, generation.TestCasesRun{}, testCases)
+	assert.Error(err)
+	assert.Equal(generation.TestCasesRun{}, testCases)
 }
 
 func TestJourneyTestCasesGenerate(t *testing.T) {
+	assert := test.NewAssert(t)
+
 	validator := &mocks.Validator{}
 	discoveryModel := &discovery.Model{}
 	validator.On("Validate", discoveryModel).Return(discovery.NoValidationFailures, nil)
@@ -109,12 +119,13 @@ func TestJourneyTestCasesGenerate(t *testing.T) {
 
 	testCasesRun, err := journey.TestCases()
 
-	assert.NoError(t, err)
-
-	assert.Equal(t, expectedTestCases, testCasesRun)
+	assert.NoError(err)
+	assert.Equal(expectedTestCases, testCasesRun)
 }
 
 func TestJourneyTestCasesDoesntREGenerate(t *testing.T) {
+	assert := test.NewAssert(t)
+
 	validator := &mocks.Validator{}
 	discoveryModel := &discovery.Model{}
 	validator.On("Validate", discoveryModel).Return(discovery.NoValidationFailures, nil)
@@ -131,54 +142,58 @@ func TestJourneyTestCasesDoesntREGenerate(t *testing.T) {
 
 	testCases, err := journey.TestCases()
 
-	assert.NoError(t, err)
-	assert.Equal(t, expectedTestCases, testCases)
-	assert.Equal(t, firstRunTestCases.TestCases, testCases.TestCases)
+	assert.NoError(err)
+	assert.Equal(expectedTestCases, testCases)
+	assert.Equal(firstRunTestCases.TestCases, testCases.TestCases)
 	generator.AssertExpectations(t)
 }
 
 func TestJourneyRunTestCasesCantRunIfNoTestCases(t *testing.T) {
+	assert := test.NewAssert(t)
+
 	validator := &mocks.Validator{}
 	generator := &gmocks.Generator{}
 	journey := NewJourney(generator, validator)
 
 	err := journey.RunTests()
 
-	assert.EqualError(t, err, "error test cases not generated")
+	assert.EqualError(err, "error test cases not generated")
 }
 
-func TestJourneySetCertificateSigning(t *testing.T) {
-	require := require.New(t)
-
-	validator := &mocks.Validator{}
-	generator := &gmocks.Generator{}
-	journey := NewJourney(generator, validator)
-
-	require.Nil(journey.certificateSigning)
-
-	certificateSigning, err := authentication.NewCertificate(publicCertValid, privateCertValid)
-	require.NoError(err)
-	require.NotNil(certificateSigning)
-
-	journey.SetCertificates(certificateSigning, nil)
-
-	require.Equal(certificateSigning, journey.certificateSigning)
-}
-
-func TestJourneySetCertificateTransport(t *testing.T) {
-	require := require.New(t)
+func TestJourneySetConfig(t *testing.T) {
+	require := test.NewRequire(t)
 
 	validator := &mocks.Validator{}
 	generator := &gmocks.Generator{}
 	journey := NewJourney(generator, validator)
 
 	require.Nil(journey.certificateTransport)
+	require.Nil(journey.certificateSigning)
+	require.Empty(journey.clientID)
+	require.Empty(journey.clientSecret)
+	require.Empty(journey.tokenEndpoint)
+	require.Empty(journey.xXFAPIFinancialID)
+	require.Empty(journey.redirectURL)
 
+	certificateSigning, err := authentication.NewCertificate(publicCertValid, privateCertValid)
+	require.NoError(err)
+	require.NotNil(certificateSigning)
 	certificateTransport, err := authentication.NewCertificate(publicCertValid, privateCertValid)
 	require.NoError(err)
 	require.NotNil(certificateTransport)
+	clientID := "8672384e-9a33-439f-8924-67bb14340d71"
+	clientSecret := "2cfb31a3-5443-4e65-b2bc-ef8e00266a77"
+	tokenEndpoint := "https://modelobank2018.o3bank.co.uk:4201/token"
+	xXFAPIFinancialID := "0015800001041RHAAY"
+	redirectURL := "https://0.0.0.0:8443/conformancesuite/callback"
 
-	journey.SetCertificates(nil, certificateTransport)
+	journey.SetConfig(certificateSigning, certificateTransport, clientID, clientSecret, tokenEndpoint, xXFAPIFinancialID, redirectURL)
 
 	require.Equal(certificateTransport, journey.certificateTransport)
+	require.Equal(certificateSigning, journey.certificateSigning)
+	require.Equal(clientID, journey.clientID)
+	require.Equal(clientSecret, journey.clientSecret)
+	require.Equal(tokenEndpoint, journey.tokenEndpoint)
+	require.Equal(xXFAPIFinancialID, journey.xXFAPIFinancialID)
+	require.Equal(redirectURL, journey.redirectURL)
 }

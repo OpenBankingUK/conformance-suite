@@ -1,17 +1,17 @@
 package server
 
 import (
-	versionmock "bitbucket.org/openbankingteam/conformance-suite/internal/pkg/version/mocks"
 	"context"
 	"net/http"
 	"testing"
 
-	"github.com/stretchr/testify/require"
+	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/test"
+	versionmock "bitbucket.org/openbankingteam/conformance-suite/internal/pkg/version/mocks"
 )
 
 // TestServerRunStartPost - tests /api/run
 func TestServerRunStartPost(t *testing.T) {
-	require := require.New(t)
+	require := test.NewRequire(t)
 
 	server := NewServer(nullLogger(), conditionalityCheckerMock{}, &versionmock.Version{})
 	defer func() {
