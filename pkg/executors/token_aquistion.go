@@ -34,7 +34,6 @@ func stuff(definition RunDefinition, consentReqs []model.SpecConsentRequirements
 		ctx.PutString("token_names", k)
 		ctx.PutStringSlice("permissions", v)
 		params["permissions"] = v
-
 	}
 }
 
