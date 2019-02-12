@@ -1,12 +1,13 @@
 package server
 
 import (
+	"sync"
+
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/authentication"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/executors"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/generation"
 	"github.com/pkg/errors"
-	"sync"
 )
 
 var (
@@ -93,6 +94,14 @@ func (wj *journey) TestCases() (generation.TestCasesRun, error) {
 	if !wj.testCasesRunGenerated {
 		wj.testCasesRun = wj.generator.GenerateSpecificationTestCases(wj.validDiscoveryModel.DiscoveryModel)
 		// replace this with a NewCollector to a real implementation
+		runDefinition := executors.RunDefinition{
+			DiscoModel:    wj.validDiscoveryModel,
+			TestCaseRun:   wj.testCasesRun,
+			SigningCert:   wj.certificateSigning,
+			TransportCert: wj.certificateTransport,
+		}
+
+		go executors.InitiationTokenAcquisition(wj.testCasesRun.SpecConsentRequirements, runDefinition)
 		wj.collector = executors.NewNullCollector(wj.doneCollectionCallback)
 		wj.testCasesRunGenerated = true
 		wj.allCollected = false

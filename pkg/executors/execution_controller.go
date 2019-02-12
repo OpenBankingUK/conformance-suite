@@ -1,6 +1,7 @@
 package executors
 
 import (
+	"encoding/json"
 	"fmt"
 	"sync"
 
@@ -9,6 +10,7 @@ import (
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/executors/results"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/generation"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/tracer"
 	"github.com/google/uuid"
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
@@ -31,12 +33,25 @@ type TestCaseRunner struct {
 	running          bool
 }
 
+// NewTestCaseRunner -
 func NewTestCaseRunner(definition RunDefinition, daemonController DaemonController) *TestCaseRunner {
 	return &TestCaseRunner{
 		executor:         NewExecutor(),
 		definition:       definition,
 		daemonController: daemonController,
 		logger:           logrus.New().WithField("module", "TestCaseRunner"),
+		runningLock:      &sync.Mutex{},
+		running:          false,
+	}
+}
+
+// NewTokenAcquisitionRunner -
+func NewTokenAcquisitionRunner(definition RunDefinition, daemonController DaemonController) *TestCaseRunner {
+	return &TestCaseRunner{
+		executor:         NewExecutor(),
+		definition:       definition,
+		daemonController: daemonController,
+		logger:           logrus.New().WithField("module", "TokenAcquisitionRunner"),
 		runningLock:      &sync.Mutex{},
 		running:          false,
 	}
@@ -57,28 +72,25 @@ func (r *TestCaseRunner) RunTestCases() error {
 }
 
 func (r *TestCaseRunner) runTestCasesAsync() {
+
 	r.executor.SetCertificates(r.definition.SigningCert, r.definition.TransportCert)
 	ruleCtx := r.makeRuleCtx()
+
 	ctxLogger := r.logger.WithField("id", uuid.New())
+	logrus.SetLevel(logrus.DebugLevel)
+	ctxLogger.Logger.SetLevel(logrus.DebugLevel)
+	r.AppMsg("runTestCasesAsync()")
+	r.AppMsg("determine Token Requirements")
 
-	ctxLogger.Debug("running pre-ExecutionCustomComponents")
-	err := r.preExecuteCustomComponents(ruleCtx, ctxLogger)
-	if err != nil {
-		errResult := results.NewTestCaseFail("PreExecuteComponet", results.Metrics{}, err)
-		r.daemonController.Results() <- errResult
-		return
-	}
-	ctxLogger.Debug(fmt.Sprintf("context: %#v", ruleCtx), ctxLogger)
-
-	ctxLogger.Info("running async test")
+	r.AppMsg("running async test")
 	for _, spec := range r.definition.TestCaseRun.TestCases {
 		r.executeSpecTests(spec, ruleCtx, ctxLogger)
 	}
 	r.setNotRunning()
 }
 
-func (r *TestCaseRunner) preExecuteCustomComponents(ctx *model.Context, ctxLogger *logrus.Entry) error {
-	ctxLogger.Debug("preExecution Custom Components")
+func (r *TestCaseRunner) executeCustomComponents(ctx *model.Context, ctxLogger *logrus.Entry) error {
+	ctxLogger.Debug("execution Custom Components")
 
 	executionUnits, err := r.getExecutionUnits(ctxLogger)
 	if err != nil {
@@ -89,8 +101,6 @@ func (r *TestCaseRunner) preExecuteCustomComponents(ctx *model.Context, ctxLogge
 		ctxLogger.Debug("no ExecutionUnits")
 		return nil
 	}
-	//TODO: move registry creation and component initialisation up a level or two
-	//TODO: consider component reentrancy, use in multiple threads
 	reg := model.NewRegistry()
 	comp, err := model.LoadComponent("tokenProviderComponent.json")
 	if err != nil {
@@ -226,4 +236,26 @@ func logWithMetrics(logger *logrus.Entry, metrics results.Metrics) *logrus.Entry
 		"responsetime": fmt.Sprintf("%v", metrics.ResponseTime),
 		"responsesize": metrics.ResponseSize,
 	})
+}
+
+// AppMsg - application level trace
+func (r *TestCaseRunner) AppMsg(msg string) string {
+	tracer.AppMsg("TestCaseRunner", fmt.Sprintf("%s", msg), r.String())
+	return msg
+}
+
+// AppErr - application level trace error msg
+func (r *TestCaseRunner) AppErr(msg string) error {
+	tracer.AppErr("TestCaseRunner", fmt.Sprintf("%s", msg), r.String())
+	return errors.New(msg)
+}
+
+// String - object represetation
+func (r *TestCaseRunner) String() string {
+	bites, err := json.MarshalIndent(r, "", "    ")
+	if err != nil {
+		// String() doesn't return error but still want to log as error to tracer ...
+		return r.AppErr(fmt.Sprintf("error converting TestCaseRunner  %s", err.Error())).Error()
+	}
+	return string(bites)
 }

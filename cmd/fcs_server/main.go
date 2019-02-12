@@ -73,8 +73,8 @@ func main() {
 }
 
 func init() {
-	rootCmd.PersistentFlags().String("log_level", "INFO", "Log level")
-	rootCmd.PersistentFlags().Bool("log_tracer", false, "Enable tracer logging")
+	rootCmd.PersistentFlags().String("log_level", "DEBUG", "Log level")
+	rootCmd.PersistentFlags().Bool("log_tracer", true, "Enable tracer logging")
 	rootCmd.PersistentFlags().Bool("log_http_trace", false, "Enable HTTP logging")
 	rootCmd.PersistentFlags().Int("port", 8443, "Server port")
 
@@ -108,7 +108,8 @@ func initConfig() {
 		os.Exit(1)
 	}
 	logger.SetLevel(level)
+	logger.SetLevel(logrus.DebugLevel)
 
-	tracer.Silent = viper.GetBool("log_tracer")
+	tracer.Silent = false //viper.GetBool("log_tracer")
 	resty.SetDebug(viper.GetBool("log_http_trace"))
 }

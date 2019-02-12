@@ -34,6 +34,7 @@ type generator struct {
 func (g generator) GenerateSpecificationTestCases(discovery discovery.ModelDiscovery) TestCasesRun {
 	specTestCases := []SpecificationTestCases{}
 	globalReplacements := make(map[string]string)
+	originalEndpoints := make(map[string]string, 0)
 
 	for _, customTest := range discovery.CustomTests { // assume ordering is prerun i.e. customtest run before other tests
 		specTestCases = append(specTestCases, GetCustomTestCases(&customTest))
@@ -44,14 +45,28 @@ func (g generator) GenerateSpecificationTestCases(discovery discovery.ModelDisco
 
 	nameGenerator := names.NewSequentialPrefixedName("#t")
 	for _, item := range discovery.DiscoveryItems {
-		specTestCases = append(specTestCases, generateSpecificationTestCases(item, nameGenerator, globalReplacements))
+		specTests, endpoints := generateSpecificationTestCases(item, nameGenerator, globalReplacements)
+		specTestCases = append(specTestCases, specTests)
+		for k, v := range endpoints {
+			originalEndpoints[k] = v
+		}
+	}
+
+	tmpSpecTestCases := []SpecificationTestCases{}
+	for _, specTest := range specTestCases {
+		tmpSpecTestCases = append(tmpSpecTestCases, specTest)
+		for x, y := range specTest.TestCases {
+			y.Input.Endpoint = originalEndpoints[y.ID]
+			specTest.TestCases[x] = y
+		}
 	}
 
 	// calculate permission set required and update the header token in the test case request
-	consentRequirements := g.consentRequirements(specTestCases)
+	consentRequirements := g.consentRequirements(tmpSpecTestCases)
+	//consentRequirements := g.consentRequirements(specTestCases)
 	// @Julian glue with `updateSpecsBearer(consentRequirements, specTestCases)`
 
-	return TestCasesRun{specTestCases, consentRequirements}
+	return TestCasesRun{specTestCases, consentRequirements, globalReplacements}
 
 }
 
@@ -62,7 +77,8 @@ func (g generator) consentRequirements(specTestCases []SpecificationTestCases) [
 	for _, spec := range specTestCases {
 		var groups []permissions.Group
 		for _, tc := range spec.TestCases {
-			groups = append(groups, model.NewPermissionGroup(tc))
+			g := model.NewDefaultPermissionGroup(tc)
+			groups = append(groups, g)
 		}
 		resultSet := g.resolver(groups)
 		consentRequirements := model.NewSpecConsentRequirements(nameGenerator, resultSet, spec.Specification.Name)
@@ -76,8 +92,10 @@ func (g generator) consentRequirements(specTestCases []SpecificationTestCases) [
 type TestCasesRun struct {
 	TestCases               []SpecificationTestCases        `json:"specCases"`
 	SpecConsentRequirements []model.SpecConsentRequirements `json:"specTokens"`
+	GlobalContext           map[string]string               `json:"globalContext"`
 }
 
-func generateSpecificationTestCases(item discovery.ModelDiscoveryItem, nameGenerator names.Generator, globalReplacements map[string]string) SpecificationTestCases {
-	return SpecificationTestCases{Specification: item.APISpecification, TestCases: GetImplementedTestCases(&item, nameGenerator, globalReplacements)}
+func generateSpecificationTestCases(item discovery.ModelDiscoveryItem, nameGenerator names.Generator, globalReplacements map[string]string) (SpecificationTestCases, map[string]string) {
+	testcases, originalEndpoints := GetImplementedTestCases(&item, nameGenerator, globalReplacements)
+	return SpecificationTestCases{Specification: item.APISpecification, TestCases: testcases}, originalEndpoints
 }
