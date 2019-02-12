@@ -4,8 +4,8 @@ type TestId string
 
 // CodeSetResult represents one set of permissions that are valid for a set of test ids
 type CodeSetResult struct {
-	CodeSet CodeSet
-	TestIds []TestId
+	CodeSet CodeSet  `json:"codes"`
+	TestIds []TestId `json:"testIds"`
 }
 
 // CodeSetResultSet represents all permissions sets and their respective test id
