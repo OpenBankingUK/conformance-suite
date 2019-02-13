@@ -93,7 +93,18 @@ describe('store/modules/testcases', () => {
 
     // Add additional `meta.status` field to each individual testCase in `OK_RESPONSE`.
     const EXPECTED_TESTCASES_STATE = _.map(OK_RESPONSE.specCases, (spec) => {
-      const testCases = _.map(spec.testCases, testCase => _.merge({}, testCase, { meta: { status: '', metrics: { responseSize: '', responseTime: '' } } }));
+      const testCases = _.map(spec.testCases, testCase => _.merge({}, testCase, {
+        _rowVariant: null,
+        _showDetails: false,
+        meta: {
+          status: '',
+          metrics: {
+            responseSize: '',
+            responseTime: '',
+          },
+
+        },
+      }));
       return _.merge({}, spec, { testCases });
     });
 
@@ -167,11 +178,31 @@ describe('store/modules/testcases', () => {
   describe('testcases/executeTestCases', () => {
     // Add additional `meta.status` field to each individual testCase in `OK_RESPONSE`.
     const EXPECTED_TESTCASES_STATE_PENDING = _.map(OK_RESPONSE.specCases, (spec) => {
-      const testCases = _.map(spec.testCases, testCase => _.merge({}, testCase, { meta: { status: 'PENDING', metrics: { responseSize: '', responseTime: '' } } }));
+      const testCases = _.map(spec.testCases, testCase => _.merge({}, testCase, {
+        _rowVariant: null,
+        _showDetails: false,
+        meta: {
+          status: 'PENDING',
+          metrics: {
+            responseSize: '',
+            responseTime: '',
+          },
+        },
+      }));
       return _.merge({}, spec, { testCases });
     });
     const EXPECTED_TESTCASES_STATE_NOT_STARTED = _.map(OK_RESPONSE.specCases, (spec) => {
-      const testCases = _.map(spec.testCases, testCase => _.merge({}, testCase, { meta: { status: '', metrics: { responseSize: '', responseTime: '' } } }));
+      const testCases = _.map(spec.testCases, testCase => _.merge({}, testCase, {
+        _rowVariant: null,
+        _showDetails: false,
+        meta: {
+          status: '',
+          metrics: {
+            responseSize: '',
+            responseTime: '',
+          },
+        },
+      }));
       return _.merge({}, spec, { testCases });
     });
 
