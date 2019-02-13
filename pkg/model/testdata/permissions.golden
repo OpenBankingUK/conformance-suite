@@ -25,7 +25,7 @@
             "/balances",
             "/accounts/{AccountId}/balances"
         ],
-        "Default": false,
+        "Default": true,
         "RequiredOneOrMore": [],
         "Optional": []
     },
@@ -55,7 +55,7 @@
             "/direct-debits",
             "/accounts/{AccountId}/direct-debits"
         ],
-        "Default": false,
+        "Default": true,
         "RequiredOneOrMore": [],
         "Optional": []
     },
@@ -149,7 +149,7 @@
             "/statements",
             "/accounts/{AccountId}/statements"
         ],
-        "Default": false,
+        "Default": true,
         "RequiredOneOrMore": [],
         "Optional": []
     },
@@ -170,7 +170,7 @@
             "/products",
             "/accounts/{AccountId}/product"
         ],
-        "Default": false,
+        "Default": true,
         "RequiredOneOrMore": [],
         "Optional": []
     },
@@ -180,7 +180,7 @@
             "/offers",
             "/accounts/{AccountId}/offers"
         ],
-        "Default": false,
+        "Default": true,
         "RequiredOneOrMore": [],
         "Optional": []
     },
@@ -189,7 +189,7 @@
         "Endpoints": [
             "/accounts/{AccountId}/party"
         ],
-        "Default": false,
+        "Default": true,
         "RequiredOneOrMore": [],
         "Optional": []
     },
@@ -198,7 +198,7 @@
         "Endpoints": [
             "/party"
         ],
-        "Default": false,
+        "Default": true,
         "RequiredOneOrMore": [],
         "Optional": []
     },
