@@ -17,9 +17,9 @@ This guide assumes the following tools are installed and functioning correctly. 
 * OpenSSL (LibreSSL 2.6.4 on OSX)
 * Postman Native (6.7.3 on OSX)
 
-## Steps
+# Steps
 
-### Ozone Bank (Model Bank)
+## Ozone Bank (Model Bank)
 
 Ozone Bank is an Account Servicing Payment Service Provider (ASPSP), which the FCS will connect to as a TPP. With that in mind,
 you must [enrol with Ozone](https://ob2018.o3bank.co.uk:444/pub/home).
@@ -30,7 +30,7 @@ you must [enrol with Ozone](https://ob2018.o3bank.co.uk:444/pub/home).
 * Click "Go"
 * Registration should be successful, keep the page open for reference later.
 
-### Generate transport and signing certificates
+## Generate transport and signing certificates
 
 Mutually Authenticated TLS (MA-TLS) is required to communicate with Ozone model bank service.
 
@@ -47,7 +47,7 @@ The following three sections will generate various files. As an output, you will
 * transport.key
 * transport.pem
 
-#### Precursor: CA Generation
+### Precursor: CA Generation
 
 A precursor step of creating a Certificate Authority (CA) is required to sign the transport and signing certs.
 
@@ -60,7 +60,7 @@ under the Certificates tab:
 * OU (Organisation Unit) 
 * CN (Common Name)
 
-#### Transport Certificate
+### Transport Certificate
 
 Execute `openssl genrsa -out transport.key 2048`
 
@@ -68,7 +68,7 @@ Execute `openssl req -new -sha256 -key transport.key -out transport.csr` (Provid
 
 Execute `openssl x509 -req -days 3650 -in transport.csr -CA ca.pem -CAkey ca.key -CAcreateserial -out transport.pem`
 
-#### Signing Certificate
+### Signing Certificate
 
 Execute `openssl genrsa -out signing.key 2048`
 
@@ -76,16 +76,14 @@ Execute `openssl req -new -sha256 -key signing.key -out signing.csr` (Provide sa
 
 Execute `openssl x509 -req -days 3650 -in signing.csr -CA ca.pem -CAkey ca.key -CAcreateserial -out signing.pem`
 
-### Run the Functional Conformance Suite
+## Run the Functional Conformance Suite
 
-#### FCS Server Certificates
+### FCS Server Certificates
 
 * Step 1: Download certificates (localhost)[https://bitbucket.org/openbankingteam/conformance-suite/src/develop/certs/]
 * Step 2: Trust the certificate or add as an exception.
 
-**TBC TBC TBC TBC TBC TBC TBC TBC TBC TBC TBC TBC TBC TBC **
-Is the same as running `make run_parallel` ?
-**TBC TBC TBC TBC TBC TBC TBC TBC TBC TBC TBC TBC TBC TBC **
+**TBC** Is the same as running `make run_parallel` ?
 
 The following command will download the latest FCS image from docker hub and run it. You may need to login to Docker Hub
 at this point by running `docker login`. 
@@ -98,7 +96,7 @@ at this point by running `docker login`.
 
 If all goes well you should be able to launch the FCS UI from you browser via `https://0.0.0.0:8443`
 
-#### Docker Content Trust
+### Docker Content Trust
 
 Docker ensures that all content is securely received and verified by Open Banking. Docker cryptographically signs the images upon completion of a satisfactory image check, so that implementers can verify and trust certified content.
 
@@ -107,7 +105,7 @@ To verify the content has not been tampered with you can you the `DOCKER_CONTENT
     DOCKER_CONTENT_TRUST=1 docker pull openbanking/conformance-suite:TAG
     DOCKER_CONTENT_TRUST=1 docker RUN openbanking/conformance-suite:TAG
 
-### Execute a test
+## Execute a test
 
 Running a test plan on the FCS involves five steps, as follows:
 
@@ -115,39 +113,38 @@ Running a test plan on the FCS involves five steps, as follows:
 
 2. Discovery - Review the discovery file and update as required.
 
-**TBC TBC TBC TBC TBC TBC TBC TBC TBC TBC TBC TBC TBC TBC **
+    You will need to update the discovery file with some values should be retrieved from Ozone. To view these values,
+    download the "Postman Environment" file from the "Postman" tab on the Ozone registration page. _I used [jsonlint.com](https://www.jsonlint.com)
+    to format the JSON._
 
-You will need to update the discovery file with some values should be retrieved from Ozone. To view these values,
-download the "Postman Environment" file from the "Postman" tab on the Ozone registration page. _I used [jsonlint.com](https://www.jsonlint.com)
-to format the JSON._
+    Please keep a note of the following values from the JSON, which are stored as key/value records:
+    * obParticipantId
+    * oidcClient
+    * basicToken
+    * redirectUrl
 
-Please keep a note of the following values from the JSON, which are stored as key/value records:
-* obParticipantId
-* oidcClient
-* basicToken
+    In the discovery JSON you will need to set the following values in `discoveryModel.customTests.replacementParameters`, based on the above values:
+    * client_id = oidcClient
+    * fapi_financial_id = obParticipantId 
+    * basic_authentication = basicToken
+    * redirect_url = redirectUrl
 
-In the discovery JSON you will need to set the following values in `discoveryModel.customTests.replacementParameters`, based on the above values:
-* client_id = oidcClient
-* fapi_financial_id = obParticipantId 
-* basic_authentication = basicToken
-* redirect_url = ** TBC **
-          
+3. Configuration
 
-**TBC TBC TBC TBC TBC TBC TBC TBC TBC TBC TBC TBC TBC TBC **
+    Provide the keys, as created earlier. The naming should be self explanatory if you ran the cert generation commands as shown.
 
-3. Configuration - Provide the keys, as created earlier. The naming should be self explanatory if you ran the
-cert generation commands as shown.
+4. Run / Overview
 
-4. Run / Overview - This screen shows the tests that will be run. Once ready, click "Run" at the end of the page.
-The tests should run and go to the "PENDING" status. Once complete the status should move to "PASSED", if everything ran ok.
-If any of the tests failed, you can click the "FAILED" badge to view more information on the cause of failure. 
+    This screen shows the tests that will be run. Once ready, click "Run" at the end of the page. The tests should run and go to the "PENDING" status. Once complete the status should move to "PASSED", if everything ran ok. If any of the tests failed, you can click the "FAILED" badge to view more information on the cause of failure. 
 
-5. Export - **TBC TBC TBC TBC TBC TBC TBC TBC TBC TBC TBC TBC TBC TBC **
+5. Export Report
 
-### Review test results
+    **TBC**
 
-*TBC*
+## Review test results
+
+**TBC**
 
 # How to get help
 
-*TBC*
+**TBC**
