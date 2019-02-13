@@ -105,8 +105,8 @@ func (wj *journey) TestCases() (generation.TestCasesRun, error) {
 			Context:       &wj.context,
 		}
 		wj.customTestParametersToJourneyContext()
-		executors.InitiationConsentAcquisition(wj.testCasesRun.SpecConsentRequirements, runDefinition)
 		if wj.validDiscoveryModel.DiscoveryModel.TokenAcquisition == "psu" {
+			executors.InitiationConsentAcquisition(wj.testCasesRun.SpecConsentRequirements, runDefinition)
 			wj.collector = executors.NewNullCollector(wj.doneCollectionCallback)
 		}
 		wj.testCasesRunGenerated = true
