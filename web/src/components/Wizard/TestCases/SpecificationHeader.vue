@@ -2,7 +2,7 @@
   <div>
     <h6>API Specification</h6>
     <b-table
-      :items="[ apiSpecification ]"
+      :items="[ apiSpecificationWithConsentUrl ]"
       :fields="tableFields"
       small
       fixed
@@ -42,11 +42,22 @@
           :href="data.value"
           target="_blank">{{ data.value }}</a>
       </template>
+      <template
+        slot="consentUrl"
+        slot-scope="data">
+        <a
+          :href="data.value"
+          target="_blank">{{ data.value }}</a>
+      </template>
     </b-table>
   </div>
 </template>
 
 <script>
+import { createNamespacedHelpers } from 'vuex';
+const {
+  mapState,
+} = createNamespacedHelpers('testcases');
 
 export default {
   name: 'SpecificationHeader',
@@ -75,9 +86,21 @@ export default {
         schema: {
           tdClass: 'table-data-breakable api-specification-table',
         },
+        consentUrl: {
+          tdClass: 'table-data-breakable api-specification-table',
+        },
       }),
     },
   },
+  computed: {
+    ...mapState([
+      'consentUrls',
+    ]),
+    apiSpecificationWithConsentUrl() {
+      const consentUrl = this.consentUrls[this.apiSpecification.name];
+      return Object.assign(this.apiSpecification, { consentUrl });
+    }
+  }
 };
 </script>
 

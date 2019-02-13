@@ -40,7 +40,7 @@
 </template>
 
 <script>
-import SpecificationHeader from './SpecificationHeader'
+import SpecificationHeader from './SpecificationHeader.vue';
 
 export default {
   name: 'TestCase',
@@ -118,7 +118,7 @@ export default {
   computed: {
     apiSpecification() {
       return this.testCase.apiSpecification;
-    }
+    },
   },
   methods: {
     toggleError(row) {
