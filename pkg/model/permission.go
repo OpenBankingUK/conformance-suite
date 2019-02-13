@@ -186,7 +186,7 @@ var staticApiPermissions = []permission{
 			"/accounts/{AccountId}/transactions",
 			"/accounts/{AccountId}/statements/{StatementId}/transactions",
 		},
-		Default: false,
+		Default: true,
 		RequiredOneOrMore: []Code{
 			"ReadTransactionsBasic",
 			"ReadTransactionsDetail",
@@ -200,7 +200,7 @@ var staticApiPermissions = []permission{
 			"/accounts/{AccountId}/transactions",
 			"/accounts/{AccountId}/statements/{StatementId}/transactions",
 		},
-		Default: false,
+		Default: true,
 		RequiredOneOrMore: []Code{
 			"ReadTransactionsBasic",
 			"ReadTransactionsDetail",

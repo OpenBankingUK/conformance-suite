@@ -118,7 +118,7 @@
             "/accounts/{AccountId}/transactions",
             "/accounts/{AccountId}/statements/{StatementId}/transactions"
         ],
-        "Default": false,
+        "Default": true,
         "RequiredOneOrMore": [
             "ReadTransactionsBasic",
             "ReadTransactionsDetail"
@@ -134,7 +134,7 @@
             "/accounts/{AccountId}/transactions",
             "/accounts/{AccountId}/statements/{StatementId}/transactions"
         ],
-        "Default": false,
+        "Default": true,
         "RequiredOneOrMore": [
             "ReadTransactionsBasic",
             "ReadTransactionsDetail"
