@@ -15,7 +15,6 @@ interaction during the authentication and consent steps when connecting to Ozone
 This guide assumes the following tools are installed and functioning correctly. Versions specified used when writing this guide.
 * Docker (Client: 18.09.1, Server: 18.09.1 on OSX)
 * OpenSSL (LibreSSL 2.6.4 on OSX)
-* Postman Native (6.7.3 on OSX)
 
 # Steps
 
