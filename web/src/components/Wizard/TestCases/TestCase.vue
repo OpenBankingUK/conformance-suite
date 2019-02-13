@@ -143,10 +143,12 @@ export default {
           label: 'Status',
         },
         'meta.metrics.responseTime': {
+          tdClass: 'response-time',
           label: 'Response Time',
         },
         'meta.metrics.responseSize': {
-          label: 'Response Body Size',
+          tdClass: 'response-size',
+          label: 'Response Bytes',
         },
       }),
     },
@@ -166,14 +168,10 @@ export default {
       }),
     },
   },
-  data() {
-    return {};
-  },
-  computed: {},
   methods: {
     toggleError(row) {
       if (row.item.error) {
-        row.toggleDetails();
+        this.$store.commit('testcases/TOGGLE_ROW_DETAILS', row.item);
       }
     },
   },
@@ -181,18 +179,26 @@ export default {
 </script>
 
 <style scoped>
-  /*
-   * Don't remove the `/deep/` here.
-   *
-   * This rule ensures values such as 'https://openbanking.atlassian.net/wiki/spaces/DZ/pages/642090641/Account+and+Transaction+API+Specification+-+v3.0'
-   * in the table are broken into separate lines.
-   */
-  .test-case /deep/ .table-data-breakable {
-    word-break: break-all;
-  }
-  .clickable { cursor: pointer; }
+/**
+ * Don't remove the `/deep/` here.
+ *
+ * This rule ensures values such as 'https://openbanking.atlassian.net/wiki/spaces/DZ/pages/642090641/Account+and+Transaction+API+Specification+-+v3.0'
+ * in the table are broken into separate lines.
+ */
+.test-case /deep/ .table-data-breakable {
+  word-break: break-all;
+}
 
-  .test-case /deep/ .api-specification-table {
-    grid-template-columns: 20% auto !important;
-  }
+.clickable {
+  cursor: pointer;
+}
+
+.test-case /deep/ .api-specification-table {
+  grid-template-columns: 20% auto !important;
+}
+
+.test-case /deep/ .response-time,
+.test-case /deep/ .response-size {
+  text-align: center;
+}
 </style>

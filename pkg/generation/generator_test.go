@@ -1,20 +1,20 @@
 package generation
 
 import (
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/permissions"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 	"io/ioutil"
 	"regexp"
 	"testing"
 
+	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/test"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/permissions"
+	"github.com/stretchr/testify/require"
 )
 
 func testLoadDiscoveryModel(t *testing.T) *discovery.ModelDiscovery {
 	t.Helper()
-	template, err := ioutil.ReadFile("../discovery/templates/ob-v3.0-generic.json")
+	template, err := ioutil.ReadFile("../discovery/templates/ob-v3.1-generic.json")
 	require.NoError(t, err)
 	require.NotNil(t, template)
 	json := string(template)
@@ -30,11 +30,15 @@ func TestGenerateSpecificationTestCases(t *testing.T) {
 	cases := testCasesRun.TestCases
 
 	t.Run("returns slice of SpecificationTestCases, one per discovery item", func(t *testing.T) {
+		assert := test.NewAssert(t)
+
 		require.NotNil(t, cases)
-		assert.Equal(t, len(discovery.DiscoveryItems), len(cases))
+		assert.Equal(len(discovery.DiscoveryItems), len(cases))
 	})
 
 	t.Run("returns each SpecificationTestCases with a Specification matching discovery item", func(t *testing.T) {
+		assert := test.NewAssert(t)
+
 		require.Equal(t, len(discovery.DiscoveryItems), len(cases))
 
 		for i, specificationCases := range cases {
@@ -42,21 +46,25 @@ func TestGenerateSpecificationTestCases(t *testing.T) {
 				continue
 			}
 			expectedSpec := discovery.DiscoveryItems[i].APISpecification
-			assert.Equal(t, expectedSpec, specificationCases.Specification)
+			assert.Equal(expectedSpec, specificationCases.Specification)
 		}
 	})
 }
 
 func TestPermissionsSetsEmpty(t *testing.T) {
+	assert := test.NewAssert(t)
+
 	generator := &generator{}
 	specTestCases := []SpecificationTestCases{}
 
 	results := generator.consentRequirements(specTestCases)
 
-	assert.Len(t, results, 0)
+	assert.Len(results, 0)
 }
 
 func TestPermissionsShouldPassAllTestsToResolver(t *testing.T) {
+	assert := test.NewAssert(t)
+
 	generator := generator{
 		resolver: func(groups []permissions.Group) permissions.CodeSetResultSet {
 			return permissions.CodeSetResultSet{
@@ -79,10 +87,10 @@ func TestPermissionsShouldPassAllTestsToResolver(t *testing.T) {
 
 	specTokens := generator.consentRequirements(specTestCases)
 
-	assert.Len(t, specTokens, 1)
-	assert.Len(t, specTokens[0].NamedPermissions, 2)
+	assert.Len(specTokens, 1)
+	assert.Len(specTokens[0].NamedPermissions, 2)
 	// token name expected in format to-{3 letters}-{sequence number}
 	matchName := regexp.MustCompile(`to\w{4}`)
-	assert.Regexp(t, matchName, specTokens[0].NamedPermissions[0].Name)
-	assert.Regexp(t, matchName, specTokens[0].NamedPermissions[1].Name)
+	assert.Regexp(matchName, specTokens[0].NamedPermissions[0].Name)
+	assert.Regexp(matchName, specTokens[0].NamedPermissions[1].Name)
 }

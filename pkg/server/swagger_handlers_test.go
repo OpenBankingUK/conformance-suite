@@ -1,19 +1,20 @@
 package server
 
 import (
-	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/version/mocks"
 	"context"
 	"fmt"
 	"net/http"
 	"testing"
 
+	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/test"
+	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/version/mocks"
+
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
-	"github.com/stretchr/testify/require"
 )
 
 // TestServerSwaggerHandlers - paths (e.g., /swagger/account-transaction-v3.0/v3.0/docs) are mapped to handlers.
 func TestServerSwaggerHandlers(t *testing.T) {
-	require := require.New(t)
+	require := test.NewRequire(t)
 
 	expectedSwaggerUIPaths := expectedSwaggerUIPaths()
 
@@ -29,7 +30,7 @@ func TestServerSwaggerHandlers(t *testing.T) {
 
 // TestServerSwaggerHandlers - paths (e.g., /swagger/account-transaction-v3.0/v3.0/docs) serve the swagger ui.
 func TestServerSwaggerHandlersServesUI(t *testing.T) {
-	require := require.New(t)
+	require := test.NewRequire(t)
 
 	server := NewServer(nullLogger(), conditionalityCheckerMock{}, &mocks.Version{})
 	defer func() {
@@ -39,22 +40,17 @@ func TestServerSwaggerHandlersServesUI(t *testing.T) {
 
 	expectedSwaggerUIPaths := expectedSwaggerUIPaths()
 	for path, schemaVersion := range expectedSwaggerUIPaths {
-		code, body, headers := request(
-			http.MethodGet,
-			path,
-			nil,
-			server)
+		code, body, headers := request(http.MethodGet, path, nil, server)
 
 		// do assertions
-		require.Equal(http.StatusOK, code)
-		require.Len(headers, 2)
-		require.Equal("text/html; charset=utf-8", headers["Content-Type"][0])
-
 		require.NotNil(body)
-
 		bodyExpected := expectedSwaggerUIHTMLResponse(schemaVersion)
 		bodyActual := body.String()
 		require.Equal(bodyExpected, bodyActual)
+
+		require.Equal(http.StatusOK, code)
+		require.Len(headers, 2)
+		require.Equal("text/html; charset=utf-8", headers["Content-Type"][0])
 	}
 }
 

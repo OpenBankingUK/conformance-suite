@@ -7,8 +7,10 @@ import (
 	"context"
 	"crypto/tls"
 	"flag"
+	"fmt"
 	"io"
 	"io/ioutil"
+	"net"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -16,12 +18,12 @@ import (
 	"testing"
 	"time"
 
+	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/test"
 	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/version/mocks"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
 
 	"github.com/labstack/echo"
 	"github.com/sirupsen/logrus"
-	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
@@ -73,21 +75,24 @@ func TestServer(t *testing.T) {
 	server := NewServer(nullLogger(), conditionalityCheckerMock{}, &mocks.Version{})
 
 	t.Run("NewServer() returns non-nil value", func(t *testing.T) {
-		assert.NotNil(t, server)
+		assert := test.NewAssert(t)
+		assert.NotNil(server)
 	})
 
 	t.Run("GET / returns index.html", func(t *testing.T) {
+		assert := test.NewAssert(t)
 		code, body, _ := request(http.MethodGet, "/", nil, server)
 
-		assert.Equal(t, true, strings.HasPrefix(body.String(), "<!DOCTYPE html>"))
-		assert.Equal(t, http.StatusOK, code)
+		assert.Equal(true, strings.HasPrefix(body.String(), "<!DOCTYPE html>"))
+		assert.Equal(http.StatusOK, code)
 	})
 
 	t.Run("GET /favicon.ico returns favicon.ico", func(t *testing.T) {
+		assert := test.NewAssert(t)
 		code, body, _ := request(http.MethodGet, "/favicon.ico", nil, server)
 
-		assert.NotEmpty(t, body.String())
-		assert.Equal(t, http.StatusOK, code)
+		assert.NotEmpty(body.String())
+		assert.Equal(http.StatusOK, code)
 	})
 
 	require.NoError(t, server.Shutdown(context.TODO()))
@@ -95,7 +100,7 @@ func TestServer(t *testing.T) {
 
 // TestServerConformanceSuiteCallback - Test that `/conformancesuite/callback` returns `./web/dist/index.html`.
 func TestServerConformanceSuiteCallback(t *testing.T) {
-	require := require.New(t)
+	require := test.NewRequire(t)
 
 	server := NewServer(nullLogger(), conditionalityCheckerMock{}, &mocks.Version{})
 	defer func() {
@@ -125,7 +130,7 @@ func TestServerConformanceSuiteCallback(t *testing.T) {
 }
 
 func TestServerSkipper(t *testing.T) {
-	require := require.New(t)
+	require := test.NewRequire(t)
 
 	echo := echo.New()
 	context := echo.AcquireContext()
@@ -151,7 +156,7 @@ func TestServerSkipper(t *testing.T) {
 
 // TestServerHTTPS - tests that TLS works.
 func TestServerHTTPS(t *testing.T) {
-	require := require.New(t)
+	require := test.NewRequire(t)
 
 	certFile := "../../certs/conformancesuite_cert.pem"
 	keyFile := "../../certs/conformancesuite_key.pem"
@@ -167,15 +172,19 @@ func TestServerHTTPS(t *testing.T) {
 		require.NoError(server.Shutdown(context.TODO()))
 	}()
 	require.NotNil(server)
-	server.HideBanner = true
+
+	// For how random port works: https://github.com/labstack/echo/issues/1065#issuecomment-367961653
 
 	// Start HTTPS server
 	go func() {
-		require.EqualError(server.StartTLS(":8443", certFile, keyFile), "http: Server closed")
+		require.EqualError(server.StartTLS(":0", certFile, keyFile), "http: Server closed")
 	}()
 	time.Sleep(100 * time.Millisecond)
 
-	res, err := client.Get("https://localhost:8443/")
+	tcpAddr, ok := server.TLSListener.Addr().(*net.TCPAddr)
+	require.True(ok)
+	url := fmt.Sprintf("https://localhost:%d/", tcpAddr.Port)
+	res, err := client.Get(url)
 	require.NoError(err)
 	require.NotNil(res)
 	require.Equal(http.StatusOK, res.StatusCode)

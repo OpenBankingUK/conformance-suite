@@ -1,43 +1,50 @@
 package server
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
+	"io/ioutil"
 	"net/http"
 	"strings"
 	"testing"
 
+	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/test"
 	versionmock "bitbucket.org/openbankingteam/conformance-suite/internal/pkg/version/mocks"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
 )
 
 // /api/discovery-model/validate - POST - When invalid JSON returns error message
 func TestServerDiscoveryModelPOSTValidateReturnsErrorsWhenInvalidJSON(t *testing.T) {
-	assert := assert.New(t)
+	assert := test.NewAssert(t)
 
 	server := NewServer(nullLogger(), conditionalityCheckerMock{}, &versionmock.Version{})
 	defer func() {
-		require.NoError(t, server.Shutdown(context.TODO()))
+		assert.NoError(server.Shutdown(context.TODO()))
 	}()
 
 	discoveryModel := `{ "bad-json" }`
 	expected := `{"error": "code=400, message=Syntax error: offset=14, error=invalid character '}' after object key"}`
 
-	code, body, _ := request(http.MethodPost, "/api/discovery-model",
+	code, body, headers := request(http.MethodPost, "/api/discovery-model",
 		strings.NewReader(discoveryModel), server)
 
 	assert.NotNil(body)
 	assert.JSONEq(string(expected), body.String())
 	assert.Equal(http.StatusBadRequest, code)
+	assert.Equal(http.Header{
+		"Vary":         []string{"Accept-Encoding"},
+		"Content-Type": []string{"application/json; charset=UTF-8"},
+	}, headers)
 }
 
 // /api/discovery-model/validate - POST - When incomplete model returns validation failures messages
 func TestServerDiscoveryModelPOSTValidateReturnsErrorsWhenIncomplete(t *testing.T) {
-	assert := assert.New(t)
+	assert := test.NewAssert(t)
 
 	server := NewServer(nullLogger(), conditionalityCheckerMock{}, &versionmock.Version{})
 	defer func() {
-		require.NoError(t, server.Shutdown(context.TODO()))
+		assert.NoError(server.Shutdown(context.TODO()))
 	}()
 
 	discoveryModel := `{}`
@@ -51,10 +58,131 @@ func TestServerDiscoveryModelPOSTValidateReturnsErrorsWhenIncomplete(t *testing.
                     ]
 				}`
 
-	code, body, _ := request(http.MethodPost, "/api/discovery-model",
-		strings.NewReader(discoveryModel), server)
+	code, body, headers := request(http.MethodPost, "/api/discovery-model", strings.NewReader(discoveryModel), server)
 
 	assert.NotNil(body)
 	assert.JSONEq(expected, body.String())
 	assert.Equal(http.StatusBadRequest, code)
+	assert.Equal(http.Header{
+		"Vary":         []string{"Accept-Encoding"},
+		"Content-Type": []string{"application/json; charset=UTF-8"},
+	}, headers)
+}
+
+// TestServerDiscoveryModelPOSTResolvesEndpointsUsingOpenidConfigurationURI - tests that a HTTP GET is called for each
+// `discoveryItems` using the url `openidConfigurationUri`.
+func TestServerDiscoveryModelPOSTResolvesEndpointsUsingOpenidConfigurationURI(t *testing.T) {
+	require := test.NewRequire(t)
+
+	// curl -s 'https://modelobankauth2018.o3bank.co.uk:4101/.well-known/openid-configuration' | jq '.' | pbcopy
+	mockResponse := `
+	{
+	  "token_endpoint": "https://modelobank2018.o3bank.co.uk:4201/<token_mock>"
+	}
+	`
+	mockedServer, mockedServerURL := test.HTTPServer(http.StatusOK, mockResponse, nil)
+	defer mockedServer.Close()
+
+	expected := `
+{
+    "token_endpoints": {
+        "schema_version=https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.0/dist/account-info-swagger.json": "https://modelobank2018.o3bank.co.uk:4201/<token_mock>",
+        "schema_version=https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.0/dist/payment-initiation-swagger.json": "https://modelobank2018.o3bank.co.uk:4201/<token_mock>"
+    }
+}
+	`
+
+	// modify `ob-v3.0-ozone.json` to make it point to mockedServerURL
+	discoveryJSON, err := ioutil.ReadFile("../discovery/templates/ob-v3.1-ozone.json")
+	require.NoError(err)
+	require.NotNil(discoveryJSON)
+
+	discoveryModel := &discovery.Model{}
+	require.NoError(json.Unmarshal(discoveryJSON, &discoveryModel))
+
+	// make `openidConfigurationUri` point to `mockedServerURL`
+	require.NotEmpty(discoveryModel.DiscoveryModel.DiscoveryItems)
+	for index := range discoveryModel.DiscoveryModel.DiscoveryItems {
+		discoveryItem := &discoveryModel.DiscoveryModel.DiscoveryItems[index]
+		discoveryItem.OpenidConfigurationURI = mockedServerURL
+	}
+
+	// make new discoveryModel POST body
+	postBody, err := json.Marshal(discoveryModel)
+	require.NoError(err)
+	require.NotNil(postBody)
+
+	server := NewServer(nullLogger(), conditionalityCheckerMock{}, &versionmock.Version{})
+	defer func() {
+		require.NoError(server.Shutdown(context.TODO()))
+	}()
+
+	code, body, headers := request(http.MethodPost, "/api/discovery-model", bytes.NewReader(postBody), server)
+
+	require.NotNil(body)
+	require.JSONEq(expected, body.String())
+	require.Equal(http.StatusCreated, code)
+	require.Equal(http.Header{
+		"Vary":         []string{"Accept-Encoding"},
+		"Content-Type": []string{"application/json; charset=UTF-8"},
+	}, headers)
+}
+
+// TestServerDiscoveryModelPOSTReturnsErrorsWhenItCannotResolveOpenidConfigurationURIs - tests that errors are
+// returned when HTTP GET to `openidConfigurationUri` fails.
+func TestServerDiscoveryModelPOSTReturnsErrorsWhenItCannotResolveOpenidConfigurationURIs(t *testing.T) {
+	require := test.NewRequire(t)
+
+	mockedBadServer, mockedBadServerURL := test.HTTPServer(http.StatusInternalServerError, ``, nil)
+	defer mockedBadServer.Close()
+
+	expected := `
+{
+    "error": [
+        {
+            "key": "DiscoveryModel.DiscoveryItems[0].OpenidConfigurationURI",
+            "error": "EOF"
+        },
+        {
+            "key": "DiscoveryModel.DiscoveryItems[1].OpenidConfigurationURI",
+            "error": "EOF"
+        }
+    ]
+}
+	`
+
+	// modify `ob-v3.0-ozone.json` to make it point to mockedServerURL
+	discoveryJSON, err := ioutil.ReadFile("../discovery/templates/ob-v3.1-ozone.json")
+	require.NoError(err)
+	require.NotNil(discoveryJSON)
+
+	discoveryModel := &discovery.Model{}
+	require.NoError(json.Unmarshal(discoveryJSON, &discoveryModel))
+
+	// make `openidConfigurationUri` point to `mockedBadServerURL`
+	require.NotEmpty(discoveryModel.DiscoveryModel.DiscoveryItems)
+	for index := range discoveryModel.DiscoveryModel.DiscoveryItems {
+		discoveryItem := &discoveryModel.DiscoveryModel.DiscoveryItems[index]
+		discoveryItem.OpenidConfigurationURI = mockedBadServerURL
+	}
+
+	// make new discoveryModel POST body
+	postBody, err := json.Marshal(discoveryModel)
+	require.NoError(err)
+	require.NotNil(postBody)
+
+	server := NewServer(nullLogger(), conditionalityCheckerMock{}, &versionmock.Version{})
+	defer func() {
+		require.NoError(server.Shutdown(context.TODO()))
+	}()
+
+	code, body, headers := request(http.MethodPost, "/api/discovery-model", bytes.NewReader(postBody), server)
+
+	require.NotNil(body)
+	require.JSONEq(expected, body.String())
+	require.Equal(http.StatusBadRequest, code)
+	require.Equal(http.Header{
+		"Vary":         []string{"Accept-Encoding"},
+		"Content-Type": []string{"application/json; charset=UTF-8"},
+	}, headers)
 }

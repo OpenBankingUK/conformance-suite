@@ -108,6 +108,7 @@ func initConfig() {
 		os.Exit(1)
 	}
 	logger.SetLevel(level)
+	logrus.SetLevel(level)
 
 	tracer.Silent = viper.GetBool("log_tracer")
 	resty.SetDebug(viper.GetBool("log_http_trace"))

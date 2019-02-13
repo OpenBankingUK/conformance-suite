@@ -6,7 +6,8 @@ import (
 
 func TestGetTestCases(t *testing.T) {
 
-	// Test Case no longer valid as initiates PSU consent flow which requires USER interface at the UI and apsps authorisation server
+	// Test Case no longer valid as initiates PSU consent flow which requires USER interface at the UI AND
+	// user interaction at ASPSP authorisation server
 
 	// assert := assert.New(t)
 	// server := NewServer(nullLogger(), conditionalityCheckerMock{}, &versionmock.Version{})

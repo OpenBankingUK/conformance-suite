@@ -19,39 +19,57 @@ export default {
     ];
   },
   [types.UPDATE_TEST_CASE](state, update) {
-    const {
-      id, pass, metrics, fail,
-    } = update.test;
-    const predicate = { '@id': id };
-
+    const predicate = { '@id': update.test.id };
     // Assume that each testCase has a globally unique id, then find the matching testCase.
     const testCases = _.flatMap(state.testCases, spec => _.get(spec, 'testCases'));
     const testCase = _.find(testCases, predicate);
 
-    if (testCase) {
-      testCase.id = id;
-      testCase.meta.status = pass ? 'PASSED' : 'FAILED';
-      const responseSeconds = moment.duration(metrics.response_time / 1000000).asSeconds().toFixed(6);
-      testCase.meta.metrics.responseTime = `${responseSeconds}s`;
-      testCase.meta.metrics.responseSize = `${metrics.response_size}B`;
-      testCase.error = fail;
-      if (fail) {
-        // Set the row variant, for alternate styling.
-        // https://bootstrap-vue.js.org/docs/components/table/#items-record-data-
-        // eslint-disable-next-line no-underscore-dangle
-        testCase._rowVariant = 'danger';
-      }
-    } else {
+    if (_.isNil(testCase)) {
       // eslint-disable-next-line no-console
       console.error('Failed to find testCase, testCases=%o, predicate=%o, update=%o', testCases, predicate, update);
+      return;
+    }
+
+    const {
+      id, pass, metrics, fail,
+    } = update.test;
+
+    testCase.id = id;
+    testCase.meta.status = pass ? 'PASSED' : 'FAILED';
+    const responseSeconds = moment.duration(metrics.response_time / 1000000).asMilliseconds().toFixed(0);
+    testCase.meta.metrics.responseTime = `${responseSeconds.toLocaleString()}ms`;
+    testCase.meta.metrics.responseSize = `${metrics.response_size.toLocaleString()}`;
+    testCase.error = fail;
+
+    if (fail) {
+      // Set the row variant, for alternate styling.
+      // https://bootstrap-vue.js.org/docs/components/table/#items-record-data-
+      _.merge(testCase, {
+        _rowVariant: 'danger',
+      });
     }
   },
   [types.SET_TEST_CASES_STATUS](state, status) {
-    const DEFAULTS = { meta: { status, metrics: { responseTime: '', responseSize: '' } } };
+    const DEFAULTS = {
+      _rowVariant: null,
+      _showDetails: false,
+      meta: {
+        status,
+        metrics: {
+          responseTime: '',
+          responseSize: '',
+        },
+      },
+    };
 
     state.testCases = _.map(state.testCases, (spec) => {
       const testCases = _.map(spec.testCases, testCase => _.merge({}, testCase, DEFAULTS));
-      return _.merge({}, spec, { testCases });
+      return _.assign(spec, { testCases });
+    });
+  },
+  [types.TOGGLE_ROW_DETAILS](state, item) {
+    _.merge(item, {
+      _showDetails: !_.get(item, '_showDetails'),
     });
   },
 };

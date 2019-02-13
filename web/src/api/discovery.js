@@ -68,7 +68,8 @@ export default {
         return { success: false, problems };
       }
     }
-    return { success: true, problems: [] };
+
+    return { success: true, problems: [], response: await response.json() };
   },
 
   annotationsAndMarkers(discoveryProblems, discoveryModelString) {

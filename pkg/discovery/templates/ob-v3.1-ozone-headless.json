@@ -1,20 +1,20 @@
 {
     "discoveryModel": {
-        "name": "ob-v3.0-ozone-headless",
-        "description": "An Ozone discovery template for v3.0 of Accounts API using Custom tests",
+        "name": "ob-v3.1-ozone-headless",
+        "description": "An Ozone discovery template for v3.1 of Accounts API using Custom tests",
         "discoveryVersion": "v0.2.1",
         "tokenAcquisition": "headless",
         "discoveryItems": [{
             "apiSpecification": {
                 "name": "Account and Transaction API Specification",
-                "url": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/642090641/Account+and+Transaction+API+Specification+-+v3.0",
-                "version": "v3.0",
-                "schemaVersion": "https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.0.0/dist/account-info-swagger.json"
+                "url": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937820271/Account+and+Transaction+API+Specification+-+v3.1",
+                "version": "v3.1",
+                "schemaVersion": "https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.0/dist/account-info-swagger.json"
             },
             "openidConfigurationUri": "https://modelobankauth2018.o3bank.co.uk:4101/.well-known/openid-configuration",
-            "resourceBaseUri": "https://modelobank2018.o3bank.co.uk:4501/open-banking/v3.0/aisp",
+            "resourceBaseUri": "https://modelobank2018.o3bank.co.uk:4501/open-banking/v3.1/aisp",
             "resourceIds": {
-                "AccountId": "500000000000000000000001",                             
+                "AccountId": "500000000000000000000001",
                 "ConsentId": "$consent_id",
                 "fapi_financial_id":"0015800001041RHAAY"
             },
@@ -100,7 +100,7 @@
                     "name": "PostAccount Request",
                     "input": {
                         "method": "POST",
-                        "endpoint": "/open-banking/v3.0/aisp/account-access-consents",
+                        "endpoint": "/open-banking/v3.1/aisp/account-access-consents",
                         "headers": {
                             "content-type": "application/json",
                             "accept": "*/*",
@@ -199,7 +199,7 @@
                     "name": "Accounts Request",
                     "input": {
                         "method": "GET",
-                        "endpoint": "/open-banking/v3.0/aisp/accounts",
+                        "endpoint": "/open-banking/v3.1/aisp/accounts",
                         "headers": {
                             "content-type": "application/json",
                             "x-fapi-financial-id": "$fapi_financial_id",

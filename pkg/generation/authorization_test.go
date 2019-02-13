@@ -1,23 +1,28 @@
 package generation
 
 import (
+	"testing"
+
+	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/test"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/permissions"
-	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 func TestSetHeaderDoesNothingOnAccountAccessConsent(t *testing.T) {
+	assert := test.NewAssert(t)
+
 	consentRequirements := []model.SpecConsentRequirements{}
 	tc := model.TestCase{}
 	tc.Input.Endpoint = "/account-access-consents"
 
 	updatedTc := setHeader(consentRequirements, tc)
 
-	assert.Nil(t, updatedTc.Input.Headers)
+	assert.Nil(updatedTc.Input.Headers)
 }
 
 func TestSetHeader(t *testing.T) {
+	assert := test.NewAssert(t)
+
 	consentRequirements := []model.SpecConsentRequirements{
 		{
 			NamedPermissions: []model.NamedPermission{
@@ -35,19 +40,21 @@ func TestSetHeader(t *testing.T) {
 	// Creates headers with authorization
 	tc.ID = "1"
 	updatedTc := setHeader(consentRequirements, tc)
-	assert.NotNil(t, updatedTc.Input.Headers)
-	assert.NotNil(t, updatedTc.Input.Headers["authorization"])
-	assert.Equal(t, "Bearer $permission-set-1", updatedTc.Input.Headers["authorization"])
+	assert.NotNil(updatedTc.Input.Headers)
+	assert.NotNil(updatedTc.Input.Headers["authorization"])
+	assert.Equal("Bearer $permission-set-1", updatedTc.Input.Headers["authorization"])
 
 	// replaces header with authorization
 	tc.ID = "1"
 	updatedTc.Input.Headers["authorization"] = "123"
 	updatedTc = setHeader(consentRequirements, tc)
-	assert.NotNil(t, updatedTc.Input.Headers)
-	assert.Equal(t, "Bearer $permission-set-1", updatedTc.Input.Headers["authorization"])
+	assert.NotNil(updatedTc.Input.Headers)
+	assert.Equal("Bearer $permission-set-1", updatedTc.Input.Headers["authorization"])
 }
 
 func TestAuthorizationNamedSet(t *testing.T) {
+	assert := test.NewAssert(t)
+
 	consentRequirements := []model.SpecConsentRequirements{
 		{
 			NamedPermissions: []model.NamedPermission{
@@ -68,19 +75,21 @@ func TestAuthorizationNamedSet(t *testing.T) {
 	}
 
 	name, found := authorizationNamedSet(consentRequirements, "1")
-	assert.True(t, found)
-	assert.Equal(t, "permission set 1", name)
+	assert.True(found)
+	assert.Equal("permission set 1", name)
 
 	name, found = authorizationNamedSet(consentRequirements, "3")
-	assert.True(t, found)
-	assert.Equal(t, "permission set 2", name)
+	assert.True(found)
+	assert.Equal("permission set 2", name)
 
 	name, found = authorizationNamedSet(consentRequirements, "4")
-	assert.False(t, found)
-	assert.Equal(t, "", name)
+	assert.False(found)
+	assert.Equal("", name)
 }
 
 func TestIsAccountAccessConsentEndpoint(t *testing.T) {
-	assert.True(t, isAccountAccessConsentEndpoint("/account-access-consents"))
-	assert.False(t, isAccountAccessConsentEndpoint("account-access-consents"))
+	assert := test.NewAssert(t)
+
+	assert.True(isAccountAccessConsentEndpoint("/account-access-consents"))
+	assert.False(isAccountAccessConsentEndpoint("account-access-consents"))
 }

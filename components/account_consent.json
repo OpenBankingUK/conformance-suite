@@ -3,7 +3,7 @@
     "name": "Post Account Consent",
     "input": {
       "method": "POST",
-      "endpoint": "/open-banking/v3.0/aisp/account-access-consents",
+      "endpoint": "/open-banking/v3.1/aisp/account-access-consents",
       "headers": {
         "content-type": "application/json",
         "accept": "*/*",
@@ -37,7 +37,7 @@
     "name": "Get Account Consent",
     "input": {
       "method": "GET",
-      "endpoint": "/open-banking/v3.0/aisp/account-access-consents/$test_consent_id",
+      "endpoint": "/open-banking/v3.1/aisp/account-access-consents/$test_consent_id",
       "headers": {
         "content-type": "application/json",
         "accept": "*/*",
@@ -62,7 +62,7 @@
     "name": "Delete Account Request",
     "input": {
       "method": "DELETE",
-      "endpoint": "/open-banking/v3.0/aisp/account-access-consents/$test_consent_id",
+      "endpoint": "/open-banking/v3.1/aisp/account-access-consents/$test_consent_id",
       "headers": {
         "content-type": "application/json",
         "accept": "*/*",
@@ -79,4 +79,3 @@
     }
   }
 ]
-

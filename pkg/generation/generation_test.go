@@ -1,12 +1,14 @@
 package generation
 
 import (
+	"fmt"
+	"sort"
+	"testing"
+
+	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/test"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
 	"github.com/go-openapi/spec"
 	"github.com/pkg/errors"
-	"github.com/stretchr/testify/assert"
-	"sort"
-	"testing"
 )
 
 func TestGetGoodResponseCode(t *testing.T) {
@@ -32,20 +34,25 @@ func TestGetGoodResponseCode(t *testing.T) {
 		},
 	}
 
-	for _, tc := range tcs {
-		t.Run("", func(t *testing.T) {
+	for index, tc := range tcs {
+		tc := tc
+		t.Run(fmt.Sprintf("TestGetGoodResponseCode/%d", index), func(t *testing.T) {
+			assert := test.NewAssert(t)
+
 			code, err := getGoodResponseCode(tc.codes)
-			assert.Equal(t, tc.expectedCode, code)
+			assert.Equal(tc.expectedCode, code)
 			if tc.err != nil {
-				assert.EqualError(t, err, tc.err.Error())
+				assert.EqualError(err, tc.err.Error())
 			} else {
-				assert.NoError(t, err)
+				assert.NoError(err)
 			}
 		})
 	}
 }
 
 func TestGetResponseCodes(t *testing.T) {
+	assert := test.NewAssert(t)
+
 	op := &spec.Operation{
 		OperationProps: spec.OperationProps{
 			Responses: &spec.Responses{
@@ -63,35 +70,43 @@ func TestGetResponseCodes(t *testing.T) {
 	sort.Ints(result)
 
 	expected := []int{200, 300}
-	assert.Equal(t, expected, result)
+	assert.Equal(expected, result)
 }
 
 func TestGetResourceIds(t *testing.T) {
+	assert := test.NewAssert(t)
+
 	item := &discovery.ModelDiscoveryItem{ResourceIds: map[string]string{"hello": "world"}}
 
 	result := getResourceIds(item, "/{hello}")
 
-	assert.Equal(t, "/world", result)
+	assert.Equal("/world", result)
 }
 
 func TestGetResourceIdsNoMatch(t *testing.T) {
+	assert := test.NewAssert(t)
+
 	item := &discovery.ModelDiscoveryItem{ResourceIds: map[string]string{}}
 
 	result := getResourceIds(item, "/{hello}")
 
-	assert.Equal(t, "/{hello}", result)
+	assert.Equal("/{hello}", result)
 }
 
 func TestGetOperationsEmpty(t *testing.T) {
+	assert := test.NewAssert(t)
+
 	props := &spec.PathItem{}
 
 	results := getOperations(props)
 
 	expected := map[string]*spec.Operation{}
-	assert.Equal(t, expected, results)
+	assert.Equal(expected, results)
 }
 
 func TestGetOperations(t *testing.T) {
+	assert := test.NewAssert(t)
+
 	props := &spec.PathItem{
 		PathItemProps: spec.PathItemProps{
 			Get:  &spec.Operation{},
@@ -101,7 +116,7 @@ func TestGetOperations(t *testing.T) {
 
 	results := getOperations(props)
 
-	assert.Len(t, results, 2)
-	assert.NotNil(t, results["GET"])
-	assert.NotNil(t, results["POST"])
+	assert.Len(results, 2)
+	assert.NotNil(results["GET"])
+	assert.NotNil(results["POST"])
 }
