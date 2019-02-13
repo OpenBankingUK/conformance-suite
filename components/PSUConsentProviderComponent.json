@@ -57,7 +57,7 @@
             "x-fapi-financial-id": "$fapi_financial_id",
             "authorization": "bearer $client_access_token"
           },
-          "bodyData":"{\"Data\": { \"Permissions\": [ $permission_list: \"2016-01-01T10:40:00+02:00\", \"TransactionToDateTime\": \"2025-12-31T10:40:00+02:00\" },  \"Risk\": {} }"
+          "bodyData":"{\"Data\": { \"Permissions\": [ \"ReadTransactionsCredits\", \"ReadTransactionsDebits\", $permission_list ],  \"TransactionFromDateTime\": \"2016-01-01T10:40:00+02:00\", \"TransactionToDateTime\": \"2025-12-31T10:40:00+02:00\" },  \"Risk\": {} }"
         },
         "context": {
           "baseurl": "$resource_server"

@@ -33,19 +33,19 @@ type generator struct {
 // GenerateSpecificationTestCases - generates test cases
 func (g generator) GenerateSpecificationTestCases(discovery discovery.ModelDiscovery) TestCasesRun {
 	specTestCases := []SpecificationTestCases{}
-	globalReplacements := make(map[string]string)
+	customReplacements := make(map[string]string)
 	originalEndpoints := make(map[string]string, 0)
 
 	for _, customTest := range discovery.CustomTests { // assume ordering is prerun i.e. customtest run before other tests
 		specTestCases = append(specTestCases, GetCustomTestCases(&customTest))
 		for k, v := range customTest.Replacements {
-			globalReplacements[k] = v
+			customReplacements[k] = v
 		}
 	}
 
 	nameGenerator := names.NewSequentialPrefixedName("#t")
 	for _, item := range discovery.DiscoveryItems {
-		specTests, endpoints := generateSpecificationTestCases(item, nameGenerator, globalReplacements)
+		specTests, endpoints := generateSpecificationTestCases(item, nameGenerator, customReplacements)
 		specTestCases = append(specTestCases, specTests)
 		for k, v := range endpoints {
 			originalEndpoints[k] = v
@@ -62,11 +62,11 @@ func (g generator) GenerateSpecificationTestCases(discovery discovery.ModelDisco
 	}
 
 	// calculate permission set required and update the header token in the test case request
-	consentRequirements := g.consentRequirements(tmpSpecTestCases)
+	consentRequirements := g.consentRequirements(tmpSpecTestCases) // uses pre-modified swagger urls
 	//consentRequirements := g.consentRequirements(specTestCases)
 	// @Julian glue with `updateSpecsBearer(consentRequirements, specTestCases)`
 
-	return TestCasesRun{specTestCases, consentRequirements, globalReplacements}
+	return TestCasesRun{specTestCases, consentRequirements}
 
 }
 
@@ -92,7 +92,6 @@ func (g generator) consentRequirements(specTestCases []SpecificationTestCases) [
 type TestCasesRun struct {
 	TestCases               []SpecificationTestCases        `json:"specCases"`
 	SpecConsentRequirements []model.SpecConsentRequirements `json:"specTokens"`
-	GlobalContext           map[string]string               `json:"globalContext"`
 }
 
 func generateSpecificationTestCases(item discovery.ModelDiscoveryItem, nameGenerator names.Generator, globalReplacements map[string]string) (SpecificationTestCases, map[string]string) {

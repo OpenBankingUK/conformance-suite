@@ -136,7 +136,7 @@ func (r *TestCaseRunner) runConsentAcquisitionAsync(tokenName string, permission
 		r.setNotRunning()
 		return
 	}
-	comp.ProcessReplacementFields(*ruleCtx)
+
 	r.executeComponentTests(&comp, ruleCtx, ctxLogger)
 
 	r.setNotRunning()
@@ -151,6 +151,7 @@ func (r *TestCaseRunner) executeComponentTests(comp *model.Component, ruleCtx *m
 			return
 		}
 		ctxLogger.Debugln("executing testcase: " + testcase.Name)
+
 		testResult := r.executeTest(testcase, ruleCtx, ctxLogger)
 		r.daemonController.Results() <- testResult
 	}
@@ -193,9 +194,6 @@ func (r *TestCaseRunner) executeTest(tc model.TestCase, ruleCtx *model.Context, 
 		ctxLogger.WithError(err).Error("preparing executing test")
 		return results.NewTestCaseFail(tc.ID, results.NoMetrics, err)
 	}
-
-	fmt.Printf("%#v\n", ruleCtx)
-	fmt.Printf("%s\n", tc.Input)
 
 	resp, metrics, err := r.executor.ExecuteTestCase(req, &tc, ruleCtx)
 	ctxLogger = logWithMetrics(ctxLogger, metrics)

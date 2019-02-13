@@ -63,6 +63,7 @@ func NewJourney(generator generation.Generator, validator discovery.Validator) *
 		journeyLock:           &sync.Mutex{},
 		allCollected:          false,
 		testCasesRunGenerated: false,
+		context:               model.Context{},
 	}
 }
 
@@ -103,7 +104,7 @@ func (wj *journey) TestCases() (generation.TestCasesRun, error) {
 			TransportCert: wj.certificateTransport,
 			Context:       &wj.context,
 		}
-
+		wj.customTestParametersToJourneyContext()
 		executors.InitiationConsentAcquisition(wj.testCasesRun.SpecConsentRequirements, runDefinition)
 		if wj.validDiscoveryModel.DiscoveryModel.TokenAcquisition == "psu" {
 			wj.collector = executors.NewNullCollector(wj.doneCollectionCallback)
@@ -176,4 +177,12 @@ func (wj *journey) SetCertificates(signing, transport authentication.Certificate
 	wj.certificateSigning = signing
 	wj.certificateTransport = transport
 	wj.journeyLock.Unlock()
+}
+
+func (wj *journey) customTestParametersToJourneyContext() {
+	for _, customTest := range wj.validDiscoveryModel.DiscoveryModel.CustomTests { // assume ordering is prerun i.e. customtest run before other tests
+		for k, v := range customTest.Replacements {
+			wj.context.PutString(k, v)
+		}
+	}
 }

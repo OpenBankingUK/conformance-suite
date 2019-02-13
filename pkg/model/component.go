@@ -54,10 +54,10 @@ func LoadComponent(filename string) (Component, error) {
 
 // ProcessReplacementFields - performance context/testcase parameter substitution on
 // component test cases before they are run
-func (c *Component) ProcessReplacementFields(ctx Context) {
+func (c *Component) ProcessReplacementFields(ctx *Context) {
 
 	m := make(map[string]string, 0)
-	for k, v := range ctx {
+	for k, v := range *ctx {
 		value, ok := v.(string)
 		if ok {
 			m[k] = value
