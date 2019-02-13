@@ -56,12 +56,15 @@ func (b permissionBuilder) includedPermission(ctx Context, endpoint string) perm
 		return mapStringToCodeSet(values)
 	}
 
-	defaultPerm, err := b.standardPermissions.defaultForEndpoint(endpoint)
+	defaultPerms, err := b.standardPermissions.defaultForEndpoint(endpoint)
 	if err != nil {
 		return permissions.NoCodeSet
 	}
-
-	return mapStringToCodeSet([]string{string(defaultPerm)})
+	codes := []string{}
+	for _, code := range defaultPerms {
+		codes = append(codes, string(code))
+	}
+	return mapStringToCodeSet(codes)
 }
 
 // excludedPermissions return a list of excluded permissions from context

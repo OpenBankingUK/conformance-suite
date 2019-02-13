@@ -3,7 +3,29 @@
         "Code": "ReadAccountsBasic",
         "Endpoints": [
             "/accounts",
-            "/accounts/{AccountId}"
+            "/accounts/{AccountId}",
+            "/accounts/{AccountId}/balances",
+            "/accounts/{AccountId}/beneficiaries",
+            "/accounts/{AccountId}/direct-debits",
+            "/accounts/{AccountId}/offers",
+            "/accounts/{AccountId}/party",
+            "/accounts/{AccountId}/product",
+            "/accounts/{AccountId}/scheduled-payments",
+            "/accounts/{AccountId}/standing-orders",
+            "/accounts/{AccountId}/statements",
+            "/accounts/{AccountId}/statements/{StatementId}/file",
+            "/accounts/{AccountId}/statements/{StatementId}/transactions",
+            "/accounts/{AccountId}/transactions",
+            "/balances",
+            "/beneficiaries",
+            "/direct-debits",
+            "/offers",
+            "/party",
+            "/products",
+            "/scheduled-payments",
+            "/standing-orders",
+            "/statements",
+            "/transactions"
         ],
         "Default": true,
         "RequiredOneOrMore": [],
@@ -147,7 +169,8 @@
         "Code": "ReadStatementsBasic",
         "Endpoints": [
             "/statements",
-            "/accounts/{AccountId}/statements"
+            "/accounts/{AccountId}/statements",
+            "/accounts/{AccountId}/statements/{StatementId}/transactions"
         ],
         "Default": true,
         "RequiredOneOrMore": [],
@@ -158,7 +181,8 @@
         "Endpoints": [
             "/statements",
             "/accounts/{AccountId}/statements",
-            "/accounts/{AccountId}/statements/{StatementId}/file"
+            "/accounts/{AccountId}/statements/{StatementId}/file",
+            "/accounts/{AccountId}/statements/{StatementId}/transactions"
         ],
         "Default": false,
         "RequiredOneOrMore": [],

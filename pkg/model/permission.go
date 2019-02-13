@@ -32,27 +32,32 @@ func newStandardPermissionsWithOptions(data []permission) standardPermissions {
 	}
 }
 
-// defaultForEndpoint finds the default permission for and endpoint
-// either marked as default or it only has one permission
-func (sp standardPermissions) defaultForEndpoint(endpoint string) (Code, error) {
+// defaultForEndpoint finds the default permissions for an endpoint
+// i.e. slice of permission codes marked as default true
+func (sp standardPermissions) defaultForEndpoint(endpoint string) ([]Code, error) {
 	perms := sp.permissionsForEndpoint(endpoint)
 
 	if len(perms) == 0 {
-		return Code(""), errors.New("no default permissions found")
+		return []Code{}, errors.New("no default permissions found")
 	}
 
 	// only one permission so always DEFAULT
 	if len(perms) == 1 {
-		return perms[0].Code, nil
+		code := []Code{ perms[0].Code }
+		return code, nil
 	}
 
+	codes := []Code{}
 	for _, p := range perms {
-		if p.Default == true {
-			return p.Code, nil
+		if p.Default {
+			codes = append(codes, p.Code)
 		}
 	}
+	if len(codes) > 0 {
+		return codes, nil
+	}
 
-	return Code(""), errors.New("no default permission found, but found more then one")
+	return []Code{}, errors.New("no default permissions found, but found more than one")
 }
 
 // permissionsForEndpoint returns a list of Permissions required by an endpoint
@@ -76,6 +81,28 @@ var staticApiPermissions = []permission{
 		Endpoints: []string{
 			"/accounts",
 			"/accounts/{AccountId}",
+			"/accounts/{AccountId}/balances",
+			"/accounts/{AccountId}/beneficiaries",
+			"/accounts/{AccountId}/direct-debits",
+			"/accounts/{AccountId}/offers",
+			"/accounts/{AccountId}/party",
+			"/accounts/{AccountId}/product",
+			"/accounts/{AccountId}/scheduled-payments",
+			"/accounts/{AccountId}/standing-orders",
+			"/accounts/{AccountId}/statements",
+			"/accounts/{AccountId}/statements/{StatementId}/file",
+			"/accounts/{AccountId}/statements/{StatementId}/transactions",
+			"/accounts/{AccountId}/transactions",
+			"/balances",
+			"/beneficiaries",
+			"/direct-debits",
+			"/offers",
+			"/party",
+			"/products",
+			"/scheduled-payments",
+			"/standing-orders",
+			"/statements",
+			"/transactions",
 		},
 		Default:           true,
 		RequiredOneOrMore: []Code{},
@@ -212,6 +239,7 @@ var staticApiPermissions = []permission{
 		Endpoints: []string{
 			"/statements",
 			"/accounts/{AccountId}/statements",
+			"/accounts/{AccountId}/statements/{StatementId}/transactions",
 		},
 		Default:           true,
 		RequiredOneOrMore: []Code{},
@@ -223,6 +251,7 @@ var staticApiPermissions = []permission{
 			"/statements",
 			"/accounts/{AccountId}/statements",
 			"/accounts/{AccountId}/statements/{StatementId}/file",
+			"/accounts/{AccountId}/statements/{StatementId}/transactions",
 		},
 		Default:           false,
 		RequiredOneOrMore: []Code{},
