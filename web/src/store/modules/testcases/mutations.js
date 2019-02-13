@@ -67,6 +67,9 @@ export default {
       return _.assign(spec, { testCases });
     });
   },
+  [types.SET_CONSENT_URLS](state, urls) {
+    state.consentUrls = urls;
+  },
   [types.TOGGLE_ROW_DETAILS](state, item) {
     _.merge(item, {
       _showDetails: !_.get(item, '_showDetails'),

@@ -33,11 +33,39 @@ describe('store/modules/testcases', () => {
     jest.resetAllMocks();
   });
 
+  const CONSENT_URL = 'http://example.com';
+  const SPEC_NAME = 'Account and Transaction API Specification';
   const OK_RESPONSE = {
+    specTokens: [
+      {
+        specIdentifier: SPEC_NAME,
+        namedPermissions: [
+          {
+            name: 'to1002',
+            codeSet: {
+              codes: [
+                'ReadAccountsBasic',
+              ],
+              testIds: [
+                '#co0001',
+                '#co0002',
+                '#co0003',
+                '#t1001',
+                '#t1002',
+                '#t1003',
+                '#t1004',
+                '#t1005',
+              ],
+            },
+            consentUrl: CONSENT_URL,
+          },
+        ],
+      },
+    ],
     specCases: [
       {
         apiSpecification: {
-          name: 'Account and Transaction API Specification',
+          name: SPEC_NAME,
           url: 'https://openbanking.atlassian.net/wiki/spaces/DZ/pages/642090641/Account+and+Transaction+API+Specification+-+v3.1',
           version: 'v3.1',
           schemaVersion: 'https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.0/dist/account-info-swagger.json',
@@ -108,6 +136,10 @@ describe('store/modules/testcases', () => {
       return _.merge({}, spec, { testCases });
     });
 
+    const EXPECTED_CONSENT_URLS_STATE = {
+      [SPEC_NAME]: CONSENT_URL,
+    };
+
     it('testcases/computeTestCases sets testcases/testCases, if successful', async () => {
       const store = createRealStore();
 
@@ -119,6 +151,8 @@ describe('store/modules/testcases', () => {
       expect(dispatch).toHaveBeenCalledWith('status/clearErrors', null, { root: true });
       expect(dispatch).toHaveBeenCalledWith('config/setWizardStep', constants.WIZARD.STEP_FOUR, { root: true });
       expect(store.state.testCases).toEqual(EXPECTED_TESTCASES_STATE);
+
+      expect(store.state.consentUrls).toEqual(EXPECTED_CONSENT_URLS_STATE);
     });
 
     it('testcases/computeTestCases sets config/errors.testCases, if unsuccessful', async () => {
