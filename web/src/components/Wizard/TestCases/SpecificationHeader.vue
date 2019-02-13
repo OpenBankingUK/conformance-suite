@@ -19,35 +19,20 @@
       </template>
       <template
         slot="schema"
-        slot-scope="data">
+        slot-scope="data"
+      >
         <a
           :href="data.item.schemaVersion"
           target="_blank">
           {{ data.item.version }}
         </a>
       </template>
-      <!-- format url column as anchor. -->
-      <template
-        slot="url"
-        slot-scope="data">
-        <a
-          :href="data.value"
-          target="_blank">{{ data.value }}</a>
-      </template>
-      <!-- format schemaVersion column as anchor. -->
-      <template
-        slot="schemaVersion"
-        slot-scope="data">
-        <a
-          :href="data.value"
-          target="_blank">{{ data.value }}</a>
-      </template>
       <template
         slot="consentUrl"
         slot-scope="data">
         <a
           :href="data.value"
-          target="_blank">{{ data.value ? "Start PSU Consent" : "" }}</a>
+          target="_blank">Start PSU Consent</a>
       </template>
     </b-table>
   </div>
@@ -55,6 +40,7 @@
 
 <script>
 import { createNamespacedHelpers } from 'vuex';
+
 const {
   mapState,
 } = createNamespacedHelpers('testcases');
@@ -73,24 +59,6 @@ export default {
       type: Object,
       required: true,
     },
-    /**
-     * Fields to display in API Specification Table.
-     * See documentation: https://bootstrap-vue.js.org/docs/components/table#fields-column-definitions-
-     */
-    tableFields: {
-      type: Object,
-      default: () => ({
-        name: {
-          tdClass: 'table-data-breakable api-specification-table',
-        },
-        schema: {
-          tdClass: 'table-data-breakable api-specification-table',
-        },
-        consentUrl: {
-          tdClass: 'table-data-breakable api-specification-table',
-        },
-      }),
-    },
   },
   computed: {
     ...mapState([
@@ -99,8 +67,34 @@ export default {
     apiSpecificationWithConsentUrl() {
       const consentUrl = this.consentUrls[this.apiSpecification.name];
       return Object.assign(this.apiSpecification, { consentUrl });
-    }
-  }
+    },
+    hasConsentUrl() {
+      const flag = this.apiSpecificationWithConsentUrl.consentUrl ? true : false;
+      return flag;
+    },
+    /**
+     * Fields to display in API Specification Table.
+     * See documentation: https://bootstrap-vue.js.org/docs/components/table#fields-column-definitions-
+     */
+    tableFields() {
+      const fields = {
+        name: {
+          tdClass: 'table-data-breakable api-specification-table',
+        },
+        schema: {
+          tdClass: 'table-data-breakable api-specification-table',
+        }
+      };
+      if (this.hasConsentUrl) {
+        Object.assign(fields, {
+          consentUrl: {
+            tdClass: 'table-data-breakable api-specification-table',
+          }
+        });
+      }
+      return fields;
+    },
+  },
 };
 </script>
 
