@@ -156,11 +156,6 @@ func (i *Input) setHeaders(req *resty.Request, ctx *Context) error {
 
 func (i *Input) setBody(req *resty.Request, ctx *Context) error {
 	value := i.RequestBody
-	fmt.Println("Dump context for body replacement")
-	for k, v := range *ctx {
-		fmt.Printf("%s:%s\n", k, v)
-	}
-	fmt.Println("Process BODY Replacements")
 	for {
 		val2, err := replaceContextField(value, ctx)
 		fmt.Printf("checking found %s, checking %s\n", value, val2)
