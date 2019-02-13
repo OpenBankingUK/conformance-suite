@@ -108,7 +108,7 @@ To verify the content has not been tampered with you can you the `DOCKER_CONTENT
 
 Running a test plan on the FCS involves five steps, as follows:
 
-1. Start / Load test - Select a template.
+1. Start / Load test - Select a template. **TBC**
 
 2. Discovery - Review the discovery file and update as required.
 
