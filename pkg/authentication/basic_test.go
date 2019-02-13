@@ -7,7 +7,7 @@ import (
 )
 
 // TestClientSecretBasicGeneration tests the generation of `client secret basic` value as a product of
-// `client_id` and `client_secret` as per https://tools.ietf.org/html/rfc6749#section-4.4
+// `client_id` and `client_secret` as per https://tools.ietf.org/html/rfc7617
 func TestClientSecretBasicGeneration(t *testing.T) {
 	assert := assert.New(t)
 
