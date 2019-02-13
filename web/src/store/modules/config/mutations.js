@@ -31,4 +31,20 @@ export default {
   [types.SET_WIZARD_STEP](state, step) {
     state.wizard.step = step;
   },
+
+  [types.SET_CLIENT_ID](state, value) {
+    state.configuration.client_id = value;
+  },
+  [types.SET_CLIENT_SECRET](state, value) {
+    state.configuration.client_secret = value;
+  },
+  [types.SET_TOKEN_ENDPOINT](state, value) {
+    state.configuration.token_endpoint = value;
+  },
+  [types.SET_X_FAPI_FINANCIAL_ID](state, value) {
+    state.configuration.x_fapi_financial_id = value;
+  },
+  [types.SET_REDIRECT_URL](state, value) {
+    state.configuration.redirect_url = value;
+  },
 };

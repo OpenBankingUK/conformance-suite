@@ -1,19 +1,21 @@
 package server
 
 import (
-	versionmock "bitbucket.org/openbankingteam/conformance-suite/internal/pkg/version/mocks"
 	"context"
 	"io/ioutil"
 	"net/http"
 	"strings"
 	"testing"
 
-	"github.com/stretchr/testify/assert"
+	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/test"
+	versionmock "bitbucket.org/openbankingteam/conformance-suite/internal/pkg/version/mocks"
+
 	"github.com/stretchr/testify/require"
 )
 
 func TestGetTestCases(t *testing.T) {
-	assert := assert.New(t)
+	assert := test.NewAssert(t)
+
 	server := NewServer(nullLogger(), conditionalityCheckerMock{}, &versionmock.Version{})
 	defer func() {
 		require.NoError(t, server.Shutdown(context.TODO()))

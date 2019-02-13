@@ -1,12 +1,14 @@
+//go:generate mockery -name Journey
 package server
 
 import (
+	"sync"
+
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/authentication"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/executors"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/generation"
 	"github.com/pkg/errors"
-	"sync"
 )
 
 var (
@@ -33,14 +35,13 @@ type Journey interface {
 	RunTests() error
 	StopTestRun()
 	Results() executors.DaemonController
-	SetCertificates(signing, transport authentication.Certificate)
+	SetConfig(signing, transport authentication.Certificate, clientID, clientSecret, tokenEndpoint, xXFAPIFinancialID, redirectURL string)
 }
 
 type journey struct {
-	generator        generation.Generator
-	validator        discovery.Validator
-	daemonController executors.DaemonController
-
+	generator             generation.Generator
+	validator             discovery.Validator
+	daemonController      executors.DaemonController
 	journeyLock           *sync.Mutex
 	testCasesRun          generation.TestCasesRun
 	testCasesRunGenerated bool
@@ -49,6 +50,11 @@ type journey struct {
 	validDiscoveryModel   *discovery.Model
 	certificateSigning    authentication.Certificate
 	certificateTransport  authentication.Certificate
+	clientID              string
+	clientSecret          string
+	tokenEndpoint         string
+	xXFAPIFinancialID     string
+	redirectURL           string
 }
 
 // NewJourney creates an instance for a user journey
@@ -156,9 +162,14 @@ func (wj *journey) StopTestRun() {
 	wj.daemonController.Stop()
 }
 
-func (wj *journey) SetCertificates(signing, transport authentication.Certificate) {
+func (wj *journey) SetConfig(signing, transport authentication.Certificate, clientID, clientSecret, tokenEndpoint, xXFAPIFinancialID, redirectURL string) {
 	wj.journeyLock.Lock()
+	defer wj.journeyLock.Unlock()
 	wj.certificateSigning = signing
 	wj.certificateTransport = transport
-	wj.journeyLock.Unlock()
+	wj.clientID = clientID
+	wj.clientSecret = clientSecret
+	wj.tokenEndpoint = tokenEndpoint
+	wj.xXFAPIFinancialID = xXFAPIFinancialID
+	wj.redirectURL = redirectURL
 }

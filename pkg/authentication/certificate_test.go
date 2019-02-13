@@ -7,7 +7,7 @@ import (
 	"encoding/pem"
 	"testing"
 
-	"github.com/stretchr/testify/require"
+	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/test"
 )
 
 const (
@@ -35,7 +35,7 @@ G6aFKaqQfOXKCyWoUiVknQJAXrlgySFci/2ueKlIE1QqIiLSZ8V8OlpFLRnb1pzI
 )
 
 func TestCertificateValidateValidKeys(t *testing.T) {
-	require := require.New(t)
+	require := test.NewRequire(t)
 
 	publicCert := publicCertValid
 	privateCert := privateCertValid
@@ -46,16 +46,17 @@ func TestCertificateValidateValidKeys(t *testing.T) {
 }
 
 func TestCertificateValidateValidKeysRandomlyGenerated(t *testing.T) {
-	require := require.New(t)
+	require := test.NewRequire(t)
 
 	reader := rand.Reader
-	bitSize := 2048
+	bitSize := 512 // smallest no. of bits that is allowed by `rsa.GenerateKey`
+	// bitSize := 2048
 	// bitSize := 4096
 
 	// Generate random keys
 	privateKey, err := rsa.GenerateKey(reader, bitSize)
-	require.NotNil(privateKey)
 	require.NoError(err)
+	require.NotNil(privateKey)
 
 	require.NoError(privateKey.Validate())
 	publicKey := &privateKey.PublicKey
@@ -87,12 +88,12 @@ func TestCertificateValidateValidKeysRandomlyGenerated(t *testing.T) {
 	privateCert := string(privateKeyPemData)
 	cert, err := NewCertificate(publicCert, privateCert)
 
-	require.NotNil(cert)
 	require.NoError(err)
+	require.NotNil(cert)
 }
 
 func TestCertificateValidatePrivateKeyInvalid(t *testing.T) {
-	require := require.New(t)
+	require := test.NewRequire(t)
 
 	publicCert := publicCertValid
 	privateCert := `-----BEGIN RSA PRIVATE KEY-----
@@ -129,7 +130,7 @@ t6uWCaHlDg2r/WDkbpxsgA==
 	require.EqualError(err, `error verifying: crypto/rsa: verification error`)
 }
 func TestCertificateValidatePublicKeyInvalid(t *testing.T) {
-	require := require.New(t)
+	require := test.NewRequire(t)
 
 	publicCert := `-----BEGIN PUBLIC KEY-----
 MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEArBPlIPFnrLAOPY7Ltkxh
@@ -148,7 +149,7 @@ XwIDAQAB
 }
 
 func TestCertificateValidateInvalidPublicAndPrivateKeyEmpty(t *testing.T) {
-	require := require.New(t)
+	require := test.NewRequire(t)
 
 	publicCert := ``
 	privateCert := ``
@@ -159,7 +160,7 @@ func TestCertificateValidateInvalidPublicAndPrivateKeyEmpty(t *testing.T) {
 }
 
 func TestCertificateValidateInvalidPublicKeyEmpty(t *testing.T) {
-	require := require.New(t)
+	require := test.NewRequire(t)
 
 	publicCert := ``
 	privateCert := privateCertValid
@@ -170,7 +171,7 @@ func TestCertificateValidateInvalidPublicKeyEmpty(t *testing.T) {
 }
 
 func TestCertificateValidateInvalidPrivateKeyEmpty(t *testing.T) {
-	require := require.New(t)
+	require := test.NewRequire(t)
 
 	publicCert := publicCertValid
 	privateCert := ``
@@ -181,7 +182,7 @@ func TestCertificateValidateInvalidPrivateKeyEmpty(t *testing.T) {
 }
 
 func TestCertificateValidateInvalidPublicKeyRSA(t *testing.T) {
-	require := require.New(t)
+	require := test.NewRequire(t)
 
 	publicCert := `-----BEGIN PUBLIC KEY-----
 MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE8xOUetsCa8EfOlDEBAfREhJqspDo
@@ -195,7 +196,7 @@ yEh6Szz2in47Tv5n52m9dLYyPCbqZkOB5nTSqtscpkQD/HpykCggvx09iQ==
 }
 
 func TestCertificateValidateInvalidPrivateKeyRSA(t *testing.T) {
-	require := require.New(t)
+	require := test.NewRequire(t)
 
 	publicCert := publicCertValid
 	privateCert := `-----BEGIN PRIVATE KEY-----
