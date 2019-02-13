@@ -66,11 +66,10 @@ export default {
     ]),
     apiSpecificationWithConsentUrl() {
       const consentUrl = this.consentUrls[this.apiSpecification.name];
-      return Object.assign(this.apiSpecification, { consentUrl });
+      return Object.assign({ consentUrl }, this.apiSpecification);
     },
     hasConsentUrl() {
-      const flag = this.apiSpecificationWithConsentUrl.consentUrl ? true : false;
-      return flag;
+      return this.apiSpecificationWithConsentUrl.consentUrl ? true : false;
     },
     /**
      * Fields to display in API Specification Table.
