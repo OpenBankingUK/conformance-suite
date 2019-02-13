@@ -106,11 +106,11 @@ func getTemplatedTestCases(path string) (tc []model.TestCase, err error) {
 		return tc, nil
 	}
 
-	filedata, err := ioutil.ReadFile("templates/account_consent.json")
+	filedata, err := ioutil.ReadFile("components/account_consent.json")
 	if err != nil {
-		filedata, err = ioutil.ReadFile("../../templates/account_consent.json") // handle testing
+		filedata, err = ioutil.ReadFile("../../components/account_consent.json") // handle testing
 		if err != nil {
-			logrus.Error("Cannot read: templates/account_consent " + err.Error())
+			logrus.Error("Cannot read: components/account_consent " + err.Error())
 			return nil, err
 		}
 	}

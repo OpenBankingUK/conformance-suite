@@ -1,6 +1,6 @@
 {
     "id": "comacctp01",
-    "name": "accounts.TokenProvider",
+    "name": "accounts.HeadlessTokenProvider",
     "description": "Provides Access Tokens for Accounts API",
     "documentation":"The TestTokenProvider takes eight input parameters, one output parameter. The input paramters define credential, endpoints and consent permssions, the output parameter names the the key under which the resulting token will be placed in the context ",
     "inputParameters": {

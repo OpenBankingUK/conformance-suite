@@ -25,7 +25,7 @@ func MakeComponent(name string) Component {
 }
 
 const (
-	productionComponentDirectory = "templates/"
+	productionComponentDirectory = "components/"
 	testComponentDirectory       = "../model/component/testdata/"
 )
 

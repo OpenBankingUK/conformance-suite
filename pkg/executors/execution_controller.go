@@ -22,6 +22,7 @@ type RunDefinition struct {
 	TestCaseRun   generation.TestCasesRun
 	SigningCert   authentication.Certificate
 	TransportCert authentication.Certificate
+	Context       *model.Context
 }
 
 type TestCaseRunner struct {
@@ -45,13 +46,13 @@ func NewTestCaseRunner(definition RunDefinition, daemonController DaemonControll
 	}
 }
 
-// NewTokenAcquisitionRunner -
-func NewTokenAcquisitionRunner(definition RunDefinition, daemonController DaemonController) *TestCaseRunner {
+// NewConsentAcquisitionRunner -
+func NewConsentAcquisitionRunner(definition RunDefinition, daemonController DaemonController) *TestCaseRunner {
 	return &TestCaseRunner{
 		executor:         NewExecutor(),
 		definition:       definition,
 		daemonController: daemonController,
-		logger:           logrus.New().WithField("module", "TokenAcquisitionRunner"),
+		logger:           logrus.New().WithField("module", "ConsentAcquisitionRunner"),
 		runningLock:      &sync.Mutex{},
 		running:          false,
 	}
@@ -71,14 +72,26 @@ func (r *TestCaseRunner) RunTestCases() error {
 	return nil
 }
 
+// RunConsentAcquisition -
+func (r *TestCaseRunner) RunConsentAcquisition(tokenName string, permissionList string, ctx *model.Context, consentType string) error {
+	r.runningLock.Lock()
+	defer r.runningLock.Unlock()
+	if r.running {
+		return errors.New("consent acquisition test cases runner already running")
+	}
+	r.running = true
+
+	go r.runConsentAcquisitionAsync(tokenName, permissionList, ctx, consentType)
+
+	return nil
+}
+
 func (r *TestCaseRunner) runTestCasesAsync() {
 
 	r.executor.SetCertificates(r.definition.SigningCert, r.definition.TransportCert)
 	ruleCtx := r.makeRuleCtx()
 
 	ctxLogger := r.logger.WithField("id", uuid.New())
-	logrus.SetLevel(logrus.DebugLevel)
-	ctxLogger.Logger.SetLevel(logrus.DebugLevel)
 	r.AppMsg("runTestCasesAsync()")
 	r.AppMsg("determine Token Requirements")
 
@@ -89,63 +102,44 @@ func (r *TestCaseRunner) runTestCasesAsync() {
 	r.setNotRunning()
 }
 
-func (r *TestCaseRunner) executeCustomComponents(ctx *model.Context, ctxLogger *logrus.Entry) error {
-	ctxLogger.Debug("execution Custom Components")
+func (r *TestCaseRunner) runConsentAcquisitionAsync(tokenName string, permissionList string, ctx *model.Context, consentType string) {
 
-	executionUnits, err := r.getExecutionUnits(ctxLogger)
-	if err != nil {
-		ctxLogger.Debug("failed to get Execution Units: " + err.Error())
-		return err
-	}
-	if len(executionUnits) == 0 {
-		ctxLogger.Debug("no ExecutionUnits")
-		return nil
-	}
-	reg := model.NewRegistry()
-	comp, err := model.LoadComponent("tokenProviderComponent.json")
-	if err != nil {
-		ctxLogger.Debug("Load Model Failed: " + err.Error())
-		return err
-	}
-	reg.Add(comp.Name, &comp)
-	for _, unitName := range executionUnits {
-		// Execute components
-		ctxLogger.Debug("process execution unit :" + unitName)
-		comp, exists := reg.Get(unitName)
-		if !exists {
-			msg := "component execution error: component (%s) does not exist: " + unitName
-			ctxLogger.Debug(msg)
-			return errors.New(msg)
-		}
+	r.executor.SetCertificates(r.definition.SigningCert, r.definition.TransportCert)
+	ruleCtx := r.makeRuleCtx()
+	ruleCtx.PutString("consent_id", tokenName)
+	ruleCtx.PutString("permission_list", permissionList)
 
-		cmp, ok := comp.(*model.Component)
-		if !ok {
-			msg := "component execution error: component (%s) cannot cast registry value:" + unitName
-			ctxLogger.Debug(msg)
-			return errors.New(msg)
-		}
-
-		err := cmp.ValidateParameters(ctx) // correct parameters for component exist in context
+	ctxLogger := r.logger.WithField("id", uuid.New())
+	r.AppMsg("runTokenAcquisitionAsync)")
+	var err error
+	var comp model.Component
+	if consentType == "psu" {
+		comp, err = model.LoadComponent("PSUConsentProviderComponent.json")
 		if err != nil {
-			msg := fmt.Sprintf("component execution error: component (%s) cannot ValidateParameters: %s", unitName, err.Error())
-			ctxLogger.Debug(msg)
-			return errors.New(msg)
+			r.AppErr("Load PSU Component Failed: " + err.Error())
+			r.setNotRunning()
+			return
 		}
-		cmp.ProcessReplacementFields(*ctx)
-		r.executeComponentTests(cmp, ctx, ctxLogger)
+	} else {
+		comp, err = model.LoadComponent("headlessTokenProviderProviderComponent.json")
+		if err != nil {
+			r.AppErr("Load HeadlessConsent Component Failed: " + err.Error())
+			r.setNotRunning()
+			return
+		}
 	}
-	return nil
-}
 
-func (r *TestCaseRunner) getExecutionUnits(ctxLogger *logrus.Entry) ([]string, error) {
-	var units []string
-	for _, customTest := range r.definition.DiscoModel.DiscoveryModel.CustomTests {
-		for _, executionUnit := range customTest.Execution {
-			ctxLogger.Debug("Execution unit: " + executionUnit)
-			units = append(units, executionUnit)
-		}
+	err = comp.ValidateParameters(ruleCtx) // correct parameters for component exist in context
+	if err != nil {
+		msg := fmt.Sprintf("component execution error: component (%s) cannot ValidateParameters: %s", comp.Name, err.Error())
+		r.AppErr(msg)
+		r.setNotRunning()
+		return
 	}
-	return units, nil
+	comp.ProcessReplacementFields(*ruleCtx)
+	r.executeComponentTests(&comp, ruleCtx, ctxLogger)
+
+	r.setNotRunning()
 }
 
 func (r *TestCaseRunner) executeComponentTests(comp *model.Component, ruleCtx *model.Context, ctxLogger *logrus.Entry) {
@@ -199,6 +193,9 @@ func (r *TestCaseRunner) executeTest(tc model.TestCase, ruleCtx *model.Context, 
 		ctxLogger.WithError(err).Error("preparing executing test")
 		return results.NewTestCaseFail(tc.ID, results.NoMetrics, err)
 	}
+
+	fmt.Printf("%#v\n", ruleCtx)
+	fmt.Printf("%s\n", tc.Input)
 
 	resp, metrics, err := r.executor.ExecuteTestCase(req, &tc, ruleCtx)
 	ctxLogger = logWithMetrics(ctxLogger, metrics)

@@ -108,8 +108,9 @@ func initConfig() {
 		os.Exit(1)
 	}
 	logger.SetLevel(level)
+	// TODO: remove the DebugLevel from here
 	logger.SetLevel(logrus.DebugLevel)
 
-	tracer.Silent = false //viper.GetBool("log_tracer")
+	tracer.Silent = viper.GetBool("log_tracer")
 	resty.SetDebug(viper.GetBool("log_http_trace"))
 }

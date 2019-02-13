@@ -7,6 +7,7 @@ import (
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/executors"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/generation"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
 	"github.com/pkg/errors"
 )
 
@@ -50,6 +51,7 @@ type journey struct {
 	validDiscoveryModel   *discovery.Model
 	certificateSigning    authentication.Certificate
 	certificateTransport  authentication.Certificate
+	context               model.Context
 }
 
 // NewJourney creates an instance for a user journey
@@ -99,10 +101,13 @@ func (wj *journey) TestCases() (generation.TestCasesRun, error) {
 			TestCaseRun:   wj.testCasesRun,
 			SigningCert:   wj.certificateSigning,
 			TransportCert: wj.certificateTransport,
+			Context:       &wj.context,
 		}
 
-		go executors.InitiationTokenAcquisition(wj.testCasesRun.SpecConsentRequirements, runDefinition)
-		wj.collector = executors.NewNullCollector(wj.doneCollectionCallback)
+		executors.InitiationConsentAcquisition(wj.testCasesRun.SpecConsentRequirements, runDefinition)
+		if wj.validDiscoveryModel.DiscoveryModel.TokenAcquisition == "psu" {
+			wj.collector = executors.NewNullCollector(wj.doneCollectionCallback)
+		}
 		wj.testCasesRunGenerated = true
 		wj.allCollected = false
 	}
@@ -151,6 +156,7 @@ func (wj *journey) RunTests() error {
 		TestCaseRun:   wj.testCasesRun,
 		SigningCert:   wj.certificateSigning,
 		TransportCert: wj.certificateTransport,
+		Context:       &wj.context,
 	}
 
 	runner := executors.NewTestCaseRunner(runDefinition, wj.daemonController)
