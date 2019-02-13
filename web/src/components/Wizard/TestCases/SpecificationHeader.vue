@@ -47,7 +47,7 @@
         slot-scope="data">
         <a
           :href="data.value"
-          target="_blank">{{ data.value }}</a>
+          target="_blank">{{ data.value ? "Start PSU Consent" : "" }}</a>
       </template>
     </b-table>
   </div>
