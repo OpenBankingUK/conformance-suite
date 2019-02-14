@@ -41,6 +41,9 @@ export default {
   [types.SET_TOKEN_ENDPOINT](state, value) {
     state.configuration.token_endpoint = value;
   },
+  [types.SET_AUTHORIZATION_ENDPOINT](state, value) {
+    state.configuration.authorization_endpoint = value;
+  },
   [types.SET_X_FAPI_FINANCIAL_ID](state, value) {
     state.configuration.x_fapi_financial_id = value;
   },

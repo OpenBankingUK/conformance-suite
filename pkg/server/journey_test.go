@@ -172,6 +172,7 @@ func TestJourneySetConfig(t *testing.T) {
 	require.Empty(journey.clientID)
 	require.Empty(journey.clientSecret)
 	require.Empty(journey.tokenEndpoint)
+	require.Empty(journey.authorizationEndpoint)
 	require.Empty(journey.xXFAPIFinancialID)
 	require.Empty(journey.redirectURL)
 
@@ -184,16 +185,18 @@ func TestJourneySetConfig(t *testing.T) {
 	clientID := "8672384e-9a33-439f-8924-67bb14340d71"
 	clientSecret := "2cfb31a3-5443-4e65-b2bc-ef8e00266a77"
 	tokenEndpoint := "https://modelobank2018.o3bank.co.uk:4201/token"
+	authorizationEndpoint := "https://modelobankauth2018.o3bank.co.uk:4101/auth"
 	xXFAPIFinancialID := "0015800001041RHAAY"
 	redirectURL := "https://0.0.0.0:8443/conformancesuite/callback"
 
-	journey.SetConfig(certificateSigning, certificateTransport, clientID, clientSecret, tokenEndpoint, xXFAPIFinancialID, redirectURL)
+	journey.SetConfig(certificateSigning, certificateTransport, clientID, clientSecret, tokenEndpoint, authorizationEndpoint, xXFAPIFinancialID, redirectURL)
 
 	require.Equal(certificateTransport, journey.certificateTransport)
 	require.Equal(certificateSigning, journey.certificateSigning)
 	require.Equal(clientID, journey.clientID)
 	require.Equal(clientSecret, journey.clientSecret)
 	require.Equal(tokenEndpoint, journey.tokenEndpoint)
+	require.Equal(authorizationEndpoint, journey.authorizationEndpoint)
 	require.Equal(xXFAPIFinancialID, journey.xXFAPIFinancialID)
 	require.Equal(redirectURL, journey.redirectURL)
 }

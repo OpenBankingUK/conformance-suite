@@ -77,7 +77,8 @@ func TestServerDiscoveryModelPOSTResolvesEndpointsUsingOpenidConfigurationURI(t 
 	// curl -s 'https://modelobankauth2018.o3bank.co.uk:4101/.well-known/openid-configuration' | jq '.' | pbcopy
 	mockResponse := `
 	{
-	  "token_endpoint": "https://modelobank2018.o3bank.co.uk:4201/<token_mock>"
+	  "token_endpoint": "https://modelobank2018.o3bank.co.uk:4201/<token_mock>",
+	  "authorization_endpoint": "https://modelobankauth2018.o3bank.co.uk:4101/<auth_mock>"
 	}
 	`
 	mockedServer, mockedServerURL := test.HTTPServer(http.StatusOK, mockResponse, nil)
@@ -88,6 +89,10 @@ func TestServerDiscoveryModelPOSTResolvesEndpointsUsingOpenidConfigurationURI(t 
     "token_endpoints": {
         "schema_version=https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.0/dist/account-info-swagger.json": "https://modelobank2018.o3bank.co.uk:4201/<token_mock>",
         "schema_version=https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.0/dist/payment-initiation-swagger.json": "https://modelobank2018.o3bank.co.uk:4201/<token_mock>"
+    },
+	"authorization_endpoints": {
+        "schema_version=https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.0/dist/account-info-swagger.json": "https://modelobankauth2018.o3bank.co.uk:4101/<auth_mock>",
+        "schema_version=https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.0/dist/payment-initiation-swagger.json": "https://modelobankauth2018.o3bank.co.uk:4101/<auth_mock>"
     }
 }
 	`

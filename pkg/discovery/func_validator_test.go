@@ -231,8 +231,8 @@ func TestValidate(t *testing.T) {
 		for _, method := range methods {
 			testValidateFailures(t, conditionalityCheckerMock{isPresent: true}, &invalidTest{
 				discoveryJSON: discoveryStub("tokenAcquisition", method),
-				success: true,
-				failures: []ValidationFailure{}})
+				success:       true,
+				failures:      []ValidationFailure{}})
 		}
 	})
 
