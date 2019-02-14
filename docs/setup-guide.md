@@ -1,4 +1,4 @@
-# Functional Conformance Suite Setup Guide
+# Functional Conformance Suite Setup Guide (Ozone Model Bank)
 
 This guide will assist you with the technical steps required to setup the Functional Conformance Suite (FCS) and run your first test. In this guide we will be connecting to and running tests against the Ozone Model Bank.
 
@@ -20,14 +20,16 @@ This guide assumes the following tools are installed and functioning correctly. 
 
 ## Ozone Bank (Model Bank)
 
-Ozone Bank is an Account Servicing Payment Service Provider (ASPSP), which the FCS will connect to as a TPP. With that in mind,
+Ozone Bank is an Mock Account Servicing Payment Service Provider (ASPSP), which the FCS will connect to as a TPP. With that in mind,
 you must [enrol with Ozone](https://ob2018.o3bank.co.uk:444/pub/home).
 
 * Use Google or LinkedIn as identity provider
 * Any organisation name
 * Redirect URI should be `https://0.0.0.0:8443/conformancesuite/callback`
 * Click "Go"
-* Registration should be successful, keep the page open for reference later.
+* Registration should be successful
+
+Make a note of the certificates and the "CLIENT ID" and "CLIENT SECRET" values. 
 
 ## Generate transport and signing certificates
 
@@ -54,8 +56,8 @@ A precursor step of creating a Certificate Authority (CA) is required to sign th
 
 The following certificate information (DN) values shall be provided, based on what is mentioned on your Ozone registration page
 under the Certificates tab:
-* C (Country Name)
-* O (Organisation Name)
+* C (Country Name) = GB
+* O (Organisation Name) = Ozone Financial Technology Limited
 * OU (Organisation Unit) 
 * CN (Common Name)
 
@@ -79,8 +81,8 @@ Execute `openssl x509 -req -days 3650 -in signing.csr -CA ca.pem -CAkey ca.key -
 
 ### FCS Server Certificates
 
-* Step 1: Download certificates (localhost)[https://bitbucket.org/openbankingteam/conformance-suite/src/develop/certs/]
-* Step 2: Trust the certificate or add as an exception.
+The suite runs on https using localhost, you can trust the certificate or add as an exception. 
+Download certificates (localhost)[https://bitbucket.org/openbankingteam/conformance-suite/src/develop/certs/]
 
 **TBC** Is the same as running `make run_parallel` ?
 
