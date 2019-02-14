@@ -69,7 +69,7 @@ export default {
       return Object.assign({ consentUrl }, this.apiSpecification);
     },
     hasConsentUrl() {
-      return this.apiSpecificationWithConsentUrl.consentUrl ? true : false;
+      return !!this.apiSpecificationWithConsentUrl.consentUrl;
     },
     /**
      * Fields to display in API Specification Table.
@@ -82,13 +82,13 @@ export default {
         },
         schema: {
           tdClass: 'table-data-breakable api-specification-table',
-        }
+        },
       };
       if (this.hasConsentUrl) {
         Object.assign(fields, {
           consentUrl: {
             tdClass: 'table-data-breakable api-specification-table',
-          }
+          },
         });
       }
       return fields;
