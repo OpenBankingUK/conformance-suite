@@ -11,34 +11,33 @@ import (
 func TestClientSecretBasicGeneration(t *testing.T) {
 	assert := assert.New(t)
 
-	tt := []struct{
-		clientID string
-		clientSecret string
+	tt := []struct {
+		clientID      string
+		clientSecret  string
 		tokenExpected string
 		errorExpected error
-		label string
+		label         string
 	}{
 		{
-			clientID : "dc3a363e-2cc3-4187-b6df-579f21bad6c8",
-			clientSecret : "e648104b-f52a-43e1-a2e0-fe3a047497cf",
+			clientID:      "dc3a363e-2cc3-4187-b6df-579f21bad6c8",
+			clientSecret:  "e648104b-f52a-43e1-a2e0-fe3a047497cf",
 			tokenExpected: "ZGMzYTM2M2UtMmNjMy00MTg3LWI2ZGYtNTc5ZjIxYmFkNmM4OmU2NDgxMDRiLWY1MmEtNDNlMS1hMmUwLWZlM2EwNDc0OTdjZg==",
-			label: "valid credentials",
+			label:         "valid credentials",
 		},
 		{
-			clientID : "",
-			clientSecret : "foobar",
+			clientID:      "",
+			clientSecret:  "foobar",
 			tokenExpected: "",
 			errorExpected: errors.New("clientID cannot be empty"),
-			label: "empty client id",
+			label:         "empty client id",
 		},
 		{
-			clientID : "foobar",
-			clientSecret : "",
+			clientID:      "foobar",
+			clientSecret:  "",
 			tokenExpected: "",
 			errorExpected: errors.New("clientSecret cannot be empty"),
-			label: "empty client secret",
+			label:         "empty client secret",
 		},
-
 	}
 
 	for _, ti := range tt {

@@ -13,12 +13,12 @@ import (
 )
 
 var (
-	ErrEmptyClientID         = errors.New("client_id is empty")
-	ErrEmptyClientSecret     = errors.New("client_secret is empty")
-	ErrEmptyTokenEndpoint    = errors.New("token_endpoint is empty")
+	ErrEmptyClientID              = errors.New("client_id is empty")
+	ErrEmptyClientSecret          = errors.New("client_secret is empty")
+	ErrEmptyTokenEndpoint         = errors.New("token_endpoint is empty")
 	ErrEmptyAuthorizationEndpoint = errors.New("authorization_endpoint is empty")
-	ErrEmptyXFAPIFinancialID = errors.New("x_fapi_financial_id is empty")
-	ErrEmptyRedirectURL      = errors.New("redirect_url is empty")
+	ErrEmptyXFAPIFinancialID      = errors.New("x_fapi_financial_id is empty")
+	ErrEmptyRedirectURL           = errors.New("redirect_url is empty")
 )
 
 type configHandlers struct {
@@ -27,16 +27,16 @@ type configHandlers struct {
 }
 
 type GlobalConfiguration struct {
-	SigningPrivate   string `json:"signing_private"`
-	SigningPublic    string `json:"signing_public"`
-	TransportPrivate string `json:"transport_private"`
-	TransportPublic  string `json:"transport_public"`
-	ClientID         string `json:"client_id"`
-	ClientSecret     string `json:"client_secret"`
-	TokenEndpoint    string `json:"token_endpoint"`
+	SigningPrivate        string `json:"signing_private"`
+	SigningPublic         string `json:"signing_public"`
+	TransportPrivate      string `json:"transport_private"`
+	TransportPublic       string `json:"transport_public"`
+	ClientID              string `json:"client_id"`
+	ClientSecret          string `json:"client_secret"`
+	TokenEndpoint         string `json:"token_endpoint"`
 	AuthorizationEndpoint string `json:"authorization_endpoint"`
-	XFAPIFinancialID string `json:"x_fapi_financial_id"`
-	RedirectURL      string `json:"redirect_url"`
+	XFAPIFinancialID      string `json:"x_fapi_financial_id"`
+	RedirectURL           string `json:"redirect_url"`
 }
 
 // POST /api/config/global

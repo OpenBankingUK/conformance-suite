@@ -11,7 +11,7 @@ import (
 )
 
 type PostDiscoveryModelResponse struct {
-	TokenEndpoints map[string]string `json:"token_endpoints"`
+	TokenEndpoints         map[string]string `json:"token_endpoints"`
 	AuthorizationEndpoints map[string]string `json:"authorization_endpoints"`
 }
 
@@ -44,7 +44,7 @@ func (d discoveryHandlers) setDiscoveryModelHandler(c echo.Context) error {
 
 	failures = discovery.ValidationFailures{}
 	response := PostDiscoveryModelResponse{
-		TokenEndpoints: map[string]string{},
+		TokenEndpoints:         map[string]string{},
 		AuthorizationEndpoints: map[string]string{},
 	}
 	for discoveryItemIndex, discoveryItem := range discoveryModel.DiscoveryModel.DiscoveryItems {

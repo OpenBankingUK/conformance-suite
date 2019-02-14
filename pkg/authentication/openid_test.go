@@ -17,7 +17,7 @@ func TestOpenIDUnmarshal(t *testing.T) {
 }
 	`
 	expected := OpenIDConfiguration{
-		TokenEndpoint: "https://modelobank2018.o3bank.co.uk:4201/<token_mock>",
+		TokenEndpoint:         "https://modelobank2018.o3bank.co.uk:4201/<token_mock>",
 		AuthorizationEndpoint: "https://modelobankauth2018.o3bank.co.uk:4101/<auth_mock>",
 	}
 	actual := OpenIDConfiguration{}
