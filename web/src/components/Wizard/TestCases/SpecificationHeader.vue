@@ -2,7 +2,7 @@
   <div>
     <h6>API Specification</h6>
     <b-table
-      :items="[ apiSpecificationWithConsentUrl ]"
+      :items="[ apiSpecificationWithConsentUrls ]"
       :fields="tableFields"
       small
       fixed
@@ -28,11 +28,17 @@
         </a>
       </template>
       <template
-        slot="consentUrl"
+        slot="consentUrls"
         slot-scope="data">
-        <a
-          :href="data.value"
-          target="_blank">Start PSU Consent</a>
+        <template v-for="url in data.value">
+          <a
+            :href="url"
+            :key="url"
+            target="_blank">
+            Start PSU Consent
+          </a>
+          <br :key="url">
+        </template>
       </template>
     </b-table>
   </div>
@@ -64,12 +70,17 @@ export default {
     ...mapState([
       'consentUrls',
     ]),
-    apiSpecificationWithConsentUrl() {
-      const consentUrl = this.consentUrls[this.apiSpecification.name];
-      return Object.assign({ consentUrl }, this.apiSpecification);
+    specConsentUrls() {
+      return this.consentUrls[this.apiSpecification.name];
+      // Uncomment below and comment line above to test before backend consent URL changes finished:
+      // return ['http://example.com/1', 'http://example.com/2'];
     },
-    hasConsentUrl() {
-      return !!this.apiSpecificationWithConsentUrl.consentUrl;
+    apiSpecificationWithConsentUrls() {
+      const consentUrls = this.specConsentUrls;
+      return Object.assign({ consentUrls }, this.apiSpecification);
+    },
+    hasConsentUrls() {
+      return this.specConsentUrls && this.specConsentUrls.length > 0;
     },
     /**
      * Fields to display in API Specification Table.
@@ -84,9 +95,9 @@ export default {
           tdClass: 'table-data-breakable api-specification-table',
         },
       };
-      if (this.hasConsentUrl) {
+      if (this.hasConsentUrls) {
         Object.assign(fields, {
-          consentUrl: {
+          consentUrls: {
             tdClass: 'table-data-breakable api-specification-table',
           },
         });

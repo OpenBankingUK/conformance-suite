@@ -34,6 +34,7 @@ describe('store/modules/testcases', () => {
   });
 
   const CONSENT_URL = 'http://example.com';
+  const CONSENT_URL2 = 'http://example.com/2';
   const SPEC_NAME = 'Account and Transaction API Specification';
   const OK_RESPONSE = {
     specTokens: [
@@ -48,16 +49,23 @@ describe('store/modules/testcases', () => {
               ],
               testIds: [
                 '#co0001',
-                '#co0002',
-                '#co0003',
                 '#t1001',
-                '#t1002',
-                '#t1003',
-                '#t1004',
-                '#t1005',
               ],
             },
             consentUrl: CONSENT_URL,
+          },
+          {
+            name: 'to1003',
+            codeSet: {
+              codes: [
+                'ReadAccountsDetail',
+              ],
+              testIds: [
+                '#co0002',
+                '#t1002',
+              ],
+            },
+            consentUrl: CONSENT_URL2,
           },
         ],
       },
@@ -137,7 +145,7 @@ describe('store/modules/testcases', () => {
     });
 
     const EXPECTED_CONSENT_URLS_STATE = {
-      [SPEC_NAME]: CONSENT_URL,
+      [SPEC_NAME]: [CONSENT_URL, CONSENT_URL2],
     };
 
     it('testcases/computeTestCases sets testcases/testCases, if successful', async () => {

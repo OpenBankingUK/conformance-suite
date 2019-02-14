@@ -42,15 +42,21 @@ Takes: [
         name: 'to1002',
         consentUrl: CONSENT_URL,
       },
+      {
+        name: 'to1002',
+        consentUrl: CONSENT_URL2,
+      },
     ],
   },
 ]
-Returns: { [SPEC_NAME]: CONSENT_URL }
+Returns: { [SPEC_NAME]: [CONSENT_URL, CONSENT_URL2] }
 */
 const consentUrls = (specTokens) => {
   const map = {};
   specTokens.forEach((item) => {
-    map[item.specIdentifier] = item.namedPermissions[0].consentUrl;
+    const list = item.namedPermissions.map(p => p.consentUrl);
+    const urls = _.filter(list, u => u); // remove null/undefined urls
+    map[item.specIdentifier] = urls;
   });
   return map;
 };
