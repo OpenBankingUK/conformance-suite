@@ -87,6 +87,7 @@ export default {
         'transport_private',
         'transport_public',
         'client_id',
+        'client_secret',
         'token_endpoint',
         'x_fapi_financial_id',
         'redirect_url',
