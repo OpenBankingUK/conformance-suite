@@ -73,8 +73,8 @@ func main() {
 }
 
 func init() {
-	rootCmd.PersistentFlags().String("log_level", "DEBUG", "Log level")
-	rootCmd.PersistentFlags().Bool("log_tracer", true, "Enable tracer logging")
+	rootCmd.PersistentFlags().String("log_level", "INFO", "Log level")
+	rootCmd.PersistentFlags().Bool("log_tracer", false, "Enable tracer logging")
 	rootCmd.PersistentFlags().Bool("log_http_trace", false, "Enable HTTP logging")
 	rootCmd.PersistentFlags().Int("port", 8443, "Server port")
 
