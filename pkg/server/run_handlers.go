@@ -72,7 +72,7 @@ func (h *runHandlers) listenResultWebSocket(c echo.Context) error {
 
 		select {
 		case <-pingTicker.C:
-			logger.Debug("pinging websocket client")
+			//logger.Debug("pinging websocket client")
 			writeTimeout := time.Now().Add(time.Second)
 			err := ws.SetWriteDeadline(writeTimeout)
 			if err != nil {
@@ -91,7 +91,7 @@ func (h *runHandlers) listenResultWebSocket(c echo.Context) error {
 				logger.Error("error reading from result channel")
 				break
 			}
-			logger.WithField("testId", result.Id).Info("sending result event")
+			//logger.WithField("testId", result.Id).Info("sending result event")
 			if err := ws.WriteJSON(newResultEvent(result)); err != nil {
 				logger.WithError(err).Error("writing json to websocket")
 				break

@@ -18,6 +18,15 @@ func newPermissionGroupWithOptions(tc TestCase, builder permissionBuilder) permi
 	)
 }
 
+func NewDefaultPermissionGroup(tc TestCase) permissions.Group {
+	builder := newPermissionBuilder()
+	return permissions.NewGroup(
+		tc.ID,
+		builder.includedPermission(Context{}, tc.Input.Endpoint),
+		builder.excludedPermissions(Context{}),
+	)
+}
+
 const (
 	permissionIncludedKey = "permissions"
 	permissionExcludedKey = "permissions_excluded"

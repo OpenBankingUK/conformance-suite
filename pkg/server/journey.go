@@ -2,13 +2,16 @@
 package server
 
 import (
+	"os"
 	"sync"
 
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/authentication"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/executors"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/generation"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
 	"github.com/pkg/errors"
+	"github.com/sirupsen/logrus"
 )
 
 var (
@@ -50,6 +53,8 @@ type journey struct {
 	validDiscoveryModel   *discovery.Model
 	certificateSigning    authentication.Certificate
 	certificateTransport  authentication.Certificate
+	context               model.Context
+	log                   *logrus.Entry
 	clientID              string
 	clientSecret          string
 	tokenEndpoint         string
@@ -66,10 +71,13 @@ func NewJourney(generator generation.Generator, validator discovery.Validator) *
 		journeyLock:           &sync.Mutex{},
 		allCollected:          false,
 		testCasesRunGenerated: false,
+		context:               model.Context{},
+		log:                   (&logrus.Logger{Out: os.Stderr, Formatter: new(logrus.TextFormatter), Hooks: make(logrus.LevelHooks), Level: logrus.DebugLevel}).WithField("module", "Journey"),
 	}
 }
 
 func (wj *journey) SetDiscoveryModel(discoveryModel *discovery.Model) (discovery.ValidationFailures, error) {
+	wj.log.Debug("wj.SetDiscoveryModel")
 	failures, err := wj.validator.Validate(discoveryModel)
 	if err != nil {
 		return nil, errors.Wrap(err, "error setting discovery model")
@@ -89,6 +97,7 @@ func (wj *journey) SetDiscoveryModel(discoveryModel *discovery.Model) (discovery
 }
 
 func (wj *journey) TestCases() (generation.TestCasesRun, error) {
+	wj.log.Debug("wj.TestCases - Generate Test Cases")
 	wj.journeyLock.Lock()
 	defer wj.journeyLock.Unlock()
 
@@ -99,7 +108,18 @@ func (wj *journey) TestCases() (generation.TestCasesRun, error) {
 	if !wj.testCasesRunGenerated {
 		wj.testCasesRun = wj.generator.GenerateSpecificationTestCases(wj.validDiscoveryModel.DiscoveryModel)
 		// replace this with a NewCollector to a real implementation
-		wj.collector = executors.NewNullCollector(wj.doneCollectionCallback)
+		runDefinition := executors.RunDefinition{
+			DiscoModel:    wj.validDiscoveryModel,
+			TestCaseRun:   wj.testCasesRun,
+			SigningCert:   wj.certificateSigning,
+			TransportCert: wj.certificateTransport,
+			Context:       &wj.context,
+		}
+		wj.customTestParametersToJourneyContext()
+		if wj.validDiscoveryModel.DiscoveryModel.TokenAcquisition == "psu" {
+			executors.InitiationConsentAcquisition(wj.testCasesRun.SpecConsentRequirements, runDefinition)
+			wj.collector = executors.NewNullCollector(wj.doneCollectionCallback)
+		}
 		wj.testCasesRunGenerated = true
 		wj.allCollected = false
 	}
@@ -108,6 +128,7 @@ func (wj *journey) TestCases() (generation.TestCasesRun, error) {
 }
 
 func (wj *journey) CollectToken(setName, token string) error {
+	wj.log.Debug("wj.CollectToken")
 	wj.journeyLock.Lock()
 	defer wj.journeyLock.Unlock()
 
@@ -119,6 +140,7 @@ func (wj *journey) CollectToken(setName, token string) error {
 }
 
 func (wj *journey) AllTokenCollected() bool {
+	wj.log.Debug("wj.AllTokensCollected")
 	wj.journeyLock.Lock()
 	defer wj.journeyLock.Unlock()
 
@@ -126,12 +148,14 @@ func (wj *journey) AllTokenCollected() bool {
 }
 
 func (wj *journey) doneCollectionCallback() {
+	wj.log.Debug("wj.doneCollection Callback")
 	wj.journeyLock.Lock()
 	wj.allCollected = true
 	wj.journeyLock.Unlock()
 }
 
 func (wj *journey) RunTests() error {
+	wj.log.Debug("wj.RunTests")
 	wj.journeyLock.Lock()
 	defer wj.journeyLock.Unlock()
 
@@ -148,6 +172,7 @@ func (wj *journey) RunTests() error {
 		TestCaseRun:   wj.testCasesRun,
 		SigningCert:   wj.certificateSigning,
 		TransportCert: wj.certificateTransport,
+		Context:       &wj.context,
 	}
 
 	runner := executors.NewTestCaseRunner(runDefinition, wj.daemonController)
@@ -155,14 +180,17 @@ func (wj *journey) RunTests() error {
 }
 
 func (wj *journey) Results() executors.DaemonController {
+	wj.log.Debug("wj.Results")
 	return wj.daemonController
 }
 
 func (wj *journey) StopTestRun() {
+	wj.log.Debug("wj.StopTestRun")
 	wj.daemonController.Stop()
 }
 
 func (wj *journey) SetConfig(signing, transport authentication.Certificate, clientID, clientSecret, tokenEndpoint, xXFAPIFinancialID, redirectURL string) {
+	wj.log.Debug("wj.SetConfig")
 	wj.journeyLock.Lock()
 	defer wj.journeyLock.Unlock()
 	wj.certificateSigning = signing
@@ -172,4 +200,12 @@ func (wj *journey) SetConfig(signing, transport authentication.Certificate, clie
 	wj.tokenEndpoint = tokenEndpoint
 	wj.xXFAPIFinancialID = xXFAPIFinancialID
 	wj.redirectURL = redirectURL
+}
+
+func (wj *journey) customTestParametersToJourneyContext() {
+	for _, customTest := range wj.validDiscoveryModel.DiscoveryModel.CustomTests { // assume ordering is prerun i.e. customtest run before other tests
+		for k, v := range customTest.Replacements {
+			wj.context.PutString(k, v)
+		}
+	}
 }

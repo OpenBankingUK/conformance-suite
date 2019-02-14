@@ -1,17 +1,18 @@
 package executors
 
 import (
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/authentication"
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/executors/results"
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/tracer"
 	"crypto/tls"
 	"crypto/x509"
 	"errors"
 	"fmt"
+	"net/http"
+
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/authentication"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/executors/results"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/tracer"
 	"github.com/sirupsen/logrus"
 	"gopkg.in/resty.v1"
-	"net/http"
 )
 
 // TestCaseExecutor defines an interface capable of executing a testcase
@@ -46,11 +47,15 @@ func (e *Executor) ExecuteTestCase(r *resty.Request, t *model.TestCase, ctx *mod
 		if resp.StatusCode() == http.StatusFound { // catch status code 302 redirects and pass back as good response
 			header := resp.Header()
 			logrus.Printf("redirection headers: %#v\n", header)
-			e.appMsg(fmt.Sprintf("Response: (%s)", resp.String()))
+			e.appMsg(fmt.Sprintf("Response: (%.250s)", resp.String()))
 			return resp, metrics(t, resp), nil
 		}
 	}
-	e.appMsg(fmt.Sprintf("Response: (%s)", resp.String()))
+	var elipsis string
+	if len(resp.String()) > 450 {
+		elipsis = " ..."
+	}
+	e.appMsg(fmt.Sprintf("Response: (%.450s)%s", resp.String(), elipsis))
 	return resp, metrics(t, resp), err
 }
 

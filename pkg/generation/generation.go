@@ -4,12 +4,13 @@ package generation
 // As such the code is necessarily 'experimental' and subject to change.
 
 import (
-	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/names"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"io/ioutil"
 	"strings"
+
+	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/names"
 
 	"github.com/sirupsen/logrus"
 
@@ -25,13 +26,14 @@ const httpUserAgent = "Open Banking Conformance Suite v0.2.x"
 // GetImplementedTestCases takes a discovery Model and determines the implemented endpoints.
 // Currently this function is experimental - meaning it contains fmt.Printlns as an aid to understanding
 // and conceptualisation
-func GetImplementedTestCases(disco *discovery.ModelDiscoveryItem, nameGenerator names.Generator, globalReplacements map[string]string) []model.TestCase {
+func GetImplementedTestCases(disco *discovery.ModelDiscoveryItem, nameGenerator names.Generator, globalReplacements map[string]string) ([]model.TestCase, map[string]string) {
+	originalEndpoints := make(map[string]string)
 	var testcases []model.TestCase
 	endpoints := disco.Endpoints
 	doc, err := loadSpec(disco.APISpecification.SchemaVersion, false)
 	if err != nil {
 		logrus.Errorln(err)
-		return nil
+		return nil, nil
 	}
 
 	for _, v := range endpoints {
@@ -51,7 +53,7 @@ func GetImplementedTestCases(disco *discovery.ModelDiscoveryItem, nameGenerator 
 							"endpoint": newpath,
 							"err":      err,
 						}).Error("Cannot get good response code")
-						return nil
+						return nil, nil
 					}
 
 					headers := map[string]string{
@@ -73,7 +75,7 @@ func GetImplementedTestCases(disco *discovery.ModelDiscoveryItem, nameGenerator 
 								"endpoint": newpath,
 								"err":      err,
 							}).Warn("error getting Templated TestCase")
-							return nil
+							return nil, nil
 						}
 						for i := range customTestCases {
 							customTestCases[i].ProcessReplacementFields(globalReplacements)
@@ -89,13 +91,14 @@ func GetImplementedTestCases(disco *discovery.ModelDiscoveryItem, nameGenerator 
 					context := model.Context{"baseurl": disco.ResourceBaseURI}
 					testcase := model.TestCase{ID: nameGenerator.Generate(), Input: input, Context: context, Expect: expect, Name: op.Summary}
 					testcase.ProcessReplacementFields(globalReplacements)
+					originalEndpoints[testcase.ID] = v.Path // capture original spec paths
 					testcases = append(testcases, testcase)
 					break
 				}
 			}
 		}
 	}
-	return testcases
+	return testcases, originalEndpoints
 }
 
 func getTemplatedTestCases(path string) (tc []model.TestCase, err error) {
@@ -103,11 +106,11 @@ func getTemplatedTestCases(path string) (tc []model.TestCase, err error) {
 		return tc, nil
 	}
 
-	filedata, err := ioutil.ReadFile("templates/account_consent.json")
+	filedata, err := ioutil.ReadFile("components/account_consent.json")
 	if err != nil {
-		filedata, err = ioutil.ReadFile("../../templates/account_consent.json") // handle testing
+		filedata, err = ioutil.ReadFile("../../components/account_consent.json") // handle testing
 		if err != nil {
-			logrus.Error("Cannot read: templates/account_consent " + err.Error())
+			logrus.Error("Cannot read: components/account_consent " + err.Error())
 			return nil, err
 		}
 	}

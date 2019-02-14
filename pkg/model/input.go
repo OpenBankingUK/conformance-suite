@@ -156,7 +156,6 @@ func (i *Input) setHeaders(req *resty.Request, ctx *Context) error {
 
 func (i *Input) setBody(req *resty.Request, ctx *Context) error {
 	value := i.RequestBody
-
 	for {
 		val2, err := replaceContextField(value, ctx)
 		if err != nil {
@@ -172,6 +171,7 @@ func (i *Input) setBody(req *resty.Request, ctx *Context) error {
 	}
 
 	req.SetBody(value)
+	i.RequestBody = value
 	return nil
 }
 
