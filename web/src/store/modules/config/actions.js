@@ -54,6 +54,9 @@ export default {
         const tokenEndpoint = _.first(_.values(response.token_endpoints));
         commit(types.SET_TOKEN_ENDPOINT, tokenEndpoint);
 
+        const authorizationEndpoint = _.first(_.values(response.authorization_endpoints));
+        commit(types.SET_AUTHORIZATION_ENDPOINT, authorizationEndpoint);
+
         dispatch('status/clearErrors', null, { root: true });
         commit(types.SET_WIZARD_STEP, constants.WIZARD.STEP_THREE);
       } else {
@@ -89,6 +92,7 @@ export default {
         'client_id',
         'client_secret',
         'token_endpoint',
+        'authorization_endpoint',
         'x_fapi_financial_id',
         'redirect_url',
       ];
@@ -162,6 +166,9 @@ export default {
     }
     if (_.isEmpty(state.configuration.token_endpoint)) {
       errors.push('Token Endpoint empty');
+    }
+    if (_.isEmpty(state.configuration.authorization_endpoint)) {
+      errors.push('Authorization Endpoint empty');
     }
     if (_.isEmpty(state.configuration.x_fapi_financial_id)) {
       errors.push('x-fapi-financial-id empty');

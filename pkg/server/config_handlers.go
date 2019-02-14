@@ -16,6 +16,7 @@ var (
 	ErrEmptyClientID         = errors.New("client_id is empty")
 	ErrEmptyClientSecret     = errors.New("client_secret is empty")
 	ErrEmptyTokenEndpoint    = errors.New("token_endpoint is empty")
+	ErrEmptyAuthorizationEndpoint = errors.New("authorization_endpoint is empty")
 	ErrEmptyXFAPIFinancialID = errors.New("x_fapi_financial_id is empty")
 	ErrEmptyRedirectURL      = errors.New("redirect_url is empty")
 )
@@ -33,6 +34,7 @@ type GlobalConfiguration struct {
 	ClientID         string `json:"client_id"`
 	ClientSecret     string `json:"client_secret"`
 	TokenEndpoint    string `json:"token_endpoint"`
+	AuthorizationEndpoint string `json:"authorization_endpoint"`
 	XFAPIFinancialID string `json:"x_fapi_financial_id"`
 	RedirectURL      string `json:"redirect_url"`
 }
@@ -73,11 +75,14 @@ func (h *configHandlers) configGlobalPostHandler(c echo.Context) error {
 	if _, err := url.Parse(config.TokenEndpoint); err != nil {
 		return c.JSON(http.StatusBadRequest, NewErrorResponse(errors.Wrap(err, "token_endpoint")))
 	}
+	if _, err := url.Parse(config.AuthorizationEndpoint); err != nil {
+		return c.JSON(http.StatusBadRequest, NewErrorResponse(errors.Wrap(err, "authorization_endpoint")))
+	}
 	if _, err := url.Parse(config.RedirectURL); err != nil {
 		return c.JSON(http.StatusBadRequest, NewErrorResponse(errors.Wrap(err, "redirect_url")))
 	}
 
-	h.journey.SetConfig(certificateSigning, certificateTransport, config.ClientID, config.ClientSecret, config.TokenEndpoint, config.XFAPIFinancialID, config.RedirectURL)
+	h.journey.SetConfig(certificateSigning, certificateTransport, config.ClientID, config.ClientSecret, config.TokenEndpoint, config.AuthorizationEndpoint, config.XFAPIFinancialID, config.RedirectURL)
 
 	return c.JSON(http.StatusCreated, config)
 }
