@@ -36,7 +36,7 @@ pipelines:
             script:
               - cd web/
               - yarn install
-              - yarn lint
+              - yarn lint --no-fix
               - yarn test:unit:coverage
 
         # build docker image
