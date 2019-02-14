@@ -28,8 +28,8 @@
 !**/config/**/*.json
 !**/swagger
 !**/swagger/**/*.json
-!**/templates
-!**/templates/**/*.json
+!**/components
+!**/components/**/*.json
 
 !**/cmd
 !**/cmd/**

@@ -46,7 +46,7 @@ WORKDIR /app
 COPY --from=gobuilder /app/fcs_server /app/
 COPY --from=gobuilder /app/fcs /app/
 COPY --from=gobuilder /app/certs /app/certs
-COPY --from=gobuilder /app/templates /app/templates
+COPY --from=gobuilder /app/components /app/components
 COPY --from=nodebuilder /app/dist /app/web/dist
 
 EXPOSE 8443
