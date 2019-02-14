@@ -1,8 +1,10 @@
 package server
 
 import (
+	"fmt"
 	"net/http"
 	"net/url"
+	"reflect"
 
 	"github.com/sirupsen/logrus"
 
@@ -12,31 +14,22 @@ import (
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/authentication"
 )
 
-var (
-	ErrEmptyClientID              = errors.New("client_id is empty")
-	ErrEmptyClientSecret          = errors.New("client_secret is empty")
-	ErrEmptyTokenEndpoint         = errors.New("token_endpoint is empty")
-	ErrEmptyAuthorizationEndpoint = errors.New("authorization_endpoint is empty")
-	ErrEmptyXFAPIFinancialID      = errors.New("x_fapi_financial_id is empty")
-	ErrEmptyRedirectURL           = errors.New("redirect_url is empty")
-)
-
 type configHandlers struct {
 	logger  *logrus.Entry
 	journey Journey
 }
 
 type GlobalConfiguration struct {
-	SigningPrivate        string `json:"signing_private"`
-	SigningPublic         string `json:"signing_public"`
-	TransportPrivate      string `json:"transport_private"`
-	TransportPublic       string `json:"transport_public"`
-	ClientID              string `json:"client_id"`
-	ClientSecret          string `json:"client_secret"`
-	TokenEndpoint         string `json:"token_endpoint"`
-	AuthorizationEndpoint string `json:"authorization_endpoint"`
-	XFAPIFinancialID      string `json:"x_fapi_financial_id"`
-	RedirectURL           string `json:"redirect_url"`
+	SigningPrivate        string `json:"signing_private" validate:"not_empty"`
+	SigningPublic         string `json:"signing_public" validate:"not_empty"`
+	TransportPrivate      string `json:"transport_private" validate:"not_empty"`
+	TransportPublic       string `json:"transport_public" validate:"not_empty"`
+	ClientID              string `json:"client_id" validate:"not_empty"`
+	ClientSecret          string `json:"client_secret" validate:"not_empty"`
+	TokenEndpoint         string `json:"token_endpoint" validate:"valid_url"`
+	AuthorizationEndpoint string `json:"authorization_endpoint" validate:"valid_url"`
+	XFAPIFinancialID      string `json:"x_fapi_financial_id" validate:"not_empty"`
+	RedirectURL           string `json:"redirect_url" validate:"valid_url"`
 }
 
 // POST /api/config/global
@@ -44,6 +37,11 @@ func (h *configHandlers) configGlobalPostHandler(c echo.Context) error {
 	config := new(GlobalConfiguration)
 	if err := c.Bind(config); err != nil {
 		return c.JSON(http.StatusBadRequest, NewErrorResponse(errors.Wrap(err, "error with Bind")))
+	}
+
+	ok, message := validateConfig(config)
+	if !ok {
+		return c.JSON(http.StatusBadRequest, NewErrorMessageResponse(message))
 	}
 
 	certificateSigning, err := authentication.NewCertificate(config.SigningPublic, config.SigningPrivate)
@@ -56,33 +54,96 @@ func (h *configHandlers) configGlobalPostHandler(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, NewErrorResponse(errors.Wrap(err, "error with transport certificate")))
 	}
 
-	if config.ClientID == "" {
-		return c.JSON(http.StatusBadRequest, NewErrorResponse(ErrEmptyClientID))
-	}
-	if config.ClientSecret == "" {
-		return c.JSON(http.StatusBadRequest, NewErrorResponse(ErrEmptyClientSecret))
-	}
-	if config.TokenEndpoint == "" {
-		return c.JSON(http.StatusBadRequest, NewErrorResponse(ErrEmptyTokenEndpoint))
-	}
-	if config.XFAPIFinancialID == "" {
-		return c.JSON(http.StatusBadRequest, NewErrorResponse(ErrEmptyXFAPIFinancialID))
-	}
-	if config.RedirectURL == "" {
-		return c.JSON(http.StatusBadRequest, NewErrorResponse(ErrEmptyRedirectURL))
-	}
-
-	if _, err := url.Parse(config.TokenEndpoint); err != nil {
-		return c.JSON(http.StatusBadRequest, NewErrorResponse(errors.Wrap(err, "token_endpoint")))
-	}
-	if _, err := url.Parse(config.AuthorizationEndpoint); err != nil {
-		return c.JSON(http.StatusBadRequest, NewErrorResponse(errors.Wrap(err, "authorization_endpoint")))
-	}
-	if _, err := url.Parse(config.RedirectURL); err != nil {
-		return c.JSON(http.StatusBadRequest, NewErrorResponse(errors.Wrap(err, "redirect_url")))
-	}
-
-	h.journey.SetConfig(certificateSigning, certificateTransport, config.ClientID, config.ClientSecret, config.TokenEndpoint, config.AuthorizationEndpoint, config.XFAPIFinancialID, config.RedirectURL)
+	h.journey.SetConfig(
+		certificateSigning,
+		certificateTransport,
+		config.ClientID,
+		config.ClientSecret,
+		config.TokenEndpoint,
+		config.AuthorizationEndpoint,
+		config.XFAPIFinancialID,
+		config.RedirectURL,
+	)
 
 	return c.JSON(http.StatusCreated, config)
+}
+
+func validateConfig(config *GlobalConfiguration) (bool, string) {
+	rules := parseRules(config)
+	for _, rule := range rules {
+		ok, message := rule.validateFunc(rule.property, rule.value)
+		if !ok {
+			return false, message
+		}
+	}
+	return true, ""
+}
+
+type validationRule struct {
+	property     string
+	value        string
+	validateFunc validateFunc
+}
+
+type validateFunc func(key, value string) (bool, string)
+
+func notEmpty(key, value string) (bool, string) {
+	if value == "" {
+		return false, fmt.Sprintf("%s is empty", key)
+	}
+	return true, ""
+}
+
+func validURL(key, value string) (bool, string) {
+	if _, err := url.Parse(value); err != nil {
+		return false, fmt.Sprintf("invalid %s url: %s", key, err.Error())
+	}
+	return true, ""
+}
+
+func and(left, right validateFunc) validateFunc {
+	return func(key, value string) (bool, string) {
+		ok, msg := left(key, value)
+		if !ok {
+			return false, msg
+		}
+		ok, msg = right(key, value)
+		if !ok {
+			return false, msg
+		}
+		return true, ""
+	}
+}
+
+var rulesFunc = map[string]validateFunc{
+	"not_empty": notEmpty,
+	"valid_url": and(notEmpty, validURL),
+}
+
+func parseRules(config *GlobalConfiguration) []validationRule {
+	var rules []validationRule
+	val := reflect.ValueOf(config).Elem()
+	for i := 0; i < val.NumField(); i++ {
+		valueField := val.Field(i)
+		typeField := val.Type().Field(i)
+		tag := typeField.Tag
+
+		if tag.Get("validate") == "" {
+			// no validate tag
+			continue
+		}
+
+		validate, ok := rulesFunc[tag.Get("validate")]
+		if !ok {
+			// no rule func found
+			continue
+		}
+
+		rules = append(rules, validationRule{
+			property:     tag.Get("json"),
+			value:        valueField.Interface().(string),
+			validateFunc: validate,
+		})
+	}
+	return rules
 }

@@ -1,3 +1,4 @@
+//go:generate mockery -name Generator
 package generation
 
 import (
@@ -14,9 +15,18 @@ type SpecificationTestCases struct {
 	TestCases     []model.TestCase                `json:"testCases"`
 }
 
+type GeneratorConfig struct {
+	ClientID              string
+	Aud                   string
+	ResponseType          string
+	Scope                 string
+	AuthorizationEndpoint string
+	RedirectURL           string
+}
+
 // Generator - generates test cases from discovery model
 type Generator interface {
-	GenerateSpecificationTestCases(discovery discovery.ModelDiscovery) TestCasesRun
+	GenerateSpecificationTestCases(GeneratorConfig, discovery.ModelDiscovery) TestCasesRun
 }
 
 // NewGenerator - returns implementation of Generator interface
@@ -32,7 +42,7 @@ type generator struct {
 }
 
 // GenerateSpecificationTestCases - generates test cases
-func (g generator) GenerateSpecificationTestCases(discovery discovery.ModelDiscovery) TestCasesRun {
+func (g generator) GenerateSpecificationTestCases(config GeneratorConfig, discovery discovery.ModelDiscovery) TestCasesRun {
 	specTestCases := []SpecificationTestCases{}
 	customReplacements := make(map[string]string)
 	originalEndpoints := make(map[string]string, 0)
@@ -66,19 +76,28 @@ func (g generator) GenerateSpecificationTestCases(discovery discovery.ModelDisco
 	consentRequirements := g.consentRequirements(tmpSpecTestCases) // uses pre-modified swagger urls
 
 	// generate PSU consent URL onto the perm set structure
-	consentRequirements = withConsentUrl(consentRequirements)
+	consentRequirements = withConsentUrl(config, consentRequirements)
 
 	return TestCasesRun{specTestCases, consentRequirements}
 
 }
 
 // withConsentUrl copies the full requirement consent structure into a new one with the Consent url populated
-func withConsentUrl(consentRequirements []model.SpecConsentRequirements) []model.SpecConsentRequirements {
+func withConsentUrl(config GeneratorConfig, consentRequirements []model.SpecConsentRequirements) []model.SpecConsentRequirements {
 	var withUrlSpecs []model.SpecConsentRequirements
 	for _, spec := range consentRequirements {
 		var namedPermsWithUrl model.NamedPermissions
 		for _, namedPerm := range spec.NamedPermissions {
-			claims := authentication.PSUConsentClaims{}
+			claims := authentication.PSUConsentClaims{
+				AuthorizationEndpoint: config.AuthorizationEndpoint,
+				Aud:                   config.Aud,
+				Iss:                   config.ClientID,
+				ResponseType:          config.ResponseType,
+				Scope:                 config.Scope,
+				RedirectURI:           config.RedirectURL,
+				ConsentId:             "",
+				State:                 namedPerm.Name,
+			}
 			consentUrl, _ := authentication.PSUURLGenerate(claims)
 			namedPermsWithUrl = append(
 				namedPermsWithUrl,

@@ -30,19 +30,6 @@ func TestPSUURLGenerate(t *testing.T) {
 	assert.Equal(t, token, url.Query().Get("request"))
 }
 
-func TestPSUURLGenerateJoinsPaths(t *testing.T) {
-	claims := PSUConsentClaims{
-		Aud: "https://bank",
-	}
-
-	urlConsent, err := PSUURLGenerate(claims)
-
-	require.NoError(t, err)
-	expected := "https://bank/auth"
-	urlConsent.RawQuery = ""
-	assert.Equal(t, expected, urlConsent.String())
-}
-
 func TestCreateAlgNoneJWTEmpty(t *testing.T) {
 	claims := PSUConsentClaims{}
 

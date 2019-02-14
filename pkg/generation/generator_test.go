@@ -27,7 +27,8 @@ func testLoadDiscoveryModel(t *testing.T) *discovery.ModelDiscovery {
 func TestGenerateSpecificationTestCases(t *testing.T) {
 	discovery := *testLoadDiscoveryModel(t)
 	generator := NewGenerator()
-	testCasesRun := generator.GenerateSpecificationTestCases(discovery)
+	config := GeneratorConfig{}
+	testCasesRun := generator.GenerateSpecificationTestCases(config, discovery)
 	cases := testCasesRun.TestCases
 
 	t.Run("returns slice of SpecificationTestCases, one per discovery item", func(t *testing.T) {
@@ -97,8 +98,9 @@ func TestPermissionsShouldPassAllTestsToResolver(t *testing.T) {
 
 func TestConsentRequirementsWithConsentUrlMapsEmpty(t *testing.T) {
 	var consentRequirements []model.SpecConsentRequirements
+	config := GeneratorConfig{}
 
-	result := withConsentUrl(consentRequirements)
+	result := withConsentUrl(config, consentRequirements)
 
 	var expected []model.SpecConsentRequirements
 	assert.Equal(t, expected, result)
@@ -117,8 +119,9 @@ func TestConsentRequirementsWithConsentUrlMapsAllProperties(t *testing.T) {
 			},
 		},
 	}
+	config := GeneratorConfig{AuthorizationEndpoint: "/auth"}
 
-	result := withConsentUrl(consentRequirements)
+	result := withConsentUrl(config, consentRequirements)
 
 	expected := []model.SpecConsentRequirements{
 		{
@@ -127,7 +130,7 @@ func TestConsentRequirementsWithConsentUrlMapsAllProperties(t *testing.T) {
 				{
 					Name:       "set1",
 					CodeSet:    permissions.CodeSetResult{CodeSet: []permissions.Code{"a"}},
-					ConsentUrl: "/auth?client_id=&request=eyJhbGciOiJub25lIn0.eyJhdWQiOiIiLCJjbGFpbXMiOnsiaWRfdG9rZW4iOnsib3BlbmJhbmtpbmdfaW50ZW50X2lkIjp7ImVzc2VudGlhbCI6dHJ1ZSwidmFsdWUiOiIifX19LCJpc3MiOiIiLCJyZWRpcmVjdF91cmkiOiIiLCJzY29wZSI6IiJ9.&response_type=&scope=&state=",
+					ConsentUrl: "/auth?client_id=&request=eyJhbGciOiJub25lIn0.eyJhdWQiOiIiLCJjbGFpbXMiOnsiaWRfdG9rZW4iOnsib3BlbmJhbmtpbmdfaW50ZW50X2lkIjp7ImVzc2VudGlhbCI6dHJ1ZSwidmFsdWUiOiIifX19LCJpc3MiOiIiLCJyZWRpcmVjdF91cmkiOiIiLCJzY29wZSI6IiJ9.&response_type=&scope=&state=set1",
 				},
 			},
 		},
