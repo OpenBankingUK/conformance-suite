@@ -33,6 +33,34 @@ const createWebSocketConnection = () => {
   });
 };
 
+/*
+Takes: [
+  {
+    specIdentifier: SPEC_NAME,
+    namedPermissions: [
+      {
+        name: 'to1002',
+        consentUrl: CONSENT_URL,
+      },
+      {
+        name: 'to1002',
+        consentUrl: CONSENT_URL2,
+      },
+    ],
+  },
+]
+Returns: { [SPEC_NAME]: [CONSENT_URL, CONSENT_URL2] }
+*/
+const consentUrls = (specTokens) => {
+  const map = {};
+  specTokens.forEach((item) => {
+    const list = item.namedPermissions.map(p => p.consentUrl);
+    const urls = _.filter(list, u => u); // remove null/undefined urls
+    map[item.specIdentifier] = urls;
+  });
+  return map;
+};
+
 export default {
   /**
    * Step 4: Calls /api/test-cases to get all the test cases, then sets the
@@ -49,6 +77,10 @@ export default {
 
       commit(types.SET_TEST_CASES, testCases.specCases);
       commit(types.SET_TEST_CASES_STATUS, '');
+
+      if (testCases.specTokens) {
+        commit(types.SET_CONSENT_URLS, consentUrls(testCases.specTokens));
+      }
       dispatch('status/clearErrors', null, { root: true });
     } catch (err) {
       commit(types.SET_TEST_CASES, []);
