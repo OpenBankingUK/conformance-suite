@@ -33,7 +33,7 @@ func TestDefaultForEndpointOneFoundDefaults(t *testing.T) {
 	perms, err := r.defaultForEndpoint("/home")
 
 	require.NoError(t, err)
-	assert.Equal(t, Code("read"), perms)
+	assert.Equal(t, []Code{"read"}, perms)
 }
 
 func TestDefaultForEndpointUsesDefault(t *testing.T) {
@@ -54,7 +54,7 @@ func TestDefaultForEndpointUsesDefault(t *testing.T) {
 	perms, err := r.defaultForEndpoint("/home")
 
 	require.NoError(t, err)
-	assert.Equal(t, Code("write"), perms)
+	assert.Equal(t, []Code{"write"}, perms)
 }
 
 func TestDefaultForErrIfNoDefaultAndMoreThenOne(t *testing.T) {
@@ -74,11 +74,11 @@ func TestDefaultForErrIfNoDefaultAndMoreThenOne(t *testing.T) {
 
 	perms, err := r.defaultForEndpoint("/home")
 
-	assert.EqualError(t, err, "no default permission found, but found more then one")
-	assert.Equal(t, Code(""), perms)
+	assert.EqualError(t, err, "no default permissions found, but found more than one")
+	assert.Equal(t, []Code{}, perms)
 }
 
-func TestDefaultForTwoDefaultsReturnFirst(t *testing.T) {
+func TestDefaultForTwoDefaultsReturnBoth(t *testing.T) {
 	data := []permission{
 		{
 			Code:      "write",
@@ -96,7 +96,7 @@ func TestDefaultForTwoDefaultsReturnFirst(t *testing.T) {
 	perms, err := r.defaultForEndpoint("/home")
 
 	require.NoError(t, err)
-	assert.Equal(t, Code("write"), perms)
+	assert.Equal(t, []Code{"write", "read"}, perms)
 }
 
 func TestPermissionsForEndpoint(t *testing.T) {
@@ -187,4 +187,45 @@ func TestStaticPermissionsHaveNotChanged(t *testing.T) {
 	require.NoError(t, err, "failed reading .golden")
 
 	assert.JSONEq(t, string(expected), string(perms))
+}
+
+// This is a test of our matching function logic operating
+// over our static permissions configuration.
+//
+// The examples below are intended to be realistic examples
+// returning permissions based on the rules defined in the
+// Accounts API specification. See:
+// https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937820271/Account+and+Transaction+API+Specification+-+v3.1#AccountandTransactionAPISpecification-v3.1-Permissions
+func TestStaticPermissionsDefaultEnpointMatchingIntegration(t *testing.T) {
+	config := newStandardPermissions()
+
+	t.Run("when single default permission code", func(t *testing.T) {
+		permissions, err := config.defaultForEndpoint("/accounts")
+		assert.NoError(t, err)
+
+		assert.Len(t, permissions, 1)
+		// At a minimum to access the "/accounts" endpoint you need
+		// either "ReadAccountsBasic" or "ReadAccountsDetail".
+		// So this default permission makes sense:
+		assert.Equal(t, Code("ReadAccountsBasic"), permissions[0])
+	})
+
+	t.Run("when multiple default permission codes", func(t *testing.T) {
+		permissions, err := config.defaultForEndpoint("/accounts/{AccountId}/statements/{StatementId}/transactions")
+		assert.NoError(t, err)
+
+		assert.Len(t, permissions, 5)
+		// At a minimum to access the "/accounts/{AccountId}/statements/{StatementId}/transactions"
+		// endpoint you need
+		// either "ReadAccountsBasic" or "ReadAccountsDetail" AND
+		// either "ReadStatementsBasic" or "ReadStatementsDetail" AND
+		// either "ReadTransactionsBasic" or "ReadTransactionsDetail" AND
+		// one or more of "ReadTransactionsDebits" or "ReadTransactionsCredits".
+		// So these default permissions make sense:
+		assert.Equal(t, Code("ReadAccountsBasic"), permissions[0])
+		assert.Equal(t, Code("ReadTransactionsBasic"), permissions[1])
+		assert.Equal(t, Code("ReadTransactionsCredits"), permissions[2])
+		assert.Equal(t, Code("ReadTransactionsDebits"), permissions[3])
+		assert.Equal(t, Code("ReadStatementsBasic"), permissions[4])
+	})
 }

@@ -68,14 +68,14 @@ func TestIncludePermissionsFromDefault(t *testing.T) {
 	data := []permission{
 		{
 			Code:      "read",
-			Default:   false,
-			Endpoints: []string{"/home"},
+			Default:   true,
+			Endpoints: []string{"/accounts/{AccountId}/statements/{StatementId}/transactions"},
 		},
 	}
 	stdPermissions := newStandardPermissionsWithOptions(data)
 	b := newPermissionBuilderWithOptions(stdPermissions)
 
-	codeSet := b.includedPermission(ctx, "/home")
+	codeSet := b.includedPermission(ctx, "/accounts/{AccountId}/statements/{StatementId}/transactions")
 
 	assert.Equal(t, permissions.CodeSet{"read"}, codeSet)
 }
