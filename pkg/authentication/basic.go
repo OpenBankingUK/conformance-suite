@@ -6,9 +6,9 @@ import (
 	"fmt"
 )
 
-// calculateClientSecretBasicToken tests the generation of `client secret basic` value as a product of
+// CalculateClientSecretBasicToken tests the generation of `client secret basic` value as a product of
 // `client_id` and `client_secret` as per https://tools.ietf.org/html/rfc7617
-func calculateClientSecretBasicToken(clientID, clientSecret string) (string, error) {
+func CalculateClientSecretBasicToken(clientID, clientSecret string) (string, error) {
 	if clientID == "" {
 		return "", errors.New("clientID cannot be empty")
 	}

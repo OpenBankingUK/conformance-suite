@@ -200,6 +200,31 @@ func (wj *journey) SetConfig(signing, transport authentication.Certificate, clie
 	wj.tokenEndpoint = tokenEndpoint
 	wj.xXFAPIFinancialID = xXFAPIFinancialID
 	wj.redirectURL = redirectURL
+
+	wj.configParametersToJourneyContext()
+}
+
+const ctxConstClientID = "client_id"
+const ctxConstClientSecret = "client_secret"
+const ctxConstTokenEndpoint = "token_endpoint"
+const ctxConstFapiFinancialID = "fapi_financial_id"
+const ctxConstRedirectURL = "redirect_url"
+
+const ctxConstAuthorisationEndpoint = "authorisation_endpoint"
+const ctxConstBasicAuthentication = "basic_authentication"
+
+func (wj *journey) configParametersToJourneyContext() error {
+	wj.context.PutString(ctxConstClientID, wj.clientID)
+	wj.context.PutString(ctxConstClientSecret, wj.clientSecret)
+	wj.context.PutString(ctxConstTokenEndpoint, wj.tokenEndpoint)
+	wj.context.PutString(ctxConstFapiFinancialID, wj.xXFAPIFinancialID)
+	wj.context.PutString(ctxConstRedirectURL, wj.redirectURL)
+	basicauth, err := authentication.CalculateClientSecretBasicToken(wj.clientID, wj.clientSecret)
+	if err != nil {
+		return err
+	}
+	wj.context.PutString(ctxConstBasicAuthentication, basicauth)
+	return nil
 }
 
 func (wj *journey) customTestParametersToJourneyContext() {
