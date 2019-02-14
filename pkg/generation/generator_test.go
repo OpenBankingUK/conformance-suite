@@ -1,6 +1,7 @@
 package generation
 
 import (
+	"github.com/stretchr/testify/assert"
 	"io/ioutil"
 	"regexp"
 	"testing"
@@ -89,8 +90,47 @@ func TestPermissionsShouldPassAllTestsToResolver(t *testing.T) {
 
 	assert.Len(specTokens, 1)
 	assert.Len(specTokens[0].NamedPermissions, 2)
-	// token name expected in format to-{3 letters}-{sequence number}
 	matchName := regexp.MustCompile(`to\w{4}`)
 	assert.Regexp(matchName, specTokens[0].NamedPermissions[0].Name)
 	assert.Regexp(matchName, specTokens[0].NamedPermissions[1].Name)
+}
+
+func TestConsentRequirementsWithConsentUrlMapsEmpty(t *testing.T) {
+	var consentRequirements []model.SpecConsentRequirements
+
+	result := withConsentUrl(consentRequirements)
+
+	var expected []model.SpecConsentRequirements
+	assert.Equal(t, expected, result)
+}
+
+func TestConsentRequirementsWithConsentUrlMapsAllProperties(t *testing.T) {
+	consentRequirements := []model.SpecConsentRequirements{
+		{
+			Identifier: "spec name",
+			NamedPermissions: []model.NamedPermission{
+				{
+					Name:       "set1",
+					CodeSet:    permissions.CodeSetResult{CodeSet: []permissions.Code{"a"}},
+					ConsentUrl: "",
+				},
+			},
+		},
+	}
+
+	result := withConsentUrl(consentRequirements)
+
+	expected := []model.SpecConsentRequirements{
+		{
+			Identifier: "spec name",
+			NamedPermissions: []model.NamedPermission{
+				{
+					Name:       "set1",
+					CodeSet:    permissions.CodeSetResult{CodeSet: []permissions.Code{"a"}},
+					ConsentUrl: "/auth?client_id=&request=eyJhbGciOiJub25lIn0.eyJhdWQiOiIiLCJjbGFpbXMiOnsiaWRfdG9rZW4iOnsib3BlbmJhbmtpbmdfaW50ZW50X2lkIjp7ImVzc2VudGlhbCI6dHJ1ZSwidmFsdWUiOiIifX19LCJpc3MiOiIiLCJyZWRpcmVjdF91cmkiOiIiLCJzY29wZSI6IiJ9.&response_type=&scope=&state=",
+				},
+			},
+		},
+	}
+	assert.Equal(t, expected, result)
 }

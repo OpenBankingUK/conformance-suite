@@ -38,7 +38,7 @@ type Journey interface {
 	RunTests() error
 	StopTestRun()
 	Results() executors.DaemonController
-	SetConfig(signing, transport authentication.Certificate, clientID, clientSecret, tokenEndpoint, xXFAPIFinancialID, redirectURL string)
+	SetConfig(signing, transport authentication.Certificate, clientID, clientSecret, tokenEndpoint, authorizationEndpoint, xXFAPIFinancialID, redirectURL string)
 }
 
 type journey struct {
@@ -58,6 +58,7 @@ type journey struct {
 	clientID              string
 	clientSecret          string
 	tokenEndpoint         string
+	authorizationEndpoint string
 	xXFAPIFinancialID     string
 	redirectURL           string
 }
@@ -189,7 +190,7 @@ func (wj *journey) StopTestRun() {
 	wj.daemonController.Stop()
 }
 
-func (wj *journey) SetConfig(signing, transport authentication.Certificate, clientID, clientSecret, tokenEndpoint, xXFAPIFinancialID, redirectURL string) {
+func (wj *journey) SetConfig(signing, transport authentication.Certificate, clientID, clientSecret, tokenEndpoint, authorizationEndpoint, xXFAPIFinancialID, redirectURL string) {
 	wj.log.Debug("wj.SetConfig")
 	wj.journeyLock.Lock()
 	defer wj.journeyLock.Unlock()
@@ -198,6 +199,7 @@ func (wj *journey) SetConfig(signing, transport authentication.Certificate, clie
 	wj.clientID = clientID
 	wj.clientSecret = clientSecret
 	wj.tokenEndpoint = tokenEndpoint
+	wj.authorizationEndpoint = authorizationEndpoint
 	wj.xXFAPIFinancialID = xXFAPIFinancialID
 	wj.redirectURL = redirectURL
 

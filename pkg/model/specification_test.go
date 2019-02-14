@@ -1,10 +1,10 @@
 package model
 
 import (
-	"flag"
-	"testing"
 	"encoding/json"
+	"flag"
 	"io/ioutil"
+	"testing"
 
 	"path/filepath"
 

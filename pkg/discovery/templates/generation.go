@@ -62,7 +62,7 @@ func addEndpoints(item *discovery.ModelDiscoveryItem, doc *loads.Document) {
 	for _, path := range keys {
 		props := paths[path]
 		for meth, op := range getOperations(&props) {
-			if (op != nil) {
+			if op != nil {
 				ep := discovery.ModelEndpoint{
 					Method: meth,
 					Path:   path,
@@ -109,15 +109,15 @@ func newItem(spec model.Specification, specVersion string) discovery.ModelDiscov
 			SchemaVersion: spec.SchemaVersion.String(),
 		},
 		OpenidConfigurationURI: "https://example.com/.well-known/openid-configuration",
-		ResourceBaseURI: "https://example.com:4501/open-banking/" + specVersion + "/",
-		Endpoints: []discovery.ModelEndpoint{},
+		ResourceBaseURI:        "https://example.com:4501/open-banking/" + specVersion + "/",
+		Endpoints:              []discovery.ModelEndpoint{},
 	}
 	return item
 }
 
 func checkName(doc *loads.Document, spec model.Specification) {
 	title := doc.Spec().Info.Title
-	if (title != spec.Name) {
+	if title != spec.Name {
 		fmt.Println("Our configured spec.Name: " +
 			spec.Name +
 			" must match swagger title: " +
@@ -129,7 +129,7 @@ func checkVersion(doc *loads.Document, spec model.Specification) string {
 	version := doc.Spec().Info.Version
 	patchRe := regexp.MustCompile(`\..$`)
 	specVersion := patchRe.ReplaceAllString(version, "")
-	if (specVersion != spec.Version) {
+	if specVersion != spec.Version {
 		fmt.Println("Our configured spec.Version: " +
 			spec.Version +
 			" must match swagger version: " +

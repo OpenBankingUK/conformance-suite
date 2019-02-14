@@ -9,6 +9,12 @@
       small
       responsive
     >
+      <template slot="table-caption">
+        <SpecificationHeader
+          :apiSpecification="apiSpecification"
+        />
+      </template>
+
       <!-- format status column as Bootstrap badge. -->
       <template
         slot="meta.status"
@@ -29,62 +35,18 @@
           <strong>Error:</strong> {{ row.item.error }}<br>
         </b-card>
       </template>
-
-      <template slot="table-caption">
-        <h6>API Specification</h6>
-        <b-table
-          :items="[ testCase.apiSpecification ]"
-          :fields="apiSpecificationTableFields"
-          small
-          fixed
-          stacked
-        >
-          <template
-            slot="name"
-            slot-scope="data">
-            <a
-              :href="data.item.url"
-              target="_blank">
-              {{ data.item.name }}
-            </a>
-          </template>
-          <template
-            slot="schema"
-            slot-scope="data">
-            <a
-              :href="data.item.schemaVersion"
-              target="_blank">
-              {{ data.item.version }}
-            </a>
-          </template>
-          <!-- format url column as anchor. -->
-          <template
-            slot="url"
-            slot-scope="data">
-            <a
-              :href="data.value"
-              target="_blank">{{ data.value }}</a>
-          </template>
-          <!-- format schemaVersion column as anchor. -->
-          <template
-            slot="schemaVersion"
-            slot-scope="data">
-            <a
-              :href="data.value"
-              target="_blank">{{ data.value }}</a>
-          </template>
-        </b-table>
-      </template>
     </b-table>
   </div>
 </template>
 
 <script>
-
+import SpecificationHeader from './SpecificationHeader.vue';
 
 export default {
   name: 'TestCase',
-  components: {},
+  components: {
+    SpecificationHeader,
+  },
   props: {
     // Example value for `testCase`.
     // {
@@ -152,20 +114,10 @@ export default {
         },
       }),
     },
-    /**
-     * Fields to display in API Specification Table.
-     * See documentation: https://bootstrap-vue.js.org/docs/components/table#fields-column-definitions-
-     */
-    apiSpecificationTableFields: {
-      type: Object,
-      default: () => ({
-        name: {
-          tdClass: 'table-data-breakable api-specification-table',
-        },
-        schema: {
-          tdClass: 'table-data-breakable api-specification-table',
-        },
-      }),
+  },
+  computed: {
+    apiSpecification() {
+      return this.testCase.apiSpecification;
     },
   },
   methods: {
@@ -191,10 +143,6 @@ export default {
 
 .clickable {
   cursor: pointer;
-}
-
-.test-case /deep/ .api-specification-table {
-  grid-template-columns: 20% auto !important;
 }
 
 .test-case /deep/ .response-time,

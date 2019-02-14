@@ -2,6 +2,7 @@ package generation
 
 import (
 	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/names"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/authentication"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/permissions"
@@ -63,11 +64,38 @@ func (g generator) GenerateSpecificationTestCases(discovery discovery.ModelDisco
 
 	// calculate permission set required and update the header token in the test case request
 	consentRequirements := g.consentRequirements(tmpSpecTestCases) // uses pre-modified swagger urls
-	//consentRequirements := g.consentRequirements(specTestCases)
-	// @Julian glue with `updateSpecsBearer(consentRequirements, specTestCases)`
+
+	// generate PSU consent URL onto the perm set structure
+	consentRequirements = withConsentUrl(consentRequirements)
 
 	return TestCasesRun{specTestCases, consentRequirements}
 
+}
+
+// withConsentUrl copies the full requirement consent structure into a new one with the Consent url populated
+func withConsentUrl(consentRequirements []model.SpecConsentRequirements) []model.SpecConsentRequirements {
+	var withUrlSpecs []model.SpecConsentRequirements
+	for _, spec := range consentRequirements {
+		var namedPermsWithUrl model.NamedPermissions
+		for _, namedPerm := range spec.NamedPermissions {
+			claims := authentication.PSUConsentClaims{}
+			consentUrl, _ := authentication.PSUURLGenerate(claims)
+			namedPermsWithUrl = append(
+				namedPermsWithUrl,
+				model.NamedPermission{
+					Name:       namedPerm.Name,
+					CodeSet:    namedPerm.CodeSet,
+					ConsentUrl: consentUrl.String(),
+				},
+			)
+		}
+		specWithUrl := model.SpecConsentRequirements{
+			Identifier:       spec.Identifier,
+			NamedPermissions: namedPermsWithUrl,
+		}
+		withUrlSpecs = append(withUrlSpecs, specWithUrl)
+	}
+	return withUrlSpecs
 }
 
 // consentRequirements calls resolver to get list of permission sets required to run all test cases

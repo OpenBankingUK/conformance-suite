@@ -17,8 +17,8 @@ import (
 // Server - wraps *echo.Echo.
 type Server struct {
 	*echo.Echo // Wrap (using composition) *echo.Echo, allows us to pretend Server is echo.Echo.
-	logger  *logrus.Entry
-	version version.Checker
+	logger     *logrus.Entry
+	version    version.Checker
 }
 
 // NewServer returns new echo.Echo server.

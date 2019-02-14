@@ -6,8 +6,9 @@ import (
 )
 
 type NamedPermission struct {
-	Name    string
-	CodeSet permissions.CodeSetResult
+	Name       string                    `json:"name"`
+	CodeSet    permissions.CodeSetResult `json:"codeSet"`
+	ConsentUrl string                    `json:"consentUrl"`
 }
 
 type NamedPermissions []NamedPermission
@@ -20,8 +21,8 @@ func (t *NamedPermissions) Add(token NamedPermission) {
 // generates a unique name
 func newNamedPermission(name string, codeSet permissions.CodeSetResult) NamedPermission {
 	return NamedPermission{
-		name,
-		codeSet,
+		Name:    name,
+		CodeSet: codeSet,
 	}
 }
 

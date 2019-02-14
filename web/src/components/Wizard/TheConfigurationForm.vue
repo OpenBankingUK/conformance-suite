@@ -68,6 +68,19 @@
       </b-form-group>
 
       <b-form-group
+        id="authorization_endpoint_group"
+        label-for="authorization_endpoint"
+        label="Authorization Endpoint">
+        <b-form-input
+          id="authorization_endpoint"
+          v-model="authorization_endpoint"
+          :state="isValidUrl(authorization_endpoint)"
+          required
+          type="url"
+        />
+      </b-form-group>
+
+      <b-form-group
         id="x_fapi_financial_id_group"
         label-for="x_fapi_financial_id"
         label="x-fapi-financial-id"
@@ -137,6 +150,15 @@ export default {
       },
       set(value) {
         this.$store.commit('config/SET_TOKEN_ENDPOINT', value);
+      },
+    },
+
+    authorization_endpoint: {
+      get() {
+        return this.$store.state.config.configuration.authorization_endpoint;
+      },
+      set(value) {
+        this.$store.commit('config/SET_AUTHORIZATION_ENDPOINT', value);
       },
     },
 
