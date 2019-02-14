@@ -41,16 +41,29 @@ export default {
     ...mapGetters('status', [
       'hasErrors',
     ]),
-    ...mapState({
-      testCases: 'testCases',
-      hasRunStarted: 'hasRunStarted',
-    }),
+    ...mapState([
+      'consentUrls',
+      'testCases',
+      'hasRunStarted',
+    ]),
+    hasConsentUrls() {
+      return Object.keys(this.consentUrls).length > 0;
+      // Uncomment below and comment line above to test before backend consent URL changes finished:
+      // return true;
+    },
+    pendingPsuConsent() {
+      // TODO: return false when all consents obtained
+      return this.hasConsentUrls;
+    },
     areTestsCompleted() {
       // TODO: Wait for backend to send completed message.
       return false;
     },
     computeNextLabel() {
       if (!this.hasRunStarted || !this.areTestsCompleted) {
+        if (this.pendingPsuConsent) {
+          return 'Pending PSU Consent';
+        }
         return 'Run';
       }
 
