@@ -189,7 +189,14 @@ func TestStaticPermissionsHaveNotChanged(t *testing.T) {
 	assert.JSONEq(t, string(expected), string(perms))
 }
 
-func TestStaticPermissionsDefaultEnpointMatching(t *testing.T) {
+// This is a test of our matching function logic operating
+// over our static permissions configuration.
+//
+// The examples below are intended to be realistic examples
+// returning permissions based on the rules defined in the
+// Accounts API specification. See:
+// https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937820271/Account+and+Transaction+API+Specification+-+v3.1#AccountandTransactionAPISpecification-v3.1-Permissions
+func TestStaticPermissionsDefaultEnpointMatchingIntegration(t *testing.T) {
 	config := newStandardPermissions()
 
 	t.Run("when single default permission code", func(t *testing.T) {
@@ -197,6 +204,9 @@ func TestStaticPermissionsDefaultEnpointMatching(t *testing.T) {
 		assert.NoError(t, err)
 
 		assert.Len(t, permissions, 1)
+		// At a minimum to access the "/accounts" endpoint you need
+		// either "ReadAccountsBasic" or "ReadAccountsDetail".
+		// So this default permission makes sense:
 		assert.Equal(t, Code("ReadAccountsBasic"), permissions[0])
 	})
 
@@ -205,6 +215,13 @@ func TestStaticPermissionsDefaultEnpointMatching(t *testing.T) {
 		assert.NoError(t, err)
 
 		assert.Len(t, permissions, 5)
+		// At a minimum to access the "/accounts/{AccountId}/statements/{StatementId}/transactions"
+		// endpoint you need
+		// either "ReadAccountsBasic" or "ReadAccountsDetail" AND
+		// either "ReadStatementsBasic" or "ReadStatementsDetail" AND
+		// either "ReadTransactionsBasic" or "ReadTransactionsDetail" AND
+		// one or more of "ReadTransactionsDebits" or "ReadTransactionsCredits".
+		// So these default permissions make sense:
 		assert.Equal(t, Code("ReadAccountsBasic"), permissions[0])
 		assert.Equal(t, Code("ReadTransactionsBasic"), permissions[1])
 		assert.Equal(t, Code("ReadTransactionsCredits"), permissions[2])
