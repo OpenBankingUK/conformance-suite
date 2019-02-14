@@ -2,6 +2,7 @@
 package server
 
 import (
+	"os"
 	"sync"
 
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/authentication"
@@ -10,6 +11,7 @@ import (
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/generation"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
 	"github.com/pkg/errors"
+	"github.com/sirupsen/logrus"
 )
 
 var (
@@ -52,6 +54,7 @@ type journey struct {
 	certificateSigning    authentication.Certificate
 	certificateTransport  authentication.Certificate
 	context               model.Context
+	log                   *logrus.Entry
 	clientID              string
 	clientSecret          string
 	tokenEndpoint         string
@@ -69,10 +72,12 @@ func NewJourney(generator generation.Generator, validator discovery.Validator) *
 		allCollected:          false,
 		testCasesRunGenerated: false,
 		context:               model.Context{},
+		log:                   (&logrus.Logger{Out: os.Stderr, Formatter: new(logrus.JSONFormatter), Hooks: make(logrus.LevelHooks), Level: logrus.DebugLevel}).WithField("module", "Journey"),
 	}
 }
 
 func (wj *journey) SetDiscoveryModel(discoveryModel *discovery.Model) (discovery.ValidationFailures, error) {
+	wj.log.Trace("wj.SetDiscoveryModel")
 	failures, err := wj.validator.Validate(discoveryModel)
 	if err != nil {
 		return nil, errors.Wrap(err, "error setting discovery model")
@@ -92,6 +97,7 @@ func (wj *journey) SetDiscoveryModel(discoveryModel *discovery.Model) (discovery
 }
 
 func (wj *journey) TestCases() (generation.TestCasesRun, error) {
+	wj.log.Trace("wj.TestCases - Generate Test Cases")
 	wj.journeyLock.Lock()
 	defer wj.journeyLock.Unlock()
 
@@ -122,6 +128,7 @@ func (wj *journey) TestCases() (generation.TestCasesRun, error) {
 }
 
 func (wj *journey) CollectToken(setName, token string) error {
+	wj.log.Debug("wj.CollectToken")
 	wj.journeyLock.Lock()
 	defer wj.journeyLock.Unlock()
 
@@ -133,6 +140,7 @@ func (wj *journey) CollectToken(setName, token string) error {
 }
 
 func (wj *journey) AllTokenCollected() bool {
+	wj.log.Debug("wj.AllTokensCollected")
 	wj.journeyLock.Lock()
 	defer wj.journeyLock.Unlock()
 
@@ -140,12 +148,14 @@ func (wj *journey) AllTokenCollected() bool {
 }
 
 func (wj *journey) doneCollectionCallback() {
+	wj.log.Debug("wj.doneCollection Callback")
 	wj.journeyLock.Lock()
 	wj.allCollected = true
 	wj.journeyLock.Unlock()
 }
 
 func (wj *journey) RunTests() error {
+	wj.log.Debug("wj.RunTests")
 	wj.journeyLock.Lock()
 	defer wj.journeyLock.Unlock()
 
@@ -170,14 +180,17 @@ func (wj *journey) RunTests() error {
 }
 
 func (wj *journey) Results() executors.DaemonController {
+	wj.log.Debug("wj.Results")
 	return wj.daemonController
 }
 
 func (wj *journey) StopTestRun() {
+	wj.log.Debug("wj.StopTestRun")
 	wj.daemonController.Stop()
 }
 
 func (wj *journey) SetConfig(signing, transport authentication.Certificate, clientID, clientSecret, tokenEndpoint, xXFAPIFinancialID, redirectURL string) {
+	wj.log.Debug("wj.SetConfig")
 	wj.journeyLock.Lock()
 	defer wj.journeyLock.Unlock()
 	wj.certificateSigning = signing
