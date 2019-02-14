@@ -25,7 +25,7 @@ func InitiationConsentAcquisition(consentRequirements []model.SpecConsentRequire
 	runner := NewConsentAcquisitionRunner(definition, NewBufferedDaemonController())
 
 	for tokenName, permissionList := range tokenParameters {
-		logrus.Debugf("processing: token: %s permissionList %v\n", tokenName, permissionList)
+		logrus.Debugf("processing: token: %s permissionList %v", tokenName, permissionList)
 		runner.RunConsentAcquisition(tokenName, buildPermissionString(permissionList), definition.Context, definition.DiscoModel.DiscoveryModel.TokenAcquisition)
 	}
 }

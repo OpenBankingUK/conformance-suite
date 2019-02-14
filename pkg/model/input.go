@@ -158,7 +158,6 @@ func (i *Input) setBody(req *resty.Request, ctx *Context) error {
 	value := i.RequestBody
 	for {
 		val2, err := replaceContextField(value, ctx)
-		fmt.Printf("checking found %s, checking %s\n", value, val2)
 		if err != nil {
 			return i.AppErr(fmt.Sprintf("setBody Replaced Context value %s :%s", val2, err.Error()))
 		}

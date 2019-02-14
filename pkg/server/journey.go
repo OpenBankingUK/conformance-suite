@@ -72,7 +72,7 @@ func NewJourney(generator generation.Generator, validator discovery.Validator) *
 		allCollected:          false,
 		testCasesRunGenerated: false,
 		context:               model.Context{},
-		log:                   (&logrus.Logger{Out: os.Stderr, Formatter: new(logrus.JSONFormatter), Hooks: make(logrus.LevelHooks), Level: logrus.DebugLevel}).WithField("module", "Journey"),
+		log:                   (&logrus.Logger{Out: os.Stderr, Formatter: new(logrus.TextFormatter), Hooks: make(logrus.LevelHooks), Level: logrus.TraceLevel}).WithField("module", "Journey"),
 	}
 }
 
@@ -128,7 +128,7 @@ func (wj *journey) TestCases() (generation.TestCasesRun, error) {
 }
 
 func (wj *journey) CollectToken(setName, token string) error {
-	wj.log.Debug("wj.CollectToken")
+	wj.log.Trace("wj.CollectToken")
 	wj.journeyLock.Lock()
 	defer wj.journeyLock.Unlock()
 
@@ -140,7 +140,7 @@ func (wj *journey) CollectToken(setName, token string) error {
 }
 
 func (wj *journey) AllTokenCollected() bool {
-	wj.log.Debug("wj.AllTokensCollected")
+	wj.log.Trace("wj.AllTokensCollected")
 	wj.journeyLock.Lock()
 	defer wj.journeyLock.Unlock()
 
@@ -148,14 +148,14 @@ func (wj *journey) AllTokenCollected() bool {
 }
 
 func (wj *journey) doneCollectionCallback() {
-	wj.log.Debug("wj.doneCollection Callback")
+	wj.log.Trace("wj.doneCollection Callback")
 	wj.journeyLock.Lock()
 	wj.allCollected = true
 	wj.journeyLock.Unlock()
 }
 
 func (wj *journey) RunTests() error {
-	wj.log.Debug("wj.RunTests")
+	wj.log.Trace("wj.RunTests")
 	wj.journeyLock.Lock()
 	defer wj.journeyLock.Unlock()
 
@@ -180,7 +180,7 @@ func (wj *journey) RunTests() error {
 }
 
 func (wj *journey) Results() executors.DaemonController {
-	wj.log.Debug("wj.Results")
+	wj.log.Trace("wj.Results")
 	return wj.daemonController
 }
 
