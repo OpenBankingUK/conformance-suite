@@ -133,6 +133,7 @@ Running a test plan on the FCS involves five steps, as follows:
 3. Configuration
 
     Provide the keys, as created earlier. The naming should be self explanatory if you ran the cert generation commands as shown.
+    --- 0015800001041RHAAY
 
 4. Run / Overview
 
