@@ -22,7 +22,6 @@ type RunDefinition struct {
 	TestCaseRun   generation.TestCasesRun
 	SigningCert   authentication.Certificate
 	TransportCert authentication.Certificate
-	Context       *model.Context
 }
 
 type TestCaseRunner struct {
@@ -59,7 +58,7 @@ func NewConsentAcquisitionRunner(definition RunDefinition, daemonController Daem
 }
 
 // RunTestCases runs the testCases
-func (r *TestCaseRunner) RunTestCases() error {
+func (r *TestCaseRunner) RunTestCases(ctx *model.Context) error {
 	r.runningLock.Lock()
 	defer r.runningLock.Unlock()
 	if r.running {
@@ -67,7 +66,7 @@ func (r *TestCaseRunner) RunTestCases() error {
 	}
 	r.running = true
 
-	go r.runTestCasesAsync()
+	go r.runTestCasesAsync(ctx)
 
 	return nil
 }
@@ -86,10 +85,10 @@ func (r *TestCaseRunner) RunConsentAcquisition(tokenName string, permissionList 
 	return nil
 }
 
-func (r *TestCaseRunner) runTestCasesAsync() {
+func (r *TestCaseRunner) runTestCasesAsync(ctx *model.Context) {
 
 	r.executor.SetCertificates(r.definition.SigningCert, r.definition.TransportCert)
-	ruleCtx := r.makeRuleCtx()
+	ruleCtx := r.makeRuleCtx(ctx)
 
 	ctxLogger := r.logger.WithField("id", uuid.New())
 	r.AppMsg("runTestCasesAsync()")
@@ -105,7 +104,7 @@ func (r *TestCaseRunner) runTestCasesAsync() {
 func (r *TestCaseRunner) runConsentAcquisitionAsync(tokenName string, permissionList string, ctx *model.Context, consentType string) {
 
 	r.executor.SetCertificates(r.definition.SigningCert, r.definition.TransportCert)
-	ruleCtx := r.makeRuleCtx()
+	ruleCtx := r.makeRuleCtx(ctx)
 	ruleCtx.PutString("consent_id", tokenName)
 	ruleCtx.PutString("permission_list", permissionList)
 
@@ -137,6 +136,11 @@ func (r *TestCaseRunner) runConsentAcquisitionAsync(tokenName string, permission
 		return
 	}
 
+	for k, v := range comp.GetTests() {
+		v.ProcessReplacementFields(ruleCtx)
+		comp.Tests[k] = v
+		logrus.Debugln(v.String())
+	}
 	r.executeComponentTests(&comp, ruleCtx, ctxLogger)
 
 	r.setNotRunning()
@@ -145,12 +149,12 @@ func (r *TestCaseRunner) runConsentAcquisitionAsync(tokenName string, permission
 func (r *TestCaseRunner) executeComponentTests(comp *model.Component, ruleCtx *model.Context, ctxLogger *logrus.Entry) {
 	ctxLogger = ctxLogger.WithField("component", comp.Name)
 	ctxLogger.Debugln("execute component Tests...")
+	logrus.Debug("component:" + comp.Name)
 	for _, testcase := range comp.Tests {
 		if r.daemonController.ShouldStop() {
-			ctxLogger.Debugln("stop component test run received, aborting runner")
+			logrus.Debugln("stop component test run received, aborting runner")
 			return
 		}
-		ctxLogger.Debugln("executing testcase: " + testcase.Name)
 
 		testResult := r.executeTest(testcase, ruleCtx, ctxLogger)
 		r.daemonController.Results() <- testResult
@@ -163,13 +167,11 @@ func (r *TestCaseRunner) setNotRunning() {
 	r.runningLock.Unlock()
 }
 
-func (r *TestCaseRunner) makeRuleCtx() *model.Context {
+func (r *TestCaseRunner) makeRuleCtx(ctx *model.Context) *model.Context {
 	ruleCtx := &model.Context{}
 	ruleCtx.Put("SigningCert", r.definition.SigningCert)
-	for _, customTest := range r.definition.DiscoModel.DiscoveryModel.CustomTests {
-		for k, v := range customTest.Replacements {
-			ruleCtx.Put(k, v)
-		}
+	for k, v := range *ctx {
+		ruleCtx.Put(k, v)
 	}
 	return ruleCtx
 }
@@ -188,7 +190,6 @@ func (r *TestCaseRunner) executeSpecTests(spec generation.SpecificationTestCases
 
 func (r *TestCaseRunner) executeTest(tc model.TestCase, ruleCtx *model.Context, ctxLogger *logrus.Entry) results.TestCase {
 	ctxLogger = logWithTestCase(r.logger, tc)
-
 	req, err := tc.Prepare(ruleCtx)
 	if err != nil {
 		ctxLogger.WithError(err).Error("preparing executing test")

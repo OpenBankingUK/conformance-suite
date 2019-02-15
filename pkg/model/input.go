@@ -68,12 +68,19 @@ func (i *Input) CreateRequest(tc *TestCase, ctx *Context) (*resty.Request, error
 	}
 
 	if len(i.RequestBody) > 0 { // set any input raw request body ("bodyData")
-		i.setBody(req, ctx)
+		body, err := i.getBody(req, ctx)
+		if err != nil {
+			return nil, err
+		}
+		i.RequestBody = body
+		req.SetBody(body)
+	} else {
+		logrus.Debug("***no body present**")
 	}
 
 	req.Method = tc.Input.Method
 	req.URL = tc.Input.Endpoint
-
+	logrus.Debugf("request body: %v", req)
 	return req, nil
 }
 
@@ -159,25 +166,22 @@ func (i *Input) setHeaders(req *resty.Request, ctx *Context) error {
 	return nil
 }
 
-func (i *Input) setBody(req *resty.Request, ctx *Context) error {
+func (i *Input) getBody(req *resty.Request, ctx *Context) (string, error) {
 	value := i.RequestBody
 	for {
 		val2, err := replaceContextField(value, ctx)
 		if err != nil {
-			return i.AppErr(fmt.Sprintf("setBody Replaced Context value %s :%s", val2, err.Error()))
+			return "", i.AppErr(fmt.Sprintf("setBody Replaced Context value %s :%s", val2, err.Error()))
 		}
 		if len(val2) == 0 {
-			return i.AppErr(fmt.Sprintf("setBody Replaced Context value %s : %s not found in context", value, i.RequestBody))
+			return "", i.AppErr(fmt.Sprintf("setBody Replaced Context value %s : %s not found in context", value, i.RequestBody))
 		}
 		if val2 == value {
 			break
 		}
 		value = val2
 	}
-
-	req.SetBody(value)
-	i.RequestBody = value
-	return nil
+	return value, nil
 }
 
 // AppMsg - application level trace

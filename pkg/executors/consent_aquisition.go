@@ -6,7 +6,7 @@ import (
 )
 
 // InitiationConsentAcquisition - get required tokens
-func InitiationConsentAcquisition(consentRequirements []model.SpecConsentRequirements, definition RunDefinition) {
+func InitiationConsentAcquisition(consentRequirements []model.SpecConsentRequirements, definition RunDefinition, ctx *model.Context) {
 	tokenParameters := make(map[string][]string)
 
 	for _, v := range consentRequirements {
@@ -25,8 +25,8 @@ func InitiationConsentAcquisition(consentRequirements []model.SpecConsentRequire
 	runner := NewConsentAcquisitionRunner(definition, NewBufferedDaemonController())
 
 	for tokenName, permissionList := range tokenParameters {
-		logrus.Debugf("processing: token: %s permissionList %v", tokenName, permissionList)
-		runner.RunConsentAcquisition(tokenName, buildPermissionString(permissionList), definition.Context, definition.DiscoModel.DiscoveryModel.TokenAcquisition)
+		logrus.Debugf("token: %s permissionList %v", tokenName, permissionList)
+		runner.RunConsentAcquisition(tokenName, buildPermissionString(permissionList), ctx, definition.DiscoModel.DiscoveryModel.TokenAcquisition)
 	}
 }
 

@@ -26,7 +26,7 @@ const httpUserAgent = "Open Banking Conformance Suite v0.2.x"
 // GetImplementedTestCases takes a discovery Model and determines the implemented endpoints.
 // Currently this function is experimental - meaning it contains fmt.Printlns as an aid to understanding
 // and conceptualisation
-func GetImplementedTestCases(disco *discovery.ModelDiscoveryItem, nameGenerator names.Generator, globalReplacements map[string]string) ([]model.TestCase, map[string]string) {
+func GetImplementedTestCases(disco *discovery.ModelDiscoveryItem, nameGenerator names.Generator, ctx *model.Context) ([]model.TestCase, map[string]string) {
 	originalEndpoints := make(map[string]string)
 	var testcases []model.TestCase
 	endpoints := disco.Endpoints
@@ -78,7 +78,7 @@ func GetImplementedTestCases(disco *discovery.ModelDiscoveryItem, nameGenerator 
 							return nil, nil
 						}
 						for i := range customTestCases {
-							customTestCases[i].ProcessReplacementFields(globalReplacements)
+							customTestCases[i].ProcessReplacementFields(ctx)
 						}
 						if customTestCases != nil {
 							testcases = append(testcases, customTestCases...)
@@ -90,7 +90,7 @@ func GetImplementedTestCases(disco *discovery.ModelDiscoveryItem, nameGenerator 
 					expect := model.Expect{StatusCode: goodResponseCode, SchemaValidation: true}
 					context := model.Context{"baseurl": disco.ResourceBaseURI}
 					testcase := model.TestCase{ID: nameGenerator.Generate(), Input: input, Context: context, Expect: expect, Name: op.Summary}
-					testcase.ProcessReplacementFields(globalReplacements)
+					testcase.ProcessReplacementFields(ctx)
 					originalEndpoints[testcase.ID] = v.Path // capture original spec paths
 					testcases = append(testcases, testcase)
 					break
@@ -123,12 +123,12 @@ func getTemplatedTestCases(path string) (tc []model.TestCase, err error) {
 }
 
 // GetCustomTestCases retrieves custom tests from the discovery file
-func GetCustomTestCases(discoReader *discovery.CustomTest) SpecificationTestCases {
+func GetCustomTestCases(discoReader *discovery.CustomTest, ctx *model.Context) SpecificationTestCases {
 	spec := discovery.ModelAPISpecification{Name: discoReader.Name}
 	specTestCases := SpecificationTestCases{Specification: spec}
 	testcases := []model.TestCase{}
 	for _, testcase := range discoReader.Sequence {
-		testcase.ProcessReplacementFields(discoReader.Replacements)
+		testcase.ProcessReplacementFields(ctx)
 		testcases = append(testcases, testcase)
 	}
 	specTestCases.TestCases = testcases

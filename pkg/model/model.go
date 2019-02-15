@@ -2,6 +2,7 @@ package model
 
 import (
 	"bytes"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"net/http"
@@ -165,7 +166,7 @@ func (t *TestCase) ApplyContext(rulectx *Context) {
 		}
 	}
 
-	baseUrl, err := t.Context.GetString("baseurl")
+	baseURL, err := t.Context.GetString("baseurl")
 	if err == ErrNotFound {
 		t.AppMsg("no base url - using only input.Endpoint")
 		return
@@ -175,7 +176,7 @@ func (t *TestCase) ApplyContext(rulectx *Context) {
 	}
 
 	// "convention" puts baseurl as prefix to endpoint in testcase"
-	t.Input.Endpoint = baseUrl + t.Input.Endpoint
+	t.Input.Endpoint = baseURL + t.Input.Endpoint
 }
 
 // ApplyExpects runs the Expects section of the testcase to evaluate if the response from the system under test passes or fails
@@ -240,6 +241,14 @@ func (t *TestCase) AppExit(msg string) string {
 	return msg
 }
 
+func (t *TestCase) String() string {
+	bites, err := json.MarshalIndent(t, "", "    ")
+	if err != nil {
+		return t.AppErr(fmt.Sprintf("error stringifying TestCase %s %s %s", t.ID, t.Name, err.Error())).Error()
+	}
+	return string(bites)
+}
+
 // Various helpers - main to dump struct contents to console
 
 func (m *Manifest) String() string {
@@ -297,29 +306,25 @@ func isReplacementField(value string) bool {
 
 // ProcessReplacementFields prefixed by '$' in the testcase Input and Context sections
 // Call to pre-process custom test cases from discovery model
-func (t *TestCase) ProcessReplacementFields(rep map[string]string) {
-	ctx := Context{}
-	for k, v := range rep {
-		ctx.Put(k, v)
-	}
+func (t *TestCase) ProcessReplacementFields(ctx *Context) {
 
-	t.Input.Endpoint, _ = replaceContextField(t.Input.Endpoint, &ctx) // errors if field not present in context - which is isReplacement for this function
-	t.Input.RequestBody, _ = replaceContextField(t.Input.RequestBody, &ctx)
+	t.Input.Endpoint, _ = replaceContextField(t.Input.Endpoint, ctx) // errors if field not present in context - which is isReplacement for this function
+	t.Input.RequestBody, _ = replaceContextField(t.Input.RequestBody, ctx)
 
 	for k := range t.Input.FormData {
-		t.Input.FormData[k], _ = replaceContextField(t.Input.FormData[k], &ctx)
+		t.Input.FormData[k], _ = replaceContextField(t.Input.FormData[k], ctx)
 	}
 	for k := range t.Input.Headers {
-		t.Input.Headers[k], _ = replaceContextField(t.Input.Headers[k], &ctx)
+		t.Input.Headers[k], _ = replaceContextField(t.Input.Headers[k], ctx)
 	}
 	for k := range t.Input.Claims {
-		t.Input.Claims[k], _ = replaceContextField(t.Input.Claims[k], &ctx)
+		t.Input.Claims[k], _ = replaceContextField(t.Input.Claims[k], ctx)
 	}
 	for k := range t.Context {
 		param, ok := t.Context[k].(string)
 		if !ok {
 			continue
 		}
-		t.Context[k], _ = replaceContextField(param, &ctx)
+		t.Context[k], _ = replaceContextField(param, ctx)
 	}
 }

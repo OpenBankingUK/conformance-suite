@@ -1,11 +1,13 @@
 package executors
 
 import (
+	"testing"
+
 	mocks2 "bitbucket.org/openbankingteam/conformance-suite/pkg/authentication/mocks"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/executors/mocks"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 func TestNewTestCaseRunner(t *testing.T) {
@@ -25,24 +27,14 @@ func TestMakeRuleContext(t *testing.T) {
 	definition := RunDefinition{
 		SigningCert: cert,
 		DiscoModel: &discovery.Model{
-			DiscoveryModel: discovery.ModelDiscovery{
-				CustomTests: []discovery.CustomTest{
-					{
-						Replacements: map[string]string{"key": "value"},
-					},
-				},
-			},
+			DiscoveryModel: discovery.ModelDiscovery{},
 		},
 	}
 	runner := NewTestCaseRunner(definition, controller)
 
-	ctx := runner.makeRuleCtx()
+	ctx := runner.makeRuleCtx(&model.Context{})
 
 	value, ok := ctx.Get("SigningCert")
 	assert.True(t, ok)
 	assert.Equal(t, cert, value)
-
-	value, ok = ctx.Get("key")
-	assert.True(t, ok)
-	assert.Equal(t, "value", value)
 }

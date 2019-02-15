@@ -2,6 +2,7 @@ package executors
 
 import (
 	"fmt"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -15,15 +16,15 @@ func TestBuildParameters(t *testing.T) {
 		"tok0003": {},
 	}
 
-	buildstr := buildPermissionString(permissions["tok0001"])
+	buildstr := strings.Join(permissions["tok0001"], ",")
 	fmt.Println(buildstr)
 	assert.Equal(t, `"readbasic","writebasic","updatebasic"`, buildstr)
 
-	buildstr = buildPermissionString(permissions["tok0002"])
+	buildstr = strings.Join(permissions["tok0002"], ",")
 	fmt.Println(buildstr)
 	assert.Equal(t, `"updatebasic"`, buildstr)
 
-	buildstr = buildPermissionString(permissions["tok0003"])
+	buildstr = strings.Join(permissions["tok0003"], ",")
 	assert.Equal(t, ``, buildstr)
 	fmt.Println(buildstr)
 
