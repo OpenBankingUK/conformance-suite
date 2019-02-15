@@ -2,8 +2,9 @@ package authentication
 
 import (
 	"errors"
-	"github.com/stretchr/testify/assert"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 // TestClientSecretBasicGeneration tests the generation of `client secret basic` value as a product of
@@ -41,7 +42,7 @@ func TestClientSecretBasicGeneration(t *testing.T) {
 	}
 
 	for _, ti := range tt {
-		tokenActual, err := calculateClientSecretBasicToken(ti.clientID, ti.clientSecret)
+		tokenActual, err := CalculateClientSecretBasicToken(ti.clientID, ti.clientSecret)
 		if ti.errorExpected != nil {
 			assert.Equal(ti.errorExpected.Error(), err.Error())
 		}

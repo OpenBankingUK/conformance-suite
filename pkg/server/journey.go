@@ -218,6 +218,7 @@ const ctxConstFapiFinancialID = "fapi_financial_id"
 const ctxConstRedirectURL = "redirect_url"
 const ctxConstAuthorisationEndpoint = "authorisation_endpoint"
 const ctxConstBasicAuthentication = "basic_authentication"
+const ctxConstResourceBaseURL = "resource_base_url"
 
 func (wj *journey) configParametersToJourneyContext() error {
 	wj.context.PutString(ctxConstClientID, wj.clientID)
@@ -226,6 +227,7 @@ func (wj *journey) configParametersToJourneyContext() error {
 	wj.context.PutString(ctxConstFapiFinancialID, wj.xXFAPIFinancialID)
 	wj.context.PutString(ctxConstRedirectURL, wj.redirectURL)
 	wj.context.PutString(ctxConstAuthorisationEndpoint, wj.authorizationEndpoint)
+	wj.context.PutString(ctxConstResourceBaseURL, wj.resourceBaseURL)
 	basicauth, err := authentication.CalculateClientSecretBasicToken(wj.clientID, wj.clientSecret)
 	if err != nil {
 		return err
