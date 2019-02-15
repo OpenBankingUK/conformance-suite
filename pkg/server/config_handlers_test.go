@@ -29,6 +29,7 @@ func TestValidateConfig(t *testing.T) {
 		ClientSecret:          "secret",
 		AuthorizationEndpoint: "https://server/auth",
 		TokenEndpoint:         "https://server/token",
+		ResourceBaseURL:       "https://server",
 		XFAPIFinancialID:      "2cfb31a3-5443-4e65-b2bc-ef8e00266a77",
 		RedirectURL:           "https://localhost",
 		ClientID:              "8672384e-9a33-439f-8924-67bb14340d71",
@@ -185,12 +186,31 @@ func TestValidateConfigTestsEmpty(t *testing.T) {
 				ClientID:              "client_id",
 				ClientSecret:          "client_secret",
 				TokenEndpoint:         "http://server",
+				ResourceBaseURL:       "http://server",
 				AuthorizationEndpoint: "http://server",
 				XFAPIFinancialID:      "123",
 			},
 			expectedOk:  false,
 			expectedMsg: "redirect_url is empty",
 		},
+		{
+			name: "missing client resource_base_url",
+			config: GlobalConfiguration{
+				SigningPrivate:        `------------`,
+				SigningPublic:         `------------`,
+				TransportPrivate:      privateKey,
+				TransportPublic:       publicKey,
+				ClientID:              "client_id",
+				ClientSecret:          "client_secret",
+				TokenEndpoint:         "http://server",
+				AuthorizationEndpoint: "http://server",
+				ResourceBaseURL:       "http://server",
+				XFAPIFinancialID:      "123",
+			},
+			expectedOk:  false,
+			expectedMsg: "redirect_url is empty",
+		},
+
 		{
 			name: "missing x_fapi_financial_id id",
 			config: GlobalConfiguration{
@@ -201,6 +221,7 @@ func TestValidateConfigTestsEmpty(t *testing.T) {
 				ClientID:              "client_id",
 				ClientSecret:          "client_secret",
 				TokenEndpoint:         "http://server",
+				ResourceBaseURL:       "http://server",
 				AuthorizationEndpoint: "http://server",
 				RedirectURL:           "http://server",
 			},
@@ -251,6 +272,7 @@ func TestServerConfigGlobalPostValid(t *testing.T) {
 		XFAPIFinancialID:      `0015800001041RHAAY`,
 		RedirectURL:           `https://0.0.0.0:8443/conformancesuite/callback`,
 		AuthorizationEndpoint: `https://modelobank2018.o3bank.co.uk:4201/token`,
+		ResourceBaseURL:       `https://modelobank2018.o3bank.co.uk:4501`,
 	}
 	globalConfigurationJSON, err := json.MarshalIndent(globalConfiguration, ``, `  `)
 	require.NoError(err)
@@ -296,6 +318,7 @@ func TestServerConfigGlobalPostInvalid(t *testing.T) {
 				ClientSecret:          "client_secret",
 				TokenEndpoint:         "http://server",
 				AuthorizationEndpoint: "http://server",
+				ResourceBaseURL:       "http://server",
 				RedirectURL:           "http://server",
 				XFAPIFinancialID:      "123",
 			},
@@ -313,6 +336,7 @@ func TestServerConfigGlobalPostInvalid(t *testing.T) {
 				ClientSecret:          "client_secret",
 				TokenEndpoint:         "token_endpoint",
 				AuthorizationEndpoint: "http://server",
+				ResourceBaseURL:       `https://server`,
 				RedirectURL:           "http://server",
 				XFAPIFinancialID:      "123",
 			},

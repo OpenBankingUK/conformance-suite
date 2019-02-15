@@ -93,6 +93,7 @@ export default {
         'client_secret',
         'token_endpoint',
         'authorization_endpoint',
+        'resource_base_url',
         'x_fapi_financial_id',
         'redirect_url',
       ];
@@ -169,6 +170,9 @@ export default {
     }
     if (_.isEmpty(state.configuration.authorization_endpoint)) {
       errors.push('Authorization Endpoint empty');
+    }
+    if (_.isEmpty(state.configuration.resource_base_url)) {
+      errors.push('Resource Base URL empty');
     }
     if (_.isEmpty(state.configuration.x_fapi_financial_id)) {
       errors.push('x-fapi-financial-id empty');
