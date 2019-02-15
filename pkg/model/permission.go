@@ -43,7 +43,7 @@ func (sp standardPermissions) defaultForEndpoint(endpoint string) ([]Code, error
 
 	// only one permission so always DEFAULT
 	if len(perms) == 1 {
-		code := []Code{ perms[0].Code }
+		code := []Code{perms[0].Code}
 		return code, nil
 	}
 

@@ -72,7 +72,7 @@ func (_m *Journey) RunTests() error {
 }
 
 // SetConfig provides a mock function with given fields: signing, transport, clientID, clientSecret, tokenEndpoint, authorizationEndpoint, xXFAPIFinancialID, redirectURL
-func (_m *Journey) SetConfig(signing authentication.Certificate, transport authentication.Certificate, clientID string, clientSecret string, tokenEndpoint string, authorizationEndpoint string, xXFAPIFinancialID string, redirectURL string) {
+func (_m *Journey) SetConfig(signing authentication.Certificate, transport authentication.Certificate, clientID string, clientSecret string, tokenEndpoint string, authorizationEndpoint string, resourceBaseURL string, xXFAPIFinancialID string, redirectURL string) {
 	_m.Called(signing, transport, clientID, clientSecret, tokenEndpoint, authorizationEndpoint, xXFAPIFinancialID, redirectURL)
 }
 

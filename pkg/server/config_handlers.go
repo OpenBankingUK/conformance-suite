@@ -28,6 +28,7 @@ type GlobalConfiguration struct {
 	ClientSecret          string `json:"client_secret" validate:"not_empty"`
 	TokenEndpoint         string `json:"token_endpoint" validate:"valid_url"`
 	AuthorizationEndpoint string `json:"authorization_endpoint" validate:"valid_url"`
+	ResourceBaseURL       string `json:"resource_base_url" validate:"valid_url"`
 	XFAPIFinancialID      string `json:"x_fapi_financial_id" validate:"not_empty"`
 	RedirectURL           string `json:"redirect_url" validate:"valid_url"`
 }
@@ -62,6 +63,7 @@ func (h *configHandlers) configGlobalPostHandler(c echo.Context) error {
 		config.TokenEndpoint,
 		config.AuthorizationEndpoint,
 		config.XFAPIFinancialID,
+		config.ResourceBaseURL,
 		config.RedirectURL,
 	)
 

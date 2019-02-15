@@ -44,6 +44,9 @@ export default {
   [types.SET_AUTHORIZATION_ENDPOINT](state, value) {
     state.configuration.authorization_endpoint = value;
   },
+  [types.SET_RESOURCE_BASE_URL](state, value) {
+    state.configuration.resource_base_url = value;
+  },
   [types.SET_X_FAPI_FINANCIAL_ID](state, value) {
     state.configuration.x_fapi_financial_id = value;
   },
