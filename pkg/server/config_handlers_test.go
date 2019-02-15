@@ -307,16 +307,22 @@ func TestServerConfigGlobalPostInvalid(t *testing.T) {
 		},
 		{
 			name:               `InvalidTransport`,
-			expectedBody:       `{"error": "transport_private is empty"}`,
+			expectedBody:       `{"error": "error with transport certificate: error with public key: Invalid Key: Key must be PEM encoded PKCS1 or PKCS8 private key"}`,
 			expectedStatusCode: http.StatusBadRequest,
 			config: GlobalConfiguration{
-				SigningPrivate:   privateKey,
-				SigningPublic:    publicKey,
-				TransportPrivate: ``,
-				TransportPublic:  ``,
+				SigningPrivate:        privateKey,
+				SigningPublic:         publicKey,
+				TransportPrivate:      `--------------`,
+				TransportPublic:       `--------------`,
+				ClientID:              "client_id",
+				ClientSecret:          "client_secret",
+				TokenEndpoint:         "token_endpoint",
+				AuthorizationEndpoint: "http://server",
+				ResourceBaseURL:       `https://server`,
+				RedirectURL:           "http://server",
+				XFAPIFinancialID:      "123",
 			},
 		},
-
 		{
 			name:               `MissingClientID`,
 			expectedBody:       `{"error": "client_id is empty"}`,
@@ -417,24 +423,6 @@ func TestServerConfigGlobalPostInvalid(t *testing.T) {
 				RedirectURL:           `https://0.0.0.0:8443/conformancesuite/callback`,
 			},
 		},
-		//{
-		//	name:               `InvalidTransport`,
-		//	expectedBody:       `{"error": "error with transport certificate: error with public key: Invalid Key: Key must be PEM encoded PKCS1 or PKCS8 private key"}`,
-		//	expectedStatusCode: http.StatusBadRequest,
-		//	config: GlobalConfiguration{
-		//		SigningPrivate:        privateKey,
-		//		SigningPublic:         publicKey,
-		//		TransportPrivate:      `--------------`,
-		//		TransportPublic:       `--------------`,
-		//		ClientID:              "client_id",
-		//		ClientSecret:          "client_secret",
-		//		TokenEndpoint:         "token_endpoint",
-		//		AuthorizationEndpoint: "http://server",
-		//		ResourceBaseURL:       `https://server`,
-		//		RedirectURL:           "http://server",
-		//		XFAPIFinancialID:      "123",
-		//	},
-		//},
 	}
 	for _, testCase := range testCases {
 		testCase := testCase
