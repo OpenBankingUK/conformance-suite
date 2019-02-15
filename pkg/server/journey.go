@@ -2,7 +2,6 @@
 package server
 
 import (
-	"os"
 	"sync"
 
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/authentication"
@@ -64,7 +63,7 @@ type journey struct {
 }
 
 // NewJourney creates an instance for a user journey
-func NewJourney(generator generation.Generator, validator discovery.Validator) *journey {
+func NewJourney(logger *logrus.Entry, generator generation.Generator, validator discovery.Validator) *journey {
 	return &journey{
 		generator:             generator,
 		validator:             validator,
@@ -73,7 +72,7 @@ func NewJourney(generator generation.Generator, validator discovery.Validator) *
 		allCollected:          false,
 		testCasesRunGenerated: false,
 		context:               model.Context{},
-		log:                   (&logrus.Logger{Out: os.Stderr, Formatter: new(logrus.TextFormatter), Hooks: make(logrus.LevelHooks), Level: logrus.DebugLevel}).WithField("module", "Journey"),
+		log:                   logger.WithField("module", "Journey"),
 	}
 }
 
@@ -107,8 +106,15 @@ func (wj *journey) TestCases() (generation.TestCasesRun, error) {
 	}
 
 	if !wj.testCasesRunGenerated {
-		wj.testCasesRun = wj.generator.GenerateSpecificationTestCases(wj.validDiscoveryModel.DiscoveryModel)
-		// replace this with a NewCollector to a real implementation
+		config := generation.GeneratorConfig{
+			ClientID:              wj.clientID,
+			Aud:                   wj.authorizationEndpoint,
+			ResponseType:          "code id_token",
+			Scope:                 "openid accounts",
+			AuthorizationEndpoint: wj.authorizationEndpoint,
+			RedirectURL:           wj.redirectURL,
+		}
+		wj.testCasesRun = wj.generator.GenerateSpecificationTestCases(config, wj.validDiscoveryModel.DiscoveryModel)
 		runDefinition := executors.RunDefinition{
 			DiscoModel:    wj.validDiscoveryModel,
 			TestCaseRun:   wj.testCasesRun,
