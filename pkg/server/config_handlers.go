@@ -42,7 +42,7 @@ func (h *configHandlers) configGlobalPostHandler(c echo.Context) error {
 
 	ok, message := validateConfig(config)
 	if !ok {
-		return c.JSON(http.StatusBadRequest, NewErrorResponse(errors.New(message)))
+		return c.JSON(http.StatusBadRequest, NewErrorMessageResponse(message))
 	}
 
 	certificateSigning, err := authentication.NewCertificate(config.SigningPublic, config.SigningPrivate)
