@@ -17,6 +17,7 @@ var (
 	ErrEmptyClientSecret          = errors.New("client_secret is empty")
 	ErrEmptyTokenEndpoint         = errors.New("token_endpoint is empty")
 	ErrEmptyAuthorizationEndpoint = errors.New("authorization_endpoint is empty")
+	ErrEmptyResourceBaseURL       = errors.New("resource_base_url is empty")
 	ErrEmptyXFAPIFinancialID      = errors.New("x_fapi_financial_id is empty")
 	ErrEmptyRedirectURL           = errors.New("redirect_url is empty")
 )
@@ -35,6 +36,7 @@ type GlobalConfiguration struct {
 	ClientSecret          string `json:"client_secret"`
 	TokenEndpoint         string `json:"token_endpoint"`
 	AuthorizationEndpoint string `json:"authorization_endpoint"`
+	ResourceBaseURL       string `json:"resource_base_url"`
 	XFAPIFinancialID      string `json:"x_fapi_financial_id"`
 	RedirectURL           string `json:"redirect_url"`
 }
@@ -65,6 +67,12 @@ func (h *configHandlers) configGlobalPostHandler(c echo.Context) error {
 	if config.TokenEndpoint == "" {
 		return c.JSON(http.StatusBadRequest, NewErrorResponse(ErrEmptyTokenEndpoint))
 	}
+	if config.AuthorizationEndpoint == "" {
+		return c.JSON(http.StatusBadRequest, NewErrorResponse(ErrEmptyAuthorizationEndpoint))
+	}
+	if config.ResourceBaseURL == "" {
+		return c.JSON(http.StatusBadRequest, NewErrorResponse(ErrEmptyResourceBaseURL))
+	}
 	if config.XFAPIFinancialID == "" {
 		return c.JSON(http.StatusBadRequest, NewErrorResponse(ErrEmptyXFAPIFinancialID))
 	}
@@ -78,11 +86,14 @@ func (h *configHandlers) configGlobalPostHandler(c echo.Context) error {
 	if _, err := url.Parse(config.AuthorizationEndpoint); err != nil {
 		return c.JSON(http.StatusBadRequest, NewErrorResponse(errors.Wrap(err, "authorization_endpoint")))
 	}
+	if _, err := url.Parse(config.ResourceBaseURL); err != nil {
+		return c.JSON(http.StatusBadRequest, NewErrorResponse(errors.Wrap(err, "resource_base_url")))
+	}
 	if _, err := url.Parse(config.RedirectURL); err != nil {
 		return c.JSON(http.StatusBadRequest, NewErrorResponse(errors.Wrap(err, "redirect_url")))
 	}
 
-	h.journey.SetConfig(certificateSigning, certificateTransport, config.ClientID, config.ClientSecret, config.TokenEndpoint, config.AuthorizationEndpoint, config.XFAPIFinancialID, config.RedirectURL)
+	h.journey.SetConfig(certificateSigning, certificateTransport, config.ClientID, config.ClientSecret, config.TokenEndpoint, config.AuthorizationEndpoint, config.ResourceBaseURL, config.XFAPIFinancialID, config.RedirectURL)
 
 	return c.JSON(http.StatusCreated, config)
 }

@@ -72,8 +72,8 @@ func (_m *Journey) RunTests() error {
 }
 
 // SetConfig provides a mock function with given fields: signing, transport, clientID, clientSecret, tokenEndpoint, xXFAPIFinancialID, redirectURL
-func (_m *Journey) SetConfig(signing authentication.Certificate, transport authentication.Certificate, clientID string, clientSecret string, tokenEndpoint, authorizationEndpoint string, xXFAPIFinancialID string, redirectURL string) {
-	_m.Called(signing, transport, clientID, clientSecret, tokenEndpoint, xXFAPIFinancialID, redirectURL)
+func (_m *Journey) SetConfig(signing authentication.Certificate, transport authentication.Certificate, clientID string, clientSecret string, tokenEndpoint, authorizationEndpoint, resourceBaseURL string, xXFAPIFinancialID string, redirectURL string) {
+	_m.Called(signing, transport, clientID, clientSecret, tokenEndpoint, authorizationEndpoint, resourceBaseURL, xXFAPIFinancialID, redirectURL)
 }
 
 // SetDiscoveryModel provides a mock function with given fields: discoveryModel

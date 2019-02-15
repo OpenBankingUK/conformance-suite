@@ -17,6 +17,7 @@ export default {
     client_secret: '',
     token_endpoint: '',
     authorization_endpoint: '',
+    resource_base_url: '',
     x_fapi_financial_id: '',
     redirect_url: 'https://0.0.0.0:8443/conformancesuite/callback',
   },

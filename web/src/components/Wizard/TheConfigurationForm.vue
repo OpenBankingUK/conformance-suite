@@ -81,6 +81,19 @@
       </b-form-group>
 
       <b-form-group
+        id="resource_base_url_group"
+        label-for="resource_base_url"
+        label="Resource Base URL">
+        <b-form-input
+          id="resource_base_url"
+          v-model="resource_base_url"
+          :state="isValidUrl(resource_base_url)"
+          required
+          type="url"
+        />
+      </b-form-group>
+
+      <b-form-group
         id="x_fapi_financial_id_group"
         label-for="x_fapi_financial_id"
         label="x-fapi-financial-id"
@@ -159,6 +172,15 @@ export default {
       },
       set(value) {
         this.$store.commit('config/SET_AUTHORIZATION_ENDPOINT', value);
+      },
+    },
+
+    resource_base_url: {
+      get() {
+        return this.$store.state.config.configuration.resource_base_url;
+      },
+      set(value) {
+        this.$store.commit('config/SET_RESOURCE_BASE_URL', value);
       },
     },
 
