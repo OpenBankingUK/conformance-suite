@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/sirupsen/logrus"
 	"os"
 
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
@@ -29,11 +30,11 @@ type GeneratorCommand struct {
 	Generator
 }
 
-func newGeneratorCmdWrapper() GeneratorCommand {
+func newGeneratorCmdWrapper(logger *logrus.Entry) GeneratorCommand {
 	checker := model.NewConditionalityChecker()
 	validatorEngine := discovery.NewFuncValidator(checker)
 	testGenerator := generation.NewGenerator()
-	journey := server.NewJourney(testGenerator, validatorEngine)
+	journey := server.NewJourney(logger, testGenerator, validatorEngine)
 	generator := newGenerator(journey)
 	return newGeneratorCmdWrapperWithOptions(generator)
 }

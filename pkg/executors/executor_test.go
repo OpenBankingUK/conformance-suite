@@ -21,10 +21,7 @@ import (
 
 func TestSimulatedChainedOzoneRequest(t *testing.T) {
 	executor := &ozoneResponder{}
-	chainedOzoneHeadlessAccounts(t, executor)
-}
 
-func chainedOzoneHeadlessAccounts(t *testing.T, executor TestCaseExecutor) {
 	manifest, err := loadManifest("testdata/ozoneconnect.json")
 	require.NoError(t, err)
 	for _, rule := range manifest.Rules {
@@ -65,8 +62,8 @@ func (o *ozoneResponder) ExecuteTestCase(r *resty.Request, t *model.TestCase, ct
 	defer appExit("OZONE-RESPONDER")
 	appMsg("This should be the place")
 	responseKey := t.Input.Method + " " + t.Input.Endpoint
-	if strings.HasPrefix(responseKey, "GET https://modelobankauth2018.o3bank.co.uk:4101/auth?client_id") {
-		responseKey = "GET https://modelobankauth2018.o3bank.co.uk:4101/auth?client_id"
+	if strings.HasPrefix(responseKey, "GET https://modelobankauth2018.o3bank.co.uk:4101?client_id") {
+		responseKey = "GET https://modelobankauth2018.o3bank.co.uk:4101?client_id"
 	}
 	appMsg(fmt.Sprintf("responsekey: %s", responseKey))
 	fn := chainTest[responseKey]
@@ -84,7 +81,7 @@ func (o *ozoneResponder) ExecuteTestCase(r *resty.Request, t *model.TestCase, ct
 var chainTest = map[string]func(*resty.Request) *resty.Response{
 	"POST https://modelobank2018.o3bank.co.uk:4201/token":                                          tokenEndpoint(),
 	"POST https://modelobank2018.o3bank.co.uk:4501/open-banking/v3.0/aisp/account-access-consents": accountAccessConsents(),
-	"GET https://modelobankauth2018.o3bank.co.uk:4101/auth?client_id":                              consentIDFlow(),
+	"GET https://modelobankauth2018.o3bank.co.uk:4101?client_id":                                   consentIDFlow(),
 	"GET https://modelobank2018.o3bank.co.uk:4501/open-banking/v3.0/aisp/accounts":                 getAccounts(),
 }
 

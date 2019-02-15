@@ -1,10 +1,11 @@
 package authentication
 
 import (
+	"testing"
+
 	"github.com/dgrijalva/jwt-go"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"testing"
 )
 
 func TestPSUURLGenerate(t *testing.T) {
@@ -28,19 +29,6 @@ func TestPSUURLGenerate(t *testing.T) {
 	token, err := createAlgNoneJWT(claims)
 	require.NoError(t, err)
 	assert.Equal(t, token, url.Query().Get("request"))
-}
-
-func TestPSUURLGenerateJoinsPaths(t *testing.T) {
-	claims := PSUConsentClaims{
-		Aud: "https://bank",
-	}
-
-	urlConsent, err := PSUURLGenerate(claims)
-
-	require.NoError(t, err)
-	expected := "https://bank/auth"
-	urlConsent.RawQuery = ""
-	assert.Equal(t, expected, urlConsent.String())
 }
 
 func TestCreateAlgNoneJWTEmpty(t *testing.T) {

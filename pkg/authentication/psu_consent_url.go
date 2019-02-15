@@ -2,20 +2,21 @@ package authentication
 
 import (
 	"fmt"
+	"net/url"
+
 	"github.com/dgrijalva/jwt-go"
 	"github.com/pkg/errors"
-	"net/url"
-	"path"
 )
 
 type PSUConsentClaims struct {
-	Aud          string
-	Iss          string
-	ResponseType string
-	Scope        string
-	RedirectURI  string
-	ConsentId    string
-	State        string
+	AuthorizationEndpoint string
+	Aud                   string // Audience
+	Iss                   string // ClientID
+	ResponseType          string // "code id_token"
+	Scope                 string // "openid accounts"
+	RedirectURI           string
+	ConsentId             string
+	State                 string // {test_id}
 }
 
 // PSUURLGenerate generates a PSU Consent URL based on claims
@@ -25,12 +26,10 @@ func PSUURLGenerate(claims PSUConsentClaims) (*url.URL, error) {
 		return nil, errors.Wrap(err, "generating psu consent URL")
 	}
 
-	consentUrl, err := url.Parse(claims.Aud)
+	consentUrl, err := url.Parse(claims.AuthorizationEndpoint)
 	if err != nil {
 		return nil, errors.Wrap(err, "generating psu consent URL")
 	}
-
-	consentUrl.Path = path.Join("/auth")
 
 	consentUrlQuery := consentUrl.Query()
 	consentUrlQuery.Set("client_id", claims.Iss)

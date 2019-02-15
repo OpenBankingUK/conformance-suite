@@ -30,14 +30,14 @@
       <template
         slot="consentUrls"
         slot-scope="data">
-        <template v-for="url in data.value">
+        <template v-for="(url, index) in data.value">
           <a
             :href="url"
             :key="url"
             target="_blank">
             Start PSU Consent
           </a>
-          <br :key="url">
+          <br :key="index">
         </template>
       </template>
     </b-table>
@@ -73,7 +73,7 @@ export default {
     specConsentUrls() {
       return this.consentUrls[this.apiSpecification.name];
       // Uncomment below and comment line above to test before backend consent URL changes finished:
-      // return ['http://example.com/1', 'http://example.com/2'];
+      // return [`http://example.com/${this.apiSpecification.name}/1`, `http://example.com/${this.apiSpecification.name}/2`];
     },
     apiSpecificationWithConsentUrls() {
       const consentUrls = this.specConsentUrls;

@@ -61,6 +61,15 @@ func (h *redirectHandlers) postFragmentOKHandler(c echo.Context) error {
 		return err
 	}
 
+	// If ID Token has not been set in the query, then there is no need to validate
+	// (Nothing to validate)
+	if fragment.IDToken == "" {
+		if fragment.Code != "" {
+			return c.JSON(http.StatusOK, nil)
+		}
+		return c.JSON(http.StatusBadRequest, errors.New("code not set"))
+	}
+
 	claim := &AuthClaim{}
 
 	// If not providing Keyfunc (3rd param), don't check for error here
@@ -84,6 +93,15 @@ func (h *redirectHandlers) postQueryOKHandler(c echo.Context) error {
 	query := new(RedirectQuery)
 	if err := c.Bind(query); err != nil {
 		return err
+	}
+
+	// If ID Token has not been set in the query, then there is no need to validate
+	// (Nothing to validate)
+	if query.IDToken == "" {
+		if query.Code != "" {
+			return c.JSON(http.StatusOK, nil)
+		}
+		return c.JSON(http.StatusBadRequest, errors.New("code not set"))
 	}
 
 	claim := &AuthClaim{}

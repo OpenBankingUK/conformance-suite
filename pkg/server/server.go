@@ -65,7 +65,7 @@ func registerRoutes(server *Server, logger *logrus.Entry, checker model.Conditio
 
 	validatorEngine := discovery.NewFuncValidator(checker)
 	testGenerator := generation.NewGenerator()
-	journey := NewJourney(testGenerator, validatorEngine)
+	journey := NewJourney(logger, testGenerator, validatorEngine)
 
 	// anything prefixed with api
 	api := server.Group("/api")

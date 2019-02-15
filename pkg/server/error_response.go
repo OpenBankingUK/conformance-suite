@@ -7,7 +7,9 @@ type ErrorResponse struct {
 
 // NewErrorResponse creates a ErrorResponse object from a go standard error
 func NewErrorResponse(err error) *ErrorResponse {
-	return &ErrorResponse{
-		err.Error(),
-	}
+	return NewErrorMessageResponse(err.Error())
+}
+
+func NewErrorMessageResponse(msg string) *ErrorResponse {
+	return &ErrorResponse{msg}
 }

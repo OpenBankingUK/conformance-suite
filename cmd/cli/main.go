@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/sirupsen/logrus"
 	"os"
 	"strings"
 
@@ -16,9 +17,11 @@ var (
 )
 
 func main() {
+	logger := logrus.StandardLogger().WithField("app", "cli")
+
 	cobra.OnInitialize(initConfig)
 
-	generatorCmdWrapper := newGeneratorCmdWrapper()
+	generatorCmdWrapper := newGeneratorCmdWrapper(logger)
 	rootCmd := newRootCommand(generatorCmdWrapper.run)
 	if err := rootCmd.Execute(); err != nil {
 		fmt.Println(err)

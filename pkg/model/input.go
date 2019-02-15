@@ -101,12 +101,13 @@ func (i *Input) setClaims(tc *TestCase, ctx *Context) error {
 		case "consenturl":
 			i.AppMsg("==> executing consenturl strategy")
 			claims := authentication.PSUConsentClaims{
-				Aud:          i.Claims["aud"],
-				Iss:          i.Claims["iss"],
-				ResponseType: i.Claims["responseType"],
-				Scope:        i.Claims["scope"],
-				RedirectURI:  i.Claims["redirect_url"],
-				ConsentId:    i.Claims["consentId"],
+				AuthorizationEndpoint: i.Claims["aud"],
+				Aud:                   i.Claims["aud"],
+				Iss:                   i.Claims["iss"],
+				ResponseType:          i.Claims["responseType"],
+				Scope:                 i.Claims["scope"],
+				RedirectURI:           i.Claims["redirect_url"],
+				ConsentId:             i.Claims["consentId"],
 			}
 			consentUrl, err := authentication.PSUURLGenerate(claims)
 			if err != nil {
