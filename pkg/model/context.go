@@ -2,6 +2,8 @@ package model
 
 import (
 	"errors"
+
+	"github.com/sirupsen/logrus"
 )
 
 // Context is intended to handle two types of object and make them available to various parts of the suite including
@@ -72,4 +74,14 @@ func (c Context) GetStringSlice(key string) ([]string, error) {
 	}
 
 	return result, nil
+}
+
+// DumpContext - send the contents of a context to a logger
+func (c *Context) DumpContext() {
+	for k, v := range *c {
+		if k == "client_secret" || k == "basic_authentication" { // skip potentially sensitive fields - likely need to be more robust
+			continue
+		}
+		logrus.Debugf("key %s:%v", k, v)
+	}
 }

@@ -1,10 +1,11 @@
 package generation
 
 import (
-	"github.com/stretchr/testify/assert"
 	"io/ioutil"
 	"regexp"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 
 	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/test"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
@@ -28,7 +29,7 @@ func TestGenerateSpecificationTestCases(t *testing.T) {
 	discovery := *testLoadDiscoveryModel(t)
 	generator := NewGenerator()
 	config := GeneratorConfig{}
-	testCasesRun := generator.GenerateSpecificationTestCases(config, discovery)
+	testCasesRun := generator.GenerateSpecificationTestCases(config, discovery, &model.Context{})
 	cases := testCasesRun.TestCases
 
 	t.Run("returns slice of SpecificationTestCases, one per discovery item", func(t *testing.T) {

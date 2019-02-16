@@ -19,7 +19,7 @@
         "name": "ClientCredential Grant",
         "input": {
           "method": "POST",
-          "endpoint": "/token",
+          "endpoint": "$token_endpoint",
           "headers": {
             "content-type": "application/x-www-form-urlencoded",
             "accept": "*/*",
@@ -31,7 +31,7 @@
           }
         },
         "context": {
-          "baseurl": "$token_endpoint"
+          "baseurl": ""
         },
         "expect": {
           "status-code": 200,
@@ -49,7 +49,7 @@
         "name": "PostAccount Request",
         "input": {
           "method": "POST",
-          "endpoint": "/open-banking/v3.0/aisp/account-access-consents",
+          "endpoint": "/open-banking/v3.1/aisp/account-access-consents",
           "headers": {
             "content-type": "application/json",
             "accept": "*/*",
@@ -60,7 +60,7 @@
           "bodyData":"{\"Data\": { \"Permissions\": [ \"ReadTransactionsCredits\", \"ReadTransactionsDebits\", $permission_list ],  \"TransactionFromDateTime\": \"2016-01-01T10:40:00+02:00\", \"TransactionToDateTime\": \"2025-12-31T10:40:00+02:00\" },  \"Risk\": {} }"
         },
         "context": {
-          "baseurl": "$resource_server"
+          "baseurl": "$resource_base_url"
         },
         "expect": {
           "status-code": 201,
@@ -71,7 +71,7 @@
           }],
           "contextPut": {
             "matches": [{
-              "name": "consent_id",
+              "name": "$consent_id",
               "description": "gets the consentid from PostAccountRequest ",
               "json": "Data.ConsentId"
             }]

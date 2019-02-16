@@ -92,6 +92,7 @@ func (wj *journey) SetDiscoveryModel(discoveryModel *discovery.Model) (discovery
 	wj.validDiscoveryModel = discoveryModel
 	wj.testCasesRunGenerated = false
 	wj.allCollected = false
+	wj.customTestParametersToJourneyContext()
 	wj.journeyLock.Unlock()
 
 	return discovery.NoValidationFailures, nil
@@ -115,17 +116,15 @@ func (wj *journey) TestCases() (generation.TestCasesRun, error) {
 			AuthorizationEndpoint: wj.authorizationEndpoint,
 			RedirectURL:           wj.redirectURL,
 		}
-		wj.testCasesRun = wj.generator.GenerateSpecificationTestCases(config, wj.validDiscoveryModel.DiscoveryModel)
+		wj.testCasesRun = wj.generator.GenerateSpecificationTestCases(config, wj.validDiscoveryModel.DiscoveryModel, &wj.context)
 		runDefinition := executors.RunDefinition{
 			DiscoModel:    wj.validDiscoveryModel,
 			TestCaseRun:   wj.testCasesRun,
 			SigningCert:   wj.certificateSigning,
 			TransportCert: wj.certificateTransport,
-			Context:       &wj.context,
 		}
-		wj.customTestParametersToJourneyContext()
 		if wj.validDiscoveryModel.DiscoveryModel.TokenAcquisition == "psu" {
-			executors.InitiationConsentAcquisition(wj.testCasesRun.SpecConsentRequirements, runDefinition)
+			executors.InitiationConsentAcquisition(wj.testCasesRun.SpecConsentRequirements, runDefinition, &wj.context)
 			wj.collector = executors.NewNullCollector(wj.doneCollectionCallback)
 		}
 		wj.testCasesRunGenerated = true
@@ -180,11 +179,10 @@ func (wj *journey) RunTests() error {
 		TestCaseRun:   wj.testCasesRun,
 		SigningCert:   wj.certificateSigning,
 		TransportCert: wj.certificateTransport,
-		Context:       &wj.context,
 	}
 
 	runner := executors.NewTestCaseRunner(runDefinition, wj.daemonController)
-	return runner.RunTestCases()
+	return runner.RunTestCases(&wj.context)
 }
 
 func (wj *journey) Results() executors.DaemonController {
@@ -210,6 +208,35 @@ func (wj *journey) SetConfig(signing, transport authentication.Certificate, clie
 	wj.resourceBaseURL = resourceBaseURL
 	wj.xXFAPIFinancialID = xXFAPIFinancialID
 	wj.redirectURL = redirectURL
+	wj.configParametersToJourneyContext()
+}
+
+const ctxConstClientID = "client_id"
+const ctxConstClientSecret = "client_secret"
+const ctxConstTokenEndpoint = "token_endpoint"
+const ctxConstFapiFinancialID = "fapi_financial_id"
+const ctxConstRedirectURL = "redirect_url"
+const ctxConstAuthorisationEndpoint = "authorisation_endpoint"
+const ctxConstBasicAuthentication = "basic_authentication"
+const ctxConstResourceBaseURL = "resource_base_url"
+
+func (wj *journey) configParametersToJourneyContext() error {
+	wj.context.PutString(ctxConstClientID, wj.clientID)
+	wj.context.PutString(ctxConstClientSecret, wj.clientSecret)
+	wj.context.PutString(ctxConstTokenEndpoint, wj.tokenEndpoint)
+	wj.context.PutString(ctxConstFapiFinancialID, wj.xXFAPIFinancialID)
+	wj.context.PutString(ctxConstRedirectURL, wj.redirectURL)
+	wj.context.PutString(ctxConstAuthorisationEndpoint, wj.authorizationEndpoint)
+	wj.context.PutString(ctxConstResourceBaseURL, wj.resourceBaseURL)
+	basicauth, err := authentication.CalculateClientSecretBasicToken(wj.clientID, wj.clientSecret)
+	if err != nil {
+		return err
+	}
+	wj.context.PutString(ctxConstBasicAuthentication, basicauth)
+
+	logrus.Debugln("configParameters - dumpcontext")
+	wj.context.DumpContext()
+	return nil
 }
 
 func (wj *journey) customTestParametersToJourneyContext() {
@@ -218,4 +245,6 @@ func (wj *journey) customTestParametersToJourneyContext() {
 			wj.context.PutString(k, v)
 		}
 	}
+
+	wj.context.DumpContext()
 }

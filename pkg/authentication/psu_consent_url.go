@@ -2,9 +2,10 @@ package authentication
 
 import (
 	"fmt"
+	"net/url"
+
 	"github.com/dgrijalva/jwt-go"
 	"github.com/pkg/errors"
-	"net/url"
 )
 
 type PSUConsentClaims struct {

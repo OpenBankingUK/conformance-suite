@@ -26,7 +26,7 @@ type GeneratorConfig struct {
 
 // Generator - generates test cases from discovery model
 type Generator interface {
-	GenerateSpecificationTestCases(GeneratorConfig, discovery.ModelDiscovery) TestCasesRun
+	GenerateSpecificationTestCases(GeneratorConfig, discovery.ModelDiscovery, *model.Context) TestCasesRun
 }
 
 // NewGenerator - returns implementation of Generator interface
@@ -42,21 +42,21 @@ type generator struct {
 }
 
 // GenerateSpecificationTestCases - generates test cases
-func (g generator) GenerateSpecificationTestCases(config GeneratorConfig, discovery discovery.ModelDiscovery) TestCasesRun {
+func (g generator) GenerateSpecificationTestCases(config GeneratorConfig, discovery discovery.ModelDiscovery, ctx *model.Context) TestCasesRun {
 	specTestCases := []SpecificationTestCases{}
-	customReplacements := make(map[string]string)
+	//customReplacements := make(map[string]string)
 	originalEndpoints := make(map[string]string, 0)
 
 	for _, customTest := range discovery.CustomTests { // assume ordering is prerun i.e. customtest run before other tests
-		specTestCases = append(specTestCases, GetCustomTestCases(&customTest))
-		for k, v := range customTest.Replacements {
-			customReplacements[k] = v
-		}
+		specTestCases = append(specTestCases, GetCustomTestCases(&customTest, ctx))
+		// for k, v := range customTest.Replacements {
+		// 	customReplacements[k] = v
+		// }
 	}
 
 	nameGenerator := names.NewSequentialPrefixedName("#t")
 	for _, item := range discovery.DiscoveryItems {
-		specTests, endpoints := generateSpecificationTestCases(item, nameGenerator, customReplacements)
+		specTests, endpoints := generateSpecificationTestCases(item, nameGenerator, ctx)
 		specTestCases = append(specTestCases, specTests)
 		for k, v := range endpoints {
 			originalEndpoints[k] = v
@@ -141,7 +141,7 @@ type TestCasesRun struct {
 	SpecConsentRequirements []model.SpecConsentRequirements `json:"specTokens"`
 }
 
-func generateSpecificationTestCases(item discovery.ModelDiscoveryItem, nameGenerator names.Generator, globalReplacements map[string]string) (SpecificationTestCases, map[string]string) {
-	testcases, originalEndpoints := GetImplementedTestCases(&item, nameGenerator, globalReplacements)
+func generateSpecificationTestCases(item discovery.ModelDiscoveryItem, nameGenerator names.Generator, ctx *model.Context) (SpecificationTestCases, map[string]string) {
+	testcases, originalEndpoints := GetImplementedTestCases(&item, nameGenerator, ctx)
 	return SpecificationTestCases{Specification: item.APISpecification, TestCases: testcases}, originalEndpoints
 }
