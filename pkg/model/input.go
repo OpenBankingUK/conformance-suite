@@ -80,7 +80,6 @@ func (i *Input) CreateRequest(tc *TestCase, ctx *Context) (*resty.Request, error
 
 	req.Method = tc.Input.Method
 	req.URL = tc.Input.Endpoint
-	logrus.Debugf("request body: %v", req)
 	return req, nil
 }
 

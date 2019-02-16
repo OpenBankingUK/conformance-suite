@@ -72,7 +72,7 @@ func (r *TestCaseRunner) RunTestCases(ctx *model.Context) error {
 }
 
 // RunConsentAcquisition -
-func (r *TestCaseRunner) RunConsentAcquisition(tokenName string, permissionList string, ctx *model.Context, consentType string) error {
+func (r *TestCaseRunner) RunConsentAcquisition(item TokenConsentIDItem, ctx *model.Context, consentType string, consentIDChannel chan<- TokenConsentIDItem) error {
 	r.runningLock.Lock()
 	defer r.runningLock.Unlock()
 	if r.running {
@@ -80,7 +80,7 @@ func (r *TestCaseRunner) RunConsentAcquisition(tokenName string, permissionList 
 	}
 	r.running = true
 
-	go r.runConsentAcquisitionAsync(tokenName, permissionList, ctx, consentType)
+	go r.runConsentAcquisitionAsync(item, ctx, consentType, consentIDChannel)
 
 	return nil
 }
@@ -91,25 +91,19 @@ func (r *TestCaseRunner) runTestCasesAsync(ctx *model.Context) {
 	ruleCtx := r.makeRuleCtx(ctx)
 
 	ctxLogger := r.logger.WithField("id", uuid.New())
-	r.AppMsg("runTestCasesAsync()")
-	r.AppMsg("determine Token Requirements")
-
-	r.AppMsg("running async test")
 	for _, spec := range r.definition.TestCaseRun.TestCases {
 		r.executeSpecTests(spec, ruleCtx, ctxLogger)
 	}
 	r.setNotRunning()
 }
 
-func (r *TestCaseRunner) runConsentAcquisitionAsync(tokenName string, permissionList string, ctx *model.Context, consentType string) {
-
+func (r *TestCaseRunner) runConsentAcquisitionAsync(item TokenConsentIDItem, ctx *model.Context, consentType string, consentIDChannel chan<- TokenConsentIDItem) {
 	r.executor.SetCertificates(r.definition.SigningCert, r.definition.TransportCert)
 	ruleCtx := r.makeRuleCtx(ctx)
-	ruleCtx.PutString("consent_id", tokenName)
-	ruleCtx.PutString("permission_list", permissionList)
+	ruleCtx.PutString("consent_id", item.TokenName)
+	ruleCtx.PutString("permission_list", item.Permissions)
 
 	ctxLogger := r.logger.WithField("id", uuid.New())
-	r.AppMsg("runTokenAcquisitionAsync)")
 	var err error
 	var comp model.Component
 	if consentType == "psu" {
@@ -139,16 +133,15 @@ func (r *TestCaseRunner) runConsentAcquisitionAsync(tokenName string, permission
 	for k, v := range comp.GetTests() {
 		v.ProcessReplacementFields(ruleCtx)
 		comp.Tests[k] = v
-		logrus.Debugln(v.String())
 	}
-	r.executeComponentTests(&comp, ruleCtx, ctxLogger)
+
+	r.executeComponentTests(&comp, ruleCtx, ctxLogger, item, consentIDChannel)
 
 	r.setNotRunning()
 }
 
-func (r *TestCaseRunner) executeComponentTests(comp *model.Component, ruleCtx *model.Context, ctxLogger *logrus.Entry) {
+func (r *TestCaseRunner) executeComponentTests(comp *model.Component, ruleCtx *model.Context, ctxLogger *logrus.Entry, item TokenConsentIDItem, consentIDChannel chan<- TokenConsentIDItem) {
 	ctxLogger = ctxLogger.WithField("component", comp.Name)
-	ctxLogger.Debugln("execute component Tests...")
 	logrus.Debug("component:" + comp.Name)
 	for _, testcase := range comp.Tests {
 		if r.daemonController.ShouldStop() {
@@ -157,7 +150,17 @@ func (r *TestCaseRunner) executeComponentTests(comp *model.Component, ruleCtx *m
 		}
 
 		testResult := r.executeTest(testcase, ruleCtx, ctxLogger)
+
 		r.daemonController.Results() <- testResult
+		if testResult.Pass {
+			consentID, err := ruleCtx.GetString(item.TokenName)
+			if err == model.ErrNotFound {
+				continue
+			}
+			item.ConsentID = consentID
+			logrus.Debugf("Sending Item %s:%s to consentIDChannel", item.TokenName, item.ConsentID)
+			consentIDChannel <- item
+		}
 	}
 }
 
@@ -195,7 +198,6 @@ func (r *TestCaseRunner) executeTest(tc model.TestCase, ruleCtx *model.Context, 
 		ctxLogger.WithError(err).Error("preparing executing test")
 		return results.NewTestCaseFail(tc.ID, results.NoMetrics, err)
 	}
-
 	resp, metrics, err := r.executor.ExecuteTestCase(req, &tc, ruleCtx)
 	ctxLogger = logWithMetrics(ctxLogger, metrics)
 	if err != nil {
