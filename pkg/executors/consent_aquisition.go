@@ -1,14 +1,75 @@
 package executors
 
 import (
+	"errors"
+	"time"
+
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
 	"github.com/sirupsen/logrus"
 )
 
-// InitiationConsentAcquisition - get required tokens
-func InitiationConsentAcquisition(consentRequirements []model.SpecConsentRequirements, definition RunDefinition, ctx *model.Context) {
-	tokenParameters := make(map[string][]string)
+// TokenConsentIDs captures the token/consentIds awaiting authorisation
+type TokenConsentIDs []TokenConsentIDItem
 
+// TokenConsentIDItem is a single consentId mapping to token name
+type TokenConsentIDItem struct {
+	TokenName   string
+	ConsentID   string
+	Permissions string
+}
+
+var (
+	consentChannelTimeout = 30
+)
+
+// InitiationConsentAcquisition - get required tokens
+func InitiationConsentAcquisition(consentRequirements []model.SpecConsentRequirements, definition RunDefinition, ctx *model.Context) (TokenConsentIDs, error) {
+	consentIDChannel := make(chan TokenConsentIDItem, 100)
+	tokenParameters := getConsentTokensAndPermissions(consentRequirements)
+
+	for tokenName, permissionList := range tokenParameters {
+		runner := NewConsentAcquisitionRunner(definition, NewBufferedDaemonController())
+		tokenAcquisitionType := definition.DiscoModel.DiscoveryModel.TokenAcquisition
+		permissionString := buildPermissionString(permissionList)
+		consentInfo := TokenConsentIDItem{TokenName: tokenName, Permissions: permissionString}
+		runner.RunConsentAcquisition(consentInfo, ctx, tokenAcquisitionType, consentIDChannel)
+	}
+
+	consentItems, err := waitForConsentIDs(consentIDChannel, tokenParameters)
+	for _, v := range consentItems {
+		logrus.Debugf("Setting Token: %s, ConsentId: %s", v.TokenName, v.ConsentID)
+		ctx.PutString(v.TokenName, v.ConsentID)
+	}
+	return consentItems, err
+}
+
+func waitForConsentIDs(consentIDChannel chan TokenConsentIDItem, tokenParameters map[string][]string) (TokenConsentIDs, error) {
+	consentItems := TokenConsentIDs{}
+	consentIDsRequired := len(tokenParameters)
+	consentIDsReceived := 0
+	logrus.Debugf("waiting for consentids items ...")
+	for {
+		select {
+		case item := <-consentIDChannel:
+			logrus.Debugf("received consent channel item item %#v", item)
+			consentIDsReceived++
+			consentItems = append(consentItems, item)
+			if consentIDsReceived == consentIDsRequired {
+				logrus.Infof("Got %d required tokens - progressing..", consentIDsReceived)
+				for _, v := range consentItems {
+					logrus.Infof("token: %s, consentid: %s", v.TokenName, v.ConsentID)
+				}
+				return consentItems, nil
+			}
+		case <-time.After(time.Duration(consentChannelTimeout) * time.Second):
+			logrus.Warnf("consent channel timeout after %d seconds", consentChannelTimeout)
+			return consentItems, errors.New("ConsentChannel Timeout")
+		}
+	}
+}
+
+func getConsentTokensAndPermissions(consentRequirements []model.SpecConsentRequirements) map[string][]string {
+	tokenParameters := make(map[string][]string)
 	for _, v := range consentRequirements {
 		for _, namedPermission := range v.NamedPermissions {
 			codeset := namedPermission.CodeSet
@@ -20,14 +81,11 @@ func InitiationConsentAcquisition(consentRequirements []model.SpecConsentRequire
 			}
 		}
 	}
-	logrus.Debugf("required tokens: %#v", tokenParameters)
-
-	runner := NewConsentAcquisitionRunner(definition, NewBufferedDaemonController())
-
-	for tokenName, permissionList := range tokenParameters {
-		logrus.Debugf("token: %s permissionList %v", tokenName, permissionList)
-		runner.RunConsentAcquisition(tokenName, buildPermissionString(permissionList), ctx, definition.DiscoModel.DiscoveryModel.TokenAcquisition)
+	for k, v := range tokenParameters {
+		logrus.Debugf("Getting ConsentToken: %s: %s", k, buildPermissionString(v))
 	}
+
+	return tokenParameters
 }
 
 func buildPermissionString(permissionSlice []string) string {
