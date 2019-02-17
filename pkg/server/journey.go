@@ -17,6 +17,7 @@ var (
 	errDiscoveryModelNotSet        = errors.New("error discovery model not set")
 	errTestCasesNotGenerated       = errors.New("error test cases not generated")
 	errNotFinishedCollectingTokens = errors.New("error not finished collecting tokens")
+	errConsentIDAcquisitionFailed  = errors.New("ConsentId acquistion failed")
 )
 
 // Journey represents all possible steps for a user test conformance journey
@@ -78,7 +79,6 @@ func NewJourney(logger *logrus.Entry, generator generation.Generator, validator 
 }
 
 func (wj *journey) SetDiscoveryModel(discoveryModel *discovery.Model) (discovery.ValidationFailures, error) {
-	wj.log.Debug("wj.SetDiscoveryModel")
 	failures, err := wj.validator.Validate(discoveryModel)
 	if err != nil {
 		return nil, errors.Wrap(err, "error setting discovery model")
@@ -99,7 +99,6 @@ func (wj *journey) SetDiscoveryModel(discoveryModel *discovery.Model) (discovery
 }
 
 func (wj *journey) TestCases() (generation.TestCasesRun, error) {
-	wj.log.Debug("wj.TestCases - Generate Test Cases")
 	wj.journeyLock.Lock()
 	defer wj.journeyLock.Unlock()
 
@@ -124,7 +123,11 @@ func (wj *journey) TestCases() (generation.TestCasesRun, error) {
 			TransportCert: wj.certificateTransport,
 		}
 		if wj.validDiscoveryModel.DiscoveryModel.TokenAcquisition == "psu" {
-			executors.InitiationConsentAcquisition(wj.testCasesRun.SpecConsentRequirements, runDefinition, &wj.context)
+			consentIds, err := executors.InitiationConsentAcquisition(wj.testCasesRun.SpecConsentRequirements, runDefinition, &wj.context)
+			if err != nil {
+				return generation.TestCasesRun{}, errConsentIDAcquisitionFailed
+			}
+			_ = consentIds
 			wj.collector = executors.NewNullCollector(wj.doneCollectionCallback)
 		}
 		wj.testCasesRunGenerated = true
@@ -135,7 +138,6 @@ func (wj *journey) TestCases() (generation.TestCasesRun, error) {
 }
 
 func (wj *journey) CollectToken(setName, token string) error {
-	wj.log.Debug("wj.CollectToken")
 	wj.journeyLock.Lock()
 	defer wj.journeyLock.Unlock()
 
@@ -147,7 +149,6 @@ func (wj *journey) CollectToken(setName, token string) error {
 }
 
 func (wj *journey) AllTokenCollected() bool {
-	wj.log.Debug("wj.AllTokensCollected")
 	wj.journeyLock.Lock()
 	defer wj.journeyLock.Unlock()
 
@@ -155,14 +156,12 @@ func (wj *journey) AllTokenCollected() bool {
 }
 
 func (wj *journey) doneCollectionCallback() {
-	wj.log.Debug("wj.doneCollection Callback")
 	wj.journeyLock.Lock()
 	wj.allCollected = true
 	wj.journeyLock.Unlock()
 }
 
 func (wj *journey) RunTests() error {
-	wj.log.Debug("wj.RunTests")
 	wj.journeyLock.Lock()
 	defer wj.journeyLock.Unlock()
 
@@ -186,17 +185,14 @@ func (wj *journey) RunTests() error {
 }
 
 func (wj *journey) Results() executors.DaemonController {
-	wj.log.Debug("wj.Results")
 	return wj.daemonController
 }
 
 func (wj *journey) StopTestRun() {
-	wj.log.Debug("wj.StopTestRun")
 	wj.daemonController.Stop()
 }
 
 func (wj *journey) SetConfig(signing, transport authentication.Certificate, clientID, clientSecret, tokenEndpoint, authorizationEndpoint, resourceBaseURL, xXFAPIFinancialID, redirectURL string) {
-	wj.log.Debug("wj.SetConfig")
 	wj.journeyLock.Lock()
 	defer wj.journeyLock.Unlock()
 	wj.certificateSigning = signing
@@ -225,17 +221,17 @@ func (wj *journey) configParametersToJourneyContext() error {
 	wj.context.PutString(ctxConstClientSecret, wj.clientSecret)
 	wj.context.PutString(ctxConstTokenEndpoint, wj.tokenEndpoint)
 	wj.context.PutString(ctxConstFapiFinancialID, wj.xXFAPIFinancialID)
+	wj.context.PutString(ctxConstFapiFinancialID, wj.resourceBaseURL) // tmp mapping fix
 	wj.context.PutString(ctxConstRedirectURL, wj.redirectURL)
 	wj.context.PutString(ctxConstAuthorisationEndpoint, wj.authorizationEndpoint)
 	wj.context.PutString(ctxConstResourceBaseURL, wj.resourceBaseURL)
+	wj.context.PutString(ctxConstResourceBaseURL, wj.xXFAPIFinancialID) // tmp mapping fix
 	basicauth, err := authentication.CalculateClientSecretBasicToken(wj.clientID, wj.clientSecret)
 	if err != nil {
 		return err
 	}
 	wj.context.PutString(ctxConstBasicAuthentication, basicauth)
-
-	logrus.Debugln("configParameters - dumpcontext")
-	wj.context.DumpContext()
+	wj.context.DumpContext("configParameters - dumpcontext")
 	return nil
 }
 
@@ -245,6 +241,4 @@ func (wj *journey) customTestParametersToJourneyContext() {
 			wj.context.PutString(k, v)
 		}
 	}
-
-	wj.context.DumpContext()
 }

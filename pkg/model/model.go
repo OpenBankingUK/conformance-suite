@@ -213,7 +213,6 @@ func (t *TestCase) ApplyExpects(res *resty.Response, rulectx *Context) (bool, er
 	if err := t.Expect.ContextPut.PutValues(t, rulectx); err != nil {
 		return false, t.AppErr("ApplyExpects Returns FALSE " + err.Error())
 	}
-
 	return true, nil
 }
 
@@ -326,5 +325,8 @@ func (t *TestCase) ProcessReplacementFields(ctx *Context) {
 			continue
 		}
 		t.Context[k], _ = replaceContextField(param, ctx)
+	}
+	for k, v := range t.Expect.ContextPut.Matches {
+		t.Expect.ContextPut.Matches[k].ContextName, _ = replaceContextField(v.ContextName, ctx)
 	}
 }

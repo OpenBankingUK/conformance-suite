@@ -77,11 +77,14 @@ func (c Context) GetStringSlice(key string) ([]string, error) {
 }
 
 // DumpContext - send the contents of a context to a logger
-func (c *Context) DumpContext() {
+func (c *Context) DumpContext(text ...string) {
+	for _, title := range text {
+		logrus.Debug("[Context] " + title)
+	}
 	for k, v := range *c {
-		if k == "client_secret" || k == "basic_authentication" { // skip potentially sensitive fields - likely need to be more robust
+		if k == "client_secret" || k == "basic_authentication" || k == "SigningCert" { // skip potentially sensitive fields - likely need to be more robust
 			continue
 		}
-		logrus.Debugf("key %s:%v", k, v)
+		logrus.Debugf("[Context] %s:%v", k, v)
 	}
 }
