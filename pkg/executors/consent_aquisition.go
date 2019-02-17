@@ -54,13 +54,13 @@ func waitForConsentIDs(consentIDChannel chan TokenConsentIDItem, tokenParameters
 	for {
 		select {
 		case item := <-consentIDChannel:
-			logrus.Infof("recieved consent channel item item %#v", item)
+			logrus.Debugf("received consent channel item item %#v", item)
 			consentIDsReceived++
 			consentItems = append(consentItems, item)
 			if consentIDsReceived == consentIDsRequired {
-				logrus.Infof("Got %d required tokens - progressiing..", consentIDsReceived)
+				logrus.Infof("Got %d required tokens - progressing..", consentIDsReceived)
 				for _, v := range consentItems {
-					logrus.Infof("item %s: %s", v.TokenName, v.ConsentID)
+					logrus.Infof("token: %s, consentid: %s", v.TokenName, v.ConsentID)
 				}
 				return consentItems, nil
 			}
@@ -85,7 +85,9 @@ func getConsentTokensAndPermissions(consentRequirements []model.SpecConsentRequi
 		}
 	}
 	tokenParameters["DefaultAccountToken"] = defaultAccountPermissions
-	logrus.Debugf("required tokens: %#v", tokenParameters)
+	for k, v := range tokenParameters {
+		logrus.Debugf("Getting ConsentToken: %s: %s", k, buildPermissionString(v))
+	}
 
 	return tokenParameters
 }

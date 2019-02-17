@@ -74,8 +74,6 @@ func (i *Input) CreateRequest(tc *TestCase, ctx *Context) (*resty.Request, error
 		}
 		i.RequestBody = body
 		req.SetBody(body)
-	} else {
-		logrus.Debug("***no body present**")
 	}
 
 	req.Method = tc.Input.Method

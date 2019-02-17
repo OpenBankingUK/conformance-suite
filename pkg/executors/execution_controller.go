@@ -142,7 +142,6 @@ func (r *TestCaseRunner) runConsentAcquisitionAsync(item TokenConsentIDItem, ctx
 
 func (r *TestCaseRunner) executeComponentTests(comp *model.Component, ruleCtx *model.Context, ctxLogger *logrus.Entry, item TokenConsentIDItem, consentIDChannel chan<- TokenConsentIDItem) {
 	ctxLogger = ctxLogger.WithField("component", comp.Name)
-	logrus.Debug("component:" + comp.Name)
 	for _, testcase := range comp.Tests {
 		if r.daemonController.ShouldStop() {
 			logrus.Debugln("stop component test run received, aborting runner")
