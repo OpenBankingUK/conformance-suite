@@ -19,9 +19,6 @@ type TokenConsentIDItem struct {
 }
 
 var (
-	defaultAccountPermissions = []string{"ReadAccountsBasic", "ReadAccountsDetail", "ReadBalances", "ReadBeneficiariesBasic", "ReadBeneficiariesDetail",
-		"ReadDirectDebits", "ReadTransactionsBasic", "ReadTransactionsCredits", "ReadTransactionsDebits", "ReadTransactionsDetail", "ReadProducts",
-		"ReadStandingOrdersDetail", "ReadProducts", "ReadStandingOrdersDetail"}
 	consentChannelTimeout = 30
 )
 
@@ -84,7 +81,6 @@ func getConsentTokensAndPermissions(consentRequirements []model.SpecConsentRequi
 			}
 		}
 	}
-	tokenParameters["DefaultAccountToken"] = defaultAccountPermissions
 	for k, v := range tokenParameters {
 		logrus.Debugf("Getting ConsentToken: %s: %s", k, buildPermissionString(v))
 	}
