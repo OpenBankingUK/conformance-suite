@@ -179,6 +179,7 @@ func (wj *journey) doneCollectionCallback() {
 }
 
 func (wj *journey) RunTests() error {
+	logrus.Debug("RunTests ...")
 	wj.journeyLock.Lock()
 	defer wj.journeyLock.Unlock()
 
@@ -198,6 +199,7 @@ func (wj *journey) RunTests() error {
 	}
 
 	runner := executors.NewTestCaseRunner(runDefinition, wj.daemonController)
+	logrus.Debug("runTestCases with context ...")
 	return runner.RunTestCases(&wj.context)
 }
 
