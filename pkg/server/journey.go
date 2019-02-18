@@ -48,7 +48,7 @@ type journey struct {
 	journeyLock           *sync.Mutex
 	testCasesRun          generation.TestCasesRun
 	testCasesRunGenerated bool
-	collector             executors.Collector
+	collector             executors.TokenCollector
 	allCollected          bool
 	validDiscoveryModel   *discovery.Model
 	certificateSigning    authentication.Certificate
@@ -92,7 +92,6 @@ func (wj *journey) SetDiscoveryModel(discoveryModel *discovery.Model) (discovery
 	wj.validDiscoveryModel = discoveryModel
 	wj.testCasesRunGenerated = false
 	wj.allCollected = false
-	wj.customTestParametersToJourneyContext()
 	wj.journeyLock.Unlock()
 
 	return discovery.NoValidationFailures, nil
@@ -127,8 +126,12 @@ func (wj *journey) TestCases() (generation.TestCasesRun, error) {
 			if err != nil {
 				return generation.TestCasesRun{}, errConsentIDAcquisitionFailed
 			}
-			_ = consentIds
-			wj.collector = executors.NewNullCollector(wj.doneCollectionCallback)
+			if len(consentIds) > 0 {
+				wj.collector = executors.NewTokenCollector(consentIds, wj.doneCollectionCallback)
+				consentIdsToTestCaseRun(consentIds, &wj.testCasesRun)
+			} else {
+				wj.allCollected = true
+			}
 		}
 		wj.testCasesRunGenerated = true
 		wj.allCollected = false
@@ -137,7 +140,7 @@ func (wj *journey) TestCases() (generation.TestCasesRun, error) {
 	return wj.testCasesRun, nil
 }
 
-func (wj *journey) CollectToken(setName, token string) error {
+func (wj *journey) CollectToken(tokenName, accesstoken string) error {
 	wj.journeyLock.Lock()
 	defer wj.journeyLock.Unlock()
 
@@ -145,7 +148,7 @@ func (wj *journey) CollectToken(setName, token string) error {
 		return errTestCasesNotGenerated
 	}
 
-	return wj.collector.Collect(setName, token)
+	return wj.collector.Collect(tokenName, accesstoken)
 }
 
 func (wj *journey) AllTokenCollected() bool {
@@ -205,6 +208,7 @@ func (wj *journey) SetConfig(signing, transport authentication.Certificate, clie
 	wj.xXFAPIFinancialID = xXFAPIFinancialID
 	wj.redirectURL = redirectURL
 	wj.configParametersToJourneyContext()
+	wj.customTestParametersToJourneyContext()
 }
 
 const ctxConstClientID = "client_id"
@@ -236,9 +240,26 @@ func (wj *journey) configParametersToJourneyContext() error {
 }
 
 func (wj *journey) customTestParametersToJourneyContext() {
+	if wj.validDiscoveryModel == nil {
+		return
+	}
 	for _, customTest := range wj.validDiscoveryModel.DiscoveryModel.CustomTests { // assume ordering is prerun i.e. customtest run before other tests
 		for k, v := range customTest.Replacements {
 			wj.context.PutString(k, v)
+		}
+	}
+}
+
+func consentIdsToTestCaseRun(consentIds []executors.TokenConsentIDItem, testCasesRun *generation.TestCasesRun) {
+	for _, v := range testCasesRun.SpecConsentRequirements {
+		for x, permission := range v.NamedPermissions {
+			for _, item := range consentIds {
+				if item.TokenName == permission.Name {
+					permission.ConsentUrl = item.ConsentURL
+					logrus.Debugf("Setting consent url for token %s to %s", permission.Name, permission.ConsentUrl)
+					v.NamedPermissions[x] = permission
+				}
+			}
 		}
 	}
 }

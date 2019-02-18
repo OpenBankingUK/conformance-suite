@@ -57,6 +57,18 @@ func NewConsentAcquisitionRunner(definition RunDefinition, daemonController Daem
 	}
 }
 
+// NewExchangeComponentRunner -
+func NewExchangeComponentRunner(definition RunDefinition, daemonController DaemonController) *TestCaseRunner {
+	return &TestCaseRunner{
+		executor:         NewExecutor(),
+		definition:       definition,
+		daemonController: daemonController,
+		logger:           logrus.New().WithField("module", "ExchangeComponent"),
+		runningLock:      &sync.Mutex{},
+		running:          false,
+	}
+}
+
 // RunTestCases runs the testCases
 func (r *TestCaseRunner) RunTestCases(ctx *model.Context) error {
 	r.runningLock.Lock()
@@ -101,6 +113,7 @@ func (r *TestCaseRunner) runConsentAcquisitionAsync(item TokenConsentIDItem, ctx
 	r.executor.SetCertificates(r.definition.SigningCert, r.definition.TransportCert)
 	ruleCtx := r.makeRuleCtx(ctx)
 	ruleCtx.PutString("consent_id", item.TokenName)
+	ruleCtx.PutString("token_name", item.TokenName)
 	ruleCtx.PutString("permission_list", item.Permissions)
 
 	ctxLogger := r.logger.WithField("id", uuid.New())
@@ -152,12 +165,19 @@ func (r *TestCaseRunner) executeComponentTests(comp *model.Component, ruleCtx *m
 
 		r.daemonController.Results() <- testResult
 		if testResult.Pass {
-			consentID, err := ruleCtx.GetString(item.TokenName)
+			logrus.Debugf("hanging around for tokennamed %s", item.TokenName)
+			consentURL, err := ruleCtx.GetString("consent_url")
 			if err == model.ErrNotFound {
 				continue
 			}
+			item.ConsentURL = consentURL
+			ruleCtx.DumpContext()
+			consentID, err := ruleCtx.GetString(item.TokenName)
+			if err == model.ErrNotFound {
+				logrus.Debugf("consentId not found in context")
+			}
 			item.ConsentID = consentID
-			logrus.Debugf("Sending Item %s:%s to consentIDChannel", item.TokenName, item.ConsentID)
+			logrus.Debugf("Sending Item %s:%s:%s to consentIDChannel", item.TokenName, item.ConsentID, item.ConsentURL)
 			consentIDChannel <- item
 		}
 	}

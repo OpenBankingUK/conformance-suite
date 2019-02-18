@@ -56,13 +56,10 @@
             "name": "CustomTest-GetOzoneToken",
             "description": "Testcase sequence to retrieve an ozone token",
             "replacementParameters": {
-                "client_id": "*** REPLACE_ME_WITH_YOUR_OZONE_CLIENT_ID ***",
-                "fapi_financial_id": "0015800001041RHAAY",
-                "basic_authentication": "*** REPLACE_ME_WITH_YOUR_OZONE_BASIC_AUTH_STRING ***",
+                "redirect_url": "https://test.maratech.co.uk/redir",                   
                 "token_endpoint": "https://modelobank2018.o3bank.co.uk:4201",
                 "authorisation_endpoint": "https://modelobankauth2018.o3bank.co.uk:4101",
                 "resource_server": "https://modelobank2018.o3bank.co.uk:4501",
-                "redirect_url": "*** REPLACE_ME_WITH_YOUR_SOFTWARE_STATEMENT_REDIRECT_URL ***",
                 "permission_payload": "{\"Data\": { \"Permissions\": [ \"ReadAccountsBasic\", \"ReadAccountsDetail\", \"ReadBalances\", \"ReadBeneficiariesBasic\", \"ReadBeneficiariesDetail\", \"ReadDirectDebits\", \"ReadTransactionsBasic\", \"ReadTransactionsCredits\", \"ReadTransactionsDebits\", \"ReadTransactionsDetail\", \"ReadProducts\", \"ReadStandingOrdersDetail\"], \"TransactionFromDateTime\": \"2016-01-01T10:40:00+02:00\", \"TransactionToDateTime\": \"2025-12-31T10:40:00+02:00\" },  \"Risk\": {} }"
             },
             "testSequence": [{

@@ -1,9 +1,10 @@
 package executors
 
 import (
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
 	"errors"
 	"sync"
+
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
 )
 
 // Collector collects tokens for a set or permissions requirements and calls a
@@ -24,6 +25,7 @@ type collector struct {
 	tokensLock   *sync.Mutex
 	tokens       map[string]string
 	doneFunc     func()
+	consentIDs   TokenConsentIDs
 }
 
 // NewCollector returns a thread safe token collector
@@ -111,4 +113,80 @@ func (c nullCollector) Collect(setName, token string) error {
 // Tokens retrieves all collected tokens
 func (c nullCollector) Tokens() []Token {
 	return []Token{}
+}
+
+// TokenConsentIDs captures the token/consentIds awaiting authorisation
+type TokenConsentIDs []TokenConsentIDItem
+
+// TokenConsentIDItem is a single consentId mapping to token name
+type TokenConsentIDItem struct {
+	TokenName   string
+	ConsentID   string
+	Permissions string
+	AccessToken string
+	ConsentURL  string
+}
+
+// TokenCollector - collects tokens
+type TokenCollector interface {
+	Collect(tokenName, accesstoken string) error
+	Tokens() TokenConsentIDs
+}
+
+type tokencollector struct {
+	tokensLock   *sync.Mutex
+	collected    int
+	doneFunc     func()
+	consentTable TokenConsentIDs
+}
+
+// NewTokenCollector -
+func NewTokenCollector(consentIds TokenConsentIDs, doneFunc func()) *tokencollector {
+	return &tokencollector{
+		tokensLock:   &sync.Mutex{},
+		collected:    0,
+		doneFunc:     doneFunc,
+		consentTable: consentIds,
+	}
+}
+
+// Collect receives an accesstoken to match a named token for which we have a consentid
+func (c *tokencollector) Collect(tokenName, accessToken string) error {
+	if !c.tokenNameExists(tokenName) {
+		return errors.New("invalid token name: " + tokenName)
+	}
+	c.tokensLock.Lock()
+	c.addAccessToken(tokenName, accessToken)
+	if c.isDone() {
+		c.doneFunc()
+	}
+	c.tokensLock.Unlock()
+	return nil
+}
+
+func (c *tokencollector) Tokens() TokenConsentIDs {
+	return c.consentTable
+}
+
+func (c *tokencollector) tokenNameExists(tokenName string) bool {
+	for _, item := range c.consentTable {
+		if item.TokenName == tokenName {
+			return true
+		}
+	}
+	return false
+}
+
+func (c *tokencollector) addAccessToken(tokenName, accessToken string) {
+	for k, item := range c.consentTable {
+		if tokenName == item.TokenName {
+			item.AccessToken = accessToken
+			c.consentTable[k] = item
+			c.collected++
+		}
+	}
+}
+
+func (c *tokencollector) isDone() bool {
+	return c.collected == len(c.consentTable)
 }

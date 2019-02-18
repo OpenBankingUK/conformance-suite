@@ -5,8 +5,9 @@ import (
 	"encoding/base64"
 	"errors"
 	"fmt"
-	"github.com/dgrijalva/jwt-go"
 	"net/http"
+
+	"github.com/dgrijalva/jwt-go"
 
 	"github.com/labstack/echo"
 	"github.com/sirupsen/logrus"
@@ -51,7 +52,8 @@ type AuthClaim struct {
 }
 
 type redirectHandlers struct {
-	logger *logrus.Entry
+	journey Journey
+	logger  *logrus.Entry
 }
 
 // postFragmentOKHandler - POST /api/redirect/fragment/ok
@@ -99,6 +101,11 @@ func (h *redirectHandlers) postQueryOKHandler(c echo.Context) error {
 	// (Nothing to validate)
 	if query.IDToken == "" {
 		if query.Code != "" {
+			err := handleCodeExchange(query)
+			if err != nil {
+				resp := NewErrorResponse(errors.New("unable to handle redirect"))
+				return c.JSON(http.StatusBadRequest, resp)
+			}
 			return c.JSON(http.StatusOK, nil)
 		}
 		return c.JSON(http.StatusBadRequest, errors.New("code not set"))
@@ -115,11 +122,21 @@ func (h *redirectHandlers) postQueryOKHandler(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, NewErrorResponse(err))
 	}
 	if cHash == claim.CHash {
+		err = handleCodeExchange(query)
+		if err != nil {
+			resp := NewErrorResponse(errors.New("unable to handle redirect"))
+			return c.JSON(http.StatusBadRequest, resp)
+		}
 		return c.JSON(http.StatusOK, nil)
 	}
 
 	resp := NewErrorResponse(errors.New("c_hash invalid"))
 	return c.JSON(http.StatusBadRequest, resp)
+}
+
+func handleCodeExchange(query *RedirectQuery) error {
+	logrus.Warnf("received redirect Query %#v", query)
+	return nil
 }
 
 // postErrorHandler - POST /api/redirect/error
