@@ -57,6 +57,9 @@ export default {
         const authorizationEndpoint = _.first(_.values(response.authorization_endpoints));
         commit(types.SET_AUTHORIZATION_ENDPOINT, authorizationEndpoint);
 
+        const issuer = _.first(_.values(response.issuers));
+        commit(types.SET_ISSUER, issuer);
+
         dispatch('status/clearErrors', null, { root: true });
         commit(types.SET_WIZARD_STEP, constants.WIZARD.STEP_THREE);
       } else {
@@ -95,6 +98,7 @@ export default {
         'authorization_endpoint',
         'resource_base_url',
         'x_fapi_financial_id',
+        'issuer',
         'redirect_url',
       ];
       const newConfig = _.pick(merged, validKeys);
@@ -176,6 +180,9 @@ export default {
     }
     if (_.isEmpty(state.configuration.x_fapi_financial_id)) {
       errors.push('x-fapi-financial-id empty');
+    }
+    if (_.isEmpty(state.configuration.issuer)) {
+      errors.push('issuer empty');
     }
     if (_.isEmpty(state.configuration.redirect_url)) {
       errors.push('Redirect URL empty');

@@ -69,19 +69,15 @@ func TestServerDiscoveryModelPOSTValidateReturnsErrorsWhenIncomplete(t *testing.
 	}, headers)
 }
 
-// TestServerDiscoveryModelPOSTResolvesEndpointsUsingOpenidConfigurationURI - tests that a HTTP GET is called for each
+// TestServerDiscoveryModelPOSTResolvesValuesUsingOpenidConfigurationURIs - tests that a HTTP GET is called for each
 // `discoveryItems` using the url `openidConfigurationUri`.
-func TestServerDiscoveryModelPOSTResolvesEndpointsUsingOpenidConfigurationURI(t *testing.T) {
+func TestServerDiscoveryModelPOSTResolvesValuesUsingOpenidConfigurationURIs(t *testing.T) {
 	require := test.NewRequire(t)
 
-	// curl -s 'https://modelobankauth2018.o3bank.co.uk:4101/.well-known/openid-configuration' | jq '.' | pbcopy
-	mockResponse := `
-	{
-	  "token_endpoint": "https://modelobank2018.o3bank.co.uk:4201/<token_mock>",
-	  "authorization_endpoint": "https://modelobankauth2018.o3bank.co.uk:4101/<auth_mock>"
-	}
-	`
-	mockedServer, mockedServerURL := test.HTTPServer(http.StatusOK, mockResponse, nil)
+	mockResponse, err := ioutil.ReadFile("./testdata/openid-configuration-mock.json")
+	require.NoError(err)
+
+	mockedServer, mockedServerURL := test.HTTPServer(http.StatusOK, string(mockResponse), nil)
 	defer mockedServer.Close()
 
 	expected := `
@@ -93,7 +89,11 @@ func TestServerDiscoveryModelPOSTResolvesEndpointsUsingOpenidConfigurationURI(t 
 	"authorization_endpoints": {
         "schema_version=https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.0/dist/account-info-swagger.json": "https://modelobankauth2018.o3bank.co.uk:4101/<auth_mock>",
         "schema_version=https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.0/dist/payment-initiation-swagger.json": "https://modelobankauth2018.o3bank.co.uk:4101/<auth_mock>"
-    }
+	},
+	"issuers": {
+		"schema_version=https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.0/dist/account-info-swagger.json": "https://modelobankauth2018.o3bank.co.uk:4101",
+		"schema_version=https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.0/dist/payment-initiation-swagger.json": "https://modelobankauth2018.o3bank.co.uk:4101"
+	}
 }
 	`
 

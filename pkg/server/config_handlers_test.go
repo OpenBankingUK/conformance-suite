@@ -32,6 +32,7 @@ func TestValidateConfig(t *testing.T) {
 		ResourceBaseURL:       "https://server",
 		XFAPIFinancialID:      "2cfb31a3-5443-4e65-b2bc-ef8e00266a77",
 		RedirectURL:           "https://localhost",
+		Issuer:                "https://modelobankauth2018.o3bank.co.uk:4101",
 		ClientID:              "8672384e-9a33-439f-8924-67bb14340d71",
 	}
 
@@ -60,6 +61,7 @@ func TestValidateConfigTestsEmpty(t *testing.T) {
 				AuthorizationEndpoint: "http://server",
 				RedirectURL:           "http://server",
 				XFAPIFinancialID:      "123",
+				Issuer:                "https://modelobankauth2018.o3bank.co.uk:4101",
 			},
 			expectedOk:  false,
 			expectedMsg: "signing_private is empty",
@@ -76,6 +78,7 @@ func TestValidateConfigTestsEmpty(t *testing.T) {
 				AuthorizationEndpoint: "http://server",
 				RedirectURL:           "http://server",
 				XFAPIFinancialID:      "123",
+				Issuer:                "https://modelobankauth2018.o3bank.co.uk:4101",
 			},
 			expectedOk:  false,
 			expectedMsg: "signing_public is empty",
@@ -92,6 +95,7 @@ func TestValidateConfigTestsEmpty(t *testing.T) {
 				AuthorizationEndpoint: "http://server",
 				RedirectURL:           "http://server",
 				XFAPIFinancialID:      "123",
+				Issuer:                "https://modelobankauth2018.o3bank.co.uk:4101",
 			},
 			expectedOk:  false,
 			expectedMsg: "transport_private is empty",
@@ -108,6 +112,7 @@ func TestValidateConfigTestsEmpty(t *testing.T) {
 				AuthorizationEndpoint: "http://server",
 				RedirectURL:           "http://server",
 				XFAPIFinancialID:      "123",
+				Issuer:                "https://modelobankauth2018.o3bank.co.uk:4101",
 			},
 			expectedOk:  false,
 			expectedMsg: "transport_public is empty",
@@ -124,6 +129,7 @@ func TestValidateConfigTestsEmpty(t *testing.T) {
 				AuthorizationEndpoint: "http://server",
 				RedirectURL:           "http://server",
 				XFAPIFinancialID:      "123",
+				Issuer:                "https://modelobankauth2018.o3bank.co.uk:4101",
 			},
 			expectedOk:  false,
 			expectedMsg: "client_id is empty",
@@ -140,6 +146,7 @@ func TestValidateConfigTestsEmpty(t *testing.T) {
 				AuthorizationEndpoint: "http://server",
 				RedirectURL:           "http://server",
 				XFAPIFinancialID:      "123",
+				Issuer:                "https://modelobankauth2018.o3bank.co.uk:4101",
 			},
 			expectedOk:  false,
 			expectedMsg: "client_secret is empty",
@@ -156,6 +163,7 @@ func TestValidateConfigTestsEmpty(t *testing.T) {
 				AuthorizationEndpoint: "http://server",
 				RedirectURL:           "http://server",
 				XFAPIFinancialID:      "123",
+				Issuer:                "https://modelobankauth2018.o3bank.co.uk:4101",
 			},
 			expectedOk:  false,
 			expectedMsg: "token_endpoint is empty",
@@ -172,6 +180,7 @@ func TestValidateConfigTestsEmpty(t *testing.T) {
 				TokenEndpoint:    "http://server",
 				RedirectURL:      "http://server",
 				XFAPIFinancialID: "123",
+				Issuer:           "https://modelobankauth2018.o3bank.co.uk:4101",
 			},
 			expectedOk:  false,
 			expectedMsg: "authorization_endpoint is empty",
@@ -189,12 +198,31 @@ func TestValidateConfigTestsEmpty(t *testing.T) {
 				ResourceBaseURL:       "http://server",
 				AuthorizationEndpoint: "http://server",
 				XFAPIFinancialID:      "123",
+				Issuer:                "https://modelobankauth2018.o3bank.co.uk:4101",
 			},
 			expectedOk:  false,
 			expectedMsg: "redirect_url is empty",
 		},
 		{
-			name: "missing client resource_base_url",
+			name: "missing client redirect_url",
+			config: GlobalConfiguration{
+				SigningPrivate:        `------------`,
+				SigningPublic:         `------------`,
+				TransportPrivate:      privateKey,
+				TransportPublic:       publicKey,
+				ClientID:              "client_id",
+				ClientSecret:          "client_secret",
+				TokenEndpoint:         "http://server",
+				AuthorizationEndpoint: "http://server",
+				ResourceBaseURL:       "http://server",
+				XFAPIFinancialID:      "123",
+				Issuer:                "https://modelobankauth2018.o3bank.co.uk:4101",
+			},
+			expectedOk:  false,
+			expectedMsg: "redirect_url is empty",
+		},
+		{
+			name: "missing client issuer",
 			config: GlobalConfiguration{
 				SigningPrivate:        `------------`,
 				SigningPublic:         `------------`,
@@ -208,9 +236,8 @@ func TestValidateConfigTestsEmpty(t *testing.T) {
 				XFAPIFinancialID:      "123",
 			},
 			expectedOk:  false,
-			expectedMsg: "redirect_url is empty",
+			expectedMsg: "issuer is empty",
 		},
-
 		{
 			name: "missing x_fapi_financial_id id",
 			config: GlobalConfiguration{
@@ -224,6 +251,7 @@ func TestValidateConfigTestsEmpty(t *testing.T) {
 				ResourceBaseURL:       "http://server",
 				AuthorizationEndpoint: "http://server",
 				RedirectURL:           "http://server",
+				Issuer:                "https://modelobankauth2018.o3bank.co.uk:4101",
 			},
 			expectedOk:  false,
 			expectedMsg: "x_fapi_financial_id is empty",
@@ -273,6 +301,7 @@ func TestServerConfigGlobalPostValid(t *testing.T) {
 		RedirectURL:           `https://0.0.0.0:8443/conformancesuite/callback`,
 		AuthorizationEndpoint: `https://modelobank2018.o3bank.co.uk:4201/token`,
 		ResourceBaseURL:       `https://modelobank2018.o3bank.co.uk:4501`,
+		Issuer:                "https://modelobankauth2018.o3bank.co.uk:4101",
 	}
 	globalConfigurationJSON, err := json.MarshalIndent(globalConfiguration, ``, `  `)
 	require.NoError(err)
@@ -321,6 +350,7 @@ func TestServerConfigGlobalPostInvalid(t *testing.T) {
 				ResourceBaseURL:       "http://server",
 				RedirectURL:           "http://server",
 				XFAPIFinancialID:      "123",
+				Issuer:                "https://modelobankauth2018.o3bank.co.uk:4101",
 			},
 		},
 		{
@@ -339,6 +369,7 @@ func TestServerConfigGlobalPostInvalid(t *testing.T) {
 				ResourceBaseURL:       `https://server`,
 				RedirectURL:           "http://server",
 				XFAPIFinancialID:      "123",
+				Issuer:                "https://modelobankauth2018.o3bank.co.uk:4101",
 			},
 		},
 	}

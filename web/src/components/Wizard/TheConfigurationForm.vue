@@ -110,6 +110,19 @@
       </b-form-group>
 
       <b-form-group
+        id="issuer_group"
+        label-for="issuer"
+        label="Issuer">
+        <b-form-input
+          id="issuer"
+          v-model="issuer"
+          :state="isValidUrl(issuer)"
+          required
+          type="url"
+        />
+      </b-form-group>
+
+      <b-form-group
         id="redirect_url_group"
         label-for="redirect_url"
         label="Redirect URL">
@@ -190,6 +203,15 @@ export default {
       },
       set(value) {
         this.$store.commit('config/SET_X_FAPI_FINANCIAL_ID', value);
+      },
+    },
+
+    issuer: {
+      get() {
+        return this.$store.state.config.configuration.issuer;
+      },
+      set(value) {
+        this.$store.commit('config/SET_ISSUER', value);
       },
     },
 
