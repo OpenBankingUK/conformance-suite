@@ -80,14 +80,13 @@ under the Certificates tab:
 
 * Execute `openssl x509 -req -days 3650 -in signing.csr -CA ca.pem -CAkey ca.key -CAcreateserial -out signing.pem`
 
-## Step 2: Run the Functional Conformance Suite
-
-### FCS Server Certificates
+## Step 2: Add Functional Conformance Suite Server Certificates 
 
 The suite runs on https using localhost, you can trust the certificate or add as an exception. 
-Download certificates (localhost)[https://bitbucket.org/openbankingteam/conformance-suite/src/develop/certs/]
 
-**TBC** Is the same as running `make run_parallel` ?
+Certificates and be downloaded (here)[https://bitbucket.org/openbankingteam/conformance-suite/src/develop/certs/]
+
+## Step 3: Download the Functional Conformance Suite
 
 The following command will download the latest FCS image from docker hub and run it. You may need to login to Docker Hub
 at this point by running `docker login`. 
@@ -100,16 +99,17 @@ at this point by running `docker login`.
 
 If all goes well you should be able to launch the FCS UI from you browser via `https://0.0.0.0:8443`
 
-#### Docker Content Trust
+### Optional - Docker Content Trust
 
-Docker ensures that all content is securely received and verified by Open Banking. Docker cryptographically signs the images upon completion of a satisfactory image check, so that implementers can verify and trust certified content.
+Docker ensures that all content is securely received and verified by Open Banking. Docker cryptographically signs the images upon completion of a satisfactory image check, so 
+that implementers can verify and trust certified content.
 
 To verify the content has not been tampered with you can you the `DOCKER_CONTENT_TRUST` flag, for example:
 
     DOCKER_CONTENT_TRUST=1 docker pull openbanking/conformance-suite:TAG
     DOCKER_CONTENT_TRUST=1 docker RUN openbanking/conformance-suite:TAG
 
-### Execute a test
+## Step 4: Congig & Run the Functional Conformance Suite
 
 Running a test plan on the FCS involves five steps, as follows:
 
