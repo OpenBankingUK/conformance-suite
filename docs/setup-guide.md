@@ -1,4 +1,4 @@
-# Functional Conformance Suite Setup Guide (Ozone Model Bank)
+# Functional Conformance Suite Setup Guide using Ozone Model Bank
 
 This guide will assist you with the technical steps required to setup the Functional Conformance Suite (FCS) and run your first test. In this guide we will be connecting to and running tests against the Ozone Model Bank.
 
@@ -18,20 +18,19 @@ This guide assumes the following tools are installed and functioning correctly. 
 * OpenSSL (LibreSSL 2.6.4 on OSX)
 * Google login if using Ozone "self-serve" 
 
-# Steps
+# Step 1: Register with Ozone Bank (Model Bank)
 
-## Ozone Bank (Model Bank)
+Ozone Bank is an Mock Account Servicing Payment Service Provider (ASPSP), which the FCS will connect to as a TPP. 
 
-Ozone Bank is an Mock Account Servicing Payment Service Provider (ASPSP), which the FCS will connect to as a TPP. With that in mind,
-you must [enrol with Ozone](https://ob2018.o3bank.co.uk:444/pub/home).
+* [Enrol with Ozone](https://ob2018.o3bank.co.uk:444/pub/home). 
 
-* Use Google or LinkedIn as identity provider
-* Any organisation name
-* Redirect URI should be `https://0.0.0.0:8443/conformancesuite/callback`
-* Click "Go"
-* Registration should be successful
+Following the enrolment screens:
 
-Make a note of the certificates and the "CLIENT ID" and "CLIENT SECRET" values. 
+* Use a Google or LinkedIn as identity provider to login.
+* Enter an organisation name
+* Enter the following redirect URI: `https://0.0.0.0:8443/conformancesuite/callback`
+
+Once completed, make a note of the certificates and the "CLIENT ID" and "CLIENT SECRET" values. 
 
 ## Generate transport and signing certificates
 
@@ -45,6 +44,7 @@ streamlined approach and in normal circumstances, you would typically be require
 prior to engagement with a bank / ASPSP, as per the Open Banking model._
 
 The following three sections will generate various files. As an output, you will require the following files to proceed:
+
 * signing.key (private key)
 * signing.pem (certificate)
 * transport.key
