@@ -103,7 +103,8 @@ type ExchangeParameters struct {
 }
 
 // ExchangeCodeForAccessToken - runs a testcase to perform this operation
-func ExchangeCodeForAccessToken(params ExchangeParameters, definition RunDefinition, ctx *model.Context) (accesstoken string, err error) {
+func ExchangeCodeForAccessToken(tokenName, code, scope string, definition RunDefinition, ctx *model.Context) (accesstoken string, err error) {
+	logrus.Debugf("Looking to exchange code %s, token: %s", tokenName, code)
 	r := NewExchangeComponentRunner(definition, NewBufferedDaemonController())
 
 	r.runningLock.Lock()
@@ -112,23 +113,25 @@ func ExchangeCodeForAccessToken(params ExchangeParameters, definition RunDefinit
 		return "", errors.New("exchange Code for Access token test cases runner already running")
 	}
 	r.running = true
-
-	go r.RunExchangeCodeComponent(params, ctx)
-
+	go r.RunExchangeCodeComponent(tokenName, code, scope, ctx)
 	return "", nil
 }
 
 // RunExchangeCodeComponent -
-func (r *TestCaseRunner) RunExchangeCodeComponent(params ExchangeParameters, ctx *model.Context) (accesstoken string, err error) {
+func (r *TestCaseRunner) RunExchangeCodeComponent(tokenName, code, scope string, ctx *model.Context) (accesstoken string, err error) {
 	r.executor.SetCertificates(r.definition.SigningCert, r.definition.TransportCert)
 	ruleCtx := r.makeRuleCtx(ctx)
 
-	ruleCtx.PutString("exchange_code", params.Code)
-	ruleCtx.PutString("exchange_basic_auth", params.BasicAuthentication)
-	ruleCtx.PutString("exchange_token_endpoint", params.TokenEndpoint)
-	ruleCtx.PutString("exchange_redirect_url", params.RedirectURL)
-	ruleCtx.PutString("exchange_scope", params.Scope)
-	ruleCtx.PutString("exchange_access_token", params.TokenName)
+	basicAuth, err := ctx.GetString("basic_authentication")
+	tokenEndpoint, err := ctx.GetString("token_endpoint")
+	redirectURL, err := ctx.GetString("redirectURL")
+
+	ruleCtx.PutString("exchange_code", code)
+	ruleCtx.PutString("exchange_basic_auth", basicAuth)
+	ruleCtx.PutString("exchange_token_endpoint", tokenEndpoint)
+	ruleCtx.PutString("exchange_redirect_url", redirectURL)
+	ruleCtx.PutString("exchange_scope", scope)
+	ruleCtx.PutString("exchange_access_token", tokenName)
 
 	var comp model.Component
 	comp, err = model.LoadComponent("PSUConsentProviderComponent.json")
@@ -142,11 +145,11 @@ func (r *TestCaseRunner) RunExchangeCodeComponent(params ExchangeParameters, ctx
 		testResult := r.executeTest(testcase, ruleCtx, r.logger)
 		r.daemonController.Results() <- testResult
 		if testResult.Pass {
-			accessToken, err := ruleCtx.GetString(params.TokenName)
+			accessToken, err := ruleCtx.GetString(tokenName)
+			logrus.Debugf("received access token: %s for named %s", accessToken, tokenName)
 			return accessToken, err
 		}
 	}
-
+	r.running = false
 	return "", nil
-
 }

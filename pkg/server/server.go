@@ -62,7 +62,6 @@ func registerRoutes(server *Server, logger *logrus.Entry, checker model.Conditio
 	for path, handler := range swaggerHandlers(logger) {
 		server.GET(path, handler)
 	}
-
 	validatorEngine := discovery.NewFuncValidator(checker)
 	testGenerator := generation.NewGenerator()
 	journey := NewJourney(logger, testGenerator, validatorEngine)

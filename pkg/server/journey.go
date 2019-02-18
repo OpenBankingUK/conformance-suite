@@ -33,7 +33,7 @@ var (
 type Journey interface {
 	SetDiscoveryModel(discoveryModel *discovery.Model) (discovery.ValidationFailures, error)
 	TestCases() (generation.TestCasesRun, error)
-	CollectToken(setName, token string) error
+	CollectToken(setName, token, scope string) error
 	AllTokenCollected() bool
 	RunTests() error
 	StopTestRun()
@@ -140,7 +140,7 @@ func (wj *journey) TestCases() (generation.TestCasesRun, error) {
 	return wj.testCasesRun, nil
 }
 
-func (wj *journey) CollectToken(tokenName, accesstoken string) error {
+func (wj *journey) CollectToken(tokenName, code, scope string) error {
 	wj.journeyLock.Lock()
 	defer wj.journeyLock.Unlock()
 
@@ -148,7 +148,18 @@ func (wj *journey) CollectToken(tokenName, accesstoken string) error {
 		return errTestCasesNotGenerated
 	}
 
-	return wj.collector.Collect(tokenName, accesstoken)
+	runDefinition := executors.RunDefinition{
+		DiscoModel:    wj.validDiscoveryModel,
+		TestCaseRun:   wj.testCasesRun,
+		SigningCert:   wj.certificateSigning,
+		TransportCert: wj.certificateTransport,
+	}
+	accessToken, err := executors.ExchangeCodeForAccessToken(tokenName, code, scope, runDefinition, &wj.context)
+	if err != nil {
+		return err
+	}
+
+	return wj.collector.Collect(tokenName, accessToken)
 }
 
 func (wj *journey) AllTokenCollected() bool {
