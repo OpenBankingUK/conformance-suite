@@ -1,6 +1,6 @@
 <template>
   <div class="d-flex flex-column align-items-stretch h-100 navbar">
-    <div class="nav-section px-1 flex-fill">
+    <div class="nav-section px-1 mb-5">
       <b-nav
         vertical
         pills>
@@ -28,12 +28,11 @@
       </b-nav>
     </div>
 
-    <div class="nav-section specifications">
+    <div class="nav-section specifications mb-5">
       <h6
         class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted"
       >
         <span>Specifications</span>
-        <plus-circle-icon class="icon-class"/>
       </h6>
       <b-nav
         vertical
@@ -49,12 +48,11 @@
       </b-nav>
     </div>
 
-    <div class="nav-section tools">
+    <div class="nav-section tools flex-fill">
       <h6
         class="sidebar-heading d-flex justify-content-between align-items-center px-3 mb-1 text-muted"
       >
         <span>Tools</span>
-        <plus-circle-icon class="icon-class"/>
       </h6>
       <b-nav
         vertical
@@ -87,7 +85,6 @@
 </template>
 
 <script>
-import map from 'lodash/map';
 import { PlusCircleIcon, FileTextIcon } from 'vue-feather-icons';
 import TheNavBarItem from './TheNavBarItem.vue';
 import Specifications from '../../../pkg/model/testdata/spec-config.golden.json';
@@ -100,13 +97,15 @@ export default {
     FileTextIcon,
   },
   data() {
-    const specifications = map(Specifications, specification => ({
-      label: `${specification.Name} (${specification.Version})`,
-      swaggerUIURL: `/swagger/${specification.Identifier}/${specification.Version}/docs`,
-      wikiURL: `${specification.URL.Scheme}://${specification.URL.Host}${specification.URL.Path}`,
-      specificationURL: `${specification.SchemaVersion.Scheme}://${specification.SchemaVersion.Host}${specification.SchemaVersion.Path}`,
-      _specification: specification,
-    }));
+    const specifications = Specifications
+      .filter(specification => specification.Version === 'v3.1')
+      .map(specification => ({
+        label: `${specification.Name} (${specification.Version})`,
+        swaggerUIURL: `/swagger/${specification.Identifier}/${specification.Version}/docs`,
+        wikiURL: `${specification.URL.Scheme}://${specification.URL.Host}${specification.URL.Path}`,
+        specificationURL: `${specification.SchemaVersion.Scheme}://${specification.SchemaVersion.Host}${specification.SchemaVersion.Path}`,
+        _specification: specification,
+      }));
 
     return {
       specifications,
