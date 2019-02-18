@@ -240,6 +240,9 @@ func (wj *journey) configParametersToJourneyContext() error {
 }
 
 func (wj *journey) customTestParametersToJourneyContext() {
+	if wj.validDiscoveryModel == nil {
+		return
+	}
 	for _, customTest := range wj.validDiscoveryModel.DiscoveryModel.CustomTests { // assume ordering is prerun i.e. customtest run before other tests
 		for k, v := range customTest.Replacements {
 			wj.context.PutString(k, v)
