@@ -1,11 +1,14 @@
 package executors
 
 import (
+	"encoding/json"
 	"errors"
+	"fmt"
 	"time"
 
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
 	"github.com/sirupsen/logrus"
+	resty "gopkg.in/resty.v0"
 )
 
 var (
@@ -104,52 +107,60 @@ type ExchangeParameters struct {
 
 // ExchangeCodeForAccessToken - runs a testcase to perform this operation
 func ExchangeCodeForAccessToken(tokenName, code, scope string, definition RunDefinition, ctx *model.Context) (accesstoken string, err error) {
-	logrus.Debugf("Looking to exchange code %s, token: %s", tokenName, code)
-	r := NewExchangeComponentRunner(definition, NewBufferedDaemonController())
-
-	r.runningLock.Lock()
-	defer r.runningLock.Unlock()
-	if r.running {
-		return "", errors.New("exchange Code for Access token test cases runner already running")
+	logrus.Debugf("Looking to exchange code %s, tokenName: %s", code, tokenName)
+	grantToken, err := exchangeCodeForToken(code, scope, ctx)
+	if err != nil {
+		logrus.Errorf("error attempting to exchange token %s", err.Error())
 	}
-	r.running = true
-	go r.RunExchangeCodeComponent(tokenName, code, scope, ctx)
-	return "", nil
+	return grantToken.AccessToken, err
 }
 
-// RunExchangeCodeComponent -
-func (r *TestCaseRunner) RunExchangeCodeComponent(tokenName, code, scope string, ctx *model.Context) (accesstoken string, err error) {
-	r.executor.SetCertificates(r.definition.SigningCert, r.definition.TransportCert)
-	ruleCtx := r.makeRuleCtx(ctx)
+type grantToken struct {
+	AccessToken string `json:"access_token,omitempty"`
+	TokenType   string `json:"token_type,omitempty"`
+	Expires     int32  `json:"expires_in,omitempty"`
+	Scope       string `json:"scope,omitempty"`
+	IDToken     string `json:"id_token,omitempty"`
+}
 
+func exchangeCodeForToken(code, scope string, ctx *model.Context) (grantToken, error) {
 	basicAuth, err := ctx.GetString("basic_authentication")
-	tokenEndpoint, err := ctx.GetString("token_endpoint")
-	redirectURL, err := ctx.GetString("redirectURL")
-
-	ruleCtx.PutString("exchange_code", code)
-	ruleCtx.PutString("exchange_basic_auth", basicAuth)
-	ruleCtx.PutString("exchange_token_endpoint", tokenEndpoint)
-	ruleCtx.PutString("exchange_redirect_url", redirectURL)
-	ruleCtx.PutString("exchange_scope", scope)
-	ruleCtx.PutString("exchange_access_token", tokenName)
-
-	var comp model.Component
-	comp, err = model.LoadComponent("PSUConsentProviderComponent.json")
 	if err != nil {
-		r.AppErr("Load PSU Component Failed: " + err.Error())
-		r.setNotRunning()
-		return
+		return grantToken{}, errors.New("cannot get basic authentication for code")
+	}
+	tokenEndpoint, err := ctx.GetString("token_endpoint")
+	if err != nil {
+		return grantToken{}, errors.New("cannot get token_endpoint for code exchange")
+	}
+	redirectURL, err := ctx.GetString("redirect_url")
+	if err != nil {
+		return grantToken{}, errors.New("Cannot get redirectURL for code exchange")
+	}
+	if scope == "" {
+		scope = "accounts" // lets default to a scope of accounts
 	}
 
-	for _, testcase := range comp.GetTests() {
-		testResult := r.executeTest(testcase, ruleCtx, r.logger)
-		r.daemonController.Results() <- testResult
-		if testResult.Pass {
-			accessToken, err := ruleCtx.GetString(tokenName)
-			logrus.Debugf("received access token: %s for named %s", accessToken, tokenName)
-			return accessToken, err
-		}
+	resp, err := resty.R().
+		SetHeader("content-type", "application/x-www-form-urlencoded").
+		SetHeader("accept", "*/*").
+		SetHeader("authorization", "Basic "+basicAuth).
+		SetFormData(map[string]string{
+			"grant_type":   "authorization_code",
+			"scope":        scope, // accounts or payments currently
+			"code":         code,
+			"redirect_uri": redirectURL,
+		}).
+		Post(tokenEndpoint + "/token")
+
+	if err != nil {
+		logrus.Debugf("error accessing exchange code url %s: %s ", tokenEndpoint, err.Error())
+		return grantToken{}, err
 	}
-	r.running = false
-	return "", nil
+	if resp.StatusCode() != 200 {
+		return grantToken{}, fmt.Errorf("bad status code %d from exchange token %s/token", resp.StatusCode(), tokenEndpoint)
+	}
+	var t grantToken
+	err = json.Unmarshal(resp.Body(), &t)
+	logrus.Debugf("exchangeCodeForToken  token: %#v", t)
+	return t, err
 }
