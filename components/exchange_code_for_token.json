@@ -1,0 +1,51 @@
+{
+    "id": "comexch01",
+    "name": "util.codeexchange",
+    "description": "Takes an code as part of the authorisation code request and exchanges the code for an access token to use against a resource endpoint",
+    "documentation":"the code exchange required the code from the PSU redirect, along with token endpoint, basic auth, redirect url and scope (accounts/payments etc..). In return you get an access token placed in the context, named using the access_token parameter.",
+    "inputParameters": {
+      "exchange_code": "",
+      "exchange_basic_auth": "",
+      "exchange_token_endpoint": "",
+      "exchange_redirect_url": "",
+      "exchange_scope": ""
+    },
+    "outputParameters": {
+      "exchange_access_token":""
+    },
+    "testcases": [
+        {
+            "@id": "#exch0001",
+            "name": "code exchange",
+            "input": {
+                "method": "POST",
+                "endpoint": "/token",
+                "headers": {
+                    "content-type": "application/x-www-form-urlencoded",
+                    "authorization": "Basic $exchange_basic_auth",
+                    "accept": "*/*"
+                },
+                "formData": {
+                    "code": "$exchange_code",
+                    "grant_type": "authorization_code",
+                    "redirect_uri": "$exchange_redirect_url",
+                    "scope": "$exchange_scope"
+                }
+            },
+            "context": {
+                "baseurl": "$exchange_token_endpoint"
+            },
+            "expect": {
+                "status-code": 200,
+                "contextPut": {
+                    "matches": [{
+                        "name": "$exchange_access_token",
+                        "description": "The accounts access token",
+                        "json": "access_token"
+                    }]
+                }
+            }
+        }
+      ]
+  }
+  

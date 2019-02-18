@@ -8,16 +8,6 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-// TokenConsentIDs captures the token/consentIds awaiting authorisation
-type TokenConsentIDs []TokenConsentIDItem
-
-// TokenConsentIDItem is a single consentId mapping to token name
-type TokenConsentIDItem struct {
-	TokenName   string
-	ConsentID   string
-	Permissions string
-}
-
 var (
 	consentChannelTimeout = 30
 )
@@ -100,4 +90,63 @@ func buildPermissionString(permissionSlice []string) string {
 		permissions += "\"" + perms + "\""
 	}
 	return permissions
+}
+
+// ExchangeParameters - Captures the parameters require to exchange a code for an access token
+type ExchangeParameters struct {
+	Code                string
+	BasicAuthentication string
+	TokenEndpoint       string
+	RedirectURL         string
+	Scope               string
+	TokenName           string
+}
+
+// ExchangeCodeForAccessToken - runs a testcase to perform this operation
+func ExchangeCodeForAccessToken(params ExchangeParameters, definition RunDefinition, ctx *model.Context) (accesstoken string, err error) {
+	r := NewExchangeComponentRunner(definition, NewBufferedDaemonController())
+
+	r.runningLock.Lock()
+	defer r.runningLock.Unlock()
+	if r.running {
+		return "", errors.New("exchange Code for Access token test cases runner already running")
+	}
+	r.running = true
+
+	go r.RunExchangeCodeComponent(params, ctx)
+
+	return "", nil
+}
+
+// RunExchangeCodeComponent -
+func (r *TestCaseRunner) RunExchangeCodeComponent(params ExchangeParameters, ctx *model.Context) (accesstoken string, err error) {
+	r.executor.SetCertificates(r.definition.SigningCert, r.definition.TransportCert)
+	ruleCtx := r.makeRuleCtx(ctx)
+
+	ruleCtx.PutString("exchange_code", params.Code)
+	ruleCtx.PutString("exchange_basic_auth", params.BasicAuthentication)
+	ruleCtx.PutString("exchange_token_endpoint", params.TokenEndpoint)
+	ruleCtx.PutString("exchange_redirect_url", params.RedirectURL)
+	ruleCtx.PutString("exchange_scope", params.Scope)
+	ruleCtx.PutString("exchange_access_token", params.TokenName)
+
+	var comp model.Component
+	comp, err = model.LoadComponent("PSUConsentProviderComponent.json")
+	if err != nil {
+		r.AppErr("Load PSU Component Failed: " + err.Error())
+		r.setNotRunning()
+		return
+	}
+
+	for _, testcase := range comp.GetTests() {
+		testResult := r.executeTest(testcase, ruleCtx, r.logger)
+		r.daemonController.Results() <- testResult
+		if testResult.Pass {
+			accessToken, err := ruleCtx.GetString(params.TokenName)
+			return accessToken, err
+		}
+	}
+
+	return "", nil
+
 }

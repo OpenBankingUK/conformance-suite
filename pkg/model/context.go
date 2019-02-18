@@ -41,11 +41,18 @@ func (c Context) Put(key string, value interface{}) {
 	c[key] = value
 }
 
-// Put a value indexed by 'key' into the context. The value can be any type
+// PutString Put a value indexed by 'key' into the context. The value can be any type
 func (c Context) PutString(key string, value string) {
 	var interfaceValue interface{}
 	interfaceValue = value
 	c[key] = interfaceValue
+}
+
+// PutMap of strings - into context
+func (c Context) PutMap(mymap map[string]string) {
+	for k, v := range mymap {
+		c.PutString(k, v)
+	}
 }
 
 // PutStringSlice puts a slice of strings into context

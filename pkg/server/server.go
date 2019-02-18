@@ -95,7 +95,7 @@ func registerRoutes(server *Server, logger *logrus.Entry, checker model.Conditio
 
 	// endpoints for validating and storing the token retrieved in `/conformancesuite/callback`
 	// `pkg/server/assets/main.js` calls into this endpoint.
-	redirectHandlers := &redirectHandlers{logger.WithField("module", "redirectHandlers")}
+	redirectHandlers := &redirectHandlers{journey, logger.WithField("module", "redirectHandlers")}
 	api.POST("/redirect/fragment/ok", redirectHandlers.postFragmentOKHandler)
 	api.POST("/redirect/query/ok", redirectHandlers.postQueryOKHandler)
 	api.POST("/redirect/error", redirectHandlers.postErrorHandler)
