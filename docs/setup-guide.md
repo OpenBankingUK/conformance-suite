@@ -113,9 +113,9 @@ To verify the content has not been tampered with you can you the `DOCKER_CONTENT
 
 Running a test plan on the FCS involves five steps, as follows:
 
-1. Start / Load test - Select a template. **TBC**
+### Start/Load test - To start a new test select the Ozone PSU template.
 
-2. Discovery - Review the discovery file and update as required.
+### Discovery - Review the discovery file and update as required.
 
     You will need to update the discovery file with some values should be retrieved from Ozone. To view these values,
     download the "Postman Environment" file from the "Postman" tab on the Ozone registration page. _I used [jsonlint.com](https://www.jsonlint.com)
@@ -133,9 +133,13 @@ Running a test plan on the FCS involves five steps, as follows:
     * basic_authentication = basicToken
     * redirect_url = redirectUrl
 
-3. Configuration
+### Configuration
 
-    Provide the keys, as created earlier. The naming should be self explanatory if you ran the cert generation commands as shown.
+* Provide the keys, as created earlier signing and transport.
+* 
+    
+    
+    
     --- 0015800001041RHAAY
 
 4. Run / Overview
