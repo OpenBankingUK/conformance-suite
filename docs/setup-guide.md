@@ -10,7 +10,7 @@ Please note the following goals of this document:
 interaction during the authentication and consent steps when connecting to Ozone.
 * Review the results of the test run.
 
-# Prerequisites
+## Prerequisites
 
 This guide assumes the following tools are installed and functioning correctly. Versions specified used when writing this guide.
 
@@ -18,7 +18,7 @@ This guide assumes the following tools are installed and functioning correctly. 
 * OpenSSL (LibreSSL 2.6.4 on OSX)
 * Google login if using Ozone "self-serve" 
 
-# Step 1: Register with Ozone Bank (Model Bank)
+## Step 1: Register with Ozone Bank (Model Bank)
 
 Ozone Bank is an Mock Account Servicing Payment Service Provider (ASPSP), which the FCS will connect to as a TPP. 
 
@@ -32,7 +32,7 @@ Following the enrolment screens:
 
 Once completed, make a note of the certificates and the "CLIENT ID" and "CLIENT SECRET" values. 
 
-## Generate transport and signing certificates
+### Generate transport and signing certificates
 
 Mutually Authenticated TLS (MA-TLS) is required to communicate with Ozone model bank service.
 
@@ -50,7 +50,7 @@ The following three sections will generate various files. As an output, you will
 * transport.key
 * transport.pem
 
-### Precursor: CA Generation
+#### Precursor: CA Generation
 
 A precursor step of creating a Certificate Authority (CA) is required to sign the transport and signing certs.
 
@@ -64,7 +64,7 @@ under the Certificates tab:
 * OU (Organisation Unit) 
 * CN (Common Name)
 
-### Transport Certificate
+#### Transport Certificate
 
 * Execute `openssl genrsa -out transport.key 2048`
 
@@ -72,7 +72,7 @@ under the Certificates tab:
 
 * Execute `openssl x509 -req -days 3650 -in transport.csr -CA ca.pem -CAkey ca.key -CAcreateserial -out transport.pem`
 
-### Signing Certificate
+#### Signing Certificate
 
 * Execute `openssl genrsa -out signing.key 2048`
 
@@ -80,7 +80,7 @@ under the Certificates tab:
 
 * Execute `openssl x509 -req -days 3650 -in signing.csr -CA ca.pem -CAkey ca.key -CAcreateserial -out signing.pem`
 
-## Run the Functional Conformance Suite
+## Step 2: Run the Functional Conformance Suite
 
 ### FCS Server Certificates
 
@@ -100,7 +100,7 @@ at this point by running `docker login`.
 
 If all goes well you should be able to launch the FCS UI from you browser via `https://0.0.0.0:8443`
 
-### Docker Content Trust
+#### Docker Content Trust
 
 Docker ensures that all content is securely received and verified by Open Banking. Docker cryptographically signs the images upon completion of a satisfactory image check, so that implementers can verify and trust certified content.
 
@@ -109,7 +109,7 @@ To verify the content has not been tampered with you can you the `DOCKER_CONTENT
     DOCKER_CONTENT_TRUST=1 docker pull openbanking/conformance-suite:TAG
     DOCKER_CONTENT_TRUST=1 docker RUN openbanking/conformance-suite:TAG
 
-## Execute a test
+### Execute a test
 
 Running a test plan on the FCS involves five steps, as follows:
 
@@ -146,7 +146,7 @@ Running a test plan on the FCS involves five steps, as follows:
 
     **TBC**
 
-## Review test results
+### Review test results
 
 **TBC**
 
