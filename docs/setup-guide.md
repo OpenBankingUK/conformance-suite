@@ -136,11 +136,12 @@ Running a test plan on the FCS involves five steps, as follows:
 ### Configuration
 
 * Provide the keys, as created earlier signing and transport.
-* 
-    
-    
-    
-    --- 0015800001041RHAAY
+* Enter a cleint ID and secret from Ozone Bank
+* x-fapi-financial-id = 0015800001041RHAAY
+* Resource Base URL = https://modelobank2018.o3bank.co.uk:4501
+
+The rest of the values are taken from the well-known.
+
 
 4. Run / Overview
 
