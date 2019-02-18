@@ -161,6 +161,7 @@ func (c *tokencollector) Collect(tokenName, accessToken string) error {
 	c.addAccessToken(tokenName, accessToken)
 	logrus.Debugf("[Collector] collected: %d, total to be collected: %d", c.collected, len(c.consentTable))
 	if c.isDone() {
+		logrus.Debug("Collector - calling done!")
 		c.doneFunc()
 	}
 	c.tokensLock.Unlock()
