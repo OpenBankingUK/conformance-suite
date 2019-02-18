@@ -44,14 +44,21 @@ type generator struct {
 // GenerateSpecificationTestCases - generates test cases
 func (g generator) GenerateSpecificationTestCases(config GeneratorConfig, discovery discovery.ModelDiscovery, ctx *model.Context) TestCasesRun {
 	specTestCases := []SpecificationTestCases{}
-	//customReplacements := make(map[string]string)
+	customTestCases := []SpecificationTestCases{}
+	customReplacements := make(map[string]string)
 	originalEndpoints := make(map[string]string, 0)
 
 	for _, customTest := range discovery.CustomTests { // assume ordering is prerun i.e. customtest run before other tests
-		specTestCases = append(specTestCases, GetCustomTestCases(&customTest, ctx))
-		// for k, v := range customTest.Replacements {
-		// 	customReplacements[k] = v
-		// }
+		customTestCases = append(customTestCases, GetCustomTestCases(&customTest, ctx))
+		for k, v := range customTest.Replacements {
+			customReplacements[k] = v
+		}
+		for k, testcase := range customTest.Sequence {
+			ctx := model.Context{}
+			ctx.PutMap(customReplacements)
+			testcase.ProcessReplacementFields(&ctx)
+			customTest.Sequence[k] = testcase
+		}
 	}
 
 	nameGenerator := names.NewSequentialPrefixedName("#t")
@@ -78,6 +85,7 @@ func (g generator) GenerateSpecificationTestCases(config GeneratorConfig, discov
 	// generate PSU consent URL onto the perm set structure
 	consentRequirements = withConsentUrl(config, consentRequirements)
 
+	specTestCases = append(customTestCases, specTestCases...)
 	return TestCasesRun{specTestCases, consentRequirements}
 
 }
