@@ -58,6 +58,7 @@ A precursor step of creating a Certificate Authority (CA) is required to sign th
 
 The following certificate information (DN) values shall be provided, based on what is mentioned on your Ozone registration page
 under the Certificates tab:
+
 * C (Country Name) = GB
 * O (Organisation Name) = Ozone Financial Technology Limited
 * OU (Organisation Unit) 
@@ -65,19 +66,19 @@ under the Certificates tab:
 
 ### Transport Certificate
 
-Execute `openssl genrsa -out transport.key 2048`
+* Execute `openssl genrsa -out transport.key 2048`
 
-Execute `openssl req -new -sha256 -key transport.key -out transport.csr` (Provide same DN information as above, no passphrase) 
+* Execute `openssl req -new -sha256 -key transport.key -out transport.csr` (Provide same DN information as above, no passphrase) 
 
-Execute `openssl x509 -req -days 3650 -in transport.csr -CA ca.pem -CAkey ca.key -CAcreateserial -out transport.pem`
+* Execute `openssl x509 -req -days 3650 -in transport.csr -CA ca.pem -CAkey ca.key -CAcreateserial -out transport.pem`
 
 ### Signing Certificate
 
-Execute `openssl genrsa -out signing.key 2048`
+* Execute `openssl genrsa -out signing.key 2048`
 
-Execute `openssl req -new -sha256 -key signing.key -out signing.csr` (Provide same DN information as above, no passphrase) 
+* Execute `openssl req -new -sha256 -key signing.key -out signing.csr` (Provide same DN information as above, no passphrase) 
 
-Execute `openssl x509 -req -days 3650 -in signing.csr -CA ca.pem -CAkey ca.key -CAcreateserial -out signing.pem`
+* Execute `openssl x509 -req -days 3650 -in signing.csr -CA ca.pem -CAkey ca.key -CAcreateserial -out signing.pem`
 
 ## Run the Functional Conformance Suite
 
