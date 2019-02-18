@@ -13,12 +13,14 @@ func TestOpenIDUnmarshal(t *testing.T) {
 	data := `
 {
 	"token_endpoint": "https://modelobank2018.o3bank.co.uk:4201/<token_mock>",
-	"authorization_endpoint": "https://modelobankauth2018.o3bank.co.uk:4101/<auth_mock>"
+	"authorization_endpoint": "https://modelobankauth2018.o3bank.co.uk:4101/<auth_mock>",
+	"issuer": "https://modelobankauth2018.o3bank.co.uk:4101"
 }
 	`
 	expected := OpenIDConfiguration{
 		TokenEndpoint:         "https://modelobank2018.o3bank.co.uk:4201/<token_mock>",
 		AuthorizationEndpoint: "https://modelobankauth2018.o3bank.co.uk:4101/<auth_mock>",
+		Issuer:                "https://modelobankauth2018.o3bank.co.uk:4101",
 	}
 	actual := OpenIDConfiguration{}
 	require.NoError(json.Unmarshal([]byte(data), &actual))

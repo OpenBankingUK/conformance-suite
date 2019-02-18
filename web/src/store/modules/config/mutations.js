@@ -50,6 +50,9 @@ export default {
   [types.SET_X_FAPI_FINANCIAL_ID](state, value) {
     state.configuration.x_fapi_financial_id = value;
   },
+  [types.SET_ISSUER](state, value) {
+    state.configuration.issuer = value;
+  },
   [types.SET_REDIRECT_URL](state, value) {
     state.configuration.redirect_url = value;
   },

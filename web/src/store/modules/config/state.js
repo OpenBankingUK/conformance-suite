@@ -19,6 +19,7 @@ export default {
     authorization_endpoint: '',
     resource_base_url: '',
     x_fapi_financial_id: '',
+    issuer: '',
     redirect_url: 'https://0.0.0.0:8443/conformancesuite/callback',
   },
 

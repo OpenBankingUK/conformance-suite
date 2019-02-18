@@ -5,4 +5,5 @@ package authentication
 type OpenIDConfiguration struct {
 	TokenEndpoint         string `json:"token_endpoint"`
 	AuthorizationEndpoint string `json:"authorization_endpoint"`
+	Issuer                string `json:"issuer"`
 }

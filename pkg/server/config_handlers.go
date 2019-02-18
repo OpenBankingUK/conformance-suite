@@ -30,6 +30,7 @@ type GlobalConfiguration struct {
 	AuthorizationEndpoint string `json:"authorization_endpoint" validate:"valid_url"`
 	ResourceBaseURL       string `json:"resource_base_url" validate:"valid_url"`
 	XFAPIFinancialID      string `json:"x_fapi_financial_id" validate:"not_empty"`
+	Issuer                string `json:"issuer" validate:"valid_url"`
 	RedirectURL           string `json:"redirect_url" validate:"valid_url"`
 }
 
@@ -64,6 +65,7 @@ func (h *configHandlers) configGlobalPostHandler(c echo.Context) error {
 		config.AuthorizationEndpoint,
 		config.XFAPIFinancialID,
 		config.ResourceBaseURL,
+		config.Issuer,
 		config.RedirectURL,
 	)
 
