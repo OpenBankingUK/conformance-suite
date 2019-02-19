@@ -48,6 +48,7 @@ func (g generator) GenerateSpecificationTestCases(config GeneratorConfig, discov
 	customTestCases := []SpecificationTestCases{}
 	customReplacements := make(map[string]string)
 	originalEndpoints := make(map[string]string, 0)
+	backupEndpoints := make(map[string]string)
 
 	for _, customTest := range discovery.CustomTests { // assume ordering is prerun i.e. customtest run before other tests
 		customTestCases = append(customTestCases, GetCustomTestCases(&customTest, ctx))
@@ -75,16 +76,26 @@ func (g generator) GenerateSpecificationTestCases(config GeneratorConfig, discov
 	for _, specTest := range specTestCases {
 		tmpSpecTestCases = append(tmpSpecTestCases, specTest)
 		for x, y := range specTest.TestCases {
+			backupEndpoints[y.ID] = y.Input.Endpoint
 			y.Input.Endpoint = originalEndpoints[y.ID]
+
 			specTest.TestCases[x] = y
 		}
 	}
 
-	// calculate permission set required and update the header token in the test case request
+	// // calculate permission set required and update the header token in the test case request
 	consentRequirements := g.consentRequirements(tmpSpecTestCases) // uses pre-modified swagger urls
+	logrus.Warnf("Consent Requirements: %#v", consentRequirements)
 
-	// generate PSU consent URL onto the perm set structure
-	consentRequirements = withConsentUrl(config, consentRequirements)
+	// // generate PSU consent URL onto the perm set structure
+	//consentRequirements = withConsentUrl(config, consentRequirements)
+
+	for _, specTest := range specTestCases {
+		for x, y := range specTest.TestCases {
+			y.Input.Endpoint = backupEndpoints[y.ID]
+			specTest.TestCases[x] = y
+		}
+	}
 
 	specTestCases = append(customTestCases, specTestCases...)
 	return TestCasesRun{specTestCases, consentRequirements}

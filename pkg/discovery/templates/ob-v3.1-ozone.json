@@ -15,7 +15,8 @@
         "resourceBaseUri": "https://modelobank2018.o3bank.co.uk:4501/open-banking/v3.1/aisp",
         "resourceIds": {
           "AccountId": "500000000000000000000001",
-          "ConsentId": "$consent_id"
+          "ConsentId": "$consent_id",
+          "StatementId":"140000000000000000000001"
         },
         "endpoints": [{
             "method": "POST",
@@ -158,7 +159,8 @@
       "description": "testcase sequence to retrieve an ozone token",
       "order": "beforeRun",
       "replacementParameters": {
-        "resource_server": "https://modelobank2018.o3bank.co.uk:4501"
+        "resource_server": "https://modelobank2018.o3bank.co.uk:4501",
+        "permission_payload": "{\"Data\": { \"Permissions\": [ \"ReadAccountsBasic\", \"ReadAccountsDetail\", \"ReadBalances\", \"ReadBeneficiariesBasic\", \"ReadBeneficiariesDetail\", \"ReadDirectDebits\", \"ReadTransactionsBasic\", \"ReadTransactionsCredits\", \"ReadTransactionsDebits\", \"ReadTransactionsDetail\", \"ReadProducts\", \"ReadStandingOrdersDetail\"], \"TransactionFromDateTime\": \"2016-01-01T10:40:00+02:00\", \"TransactionToDateTime\": \"2025-12-31T10:40:00+02:00\" },  \"Risk\": {} }"        
       },
       "testSequence": [{
         "@id": "#ct0005",
