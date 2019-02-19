@@ -17,7 +17,8 @@ This guide assumes the following tools are installed and functioning correctly. 
 
 * Docker (Client: 18.09.1, Server: 18.09.1 on OSX)
 * OpenSSL (LibreSSL 2.6.4 on OSX)
-* Google login if using Ozone "self-serve" 
+* Google login if using Ozone "self-serve"
+* Access to the following hosts from your computer - See Appendix A.
 
 
 *Note for Windows 10 users - Docker on Windows 10 requires Hyper-V to be installed. Hyper-V is only available
@@ -146,3 +147,17 @@ The rest of the values are taken from the well-known.
 # How to get help
 
 **TBC**
+
+# Appendix A
+
+The following hosts are required to be accessible for the Functional Conformance Suite to function correctly:
+
+| Protocol   | Host | Ports |
+| ---------- | ---- | ----- |
+| TCP, HTTPS | modelobankauth2018.o3bank.co.uk | 4101
+| TCP, HTTPS | modelo2018.o3bank.co.uk | 4201,4501
+| TCP, HTTPS | github.map.fastly.net | 443
+| TCP, HTTPS | api.bitbucket.org | 443
+| TCP, HTTPS | production.cloudflare.docker.com | 443
+| TCP, HTTPS | registry-1.docker.io | 443
+| TCP, HTTPS | auth.docker.io | 443
