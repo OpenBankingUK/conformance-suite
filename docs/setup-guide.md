@@ -18,6 +18,11 @@ This guide assumes the following tools are installed and functioning correctly. 
 * OpenSSL (LibreSSL 2.6.4 on OSX)
 * Google login if using Ozone "self-serve" 
 
+
+*Note for Windows 10 users - Docker on Windows 10 requires Hyper-V to be installed. Hyper-V is only available
+on Pro or Enterprise versions. Please refer to [this guide](https://techcommunity.microsoft.com/t5/ITOps-Talk-Blog/Step-By-Step-Enabling-Hyper-V-for-use-on-Windows-10/ba-p/267945) for more information.*
+
+
 ## Step 1: Register with Ozone Bank (Model Bank)
 
 Ozone Bank is an Mock Account Servicing Payment Service Provider (ASPSP), which the FCS will connect to as a TPP. 
