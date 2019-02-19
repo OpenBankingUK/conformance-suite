@@ -33,7 +33,7 @@ var (
 type Journey interface {
 	SetDiscoveryModel(discoveryModel *discovery.Model) (discovery.ValidationFailures, error)
 	TestCases() (generation.TestCasesRun, error)
-	CollectToken(setName, token string) error
+	CollectToken(code, state, scope string) error
 	AllTokenCollected() bool
 	RunTests() error
 	StopTestRun()
@@ -141,7 +141,8 @@ func (wj *journey) TestCases() (generation.TestCasesRun, error) {
 	return wj.testCasesRun, nil
 }
 
-func (wj *journey) CollectToken(tokenName, accesstoken string) error {
+func (wj *journey) CollectToken(code, state, scope string) error {
+	logrus.Debugf("state: %s, code: %s", state, code)
 	wj.journeyLock.Lock()
 	defer wj.journeyLock.Unlock()
 
@@ -149,7 +150,18 @@ func (wj *journey) CollectToken(tokenName, accesstoken string) error {
 		return errTestCasesNotGenerated
 	}
 
-	return wj.collector.Collect(tokenName, accesstoken)
+	runDefinition := executors.RunDefinition{
+		DiscoModel:    wj.validDiscoveryModel,
+		TestCaseRun:   wj.testCasesRun,
+		SigningCert:   wj.certificateSigning,
+		TransportCert: wj.certificateTransport,
+	}
+	accessToken, err := executors.ExchangeCodeForAccessToken(state, code, scope, runDefinition, &wj.context)
+	if err != nil {
+		return err
+	}
+	wj.context.PutString(state, accessToken)
+	return wj.collector.Collect(state, accessToken)
 }
 
 func (wj *journey) AllTokenCollected() bool {
@@ -161,11 +173,13 @@ func (wj *journey) AllTokenCollected() bool {
 
 func (wj *journey) doneCollectionCallback() {
 	wj.journeyLock.Lock()
+	logrus.Debug("Setting wj.allCollection=true")
 	wj.allCollected = true
 	wj.journeyLock.Unlock()
 }
 
 func (wj *journey) RunTests() error {
+	logrus.Debug("RunTests ...")
 	wj.journeyLock.Lock()
 	defer wj.journeyLock.Unlock()
 
@@ -185,6 +199,7 @@ func (wj *journey) RunTests() error {
 	}
 
 	runner := executors.NewTestCaseRunner(runDefinition, wj.daemonController)
+	logrus.Debug("runTestCases with context ...")
 	return runner.RunTestCases(&wj.context)
 }
 
@@ -220,7 +235,7 @@ const ctxConstFapiFinancialID = "fapi_financial_id"
 const ctxConstRedirectURL = "redirect_url"
 const ctxConstAuthorisationEndpoint = "authorisation_endpoint"
 const ctxConstBasicAuthentication = "basic_authentication"
-const ctxConstResourceBaseURL = "resource_base_url"
+const ctxConstResourceBaseURL = "resource_server"
 
 func (wj *journey) configParametersToJourneyContext() error {
 	wj.context.PutString(ctxConstClientID, wj.clientID)

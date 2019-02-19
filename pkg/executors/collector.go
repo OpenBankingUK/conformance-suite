@@ -5,6 +5,7 @@ import (
 	"sync"
 
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
+	"github.com/sirupsen/logrus"
 )
 
 // Collector collects tokens for a set or permissions requirements and calls a
@@ -152,12 +153,15 @@ func NewTokenCollector(consentIds TokenConsentIDs, doneFunc func()) *tokencollec
 
 // Collect receives an accesstoken to match a named token for which we have a consentid
 func (c *tokencollector) Collect(tokenName, accessToken string) error {
+	logrus.Debugf("[Collector] entry with tokenname %s: accessToken: %s", tokenName, accessToken)
 	if !c.tokenNameExists(tokenName) {
 		return errors.New("invalid token name: " + tokenName)
 	}
 	c.tokensLock.Lock()
 	c.addAccessToken(tokenName, accessToken)
+	logrus.Debugf("[Collector] collected: %d, total to be collected: %d", c.collected, len(c.consentTable))
 	if c.isDone() {
+		logrus.Debug("Collector - calling done!")
 		c.doneFunc()
 	}
 	c.tokensLock.Unlock()

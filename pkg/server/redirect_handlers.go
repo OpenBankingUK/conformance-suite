@@ -101,7 +101,7 @@ func (h *redirectHandlers) postQueryOKHandler(c echo.Context) error {
 	// (Nothing to validate)
 	if query.IDToken == "" {
 		if query.Code != "" {
-			err := handleCodeExchange(query)
+			err := h.handleCodeExchange(query)
 			if err != nil {
 				resp := NewErrorResponse(errors.New("unable to handle redirect"))
 				return c.JSON(http.StatusBadRequest, resp)
@@ -122,7 +122,7 @@ func (h *redirectHandlers) postQueryOKHandler(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, NewErrorResponse(err))
 	}
 	if cHash == claim.CHash {
-		err = handleCodeExchange(query)
+		err = h.handleCodeExchange(query)
 		if err != nil {
 			resp := NewErrorResponse(errors.New("unable to handle redirect"))
 			return c.JSON(http.StatusBadRequest, resp)
@@ -134,8 +134,9 @@ func (h *redirectHandlers) postQueryOKHandler(c echo.Context) error {
 	return c.JSON(http.StatusBadRequest, resp)
 }
 
-func handleCodeExchange(query *RedirectQuery) error {
+func (h *redirectHandlers) handleCodeExchange(query *RedirectQuery) error {
 	logrus.Warnf("received redirect Query %#v", query)
+	h.journey.CollectToken(query.Code, query.State, query.Scope)
 	return nil
 }
 
