@@ -15,15 +15,15 @@ import (
 //  Checker returns the semantic version (see http://semver.org).
 const (
 	// Checker must conform to the format expected, major, minor and patch.
-	major = "0"
-	minor = "2"
+	major = "1"
+	minor = "0"
 	patch = "0"
 	// Checker is the full string version of Conformance Suite.
 	FullVersion = major + "." + minor + "." + patch
 	// VersionPrerelease is pre-release marker for the version. If this is "" (empty string)
 	// then it means that it is a final release. Otherwise, this is a pre-release
 	// such as "alpha", "beta", "rc1", etc.
-	Prerelease             = "alpha"
+	Prerelease             = "beta"
 	BitBucketAPIRepository = "https://api.bitbucket.org/2.0/repositories/openbankingteam/conformance-suite/refs/tags"
 )
 
