@@ -22,7 +22,7 @@ func OpenIdConfig(url string) (OpenIDConfiguration, error) {
 	} else {
 		defer resp.Body.Close()
 
-		if resp.StatusCode != 200 {
+		if resp.StatusCode != http.StatusOK {
 			return config, fmt.Errorf("Failed to GET OpenID config: %s - HTTP response status: %d", url, resp.StatusCode)
 		}
 		if err := json.NewDecoder(resp.Body).Decode(&config); err != nil {
