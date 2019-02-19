@@ -149,6 +149,11 @@ func (r *TestCaseRunner) runConsentAcquisitionAsync(item TokenConsentIDItem, ctx
 	}
 
 	r.executeComponentTests(&comp, ruleCtx, ctxLogger, item, consentIDChannel)
+	clientGrantToken, err := ruleCtx.GetString("client_access_token")
+	if err == nil {
+		logrus.Debugf("setting client credential grant token to %s", clientGrantToken)
+		ctx.PutString("client_access_token", clientGrantToken)
+	}
 
 	r.setNotRunning()
 }
