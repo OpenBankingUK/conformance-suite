@@ -12,6 +12,28 @@ import (
 )
 
 var (
+	defaultPermissions = []string{
+		"ReadAccountsBasic",
+		"ReadAccountsDetail",
+		"ReadBalances",
+		"ReadBeneficiariesBasic",
+		"ReadBeneficiariesDetail",
+		"ReadDirectDebits",
+		"ReadTransactionsBasic",
+		"ReadTransactionsCredits",
+		"ReadTransactionsDebits",
+		"ReadTransactionsDetail",
+		"ReadProducts",
+		"ReadStandingOrdersDetail",
+		"ReadProducts",
+		"ReadStandingOrdersDetail",
+		"ReadParty",
+		"ReadPartyPSU",
+		"ReadScheduledPaymentsBasic",
+		"ReadScheduledPaymentsDetail",
+		"ReadPAN",
+	}
+
 	consentChannelTimeout = 30
 )
 
@@ -20,10 +42,13 @@ func InitiationConsentAcquisition(consentRequirements []model.SpecConsentRequire
 	consentIDChannel := make(chan TokenConsentIDItem, 100)
 	tokenParameters := getConsentTokensAndPermissions(consentRequirements)
 
+	//tokenParameters["to1001"] = defaultPermissions // use default permissions for default token
+
 	for tokenName, permissionList := range tokenParameters {
 		runner := NewConsentAcquisitionRunner(definition, NewBufferedDaemonController())
 		tokenAcquisitionType := definition.DiscoModel.DiscoveryModel.TokenAcquisition
 		permissionString := buildPermissionString(permissionList)
+		//permissionString = buildPermissionString(defaultPermissions)
 		consentInfo := TokenConsentIDItem{TokenName: tokenName, Permissions: permissionString}
 		runner.RunConsentAcquisition(consentInfo, ctx, tokenAcquisitionType, consentIDChannel)
 	}
