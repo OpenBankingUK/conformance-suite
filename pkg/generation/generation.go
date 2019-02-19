@@ -21,7 +21,7 @@ import (
 	"github.com/go-openapi/spec"
 )
 
-const httpUserAgent = "Open Banking Conformance Suite v0.2.x"
+const httpUserAgent = "Open Banking Conformance Suite v1.0.0-beta"
 
 // GetImplementedTestCases takes a discovery Model and determines the implemented endpoints.
 // Currently this function is experimental - meaning it contains fmt.Printlns as an aid to understanding
