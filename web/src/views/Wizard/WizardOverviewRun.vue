@@ -49,12 +49,12 @@ export default {
     hasConsentUrls() {
       return Object.keys(this.consentUrls).length > 0;
       // Uncomment below and comment line above to test before backend consent URL changes finished:
-      //return true;
+      // return true;
     },
     pendingPsuConsent() {
       // TODO: return false when all consents obtained
       return this.hasConsentUrls;
-      //return false;
+      // return false;
     },
     areTestsCompleted() {
       // TODO: Wait for backend to send completed message.
