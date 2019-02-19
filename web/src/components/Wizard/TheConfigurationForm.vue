@@ -57,6 +57,21 @@
             placeholder="Enter your Client Secret"
           />
         </b-form-group>
+        <b-form-group
+          id="x_fapi_financial_id_group"
+          label-for="x_fapi_financial_id"
+          label="x-fapi-financial-id"
+          description="The unique id of the ASPSP to which the request is issued. The unique id will be issued by OB."
+        >
+          <b-form-input
+            id="x_fapi_financial_id"
+            v-model="x_fapi_financial_id"
+            :state="isNotEmpty(x_fapi_financial_id)"
+            placeholder="Enter your x-fapi-financial-id"
+            required
+            type="text"
+          />
+        </b-form-group>
       </b-card>
       <br>
       <b-card bg-variant="light">
@@ -99,22 +114,6 @@
             :state="isValidUrl(resource_base_url)"
             required
             type="url"
-          />
-        </b-form-group>
-
-        <b-form-group
-          id="x_fapi_financial_id_group"
-          label-for="x_fapi_financial_id"
-          label="x-fapi-financial-id"
-          description="The unique id of the ASPSP to which the request is issued. The unique id will be issued by OB."
-        >
-          <b-form-input
-            id="x_fapi_financial_id"
-            v-model="x_fapi_financial_id"
-            :state="isNotEmpty(x_fapi_financial_id)"
-            placeholder="Enter your x-fapi-financial-id"
-            required
-            type="text"
           />
         </b-form-group>
 
