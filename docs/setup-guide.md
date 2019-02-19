@@ -97,7 +97,7 @@ Certificates and be downloaded (here)[https://bitbucket.org/openbankingteam/conf
 The following command will download the latest FCS image from docker hub and run it. You may need to login to Docker Hub
 at this point by running `docker login`. 
 
-`docker run --rm -it -p 8443:8443 "openbanking/conformance-suite:latest"`
+`docker run --rm -it -p 8443:8443 "openbanking/conformance-suite:v1.0.0-beta"`
 
 If all goes well you should be able to launch the FCS UI from you browser via `https://0.0.0.0:8443`
 
@@ -119,28 +119,14 @@ Running a test plan on the FCS involves five steps, as follows:
 
 ### Discovery - Review the discovery file and update as required.
 
-    You will need to update the discovery file with some values should be retrieved from Ozone. To view these values,
-    download the "Postman Environment" file from the "Postman" tab on the Ozone registration page. _I used [jsonlint.com](https://www.jsonlint.com)
-    to format the JSON._
-
-    Please keep a note of the following values from the JSON, which are stored as key/value records:
-    * obParticipantId
-    * oidcClient
-    * basicToken
-    * redirectUrl
-
-    In the discovery JSON you will need to set the following values in `discoveryModel.customTests.replacementParameters`, based on the above values:
-    * client_id = oidcClient
-    * fapi_financial_id = obParticipantId 
-    * basic_authentication = basicToken
-    * redirect_url = redirectUrl
+Select the Ozone PSU template.
 
 ### Configuration
 
 * Provide the keys, as created earlier signing and transport.
 * Enter a cleint ID and secret from Ozone Bank
 * x-fapi-financial-id = 0015800001041RHAAY
-* Resource Base URL = https://modelobank2018.o3bank.co.uk:4501
+* Resource Base URL = https://modelobank2018.o3bank.co.uk:4501/open-banking/v3.1/aisp
 
 The rest of the values are taken from the well-known.
 
