@@ -74,7 +74,7 @@ func registerRoutes(server *Server, logger *logrus.Entry, checker model.Conditio
 	api.POST("/config/global", configHandlers.configGlobalPostHandler)
 
 	// endpoints for discovery model
-	discoveryHandlers := newDiscoveryHandlers(journey)
+	discoveryHandlers := newDiscoveryHandlers(journey, logger)
 	api.POST("/discovery-model", discoveryHandlers.setDiscoveryModelHandler)
 
 	// endpoints for test cases
