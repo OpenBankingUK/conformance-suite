@@ -160,7 +160,7 @@ func (wj *journey) CollectToken(code, state, scope string) error {
 	if err != nil {
 		return err
 	}
-
+	wj.context.PutString(state, accessToken)
 	return wj.collector.Collect(state, accessToken)
 }
 
@@ -235,7 +235,7 @@ const ctxConstFapiFinancialID = "fapi_financial_id"
 const ctxConstRedirectURL = "redirect_url"
 const ctxConstAuthorisationEndpoint = "authorisation_endpoint"
 const ctxConstBasicAuthentication = "basic_authentication"
-const ctxConstResourceBaseURL = "resource_base_url"
+const ctxConstResourceBaseURL = "resource_server"
 
 func (wj *journey) configParametersToJourneyContext() error {
 	wj.context.PutString(ctxConstClientID, wj.clientID)
