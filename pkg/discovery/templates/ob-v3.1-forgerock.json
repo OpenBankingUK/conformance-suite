@@ -12,7 +12,7 @@
         "schemaVersion": "https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.0/dist/account-info-swagger.json"
       },
       "openidConfigurationUri": "https://as.aspsp.ob.forgerock.financial/oauth2/.well-known/openid-configuration",
-      "resourceBaseUri": "https://rs.aspsp.ob.forgerock.financial/open-banking/v3.1/",
+      "resourceBaseUri": "https://rs.aspsp.ob.forgerock.financial/open-banking/v3.1",
       "resourceIds": {
         "AccountId": "055bdf14-9b5d-42b5-bdb3-c3e118ecee02",
         "ConsentId": "$consent_id"
@@ -162,7 +162,7 @@
         "schemaVersion": "https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.0/dist/payment-initiation-swagger.json"
       },
       "openidConfigurationUri": "https://as.aspsp.ob.forgerock.financial/oauth2/.well-known/openid-configuration",
-      "resourceBaseUri": "https://rs.aspsp.ob.forgerock.financial/open-banking/v3.1/",
+      "resourceBaseUri": "https://rs.aspsp.ob.forgerock.financial/open-banking/v3.1",
       "endpoints": [
         {
           "method": "POST",

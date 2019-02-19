@@ -13,7 +13,7 @@
           "schemaVersion": "https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.0/dist/account-info-swagger.json"
         },
         "openidConfigurationUri": "https://generic.com/.well-known/openid-configuration",
-        "resourceBaseUri": "https://generic.com:4501/open-banking/v3.1/",
+        "resourceBaseUri": "https://generic.com:4501/open-banking/v3.1",
         "endpoints": [
           {
             "method": "POST",
@@ -159,7 +159,7 @@
           "schemaVersion": "https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.0/dist/payment-initiation-swagger.json"
         },
         "openidConfigurationUri": "https://generic.com/.well-known/openid-configuration",
-        "resourceBaseUri": "https://generic.com:4501/open-banking/v3.1/",
+        "resourceBaseUri": "https://generic.com:4501/open-banking/v3.1",
         "endpoints": [
           {
             "method": "POST",
