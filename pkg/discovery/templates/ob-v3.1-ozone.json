@@ -12,7 +12,7 @@
           "schemaVersion": "https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.0/dist/account-info-swagger.json"
         },
         "openidConfigurationUri": "https://modelobankauth2018.o3bank.co.uk:4101/.well-known/openid-configuration",
-        "resourceBaseUri": "https://modelobank2018.o3bank.co.uk:4501/open-banking/v3.1/",
+        "resourceBaseUri": "https://modelobank2018.o3bank.co.uk:4501/open-banking/v3.1/aisp",
         "resourceIds": {
           "AccountId": "500000000000000000000001",
           "ConsentId": "$consent_id"
@@ -160,7 +160,7 @@
           "schemaVersion": "https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.0/dist/payment-initiation-swagger.json"
         },
         "openidConfigurationUri": "https://modelobankauth2018.o3bank.co.uk:4101/.well-known/openid-configuration",
-        "resourceBaseUri": "https://modelobank2018.o3bank.co.uk:4501/open-banking/v3.1/",
+        "resourceBaseUri": "https://modelobank2018.o3bank.co.uk:4501/open-banking/v3.1/aisp",
         "endpoints": [{
             "method": "POST",
             "path": "/domestic-payment-consents",
