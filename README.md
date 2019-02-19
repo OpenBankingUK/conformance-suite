@@ -15,7 +15,7 @@ This **v1.0.0-beta** release introduces manual PSU consent (hybrid flow) and a e
 
 N.B. This release is not intended to be run in production.
 
-Read the full [release notes](docs/releases/v0.2.0-alpha.md) (v0.2.0-alpha.md)
+Read the full [release notes](docs/releases/v1.0.0-beta.md) (v1.0.0-beta.md)
 
 ### v0.2.0-alpha (11th January 2019)
 
@@ -23,7 +23,7 @@ This **v0.2.0-alpha** release introduces an example Discovery Template to demons
 
 N.B. This release is not intended to be run in sandbox or production so bug reports about this version should **NOT** be posted.
 
-Read the full [release notes](docs/releases/v1.0.0-beta.md) (v1.0.0-beta.md)
+Read the full [release notes](docs/releases/v0.2.0-alpha.md) (v0.2.0-alpha.md)
 
 ### v0.1.0-pre-alpha (30th November 2018)
 
