@@ -7,6 +7,7 @@ import (
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/permissions"
+	"github.com/sirupsen/logrus"
 )
 
 // SpecificationTestCases - test cases generated for a specification
@@ -151,5 +152,9 @@ type TestCasesRun struct {
 
 func generateSpecificationTestCases(item discovery.ModelDiscoveryItem, nameGenerator names.Generator, ctx *model.Context) (SpecificationTestCases, map[string]string) {
 	testcases, originalEndpoints := GetImplementedTestCases(&item, nameGenerator, ctx)
+
+	for _, tc := range testcases {
+		logrus.Debug(tc.String())
+	}
 	return SpecificationTestCases{Specification: item.APISpecification, TestCases: testcases}, originalEndpoints
 }

@@ -161,27 +161,31 @@ func (wj *journey) CollectToken(code, state, scope string) error {
 		return err
 	}
 	wj.context.PutString(state, accessToken)
+	if state == "to1001" {
+		logrus.Warnf("Setting 'access_token' to %s", accessToken)
+		wj.context.PutString("access_token", accessToken) // tmp measure to get testcases running
+	}
 	return wj.collector.Collect(state, accessToken)
 }
 
 func (wj *journey) AllTokenCollected() bool {
-	wj.journeyLock.Lock()
-	defer wj.journeyLock.Unlock()
-
+	// wj.journeyLock.Lock()
+	// defer wj.journeyLock.Unlock()
+	logrus.Debugf("All tokens collected %t", wj.allCollected)
 	return wj.allCollected
 }
 
 func (wj *journey) doneCollectionCallback() {
-	wj.journeyLock.Lock()
+	//wj.journeyLock.Lock()
 	logrus.Debug("Setting wj.allCollection=true")
 	wj.allCollected = true
-	wj.journeyLock.Unlock()
+	//wj.journeyLock.Unlock()
 }
 
 func (wj *journey) RunTests() error {
 	logrus.Debug("RunTests ...")
-	wj.journeyLock.Lock()
-	defer wj.journeyLock.Unlock()
+	//wj.journeyLock.Lock()
+	//defer wj.journeyLock.Unlock()
 
 	if !wj.testCasesRunGenerated {
 		return errTestCasesNotGenerated
@@ -236,6 +240,7 @@ const ctxConstRedirectURL = "redirect_url"
 const ctxConstAuthorisationEndpoint = "authorisation_endpoint"
 const ctxConstBasicAuthentication = "basic_authentication"
 const ctxConstResourceBaseURL = "resource_server"
+const ctxConstIssuer = "issuer"
 
 func (wj *journey) configParametersToJourneyContext() error {
 	wj.context.PutString(ctxConstClientID, wj.clientID)
@@ -248,6 +253,8 @@ func (wj *journey) configParametersToJourneyContext() error {
 	wj.context.PutString(ctxConstResourceBaseURL, wj.resourceBaseURL)
 	wj.context.PutString(ctxConstResourceBaseURL, wj.xXFAPIFinancialID) // tmp mapping fix
 	basicauth, err := authentication.CalculateClientSecretBasicToken(wj.clientID, wj.clientSecret)
+	wj.context.PutString(ctxConstIssuer, wj.issuer)
+	logrus.Debugf("Issuer string : %s ", wj.issuer)
 	if err != nil {
 		return err
 	}
