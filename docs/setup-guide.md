@@ -3,6 +3,7 @@
 This guide will assist you with the technical steps required to setup the Functional Conformance Suite (FCS) and run your first test. In this guide we will be connecting to and running tests against the Ozone Model Bank.
 
 Please note the following goals of this document:
+
 * Register with Ozone model bank as a Third Party Provider (TPP).
 * Generate certificates for transport and signing of requests to Ozone - self signed certs to be used.
 * Setup the FCS to run on local machine (via Docker container).
