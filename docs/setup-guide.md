@@ -3,6 +3,7 @@
 This guide will assist you with the technical steps required to setup the Functional Conformance Suite (FCS) and run your first test. In this guide we will be connecting to and running tests against the Ozone Model Bank.
 
 Please note the following goals of this document:
+
 * Register with Ozone model bank as a Third Party Provider (TPP).
 * Generate certificates for transport and signing of requests to Ozone - self signed certs to be used.
 * Setup the FCS to run on local machine (via Docker container).
@@ -17,6 +18,11 @@ This guide assumes the following tools are installed and functioning correctly. 
 * Docker (Client: 18.09.1, Server: 18.09.1 on OSX)
 * OpenSSL (LibreSSL 2.6.4 on OSX)
 * Google login if using Ozone "self-serve" 
+
+
+*Note for Windows 10 users - Docker on Windows 10 requires Hyper-V to be installed. Hyper-V is only available
+on Pro or Enterprise versions. Please refer to [this guide](https://techcommunity.microsoft.com/t5/ITOps-Talk-Blog/Step-By-Step-Enabling-Hyper-V-for-use-on-Windows-10/ba-p/267945) for more information.*
+
 
 ## Step 1: Register with Ozone Bank (Model Bank)
 
