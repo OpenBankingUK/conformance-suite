@@ -7,6 +7,7 @@ import (
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/authentication"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
 	"github.com/labstack/echo"
+	"github.com/sirupsen/logrus"
 )
 
 type PostDiscoveryModelResponse struct {
@@ -21,10 +22,11 @@ type validationFailuresResponse struct {
 
 type discoveryHandlers struct {
 	webJourney Journey
+	logger *logrus.Entry
 }
 
-func newDiscoveryHandlers(webJourney Journey) discoveryHandlers {
-	return discoveryHandlers{webJourney}
+func newDiscoveryHandlers(webJourney Journey, logger *logrus.Entry) discoveryHandlers {
+	return discoveryHandlers{webJourney, logger.WithField("handler", "discoveryHandler")}
 }
 
 func (d discoveryHandlers) setDiscoveryModelHandler(c echo.Context) error {
@@ -52,8 +54,10 @@ func (d discoveryHandlers) setDiscoveryModelHandler(c echo.Context) error {
 		key := fmt.Sprintf("schema_version=%s", discoveryItem.APISpecification.SchemaVersion)
 
 		url := discoveryItem.OpenidConfigurationURI
+		d.logger.Info(fmt.Sprintf("GET OpenID config: %s", url))
 		config, e := authentication.OpenIdConfig(url)
 		if e != nil {
+			d.logger.WithError(e).Warn(fmt.Sprintf("Failed to GET %s", url))
 			failures = append(failures, newOpenidConfigurationURIFailure(discoveryItemIndex, e))
 		} else {
 			response.TokenEndpoints[key] = config.TokenEndpoint

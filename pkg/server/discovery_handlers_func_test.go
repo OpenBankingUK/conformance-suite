@@ -147,11 +147,11 @@ func TestServerDiscoveryModelPOSTReturnsErrorsWhenItCannotResolveOpenidConfigura
     "error": [
         {
             "key": "DiscoveryModel.DiscoveryItems[0].OpenidConfigurationURI",
-            "error": "Failed to GET OpenID config %s - HTTP response status: 500"
+            "error": "Failed to GET OpenID config: %s - HTTP response status: 500"
         },
         {
             "key": "DiscoveryModel.DiscoveryItems[1].OpenidConfigurationURI",
-            "error": "Failed to GET OpenID config %s - HTTP response status: 500"
+            "error": "Failed to GET OpenID config: %s - HTTP response status: 500"
         }
     ]
 }

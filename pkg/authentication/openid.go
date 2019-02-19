@@ -18,16 +18,16 @@ func OpenIdConfig(url string) (OpenIDConfiguration, error) {
 	config := OpenIDConfiguration{}
 	resp, err := http.Get(url)
 	if err != nil {
-		return config, err
+		return config, fmt.Errorf(fmt.Sprintf("Failed to GET OpenID config: %s - %s", url, err))
 	} else {
 		defer resp.Body.Close()
 
-		if resp.StatusCode == 200 {
-			if err := json.NewDecoder(resp.Body).Decode(&config); err != nil {
-				return config, fmt.Errorf(fmt.Sprintf("Invalid OpenID config JSON returned from %s : %s", url, err))
-			}
-			return config, nil
+		if resp.StatusCode != 200 {
+			return config, fmt.Errorf("Failed to GET OpenID config: %s - HTTP response status: %d", url, resp.StatusCode)
 		}
-		return config, fmt.Errorf("Failed to GET OpenID config %s - HTTP response status: %d", url, resp.StatusCode)
+		if err := json.NewDecoder(resp.Body).Decode(&config); err != nil {
+			return config, fmt.Errorf(fmt.Sprintf("Invalid OpenID config JSON returned: %s - %s", url, err))
+		}
+		return config, nil
 	}
 }
