@@ -150,7 +150,7 @@ func exchangeCodeForToken(code, scope string, ctx *model.Context) (grantToken, e
 			"code":         code,
 			"redirect_uri": redirectURL,
 		}).
-		Post(tokenEndpoint + "/token")
+		Post(tokenEndpoint)
 
 	if err != nil {
 		logrus.Debugf("error accessing exchange code url %s: %s ", tokenEndpoint, err.Error())
