@@ -1,7 +1,6 @@
 package server
 
 import (
-	"encoding/json"
 	"fmt"
 	"net/http"
 
@@ -53,7 +52,7 @@ func (d discoveryHandlers) setDiscoveryModelHandler(c echo.Context) error {
 		key := fmt.Sprintf("schema_version=%s", discoveryItem.APISpecification.SchemaVersion)
 
 		url := discoveryItem.OpenidConfigurationURI
-		config, e := openIdConfig(url)
+		config, e := authentication.OpenIdConfig(url)
 		if e != nil {
 			failures = append(failures, newOpenidConfigurationURIFailure(discoveryItemIndex, e))
 		} else {
@@ -67,21 +66,6 @@ func (d discoveryHandlers) setDiscoveryModelHandler(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, validationFailuresResponse{failures})
 	}
 	return c.JSON(http.StatusCreated, response)
-}
-
-func openIdConfig(url string) (authentication.OpenIDConfiguration, error) {
-	config := authentication.OpenIDConfiguration{}
-	resp, err := http.Get(url)
-	if err != nil {
-		return config, err
-	} else {
-		defer resp.Body.Close()
-
-		if err := json.NewDecoder(resp.Body).Decode(&config); err != nil {
-			return config, err
-		}
-		return config, nil
-	}
 }
 
 func newOpenidConfigurationURIFailure(discoveryItemIndex int, err error) discovery.ValidationFailure {

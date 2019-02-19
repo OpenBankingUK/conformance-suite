@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"strings"
 	"testing"
+	"fmt"
 
 	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/test"
 	versionmock "bitbucket.org/openbankingteam/conformance-suite/internal/pkg/version/mocks"
@@ -141,20 +142,20 @@ func TestServerDiscoveryModelPOSTReturnsErrorsWhenItCannotResolveOpenidConfigura
 	mockedBadServer, mockedBadServerURL := test.HTTPServer(http.StatusInternalServerError, ``, nil)
 	defer mockedBadServer.Close()
 
-	expected := `
+	expected := fmt.Sprintf(`
 {
     "error": [
         {
             "key": "DiscoveryModel.DiscoveryItems[0].OpenidConfigurationURI",
-            "error": "EOF"
+            "error": "Failed to GET OpenID config %s - HTTP response status: 500"
         },
         {
             "key": "DiscoveryModel.DiscoveryItems[1].OpenidConfigurationURI",
-            "error": "EOF"
+            "error": "Failed to GET OpenID config %s - HTTP response status: 500"
         }
     ]
 }
-	`
+	`, mockedBadServerURL, mockedBadServerURL)
 
 	// modify `ob-v3.0-ozone.json` to make it point to mockedServerURL
 	discoveryJSON, err := ioutil.ReadFile("../discovery/templates/ob-v3.1-ozone.json")
