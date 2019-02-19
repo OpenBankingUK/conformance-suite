@@ -19,7 +19,7 @@
       "name": "ClientCredential Grant",
       "input": {
         "method": "POST",
-        "endpoint": "/token",
+        "endpoint": "$token_endpoint",
         "headers": {
           "content-type": "application/x-www-form-urlencoded",
           "accept": "*/*",
@@ -31,7 +31,7 @@
         }
       },
       "context": {
-        "baseurl": "$token_endpoint"
+        "baseurl": ""
       },
       "expect": {
         "status-code": 200,
@@ -83,12 +83,12 @@
       "name": "Ozone Headless Consent Flow",
       "input": {
         "method": "GET",
-        "endpoint": "/auth?clientid",
+        "endpoint": "?clientid",
         "generation": {
           "strategy": "psuConsenturl"
         },
         "claims": {
-          "aud": "$baseurl",
+          "aud": "$issuer",
           "iss": "$client_id",
           "scope": "openid accounts",
           "redirect_url": "$redirect_url",

@@ -220,17 +220,22 @@ func (r *TestCaseRunner) executeTest(tc model.TestCase, ruleCtx *model.Context, 
 	resp, metrics, err := r.executor.ExecuteTestCase(req, &tc, ruleCtx)
 	ctxLogger = logWithMetrics(ctxLogger, metrics)
 	if err != nil {
-		ctxLogger.WithError(err).WithField("result", "FAIL").Info("test result")
+		ctxLogger.WithError(err).WithField("result", "FAIL").Error("test result")
 		return results.NewTestCaseFail(tc.ID, metrics, err)
 	}
 
 	result, err := tc.Validate(resp, ruleCtx)
 	if err != nil {
-		ctxLogger.WithError(err).WithField("result", passText[result]).Info("test result")
+		ctxLogger.WithError(err).WithFields(logrus.Fields{"result": passText[result], "ID": tc.ID}).Error("test result")
 		return results.NewTestCaseFail(tc.ID, metrics, err)
 	}
 
-	ctxLogger.WithError(err).WithField("result", passText[result]).Info("test result")
+	if !result {
+		ctxLogger.WithError(err).WithFields(logrus.Fields{"result": passText[result], "ID": tc.ID}).Error("test result")
+	} else {
+		ctxLogger.WithError(err).WithFields(logrus.Fields{"result": passText[result], "ID": tc.ID}).Info("test result")
+	}
+
 	return results.NewTestCaseResult(tc.ID, result, metrics, err)
 }
 
