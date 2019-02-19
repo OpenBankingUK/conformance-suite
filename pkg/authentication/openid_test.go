@@ -53,7 +53,7 @@ func TestOpenIdConfigWhenHttpResponseError(t *testing.T) {
 	defer mockedBadServer.Close()
 
 	_, err := OpenIdConfig(mockedBadServerURL)
-	require.EqualError(err, fmt.Sprintf("Failed to GET OpenID config: %s - HTTP response status: 503", mockedBadServerURL))
+	require.EqualError(err, fmt.Sprintf("Failed to GET OpenID config: %s : HTTP response status: 503", mockedBadServerURL))
 }
 
 func TestOpenIdConfigWhenJsonParseFails(t *testing.T) {
@@ -64,5 +64,5 @@ func TestOpenIdConfigWhenJsonParseFails(t *testing.T) {
 	defer mockedServer.Close()
 
 	_, err := OpenIdConfig(mockedServerURL)
-	require.EqualError(err, fmt.Sprintf("Invalid OpenID config JSON returned: %s - invalid character '<' looking for beginning of value", mockedServerURL))
+	require.EqualError(err, fmt.Sprintf("Invalid OpenID config JSON returned: %s : invalid character '<' looking for beginning of value", mockedServerURL))
 }
