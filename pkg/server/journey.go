@@ -247,11 +247,9 @@ func (wj *journey) configParametersToJourneyContext() error {
 	wj.context.PutString(ctxConstClientSecret, wj.clientSecret)
 	wj.context.PutString(ctxConstTokenEndpoint, wj.tokenEndpoint)
 	wj.context.PutString(ctxConstFapiFinancialID, wj.xXFAPIFinancialID)
-	wj.context.PutString(ctxConstFapiFinancialID, wj.resourceBaseURL) // tmp mapping fix
 	wj.context.PutString(ctxConstRedirectURL, wj.redirectURL)
 	wj.context.PutString(ctxConstAuthorisationEndpoint, wj.authorizationEndpoint)
 	wj.context.PutString(ctxConstResourceBaseURL, wj.resourceBaseURL)
-	wj.context.PutString(ctxConstResourceBaseURL, wj.xXFAPIFinancialID) // tmp mapping fix
 	basicauth, err := authentication.CalculateClientSecretBasicToken(wj.clientID, wj.clientSecret)
 	wj.context.PutString(ctxConstIssuer, wj.issuer)
 	logrus.Debugf("Issuer string : %s ", wj.issuer)

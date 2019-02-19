@@ -63,8 +63,8 @@ func (h *configHandlers) configGlobalPostHandler(c echo.Context) error {
 		config.ClientSecret,
 		config.TokenEndpoint,
 		config.AuthorizationEndpoint,
-		config.XFAPIFinancialID,
 		config.ResourceBaseURL,
+		config.XFAPIFinancialID,
 		config.Issuer,
 		config.RedirectURL,
 	)
