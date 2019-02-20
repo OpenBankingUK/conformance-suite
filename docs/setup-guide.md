@@ -134,7 +134,9 @@ The rest of the values are taken from the well-known.
 
 4. Run / Overview
 
-    This screen shows the tests that will be run. Once ready, click "Run" at the end of the page. The tests should run and go to the "PENDING" status. Once complete the status should move to "PASSED", if everything ran ok. If any of the tests failed, you can click the "FAILED" badge to view more information on the cause of failure. 
+    This screen shows the tests that will be run. Once ready, click "Start PSU Consent" in API Specification section. This should load up Ozone PSU authentication page. Provide mits/mits as login name and password. 
+    On the account selection page that follows, select at least one account and click Confirm button. On the next page, click Yes button to grant consent and see the authorization code page.
+    Go back to the FCS Testcases page to select Pending PSU Consent button at the bottom of the page. The tests should run and go to the "PENDING" status. Once complete the status should move to "PASSED", if everything ran ok. If any of the tests failed, you can click the "FAILED" badge to view more information on the cause of failure. 
 
 5. Export Report
 
@@ -146,7 +148,7 @@ The rest of the values are taken from the well-known.
 
 # How to get help
 
-**TBC**
+**TBC** 
 
 # Appendix A
 
