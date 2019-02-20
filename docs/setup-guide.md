@@ -152,13 +152,13 @@ The rest of the values are taken from the well-known.
 
 The following hosts are required to be accessible for the Functional Conformance Suite to function correctly:
 
-| Protocol   | Host | Ports |
-| ---------- | ---- | ----- |
-| TCP, HTTPS | modelobankauth2018.o3bank.co.uk | 4101
-| TCP, HTTPS | modelo2018.o3bank.co.uk | 4201,4501
-| TCP, HTTPS | github.map.fastly.net | 443
-| TCP, HTTPS | api.bitbucket.org | 443
-| TCP, HTTPS | production.cloudflare.docker.com | 443
-| TCP, HTTPS | registry-1.docker.io | 443
-| TCP, HTTPS | auth.docker.io | 443
-| TCP, HTTPS | rebilly.github.io | 443
+| Protocol   | Host | Ports | Comment |
+| ---------- | ---- | ----- | ------- |
+| TCP, HTTPS | modelobankauth2018.o3bank.co.uk | 4101 | Only required when testing against Ozone Model Bank.
+| TCP, HTTPS | modelo2018.o3bank.co.uk | 4201,4501 | Only required when testing against Ozone Model Bank.
+| TCP, HTTPS | github.map.fastly.net | 443 | DNS Alias for `raw.githubusercontent.com` - CDN to access OBIE Swagger spec files.
+| TCP, HTTPS | api.bitbucket.org | 443 | Used to get version information for Conformance Suite - Update available check.
+| TCP, HTTPS | production.cloudflare.docker.com | 443 | Access to Docker repository.
+| TCP, HTTPS | registry-1.docker.io | 443 | Access to Docker repository.
+| TCP, HTTPS | auth.docker.io | 443 | Authenticating with Docker Hub.
+| TCP, HTTPS | rebilly.github.io | 443 | Accessed by web browser frontend code.
