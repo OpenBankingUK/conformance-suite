@@ -17,7 +17,8 @@ This guide assumes the following tools are installed and functioning correctly. 
 
 * Docker (Client: 18.09.1, Server: 18.09.1 on OSX)
 * OpenSSL (LibreSSL 2.6.4 on OSX)
-* Google login if using Ozone "self-serve" 
+* Google login if using Ozone "self-serve"
+* Access to the following hosts from your computer - See Appendix A.
 
 
 *Note for Windows 10 users - Docker on Windows 10 requires Hyper-V to be installed. Hyper-V is only available
@@ -146,3 +147,18 @@ The rest of the values are taken from the well-known.
 # How to get help
 
 **TBC**
+
+# Appendix A
+
+The following hosts are required to be accessible for the Functional Conformance Suite to function correctly:
+
+| Protocol   | Host | Ports | Comment |
+| ---------- | ---- | ----- | ------- |
+| TCP, HTTPS | modelobankauth2018.o3bank.co.uk | 4101 | Only required when testing against Ozone Model Bank.
+| TCP, HTTPS | modelo2018.o3bank.co.uk | 4201,4501 | Only required when testing against Ozone Model Bank.
+| TCP, HTTPS | github.map.fastly.net | 443 | DNS Alias for `raw.githubusercontent.com` - CDN to access OBIE Swagger spec files.
+| TCP, HTTPS | api.bitbucket.org | 443 | Used to get version information for Conformance Suite - Update available check.
+| TCP, HTTPS | production.cloudflare.docker.com | 443 | Access to Docker repository.
+| TCP, HTTPS | registry-1.docker.io | 443 | Access to Docker repository.
+| TCP, HTTPS | auth.docker.io | 443 | Authenticating with Docker Hub.
+| TCP, HTTPS | rebilly.github.io | 443 | Accessed by web browser frontend code.
