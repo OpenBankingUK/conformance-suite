@@ -9,16 +9,16 @@ import (
 )
 
 // ConditionEnum models endpoint conditionality based on:
-// Account and Transaction API Specification - v3.0 - Section 4 Endpoints
-// https://openbanking.atlassian.net/wiki/spaces/DZ/pages/642090641/Account+and+Transaction+API+Specification+-+v3.0#AccountandTransactionAPISpecification-v3.0-Endpoints
+// Account and Transaction API Specification - v3.1 - Section 4 Endpoints
+// https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937820271/Account+and+Transaction+API+Specification+-+v3.1#AccountandTransactionAPISpecification-v3.1-Endpoints
 // Also see "Categorisation of Implementation Requirements" section of the following document
-// https://openbanking.atlassian.net/wiki/spaces/DZ/pages/641992418/Read+Write+Data+API+Specification+-+v3.0#Read/WriteDataAPISpecification-v3.0-CategorisationofImplementationRequirements
+// https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937656404/Read+Write+Data+API+Specification+-+v3.1#Read/WriteDataAPISpecification-v3.1-CategorisationofImplementationRequirements
 type ConditionEnum int
 
 const (
 	// Mandatory - required
 	Mandatory ConditionEnum = iota
-	// Conditional on a regulartory requirement
+	// Conditional on a regulatory requirement
 	Conditional
 	// Optional at the implementors discretion
 	Optional
@@ -68,7 +68,7 @@ func (checker conditionalityChecker) IsPresent(method, endpoint string, specific
 	if err != nil {
 		return false, nil
 	}
-	return (optional || mandatory || conditional), nil
+	return optional || mandatory || conditional, nil
 }
 
 // IsOptional - returns true if the method/endpoint mix is optional
@@ -178,7 +178,7 @@ func isConditional(method, endpoint string, specification string) (bool, error) 
 // model.Conditional - endpoint is conditional
 // model.Optional - endpoint is optional
 // model.UndefineCondition - we don't recognise the endpoint
-func GetConditionality(method, endpoint string, specification string) (ConditionEnum, error) {
+func GetConditionality(method, endpoint, specification string) (ConditionEnum, error) {
 	condition, err := findCondition(method, endpoint, specification)
 	if err != nil {
 		return UndefinedCondition, err

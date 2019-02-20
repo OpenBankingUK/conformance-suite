@@ -1,0 +1,253 @@
+{
+    "discoveryModel": {
+      "name": "ob-v3.0-ozone",
+      "description": "An Open Banking UK discovery template for v3.0 of Accounts & Payments with pre-populated model Bank (Ozone) data.",
+      "discovery-version": "v0.2.0",
+      "discoveryItems": [
+        {
+          "apiSpecification": {
+            "name": "Account and Transaction API Specification",
+            "url": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/642090641/Account+and+Transaction+API+Specification+-+v3.0",
+            "version": "account-transaction-v3.0",
+            "schemaVersion": "https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.0.0/dist/account-info-swagger.json"
+          },
+          "openidConfigurationUri": "https://modelobankauth2018.o3bank.co.uk:4101/.well-known/openid-configuration",
+          "resourceBaseUri": "https://modelobankauth2018.o3bank.co.uk:4101/open-banking/3.0/aisp",
+          "resourceIds":  {
+            "ConsentId": "507c2dc9-a2fd-4980-b33c-777459b77cb",
+            "AccountId": "500000000000000000000001"
+          },
+          "endpoints": [
+            {
+              "method": "POST",
+              "path": "/account-access-consents"
+            },
+            {
+              "method": "GET",
+              "path": "/account-access-consents/{ConsentId}"
+            },
+            {
+              "method": "DELETE",
+              "path": "/account-access-consents/{ConsentId}"
+            },
+            {
+              "method": "GET",
+              "path": "/accounts/{AccountId}/product"
+            },
+            {
+              "method": "GET",
+              "path": "/accounts/{AccountId}/transactions",
+              "conditionalProperties": [
+                {
+                  "schema": "OBTransaction3Detail",
+                  "property": "Balance",
+                  "path": "Data.Transaction.*.Balance"
+                },
+                {
+                  "schema": "OBTransaction3Detail",
+                  "property": "MerchantDetails",
+                  "path": "Data.Transaction.*.MerchantDetails"
+                },
+                {
+                  "schema": "OBTransaction3Basic",
+                  "property": "TransactionReference",
+                  "path": "Data.Transaction.*.TransactionReference"
+                },
+                {
+                  "schema": "OBTransaction3Detail",
+                  "property": "TransactionReference",
+                  "path": "Data.Transaction.*.TransactionReference"
+                }
+              ]
+            },
+            {
+              "method": "GET",
+              "path": "/accounts"
+            },
+            {
+              "method": "GET",
+              "path": "/accounts/{AccountId}"
+            },
+            {
+              "method": "GET",
+              "path": "/accounts/{AccountId}/balances"
+            }
+          ]
+        },
+        {
+          "apiSpecification": {
+            "name": "Payment Initiation API",
+            "url": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/645367011/Payment+Initiation+API+Specification+-+v3.0",
+            "version": "payment-initiation-v3.0",
+            "schemaVersion": "https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.0.0/dist/payment-initiation-swagger.json"
+          },
+          "openidConfigurationUri": "https://modelobankauth2018.o3bank.co.uk:4101/.well-known/openid-configuration",
+          "resourceBaseUri": "https://modelobankauth2018.o3bank.co.uk:4101/open-banking/3.0/pisp",
+          "resourceIds":  {
+            "ConsentId": "507c2dc9-a2fd-4980-b33c-777459b77cb",
+            "DomesticPaymentId": "PAYID0001010101",
+            "DomesticScheduledPaymentId":"DSCHEDP0001010101",
+            "DomesticStandingOrderId":"DSOI1123111223",
+            "InternationalScheduledPaymentId":"ISPID8882828",
+            "InternationalStandingOrderPaymentId":"ISOPID01010110",
+            "FilePaymentId":"FPID0001010"
+          },
+          "endpoints": [
+            {
+              "method": "POST",
+              "path": "/domestic-payment-consents",
+              "conditionalProperties": [
+                {
+                  "schema": "OBWriteDataDomesticConsentResponse1",
+                  "property": "Charges",
+                  "path": "Data.Charges"
+                }
+              ]
+            },
+            {
+              "method": "GET",
+              "path": "/domestic-payment-consents/{ConsentId}",
+              "conditionalProperties": [
+                {
+                  "schema": "OBWriteDataDomesticConsentResponse1",
+                  "property": "Charges",
+                  "path": "Data.Charges"
+                }
+              ]
+            },
+            {
+              "method": "POST",
+              "path": "/domestic-payments",
+              "conditionalProperties": [
+                {
+                  "schema": "OBWriteDataDomesticResponse1",
+                  "property": "Charges",
+                  "path": "Data.Charges"
+                }
+              ]
+            },
+            {
+              "method": "GET",
+              "path": "/domestic-payments/{DomesticPaymentId}",
+              "conditionalProperties": [
+                {
+                  "schema": "OBWriteDataDomesticResponse1",
+                  "property": "Charges",
+                  "path": "Data.Charges"
+                }
+              ]
+            },
+            {
+              "method": "POST",
+              "path": "/domestic-scheduled-payment-consents"
+            },
+            {
+              "method": "GET",
+              "path": "/domestic-scheduled-payment-consents/{ConsentId}"
+            },
+            {
+              "method": "POST",
+              "path": "/domestic-scheduled-payments"
+            },
+            {
+              "method": "GET",
+              "path": "/domestic-scheduled-payments/{DomesticScheduledPaymentId}"
+            },
+            {
+              "method": "POST",
+              "path": "/domestic-standing-order-consents"
+            },
+            {
+              "method": "GET",
+              "path": "/domestic-standing-order-consents/{ConsentId}"
+            },
+            {
+              "method": "POST",
+              "path": "/domestic-standing-orders"
+            },
+            {
+              "method": "GET",
+              "path": "/domestic-standing-orders/{DomesticStandingOrderId}"
+            },
+            {
+              "method": "POST",
+              "path": "/international-payment-consents"
+            },
+            {
+              "method": "GET",
+              "path": "/international-payment-consents/{ConsentId}"
+            },
+            {
+              "method": "POST",
+              "path": "/international-payments"
+            },
+            {
+              "method": "GET",
+              "path": "/international-payments/{InternationalPaymentId}"
+            },
+            {
+              "method": "POST",
+              "path": "/international-scheduled-payment-consents"
+            },
+            {
+              "method": "GET",
+              "path": "/international-scheduled-payment-consents/{ConsentId}"
+            },
+            {
+              "method": "POST",
+              "path": "/international-scheduled-payments"
+            },
+            {
+              "method": "GET",
+              "path": "/international-scheduled-payments/{InternationalScheduledPaymentId}"
+            },
+            {
+              "method": "POST",
+              "path": "/international-standing-order-consents"
+            },
+            {
+              "method": "GET",
+              "path": "/international-standing-order-consents/{ConsentId}"
+            },
+            {
+              "method": "POST",
+              "path": "/international-standing-orders"
+            },
+            {
+              "method": "GET",
+              "path": "/international-standing-orders/{InternationalStandingOrderPaymentId}"
+            },
+            {
+              "method": "POST",
+              "path": "/file-payment-consents"
+            },
+            {
+              "method": "GET",
+              "path": "/file-payment-consents/{ConsentId}"
+            },
+            {
+              "method": "POST",
+              "path": "/file-payment-consents/{ConsentId}/file"
+            },
+            {
+              "method": "GET",
+              "path": "/file-payment-consents/{ConsentId}/file"
+            },
+            {
+              "method": "POST",
+              "path": "/file-payments"
+            },
+            {
+              "method": "GET",
+              "path": "/file-payments/{FilePaymentId}"
+            },
+            {
+              "method": "GET",
+              "path": "/file-payments/{FilePaymentId}/report-file"
+            }
+          ]
+        }
+      ]
+    }
+  }
+  

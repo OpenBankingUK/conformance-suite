@@ -1,0 +1,201 @@
+{
+  "discoveryModel": {
+    "name": "ob-v3.1-ozone",
+    "description": "An Open Banking UK discovery template for v3.1 of Accounts and Payments with pre-populated model Bank (Ozone) data.",
+    "discoveryVersion": "v0.2.1",
+    "tokenAcquisition": "psu",
+    "discoveryItems": [{
+        "apiSpecification": {
+          "name": "Account and Transaction API Specification",
+          "url": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937820271/Account+and+Transaction+API+Specification+-+v3.1",
+          "version": "v3.1",
+          "schemaVersion": "https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.0/dist/account-info-swagger.json"
+        },
+        "openidConfigurationUri": "https://modelobankauth2018.o3bank.co.uk:4101/.well-known/openid-configuration",
+        "resourceBaseUri": "https://modelobank2018.o3bank.co.uk:4501/open-banking/v3.1/aisp",
+        "resourceIds": {
+          "AccountId": "500000000000000000000001",
+          "ConsentId": "$consent_id",
+          "StatementId":"140000000000000000000001"
+        },
+        "endpoints": [{
+            "method": "POST",
+            "path": "/account-access-consents"
+          },
+          {
+            "method": "GET",
+            "path": "/account-access-consents/{ConsentId}"
+          },
+          {
+            "method": "DELETE",
+            "path": "/account-access-consents/{ConsentId}"
+          },
+          {
+            "method": "GET",
+            "path": "/accounts"
+          },
+          {
+            "method": "GET",
+            "path": "/accounts/{AccountId}"
+          },
+          {
+            "method": "GET",
+            "path": "/accounts/{AccountId}/balances"
+          },
+          {
+            "method": "GET",
+            "path": "/accounts/{AccountId}/beneficiaries"
+          },
+          {
+            "method": "GET",
+            "path": "/accounts/{AccountId}/direct-debits"
+          },
+          {
+            "method": "GET",
+            "path": "/accounts/{AccountId}/offers"
+          },
+          {
+            "method": "GET",
+            "path": "/accounts/{AccountId}/party"
+          },
+          {
+            "method": "GET",
+            "path": "/accounts/{AccountId}/product"
+          },
+          {
+            "method": "GET",
+            "path": "/accounts/{AccountId}/scheduled-payments"
+          },
+          {
+            "method": "GET",
+            "path": "/accounts/{AccountId}/standing-orders"
+          },
+          {
+            "method": "GET",
+            "path": "/accounts/{AccountId}/statements"
+          },
+          {
+            "method": "GET",
+            "path": "/accounts/{AccountId}/statements/{StatementId}"
+          },
+          {
+            "method": "GET",
+            "path": "/accounts/{AccountId}/statements/{StatementId}/file"
+          },
+          {
+            "method": "GET",
+            "path": "/accounts/{AccountId}/statements/{StatementId}/transactions"
+          },
+          {
+            "method": "GET",
+            "path": "/accounts/{AccountId}/transactions",
+            "conditionalProperties": [{
+                "schema": "OBTransaction3Detail",
+                "property": "Balance",
+                "path": "Data.Transaction.*.Balance"
+              },
+              {
+                "schema": "OBTransaction3Detail",
+                "property": "MerchantDetails",
+                "path": "Data.Transaction.*.MerchantDetails"
+              },
+              {
+                "schema": "OBTransaction3Basic",
+                "property": "TransactionReference",
+                "path": "Data.Transaction.*.TransactionReference"
+              },
+              {
+                "schema": "OBTransaction3Detail",
+                "property": "TransactionReference",
+                "path": "Data.Transaction.*.TransactionReference"
+              }
+            ]
+          },
+          {
+            "method": "GET",
+            "path": "/balances"
+          },
+          {
+            "method": "GET",
+            "path": "/beneficiaries"
+          },
+          {
+            "method": "GET",
+            "path": "/direct-debits"
+          },
+          {
+            "method": "GET",
+            "path": "/offers"
+          },
+          {
+            "method": "GET",
+            "path": "/party"
+          },
+          {
+            "method": "GET",
+            "path": "/products"
+          },
+          {
+            "method": "GET",
+            "path": "/scheduled-payments"
+          },
+          {
+            "method": "GET",
+            "path": "/standing-orders"
+          },
+          {
+            "method": "GET",
+            "path": "/statements"
+          },
+          {
+            "method": "GET",
+            "path": "/transactions"
+          }
+        ]
+      }    
+    ],
+    "customTests": [{
+      "name": "CustomTest-GetOzoneToken",
+      "description": "testcase sequence to retrieve an ozone token",
+      "order": "beforeRun",
+      "replacementParameters": {
+        "resource_server": "https://modelobank2018.o3bank.co.uk:4501",
+        "permission_payload": "{\"Data\": { \"Permissions\": [ \"ReadAccountsBasic\", \"ReadAccountsDetail\", \"ReadBalances\", \"ReadBeneficiariesBasic\", \"ReadBeneficiariesDetail\", \"ReadDirectDebits\", \"ReadTransactionsBasic\", \"ReadTransactionsCredits\", \"ReadTransactionsDebits\", \"ReadTransactionsDetail\", \"ReadProducts\", \"ReadStandingOrdersDetail\"], \"TransactionFromDateTime\": \"2016-01-01T10:40:00+02:00\", \"TransactionToDateTime\": \"2025-12-31T10:40:00+02:00\" },  \"Risk\": {} }"        
+      },
+      "testSequence": [{
+        "@id": "#ct0005",
+        "name": "Accounts Request",
+        "input": {
+          "method": "GET",
+          "endpoint": "/open-banking/v3.1/aisp/accounts",
+          "headers": {
+            "content-type": "application/json",
+            "x-fapi-financial-id": "$fapi_financial_id",
+            "x-fapi-interaction-id": "b4405450-febe-11e8-80a5-0fcebb1574e1",
+            "authorization": "Bearer $to1001",
+            "accept": "*/*"
+          }
+        },
+        "context": {
+          "baseurl": "$resource_server"
+        },
+        "expect": {
+          "status-code": 200,
+          "matches": [{
+              "name": "AccoundId",
+              "description": "AccountID of first Record returned is 500000000000000000000001",
+              "json": "Data.Account.0.AccountId",
+              "value": "500000000000000000000001"
+            },
+            {
+              "name": "AccountType",
+              "description": "Account Subtype equals CurrentAccount",
+              "json": "Data.Account.0.AccountSubType",
+              "value": "CurrentAccount"
+            }
+          ]
+        }
+      }]
+    }]
+  }
+}

@@ -1,0 +1,17 @@
+# Denote all files that are truly binary and should not be modified.
+
+*.ico   binary
+*.png   binary
+*.jpg   binary
+*.jpeg  binary
+*.gif   binary
+
+# Fonts
+
+*.eot   binary
+*.otf   binary diff=exif
+*.ttc   binary diff=exif
+*.ttf   binary diff=exif
+*.woff  binary
+*.woff2 binary
+

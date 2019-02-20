@@ -1,20 +1,50 @@
 {
-  "name": "web",
-  "short_name": "web",
+  "name": "Functional Conformance Suite",
+  "short_name": "Functional Conformance Suite",
   "icons": [
+    {
+      "src": "/img/icons/favicon.ico",
+      "sizes": "48x48",
+      "type": "image/x-icon"
+    },
+    {
+      "src": "/img/icons/favicon-48x48.ico",
+      "sizes": "48x48",
+      "type": "image/x-icon"
+    },
+    {
+      "src": "/img/icons/favicon-16x16.png",
+      "sizes": "16x16",
+      "type": "image/png"
+    },
+    {
+      "src": "/img/icons/favicon-32x32.png",
+      "sizes": "32x32",
+      "type": "image/png"
+    },
     {
       "src": "/img/icons/android-chrome-192x192.png",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "/img/icons/android-chrome-512x512.png",
-      "sizes": "512x512",
+      "src": "/img/icons/android-chrome-256x256.png.png",
+      "sizes": "256x256",
+      "type": "image/png"
+    },
+    {
+      "src": "/img/icons/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    },
+    {
+      "src": "/img/icons/apple-touch-icon-180x180.png",
+      "sizes": "180x180",
       "type": "image/png"
     }
   ],
   "start_url": "/index.html",
   "display": "standalone",
-  "background_color": "#000000",
-  "theme_color": "#4DBA87"
+  "background_color": "#ffffff",
+  "theme_color": "#ffffff"
 }

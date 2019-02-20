@@ -1,68 +1,40 @@
 package server
 
 import (
-	"context"
-	"fmt"
-	"net/http"
 	"strings"
-	"time"
 
+	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/version"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/generation"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
 
-	"bitbucket.org/openbankingteam/conformance-suite/appconfig"
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
-	"bitbucket.org/openbankingteam/conformance-suite/proxy"
-
-	"github.com/go-openapi/loads"
-	"github.com/google/uuid"
+	"github.com/gorilla/websocket"
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
 	"github.com/sirupsen/logrus"
-	validator "gopkg.in/go-playground/validator.v9"
 )
 
-// ValidationRunsResponse is the response to the `/api/validation-runs` endpoint.
-type ValidationRunsResponse struct {
-	ID string `json:"id"`
-}
-
-// ValidationRunsIDResponse is the response to the `/api/validation-runs/:id` endpoint.
-type ValidationRunsIDResponse struct {
-	Status string `json:"status"`
-}
-
-// ErrorResponse wraps `error` into a JSON object.
-type ErrorResponse struct {
-	Error interface{} `json:"error"`
-}
-
-// CustomValidator used to validate incoming payloads (for now).
-// https://echo.labstack.com/guide/request#validate-data
-type CustomValidator struct {
-	validator *validator.Validate
-}
-
-// Validate incoming payloads (for now) that contain the struct tag `validate:"required"`.
-func (cv *CustomValidator) Validate(i interface{}) error {
-	return cv.validator.Struct(i)
-}
-
-// Server wraps *echo.Echo and stores the proxy once configured.
+// Server - wraps *echo.Echo.
 type Server struct {
 	*echo.Echo // Wrap (using composition) *echo.Echo, allows us to pretend Server is echo.Echo.
-	proxy      *http.Server
+	logger     *logrus.Entry
+	version    version.Checker
 }
 
-var conditionalityChecker model.ConditionalityChecker
-
 // NewServer returns new echo.Echo server.
-func NewServer(checker model.ConditionalityChecker) *Server {
+func NewServer(logger *logrus.Entry, checker model.ConditionalityChecker, version version.Checker) *Server {
 	server := &Server{
-		Echo:  echo.New(),
-		proxy: nil,
+		Echo:    echo.New(),
+		logger:  logger,
+		version: version,
 	}
-	conditionalityChecker = checker
-	server.Use(middleware.Logger())
+	server.Validator = newEchoValidatorAdapter()
+
+	// Use custom logger config so that we can control where log lines like below get sent to - either /dev/null or stdout.
+	// {"time":"2018-12-18T13:00:40.291032Z","id":"","remote_ip":"192.0.2.1","host":"example.com","method":"POST","uri":"/api/config/global?pretty","status":400, "latency":627320,"latency_human":"627.32µs","bytes_in":0,"bytes_out":137}
+	server.Use(middleware.LoggerWithConfig(middleware.LoggerConfig{
+		Output: logger.Writer(),
+	}))
 	server.Use(middleware.Recover())
 	server.Use(middleware.GzipWithConfig(middleware.GzipConfig{
 		// level between 1-9
@@ -70,250 +42,86 @@ func NewServer(checker model.ConditionalityChecker) *Server {
 		// 9 indicates the slowest compression method (best compression)
 		Level: 5,
 	}))
+
 	// serve Vue.js site
 	server.Use(middleware.StaticWithConfig(middleware.StaticConfig{
-		Skipper: server.skipper,
+		Skipper: skipper,
 		Root:    "web/dist",
 		Index:   "index.html",
 		HTML5:   true,
 		Browse:  false,
 	}))
 
-	// https://echo.labstack.com/guide/request#validate-data
-	validator := validator.New()
-	server.Validator = &CustomValidator{validator}
-
-	// anything prefixed with api
-	api := server.Group("/api")
-
-	wsHandler := &WebSocketHandler{
-		upgrader: NewWebSocketUpgrader(),
-	}
-	// serve WebSocket
-	api.GET("/ws", wsHandler.Handle)
-	// health check endpoint
-	api.GET("/health", server.healthHandler)
-	api.POST("/validation-runs", server.validationRunsHandler)
-	api.GET("/validation-runs/:id", server.validationRunsIDHandler)
-	// endpoints to post a config and setup the proxy server
-	api.POST("/config", server.configPostHandler)
-	api.DELETE("/config", server.configDeleteHandler)
-	// endpoints for discovery model
-	api.POST("/discovery-model/validate", server.discoveryModelValidateHandler)
-
-	// routes, err := json.MarshalIndent(server.Routes(), "", "  ")
-	// if err == nil {
-	// }
-	for _, route := range server.Routes() {
-		logrus.Debugf("route -> path=%+v, method=%+v", route.Path, route.Method)
-	}
+	registerRoutes(server, logger, checker, version)
 
 	return server
 }
 
-// Shutdown the server and the proxy if it is alive
-func (s *Server) Shutdown(ctx context.Context) error {
-	if s.proxy != nil {
-		if err := s.proxy.Shutdown(nil); err != nil {
-			logrus.Errorln("Server:Shutdown -> s.proxy.Shutdown err=", err)
-			return err
+func registerRoutes(server *Server, logger *logrus.Entry, checker model.ConditionalityChecker, version version.Checker) {
+	// swagger ui endpoints
+	for path, handler := range swaggerHandlers(logger) {
+		server.GET(path, handler)
+	}
+	validatorEngine := discovery.NewFuncValidator(checker)
+	testGenerator := generation.NewGenerator()
+	journey := NewJourney(logger, testGenerator, validatorEngine)
+
+	// anything prefixed with api
+	api := server.Group("/api")
+
+	configHandlers := &configHandlers{logger: logger, journey: journey}
+	// endpoint to post global configuration
+	api.POST("/config/global", configHandlers.configGlobalPostHandler)
+
+	// endpoints for discovery model
+	discoveryHandlers := newDiscoveryHandlers(journey, logger)
+	api.POST("/discovery-model", discoveryHandlers.setDiscoveryModelHandler)
+
+	// endpoints for test cases
+	testCaseHandlers := newTestCaseHandlers(journey, NewWebSocketUpgrader(), logger)
+	api.GET("/test-cases", testCaseHandlers.testCasesHandler)
+	api.GET("/test-cases/ws", testCaseHandlers.listenCodeWebSocket)
+
+	// endpoints for test runner
+	runHandlers := newRunHandlers(journey, NewWebSocketUpgrader(), logger)
+	api.POST("/run", runHandlers.runStartPostHandler)
+	api.GET("/run/ws", runHandlers.listenResultWebSocket)
+	api.DELETE("/run", runHandlers.stopRunHandler)
+
+	// endpoints for utility function such as version/update checking.
+	utilityEndpoints := newUtilityEndpoints(version)
+	api.GET("/version", utilityEndpoints.versionCheck)
+
+	// endpoints for validating and storing the token retrieved in `/conformancesuite/callback`
+	// `pkg/server/assets/main.js` calls into this endpoint.
+	redirectHandlers := &redirectHandlers{journey, logger.WithField("module", "redirectHandlers")}
+	api.POST("/redirect/fragment/ok", redirectHandlers.postFragmentOKHandler)
+	api.POST("/redirect/query/ok", redirectHandlers.postQueryOKHandler)
+	api.POST("/redirect/error", redirectHandlers.postErrorHandler)
+}
+
+// skipper - ensures that all requests not prefixed with any string in `pathsToSkip` is skipped.
+// E.g., ensure that `/api/validation-runs` or `/swagger/docs` is not handled by the static middleware.
+func skipper(c echo.Context) bool {
+	pathsToSkip := []string{
+		"/api",
+		"/swagger",
+	}
+
+	path := c.Path()
+	for _, pathToSkip := range pathsToSkip {
+		if strings.HasPrefix(path, pathToSkip) {
+			return true
 		}
 	}
 
-	if s.Echo == nil {
-		logrus.Errorf("Server:Shutdown -> s.Echo=%p\n", s.Echo)
-	}
-
-	if err := s.Echo.Shutdown(ctx); err != nil {
-		logrus.Errorln("Server:Shutdown -> s.Echo.Shutdown err=", err)
-		return err
-	}
-
-	return nil
+	return false
 }
 
-// GET /api/health
-func (s *Server) healthHandler(c echo.Context) error {
-	return c.String(http.StatusOK, "OK")
-}
-
-// POST /api/validation-runs
-func (s *Server) validationRunsHandler(c echo.Context) error {
-	id, err := uuid.NewUUID()
-	if err != nil {
-		return c.JSONPretty(http.StatusNotAcceptable, &ErrorResponse{
-			Error: err.Error(),
-		}, "    ")
+// NewWebSocketUpgrader creates a new websocket.Ugprader.
+func NewWebSocketUpgrader() *websocket.Upgrader {
+	return &websocket.Upgrader{
+		ReadBufferSize:  1024,
+		WriteBufferSize: 1024,
 	}
-
-	return c.JSONPretty(http.StatusAccepted, ValidationRunsResponse{
-		ID: id.String(),
-	}, "    ")
-}
-
-// GET /api/validation-runs/:id
-func (s *Server) validationRunsIDHandler(c echo.Context) error {
-	status := c.Param("id")
-	return c.JSONPretty(http.StatusOK, ValidationRunsIDResponse{
-		Status: status,
-	}, "    ")
-}
-
-// POST /api/config
-func (s *Server) configPostHandler(c echo.Context) error {
-	appConfig := new(appconfig.AppConfig)
-	if err := c.Bind(appConfig); err != nil {
-		return c.JSONPretty(http.StatusBadRequest, &ErrorResponse{
-			Error: err.Error(),
-		}, "    ")
-	}
-	if err := c.Validate(appConfig); err != nil {
-		// translate all error at once
-		errs := err.(validator.ValidationErrors)
-		errsMap := errs.Translate(nil)
-
-		return c.JSONPretty(http.StatusBadRequest, errsMap, "    ")
-	}
-
-	logrus.Debugf("Server:configPostHandler -> status=creating proxy")
-	proxy, err := createProxy(appConfig)
-	if err != nil {
-		return c.JSONPretty(http.StatusBadRequest, &ErrorResponse{
-			Error: err.Error(),
-		}, "    ")
-	}
-	s.proxy = proxy
-
-	logrus.Debugf("Server:configPostHandler -> status=created proxy=%+v", s.proxy)
-
-	return c.JSONPretty(http.StatusOK, appConfig, "    ")
-}
-
-// DELETE /api/config
-func (s *Server) configDeleteHandler(c echo.Context) error {
-	if s.proxy == nil {
-		return c.JSONPretty(http.StatusBadRequest, &ErrorResponse{
-			Error: fmt.Errorf("proxy has not been configured").Error(),
-		}, "    ")
-	}
-
-	logrus.Debugf("Server:configDeleteHandler -> status=destroying down proxy=%+v", s.proxy)
-	if err := s.proxy.Shutdown(nil); err != nil {
-		return c.JSONPretty(http.StatusBadRequest, &ErrorResponse{
-			Error: err.Error(),
-		}, "    ")
-	}
-
-	s.proxy = nil
-	logrus.Debugf("Server:configDeleteHandler -> status=down proxy=%+v", s.proxy)
-
-	return c.NoContent(http.StatusOK)
-}
-
-// POST /api/discovery-model/validate
-// Validate the discovery model.
-// Returns the request payload otherwise returns errors.
-func (s *Server) discoveryModelValidateHandler(c echo.Context) error {
-	discoveryModel := new(discovery.Model)
-	if err := c.Bind(discoveryModel); err != nil {
-		return c.JSONPretty(http.StatusBadRequest, &ErrorResponse{
-			Error: err.Error(),
-		}, "  ")
-	}
-	ok, failures, _ := discovery.Validate(conditionalityChecker, discoveryModel)
-	if !ok {
-		return c.JSONPretty(http.StatusBadRequest, &ErrorResponse{Error: failures}, "  ")
-	}
-	return c.JSONPretty(http.StatusOK, discoveryModel, "  ")
-}
-
-// Skipper ensures that all requests not prefixed with `/api` get sent
-// to the `middleware.Static` or `middleware.StaticWithConfig`.
-// E.g., ensure that `/api/validation-runs` does not get handled by the
-// the static middleware.
-//
-// Anything not prefix by `/api` will get get handled by
-// `middleware.Static` or `middleware.StaticWithConfig`
-func (s *Server) skipper(c echo.Context) bool {
-	return strings.HasPrefix(c.Path(), "/api")
-}
-
-// Run the proxy at the address specified by "bind"
-// Requests get sent to the target server identifyed by proxy.Target()
-// configure some channels to handle shutdown/interrupts
-//
-// Return channel so that caller can block waiting
-// to see if we managed to start the server or not.
-func serveProxy(proxy *proxy.Proxy, bind string) (*http.Server, chan error) {
-	server := &http.Server{
-		Addr:    bind,
-		Handler: proxy.Router(),
-	}
-
-	// Run server s.ListenAndServe on a goroutine
-	serveErr := make(chan error)
-	go func() {
-		err := server.ListenAndServe()
-		serveErr <- err
-	}()
-
-	return server, serveErr
-}
-
-// createProxy - kick off proxy by:
-// loading the spec,
-// creating a new proxy configured with
-//    - bind address
-//    - swagger specification location
-//    - target host (aspsp resource server)
-//    - verbosity
-// configure an default logreport
-func createProxy(appConfig *appconfig.AppConfig) (*http.Server, error) {
-	logrus.Info("Server:createProxy -> Proxy")
-
-	appConfig.PrintAppConfig()
-	doc, err := loads.Spec(appConfig.Spec)
-	if err != nil {
-		logrus.Errorln("Server:createProxy -> loads.Spec err=", err)
-		return nil, err
-	}
-
-	proxy, err := proxy.New(
-		doc.Spec(),
-		&proxy.LogReporter{},
-		proxy.WithTarget(appConfig.TargetHost),
-		proxy.WithVerbose(appConfig.Verbose),
-		proxy.WithAppConfig(appConfig),
-	)
-	if err != nil {
-		logrus.Errorln("Server:createProxy -> proxy.New err=", err)
-		return nil, err
-	}
-
-	// start serving the proxy - and don't return unless there is a problem/exit
-	// also sleep for a bit until it starts...
-	server, serveErr := serveProxy(proxy, appConfig.Bind)
-	time.Sleep(200 * time.Millisecond)
-
-	// block until serveErr has an error value or the specified timeout has elapsed.
-	// we might need to bump up this timeout to something a bit larger.
-	timeout := time.After(1 * time.Second)
-	select {
-	case err := <-serveErr: // Error from listen&serve - exit
-		return nil, err
-	case <-timeout:
-	}
-
-	logrus.WithFields(logrus.Fields{
-		"bind":   appConfig.Bind,
-		"target": proxy.Target(),
-	}).Info("Server:createProxy -> Proxy is listening")
-
-	// Report PendingOperations - part of shutdown tidyup
-	logrus.Debugln("Pending Operations:")
-	for i, op := range proxy.PendingOperations() {
-		logrus.Debugf("%03d) id=%s", i+1, op.ID)
-	}
-
-	return server, nil
 }

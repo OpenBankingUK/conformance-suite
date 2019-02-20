@@ -1,0 +1,259 @@
+[
+    {
+        "Code": "ReadAccountsBasic",
+        "Endpoints": [
+            "/accounts",
+            "/accounts/{AccountId}",
+            "/accounts/{AccountId}/balances",
+            "/accounts/{AccountId}/beneficiaries",
+            "/accounts/{AccountId}/direct-debits",
+            "/accounts/{AccountId}/offers",
+            "/accounts/{AccountId}/party",
+            "/accounts/{AccountId}/product",
+            "/accounts/{AccountId}/scheduled-payments",
+            "/accounts/{AccountId}/standing-orders",
+            "/accounts/{AccountId}/statements",
+            "/accounts/{AccountId}/statements/{StatementId}/file",
+            "/accounts/{AccountId}/statements/{StatementId}/transactions",
+            "/accounts/{AccountId}/transactions",
+            "/balances",
+            "/beneficiaries",
+            "/direct-debits",
+            "/offers",
+            "/party",
+            "/products",
+            "/scheduled-payments",
+            "/standing-orders",
+            "/statements",
+            "/transactions"
+        ],
+        "Default": true,
+        "RequiredOneOrMore": [],
+        "Optional": []
+    },
+    {
+        "Code": "ReadAccountsDetail",
+        "Endpoints": [
+            "/accounts",
+            "/accounts/{AccountId}"
+        ],
+        "Default": false,
+        "RequiredOneOrMore": [],
+        "Optional": []
+    },
+    {
+        "Code": "ReadBalances",
+        "Endpoints": [
+            "/balances",
+            "/accounts/{AccountId}/balances"
+        ],
+        "Default": true,
+        "RequiredOneOrMore": [],
+        "Optional": []
+    },
+    {
+        "Code": "ReadBeneficiariesBasic",
+        "Endpoints": [
+            "/beneficiaries",
+            "/accounts/{AccountId}/beneficiaries"
+        ],
+        "Default": true,
+        "RequiredOneOrMore": [],
+        "Optional": []
+    },
+    {
+        "Code": "ReadBeneficiariesDetail",
+        "Endpoints": [
+            "/beneficiaries",
+            "/accounts/{AccountId}/beneficiaries"
+        ],
+        "Default": false,
+        "RequiredOneOrMore": [],
+        "Optional": []
+    },
+    {
+        "Code": "ReadDirectDebits",
+        "Endpoints": [
+            "/direct-debits",
+            "/accounts/{AccountId}/direct-debits"
+        ],
+        "Default": true,
+        "RequiredOneOrMore": [],
+        "Optional": []
+    },
+    {
+        "Code": "ReadStandingOrdersBasic",
+        "Endpoints": [
+            "/standing-orders",
+            "/accounts/{AccountId}/standing-orders"
+        ],
+        "Default": true,
+        "RequiredOneOrMore": [],
+        "Optional": []
+    },
+    {
+        "Code": "ReadStandingOrdersDetail",
+        "Endpoints": [
+            "/standing-orders",
+            "/accounts/{AccountId}/standing-orders"
+        ],
+        "Default": false,
+        "RequiredOneOrMore": [],
+        "Optional": []
+    },
+    {
+        "Code": "ReadTransactionsBasic",
+        "Endpoints": [
+            "/transactions",
+            "/accounts/{AccountId}/transactions",
+            "/accounts/{AccountId}/statements/{StatementId}/transactions"
+        ],
+        "Default": true,
+        "RequiredOneOrMore": [
+            "ReadTransactionsCredits",
+            "ReadTransactionsDebits"
+        ],
+        "Optional": [
+            "ReadPAN"
+        ]
+    },
+    {
+        "Code": "ReadTransactionsDetail",
+        "Endpoints": [
+            "/transactions",
+            "/accounts/{AccountId}/transactions",
+            "/accounts/{AccountId}/statements/{StatementId}/transactions"
+        ],
+        "Default": false,
+        "RequiredOneOrMore": [
+            "ReadTransactionsCredits",
+            "ReadTransactionsDebits"
+        ],
+        "Optional": [
+            "ReadPAN"
+        ]
+    },
+    {
+        "Code": "ReadTransactionsCredits",
+        "Endpoints": [
+            "/transactions",
+            "/accounts/{AccountId}/transactions",
+            "/accounts/{AccountId}/statements/{StatementId}/transactions"
+        ],
+        "Default": true,
+        "RequiredOneOrMore": [
+            "ReadTransactionsBasic",
+            "ReadTransactionsDetail"
+        ],
+        "Optional": [
+            "ReadPAN"
+        ]
+    },
+    {
+        "Code": "ReadTransactionsDebits",
+        "Endpoints": [
+            "/transactions",
+            "/accounts/{AccountId}/transactions",
+            "/accounts/{AccountId}/statements/{StatementId}/transactions"
+        ],
+        "Default": true,
+        "RequiredOneOrMore": [
+            "ReadTransactionsBasic",
+            "ReadTransactionsDetail"
+        ],
+        "Optional": [
+            "ReadPAN"
+        ]
+    },
+    {
+        "Code": "ReadStatementsBasic",
+        "Endpoints": [
+            "/statements",
+            "/accounts/{AccountId}/statements",
+            "/accounts/{AccountId}/statements/{StatementId}/transactions"
+        ],
+        "Default": true,
+        "RequiredOneOrMore": [],
+        "Optional": []
+    },
+    {
+        "Code": "ReadStatementsDetail",
+        "Endpoints": [
+            "/statements",
+            "/accounts/{AccountId}/statements",
+            "/accounts/{AccountId}/statements/{StatementId}/file",
+            "/accounts/{AccountId}/statements/{StatementId}/transactions"
+        ],
+        "Default": false,
+        "RequiredOneOrMore": [],
+        "Optional": []
+    },
+    {
+        "Code": "ReadProducts",
+        "Endpoints": [
+            "/products",
+            "/accounts/{AccountId}/product"
+        ],
+        "Default": true,
+        "RequiredOneOrMore": [],
+        "Optional": []
+    },
+    {
+        "Code": "ReadOffers",
+        "Endpoints": [
+            "/offers",
+            "/accounts/{AccountId}/offers"
+        ],
+        "Default": true,
+        "RequiredOneOrMore": [],
+        "Optional": []
+    },
+    {
+        "Code": "ReadParty",
+        "Endpoints": [
+            "/accounts/{AccountId}/party"
+        ],
+        "Default": true,
+        "RequiredOneOrMore": [],
+        "Optional": []
+    },
+    {
+        "Code": "ReadPartyPSU",
+        "Endpoints": [
+            "/party"
+        ],
+        "Default": true,
+        "RequiredOneOrMore": [],
+        "Optional": []
+    },
+    {
+        "Code": "ReadScheduledPaymentsBasic",
+        "Endpoints": [
+            "/scheduled-payments",
+            "/accounts/{AccountId}/scheduled-payments"
+        ],
+        "Default": true,
+        "RequiredOneOrMore": [],
+        "Optional": []
+    },
+    {
+        "Code": "ReadScheduledPaymentsDetail",
+        "Endpoints": [
+            "/scheduled-payments",
+            "/accounts/{AccountId}/scheduled-payments"
+        ],
+        "Default": false,
+        "RequiredOneOrMore": [],
+        "Optional": []
+    },
+    {
+        "Code": "ReadPAN",
+        "Endpoints": [
+            "",
+            ""
+        ],
+        "Default": false,
+        "RequiredOneOrMore": [],
+        "Optional": []
+    }
+]

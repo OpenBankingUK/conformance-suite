@@ -1,21 +1,29 @@
-import DiscoveryExample from './discovery-example.json';
 
-const example = {
-  config: {
-    accountAccessToken: 'access-token',
-    certificateSigning: '-----BEGIN PRIVATE KEY----------END PRIVATE KEY-----',
-    certificateTransport: '-----BEGIN PRIVATE KEY----------END PRIVATE KEY-----',
-    clientScopes: 'AuthoritiesReadAccess ASPSPReadAccess TPPReadAccess',
-    keyId: 'key-id',
-    privateKeySigning: '-----BEGIN PRIVATE KEY----------END PRIVATE KEY-----',
-    privateKeyTransport: '-----BEGIN PRIVATE KEY----------END PRIVATE KEY-----',
-    softwareStatementId: 'software-statement-id',
-    targetHost: 'https://resourceserver.example.com/',
-  },
-};
+import constants from './constants';
+
+const templates = [];
 
 export default {
-  main: example.config,
-  discoveryModel: DiscoveryExample,
+  discoveryTemplates: templates,
+  discoveryModel: null,
   problems: null,
+
+  configuration: {
+    signing_private: '',
+    signing_public: '',
+    transport_private: '',
+    transport_public: '',
+    client_id: '',
+    client_secret: '',
+    token_endpoint: '',
+    authorization_endpoint: '',
+    resource_base_url: '',
+    x_fapi_financial_id: '',
+    issuer: '',
+    redirect_url: 'https://0.0.0.0:8443/conformancesuite/callback',
+  },
+
+  wizard: {
+    step: constants.WIZARD.STEP_ONE,
+  },
 };

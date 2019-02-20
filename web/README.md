@@ -1,5 +1,9 @@
 # web
 
+## Contents
+
+[TOC]
+
 ## Project setup
 ```
 yarn install
@@ -68,3 +72,11 @@ To start the app run `make serve_web` in the root of the application. Phoenix wi
 
 ### Test the app
 In a separate terminal you can run `npm t` in `apps/compliance_web/assets`. This will run all the tests. To run the tests in watch mode append `-- --watch`, for instance: `npm t -- --watch`. To see the code coverage you can append `-- --coverage`. It's possible to combine both flags: `npm t -- --watch --coverage`. You can also see the code coverage in the `coverage` folder: `open apps/compliance_web/assets/coverage/lcov-report/index.html` to open in a browser.
+
+---
+
+## assets
+
+## inline fonts and images
+`web/vue.config.js`: inlines the fonts and images into the app. If we don't want to inline the
+fonts and images into the final app, simply remove this file.

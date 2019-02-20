@@ -3,13 +3,11 @@ package model
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
-	"net/http"
 	"testing"
 
-	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/utils"
+	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/test"
+
 	"github.com/stretchr/testify/assert"
-	gock "gopkg.in/h2non/gock.v1"
 )
 
 var (
@@ -135,39 +133,31 @@ func TestReadSingleTestCaseFromJsonBytes(t *testing.T) {
 	assert.Equal(t, "GET", testcase.Input.Method)
 	assert.Equal(t, "/accounts", testcase.Input.Endpoint)
 	assert.Equal(t, true, testcase.Expect.SchemaValidation)
-	pkgutils.DumpJSON(testcase)
-}
 
-// Simple gock test
-func TestRunGock(t *testing.T) {
-	defer gock.Off()
+	data, err := json.MarshalIndent(testcase, "", "    ")
+	if err != nil {
+		fmt.Println(err.Error())
+	}
 
-	gock.New("http://foo.com").
-		Get("/bar").
-		Reply(200).
-		JSON(map[string]string{"foo": "bar"})
-
-	res, err := http.Get("http://foo.com/bar")
-	assert.NoError(t, err)
-	_ = res
-	assert.Equal(t, res.StatusCode, 200)
-
-	body, _ := ioutil.ReadAll(res.Body)
-	assert.Equal(t, string(body)[:13], `{"foo":"bar"}`)
-	fmt.Printf("Body: %s\n", string(body))
-
-	// Verify that we don't have pending mocks
-	assert.Equal(t, gock.IsDone(), true)
-
-}
-
-func TestSimpleMock(t *testing.T) {
-	defer gock.Off()
-	gock.New("http://myaspsp").Get("/accounts").Reply(200).BodyString(string(getAccountResponse))
-	req, _ := http.NewRequest("GET", "http://myaspsp/accounts", nil)
-	res, err := (&http.Client{}).Do(req)
-	assert.NoError(t, err)
-	assert.Equal(t, res.StatusCode, 200)
+	fmt.Println(string(data))
+	// Output:
+	// {
+	// 	"@id": "#t1008",
+	// 	"name": "Get a list of accounts",
+	//	"input": {
+	//	"method": "GET",
+	//		"endpoint": "/accounts",
+	//		"contextGet": {}
+	// },
+	//	"context": {
+	//	"baseurl": "http://myaspsp"
+	// },
+	//	"expect": {
+	//	"status-code": 200,
+	//		"schema-validation": true,
+	//		"contextPut": {}
+	// }
+	// }
 }
 
 // TestMockedTestCase - creates http request and response objects, sends them to a mocked
@@ -177,74 +167,53 @@ func TestSimpleMock(t *testing.T) {
 // checks the resultcode
 // Noted - the mocked service sends 'getAccountResponse' as the response body
 func TestMockedTestCase(t *testing.T) {
-	defer gock.Off()
-	gock.New("http://myaspsp").Get("/accounts").Reply(200).BodyString(string(getAccountResponse))
-
 	var testcase TestCase // get the testcase
 	err := json.Unmarshal(basicTestCase, &testcase)
 	assert.NoError(t, err)
 
-	req, err := testcase.Prepare(nil)
+	req, err := testcase.Prepare(&Context{})
 	assert.Nil(t, err)
 	assert.NotNil(t, req)
 
-	res, err := (&http.Client{}).Do(req)
-	assert.Nil(t, err)
-	assert.NotNil(t, res)
-
+	res := test.CreateHTTPResponse(200, "OK", string(getAccountResponse))
 	result, err := testcase.ApplyExpects(res, nil)
 	assert.NoError(t, err)
-	assert.Equal(t, res.StatusCode, 200)
+	assert.Equal(t, res.StatusCode(), 200)
 	assert.Nil(t, err)
 	assert.Equal(t, result, true)
-
-	// Verify that we don't have pending mocks
-	assert.Equal(t, gock.IsDone(), true)
 }
 
 // test a testcase against mock service which supplies incorrect http status code
 func TestResponseStatusCodeMismatch(t *testing.T) {
-	defer gock.Off()
-	gock.New("http://myaspsp").Get("/accounts").Reply(201).BodyString(string(getAccountResponse))
 
 	var testcase TestCase // get the testcase
 	err := json.Unmarshal(basicTestCase, &testcase)
 	assert.NoError(t, err)
 
-	req, err := testcase.Prepare(nil)
-	assert.Nil(t, err)
-
-	res, err := (&http.Client{}).Do(req)
-	assert.Nil(t, err)
+	res := test.CreateHTTPResponse(201, "OK", string(getAccountResponse))
 
 	result, err := testcase.ApplyExpects(res, nil)
 	assert.NotNil(t, err)
-	fmt.Println(err)
 	assert.Equal(t, result, false)
 
-	// Verify that we don't have pending mocks (gock specific)
-	assert.Equal(t, gock.IsDone(), true)
 }
 
 // Check that a json response field can be checked using Expects
 func TestJsonExpectMatch(t *testing.T) {
-	defer gock.Off()
-	gock.New("http://myaspsp").Get("/accounts").Reply(200).BodyString(string(getAccountResponse))
-
 	var testcase TestCase // get the testcase
 	err := json.Unmarshal(jsonTestCase, &testcase)
 	assert.NoError(t, err)
 
-	req, err := testcase.Prepare(nil) // need a proper http object here
-	assert.Nil(t, err)
+	res := test.CreateHTTPResponse(200, "OK", string(getAccountResponse))
 
-	res, err := (&http.Client{}).Do(req)
-	assert.Nil(t, err)
-
-	result, err := testcase.Validate(res, nil)
+	result, err := testcase.Validate(res, emptyContext)
 	assert.Nil(t, err)
 	assert.Equal(t, result, true)
+}
 
-	// Verify that we don't have pending mocks (gock specific)
-	assert.Equal(t, gock.IsDone(), true)
+func TestApplyInputNoGetMethod(t *testing.T) {
+	tc := TestCase{}
+	req, err := tc.Prepare(emptyContext)
+	assert.NotNil(t, err)
+	assert.Nil(t, req)
 }

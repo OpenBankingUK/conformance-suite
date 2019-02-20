@@ -4,14 +4,15 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"net/http"
 	"testing"
 
-	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/utils"
+	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/test"
+
 	"github.com/go-openapi/loads"
 	"github.com/go-openapi/spec"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"gopkg.in/resty.v1"
 )
 
 func TestLoadModel(t *testing.T) {
@@ -32,15 +33,6 @@ func TestLoadModel(t *testing.T) {
 	t.Run("rule has a Name", func(t *testing.T) {
 		assert.Equal(t, rule.Name, "Get Accounts Basic Rule")
 	})
-
-	t.Run("rule has a RunTests() function", func(t *testing.T) {
-		rule.RunTests() // Run Tests for a Rule
-	})
-
-	testcase := rule.Tests[0][0]
-	t.Run("testcase has Dump() function", func(t *testing.T) {
-		testcase.Dump(false)
-	})
 }
 
 // Enumerates all OpenAPI calls from swagger file
@@ -54,7 +46,6 @@ func TestEnumerateOpenApiTestcases(t *testing.T) {
 			newPath := base + path
 			assert.NotNil(t, meth)
 			assert.NotNil(t, newPath)
-			// fmt.Printf("Register %s %s\n", meth, newPath)
 		}
 	}
 }
@@ -120,7 +111,6 @@ func loadOpenAPI(print bool) (*loads.Document, error) {
 func dumpTestCases(testcases []TestCase) {
 	var model []byte
 	model, _ = json.MarshalIndent(testcases, "", "    ")
-	//fmt.Println(string(model))
 	_ = model
 
 }
@@ -152,7 +142,7 @@ func getOperations(props *spec.PathItem) map[string]*spec.Operation {
 /*
 As a developer I want to perform a test where I load some json which defines a manifest, rule and testcases
 I want the rule to manage the execution of the test that includes two test cases
-I want the testcases to communicate paramaters between themselves using a context
+I want the testcases to communicate parameters between themselves using a context
 I want the results of one test case being used as input to the other testcase
 I want to use json pattern matching to extract the first returned AccountId from the first testcase and
 use that value as the accountid parameter for the second testcase
@@ -161,51 +151,84 @@ func TestChainedTestCases(t *testing.T) {
 	manifest, err := loadManifest("testdata/passAccountId.json")
 	require.NoError(t, err)
 
-	rule := manifest.Rules[0]                    // get the first rule
-	rule.Executor = &executor{}                  // Allows rule testcase execution strategies to be dynamically added to rules
-	rulectx := Context{}                         // create a context to hold the passed parameters
-	tc01 := rule.Tests[0][0]                     // get the first testcase of the first rule
-	req, _ := tc01.Prepare(&rulectx)             // Prepare calls ApplyInput and ApplyContext on testcase
-	resp, err := rule.Execute(req, &tc01)        // send the request to be executed resulting in a response
-	result, err := tc01.Validate(resp, &rulectx) // Validate checks response against the match rules and processes any contextPuts present
+	rule := manifest.Rules[0]                                   // get the first rule
+	executor := &executor{}                                     // Allows rule testcase execution strategies to be dynamically added to rules
+	rulectx := Context{}                                        // create a context to hold the passed parameters
+	tc01 := rule.Tests[0][0]                                    // get the first testcase of the first rule
+	req, _ := tc01.Prepare(&rulectx)                            // Prepare calls ApplyInput and ApplyContext on testcase
+	resp, err := executor.ExecuteTestCase(req, &tc01, &rulectx) // send the request to be executed resulting in a response
+	result, err := tc01.Validate(resp, &rulectx)                // Validate checks response against the match rules and processes any contextPuts present
 
-	tc02 := rule.Tests[0][1]                    // get the second testcase of the first rule
-	req, err = tc02.Prepare(&rulectx)           // Prepare
-	resp, err = rule.Execute(req, &tc02)        // Execute
-	result, err = tc02.Validate(resp, &rulectx) // Validate checks the match rules and processes any contextPuts present
+	tc02 := rule.Tests[0][1]                                   // get the second testcase of the first rule
+	req, err = tc02.Prepare(&rulectx)                          // Prepare
+	resp, err = executor.ExecuteTestCase(req, &tc02, &rulectx) // Execute
+	result, err = tc02.Validate(resp, &rulectx)                // Validate checks the match rules and processes any contextPuts present
 	assert.True(t, result)
-	assert.Equal(t, "500000000000000000000007", rulectx.Get("AccountId"))
-	assert.Equal(t, "/accounts/500000000000000000000007", tc02.Input.Endpoint)
+	acctid, exist := rulectx.Get("AccountId")
+	assert.True(t, exist)
+	assert.Equal(t, "500000000000000000000007", acctid)
+	assert.Equal(t, "http://myaspsp/accounts/500000000000000000000007", tc02.Input.Endpoint)
 }
 
 type executor struct {
 }
 
-func (e *executor) ExecuteTestCase(r *http.Request, t *TestCase, ctx *Context) (*http.Response, error) {
+func (e *executor) ExecuteTestCase(r *resty.Request, t *TestCase, ctx *Context) (*resty.Response, error) {
 	responseKey := t.Input.Method + " " + t.Input.Endpoint
 	return chainTest[responseKey](), nil
 }
 
-var chainTest = map[string]func() *http.Response{
-	"GET /accounts/":                         httpAccountCall(),
-	"GET /accounts/{AccountId}":              httpAccountIDCall(),
-	"GET /accounts/500000000000000000000007": httpAccountID007Call(),
+var chainTest = map[string]func() *resty.Response{
+	"GET http://myaspsp/accounts/":                         httpAccountCall(),
+	"GET http://myaspsp/accounts/{AccountId}":              httpAccountIDCall(),
+	"GET http://myaspsp/accounts/500000000000000000000007": httpAccountID007Call(),
 }
 
-func httpAccountCall() func() *http.Response {
-	return func() *http.Response {
-		return pkgutils.CreateHTTPResponse(200, "OK", string(getAccountResponse))
+func httpAccountCall() func() *resty.Response {
+	return func() *resty.Response {
+		return test.CreateHTTPResponse(200, "OK", string(getAccountResponse))
 	}
 }
 
-func httpAccountIDCall() func() *http.Response {
-	return func() *http.Response {
-		return pkgutils.CreateHTTPResponse(200, "OK", string(getAccountResponse), "content-type", "klingon/text")
+func httpAccountIDCall() func() *resty.Response {
+	return func() *resty.Response {
+		return test.CreateHTTPResponse(200, "OK", string(getAccountResponse), "content-type", "klingon/text")
 	}
 }
 
-func httpAccountID007Call() func() *http.Response {
-	return func() *http.Response {
-		return pkgutils.CreateHTTPResponse(200, "OK", string(account0007), "content-type", "klingon/text")
+func httpAccountID007Call() func() *resty.Response {
+	return func() *resty.Response {
+		return test.CreateHTTPResponse(200, "OK", string(account0007), "content-type", "klingon/text")
 	}
+}
+
+func TestGetReplacementField(t *testing.T) {
+	testCases := []struct {
+		stringToCheck string
+		value         string
+		isReplacement bool
+		err           error
+	}{
+		{
+			stringToCheck: "$hello",
+			value:         "hello",
+			isReplacement: true,
+			err:           nil,
+		},
+		{
+			stringToCheck: "hello",
+			value:         "hello",
+			isReplacement: false,
+			err:           nil,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run("", func(t *testing.T) {
+			value, isReplacement := getReplacementField(tc.stringToCheck)
+			assert.Equal(t, tc.value, value)
+			assert.Equal(t, tc.isReplacement, isReplacement)
+		})
+	}
+
 }

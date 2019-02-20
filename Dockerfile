@@ -1,4 +1,7 @@
-# Image to compile go binary
+FROM alpine:latest as certs
+RUN apk --update add ca-certificates
+
+# Image to compile go binaries
 FROM golang:1.11-stretch as gobuilder
 # disable crosscompiling
 #
@@ -12,13 +15,22 @@ ENV GOOS=linux
 ENV GOARCH=amd64
 
 WORKDIR /app
+
 ADD . .
 
+RUN make init
 RUN make build
+RUN make build_cli
 
 # Image to compile Single Page Application of the Vue.js site
 FROM node:8.11.1-slim as nodebuilder
 WORKDIR /app
+
+# This is to that JavaScript code can import code defined in the Go side, e.g.,
+# '../../../../../pkg/discovery/templates/ob-v3.1-generic.json'
+# '../../../pkg/model/testdata/spec-config.golden.json'
+ADD pkg/discovery/templates/*.json /pkg/discovery/templates/
+ADD pkg/model/testdata/*.json /pkg/model/testdata/
 ADD web .
 
 RUN yarn install \
@@ -27,11 +39,16 @@ RUN yarn install \
 # Final image to run the binary
 FROM scratch
 LABEL MAINTAINER Open Banking
+COPY --from=certs /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
+
 WORKDIR /app
 
-COPY --from=gobuilder /app/conformance-suite /app/
+COPY --from=gobuilder /app/fcs_server /app/
+COPY --from=gobuilder /app/fcs /app/
+COPY --from=gobuilder /app/certs /app/certs
+COPY --from=gobuilder /app/components /app/components
 COPY --from=nodebuilder /app/dist /app/web/dist
 
-EXPOSE 8080
+EXPOSE 8443
 
-ENTRYPOINT ["/app/conformance-suite"]
+ENTRYPOINT ["/app/fcs_server"]

@@ -47,15 +47,7 @@
                     "purpose": "Accesses the Accounts endpoint and retrieves a list of PSU accounts",
                     "input": {
                         "method": "GET",
-                        "endpoint": "/accounts/{AccountId}",
-                        "contextGet": {
-                            "matches":                        
-                            [{
-                            "name": "AccountId",
-                            "description": "supplies the account number to be queried",
-                            "replaceInEndpoint": "{AccountId}"
-                            }]
-                        }
+                        "endpoint": "/accounts/$AccountId"
                     },
                     "context": {
                         "baseurl":"http://myaspsp"

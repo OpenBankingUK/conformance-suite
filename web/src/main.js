@@ -1,32 +1,20 @@
 import Vue from 'vue';
-import BootstrapVue from 'bootstrap-vue';
-// import axios from 'axios';
-// import VueAxios from 'vue-axios';
+import BootstrapVue from 'bootstrap-vue/dist/bootstrap-vue.esm.min';
 
-import 'bootstrap/dist/css/bootstrap.css';
-import 'bootstrap-vue/dist/bootstrap-vue.css';
+/* global fetch */
+import 'whatwg-fetch';
 
-// // https://vuecomponent.github.io/ant-design-vue/docs/vue/introduce/
-// import Antd from 'ant-design-vue';
-// import 'ant-design-vue/dist/antd.css';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import 'bootstrap-vue/dist/bootstrap-vue.min.css';
 
 import App from './App.vue';
 import router from './router';
 import store from './store/';
-import './registerServiceWorker';
-
-// import Default from './layouts/Default.vue';
-// import Clean from './layouts/Clean.vue';
-import './assets/css/app.css';
-
-// Vue.component('default-layout', Default);
-// Vue.component('clean-layout', Clean);
 
 Vue.use(BootstrapVue);
-// Vue.use(VueAxios, axios);
-// Vue.use(Antd);
 
-Vue.config.productionTip = false;
+// Don't warn about using the dev version of Vue in development.
+Vue.config.productionTip = process.env.NODE_ENV === 'production';
 
 new Vue({
   router,
