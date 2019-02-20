@@ -161,3 +161,4 @@ The following hosts are required to be accessible for the Functional Conformance
 | TCP, HTTPS | production.cloudflare.docker.com | 443
 | TCP, HTTPS | registry-1.docker.io | 443
 | TCP, HTTPS | auth.docker.io | 443
+| TCP, HTTPS | rebilly.github.io | 443
