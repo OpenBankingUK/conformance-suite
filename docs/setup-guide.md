@@ -98,7 +98,7 @@ Certificates and be downloaded (here)[https://bitbucket.org/openbankingteam/conf
 The following command will download the latest FCS image from docker hub and run it. You may need to login to Docker Hub
 at this point by running `docker login`. 
 
-`docker run --rm -it -p 8443:8443 "openbanking/conformance-suite:v1.0.0-beta"`
+`docker run --rm -it -p 8443:8443 "openbanking/conformance-suite:v1.0.1-beta"`
 
 If all goes well you should be able to launch the FCS UI from you browser via `https://0.0.0.0:8443`
 
