@@ -130,12 +130,14 @@ func (wj *journey) TestCases() (generation.TestCasesRun, error) {
 			if len(consentIds) > 0 {
 				wj.collector = executors.NewTokenCollector(consentIds, wj.doneCollectionCallback)
 				consentIdsToTestCaseRun(consentIds, &wj.testCasesRun)
+				wj.allCollected = false
 			} else {
 				wj.allCollected = true
 			}
+		} else {
+			wj.allCollected = true
 		}
 		wj.testCasesRunGenerated = true
-		wj.allCollected = false
 	}
 
 	return wj.testCasesRun, nil
