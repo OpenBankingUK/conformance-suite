@@ -55,8 +55,8 @@ describe('computeTestCases', () => {
       expect(fetch.mock.calls.length).toEqual(1);
       expect(fetch.mock.calls[0][0]).toEqual(EXPECTED_INPUT);
       expect(fetch.mock.calls[0][1]).toEqual(Object.assign(
-        {}
-        , EXPECTED_INIT,
+        {},
+        EXPECTED_INIT,
       ));
     } catch (err) {
     // Should not get here.

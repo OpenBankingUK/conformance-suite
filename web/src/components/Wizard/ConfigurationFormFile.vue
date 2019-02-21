@@ -84,7 +84,8 @@ export default {
           return this.fileInfo();
         }
         return this.extError(this.validExtension);
-      } else if (contents) {
+      }
+      if (contents) {
         return `Size: ${contents.length} bytes`;
       }
 
