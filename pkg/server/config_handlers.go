@@ -56,18 +56,19 @@ func (h *configHandlers) configGlobalPostHandler(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, NewErrorResponse(errors.Wrap(err, "error with transport certificate")))
 	}
 
-	h.journey.SetConfig(
-		certificateSigning,
-		certificateTransport,
-		config.ClientID,
-		config.ClientSecret,
-		config.TokenEndpoint,
-		config.AuthorizationEndpoint,
-		config.ResourceBaseURL,
-		config.XFAPIFinancialID,
-		config.Issuer,
-		config.RedirectURL,
-	)
+	jConfig := JourneyConfig{
+		certificateSigning:    certificateSigning,
+		certificateTransport:  certificateTransport,
+		clientID:              config.ClientID,
+		clientSecret:          config.ClientSecret,
+		tokenEndpoint:         config.TokenEndpoint,
+		authorizationEndpoint: config.AuthorizationEndpoint,
+		resourceBaseURL:       config.ResourceBaseURL,
+		xXFAPIFinancialID:     config.XFAPIFinancialID,
+		issuer:                config.Issuer,
+		redirectURL:           config.RedirectURL,
+	}
+	h.journey.SetConfig(jConfig)
 
 	return c.JSON(http.StatusCreated, config)
 }

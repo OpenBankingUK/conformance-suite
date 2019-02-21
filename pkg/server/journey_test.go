@@ -170,16 +170,7 @@ func TestJourneySetConfig(t *testing.T) {
 	generator := &gmocks.Generator{}
 	journey := NewJourney(nullLogger(), generator, validator)
 
-	require.Nil(journey.certificateTransport)
-	require.Nil(journey.certificateSigning)
-	require.Empty(journey.clientID)
-	require.Empty(journey.clientSecret)
-	require.Empty(journey.tokenEndpoint)
-	require.Empty(journey.authorizationEndpoint)
-	require.Empty(journey.resourceBaseURL)
-	require.Empty(journey.xXFAPIFinancialID)
-	require.Empty(journey.issuer)
-	require.Empty(journey.redirectURL)
+	require.Equal(JourneyConfig{}, journey.config)
 
 	certificateSigning, err := authentication.NewCertificate(publicCertValid, privateCertValid)
 	require.NoError(err)
@@ -187,25 +178,19 @@ func TestJourneySetConfig(t *testing.T) {
 	certificateTransport, err := authentication.NewCertificate(publicCertValid, privateCertValid)
 	require.NoError(err)
 	require.NotNil(certificateTransport)
-	clientID := "8672384e-9a33-439f-8924-67bb14340d71"
-	clientSecret := "2cfb31a3-5443-4e65-b2bc-ef8e00266a77"
-	tokenEndpoint := "https://modelobank2018.o3bank.co.uk:4201/token"
-	authorizationEndpoint := "https://modelobankauth2018.o3bank.co.uk:4101/auth"
-	resourceBaseURL := "https://modelobank2018.o3bank.co.uk:4501"
-	xXFAPIFinancialID := "0015800001041RHAAY"
-	issuer := "https://modelobankauth2018.o3bank.co.uk:4101"
-	redirectURL := "https://0.0.0.0:8443/conformancesuite/callback"
+	config := JourneyConfig{
+		certificateSigning:    certificateSigning,
+		certificateTransport:  certificateTransport,
+		clientID:              "8672384e-9a33-439f-8924-67bb14340d71",
+		clientSecret:          "2cfb31a3-5443-4e65-b2bc-ef8e00266a77",
+		tokenEndpoint:         "https://modelobank2018.o3bank.co.uk:4201/token",
+		authorizationEndpoint: "https://modelobankauth2018.o3bank.co.uk:4101/auth",
+		resourceBaseURL:       "https://modelobank2018.o3bank.co.uk:4501",
+		xXFAPIFinancialID:     "0015800001041RHAAY",
+		issuer:                "https://modelobankauth2018.o3bank.co.uk:4101",
+		redirectURL:           "https://0.0.0.0:8443/conformancesuite/callback",
+	}
+	journey.SetConfig(config)
 
-	journey.SetConfig(certificateSigning, certificateTransport, clientID, clientSecret, tokenEndpoint, authorizationEndpoint, resourceBaseURL, xXFAPIFinancialID, issuer, redirectURL)
-
-	require.Equal(certificateTransport, journey.certificateTransport)
-	require.Equal(certificateSigning, journey.certificateSigning)
-	require.Equal(clientID, journey.clientID)
-	require.Equal(clientSecret, journey.clientSecret)
-	require.Equal(tokenEndpoint, journey.tokenEndpoint)
-	require.Equal(authorizationEndpoint, journey.authorizationEndpoint)
-	require.Equal(resourceBaseURL, journey.resourceBaseURL)
-	require.Equal(xXFAPIFinancialID, journey.xXFAPIFinancialID)
-	require.Equal(issuer, journey.issuer)
-	require.Equal(redirectURL, journey.redirectURL)
+	require.Equal(config, journey.config)
 }

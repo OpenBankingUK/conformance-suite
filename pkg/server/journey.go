@@ -38,7 +38,7 @@ type Journey interface {
 	RunTests() error
 	StopTestRun()
 	Results() executors.DaemonController
-	SetConfig(signing, transport authentication.Certificate, clientID, clientSecret, tokenEndpoint, authorizationEndpoint, resourceBaseURL, xXFAPIFinancialID, issuer, redirectURL string)
+	SetConfig(config JourneyConfig)
 }
 
 type journey struct {
@@ -51,18 +51,9 @@ type journey struct {
 	collector             executors.TokenCollector
 	allCollected          bool
 	validDiscoveryModel   *discovery.Model
-	certificateSigning    authentication.Certificate
-	certificateTransport  authentication.Certificate
 	context               model.Context
 	log                   *logrus.Entry
-	clientID              string
-	clientSecret          string
-	tokenEndpoint         string
-	authorizationEndpoint string
-	resourceBaseURL       string
-	xXFAPIFinancialID     string
-	issuer                string
-	redirectURL           string
+	config                JourneyConfig
 }
 
 // NewJourney creates an instance for a user journey
@@ -108,19 +99,19 @@ func (wj *journey) TestCases() (generation.TestCasesRun, error) {
 
 	if !wj.testCasesRunGenerated {
 		config := generation.GeneratorConfig{
-			ClientID:              wj.clientID,
-			Aud:                   wj.authorizationEndpoint,
+			ClientID:              wj.config.clientID,
+			Aud:                   wj.config.authorizationEndpoint,
 			ResponseType:          "code id_token",
 			Scope:                 "openid accounts",
-			AuthorizationEndpoint: wj.authorizationEndpoint,
-			RedirectURL:           wj.redirectURL,
+			AuthorizationEndpoint: wj.config.authorizationEndpoint,
+			RedirectURL:           wj.config.redirectURL,
 		}
 		wj.testCasesRun = wj.generator.GenerateSpecificationTestCases(config, wj.validDiscoveryModel.DiscoveryModel, &wj.context)
 		runDefinition := executors.RunDefinition{
 			DiscoModel:    wj.validDiscoveryModel,
 			TestCaseRun:   wj.testCasesRun,
-			SigningCert:   wj.certificateSigning,
-			TransportCert: wj.certificateTransport,
+			SigningCert:   wj.config.certificateSigning,
+			TransportCert: wj.config.certificateTransport,
 		}
 		if wj.validDiscoveryModel.DiscoveryModel.TokenAcquisition == "psu" {
 			consentIds, err := executors.InitiationConsentAcquisition(wj.testCasesRun.SpecConsentRequirements, runDefinition, &wj.context)
@@ -155,8 +146,8 @@ func (wj *journey) CollectToken(code, state, scope string) error {
 	runDefinition := executors.RunDefinition{
 		DiscoModel:    wj.validDiscoveryModel,
 		TestCaseRun:   wj.testCasesRun,
-		SigningCert:   wj.certificateSigning,
-		TransportCert: wj.certificateTransport,
+		SigningCert:   wj.config.certificateSigning,
+		TransportCert: wj.config.certificateTransport,
 	}
 	accessToken, err := executors.ExchangeCodeForAccessToken(state, code, scope, runDefinition, &wj.context)
 	if err != nil {
@@ -200,8 +191,8 @@ func (wj *journey) RunTests() error {
 	runDefinition := executors.RunDefinition{
 		DiscoModel:    wj.validDiscoveryModel,
 		TestCaseRun:   wj.testCasesRun,
-		SigningCert:   wj.certificateSigning,
-		TransportCert: wj.certificateTransport,
+		SigningCert:   wj.config.certificateSigning,
+		TransportCert: wj.config.certificateTransport,
 	}
 
 	runner := executors.NewTestCaseRunner(runDefinition, wj.daemonController)
@@ -217,19 +208,23 @@ func (wj *journey) StopTestRun() {
 	wj.daemonController.Stop()
 }
 
-func (wj *journey) SetConfig(signing, transport authentication.Certificate, clientID, clientSecret, tokenEndpoint, authorizationEndpoint, resourceBaseURL, xXFAPIFinancialID, issuer, redirectURL string) {
+type JourneyConfig struct {
+	certificateSigning    authentication.Certificate
+	certificateTransport  authentication.Certificate
+	clientID              string
+	clientSecret          string
+	tokenEndpoint         string
+	authorizationEndpoint string
+	resourceBaseURL       string
+	xXFAPIFinancialID     string
+	issuer                string
+	redirectURL           string
+}
+
+func (wj *journey) SetConfig(config JourneyConfig) {
 	wj.journeyLock.Lock()
 	defer wj.journeyLock.Unlock()
-	wj.certificateSigning = signing
-	wj.certificateTransport = transport
-	wj.clientID = clientID
-	wj.clientSecret = clientSecret
-	wj.tokenEndpoint = tokenEndpoint
-	wj.authorizationEndpoint = authorizationEndpoint
-	wj.resourceBaseURL = resourceBaseURL
-	wj.xXFAPIFinancialID = xXFAPIFinancialID
-	wj.issuer = issuer
-	wj.redirectURL = redirectURL
+	wj.config = config
 	wj.configParametersToJourneyContext()
 	wj.customTestParametersToJourneyContext()
 }
@@ -245,20 +240,22 @@ const ctxConstResourceBaseURL = "resource_server"
 const ctxConstIssuer = "issuer"
 
 func (wj *journey) configParametersToJourneyContext() error {
-	wj.context.PutString(ctxConstClientID, wj.clientID)
-	wj.context.PutString(ctxConstClientSecret, wj.clientSecret)
-	wj.context.PutString(ctxConstTokenEndpoint, wj.tokenEndpoint)
-	wj.context.PutString(ctxConstFapiFinancialID, wj.xXFAPIFinancialID)
-	wj.context.PutString(ctxConstRedirectURL, wj.redirectURL)
-	wj.context.PutString(ctxConstAuthorisationEndpoint, wj.authorizationEndpoint)
-	wj.context.PutString(ctxConstResourceBaseURL, wj.resourceBaseURL)
-	basicauth, err := authentication.CalculateClientSecretBasicToken(wj.clientID, wj.clientSecret)
-	wj.context.PutString(ctxConstIssuer, wj.issuer)
-	logrus.Debugf("Issuer string : %s ", wj.issuer)
+	wj.context.PutString(ctxConstClientID, wj.config.clientID)
+	wj.context.PutString(ctxConstClientSecret, wj.config.clientSecret)
+	wj.context.PutString(ctxConstTokenEndpoint, wj.config.tokenEndpoint)
+	wj.context.PutString(ctxConstFapiFinancialID, wj.config.xXFAPIFinancialID)
+	wj.context.PutString(ctxConstRedirectURL, wj.config.redirectURL)
+	wj.context.PutString(ctxConstAuthorisationEndpoint, wj.config.authorizationEndpoint)
+	wj.context.PutString(ctxConstResourceBaseURL, wj.config.resourceBaseURL)
+
+	basicauth, err := authentication.CalculateClientSecretBasicToken(wj.config.clientID, wj.config.clientSecret)
 	if err != nil {
 		return err
 	}
 	wj.context.PutString(ctxConstBasicAuthentication, basicauth)
+
+	wj.context.PutString(ctxConstIssuer, wj.config.issuer)
+
 	wj.context.DumpContext("configParameters - dumpcontext")
 	return nil
 }
