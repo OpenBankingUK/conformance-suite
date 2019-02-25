@@ -1,7 +1,7 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
 import has from 'lodash/has';
-import store from './store/';
+import store from './store';
 
 import TheWizard from './views/TheWizard.vue';
 import WizardContinueOrStart from './views/Wizard/WizardContinueOrStart.vue';

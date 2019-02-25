@@ -128,12 +128,10 @@ export default {
   // "The leave guard is usually used to prevent the user from accidentally leaving the route with unsaved edits. The navigation can be canceled by calling next(false)."
   // See documentation: https://router.vuejs.org/guide/advanced/navigation-guards.html#in-component-guards
   async beforeRouteLeave(to, from, next) {
-    const isBack =
-      from.path === '/wizard/discovery-config' &&
-      to.path === '/wizard/continue-or-start';
-    const isNext =
-      from.path === '/wizard/discovery-config' &&
-      to.path !== '/wizard/continue-or-start';
+    const isBack = from.path === '/wizard/discovery-config'
+      && to.path === '/wizard/continue-or-start';
+    const isNext = from.path === '/wizard/discovery-config'
+      && to.path !== '/wizard/continue-or-start';
 
     // Always allow user to go back from this page.
     if (isBack) {
