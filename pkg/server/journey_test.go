@@ -8,7 +8,7 @@ import (
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery/mocks"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/generation"
-	gmocks "bitbucket.org/openbankingteam/conformance-suite/pkg/generation/mocks"
+	gmocks "bitbucket.org/openbankingteam/conformance-suite/pkg/generation"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
 	"github.com/pkg/errors"
 	"github.com/stretchr/testify/require"
@@ -44,7 +44,7 @@ func TestJourneySetDiscoveryModelValidatesModel(t *testing.T) {
 	discoveryModel := &discovery.Model{}
 	validator := &mocks.Validator{}
 	validator.On("Validate", discoveryModel).Return(discovery.NoValidationFailures, nil)
-	generator := &gmocks.Generator{}
+	generator := &gmocks.MockGenerator{}
 	journey := NewJourney(nullLogger(), generator, validator)
 
 	failures, err := journey.SetDiscoveryModel(discoveryModel)
@@ -62,7 +62,7 @@ func TestJourneySetDiscoveryModelHandlesErrorFromValidator(t *testing.T) {
 	validator := &mocks.Validator{}
 	expectedFailures := discovery.ValidationFailures{}
 	validator.On("Validate", discoveryModel).Return(expectedFailures, errors.New("validator error"))
-	generator := &gmocks.Generator{}
+	generator := &gmocks.MockGenerator{}
 	journey := NewJourney(nullLogger(), generator, validator)
 
 	failures, err := journey.SetDiscoveryModel(discoveryModel)
@@ -83,7 +83,7 @@ func TestJourneySetDiscoveryModelReturnsFailuresFromValidator(t *testing.T) {
 	}
 	expectedFailures := discovery.ValidationFailures{failure}
 	validator.On("Validate", discoveryModel).Return(expectedFailures, nil)
-	generator := &gmocks.Generator{}
+	generator := &gmocks.MockGenerator{}
 	journey := NewJourney(nullLogger(), generator, validator)
 
 	failures, err := journey.SetDiscoveryModel(discoveryModel)
@@ -96,7 +96,7 @@ func TestJourneyTestCasesCantGenerateIfDiscoveryNotSet(t *testing.T) {
 	assert := test.NewAssert(t)
 
 	validator := &mocks.Validator{}
-	generator := &gmocks.Generator{}
+	generator := &gmocks.MockGenerator{}
 	journey := NewJourney(nullLogger(), generator, validator)
 
 	testCases, err := journey.TestCases()
@@ -112,7 +112,7 @@ func TestJourneyTestCasesGenerate(t *testing.T) {
 	discoveryModel := &discovery.Model{}
 	validator.On("Validate", discoveryModel).Return(discovery.NoValidationFailures, nil)
 	expectedTestCases := generation.TestCasesRun{}
-	generator := &gmocks.Generator{}
+	generator := &gmocks.MockGenerator{}
 	config := generation.GeneratorConfig{ClientID: "", Aud: "", ResponseType: "code id_token", Scope: "openid accounts", AuthorizationEndpoint: "", RedirectURL: ""}
 	generator.On("GenerateSpecificationTestCases", config, discoveryModel.DiscoveryModel, &model.Context{}).Return(expectedTestCases)
 	journey := NewJourney(nullLogger(), generator, validator)
@@ -132,7 +132,7 @@ func TestJourneyTestCasesDoesntREGenerate(t *testing.T) {
 	discoveryModel := &discovery.Model{}
 	validator.On("Validate", discoveryModel).Return(discovery.NoValidationFailures, nil)
 	expectedTestCases := generation.TestCasesRun{}
-	generator := &gmocks.Generator{}
+	generator := &gmocks.MockGenerator{}
 	config := generation.GeneratorConfig{ClientID: "", Aud: "", ResponseType: "code id_token", Scope: "openid accounts", AuthorizationEndpoint: "", RedirectURL: ""}
 	generator.On("GenerateSpecificationTestCases", config, discoveryModel.DiscoveryModel, &model.Context{}).
 		Return(expectedTestCases).Times(1)
@@ -155,7 +155,7 @@ func TestJourneyRunTestCasesCantRunIfNoTestCases(t *testing.T) {
 	assert := test.NewAssert(t)
 
 	validator := &mocks.Validator{}
-	generator := &gmocks.Generator{}
+	generator := &gmocks.MockGenerator{}
 	journey := NewJourney(nullLogger(), generator, validator)
 
 	err := journey.RunTests()
@@ -167,7 +167,7 @@ func TestJourneySetConfig(t *testing.T) {
 	require := test.NewRequire(t)
 
 	validator := &mocks.Validator{}
-	generator := &gmocks.Generator{}
+	generator := &gmocks.MockGenerator{}
 	journey := NewJourney(nullLogger(), generator, validator)
 
 	require.Equal(JourneyConfig{}, journey.config)
@@ -190,7 +190,8 @@ func TestJourneySetConfig(t *testing.T) {
 		issuer:                "https://modelobankauth2018.o3bank.co.uk:4101",
 		redirectURL:           "https://0.0.0.0:8443/conformancesuite/callback",
 	}
-	journey.SetConfig(config)
+	err = journey.SetConfig(config)
+	require.NoError(err)
 
 	require.Equal(config, journey.config)
 }

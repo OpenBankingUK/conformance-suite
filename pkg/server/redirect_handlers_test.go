@@ -3,6 +3,8 @@ package server
 import (
 	"context"
 	"fmt"
+	"github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/require"
 	"net/http"
 	"strings"
 	"testing"
@@ -21,8 +23,8 @@ type testTableItem struct {
 
 func TestRedirectHandlersFragmentOK(t *testing.T) {
 	require := test.NewRequire(t)
-
-	server := NewServer(nullLogger(), conditionalityCheckerMock{}, &mocks.Version{})
+	journey := &MockJourney{}
+	server := NewServer(journey, nullLogger(), &mocks.Version{})
 	defer func() {
 		require.NoError(server.Shutdown(context.TODO()))
 	}()
@@ -104,13 +106,13 @@ func TestRedirectHandlersFragmentOK(t *testing.T) {
 }
 
 func TestRedirectHandlersQueryOK(t *testing.T) {
-	require := test.NewRequire(t)
-
-	server := NewServer(nullLogger(), conditionalityCheckerMock{}, &mocks.Version{})
+	journey := &MockJourney{}
+	journey.On("CollectToken", mock.Anything, mock.Anything, mock.Anything).Return(nil)
+	server := NewServer(journey, nullLogger(), &mocks.Version{})
 	defer func() {
-		require.NoError(server.Shutdown(context.TODO()))
+		require.NoError(t, server.Shutdown(context.TODO()))
 	}()
-	require.NotNil(server)
+	require.NotNil(t, server)
 
 	// valid code and c_hash combination
 	testItemOK := testTableItem{
@@ -167,29 +169,33 @@ func TestRedirectHandlersQueryOK(t *testing.T) {
 	}
 
 	for _, ttItem := range ttData {
-		// read the file we expect to be served.
-		code, body, headers := request(
-			http.MethodPost,
-			ttItem.endpoint,
-			strings.NewReader(ttItem.requestBody),
-			server,
-		)
+		ttItem := ttItem
+		t.Run(ttItem.label, func(t *testing.T) {
+			require := test.NewRequire(t)
 
-		// do assertions.
-		require.Equal(ttItem.httpStatusExpected, code, ttItem.label)
-		require.Len(headers, 2, ttItem.label)
-		require.Equal("application/json; charset=UTF-8", headers["Content-Type"][0], ttItem.label)
-		require.NotNil(body, ttItem.label)
+			// read the file we expect to be served.
+			code, body, headers := request(
+				http.MethodPost,
+				ttItem.endpoint,
+				strings.NewReader(ttItem.requestBody),
+				server,
+			)
 
-		bodyActual := body.String()
-		require.JSONEq(ttItem.responseBodyExpected, bodyActual, ttItem.label)
+			// do assertions.
+			require.NotNil(body)
+			bodyActual := body.String()
+			require.JSONEq(ttItem.responseBodyExpected, bodyActual)
+			require.Equal(ttItem.httpStatusExpected, code)
+			require.Len(headers, 2)
+			require.Equal("application/json; charset=UTF-8", headers["Content-Type"][0])
+		})
 	}
 }
 
 func TestRedirectHandlersError(t *testing.T) {
 	require := test.NewRequire(t)
 
-	server := NewServer(nullLogger(), conditionalityCheckerMock{}, &mocks.Version{})
+	server := NewServer(testJourney(), nullLogger(), &mocks.Version{})
 	defer func() {
 		require.NoError(server.Shutdown(context.TODO()))
 	}()

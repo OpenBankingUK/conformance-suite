@@ -150,7 +150,10 @@ func (v BitBucket) UpdateWarningVersion(version string) (string, bool, error) {
 			return errorMessageUI, false, errors.Wrap(err, "error on update warning version")
 		}
 
-		s, _ := getTags([]byte(body))
+		s, err := getTags([]byte(body))
+		if err != nil {
+			return errorMessageUI, false, errors.Wrap(err, "error on update warning version")
+		}
 
 		if len(s.TagList) == 0 {
 			return errorMessageUI, false, fmt.Errorf("no Tags found")
@@ -160,7 +163,13 @@ func (v BitBucket) UpdateWarningVersion(version string) (string, bool, error) {
 
 		// Format version string to compare.
 		versionLocal, err := v.VersionFormatter(version)
+		if err != nil {
+			return errorMessageUI, false, errors.Wrap(err, "error on update warning version")
+		}
 		versionRemote, err := v.VersionFormatter(latestTag)
+		if err != nil {
+			return errorMessageUI, false, errors.Wrap(err, "error on update warning version")
+		}
 
 		if versionLocal < versionRemote {
 			errorMessageUI = fmt.Sprintf("Version v%s of the Conformance Suite is out-of-date, please update to v%s", versionLocal, versionRemote)

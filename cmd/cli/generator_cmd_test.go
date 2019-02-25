@@ -9,7 +9,6 @@ import (
 	"path/filepath"
 	"testing"
 
-	"bitbucket.org/openbankingteam/conformance-suite/cmd/cli/mocks"
 	"github.com/spf13/cobra"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -17,7 +16,7 @@ import (
 )
 
 func ExampleGeneratorCommand_runNoFilename() {
-	generator := &mocks.Generator{}
+	generator := &MockGenerator{}
 	generatorCmdWrapper := newGeneratorCmdWrapperWithOptions(generator)
 	root := newRootCommand(generatorCmdWrapper.run)
 
@@ -31,7 +30,7 @@ func ExampleGeneratorCommand_runNoFilename() {
 }
 
 func TestGeneratorCommand(t *testing.T) {
-	generator := &mocks.Generator{}
+	generator := &MockGenerator{}
 	generator.On("Generate", mock.Anything, mock.Anything).Return(nil)
 	generatorCmdWrapper := newGeneratorCmdWrapperWithOptions(generator)
 	root := newRootCommand(generatorCmdWrapper.run)
@@ -42,7 +41,7 @@ func TestGeneratorCommand(t *testing.T) {
 }
 
 func TestGeneratorWritesToFile(t *testing.T) {
-	generator := &mocks.Generator{}
+	generator := &MockGenerator{}
 	generator.On(
 		"Generate", mock.Anything, mock.Anything).Return(nil)
 	generatorCmdWrapper := newGeneratorCmdWrapperWithOptions(generator)

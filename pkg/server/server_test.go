@@ -20,46 +20,10 @@ import (
 
 	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/test"
 	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/version/mocks"
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
-
 	"github.com/labstack/echo"
 	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/require"
 )
-
-// conditionalityCheckerMock - implements model.ConditionalityChecker interface for tests
-type conditionalityCheckerMock struct {
-}
-
-// IsOptional - not used in discovery test
-func (c conditionalityCheckerMock) IsOptional(method, endpoint string, specification string) (bool, error) {
-	return false, nil
-}
-
-// Returns IsMandatory true for POST /account-access-consents, false for all other endpoint/methods.
-func (c conditionalityCheckerMock) IsMandatory(method, endpoint string, specification string) (bool, error) {
-	if method == "POST" && endpoint == "/account-access-consents" {
-		return true, nil
-	}
-	return false, nil
-}
-
-// IsOptional - not used in discovery test
-func (c conditionalityCheckerMock) IsConditional(method, endpoint string, specification string) (bool, error) {
-	return false, nil
-}
-
-// Returns IsPresent true for valid GET/POST/DELETE endpoints.
-func (c conditionalityCheckerMock) IsPresent(method, endpoint string, specification string) (bool, error) {
-	if method == "GET" || method == "POST" || method == "DELETE" {
-		return true, nil
-	}
-	return false, nil
-}
-
-func (c conditionalityCheckerMock) MissingMandatory(endpoints []model.Input, specification string) ([]model.Input, error) {
-	return []model.Input{}, nil
-}
 
 func TestMain(m *testing.M) {
 	// call flag.Parse() here if TestMain uses flags
@@ -72,7 +36,7 @@ func TestMain(m *testing.M) {
 }
 
 func TestServer(t *testing.T) {
-	server := NewServer(nullLogger(), conditionalityCheckerMock{}, &mocks.Version{})
+	server := NewServer(testJourney(), nullLogger(), &mocks.Version{})
 
 	t.Run("NewServer() returns non-nil value", func(t *testing.T) {
 		assert := test.NewAssert(t)
@@ -102,7 +66,7 @@ func TestServer(t *testing.T) {
 func TestServerConformanceSuiteCallback(t *testing.T) {
 	require := test.NewRequire(t)
 
-	server := NewServer(nullLogger(), conditionalityCheckerMock{}, &mocks.Version{})
+	server := NewServer(testJourney(), nullLogger(), &mocks.Version{})
 	defer func() {
 		require.NoError(server.Shutdown(context.TODO()))
 	}()
@@ -167,7 +131,7 @@ func TestServerHTTPS(t *testing.T) {
 	}
 	client := &http.Client{Transport: transport}
 
-	server := NewServer(nullLogger(), conditionalityCheckerMock{}, &mocks.Version{})
+	server := NewServer(testJourney(), nullLogger(), &mocks.Version{})
 	defer func() {
 		require.NoError(server.Shutdown(context.TODO()))
 	}()
@@ -210,7 +174,7 @@ func request(method, path string, body io.Reader, server *Server) (int, *bytes.B
 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 	server.ServeHTTP(rec, req)
 
-	return rec.Code, rec.Body, rec.HeaderMap
+	return rec.Code, rec.Body, rec.Header()
 }
 
 // nullLogger - create a logger that discards output.

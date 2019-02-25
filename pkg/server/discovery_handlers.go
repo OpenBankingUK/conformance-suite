@@ -22,7 +22,7 @@ type validationFailuresResponse struct {
 
 type discoveryHandlers struct {
 	webJourney Journey
-	logger *logrus.Entry
+	logger     *logrus.Entry
 }
 
 func newDiscoveryHandlers(webJourney Journey, logger *logrus.Entry) discoveryHandlers {

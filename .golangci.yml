@@ -1,12 +1,21 @@
 run:
   tests: true
 
-# all available settings of specific linters
-linters-settings:
-  enable-all: true
-  disable-all: false
+linters:
+  enable:
+    - errcheck
+    - govet
+    - golint
+    - gofmt
+    - gocyclo
+    - lll
+    - megacheck
+  enable-all: false
+  disable-all: true
   fast: false
 
+# all available settings of specific linters
+linters-settings:
   errcheck:
     # report about not checking of errors in type assetions: `a := b.(MyStruct)`;
     # default is false: such cases aren't reported by default.
@@ -20,8 +29,6 @@ linters-settings:
   golint:
     # minimal confidence for issues, default is 0.8
     min-confidence: 1.0
-  maligned:
-    suggest-new: true
   gofmt:
     # simplify code: gofmt with `-s` option, true by default
     simplify: true
@@ -31,7 +38,11 @@ linters-settings:
     # Setting locale to US will correct the British spelling of 'colour' to 'color'.
     locale: UK
   gocyclo:
-    min-complexity: 12
+    min-complexity: 13
+  lll:
+    # max line length, lines longer will be reported. Default is 120.
+    # '\t' is counted as 1 character by default, and can be changed with the tab-width option
+    line-length: 1024
 
   # see: https://github.com/golangci/golangci-lint/blob/master/.golangci.example.yml#L47
   #

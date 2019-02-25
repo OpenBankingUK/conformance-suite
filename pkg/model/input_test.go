@@ -180,7 +180,8 @@ func TestInputClaims(t *testing.T) {
 	assert.Nil(t, err)
 	assert.NotNil(t, req)
 
-	m, _ := url.ParseQuery(req.URL)
+	m, err := url.ParseQuery(req.URL)
+	require.NoError(t, err)
 	assert.Equal(t, m["request"][0], "eyJhbGciOiJub25lIn0.eyJhdWQiOiIiLCJjbGFpbXMiOnsiaWRfdG9rZW4iOnsib3BlbmJhbmtpbmdfaW50ZW50X2lkIjp7ImVzc2VudGlhbCI6dHJ1ZSwidmFsdWUiOiIifX19LCJpc3MiOiI4NjcyMzg0ZS05YTMzLTQzOWYtODkyNC02N2JiMTQzNDBkNzEiLCJyZWRpcmVjdF91cmkiOiJodHRwczovL3Rlc3QuZXhhbXBsZS5jby51ay9yZWRpciIsInNjb3BlIjoib3BlbmlkIGFjY291bnRzIn0.")
 }
 
@@ -203,7 +204,8 @@ func TestInputClaimsWithContextReplacementParameters(t *testing.T) {
 	assert.Nil(t, err)
 	assert.NotNil(t, req)
 
-	m, _ := url.ParseQuery(req.URL)
+	m, err := url.ParseQuery(req.URL)
+	require.NoError(t, err)
 	assert.Equal(t, m["request"][0], "eyJhbGciOiJub25lIn0.eyJhdWQiOiJodHRwOi8vbXliYXNldXJsIiwiY2xhaW1zIjp7ImlkX3Rva2VuIjp7Im9wZW5iYW5raW5nX2ludGVudF9pZCI6eyJlc3NlbnRpYWwiOnRydWUsInZhbHVlIjoibXljb25zZW50aWQifX19LCJpc3MiOiI4NjcyMzg0ZS05YTMzLTQzOWYtODkyNC02N2JiMTQzNDBkNzEiLCJyZWRpcmVjdF91cmkiOiJodHRwczovL3Rlc3QuZXhhbXBsZS5jby51ay9yZWRpciIsInNjb3BlIjoib3BlbmlkIGFjY291bnRzIn0.")
 
 }
@@ -229,7 +231,8 @@ func TestInputClaimsConsentId(t *testing.T) {
 }
 
 func TestClaimsJWTBearer(t *testing.T) {
-	cert, _ := authentication.NewCertificate(selfsignedDummypub, selfsignedDummykey)
+	cert, err := authentication.NewCertificate(selfsignedDummypub, selfsignedDummykey)
+	require.NoError(t, err)
 	ctx := Context{
 		"consent_id":   "aac-fee2b8eb-ce1b-48f1-af7f-dc8f576d53dc",
 		"xchange_code": "10e9d80b-10d4-4abd-9fe0-15789cc512b5",

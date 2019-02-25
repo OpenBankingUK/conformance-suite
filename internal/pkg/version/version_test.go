@@ -61,7 +61,8 @@ func TestNoUpdateUpdateWarningVersion(t *testing.T) {
 	assert.Equal(t, false, flag)
 	assert.Equal(t, "Conformance Suite is running the latest version "+v.GetHumanVersion(), message)
 	version = FullVersion
-	_, flag, _ = v.UpdateWarningVersion(version)
+	_, flag, err = v.UpdateWarningVersion(version)
+	assert.NoError(t, err)
 	assert.Equal(t, false, flag)
 }
 
@@ -84,7 +85,8 @@ func TestBadStatusUpdateWarningVersionFail(t *testing.T) {
 
 	message := ""
 	// Check we get the appropriate error message.
-	message, _, _ = v.UpdateWarningVersion(FullVersion)
+	message, _, err := v.UpdateWarningVersion(FullVersion)
+	assert.NoError(t, err)
 	assert.Equal(t, message, "Version check is unavailable at this time.")
 
 }

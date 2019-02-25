@@ -32,7 +32,7 @@ func TestServerSwaggerHandlers(t *testing.T) {
 func TestServerSwaggerHandlersServesUI(t *testing.T) {
 	require := test.NewRequire(t)
 
-	server := NewServer(nullLogger(), conditionalityCheckerMock{}, &mocks.Version{})
+	server := NewServer(testJourney(), nullLogger(), &mocks.Version{})
 	defer func() {
 		require.NoError(server.Shutdown(context.TODO()))
 	}()

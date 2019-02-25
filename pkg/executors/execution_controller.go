@@ -99,7 +99,11 @@ func (r *TestCaseRunner) RunConsentAcquisition(item TokenConsentIDItem, ctx *mod
 
 func (r *TestCaseRunner) runTestCasesAsync(ctx *model.Context) {
 
-	r.executor.SetCertificates(r.definition.SigningCert, r.definition.TransportCert)
+	err := r.executor.SetCertificates(r.definition.SigningCert, r.definition.TransportCert)
+	if err != nil {
+		r.logger.WithError(err).Error("running test cases async")
+	}
+
 	ruleCtx := r.makeRuleCtx(ctx)
 
 	ctxLogger := r.logger.WithField("id", uuid.New())
@@ -110,26 +114,29 @@ func (r *TestCaseRunner) runTestCasesAsync(ctx *model.Context) {
 }
 
 func (r *TestCaseRunner) runConsentAcquisitionAsync(item TokenConsentIDItem, ctx *model.Context, consentType string, consentIDChannel chan<- TokenConsentIDItem) {
-	r.executor.SetCertificates(r.definition.SigningCert, r.definition.TransportCert)
+	err := r.executor.SetCertificates(r.definition.SigningCert, r.definition.TransportCert)
+	if err != nil {
+		r.logger.WithError(err).Error("running consent acquisition async")
+	}
+
 	ruleCtx := r.makeRuleCtx(ctx)
 	ruleCtx.PutString("consent_id", item.TokenName)
 	ruleCtx.PutString("token_name", item.TokenName)
 	ruleCtx.PutString("permission_list", item.Permissions)
 
 	ctxLogger := r.logger.WithField("id", uuid.New())
-	var err error
 	var comp model.Component
 	if consentType == "psu" {
 		comp, err = model.LoadComponent("PSUConsentProviderComponent.json")
 		if err != nil {
-			r.AppErr("Load PSU Component Failed: " + err.Error())
+			r.AppMsg("Load PSU Component Failed: " + err.Error())
 			r.setNotRunning()
 			return
 		}
 	} else {
 		comp, err = model.LoadComponent("headlessTokenProviderProviderComponent.json")
 		if err != nil {
-			r.AppErr("Load HeadlessConsent Component Failed: " + err.Error())
+			r.AppMsg("Load HeadlessConsent Component Failed: " + err.Error())
 			r.setNotRunning()
 			return
 		}
@@ -138,7 +145,7 @@ func (r *TestCaseRunner) runConsentAcquisitionAsync(item TokenConsentIDItem, ctx
 	err = comp.ValidateParameters(ruleCtx) // correct parameters for component exist in context
 	if err != nil {
 		msg := fmt.Sprintf("component execution error: component (%s) cannot ValidateParameters: %s", comp.Name, err.Error())
-		r.AppErr(msg)
+		r.AppMsg(msg)
 		r.setNotRunning()
 		return
 	}
@@ -216,7 +223,7 @@ func (r *TestCaseRunner) executeSpecTests(spec generation.SpecificationTestCases
 }
 
 func (r *TestCaseRunner) executeTest(tc model.TestCase, ruleCtx *model.Context, ctxLogger *logrus.Entry) results.TestCase {
-	ctxLogger = logWithTestCase(r.logger, tc)
+	ctxLogger = logWithTestCase(ctxLogger, tc)
 	req, err := tc.Prepare(ruleCtx)
 	if err != nil {
 		ctxLogger.WithError(err).Error("preparing executing test")
@@ -267,13 +274,13 @@ func logWithMetrics(logger *logrus.Entry, metrics results.Metrics) *logrus.Entry
 
 // AppMsg - application level trace
 func (r *TestCaseRunner) AppMsg(msg string) string {
-	tracer.AppMsg("TestCaseRunner", fmt.Sprintf("%s", msg), r.String())
+	tracer.AppMsg("TestCaseRunner", msg, r.String())
 	return msg
 }
 
 // AppErr - application level trace error msg
 func (r *TestCaseRunner) AppErr(msg string) error {
-	tracer.AppErr("TestCaseRunner", fmt.Sprintf("%s", msg), r.String())
+	tracer.AppErr("TestCaseRunner", msg, r.String())
 	return errors.New(msg)
 }
 

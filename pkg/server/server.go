@@ -4,9 +4,6 @@ import (
 	"strings"
 
 	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/version"
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/generation"
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
 
 	"github.com/gorilla/websocket"
 	"github.com/labstack/echo"
@@ -22,7 +19,7 @@ type Server struct {
 }
 
 // NewServer returns new echo.Echo server.
-func NewServer(logger *logrus.Entry, checker model.ConditionalityChecker, version version.Checker) *Server {
+func NewServer(journey Journey, logger *logrus.Entry, version version.Checker) *Server {
 	server := &Server{
 		Echo:    echo.New(),
 		logger:  logger,
@@ -52,19 +49,16 @@ func NewServer(logger *logrus.Entry, checker model.ConditionalityChecker, versio
 		Browse:  false,
 	}))
 
-	registerRoutes(server, logger, checker, version)
+	registerRoutes(journey, server, logger, version)
 
 	return server
 }
 
-func registerRoutes(server *Server, logger *logrus.Entry, checker model.ConditionalityChecker, version version.Checker) {
+func registerRoutes(journey Journey, server *Server, logger *logrus.Entry, version version.Checker) {
 	// swagger ui endpoints
 	for path, handler := range swaggerHandlers(logger) {
 		server.GET(path, handler)
 	}
-	validatorEngine := discovery.NewFuncValidator(checker)
-	testGenerator := generation.NewGenerator()
-	journey := NewJourney(logger, testGenerator, validatorEngine)
 
 	// anything prefixed with api
 	api := server.Group("/api")

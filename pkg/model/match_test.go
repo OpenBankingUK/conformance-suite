@@ -3,6 +3,7 @@ package model
 import (
 	"bytes"
 	"encoding/json"
+	"github.com/stretchr/testify/require"
 	"testing"
 
 	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/test"
@@ -25,7 +26,8 @@ func TestContextPutFromMatch(t *testing.T) {
 	m := Match{JSON: "name.last", Description: "simple match test", ContextName: "LastName"}
 	resp := test.CreateHTTPResponse(200, "OK", simplejson)
 	buf := new(bytes.Buffer)
-	buf.ReadFrom(resp.RawResponse.Body)
+	_, err := buf.ReadFrom(resp.RawResponse.Body)
+	require.NoError(t, err)
 	tc := TestCase{Body: buf.String()}
 	assert.True(t, m.PutValue(&tc, &ctx))
 	ctxvalue, exists := ctx.Get(m.ContextName)
@@ -59,7 +61,8 @@ var status200 = []byte(`{"expect": {"status-code": 200}}`)
 // check match on status code is detected
 func TestMatchOnStatusCode(t *testing.T) {
 	var tc TestCase
-	json.Unmarshal(status200, &tc)
+	err := json.Unmarshal(status200, &tc)
+	require.NoError(t, err)
 	resp := test.CreateHTTPResponse(200, "OK", simplejson)
 	result, err := tc.ApplyExpects(resp, nil)
 	assert.Nil(t, err)
@@ -69,7 +72,8 @@ func TestMatchOnStatusCode(t *testing.T) {
 // check status code mismatch is detected
 func TestNoMatchOnStatusCode(t *testing.T) {
 	var tc TestCase
-	json.Unmarshal(status200, &tc)
+	err := json.Unmarshal(status200, &tc)
+	require.NoError(t, err)
 	resp := test.CreateHTTPResponse(404, "File Not Found", simplejson)
 	result, err := tc.ApplyExpects(resp, nil)
 	assert.Equal(t, "():: HTTP Status code does not match: expected 200 got 404", err.Error())

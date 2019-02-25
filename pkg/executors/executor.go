@@ -108,16 +108,3 @@ func (e *Executor) setupTLSCertificate(tlsCert tls.Certificate) error {
 func (e *Executor) appMsg(msg string) {
 	tracer.AppMsg("Executor", msg, "")
 }
-
-func (e *Executor) appErr(msg string) error {
-	tracer.AppErr("Executor", msg, "")
-	return errors.New(msg)
-}
-
-func (e *Executor) appEntry(msg string) {
-	tracer.AppEntry("Executor", msg)
-}
-
-func (e *Executor) appExit(msg string) {
-	tracer.AppExit("Executor", msg)
-}

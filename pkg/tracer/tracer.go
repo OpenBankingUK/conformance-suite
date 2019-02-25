@@ -17,8 +17,6 @@ The basic naive implementation consists of:-
 */
 import (
 	"fmt"
-	"strings"
-
 	"github.com/sirupsen/logrus"
 )
 
@@ -85,14 +83,6 @@ func AppEntry(objtype, msg string) {
 func AppExit(objtype, msg string) {
 	addIndent(-1)
 	AppMsg(objtype, msg, "")
-}
-
-// Indent -
-func indent() string {
-	if indents < 0 {
-		return ""
-	}
-	return strings.Repeat(" ", indents*3)
 }
 
 // addIndent -

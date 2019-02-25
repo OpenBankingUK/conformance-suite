@@ -109,15 +109,15 @@ func discoveryStub(field string, value string) string {
 	discoveryItems := discoveryItemsStub(apiSpecification, endpoints, field, value)
 
 	return `
-				{
-					"discoveryModel": {` +
+	{
+		"discoveryModel": {` +
 		`"name": "` + name + `",` +
 		`"description": "` + description + `",` +
 		`"discoveryVersion": "` + version + `",` +
 		`"tokenAcquisition": "` + tokenAcquisition + `"` +
 		discoveryItems + `
-					}
-			}`
+		}
+	}`
 }
 
 func apiSpecificationStub(specName string, specURL string, specVersion string, schemaVersion string, field string, value string) string {
@@ -257,17 +257,6 @@ func TestValidate(t *testing.T) {
 				},
 			}})
 	})
-
-	// t.Run("when discoveryItems is empty array returns failure", func(t *testing.T) {
-	// 	testValidateFailures(t, conditionalityCheckerMock{}, &invalidTest{
-	// 		discoveryJSON: discoveryStub("discoveryItems", "[]"),
-	// 		failures: []ValidationFailure{
-	// 			{
-	// 				Key:   "DiscoveryModel.DiscoveryItems",
-	// 				Error: "Field 'DiscoveryModel.DiscoveryItems' cannot be empty",
-	// 			},
-	// 		}})
-	// })
 
 	t.Run("when discoveryItem missing apiSpecification returns failures", func(t *testing.T) {
 		testValidateFailures(t, conditionalityCheckerMock{}, &invalidTest{

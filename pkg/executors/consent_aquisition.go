@@ -11,46 +11,22 @@ import (
 	resty "gopkg.in/resty.v1"
 )
 
-var (
-	defaultPermissions = []string{
-		"ReadAccountsBasic",
-		"ReadAccountsDetail",
-		"ReadBalances",
-		"ReadBeneficiariesBasic",
-		"ReadBeneficiariesDetail",
-		"ReadDirectDebits",
-		"ReadTransactionsBasic",
-		"ReadTransactionsCredits",
-		"ReadTransactionsDebits",
-		"ReadTransactionsDetail",
-		"ReadProducts",
-		"ReadStandingOrdersDetail",
-		"ReadProducts",
-		"ReadStandingOrdersDetail",
-		"ReadParty",
-		"ReadPartyPSU",
-		"ReadScheduledPaymentsBasic",
-		"ReadScheduledPaymentsDetail",
-		"ReadPAN",
-	}
-
-	consentChannelTimeout = 30
-)
+var consentChannelTimeout = 30
 
 // InitiationConsentAcquisition - get required tokens
 func InitiationConsentAcquisition(consentRequirements []model.SpecConsentRequirements, definition RunDefinition, ctx *model.Context) (TokenConsentIDs, error) {
 	consentIDChannel := make(chan TokenConsentIDItem, 100)
 	tokenParameters := getConsentTokensAndPermissions(consentRequirements)
 
-	//tokenParameters["to1001"] = defaultPermissions // use default permissions for default token
-
 	for tokenName, permissionList := range tokenParameters {
 		runner := NewConsentAcquisitionRunner(definition, NewBufferedDaemonController())
 		tokenAcquisitionType := definition.DiscoModel.DiscoveryModel.TokenAcquisition
 		permissionString := buildPermissionString(permissionList)
-		//permissionString = buildPermissionString(defaultPermissions)
 		consentInfo := TokenConsentIDItem{TokenName: tokenName, Permissions: permissionString}
-		runner.RunConsentAcquisition(consentInfo, ctx, tokenAcquisitionType, consentIDChannel)
+		err := runner.RunConsentAcquisition(consentInfo, ctx, tokenAcquisitionType, consentIDChannel)
+		if err != nil {
+			logrus.WithError(err).Debug("InitiationConsentAcquisition")
+		}
 	}
 
 	consentItems, err := waitForConsentIDs(consentIDChannel, tokenParameters)

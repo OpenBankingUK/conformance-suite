@@ -4,7 +4,7 @@ import (
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/generation"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/server/mocks"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/server"
 	"bytes"
 	"errors"
 	"github.com/stretchr/testify/assert"
@@ -14,7 +14,7 @@ import (
 )
 
 func TestGenerator(t *testing.T) {
-	journey := &mocks.Journey{}
+	journey := &server.MockJourney{}
 	journey.On("SetDiscoveryModel", &discovery.Model{}).Return(discovery.NoValidationFailures, nil)
 	testCaseRun := generation.TestCasesRun{TestCases: []generation.SpecificationTestCases{}, SpecConsentRequirements: []model.SpecConsentRequirements{}}
 	journey.On("TestCases").Return(testCaseRun, nil)
@@ -30,7 +30,7 @@ func TestGenerator(t *testing.T) {
 }
 
 func TestGeneratorHandlesWrongInput(t *testing.T) {
-	journey := &mocks.Journey{}
+	journey := &server.MockJourney{}
 	g := newGenerator(journey)
 	input := `hannah montana`
 	output := &bytes.Buffer{}
@@ -41,7 +41,7 @@ func TestGeneratorHandlesWrongInput(t *testing.T) {
 }
 
 func TestGeneratorHandlesSetDiscoveryModelErr(t *testing.T) {
-	journey := &mocks.Journey{}
+	journey := &server.MockJourney{}
 	journey.On("SetDiscoveryModel", &discovery.Model{}).Return(discovery.NoValidationFailures, errors.New("booboo"))
 	g := newGenerator(journey)
 	input := `{}`
@@ -53,7 +53,7 @@ func TestGeneratorHandlesSetDiscoveryModelErr(t *testing.T) {
 }
 
 func TestGeneratorHandlesFailuresFromSetDiscovery(t *testing.T) {
-	journey := &mocks.Journey{}
+	journey := &server.MockJourney{}
 	failures := discovery.ValidationFailures{{Key: "key", Error: "something wrong with this world"}}
 	journey.On("SetDiscoveryModel", &discovery.Model{}).Return(failures, nil)
 	g := newGenerator(journey)
@@ -66,7 +66,7 @@ func TestGeneratorHandlesFailuresFromSetDiscovery(t *testing.T) {
 }
 
 func TestGeneratorHandlesErrFromTestCases(t *testing.T) {
-	journey := &mocks.Journey{}
+	journey := &server.MockJourney{}
 	journey.On("SetDiscoveryModel", &discovery.Model{}).Return(discovery.NoValidationFailures, nil)
 	testCaseRun := generation.TestCasesRun{TestCases: []generation.SpecificationTestCases{}, SpecConsentRequirements: []model.SpecConsentRequirements{}}
 	journey.On("TestCases").Return(testCaseRun, errors.New("more booboo"))
@@ -79,7 +79,7 @@ func TestGeneratorHandlesErrFromTestCases(t *testing.T) {
 }
 
 func TestGeneratorHandlesErrWriteToOutput(t *testing.T) {
-	journey := &mocks.Journey{}
+	journey := &server.MockJourney{}
 	journey.On("SetDiscoveryModel", &discovery.Model{}).Return(discovery.NoValidationFailures, nil)
 	testCaseRun := generation.TestCasesRun{TestCases: []generation.SpecificationTestCases{}, SpecConsentRequirements: []model.SpecConsentRequirements{}}
 	journey.On("TestCases").Return(testCaseRun, nil)

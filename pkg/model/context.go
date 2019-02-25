@@ -43,8 +43,7 @@ func (c Context) Put(key string, value interface{}) {
 
 // PutString Put a value indexed by 'key' into the context. The value can be any type
 func (c Context) PutString(key string, value string) {
-	var interfaceValue interface{}
-	interfaceValue = value
+	var interfaceValue interface{} = value
 	c[key] = interfaceValue
 }
 

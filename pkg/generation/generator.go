@@ -1,9 +1,8 @@
-//go:generate mockery -name Generator
+//go:generate mockery -name Generator -inpkg
 package generation
 
 import (
 	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/names"
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/authentication"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/permissions"
@@ -47,7 +46,7 @@ func (g generator) GenerateSpecificationTestCases(config GeneratorConfig, discov
 	specTestCases := []SpecificationTestCases{}
 	customTestCases := []SpecificationTestCases{}
 	customReplacements := make(map[string]string)
-	originalEndpoints := make(map[string]string, 0)
+	originalEndpoints := make(map[string]string)
 	backupEndpoints := make(map[string]string)
 
 	for _, customTest := range discovery.CustomTests { // assume ordering is prerun i.e. customtest run before other tests
@@ -87,9 +86,6 @@ func (g generator) GenerateSpecificationTestCases(config GeneratorConfig, discov
 	consentRequirements := g.consentRequirements(tmpSpecTestCases) // uses pre-modified swagger urls
 	logrus.Warnf("Consent Requirements: %#v", consentRequirements)
 
-	// // generate PSU consent URL onto the perm set structure
-	//consentRequirements = withConsentUrl(config, consentRequirements)
-
 	for _, specTest := range specTestCases {
 		for x, y := range specTest.TestCases {
 			y.Input.Endpoint = backupEndpoints[y.ID]
@@ -100,41 +96,6 @@ func (g generator) GenerateSpecificationTestCases(config GeneratorConfig, discov
 	specTestCases = append(customTestCases, specTestCases...)
 	return TestCasesRun{specTestCases, consentRequirements}
 
-}
-
-// withConsentUrl copies the full requirement consent structure into a new one with the Consent url populated
-func withConsentUrl(config GeneratorConfig, consentRequirements []model.SpecConsentRequirements) []model.SpecConsentRequirements {
-	var withUrlSpecs []model.SpecConsentRequirements
-	for _, spec := range consentRequirements {
-		var namedPermsWithUrl model.NamedPermissions
-		for _, namedPerm := range spec.NamedPermissions {
-			claims := authentication.PSUConsentClaims{
-				AuthorizationEndpoint: config.AuthorizationEndpoint,
-				Aud:                   config.Aud,
-				Iss:                   config.ClientID,
-				ResponseType:          config.ResponseType,
-				Scope:                 config.Scope,
-				RedirectURI:           config.RedirectURL,
-				ConsentId:             "",
-				State:                 namedPerm.Name,
-			}
-			consentUrl, _ := authentication.PSUURLGenerate(claims)
-			namedPermsWithUrl = append(
-				namedPermsWithUrl,
-				model.NamedPermission{
-					Name:       namedPerm.Name,
-					CodeSet:    namedPerm.CodeSet,
-					ConsentUrl: consentUrl.String(),
-				},
-			)
-		}
-		specWithUrl := model.SpecConsentRequirements{
-			Identifier:       spec.Identifier,
-			NamedPermissions: namedPermsWithUrl,
-		}
-		withUrlSpecs = append(withUrlSpecs, specWithUrl)
-	}
-	return withUrlSpecs
 }
 
 // consentRequirements calls resolver to get list of permission sets required to run all test cases

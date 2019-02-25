@@ -2,10 +2,10 @@ package authentication
 
 import (
 	"encoding/json"
-	"testing"
-	"net/http"
-	"io/ioutil"
 	"fmt"
+	"io/ioutil"
+	"net/http"
+	"testing"
 
 	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/test"
 )
@@ -53,7 +53,7 @@ func TestOpenIdConfigWhenHttpResponseError(t *testing.T) {
 	defer mockedBadServer.Close()
 
 	_, err := OpenIdConfig(mockedBadServerURL)
-	require.EqualError(err, fmt.Sprintf("Failed to GET OpenID config: %s : HTTP response status: 503", mockedBadServerURL))
+	require.EqualError(err, fmt.Sprintf("failed to GET OpenID config: %s : HTTP response status: 503", mockedBadServerURL))
 }
 
 func TestOpenIdConfigWhenJsonParseFails(t *testing.T) {

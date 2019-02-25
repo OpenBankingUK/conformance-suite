@@ -1,6 +1,9 @@
 package server
 
 import (
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/generation"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
 	"bytes"
 	"context"
 	"encoding/json"
@@ -283,7 +286,7 @@ func readFile(filename string) string {
 func TestServerConfigGlobalPostValid(t *testing.T) {
 	require := test.NewRequire(t)
 
-	server := NewServer(nullLogger(), conditionalityCheckerMock{}, &mocks.Version{})
+	server := NewServer(testJourney(), nullLogger(), &mocks.Version{})
 	defer func() {
 		require.NoError(server.Shutdown(context.TODO()))
 	}()
@@ -378,7 +381,7 @@ func TestServerConfigGlobalPostInvalid(t *testing.T) {
 		t.Run(testCase.name, func(t *testing.T) {
 			require := test.NewRequire(t)
 
-			server := NewServer(nullLogger(), conditionalityCheckerMock{}, &mocks.Version{})
+			server := NewServer(testJourney(), nullLogger(), &mocks.Version{})
 			defer func() {
 				require.NoError(server.Shutdown(context.TODO()))
 			}()
@@ -402,4 +405,10 @@ func TestServerConfigGlobalPostInvalid(t *testing.T) {
 			}, headers)
 		})
 	}
+}
+
+func testJourney() Journey {
+	validatorEngine := discovery.NewFuncValidator(model.NewConditionalityChecker())
+	testGenerator := generation.NewGenerator()
+	return NewJourney(nullLogger(), testGenerator, validatorEngine)
 }

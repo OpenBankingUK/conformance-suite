@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/sirupsen/logrus"
 	"net/http"
 	"regexp"
 	"strings"
@@ -202,7 +203,7 @@ func (t *TestCase) ApplyExpects(res *resty.Response, rulectx *Context) (bool, er
 	t.AppMsg(fmt.Sprintf("Status check isReplacement: expected [%d] got [%d]", t.Expect.StatusCode, res.StatusCode()))
 	for k, match := range t.Expect.Matches {
 		checkResult, got := match.Check(t)
-		if checkResult == false {
+		if !checkResult {
 			return false, t.AppErr(fmt.Sprintf("ApplyExpects Returns False on match %s : %s", match.String(), got.Error()))
 		}
 
@@ -306,27 +307,67 @@ func isReplacementField(value string) bool {
 // ProcessReplacementFields prefixed by '$' in the testcase Input and Context sections
 // Call to pre-process custom test cases from discovery model
 func (t *TestCase) ProcessReplacementFields(ctx *Context) {
+	var err error
 
-	t.Input.Endpoint, _ = replaceContextField(t.Input.Endpoint, ctx) // errors if field not present in context - which is isReplacement for this function
-	t.Input.RequestBody, _ = replaceContextField(t.Input.RequestBody, ctx)
+	t.Input.Endpoint, err = replaceContextField(t.Input.Endpoint, ctx) // errors if field not present in context - which is isReplacement for this function
+	if err != nil {
+		logrus.WithError(err).Error("processing replacement fields")
+	}
 
-	for k := range t.Input.FormData {
-		t.Input.FormData[k], _ = replaceContextField(t.Input.FormData[k], ctx)
+	t.Input.RequestBody, err = replaceContextField(t.Input.RequestBody, ctx)
+	if err != nil {
+		logrus.WithError(err).Error("processing replacement fields")
 	}
-	for k := range t.Input.Headers {
-		t.Input.Headers[k], _ = replaceContextField(t.Input.Headers[k], ctx)
-	}
-	for k := range t.Input.Claims {
-		t.Input.Claims[k], _ = replaceContextField(t.Input.Claims[k], ctx)
-	}
+
+	t.processReplacementFormData(ctx)
+	t.processReplacementHeaders(ctx)
+	t.processReplacementClaims(ctx)
+
 	for k := range t.Context {
 		param, ok := t.Context[k].(string)
 		if !ok {
 			continue
 		}
-		t.Context[k], _ = replaceContextField(param, ctx)
+		t.Context[k], err = replaceContextField(param, ctx)
+		if err != nil {
+			logrus.WithError(err).Error("processing replacement fields")
+		}
 	}
+
 	for k, v := range t.Expect.ContextPut.Matches {
-		t.Expect.ContextPut.Matches[k].ContextName, _ = replaceContextField(v.ContextName, ctx)
+		t.Expect.ContextPut.Matches[k].ContextName, err = replaceContextField(v.ContextName, ctx)
+		if err != nil {
+			logrus.WithError(err).Error("processing replacement fields")
+		}
+	}
+}
+
+func (t *TestCase) processReplacementFormData(ctx *Context) {
+	var err error
+	for k := range t.Input.FormData {
+		t.Input.FormData[k], err = replaceContextField(t.Input.FormData[k], ctx)
+		if err != nil {
+			logrus.WithError(err).Error("processing replacement fields")
+		}
+	}
+}
+
+func (t *TestCase) processReplacementHeaders(ctx *Context) {
+	var err error
+	for k := range t.Input.Headers {
+		t.Input.Headers[k], err = replaceContextField(t.Input.Headers[k], ctx)
+		if err != nil {
+			logrus.WithError(err).Error("processing replacement fields")
+		}
+	}
+}
+
+func (t *TestCase) processReplacementClaims(ctx *Context) {
+	var err error
+	for k := range t.Input.Claims {
+		t.Input.Claims[k], err = replaceContextField(t.Input.Claims[k], ctx)
+		if err != nil {
+			logrus.WithError(err).Error("processing replacement fields")
+		}
 	}
 }

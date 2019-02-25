@@ -68,7 +68,10 @@ func (h *configHandlers) configGlobalPostHandler(c echo.Context) error {
 		issuer:                config.Issuer,
 		redirectURL:           config.RedirectURL,
 	}
-	h.journey.SetConfig(jConfig)
+	err = h.journey.SetConfig(jConfig)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, NewErrorResponse(err))
+	}
 
 	return c.JSON(http.StatusCreated, config)
 }

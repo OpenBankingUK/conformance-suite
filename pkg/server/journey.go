@@ -1,4 +1,4 @@
-//go:generate mockery -name Journey
+//go:generate mockery -name Journey -inpkg
 package server
 
 import (
@@ -38,7 +38,7 @@ type Journey interface {
 	RunTests() error
 	StopTestRun()
 	Results() executors.DaemonController
-	SetConfig(config JourneyConfig)
+	SetConfig(config JourneyConfig) error
 }
 
 type journey struct {
@@ -221,12 +221,16 @@ type JourneyConfig struct {
 	redirectURL           string
 }
 
-func (wj *journey) SetConfig(config JourneyConfig) {
+func (wj *journey) SetConfig(config JourneyConfig) error {
 	wj.journeyLock.Lock()
 	defer wj.journeyLock.Unlock()
 	wj.config = config
-	wj.configParametersToJourneyContext()
+	err := wj.configParametersToJourneyContext()
+	if err != nil {
+		return err
+	}
 	wj.customTestParametersToJourneyContext()
+	return nil
 }
 
 const ctxConstClientID = "client_id"

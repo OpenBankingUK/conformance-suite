@@ -72,7 +72,7 @@ devtools: ## install dev tools.
 .PHONY: lint
 lint: ## lint the go code.
 	@echo -e "\033[92m  ---> Checking other qa tools ... \033[0m"
-	golangci-lint run --config ./.golangci.yml --new ./...
+	golangci-lint run --config ./.golangci.yml ./...
 
 .PHONY: qa
 qa: test lint ## run all known quality assurance tools

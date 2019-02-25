@@ -4,11 +4,11 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"strings"
 	"testing"
-	"fmt"
 
 	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/test"
 	versionmock "bitbucket.org/openbankingteam/conformance-suite/internal/pkg/version/mocks"
@@ -19,7 +19,7 @@ import (
 func TestServerDiscoveryModelPOSTValidateReturnsErrorsWhenInvalidJSON(t *testing.T) {
 	assert := test.NewAssert(t)
 
-	server := NewServer(nullLogger(), conditionalityCheckerMock{}, &versionmock.Version{})
+	server := NewServer(testJourney(), nullLogger(), &versionmock.Version{})
 	defer func() {
 		assert.NoError(server.Shutdown(context.TODO()))
 	}()
@@ -43,7 +43,7 @@ func TestServerDiscoveryModelPOSTValidateReturnsErrorsWhenInvalidJSON(t *testing
 func TestServerDiscoveryModelPOSTValidateReturnsErrorsWhenIncomplete(t *testing.T) {
 	assert := test.NewAssert(t)
 
-	server := NewServer(nullLogger(), conditionalityCheckerMock{}, &versionmock.Version{})
+	server := NewServer(testJourney(), nullLogger(), &versionmock.Version{})
 	defer func() {
 		assert.NoError(server.Shutdown(context.TODO()))
 	}()
@@ -115,7 +115,7 @@ func TestServerDiscoveryModelPOSTResolvesValuesUsingOpenidConfigurationURIs(t *t
 	require.NoError(err)
 	require.NotNil(postBody)
 
-	server := NewServer(nullLogger(), conditionalityCheckerMock{}, &versionmock.Version{})
+	server := NewServer(testJourney(), nullLogger(), &versionmock.Version{})
 	defer func() {
 		require.NoError(server.Shutdown(context.TODO()))
 	}()
@@ -143,8 +143,8 @@ func TestServerDiscoveryModelPOSTReturnsErrorsWhenItCannotResolveOpenidConfigura
 {
     "error": [
         {
-            "key": "DiscoveryModel.DiscoveryItems[0].OpenidConfigurationURI",
-            "error": "Failed to GET OpenID config: %s : HTTP response status: 500"
+			"key": "DiscoveryModel.DiscoveryItems[0].OpenidConfigurationURI",
+			"error": "failed to GET OpenID config: %s : HTTP response status: 500"
         }
     ]
 }
@@ -170,7 +170,7 @@ func TestServerDiscoveryModelPOSTReturnsErrorsWhenItCannotResolveOpenidConfigura
 	require.NoError(err)
 	require.NotNil(postBody)
 
-	server := NewServer(nullLogger(), conditionalityCheckerMock{}, &versionmock.Version{})
+	server := NewServer(testJourney(), nullLogger(), &versionmock.Version{})
 	defer func() {
 		require.NoError(server.Shutdown(context.TODO()))
 	}()

@@ -55,15 +55,15 @@ func (g GeneratorCommand) run(cmd *cobra.Command, _ []string) {
 	output := os.Stdout
 	outputFlag, err := cmd.Flags().GetString("output")
 	if err == nil && outputFlag != "" {
-		file, err := os.Create(outputFlag)
-		if err != nil {
-			exitError(err, "Error creating output file")
+		file, err2 := os.Create(outputFlag)
+		if err2 != nil {
+			exitError(err2, "Error creating output file")
 		}
 		output = file
 		defer func() {
-			err := file.Close()
-			if err != nil {
-				exitError(err, "Error closing output file")
+			err3 := file.Close()
+			if err3 != nil {
+				exitError(err3, "Error closing output file")
 			}
 		}()
 	}
@@ -73,9 +73,9 @@ func (g GeneratorCommand) run(cmd *cobra.Command, _ []string) {
 		exitError(err, "Error running generation command, opening input file")
 	}
 	defer func() {
-		err := input.Close()
-		if err != nil {
-			exitError(err, "Error closing output file")
+		err2 := input.Close()
+		if err2 != nil {
+			exitError(err2, "Error closing output file")
 		}
 	}()
 
@@ -86,7 +86,9 @@ func (g GeneratorCommand) run(cmd *cobra.Command, _ []string) {
 }
 
 func exitError(err error, message string) {
-	fmt.Fprint(os.Stderr, message+"\n")
-	fmt.Fprint(os.Stderr, err.Error()+"\n")
+	_, err2 := fmt.Fprint(os.Stderr, fmt.Sprintf("%s\n%v\n", message, err))
+	if err2 != nil {
+		panic(err2)
+	}
 	os.Exit(1)
 }

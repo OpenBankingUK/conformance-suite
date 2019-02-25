@@ -127,54 +127,6 @@ func (i *Input) setClaims(tc *TestCase, ctx *Context) error {
 	return nil
 }
 
-func (i *Input) setClaims1(tc *TestCase, ctx *Context) error {
-	i.AppMsg("setClaims Entry")
-	defer i.AppMsg("setCliams Exit")
-	for k, v := range i.Claims {
-		value, err := replaceContextField(v, ctx)
-		if err != nil {
-			return i.AppErr(fmt.Sprintf("setClaims Replace Context value %s :%s", v, err.Error()))
-		}
-		i.Claims[k] = value
-		i.AppMsg(fmt.Sprintf("Claims [%s:%s]", k, i.Claims[k]))
-	}
-
-	if len(i.Claims) > 0 {
-		switch i.Generation["strategy"] {
-		case "consenturl":
-			i.AppMsg("==> executing consenturl strategy")
-			claims := authentication.PSUConsentClaims{
-				AuthorizationEndpoint: i.Claims["aud"],
-				Aud:                   i.Claims["aud"],
-				Iss:                   i.Claims["iss"],
-				ResponseType:          i.Claims["responseType"],
-				Scope:                 i.Claims["scope"],
-				RedirectURI:           i.Claims["redirect_url"],
-				ConsentId:             i.Claims["consentId"],
-			}
-			consentUrl, err := authentication.PSUURLGenerate(claims)
-			if err != nil {
-				return i.AppErr(fmt.Sprintf("error generating consenturl %s", err.Error()))
-			}
-			tc.Input.Endpoint = consentUrl.String()
-			i.AppMsg("consent url: " + tc.Input.Endpoint)
-
-		case "jwt-bearer":
-			i.AppMsg("==> executing jwt-bearer strategy")
-			token, err := i.createAlgRS256JWT(ctx)
-			if err != nil {
-				return i.AppErr(fmt.Sprintf("error creating AlgRS256JWT %s", err.Error()))
-			}
-			i.AppMsg(fmt.Sprintf("jwt-bearer Token: %s", token))
-			ctx.Put("jwtbearer", token) // Result - set jwt-bearer token in context
-		}
-	} else {
-		i.AppMsg("no claims to set!")
-	}
-
-	return nil
-}
-
 func (i *Input) setFormData(req *resty.Request, ctx *Context) error {
 	if len(i.FormData) > 0 {
 		i.AppMsg(fmt.Sprintf("AddFormData %v", i.FormData))
@@ -230,13 +182,13 @@ func (i *Input) getBody(req *resty.Request, ctx *Context) (string, error) {
 
 // AppMsg - application level trace
 func (i *Input) AppMsg(msg string) string {
-	tracer.AppMsg("Input", fmt.Sprintf("%s", msg), i.String())
+	tracer.AppMsg("Input", msg, i.String())
 	return msg
 }
 
 // AppErr - application level trace error msg
 func (i *Input) AppErr(msg string) error {
-	tracer.AppErr("Input", fmt.Sprintf("%s", msg), i.String())
+	tracer.AppErr("Input", msg, i.String())
 	return errors.New(msg)
 }
 
@@ -329,7 +281,7 @@ func (i *Input) createAlgNoneJWT() (string, error) {
 
 	tokenString, err := token.SigningString() // sign the token - get as encoded string
 	if err != nil {
-		i.AppErr(fmt.Sprintf("error signing jwt: %s", err.Error()))
+		i.AppMsg(fmt.Sprintf("error signing jwt: %s", err.Error()))
 		return "", err
 	}
 	tokenString = tokenString + "."

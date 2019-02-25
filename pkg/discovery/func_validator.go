@@ -86,9 +86,7 @@ func appendOtherValidationErrors(failures []ValidationFailure, checker model.Con
 	validationFn func(checker model.ConditionalityChecker, discoveryConfig *Model) (bool, []ValidationFailure)) []ValidationFailure {
 	pass, newFailures := validationFn(checker, discovery)
 	if !pass {
-		for _, message := range newFailures {
-			failures = append(failures, message)
-		}
+		failures = append(failures, newFailures...)
 	}
 	return failures
 }

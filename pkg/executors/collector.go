@@ -26,7 +26,6 @@ type collector struct {
 	tokensLock   *sync.Mutex
 	tokens       map[string]string
 	doneFunc     func()
-	consentIDs   TokenConsentIDs
 }
 
 // NewCollector returns a thread safe token collector
@@ -94,26 +93,6 @@ func (c *collector) setNameExists(setName string) bool {
 		}
 	}
 	return false
-}
-
-type nullCollector struct {
-}
-
-// NewNullCollector implements a dummy collector that trigger done immediately and collects nothing
-// for using when we don't want to collect or in tests
-func NewNullCollector(doneFunc func()) Collector {
-	go doneFunc()
-	return nullCollector{}
-}
-
-// Collect receives on token for a permission set
-func (c nullCollector) Collect(setName, token string) error {
-	return errors.New("cant collect this is a null collector")
-}
-
-// Tokens retrieves all collected tokens
-func (c nullCollector) Tokens() []Token {
-	return []Token{}
 }
 
 // TokenConsentIDs captures the token/consentIds awaiting authorisation

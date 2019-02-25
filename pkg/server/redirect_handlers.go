@@ -3,8 +3,8 @@ package server
 import (
 	"crypto/sha256"
 	"encoding/base64"
-	"errors"
 	"fmt"
+	"github.com/pkg/errors"
 	"net/http"
 
 	"github.com/dgrijalva/jwt-go"
@@ -74,9 +74,12 @@ func (h *redirectHandlers) postFragmentOKHandler(c echo.Context) error {
 
 	claim := &AuthClaim{}
 
-	// If not providing Keyfunc (3rd param), don't check for error here
-	// as it will always be error("no Keyfunc was provided")
-	t, _ := jwt.ParseWithClaims(fragment.IDToken, claim, nil)
+	t, err := jwt.ParseWithClaims(fragment.IDToken, claim, nil)
+	if err != nil {
+		// If not providing Keyfunc (3rd param), don't check for error here
+		// as it will always be error("no Keyfunc was provided")
+		h.logger.Debug("Keyfunc not provided")
+	}
 
 	cHash, err := calculateCHash(t.Header["alg"].(string), fragment.Code)
 	if err != nil {
@@ -103,7 +106,7 @@ func (h *redirectHandlers) postQueryOKHandler(c echo.Context) error {
 		if query.Code != "" {
 			err := h.handleCodeExchange(query)
 			if err != nil {
-				resp := NewErrorResponse(errors.New("unable to handle redirect"))
+				resp := NewErrorResponse(errors.Wrap(err, "unable to handle redirect"))
 				return c.JSON(http.StatusBadRequest, resp)
 			}
 			return c.JSON(http.StatusOK, nil)
@@ -113,9 +116,12 @@ func (h *redirectHandlers) postQueryOKHandler(c echo.Context) error {
 
 	claim := &AuthClaim{}
 
-	// If not providing Keyfunc (3rd param), don't check for error here
-	// as it will always be error("no Keyfunc was provided")
-	t, _ := jwt.ParseWithClaims(query.IDToken, claim, nil)
+	t, err := jwt.ParseWithClaims(query.IDToken, claim, nil)
+	if err != nil {
+		// If not providing Keyfunc (3rd param), don't check for error here
+		// as it will always be error("no Keyfunc was provided")
+		h.logger.Debug("Keyfunc not provided")
+	}
 
 	cHash, err := calculateCHash(t.Header["alg"].(string), query.Code)
 	if err != nil {
@@ -124,7 +130,7 @@ func (h *redirectHandlers) postQueryOKHandler(c echo.Context) error {
 	if cHash == claim.CHash {
 		err = h.handleCodeExchange(query)
 		if err != nil {
-			resp := NewErrorResponse(errors.New("unable to handle redirect"))
+			resp := NewErrorResponse(errors.Wrap(err, "unable to handle redirect"))
 			return c.JSON(http.StatusBadRequest, resp)
 		}
 		return c.JSON(http.StatusOK, nil)
@@ -136,8 +142,7 @@ func (h *redirectHandlers) postQueryOKHandler(c echo.Context) error {
 
 func (h *redirectHandlers) handleCodeExchange(query *RedirectQuery) error {
 	logrus.Warnf("received redirect Query %#v", query)
-	h.journey.CollectToken(query.Code, query.State, query.Scope)
-	return nil
+	return h.journey.CollectToken(query.Code, query.State, query.Scope)
 }
 
 // postErrorHandler - POST /api/redirect/error

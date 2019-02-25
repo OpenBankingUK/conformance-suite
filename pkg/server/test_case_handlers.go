@@ -63,24 +63,21 @@ func (d testCaseHandlers) listenCodeWebSocket(c echo.Context) error {
 				logger.WithError(err).Error("writing json to websocket")
 			}
 		}
-		select {
-		case <-pingTicker.C:
-			logger.Debug("pinging websocket client")
-			writeTimeout := time.Now().Add(time.Second)
-			err := ws.SetWriteDeadline(writeTimeout)
-			if err != nil {
-				// we cannot return error here, if we do echo will try to write the error to conn
-				// and we closed the ws with a defer func
-				return nil
-			}
-			if err := ws.WriteMessage(websocket.PingMessage, nil); err != nil {
-				// same as above
-				return nil
-			}
+
+		<-pingTicker.C
+		logger.Debug("pinging websocket client")
+		writeTimeout := time.Now().Add(time.Second)
+		err := ws.SetWriteDeadline(writeTimeout)
+		if err != nil {
+			// we cannot return error here, if we do echo will try to write the error to conn
+			// and we closed the ws with a defer func
+			return nil
+		}
+		if err := ws.WriteMessage(websocket.PingMessage, nil); err != nil {
+			// same as above
+			return nil
 		}
 	}
-
-	return nil
 }
 
 type AllCollectedEvent struct {

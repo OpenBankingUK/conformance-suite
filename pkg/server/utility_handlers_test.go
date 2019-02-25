@@ -27,7 +27,7 @@ func TestVersionCheckUpdateAvailable(t *testing.T) {
 	v.On("UpdateWarningVersion", mock.AnythingOfType("string")).Return(warningMsg, true, nil)
 	v.On("VersionFormatter", mock.AnythingOfType("string")).Return(formatted, nil)
 
-	server := NewServer(nullLogger(), conditionalityCheckerMock{}, v)
+	server := NewServer(testJourney(), nullLogger(), v)
 	defer func() {
 		require.NoError(t, server.Shutdown(context.TODO()))
 	}()
@@ -55,7 +55,7 @@ func TestVersionCheckNoUpdateAvailable(t *testing.T) {
 	v.On("UpdateWarningVersion", mock.AnythingOfType("string")).Return(warningMsg, false, nil)
 	v.On("VersionFormatter", mock.AnythingOfType("string")).Return(formatted, nil)
 
-	server := NewServer(nullLogger(), conditionalityCheckerMock{}, v)
+	server := NewServer(testJourney(), nullLogger(), v)
 	defer func() {
 		require.NoError(t, server.Shutdown(context.TODO()))
 	}()
@@ -80,7 +80,7 @@ func TestVersionUpstreamUnavailableReturnsServerError(t *testing.T) {
 	v.On("UpdateWarningVersion", mock.AnythingOfType("string")).Return(warningMsg, false, errors.New("service error"))
 	v.On("VersionFormatter", mock.AnythingOfType("string")).Return(formatted, nil)
 
-	server := NewServer(nullLogger(), conditionalityCheckerMock{}, v)
+	server := NewServer(testJourney(), nullLogger(), v)
 	defer func() {
 		require.NoError(t, server.Shutdown(context.TODO()))
 	}()

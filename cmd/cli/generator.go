@@ -1,3 +1,4 @@
+//go:generate mockery -name Generator -inpkg
 package main
 
 import (

@@ -50,35 +50,14 @@ func TestEnumerateOpenApiTestcases(t *testing.T) {
 	}
 }
 
-// Interate over swagger file and generate all testcases
-func TestGenerateSwaggerTestCases(t *testing.T) {
-	doc, err := loadOpenAPI(false)
-	require.NoError(t, err)
-	var testcases []TestCase
-	testNo := 1000
-	for path, props := range doc.Spec().Paths.Paths {
-		for meth, op := range getOperations(&props) {
-			testNo++
-			successStatus := 0
-			for i := range op.OperationProps.Responses.ResponsesProps.StatusCodeResponses {
-				if i > 199 && i < 300 {
-					successStatus = i
-				}
-			}
-			input := Input{Method: meth, Endpoint: path}
-			expect := Expect{StatusCode: successStatus, SchemaValidation: true}
-			testcase := TestCase{ID: fmt.Sprintf("#t%4.4d", testNo), Input: input, Expect: expect, Name: op.Description}
-			testcases = append(testcases, testcase)
-		}
-	}
-	dumpTestCases(testcases)
-}
-
 // Utility to load Manifest Data Model containing all Rules, Tests and Conditions
 func loadManifest(filename string) (Manifest, error) {
-	plan, _ := ioutil.ReadFile(filename)
+	plan, err := ioutil.ReadFile(filename)
+	if err != nil {
+		return Manifest{}, err
+	}
 	var i Manifest
-	err := json.Unmarshal(plan, &i)
+	err = json.Unmarshal(plan, &i)
 	if err != nil {
 		return i, err
 	}
@@ -87,9 +66,12 @@ func loadManifest(filename string) (Manifest, error) {
 
 // Utility to load Manifest Data Model containing all Rules, Tests and Conditions
 func loadModel() (Manifest, error) {
-	plan, _ := ioutil.ReadFile("testdata/testmanifest.json")
+	plan, err := ioutil.ReadFile("testdata/testmanifest.json")
+	if err != nil {
+		return Manifest{}, err
+	}
 	var m Manifest
-	err := json.Unmarshal(plan, &m)
+	err = json.Unmarshal(plan, &m)
 	if err != nil {
 		return Manifest{}, err
 	}
@@ -99,20 +81,18 @@ func loadModel() (Manifest, error) {
 // Utility to load the 2.0 swagger spec for testing purposes
 func loadOpenAPI(print bool) (*loads.Document, error) {
 	doc, err := loads.Spec("testdata/rwspec2-0.json")
+	if err != nil {
+		return nil, err
+	}
 	if print {
 		var jsondoc []byte
-		jsondoc, _ = json.MarshalIndent(doc.Spec(), "", "    ")
+		jsondoc, err = json.MarshalIndent(doc.Spec(), "", "    ")
+		if err != nil {
+			return nil, err
+		}
 		fmt.Println(string(jsondoc))
 	}
 	return doc, err
-}
-
-// Utility to Dump out an array of test cases in JSON formaT
-func dumpTestCases(testcases []TestCase) {
-	var model []byte
-	model, _ = json.MarshalIndent(testcases, "", "    ")
-	_ = model
-
 }
 
 // Utilities to walk the swagger tree
@@ -151,18 +131,25 @@ func TestChainedTestCases(t *testing.T) {
 	manifest, err := loadManifest("testdata/passAccountId.json")
 	require.NoError(t, err)
 
-	rule := manifest.Rules[0]                                   // get the first rule
-	executor := &executor{}                                     // Allows rule testcase execution strategies to be dynamically added to rules
-	rulectx := Context{}                                        // create a context to hold the passed parameters
-	tc01 := rule.Tests[0][0]                                    // get the first testcase of the first rule
-	req, _ := tc01.Prepare(&rulectx)                            // Prepare calls ApplyInput and ApplyContext on testcase
+	rule := manifest.Rules[0]          // get the first rule
+	executor := &executor{}            // Allows rule testcase execution strategies to be dynamically added to rules
+	rulectx := Context{}               // create a context to hold the passed parameters
+	tc01 := rule.Tests[0][0]           // get the first testcase of the first rule
+	req, err := tc01.Prepare(&rulectx) // Prepare calls ApplyInput and ApplyContext on testcase
+	require.NoError(t, err)
 	resp, err := executor.ExecuteTestCase(req, &tc01, &rulectx) // send the request to be executed resulting in a response
-	result, err := tc01.Validate(resp, &rulectx)                // Validate checks response against the match rules and processes any contextPuts present
+	assert.NoError(t, err)
+	result, err := tc01.Validate(resp, &rulectx) // Validate checks response against the match rules and processes any contextPuts present
+	assert.NoError(t, err)
+	assert.True(t, result)
 
-	tc02 := rule.Tests[0][1]                                   // get the second testcase of the first rule
-	req, err = tc02.Prepare(&rulectx)                          // Prepare
+	tc02 := rule.Tests[0][1]          // get the second testcase of the first rule
+	req, err = tc02.Prepare(&rulectx) // Prepare
+	assert.NoError(t, err)
 	resp, err = executor.ExecuteTestCase(req, &tc02, &rulectx) // Execute
-	result, err = tc02.Validate(resp, &rulectx)                // Validate checks the match rules and processes any contextPuts present
+	assert.NoError(t, err)
+	result, err = tc02.Validate(resp, &rulectx) // Validate checks the match rules and processes any contextPuts present
+	assert.NoError(t, err)
 	assert.True(t, result)
 	acctid, exist := rulectx.Get("AccountId")
 	assert.True(t, exist)

@@ -45,8 +45,8 @@ const (
 // - check that a response body has a specific value of a specified json field
 // - check that a response body has a specific json field and that the specific json field matches a regular expression
 // - check that a response body is a specified length
-// - allow for replacment of endpoint text ... e.g. {AccountId}
-// - Authoriation: allow for manipulation of Bearer tokens in http headers
+// - allow for replacement of endpoint text ... e.g. {AccountId}
+// - Authorization: allow for manipulation of Bearer tokens in http headers
 // - Result: allow for capturing of match values for further processing - like putting into a context
 type Match struct {
 	MatchType       MatchType `json:"match_type,omitempty"`        // Type of Match we're doing
@@ -119,20 +119,20 @@ func (m *Match) Check(tc *TestCase) (bool, error) {
 
 // PutValue puts the value from the json match along with a context variable to put it into
 func (m *Match) PutValue(tc *TestCase, ctx *Context) bool {
-	success := false
-	var err error
 	switch m.GetType() {
 	case BodyJSONPresent:
-		success, err = m.setContextFromBodyPresent(tc, ctx)
+		success, err := m.setContextFromBodyPresent(tc, ctx)
 		if err != nil {
 			m.AppMsg(err.Error())
 			return false
 		}
+		return success
 	case BodyJSONValue:
-		success, err = m.setContextFromCheckBodyJSONValue(tc, ctx)
+		success, err := m.setContextFromCheckBodyJSONValue(tc, ctx)
 		if err != nil {
 			return false
 		}
+		return success
 	case Authorisation:
 		if strings.EqualFold("bearer", m.Authorisation) {
 			success, err := checkAuthorisation(m, tc)
@@ -155,8 +155,7 @@ func (m *Match) PutValue(tc *TestCase, ctx *Context) bool {
 		return handleBodyRegex(tc, m, ctx)
 
 	}
-
-	return success
+	return false
 }
 
 func handleBodyRegex(tc *TestCase, m *Match, ctx *Context) bool {

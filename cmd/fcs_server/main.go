@@ -1,6 +1,8 @@
 package main
 
 import (
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/generation"
 	"fmt"
 	"os"
 	"strings"
@@ -39,7 +41,11 @@ Complete documentation is available at https://bitbucket.org/openbankingteam/con
 
 			printVersionInfo(ver, logger)
 
-			echoServer := server.NewServer(logger, model.NewConditionalityChecker(), ver)
+			validatorEngine := discovery.NewFuncValidator(model.NewConditionalityChecker())
+			testGenerator := generation.NewGenerator()
+			journey := server.NewJourney(logger, testGenerator, validatorEngine)
+
+			echoServer := server.NewServer(journey, logger, ver)
 			echoServer.HideBanner = true
 			server.PrintRoutesInfo(echoServer, logger)
 
