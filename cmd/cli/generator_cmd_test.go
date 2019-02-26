@@ -2,15 +2,14 @@ package main
 
 import (
 	"bytes"
+	"crypto/rand"
 	"encoding/hex"
 	"fmt"
-	"math/rand"
 	"os"
 	"path/filepath"
 	"testing"
 
 	"github.com/spf13/cobra"
-	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 )
@@ -29,36 +28,27 @@ func ExampleGeneratorCommand_runNoFilename() {
 	// You need to provide a discovery filename.
 }
 
-func TestGeneratorCommand(t *testing.T) {
-	generator := &MockGenerator{}
-	generator.On("Generate", mock.Anything, mock.Anything).Return(nil)
-	generatorCmdWrapper := newGeneratorCmdWrapperWithOptions(generator)
-	root := newRootCommand(generatorCmdWrapper.run)
-
-	_, err := executeCommand(root, "generate", "--filename", "generator_cmd_test.go")
-
-	require.NoError(t, err)
-}
-
 func TestGeneratorWritesToFile(t *testing.T) {
 	generator := &MockGenerator{}
-	generator.On(
-		"Generate", mock.Anything, mock.Anything).Return(nil)
+	generator.On("Generate", mock.Anything, mock.Anything, mock.Anything).Return(nil)
 	generatorCmdWrapper := newGeneratorCmdWrapperWithOptions(generator)
 	root := newRootCommand(generatorCmdWrapper.run)
-	output := tempFileName("fcs", "json")
+	output, err := tempFileName("fcs", ".json")
+	require.NoError(t, err)
 
-	_, err := executeCommand(
+	_, err = executeCommand(
 		root,
 		"generate",
 		"--filename",
 		"testdata/discovery-model.json",
 		"--output",
 		output,
+		"--config",
+		"testdata/config.json",
 	)
 
 	require.NoError(t, err)
-	assert.FileExists(t, output)
+	require.FileExists(t, output)
 	require.NoError(t, os.Remove(output))
 }
 
@@ -75,8 +65,11 @@ func executeCommandC(root *cobra.Command, args ...string) (c *cobra.Command, out
 	return c, buf.String(), err
 }
 
-func tempFileName(prefix, suffix string) string {
+func tempFileName(prefix, suffix string) (string, error) {
 	randBytes := make([]byte, 16)
-	rand.Read(randBytes)
-	return filepath.Join(os.TempDir(), prefix+hex.EncodeToString(randBytes)+suffix)
+	_, err := rand.Read(randBytes)
+	if err != nil {
+		return "", err
+	}
+	return filepath.Join(os.TempDir(), prefix+hex.EncodeToString(randBytes)+suffix), nil
 }

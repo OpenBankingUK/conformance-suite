@@ -41,22 +41,36 @@ func (h *configHandlers) configGlobalPostHandler(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, NewErrorResponse(errors.Wrap(err, "error with Bind")))
 	}
 
+	journeyConfig, err := MakeJourneyConfig(config)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, NewErrorResponse(err))
+	}
+
+	err = h.journey.SetConfig(journeyConfig)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, NewErrorResponse(err))
+	}
+
+	return c.JSON(http.StatusCreated, config)
+}
+
+func MakeJourneyConfig(config *GlobalConfiguration) (JourneyConfig, error) {
 	ok, message := validateConfig(config)
 	if !ok {
-		return c.JSON(http.StatusBadRequest, NewErrorMessageResponse(message))
+		return JourneyConfig{}, errors.New(message)
 	}
 
 	certificateSigning, err := authentication.NewCertificate(config.SigningPublic, config.SigningPrivate)
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, NewErrorResponse(errors.Wrap(err, "error with signing certificate")))
+		return JourneyConfig{}, errors.Wrap(err, "error with signing certificate")
 	}
 
 	certificateTransport, err := authentication.NewCertificate(config.TransportPublic, config.TransportPrivate)
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, NewErrorResponse(errors.Wrap(err, "error with transport certificate")))
+		return JourneyConfig{}, errors.Wrap(err, "error with transport certificate")
 	}
 
-	jConfig := JourneyConfig{
+	return JourneyConfig{
 		certificateSigning:    certificateSigning,
 		certificateTransport:  certificateTransport,
 		clientID:              config.ClientID,
@@ -67,13 +81,7 @@ func (h *configHandlers) configGlobalPostHandler(c echo.Context) error {
 		xXFAPIFinancialID:     config.XFAPIFinancialID,
 		issuer:                config.Issuer,
 		redirectURL:           config.RedirectURL,
-	}
-	err = h.journey.SetConfig(jConfig)
-	if err != nil {
-		return c.JSON(http.StatusBadRequest, NewErrorResponse(err))
-	}
-
-	return c.JSON(http.StatusCreated, config)
+	}, nil
 }
 
 func validateConfig(config *GlobalConfiguration) (bool, string) {

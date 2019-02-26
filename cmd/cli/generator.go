@@ -14,7 +14,7 @@ import (
 
 // Generator generates testcases from a discovery model using io.Reader/io.Writer pair
 type Generator interface {
-	Generate(input io.Reader, output io.Writer) error
+	Generate(config server.JourneyConfig, input io.Reader, output io.Writer) error
 }
 
 type generator struct {
@@ -32,7 +32,7 @@ func newGenerator(journey server.Journey) generator {
 //		4. generate test cases
 //		5. marshal results to json
 //		6. write to output marshaled result
-func (g generator) Generate(input io.Reader, output io.Writer) error {
+func (g generator) Generate(config server.JourneyConfig, input io.Reader, output io.Writer) error {
 	content, err := ioutil.ReadAll(input)
 	if err != nil {
 		return errors.Wrap(err, "error reading discovery model file")
@@ -42,6 +42,11 @@ func (g generator) Generate(input io.Reader, output io.Writer) error {
 	err = json.Unmarshal(content, discoveryModel)
 	if err != nil {
 		return errors.Wrap(err, "error parsing discovery model json")
+	}
+
+	err = g.journey.SetConfig(config)
+	if err != nil {
+		return errors.Wrap(err, "error generating testcases on setConfig")
 	}
 
 	failures, err := g.journey.SetDiscoveryModel(discoveryModel)

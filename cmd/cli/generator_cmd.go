@@ -1,8 +1,11 @@
 package main
 
 import (
+	"encoding/json"
+	"errors"
 	"fmt"
 	"github.com/sirupsen/logrus"
+	"io/ioutil"
 	"os"
 
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
@@ -20,6 +23,7 @@ func generatorCmd(runFunc cobraCmdRunFunc) *cobra.Command {
 		Run:   runFunc,
 	}
 	generatorCmd.Flags().StringP("filename", "f", "", "Discovery filename")
+	generatorCmd.Flags().StringP("config", "c", "", "Config filename")
 	generatorCmd.Flags().StringP("output", "o", "", "Output filename, defaults to stdout")
 
 	return generatorCmd
@@ -34,6 +38,8 @@ func newGeneratorCmdWrapper(logger *logrus.Entry) GeneratorCommand {
 	checker := model.NewConditionalityChecker()
 	validatorEngine := discovery.NewFuncValidator(checker)
 	testGenerator := generation.NewGenerator()
+	// we overwrite the output of logs so it wont collide with testcases output (stdOut)
+	logger.Logger.Out = os.Stderr
 	journey := server.NewJourney(logger, testGenerator, validatorEngine)
 	generator := newGenerator(journey)
 	return newGeneratorCmdWrapperWithOptions(generator)
@@ -48,6 +54,12 @@ func (g GeneratorCommand) run(cmd *cobra.Command, _ []string) {
 	filenameFlag, err := cmd.Flags().GetString("filename")
 	if err != nil || filenameFlag == "" {
 		fmt.Println("You need to provide a discovery filename.")
+		return
+	}
+
+	config, err := makeJourneyConfigFromFlag(cmd)
+	if err != nil {
+		exitError(err, "Error making config")
 		return
 	}
 
@@ -79,10 +91,31 @@ func (g GeneratorCommand) run(cmd *cobra.Command, _ []string) {
 		}
 	}()
 
-	err = g.Generate(input, output)
+	err = g.Generate(config, input, output)
 	if err != nil {
 		exitError(err, "Error running generation command")
 	}
+}
+
+func makeJourneyConfigFromFlag(cmd *cobra.Command) (server.JourneyConfig, error) {
+	// check if config filename if provided
+	configFlag, err := cmd.Flags().GetString("config")
+	if err != nil || configFlag == "" {
+		return server.JourneyConfig{}, errors.New("you need to provide a config filename.")
+	}
+
+	configContent, err := ioutil.ReadFile(configFlag)
+	if err != nil {
+		return server.JourneyConfig{}, err
+	}
+
+	globalConfig := &server.GlobalConfiguration{}
+	err = json.Unmarshal(configContent, globalConfig)
+	if err != nil {
+		return server.JourneyConfig{}, err
+	}
+
+	return server.MakeJourneyConfig(globalConfig)
 }
 
 func exitError(err error, message string) {

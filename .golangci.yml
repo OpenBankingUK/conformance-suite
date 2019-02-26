@@ -10,6 +10,11 @@ linters:
     - gocyclo
     - lll
     - megacheck
+    - deadcode
+    - unused
+    - nakedret
+    - varcheck
+    - structcheck
   enable-all: false
   disable-all: true
   fast: false

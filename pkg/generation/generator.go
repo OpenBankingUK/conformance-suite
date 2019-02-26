@@ -26,7 +26,7 @@ type GeneratorConfig struct {
 
 // Generator - generates test cases from discovery model
 type Generator interface {
-	GenerateSpecificationTestCases(GeneratorConfig, discovery.ModelDiscovery, *model.Context) TestCasesRun
+	GenerateSpecificationTestCases(*logrus.Entry, GeneratorConfig, discovery.ModelDiscovery, *model.Context) TestCasesRun
 }
 
 // NewGenerator - returns implementation of Generator interface
@@ -42,7 +42,7 @@ type generator struct {
 }
 
 // GenerateSpecificationTestCases - generates test cases
-func (g generator) GenerateSpecificationTestCases(config GeneratorConfig, discovery discovery.ModelDiscovery, ctx *model.Context) TestCasesRun {
+func (g generator) GenerateSpecificationTestCases(log *logrus.Entry, config GeneratorConfig, discovery discovery.ModelDiscovery, ctx *model.Context) TestCasesRun {
 	specTestCases := []SpecificationTestCases{}
 	customTestCases := []SpecificationTestCases{}
 	customReplacements := make(map[string]string)
@@ -64,7 +64,7 @@ func (g generator) GenerateSpecificationTestCases(config GeneratorConfig, discov
 
 	nameGenerator := names.NewSequentialPrefixedName("#t")
 	for _, item := range discovery.DiscoveryItems {
-		specTests, endpoints := generateSpecificationTestCases(item, nameGenerator, ctx)
+		specTests, endpoints := generateSpecificationTestCases(log, item, nameGenerator, ctx)
 		specTestCases = append(specTestCases, specTests)
 		for k, v := range endpoints {
 			originalEndpoints[k] = v
@@ -84,7 +84,7 @@ func (g generator) GenerateSpecificationTestCases(config GeneratorConfig, discov
 
 	// // calculate permission set required and update the header token in the test case request
 	consentRequirements := g.consentRequirements(tmpSpecTestCases) // uses pre-modified swagger urls
-	logrus.Warnf("Consent Requirements: %#v", consentRequirements)
+	log.Warnf("Consent Requirements: %#v", consentRequirements)
 
 	for _, specTest := range specTestCases {
 		for x, y := range specTest.TestCases {
@@ -122,11 +122,11 @@ type TestCasesRun struct {
 	SpecConsentRequirements []model.SpecConsentRequirements `json:"specTokens"`
 }
 
-func generateSpecificationTestCases(item discovery.ModelDiscoveryItem, nameGenerator names.Generator, ctx *model.Context) (SpecificationTestCases, map[string]string) {
+func generateSpecificationTestCases(log *logrus.Entry, item discovery.ModelDiscoveryItem, nameGenerator names.Generator, ctx *model.Context) (SpecificationTestCases, map[string]string) {
 	testcases, originalEndpoints := GetImplementedTestCases(&item, nameGenerator, ctx)
 
 	for _, tc := range testcases {
-		logrus.Debug(tc.String())
+		log.Debug(tc.String())
 	}
 	return SpecificationTestCases{Specification: item.APISpecification, TestCases: testcases}, originalEndpoints
 }

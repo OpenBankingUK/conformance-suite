@@ -106,7 +106,7 @@ func (wj *journey) TestCases() (generation.TestCasesRun, error) {
 			AuthorizationEndpoint: wj.config.authorizationEndpoint,
 			RedirectURL:           wj.config.redirectURL,
 		}
-		wj.testCasesRun = wj.generator.GenerateSpecificationTestCases(config, wj.validDiscoveryModel.DiscoveryModel, &wj.context)
+		wj.testCasesRun = wj.generator.GenerateSpecificationTestCases(wj.log, config, wj.validDiscoveryModel.DiscoveryModel, &wj.context)
 		runDefinition := executors.RunDefinition{
 			DiscoModel:    wj.validDiscoveryModel,
 			TestCaseRun:   wj.testCasesRun,
@@ -120,7 +120,7 @@ func (wj *journey) TestCases() (generation.TestCasesRun, error) {
 			}
 			if len(consentIds) > 0 {
 				wj.collector = executors.NewTokenCollector(consentIds, wj.doneCollectionCallback)
-				consentIdsToTestCaseRun(consentIds, &wj.testCasesRun)
+				consentIdsToTestCaseRun(wj.log, consentIds, &wj.testCasesRun)
 				wj.allCollected = false
 			} else {
 				wj.allCollected = true
@@ -135,7 +135,7 @@ func (wj *journey) TestCases() (generation.TestCasesRun, error) {
 }
 
 func (wj *journey) CollectToken(code, state, scope string) error {
-	logrus.Debugf("state: %s, code: %s", state, code)
+	wj.log.Debugf("state: %s, code: %s", state, code)
 	wj.journeyLock.Lock()
 	defer wj.journeyLock.Unlock()
 
@@ -155,7 +155,7 @@ func (wj *journey) CollectToken(code, state, scope string) error {
 	}
 	wj.context.PutString(state, accessToken)
 	if state == "to1001" {
-		logrus.Warnf("Setting 'access_token' to %s", accessToken)
+		wj.log.Warnf("Setting 'access_token' to %s", accessToken)
 		wj.context.PutString("access_token", accessToken) // tmp measure to get testcases running
 	}
 	return wj.collector.Collect(state, accessToken)
@@ -164,19 +164,19 @@ func (wj *journey) CollectToken(code, state, scope string) error {
 func (wj *journey) AllTokenCollected() bool {
 	// wj.journeyLock.Lock()
 	// defer wj.journeyLock.Unlock()
-	logrus.Debugf("All tokens collected %t", wj.allCollected)
+	wj.log.Debugf("All tokens collected %t", wj.allCollected)
 	return wj.allCollected
 }
 
 func (wj *journey) doneCollectionCallback() {
 	//wj.journeyLock.Lock()
-	logrus.Debug("Setting wj.allCollection=true")
+	wj.log.Debug("Setting wj.allCollection=true")
 	wj.allCollected = true
 	//wj.journeyLock.Unlock()
 }
 
 func (wj *journey) RunTests() error {
-	logrus.Debug("RunTests ...")
+	wj.log.Debug("RunTests ...")
 	//wj.journeyLock.Lock()
 	//defer wj.journeyLock.Unlock()
 
@@ -196,7 +196,7 @@ func (wj *journey) RunTests() error {
 	}
 
 	runner := executors.NewTestCaseRunner(runDefinition, wj.daemonController)
-	logrus.Debug("runTestCases with context ...")
+	wj.log.Debug("runTestCases with context ...")
 	return runner.RunTestCases(&wj.context)
 }
 
@@ -275,13 +275,13 @@ func (wj *journey) customTestParametersToJourneyContext() {
 	}
 }
 
-func consentIdsToTestCaseRun(consentIds []executors.TokenConsentIDItem, testCasesRun *generation.TestCasesRun) {
+func consentIdsToTestCaseRun(log *logrus.Entry, consentIds []executors.TokenConsentIDItem, testCasesRun *generation.TestCasesRun) {
 	for _, v := range testCasesRun.SpecConsentRequirements {
 		for x, permission := range v.NamedPermissions {
 			for _, item := range consentIds {
 				if item.TokenName == permission.Name {
 					permission.ConsentUrl = item.ConsentURL
-					logrus.Debugf("Setting consent url for token %s to %s", permission.Name, permission.ConsentUrl)
+					log.Debugf("Setting consent url for token %s to %s", permission.Name, permission.ConsentUrl)
 					v.NamedPermissions[x] = permission
 				}
 			}
