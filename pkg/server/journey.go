@@ -229,16 +229,17 @@ func (wj *journey) makeRunDefinition() executors.RunDefinition {
 }
 
 type JourneyConfig struct {
-	certificateSigning    authentication.Certificate
-	certificateTransport  authentication.Certificate
-	clientID              string
-	clientSecret          string
-	tokenEndpoint         string
-	authorizationEndpoint string
-	resourceBaseURL       string
-	xXFAPIFinancialID     string
-	issuer                string
-	redirectURL           string
+	certificateSigning      authentication.Certificate
+	certificateTransport    authentication.Certificate
+	clientID                string
+	clientSecret            string
+	tokenEndpoint           string
+	tokenEndpointAuthMethod string
+	authorizationEndpoint   string
+	resourceBaseURL         string
+	xXFAPIFinancialID       string
+	issuer                  string
+	redirectURL             string
 }
 
 func (wj *journey) SetConfig(config JourneyConfig) error {
@@ -262,6 +263,7 @@ func (wj *journey) Events() events.Events {
 const ctxConstClientID = "client_id"
 const ctxConstClientSecret = "client_secret"
 const ctxConstTokenEndpoint = "token_endpoint"
+const ctxConstTokenEndpointAuthMethod = "token_endpoint_auth_method"
 const ctxConstFapiFinancialID = "fapi_financial_id"
 const ctxConstRedirectURL = "redirect_url"
 const ctxConstAuthorisationEndpoint = "authorisation_endpoint"
@@ -273,6 +275,7 @@ func (wj *journey) configParametersToJourneyContext() error {
 	wj.context.PutString(ctxConstClientID, wj.config.clientID)
 	wj.context.PutString(ctxConstClientSecret, wj.config.clientSecret)
 	wj.context.PutString(ctxConstTokenEndpoint, wj.config.tokenEndpoint)
+	wj.context.PutString(ctxConstTokenEndpointAuthMethod, wj.config.tokenEndpointAuthMethod)
 	wj.context.PutString(ctxConstFapiFinancialID, wj.config.xXFAPIFinancialID)
 	wj.context.PutString(ctxConstRedirectURL, wj.config.redirectURL)
 	wj.context.PutString(ctxConstAuthorisationEndpoint, wj.config.authorizationEndpoint)

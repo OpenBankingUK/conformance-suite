@@ -6,6 +6,7 @@
   "client_id": "123",
   "client_secret": "123",
   "token_endpoint": "https://localhost",
+  "token_endpoint_auth_method": "client_secret_basic",
   "authorization_endpoint": "https://localhost",
   "resource_base_url": "https://localhost",
   "issuer": "https://localhost",
