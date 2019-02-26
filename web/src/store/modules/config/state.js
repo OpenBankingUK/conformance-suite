@@ -16,6 +16,7 @@ export default {
     client_id: '',
     client_secret: '',
     token_endpoint: '',
+    token_endpoint_auth_method: 'client_secret_basic',
     authorization_endpoint: '',
     resource_base_url: '',
     x_fapi_financial_id: '',

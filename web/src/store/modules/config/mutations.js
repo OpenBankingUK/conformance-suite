@@ -41,6 +41,9 @@ export default {
   [types.SET_TOKEN_ENDPOINT](state, value) {
     state.configuration.token_endpoint = value;
   },
+  [types.SET_TOKEN_ENDPOINT_AUTH_METHOD](state, value) {
+    state.configuration.token_endpoint_auth_method = value;
+  },
   [types.SET_AUTHORIZATION_ENDPOINT](state, value) {
     state.configuration.authorization_endpoint = value;
   },

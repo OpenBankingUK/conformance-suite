@@ -95,6 +95,7 @@ export default {
         'client_id',
         'client_secret',
         'token_endpoint',
+        'token_endpoint_auth_method',
         'authorization_endpoint',
         'resource_base_url',
         'x_fapi_financial_id',
@@ -171,6 +172,9 @@ export default {
     }
     if (_.isEmpty(state.configuration.token_endpoint)) {
       errors.push('Token Endpoint empty');
+    }
+    if (_.isEmpty(state.configuration.token_endpoint_auth_method)) {
+      errors.push('Token Endpoint Auth Method empty');
     }
     if (_.isEmpty(state.configuration.authorization_endpoint)) {
       errors.push('Authorization Endpoint empty');

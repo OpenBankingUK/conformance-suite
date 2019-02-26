@@ -92,6 +92,22 @@
         </b-form-group>
 
         <b-form-group
+          id="token_endpoint_auth_method_group"
+          label-for="token_endpoint_auth_method"
+          label="Token Endpoint Auth Method"
+          description="Registered client authentication method, e.g client_secret_basic"
+        >
+          <b-form-input
+            id="token_endpoint_auth_method"
+            v-model="token_endpoint_auth_method"
+            :state="isNotEmpty(token_endpoint_auth_method)"
+            placeholder="Enter your client registered token endpoint auth method"
+            required
+            type="text"
+          />
+        </b-form-group>
+
+        <b-form-group
           id="authorization_endpoint_group"
           label-for="authorization_endpoint"
           label="Authorization Endpoint">
@@ -185,6 +201,15 @@ export default {
       },
       set(value) {
         this.$store.commit('config/SET_TOKEN_ENDPOINT', value);
+      },
+    },
+
+    token_endpoint_auth_method: {
+      get() {
+        return this.$store.state.config.configuration.token_endpoint_auth_method;
+      },
+      set(value) {
+        this.$store.commit('config/SET_TOKEN_ENDPOINT_AUTH_METHOD', value);
       },
     },
 
