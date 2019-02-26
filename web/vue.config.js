@@ -2,6 +2,9 @@
  * https://cli.vuejs.org/config/#vue-config-js
  */
 
+const path = require('path');
+const _ = require('lodash');
+
 // vue.config.js
 module.exports = {
   // options...
@@ -39,6 +42,29 @@ module.exports = {
     config.module.rule('images').use('url-loader').tap((opts) => {
       const options = Object.assign(opts, { limit: 0 });
       return options;
+    });
+
+    // Copy `ReDoc` (https://github.com/Rebilly/ReDoc) to `/static/redoc/bundles/redoc.standalone.js`
+    // so that `pkg/server/swagger_handlers.go` can use it as the `RedocURL`.
+    //
+    // Uses:
+    // * https://github.com/webpack-contrib/copy-webpack-plugin
+    // * https://webpack.js.org/plugins/copy-webpack-plugin
+    config.plugin('copy').tap((opts) => {
+      const outputDir = config.output.get('path');
+      const pattern = {
+        from: path.resolve(__dirname, 'node_modules/redoc/bundles/redoc.standalone.js'),
+        to: `${outputDir}/static/redoc/bundles/redoc.standalone.js`,
+        toType: 'file',
+      };
+      const patterns = _.concat(pattern, opts[0]);
+
+      return [
+        patterns,
+        {
+          debug: process.env.NODE_ENV === 'production' ? 'warn' : 'warn',
+        },
+      ];
     });
   },
 

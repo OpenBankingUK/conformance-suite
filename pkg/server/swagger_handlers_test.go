@@ -8,8 +8,8 @@ import (
 
 	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/test"
 	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/version/mocks"
-
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
+	"github.com/stretchr/testify/require"
 )
 
 // TestServerSwaggerHandlers - paths (e.g., /swagger/account-transaction-v3.0/v3.0/docs) are mapped to handlers.
@@ -30,27 +30,30 @@ func TestServerSwaggerHandlers(t *testing.T) {
 
 // TestServerSwaggerHandlers - paths (e.g., /swagger/account-transaction-v3.0/v3.0/docs) serve the swagger ui.
 func TestServerSwaggerHandlersServesUI(t *testing.T) {
-	require := test.NewRequire(t)
-
 	server := NewServer(testJourney(), nullLogger(), &mocks.Version{})
 	defer func() {
-		require.NoError(server.Shutdown(context.TODO()))
+		require.NoError(t, server.Shutdown(context.TODO()))
 	}()
-	require.NotNil(server)
+	require.NotNil(t, server)
 
 	expectedSwaggerUIPaths := expectedSwaggerUIPaths()
 	for path, schemaVersion := range expectedSwaggerUIPaths {
-		code, body, headers := request(http.MethodGet, path, nil, server)
+		path, schemaVersion := path, schemaVersion
+		t.Run(path, func(t *testing.T) {
+			require := test.NewRequire(t)
 
-		// do assertions
-		require.NotNil(body)
-		bodyExpected := expectedSwaggerUIHTMLResponse(schemaVersion)
-		bodyActual := body.String()
-		require.Equal(bodyExpected, bodyActual)
+			code, body, headers := request(http.MethodGet, path, nil, server)
 
-		require.Equal(http.StatusOK, code)
-		require.Len(headers, 2)
-		require.Equal("text/html; charset=utf-8", headers["Content-Type"][0])
+			// do assertions
+			require.NotNil(body)
+			bodyExpected := expectedSwaggerUIHTMLResponse(schemaVersion)
+			bodyActual := body.String()
+			require.Equal(bodyExpected, bodyActual)
+
+			require.Equal(http.StatusOK, code)
+			require.Len(headers, 2)
+			require.Equal("text/html; charset=utf-8", headers["Content-Type"][0])
+		})
 	}
 }
 
@@ -90,7 +93,7 @@ func expectedSwaggerUIHTMLResponse(specURL string) string {
   </head>
   <body>
     <redoc spec-url='%s'></redoc>
-    <script src="https://rebilly.github.io/ReDoc/releases/latest/redoc.min.js"> </script>
+    <script src="/static/redoc/bundles/redoc.standalone.js"> </script>
   </body>
 </html>
 `, spaces, spaces, specURL)
