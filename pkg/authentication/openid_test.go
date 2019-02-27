@@ -1,7 +1,6 @@
 package authentication
 
 import (
-	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -10,29 +9,40 @@ import (
 	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/test"
 )
 
-func TestOpenIDUnmarshal(t *testing.T) {
-	require := test.NewRequire(t)
-
-	data := `
-{
-	"token_endpoint": "https://modelobank2018.o3bank.co.uk:4201/<token_mock>",
-	"authorization_endpoint": "https://modelobankauth2018.o3bank.co.uk:4101/<auth_mock>",
-	"issuer": "https://modelobankauth2018.o3bank.co.uk:4101"
+func TestSortAuthMethodsMostSecureFirstAllMethods(t *testing.T) {
+	sorted := sortAuthMethodsMostSecureFirst([]string{
+		"client_secret_basic",
+		"client_secret_post",
+		"client_secret_jwt",
+		"private_key_jwt",
+		"tls_client_auth"})
+	test.NewRequire(t).Equal(AUTH_METHODS_SORTED_MOST_SECURE_FIRST, sorted)
 }
-	`
-	expected := OpenIDConfiguration{
-		TokenEndpoint:         "https://modelobank2018.o3bank.co.uk:4201/<token_mock>",
-		AuthorizationEndpoint: "https://modelobankauth2018.o3bank.co.uk:4101/<auth_mock>",
-		Issuer:                "https://modelobankauth2018.o3bank.co.uk:4101",
-	}
-	actual := OpenIDConfiguration{}
-	require.NoError(json.Unmarshal([]byte(data), &actual))
-	require.Equal(expected, actual)
+
+func TestSortAuthMethodsMostSecureFirstSubsetOfMethods(t *testing.T) {
+	sorted := sortAuthMethodsMostSecureFirst([]string{
+		"client_secret_basic",
+		"tls_client_auth"})
+	test.NewRequire(t).Equal([]string{"tls_client_auth", "client_secret_basic"}, sorted)
+}
+
+func TestSortAuthMethodsMostSecureFirstDuplicateMethods(t *testing.T) {
+	sorted := sortAuthMethodsMostSecureFirst([]string{
+		"client_secret_basic",
+		"client_secret_basic"})
+	test.NewRequire(t).Equal([]string{"client_secret_basic", "client_secret_basic"}, sorted)
+}
+
+func TestSortAuthMethodsMostSecureFirstNonMatching(t *testing.T) {
+	sorted := sortAuthMethodsMostSecureFirst([]string{
+		"client_secret_basic",
+		"private_key_jwt_bad_match",
+		"tls_client_auth"})
+	test.NewRequire(t).Equal([]string{"tls_client_auth", "client_secret_basic", ""}, sorted)
 }
 
 func TestOpenIdConfigWhenGetSuccessful(t *testing.T) {
 	require := test.NewRequire(t)
-
 	mockResponse, err := ioutil.ReadFile("../server/testdata/openid-configuration-mock.json")
 	require.NoError(err)
 
@@ -43,6 +53,21 @@ func TestOpenIdConfigWhenGetSuccessful(t *testing.T) {
 	config, err := OpenIdConfig(mockedServerURL)
 	require.NoError(err)
 	require.NotNil(config)
+	authMethodsMostSecureFirst := []string{
+		"tls_client_auth",
+		"private_key_jwt",
+		"client_secret_jwt",
+		"client_secret_post",
+		"client_secret_basic",
+	}
+	expected := OpenIDConfiguration{
+		TokenEndpoint:                     "https://modelobank2018.o3bank.co.uk:4201/<token_mock>",
+		AuthorizationEndpoint:             "https://modelobankauth2018.o3bank.co.uk:4101/<auth_mock>",
+		Issuer:                            "https://modelobankauth2018.o3bank.co.uk:4101",
+		TokenEndpointAuthMethodsSupported: authMethodsMostSecureFirst,
+	}
+
+	require.Equal(expected, config)
 }
 
 func TestOpenIdConfigWhenHttpResponseError(t *testing.T) {
