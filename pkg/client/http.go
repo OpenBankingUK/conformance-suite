@@ -17,7 +17,7 @@ func NewHTTPClient(timeout time.Duration) *http.Client {
 // NewHTTPClientWithTransport returns a sane default HTTP client as opposed the default provided by `net/http`
 func NewHTTPClientWithTransport(timeout time.Duration, transport http.RoundTripper) *http.Client {
 	return &http.Client{
-		Timeout: timeout,
+		Timeout:   timeout,
 		Transport: transport,
 	}
 }
