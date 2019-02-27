@@ -1,6 +1,7 @@
 package authentication
 
 import (
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/client"
 	"encoding/json"
 	"fmt"
 	"github.com/pkg/errors"
@@ -17,7 +18,7 @@ type OpenIDConfiguration struct {
 
 func OpenIdConfig(url string) (OpenIDConfiguration, error) {
 	config := OpenIDConfiguration{}
-	resp, err := http.Get(url)
+	resp, err := client.NewHTTPClient(client.DefaultTimeout).Get(url)
 	if err != nil {
 		return config, errors.Wrap(err, fmt.Sprintf("Failed to GET OpenID config: %s", url))
 	}

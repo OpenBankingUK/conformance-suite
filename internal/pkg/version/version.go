@@ -2,6 +2,7 @@
 package version
 
 import (
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/client"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -133,7 +134,7 @@ func (v BitBucket) UpdateWarningVersion(version string) (string, bool, error) {
 		return errorMessageUI, false, fmt.Errorf("no version found")
 	}
 	// Try to get the latest tag using the BitBucket API.
-	resp, err := http.Get(v.bitBucketAPIRepository)
+	resp, err := client.NewHTTPClient(client.DefaultTimeout).Get(v.bitBucketAPIRepository)
 	if err != nil {
 		// If network error then return message, flag to NOT update and actual error.
 		return errorMessageUI, false, errors.Wrap(err, "HTTP on GET to BitBucket API")

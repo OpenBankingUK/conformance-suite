@@ -1,7 +1,7 @@
 // Package appconfig - Package to read certs and parameters via the config/config.json file
 /*
 
-Typically this files looks like the following or simplar:-
+Typically this files looks like the following or simpler:-
 
     // config.json
 	{

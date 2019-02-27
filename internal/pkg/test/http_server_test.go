@@ -1,6 +1,7 @@
 package test
 
 import (
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/client"
 	"io/ioutil"
 	"net/http"
 	"testing"
@@ -12,7 +13,7 @@ import (
 func TestMockHTTPServer_Minimal_Usage(t *testing.T) {
 	server, url := HTTPServer(http.StatusOK, "body", nil)
 
-	response, err := http.Get(url)
+	response, err := client.NewHTTPClient(client.DefaultTimeout).Get(url)
 	require.NoError(t, err)
 
 	assert.Equal(t, http.StatusOK, response.StatusCode)
@@ -27,7 +28,7 @@ func TestMockHTTPServer_Adds_Headers(t *testing.T) {
 	headers := map[string]string{"key1": "value1", "key2": "value2"}
 	server, url := HTTPServer(http.StatusOK, "body", headers)
 
-	response, err := http.Get(url)
+	response, err := client.NewHTTPClient(client.DefaultTimeout).Get(url)
 	require.NoError(t, err)
 
 	assert.Equal(t, "value1", response.Header.Get("key1"))
