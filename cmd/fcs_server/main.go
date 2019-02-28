@@ -16,8 +16,8 @@ import (
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	prefixed "github.com/x-cray/logrus-prefixed-formatter"
-	resty "gopkg.in/resty.v1"
+	"github.com/x-cray/logrus-prefixed-formatter"
+	"gopkg.in/resty.v1"
 )
 
 const (
@@ -48,8 +48,7 @@ Complete documentation is available at https://bitbucket.org/openbankingteam/con
 			echoServer := server.NewServer(journey, logger, ver)
 			echoServer.HideBanner = true
 			server.PrintRoutesInfo(echoServer, logger)
-
-			address := fmt.Sprintf("0.0.0.0:%d", viper.GetInt("port"))
+			address := fmt.Sprintf("%s:%d", server.ListenHost, viper.GetInt("port"))
 			logger.Infof("listening on https://%s", address)
 			return echoServer.StartTLS(address, certFile, keyFile)
 		},

@@ -301,7 +301,7 @@ func TestServerConfigGlobalPostValid(t *testing.T) {
 		ClientSecret:          `2cfb31a3-5443-4e65-b2bc-ef8e00266a77`,
 		TokenEndpoint:         `https://modelobank2018.o3bank.co.uk:4201/token`,
 		XFAPIFinancialID:      `0015800001041RHAAY`,
-		RedirectURL:           `https://0.0.0.0:8443/conformancesuite/callback`,
+		RedirectURL:           fmt.Sprintf(`https://%s:8443/conformancesuite/callback`, ListenHost),
 		AuthorizationEndpoint: `https://modelobank2018.o3bank.co.uk:4201/token`,
 		ResourceBaseURL:       `https://modelobank2018.o3bank.co.uk:4501`,
 		Issuer:                "https://modelobankauth2018.o3bank.co.uk:4101",

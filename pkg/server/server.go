@@ -11,6 +11,9 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
+// ListenHost defines the name/address by which the service can be accessed.
+const ListenHost = "127.0.0.1"
+
 // Server - wraps *echo.Echo.
 type Server struct {
 	*echo.Echo // Wrap (using composition) *echo.Echo, allows us to pretend Server is echo.Echo.
