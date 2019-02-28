@@ -15,30 +15,53 @@ func TestSortAuthMethodsMostSecureFirstAllMethods(t *testing.T) {
 		"client_secret_post",
 		"client_secret_jwt",
 		"private_key_jwt",
-		"tls_client_auth"}, test.NullLogger())
-	test.NewRequire(t).Equal(AUTH_METHODS_SORTED_MOST_SECURE_FIRST, sorted)
+		"tls_client_auth",
+	}, test.NullLogger())
+
+	expected := AUTH_METHODS_SORTED_MOST_SECURE_FIRST
+
+	test.NewRequire(t).Equal(expected, sorted)
 }
 
 func TestSortAuthMethodsMostSecureFirstSubsetOfMethods(t *testing.T) {
 	sorted := sortAuthMethodsMostSecureFirst([]string{
 		"client_secret_basic",
-		"tls_client_auth"}, test.NullLogger())
-	test.NewRequire(t).Equal([]string{"tls_client_auth", "client_secret_basic"}, sorted)
+		"tls_client_auth",
+	}, test.NullLogger())
+
+	expected := []string{
+		tls_client_auth,
+		client_secret_basic,
+	}
+	test.NewRequire(t).Equal(expected, sorted)
 }
 
 func TestSortAuthMethodsMostSecureFirstDuplicateMethods(t *testing.T) {
 	sorted := sortAuthMethodsMostSecureFirst([]string{
 		"client_secret_basic",
-		"client_secret_basic"}, test.NullLogger())
-	test.NewRequire(t).Equal([]string{"client_secret_basic", "client_secret_basic"}, sorted)
+		"client_secret_basic",
+	}, test.NullLogger())
+
+	expected := []string{
+		client_secret_basic,
+		client_secret_basic,
+	}
+	test.NewRequire(t).Equal(expected, sorted)
 }
 
 func TestSortAuthMethodsMostSecureFirstNonMatching(t *testing.T) {
 	sorted := sortAuthMethodsMostSecureFirst([]string{
 		"client_secret_basic",
 		"private_key_jwt_bad_match",
-		"tls_client_auth"}, test.NullLogger())
-	test.NewRequire(t).Equal([]string{"tls_client_auth", "client_secret_basic", ""}, sorted)
+		"tls_client_auth",
+	}, test.NullLogger())
+
+	expected := []string{
+		tls_client_auth,
+		client_secret_basic,
+		"",
+	}
+	test.NewRequire(t).Equal(expected, sorted)
 }
 
 func TestOpenIdConfigWhenGetSuccessful(t *testing.T) {
@@ -54,11 +77,11 @@ func TestOpenIdConfigWhenGetSuccessful(t *testing.T) {
 	require.NoError(err)
 	require.NotNil(config)
 	authMethodsMostSecureFirst := []string{
-		"tls_client_auth",
-		"private_key_jwt",
-		"client_secret_jwt",
-		"client_secret_post",
-		"client_secret_basic",
+		tls_client_auth,
+		private_key_jwt,
+		client_secret_jwt,
+		client_secret_post,
+		client_secret_basic,
 	}
 	expected := OpenIDConfiguration{
 		TokenEndpoint:                     "https://modelobank2018.o3bank.co.uk:4201/<token_mock>",
