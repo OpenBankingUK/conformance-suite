@@ -15,21 +15,21 @@ func TestSortAuthMethodsMostSecureFirstAllMethods(t *testing.T) {
 		"client_secret_post",
 		"client_secret_jwt",
 		"private_key_jwt",
-		"tls_client_auth"})
+		"tls_client_auth"}, test.NullLogger())
 	test.NewRequire(t).Equal(AUTH_METHODS_SORTED_MOST_SECURE_FIRST, sorted)
 }
 
 func TestSortAuthMethodsMostSecureFirstSubsetOfMethods(t *testing.T) {
 	sorted := sortAuthMethodsMostSecureFirst([]string{
 		"client_secret_basic",
-		"tls_client_auth"})
+		"tls_client_auth"}, test.NullLogger())
 	test.NewRequire(t).Equal([]string{"tls_client_auth", "client_secret_basic"}, sorted)
 }
 
 func TestSortAuthMethodsMostSecureFirstDuplicateMethods(t *testing.T) {
 	sorted := sortAuthMethodsMostSecureFirst([]string{
 		"client_secret_basic",
-		"client_secret_basic"})
+		"client_secret_basic"}, test.NullLogger())
 	test.NewRequire(t).Equal([]string{"client_secret_basic", "client_secret_basic"}, sorted)
 }
 
@@ -37,7 +37,7 @@ func TestSortAuthMethodsMostSecureFirstNonMatching(t *testing.T) {
 	sorted := sortAuthMethodsMostSecureFirst([]string{
 		"client_secret_basic",
 		"private_key_jwt_bad_match",
-		"tls_client_auth"})
+		"tls_client_auth"}, test.NullLogger())
 	test.NewRequire(t).Equal([]string{"tls_client_auth", "client_secret_basic", ""}, sorted)
 }
 
@@ -50,7 +50,7 @@ func TestOpenIdConfigWhenGetSuccessful(t *testing.T) {
 		string(mockResponse), nil)
 	defer mockedServer.Close()
 
-	config, err := OpenIdConfig(mockedServerURL)
+	config, err := OpenIdConfig(mockedServerURL, test.NullLogger())
 	require.NoError(err)
 	require.NotNil(config)
 	authMethodsMostSecureFirst := []string{
@@ -77,7 +77,7 @@ func TestOpenIdConfigWhenHttpResponseError(t *testing.T) {
 		"<h1>503 Service Temporarily Unavailable</h1>", nil)
 	defer mockedBadServer.Close()
 
-	_, err := OpenIdConfig(mockedBadServerURL)
+	_, err := OpenIdConfig(mockedBadServerURL, test.NullLogger())
 	require.EqualError(err, fmt.Sprintf("failed to GET OpenID config: %s : HTTP response status: 503", mockedBadServerURL))
 }
 
@@ -88,6 +88,6 @@ func TestOpenIdConfigWhenJsonParseFails(t *testing.T) {
 		mockedBody, nil)
 	defer mockedServer.Close()
 
-	_, err := OpenIdConfig(mockedServerURL)
+	_, err := OpenIdConfig(mockedServerURL, test.NullLogger())
 	require.EqualError(err, fmt.Sprintf("Invalid OpenID config JSON returned: %s : invalid character '<' looking for beginning of value", mockedServerURL))
 }

@@ -57,7 +57,7 @@ func (d discoveryHandlers) setDiscoveryModelHandler(c echo.Context) error {
 
 		url := discoveryItem.OpenidConfigurationURI
 		d.logger.Info(fmt.Sprintf("GET OpenID config: %s", url))
-		config, e := authentication.OpenIdConfig(url)
+		config, e := authentication.OpenIdConfig(url, d.logger)
 		if e != nil {
 			d.logger.WithError(e).Warn(fmt.Sprintf("Failed to GET %s", url))
 			failures = append(failures, newOpenidConfigurationURIFailure(discoveryItemIndex, e))

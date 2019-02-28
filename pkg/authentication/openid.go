@@ -27,7 +27,7 @@ var AUTH_METHODS_SORTED_MOST_SECURE_FIRST = []string{
 	"client_secret_basic", // least secure
 }
 
-func OpenIdConfig(url string) (OpenIDConfiguration, error) {
+func OpenIdConfig(url string, logger *logrus.Entry) (OpenIDConfiguration, error) {
 	body, e := retrieveConfig(url)
 	if body != nil {
 		defer body.Close()
@@ -40,7 +40,7 @@ func OpenIdConfig(url string) (OpenIDConfiguration, error) {
 	if err := json.NewDecoder(body).Decode(&config); err != nil {
 		return config, errors.Wrap(err, fmt.Sprintf("Invalid OpenID config JSON returned: %s ", url))
 	}
-	config.TokenEndpointAuthMethodsSupported = sortAuthMethodsMostSecureFirst(config.TokenEndpointAuthMethodsSupported)
+	config.TokenEndpointAuthMethodsSupported = sortAuthMethodsMostSecureFirst(config.TokenEndpointAuthMethodsSupported, logger)
 	return config, nil
 }
 
@@ -55,7 +55,7 @@ func retrieveConfig(url string) (io.ReadCloser, error) {
 	return resp.Body, nil
 }
 
-func sortAuthMethodsMostSecureFirst(methods []string) []string {
+func sortAuthMethodsMostSecureFirst(methods []string, logger *logrus.Entry) []string {
 	sorted := make([]string, len(methods))
 	i := 0
 	for _, a := range AUTH_METHODS_SORTED_MOST_SECURE_FIRST {
@@ -69,7 +69,6 @@ func sortAuthMethodsMostSecureFirst(methods []string) []string {
 	}
 	for _, m := range methods {
 		if m != "" {
-			logger := logrus.StandardLogger().WithField("authentication", "OpenIDConfiguration")
 			logger.Infof("Invalid token endpoint auth method in OpenID config: %s", m)
 		}
 	}
