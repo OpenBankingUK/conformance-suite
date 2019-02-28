@@ -54,12 +54,8 @@ export default {
         const tokenEndpoint = _.first(_.values(response.token_endpoints));
         commit(types.SET_TOKEN_ENDPOINT, tokenEndpoint);
 
-        const mostSecureAuthMethod = _.first(_.values(response.most_secure_token_endpoint_auth_method));
-        if (mostSecureAuthMethod && mostSecureAuthMethod !== '') {
-          commit(types.SET_TOKEN_ENDPOINT_AUTH_METHOD, mostSecureAuthMethod);
-        } else {
-          commit(types.SET_TOKEN_ENDPOINT_AUTH_METHOD, 'client_secret_basic');
-        }
+        const defaultAuthMethod = _.first(_.values(response.default_token_endpoint_auth_method));
+        commit(types.SET_TOKEN_ENDPOINT_AUTH_METHOD, defaultAuthMethod);
 
         const authorizationEndpoint = _.first(_.values(response.authorization_endpoints));
         commit(types.SET_AUTHORIZATION_ENDPOINT, authorizationEndpoint);

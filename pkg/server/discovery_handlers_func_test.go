@@ -87,9 +87,13 @@ func TestServerDiscoveryModelPOSTResolvesValuesUsingOpenidConfigurationURIs(t *t
         "schema_version=https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.0/dist/account-info-swagger.json":
           "https://modelobank2018.o3bank.co.uk:4201/<token_mock>"
       },
-      "most_secure_token_endpoint_auth_method": {
+      "token_endpoint_auth_methods": {
         "schema_version=https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.0/dist/account-info-swagger.json":
-          "tls_client_auth"
+          ["client_secret_basic"]
+      },
+      "default_token_endpoint_auth_method": {
+        "schema_version=https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.0/dist/account-info-swagger.json":
+          "client_secret_basic"
       },
       "authorization_endpoints": {
         "schema_version=https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.0/dist/account-info-swagger.json":
