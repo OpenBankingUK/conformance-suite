@@ -1,8 +1,7 @@
-FROM alpine:latest as certs
-RUN apk --update add ca-certificates
-
 # Image to compile go binaries
-FROM golang:1.11-stretch as gobuilder
+FROM golang:1.11-alpine as gobuilder
+RUN apk update && apk add git make bash
+
 # disable crosscompiling
 #
 # A normal compiled app is dynamically linked to the libraries it needs to run (i.e., all the C libraries it binds to).
@@ -14,16 +13,25 @@ ENV CGO_ENABLED=0
 ENV GOOS=linux
 ENV GOARCH=amd64
 
+# For caching technique, see: https://medium.com/@petomalina/using-go-mod-download-to-speed-up-golang-docker-builds-707591336888
+
+# All these steps will be cached
+RUN mkdir /app
 WORKDIR /app
+# COPY go.mod and go.sum files to the workspace
+COPY go.mod .
+COPY go.sum .
+# Get dependancies - will also be cached if we won't change mod/sum
+RUN go mod download
+# COPY the source code as the last step
+COPY . .
 
-ADD . .
-
-RUN make init
+# Build the binary
 RUN make build
 RUN make build_cli
 
 # Image to compile Single Page Application of the Vue.js site
-FROM node:8.11.1-slim as nodebuilder
+FROM node:dubnium-alpine as nodebuilder
 WORKDIR /app
 
 # This is to that JavaScript code can import code defined in the Go side, e.g.,
@@ -33,8 +41,15 @@ ADD pkg/discovery/templates/*.json /pkg/discovery/templates/
 ADD pkg/model/testdata/*.json /pkg/model/testdata/
 ADD web .
 
+ENV FORCE_COLOR=1
+ENV NODE_DISABLE_COLORS=0
+
 RUN yarn install \
 	&& NODE_ENV=production yarn build
+
+# Certificates needed if you are building a networking application
+FROM alpine:latest as certs
+RUN apk --update add ca-certificates
 
 # Final image to run the binary
 FROM scratch
