@@ -1,5 +1,5 @@
 <template>
-  <div class="d-flex flex-column align-items-stretch h-100 navbar">
+  <div class="d-flex flex-column align-items-stretch h-500 navbar">
     <div class="nav-section px-1 mb-5">
       <b-nav
         vertical
