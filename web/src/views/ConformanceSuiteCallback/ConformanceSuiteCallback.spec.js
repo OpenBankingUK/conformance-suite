@@ -1,7 +1,12 @@
-import { shallowMount } from '@vue/test-utils';
+import { shallowMount, createLocalVue } from '@vue/test-utils';
 // https://vue-test-utils.vuejs.org/guides/testing-async-components.html#testing-asynchronous-behavior
+import BootstrapVue from 'bootstrap-vue';
 import flushPromises from 'flush-promises';
 import ConformanceSuiteCallback from './ConformanceSuiteCallback.vue';
+
+
+const localVue = createLocalVue();
+localVue.use(BootstrapVue);
 
 describe('ConformanceSuiteCallback', () => {
   const mount = ($route) => {
@@ -10,6 +15,11 @@ describe('ConformanceSuiteCallback', () => {
     };
     return shallowMount(ConformanceSuiteCallback, {
       mocks,
+      localVue,
+      propsData:
+      {
+        autoCloseOnSuccess: false,
+      },
     });
   };
 
@@ -113,5 +123,35 @@ describe('ConformanceSuiteCallback', () => {
 
     await flushPromises();
     expect(wrapper.find('.response').text()).toBe(JSON.stringify(response, null, 2));
+  });
+
+  it('is serverError', async () => {
+    const $route = {
+      fullPath: '/conformancesuite/callback?code=1234567890',
+    };
+
+    const response = {
+      code: '1234567890',
+    };
+    fetch.mockResponseOnce(
+      JSON.stringify(response),
+      { status: 400 },
+    );
+
+    // render the component
+    const wrapper = mount($route);
+
+    // assert on the times called and arguments given to fetch
+    expect(fetch.mock.calls.length).toEqual(1);
+    expect(fetch.mock.calls[0][0]).toEqual('/api/redirect/query/ok');
+
+    // assert element values
+    expect(wrapper.find('.has-query').text()).toBe('true');
+    expect(wrapper.find('.has-fragment').text()).toBe('false');
+    expect(wrapper.find('.params').text()).toBe(JSON.stringify(response, null, 2));
+    expect(wrapper.find('.is-error').text()).toBe('false');
+
+    await flushPromises();
+    expect(wrapper.find('.serverError').text()).toBe('Error processing callback - expected HTTP 200 OK');
   });
 });

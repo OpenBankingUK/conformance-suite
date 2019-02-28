@@ -26,10 +26,20 @@ See:
     </div>
     <hr>
     <h2>Response</h2>
-    <div>
-      <code class="response">{{ response }}</code>
+    <div v-if="serverError">
+      <code class="serverError">{{ serverError }}</code>
+      <br>
     </div>
+    <p>The following response was received from the backend when processing the callback message.</p>
+    <div v-if="serverResponse">
+      <code class="response">{{ JSON.stringify(serverResponse, null, 2) }}</code>
+    </div>
+    <br>
+    <b-button @click="closeWindow()">
+      Close Window
+    </b-button>
   </div>
+
 </template>
 
 <script>
@@ -39,10 +49,18 @@ import api from '../../api/apiUtil';
 
 export default {
   name: 'ConformanceSuiteCallback',
+  props: {
+    autoCloseOnSuccess: {
+      type: Boolean,
+      required: false,
+      default: true,
+    },
+  },
   data() {
     return {
-      response: null,
+      serverResponse: null,
       uri: null,
+      serverError: null,
     };
   },
   computed: {
@@ -84,6 +102,13 @@ export default {
   async created() {
     this.uri = new URI(this.$route.fullPath);
     await this.doPost();
+    if (this.serverResponse.error == null && !this.isError && this.autoCloseOnSuccess) {
+      try {
+        window.close();
+      } catch (e) {
+        // Can ignore this exception as it's just an attempt to close window
+      }
+    }
   },
   methods: {
     async doPost() {
@@ -92,9 +117,21 @@ export default {
         const data = this.params;
 
         const result = await api.post(url, data);
-        this.response = await result.json();
+        const { status } = result;
+
+        if (status !== 200) {
+          this.serverError = 'Error processing callback - expected HTTP 200 OK';
+        }
+        this.serverResponse = await result.json();
       } catch (err) {
-        this.response = err;
+        this.serverResponse = err;
+      }
+    },
+    closeWindow() {
+      try {
+        window.close();
+      } catch (e) {
+        // Can ignore this exception as it's just an attempt to close window
       }
     },
   },
