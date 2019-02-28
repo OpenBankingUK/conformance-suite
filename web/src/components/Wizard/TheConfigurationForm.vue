@@ -97,13 +97,12 @@
           label="Token Endpoint Auth Method"
           description="Registered client authentication method, e.g client_secret_basic"
         >
-          <b-form-input
+          <b-form-select
             id="token_endpoint_auth_method"
             v-model="token_endpoint_auth_method"
-            :state="isNotEmpty(token_endpoint_auth_method)"
-            placeholder="Enter your client registered token endpoint auth method"
+            :options="token_endpoint_auth_methods"
+            :state="true"
             required
-            type="text"
           />
         </b-form-group>
 
@@ -174,6 +173,13 @@ export default {
     ConfigurationFormFile,
   },
   computed: {
+    token_endpoint_auth_methods() {
+      const authMethods = this.$store.state.config.token_endpoint_auth_methods;
+      return authMethods.map(m => ({
+        value: m,
+        text: m,
+      }));
+    },
     // For an explanation on how these work. See:
     // * https://stackoverflow.com/a/45841419/241993
     // * http://shzhangji.com/blog/2018/04/17/form-handling-in-vuex-strict-mode/#Computed-Property
@@ -212,7 +218,6 @@ export default {
         this.$store.commit('config/SET_TOKEN_ENDPOINT_AUTH_METHOD', value);
       },
     },
-
     authorization_endpoint: {
       get() {
         return this.$store.state.config.configuration.authorization_endpoint;

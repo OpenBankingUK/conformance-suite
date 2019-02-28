@@ -57,6 +57,9 @@ export default {
         const defaultAuthMethod = _.first(_.values(response.default_token_endpoint_auth_method));
         commit(types.SET_TOKEN_ENDPOINT_AUTH_METHOD, defaultAuthMethod);
 
+        const authMethods = _.first(_.values(response.token_endpoint_auth_methods));
+        commit(types.SET_TOKEN_ENDPOINT_AUTH_METHODS, authMethods);
+
         const authorizationEndpoint = _.first(_.values(response.authorization_endpoints));
         commit(types.SET_AUTHORIZATION_ENDPOINT, authorizationEndpoint);
 

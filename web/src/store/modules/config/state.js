@@ -7,6 +7,7 @@ export default {
   discoveryTemplates: templates,
   discoveryModel: null,
   problems: null,
+  token_endpoint_auth_methods: [],
 
   configuration: {
     signing_private: '',
