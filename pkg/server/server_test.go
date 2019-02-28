@@ -3,6 +3,7 @@ package server
 // Note: Do not run the server tests in parallel.
 
 import (
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/client"
 	"bytes"
 	"context"
 	"crypto/tls"
@@ -129,7 +130,7 @@ func TestServerHTTPS(t *testing.T) {
 			InsecureSkipVerify: true,
 		},
 	}
-	client := &http.Client{Transport: transport}
+	httpClient := client.NewHTTPClientWithTransport(client.DefaultTimeout, transport)
 
 	server := NewServer(testJourney(), nullLogger(), &mocks.Version{})
 	defer func() {
@@ -148,7 +149,7 @@ func TestServerHTTPS(t *testing.T) {
 	tcpAddr, ok := server.TLSListener.Addr().(*net.TCPAddr)
 	require.True(ok)
 	url := fmt.Sprintf("https://localhost:%d/", tcpAddr.Port)
-	res, err := client.Get(url)
+	res, err := httpClient.Get(url)
 	require.NoError(err)
 	require.NotNil(res)
 	require.Equal(http.StatusOK, res.StatusCode)
