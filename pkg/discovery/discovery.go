@@ -38,6 +38,7 @@ type ModelAPISpecification struct {
 	URL           string `json:"url" validate:"required,url"`
 	Version       string `json:"version" validate:"required"`
 	SchemaVersion string `json:"schemaVersion" validate:"required,url"`
+	Manifest	  string `json:"manifest" validate:"optional"`
 }
 
 // ModelEndpoint - Endpoint and methods that have been implemented by implementer.
