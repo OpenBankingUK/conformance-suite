@@ -6,4 +6,8 @@ export default {
     connection: null,
     messages: [],
   },
+  tokens: {
+    acquired: [],
+    all_acquired: false,
+  },
 };

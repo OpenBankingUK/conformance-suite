@@ -32,7 +32,7 @@ func GetImplementedTestCases(disco *discovery.ModelDiscoveryItem, nameGenerator 
 	endpoints := disco.Endpoints
 	doc, err := loadSpec(disco.APISpecification.SchemaVersion, false)
 	if err != nil {
-		logrus.Errorln(err)
+		logrus.StandardLogger().Errorln(err)
 		return nil, nil
 	}
 
@@ -47,7 +47,7 @@ func GetImplementedTestCases(disco *discovery.ModelDiscoveryItem, nameGenerator 
 					responseCodes = getResponseCodes(op)
 					goodResponseCode, err = getGoodResponseCode(responseCodes)
 					if err != nil {
-						logrus.WithFields(logrus.Fields{
+						logrus.StandardLogger().WithFields(logrus.Fields{
 							"testcase": op.Summary,
 							"method":   meth,
 							"endpoint": newpath,
@@ -69,7 +69,7 @@ func GetImplementedTestCases(disco *discovery.ModelDiscoveryItem, nameGenerator 
 						headers["authorization"] = "Bearer $client_access_token"
 						customTestCases, err := getTemplatedTestCases(newpath)
 						if err != nil {
-							logrus.WithFields(logrus.Fields{
+							logrus.StandardLogger().WithFields(logrus.Fields{
 								"testcase": op.Summary,
 								"method":   meth,
 								"endpoint": newpath,
@@ -110,7 +110,7 @@ func getTemplatedTestCases(path string) (tc []model.TestCase, err error) {
 	if err != nil {
 		filedata, err = ioutil.ReadFile("../../components/account_consent.json") // handle testing
 		if err != nil {
-			logrus.Error("Cannot read: components/account_consent " + err.Error())
+			logrus.StandardLogger().Error("Cannot read: components/account_consent " + err.Error())
 			return nil, err
 		}
 	}

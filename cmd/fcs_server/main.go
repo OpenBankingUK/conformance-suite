@@ -109,6 +109,7 @@ func initConfig() {
 	})
 	level, err := logrus.ParseLevel(viper.GetString("log_level"))
 	if err != nil {
+		printConfigurationFlags()
 		fmt.Fprint(os.Stderr, err)
 		fmt.Fprint(os.Stderr, "\n")
 		os.Exit(1)
@@ -117,4 +118,15 @@ func initConfig() {
 
 	tracer.Silent = viper.GetBool("log_tracer")
 	resty.SetDebug(viper.GetBool("log_http_trace"))
+
+	printConfigurationFlags()
+}
+
+func printConfigurationFlags() {
+	logger.WithFields(logrus.Fields{
+		"log_level":      viper.GetString("log_level"),
+		"log_tracer":     viper.GetBool("log_tracer"),
+		"log_http_trace": viper.GetBool("log_http_trace"),
+		"port":           viper.GetInt("port"),
+	}).Info("configuration flags")
 }

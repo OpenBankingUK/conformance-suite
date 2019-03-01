@@ -17,12 +17,12 @@ import (
 
 // TestCaseExecutor defines an interface capable of executing a testcase
 type TestCaseExecutor interface {
-	ExecuteTestCase(r *resty.Request, t *model.TestCase, ctx *model.Context) (*resty.Response, error)
+	ExecuteTestCase(r *resty.Request, t *model.TestCase, ctx *model.Context) (*resty.Response, results.Metrics, error)
 	SetCertificates(certificateSigning, certificationTransport authentication.Certificate) error
 }
 
 // NewExecutor creates an executor
-func NewExecutor() *Executor {
+func NewExecutor() TestCaseExecutor {
 	return &Executor{}
 }
 
@@ -46,7 +46,7 @@ func (e *Executor) ExecuteTestCase(r *resty.Request, t *model.TestCase, ctx *mod
 	if err != nil {
 		if resp.StatusCode() == http.StatusFound { // catch status code 302 redirects and pass back as good response
 			header := resp.Header()
-			logrus.Printf("redirection headers: %#v\n", header)
+			logrus.StandardLogger().Printf("redirection headers: %#v\n", header)
 			e.appMsg(fmt.Sprintf("Response: (%.250s)", resp.String()))
 			return resp, metrics(t, resp), nil
 		}

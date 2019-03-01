@@ -3,11 +3,12 @@ package server
 import (
 	"context"
 	"fmt"
-	"github.com/stretchr/testify/mock"
-	"github.com/stretchr/testify/require"
 	"net/http"
 	"strings"
 	"testing"
+
+	"github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/require"
 
 	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/test"
 	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/version/mocks"
@@ -23,6 +24,7 @@ type testTableItem struct {
 
 func TestRedirectHandlersFragmentOK(t *testing.T) {
 	require := test.NewRequire(t)
+
 	journey := &MockJourney{}
 	server := NewServer(journey, nullLogger(), &mocks.Version{})
 	defer func() {
@@ -95,19 +97,22 @@ func TestRedirectHandlersFragmentOK(t *testing.T) {
 		)
 
 		// do assertions.
-		require.Equal(ttItem.httpStatusExpected, code, ttItem.label)
-		require.Len(headers, 2, ttItem.label)
-		require.Equal("application/json; charset=UTF-8", headers["Content-Type"][0], ttItem.label)
-		require.NotNil(body, ttItem.label)
-
+		require.NotNil(body)
 		bodyActual := body.String()
-		require.Equal(ttItem.responseBodyExpected, bodyActual, ttItem.label)
+		require.JSONEq(ttItem.responseBodyExpected, bodyActual, ttItem.label)
+
+		require.Equal(ttItem.httpStatusExpected, code, ttItem.label)
+		require.Equal(http.Header{
+			"Vary":         []string{"Accept-Encoding"},
+			"Content-Type": []string{"application/json; charset=UTF-8"},
+		}, headers, ttItem.label)
 	}
 }
 
 func TestRedirectHandlersQueryOK(t *testing.T) {
 	journey := &MockJourney{}
 	journey.On("CollectToken", mock.Anything, mock.Anything, mock.Anything).Return(nil)
+
 	server := NewServer(journey, nullLogger(), &mocks.Version{})
 	defer func() {
 		require.NoError(t, server.Shutdown(context.TODO()))
@@ -185,9 +190,12 @@ func TestRedirectHandlersQueryOK(t *testing.T) {
 			require.NotNil(body)
 			bodyActual := body.String()
 			require.JSONEq(ttItem.responseBodyExpected, bodyActual)
+
 			require.Equal(ttItem.httpStatusExpected, code)
-			require.Len(headers, 2)
-			require.Equal("application/json; charset=UTF-8", headers["Content-Type"][0])
+			require.Equal(http.Header{
+				"Vary":         []string{"Accept-Encoding"},
+				"Content-Type": []string{"application/json; charset=UTF-8"},
+			}, headers)
 		})
 	}
 }
@@ -217,13 +225,15 @@ func TestRedirectHandlersError(t *testing.T) {
 	)
 
 	// do assertions.
-	require.Equal(http.StatusOK, code)
-	require.Len(headers, 2)
-	require.Equal("application/json; charset=UTF-8", headers["Content-Type"][0])
 	require.NotNil(body)
-
 	bodyActual := body.String()
 	require.JSONEq(bodyExpected, bodyActual)
+
+	require.Equal(http.StatusOK, code)
+	require.Equal(http.Header{
+		"Vary":         []string{"Accept-Encoding"},
+		"Content-Type": []string{"application/json; charset=UTF-8"},
+	}, headers)
 }
 
 func TestCalculateCHash(t *testing.T) {

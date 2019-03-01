@@ -82,6 +82,37 @@ export default {
         commit(types.SET_CONSENT_URLS, consentUrls(testCases.specTokens));
       }
       dispatch('status/clearErrors', null, { root: true });
+
+      // Setup WebSocket now as we need to know when tokens have been acquired.
+      setShowLoading(true);
+      const wsConnection = await createWebSocketConnection();
+      commit(types.SET_WEBSOCKET_CONNECTION, wsConnection);
+
+      wsConnection.onerror = (ev) => {
+        setShowLoading(false);
+        dispatch('status/setErrors', [ev], { root: true });
+      };
+      wsConnection.onmessage = (ev) => {
+        // TODO: call `setShowLoading(false)` once using _.once or similar.
+        setShowLoading(false);
+        const { data } = ev;
+        const update = JSON.parse(data);
+
+        commit(types.SET_WEBSOCKET_MESSAGE, update);
+
+        if (_.has(update, 'type') && update.type === 'ResultType_AcquiredAccessToken') {
+          commit(types.ADD_TOKEN_ACQUIRED, update);
+        } else if (_.has(update, 'type') && update.type === 'ResultType_AcquiredAllAccessTokens') {
+          commit(types.SET_ALL_TOKENS_ACQUIRED);
+        } else {
+          // update = {"error":"createRequest: setHeaders Replaced Context value Bearer $access_token :replacement not found in context: Bearer $access_token"}
+          const isErrorMsg = _.has(update, 'error');
+          if (!isErrorMsg) {
+            // update = {"test":{"id":"#co0001","pass":true}}
+            commit(types.UPDATE_TEST_CASE, update);
+          }
+        }
+      };
     } catch (err) {
       commit(types.SET_TEST_CASES, []);
       dispatch('status/setErrors', [err], { root: true });
@@ -100,27 +131,6 @@ export default {
       await api.executeTestCases(setShowLoading);
       dispatch('status/clearErrors', null, { root: true });
       commit(types.SET_TEST_CASES_STATUS, 'PENDING');
-
-      setShowLoading(true);
-      const wsConnection = await createWebSocketConnection();
-      commit(types.SET_WEBSOCKET_CONNECTION, wsConnection);
-
-      wsConnection.onerror = (ev) => {
-        setShowLoading(false);
-        dispatch('status/setErrors', [ev], { root: true });
-      };
-      wsConnection.onmessage = (ev) => {
-        setShowLoading(false);
-        const { data } = ev;
-        const update = JSON.parse(data);
-
-        commit(types.SET_WEBSOCKET_MESSAGE, update);
-
-        const isErrorMsg = _.has(update, 'error'); // update = {"error":"createRequest: setHeaders Replaced Context value Bearer $access_token :replacement not found in context: Bearer $access_token"}
-        if (!isErrorMsg) {
-          commit(types.UPDATE_TEST_CASE, update); // update = {"test":{"id":"#co0001","pass":true}}
-        }
-      };
     } catch (err) {
       setShowLoading(false);
       commit(types.SET_HAS_RUN_STARTED, false);

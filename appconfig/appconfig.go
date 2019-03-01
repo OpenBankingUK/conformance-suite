@@ -61,7 +61,7 @@ type AppConfig struct {
 
 // PrintAppConfig - dumps application config to console
 func (a *AppConfig) PrintAppConfig() {
-	logrus.WithFields(logrus.Fields{
+	logrus.StandardLogger().WithFields(logrus.Fields{
 		"SoftwareStatementId": a.SoftwareStatementID,
 		"KeyID":               a.KeyID,
 		"TargetHost":          a.TargetHost,

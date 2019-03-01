@@ -4,8 +4,9 @@ import (
 	"crypto/sha256"
 	"encoding/base64"
 	"fmt"
-	"github.com/pkg/errors"
 	"net/http"
+
+	"github.com/pkg/errors"
 
 	"github.com/dgrijalva/jwt-go"
 
@@ -141,7 +142,7 @@ func (h *redirectHandlers) postQueryOKHandler(c echo.Context) error {
 }
 
 func (h *redirectHandlers) handleCodeExchange(query *RedirectQuery) error {
-	logrus.Warnf("received redirect Query %#v", query)
+	logrus.StandardLogger().Warnf("received redirect Query %#v", query)
 	return h.journey.CollectToken(query.Code, query.State, query.Scope)
 }
 

@@ -5,10 +5,11 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/sirupsen/logrus"
 	"net/http"
 	"regexp"
 	"strings"
+
+	"github.com/sirupsen/logrus"
 
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/tracer"
 	"gopkg.in/resty.v1"
@@ -311,12 +312,12 @@ func (t *TestCase) ProcessReplacementFields(ctx *Context) {
 
 	t.Input.Endpoint, err = replaceContextField(t.Input.Endpoint, ctx) // errors if field not present in context - which is isReplacement for this function
 	if err != nil {
-		logrus.WithError(err).Error("processing replacement fields")
+		logrus.StandardLogger().WithError(err).Error("processing replacement fields")
 	}
 
 	t.Input.RequestBody, err = replaceContextField(t.Input.RequestBody, ctx)
 	if err != nil {
-		logrus.WithError(err).Error("processing replacement fields")
+		logrus.StandardLogger().WithError(err).Error("processing replacement fields")
 	}
 
 	t.processReplacementFormData(ctx)
@@ -330,14 +331,14 @@ func (t *TestCase) ProcessReplacementFields(ctx *Context) {
 		}
 		t.Context[k], err = replaceContextField(param, ctx)
 		if err != nil {
-			logrus.WithError(err).Error("processing replacement fields")
+			logrus.StandardLogger().WithError(err).Error("processing replacement fields")
 		}
 	}
 
 	for k, v := range t.Expect.ContextPut.Matches {
 		t.Expect.ContextPut.Matches[k].ContextName, err = replaceContextField(v.ContextName, ctx)
 		if err != nil {
-			logrus.WithError(err).Error("processing replacement fields")
+			logrus.StandardLogger().WithError(err).Error("processing replacement fields")
 		}
 	}
 }
@@ -347,7 +348,7 @@ func (t *TestCase) processReplacementFormData(ctx *Context) {
 	for k := range t.Input.FormData {
 		t.Input.FormData[k], err = replaceContextField(t.Input.FormData[k], ctx)
 		if err != nil {
-			logrus.WithError(err).Error("processing replacement fields")
+			logrus.StandardLogger().WithError(err).Error("processing replacement fields")
 		}
 	}
 }
@@ -357,7 +358,7 @@ func (t *TestCase) processReplacementHeaders(ctx *Context) {
 	for k := range t.Input.Headers {
 		t.Input.Headers[k], err = replaceContextField(t.Input.Headers[k], ctx)
 		if err != nil {
-			logrus.WithError(err).Error("processing replacement fields")
+			logrus.StandardLogger().WithError(err).Error("processing replacement fields")
 		}
 	}
 }
@@ -367,7 +368,7 @@ func (t *TestCase) processReplacementClaims(ctx *Context) {
 	for k := range t.Input.Claims {
 		t.Input.Claims[k], err = replaceContextField(t.Input.Claims[k], ctx)
 		if err != nil {
-			logrus.WithError(err).Error("processing replacement fields")
+			logrus.StandardLogger().WithError(err).Error("processing replacement fields")
 		}
 	}
 }

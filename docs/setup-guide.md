@@ -20,10 +20,8 @@ This guide assumes the following tools are installed and functioning correctly. 
 * Google login if using Ozone "self-serve"
 * Access to the following hosts from your computer - See Appendix A.
 
-
 *Note for Windows 10 users - Docker on Windows 10 requires Hyper-V to be installed. Hyper-V is only available
 on Pro or Enterprise versions. Please refer to [this guide](https://techcommunity.microsoft.com/t5/ITOps-Talk-Blog/Step-By-Step-Enabling-Hyper-V-for-use-on-Windows-10/ba-p/267945) for more information.*
-
 
 ## Step 1: Register with Ozone Bank (Model Bank)
 
@@ -37,7 +35,7 @@ Following the enrolment screens:
 * Enter an organisation name
 * Enter the following redirect URI: `https://0.0.0.0:8443/conformancesuite/callback`
 
-Once completed, make a note of the certificates and the "CLIENT ID" and "CLIENT SECRET" values.
+Once completed, make a note of the certificates and the `CLIENT ID` and `CLIENT SECRET` values.
 
 ### Generate transport and signing certificates
 
@@ -91,7 +89,7 @@ under the Certificates tab:
 
 The suite runs on https using localhost, you can trust the certificate or add as an exception.
 
-Certificates and be downloaded (here)[https://bitbucket.org/openbankingteam/conformance-suite/src/develop/certs/]
+Certificates and be downloaded [https://bitbucket.org/openbankingteam/conformance-suite/src/develop/certs/](here).
 
 ## Step 3: Download the Functional Conformance Suite
 
@@ -126,11 +124,10 @@ Select the Ozone PSU template.
 
 * Provide the keys, as created earlier signing and transport.
 * Enter a cleint ID and secret from Ozone Bank
-* x-fapi-financial-id = 0015800001041RHAAY
-* Resource Base URL = https://modelobank2018.o3bank.co.uk:4501/open-banking/v3.1/aisp
+* x-fapi-financial-id = `0015800001041RHAAY`
+* Resource Base URL = <https://modelobank2018.o3bank.co.uk:4501/open-banking/v3.1/aisp>
 
 The rest of the values are taken from the well-known.
-
 
 4. Run / Overview
 

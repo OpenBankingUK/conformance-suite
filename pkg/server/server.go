@@ -74,7 +74,6 @@ func registerRoutes(journey Journey, server *Server, logger *logrus.Entry, versi
 	// endpoints for test cases
 	testCaseHandlers := newTestCaseHandlers(journey, NewWebSocketUpgrader(), logger)
 	api.GET("/test-cases", testCaseHandlers.testCasesHandler)
-	api.GET("/test-cases/ws", testCaseHandlers.listenCodeWebSocket)
 
 	// endpoints for test runner
 	runHandlers := newRunHandlers(journey, NewWebSocketUpgrader(), logger)

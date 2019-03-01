@@ -25,15 +25,16 @@ func InitiationConsentAcquisition(consentRequirements []model.SpecConsentRequire
 		consentInfo := TokenConsentIDItem{TokenName: tokenName, Permissions: permissionString}
 		err := runner.RunConsentAcquisition(consentInfo, ctx, tokenAcquisitionType, consentIDChannel)
 		if err != nil {
-			logrus.WithError(err).Debug("InitiationConsentAcquisition")
+			logrus.StandardLogger().WithError(err).Debug("InitiationConsentAcquisition")
 		}
 	}
 
 	consentItems, err := waitForConsentIDs(consentIDChannel, tokenParameters)
 	for _, v := range consentItems {
-		logrus.Debugf("Setting Token: %s, ConsentId: %s", v.TokenName, v.ConsentID)
+		logrus.StandardLogger().Debugf("Setting Token: %s, ConsentId: %s", v.TokenName, v.ConsentID)
 		ctx.PutString(v.TokenName, v.ConsentID)
 	}
+
 	return consentItems, err
 }
 
@@ -41,22 +42,22 @@ func waitForConsentIDs(consentIDChannel chan TokenConsentIDItem, tokenParameters
 	consentItems := TokenConsentIDs{}
 	consentIDsRequired := len(tokenParameters)
 	consentIDsReceived := 0
-	logrus.Debugf("waiting for consentids items ...")
+	logrus.StandardLogger().Debugf("waiting for consentids items ...")
 	for {
 		select {
 		case item := <-consentIDChannel:
-			logrus.Debugf("received consent channel item item %#v", item)
+			logrus.StandardLogger().Debugf("received consent channel item item %#v", item)
 			consentIDsReceived++
 			consentItems = append(consentItems, item)
 			if consentIDsReceived == consentIDsRequired {
-				logrus.Infof("Got %d required tokens - progressing..", consentIDsReceived)
+				logrus.StandardLogger().Infof("Got %d required tokens - progressing..", consentIDsReceived)
 				for _, v := range consentItems {
-					logrus.Infof("token: %s, consentid: %s", v.TokenName, v.ConsentID)
+					logrus.StandardLogger().Infof("token: %s, consentid: %s", v.TokenName, v.ConsentID)
 				}
 				return consentItems, nil
 			}
 		case <-time.After(time.Duration(consentChannelTimeout) * time.Second):
-			logrus.Warnf("consent channel timeout after %d seconds", consentChannelTimeout)
+			logrus.StandardLogger().Warnf("consent channel timeout after %d seconds", consentChannelTimeout)
 			return consentItems, errors.New("ConsentChannel Timeout")
 		}
 	}
@@ -76,7 +77,7 @@ func getConsentTokensAndPermissions(consentRequirements []model.SpecConsentRequi
 		}
 	}
 	for k, v := range tokenParameters {
-		logrus.Debugf("Getting ConsentToken: %s: %s", k, buildPermissionString(v))
+		logrus.StandardLogger().Debugf("Getting ConsentToken: %s: %s", k, buildPermissionString(v))
 	}
 
 	return tokenParameters
@@ -108,10 +109,10 @@ type ExchangeParameters struct {
 
 // ExchangeCodeForAccessToken - runs a testcase to perform this operation
 func ExchangeCodeForAccessToken(tokenName, code, scope string, definition RunDefinition, ctx *model.Context) (accesstoken string, err error) {
-	logrus.Debugf("Looking to exchange code %s, tokenName: %s", code, tokenName)
+	logrus.StandardLogger().Debugf("Looking to exchange code %s, tokenName: %s", code, tokenName)
 	grantToken, err := exchangeCodeForToken(code, scope, ctx)
 	if err != nil {
-		logrus.Errorf("error attempting to exchange token %s", err.Error())
+		logrus.StandardLogger().Errorf("error attempting to exchange token %s", err.Error())
 	}
 	return grantToken.AccessToken, err
 }
@@ -154,7 +155,7 @@ func exchangeCodeForToken(code, scope string, ctx *model.Context) (grantToken, e
 		Post(tokenEndpoint)
 
 	if err != nil {
-		logrus.Debugf("error accessing exchange code url %s: %s ", tokenEndpoint, err.Error())
+		logrus.StandardLogger().Debugf("error accessing exchange code url %s: %s ", tokenEndpoint, err.Error())
 		return grantToken{}, err
 	}
 	if resp.StatusCode() != 200 {
@@ -162,6 +163,6 @@ func exchangeCodeForToken(code, scope string, ctx *model.Context) (grantToken, e
 	}
 	var t grantToken
 	err = json.Unmarshal(resp.Body(), &t)
-	logrus.Debugf("exchangeCodeForToken  token: %#v", t)
+	logrus.StandardLogger().Debugf("exchangeCodeForToken  token: %#v", t)
 	return t, err
 }
