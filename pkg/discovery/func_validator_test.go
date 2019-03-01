@@ -58,7 +58,7 @@ func testUnmarshalDiscoveryJSON(t *testing.T, discoveryJSON string) *Model {
 func discoveryStub(field string, value string) string {
 	name := "ob-v3.1-generic"
 	description := "An Open Banking UK generic discovery template for v3.1 of Accounts and Payments."
-	version := "v0.2.1"
+	version := "v0.3.0"
 	tokenAcquisition := "psu"
 	specName := "Account and Transaction API Specification"
 	specURL := "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937820271/Account+and+Transaction+API+Specification+-+v3.1"
@@ -432,5 +432,5 @@ func TestValidate(t *testing.T) {
 func TestDiscovery_Version(t *testing.T) {
 	assert := assert.New(t)
 
-	assert.Equal(Version(), "v0.2.1")
+	assert.Equal(Version(), "v0.3.0")
 }

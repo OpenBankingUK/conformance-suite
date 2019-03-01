@@ -16,7 +16,7 @@ var (
 
 // Version returns the current version of the Discovery Model parser
 func Version() string {
-	version := "v0.2.1"
+	version := "v0.3.0"
 	return version
 }
 
