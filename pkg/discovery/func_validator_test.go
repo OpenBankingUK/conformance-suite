@@ -428,9 +428,9 @@ func TestValidate(t *testing.T) {
 		})
 	})
 
-	t.Run("Validation should pass when `manifest` is a normal string not URL", func(t *testing.T) {
+	t.Run("Validation should pass when `manifest` is empty", func(t *testing.T) {
 		testValidateFailures(t, conditionalityCheckerMock{}, &invalidTest{
-			discoveryJSON: discoveryStub("manifest", "https://www.google.com"),
+			discoveryJSON: discoveryStub("manifest", ""),
 			failures: []ValidationFailure{
 				{
 					Key:   "DiscoveryModel.DiscoveryItems[0].Endpoints[0]",
