@@ -35,7 +35,7 @@ const (
 	tokenAcquisitionErrMsgFormat = "TokenAcquisition '%s' not in list of supported methods"
 	requiredErrorFormat          = "Field '%s' is required"
 	emptyArrayErrorFormat        = "Field '%s' cannot be empty"
-	httpsURLOnlyErrorFormat      = "Field '%s' must use HTTPS if it is a URL"
+	fileOrHttpsErrorFormat       = "Field '%s' must 'file://' or 'https://'"
 )
 
 // Validate - validates a discovery model, returns true when valid,
@@ -87,8 +87,8 @@ func appendStructValidationErrors(errs validation.ValidationErrors, failures []V
 			message = fmt.Sprintf(requiredErrorFormat, key)
 		case "gt":
 			message = fmt.Sprintf(emptyArrayErrorFormat, key)
-		case "https":
-			message = fmt.Sprintf(httpsURLOnlyErrorFormat, key)
+		case "fileorhttps":
+			message = fmt.Sprintf(fileOrHttpsErrorFormat, key)
 		}
 		failure := ValidationFailure{
 			Key:   key,
