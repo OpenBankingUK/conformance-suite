@@ -6,7 +6,7 @@ import (
 )
 
 func TestDefaultAuthMethodReturnsFirstSuiteSupportedMethodWhenOneMatch(t *testing.T) {
-	expected := SUITE_SUPPORTED_AUTH_METHODS_MOST_SECURE_FIRST[0]
+	expected := SuiteSupportedAuthMethodsMostSecureFirst[0]
 
 	openIDConfigAuthMethods := []string{
 		"client_secret_post",
@@ -26,7 +26,7 @@ func TestDefaultAuthMethodReturnsFirstSuiteSupportedMethodWhenNoMatch(t *testing
 	}
 	actual := DefaultAuthMethod(openIDConfigAuthMethods, test.NullLogger())
 
-	expected := SUITE_SUPPORTED_AUTH_METHODS_MOST_SECURE_FIRST[0]
+	expected := SuiteSupportedAuthMethodsMostSecureFirst[0]
 	test.NewRequire(t).Equal(expected, actual)
 }
 
@@ -36,11 +36,11 @@ func TestDefaultAuthMethodReturnsFirstSuiteSupportedMethodWhenMultipleMatches(t 
 		"tls_client_auth",
 	}
 	mockSuiteSupported := []string{
-		tls_client_auth,
-		private_key_jwt,
-		client_secret_jwt,
-		client_secret_post,
-		client_secret_basic,
+		TlsClientAuth,
+		PrivateKeyJwt,
+		ClientSecretJwt,
+		ClientSecretPost,
+		ClientSecretBasic,
 	}
 
 	actual := defaultAuthMethod(mockSuiteSupported, openIDConfigAuthMethods, test.NullLogger())

@@ -67,7 +67,7 @@ func (d discoveryHandlers) setDiscoveryModelHandler(c echo.Context) error {
 			response.TokenEndpoints[key] = config.TokenEndpoint
 			response.AuthorizationEndpoints[key] = config.AuthorizationEndpoint
 			response.Issuers[key] = config.Issuer
-			response.TokenEndpointAuthMethods[key] = authentication.SUITE_SUPPORTED_AUTH_METHODS_MOST_SECURE_FIRST
+			response.TokenEndpointAuthMethods[key] = authentication.SuiteSupportedAuthMethodsMostSecureFirst
 			response.DefaultTokenEndpointAuthMethod[key] = authentication.DefaultAuthMethod(config.TokenEndpointAuthMethodsSupported, d.logger)
 		}
 	}

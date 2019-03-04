@@ -4,23 +4,26 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-const tls_client_auth = "tls_client_auth"
-const private_key_jwt = "private_key_jwt"
-const client_secret_jwt = "client_secret_jwt"
-const client_secret_post = "client_secret_post"
-const client_secret_basic = "client_secret_basic"
+const TlsClientAuth = "tls_client_auth"
+const PrivateKeyJwt = "private_key_jwt"
+const ClientSecretJwt = "client_secret_jwt"
+const ClientSecretPost = "client_secret_post"
+const ClientSecretBasic = "client_secret_basic"
 
-// SUITE_SUPPORTED_AUTH_METHODS_MOST_SECURE_FIRST -
+// SuiteSupportedAuthMethodsMostSecureFirst -
 // We have made our own determination of security offered by each auth method.
 // It is not from a formal definition.
-var SUITE_SUPPORTED_AUTH_METHODS_MOST_SECURE_FIRST = []string{
-	client_secret_basic,
+var SuiteSupportedAuthMethodsMostSecureFirst = []string{
+	ClientSecretBasic,
 }
 
 func DefaultAuthMethod(openIDConfigAuthMethods []string, logger *logrus.Entry) string {
-	return defaultAuthMethod(SUITE_SUPPORTED_AUTH_METHODS_MOST_SECURE_FIRST, openIDConfigAuthMethods, logger)
+	return defaultAuthMethod(SuiteSupportedAuthMethodsMostSecureFirst, openIDConfigAuthMethods, logger)
 }
 
+// defaultAuthMethod - return first match from openIDConfigAuthMethods in
+// suiteSupportedAuthMethods, else when no match return first method in
+// suiteSupportedAuthMethods.
 func defaultAuthMethod(suiteSupportedAuthMethods []string, openIDConfigAuthMethods []string, logger *logrus.Entry) string {
 	intersection := make([]string, len(openIDConfigAuthMethods))
 	i := 0
