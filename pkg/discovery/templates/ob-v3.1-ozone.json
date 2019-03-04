@@ -159,7 +159,8 @@
           "name": "Payment Initiation API",
           "url": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937754701/Payment+Initiation+API+Specification+-+v3.1",
           "version": "v3.1",
-          "schemaVersion": "https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.0/dist/payment-initiation-swagger.json"
+          "schemaVersion": "https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.0/dist/payment-initiation-swagger.json",
+          "manifest": "manifests/ob_3.1__payment_fca.json"
         },
         "openidConfigurationUri": "https://modelobankauth2018.o3bank.co.uk:4101/.well-known/openid-configuration",
         "resourceBaseUri": "https://modelobank2018.o3bank.co.uk:4501/open-banking/v3.1/",

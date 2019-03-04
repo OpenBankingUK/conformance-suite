@@ -64,6 +64,7 @@ func discoveryStub(field string, value string) string {
 	specURL := "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937820271/Account+and+Transaction+API+Specification+-+v3.1"
 	specVersion := "v3.1"
 	schemaVersion := "https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.0/dist/account-info-swagger.json"
+	manifest := "https://www.example.com"
 	endpoints := `, "endpoints": [
 		{
 			"method": "POST",
@@ -88,6 +89,8 @@ func discoveryStub(field string, value string) string {
 		specName = value
 	case "schemaVersion":
 		schemaVersion = value
+	case "manifest":
+		manifest = value
 	case "tokenAcquisition":
 		tokenAcquisition = value
 	case "specURL":
@@ -104,7 +107,7 @@ func discoveryStub(field string, value string) string {
 		}
 	}
 
-	apiSpecification := apiSpecificationStub(specName, specURL, specVersion, schemaVersion, field, value)
+	apiSpecification := apiSpecificationStub(specName, specURL, specVersion, schemaVersion, manifest, field, value)
 
 	discoveryItems := discoveryItemsStub(apiSpecification, endpoints, field, value)
 
@@ -120,12 +123,13 @@ func discoveryStub(field string, value string) string {
 	}`
 }
 
-func apiSpecificationStub(specName string, specURL string, specVersion string, schemaVersion string, field string, value string) string {
+func apiSpecificationStub(specName string, specURL string, specVersion string, schemaVersion string, manifest, field string, value string) string {
 	apiSpecification := `"apiSpecification": {
 			"name": "` + specName + `",
 			"url": "` + specURL + `",
 			"version": "` + specVersion + `",
-			"schemaVersion": "` + schemaVersion + `"
+			"schemaVersion": "` + schemaVersion + `",
+			"manifest":	"`+ manifest +`"
 		},`
 	if field == "apiSpecification" {
 		if value == "" {
@@ -423,6 +427,50 @@ func TestValidate(t *testing.T) {
 				{
 					Key:   "DiscoveryModel.DiscoveryItems[0].Endpoints",
 					Error: "Missing mandatory endpoint Method='DELETE', Path='/account-access-consents/{ConsentId}'",
+				},
+			},
+		})
+	})
+
+	t.Run("Validation should pass when `manifest` is a normal string not URL", func(t *testing.T) {
+		testValidateFailures(t, conditionalityCheckerMock{}, &invalidTest{
+			discoveryJSON: discoveryStub("manifest", "some-string"),
+			failures: []ValidationFailure{
+				{
+					Key:   "DiscoveryModel.DiscoveryItems[0].Endpoints[0]",
+					Error: "Invalid endpoint Method='POST', Path='/account-access-consents'",
+				},
+				{
+					Key:   "DiscoveryModel.DiscoveryItems[0].Endpoints[1]",
+					Error: "Invalid endpoint Method='GET', Path='/accounts/{AccountId}/balances'",
+				},
+			},
+		})
+	})
+
+	t.Run("Validation should pass when `manifest` is a https URL", func(t *testing.T) {
+		testValidateFailures(t, conditionalityCheckerMock{}, &invalidTest{
+			discoveryJSON: discoveryStub("manifest", "https://www.example.com"),
+			failures: []ValidationFailure{
+				{
+					Key:   "DiscoveryModel.DiscoveryItems[0].Endpoints[0]",
+					Error: "Invalid endpoint Method='POST', Path='/account-access-consents'",
+				},
+				{
+					Key:   "DiscoveryModel.DiscoveryItems[0].Endpoints[1]",
+					Error: "Invalid endpoint Method='GET', Path='/accounts/{AccountId}/balances'",
+				},
+			},
+		})
+	})
+
+	t.Run("Validation should fail when `manifest` is a http URL instead of https", func(t *testing.T) {
+		testValidateFailures(t, conditionalityCheckerMock{}, &invalidTest{
+			discoveryJSON: discoveryStub("manifest", "http://www.example.com"),
+			failures: []ValidationFailure{
+				{
+					Key:   "DiscoveryModel.DiscoveryItems[0].APISpecification.Manifest",
+					Error: "Field 'DiscoveryModel.DiscoveryItems[0].APISpecification.Manifest' must use HTTPS if it is a URL",
 				},
 			},
 		})

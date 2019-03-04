@@ -2,16 +2,12 @@ package discovery
 
 import (
 	"fmt"
+	"github.com/pkg/errors"
 	"strings"
 
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
 
 	validation "gopkg.in/go-playground/validator.v9"
-)
-
-var (
-	// use a single instance of Validate, it caches struct info
-	validator = validation.New()
 )
 
 // Version returns the current version of the Discovery Model parser
@@ -38,14 +34,28 @@ const (
 	tokenAcquisitionErrMsgFormat = "TokenAcquisition '%s' not in list of supported methods"
 	requiredErrorFormat          = "Field '%s' is required"
 	emptyArrayErrorFormat        = "Field '%s' cannot be empty"
+	httpsURLOnlyErrorFormat      = "Field '%s' must use HTTPS if it is a URL"
 )
 
 // Validate - validates a discovery model, returns true when valid,
 // returns false and array of ValidationFailure structs when not valid.
 func Validate(checker model.ConditionalityChecker, discovery *Model) (bool, []ValidationFailure, error) {
-	failures := []ValidationFailure{}
+	failures := make([]ValidationFailure, 0)
 
-	if err := validator.Struct(discovery); err != nil {
+	v := validation.New()
+	httpsValidate := func(f validation.FieldLevel) bool {
+		// Basically just fail validation if we have a http scheme
+		// Anything else is acceptable, as the value could also be a path to file which could
+		// be anything.
+		return !strings.HasPrefix(f.Field().String(), "http://")
+	}
+	if err := v.RegisterValidation("https", httpsValidate); err != nil {
+		if err != nil {
+			return false, nil, errors.Wrap(err, "register https validator")
+		}
+	}
+
+	if err := v.Struct(discovery); err != nil {
 		failures = appendStructValidationErrors(err.(validation.ValidationErrors), failures)
 		return false, failures, nil
 	}
@@ -72,6 +82,8 @@ func appendStructValidationErrors(errs validation.ValidationErrors, failures []V
 			message = fmt.Sprintf(requiredErrorFormat, key)
 		case "gt":
 			message = fmt.Sprintf(emptyArrayErrorFormat, key)
+		case "https":
+			message = fmt.Sprintf(httpsURLOnlyErrorFormat, key)
 		}
 		failure := ValidationFailure{
 			Key:   key,
