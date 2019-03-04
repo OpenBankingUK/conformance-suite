@@ -4,11 +4,13 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-const TlsClientAuth = "tls_client_auth"
-const PrivateKeyJwt = "private_key_jwt"
-const ClientSecretJwt = "client_secret_jwt"
-const ClientSecretPost = "client_secret_post"
-const ClientSecretBasic = "client_secret_basic"
+const (
+	TlsClientAuth     = "tls_client_auth"
+	PrivateKeyJwt     = "private_key_jwt"
+	ClientSecretJwt   = "client_secret_jwt"
+	ClientSecretPost  = "client_secret_post"
+	ClientSecretBasic = "client_secret_basic"
+)
 
 // SuiteSupportedAuthMethodsMostSecureFirst -
 // We have made our own determination of security offered by each auth method.
