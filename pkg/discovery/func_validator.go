@@ -62,7 +62,7 @@ func Validate(checker model.ConditionalityChecker, discovery *Model) (bool, []Va
 
 func appendStructValidationErrors(errs validation.ValidationErrors, failures []ValidationFailure) []ValidationFailure {
 	for _, msg := range errs {
-		fieldError := validation.FieldError(msg)
+		fieldError := msg
 		key := strings.Replace(fieldError.Namespace(), "Model.DiscoveryModel", "DiscoveryModel", 1)
 		var message string
 		switch fieldError.Tag() {

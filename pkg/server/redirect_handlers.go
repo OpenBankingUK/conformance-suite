@@ -169,7 +169,7 @@ func calculateCHash(alg string, code string) (string, error) {
 		d := sha256.Sum256([]byte(code))
 		//left most 256 bits.. 256/8 = 32bytes
 		// no need to validate length as sha256.Sum256 returns fixed length
-		digest = []byte(d[0:32])
+		digest = d[0:32]
 	default:
 		return "", fmt.Errorf("%s algorithm not supported", alg)
 	}

@@ -31,7 +31,7 @@ func TestServerDiscoveryModelPOSTValidateReturnsErrorsWhenInvalidJSON(t *testing
 		strings.NewReader(discoveryModel), server)
 
 	assert.NotNil(body)
-	assert.JSONEq(string(expected), body.String())
+	assert.JSONEq(expected, body.String())
 	assert.Equal(http.StatusBadRequest, code)
 	assert.Equal(http.Header{
 		"Vary":         []string{"Accept-Encoding"},

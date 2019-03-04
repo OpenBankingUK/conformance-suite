@@ -1,16 +1,21 @@
 package main
 
 import (
+	"bytes"
+	"errors"
+	"strings"
+	"testing"
+
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/generation"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/server"
-	"bytes"
-	"errors"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"strings"
-	"testing"
+)
+
+const (
+	testGeneratorInput = `{}`
 )
 
 func TestGenerator(t *testing.T) {
@@ -21,7 +26,7 @@ func TestGenerator(t *testing.T) {
 	testCaseRun := generation.TestCasesRun{TestCases: []generation.SpecificationTestCases{}, SpecConsentRequirements: []model.SpecConsentRequirements{}}
 	journey.On("TestCases").Return(testCaseRun, nil)
 	g := newGenerator(journey)
-	input := `{}`
+	input := testGeneratorInput
 	output := &bytes.Buffer{}
 
 	err := g.Generate(journeyConfig, strings.NewReader(input), output)
@@ -48,7 +53,7 @@ func TestGeneratorHandlesSetDiscoveryModelErr(t *testing.T) {
 	journey.On("SetDiscoveryModel", &discovery.Model{}).Return(discovery.NoValidationFailures, errors.New("booboo"))
 	journey.On("SetConfig", journeyConfig).Return(nil)
 	g := newGenerator(journey)
-	input := `{}`
+	input := testGeneratorInput
 	output := &bytes.Buffer{}
 
 	err := g.Generate(server.JourneyConfig{}, strings.NewReader(input), output)
@@ -63,7 +68,7 @@ func TestGeneratorHandlesFailuresFromSetDiscovery(t *testing.T) {
 	journey.On("SetDiscoveryModel", &discovery.Model{}).Return(failures, nil)
 	journey.On("SetConfig", journeyConfig).Return(nil)
 	g := newGenerator(journey)
-	input := `{}`
+	input := testGeneratorInput
 	output := &bytes.Buffer{}
 
 	err := g.Generate(server.JourneyConfig{}, strings.NewReader(input), output)
@@ -79,7 +84,7 @@ func TestGeneratorHandlesErrFromTestCases(t *testing.T) {
 	testCaseRun := generation.TestCasesRun{TestCases: []generation.SpecificationTestCases{}, SpecConsentRequirements: []model.SpecConsentRequirements{}}
 	journey.On("TestCases").Return(testCaseRun, errors.New("more booboo"))
 	g := newGenerator(journey)
-	input := `{}`
+	input := testGeneratorInput
 	output := &bytes.Buffer{}
 
 	err := g.Generate(server.JourneyConfig{}, strings.NewReader(input), output)

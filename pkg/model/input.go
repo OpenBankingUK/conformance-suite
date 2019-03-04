@@ -162,7 +162,7 @@ func (i *Input) setHeaders(req *resty.Request, ctx *Context) error {
 	return nil
 }
 
-func (i *Input) getBody(req *resty.Request, ctx *Context) (string, error) {
+func (i *Input) getBody(_ *resty.Request, ctx *Context) (string, error) {
 	value := i.RequestBody
 	for {
 		val2, err := replaceContextField(value, ctx)
@@ -284,6 +284,6 @@ func (i *Input) createAlgNoneJWT() (string, error) {
 		i.AppMsg(fmt.Sprintf("error signing jwt: %s", err.Error()))
 		return "", err
 	}
-	tokenString = tokenString + "."
+	tokenString += "."
 	return tokenString, nil
 }

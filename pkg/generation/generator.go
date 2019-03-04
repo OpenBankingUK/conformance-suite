@@ -103,7 +103,7 @@ func (g generator) GenerateSpecificationTestCases(log *logrus.Entry, config Gene
 // consentRequirements calls resolver to get list of permission sets required to run all test cases
 func (g generator) consentRequirements(specTestCases []SpecificationTestCases) []model.SpecConsentRequirements {
 	nameGenerator := names.NewSequentialPrefixedName("to")
-	var specConsentRequirements []model.SpecConsentRequirements
+	specConsentRequirements := []model.SpecConsentRequirements{}
 	for _, spec := range specTestCases {
 		var groups []permissions.Group
 		for _, tc := range spec.TestCases {

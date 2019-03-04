@@ -63,7 +63,7 @@ func createAlgNoneJWT(claims PSUConsentClaims) (string, error) {
 
 	// alg none might cause problems for some JWT parses so we add the "."
 	// to terminate the jwt
-	tokenString = tokenString + "."
+	tokenString += "."
 
 	return tokenString, nil
 }

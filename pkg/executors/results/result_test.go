@@ -18,7 +18,7 @@ func TestNewTestCaseResult123(t *testing.T) {
 	assert.Equal("123", result.Id)
 	assert.True(result.Pass)
 	assert.Equal(NoMetrics, result.Metrics)
-	assert.Equal(err.Error(), string(result.Fail))
+	assert.Equal(err.Error(), result.Fail)
 }
 
 func TestNewTestCaseResult321(t *testing.T) {
@@ -30,7 +30,7 @@ func TestNewTestCaseResult321(t *testing.T) {
 	assert.Equal("321", result.Id)
 	assert.True(result.Pass)
 	assert.Equal(NoMetrics, result.Metrics)
-	assert.Equal(err.Error(), string(result.Fail))
+	assert.Equal(err.Error(), result.Fail)
 }
 
 func TestNewTestCaseFailResult(t *testing.T) {
@@ -42,7 +42,7 @@ func TestNewTestCaseFailResult(t *testing.T) {
 	assert.Equal("id", result.Id)
 	assert.False(result.Pass)
 	assert.Equal(NoMetrics, result.Metrics)
-	assert.Equal(err.Error(), string(result.Fail))
+	assert.Equal(err.Error(), result.Fail)
 }
 
 func TestTestCaseResultJsonMarshal(t *testing.T) {

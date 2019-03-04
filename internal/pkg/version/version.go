@@ -2,13 +2,14 @@
 package version
 
 import (
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/client"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
 	"regexp"
 	"strings"
+
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/client"
 
 	"github.com/pkg/errors"
 )
@@ -110,12 +111,7 @@ func (v BitBucket) VersionFormatter(version string) (string, error) {
 		vo[j]++
 	}
 	// Regex to remove all (non numeric OR period).
-	reg, err := regexp.Compile("[^0-9.]")
-	// Raise any errors running the expression.
-	if err != nil {
-		return "", errors.Wrap(err, "could not format version number.")
-
-	}
+	reg := regexp.MustCompile("[^0-9.]")
 	processedString := reg.ReplaceAllString(string(vo), "")
 
 	return processedString, nil
@@ -151,7 +147,7 @@ func (v BitBucket) UpdateWarningVersion(version string) (string, bool, error) {
 			return errorMessageUI, false, errors.Wrap(err, "error on update warning version")
 		}
 
-		s, err := getTags([]byte(body))
+		s, err := getTags(body)
 		if err != nil {
 			return errorMessageUI, false, errors.Wrap(err, "error on update warning version")
 		}

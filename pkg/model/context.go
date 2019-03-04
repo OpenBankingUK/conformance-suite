@@ -56,7 +56,7 @@ func (c Context) PutMap(mymap map[string]string) {
 
 // PutStringSlice puts a slice of strings into context
 func (c Context) PutStringSlice(key string, values []string) {
-	var valuesCasted []interface{}
+	valuesCasted := []interface{}{}
 	for _, value := range values {
 		valuesCasted = append(valuesCasted, value)
 	}
@@ -65,7 +65,7 @@ func (c Context) PutStringSlice(key string, values []string) {
 
 // GetStringSlice gets a slice of string from context
 func (c Context) GetStringSlice(key string) ([]string, error) {
-	var result []string
+	result := []string{}
 	stringsSlice, ok := c[key].([]interface{})
 	if !ok {
 		return nil, errors.New("cast error can't get string slice from context")
