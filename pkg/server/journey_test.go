@@ -1,6 +1,7 @@
 package server
 
 import (
+	"fmt"
 	"github.com/stretchr/testify/mock"
 	"testing"
 
@@ -189,7 +190,7 @@ func TestJourneySetConfig(t *testing.T) {
 		resourceBaseURL:       "https://modelobank2018.o3bank.co.uk:4501",
 		xXFAPIFinancialID:     "0015800001041RHAAY",
 		issuer:                "https://modelobankauth2018.o3bank.co.uk:4101",
-		redirectURL:           "https://0.0.0.0:8443/conformancesuite/callback",
+		redirectURL:           fmt.Sprintf("https://%s:8443/conformancesuite/callback", ListenHost),
 	}
 	err = journey.SetConfig(config)
 	require.NoError(err)
