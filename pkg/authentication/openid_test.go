@@ -1,7 +1,6 @@
 package authentication
 
 import (
-	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -10,29 +9,8 @@ import (
 	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/test"
 )
 
-func TestOpenIDUnmarshal(t *testing.T) {
-	require := test.NewRequire(t)
-
-	data := `
-{
-	"token_endpoint": "https://modelobank2018.o3bank.co.uk:4201/<token_mock>",
-	"authorization_endpoint": "https://modelobankauth2018.o3bank.co.uk:4101/<auth_mock>",
-	"issuer": "https://modelobankauth2018.o3bank.co.uk:4101"
-}
-	`
-	expected := OpenIDConfiguration{
-		TokenEndpoint:         "https://modelobank2018.o3bank.co.uk:4201/<token_mock>",
-		AuthorizationEndpoint: "https://modelobankauth2018.o3bank.co.uk:4101/<auth_mock>",
-		Issuer:                "https://modelobankauth2018.o3bank.co.uk:4101",
-	}
-	actual := OpenIDConfiguration{}
-	require.NoError(json.Unmarshal([]byte(data), &actual))
-	require.Equal(expected, actual)
-}
-
 func TestOpenIdConfigWhenGetSuccessful(t *testing.T) {
 	require := test.NewRequire(t)
-
 	mockResponse, err := ioutil.ReadFile("../server/testdata/openid-configuration-mock.json")
 	require.NoError(err)
 
@@ -43,6 +21,21 @@ func TestOpenIdConfigWhenGetSuccessful(t *testing.T) {
 	config, err := OpenIdConfig(mockedServerURL)
 	require.NoError(err)
 	require.NotNil(config)
+	authMethods := []string{
+		"tls_client_auth",
+		"client_secret_jwt",
+		"client_secret_basic",
+		"client_secret_post",
+		"private_key_jwt",
+	}
+	expected := OpenIDConfiguration{
+		TokenEndpoint:                     "https://modelobank2018.o3bank.co.uk:4201/<token_mock>",
+		AuthorizationEndpoint:             "https://modelobankauth2018.o3bank.co.uk:4101/<auth_mock>",
+		Issuer:                            "https://modelobankauth2018.o3bank.co.uk:4101",
+		TokenEndpointAuthMethodsSupported: authMethods,
+	}
+
+	require.Equal(expected, config)
 }
 
 func TestOpenIdConfigWhenHttpResponseError(t *testing.T) {

@@ -92,6 +92,21 @@
         </b-form-group>
 
         <b-form-group
+          id="token_endpoint_auth_method_group"
+          label-for="token_endpoint_auth_method"
+          label="Token Endpoint Auth Method"
+          description="Registered client authentication method, e.g client_secret_basic"
+        >
+          <b-form-select
+            id="token_endpoint_auth_method"
+            v-model="token_endpoint_auth_method"
+            :options="token_endpoint_auth_methods"
+            :state="true"
+            required
+          />
+        </b-form-group>
+
+        <b-form-group
           id="authorization_endpoint_group"
           label-for="authorization_endpoint"
           label="Authorization Endpoint">
@@ -158,6 +173,13 @@ export default {
     ConfigurationFormFile,
   },
   computed: {
+    token_endpoint_auth_methods() {
+      const authMethods = this.$store.state.config.token_endpoint_auth_methods;
+      return authMethods.map(m => ({
+        value: m,
+        text: m,
+      }));
+    },
     // For an explanation on how these work. See:
     // * https://stackoverflow.com/a/45841419/241993
     // * http://shzhangji.com/blog/2018/04/17/form-handling-in-vuex-strict-mode/#Computed-Property
@@ -188,6 +210,14 @@ export default {
       },
     },
 
+    token_endpoint_auth_method: {
+      get() {
+        return this.$store.state.config.configuration.token_endpoint_auth_method;
+      },
+      set(value) {
+        this.$store.commit('config/SET_TOKEN_ENDPOINT_AUTH_METHOD', value);
+      },
+    },
     authorization_endpoint: {
       get() {
         return this.$store.state.config.configuration.authorization_endpoint;
