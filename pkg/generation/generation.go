@@ -4,6 +4,7 @@ package generation
 // As such the code is necessarily 'experimental' and subject to change.
 
 import (
+	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/version"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -21,7 +22,12 @@ import (
 	"github.com/go-openapi/spec"
 )
 
-const httpUserAgent = "Open Banking Conformance Suite v1.0.1-beta"
+var httpUserAgent string
+
+func init() {
+	humanVersion := version.NewBitBucket("").GetHumanVersion()
+	httpUserAgent = fmt.Sprintf("Open Banking Conformance Suite %s", humanVersion)
+}
 
 // GetImplementedTestCases takes a discovery Model and determines the implemented endpoints.
 // Currently this function is experimental - meaning it contains fmt.Printlns as an aid to understanding
