@@ -54,7 +54,7 @@ func intersectionAndRemaining(openIDConfigAuthMethods []string, suiteSupportedAu
 			if supportedAuthMethod == suppliedAuthMethod {
 				intersection[i] = supportedAuthMethod
 				remaining[index] = ""
-				i = i + 1
+				i += 1
 			}
 		}
 	}
