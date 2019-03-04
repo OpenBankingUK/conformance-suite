@@ -3,6 +3,7 @@ package discovery
 import (
 	"fmt"
 	"github.com/pkg/errors"
+	"net/url"
 	"strings"
 
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
@@ -44,14 +45,18 @@ func Validate(checker model.ConditionalityChecker, discovery *Model) (bool, []Va
 
 	v := validation.New()
 	httpsValidate := func(f validation.FieldLevel) bool {
-		// Basically just fail validation if we have a http scheme
-		// Anything else is acceptable, as the value could also be a path to file which could
-		// be anything.
-		return !strings.HasPrefix(f.Field().String(), "http://")
+		value := f.Field().String()
+
+		if value == "" {
+			return true
+		}
+
+		u, err := url.Parse(value)
+		return err == nil && (u.Scheme == "file" || u.Scheme == "https")
 	}
-	if err := v.RegisterValidation("https", httpsValidate); err != nil {
+	if err := v.RegisterValidation("fileorhttps", httpsValidate); err != nil {
 		if err != nil {
-			return false, nil, errors.Wrap(err, "register https validator")
+			return false, nil, errors.Wrap(err, "register `fileorhttps` validation")
 		}
 	}
 

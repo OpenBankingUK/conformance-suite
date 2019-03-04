@@ -32,7 +32,7 @@ func TestDiscoverySamples_Examples_Parse_Correctly(t *testing.T) {
 			checker := model.NewConditionalityChecker()
 			result, failures, err := discovery.Validate(checker, discoveryModel)
 			require.NoError(t, err)
-			require.Equal(t, []discovery.ValidationFailure{}, failures)
+			require.Empty(t, failures)
 			assert.True(result)
 		})
 	}
@@ -58,7 +58,7 @@ func TestDiscoverySamplesIfManifestIsURLHTTPSOnly(t *testing.T) {
 			checker := model.NewConditionalityChecker()
 			result, failures, err := discovery.Validate(checker, discoveryModel)
 			require.NoError(t, err)
-			require.Equal(t, []discovery.ValidationFailure{}, failures)
+			require.Empty(t, failures)
 			assert.True(result)
 		})
 	}

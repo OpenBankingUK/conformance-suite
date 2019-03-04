@@ -430,7 +430,7 @@ func TestValidate(t *testing.T) {
 
 	t.Run("Validation should pass when `manifest` is a normal string not URL", func(t *testing.T) {
 		testValidateFailures(t, conditionalityCheckerMock{}, &invalidTest{
-			discoveryJSON: discoveryStub("manifest", "some-string"),
+			discoveryJSON: discoveryStub("manifest", "https://www.google.com"),
 			failures: []ValidationFailure{
 				{
 					Key:   "DiscoveryModel.DiscoveryItems[0].Endpoints[0]",
@@ -439,6 +439,18 @@ func TestValidate(t *testing.T) {
 				{
 					Key:   "DiscoveryModel.DiscoveryItems[0].Endpoints[1]",
 					Error: "Invalid endpoint Method='GET', Path='/accounts/{AccountId}/balances'",
+				},
+			},
+		})
+	})
+
+	t.Run("Validation should fail when `manifest` is a normal string, not URL", func(t *testing.T) {
+		testValidateFailures(t, conditionalityCheckerMock{}, &invalidTest{
+			discoveryJSON: discoveryStub("manifest", "some-string"),
+			failures: []ValidationFailure{
+				{
+					Key:   "DiscoveryModel.DiscoveryItems[0].APISpecification.Manifest",
+					Error: "Field validation for 'Manifest' failed on the 'fileorhttps' tag",
 				},
 			},
 		})
@@ -465,8 +477,8 @@ func TestValidate(t *testing.T) {
 			discoveryJSON: discoveryStub("manifest", "http://www.example.com"),
 			failures: []ValidationFailure{
 				{
-					Key:   "DiscoveryModel.DiscoveryItems[0].APISpecification.Manifest",
-					Error: "Field 'DiscoveryModel.DiscoveryItems[0].APISpecification.Manifest' must use HTTPS if it is a URL",
+					Key: "DiscoveryModel.DiscoveryItems[0].APISpecification.Manifest",
+					Error: "Field validation for 'Manifest' failed on the 'fileorhttps' tag",
 				},
 			},
 		})
