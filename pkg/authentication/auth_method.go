@@ -25,26 +25,36 @@ func DefaultAuthMethod(openIDConfigAuthMethods []string, logger *logrus.Entry) s
 // suiteSupportedAuthMethods, else when no match return first method in
 // suiteSupportedAuthMethods.
 func defaultAuthMethod(suiteSupportedAuthMethods []string, openIDConfigAuthMethods []string, logger *logrus.Entry) string {
+	intersection, remaining := intersectionAndRemaining(openIDConfigAuthMethods, suiteSupportedAuthMethods)
+
+	for _, method := range remaining {
+		if method != "" {
+			logger.Infof("Invalid token endpoint auth method in OpenID config: %s", method)
+		}
+	}
+	for _, methodMatch := range intersection {
+		if methodMatch != "" {
+			return methodMatch
+		}
+	}
+
+	return suiteSupportedAuthMethods[0]
+}
+
+func intersectionAndRemaining(openIDConfigAuthMethods []string, suiteSupportedAuthMethods []string) ([]string, []string) {
+	remaining := make([]string, len(openIDConfigAuthMethods))
+	copy(remaining, openIDConfigAuthMethods)
+
 	intersection := make([]string, len(openIDConfigAuthMethods))
 	i := 0
-	for _, a := range suiteSupportedAuthMethods {
-		for index, m := range openIDConfigAuthMethods {
-			if a == m {
-				intersection[i] = a
-				openIDConfigAuthMethods[index] = ""
+	for _, supportedAuthMethod := range suiteSupportedAuthMethods {
+		for index, suppliedAuthMethod := range openIDConfigAuthMethods {
+			if supportedAuthMethod == suppliedAuthMethod {
+				intersection[i] = supportedAuthMethod
+				remaining[index] = ""
 				i = i + 1
 			}
 		}
 	}
-	for _, m := range openIDConfigAuthMethods {
-		if m != "" {
-			logger.Infof("Invalid token endpoint auth method in OpenID config: %s", m)
-		}
-	}
-	for _, method := range intersection {
-		if method != "" {
-			return method
-		}
-	}
-	return suiteSupportedAuthMethods[0]
+	return intersection, remaining
 }
