@@ -26,7 +26,7 @@ type GeneratorConfig struct {
 
 // Generator - generates test cases from discovery model
 type Generator interface {
-	GenerateSpecificationTestCases(*logrus.Entry, GeneratorConfig, discovery.ModelDiscovery, *model.Context) TestCasesRun
+	GenerateSpecificationTestCases(log *logrus.Entry, config GeneratorConfig, discovery discovery.ModelDiscovery, ctx *model.Context) TestCasesRun
 }
 
 // NewGenerator - returns implementation of Generator interface
@@ -43,6 +43,8 @@ type generator struct {
 
 // GenerateSpecificationTestCases - generates test cases
 func (g generator) GenerateSpecificationTestCases(log *logrus.Entry, config GeneratorConfig, discovery discovery.ModelDiscovery, ctx *model.Context) TestCasesRun {
+	log = log.WithField("module", "GenerateSpecificationTestCases")
+
 	specTestCases := []SpecificationTestCases{}
 	customTestCases := []SpecificationTestCases{}
 	customReplacements := make(map[string]string)
@@ -84,7 +86,7 @@ func (g generator) GenerateSpecificationTestCases(log *logrus.Entry, config Gene
 
 	// // calculate permission set required and update the header token in the test case request
 	consentRequirements := g.consentRequirements(tmpSpecTestCases) // uses pre-modified swagger urls
-	log.Warnf("Consent Requirements: %#v", consentRequirements)
+	log.Infof("Consent Requirements: %#v", consentRequirements)
 
 	for _, specTest := range specTestCases {
 		for x, y := range specTest.TestCases {
@@ -101,7 +103,7 @@ func (g generator) GenerateSpecificationTestCases(log *logrus.Entry, config Gene
 // consentRequirements calls resolver to get list of permission sets required to run all test cases
 func (g generator) consentRequirements(specTestCases []SpecificationTestCases) []model.SpecConsentRequirements {
 	nameGenerator := names.NewSequentialPrefixedName("to")
-	var specConsentRequirements []model.SpecConsentRequirements
+	specConsentRequirements := []model.SpecConsentRequirements{}
 	for _, spec := range specTestCases {
 		var groups []permissions.Group
 		for _, tc := range spec.TestCases {

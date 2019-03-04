@@ -7,6 +7,22 @@
         </div>
         <div class="flex-fill panel-body">
           <TheErrorStatus/>
+          <div class="test-case border p-2 mt-2 mb-2">
+            <b-table
+              :items="tokens_acquired"
+              :fields="tokenTableFields"
+              head-variant="dark"
+              caption-top
+              hover
+              small
+              responsive
+            >
+              <template slot="table-caption">
+                <b>All Token Acquired</b>
+                {{ tokens_all_acquired }}
+              </template>
+            </b-table>
+          </div>
           <TestCases
             :test-cases="testCases"
             if="!hasErrors"/>
@@ -37,6 +53,18 @@ export default {
     TestCases,
     TheWizardFooter,
   },
+  data() {
+    return {
+      tokenTableFields: {
+        type: {
+          label: 'Type',
+        },
+        'value.token_name': {
+          label: 'Token Name',
+        },
+      },
+    };
+  },
   computed: {
     ...mapGetters('status', [
       'hasErrors',
@@ -52,9 +80,7 @@ export default {
       // return true;
     },
     pendingPsuConsent() {
-      // TODO: return false when all consents obtained
-      return this.hasConsentUrls;
-      // return false;
+      return !this.tokens_all_acquired;
     },
     areTestsCompleted() {
       // TODO: Wait for backend to send completed message.
@@ -69,6 +95,25 @@ export default {
       }
 
       return 'Next Export';
+    },
+    // Example Value:
+    // [
+    //     {
+    //         "type": "ResultType_AcquiredAccessToken",
+    //         "value": {
+    //             "token_name": "to1001"
+    //         }
+    //     }
+    // ]
+    tokens_acquired: {
+      get() {
+        return this.$store.state.testcases.tokens.acquired;
+      },
+    },
+    tokens_all_acquired: {
+      get() {
+        return this.$store.state.testcases.tokens.all_acquired;
+      },
     },
   },
   methods: {

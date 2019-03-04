@@ -327,7 +327,7 @@ var matchTypeString = map[MatchType]string{
 	Authorisation:      "Authorisation",
 }
 
-func defaultMatch(m *Match, tc *TestCase) (bool, error) {
+func defaultMatch(m *Match, _ *TestCase) (bool, error) {
 	return false, m.AppErr("Unknown match type fails by default")
 }
 

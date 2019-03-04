@@ -3,6 +3,7 @@
 package server
 
 import discovery "bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
+import events "bitbucket.org/openbankingteam/conformance-suite/pkg/executors/events"
 import executors "bitbucket.org/openbankingteam/conformance-suite/pkg/executors"
 import generation "bitbucket.org/openbankingteam/conformance-suite/pkg/generation"
 import mock "github.com/stretchr/testify/mock"
@@ -35,6 +36,22 @@ func (_m *MockJourney) CollectToken(code string, state string, scope string) err
 		r0 = rf(code, state, scope)
 	} else {
 		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
+// Events provides a mock function with given fields:
+func (_m *MockJourney) Events() events.Events {
+	ret := _m.Called()
+
+	var r0 events.Events
+	if rf, ok := ret.Get(0).(func() events.Events); ok {
+		r0 = rf()
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(events.Events)
+		}
 	}
 
 	return r0

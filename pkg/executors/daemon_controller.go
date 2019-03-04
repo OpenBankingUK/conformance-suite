@@ -1,8 +1,10 @@
+//go:generate mockery -name DaemonController
 package executors
 
 import (
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/executors/results"
 	"sync"
+
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/executors/results"
 )
 
 type DaemonController interface {

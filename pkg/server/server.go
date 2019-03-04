@@ -11,6 +11,9 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
+// ListenHost defines the name/address by which the service can be accessed.
+const ListenHost = "127.0.0.1"
+
 // Server - wraps *echo.Echo.
 type Server struct {
 	*echo.Echo // Wrap (using composition) *echo.Echo, allows us to pretend Server is echo.Echo.
@@ -74,7 +77,6 @@ func registerRoutes(journey Journey, server *Server, logger *logrus.Entry, versi
 	// endpoints for test cases
 	testCaseHandlers := newTestCaseHandlers(journey, NewWebSocketUpgrader(), logger)
 	api.GET("/test-cases", testCaseHandlers.testCasesHandler)
-	api.GET("/test-cases/ws", testCaseHandlers.listenCodeWebSocket)
 
 	// endpoints for test runner
 	runHandlers := newRunHandlers(journey, NewWebSocketUpgrader(), logger)

@@ -1,9 +1,10 @@
 package executors
 
 import (
+	"testing"
+
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/executors/results"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 func TestNewDaemonController(t *testing.T) {

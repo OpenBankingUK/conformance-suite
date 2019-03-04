@@ -75,4 +75,14 @@ export default {
       _showDetails: !_.get(item, '_showDetails'),
     });
   },
+
+  [types.ADD_TOKEN_ACQUIRED](state, value) {
+    state.tokens.acquired = [
+      ...state.tokens.acquired,
+      value,
+    ];
+  },
+  [types.SET_ALL_TOKENS_ACQUIRED](state) {
+    state.tokens.all_acquired = true;
+  },
 };

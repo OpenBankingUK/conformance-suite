@@ -12,13 +12,13 @@ type MockGenerator struct {
 	mock.Mock
 }
 
-// GenerateSpecificationTestCases provides a mock function with given fields: _a0, _a1, _a2, _a3
-func (_m *MockGenerator) GenerateSpecificationTestCases(_a0 *logrus.Entry, _a1 GeneratorConfig, _a2 discovery.ModelDiscovery, _a3 *model.Context) TestCasesRun {
-	ret := _m.Called(_a0, _a1, _a2, _a3)
+// GenerateSpecificationTestCases provides a mock function with given fields: log, config, _a2, ctx
+func (_m *MockGenerator) GenerateSpecificationTestCases(log *logrus.Entry, config GeneratorConfig, _a2 discovery.ModelDiscovery, ctx *model.Context) TestCasesRun {
+	ret := _m.Called(log, config, _a2, ctx)
 
 	var r0 TestCasesRun
 	if rf, ok := ret.Get(0).(func(*logrus.Entry, GeneratorConfig, discovery.ModelDiscovery, *model.Context) TestCasesRun); ok {
-		r0 = rf(_a0, _a1, _a2, _a3)
+		r0 = rf(log, config, _a2, ctx)
 	} else {
 		r0 = ret.Get(0).(TestCasesRun)
 	}

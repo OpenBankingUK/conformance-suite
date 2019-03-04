@@ -7,6 +7,7 @@ import (
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/authentication"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/executors"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/executors/events"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/generation"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
 	"github.com/pkg/errors"
@@ -29,7 +30,6 @@ var (
 // 3.1 CollectToken - collects all tokens required to RunTest
 // 4. RunTest - Runs triggers a background run on all generated test from previous steps, needs all token to be already collected
 // 5. Results - returns a background process control, so we can monitor on finished tests
-//
 type Journey interface {
 	SetDiscoveryModel(discoveryModel *discovery.Model) (discovery.ValidationFailures, error)
 	TestCases() (generation.TestCasesRun, error)
@@ -39,6 +39,7 @@ type Journey interface {
 	StopTestRun()
 	Results() executors.DaemonController
 	SetConfig(config JourneyConfig) error
+	Events() events.Events
 }
 
 type journey struct {
@@ -54,6 +55,7 @@ type journey struct {
 	context               model.Context
 	log                   *logrus.Entry
 	config                JourneyConfig
+	events                events.Events
 }
 
 // NewJourney creates an instance for a user journey
@@ -67,6 +69,7 @@ func NewJourney(logger *logrus.Entry, generator generation.Generator, validator 
 		testCasesRunGenerated: false,
 		context:               model.Context{},
 		log:                   logger.WithField("module", "Journey"),
+		events:                events.NewEvents(),
 	}
 }
 
@@ -81,50 +84,39 @@ func (wj *journey) SetDiscoveryModel(discoveryModel *discovery.Model) (discovery
 	}
 
 	wj.journeyLock.Lock()
+	defer wj.journeyLock.Unlock()
 	wj.validDiscoveryModel = discoveryModel
 	wj.testCasesRunGenerated = false
 	wj.allCollected = false
-	wj.journeyLock.Unlock()
 
 	return discovery.NoValidationFailures, nil
 }
 
 func (wj *journey) TestCases() (generation.TestCasesRun, error) {
+	wj.log.Debug("journey.TestCases, journeyLock=false")
 	wj.journeyLock.Lock()
-	defer wj.journeyLock.Unlock()
+	wj.log.Debug("journey.TestCases, journeyLock=true")
+	defer func() {
+		wj.log.Debug("journey.TestCases, journeyLock=false")
+		wj.journeyLock.Unlock()
+	}()
 
 	if wj.validDiscoveryModel == nil {
 		return generation.TestCasesRun{}, errDiscoveryModelNotSet
 	}
 
 	if !wj.testCasesRunGenerated {
-		config := generation.GeneratorConfig{
-			ClientID:              wj.config.clientID,
-			Aud:                   wj.config.authorizationEndpoint,
-			ResponseType:          "code id_token",
-			Scope:                 "openid accounts",
-			AuthorizationEndpoint: wj.config.authorizationEndpoint,
-			RedirectURL:           wj.config.redirectURL,
-		}
-		wj.testCasesRun = wj.generator.GenerateSpecificationTestCases(wj.log, config, wj.validDiscoveryModel.DiscoveryModel, &wj.context)
-		runDefinition := executors.RunDefinition{
-			DiscoModel:    wj.validDiscoveryModel,
-			TestCaseRun:   wj.testCasesRun,
-			SigningCert:   wj.config.certificateSigning,
-			TransportCert: wj.config.certificateTransport,
-		}
-		if wj.validDiscoveryModel.DiscoveryModel.TokenAcquisition == "psu" {
-			consentIds, err := executors.InitiationConsentAcquisition(wj.testCasesRun.SpecConsentRequirements, runDefinition, &wj.context)
+		config := wj.makeGeneratorConfig()
+		discovery := wj.validDiscoveryModel.DiscoveryModel
+		wj.testCasesRun = wj.generator.GenerateSpecificationTestCases(wj.log, config, discovery, &wj.context)
+		if discovery.TokenAcquisition == "psu" {
+			definition := wj.makeRunDefinition()
+			consentIds, err := executors.InitiationConsentAcquisition(wj.testCasesRun.SpecConsentRequirements, definition, &wj.context)
 			if err != nil {
 				return generation.TestCasesRun{}, errConsentIDAcquisitionFailed
 			}
-			if len(consentIds) > 0 {
-				wj.collector = executors.NewTokenCollector(consentIds, wj.doneCollectionCallback)
-				consentIdsToTestCaseRun(wj.log, consentIds, &wj.testCasesRun)
-				wj.allCollected = false
-			} else {
-				wj.allCollected = true
-			}
+
+			wj.createTokenCollector(consentIds)
 		} else {
 			wj.allCollected = true
 		}
@@ -135,29 +127,31 @@ func (wj *journey) TestCases() (generation.TestCasesRun, error) {
 }
 
 func (wj *journey) CollectToken(code, state, scope string) error {
-	wj.log.Debugf("state: %s, code: %s", state, code)
+	wj.log.Debug("journey.CollectToken, journeyLock=false")
 	wj.journeyLock.Lock()
-	defer wj.journeyLock.Unlock()
+	wj.log.Debug("journey.CollectToken, journeyLock=true")
+	defer func() {
+		wj.log.Debug("journey.CollectToken, journeyLock=false")
+		wj.journeyLock.Unlock()
+	}()
 
+	wj.log.Debugf("state: %s, code: %s", state, code)
 	if !wj.testCasesRunGenerated {
 		return errTestCasesNotGenerated
 	}
 
-	runDefinition := executors.RunDefinition{
-		DiscoModel:    wj.validDiscoveryModel,
-		TestCaseRun:   wj.testCasesRun,
-		SigningCert:   wj.config.certificateSigning,
-		TransportCert: wj.config.certificateTransport,
-	}
+	runDefinition := wj.makeRunDefinition()
 	accessToken, err := executors.ExchangeCodeForAccessToken(state, code, scope, runDefinition, &wj.context)
 	if err != nil {
 		return err
 	}
+
 	wj.context.PutString(state, accessToken)
 	if state == "to1001" {
 		wj.log.Warnf("Setting 'access_token' to %s", accessToken)
 		wj.context.PutString("access_token", accessToken) // tmp measure to get testcases running
 	}
+
 	return wj.collector.Collect(state, accessToken)
 }
 
@@ -169,16 +163,17 @@ func (wj *journey) AllTokenCollected() bool {
 }
 
 func (wj *journey) doneCollectionCallback() {
+	// TODO: ensure lock is acquired and released.
 	//wj.journeyLock.Lock()
+	//defer wj.journeyLock.Unlock()
 	wj.log.Debug("Setting wj.allCollection=true")
 	wj.allCollected = true
-	//wj.journeyLock.Unlock()
 }
 
 func (wj *journey) RunTests() error {
-	wj.log.Debug("RunTests ...")
 	//wj.journeyLock.Lock()
 	//defer wj.journeyLock.Unlock()
+	wj.log.Debug("RunTests ...")
 
 	if !wj.testCasesRunGenerated {
 		return errTestCasesNotGenerated
@@ -188,13 +183,7 @@ func (wj *journey) RunTests() error {
 		return errNotFinishedCollectingTokens
 	}
 
-	runDefinition := executors.RunDefinition{
-		DiscoModel:    wj.validDiscoveryModel,
-		TestCaseRun:   wj.testCasesRun,
-		SigningCert:   wj.config.certificateSigning,
-		TransportCert: wj.config.certificateTransport,
-	}
-
+	runDefinition := wj.makeRunDefinition()
 	runner := executors.NewTestCaseRunner(runDefinition, wj.daemonController)
 	wj.log.Debug("runTestCases with context ...")
 	return runner.RunTestCases(&wj.context)
@@ -208,34 +197,73 @@ func (wj *journey) StopTestRun() {
 	wj.daemonController.Stop()
 }
 
+func (wj *journey) createTokenCollector(consentIds executors.TokenConsentIDs) {
+	if len(consentIds) > 0 {
+		wj.collector = executors.NewTokenCollector(wj.log, consentIds, wj.doneCollectionCallback, wj.events)
+		consentIdsToTestCaseRun(wj.log, consentIds, &wj.testCasesRun)
+
+		wj.allCollected = false
+	} else {
+		wj.allCollected = true
+	}
+}
+
+func (wj *journey) makeGeneratorConfig() generation.GeneratorConfig {
+	return generation.GeneratorConfig{
+		ClientID:              wj.config.clientID,
+		Aud:                   wj.config.authorizationEndpoint,
+		ResponseType:          "code id_token",
+		Scope:                 "openid accounts",
+		AuthorizationEndpoint: wj.config.authorizationEndpoint,
+		RedirectURL:           wj.config.redirectURL,
+	}
+}
+
+func (wj *journey) makeRunDefinition() executors.RunDefinition {
+	return executors.RunDefinition{
+		DiscoModel:    wj.validDiscoveryModel,
+		TestCaseRun:   wj.testCasesRun,
+		SigningCert:   wj.config.certificateSigning,
+		TransportCert: wj.config.certificateTransport,
+	}
+}
+
 type JourneyConfig struct {
-	certificateSigning    authentication.Certificate
-	certificateTransport  authentication.Certificate
-	clientID              string
-	clientSecret          string
-	tokenEndpoint         string
-	authorizationEndpoint string
-	resourceBaseURL       string
-	xXFAPIFinancialID     string
-	issuer                string
-	redirectURL           string
+	certificateSigning      authentication.Certificate
+	certificateTransport    authentication.Certificate
+	clientID                string
+	clientSecret            string
+	tokenEndpoint           string
+	tokenEndpointAuthMethod string
+	authorizationEndpoint   string
+	resourceBaseURL         string
+	xXFAPIFinancialID       string
+	issuer                  string
+	redirectURL             string
 }
 
 func (wj *journey) SetConfig(config JourneyConfig) error {
 	wj.journeyLock.Lock()
 	defer wj.journeyLock.Unlock()
+
 	wj.config = config
 	err := wj.configParametersToJourneyContext()
 	if err != nil {
 		return err
 	}
+
 	wj.customTestParametersToJourneyContext()
 	return nil
+}
+
+func (wj *journey) Events() events.Events {
+	return wj.events
 }
 
 const ctxConstClientID = "client_id"
 const ctxConstClientSecret = "client_secret"
 const ctxConstTokenEndpoint = "token_endpoint"
+const ctxConstTokenEndpointAuthMethod = "token_endpoint_auth_method"
 const ctxConstFapiFinancialID = "fapi_financial_id"
 const ctxConstRedirectURL = "redirect_url"
 const ctxConstAuthorisationEndpoint = "authorisation_endpoint"
@@ -247,6 +275,7 @@ func (wj *journey) configParametersToJourneyContext() error {
 	wj.context.PutString(ctxConstClientID, wj.config.clientID)
 	wj.context.PutString(ctxConstClientSecret, wj.config.clientSecret)
 	wj.context.PutString(ctxConstTokenEndpoint, wj.config.tokenEndpoint)
+	wj.context.PutString(ctxConstTokenEndpointAuthMethod, wj.config.tokenEndpointAuthMethod)
 	wj.context.PutString(ctxConstFapiFinancialID, wj.config.xXFAPIFinancialID)
 	wj.context.PutString(ctxConstRedirectURL, wj.config.redirectURL)
 	wj.context.PutString(ctxConstAuthorisationEndpoint, wj.config.authorizationEndpoint)
@@ -256,8 +285,8 @@ func (wj *journey) configParametersToJourneyContext() error {
 	if err != nil {
 		return err
 	}
-	wj.context.PutString(ctxConstBasicAuthentication, basicauth)
 
+	wj.context.PutString(ctxConstBasicAuthentication, basicauth)
 	wj.context.PutString(ctxConstIssuer, wj.config.issuer)
 
 	wj.context.DumpContext("configParameters - dumpcontext")
@@ -268,7 +297,9 @@ func (wj *journey) customTestParametersToJourneyContext() {
 	if wj.validDiscoveryModel == nil {
 		return
 	}
-	for _, customTest := range wj.validDiscoveryModel.DiscoveryModel.CustomTests { // assume ordering is prerun i.e. customtest run before other tests
+
+	// assume ordering is prerun i.e. customtest run before other tests
+	for _, customTest := range wj.validDiscoveryModel.DiscoveryModel.CustomTests {
 		for k, v := range customTest.Replacements {
 			wj.context.PutString(k, v)
 		}

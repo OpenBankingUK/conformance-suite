@@ -2,11 +2,18 @@ package server
 
 import (
 	"context"
+	"encoding/json"
 	"net/http"
 	"testing"
 
 	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/test"
 	versionmock "bitbucket.org/openbankingteam/conformance-suite/internal/pkg/version/mocks"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/executors/results"
+)
+
+const (
+	prefix = ""
+	indent = "    "
 )
 
 // TestServerRunStartPost - tests /api/run
@@ -26,13 +33,45 @@ func TestServerRunStartPost(t *testing.T) {
 		server)
 
 	// do assertions
-	require.Equal(http.StatusBadRequest, code)
-	require.Len(headers, 2)
-	require.Equal("application/json; charset=UTF-8", headers["Content-Type"][0])
-
 	require.NotNil(body)
 
-	bodyExpected := `{ "error": "error test cases not generated" }`
-	bodyActual := body.String()
-	require.JSONEq(bodyExpected, bodyActual)
+	expected := `{ "error": "error test cases not generated" }`
+	actual := body.String()
+	require.JSONEq(expected, actual)
+
+	require.Equal(http.StatusBadRequest, code)
+	require.Equal(http.Header{
+		"Vary":         []string{"Accept-Encoding"},
+		"Content-Type": []string{"application/json; charset=UTF-8"},
+	}, headers)
+}
+
+func TestServerRunHandlersnewTestCaseResultWebSocketEvent(t *testing.T) {
+	require := test.NewRequire(t)
+
+	testCaseResult := results.TestCase{
+		Id:   "#t1025",
+		Pass: true,
+	}
+	wsEvent := newTestCaseResultWebSocketEvent(testCaseResult)
+
+	wsEventJson, err := json.MarshalIndent(wsEvent, prefix, indent)
+	require.NoError(err)
+	require.NotNil(wsEventJson)
+
+	expected := `
+{
+    "test": {
+        "id": "#t1025",
+        "pass": true,
+        "metrics": {
+            "response_time": 0,
+            "response_size": 0
+        }
+    }
+}
+	`
+	actual := string(wsEventJson)
+
+	require.JSONEq(expected, actual)
 }

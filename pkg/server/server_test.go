@@ -148,6 +148,7 @@ func TestServerHTTPS(t *testing.T) {
 
 	tcpAddr, ok := server.TLSListener.Addr().(*net.TCPAddr)
 	require.True(ok)
+	require.NotNil(tcpAddr)
 	url := fmt.Sprintf("https://localhost:%d/", tcpAddr.Port)
 	res, err := httpClient.Get(url)
 	require.NoError(err)

@@ -1,11 +1,12 @@
 package results
 
 import (
+	"testing"
+	"time"
+
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
 	"github.com/stretchr/testify/assert"
 	"gopkg.in/resty.v1"
-	"testing"
-	"time"
 )
 
 func TestNewMetricsFromRestyResponse(t *testing.T) {

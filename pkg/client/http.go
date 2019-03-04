@@ -6,7 +6,7 @@ import (
 )
 
 const (
-	DefaultTimeout = time.Duration(time.Second * 25)
+	DefaultTimeout = time.Second * 25
 )
 
 // NewHTTPClient returns a more appropriate HTTP client as opposed the default provided by `net/http`

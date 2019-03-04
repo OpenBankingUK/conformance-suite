@@ -149,71 +149,51 @@ describe('store/modules/testcases', () => {
     };
 
     it('testcases/computeTestCases sets testcases/testCases, if successful', async () => {
+      expect.assertions(10);
+      const fakeURL = 'ws://localhost/api/run/ws';
+      const mockServer = new Server(fakeURL);
       const store = createRealStore();
 
       expect(store.state.testCases).toEqual([]);
+      expect(store.state.ws.connection).toBeNull();
+
+      mockServer.on('connection', (socket) => {
+        expect(store.state.hasRunStarted).toEqual(false);
+        expect(store.state.ws.connection).toBeDefined();
+        expect(store.state.testCases).toEqual(EXPECTED_TESTCASES_STATE);
+        expect(store.state.consentUrls).toEqual(EXPECTED_CONSENT_URLS_STATE);
+
+        expect(dispatch).toHaveBeenCalledWith('status/setShowLoading', true, { root: true });
+        expect(dispatch).toHaveBeenCalledWith('status/clearErrors', null, { root: true });
+
+        socket.close();
+        mockServer.stop(() => {
+          expect(dispatch).toHaveBeenCalledWith('status/clearErrors', null, { root: true });
+        });
+      });
 
       api.computeTestCases.mockResolvedValueOnce(OK_RESPONSE);
       await actions.computeTestCases(store);
 
-      expect(dispatch).toHaveBeenCalledWith('status/clearErrors', null, { root: true });
       expect(dispatch).toHaveBeenCalledWith('config/setWizardStep', constants.WIZARD.STEP_FOUR, { root: true });
-      expect(store.state.testCases).toEqual(EXPECTED_TESTCASES_STATE);
-
-      expect(store.state.consentUrls).toEqual(EXPECTED_CONSENT_URLS_STATE);
     });
 
     it('testcases/computeTestCases sets config/errors.testCases, if unsuccessful', async () => {
+      expect.assertions(6);
+
       const store = createRealStore();
 
       expect(store.state.testCases).toEqual([]);
+      expect(store.state.ws.connection).toBeNull();
 
       api.computeTestCases.mockRejectedValueOnce(ERROR_RESPONSE);
       await actions.computeTestCases(store);
 
-      expect(dispatch).toHaveBeenCalledWith('status/setErrors', [ERROR_RESPONSE], { root: true });
-      expect(dispatch).toHaveBeenCalledWith('config/setWizardStep', constants.WIZARD.STEP_FOUR, { root: true });
+      expect(store.state.ws.connection).toBeDefined();
       expect(store.state.testCases).toEqual([]);
-    });
-
-    it('testcases/computeTestCases sets testcases/testCases and clears config/errors.testCases, if successful', async () => {
-      const store = createRealStore();
-
-      expect(store.state.testCases).toEqual([]);
-
-      api.computeTestCases.mockRejectedValueOnce(ERROR_RESPONSE);
-      await actions.computeTestCases(store);
 
       expect(dispatch).toHaveBeenCalledWith('status/setErrors', [ERROR_RESPONSE], { root: true });
       expect(dispatch).toHaveBeenCalledWith('config/setWizardStep', constants.WIZARD.STEP_FOUR, { root: true });
-      expect(store.state.testCases).toEqual([]);
-
-      api.computeTestCases.mockResolvedValueOnce(OK_RESPONSE);
-      await actions.computeTestCases(store);
-
-      expect(dispatch).toHaveBeenCalledWith('status/clearErrors', null, { root: true });
-      expect(dispatch).toHaveBeenCalledWith('config/setWizardStep', constants.WIZARD.STEP_FOUR, { root: true });
-      expect(store.state.testCases).toEqual(EXPECTED_TESTCASES_STATE);
-    });
-
-    it('testcases/computeTestCases clears testcases/testCases and sets config/errors.testCases, if unsuccessful', async () => {
-      const store = createRealStore();
-
-      expect(store.state.testCases).toEqual([]);
-
-      api.computeTestCases.mockResolvedValueOnce(OK_RESPONSE);
-      await actions.computeTestCases(store);
-
-      expect(dispatch).toHaveBeenCalledWith('status/clearErrors', null, { root: true });
-      expect(dispatch).toHaveBeenCalledWith('config/setWizardStep', constants.WIZARD.STEP_FOUR, { root: true });
-      expect(store.state.testCases).toEqual(EXPECTED_TESTCASES_STATE);
-
-      api.computeTestCases.mockRejectedValueOnce(ERROR_RESPONSE);
-      await actions.computeTestCases(store);
-
-      expect(dispatch).toHaveBeenCalledWith('status/setErrors', [ERROR_RESPONSE], { root: true });
-      expect(dispatch).toHaveBeenCalledWith('config/setWizardStep', constants.WIZARD.STEP_FOUR, { root: true });
-      expect(store.state.testCases).toEqual([]);
     });
   });
 
@@ -249,21 +229,24 @@ describe('store/modules/testcases', () => {
     });
 
     it('testcases/state.testsCases have \'PENDING\' state when testcases/executeTestCases is called', async () => {
+      expect.assertions(9);
+
       const fakeURL = 'ws://localhost/api/run/ws';
       const mockServer = new Server(fakeURL);
-
       const store = createRealStore();
 
       expect(store.state.testCases).toEqual([]);
       expect(store.state.hasRunStarted).toEqual(false);
+      expect(store.state.ws.connection).toBeNull();
 
-      api.computeTestCases.mockResolvedValueOnce(OK_RESPONSE);
-      await actions.computeTestCases(store);
-      expect(store.state.testCases).toEqual(EXPECTED_TESTCASES_STATE_NOT_STARTED);
+      mockServer.on('connection', async (socket) => {
+        expect(store.state.testCases).toEqual(EXPECTED_TESTCASES_STATE_NOT_STARTED);
+        expect(store.state.ws.connection).toBeDefined();
 
-      mockServer.on('connection', (socket) => {
+        api.executeTestCases.mockResolvedValueOnce({});
+        await actions.executeTestCases(store);
+
         expect(store.state.hasRunStarted).toEqual(true);
-        expect(dispatch).toHaveBeenCalledWith('status/clearErrors', null, { root: true });
         expect(store.state.testCases).toEqual(EXPECTED_TESTCASES_STATE_PENDING);
 
         socket.close();
@@ -272,48 +255,64 @@ describe('store/modules/testcases', () => {
         });
       });
 
+      api.computeTestCases.mockResolvedValueOnce(OK_RESPONSE);
+      await actions.computeTestCases(store);
 
-      api.executeTestCases.mockResolvedValueOnce({});
-      await actions.executeTestCases(store);
+      expect(dispatch).toHaveBeenCalledWith('status/clearErrors', null, { root: true });
     });
 
     it('testcases/state.testsCases are left in \'NOT_STARTED\' state when testcases/executeTestCases is called', async () => {
+      const fakeURL = 'ws://localhost/api/run/ws';
+      const mockServer = new Server(fakeURL);
+      const store = createRealStore();
+
       const ERROR_RESPONSE = {
         error: 'testcases/state.testsCases are left in \'NOT_STARTED\' state when testcases/executeTestCases is called',
       };
 
-      const store = createRealStore();
-
       expect(store.state.testCases).toEqual([]);
       expect(store.state.hasRunStarted).toEqual(false);
+      expect(store.state.ws.connection).toBeNull();
+
+      mockServer.on('connection', async (socket) => {
+        expect(store.state.testCases).toEqual(EXPECTED_TESTCASES_STATE_NOT_STARTED);
+
+        api.executeTestCases.mockRejectedValueOnce(ERROR_RESPONSE);
+        await actions.executeTestCases(store);
+
+        expect(store.state.testCases).toEqual(EXPECTED_TESTCASES_STATE_NOT_STARTED);
+        expect(store.state.hasRunStarted).toEqual(false);
+
+        // expect(dispatch).toHaveBeenCalledWith('status/setErrors', [ERROR_RESPONSE], { root: true });
+        // expect(dispatch).toHaveBeenCalledWith('config/setWizardStep', constants.WIZARD.STEP_FIVE, { root: true });
+
+        socket.close();
+        mockServer.stop(() => {
+          expect(dispatch).toHaveBeenCalledWith('status/clearErrors', null, { root: true });
+        });
+      });
 
       api.computeTestCases.mockResolvedValueOnce(OK_RESPONSE);
-      api.executeTestCases.mockRejectedValueOnce(ERROR_RESPONSE);
       await actions.computeTestCases(store);
-      expect(store.state.testCases).toEqual(EXPECTED_TESTCASES_STATE_NOT_STARTED);
 
-      await actions.executeTestCases(store);
-      expect(store.state.testCases).toEqual(EXPECTED_TESTCASES_STATE_NOT_STARTED);
-      expect(store.state.hasRunStarted).toEqual(false);
-
-      expect(dispatch).toHaveBeenCalledWith('status/setErrors', [ERROR_RESPONSE], { root: true });
       expect(dispatch).toHaveBeenCalledWith('config/setWizardStep', constants.WIZARD.STEP_FIVE, { root: true });
     });
 
     it('testcases/state.testsCases are updated when update arrives on the WebSocket', async () => {
       const fakeURL = 'ws://localhost/api/run/ws';
       const mockServer = new Server(fakeURL);
-
       const store = createRealStore();
 
       expect(store.state.testCases).toEqual([]);
       expect(store.state.hasRunStarted).toEqual(false);
-
-      api.computeTestCases.mockResolvedValueOnce(OK_RESPONSE);
-      await actions.computeTestCases(store);
-      expect(store.state.testCases).toEqual(EXPECTED_TESTCASES_STATE_NOT_STARTED);
+      expect(store.state.ws.connection).toBeNull();
 
       mockServer.on('connection', async (socket) => {
+        expect(store.state.testCases).toEqual(EXPECTED_TESTCASES_STATE_NOT_STARTED);
+
+        api.executeTestCases.mockResolvedValueOnce({});
+        await actions.executeTestCases(store);
+
         expect(store.state.hasRunStarted).toEqual(true);
         expect(dispatch).toHaveBeenCalledWith('status/clearErrors', null, { root: true });
         expect(store.state.testCases).toEqual(EXPECTED_TESTCASES_STATE_PENDING);
@@ -330,8 +329,8 @@ describe('store/modules/testcases', () => {
         });
       });
 
-      api.executeTestCases.mockResolvedValueOnce({});
-      await actions.executeTestCases(store);
+      api.computeTestCases.mockResolvedValueOnce(OK_RESPONSE);
+      await actions.computeTestCases(store);
     });
   });
 });

@@ -477,7 +477,7 @@ func TestValidate(t *testing.T) {
 			discoveryJSON: discoveryStub("manifest", "http://www.example.com"),
 			failures: []ValidationFailure{
 				{
-					Key: "DiscoveryModel.DiscoveryItems[0].APISpecification.Manifest",
+					Key:   "DiscoveryModel.DiscoveryItems[0].APISpecification.Manifest",
 					Error: "Field validation for 'Manifest' failed on the 'fileorhttps' tag",
 				},
 			},

@@ -56,7 +56,7 @@ func (c Context) PutMap(mymap map[string]string) {
 
 // PutStringSlice puts a slice of strings into context
 func (c Context) PutStringSlice(key string, values []string) {
-	var valuesCasted []interface{}
+	valuesCasted := []interface{}{}
 	for _, value := range values {
 		valuesCasted = append(valuesCasted, value)
 	}
@@ -65,7 +65,7 @@ func (c Context) PutStringSlice(key string, values []string) {
 
 // GetStringSlice gets a slice of string from context
 func (c Context) GetStringSlice(key string) ([]string, error) {
-	var result []string
+	result := []string{}
 	stringsSlice, ok := c[key].([]interface{})
 	if !ok {
 		return nil, errors.New("cast error can't get string slice from context")
@@ -85,12 +85,12 @@ func (c Context) GetStringSlice(key string) ([]string, error) {
 // DumpContext - send the contents of a context to a logger
 func (c *Context) DumpContext(text ...string) {
 	for _, title := range text {
-		logrus.Debug("[Context] " + title)
+		logrus.StandardLogger().Debug("[Context] " + title)
 	}
 	for k, v := range *c {
 		if k == "client_secret" || k == "basic_authentication" || k == "SigningCert" { // skip potentially sensitive fields - likely need to be more robust
 			continue
 		}
-		logrus.Debugf("[Context] %s:%v", k, v)
+		logrus.StandardLogger().Debugf("[Context] %s:%v", k, v)
 	}
 }

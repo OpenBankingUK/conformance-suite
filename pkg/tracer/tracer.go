@@ -17,6 +17,7 @@ The basic naive implementation consists of:-
 */
 import (
 	"fmt"
+
 	"github.com/sirupsen/logrus"
 )
 
@@ -59,7 +60,7 @@ func AppMsg(objtype, msg, objdump string) {
 		return
 	}
 	appmsg := fmt.Sprintf("%s[%s] %s", "" /*indent()*/, objtype, msg)
-	logrus.Debugln(appmsg)
+	logrus.StandardLogger().Debugln(appmsg)
 	applicationTrace <- appmsg
 }
 
@@ -69,7 +70,7 @@ func AppErr(objtype, msg, objdump string) {
 		return
 	}
 	errmsg := fmt.Sprintf("%s[%s] %s", "" /*indent()*/, objtype, msg)
-	logrus.Error(errmsg)
+	logrus.StandardLogger().Error(errmsg)
 	applicationTrace <- errmsg
 }
 

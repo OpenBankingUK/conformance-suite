@@ -25,7 +25,7 @@ type RunDefinition struct {
 }
 
 type TestCaseRunner struct {
-	executor         *Executor
+	executor         TestCaseExecutor
 	definition       RunDefinition
 	daemonController DaemonController
 	logger           *logrus.Entry
@@ -39,7 +39,7 @@ func NewTestCaseRunner(definition RunDefinition, daemonController DaemonControll
 		executor:         NewExecutor(),
 		definition:       definition,
 		daemonController: daemonController,
-		logger:           logrus.New().WithField("module", "TestCaseRunner"),
+		logger:           logrus.StandardLogger().WithField("module", "TestCaseRunner"),
 		runningLock:      &sync.Mutex{},
 		running:          false,
 	}
@@ -51,7 +51,7 @@ func NewConsentAcquisitionRunner(definition RunDefinition, daemonController Daem
 		executor:         NewExecutor(),
 		definition:       definition,
 		daemonController: daemonController,
-		logger:           logrus.New().WithField("module", "ConsentAcquisitionRunner"),
+		logger:           logrus.StandardLogger().WithField("module", "ConsentAcquisitionRunner"),
 		runningLock:      &sync.Mutex{},
 		running:          false,
 	}
@@ -63,7 +63,7 @@ func NewExchangeComponentRunner(definition RunDefinition, daemonController Daemo
 		executor:         NewExecutor(),
 		definition:       definition,
 		daemonController: daemonController,
-		logger:           logrus.New().WithField("module", "ExchangeComponent"),
+		logger:           logrus.StandardLogger().WithField("module", "ExchangeComponent"),
 		runningLock:      &sync.Mutex{},
 		running:          false,
 	}
@@ -71,8 +71,13 @@ func NewExchangeComponentRunner(definition RunDefinition, daemonController Daemo
 
 // RunTestCases runs the testCases
 func (r *TestCaseRunner) RunTestCases(ctx *model.Context) error {
+	logrus.StandardLogger().Debug("TestCaseRunner.RunTestCases, runningLock=false")
 	r.runningLock.Lock()
-	defer r.runningLock.Unlock()
+	logrus.StandardLogger().Debug("TestCaseRunner.RunTestCases, runningLock=true")
+	defer func() {
+		logrus.StandardLogger().Debug("TestCaseRunner.RunTestCases, runningLock=false")
+		r.runningLock.Unlock()
+	}()
 	if r.running {
 		return errors.New("test cases runner already running")
 	}
@@ -85,8 +90,13 @@ func (r *TestCaseRunner) RunTestCases(ctx *model.Context) error {
 
 // RunConsentAcquisition -
 func (r *TestCaseRunner) RunConsentAcquisition(item TokenConsentIDItem, ctx *model.Context, consentType string, consentIDChannel chan<- TokenConsentIDItem) error {
+	logrus.StandardLogger().Debug("RunConsentAcquisition, runningLock=false")
 	r.runningLock.Lock()
-	defer r.runningLock.Unlock()
+	logrus.StandardLogger().Debug("RunConsentAcquisition, runningLock=true")
+	defer func() {
+		logrus.StandardLogger().Debug("RunConsentAcquisition, runningLock=false")
+		r.runningLock.Unlock()
+	}()
 	if r.running {
 		return errors.New("consent acquisition test cases runner already running")
 	}
@@ -98,7 +108,6 @@ func (r *TestCaseRunner) RunConsentAcquisition(item TokenConsentIDItem, ctx *mod
 }
 
 func (r *TestCaseRunner) runTestCasesAsync(ctx *model.Context) {
-
 	err := r.executor.SetCertificates(r.definition.SigningCert, r.definition.TransportCert)
 	if err != nil {
 		r.logger.WithError(err).Error("running test cases async")
@@ -158,7 +167,7 @@ func (r *TestCaseRunner) runConsentAcquisitionAsync(item TokenConsentIDItem, ctx
 	r.executeComponentTests(&comp, ruleCtx, ctxLogger, item, consentIDChannel)
 	clientGrantToken, err := ruleCtx.GetString("client_access_token")
 	if err == nil {
-		logrus.Debugf("setting client credential grant token to %s", clientGrantToken)
+		logrus.StandardLogger().Debugf("setting client credential grant token to %s", clientGrantToken)
 		ctx.PutString("client_access_token", clientGrantToken)
 	}
 
@@ -169,15 +178,15 @@ func (r *TestCaseRunner) executeComponentTests(comp *model.Component, ruleCtx *m
 	ctxLogger = ctxLogger.WithField("component", comp.Name)
 	for _, testcase := range comp.Tests {
 		if r.daemonController.ShouldStop() {
-			logrus.Debugln("stop component test run received, aborting runner")
+			logrus.StandardLogger().Debugln("stop component test run received, aborting runner")
 			return
 		}
 
 		testResult := r.executeTest(testcase, ruleCtx, ctxLogger)
-
 		r.daemonController.Results() <- testResult
+
 		if testResult.Pass {
-			logrus.Debugf("hanging around for tokennamed %s", item.TokenName)
+			logrus.StandardLogger().Debugf("hanging around for tokennamed %s", item.TokenName)
 			consentURL, err := ruleCtx.GetString("consent_url")
 			if err == model.ErrNotFound {
 				continue
@@ -186,19 +195,24 @@ func (r *TestCaseRunner) executeComponentTests(comp *model.Component, ruleCtx *m
 			ruleCtx.DumpContext()
 			consentID, err := ruleCtx.GetString(item.TokenName)
 			if err == model.ErrNotFound {
-				logrus.Debugf("consentId not found in context")
+				logrus.StandardLogger().Debugf("consentId not found in context")
 			}
 			item.ConsentID = consentID
-			logrus.Debugf("Sending Item %s:%s:%s to consentIDChannel", item.TokenName, item.ConsentID, item.ConsentURL)
+			logrus.StandardLogger().Debugf("Sending Item %s:%s:%s to consentIDChannel", item.TokenName, item.ConsentID, item.ConsentURL)
 			consentIDChannel <- item
 		}
 	}
 }
 
 func (r *TestCaseRunner) setNotRunning() {
+	logrus.StandardLogger().Debug("TestCaseRunner.setNotRunning, runningLock=false")
 	r.runningLock.Lock()
+	logrus.StandardLogger().Debug("TestCaseRunner.setNotRunning, runningLock=true")
+	defer func() {
+		logrus.StandardLogger().Debug("TestCaseRunner.setNotRunning, runningLock=false")
+		r.runningLock.Unlock()
+	}()
 	r.running = false
-	r.runningLock.Unlock()
 }
 
 func (r *TestCaseRunner) makeRuleCtx(ctx *model.Context) *model.Context {
@@ -207,6 +221,7 @@ func (r *TestCaseRunner) makeRuleCtx(ctx *model.Context) *model.Context {
 	for k, v := range *ctx {
 		ruleCtx.Put(k, v)
 	}
+
 	return ruleCtx
 }
 
@@ -217,6 +232,7 @@ func (r *TestCaseRunner) executeSpecTests(spec generation.SpecificationTestCases
 			ctxLogger.Info("stop test run received, aborting runner")
 			return
 		}
+
 		testResult := r.executeTest(testcase, ruleCtx, ctxLogger)
 		r.daemonController.Results() <- testResult
 	}

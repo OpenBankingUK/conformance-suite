@@ -1,31 +1,68 @@
 package results
 
 import (
+	"encoding/json"
+
+	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/test"
+
 	"errors"
-	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
-func TestNewTestResult(t *testing.T) {
+func TestNewTestCaseResult123(t *testing.T) {
+	assert := test.NewAssert(t)
+
 	err := errors.New("some error")
 	result := NewTestCaseResult("123", true, NoMetrics, err)
-	assert.Equal(t, "123", result.Id)
-	assert.True(t, result.Pass)
-	assert.Equal(t, NoMetrics, result.Metrics)
-	assert.Equal(t, err.Error(), string(result.Fail))
 
-	result = NewTestCaseResult("321", true, NoMetrics, err)
-	assert.Equal(t, "321", result.Id)
-	assert.True(t, result.Pass)
-	assert.Equal(t, NoMetrics, result.Metrics)
-	assert.Equal(t, err.Error(), string(result.Fail))
+	assert.Equal("123", result.Id)
+	assert.True(result.Pass)
+	assert.Equal(NoMetrics, result.Metrics)
+	assert.Equal(err.Error(), result.Fail)
 }
 
-func TestNewTestFailResult(t *testing.T) {
+func TestNewTestCaseResult321(t *testing.T) {
+	assert := test.NewAssert(t)
+
 	err := errors.New("some error")
+
+	result := NewTestCaseResult("321", true, NoMetrics, err)
+	assert.Equal("321", result.Id)
+	assert.True(result.Pass)
+	assert.Equal(NoMetrics, result.Metrics)
+	assert.Equal(err.Error(), result.Fail)
+}
+
+func TestNewTestCaseFailResult(t *testing.T) {
+	assert := test.NewAssert(t)
+	err := errors.New("some error")
+
 	result := NewTestCaseFail("id", NoMetrics, err)
-	assert.Equal(t, "id", result.Id)
-	assert.False(t, result.Pass)
-	assert.Equal(t, NoMetrics, result.Metrics)
-	assert.Equal(t, err.Error(), string(result.Fail))
+
+	assert.Equal("id", result.Id)
+	assert.False(result.Pass)
+	assert.Equal(NoMetrics, result.Metrics)
+	assert.Equal(err.Error(), result.Fail)
+}
+
+func TestTestCaseResultJsonMarshal(t *testing.T) {
+	require := test.NewRequire(t)
+
+	result := NewTestCaseResult("123", true, NoMetrics, nil)
+
+	expected := `
+{
+	"id": "123",
+	"pass": true,
+	"metrics": {
+		"response_time": 0,
+		"response_size": 0
+	}
+}
+	`
+	actual, err := json.Marshal(result)
+	require.NoError(err)
+	require.NotEmpty(actual)
+
+	require.JSONEq(expected, string(actual))
 }

@@ -162,7 +162,7 @@ func (i *Input) setHeaders(req *resty.Request, ctx *Context) error {
 	return nil
 }
 
-func (i *Input) getBody(req *resty.Request, ctx *Context) (string, error) {
+func (i *Input) getBody(_ *resty.Request, ctx *Context) (string, error) {
 	value := i.RequestBody
 	for {
 		val2, err := replaceContextField(value, ctx)
@@ -216,7 +216,7 @@ func (i *Input) createAlgRS256JWT(ctx *Context) (string, error) {
 	alg := jwt.GetSigningMethod("RS256")
 	if alg == nil {
 		msg := fmt.Sprintf("couldn't find RS256 signing method: %v", alg)
-		logrus.Error(msg)
+		logrus.StandardLogger().Error(msg)
 		return "", errors.New(msg)
 	}
 	token := jwt.NewWithClaims(alg, claims) // create new token
@@ -234,7 +234,7 @@ func (i *Input) createAlgRS256JWT(ctx *Context) (string, error) {
 	if err != nil {
 		return "", i.AppErr(fmt.Sprintf("error siging jwt: %s", err.Error()))
 	}
-	logrus.Debugf("\nCreated JWT:\n-------------\n%s\n", tokenString)
+	logrus.StandardLogger().Debugf("\nCreated JWT:\n-------------\n%s\n", tokenString)
 	return tokenString, nil
 }
 
@@ -284,6 +284,6 @@ func (i *Input) createAlgNoneJWT() (string, error) {
 		i.AppMsg(fmt.Sprintf("error signing jwt: %s", err.Error()))
 		return "", err
 	}
-	tokenString = tokenString + "."
+	tokenString += "."
 	return tokenString, nil
 }
