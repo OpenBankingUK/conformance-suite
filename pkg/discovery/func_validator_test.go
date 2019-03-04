@@ -129,7 +129,7 @@ func apiSpecificationStub(specName string, specURL string, specVersion string, s
 			"url": "` + specURL + `",
 			"version": "` + specVersion + `",
 			"schemaVersion": "` + schemaVersion + `",
-			"manifest":	"`+ manifest +`"
+			"manifest":	"` + manifest + `"
 		},`
 	if field == "apiSpecification" {
 		if value == "" {
