@@ -98,13 +98,9 @@ func discoveryStub(field string, value string) string {
 	case "specVersion":
 		specVersion = value
 	case "name":
-		if value == "" {
-			name = ""
-		}
+		name = value
 	case "description":
-		if value == "" {
-			description = ""
-		}
+		description = value
 	}
 
 	apiSpecification := apiSpecificationStub(specName, specURL, specVersion, schemaVersion, manifest, field, value)
