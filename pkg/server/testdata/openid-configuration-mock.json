@@ -3,10 +3,10 @@
   "authorization_endpoint": "https://modelobankauth2018.o3bank.co.uk:4101/<auth_mock>",
   "issuer": "https://modelobankauth2018.o3bank.co.uk:4101",
   "token_endpoint_auth_methods_supported": [
-			"tls_client_auth",
-			"client_secret_jwt",
-			"client_secret_basic",
-			"client_secret_post",
-			"private_key_jwt"
-		]
+    "tls_client_auth",
+    "client_secret_jwt",
+    "client_secret_basic",
+    "client_secret_post",
+    "private_key_jwt"
+  ]
 }

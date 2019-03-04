@@ -82,7 +82,7 @@ func TestServerDiscoveryModelPOSTResolvesValuesUsingOpenidConfigurationURIs(t *t
 	defer mockedServer.Close()
 
 	expected := `
-		{
+    {
       "token_endpoints": {
         "schema_version=https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.0/dist/account-info-swagger.json":
           "https://modelobank2018.o3bank.co.uk:4201/<token_mock>"
@@ -100,10 +100,10 @@ func TestServerDiscoveryModelPOSTResolvesValuesUsingOpenidConfigurationURIs(t *t
           "https://modelobankauth2018.o3bank.co.uk:4101/<auth_mock>"
 			},
       "issuers": {
-				"schema_version=https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.0/dist/account-info-swagger.json":
+        "schema_version=https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.0/dist/account-info-swagger.json":
           "https://modelobankauth2018.o3bank.co.uk:4101"
 			}
-		}`
+    }`
 
 	// modify `ob-v3.0-ozone.json` to make it point to mockedServerURL
 	discoveryJSON, err := ioutil.ReadFile("../discovery/templates/ob-v3.1-ozone.json")
