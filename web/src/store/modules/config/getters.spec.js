@@ -67,15 +67,13 @@ describe('discoveryProblems', () => {
 
 describe('Config', () => {
   let state;
-  const example = '{"a": 1}';
 
   beforeEach(() => {
     state = {
-      raw: example,
-      parsed: JSON.parse(example),
       discoveryModel: {
-        raw: example,
-        parsed: JSON.parse(example),
+        discoveryModel: {
+          tokenAcquisition: 'headless',
+        },
       },
     };
   });
@@ -83,6 +81,12 @@ describe('Config', () => {
   describe('getters', () => {
     it('discoveryModel', () => {
       expect(getters.discoveryModel(state)).toEqual(state.discoveryModel);
+    });
+    it('discoveryModelString', () => {
+      expect(getters.discoveryModelString(state)).toEqual(JSON.stringify(state.discoveryModel, null, 2));
+    });
+    it('tokenAcquisition', () => {
+      expect(getters.tokenAcquisition(state)).toEqual('headless');
     });
   });
 });

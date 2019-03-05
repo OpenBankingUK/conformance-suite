@@ -29,6 +29,7 @@ export default {
   discoveryModel: state => state.discoveryModel,
   discoveryModelString: state => JSON.stringify(state.discoveryModel, null, 2),
   discoveryTemplates: state => state.discoveryTemplates,
+  tokenAcquisition: state => (state.discoveryModel ? state.discoveryModel.discoveryModel.tokenAcquisition : null),
   problems: state => state.problems,
   discoveryProblems: state => (state.problems ? state.problems.map(p => parseProblem(p)) : null),
   configuration: state => state.configuration,
