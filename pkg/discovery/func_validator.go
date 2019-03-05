@@ -35,7 +35,7 @@ const (
 	tokenAcquisitionErrMsgFormat = "TokenAcquisition '%s' not in list of supported methods"
 	requiredErrorFormat          = "Field '%s' is required"
 	emptyArrayErrorFormat        = "Field '%s' cannot be empty"
-	fileOrHttpsErrorFormat       = "Field '%s' must 'file://' or 'https://'"
+	fileOrHttpsErrorFormat       = "Field '%s' must be 'file://' or 'https://'"
 )
 
 // Validate - validates a discovery model, returns true when valid,

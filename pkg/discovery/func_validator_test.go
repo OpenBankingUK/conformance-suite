@@ -450,7 +450,7 @@ func TestValidate(t *testing.T) {
 			failures: []ValidationFailure{
 				{
 					Key:   "DiscoveryModel.DiscoveryItems[0].APISpecification.Manifest",
-					Error: "Field validation for 'Manifest' failed on the 'fileorhttps' tag",
+					Error: "Field 'DiscoveryModel.DiscoveryItems[0].APISpecification.Manifest' must be 'file://' or 'https://'",
 				},
 			},
 		})
@@ -478,7 +478,7 @@ func TestValidate(t *testing.T) {
 			failures: []ValidationFailure{
 				{
 					Key:   "DiscoveryModel.DiscoveryItems[0].APISpecification.Manifest",
-					Error: "Field validation for 'Manifest' failed on the 'fileorhttps' tag",
+					Error: "Field 'DiscoveryModel.DiscoveryItems[0].APISpecification.Manifest' must be 'file://' or 'https://'",
 				},
 			},
 		})
