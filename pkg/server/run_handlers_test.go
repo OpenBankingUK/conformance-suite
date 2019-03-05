@@ -75,3 +75,23 @@ func TestServerRunHandlersnewTestCaseResultWebSocketEvent(t *testing.T) {
 
 	require.JSONEq(expected, actual)
 }
+
+func TestServerRunHandlersnewTestCasesCompletedWebSocketEvent(t *testing.T) {
+	require := test.NewRequire(t)
+
+	wsEvent := newTestCasesCompletedWebSocketEvent(true)
+
+	wsEventJson, err := json.MarshalIndent(wsEvent, prefix, indent)
+	require.NoError(err)
+	require.NotNil(wsEventJson)
+
+	expected := `
+{
+    "type": "ResultType_TestCasesCompleted",
+    "value": true
+}
+	`
+	actual := string(wsEventJson)
+
+	require.JSONEq(expected, actual)
+}

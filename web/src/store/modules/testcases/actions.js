@@ -99,8 +99,12 @@ export default {
         const update = JSON.parse(data);
 
         commit(types.SET_WEBSOCKET_MESSAGE, update);
+        // eslint-disable-next-line no-console
+        console.log('update=', JSON.stringify(update));
 
-        if (_.has(update, 'type') && update.type === 'ResultType_AcquiredAccessToken') {
+        if (_.has(update, 'type') && update.type === 'ResultType_TestCasesCompleted') {
+          commit(types.SET_TEST_CASES_COMPLETED, update.value);
+        } else if (_.has(update, 'type') && update.type === 'ResultType_AcquiredAccessToken') {
           commit(types.ADD_TOKEN_ACQUIRED, update);
         } else if (_.has(update, 'type') && update.type === 'ResultType_AcquiredAllAccessTokens') {
           commit(types.SET_ALL_TOKENS_ACQUIRED);

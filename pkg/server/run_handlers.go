@@ -28,8 +28,8 @@ type runHandlers struct {
 	logger   *logrus.Entry
 }
 
-func newRunHandlers(journey Journey, upgrader *websocket.Upgrader, logger *logrus.Entry) *runHandlers {
-	return &runHandlers{
+func newRunHandlers(journey Journey, upgrader *websocket.Upgrader, logger *logrus.Entry) runHandlers {
+	return runHandlers{
 		journey:  journey,
 		upgrader: upgrader,
 		logger:   logger,
@@ -37,7 +37,7 @@ func newRunHandlers(journey Journey, upgrader *websocket.Upgrader, logger *logru
 }
 
 // runStartPostHandler creates a new test run
-func (h *runHandlers) runStartPostHandler(c echo.Context) error {
+func (h runHandlers) runStartPostHandler(c echo.Context) error {
 	err := h.journey.RunTests()
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, NewErrorResponse(err))
@@ -47,7 +47,11 @@ func (h *runHandlers) runStartPostHandler(c echo.Context) error {
 
 // listenResultWebSocket - /api/run/ws
 // creates a socket connection to listen for test run results.
-func (h *runHandlers) listenResultWebSocket(c echo.Context) error {
+//
+// Silence this linter error:
+// `pkg/server/run_handlers.go:50:1: cyclomatic complexity 15 of func `(runHandlers).listenResultWebSocket` is high (> 13) (gocyclo)`
+// nolint:gocyclo
+func (h runHandlers) listenResultWebSocket(c echo.Context) error {
 	ws, err := h.upgrader.Upgrade(c.Response(), c.Request(), nil)
 	logger := h.logger.WithField("handler", "listenResultWebSocket").WithField("websocket", fmt.Sprintf("%p", ws))
 	if err != nil {
@@ -77,15 +81,19 @@ func (h *runHandlers) listenResultWebSocket(c echo.Context) error {
 			if !h.doSendPingMessage(ws, logger) {
 				break
 			}
+		case isCompleted, ok := <-daemon.IsCompleted():
+			if err := h.processTestCasesCompleted(ws, logger, isCompleted, ok); err != nil {
+				break
+			}
 		case testCaseResult, ok := <-daemon.Results():
 			if err := h.processTestCaseResult(ws, logger, testCaseResult, ok); err != nil {
 				break
 			}
-		case event, ok := <-events.Tokens():
+		case event, ok := <-events.TokensChannel():
 			if err := h.processAcquiredAccessTokenEvent(ws, logger, event, ok); err != nil {
 				break
 			}
-		case event, ok := <-events.AllTokens():
+		case event, ok := <-events.AllTokensChannel():
 			if err := h.processAcquiredAllAccessTokensEvent(ws, logger, event, ok); err != nil {
 				break
 			}
@@ -96,7 +104,7 @@ func (h *runHandlers) listenResultWebSocket(c echo.Context) error {
 }
 
 // shouldStop - True if caller should stop, false otherwise.
-func (h *runHandlers) shouldStop(daemon executors.DaemonController, ws *websocket.Conn, logger *logrus.Entry) bool {
+func (h runHandlers) shouldStop(daemon executors.DaemonController, ws *websocket.Conn, logger *logrus.Entry) bool {
 	if daemon.ShouldStop() {
 		daemon.Stopped()
 		logger.Info("sending stop event")
@@ -110,7 +118,7 @@ func (h *runHandlers) shouldStop(daemon executors.DaemonController, ws *websocke
 }
 
 // doSendPingMessage - If false, caller should terminate WebSocket connection.
-func (h *runHandlers) doSendPingMessage(ws *websocket.Conn, logger *logrus.Entry) bool {
+func (h runHandlers) doSendPingMessage(ws *websocket.Conn, logger *logrus.Entry) bool {
 	//logger.Debug("pinging websocket client")
 
 	// We cannot return error here, if we do echo will try to write the error to conn
@@ -130,14 +138,33 @@ func (h *runHandlers) doSendPingMessage(ws *websocket.Conn, logger *logrus.Entry
 }
 
 // stopHandler sends signal to stop running test
-func (h *runHandlers) stopRunHandler(c echo.Context) error {
+func (h runHandlers) stopRunHandler(c echo.Context) error {
 	h.journey.StopTestRun()
 	return nil
 }
 
-func (h *runHandlers) processTestCaseResult(ws *websocket.Conn, logger *logrus.Entry, result results.TestCase, ok bool) error {
+func (h runHandlers) processTestCasesCompleted(ws *websocket.Conn, logger *logrus.Entry, isCompleted bool, ok bool) error {
 	if !ok {
-		err := errors.New("error reading from result channel")
+		err := errors.New("error reading from daemon.IsCompleted channel")
+		logger.Error(err)
+		return err
+	}
+
+	wsEvent := newTestCasesCompletedWebSocketEvent(isCompleted)
+	logger.WithFields(logrus.Fields{
+		"wsEvent": wsEvent,
+	}).Info("sending event")
+	if err := ws.WriteJSON(wsEvent); err != nil {
+		logger.WithError(err).Error("writing json to websocket")
+		return err
+	}
+
+	return nil
+}
+
+func (h runHandlers) processTestCaseResult(ws *websocket.Conn, logger *logrus.Entry, result results.TestCase, ok bool) error {
+	if !ok {
+		err := errors.New("error reading from daemon.Results channel")
 		logger.Error(err)
 		return err
 	}
@@ -154,7 +181,7 @@ func (h *runHandlers) processTestCaseResult(ws *websocket.Conn, logger *logrus.E
 	return nil
 }
 
-func (h *runHandlers) processAcquiredAccessTokenEvent(ws *websocket.Conn, logger *logrus.Entry, event events.AcquiredAccessToken, ok bool) error {
+func (h runHandlers) processAcquiredAccessTokenEvent(ws *websocket.Conn, logger *logrus.Entry, event events.AcquiredAccessToken, ok bool) error {
 	if !ok {
 		err := errors.New("error reading from events.Tokens channel")
 		logger.Error(err)
@@ -173,7 +200,7 @@ func (h *runHandlers) processAcquiredAccessTokenEvent(ws *websocket.Conn, logger
 	return nil
 }
 
-func (h *runHandlers) processAcquiredAllAccessTokensEvent(ws *websocket.Conn, logger *logrus.Entry, event events.AcquiredAllAccessTokens, ok bool) error {
+func (h runHandlers) processAcquiredAllAccessTokensEvent(ws *websocket.Conn, logger *logrus.Entry, event events.AcquiredAllAccessTokens, ok bool) error {
 	if !ok {
 		err := errors.New("error reading from events.AllTokens channel")
 		logger.Error(err)
@@ -209,6 +236,18 @@ type TestCaseResultWebSocketEvent struct {
 func newTestCaseResultWebSocketEvent(testCaseResult results.TestCase) TestCaseResultWebSocketEvent {
 	return TestCaseResultWebSocketEvent{
 		Test: testCaseResult,
+	}
+}
+
+type TestCasesCompletedWebSocketEvent struct {
+	Type  string `json:"type"`
+	Value bool   `json:"value"`
+}
+
+func newTestCasesCompletedWebSocketEvent(isCompleted bool) TestCasesCompletedWebSocketEvent {
+	return TestCasesCompletedWebSocketEvent{
+		Type:  "ResultType_TestCasesCompleted",
+		Value: isCompleted,
 	}
 }
 

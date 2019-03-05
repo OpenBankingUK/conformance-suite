@@ -119,6 +119,8 @@ func (r *TestCaseRunner) runTestCasesAsync(ctx *model.Context) {
 	for _, spec := range r.definition.TestCaseRun.TestCases {
 		r.executeSpecTests(spec, ruleCtx, ctxLogger)
 	}
+	r.daemonController.SetCompleted()
+
 	r.setNotRunning()
 }
 
@@ -183,7 +185,7 @@ func (r *TestCaseRunner) executeComponentTests(comp *model.Component, ruleCtx *m
 		}
 
 		testResult := r.executeTest(testcase, ruleCtx, ctxLogger)
-		r.daemonController.Results() <- testResult
+		r.daemonController.AddResult(testResult)
 
 		if testResult.Pass {
 			logrus.StandardLogger().Debugf("hanging around for tokennamed %s", item.TokenName)
@@ -234,7 +236,7 @@ func (r *TestCaseRunner) executeSpecTests(spec generation.SpecificationTestCases
 		}
 
 		testResult := r.executeTest(testcase, ruleCtx, ctxLogger)
-		r.daemonController.Results() <- testResult
+		r.daemonController.AddResult(testResult)
 	}
 }
 

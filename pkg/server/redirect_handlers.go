@@ -57,8 +57,15 @@ type redirectHandlers struct {
 	logger  *logrus.Entry
 }
 
+func newRedirectHandlers(journey Journey, logger *logrus.Entry) redirectHandlers {
+	return redirectHandlers{
+		journey: journey,
+		logger:  logger.WithField("module", "redirectHandlers"),
+	}
+}
+
 // postFragmentOKHandler - POST /api/redirect/fragment/ok
-func (h *redirectHandlers) postFragmentOKHandler(c echo.Context) error {
+func (h redirectHandlers) postFragmentOKHandler(c echo.Context) error {
 	fragment := new(RedirectFragment)
 	if err := c.Bind(fragment); err != nil {
 		return err
@@ -95,7 +102,7 @@ func (h *redirectHandlers) postFragmentOKHandler(c echo.Context) error {
 }
 
 // postQueryOKHandler - POST /redirect/query/ok
-func (h *redirectHandlers) postQueryOKHandler(c echo.Context) error {
+func (h redirectHandlers) postQueryOKHandler(c echo.Context) error {
 	query := new(RedirectQuery)
 	if err := c.Bind(query); err != nil {
 		return err
@@ -141,13 +148,13 @@ func (h *redirectHandlers) postQueryOKHandler(c echo.Context) error {
 	return c.JSON(http.StatusBadRequest, resp)
 }
 
-func (h *redirectHandlers) handleCodeExchange(query *RedirectQuery) error {
+func (h redirectHandlers) handleCodeExchange(query *RedirectQuery) error {
 	logrus.StandardLogger().Warnf("received redirect Query %#v", query)
 	return h.journey.CollectToken(query.Code, query.State, query.Scope)
 }
 
 // postErrorHandler - POST /api/redirect/error
-func (h *redirectHandlers) postErrorHandler(c echo.Context) error {
+func (h redirectHandlers) postErrorHandler(c echo.Context) error {
 	redirectError := new(RedirectError)
 	if err := c.Bind(redirectError); err != nil {
 		return err

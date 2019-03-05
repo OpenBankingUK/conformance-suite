@@ -10,14 +10,14 @@
       @click="onNext()">
       <b-spinner
         v-if="showLoading"
-        small />
+        small/>
       <span class="next-label">{{ nextLabel }}</span>
     </b-btn>
   </div>
 </template>
 
 <script>
-import * as _ from 'lodash';
+import invert from 'lodash/invert';
 import { createNamespacedHelpers } from 'vuex';
 import BSpinner from '@/components/BSpinner';
 
@@ -34,6 +34,43 @@ export default {
       required: false,
       default: () => 'Next',
     },
+    isNextEnabled: {
+      type: Boolean,
+      required: false,
+      default: () => true,
+    },
+
+    nextRoute: {
+      type: Function,
+      required: false,
+      default() {
+        const { path } = this.$route;
+        return this.ROUTES_NEXT[path];
+      },
+    },
+    previousRoute: {
+      type: Function,
+      required: false,
+      default() {
+        const { path } = this.$route;
+        return this.ROUTES_BACK[path];
+      },
+    },
+
+    onBack: {
+      type: Function,
+      required: false,
+      default() {
+        this.$router.push(this.previousRoute());
+      },
+    },
+    onNext: {
+      type: Function,
+      required: false,
+      default() {
+        this.$router.push(this.nextRoute());
+      },
+    },
   },
   data() {
     // normal navigation
@@ -45,7 +82,7 @@ export default {
     };
     // invert the ROUTES map, could do this manually but there is no point
     // as it is error-prone.
-    const ROUTES_INVERTED = _.invert(ROUTES);
+    const ROUTES_INVERTED = invert(ROUTES);
 
     return {
       ROUTES_BACK: ROUTES_INVERTED,
@@ -65,12 +102,18 @@ export default {
 
       return false;
     },
-    // disable next button when showLoading is true
-    // disable next button when we are the last step in the wizard
-    // disable next button when we are on discovery template selection step
+    // disable next button when showLoading is true.
+    // disable next button when we are on discovery template selection step.
+    // disable next button when property `isNextEnabled` is false.
     isNextDisabled() {
       const { path } = this.$route;
-      if (this.showLoading || path === '/wizard/export' || path === '/wizard/continue-or-start') {
+      if (this.showLoading) {
+        return true;
+      }
+      if (path === '/wizard/continue-or-start') {
+        return true;
+      }
+      if (!this.isNextEnabled) {
         return true;
       }
 
@@ -78,20 +121,6 @@ export default {
     },
   },
   methods: {
-    nextRoute() {
-      const { path } = this.$route;
-      return this.ROUTES_NEXT[path];
-    },
-    previousRoute() {
-      const { path } = this.$route;
-      return this.ROUTES_BACK[path];
-    },
-    onBack() {
-      this.$router.push(this.previousRoute());
-    },
-    onNext() {
-      this.$router.push(this.nextRoute());
-    },
   },
 };
 </script>

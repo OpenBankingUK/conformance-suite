@@ -7,6 +7,7 @@ import loadDiscoveryTemplates from './modules/config/loadDiscoveryTemplates';
 import config from './modules/config';
 import testcases from './modules/testcases';
 import status from './modules/status';
+import exporter from './modules/exporter';
 
 Vue.use(Vuex);
 
@@ -18,6 +19,7 @@ const store = new Vuex.Store({
     config,
     testcases,
     status,
+    exporter,
   },
   strict,
   plugins,

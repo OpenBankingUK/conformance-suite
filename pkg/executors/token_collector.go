@@ -85,7 +85,9 @@ func (c *tokenCollector) Collect(tokenName, accessToken string) error {
 		for _, item := range c.consentTable {
 			tokenNames = append(tokenNames, item.TokenName)
 		}
-		c.events.AllTokens() <- events.NewAcquiredAllAccessTokens(tokenNames)
+
+		acquiredAllAccessTokens := events.NewAcquiredAllAccessTokens(tokenNames)
+		c.events.AddAcquiredAllAccessTokens(acquiredAllAccessTokens)
 
 		c.doneFunc()
 	}
@@ -121,7 +123,8 @@ func (c *tokenCollector) addAccessToken(tokenName, accessToken string) {
 			c.consentTable[k] = item
 			c.collected++
 
-			c.events.Tokens() <- events.NewAcquiredAccessToken(tokenName)
+			acquiredAccessToken := events.NewAcquiredAccessToken(tokenName)
+			c.events.AddAcquiredAccessToken(acquiredAccessToken)
 		}
 	}
 }

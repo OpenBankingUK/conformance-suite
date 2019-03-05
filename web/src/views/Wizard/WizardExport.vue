@@ -6,27 +6,188 @@
           <h5>Export</h5>
         </div>
         <div class="flex-fill panel-body">
-          <p>body</p>
+          <b-card bg-variant="light">
+            <h5>Export Configuration</h5>
+            <b-form>
+              <b-form-group
+                id="implementer_group"
+                label-for="implementer"
+                label="Implementer/Brand Name"
+              >
+                <b-form-input
+                  id="implementer"
+                  v-model="implementer"
+                  :state="isNotEmpty(implementer)"
+                  required
+                  type="text"
+                />
+              </b-form-group>
+
+              <b-form-group
+                id="authorised_by_group"
+                label-for="authorised_by"
+                label="Authorised by"
+              >
+                <b-form-input
+                  id="authorised_by"
+                  v-model="authorised_by"
+                  :state="isNotEmpty(authorised_by)"
+                  required
+                  type="text"
+                />
+              </b-form-group>
+
+              <b-form-group
+                id="job_title_group"
+                label-for="job_title"
+                label="Job Title">
+                <b-form-input
+                  id="job_title"
+                  v-model="job_title"
+                  :state="isNotEmpty(job_title)"
+                  required
+                  type="text"
+                />
+              </b-form-group>
+
+              <b-form-group
+                id="has_agreed_group"
+                :label="has_agreed_terms"
+                label-for="has_agreed">
+                <b-form-checkbox
+                  id="has_agreed"
+                  v-model="has_agreed"
+                  required>I agree</b-form-checkbox>
+              </b-form-group>
+
+              <b-form-group
+                id="add_digital_signature_group"
+                label-for="add_digital_signature"
+                label="Sign this report with your public keys"
+              >
+                <b-form-checkbox
+                  id="add_digital_signature"
+                  v-model="add_digital_signature"
+                >Add Digital Signature?</b-form-checkbox>
+              </b-form-group>
+            </b-form>
+          </b-card>
+          <br>
+          <b-card bg-variant="light">
+            <h5>Exported Results</h5>
+            {{ export_results }}
+          </b-card>
+          <b-card
+            v-if="hasErrors"
+            bg-variant="light">
+            <TheErrorStatus/>
+          </b-card>
         </div>
-        <TheWizardFooter/>
+
+        <TheWizardFooter
+          :is-next-enabled="canExport"
+          :next-label="computeFooterNextLabel"
+          :on-next="exportResults"
+        />
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import isEmpty from 'lodash/isEmpty';
+import every from 'lodash/every';
+import { mapGetters, mapActions } from 'vuex';
+import TheErrorStatus from '../../components/TheErrorStatus.vue';
 import TheWizardFooter from '../../components/Wizard/TheWizardFooter.vue';
 
 export default {
   name: 'WizardExport',
   components: {
+    TheErrorStatus,
     TheWizardFooter,
   },
   data() {
-    return {};
+    return {
+      has_agreed_terms: 'I the Implementer has tested the Deployment (including by successfully completing the validation testing using the Conformance Test Suite Software) and verified that it conforms to the Open Banking Specifications, and hereby certifies to the Open Banking Implementation Entity and the public that the Deployment conforms to the Open Banking Functional Standards for',
+    };
   },
-  computed: {},
-  methods: {},
+  computed: {
+    ...mapGetters('status', [
+      'hasErrors',
+    ]),
+
+    implementer: {
+      get() {
+        return this.$store.state.exporter.implementer;
+      },
+      set(value) {
+        this.$store.commit('exporter/SET_IMPLEMENTER', value);
+      },
+    },
+    authorised_by: {
+      get() {
+        return this.$store.state.exporter.authorised_by;
+      },
+      set(value) {
+        this.$store.commit('exporter/SET_AUTHORISED_BY', value);
+      },
+    },
+    job_title: {
+      get() {
+        return this.$store.state.exporter.job_title;
+      },
+      set(value) {
+        this.$store.commit('exporter/SET_JOB_TITLE', value);
+      },
+    },
+
+    has_agreed: {
+      get() {
+        return this.$store.state.exporter.has_agreed;
+      },
+      set(value) {
+        this.$store.commit('exporter/SET_HAS_AGREED', value);
+      },
+    },
+    add_digital_signature: {
+      get() {
+        return this.$store.state.exporter.add_digital_signature;
+      },
+      set(value) {
+        this.$store.commit('exporter/SET_ADD_DIGITAL_SIGNATURE', value);
+      },
+    },
+
+    export_results: {
+      get() {
+        return this.$store.state.exporter.export_results;
+      },
+    },
+
+    canExport() {
+      const conditions = [
+        this.isNotEmpty(this.implementer),
+        this.isNotEmpty(this.authorised_by),
+        this.isNotEmpty(this.job_title),
+        this.has_agreed,
+      ];
+
+      const canExport = every(conditions);
+      return canExport;
+    },
+    computeFooterNextLabel() {
+      return 'Export Conformance Report';
+    },
+  },
+  methods: {
+    ...mapActions('exporter', [
+      'exportResults',
+    ]),
+    isNotEmpty(value) {
+      return !isEmpty(value);
+    },
+  },
 };
 </script>
 
