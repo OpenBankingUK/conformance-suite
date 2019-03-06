@@ -56,7 +56,7 @@ func LoadComponent(filename string) (Component, error) {
 // component test cases before they are run
 func (c *Component) ProcessReplacementFields(ctx *Context) {
 	for _, testcase := range c.Tests {
-		testcase.ProcessReplacementFields(ctx)
+		testcase.ProcessReplacementFields(ctx, true)
 	}
 }
 

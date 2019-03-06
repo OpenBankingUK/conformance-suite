@@ -307,17 +307,18 @@ func isReplacementField(value string) bool {
 
 // ProcessReplacementFields prefixed by '$' in the testcase Input and Context sections
 // Call to pre-process custom test cases from discovery model
-func (t *TestCase) ProcessReplacementFields(ctx *Context) {
+func (t *TestCase) ProcessReplacementFields(ctx *Context, showReplacementErrors bool) {
 	var err error
+	logger := logrus.StandardLogger()
 
 	t.Input.Endpoint, err = replaceContextField(t.Input.Endpoint, ctx) // errors if field not present in context - which is isReplacement for this function
 	if err != nil {
-		logrus.StandardLogger().WithError(err).Error("processing replacement fields")
+		t.logError("Endpoint", err, logger, showReplacementErrors)
 	}
 
 	t.Input.RequestBody, err = replaceContextField(t.Input.RequestBody, ctx)
 	if err != nil {
-		logrus.StandardLogger().WithError(err).Error("processing replacement fields")
+		t.logError("RequestBody", err, logger, showReplacementErrors)
 	}
 
 	t.processReplacementFormData(ctx)
@@ -331,15 +332,23 @@ func (t *TestCase) ProcessReplacementFields(ctx *Context) {
 		}
 		t.Context[k], err = replaceContextField(param, ctx)
 		if err != nil {
-			logrus.StandardLogger().WithError(err).Error("processing replacement fields")
+			t.logError("param", err, logger, showReplacementErrors)
 		}
 	}
 
 	for k, v := range t.Expect.ContextPut.Matches {
 		t.Expect.ContextPut.Matches[k].ContextName, err = replaceContextField(v.ContextName, ctx)
 		if err != nil {
-			logrus.StandardLogger().WithError(err).Error("processing replacement fields")
+			t.logError("ContextName", err, logger, showReplacementErrors)
 		}
+	}
+}
+
+func (t *TestCase) logError(field string, err error, logger *logrus.Logger, showReplacementErrors bool) {
+	if showReplacementErrors {
+		logger.WithError(err).Errorf("processing %s replacement fields", field)
+	} else {
+		logger.WithError(err).Debugf("processing %s replacement fields", field)
 	}
 }
 
