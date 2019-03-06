@@ -313,16 +313,16 @@ func (t *TestCase) ProcessReplacementFields(ctx *Context, showReplacementErrors 
 
 	t.Input.Endpoint, err = replaceContextField(t.Input.Endpoint, ctx) // errors if field not present in context - which is isReplacement for this function
 	if err != nil {
-		t.logError("Endpoint", err, logger, showReplacementErrors)
+		t.logReplaceError("Endpoint", err, logger, showReplacementErrors)
 	}
 
 	t.Input.RequestBody, err = replaceContextField(t.Input.RequestBody, ctx)
 	if err != nil {
-		t.logError("RequestBody", err, logger, showReplacementErrors)
+		t.logReplaceError("RequestBody", err, logger, showReplacementErrors)
 	}
 
 	t.processReplacementFormData(ctx)
-	t.processReplacementHeaders(ctx)
+	t.processReplacementHeaders(ctx, logger, showReplacementErrors)
 	t.processReplacementClaims(ctx)
 
 	for k := range t.Context {
@@ -332,19 +332,19 @@ func (t *TestCase) ProcessReplacementFields(ctx *Context, showReplacementErrors 
 		}
 		t.Context[k], err = replaceContextField(param, ctx)
 		if err != nil {
-			t.logError("param", err, logger, showReplacementErrors)
+			t.logReplaceError("param", err, logger, showReplacementErrors)
 		}
 	}
 
 	for k, v := range t.Expect.ContextPut.Matches {
 		t.Expect.ContextPut.Matches[k].ContextName, err = replaceContextField(v.ContextName, ctx)
 		if err != nil {
-			t.logError("ContextName", err, logger, showReplacementErrors)
+			t.logReplaceError("ContextName", err, logger, showReplacementErrors)
 		}
 	}
 }
 
-func (t *TestCase) logError(field string, err error, logger *logrus.Logger, showReplacementErrors bool) {
+func (t *TestCase) logReplaceError(field string, err error, logger *logrus.Logger, showReplacementErrors bool) {
 	if showReplacementErrors {
 		logger.WithError(err).Errorf("processing %s replacement fields", field)
 	} else {
@@ -362,12 +362,13 @@ func (t *TestCase) processReplacementFormData(ctx *Context) {
 	}
 }
 
-func (t *TestCase) processReplacementHeaders(ctx *Context) {
+func (t *TestCase) processReplacementHeaders(ctx *Context, logger *logrus.Logger, showReplacementErrors bool) {
 	var err error
 	for k := range t.Input.Headers {
 		t.Input.Headers[k], err = replaceContextField(t.Input.Headers[k], ctx)
 		if err != nil {
-			logrus.StandardLogger().WithError(err).Error("processing replacement fields")
+			field := fmt.Sprintf("Headers[%s]", k)
+			t.logReplaceError(field, err, logger, showReplacementErrors)
 		}
 	}
 }
