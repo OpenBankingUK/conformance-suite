@@ -34,7 +34,7 @@ export default {
 }
 
 .router-section /deep/ .wizard-step.panel {
-  min-height: 900px;
+  min-height: 850px;
   padding-bottom: 0;
 }
 </style>

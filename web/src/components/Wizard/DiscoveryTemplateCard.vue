@@ -1,6 +1,6 @@
 <template>
   <b-card
-    :id="name"
+    :id="name.replace(/\./g,'-')"
     :title="title"
     style="max-width: 20rem;"
     class="discovery-card mb-2"
