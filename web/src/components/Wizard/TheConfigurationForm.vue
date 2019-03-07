@@ -46,8 +46,8 @@
             </b-input-group-prepend>
             <b-form-input
               id="resource_account_ids"
-              v-model="resource_account_ids[index]"
-              :state="isNotEmpty(item)"
+              v-model="resource_account_ids[index].account_id"
+              :state="isNotEmpty(item.account_id)"
               label="Resource - Account IDs"
               required
               type="text"/>
@@ -76,8 +76,8 @@
             </b-input-group-prepend>
             <b-form-input
               id="resource_statement_ids"
-              v-model="resource_statement_ids[index]"
-              :state="isNotEmpty(item)"
+              v-model="resource_statement_ids[index].statement_id"
+              :state="isNotEmpty(item.statement_id)"
               label="Resource - Statement IDs"
               required
               type="text"/>
@@ -236,12 +236,12 @@ export default {
   computed: {
     resource_account_ids: {
       get() {
-        if (this.$store.state.config.configuration.resource_account_ids.length === 0) {
-          const s = this.$store.state.config.configuration.resource_account_ids;
+        if (this.$store.state.config.configuration.resource_ids.account_ids.length === 0) {
+          const s = this.$store.state.config.configuration.resource_ids.account_ids;
           s.push('');
-          this.$store.state.config.configuration.resource_account_ids = s;
+          this.$store.state.config.configuration.resource_ids.account_ids = s;
         }
-        return this.$store.state.config.configuration.resource_account_ids;
+        return this.$store.state.config.configuration.resource_ids.account_ids;
       },
       set(value) {
         this.$store.commit('config/SET_RESOURCE_ACCOUNT_IDS', value);
@@ -249,12 +249,12 @@ export default {
     },
     resource_statement_ids: {
       get() {
-        if (this.$store.state.config.configuration.resource_statement_ids.length === 0) {
-          const s = this.$store.state.config.configuration.resource_statement_ids;
+        if (this.$store.state.config.configuration.resource_ids.statement_ids.length === 0) {
+          const s = this.$store.state.config.configuration.resource_ids.statement_ids;
           s.push('');
-          this.$store.state.config.configuration.resource_statement_ids = s;
+          this.$store.state.config.configuration.resource_ids.statement_ids = s;
         }
-        return this.$store.state.config.configuration.resource_statement_ids;
+        return this.$store.state.config.configuration.resource_ids.statement_ids;
       },
       set(value) {
         this.$store.commit('config/SET_RESOURCE_STATEMENT_IDS', value);
@@ -363,7 +363,7 @@ export default {
     },
     addResourceAccountIDField() {
       const s = this.resource_account_ids;
-      s.push('');
+      s.push({ account_id: '' });
       this.resource_account_ids = s;
     },
     removeResourceAccountIDField(index) {
@@ -373,7 +373,7 @@ export default {
     },
     addResourceStatementIDField() {
       const s = this.resource_statement_ids;
-      s.push('');
+      s.push({ statement_id: '' });
       this.resource_statement_ids = s;
     },
     removeResourceStatementIDField(index) {

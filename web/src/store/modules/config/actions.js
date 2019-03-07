@@ -107,8 +107,7 @@ export default {
         'x_fapi_financial_id',
         'issuer',
         'redirect_url',
-        'resource_account_ids',
-        'resource_statement_ids',
+        'resource_ids',
       ];
       const newConfig = _.pick(merged, validKeys);
       commit(types.SET_CONFIGURATION, newConfig);
@@ -171,10 +170,10 @@ export default {
     if (_.isEmpty(state.configuration.transport_public)) {
       errors.push('Transport Public Certificate (.pem) empty');
     }
-    if (_.isEmpty(state.configuration.resource_account_ids) || state.configuration.resource_account_ids[0] === '') {
+    if (_.isEmpty(state.configuration.resource_ids.account_ids)) {
       errors.push('Account IDs empty');
     }
-    if (_.isEmpty(state.configuration.resource_statement_ids) || state.configuration.resource_statement_ids[0] === '') {
+    if (_.isEmpty(state.configuration.resource_ids.statement_ids)) {
       errors.push('Statement IDs empty');
     }
 
