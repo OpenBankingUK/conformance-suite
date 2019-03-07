@@ -8,7 +8,7 @@ describe('Headless consent model bank test case run', () => {
   // Note: We can't use async/await with Cypress then() func, as it does not
   // return a Promise.
   // See: https://docs.cypress.io/guides/core-concepts/variables-and-aliases.html#Closures
-  it('Gets results', () => {
+  it('Gets a PASSED result', () => {
     cy.visit('https://localhost:8443');
     cy.get(discoveryTemplate).click();
     cy.get(nextButton).click();
@@ -24,5 +24,6 @@ describe('Headless consent model bank test case run', () => {
     cy.contains('a', 'Account and Transaction API Specification');
     cy.contains(nextButton, 'Run');
     cy.get(nextButton).click();
+    cy.contains('h6', 'PASSED', { timeout: 8000 });
   });
 });
