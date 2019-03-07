@@ -92,6 +92,7 @@ func MakeJourneyConfig(config *GlobalConfiguration) (JourneyConfig, error) {
 		xXFAPIFinancialID:       config.XFAPIFinancialID,
 		issuer:                  config.Issuer,
 		redirectURL:             config.RedirectURL,
+		resourceIDs:             config.ResourceIDs,
 	}, nil
 }
 
