@@ -32,7 +32,7 @@ func init() {
 // GetImplementedTestCases takes a discovery Model and determines the implemented endpoints.
 // Currently this function is experimental - meaning it contains fmt.Printlns as an aid to understanding
 // and conceptualisation
-func GetImplementedTestCases(disco *discovery.ModelDiscoveryItem, nameGenerator names.Generator, ctx *model.Context) ([]model.TestCase, map[string]string) {
+func GetImplementedTestCases(disco *discovery.ModelDiscoveryItem, nameGenerator names.Generator, ctx *model.Context, genConfig GeneratorConfig) ([]model.TestCase, map[string]string) {
 	originalEndpoints := make(map[string]string)
 	var testcases []model.TestCase
 	endpoints := disco.Endpoints
@@ -45,7 +45,7 @@ func GetImplementedTestCases(disco *discovery.ModelDiscoveryItem, nameGenerator 
 	for _, v := range endpoints {
 		var responseCodes []int
 		var goodResponseCode int
-		newpath := getResourceIds(disco, v.Path)
+		newpath := getResourceIds(disco, v.Path, genConfig)
 
 		for path, props := range doc.Spec().Paths.Paths {
 			for meth, op := range getOperations(&props) {
@@ -159,14 +159,28 @@ func getResponseCodes(op *spec.Operation) (result []int) {
 	return
 }
 
-// helper to replace path name resource ids specificed between brackets e.g. `{AccountId}`
+// helper to replace path name resource ids specified between brackets e.g. `{AccountId}`
 // with the values "ResourceIds" section of the discovery model
-func getResourceIds(item *discovery.ModelDiscoveryItem, path string) string {
+func getResourceIds(item *discovery.ModelDiscoveryItem, path string, genConfig GeneratorConfig) string {
 	newstr := path
 	for k, v := range item.ResourceIds {
 		key := strings.Join([]string{"{", k, "}"}, "")
 		newstr = strings.Replace(newstr, key, v, 1)
 	}
+
+	// Update the account ids in based on the discovery configuration
+	if len(genConfig.ResourceIDs.AccountIDs) > 0 {
+		// At the moment, according to requirements, we only need support the first ID.
+		v := genConfig.ResourceIDs.AccountIDs[0]
+		newstr = strings.Replace(newstr, "{AccountId}", v.AccountID, 1)
+	}
+	// Update the statement ids in based on the discovery configuration
+	if len(genConfig.ResourceIDs.StatementIDs) > 0 {
+		// At the moment, according to requirements, we only need support the first ID.
+		v := genConfig.ResourceIDs.StatementIDs[0]
+		newstr = strings.Replace(newstr, "{StatementId}", v.StatementID, 1)
+	}
+
 	return newstr
 }
 

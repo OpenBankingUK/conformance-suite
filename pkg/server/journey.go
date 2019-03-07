@@ -216,6 +216,7 @@ func (wj *journey) makeGeneratorConfig() generation.GeneratorConfig {
 		Scope:                 "openid accounts",
 		AuthorizationEndpoint: wj.config.authorizationEndpoint,
 		RedirectURL:           wj.config.redirectURL,
+		ResourceIDs:           wj.config.resourceIDs,
 	}
 }
 
@@ -240,6 +241,7 @@ type JourneyConfig struct {
 	xXFAPIFinancialID       string
 	issuer                  string
 	redirectURL             string
+	resourceIDs             model.ResourceIDs
 }
 
 func (wj *journey) SetConfig(config JourneyConfig) error {

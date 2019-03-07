@@ -22,6 +22,7 @@ type GeneratorConfig struct {
 	Scope                 string
 	AuthorizationEndpoint string
 	RedirectURL           string
+	ResourceIDs           model.ResourceIDs
 }
 
 // Generator - generates test cases from discovery model
@@ -66,7 +67,7 @@ func (g generator) GenerateSpecificationTestCases(log *logrus.Entry, config Gene
 
 	nameGenerator := names.NewSequentialPrefixedName("#t")
 	for _, item := range discovery.DiscoveryItems {
-		specTests, endpoints := generateSpecificationTestCases(log, item, nameGenerator, ctx)
+		specTests, endpoints := generateSpecificationTestCases(log, item, nameGenerator, ctx, config)
 		specTestCases = append(specTestCases, specTests)
 		for k, v := range endpoints {
 			originalEndpoints[k] = v
@@ -124,8 +125,8 @@ type TestCasesRun struct {
 	SpecConsentRequirements []model.SpecConsentRequirements `json:"specTokens"`
 }
 
-func generateSpecificationTestCases(log *logrus.Entry, item discovery.ModelDiscoveryItem, nameGenerator names.Generator, ctx *model.Context) (SpecificationTestCases, map[string]string) {
-	testcases, originalEndpoints := GetImplementedTestCases(&item, nameGenerator, ctx)
+func generateSpecificationTestCases(log *logrus.Entry, item discovery.ModelDiscoveryItem, nameGenerator names.Generator, ctx *model.Context, genConfig GeneratorConfig) (SpecificationTestCases, map[string]string) {
+	testcases, originalEndpoints := GetImplementedTestCases(&item, nameGenerator, ctx, genConfig)
 
 	for _, tc := range testcases {
 		log.Debug(tc.String())

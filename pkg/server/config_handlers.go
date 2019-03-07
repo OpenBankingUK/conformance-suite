@@ -20,26 +20,21 @@ type configHandlers struct {
 	journey Journey
 }
 
-type ResourceIDs struct {
-	AccountIDs []model.ResourceAccountID   `json:"account_ids" "validation:min=1"`
-	StatementIDs []model.ResourceStatementID `json:"statement_ids" "validation:min=1"`
-}
-
 type GlobalConfiguration struct {
-	SigningPrivate          string `json:"signing_private" validate:"not_empty"`
-	SigningPublic           string `json:"signing_public" validate:"not_empty"`
-	TransportPrivate        string `json:"transport_private" validate:"not_empty"`
-	TransportPublic         string `json:"transport_public" validate:"not_empty"`
-	ClientID                string `json:"client_id" validate:"not_empty"`
-	ClientSecret            string `json:"client_secret" validate:"not_empty"`
-	TokenEndpoint           string `json:"token_endpoint" validate:"valid_url"`
-	TokenEndpointAuthMethod string `json:"token_endpoint_auth_method" validate:"not_empty"`
-	AuthorizationEndpoint   string `json:"authorization_endpoint" validate:"valid_url"`
-	ResourceBaseURL         string `json:"resource_base_url" validate:"valid_url"`
-	XFAPIFinancialID        string `json:"x_fapi_financial_id" validate:"not_empty"`
-	Issuer                  string `json:"issuer" validate:"valid_url"`
-	RedirectURL             string `json:"redirect_url" validate:"valid_url"`
-	ResourceIDs 			ResourceIDs `json:"resource_ids"`
+	SigningPrivate          string            `json:"signing_private" validate:"not_empty"`
+	SigningPublic           string            `json:"signing_public" validate:"not_empty"`
+	TransportPrivate        string            `json:"transport_private" validate:"not_empty"`
+	TransportPublic         string            `json:"transport_public" validate:"not_empty"`
+	ClientID                string            `json:"client_id" validate:"not_empty"`
+	ClientSecret            string            `json:"client_secret" validate:"not_empty"`
+	TokenEndpoint           string            `json:"token_endpoint" validate:"valid_url"`
+	TokenEndpointAuthMethod string            `json:"token_endpoint_auth_method" validate:"not_empty"`
+	AuthorizationEndpoint   string            `json:"authorization_endpoint" validate:"valid_url"`
+	ResourceBaseURL         string            `json:"resource_base_url" validate:"valid_url"`
+	XFAPIFinancialID        string            `json:"x_fapi_financial_id" validate:"not_empty"`
+	Issuer                  string            `json:"issuer" validate:"valid_url"`
+	RedirectURL             string            `json:"redirect_url" validate:"valid_url"`
+	ResourceIDs             model.ResourceIDs `json:"resource_ids"`
 }
 
 func newConfigHandlers(journey Journey, logger *logrus.Entry) configHandlers {
@@ -65,8 +60,6 @@ func (h configHandlers) configGlobalPostHandler(c echo.Context) error {
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, NewErrorResponse(err))
 	}
-
-	fmt.Printf("%+v\n", *config)
 
 	return c.JSON(http.StatusCreated, config)
 }
