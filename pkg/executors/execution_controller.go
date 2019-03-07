@@ -162,7 +162,7 @@ func (r *TestCaseRunner) runConsentAcquisitionAsync(item TokenConsentIDItem, ctx
 	}
 
 	for k, v := range comp.GetTests() {
-		v.ProcessReplacementFields(ruleCtx)
+		v.ProcessReplacementFields(ruleCtx, true)
 		comp.Tests[k] = v
 	}
 

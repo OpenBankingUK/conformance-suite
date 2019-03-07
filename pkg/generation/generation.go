@@ -32,13 +32,14 @@ func init() {
 // GetImplementedTestCases takes a discovery Model and determines the implemented endpoints.
 // Currently this function is experimental - meaning it contains fmt.Printlns as an aid to understanding
 // and conceptualisation
-func GetImplementedTestCases(disco *discovery.ModelDiscoveryItem, nameGenerator names.Generator, ctx *model.Context, genConfig GeneratorConfig) ([]model.TestCase, map[string]string) {
+func GetImplementedTestCases(disco *discovery.ModelDiscoveryItem, nameGenerator names.Generator, ctx *model.Context, headlessTokenAcquisition bool, genConfig GeneratorConfig) ([]model.TestCase, map[string]string) {
+	logger := logrus.StandardLogger()
 	originalEndpoints := make(map[string]string)
 	var testcases []model.TestCase
 	endpoints := disco.Endpoints
 	doc, err := loadSpec(disco.APISpecification.SchemaVersion, false)
 	if err != nil {
-		logrus.StandardLogger().Errorln(err)
+		logger.Errorln(err)
 		return nil, nil
 	}
 
@@ -53,7 +54,7 @@ func GetImplementedTestCases(disco *discovery.ModelDiscoveryItem, nameGenerator 
 					responseCodes = getResponseCodes(op)
 					goodResponseCode, err = getGoodResponseCode(responseCodes)
 					if err != nil {
-						logrus.StandardLogger().WithFields(logrus.Fields{
+						logger.WithFields(logrus.Fields{
 							"testcase": op.Summary,
 							"method":   meth,
 							"endpoint": newpath,
@@ -75,7 +76,7 @@ func GetImplementedTestCases(disco *discovery.ModelDiscoveryItem, nameGenerator 
 						headers["authorization"] = "Bearer $client_access_token"
 						customTestCases, err := getTemplatedTestCases(newpath)
 						if err != nil {
-							logrus.StandardLogger().WithFields(logrus.Fields{
+							logger.WithFields(logrus.Fields{
 								"testcase": op.Summary,
 								"method":   meth,
 								"endpoint": newpath,
@@ -84,7 +85,8 @@ func GetImplementedTestCases(disco *discovery.ModelDiscoveryItem, nameGenerator 
 							return nil, nil
 						}
 						for i := range customTestCases {
-							customTestCases[i].ProcessReplacementFields(ctx)
+							showReplacementErrors := !headlessTokenAcquisition
+							customTestCases[i].ProcessReplacementFields(ctx, showReplacementErrors)
 						}
 						if customTestCases != nil {
 							testcases = append(testcases, customTestCases...)
@@ -96,7 +98,9 @@ func GetImplementedTestCases(disco *discovery.ModelDiscoveryItem, nameGenerator 
 					expect := model.Expect{StatusCode: goodResponseCode, SchemaValidation: true}
 					context := model.Context{"baseurl": disco.ResourceBaseURI}
 					testcase := model.TestCase{ID: nameGenerator.Generate(), Input: input, Context: context, Expect: expect, Name: op.Summary}
-					testcase.ProcessReplacementFields(ctx)
+					if !headlessTokenAcquisition {
+						testcase.ProcessReplacementFields(ctx, true)
+					}
 					originalEndpoints[testcase.ID] = v.Path // capture original spec paths
 					testcases = append(testcases, testcase)
 					break
@@ -129,12 +133,14 @@ func getTemplatedTestCases(path string) (tc []model.TestCase, err error) {
 }
 
 // GetCustomTestCases retrieves custom tests from the discovery file
-func GetCustomTestCases(discoReader *discovery.CustomTest, ctx *model.Context) SpecificationTestCases {
+func GetCustomTestCases(discoReader *discovery.CustomTest, ctx *model.Context, headlessTokenAcquisition bool) SpecificationTestCases {
 	spec := discovery.ModelAPISpecification{Name: discoReader.Name}
 	specTestCases := SpecificationTestCases{Specification: spec}
 	testcases := []model.TestCase{}
 	for _, testcase := range discoReader.Sequence {
-		testcase.ProcessReplacementFields(ctx)
+		if !headlessTokenAcquisition {
+			testcase.ProcessReplacementFields(ctx, true)
+		}
 		testcases = append(testcases, testcase)
 	}
 	specTestCases.TestCases = testcases

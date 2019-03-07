@@ -16,7 +16,8 @@ var consentChannelTimeout = 30
 // InitiationConsentAcquisition - get required tokens
 func InitiationConsentAcquisition(consentRequirements []model.SpecConsentRequirements, definition RunDefinition, ctx *model.Context) (TokenConsentIDs, error) {
 	consentIDChannel := make(chan TokenConsentIDItem, 100)
-	tokenParameters := getConsentTokensAndPermissions(consentRequirements)
+	logger := logrus.StandardLogger().WithField("module", "InitiationConsentAcquisition")
+	tokenParameters := getConsentTokensAndPermissions(consentRequirements, logger)
 
 	for tokenName, permissionList := range tokenParameters {
 		runner := NewConsentAcquisitionRunner(definition, NewBufferedDaemonController())
@@ -25,45 +26,45 @@ func InitiationConsentAcquisition(consentRequirements []model.SpecConsentRequire
 		consentInfo := TokenConsentIDItem{TokenName: tokenName, Permissions: permissionString}
 		err := runner.RunConsentAcquisition(consentInfo, ctx, tokenAcquisitionType, consentIDChannel)
 		if err != nil {
-			logrus.StandardLogger().WithError(err).Debug("InitiationConsentAcquisition")
+			logger.WithError(err).Debug("InitiationConsentAcquisition")
 		}
 	}
 
-	consentItems, err := waitForConsentIDs(consentIDChannel, tokenParameters)
+	consentItems, err := waitForConsentIDs(consentIDChannel, tokenParameters, logger)
 	for _, v := range consentItems {
-		logrus.StandardLogger().Debugf("Setting Token: %s, ConsentId: %s", v.TokenName, v.ConsentID)
+		logger.Debugf("Setting Token: %s, ConsentId: %s", v.TokenName, v.ConsentID)
 		ctx.PutString(v.TokenName, v.ConsentID)
 	}
 
 	return consentItems, err
 }
 
-func waitForConsentIDs(consentIDChannel chan TokenConsentIDItem, tokenParameters map[string][]string) (TokenConsentIDs, error) {
+func waitForConsentIDs(consentIDChannel chan TokenConsentIDItem, tokenParameters map[string][]string, logger *logrus.Entry) (TokenConsentIDs, error) {
 	consentItems := TokenConsentIDs{}
 	consentIDsRequired := len(tokenParameters)
 	consentIDsReceived := 0
-	logrus.StandardLogger().Debugf("waiting for consentids items ...")
+	logger.Debugf("waiting for consentids items ...")
 	for {
 		select {
 		case item := <-consentIDChannel:
-			logrus.StandardLogger().Debugf("received consent channel item item %#v", item)
+			logger.Debugf("received consent channel item item %#v", item)
 			consentIDsReceived++
 			consentItems = append(consentItems, item)
 			if consentIDsReceived == consentIDsRequired {
-				logrus.StandardLogger().Infof("Got %d required tokens - progressing..", consentIDsReceived)
+				logger.Infof("Got %d required tokens - progressing..", consentIDsReceived)
 				for _, v := range consentItems {
-					logrus.StandardLogger().Infof("token: %s, consentid: %s", v.TokenName, v.ConsentID)
+					logger.Infof("token: %s, consentid: %s", v.TokenName, v.ConsentID)
 				}
 				return consentItems, nil
 			}
 		case <-time.After(time.Duration(consentChannelTimeout) * time.Second):
-			logrus.StandardLogger().Warnf("consent channel timeout after %d seconds", consentChannelTimeout)
+			logger.Warnf("consent channel timeout after %d seconds", consentChannelTimeout)
 			return consentItems, errors.New("ConsentChannel Timeout")
 		}
 	}
 }
 
-func getConsentTokensAndPermissions(consentRequirements []model.SpecConsentRequirements) map[string][]string {
+func getConsentTokensAndPermissions(consentRequirements []model.SpecConsentRequirements, logger *logrus.Entry) map[string][]string {
 	tokenParameters := make(map[string][]string)
 	for _, v := range consentRequirements {
 		for _, namedPermission := range v.NamedPermissions {
@@ -77,7 +78,7 @@ func getConsentTokensAndPermissions(consentRequirements []model.SpecConsentRequi
 		}
 	}
 	for k, v := range tokenParameters {
-		logrus.StandardLogger().Debugf("Getting ConsentToken: %s: %s", k, buildPermissionString(v))
+		logger.Debugf("Getting ConsentToken: %s: %s", k, buildPermissionString(v))
 	}
 
 	return tokenParameters
@@ -109,10 +110,11 @@ type ExchangeParameters struct {
 
 // ExchangeCodeForAccessToken - runs a testcase to perform this operation
 func ExchangeCodeForAccessToken(tokenName, code, scope string, definition RunDefinition, ctx *model.Context) (accesstoken string, err error) {
-	logrus.StandardLogger().Debugf("Looking to exchange code %s, tokenName: %s", code, tokenName)
-	grantToken, err := exchangeCodeForToken(code, scope, ctx)
+	logger := logrus.StandardLogger().WithField("module", "ExchangeCodeForAccessToken")
+	logger.Debugf("Looking to exchange code %s, tokenName: %s", code, tokenName)
+	grantToken, err := exchangeCodeForToken(code, scope, ctx, logger)
 	if err != nil {
-		logrus.StandardLogger().Errorf("error attempting to exchange token %s", err.Error())
+		logger.Errorf("error attempting to exchange token %s", err.Error())
 	}
 	return grantToken.AccessToken, err
 }
@@ -125,7 +127,7 @@ type grantToken struct {
 	IDToken     string `json:"id_token,omitempty"`
 }
 
-func exchangeCodeForToken(code, scope string, ctx *model.Context) (grantToken, error) {
+func exchangeCodeForToken(code, scope string, ctx *model.Context, logger *logrus.Entry) (grantToken, error) {
 	basicAuth, err := ctx.GetString("basic_authentication")
 	if err != nil {
 		return grantToken{}, errors.New("cannot get basic authentication for code")
@@ -142,6 +144,7 @@ func exchangeCodeForToken(code, scope string, ctx *model.Context) (grantToken, e
 		scope = "accounts" // lets default to a scope of accounts
 	}
 
+	logger.Debugf("[%s] attempting POST %s", "exchangeCodeForToken", tokenEndpoint)
 	resp, err := resty.R().
 		SetHeader("content-type", "application/x-www-form-urlencoded").
 		SetHeader("accept", "*/*").
@@ -155,7 +158,7 @@ func exchangeCodeForToken(code, scope string, ctx *model.Context) (grantToken, e
 		Post(tokenEndpoint)
 
 	if err != nil {
-		logrus.StandardLogger().Debugf("error accessing exchange code url %s: %s ", tokenEndpoint, err.Error())
+		logger.Debugf("error accessing exchange code url %s: %s ", tokenEndpoint, err.Error())
 		return grantToken{}, err
 	}
 	if resp.StatusCode() != 200 {
@@ -163,6 +166,6 @@ func exchangeCodeForToken(code, scope string, ctx *model.Context) (grantToken, e
 	}
 	var t grantToken
 	err = json.Unmarshal(resp.Body(), &t)
-	logrus.StandardLogger().Debugf("exchangeCodeForToken  token: %#v", t)
+	logger.Debugf("exchangeCodeForToken  token: %#v", t)
 	return t, err
 }

@@ -45,6 +45,7 @@ type generator struct {
 // GenerateSpecificationTestCases - generates test cases
 func (g generator) GenerateSpecificationTestCases(log *logrus.Entry, config GeneratorConfig, discovery discovery.ModelDiscovery, ctx *model.Context) TestCasesRun {
 	log = log.WithField("module", "GenerateSpecificationTestCases")
+	headlessTokenAcquisition := discovery.TokenAcquisition == "headless"
 
 	specTestCases := []SpecificationTestCases{}
 	customTestCases := []SpecificationTestCases{}
@@ -53,21 +54,23 @@ func (g generator) GenerateSpecificationTestCases(log *logrus.Entry, config Gene
 	backupEndpoints := make(map[string]string)
 
 	for _, customTest := range discovery.CustomTests { // assume ordering is prerun i.e. customtest run before other tests
-		customTestCases = append(customTestCases, GetCustomTestCases(&customTest, ctx))
+		customTestCases = append(customTestCases, GetCustomTestCases(&customTest, ctx, headlessTokenAcquisition))
 		for k, v := range customTest.Replacements {
 			customReplacements[k] = v
 		}
 		for k, testcase := range customTest.Sequence {
-			ctx := model.Context{}
-			ctx.PutMap(customReplacements)
-			testcase.ProcessReplacementFields(&ctx)
+			if !headlessTokenAcquisition {
+				ctx := model.Context{}
+				ctx.PutMap(customReplacements)
+				testcase.ProcessReplacementFields(&ctx, true)
+			}
 			customTest.Sequence[k] = testcase
 		}
 	}
 
 	nameGenerator := names.NewSequentialPrefixedName("#t")
 	for _, item := range discovery.DiscoveryItems {
-		specTests, endpoints := generateSpecificationTestCases(log, item, nameGenerator, ctx, config)
+		specTests, endpoints := generateSpecificationTestCases(log, item, nameGenerator, ctx, headlessTokenAcquisition, config)
 		specTestCases = append(specTestCases, specTests)
 		for k, v := range endpoints {
 			originalEndpoints[k] = v
@@ -125,8 +128,8 @@ type TestCasesRun struct {
 	SpecConsentRequirements []model.SpecConsentRequirements `json:"specTokens"`
 }
 
-func generateSpecificationTestCases(log *logrus.Entry, item discovery.ModelDiscoveryItem, nameGenerator names.Generator, ctx *model.Context, genConfig GeneratorConfig) (SpecificationTestCases, map[string]string) {
-	testcases, originalEndpoints := GetImplementedTestCases(&item, nameGenerator, ctx, genConfig)
+func generateSpecificationTestCases(log *logrus.Entry, item discovery.ModelDiscoveryItem, nameGenerator names.Generator, ctx *model.Context, headlessTokenAcquisition bool, genConfig GeneratorConfig) (SpecificationTestCases, map[string]string) {
+	testcases, originalEndpoints := GetImplementedTestCases(&item, nameGenerator, ctx, headlessTokenAcquisition, genConfig)
 
 	for _, tc := range testcases {
 		log.Debug(tc.String())
