@@ -1,0 +1,72 @@
+{
+	"references": {
+		"OB3ACCAssertOnSuccess": {
+			"expect": {
+				"status-code": 200,
+				"matches": [{
+					"header": "x-fapi-interaction-id"
+				}, {
+					"custom": "areResourcesConsented"
+				}, {
+					"custom": "hasAllConsentedResources"
+				}, {
+					"custom": "hasAccountsPermissionsApplied"
+				}]
+			}
+		},
+		"OB3ACCAssertOn404": {
+			"expect": {
+				"status-code": 404
+			}
+		},
+		"OB3ACCAssertOn403": {
+			"expect": {
+				"status-code": 403
+			}
+		},
+		"OB3ACCAssertOn401": {
+			"expect": {
+				"status-code": 401
+			}
+		},
+		"OB3ACCAssertOn400": {
+			"expect": {
+				"status-code": 400,
+				"matches": [{
+					"header": "x-fapi-interaction-id"
+				}]
+			}
+		},
+		"basicAccountAccessConsent": {
+			"permissions": ["ReadAccountsBasic"]
+		},
+		"detailaccountAccessConsent": {
+			"permissions": ["ReadAccountDetail"]
+		},
+		"2paccountAccessConsent": {
+			"permissions": ["ReadAccountsBasic", "ReadAccountsDetail"]
+		},
+		"OB3ACCAssertNoToken": {
+			"expect": {
+				"status-code": 401,
+				"matches": [{
+						"header": "content-type",
+						"value": "application/json; charset=utf-8"
+					},
+					{
+						"JSON": "Code",
+						"Value": "UK.OBIE.Header.Missing"
+					},
+					{
+						"JSON": "Errors.0.ErrorCode",
+						"Value": "UK.OBIE.Header.Missing"
+					},
+					{
+						"JSON": "Errors.0.Path",
+						"Value": "Authorization"
+					}
+				]
+			}
+		}
+	}
+}

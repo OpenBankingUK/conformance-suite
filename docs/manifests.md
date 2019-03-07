@@ -38,7 +38,7 @@ TABLE A:
                         "accountId": "$consentedAccountId"
                     },
         "resource": "Account",
-        "asserts": ["assertNoToken"]
+        "asserts": ["OB3assertNoToken"]
     }
 
 ## Manifest Asserts
