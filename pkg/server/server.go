@@ -66,7 +66,7 @@ func registerRoutes(journey Journey, server *Server, logger *logrus.Entry, versi
 	// anything prefixed with api
 	api := server.Group("/api")
 
-	configHandlers := &configHandlers{logger: logger, journey: journey}
+	configHandlers := newConfigHandlers(journey, logger)
 	// endpoint to post global configuration
 	api.POST("/config/global", configHandlers.configGlobalPostHandler)
 
@@ -90,10 +90,13 @@ func registerRoutes(journey Journey, server *Server, logger *logrus.Entry, versi
 
 	// endpoints for validating and storing the token retrieved in `/conformancesuite/callback`
 	// `pkg/server/assets/main.js` calls into this endpoint.
-	redirectHandlers := &redirectHandlers{journey, logger.WithField("module", "redirectHandlers")}
+	redirectHandlers := newRedirectHandlers(journey, logger)
 	api.POST("/redirect/fragment/ok", redirectHandlers.postFragmentOKHandler)
 	api.POST("/redirect/query/ok", redirectHandlers.postQueryOKHandler)
 	api.POST("/redirect/error", redirectHandlers.postErrorHandler)
+
+	exportHandlers := newExportHandlers(journey, logger)
+	api.POST("/export", exportHandlers.postExport)
 }
 
 // skipper - ensures that all requests not prefixed with any string in `pathsToSkip` is skipped.

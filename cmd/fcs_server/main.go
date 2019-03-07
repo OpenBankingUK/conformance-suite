@@ -115,7 +115,7 @@ func initConfig() {
 	}
 	logger.SetLevel(level)
 
-	tracer.Silent = viper.GetBool("log_tracer")
+	tracer.Silent = !viper.GetBool("log_tracer")
 	resty.SetDebug(viper.GetBool("log_http_trace"))
 
 	printConfigurationFlags()
@@ -127,5 +127,6 @@ func printConfigurationFlags() {
 		"log_tracer":     viper.GetBool("log_tracer"),
 		"log_http_trace": viper.GetBool("log_http_trace"),
 		"port":           viper.GetInt("port"),
+		"tracer.Silent":  tracer.Silent,
 	}).Info("configuration flags")
 }

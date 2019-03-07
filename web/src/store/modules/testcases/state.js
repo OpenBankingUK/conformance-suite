@@ -2,6 +2,7 @@ export default {
   testCases: [],
   consentUrls: {},
   hasRunStarted: false,
+  test_cases_completed: false,
   ws: {
     connection: null,
     messages: [],

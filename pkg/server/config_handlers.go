@@ -35,8 +35,15 @@ type GlobalConfiguration struct {
 	RedirectURL             string `json:"redirect_url" validate:"valid_url"`
 }
 
+func newConfigHandlers(journey Journey, logger *logrus.Entry) configHandlers {
+	return configHandlers{
+		journey: journey,
+		logger:  logger.WithField("module", "configHandlers"),
+	}
+}
+
 // POST /api/config/global
-func (h *configHandlers) configGlobalPostHandler(c echo.Context) error {
+func (h configHandlers) configGlobalPostHandler(c echo.Context) error {
 	config := new(GlobalConfiguration)
 	if err := c.Bind(config); err != nil {
 		return c.JSON(http.StatusBadRequest, NewErrorResponse(errors.Wrap(err, "error with Bind")))

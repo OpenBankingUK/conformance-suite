@@ -10,20 +10,62 @@ type DaemonController struct {
 	mock.Mock
 }
 
-// Results provides a mock function with given fields:
-func (_m *DaemonController) Results() chan results.TestCase {
+// AddResult provides a mock function with given fields: result
+func (_m *DaemonController) AddResult(result results.TestCase) {
+	_m.Called(result)
+}
+
+// AllResults provides a mock function with given fields:
+func (_m *DaemonController) AllResults() []results.TestCase {
 	ret := _m.Called()
 
-	var r0 chan results.TestCase
-	if rf, ok := ret.Get(0).(func() chan results.TestCase); ok {
+	var r0 []results.TestCase
+	if rf, ok := ret.Get(0).(func() []results.TestCase); ok {
 		r0 = rf()
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(chan results.TestCase)
+			r0 = ret.Get(0).([]results.TestCase)
 		}
 	}
 
 	return r0
+}
+
+// IsCompleted provides a mock function with given fields:
+func (_m *DaemonController) IsCompleted() <-chan bool {
+	ret := _m.Called()
+
+	var r0 <-chan bool
+	if rf, ok := ret.Get(0).(func() <-chan bool); ok {
+		r0 = rf()
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(<-chan bool)
+		}
+	}
+
+	return r0
+}
+
+// Results provides a mock function with given fields:
+func (_m *DaemonController) Results() <-chan results.TestCase {
+	ret := _m.Called()
+
+	var r0 <-chan results.TestCase
+	if rf, ok := ret.Get(0).(func() <-chan results.TestCase); ok {
+		r0 = rf()
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(<-chan results.TestCase)
+		}
+	}
+
+	return r0
+}
+
+// SetCompleted provides a mock function with given fields:
+func (_m *DaemonController) SetCompleted() {
+	_m.Called()
 }
 
 // ShouldStop provides a mock function with given fields:

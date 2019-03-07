@@ -7,7 +7,9 @@
         </div>
         <div class="flex-fill panel-body">
           <TheErrorStatus/>
-          <div class="test-case border p-2 mt-2 mb-2">
+          <div
+            v-if="!headlessConsent"
+            class="test-case border p-2 mt-2 mb-2">
             <b-table
               :items="tokens_acquired"
               :fields="tokenTableFields"
@@ -18,8 +20,12 @@
               responsive
             >
               <template slot="table-caption">
-                <b>All Token Acquired</b>
-                {{ tokens_all_acquired }}
+                <div>
+                  <b>Test Cases Completed:</b> {{ test_cases_completed }}
+                </div>
+                <div>
+                  <b>All Token Acquired:</b> {{ tokens_all_acquired }}
+                </div>
               </template>
             </b-table>
           </div>
@@ -69,25 +75,26 @@ export default {
     ...mapGetters('status', [
       'hasErrors',
     ]),
+    ...mapGetters('config', [
+      'tokenAcquisition',
+    ]),
     ...mapState([
       'consentUrls',
       'testCases',
       'hasRunStarted',
     ]),
-    hasConsentUrls() {
-      return Object.keys(this.consentUrls).length > 0;
-      // Uncomment below and comment line above to test before backend consent URL changes finished:
-      // return true;
+    headlessConsent() {
+      return this.tokenAcquisition === 'headless';
     },
     pendingPsuConsent() {
+      if (this.headlessConsent) {
+        this.setShowLoading(false);
+        return false;
+      }
       return !this.tokens_all_acquired;
     },
-    areTestsCompleted() {
-      // TODO: Wait for backend to send completed message.
-      return false;
-    },
     computeNextLabel() {
-      if (!this.hasRunStarted || !this.areTestsCompleted) {
+      if (!this.hasRunStarted || !this.test_cases_completed) {
         if (this.pendingPsuConsent) {
           return 'Pending PSU Consent';
         }
@@ -113,6 +120,11 @@ export default {
     tokens_all_acquired: {
       get() {
         return this.$store.state.testcases.tokens.all_acquired;
+      },
+    },
+    test_cases_completed: {
+      get() {
+        return this.$store.state.testcases.test_cases_completed;
       },
     },
   },
@@ -157,7 +169,7 @@ export default {
       }
 
       // If tests have not completed, prevent navigation.
-      if (!this.areTestsCompleted) {
+      if (!this.test_cases_completed) {
         return next(false);
       }
 
