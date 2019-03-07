@@ -59,7 +59,10 @@ export default {
   [types.SET_ISSUER](state, value) {
     state.configuration.issuer = value;
   },
-  [types.SET_REDIRECT_URL](state, value) {
-    state.configuration.redirect_url = value;
+  [types.SET_RESOURCE_ACCOUNT_IDS](state, value) {
+    state.configuration.resource_account_ids = value;
+  },
+  [types.SET_RESOURCE_STATEMENT_IDS](state, value) {
+    state.configuration.resource_statement_ids = value;
   },
 };

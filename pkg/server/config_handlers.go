@@ -1,6 +1,7 @@
 package server
 
 import (
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
 	"fmt"
 	"net/http"
 	"net/url"
@@ -19,6 +20,11 @@ type configHandlers struct {
 	journey Journey
 }
 
+type ResourceIDs struct {
+	AccountIDs []model.ResourceAccountID   `json:"account_ids" "validation:min=1"`
+	StatementIDs []model.ResourceStatementID `json:"statement_ids" "validation:min=1"`
+}
+
 type GlobalConfiguration struct {
 	SigningPrivate          string `json:"signing_private" validate:"not_empty"`
 	SigningPublic           string `json:"signing_public" validate:"not_empty"`
@@ -33,6 +39,7 @@ type GlobalConfiguration struct {
 	XFAPIFinancialID        string `json:"x_fapi_financial_id" validate:"not_empty"`
 	Issuer                  string `json:"issuer" validate:"valid_url"`
 	RedirectURL             string `json:"redirect_url" validate:"valid_url"`
+	ResourceIDs 			ResourceIDs `json:"resource_ids"`
 }
 
 func newConfigHandlers(journey Journey, logger *logrus.Entry) configHandlers {
@@ -58,6 +65,8 @@ func (h configHandlers) configGlobalPostHandler(c echo.Context) error {
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, NewErrorResponse(err))
 	}
+
+	fmt.Printf("%+v\n", *config)
 
 	return c.JSON(http.StatusCreated, config)
 }

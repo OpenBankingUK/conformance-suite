@@ -10,7 +10,21 @@ export default {
    * @param setShowLoading function to handle setShowLoading(true/false) calls
    */
   async validateConfiguration(configuration, setShowLoading) {
-    const response = await api.post(CONFIG_URL, configuration, setShowLoading);
+    const cfg = configuration;
+    cfg.resource_ids = {
+      statement_ids: [
+        {
+          statement_id: '456',
+        },
+      ],
+      account_ids: [
+        {
+          account_id: '123',
+        },
+      ],
+    };
+    console.log(JSON.stringify(cfg));
+    const response = await api.post(CONFIG_URL, cfg, setShowLoading);
     const data = await response.json();
 
     // `fetch` does not throw an error even when status is not 200.

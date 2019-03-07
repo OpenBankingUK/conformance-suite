@@ -31,6 +31,67 @@
         />
 
         <b-form-group
+          id="resource_account_id_group"
+          label-for="resource_account_ids"
+          label="Account IDs">
+          <b-input-group
+            v-for="(item, index) in resource_account_ids"
+            :key="index"
+            class="mt-3">
+            <b-input-group-prepend
+              v-if="resource_account_ids.length > 1">
+              <b-button
+                variant="danger"
+                @click="removeResourceAccountIDField(index)">-</b-button>
+            </b-input-group-prepend>
+            <b-form-input
+              id="resource_account_ids"
+              v-model="resource_account_ids[index]"
+              :state="isNotEmpty(item)"
+              label="Resource - Account IDs"
+              required
+              type="text"/>
+            <b-input-group-append
+              v-if="index == resource_account_ids.length -1">
+              <b-button
+                variant="success"
+                @click="addResourceAccountIDField()">+</b-button>
+            </b-input-group-append>
+          </b-input-group>
+        </b-form-group>
+
+        <b-form-group
+          id="resource_statement_id_group"
+          label-for="resource_statement_ids"
+          label="Statement IDs">
+          <b-input-group
+            v-for="(item, index) in resource_statement_ids"
+            :key="index"
+            class="mt-3">
+            <b-input-group-prepend
+              v-if="resource_statement_ids.length > 1">
+              <b-button
+                variant="danger"
+                @click="removeResourceStatementIDField(index)">-</b-button>
+            </b-input-group-prepend>
+            <b-form-input
+              id="resource_statement_ids"
+              v-model="resource_statement_ids[index]"
+              :state="isNotEmpty(item)"
+              label="Resource - Statement IDs"
+              required
+              type="text"/>
+            <b-input-group-append
+              v-if="index == resource_statement_ids.length -1">
+              <b-button
+                variant="success"
+                @click="addResourceStatementIDField()">+</b-button>
+            </b-input-group-append>
+          </b-input-group>
+        </b-form-group>
+
+
+        <b-form-group
           id="client_id_group"
           label-for="client_id"
           label="Client ID">
@@ -173,6 +234,32 @@ export default {
     ConfigurationFormFile,
   },
   computed: {
+    resource_account_ids: {
+      get() {
+        if (this.$store.state.config.configuration.resource_account_ids.length === 0) {
+          const s = this.$store.state.config.configuration.resource_account_ids;
+          s.push('');
+          this.$store.state.config.configuration.resource_account_ids = s;
+        }
+        return this.$store.state.config.configuration.resource_account_ids;
+      },
+      set(value) {
+        this.$store.commit('config/SET_RESOURCE_ACCOUNT_IDS', value);
+      },
+    },
+    resource_statement_ids: {
+      get() {
+        if (this.$store.state.config.configuration.resource_statement_ids.length === 0) {
+          const s = this.$store.state.config.configuration.resource_statement_ids;
+          s.push('');
+          this.$store.state.config.configuration.resource_statement_ids = s;
+        }
+        return this.$store.state.config.configuration.resource_statement_ids;
+      },
+      set(value) {
+        this.$store.commit('config/SET_RESOURCE_STATEMENT_IDS', value);
+      },
+    },
     token_endpoint_auth_methods() {
       const authMethods = this.$store.state.config.token_endpoint_auth_methods;
       return authMethods.map(m => ({
@@ -273,6 +360,26 @@ export default {
       } catch (e) {
         return false;
       }
+    },
+    addResourceAccountIDField() {
+      const s = this.resource_account_ids;
+      s.push('');
+      this.resource_account_ids = s;
+    },
+    removeResourceAccountIDField(index) {
+      const s = this.resource_account_ids;
+      s.splice(index, 1);
+      this.resource_account_ids = s;
+    },
+    addResourceStatementIDField() {
+      const s = this.resource_statement_ids;
+      s.push('');
+      this.resource_statement_ids = s;
+    },
+    removeResourceStatementIDField(index) {
+      const s = this.resource_statement_ids;
+      s.splice(index, 1);
+      this.resource_statement_ids = s;
     },
   },
 };

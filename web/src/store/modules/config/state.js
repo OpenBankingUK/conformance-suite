@@ -23,6 +23,8 @@ export default {
     x_fapi_financial_id: '',
     issuer: '',
     redirect_url: 'https://0.0.0.0:8443/conformancesuite/callback',
+    resource_account_ids: [],
+    resource_statement_ids: [],
   },
 
   wizard: {
