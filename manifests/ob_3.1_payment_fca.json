@@ -7,6 +7,7 @@
             "detail" : "Checks that the resource succeeds posting a domestic payment consents with a minimal data set and checks additional schema.",
 			"parameters": {
                 "tokenRequestScope": "payments",
+                "paymentType": "domestic-payment-consents",
                 "body": {
                     "Data": {
                       "Initiation": {
@@ -41,6 +42,7 @@
             "detail" : "Checks that the resource correctly fails posting an invalid domestic payment consent.",
 			"parameters": {
                 "tokenRequestScope": "payments",
+                "paymentType": "domestic-payment-consents",
                 "ConsentId": "$consentId",
                 "body": {
                     "Data": {

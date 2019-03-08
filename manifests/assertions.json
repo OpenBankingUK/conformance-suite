@@ -131,7 +131,9 @@
 			"expect": {
 				"matches": [
                 {
-                    "JSON": "json.Data.ConsentId"
+                    "type": "ConsentId",
+                    "JSON": "json.Data.ConsentId",
+                    "detail" :"Expected a unique identification as assigned by the ASPSP to uniquely identify the consent resource."
                 }
             ]
 			}
