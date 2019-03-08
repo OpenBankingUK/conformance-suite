@@ -1,0 +1,22 @@
+{
+	"data": {
+        "minimalDomesticPaymentConsent": {
+            "Data": {
+              "Initiation": {
+                "InstructionIdentification": "Excaliber",
+                "EndToEndIdentification": "Excaliber",
+                "InstructedAmount": {
+                  "Amount": "10.00",
+                  "Currency": { "$ref": "#/globals/pis/Currency"}
+                },
+                "CreditorAccount": {
+                  "SchemeName": "IBAN",
+                  "Identification": "GB29PAPA20000390210002",
+                  "Name": "Dr Foo"
+                }
+              }
+            },
+            "Risk": {}
+          }
+	}
+}
