@@ -7,7 +7,7 @@
                 "EndToEndIdentification": "Excaliber",
                 "InstructedAmount": {
                   "Amount": "10.00",
-                  "Currency": { "$ref": "#/globals/pis/Currency"}
+                  "Currency": "GBP"
                 },
                 "CreditorAccount": {
                   "SchemeName": "IBAN",
