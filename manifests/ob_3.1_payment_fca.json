@@ -4,7 +4,7 @@
         {
 			"description": "Domestic Payment consents succeeds with minimal data set.",
             "id": "OB-301-DOP-194834",
-            "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937984109/Domestic+Payments+v3.1",
+            "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937984109/Domestic+Payments+v3.1#DomesticPaymentsv3.1-POST/domestic-payment-consents",
             "detail" : "Checks that the resource succeeds posting a domestic payment consents with a minimal data set.",
 			"parameters": {
                 "tokenRequestScope": "payments",
