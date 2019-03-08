@@ -126,6 +126,16 @@
 					}
 				]
 			}
+        },
+        "OB3GLOAAssertConsentId": {
+			"expect": {
+				"matches": [
+                {
+                    "JSON": "json.Data.ConsentId"
+                }
+            ]
+			}
 		}
+
 	}
 }

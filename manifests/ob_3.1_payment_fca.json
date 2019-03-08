@@ -29,12 +29,11 @@
             "uri": "domestic-payment-consents",
             "uriImplementation": "mandatory",
             "resource": "DomesticPayment",
-            "asserts": ["OB3DOPAssertOnSuccess"],
+            "asserts": ["OB3DOPAssertOnSuccess", "OB3GLOAAssertConsentId"],
+            "keepContext": ["OB3GLOAAssertConsentId"],
             "method":"post",
             "schemaCheck": true
         },
-
-
         {
 			"description": "Domestic Payment consents fails when given an invalid ConsentId",
             "id": "OB-301-DOP-311740",
