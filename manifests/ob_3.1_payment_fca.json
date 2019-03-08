@@ -1,5 +1,40 @@
 {
 	"scripts": [
 
+        {
+			"description": "Domestic Payment consents succeeds with minimal data set.",
+            "id": "OB-301-DOP-194834",
+            "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937984109/Domestic+Payments+v3.1",
+            "detail" : "Checks that the resource succeeds posting a domestic payment consents with a minimal data set.",
+			"parameters": {
+				"accountAccessConsent": "basicAccountAccessConsent",
+                "tokenRequestScope": "payments",
+                "body": {
+                    "Data": {
+                      "Initiation": {
+                        "InstructionIdentification": "Excaliber",
+                        "EndToEndIdentification": "Excaliber",
+                        "InstructedAmount": {
+                          "Amount": "10.00",
+                          "Currency": "GBP"
+                        },
+                        "CreditorAccount": {
+                          "SchemeName": "SortCodeAccountNumber",
+                          "Identification": "20202010981789",
+                          "Name": "Dr Foo"
+                        }
+                      }
+                    },
+                    "Risk": {}
+                  }     
+            },
+            "uri": "domestic-payment-consents",
+            "uriImplementation": "mandatory",
+            "resource": "DomesticPayment",
+            "asserts": ["OB3DOPAssertOnSuccess"],
+            "method":"post",
+            "schemaCheck": false
+        }
+
 	]
 }
