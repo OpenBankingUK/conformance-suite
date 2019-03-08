@@ -8,24 +8,7 @@
 			"parameters": {
                 "tokenRequestScope": "payments",
                 "paymentType": "domestic-payment-consents",
-                "body": {
-                    "Data": {
-                      "Initiation": {
-                        "InstructionIdentification": "Excaliber",
-                        "EndToEndIdentification": "Excaliber",
-                        "InstructedAmount": {
-                          "Amount": "10.00",
-                          "Currency": "GBP"
-                        },
-                        "CreditorAccount": {
-                          "SchemeName": "SortCodeAccountNumber",
-                          "Identification": "20202010981789",
-                          "Name": "Dr Foo"
-                        }
-                      }
-                    },
-                    "Risk": {}
-                  }     
+                "post" : "minimalDomesticPaymentConsent"    
             },
             "uri": "domestic-payment-consents",
             "uriImplementation": "mandatory",
@@ -42,26 +25,8 @@
             "detail" : "Checks that the resource correctly fails posting an invalid domestic payment consent.",
 			"parameters": {
                 "tokenRequestScope": "payments",
-                "paymentType": "domestic-payment-consents",
                 "ConsentId": "$consentId",
-                "body": {
-                    "Data": {
-                      "Initiation": {
-                        "InstructionIdentification": "Excaliber",
-                        "EndToEndIdentification": "Excaliber",
-                        "InstructedAmount": {
-                          "Amount": "10.00",
-                          "Currency": "GBP"
-                        },
-                        "CreditorAccount": {
-                          "SchemeName": "SortCodeAccountNumber",
-                          "Identification": "20202010981789",
-                          "Name": "Dr Foo"
-                        }
-                      }
-                    },
-                    "Risk": {}
-                  }     
+                "post" : "minimalDomesticPaymentConsent"    
             },
             "uri": "domestic-payment-consents/$consentId",
             "uriImplementation": "mandatory",
