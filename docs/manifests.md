@@ -28,6 +28,10 @@ TABLE A:
 
 ### Example Test in a Manifest
 
+
+
+
+
     {
         "name": "A Test that fails when no token is provided.",
         "id": "OB-301-ACC-019281",
@@ -51,3 +55,5 @@ Open Banking Implementation Entity (OBIE) has created a number of manifests to h
 
 * Open Banking Implementation Entity Discovery File.
 * Open Banking Implementation Manifests.
+
+**Each test is only pickup if a corresponding endpoint is detected in your Discovery.**

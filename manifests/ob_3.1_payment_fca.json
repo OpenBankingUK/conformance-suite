@@ -1,0 +1,22 @@
+{
+	"scripts": [
+        
+        {
+			"description": "Minimal data returned for a given account using the ReadAccountsBasic permission, status and headers.",
+            "id": "OB-301-ACC-120382",
+            "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937623627/Accounts+v3.1#Accountsv3.1-PermissionCodes",
+            "detail" : "Checks that the resource differs depending on the permissions (ReadAccountsBasic and ReadAccountsDetail) used to access the resource with additional checks on status and headers.",
+			"parameters": {
+				"accountAccessConsent": "basicAccountAccessConsent",
+				"tokenRequestScope": "accounts",
+                "accountId": "$consentedAccountId"         
+            },
+            "uri": "accounts/$accountId",
+			"resource": "Account",
+            "asserts": ["OB3ACCAssertOnSuccess"],
+            "method":"get",
+            "schemaCheck": true
+        }
+
+	]
+}
