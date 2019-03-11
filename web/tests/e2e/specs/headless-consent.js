@@ -25,5 +25,14 @@ describe('Headless consent model bank test case run', () => {
     cy.contains(nextButton, 'Run');
     cy.get(nextButton).click();
     cy.contains('h6', 'PASSED', { timeout: 8000 });
+    cy.contains(nextButton, 'Next Export', { timeout: 8000 });
+    cy.get(nextButton).click();
+    cy.get('#implementer').type('implementer_example');
+    cy.get('#authorised_by').type('authorised_by_example');
+    cy.get('#job_title').type('job_title_example');
+    cy.get('#has_agreed').click({ force: true });
+    cy.contains(nextButton, 'Export Conformance Report');
+    cy.get(nextButton).click();
+    cy.contains('h5', 'Exported Results');
   });
 });
