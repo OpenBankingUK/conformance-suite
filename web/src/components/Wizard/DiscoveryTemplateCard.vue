@@ -1,6 +1,6 @@
 <template>
   <b-card
-    :id="name.replace(/\./g,'-')"
+    :id="idSelector"
     :title="title"
     style="max-width: 20rem;"
     class="discovery-card mb-2"
@@ -40,6 +40,9 @@ export default {
     },
     name() {
       return this.discoveryModel.name;
+    },
+    idSelector() {
+      return this.name.replace(/\./g, '-');
     },
     text() {
       return this.discoveryModel.description;
