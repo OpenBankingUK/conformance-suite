@@ -1,7 +1,7 @@
 <template>
   <div class="test-case border p-2 mt-2">
     <b-table
-      :items="testCase.testCases"
+      :items="testGroup.testCases"
       :fields="tableFields"
       head-variant="dark"
       caption-top
@@ -22,6 +22,7 @@
         <b-badge
           :variant="row.value === 'PASSED' ? 'success' : (row.value === 'FAILED' ? 'danger' : (row.value === 'PENDING' ? 'info' : 'secondary'))"
           :class="row.value === 'FAILED' ? 'clickable' : ''"
+          :id="statusIdSelector(row)"
           tag="h6"
           @click.stop="toggleError(row)"
         >{{ row.value }}</b-badge>
@@ -48,7 +49,7 @@ export default {
     SpecificationHeader,
   },
   props: {
-    // Example value for `testCase`.
+    // Example value for `testGroup`.
     // {
     //   "apiSpecification": {
     //     "name": "Account and Transaction API Specification",
@@ -73,7 +74,7 @@ export default {
     //     }
     //   ]
     // }
-    testCase: {
+    testGroup: {
       type: Object,
       required: true,
     },
@@ -117,10 +118,13 @@ export default {
   },
   computed: {
     apiSpecification() {
-      return this.testCase.apiSpecification;
+      return this.testGroup.apiSpecification;
     },
   },
   methods: {
+    statusIdSelector(row) {
+      return row.item['@id'].replace('#', '');
+    },
     toggleError(row) {
       if (row.item.error) {
         this.$store.commit('testcases/TOGGLE_ROW_DETAILS', row.item);

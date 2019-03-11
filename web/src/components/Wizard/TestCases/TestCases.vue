@@ -2,9 +2,9 @@
   <div>
     <h5>{{ this.$options.name }}</h5>
     <TestCase
-      v-for="(testCase, index) in testCases"
+      v-for="(testGroup, index) in testCases"
       :key="index"
-      :test-case="testCase"
+      :test-group="testGroup"
     />
   </div>
 </template>

@@ -74,6 +74,7 @@ export default {
   computed: {
     ...mapGetters('status', [
       'hasErrors',
+      'showLoading',
     ]),
     ...mapGetters('config', [
       'tokenAcquisition',
@@ -88,7 +89,6 @@ export default {
     },
     pendingPsuConsent() {
       if (this.headlessConsent) {
-        this.setShowLoading(false);
         return false;
       }
       return !this.tokens_all_acquired;
@@ -97,6 +97,10 @@ export default {
       if (!this.hasRunStarted || !this.test_cases_completed) {
         if (this.pendingPsuConsent) {
           return 'Pending PSU Consent';
+        }
+        if (this.showLoading) {
+          this.setShowLoading(false);
+          return 'Pending';
         }
         return 'Run';
       }
