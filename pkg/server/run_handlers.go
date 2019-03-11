@@ -230,11 +230,13 @@ func newStoppedEvent() StoppedEvent {
 }
 
 type TestCaseResultWebSocketEvent struct {
+	Type string           `json:"type"`
 	Test results.TestCase `json:"test"`
 }
 
 func newTestCaseResultWebSocketEvent(testCaseResult results.TestCase) TestCaseResultWebSocketEvent {
 	return TestCaseResultWebSocketEvent{
+		Type: "ResultType_TestCaseResult",
 		Test: testCaseResult,
 	}
 }

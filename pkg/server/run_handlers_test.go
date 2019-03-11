@@ -61,6 +61,7 @@ func TestServerRunHandlersnewTestCaseResultWebSocketEvent(t *testing.T) {
 
 	expected := `
 {
+	"type": "ResultType_TestCaseResult",
     "test": {
         "id": "#t1025",
         "pass": true,
