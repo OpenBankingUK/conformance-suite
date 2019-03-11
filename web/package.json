@@ -7,7 +7,7 @@
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
     "build-watch": "vue-cli-service build-watch",
-    "test:e2e": "vue-cli-service test:e2e",
+    "test:e2e": "vue-cli-service test:e2e --url https://localhost:8443/",
     "test:unit": "vue-cli-service test:unit --detectOpenHandles",
     "test:watch": "vue-cli-service test:unit --watch",
     "test:unit:coverage": "vue-cli-service test:unit --coverage --runInBand --ci --detectOpenHandles",
