@@ -1,19 +1,20 @@
 package server
 
 import (
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/generation"
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
 	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/stretchr/testify/assert"
 	"io/ioutil"
 	"net/http"
 	"os"
 	"reflect"
 	"testing"
+
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/generation"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
+	"github.com/stretchr/testify/assert"
 
 	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/test"
 	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/version/mocks"
@@ -205,10 +206,7 @@ func TestServerConfigGlobalPostValid(t *testing.T) {
 	require.JSONEq(bodyExpected, bodyActual)
 
 	require.Equal(http.StatusCreated, code)
-	require.Equal(http.Header{
-		"Vary":         []string{"Accept-Encoding"},
-		"Content-Type": []string{"application/json; charset=UTF-8"},
-	}, headers)
+	require.Equal(expectedJsonHeaders, headers)
 }
 
 // TestServerConfigGlobalPostInvalid - tests /api/config/global invalid cases.
@@ -283,10 +281,7 @@ func TestServerConfigGlobalPostInvalid(t *testing.T) {
 			require.JSONEq(testCase.expectedBody, bodyActual)
 
 			require.Equal(testCase.expectedStatusCode, code)
-			require.Equal(http.Header{
-				"Vary":         []string{"Accept-Encoding"},
-				"Content-Type": []string{"application/json; charset=UTF-8"},
-			}, headers)
+			require.Equal(expectedJsonHeaders, headers)
 		})
 	}
 }

@@ -10,6 +10,7 @@ require (
 	github.com/go-openapi/strfmt v0.17.2 // indirect
 	github.com/go-openapi/swag v0.17.2 // indirect
 	github.com/go-openapi/validate v0.17.2 // indirect
+	github.com/go-ozzo/ozzo-validation v3.5.0+incompatible
 	github.com/go-playground/locales v0.12.1 // indirect
 	github.com/go-playground/universal-translator v0.16.0 // indirect
 	github.com/google/uuid v1.0.0

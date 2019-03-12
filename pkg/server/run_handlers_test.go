@@ -26,11 +26,7 @@ func TestServerRunStartPost(t *testing.T) {
 	}()
 	require.NotNil(server)
 
-	code, body, headers := request(
-		http.MethodPost,
-		"/api/run",
-		nil,
-		server)
+	code, body, headers := request(http.MethodPost, "/api/run", nil, server)
 
 	// do assertions
 	require.NotNil(body)
@@ -40,10 +36,7 @@ func TestServerRunStartPost(t *testing.T) {
 	require.JSONEq(expected, actual)
 
 	require.Equal(http.StatusBadRequest, code)
-	require.Equal(http.Header{
-		"Vary":         []string{"Accept-Encoding"},
-		"Content-Type": []string{"application/json; charset=UTF-8"},
-	}, headers)
+	require.Equal(expectedJsonHeaders, headers)
 }
 
 func TestServerRunHandlersnewTestCaseResultWebSocketEvent(t *testing.T) {

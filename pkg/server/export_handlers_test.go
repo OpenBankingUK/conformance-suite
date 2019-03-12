@@ -22,7 +22,12 @@ func TestServerPostExport(t *testing.T) {
 	}()
 	require.NotNil(server)
 
-	exportRequest := ExportRequest{}
+	exportRequest := ExportRequest{
+		Implementer:  "implementer",
+		AuthorisedBy: "authorised_by",
+		JobTitle:     "job_title",
+		HasAgreed:    true,
+	}
 	exportRequestJSON, err := json.MarshalIndent(exportRequest, ``, `  `)
 	require.NoError(err)
 	require.NotNil(exportRequestJSON)
@@ -49,8 +54,5 @@ func TestServerPostExport(t *testing.T) {
 	require.JSONEq(bodyExpected, bodyActual)
 
 	require.Equal(http.StatusOK, code)
-	require.Equal(http.Header{
-		"Vary":         []string{"Accept-Encoding"},
-		"Content-Type": []string{"application/json; charset=UTF-8"},
-	}, headers)
+	require.Equal(expectedJsonHeaders, headers)
 }

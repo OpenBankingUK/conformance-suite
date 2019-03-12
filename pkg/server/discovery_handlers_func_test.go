@@ -33,10 +33,7 @@ func TestServerDiscoveryModelPOSTValidateReturnsErrorsWhenInvalidJSON(t *testing
 	assert.NotNil(body)
 	assert.JSONEq(expected, body.String())
 	assert.Equal(http.StatusBadRequest, code)
-	assert.Equal(http.Header{
-		"Vary":         []string{"Accept-Encoding"},
-		"Content-Type": []string{"application/json; charset=UTF-8"},
-	}, headers)
+	assert.Equal(expectedJsonHeaders, headers)
 }
 
 // /api/discovery-model/validate - POST - When incomplete model returns validation failures messages
@@ -64,10 +61,7 @@ func TestServerDiscoveryModelPOSTValidateReturnsErrorsWhenIncomplete(t *testing.
 	assert.NotNil(body)
 	assert.JSONEq(expected, body.String())
 	assert.Equal(http.StatusBadRequest, code)
-	assert.Equal(http.Header{
-		"Vary":         []string{"Accept-Encoding"},
-		"Content-Type": []string{"application/json; charset=UTF-8"},
-	}, headers)
+	assert.Equal(expectedJsonHeaders, headers)
 }
 
 // TestServerDiscoveryModelPOSTResolvesValuesUsingOpenidConfigurationURIs - tests that a HTTP GET is called for each
@@ -135,10 +129,7 @@ func TestServerDiscoveryModelPOSTResolvesValuesUsingOpenidConfigurationURIs(t *t
 	require.NotNil(body)
 	require.JSONEq(expected, body.String())
 	require.Equal(http.StatusCreated, code)
-	require.Equal(http.Header{
-		"Vary":         []string{"Accept-Encoding"},
-		"Content-Type": []string{"application/json; charset=UTF-8"},
-	}, headers)
+	require.Equal(expectedJsonHeaders, headers)
 }
 
 // TestServerDiscoveryModelPOSTReturnsErrorsWhenItCannotResolveOpenidConfigurationURIs - tests that errors are
@@ -190,8 +181,5 @@ func TestServerDiscoveryModelPOSTReturnsErrorsWhenItCannotResolveOpenidConfigura
 	require.NotNil(body)
 	require.JSONEq(expected, body.String())
 	require.Equal(http.StatusBadRequest, code)
-	require.Equal(http.Header{
-		"Vary":         []string{"Accept-Encoding"},
-		"Content-Type": []string{"application/json; charset=UTF-8"},
-	}, headers)
+	require.Equal(expectedJsonHeaders, headers)
 }

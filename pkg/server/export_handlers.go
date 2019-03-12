@@ -3,8 +3,8 @@ package server
 import (
 	"net/http"
 
+	validation "github.com/go-ozzo/ozzo-validation"
 	"github.com/labstack/echo"
-	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/executors/events"
@@ -13,11 +13,20 @@ import (
 
 // ExportRequest - Request to `/api/export`.
 type ExportRequest struct {
-	Implementer         string `json:"implementer" validate:"not_empty"`
-	AuthorisedBy        string `json:"authorised_by" validate:"not_empty"`
-	JobTitle            string `json:"job_title" validate:"not_empty"`
-	HasAgreed           bool   `json:"has_agreed" validate:"not_empty"`
-	AddDigitalSignature bool   `json:"add_digital_signature" validate:"not_empty"`
+	Implementer         string `json:"implementer"`
+	AuthorisedBy        string `json:"authorised_by"`
+	JobTitle            string `json:"job_title"`
+	HasAgreed           bool   `json:"has_agreed"`
+	AddDigitalSignature bool   `json:"add_digital_signature"`
+}
+
+func (e ExportRequest) Validate() error {
+	return validation.ValidateStruct(&e,
+		validation.Field(&e.Implementer, validation.Required),
+		validation.Field(&e.AuthorisedBy, validation.Required),
+		validation.Field(&e.JobTitle, validation.Required),
+		validation.Field(&e.HasAgreed, validation.Required, validation.In(true)),
+	)
 }
 
 // ExportResponse - Response to `/api/export`.
@@ -45,7 +54,12 @@ func (h exportHandlers) postExport(c echo.Context) error {
 
 	exportRequest := new(ExportRequest)
 	if err := c.Bind(exportRequest); err != nil {
-		return c.JSON(http.StatusBadRequest, NewErrorResponse(errors.Wrap(err, "error with Bind")))
+		return c.JSON(http.StatusBadRequest, NewErrorResponse(err))
+	}
+
+	err := exportRequest.Validate()
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, NewErrorResponse(err))
 	}
 
 	logger.WithField("exportRequest", exportRequest).Info("Exporting ...")
