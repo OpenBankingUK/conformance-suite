@@ -37,7 +37,9 @@ Cypress.Commands.add('configFixture', (file) => {
 // Replace ENV variables in config template, with ENV variable values.
 //
 // There are several ways to set ENV variables, including:
-//   1. Create a web/cypress.env.json file, e.g.
+//   1. Create a web/cypress.env.json file, i.e.
+//      > cp web/cypress.sample.env.json web/cypress.env.json
+//      Edit to add config values. E.g.
 //   {
 //     "OZONE_CLIENT_ID": "example_client_id",
 //     "OZONE_CLIENT_SECRET": "example_client_secret",
@@ -45,8 +47,8 @@ Cypress.Commands.add('configFixture', (file) => {
 //     "OZONE_SIGNING_PUBLIC": "-----BEGIN CERTIFICATE-----\nexample\n-----END CERTIFICATE-----\n",
 //     "OZONE_TRANSPORT_PRIVATE": "-----BEGIN PRIVATE KEY-----\nexample\n-----END PRIVATE KEY-----\n",
 //     "OZONE_TRANSPORT_PUBLIC": "-----BEGIN CERTIFICATE-----\nexample\n-----END CERTIFICATE-----\n"
-//   }
-//   2. Or export as `CYPRESS_*`
+//     ...
+//   2. Or export ENV prefixed as `CYPRESS_*`
 //
 // For more options see: https://docs.cypress.io/guides/guides/environment-variables.html#Setting
 Cypress.Commands.add('replaceEnvVarConfig', (config) => {
