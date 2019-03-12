@@ -4,6 +4,10 @@ node_modules
 tests/e2e/videos/
 tests/e2e/screenshots/
 
+# test files
+consentUrl.txt
+redirectBackUrl.txt
+
 # local env files
 .env.local
 .env.*.local

@@ -1,4 +1,3 @@
-// https://docs.cypress.io/api/introduction/api.html
 
 describe('Headless consent model bank test case run', () => {
   const discoveryTemplateId = '#ob-v3-1-ozone-headless';

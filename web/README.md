@@ -34,7 +34,7 @@ yarn run lint
 yarn run test:unit
 ```
 
-### Run e2e integration tests - headless
+### Run e2e integration tests - headless consent
 ```
 cd ..
 make run
@@ -43,7 +43,22 @@ cd web
 cp cypress.sample.env.json cypress.env.json # first time only
 # Add TPP client values for ENV VAR in cypress.env.json
 
-yarn test:e2e:headless
+yarn test:e2e:headless-consent
+```
+
+At present we need to restart the server between e2e test runs due to websocket
+dropping out on repeats of test run.
+
+### Run e2e integration tests - PSU consent
+```
+cd ..
+make run
+
+cd web
+cp cypress.sample.env.json cypress.env.json # first time only
+# Add TPP client values for ENV VAR in cypress.env.json
+
+yarn test:e2e:psu-consent
 ```
 
 At present we need to restart the server between e2e test runs due to websocket

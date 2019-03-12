@@ -79,7 +79,7 @@ Cypress.Commands.add('nextButtonContains', (text, opts) => {
 });
 
 Cypress.Commands.add('selectDiscoveryTemplate', (templateSelectorId) => {
-  cy.visit('https://localhost:8443', { timeout: 8000 });
+  cy.visit('https://localhost:8443', { timeout: 16000 });
   cy.get(templateSelectorId).click();
   cy.clickNext();
 });
@@ -105,8 +105,8 @@ Cypress.Commands.add('runTestCases', () => {
   cy.nextButtonContains('Run');
   cy.clickNext();
 
-  cy.contains('h6', 'PASSED', { timeout: 8000 });
-  cy.nextButtonContains('Next Export', { timeout: 8000 });
+  cy.contains('h6', 'PASSED', { timeout: 16000 });
+  cy.nextButtonContains('Next Export', { timeout: 16000 });
 });
 
 Cypress.Commands.add('exportConformanceReport', () => {
