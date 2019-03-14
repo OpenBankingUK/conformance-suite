@@ -2,6 +2,8 @@ package discovery
 
 import (
 	"fmt"
+	"github.com/pkg/errors"
+	"net/url"
 	"strings"
 
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
@@ -9,14 +11,9 @@ import (
 	validation "gopkg.in/go-playground/validator.v9"
 )
 
-var (
-	// use a single instance of Validate, it caches struct info
-	validator = validation.New()
-)
-
 // Version returns the current version of the Discovery Model parser
 func Version() string {
-	version := "v0.2.1"
+	version := "v0.3.0"
 	return version
 }
 
@@ -38,14 +35,32 @@ const (
 	tokenAcquisitionErrMsgFormat = "TokenAcquisition '%s' not in list of supported methods"
 	requiredErrorFormat          = "Field '%s' is required"
 	emptyArrayErrorFormat        = "Field '%s' cannot be empty"
+	fileOrHttpsErrorFormat       = "Field '%s' must be 'file://' or 'https://'"
 )
 
 // Validate - validates a discovery model, returns true when valid,
 // returns false and array of ValidationFailure structs when not valid.
 func Validate(checker model.ConditionalityChecker, discovery *Model) (bool, []ValidationFailure, error) {
-	failures := []ValidationFailure{}
+	failures := make([]ValidationFailure, 0)
 
-	if err := validator.Struct(discovery); err != nil {
+	v := validation.New()
+	httpsValidate := func(f validation.FieldLevel) bool {
+		value := f.Field().String()
+
+		if value == "" {
+			return true
+		}
+
+		u, err := url.Parse(value)
+		return err == nil && (u.Scheme == "file" || u.Scheme == "https")
+	}
+	if err := v.RegisterValidation("fileorhttps", httpsValidate); err != nil {
+		if err != nil {
+			return false, nil, errors.Wrap(err, "register `fileorhttps` validation")
+		}
+	}
+
+	if err := v.Struct(discovery); err != nil {
 		failures = appendStructValidationErrors(err.(validation.ValidationErrors), failures)
 		return false, failures, nil
 	}
@@ -72,6 +87,8 @@ func appendStructValidationErrors(errs validation.ValidationErrors, failures []V
 			message = fmt.Sprintf(requiredErrorFormat, key)
 		case "gt":
 			message = fmt.Sprintf(emptyArrayErrorFormat, key)
+		case "fileorhttps":
+			message = fmt.Sprintf(fileOrHttpsErrorFormat, key)
 		}
 		failure := ValidationFailure{
 			Key:   key,

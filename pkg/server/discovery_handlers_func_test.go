@@ -76,28 +76,28 @@ func TestServerDiscoveryModelPOSTResolvesValuesUsingOpenidConfigurationURIs(t *t
 	defer mockedServer.Close()
 
 	expected := `
-    {
-      "token_endpoints": {
-        "schema_version=https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.0/dist/account-info-swagger.json":
-          "https://modelobank2018.o3bank.co.uk:4201/<token_mock>"
-      },
-      "token_endpoint_auth_methods": {
-        "schema_version=https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.0/dist/account-info-swagger.json":
-          ["client_secret_basic"]
-      },
-      "default_token_endpoint_auth_method": {
-        "schema_version=https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.0/dist/account-info-swagger.json":
-          "client_secret_basic"
-      },
-      "authorization_endpoints": {
-        "schema_version=https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.0/dist/account-info-swagger.json":
-          "https://modelobankauth2018.o3bank.co.uk:4101/<auth_mock>"
-			},
-      "issuers": {
-        "schema_version=https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.0/dist/account-info-swagger.json":
-          "https://modelobankauth2018.o3bank.co.uk:4101"
-			}
-    }`
+{
+	"token_endpoints": {
+		"schema_version=https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.0/dist/account-info-swagger.json": "https://modelobank2018.o3bank.co.uk:4201/<token_mock>",
+		"schema_version=https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.0/dist/payment-initiation-swagger.json": "https://modelobank2018.o3bank.co.uk:4201/<token_mock>"
+	},
+	"token_endpoint_auth_methods": {
+		"schema_version=https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.0/dist/account-info-swagger.json": ["client_secret_basic"],
+		"schema_version=https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.0/dist/payment-initiation-swagger.json": ["client_secret_basic"]
+	},
+	"default_token_endpoint_auth_method": {
+		"schema_version=https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.0/dist/account-info-swagger.json": "client_secret_basic",
+		"schema_version=https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.0/dist/payment-initiation-swagger.json": "client_secret_basic"
+	},
+	"authorization_endpoints": {
+		"schema_version=https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.0/dist/account-info-swagger.json": "https://modelobankauth2018.o3bank.co.uk:4101/<auth_mock>",
+		"schema_version=https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.0/dist/payment-initiation-swagger.json": "https://modelobankauth2018.o3bank.co.uk:4101/<auth_mock>"
+	},
+	"issuers": {
+		"schema_version=https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.0/dist/account-info-swagger.json": "https://modelobankauth2018.o3bank.co.uk:4101",
+		"schema_version=https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.0/dist/payment-initiation-swagger.json": "https://modelobankauth2018.o3bank.co.uk:4101"
+	}
+}`
 
 	// modify `ob-v3.0-ozone.json` to make it point to mockedServerURL
 	discoveryJSON, err := ioutil.ReadFile("../discovery/templates/ob-v3.1-ozone.json")
@@ -146,10 +146,14 @@ func TestServerDiscoveryModelPOSTReturnsErrorsWhenItCannotResolveOpenidConfigura
         {
 			"key": "DiscoveryModel.DiscoveryItems[0].OpenidConfigurationURI",
 			"error": "failed to GET OpenID config: %s : HTTP response status: 500"
+        },
+		{
+			"key": "DiscoveryModel.DiscoveryItems[1].OpenidConfigurationURI",
+			"error": "failed to GET OpenID config: %s : HTTP response status: 500"
         }
     ]
 }
-	`, mockedBadServerURL)
+	`, mockedBadServerURL, mockedBadServerURL)
 
 	// modify `ob-v3.0-ozone.json` to make it point to mockedServerURL
 	discoveryJSON, err := ioutil.ReadFile("../discovery/templates/ob-v3.1-ozone.json")

@@ -1,4 +1,4 @@
-# Discovery Specification - v0.2.1
+# Discovery Specification - v0.3.0
 
 **Warning**: The Discovery Specification is in alpha and is subject to change without notice.
 
@@ -38,7 +38,7 @@ Name             | Occurrence | Path | Description
 discoveryModel   | 1..1       | discoveryModel |
 name             | 1..1       | discoveryModel.name | Name of the model, e.g. "ob-v3.0-ozone".
 description      | 1..1       | discoveryModel.description | Description of the model, e.g. "An Open Banking UK discovery template for v3.0 of Accounts and Payments with pre-populated model Bank (Ozone) data."
-discoveryVersion | 1..1       | discoveryModel.discoveryVersion | Version of the discovery model format, e.g. "v0.2.1"
+discoveryVersion | 1..1       | discoveryModel.discoveryVersion | Version of the discovery model format, e.g. "v0.3.0"
 tokenAcquisition | 1..1       | discoveryModel.tokenAcquisition | Define how access tokens will be acquired, e.g. "headless", "psu", "store"
 discoveryItems   | 1..n       | discoveryModel.discoveryItems.* | List of items. Each item contains information related to a particular specification version.
 apiSpecification | 1..1       | discoveryModel.discoveryItems.*.apiSpecification | Details of API specification
@@ -46,6 +46,7 @@ name             | 1..1       | discoveryModel.discoveryItems.*.apiSpecification
 url              | 1..1       | discoveryModel.discoveryItems.*.apiSpecification.url | URI identifier of the specification, i.e. link to specification document
 version          | 1..1       | discoveryModel.discoveryItems.*.apiSpecification.version | API version number that appears in API paths, e.g. "v3.0"
 schemaVersion    | 1..1       | discoveryModel.discoveryItems.*.apiSpecification.schemaVersion | URI identifier of the Swagger/OpenAPI specification file patch version
+manifest         | 1..1       | discoveryModel.discoveryItems.*.apiSpecification.manifest | Path to manifest file for custom tests. Can be `https://` or `file://`.
 openidConfigurationUri | 1..1 | discoveryModel.discoveryItems.*.openidConfigurationUri | URI of the openid configuration well-known endpoint
 resourceBaseUri  | 1..1       | discoveryModel.discoveryItems.*.resourceBaseUri | Base of resource URI, i.e. the part before "/open-banking/v3.0".
 endpoints        | 1..n       | discoveryModel.discoveryItems.*.endpoints | List of endpoint and methods that have been implemented.
@@ -89,19 +90,23 @@ The discovery model records specification details in an unambiguous way.
 The `apiSpecification` property names `name`, `url`, `version`, and `schemaVersion` are from the schema.org
 [APIReference schema](https://schema.org/APIReference)
 
+The `manifest` property is proprietary and contains a reference to a manifest file for custom tests. This location can
+be a `https://` endpoint or a relative location on the local filesystem defined using the `file://` scheme.
+
 Non-normative example
 
 ```json
 {
   "discoveryModel": {
-    "discoveryVersion": "v0.2.1",
+    "discoveryVersion": "v0.3.0",
     "discoveryItems": [
       {
         "apiSpecification": {
           "name": "Account and Transaction API Specification",
           "url": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/642090641/Account+and+Transaction+API+Specification+-+v3.0",
           "version": "v3.0",
-          "schemaVersion": "https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.0.0/dist/account-info-swagger.json"
+          "schemaVersion": "https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.0.0/dist/account-info-swagger.json",
+          "manifest": "file://../pkg/discovery/templates/manifests/ob_3.1_accounts_fca.json"
         },
         "openidConfigurationUri": "https://as.aspsp.ob.forgerock.financial/oauth2/.well-known/openid-configuration",
         "resourceBaseUri": "https://rs.aspsp.ob.forgerock.financial:443/",
