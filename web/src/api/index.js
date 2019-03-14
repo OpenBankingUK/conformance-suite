@@ -1,4 +1,5 @@
 import config from './config';
+import consentCallback from './consentCallback';
 import discovery from './discovery';
 import results from './results';
 import testcases from './testcases';
@@ -7,10 +8,13 @@ import apiUtil from './apiUtil';
 const EXPORT_URL = '/api/export';
 
 export default {
+  ...apiUtil,
   ...config,
+  ...consentCallback,
   ...discovery,
   ...results,
   ...testcases,
+
   /**
    * Call GET /api/export
    */

@@ -10,6 +10,10 @@
           <div
             v-if="!headlessConsent"
             class="test-case border p-2 mt-2 mb-2">
+            <span
+              v-if="wsConnected"
+              id="ws-connected"
+            />
             <b-table
               :items="tokens_acquired"
               :fields="tokenTableFields"
@@ -78,6 +82,9 @@ export default {
     ]),
     ...mapGetters('config', [
       'tokenAcquisition',
+    ]),
+    ...mapGetters('testcases', [
+      'wsConnected',
     ]),
     ...mapState([
       'consentUrls',
