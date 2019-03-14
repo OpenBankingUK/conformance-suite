@@ -323,6 +323,14 @@
           }
         ]
       }],
-    "customTests": []
+    "customTests": [
+      {
+        "name": "",
+        "description": "",
+        "replacementParameters": {
+          "permission_payload": "{\"Data\": { \"Permissions\": [ \"ReadAccountsBasic\", \"ReadAccountsDetail\", \"ReadBalances\", \"ReadBeneficiariesBasic\", \"ReadBeneficiariesDetail\", \"ReadDirectDebits\", \"ReadTransactionsBasic\", \"ReadTransactionsCredits\", \"ReadTransactionsDebits\", \"ReadTransactionsDetail\", \"ReadProducts\", \"ReadStandingOrdersDetail\"], \"TransactionFromDateTime\": \"2016-01-01T10:40:00+02:00\", \"TransactionToDateTime\": \"2025-12-31T10:40:00+02:00\" },  \"Risk\": {} }"
+        }
+      }
+    ]
   }
 }
