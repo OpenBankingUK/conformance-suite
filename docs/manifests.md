@@ -105,6 +105,8 @@ _In the following example `assertion-ref` is the reference of the assertion._
 
 ## Custom Data
 
+** WIP ** 
+
 Custom data can be defined, which can then be consumed by test cases. This data is stored in a JSON file name `data.json`.
 The items are stored as referencable JSON objects similar to that of the asserts - this means we would start off with the same boilerplate
 as assertions, seen previously.
@@ -112,9 +114,7 @@ as assertions, seen previously.
 The schema for data items is currently "free form" and specific to each test. With this in mind,
 it would be useful to examine any associated notes for the each test.
 
-** WIP **
-
-## Manifests
+## Supplementary Manifests
 
 Open Banking Implementation Entity (OBIE) has created a number of manifests to help Implementers (Account Providers, Third Party Providers, Vendors and Technical Service Providers) test or provide evidence you have implemented each part of the OBIE Standard correctly. If required these manifests should be used or referenced in your discovery file. 
 
