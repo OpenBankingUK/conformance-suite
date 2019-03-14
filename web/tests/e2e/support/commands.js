@@ -68,14 +68,14 @@ Cypress.Commands.add('replaceEnvVarConfig', (config) => {
   return config;
 });
 
-const nextButton = '#next';
+const nextButtonId = '#next';
 
 Cypress.Commands.add('clickNext', () => {
-  cy.get(nextButton).click();
+  cy.get(nextButtonId).click();
 });
 
 Cypress.Commands.add('nextButtonContains', (text, opts) => {
-  cy.contains(nextButton, text, opts);
+  cy.contains(nextButtonId, text, opts);
 });
 
 Cypress.Commands.add('selectDiscoveryTemplate', (templateSelectorId) => {
