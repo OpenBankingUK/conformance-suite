@@ -17,33 +17,41 @@ This document is a specification (alpha) for describing a Manifest as a JSON doc
 
 TABLE A:
 
-| Name        | Occurrence | Description                                             | Type             | Value(s)    |
-|-------------|------------|---------------------------------------------------------|------------------|-------------|
-| id          | 1..1       | A unique identifier used to identify a test.            | UUID             |             |
-| description | 1..1       | A short description describing the and expected result. | String (max 256) |             |
-| reference   | 0..1       | A URI to identify regulatory or specification.          | String (max 256) |             |
-| parameters  | 1..1       |                                                         | json             | see example |
-| resource    | 1..1       | A resource to test.                                     | String           |             |
-| asserts     | 1..1       | List of linked asserts.                                 | List             |             |
+| Name              | Occurrence | Description                                             | Type             | Value(s)    |
+|-------------------|------------|---------------------------------------------------------|------------------|-------------|
+| id                | 1..1       | A unique identifier used to identify a test.            | UUID             |             |
+| description       | 1..1       | A short description describing the and expected result. | String (max 256) |             |
+| refURI            | 0..1       | A URI to identify regulatory or specification.          | String (max 256) |             |
+| detail            | 0..1       | Long description describing the and expected result     | String (max 256) |             |
+| parameters        | 1..1       |                                                         | json             | see example |
+| uri               | 1..1       | A resource to test.                                     | String           |             |
+| asserts           | 1..1       | List of linked asserts.                                 | List             |             |
+| uriImplementation | 1..1       |                                                         |                  |             |
+| resource          | 1..1       |                                                         |                  |             |
+| keepContext       | 1..1       |                                                         |                  |             |
+| method            | 1..1       |                                                         |                  |             |
+| schemaCheck       | 1..1       |                                                         |                  |             |
 
 ### Example Test in a Manifest
 
-
-
-
-
-    {
-        "name": "A Test that fails when no token is provided.",
-        "id": "OB-301-ACC-019281",
-        "parameters": {
-                        "accountAccessConsent": "basicAccountAccessConsent",
-                        "tokenRequestScope": "accounts",
-                        "consentedAccounts": "$consentedAccountIds",
-                        "accountId": "$consentedAccountId"
-                    },
-        "resource": "Account",
-        "asserts": ["OB3assertNoToken"]
-    }
+        {
+			"description": "Domestic Payment consents succeeds with minimal data set with additional schema checks.",
+            "id": "OB-301-DOP-206111",
+            "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937984109/Domestic+Payments+v3.1#DomesticPaymentsv3.1-POST/domestic-payment-consents",
+            "detail" : "Checks that the resource succeeds posting a domestic payment consents with a minimal data set and checks additional schema.",
+			"parameters": {
+                "tokenRequestScope": "payments",
+                "paymentType": "domestic-payment-consents",
+                "post" : "minimalDomesticPaymentConsent"    
+            },
+            "uri": "domestic-payment-consents",
+            "uriImplementation": "mandatory",
+            "resource": "DomesticPayment",
+            "asserts": ["OB3DOPAssertOnSuccess", "OB3GLOAAssertConsentId"],
+            "keepContext": ["OB3GLOAAssertConsentId"],
+            "method":"post",
+            "schemaCheck": true
+        },
 
 ## Manifest Asserts
 
