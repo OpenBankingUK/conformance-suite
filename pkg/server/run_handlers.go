@@ -155,7 +155,7 @@ func (h runHandlers) processTestCasesCompleted(ws *websocket.Conn, logger *logru
 		"wsEvent": wsEvent,
 	}).Info("sending event")
 	if err := ws.WriteJSON(wsEvent); err != nil {
-		logger.WithError(err).Error("writing json to websocket")
+		logger.WithError(err).Error("[processTestCasesCompleted] writing json to websocket")
 		return err
 	}
 
@@ -174,7 +174,7 @@ func (h runHandlers) processTestCaseResult(ws *websocket.Conn, logger *logrus.En
 		"wsEvent": wsEvent,
 	}).Info("sending event")
 	if err := ws.WriteJSON(wsEvent); err != nil {
-		logger.WithError(err).Error("writing json to websocket")
+		logger.WithError(err).Error("[processTestCaseResult] writing json to websocket")
 		return err
 	}
 
@@ -193,7 +193,7 @@ func (h runHandlers) processAcquiredAccessTokenEvent(ws *websocket.Conn, logger 
 		"wsEvent": wsEvent,
 	}).Info("sending event")
 	if err := ws.WriteJSON(wsEvent); err != nil {
-		logger.WithError(err).Error("writing json to websocket")
+		logger.WithError(err).Error("[processAcquiredAccessTokenEvent] writing json to websocket")
 		return err
 	}
 
@@ -212,7 +212,7 @@ func (h runHandlers) processAcquiredAllAccessTokensEvent(ws *websocket.Conn, log
 		"wsEvent": wsEvent,
 	}).Info("sending event")
 	if err := ws.WriteJSON(wsEvent); err != nil {
-		logger.WithError(err).Error("writing json to websocket")
+		logger.WithError(err).Error("[processAcquiredAllAccessTokensEvent] writing json to websocket")
 		return err
 	}
 
@@ -230,11 +230,13 @@ func newStoppedEvent() StoppedEvent {
 }
 
 type TestCaseResultWebSocketEvent struct {
+	Type string           `json:"type"`
 	Test results.TestCase `json:"test"`
 }
 
 func newTestCaseResultWebSocketEvent(testCaseResult results.TestCase) TestCaseResultWebSocketEvent {
 	return TestCaseResultWebSocketEvent{
+		Type: "ResultType_TestCaseResult",
 		Test: testCaseResult,
 	}
 }

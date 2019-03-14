@@ -7,7 +7,9 @@
         </div>
         <div class="flex-fill panel-body">
           <TheErrorStatus/>
-          <div class="test-case border p-2 mt-2 mb-2">
+          <div
+            v-if="!headlessConsent"
+            class="test-case border p-2 mt-2 mb-2">
             <b-table
               :items="tokens_acquired"
               :fields="tokenTableFields"
@@ -72,24 +74,33 @@ export default {
   computed: {
     ...mapGetters('status', [
       'hasErrors',
+      'showLoading',
+    ]),
+    ...mapGetters('config', [
+      'tokenAcquisition',
     ]),
     ...mapState([
       'consentUrls',
       'testCases',
       'hasRunStarted',
     ]),
-    hasConsentUrls() {
-      return Object.keys(this.consentUrls).length > 0;
-      // Uncomment below and comment line above to test before backend consent URL changes finished:
-      // return true;
+    headlessConsent() {
+      return this.tokenAcquisition === 'headless';
     },
     pendingPsuConsent() {
+      if (this.headlessConsent) {
+        return false;
+      }
       return !this.tokens_all_acquired;
     },
     computeNextLabel() {
       if (!this.hasRunStarted || !this.test_cases_completed) {
         if (this.pendingPsuConsent) {
           return 'Pending PSU Consent';
+        }
+        if (this.showLoading) {
+          this.setShowLoading(false);
+          return 'Pending';
         }
         return 'Run';
       }

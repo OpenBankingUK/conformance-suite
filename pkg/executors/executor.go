@@ -42,6 +42,7 @@ func (e *Executor) SetCertificates(certificateSigning, certificationTransport au
 // ExecuteTestCase - makes this a generic executor
 func (e *Executor) ExecuteTestCase(r *resty.Request, t *model.TestCase, ctx *model.Context) (*resty.Response, results.Metrics, error) {
 	e.appMsg(fmt.Sprintf("Execute Testcase: %s: %s", t.ID, t.Name))
+	e.appMsg(fmt.Sprintf("attempting %s %s", r.Method, r.URL))
 	resp, err := r.Execute(r.Method, r.URL)
 	if err != nil {
 		if resp.StatusCode() == http.StatusFound { // catch status code 302 redirects and pass back as good response
