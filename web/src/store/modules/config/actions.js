@@ -150,6 +150,26 @@ export default {
     commit(types.SET_CONFIGURATION_TRANSPORT_PUBLIC, transportPublic);
     commit(types.SET_WIZARD_STEP, constants.WIZARD.STEP_THREE);
   },
+  addResourceAccountID({ commit }, accountID) {
+    commit(types.ADD_RESOURCE_ACCOUNT_ID, accountID);
+  },
+  removeResourceAccountID({ commit, state }, index) {
+    if (index < 0 || index > state.configuration.resource_ids.account_ids - 1) {
+      return;
+    }
+
+    commit(types.REMOVE_RESOURCE_ACCOUNT_ID, index);
+  },
+  addResourceStatementID({ commit }, statementID) {
+    commit(types.ADD_RESOURCE_STATEMENT_ID, statementID);
+  },
+  removeResourceStatementID({ commit, state }, index) {
+    if (index < 0 || index > state.configuration.resource_ids.statement_ids - 1) {
+      return;
+    }
+
+    commit(types.REMOVE_RESOURCE_STATEMENT_ID, index);
+  },
   /**
    * Step 3: Validate the configuration.
    * Route: `/wizard/configuration`.

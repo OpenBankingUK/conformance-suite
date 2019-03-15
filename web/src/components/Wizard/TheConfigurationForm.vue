@@ -49,8 +49,9 @@
               v-model="resource_account_ids[index].account_id"
               :state="isNotEmpty(item.account_id)"
               label="Resource - Account IDs"
-              required
-              type="text"/>
+              placeholder="At least one Account ID is required"
+              type="text"
+              required />
             <b-input-group-append
               v-if="index == resource_account_ids.length -1">
               <b-button
@@ -79,6 +80,7 @@
               v-model="resource_statement_ids[index].statement_id"
               :state="isNotEmpty(item.statement_id)"
               label="Resource - Statement IDs"
+              placeholder="At least one Statement ID is required"
               required
               type="text"/>
             <b-input-group-append
@@ -224,6 +226,7 @@
 </template>
 
 <script>
+import { mapActions } from 'vuex';
 import isEmpty from 'lodash/isEmpty';
 
 import ConfigurationFormFile from './ConfigurationFormFile.vue';
@@ -236,10 +239,10 @@ export default {
   computed: {
     resource_account_ids: {
       get() {
+        // Because the text fields in the UI are bound to this store, there should always be at least one
+        // Item in the list. If list is empty, add an empty item so that user can input.
         if (this.$store.state.config.configuration.resource_ids.account_ids.length === 0) {
-          const s = this.$store.state.config.configuration.resource_ids.account_ids;
-          s.push('');
-          this.$store.state.config.configuration.resource_ids.account_ids = s;
+          this.addResourceAccountIDField();
         }
         return this.$store.state.config.configuration.resource_ids.account_ids;
       },
@@ -248,11 +251,11 @@ export default {
       },
     },
     resource_statement_ids: {
+      // Because the text fields in the UI are bound to this store, there should always be at least one
+      // Item in the list. If list is empty, add an empty item so that user can input.
       get() {
         if (this.$store.state.config.configuration.resource_ids.statement_ids.length === 0) {
-          const s = this.$store.state.config.configuration.resource_ids.statement_ids;
-          s.push('');
-          this.$store.state.config.configuration.resource_ids.statement_ids = s;
+          this.addResourceStatementIDField();
         }
         return this.$store.state.config.configuration.resource_ids.statement_ids;
       },
@@ -351,6 +354,12 @@ export default {
     },
   },
   methods: {
+    ...mapActions('config', [
+      'addResourceAccountID',
+      'removeResourceAccountID',
+      'addResourceStatementID',
+      'removeResourceStatementID',
+    ]),
     isNotEmpty(value) {
       return !isEmpty(value);
     },
@@ -362,24 +371,22 @@ export default {
       }
     },
     addResourceAccountIDField() {
-      const s = this.resource_account_ids;
-      s.push({ account_id: '' });
-      this.resource_account_ids = s;
+      const item = {
+        account_id: '',
+      };
+      this.addResourceAccountID(item);
     },
     removeResourceAccountIDField(index) {
-      const s = this.resource_account_ids;
-      s.splice(index, 1);
-      this.resource_account_ids = s;
+      this.removeResourceAccountID(index);
     },
     addResourceStatementIDField() {
-      const s = this.resource_statement_ids;
-      s.push({ statement_id: '' });
-      this.resource_statement_ids = s;
+      const item = {
+        statement_id: '',
+      };
+      this.addResourceStatementID(item);
     },
     removeResourceStatementIDField(index) {
-      const s = this.resource_statement_ids;
-      s.splice(index, 1);
-      this.resource_statement_ids = s;
+      this.removeResourceStatementID(index);
     },
   },
 };

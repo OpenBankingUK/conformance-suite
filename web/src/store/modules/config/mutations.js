@@ -65,4 +65,16 @@ export default {
   [types.SET_RESOURCE_STATEMENT_IDS](state, value) {
     state.configuration.resource_ids.statement_ids = value;
   },
+  [types.ADD_RESOURCE_ACCOUNT_ID](state, value) {
+    state.configuration.resource_ids.account_ids.push(value);
+  },
+  [types.REMOVE_RESOURCE_ACCOUNT_ID](state, index) {
+    state.configuration.resource_ids.account_ids.splice(index, 1);
+  },
+  [types.ADD_RESOURCE_STATEMENT_ID](state, value) {
+    state.configuration.resource_ids.statement_ids.push(value);
+  },
+  [types.REMOVE_RESOURCE_STATEMENT_ID](state, index) {
+    state.configuration.resource_ids.statement_ids.splice(index, 1);
+  },
 };
