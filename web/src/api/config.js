@@ -10,7 +10,6 @@ export default {
    * @param setShowLoading function to handle setShowLoading(true/false) calls
    */
   async validateConfiguration(configuration, setShowLoading) {
-    console.log(JSON.stringify(configuration));
     const response = await api.post(CONFIG_URL, configuration, setShowLoading);
     const data = await response.json();
 
