@@ -56,7 +56,11 @@ describe('web/src/store/modules/config', () => {
         resource_base_url: '',
         x_fapi_financial_id: '',
         issuer: '',
-        redirect_url: 'https://0.0.0.0:8443/conformancesuite/callback',
+        redirect_url: 'https://127.0.0.1:8443/conformancesuite/callback',
+        resource_ids: {
+            account_ids: [{ account_id: '' }],
+            statement_ids: [{ statement_id: '' }],
+        },
       });
     });
 
@@ -112,7 +116,11 @@ describe('web/src/store/modules/config', () => {
         resource_base_url: '',
         x_fapi_financial_id: '',
         issuer: '',
-        redirect_url: 'https://0.0.0.0:8443/conformancesuite/callback',
+        redirect_url: 'https://127.0.0.1:8443/conformancesuite/callback',
+        resource_ids: {
+            account_ids: [{ account_id: '' }],
+            statement_ids: [{ statement_id: '' }],
+        },
       });
 
       store.commit(types.SET_TOKEN_ENDPOINT_AUTH_METHODS, ['tls_client_auth', 'client_secret_basic']);
@@ -130,7 +138,11 @@ describe('web/src/store/modules/config', () => {
         resource_base_url: '',
         x_fapi_financial_id: '',
         issuer: '',
-        redirect_url: 'https://0.0.0.0:8443/conformancesuite/callback',
+        redirect_url: 'https://127.0.0.1:8443/conformancesuite/callback',
+        resource_ids: {
+            account_ids: [{ account_id: '' }],
+            statement_ids: [{ statement_id: '' }],
+        },
       });
 
       store.commit(types.SET_CLIENT_SECRET, '2cfb31a3-5443-4e65-b2bc-ef8e00266a77');
@@ -147,7 +159,11 @@ describe('web/src/store/modules/config', () => {
         resource_base_url: '',
         x_fapi_financial_id: '',
         issuer: '',
-        redirect_url: 'https://0.0.0.0:8443/conformancesuite/callback',
+        redirect_url: 'https://127.0.0.1:8443/conformancesuite/callback',
+        resource_ids: {
+            account_ids: [{ account_id: '' }],
+            statement_ids: [{ statement_id: '' }],
+        },
       });
 
       store.commit(types.SET_TOKEN_ENDPOINT, 'https://modelobank2018.o3bank.co.uk:4201/token');
@@ -164,7 +180,11 @@ describe('web/src/store/modules/config', () => {
         resource_base_url: '',
         x_fapi_financial_id: '',
         issuer: '',
-        redirect_url: 'https://0.0.0.0:8443/conformancesuite/callback',
+        redirect_url: 'https://127.0.0.1:8443/conformancesuite/callback',
+        resource_ids: {
+            account_ids: [{ account_id: '' }],
+            statement_ids: [{ statement_id: '' }],
+        },
       });
 
       store.commit(types.SET_TOKEN_ENDPOINT_AUTH_METHOD, 'client_secret_basic');
@@ -184,7 +204,11 @@ describe('web/src/store/modules/config', () => {
         resource_base_url: '',
         x_fapi_financial_id: '',
         issuer: '',
-        redirect_url: 'https://0.0.0.0:8443/conformancesuite/callback',
+        redirect_url: 'https://127.0.0.1:8443/conformancesuite/callback',
+        resource_ids: {
+            account_ids: [{ account_id: '' }],
+            statement_ids: [{ statement_id: '' }],
+        },
       });
 
       store.commit(types.SET_RESOURCE_BASE_URL, 'https://modelobank2018.o3bank.co.uk:4501');
@@ -201,7 +225,11 @@ describe('web/src/store/modules/config', () => {
         resource_base_url: 'https://modelobank2018.o3bank.co.uk:4501',
         x_fapi_financial_id: '',
         issuer: '',
-        redirect_url: 'https://0.0.0.0:8443/conformancesuite/callback',
+        redirect_url: 'https://127.0.0.1:8443/conformancesuite/callback',
+        resource_ids: {
+            account_ids: [{ account_id: '' }],
+            statement_ids: [{ statement_id: '' }],
+        },
       });
 
       store.commit(types.SET_X_FAPI_FINANCIAL_ID, '0015800001041RHAAY');
@@ -218,7 +246,11 @@ describe('web/src/store/modules/config', () => {
         resource_base_url: 'https://modelobank2018.o3bank.co.uk:4501',
         x_fapi_financial_id: '0015800001041RHAAY',
         issuer: '',
-        redirect_url: 'https://0.0.0.0:8443/conformancesuite/callback',
+        redirect_url: 'https://127.0.0.1:8443/conformancesuite/callback',
+        resource_ids: {
+            account_ids: [{ account_id: '' }],
+            statement_ids: [{ statement_id: '' }],
+        },
       });
 
       store.commit(types.SET_ISSUER, 'https://modelobankauth2018.o3bank.co.uk:4101');
@@ -235,7 +267,11 @@ describe('web/src/store/modules/config', () => {
         resource_base_url: 'https://modelobank2018.o3bank.co.uk:4501',
         x_fapi_financial_id: '0015800001041RHAAY',
         issuer: 'https://modelobankauth2018.o3bank.co.uk:4101',
-        redirect_url: 'https://0.0.0.0:8443/conformancesuite/callback',
+        redirect_url: 'https://127.0.0.1:8443/conformancesuite/callback',
+        resource_ids: {
+            account_ids: [{ account_id: '' }],
+            statement_ids: [{ statement_id: '' }],
+        },
       });
     });
 
@@ -260,7 +296,11 @@ describe('web/src/store/modules/config', () => {
           resource_base_url: '',
           x_fapi_financial_id: '',
           issuer: '',
-          redirect_url: 'https://0.0.0.0:8443/conformancesuite/callback',
+          redirect_url: 'https://127.0.0.1:8443/conformancesuite/callback',
+          resource_ids: {
+              account_ids: [{ account_id: '' }],
+              statement_ids: [{ statement_id: '' }],
+          },
         });
 
         api.validateDiscoveryConfig.mockReturnValueOnce({
@@ -305,7 +345,11 @@ describe('web/src/store/modules/config', () => {
           resource_base_url: '',
           x_fapi_financial_id: '',
           issuer: 'https://modelobankauth2018.o3bank.co.uk:4101_1',
-          redirect_url: 'https://0.0.0.0:8443/conformancesuite/callback',
+          redirect_url: 'https://127.0.0.1:8443/conformancesuite/callback',
+          resource_ids: {
+              account_ids: [{ account_id: '' }],
+              statement_ids: [{ statement_id: '' }],
+          },
         });
       });
     });
