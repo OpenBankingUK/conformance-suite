@@ -190,10 +190,10 @@ export default {
     if (_.isEmpty(state.configuration.transport_public)) {
       errors.push('Transport Public Certificate (.pem) empty');
     }
-    if (_.isEmpty(state.configuration.resource_ids.account_ids)) {
+    if (_.isEmpty(state.configuration.resource_ids.account_ids) || state.configuration.resource_ids.account_ids[0].account_id.length === 0) {
       errors.push('Account IDs empty');
     }
-    if (_.isEmpty(state.configuration.resource_ids.statement_ids)) {
+    if (_.isEmpty(state.configuration.resource_ids.statement_ids) || state.configuration.resource_ids.statement_ids[0].statement_id.length === 0) {
       errors.push('Statement IDs empty');
     }
 
