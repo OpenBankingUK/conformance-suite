@@ -10,6 +10,10 @@
           <div
             v-if="!headlessConsent"
             class="test-case border p-2 mt-2 mb-2">
+            <span
+              v-if="wsConnected"
+              id="ws-connected"
+            />
             <b-table
               :items="tokens_acquired"
               :fields="tokenTableFields"
@@ -74,9 +78,13 @@ export default {
   computed: {
     ...mapGetters('status', [
       'hasErrors',
+      'showLoading',
     ]),
     ...mapGetters('config', [
       'tokenAcquisition',
+    ]),
+    ...mapGetters('testcases', [
+      'wsConnected',
     ]),
     ...mapState([
       'consentUrls',
@@ -88,7 +96,6 @@ export default {
     },
     pendingPsuConsent() {
       if (this.headlessConsent) {
-        this.setShowLoading(false);
         return false;
       }
       return !this.tokens_all_acquired;
@@ -97,6 +104,10 @@ export default {
       if (!this.hasRunStarted || !this.test_cases_completed) {
         if (this.pendingPsuConsent) {
           return 'Pending PSU Consent';
+        }
+        if (this.showLoading) {
+          this.setShowLoading(false);
+          return 'Pending';
         }
         return 'Run';
       }

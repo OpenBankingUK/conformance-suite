@@ -58,12 +58,13 @@ func testUnmarshalDiscoveryJSON(t *testing.T, discoveryJSON string) *Model {
 func discoveryStub(field string, value string) string {
 	name := "ob-v3.1-generic"
 	description := "An Open Banking UK generic discovery template for v3.1 of Accounts and Payments."
-	version := "v0.2.1"
+	version := "v0.3.0"
 	tokenAcquisition := "psu"
 	specName := "Account and Transaction API Specification"
 	specURL := "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937820271/Account+and+Transaction+API+Specification+-+v3.1"
 	specVersion := "v3.1"
 	schemaVersion := "https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.0/dist/account-info-swagger.json"
+	manifest := "https://www.example.com"
 	endpoints := `, "endpoints": [
 		{
 			"method": "POST",
@@ -88,6 +89,8 @@ func discoveryStub(field string, value string) string {
 		specName = value
 	case "schemaVersion":
 		schemaVersion = value
+	case "manifest":
+		manifest = value
 	case "tokenAcquisition":
 		tokenAcquisition = value
 	case "specURL":
@@ -95,16 +98,12 @@ func discoveryStub(field string, value string) string {
 	case "specVersion":
 		specVersion = value
 	case "name":
-		if value == "" {
-			name = ""
-		}
+		name = value
 	case "description":
-		if value == "" {
-			description = ""
-		}
+		description = value
 	}
 
-	apiSpecification := apiSpecificationStub(specName, specURL, specVersion, schemaVersion, field, value)
+	apiSpecification := apiSpecificationStub(specName, specURL, specVersion, schemaVersion, manifest, field, value)
 
 	discoveryItems := discoveryItemsStub(apiSpecification, endpoints, field, value)
 
@@ -120,12 +119,13 @@ func discoveryStub(field string, value string) string {
 	}`
 }
 
-func apiSpecificationStub(specName string, specURL string, specVersion string, schemaVersion string, field string, value string) string {
+func apiSpecificationStub(specName string, specURL string, specVersion string, schemaVersion string, manifest, field string, value string) string {
 	apiSpecification := `"apiSpecification": {
 			"name": "` + specName + `",
 			"url": "` + specURL + `",
 			"version": "` + specVersion + `",
-			"schemaVersion": "` + schemaVersion + `"
+			"schemaVersion": "` + schemaVersion + `",
+			"manifest":	"` + manifest + `"
 		},`
 	if field == "apiSpecification" {
 		if value == "" {
@@ -427,10 +427,66 @@ func TestValidate(t *testing.T) {
 			},
 		})
 	})
+
+	t.Run("Validation should pass when `manifest` is empty", func(t *testing.T) {
+		testValidateFailures(t, conditionalityCheckerMock{}, &invalidTest{
+			discoveryJSON: discoveryStub("manifest", ""),
+			failures: []ValidationFailure{
+				{
+					Key:   "DiscoveryModel.DiscoveryItems[0].Endpoints[0]",
+					Error: "Invalid endpoint Method='POST', Path='/account-access-consents'",
+				},
+				{
+					Key:   "DiscoveryModel.DiscoveryItems[0].Endpoints[1]",
+					Error: "Invalid endpoint Method='GET', Path='/accounts/{AccountId}/balances'",
+				},
+			},
+		})
+	})
+
+	t.Run("Validation should fail when `manifest` is a normal string, not URL", func(t *testing.T) {
+		testValidateFailures(t, conditionalityCheckerMock{}, &invalidTest{
+			discoveryJSON: discoveryStub("manifest", "some-string"),
+			failures: []ValidationFailure{
+				{
+					Key:   "DiscoveryModel.DiscoveryItems[0].APISpecification.Manifest",
+					Error: "Field 'DiscoveryModel.DiscoveryItems[0].APISpecification.Manifest' must be 'file://' or 'https://'",
+				},
+			},
+		})
+	})
+
+	t.Run("Validation should pass when `manifest` is a https URL", func(t *testing.T) {
+		testValidateFailures(t, conditionalityCheckerMock{}, &invalidTest{
+			discoveryJSON: discoveryStub("manifest", "https://www.example.com"),
+			failures: []ValidationFailure{
+				{
+					Key:   "DiscoveryModel.DiscoveryItems[0].Endpoints[0]",
+					Error: "Invalid endpoint Method='POST', Path='/account-access-consents'",
+				},
+				{
+					Key:   "DiscoveryModel.DiscoveryItems[0].Endpoints[1]",
+					Error: "Invalid endpoint Method='GET', Path='/accounts/{AccountId}/balances'",
+				},
+			},
+		})
+	})
+
+	t.Run("Validation should fail when `manifest` is a http URL instead of https", func(t *testing.T) {
+		testValidateFailures(t, conditionalityCheckerMock{}, &invalidTest{
+			discoveryJSON: discoveryStub("manifest", "http://www.example.com"),
+			failures: []ValidationFailure{
+				{
+					Key:   "DiscoveryModel.DiscoveryItems[0].APISpecification.Manifest",
+					Error: "Field 'DiscoveryModel.DiscoveryItems[0].APISpecification.Manifest' must be 'file://' or 'https://'",
+				},
+			},
+		})
+	})
 }
 
 func TestDiscovery_Version(t *testing.T) {
 	assert := assert.New(t)
 
-	assert.Equal(Version(), "v0.2.1")
+	assert.Equal(Version(), "v0.3.0")
 }

@@ -3,38 +3,23 @@ package server
 // Note: Do not run the server tests in parallel.
 
 import (
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/client"
-	"bytes"
 	"context"
 	"crypto/tls"
-	"flag"
 	"fmt"
-	"io"
 	"io/ioutil"
 	"net"
 	"net/http"
-	"net/http/httptest"
-	"os"
 	"strings"
 	"testing"
 	"time"
 
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/client"
+
 	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/test"
 	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/version/mocks"
 	"github.com/labstack/echo"
-	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/require"
 )
-
-func TestMain(m *testing.M) {
-	// call flag.Parse() here if TestMain uses flags
-	flag.Parse()
-
-	// silence log output when running tests...
-	logrus.SetLevel(logrus.WarnLevel)
-
-	os.Exit(m.Run())
-}
 
 func TestServer(t *testing.T) {
 	server := NewServer(testJourney(), nullLogger(), &mocks.Version{})
@@ -166,22 +151,4 @@ func TestServerHTTPS(t *testing.T) {
 	require.NoError(err)
 
 	require.Equal(string(bodyExpected), string(bodyActual))
-}
-
-// Generic util function for making test requests.
-func request(method, path string, body io.Reader, server *Server) (int, *bytes.Buffer, http.Header) {
-	req := httptest.NewRequest(method, path, body)
-	rec := httptest.NewRecorder()
-
-	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
-	server.ServeHTTP(rec, req)
-
-	return rec.Code, rec.Body, rec.Header()
-}
-
-// nullLogger - create a logger that discards output.
-func nullLogger() *logrus.Entry {
-	logger := logrus.New()
-	logger.Out = ioutil.Discard
-	return logger.WithField("app", "test")
 }

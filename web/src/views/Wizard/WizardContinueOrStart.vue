@@ -52,7 +52,7 @@ import { mapActions, mapGetters } from 'vuex';
 import DiscoveryTemplateCard from '@/components/Wizard/DiscoveryTemplateCard.vue';
 import TheErrorStatus from '@/components/TheErrorStatus.vue';
 
-import api from '../../api/apiUtil';
+import api from '../../api';
 
 export default {
   name: 'WizardContinueOrStart',

@@ -33,6 +33,8 @@
         <template v-for="(url, index) in data.value">
           <a
             :key="url"
+            :title="url"
+            class="psu-consent-link"
             href="#"
             @click="openPopup(url, 'PSU Consent', 1074, 800)">
             Start PSU Consent

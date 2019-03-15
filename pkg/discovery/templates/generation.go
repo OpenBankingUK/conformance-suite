@@ -75,7 +75,7 @@ func newModel() discovery.ModelDiscovery {
 	template := discovery.ModelDiscovery{
 		Name:             "ob-[VERSION]-generic",
 		Description:      "An Open Banking UK generic discovery template for [VERSION] of Accounts and Payments.",
-		DiscoveryVersion: "v0.2.1",
+		DiscoveryVersion: "v0.3.0",
 		TokenAcquisition: "psu",
 		DiscoveryItems:   []discovery.ModelDiscoveryItem{},
 	}

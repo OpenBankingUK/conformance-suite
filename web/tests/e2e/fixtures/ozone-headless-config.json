@@ -1,0 +1,15 @@
+{
+  "signing_private": "OZONE_HEADLESS_SIGNING_PRIVATE",
+  "signing_public": "OZONE_HEADLESS_SIGNING_PUBLIC",
+  "transport_private": "OZONE_HEADLESS_TRANSPORT_PRIVATE",
+  "transport_public": "OZONE_HEADLESS_TRANSPORT_PUBLIC",
+  "client_id": "OZONE_HEADLESS_CLIENT_ID",
+  "client_secret": "OZONE_HEADLESS_CLIENT_SECRET",
+  "token_endpoint": "https://modelobank2018.o3bank.co.uk:4201/token",
+  "token_endpoint_auth_method": "client_secret_basic",
+  "authorization_endpoint": "https://modelobankauth2018.o3bank.co.uk:4101/auth",
+  "resource_base_url": "https://modelobank2018.o3bank.co.uk:4501",
+  "x_fapi_financial_id": "0015800001041RHAAY",
+  "issuer": "https://modelobankauth2018.o3bank.co.uk:4101",
+  "redirect_url": "https://127.0.0.1:8443/conformancesuite/callback"
+}

@@ -5,6 +5,7 @@
       variant="primary"
       @click="onBack()">Back</b-btn>
     <b-btn
+      id="next"
       :disabled="isNextDisabled"
       variant="success"
       @click="onNext()">
