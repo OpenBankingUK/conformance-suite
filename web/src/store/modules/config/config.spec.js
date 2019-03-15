@@ -58,8 +58,8 @@ describe('web/src/store/modules/config', () => {
         issuer: '',
         redirect_url: 'https://127.0.0.1:8443/conformancesuite/callback',
         resource_ids: {
-            account_ids: [{ account_id: '' }],
-            statement_ids: [{ statement_id: '' }],
+          account_ids: [{ account_id: '' }],
+          statement_ids: [{ statement_id: '' }],
         },
       });
     });
@@ -118,8 +118,8 @@ describe('web/src/store/modules/config', () => {
         issuer: '',
         redirect_url: 'https://127.0.0.1:8443/conformancesuite/callback',
         resource_ids: {
-            account_ids: [{ account_id: '' }],
-            statement_ids: [{ statement_id: '' }],
+          account_ids: [{ account_id: '' }],
+          statement_ids: [{ statement_id: '' }],
         },
       });
 
@@ -140,8 +140,8 @@ describe('web/src/store/modules/config', () => {
         issuer: '',
         redirect_url: 'https://127.0.0.1:8443/conformancesuite/callback',
         resource_ids: {
-            account_ids: [{ account_id: '' }],
-            statement_ids: [{ statement_id: '' }],
+          account_ids: [{ account_id: '' }],
+          statement_ids: [{ statement_id: '' }],
         },
       });
 
@@ -161,8 +161,8 @@ describe('web/src/store/modules/config', () => {
         issuer: '',
         redirect_url: 'https://127.0.0.1:8443/conformancesuite/callback',
         resource_ids: {
-            account_ids: [{ account_id: '' }],
-            statement_ids: [{ statement_id: '' }],
+          account_ids: [{ account_id: '' }],
+          statement_ids: [{ statement_id: '' }],
         },
       });
 
@@ -182,8 +182,8 @@ describe('web/src/store/modules/config', () => {
         issuer: '',
         redirect_url: 'https://127.0.0.1:8443/conformancesuite/callback',
         resource_ids: {
-            account_ids: [{ account_id: '' }],
-            statement_ids: [{ statement_id: '' }],
+          account_ids: [{ account_id: '' }],
+          statement_ids: [{ statement_id: '' }],
         },
       });
 
@@ -206,8 +206,8 @@ describe('web/src/store/modules/config', () => {
         issuer: '',
         redirect_url: 'https://127.0.0.1:8443/conformancesuite/callback',
         resource_ids: {
-            account_ids: [{ account_id: '' }],
-            statement_ids: [{ statement_id: '' }],
+          account_ids: [{ account_id: '' }],
+          statement_ids: [{ statement_id: '' }],
         },
       });
 
@@ -227,8 +227,8 @@ describe('web/src/store/modules/config', () => {
         issuer: '',
         redirect_url: 'https://127.0.0.1:8443/conformancesuite/callback',
         resource_ids: {
-            account_ids: [{ account_id: '' }],
-            statement_ids: [{ statement_id: '' }],
+          account_ids: [{ account_id: '' }],
+          statement_ids: [{ statement_id: '' }],
         },
       });
 
@@ -248,8 +248,8 @@ describe('web/src/store/modules/config', () => {
         issuer: '',
         redirect_url: 'https://127.0.0.1:8443/conformancesuite/callback',
         resource_ids: {
-            account_ids: [{ account_id: '' }],
-            statement_ids: [{ statement_id: '' }],
+          account_ids: [{ account_id: '' }],
+          statement_ids: [{ statement_id: '' }],
         },
       });
 
@@ -269,8 +269,8 @@ describe('web/src/store/modules/config', () => {
         issuer: 'https://modelobankauth2018.o3bank.co.uk:4101',
         redirect_url: 'https://127.0.0.1:8443/conformancesuite/callback',
         resource_ids: {
-            account_ids: [{ account_id: '' }],
-            statement_ids: [{ statement_id: '' }],
+          account_ids: [{ account_id: '' }],
+          statement_ids: [{ statement_id: '' }],
         },
       });
     });
@@ -298,8 +298,8 @@ describe('web/src/store/modules/config', () => {
           issuer: '',
           redirect_url: 'https://127.0.0.1:8443/conformancesuite/callback',
           resource_ids: {
-              account_ids: [{ account_id: '' }],
-              statement_ids: [{ statement_id: '' }],
+            account_ids: [{ account_id: '' }],
+            statement_ids: [{ statement_id: '' }],
           },
         });
 
@@ -347,8 +347,8 @@ describe('web/src/store/modules/config', () => {
           issuer: 'https://modelobankauth2018.o3bank.co.uk:4101_1',
           redirect_url: 'https://127.0.0.1:8443/conformancesuite/callback',
           resource_ids: {
-              account_ids: [{ account_id: '' }],
-              statement_ids: [{ statement_id: '' }],
+            account_ids: [{ account_id: '' }],
+            statement_ids: [{ statement_id: '' }],
           },
         });
       });
