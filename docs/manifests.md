@@ -10,7 +10,7 @@
 
 This document is a specification (alpha) for describing a Manifest as a JSON document.  It is intended to be used by the Functional Conformance Suite with the goal of:
 
-* Providing a standardise and structured approach to the presentation of a Manifest data used by the suite in the generation of test cases.
+* Providing a standardised and structured approach to the presentation of a Manifest data used by the suite in the generation of test cases.
 * Facilitating a cross-platform format that allows 3rd parties to view and contribute easily to tests.
 
 ## Manifest Dictionary
@@ -55,13 +55,70 @@ TABLE A:
 
 ## Manifest Asserts
 
-[WIP]
+Re-usable assertions can be defined as standalone units in a JSON file named `assertions.json`. An assertion can be defined in
+the context of a HTTP request in a test case. A HTTP status code, header field(s) and JSON path can be specified as items to be
+tested against, along with a custom implementation of an "expectation", designated with the label `custom`.
 
-## Manifests
+A boilerplate assertions file is structured such that `assertion-ref` is a reference to an assertion, many references can be defined
+alongside each other as long as the reference is unique:
+
+    {
+        "references": {
+            "assertion-ref": {}
+        }
+    }
+
+TABLE B - Structure of an assertion:
+
+| Name                  | Occurrence | Description                                             | Type             | Value(s)    |
+|-----------------------|------------|---------------------------------------------------------|------------------|-------------|
+| expect                | 1..1       | Container for test expectations                         | JSON             |             |
+| expect.status-code    | 0..1       | Expected HTTP status code                               | Integer          |             |
+| expect.matches        | 0..N       | Array of "MatchType" checks                             | Array of JSON    | see example |
+| expect.custom         | 0..N       | Reference to an implementation of a custom expectation. Can be defined multiple times.                          | String           |             |
+
+
+
+_In the following example `assertion-ref` is the reference of the assertion._
+    
+    "assertion-ref": {
+        "expect": {
+            "status-code": 201,
+            "matches": [{
+                    "header": "x-fapi-interaction-id",
+                    "detail": "An RFC4122 UID used as a correlation id. The ASPSP 'plays back' the value given. If a value is not given the ASPSP MUST play back their own UUID.",
+                    "value": "ba70ddff-b9ea-43a2-8ade-567746f39fff"
+                },
+                {
+                    "JSON": "json.Data.Status",
+                    "detail: "Status label for request",
+                    "Value": "AcceptedSettlementCompleted"
+                }
+            ],
+            "custom": "bodyNotEmpty"
+        }
+    }
+
+### Custom expectations
+
+** WIP **
+
+## Custom Data
+
+** WIP ** 
+
+Custom data can be defined, which can then be consumed by test cases. This data is stored in a JSON file name `data.json`.
+The items are stored as referencable JSON objects similar to that of the asserts - this means we would start off with the same boilerplate
+as assertions, seen previously.
+
+The schema for data items is currently "free form" and specific to each test. With this in mind,
+it would be useful to examine any associated notes for the each test.
+
+## Supplementary Manifests
 
 Open Banking Implementation Entity (OBIE) has created a number of manifests to help Implementers (Account Providers, Third Party Providers, Vendors and Technical Service Providers) test or provide evidence you have implemented each part of the OBIE Standard correctly. If required these manifests should be used or referenced in your discovery file. 
 
 * Open Banking Implementation Entity Discovery File.
 * Open Banking Implementation Manifests.
 
-**Each test is only pickup if a corresponding endpoint is detected in your Discovery.**
+**A test is only picked up if a corresponding endpoint is detected in your Discovery.**
