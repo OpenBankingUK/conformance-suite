@@ -56,7 +56,7 @@
               v-if="index == resource_account_ids.length -1">
               <b-button
                 variant="success"
-                @click="addResourceAccountIDField()">+</b-button>
+                @click="addResourceAccountIDField('')">+</b-button>
             </b-input-group-append>
           </b-input-group>
         </b-form-group>
@@ -87,7 +87,7 @@
               v-if="index == resource_statement_ids.length -1">
               <b-button
                 variant="success"
-                @click="addResourceStatementIDField()">+</b-button>
+                @click="addResourceStatementIDField('')">+</b-button>
             </b-input-group-append>
           </b-input-group>
         </b-form-group>
@@ -370,14 +370,14 @@ export default {
         return false;
       }
     },
-    addResourceAccountIDField() {
-      this.addResourceAccountID({ account_id: '' });
+    addResourceAccountIDField(value) {
+      this.addResourceAccountID({ account_id: value });
     },
     removeResourceAccountIDField(index) {
       this.removeResourceAccountID(index);
     },
-    addResourceStatementIDField() {
-      this.addResourceStatementID({ statement_id: '' });
+    addResourceStatementIDField(value) {
+      this.addResourceStatementID({ statement_id: value });
     },
     removeResourceStatementIDField(index) {
       this.removeResourceStatementID(index);
