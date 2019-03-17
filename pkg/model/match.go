@@ -63,6 +63,7 @@ type Match struct {
 	ReplaceEndpoint string    `json:"replaceInEndpoint,omitempty"` // allows substitution of resourceIds
 	Authorisation   string    `json:"authorisation,omitempty"`     // allows capturing of bearer tokens
 	Result          string    `json:"result,omitempty"`            // capturing match values
+	Custom          string    `json:"custom,omitempty"`            // specifies custom matching routine
 }
 
 // ContextAccessor - Manages access to matches for Put and Get value operations on a context
