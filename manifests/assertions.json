@@ -87,7 +87,7 @@
 		"basicAccountAccessConsent": {
 			"permissions": ["ReadAccountsBasic"]
 		},
-		"detailaccountAccessConsent": {
+		"detailAccountAccessConsent": {
 			"permissions": ["ReadAccountDetail"]
 		},
 		"2paccountAccessConsent": {
