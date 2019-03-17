@@ -1,14 +1,14 @@
 package model
 
 type ResourceIDs struct {
-	AccountIDs   []ResourceAccountID   `json:"account_ids" validate:"min=1"`
-	StatementIDs []ResourceStatementID `json:"statement_ids" validate:"min=1"`
+	AccountIDs   []ResourceAccountID   `json:"account_ids"`
+	StatementIDs []ResourceStatementID `json:"statement_ids"`
 }
 
 type ResourceAccountID struct {
-	AccountID string `json:"account_id" validate:"not_empty"`
+	AccountID string `json:"account_id"`
 }
 
 type ResourceStatementID struct {
-	StatementID string `json:"statement_id" validate:"not_empty"`
+	StatementID string `json:"statement_id"`
 }
