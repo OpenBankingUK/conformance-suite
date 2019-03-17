@@ -96,15 +96,14 @@ func TestDiscoveryEndpointsMapToManifestCorrectly(t *testing.T) {
 	require.Nil(err)
 
 	mpParams := map[string]string{
-		"$AccountID":"500000000000000000000004",
+		"$AccountID": "500000000000000000000004",
 	}
 
 	mpResults := MapDiscoveryEndpointsToManifestTestIDs(disco, mf, mpParams)
 
-
-	exp := DiscoveryPathsTestIDs {
+	exp := DiscoveryPathsTestIDs{
 		"/accounts/500000000000000000000004": {
-			"GET": {"OB-301-ACC-120382"},
+			"GET":  {"OB-301-ACC-120382"},
 			"HEAD": {"OB-301-ACC-352203"},
 		},
 	}
@@ -214,14 +213,14 @@ func TestUnMappedManifestItemsReportedCorrectly(t *testing.T) {
 	require.Nil(err)
 
 	mpParams := map[string]string{
-		"$AccountID":"500000000000000000000004",
+		"$AccountID": "500000000000000000000004",
 	}
 
 	mpResults := MapDiscoveryEndpointsToManifestTestIDs(disco, mf, mpParams)
 
 	unmatched := FindUnmatchedManifestTests(mf, mpResults)
 
-	exp := []string { "unmapped-test-id" }
+	exp := []string{"unmapped-test-id"}
 
 	require.Equal(exp, unmatched)
 }
