@@ -100,7 +100,7 @@ describe('web/src/store/modules/config', () => {
       expect(store.getters.configuration.transport_public).toEqual(transportPublic);
     });
 
-    it('commmits client_id, client_secret, token_endpoint, authorization_endpoint, resource_base_url, x_fapi_financial_id, issuer and redirect_url', async () => {
+    it('commits client_id, client_secret, token_endpoint, authorization_endpoint, resource_base_url, x_fapi_financial_id, issuer and redirect_url', async () => {
       const store = createRealStore();
 
       expect(store.state.configuration).toEqual({
@@ -371,6 +371,8 @@ describe('web/src/store/modules/config', () => {
 
         const errors = [
           'Signing Private Certificate (.key) empty',
+          'Account IDs empty',
+          'Statement IDs empty',
           'Client ID empty',
           'Client Secret empty',
           'Token Endpoint empty',
@@ -394,6 +396,8 @@ describe('web/src/store/modules/config', () => {
 
         const errors = [
           'Signing Public Certificate (.pem) empty',
+          'Account IDs empty',
+          'Statement IDs empty',
           'Client ID empty',
           'Client Secret empty',
           'Token Endpoint empty',
@@ -417,6 +421,8 @@ describe('web/src/store/modules/config', () => {
 
         const errors = [
           'Transport Private Certificate (.key) empty',
+          'Account IDs empty',
+          'Statement IDs empty',
           'Client ID empty',
           'Client Secret empty',
           'Token Endpoint empty',
@@ -440,6 +446,8 @@ describe('web/src/store/modules/config', () => {
 
         const errors = [
           'Transport Public Certificate (.pem) empty',
+          'Account IDs empty',
+          'Statement IDs empty',
           'Client ID empty',
           'Client Secret empty',
           'Token Endpoint empty',
@@ -462,6 +470,8 @@ describe('web/src/store/modules/config', () => {
           'Signing Public Certificate (.pem) empty',
           'Transport Private Certificate (.key) empty',
           'Transport Public Certificate (.pem) empty',
+          'Account IDs empty',
+          'Statement IDs empty',
           'Client ID empty',
           'Client Secret empty',
           'Token Endpoint empty',
@@ -495,6 +505,11 @@ describe('web/src/store/modules/config', () => {
         await actions.setConfigurationTransportPrivate(store, 'setConfigurationTransportPrivate');
         await actions.setConfigurationTransportPublic(store, 'setConfigurationTransportPublic');
 
+        await actions.removeResourceAccountID(store, 0);
+        await actions.removeResourceStatementID(store, 0);
+        await actions.addResourceAccountID(store, { account_id: 'account-id' });
+        await actions.addResourceStatementID(store, { statement_id: 'statement-id' });
+
         const valid = await actions.validateConfiguration(store);
         expect(valid).toEqual(true);
       });
@@ -519,6 +534,11 @@ describe('web/src/store/modules/config', () => {
         await actions.setConfigurationTransportPrivate(store, 'not_a_certificate');
         await actions.setConfigurationTransportPublic(store, 'not_a_certificate');
 
+        await actions.removeResourceAccountID(store, 0);
+        await actions.removeResourceStatementID(store, 0);
+        await actions.addResourceAccountID(store, { account_id: 'account-id' });
+        await actions.addResourceStatementID(store, { statement_id: 'statement-id' });
+
         const valid = await actions.validateConfiguration(store);
         expect(valid).toEqual(false);
 
@@ -537,6 +557,8 @@ describe('web/src/store/modules/config', () => {
           'Signing Public Certificate (.pem) empty',
           'Transport Private Certificate (.key) empty',
           'Transport Public Certificate (.pem) empty',
+          'Account IDs empty',
+          'Statement IDs empty',
           'Client ID empty',
           'Client Secret empty',
           'Token Endpoint empty',
@@ -558,6 +580,11 @@ describe('web/src/store/modules/config', () => {
         await actions.setConfigurationSigningPrivate(store, 'setConfigurationSigningPrivate');
         await actions.setConfigurationTransportPrivate(store, 'setConfigurationTransportPrivate');
         await actions.setConfigurationTransportPublic(store, 'setConfigurationTransportPublic');
+
+        await actions.removeResourceAccountID(store, 0);
+        await actions.removeResourceStatementID(store, 0);
+        await actions.addResourceAccountID(store, { account_id: 'account-id' });
+        await actions.addResourceStatementID(store, { statement_id: 'statement-id' });
 
         store.commit(types.SET_CLIENT_ID, '8672384e-9a33-439f-8924-67bb14340d71');
         store.commit(types.SET_CLIENT_SECRET, '2cfb31a3-5443-4e65-b2bc-ef8e00266a77');
