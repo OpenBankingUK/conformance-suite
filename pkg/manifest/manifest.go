@@ -69,19 +69,6 @@ func LoadScripts(filename string) (Scripts, error) {
 	return m, nil
 }
 
-func loadReferences(filename string) (References, error) {
-	plan, err := ioutil.ReadFile(filename)
-	if err != nil {
-		return References{}, err
-	}
-	var m References
-	err = json.Unmarshal(plan, &m)
-	if err != nil {
-		return References{}, err
-	}
-	return m, nil
-}
-
 // DiscoveryPathsTestIDs -
 type DiscoveryPathsTestIDs map[string]map[string][]string
 
@@ -105,7 +92,7 @@ type DiscoveryPathsTestIDs map[string]map[string][]string
 //	]
 //}
 func MapDiscoveryEndpointsToManifestTestIDs(disco *discovery.Model, mf Scripts, mpParams map[string]string) DiscoveryPathsTestIDs {
-	mapURLTests := make(DiscoveryPathsTestIDs, 0)
+	mapURLTests := make(DiscoveryPathsTestIDs)
 
 	// Iterate the discoveryModel.discoveryItems.endpoints
 	for _, v1 := range disco.DiscoveryModel.DiscoveryItems {
@@ -135,7 +122,6 @@ func MapDiscoveryEndpointsToManifestTestIDs(disco *discovery.Model, mf Scripts, 
 				}
 			}
 		}
-		break
 	}
 	return mapURLTests
 }
