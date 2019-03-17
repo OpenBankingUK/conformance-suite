@@ -58,7 +58,16 @@
 				}]
 			}
 		},
-		"OB3GLOAssertContentType": {
+		"basicAccountAccessConsent": {
+			"permissions": ["ReadAccountsBasic"]
+		},
+		"detailAccountAccessConsent": {
+			"permissions": ["ReadAccountDetail"]
+		},
+		"2paccountAccessConsent": {
+			"permissions": ["ReadAccountsBasic", "ReadAccountsDetail"]
+		},
+		"OB3GLOAAssertNoToken": {
 			"expect": {
 				"matches": [{
 					"header": "content-type",

@@ -1,11 +1,15 @@
 package manifest
 
 import (
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
+	"strings"
 	"testing"
 
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestReadScriptsFile(t *testing.T) {
@@ -14,6 +18,24 @@ func TestReadScriptsFile(t *testing.T) {
 	assert.Nil(t, err)
 	dumpJSON(tp)
 	introspect(&tp)
+}
+
+func TestLoadStuff(t *testing.T) {
+	sc, err := loadScripts("testdata/ob31_testscript.json")
+	assert.Nil(t, err)
+	dumpJSON(sc)
+	as, err := loadReferences("testdata/assertions.json")
+	assert.Nil(t, err)
+	dumpJSON(as)
+	tp := TestPlan{Scripts: sc, References: as}
+	introspect(&tp)
+}
+
+// Utility to Dump Json
+func dumpJSON(i interface{}) {
+	var model []byte
+	model, _ = json.MarshalIndent(i, "", "    ")
+	fmt.Println(string(model))
 }
 
 func introspect(tp *TestPlan) {
@@ -59,23 +81,60 @@ func loadTestPlan2() (*TestPlan, error) {
 }
 
 func TestGenerateTestCases(t *testing.T) {
-	tests, err := GenerateTestCases("TestSpec", "http://mybaseurl")
+	tp, err := loadTestPlan2()
 	assert.Nil(t, err)
+
+	// Gather replacement parameters and account ids
+	accountCtx := model.Context{}
+	accountData, err := loadAccountData("testdata/resources.json")
+	require.Nil(t, err)
+
+	// accumulate context data from accountsData ...
+	for k, v := range accountData.Ais {
+		accountCtx.PutString(k, v)
+	}
+	refs := tp.References
+
+	scripts := tp.Scripts
+	tests := []model.TestCase{}
+	consents := []string{}
+	for _, v := range scripts.Scripts {
+		localCtx := model.Context{}
+
+		for k, value := range v.Parameters {
+			if strings.Contains(value, "$") {
+				str := value[1:]
+				value, err = accountCtx.GetString(str)
+			}
+			switch k {
+			case "accountAccessConsent":
+				consent := getAccountConsent(refs, value)
+				localCtx.PutStringSlice("permissions", consent)
+			case "tokenRequestScope":
+				localCtx.PutString("tokenScope", value)
+			default:
+				localCtx.PutString(k, value)
+			}
+		}
+
+		tc, _ := testCaseBuilder(v, refs.References, &localCtx, consents)
+		tests = append(tests, tc)
+	}
+
+	// for _, tc := range tests {
+	// 	fmt.Printf("%s\n", tc.String())
+	// }
 
 	perms, err := getPermissions(tests)
 	assert.Nil(t, err)
 	m := make(map[string]string, 0)
 	for _, v := range perms {
-		fmt.Printf("perms: %s %-50.50s %s\n", v.ID, v.Path, v.Permissions)
+		fmt.Printf("perms: %#v\n", v)
 		m[v.Path] = v.ID
 	}
 	fmt.Println("----------------------==")
 	for k := range m {
 		fmt.Println(k)
-	}
-
-	for _, v := range tests {
-		dumpJSON(v)
 	}
 
 }
@@ -105,4 +164,17 @@ func getPermissions(tests []model.TestCase) ([]ScriptPermission, error) {
 	}
 
 	return permCollector, nil
+}
+
+func loadAccountData(filename string) (AccountData, error) {
+	plan, err := ioutil.ReadFile(filename)
+	if err != nil {
+		return AccountData{}, err
+	}
+	var m AccountData
+	err = json.Unmarshal(plan, &m)
+	if err != nil {
+		return AccountData{}, err
+	}
+	return m, nil
 }

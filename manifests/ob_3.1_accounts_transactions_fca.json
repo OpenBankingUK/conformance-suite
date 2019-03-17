@@ -9,8 +9,6 @@
 				"tokenRequestScope": "accounts",
                 "accountId": "$consentedAccountId"         
             },
-            "permissions":["ReadAccountBasic"],
-            "permissions-excluded":["ReadAccountDetail"],
             "uri": "/accounts/$accountId",
             "uriImplementation": "mandatory",
             "resource": "Account",
@@ -27,7 +25,6 @@
 				"tokenRequestScope": "accounts",
 				"accountId": "$consentedAccountId"
             },
-            "permissions":["ReadAccountDetail"],
             "uri": "/accounts/$accountId",
             "uriImplementation": "mandatory",
 			"resource": "Account",
@@ -43,8 +40,6 @@
 			"parameters": {
 				"tokenRequestScope": "accounts"       
             },
-            "permissions":["ReadAccountsBasic"],
-            "permissions-excluded":["ReadAccountDetail"],
             "uri": "/accounts",
             "uriImplementation": "mandatory",
 			"resource": "Account",
@@ -60,7 +55,6 @@
 			"parameters": {
 				"tokenRequestScope": "accounts"
             },
-            "permissions":["ReadAccountDetail"],
             "uri": "/accounts",
             "uriImplementation": "mandatory",
 			"resource": "Account",
@@ -77,7 +71,6 @@
 				"tokenRequestScope": "accounts",
                 "accountId": "$consentedAccountId"
             },
-            "permissions-excluded":["ReadAccountBasic","ReadAccountDetail"],
             "uri": "/accounts/$accountId",
             "uriImplementation": "mandatory",
             "resource": "Account",
@@ -93,7 +86,6 @@
 			"parameters": {
                 "tokenRequestScope": "accounts"
             },
-            "permissions-excluded":["ReadAccountBasic","ReadAccountDetail"],
             "uri": "/accounts",
             "uriImplementation": "mandatory",
             "resource": "Account",
@@ -111,10 +103,6 @@
                 "accountId": "$consentedAccountId",
                 "x-fapi-interaction-id": "aac-f5a10e5e-0c46-41c5-a7b7-c8f56020520c"
             },
-            "headers": {
-                "x-fapi-interaction-id": "$x-fapi-interaction-id"
-            },
-            "permissions":["ReadAccountDetail"],
             "uri": "/accounts/$accountId",
             "uriImplementation": "mandatory",
             "resource": "Account",
@@ -132,10 +120,6 @@
                 "accountId": "$consentedAccountId",
                 "x-fapi-interaction-id": "aac-f5a10e5e-0c46-41c5-a7b7-c8f56020520x"
             },
-            "headers": {
-                "x-fapi-interaction-id": "$x-fapi-interaction-id"
-            },
-            "permissions":["ReadAccountDetail"],
             "uri": "/accounts/$accountId",
             "uriImplementation": "mandatory",
             "resource": "Account",
@@ -191,7 +175,6 @@
 				"tokenRequestScope": "accounts",
 				"accountId": "$consentedAccountId"
             },
-            "permissions":[ "ReadAccountsBasic", "ReadBalances"],
             "uri": "/accounts/$accountId/balances",
             "uriImplementation": "mandatory",
 			"resource": "Balance",
@@ -226,7 +209,6 @@
 				"tokenRequestScope": "accounts",
 				"accountId": "$consentedAccountId"
             },
-            "permissions-excluded":[ "ReadAccountsBasic", "ReadBalances"],
             "uri": "/accounts/$accountId/balances",
             "uriImplementation": "mandatory",
             "resource": "Balance",
@@ -242,7 +224,6 @@
 			"parameters": {
 				"tokenRequestScope": "accounts"
             },
-            "permissions-excluded":[ "ReadAccountsBasic", "ReadBalances"],
             "uri": "/balances",
             "uriImplementation": "optional",
             "resource": "Balance",
@@ -259,7 +240,6 @@
 				"tokenRequestScope": "accounts",
 				"accountId": "foobar"
             },
-            "permissions":[ "ReadAccountsBasic", "ReadBalances"],
             "uri": "/accounts/$accountId/balances",
             "uriImplementation": "mandatory",
             "resource": "Balance",
@@ -275,7 +255,6 @@
 			"parameters": {
 				"tokenRequestScope": "accounts"
             },
-            "permissions":[ "ReadAccountsBasic", "ReadBalances"],
             "uri": "/balances",
             "uriImplementation": "optional",
             "resource": "Balance",
@@ -292,7 +271,6 @@
 				"tokenRequestScope": "accounts",
                 "accountId": "$consentedAccountId"         
             },
-            "permissions": [ "ReadAccountsBasic", "ReadBeneficiariesBasic"],
             "uri": "/accounts/$accountId/beneficiaries",
             "uriImplementation": "conditional",
 			"resource": "Beneficiary",
@@ -308,7 +286,6 @@
 			"parameters": {
 				"tokenRequestScope": "accounts"    
             },
-            "permissions": [ "ReadAccountsBasic", "ReadBeneficiariesBasic"],
             "uri": "/beneficiaries",
             "uriImplementation": "optional",
 			"resource": "Beneficiary",
@@ -324,7 +301,6 @@
 			"parameters": {
 				"tokenRequestScope": "accounts"
             },
-            "permissions-excluded":["ReadAccountBasic","ReadBeneficiariesBasic"],
             "uri": "/beneficiaries",
             "uriImplementation": "optional",
             "resource": "Beneficiary",
@@ -341,7 +317,6 @@
                 "tokenRequestScope": "accounts",
                 "accountId": "$consentedAccountId" 
             },
-            "permissions-excluded":["ReadAccountBasic","ReadBeneficiariesBasic"],
             "uri": "/accounts/$accountId/beneficiaries",
             "uriImplementation": "conditional",
             "resource": "Beneficiary",
@@ -375,7 +350,6 @@
 				"tokenRequestScope": "accounts",
 				"accountId": "$consentedAccountId"
             },
-            "permissions":[ "ReadAccountsBasic", "ReadDirectDebits"],
             "uri": "/accounts/$accountId/direct-debits",
             "uriImplementation": "conditional",
 			"resource": "DirectDebit",
@@ -391,7 +365,6 @@
 			"parameters": {
 				"tokenRequestScope": "accounts"
             },
-            "permissions":[ "ReadAccountsBasic", "ReadDirectDebits"],
             "uri": "/direct-debits",
             "uriImplementation": "optional",
 			"resource": "DirectDebit",
@@ -408,7 +381,6 @@
 				"tokenRequestScope": "accounts",
 				"accountId": "foobar"
             },
-            "permissions-excluded":[ "ReadAccountsBasic", "ReadDirectDebits"],
             "uri": "/accounts/$accountId/direct-debits",
             "uriImplementation": "conditional",
             "resource": "DirectDebit",
@@ -425,7 +397,6 @@
 				"tokenRequestScope": "accounts",
 				"accountId": "$consentedAccountId"
             },
-            "permissions": [ "ReadAccountsBasic", "ReadOffers"],
             "uri": "/accounts/$accountId/offers",
             "uriImplementation": "conditional",
 			"resource": "Offer",
@@ -442,7 +413,6 @@
 				"tokenRequestScope": "accounts",
 				"accountId": "$consentedAccountId"
             },
-            "permissions": [ "ReadAccountsBasic", "ReadOffers"],
             "uri": "/offers",
             "resource": "Offer",
             "uriImplementation": "optional",
@@ -459,7 +429,6 @@
 				"tokenRequestScope": "accounts",
 				"accountId": "foobar"
             },
-            "permissions": [ "ReadAccountsBasic", "ReadOffers"],
             "uri": "/accounts/$accountId/offers",
             "uriImplementation": "conditional",
             "resource": "Offer",
@@ -476,7 +445,6 @@
 				"tokenRequestScope": "accounts",
 				"accountId": "$consentedAccountId"
             },
-            "permissions": [ "ReadAccountsBasic", "ReadParty"],
             "uri": "/accounts/$accountId/party",
             "uriImplementation": "conditional",
 			"resource": "Party",
@@ -492,7 +460,6 @@
 			"parameters": {
 				"tokenRequestScope": "accounts"
             },
-            "permissions": [ "ReadAccountsBasic", "ReadParty"],
             "uri": "/accounts/party",
             "uriImplementation": "conditional",
 			"resource": "Party",
@@ -510,7 +477,6 @@
 				"tokenRequestScope": "accounts",
 				"accountId": "foobar"
             },
-            "permissions": [ "ReadAccountsBasic", "ReadParty"],
             "uri": "/accounts/$accountId/party",
             "uriImplementation": "conditional",
             "resource": "Party",
@@ -527,7 +493,6 @@
 				"tokenRequestScope": "accounts",
 				"accountId": "$consentedAccountId"
             },
-            "permissions": [ "ReadAccountsBasic", "ReadProducts"],
             "uri": "/accounts/$accountId/product",
             "uriImplementation": "conditional",
 			"resource": "Product",
@@ -543,7 +508,6 @@
 			"parameters": {
 				"tokenRequestScope": "accounts"
             },
-            "permissions": [ "ReadAccountsBasic", "ReadProducts"],
             "uri": "/product",
             "uriImplementation": "optional",
 			"resource": "Product",
@@ -560,7 +524,6 @@
 				"tokenRequestScope": "accounts",
 				"accountId": "foobar"
             },
-            "permissions": [ "ReadAccountsBasic", "ReadProducts"],
             "uri": "/accounts/$accountId/product",
             "uriImplementation": "conditional",
             "resource": "Party",
@@ -577,7 +540,6 @@
 				"tokenRequestScope": "accounts",
                 "accountId": "$consentedAccountId"         
             },
-            "permissions": [ "ReadAccountsBasic", "ReadScheduledPaymentsDetail"],
             "uri": "/accounts/$accountId/scheduled-payments",
             "uriImplementation": "conditional",
 			"resource": "ScheduledPayment",
@@ -593,7 +555,6 @@
 			"parameters": {
 				"tokenRequestScope": "accounts"
             },
-            "permissions": [ "ReadAccountsBasic", "ReadScheduledPaymentsDetail"],
             "uri": "/scheduled-payments",
             "uriImplementation": "optional",
 			"resource": "ScheduledPayment",
@@ -610,7 +571,6 @@
 				"tokenRequestScope": "accounts",
 				"accountId": "foobar"
             },
-            "permissions": [ "ReadAccountsBasic", "ReadScheduledPaymentsDetail"],
             "uri": "/accounts/$accountId/scheduled-payments",
             "uriImplementation": "conditional",
             "resource": "ScheduledPayment",
@@ -627,7 +587,6 @@
 				"tokenRequestScope": "accounts",
                 "accountId": "$consentedAccountId"         
             },
-            "permissions": [ "ReadAccountsBasic", "ReadStandingOrdersDetail"],
             "uri": "/accounts/$accountId/standing-orders",
             "uriImplementation": "conditional",
 			"resource": "StandingOrder",
@@ -643,7 +602,6 @@
 			"parameters": {
 				"tokenRequestScope": "accounts"   
             },
-            "permissions": [ "ReadAccountsBasic", "ReadStandingOrdersDetail"],
             "uri": "/standing-orders",
             "uriImplementation": "optional",
 			"resource": "StandingOrder",
@@ -660,7 +618,6 @@
 				"tokenRequestScope": "accounts",
 				"accountId": "foobar"
             },
-            "permissions": [ "ReadAccountsBasic", "ReadStandingOrdersDetail"],
             "uri": "/accounts/$accountId/standing-orders",
             "uriImplementation": "conditional",
             "resource": "StandingOrder",

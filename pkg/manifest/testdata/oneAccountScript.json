@@ -1,47 +1,21 @@
 {
-  "scripts": [{
-      "description": "The x-fapi-interaction-id is replayed for bulk accounts if given.",
-      "id": "OB-301-ACC-780127",
-      "refURI": "",
-      "detail": "Checks that the x-fapi-interaction-id value is played-back for bulk accounts.",
-      "parameters": {
-        "tokenRequestScope": "accounts",
-        "accountId": "$consentedAccountId",
-        "x-fapi-interaction-id": "aac-f5a10e5e-0c46-41c5-a7b7-c8f56020520x"
-      },
-      "permissions":["ReadAccountDetail"],
-      "headers": {
-        "x-fapi-interaction-id": "$x-fapi-interaction-id"
-      },
-      "uri": "/accounts/$accountId",
-      "uriImplementation": "mandatory",
-      "resource": "Account",
-      "method": "get",
-      "asserts": ["OB3GLOAssertFAPIPlayBack"],
-      "schemaCheck": false
-    },
-
-    {
-      "description": "The x-fapi-interaction-id is replayed for an account if given.",
-      "id": "OB-301-ACC-120401",
-      "refURI": "",
-      "detail": "Checks that the x-fapi-interaction-id value is played-back for an account.",
-      "parameters": {
-        "tokenRequestScope": "accounts",
-        "accountId": "$consentedAccountId",
-        "x-fapi-interaction-id": "aac-f5a10e5e-0c46-41c5-a7b7-c8f56020520c"
-      },
-      "permissions":["ReadAccountDetail"],
-      "headers": {
-        "x-fapi-interaction-id": "$x-fapi-interaction-id"
-      },
-      "uri": "/accounts/$accountId",
-      "uriImplementation": "mandatory",
-      "resource": "Account",
-      "method": "get",
-      "asserts": ["OB3GLOAssertFAPIPlayBack"],
-      "schemaCheck": false
-    }
-
-  ]
-}
+    "scripts": [
+      {
+        "description": "Fails when no token is provided for balance.",
+        "id": "OB-301-BAL-726946",
+        "refURI": "",
+        "detail": "Validates that the balance resource fails correctly given an invalided or incorrect token.",
+        "parameters": {
+          "accountAccessConsent": "detailAccountAccessConsent",
+          "tokenRequestScope": "accounts",
+          "accountId": "XXntedAccountId"
+        },
+        "uri": "/accounts/$accountId/balances",
+        "uriImplementation": "mandatory",
+        "resource": "Balance",
+        "method": "get",
+        "asserts": ["OB3GLOAAssertNoToken"],
+        "schemaCheck": true
+      }   ]
+  }
+  
