@@ -371,19 +371,13 @@ export default {
       }
     },
     addResourceAccountIDField() {
-      const item = {
-        account_id: '',
-      };
-      this.addResourceAccountID(item);
+      this.addResourceAccountID({ account_id: '' });
     },
     removeResourceAccountIDField(index) {
       this.removeResourceAccountID(index);
     },
     addResourceStatementIDField() {
-      const item = {
-        statement_id: '',
-      };
-      this.addResourceStatementID(item);
+      this.addResourceStatementID({ statement_id: '' });
     },
     removeResourceStatementIDField(index) {
       this.removeResourceStatementID(index);
