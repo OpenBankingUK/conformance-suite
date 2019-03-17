@@ -34,7 +34,7 @@ type GlobalConfiguration struct {
 	XFAPIFinancialID        string            `json:"x_fapi_financial_id" validate:"not_empty"`
 	Issuer                  string            `json:"issuer" validate:"valid_url"`
 	RedirectURL             string            `json:"redirect_url" validate:"valid_url"`
-	ResourceIDs             model.ResourceIDs `json:"resource_ids"`
+	ResourceIDs             model.ResourceIDs `json:"resource_ids" validate:"not_empty"`
 }
 
 func newConfigHandlers(journey Journey, logger *logrus.Entry) configHandlers {
@@ -109,28 +109,50 @@ func validateConfig(config *GlobalConfiguration) (bool, string) {
 
 type validationRule struct {
 	property     string
-	value        string
+	value        interface{}
 	validateFunc validateFunc
 }
 
-type validateFunc func(key, value string) (bool, string)
+type validateFunc func(key, value interface{}) (bool, string)
 
-func notEmpty(key, value string) (bool, string) {
-	if value == "" {
-		return false, fmt.Sprintf("%s is empty", key)
+func notEmpty(key, value interface{}) (bool, string) {
+	switch v := value.(type) {
+	case string:
+		if v == "" {
+			return false, fmt.Sprintf("%s is empty", key)
+		}
+		return true, ""
+	case model.ResourceIDs:
+
+		emAccts := nilOrEmpty(v.AccountIDs)
+		emStmts := nilOrEmpty(v.StatementIDs)
+
+		if emAccts && emStmts {
+			return false, fmt.Sprintf("%s is empty", key)
+		}
+
+		if emAccts {
+			return false, fmt.Sprintf("%s.AccountIDs is empty", key)
+		}
+		if emStmts {
+			return false, fmt.Sprintf("%s.StatementIDs is empty", key)
+		}
+
+		return true, ""
 	}
-	return true, ""
+
+	return false, fmt.Sprintf("%s type not found", key)
 }
 
-func validURL(key, value string) (bool, string) {
-	if _, err := url.Parse(value); err != nil {
+func validURL(key, value interface{}) (bool, string) {
+	if _, err := url.Parse(value.(string)); err != nil {
 		return false, fmt.Sprintf("invalid %s url: %s", key, err.Error())
 	}
 	return true, ""
 }
 
 func and(left, right validateFunc) validateFunc {
-	return func(key, value string) (bool, string) {
+	return func(key, value interface{}) (bool, string) {
 		ok, msg := left(key, value)
 		if !ok {
 			return false, msg
@@ -169,9 +191,13 @@ func parseRules(config *GlobalConfiguration) []validationRule {
 
 		rules = append(rules, validationRule{
 			property:     tag.Get("json"),
-			value:        valueField.Interface().(string),
+			value:        valueField.Interface(),
 			validateFunc: validate,
 		})
 	}
 	return rules
+}
+
+func nilOrEmpty(v interface{}) bool {
+	return v == nil || reflect.ValueOf(v).Len() == 0
 }

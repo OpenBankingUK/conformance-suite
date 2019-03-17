@@ -6,9 +6,9 @@ type ResourceIDs struct {
 }
 
 type ResourceAccountID struct {
-	AccountID string `json:"account_id"`
+	AccountID string `json:"account_id" validate:"not_empty"`
 }
 
 type ResourceStatementID struct {
-	StatementID string `json:"statement_id"`
+	StatementID string `json:"statement_id" validate:"not_empty"`
 }
