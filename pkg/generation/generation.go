@@ -168,26 +168,30 @@ func getResponseCodes(op *spec.Operation) (result []int) {
 // helper to replace path name resource ids specified between brackets e.g. `{AccountId}`
 // with the values "ResourceIds" section of the discovery model
 func getResourceIds(item *discovery.ModelDiscoveryItem, path string, genConfig GeneratorConfig) string {
-	newstr := path
+	result := path
 	for k, v := range item.ResourceIds {
 		key := strings.Join([]string{"{", k, "}"}, "")
-		newstr = strings.Replace(newstr, key, v, 1)
+		result = strings.Replace(result, key, v, 1)
 	}
 
 	// Update the account ids in based on the discovery configuration
 	if len(genConfig.ResourceIDs.AccountIDs) > 0 {
 		// At the moment, according to requirements, we only need support the first ID.
+		logrus.StandardLogger().Warn("Using the {AccountId} value at index 0 - ignoring others")
+
 		v := genConfig.ResourceIDs.AccountIDs[0]
-		newstr = strings.Replace(newstr, "{AccountId}", v.AccountID, 1)
+		result = strings.Replace(result, "{AccountId}", v.AccountID, 1)
 	}
 	// Update the statement ids in based on the discovery configuration
 	if len(genConfig.ResourceIDs.StatementIDs) > 0 {
 		// At the moment, according to requirements, we only need support the first ID.
+		logrus.StandardLogger().Warn("Using the {StatementId} value at index 0 - ignoring others")
+
 		v := genConfig.ResourceIDs.StatementIDs[0]
-		newstr = strings.Replace(newstr, "{StatementId}", v.StatementID, 1)
+		result = strings.Replace(result, "{StatementId}", v.StatementID, 1)
 	}
 
-	return newstr
+	return result
 }
 
 // loads an openapi specification via http or file
