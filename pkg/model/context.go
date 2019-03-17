@@ -36,6 +36,13 @@ func (c Context) GetString(key string) (string, error) {
 	return valueStr, nil
 }
 
+// PutContext - puts another context into this one
+func (c Context) PutContext(ctx *Context) {
+	for k, v := range *ctx {
+		c.Put(k, v)
+	}
+}
+
 // Put a value indexed by 'key' into the context. The value can be any type
 func (c Context) Put(key string, value interface{}) {
 	c[key] = value
