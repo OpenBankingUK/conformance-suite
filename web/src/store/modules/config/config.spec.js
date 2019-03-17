@@ -100,7 +100,7 @@ describe('web/src/store/modules/config', () => {
       expect(store.getters.configuration.transport_public).toEqual(transportPublic);
     });
 
-    it('commits client_id, client_secret, token_endpoint, authorization_endpoint, resource_base_url, x_fapi_financial_id, issuer and redirect_url', async () => {
+    it('commits client_id, client_secret, token_endpoint, authorization_endpoint, resource_base_url, x_fapi_financial_id, issuer, redirect_url and resource_ids', async () => {
       const store = createRealStore();
 
       expect(store.state.configuration).toEqual({
@@ -271,6 +271,118 @@ describe('web/src/store/modules/config', () => {
         resource_ids: {
           account_ids: [{ account_id: '' }],
           statement_ids: [{ statement_id: '' }],
+        },
+      });
+
+      store.commit(types.ADD_RESOURCE_ACCOUNT_ID, { account_id: 'account-id' });
+      expect(store.state.configuration).toEqual({
+        signing_private: '',
+        signing_public: '',
+        transport_private: '',
+        transport_public: '',
+        client_id: '8672384e-9a33-439f-8924-67bb14340d71',
+        client_secret: '2cfb31a3-5443-4e65-b2bc-ef8e00266a77',
+        token_endpoint: 'https://modelobank2018.o3bank.co.uk:4201/token',
+        token_endpoint_auth_method: 'client_secret_basic',
+        authorization_endpoint: 'https://modelobankauth2018.o3bank.co.uk:4101/auth',
+        resource_base_url: 'https://modelobank2018.o3bank.co.uk:4501',
+        x_fapi_financial_id: '0015800001041RHAAY',
+        issuer: 'https://modelobankauth2018.o3bank.co.uk:4101',
+        redirect_url: 'https://127.0.0.1:8443/conformancesuite/callback',
+        resource_ids: {
+          account_ids: [{ account_id: '' }, { account_id: 'account-id' }],
+          statement_ids: [{ statement_id: '' }],
+        },
+      });
+
+      store.commit(types.ADD_RESOURCE_STATEMENT_ID, { statement_id: 'statement-id' });
+      expect(store.state.configuration).toEqual({
+        signing_private: '',
+        signing_public: '',
+        transport_private: '',
+        transport_public: '',
+        client_id: '8672384e-9a33-439f-8924-67bb14340d71',
+        client_secret: '2cfb31a3-5443-4e65-b2bc-ef8e00266a77',
+        token_endpoint: 'https://modelobank2018.o3bank.co.uk:4201/token',
+        token_endpoint_auth_method: 'client_secret_basic',
+        authorization_endpoint: 'https://modelobankauth2018.o3bank.co.uk:4101/auth',
+        resource_base_url: 'https://modelobank2018.o3bank.co.uk:4501',
+        x_fapi_financial_id: '0015800001041RHAAY',
+        issuer: 'https://modelobankauth2018.o3bank.co.uk:4101',
+        redirect_url: 'https://127.0.0.1:8443/conformancesuite/callback',
+        resource_ids: {
+          account_ids: [{ account_id: '' }, { account_id: 'account-id' }],
+          statement_ids: [{ statement_id: '' }, { statement_id: 'statement-id' }],
+        },
+      });
+    });
+
+    it('sets resource_ids', async () => {
+      const store = createRealStore();
+
+      expect(store.state.configuration).toEqual({
+        signing_private: '',
+        signing_public: '',
+        transport_private: '',
+        transport_public: '',
+        client_id: '',
+        client_secret: '',
+        token_endpoint: '',
+        token_endpoint_auth_method: 'client_secret_basic',
+        authorization_endpoint: '',
+        resource_base_url: '',
+        x_fapi_financial_id: '',
+        issuer: '',
+        redirect_url: 'https://127.0.0.1:8443/conformancesuite/callback',
+        resource_ids: {
+          account_ids: [{ account_id: '' }],
+          statement_ids: [{ statement_id: '' }],
+        },
+      });
+
+      const acctIDs = [{ account_id: '123' }, { account_id: '456' }];
+      store.commit(types.SET_RESOURCE_ACCOUNT_IDS, acctIDs);
+
+      expect(store.state.configuration).toEqual({
+        signing_private: '',
+        signing_public: '',
+        transport_private: '',
+        transport_public: '',
+        client_id: '',
+        client_secret: '',
+        token_endpoint: '',
+        token_endpoint_auth_method: 'client_secret_basic',
+        authorization_endpoint: '',
+        resource_base_url: '',
+        x_fapi_financial_id: '',
+        issuer: '',
+        redirect_url: 'https://127.0.0.1:8443/conformancesuite/callback',
+        resource_ids: {
+          account_ids: [{ account_id: '123' }, { account_id: '456' }],
+          statement_ids: [{ statement_id: '' }],
+        },
+      });
+
+      const stmtIDs = [{ statement_id: '123' }, { statement_id: '456' }];
+      store.commit(types.SET_RESOURCE_STATEMENT_IDS, stmtIDs);
+
+      expect(store.state.configuration).toEqual({
+        signing_private: '',
+        signing_public: '',
+        transport_private: '',
+        transport_public: '',
+        client_id: '',
+        client_secret: '',
+        token_endpoint: '',
+        token_endpoint_auth_method: 'client_secret_basic',
+        authorization_endpoint: '',
+        resource_base_url: '',
+        x_fapi_financial_id: '',
+        issuer: '',
+        redirect_url: 'https://127.0.0.1:8443/conformancesuite/callback',
+        resource_ids: {
+          account_ids: [{ account_id: '123' }, { account_id: '456' }],
+          statement_ids: [{ statement_id: '123' }, { statement_id: '456' }],
         },
       });
     });
