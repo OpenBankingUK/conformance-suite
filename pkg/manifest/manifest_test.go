@@ -138,7 +138,7 @@ func TestDiscoveryEndpointsMapToManifestCorrectly(t *testing.T) {
 			"HEAD": {"OB-301-ACC-352203"},
 		},
 		"/domestic-payment-consents": {
-			"GET":{"OB-301-DOP-206111"},
+			"GET": {"OB-301-DOP-206111"},
 		},
 	}
 
