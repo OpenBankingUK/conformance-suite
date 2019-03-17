@@ -41,8 +41,8 @@ func TestValidateConfig(t *testing.T) {
 		Issuer:                  "https://modelobankauth2018.o3bank.co.uk:4101",
 		ClientID:                "8672384e-9a33-439f-8924-67bb14340d71",
 		ResourceIDs: model.ResourceIDs{
-			AccountIDs: []model.ResourceAccountID{{AccountID:"account-id"}},
-			StatementIDs: []model.ResourceStatementID{{StatementID:"statement-id"}},
+			AccountIDs:   []model.ResourceAccountID{{AccountID: "account-id"}},
+			StatementIDs: []model.ResourceStatementID{{StatementID: "statement-id"}},
 		},
 	}
 
@@ -193,8 +193,8 @@ func TestServerConfigGlobalPostValid(t *testing.T) {
 		ResourceBaseURL:         `https://modelobank2018.o3bank.co.uk:4501`,
 		Issuer:                  "https://modelobankauth2018.o3bank.co.uk:4101",
 		ResourceIDs: model.ResourceIDs{
-			AccountIDs: []model.ResourceAccountID{{AccountID:"account-id"}},
-			StatementIDs: []model.ResourceStatementID{{StatementID:"statement-id"}},
+			AccountIDs:   []model.ResourceAccountID{{AccountID: "account-id"}},
+			StatementIDs: []model.ResourceStatementID{{StatementID: "statement-id"}},
 		},
 	}
 	globalConfigurationJSON, err := json.MarshalIndent(globalConfiguration, ``, `  `)

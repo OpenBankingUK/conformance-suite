@@ -133,22 +133,21 @@ func notEmpty(key, value interface{}) (bool, string) {
 
 		if emAccts {
 			return false, fmt.Sprintf("%s.AccountIDs is empty", key)
-		} else {
-			// Some nested validation here, not great but need to think about validation for nested values
-			for i, v := range v.AccountIDs {
-				if v.AccountID == "" {
-					return false, fmt.Sprintf("%s.AccountIDs contains an empty value at index %d", key, i)
-				}
+		}
+		// Some nested validation here, not great but need to think about validation for nested values
+		for i, v := range v.AccountIDs {
+			if v.AccountID == "" {
+				return false, fmt.Sprintf("%s.AccountIDs contains an empty value at index %d", key, i)
 			}
 		}
+
 		if emStmts {
 			return false, fmt.Sprintf("%s.StatementIDs is empty", key)
-		} else {
-			// Some nested validation here, not great but need to think about validation for nested values
-			for i, v := range v.StatementIDs {
-				if v.StatementID == "" {
-					return false, fmt.Sprintf("%s.StatementIDs contains an empty value at index %d", key, i)
-				}
+		}
+		// Some nested validation here, not great but need to think about validation for nested values
+		for i, v := range v.StatementIDs {
+			if v.StatementID == "" {
+				return false, fmt.Sprintf("%s.StatementIDs contains an empty value at index %d", key, i)
 			}
 		}
 
