@@ -93,6 +93,8 @@ func TestGetResourceIds(t *testing.T) {
 	assert.Equal("/12345", result)
 	result = getResourceIds(item, "/{StatementId}", genConfig)
 	assert.Equal("/6789", result)
+	result = getResourceIds(item, "/{AccountId}/{StatementId}", genConfig)
+	assert.Equal("/12345/6789", result)
 }
 
 func TestGetResourceIdsNoMatch(t *testing.T) {
