@@ -11,7 +11,7 @@ import (
 
 func TestReport_Validate(t *testing.T) {
 	type fields struct {
-		Id             string
+		ID             string
 		Created        string
 		Expiration     string
 		Version        string
@@ -49,7 +49,7 @@ func TestReport_Validate(t *testing.T) {
 		{
 			name: "invalid_id_format",
 			fields: fields{
-				Id:         "id_invalid",
+				ID:         "id_invalid",
 				Created:    time.Now().Format(time.RFC3339),
 				Expiration: time.Now().Format(time.RFC3339),
 				Version:    "Version",
@@ -66,7 +66,7 @@ func TestReport_Validate(t *testing.T) {
 		{
 			name: "blank_created",
 			fields: fields{
-				Id:         "f47ac10b-58cc-4372-8567-0e02b2c3d479",
+				ID:         "f47ac10b-58cc-4372-8567-0e02b2c3d479",
 				Expiration: time.Now().Format(time.RFC3339),
 				Version:    "Version",
 				Status:     ReportStatusPending,
@@ -82,7 +82,7 @@ func TestReport_Validate(t *testing.T) {
 		{
 			name: "invalid_created_time_format",
 			fields: fields{
-				Id:         "f47ac10b-58cc-4372-8567-0e02b2c3d479",
+				ID:         "f47ac10b-58cc-4372-8567-0e02b2c3d479",
 				Created:    time.Now().Format(time.ANSIC),
 				Expiration: time.Now().Format(time.RFC3339),
 				Version:    "Version",
@@ -99,7 +99,7 @@ func TestReport_Validate(t *testing.T) {
 		{
 			name: "invalid_expiration_time_format",
 			fields: fields{
-				Id:         "f47ac10b-58cc-4372-8567-0e02b2c3d479",
+				ID:         "f47ac10b-58cc-4372-8567-0e02b2c3d479",
 				Created:    time.Now().Format(time.RFC3339),
 				Expiration: time.Now().Format(time.ANSIC),
 				Version:    "Version",
@@ -116,7 +116,7 @@ func TestReport_Validate(t *testing.T) {
 		{
 			name: "invalid_status_value",
 			fields: fields{
-				Id:         "f47ac10b-58cc-4372-8567-0e02b2c3d479",
+				ID:         "f47ac10b-58cc-4372-8567-0e02b2c3d479",
 				Created:    time.Now().Format(time.RFC3339),
 				Expiration: time.Now().Format(time.RFC3339),
 				Version:    "Version",
@@ -134,7 +134,7 @@ func TestReport_Validate(t *testing.T) {
 		{
 			name: "valid",
 			fields: fields{
-				Id:         "f47ac10b-58cc-4372-8567-0e02b2c3d479",
+				ID:         "f47ac10b-58cc-4372-8567-0e02b2c3d479",
 				Created:    time.Now().Format(time.RFC3339),
 				Expiration: time.Now().Format(time.RFC3339),
 				Version:    "Version",
@@ -154,7 +154,7 @@ func TestReport_Validate(t *testing.T) {
 			require := test.NewRequire(t)
 
 			r := Report{
-				Id:             tt.fields.Id,
+				ID:             tt.fields.ID,
 				Created:        tt.fields.Created,
 				Expiration:     tt.fields.Expiration,
 				Version:        tt.fields.Version,

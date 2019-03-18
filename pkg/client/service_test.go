@@ -1,4 +1,4 @@
-package main
+package client
 
 import (
 	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/test"
@@ -12,7 +12,7 @@ func TestServiceVersion(t *testing.T) {
 	server, url := test.HTTPServer(http.StatusOK, response, nil)
 	defer server.Close()
 	conn := &Connection{Client: &http.Client{}}
-	service := newService(url, url, conn)
+	service := NewService(url, url, conn)
 
 	version, err := service.Version()
 
@@ -24,9 +24,9 @@ func TestSetDiscoveryModel(t *testing.T) {
 	server, url := test.HTTPServer(http.StatusCreated, "", nil)
 	defer server.Close()
 	conn := &Connection{Client: &http.Client{}}
-	service := newService(url, url, conn)
+	service := NewService(url, url, conn)
 
-	err := service.SetDiscoveryModel("README.md")
+	err := service.setDiscoveryModel("testdata/sample.json")
 
 	assert.NoError(t, err)
 }
@@ -35,9 +35,9 @@ func TestSetConfig(t *testing.T) {
 	server, url := test.HTTPServer(http.StatusCreated, "", nil)
 	defer server.Close()
 	conn := &Connection{Client: &http.Client{}}
-	service := newService(url, url, conn)
+	service := NewService(url, url, conn)
 
-	err := service.SetConfig("README.md")
+	err := service.setConfig("testdata/sample.json")
 
 	assert.NoError(t, err)
 }
@@ -46,7 +46,7 @@ func TestTestCases(t *testing.T) {
 	server, url := test.HTTPServer(http.StatusOK, "", nil)
 	defer server.Close()
 	conn := &Connection{Client: &http.Client{}}
-	service := newService(url, url, conn)
+	service := NewService(url, url, conn)
 
 	err := service.TestCases()
 

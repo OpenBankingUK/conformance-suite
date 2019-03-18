@@ -2,6 +2,7 @@ package report
 
 import validation "github.com/go-ozzo/ozzo-validation"
 
+// ReportCertifiedBy - contains details of who certified the `Report`.
 type ReportCertifiedBy struct {
 	Environment  ReportCertifiedByEnvironment `json:"environment"`  // Name of the environment tested
 	Brand        string                       `json:"brand"`        // Name of the brand tested
@@ -9,6 +10,7 @@ type ReportCertifiedBy struct {
 	JobTitle     string                       `json:"jobTitle"`     // Job Title of the Authorisee
 }
 
+// Validate - called by `github.com/go-ozzo/ozzo-validation` to validate struct.
 func (r ReportCertifiedBy) Validate() error {
 	return validation.ValidateStruct(&r,
 		validation.Field(&r.Environment, validation.Required, validation.In(
