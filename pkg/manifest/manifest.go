@@ -173,10 +173,10 @@ func fixReferenceStructure(url string) string {
 }
 
 func replaceParams(url string, params map[string]string) string {
-	var result string
+	result := url
 
 	for key, val := range params {
-		result = strings.Replace(strings.ToLower(url), strings.ToLower(key), val, -1)
+		result = strings.Replace(strings.ToLower(result), strings.ToLower(key), val, -1)
 	}
 	return result
 }

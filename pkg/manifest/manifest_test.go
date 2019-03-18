@@ -26,9 +26,7 @@ func TestDiscoveryEndpointsMapToManifestCorrectly(t *testing.T) {
 			"openidConfigurationUri": "https://modelobankauth2018.o3bank.co.uk:4101/.well-known/openid-configuration",
 			"resourceBaseUri": "https://modelobank2018.o3bank.co.uk:4501/open-banking/v3.1/aisp",
 			"resourceIds": {
-				"AccountId": "500000000000000000000001",
-				"ConsentId": "$consent_id",
-				"StatementId": "140000000000000000000001"
+				"ConsentId": "$consent_id"
 			},
 			"endpoints": [{
 					"method": "HEAD",
@@ -37,6 +35,10 @@ func TestDiscoveryEndpointsMapToManifestCorrectly(t *testing.T) {
 				{
 					"method": "GET",
 					"path": "/accounts/{AccountId}"
+				},
+				{
+					"method": "GET",
+					"path": "/accounts/{AccountId}/statements/{StatementId}"
 				}
 			]
 		}, {
@@ -59,6 +61,7 @@ func TestDiscoveryEndpointsMapToManifestCorrectly(t *testing.T) {
 	}
 }
 `
+	require := test.NewRequire(t)
 	mfJSON := `
 {
 	"scripts": [
@@ -113,11 +116,28 @@ func TestDiscoveryEndpointsMapToManifestCorrectly(t *testing.T) {
             "keepContext": ["OB3GLOAAssertConsentId"],
             "method":"get",
             "schemaCheck": true
+        },
+		{
+			"description": "Domestic Payment consents succeeds with minimal data set with additional schema checks.",
+            "id": "OB-301-DOP-2061133",
+            "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937984109/Domestic+Payments+v3.1#DomesticPaymentsv3.1-POST/domestic-payment-consents",
+            "detail" : "Checks that the resource succeeds posting a domestic payment consents with a minimal data set and checks additional schema.",
+			"parameters": {
+                "tokenRequestScope": "payments",
+                "paymentType": "domestic-payment-consents",
+                "post" : "minimalDomesticPaymentConsent"    
+            },
+            "uri": "accounts/$accountId/statements/$statementId",
+            "uriImplementation": "mandatory",
+            "resource": "accounts/$accountId/statements/$statementId",
+            "asserts": ["OB3DOPAssertOnSuccess", "OB3GLOAAssertConsentId"],
+            "keepContext": ["OB3GLOAAssertConsentId"],
+            "method":"get",
+            "schemaCheck": true
         }
 	]
 }
 `
-	require := test.NewRequire(t)
 
 	var mf Scripts
 	err := json.Unmarshal([]byte(mfJSON), &mf)
@@ -127,18 +147,22 @@ func TestDiscoveryEndpointsMapToManifestCorrectly(t *testing.T) {
 	require.Nil(err)
 
 	mpParams := map[string]string{
-		"$AccountID": "500000000000000000000004",
+		"$AccountID": "acct-123",
+		"$StatementID": "stmt-123",
 	}
 
 	mpResults := MapDiscoveryEndpointsToManifestTestIDs(disco, mf, mpParams)
 
 	exp := DiscoveryPathsTestIDs{
-		"/accounts/500000000000000000000004": {
+		"/accounts/acct-123": {
 			"GET":  {"OB-301-ACC-120382"},
 			"HEAD": {"OB-301-ACC-352203"},
 		},
 		"/domestic-payment-consents": {
 			"GET": {"OB-301-DOP-206111"},
+		},
+		"/accounts/acct-123/statements/stmt-123": {
+			"GET":  {"OB-301-DOP-2061133"},
 		},
 	}
 
@@ -164,9 +188,7 @@ func TestUnMappedManifestItemsReportedCorrectly(t *testing.T) {
 			"openidConfigurationUri": "https://modelobankauth2018.o3bank.co.uk:4101/.well-known/openid-configuration",
 			"resourceBaseUri": "https://modelobank2018.o3bank.co.uk:4501/open-banking/v3.1/aisp",
 			"resourceIds": {
-				"AccountId": "500000000000000000000001",
 				"ConsentId": "$consent_id",
-				"StatementId": "140000000000000000000001"
 			},
 			"endpoints": [{
 					"method": "HEAD",
@@ -282,7 +304,7 @@ func TestUnMappedManifestItemsReportedCorrectly(t *testing.T) {
 	require.Nil(err)
 
 	mpParams := map[string]string{
-		"$AccountID": "500000000000000000000004",
+		"$AccountID": "acct-123",
 	}
 
 	mpResults := MapDiscoveryEndpointsToManifestTestIDs(disco, mf, mpParams)
