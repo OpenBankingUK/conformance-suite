@@ -1,27 +1,27 @@
 {
   "scripts": [
-    
+
     {
-			"description": "The x-fapi-interaction-id is replayed for an account if given.",
-            "id": "OB-301-ACC-120401",
-            "refURI": "",
-            "detail" : "Checks that the x-fapi-interaction-id value is played-back for an account.",
-			"parameters": {
-				"accountAccessConsent": "detailAccountAccessConsent",
-				"tokenRequestScope": "accounts",
-                "accountId": "$consentedAccountId",
-                "x-fapi-interaction-id": "aac-f5a10e5e-0c46-41c5-a7b7-c8f56020520c"
-            },
-            "headers": {
-                "x-fapi-interaction-id": "aac-f5a10e5e-0c46-41c5-a7b7-c8f56020520c"
-            },
-            "uri": "/accounts/$accountId",
-            "uriImplementation": "mandatory",
-            "resource": "Account",
-            "method":"get",
-            "asserts": ["OB3GLOAssertFAPIPlayBack"],
-            "schemaCheck": false
-        }
-  
+      "description": "The x-fapi-interaction-id is replayed for an account if given.",
+      "id": "OB-301-ACC-120401",
+      "refURI": "",
+      "detail": "Checks that the x-fapi-interaction-id value is played-back for an account.",
+      "parameters": {
+        "accountAccessConsent": "detailAccountAccessConsent",
+        "tokenRequestScope": "accounts",
+        "accountId": "$consentedAccountId",
+        "x-fapi-interaction-id": "aac-f5a10e5e-0c46-41c5-a7b7-c8f56020520c"
+      },
+      "headers": {
+        "x-fapi-interaction-id": "$x-fapi-interaction-id"
+      },
+      "uri": "/accounts/$accountId",
+      "uriImplementation": "mandatory",
+      "resource": "Account",
+      "method": "get",
+      "asserts": ["OB3GLOAssertFAPIPlayBack"],
+      "schemaCheck": false
+    }
+
   ]
 }

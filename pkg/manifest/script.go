@@ -118,30 +118,45 @@ func GenerateTestCases(spec string, baseurl string) ([]model.TestCase, error) {
 
 	tests := []model.TestCase{}
 	for _, script := range scripts.Scripts {
-		localCtx := model.Context{}
 
-		for k, value := range script.Parameters {
-			if strings.Contains(value, "$") {
-				str := value[1:]
-				value, err = accountCtx.GetString(str)
-			}
-			switch k {
-			case "accountAccessConsent":
-				consent := getAccountConsent(refs, value)
-				localCtx.PutStringSlice("permissions", consent)
-			case "tokenRequestScope":
-				localCtx.PutString("tokenScope", value)
-			default:
-				localCtx.PutString(k, value)
-			}
+		localCtx, err := script.processParameters(&refs, &accountCtx)
+		if err != nil {
+			return nil, err
 		}
-
 		consents := []string{}
-		tc, _ := testCaseBuilder(script, refs.References, &localCtx, consents, baseurl)
+		tc, _ := testCaseBuilder(script, refs.References, localCtx, consents, baseurl)
+		tc.ProcessReplacementFields(localCtx, false)
 		tests = append(tests, tc)
 	}
 
 	return tests, nil
+}
+
+func (s *Script) processParameters(refs *References, resources *model.Context) (*model.Context, error) {
+	localCtx := model.Context{}
+	var err error
+
+	for k, value := range s.Parameters {
+		if strings.Contains(value, "$") {
+			str := value[1:]
+			value, err = resources.GetString(str)
+			if err != nil {
+				continue
+			}
+		}
+		switch k {
+		case "accountAccessConsent":
+			consent := getAccountConsent(refs, value)
+			localCtx.PutStringSlice("permissions", consent)
+		case "tokenRequestScope":
+			localCtx.PutString("tokenScope", value)
+		default:
+			localCtx.PutString(k, value)
+		}
+	}
+
+	return &localCtx, nil
+
 }
 
 func testCaseBuilder(s Script, refs map[string]Reference, ctx *model.Context, consents []string, baseurl string) (model.TestCase, error) {
@@ -178,7 +193,7 @@ func testCaseBuilder(s Script, refs map[string]Reference, ctx *model.Context, co
 	return tc, nil
 }
 
-func getAccountConsent(refs References, vx string) []string {
+func getAccountConsent(refs *References, vx string) []string {
 	ref := refs.References[vx]
 	return ref.Permissions
 }
@@ -196,21 +211,21 @@ func loadGenerationResources() (Scripts, References, AccountData, error) {
 }
 
 func loadScriptFiles() (Scripts, References, AccountData, error) {
-	// sc, err := loadScripts("../../manifests/ob_3.1_accounts_transactions_fca.json")
-	// if err != nil {
-	// 	sc, err = loadScripts("manifests/ob_3.1_accounts_transactions_fca.json")
-	// 	if err != nil {
-	// 		return Scripts{}, References{}, AccountData{}, err
-	// 	}
-	// }
-
-	sc, err := loadScripts("testdata/oneAccountScript.json")
+	sc, err := loadScripts("../../manifests/ob_3.1_accounts_transactions_fca.json")
 	if err != nil {
-		sc, err = loadScripts("pkg/manifest/testdata/oneAccountScript.json")
+		sc, err = loadScripts("manifests/ob_3.1_accounts_transactions_fca.json")
 		if err != nil {
 			return Scripts{}, References{}, AccountData{}, err
 		}
 	}
+
+	// sc, err := loadScripts("testdata/oneAccountScript.json")
+	// if err != nil {
+	// 	sc, err = loadScripts("pkg/manifest/testdata/oneAccountScript.json")
+	// 	if err != nil {
+	// 		return Scripts{}, References{}, AccountData{}, err
+	// 	}
+	// }
 
 	refs, err := loadReferences("../../manifests/assertions.json")
 	if err != nil {

@@ -364,6 +364,7 @@ func (t *TestCase) ProcessReplacementFields(ctx *Context, showReplacementErrors 
 	}
 
 	for idx, match := range t.Expect.Matches {
+		fmt.Println("Processing match " + match.String())
 		match.ProcessReplacementFields(ctx)
 		t.Expect.Matches[idx] = match
 	}
