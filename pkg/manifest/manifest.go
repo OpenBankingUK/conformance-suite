@@ -130,8 +130,6 @@ func MapDiscoveryEndpointsToManifestTestIDs(disco *discovery.Model, mf Scripts, 
 func FindUnmatchedManifestTests(mf Scripts, mappedTests DiscoveryPathsTestIDs, mpParams map[string]string) []string {
 	var result []string
 	for _, script := range mf.Scripts {
-
-		// uriFixed := strings.Replace(script.URI, "$accountId", "500000000000000000000004", -1)
 		uriFixed := replaceParams(script.URI, mpParams)
 		uriFixed = "/" + uriFixed
 
