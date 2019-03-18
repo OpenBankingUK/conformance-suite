@@ -619,8 +619,8 @@ describe('web/src/store/modules/config', () => {
 
         await actions.removeResourceAccountID(store, 0);
         await actions.removeResourceStatementID(store, 0);
-        await actions.addResourceAccountID(store, { account_id: 'account-id' });
-        await actions.addResourceStatementID(store, { statement_id: 'statement-id' });
+        await store.commit(types.ADD_RESOURCE_ACCOUNT_ID, { account_id: 'account-id' });
+        await store.commit(types.ADD_RESOURCE_STATEMENT_ID, { statement_id: 'statement-id' });
 
         const valid = await actions.validateConfiguration(store);
         expect(valid).toEqual(true);
@@ -648,8 +648,8 @@ describe('web/src/store/modules/config', () => {
 
         await actions.removeResourceAccountID(store, 0);
         await actions.removeResourceStatementID(store, 0);
-        await actions.addResourceAccountID(store, { account_id: 'account-id' });
-        await actions.addResourceStatementID(store, { statement_id: 'statement-id' });
+        await store.commit(types.ADD_RESOURCE_ACCOUNT_ID, { account_id: 'account-id' });
+        await store.commit(types.ADD_RESOURCE_STATEMENT_ID, { statement_id: 'statement-id' });
 
         const valid = await actions.validateConfiguration(store);
         expect(valid).toEqual(false);
@@ -695,8 +695,8 @@ describe('web/src/store/modules/config', () => {
 
         await actions.removeResourceAccountID(store, 0);
         await actions.removeResourceStatementID(store, 0);
-        await actions.addResourceAccountID(store, { account_id: 'account-id' });
-        await actions.addResourceStatementID(store, { statement_id: 'statement-id' });
+        await store.commit(types.ADD_RESOURCE_ACCOUNT_ID, { account_id: 'account-id' });
+        await store.commit(types.ADD_RESOURCE_STATEMENT_ID, { statement_id: 'statement-id' });
 
         store.commit(types.SET_CLIENT_ID, '8672384e-9a33-439f-8924-67bb14340d71');
         store.commit(types.SET_CLIENT_SECRET, '2cfb31a3-5443-4e65-b2bc-ef8e00266a77');

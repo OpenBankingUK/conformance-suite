@@ -242,7 +242,7 @@ export default {
         // Because the text fields in the UI are bound to this store, there should always be at least one
         // Item in the list. If list is empty, add an empty item so that user can input.
         if (this.$store.state.config.configuration.resource_ids.account_ids.length === 0) {
-          this.addResourceAccountIDField('');
+          this.$store.commit('config/ADD_RESOURCE_STATEMENT_ID', { statement_id: '' });
         }
         return this.$store.state.config.configuration.resource_ids.account_ids;
       },
@@ -255,7 +255,7 @@ export default {
       // Item in the list. If list is empty, add an empty item so that user can input.
       get() {
         if (this.$store.state.config.configuration.resource_ids.statement_ids.length === 0) {
-          this.addResourceStatementIDField('');
+          this.$store.commit('config/ADD_RESOURCE_ACCOUNT_ID', { account_id: '' });
         }
         return this.$store.state.config.configuration.resource_ids.statement_ids;
       },
