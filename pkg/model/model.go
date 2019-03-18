@@ -362,6 +362,13 @@ func (t *TestCase) ProcessReplacementFields(ctx *Context, showReplacementErrors 
 			t.logReplaceError("ContextName", err, logger, showReplacementErrors)
 		}
 	}
+
+	for idx, match := range t.Expect.Matches {
+		fmt.Println("Processing match " + match.String())
+		match.ProcessReplacementFields(ctx)
+		t.Expect.Matches[idx] = match
+	}
+
 }
 
 func (t *TestCase) logReplaceError(field string, err error, logger *logrus.Logger, showReplacementErrors bool) {
