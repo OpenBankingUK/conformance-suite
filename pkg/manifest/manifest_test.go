@@ -147,7 +147,7 @@ func TestDiscoveryEndpointsMapToManifestCorrectly(t *testing.T) {
 	require.Nil(err)
 
 	mpParams := map[string]string{
-		"$AccountID": "acct-123",
+		"$AccountID":   "acct-123",
 		"$StatementID": "stmt-123",
 	}
 
@@ -162,7 +162,7 @@ func TestDiscoveryEndpointsMapToManifestCorrectly(t *testing.T) {
 			"GET": {"OB-301-DOP-206111"},
 		},
 		"/accounts/acct-123/statements/stmt-123": {
-			"GET":  {"OB-301-DOP-2061133"},
+			"GET": {"OB-301-DOP-2061133"},
 		},
 	}
 
@@ -188,7 +188,7 @@ func TestUnMappedManifestItemsReportedCorrectly(t *testing.T) {
 			"openidConfigurationUri": "https://modelobankauth2018.o3bank.co.uk:4101/.well-known/openid-configuration",
 			"resourceBaseUri": "https://modelobank2018.o3bank.co.uk:4501/open-banking/v3.1/aisp",
 			"resourceIds": {
-				"ConsentId": "$consent_id",
+				"ConsentId": "$consent_id"
 			},
 			"endpoints": [{
 					"method": "HEAD",
@@ -309,7 +309,7 @@ func TestUnMappedManifestItemsReportedCorrectly(t *testing.T) {
 
 	mpResults := MapDiscoveryEndpointsToManifestTestIDs(disco, mf, mpParams)
 
-	unmatched := FindUnmatchedManifestTests(mf, mpResults)
+	unmatched := FindUnmatchedManifestTests(mf, mpResults, mpParams)
 
 	exp := []string{"unmapped-test-id", "OB-301-DOP-206111"}
 

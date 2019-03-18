@@ -127,14 +127,15 @@ func MapDiscoveryEndpointsToManifestTestIDs(disco *discovery.Model, mf Scripts, 
 
 // FindUnmatchedManifestTests
 // Find all the TestIDs from Manifest that have not been matched against an endpoint in the discovery model
-func FindUnmatchedManifestTests(mf Scripts, mpParams DiscoveryPathsTestIDs) []string {
+func FindUnmatchedManifestTests(mf Scripts, mappedTests DiscoveryPathsTestIDs, mpParams map[string]string) []string {
 	var result []string
 	for _, script := range mf.Scripts {
 
-		uriFixed := strings.Replace(script.URI, "$accountId", "500000000000000000000004", -1)
+		// uriFixed := strings.Replace(script.URI, "$accountId", "500000000000000000000004", -1)
+		uriFixed := replaceParams(script.URI, mpParams)
 		uriFixed = "/" + uriFixed
 
-		if methods, ok := mpParams[uriFixed]; ok {
+		if methods, ok := mappedTests[uriFixed]; ok {
 			for method, testIDs := range methods {
 				if strings.ToLower(method) == strings.ToLower(script.Method) {
 					if !isInArray(script.ID, testIDs) {
