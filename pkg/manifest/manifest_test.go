@@ -75,6 +75,23 @@ func TestDiscoveryEndpointsMapToManifestCorrectly(t *testing.T) {
 				"tokenRequestScope": "accounts",
                 "accountId": "$consentedAccountId"         
             },
+            "uri": "/accounts/{AccountId}",
+            "uriImplementation": "mandatory",
+            "resource": "Account",
+            "asserts": ["OB3ACCAssertOnSuccess"],
+            "method":"get",
+            "schemaCheck": true
+        },
+		{
+			"description": "Minimal data returned for a given account using the ReadAccountsBasic permission, status and headers.",
+            "id": "OB-301-ACC-120999",
+            "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937623627/Accounts+v3.1#Accountsv3.1-PermissionCodes",
+            "detail" : "Checks that the resource differs depending on the permissions (ReadAccountsBasic and ReadAccountsDetail) used to access the resource with additional schema checks on status and headers.",
+			"parameters": {
+				"accountAccessConsent": "basicAccountAccessConsent",
+				"tokenRequestScope": "accounts",
+                "accountId": "$consentedAccountId"         
+            },
             "uri": "/accounts/{accountId}",
             "uriImplementation": "mandatory",
             "resource": "Account",
@@ -149,16 +166,10 @@ func TestDiscoveryEndpointsMapToManifestCorrectly(t *testing.T) {
 	mpResults := MapDiscoveryEndpointsToManifestTestIDs(disco, mf)
 
 	exp := DiscoveryPathsTestIDs{
-		"/accounts/{accountid}": {
-			"GET":  {"OB-301-ACC-120382"},
-			"HEAD": {"OB-301-ACC-352203"},
-		},
-		"/domestic-payment-consents": {
-			"GET": {"OB-301-DOP-206111"},
-		},
-		"/accounts/{accountid}/statements/{statementid}": {
-			"GET": {"OB-301-DOP-2061133"},
-		},
+		"GET /accounts/{AccountId}":                          []string{"OB-301-ACC-120382", "OB-301-ACC-120999"},
+		"HEAD /accounts/{AccountId}":                         []string{"OB-301-ACC-352203"},
+		"GET /domestic-payment-consents":                     []string{"OB-301-DOP-206111"},
+		"GET /accounts/{AccountId}/statements/{StatementId}": []string{"OB-301-DOP-2061133"},
 	}
 
 	require.Equal(exp, mpResults)

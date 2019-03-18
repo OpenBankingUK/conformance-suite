@@ -4,6 +4,7 @@ import (
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"strings"
 )
@@ -70,7 +71,7 @@ func LoadScripts(filename string) (Scripts, error) {
 }
 
 // DiscoveryPathsTestIDs -
-type DiscoveryPathsTestIDs map[string]map[string][]string
+type DiscoveryPathsTestIDs map[string][]string
 
 // MapDiscoveryEndpointsToManifestTestIDs creates a mapping such that:
 // - For each [endpoint + method] in the discovery file
@@ -97,17 +98,15 @@ func MapDiscoveryEndpointsToManifestTestIDs(disco *discovery.Model, mf Scripts) 
 	// Iterate the discoveryModel.discoveryItems.endpoints
 	for _, discoItem := range disco.DiscoveryModel.DiscoveryItems {
 		for _, discoEndpoint := range discoItem.Endpoints {
-			discoEpLowerCase := strings.ToLower(discoEndpoint.Path)
-
 			// For each discovery item, iterate all the `uri` fields and see if there is a match.
 			for _, mfScript := range mf.Scripts {
-				if strings.EqualFold(discoEpLowerCase, mfScript.URI) &&
+				if strings.EqualFold(discoEndpoint.Path, mfScript.URI) &&
 					strings.EqualFold(discoEndpoint.Method, mfScript.Method) {
-					if _, ok := mapURLTests[discoEpLowerCase]; !ok {
-						mapURLTests[discoEpLowerCase] = map[string][]string{}
+					key := fmt.Sprintf("%s %s", strings.ToUpper(mfScript.Method), discoEndpoint.Path)
+					if _, ok := mapURLTests[key]; !ok {
+						mapURLTests[key] = []string{}
 					}
-					mfMethod := strings.ToUpper(mfScript.Method)
-					mapURLTests[discoEpLowerCase][mfMethod] = append(mapURLTests[discoEpLowerCase][mfMethod], mfScript.ID)
+					mapURLTests[key] = append(mapURLTests[key], mfScript.ID)
 				}
 			}
 		}
@@ -120,15 +119,14 @@ func MapDiscoveryEndpointsToManifestTestIDs(disco *discovery.Model, mf Scripts) 
 func FindUnmatchedManifestTests(mf Scripts, mappedTests DiscoveryPathsTestIDs) []string {
 	var result []string
 	for _, script := range mf.Scripts {
-		if methods, ok := mappedTests[strings.ToLower(script.URI)]; ok {
-			for method, testIDs := range methods {
-				if strings.EqualFold(method, script.Method) {
-					if !isInArray(script.ID, testIDs) {
-						result = append(result, script.ID)
-					}
-				}
+		i := 0
+		for _, v := range mappedTests {
+			if isInArray(script.ID, v) {
+				continue
 			}
-		} else {
+			i++
+		}
+		if i == len(mappedTests) {
 			result = append(result, script.ID)
 		}
 	}
