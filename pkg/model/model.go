@@ -409,3 +409,16 @@ func (t *TestCase) processReplacementClaims(ctx *Context) {
 		}
 	}
 }
+
+// Clone - preforms deep copy of expect object
+func (e *Expect) Clone() Expect {
+	ex := Expect{}
+	ex.StatusCode = e.StatusCode
+	ex.SchemaValidation = e.SchemaValidation
+	for k, match := range e.Matches {
+		_, _ = k, match
+		m := match.Clone()
+		ex.Matches = append(ex.Matches, m)
+	}
+	return ex
+}

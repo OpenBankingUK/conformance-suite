@@ -2,7 +2,7 @@
 .ignore/
 
 *.env*
-
+suite.log
 # ignore binaries generated from `go build`
 /server
 /conformance-suite

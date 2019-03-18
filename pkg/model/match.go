@@ -547,3 +547,29 @@ func (m *Match) ProcessReplacementFields(ctx *Context) {
 	fmt.Printf("Value after %s\n", m.Value)
 	m.ContextName, _ = replaceContextField(m.ContextName, ctx)
 }
+
+// Clone duplicates a Match into a separate independent object
+// TODO: consider cloning the contextPut
+func (m *Match) Clone() Match {
+	var bodylen int64
+	if m.BodyLength != nil {
+		bodylen = *m.BodyLength
+	}
+	ma := Match{Authorisation: m.Authorisation,
+		BodyLength:      &bodylen,
+		ContextName:     m.ContextName,
+		Count:           m.Count,
+		Custom:          m.Custom,
+		Description:     m.Description,
+		Header:          m.Header,
+		HeaderPresent:   m.HeaderPresent,
+		JSON:            m.JSON,
+		MatchType:       m.MatchType,
+		Numeric:         m.Numeric,
+		Regex:           m.Regex,
+		Result:          m.Result,
+		ReplaceEndpoint: m.ReplaceEndpoint,
+		Value:           m.Value,
+	}
+	return ma
+}
