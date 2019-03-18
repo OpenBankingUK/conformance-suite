@@ -64,45 +64,6 @@ type PisData struct {
 	MADebtorAccount map[string]string `json:"MADebtorAccount,omitempty"`
 }
 
-func loadScripts(filename string) (Scripts, error) {
-	plan, err := ioutil.ReadFile(filename)
-	if err != nil {
-		return Scripts{}, err
-	}
-	var m Scripts
-	err = json.Unmarshal(plan, &m)
-	if err != nil {
-		return Scripts{}, err
-	}
-	return m, nil
-}
-
-func loadReferences(filename string) (References, error) {
-	plan, err := ioutil.ReadFile(filename)
-	if err != nil {
-		return References{}, err
-	}
-	var m References
-	err = json.Unmarshal(plan, &m)
-	if err != nil {
-		return References{}, err
-	}
-	return m, nil
-}
-
-func loadTestPlan(filename string) (TestPlan, error) {
-	plan, err := ioutil.ReadFile(filename)
-	if err != nil {
-		return TestPlan{}, err
-	}
-	var m TestPlan
-	err = json.Unmarshal(plan, &m)
-	if err != nil {
-		return TestPlan{}, err
-	}
-	return m, nil
-}
-
 // GenerateTestCases examines a manifest file, asserts file and resources definition, then builds the associated test cases
 func GenerateTestCases(spec string, baseurl string) ([]model.TestCase, error) {
 	scripts, refs, resources, err := loadGenerationResources()
@@ -255,6 +216,45 @@ func loadAccountData(filename string) (AccountData, error) {
 	err = json.Unmarshal(plan, &m)
 	if err != nil {
 		return AccountData{}, err
+	}
+	return m, nil
+}
+
+func loadScripts(filename string) (Scripts, error) {
+	plan, err := ioutil.ReadFile(filename)
+	if err != nil {
+		return Scripts{}, err
+	}
+	var m Scripts
+	err = json.Unmarshal(plan, &m)
+	if err != nil {
+		return Scripts{}, err
+	}
+	return m, nil
+}
+
+func loadReferences(filename string) (References, error) {
+	plan, err := ioutil.ReadFile(filename)
+	if err != nil {
+		return References{}, err
+	}
+	var m References
+	err = json.Unmarshal(plan, &m)
+	if err != nil {
+		return References{}, err
+	}
+	return m, nil
+}
+
+func loadTestPlan(filename string) (TestPlan, error) {
+	plan, err := ioutil.ReadFile(filename)
+	if err != nil {
+		return TestPlan{}, err
+	}
+	var m TestPlan
+	err = json.Unmarshal(plan, &m)
+	if err != nil {
+		return TestPlan{}, err
 	}
 	return m, nil
 }
