@@ -95,30 +95,29 @@ func MapDiscoveryEndpointsToManifestTestIDs(disco *discovery.Model, mf Scripts, 
 	mapURLTests := make(DiscoveryPathsTestIDs)
 
 	// Iterate the discoveryModel.discoveryItems.endpoints
-	for _, v1 := range disco.DiscoveryModel.DiscoveryItems {
-		for _, v2 := range v1.Endpoints {
-			v2PathFixed := fixReferenceStructure(v2.Path)
+	for _, discoItem := range disco.DiscoveryModel.DiscoveryItems {
+		for _, discoEndpoint := range discoItem.Endpoints {
+			discoEndpointFixed := fixReferenceStructure(discoEndpoint.Path)
 
 			// For each discovery item, iterate all the `uri` fields and see if there is a match.
-			for _, v3 := range mf.Scripts {
-				v2Method := strings.ToUpper(v2.Method)
-				v3Method := strings.ToUpper(v3.Method)
+			for _, mfScript := range mf.Scripts {
+				discoMethod := strings.ToUpper(discoEndpoint.Method)
+				mfMethod := strings.ToUpper(mfScript.Method)
 
 				// Need to prepend '/' as manifest URIs do not contain it.
-				v3URIFixed := "/" + v3.URI
-				if strings.ToLower(v2PathFixed) == strings.ToLower(v3URIFixed) &&
-					v2Method == v3Method {
+				mfURIFixed := "/" + mfScript.URI
+				if strings.ToLower(discoEndpointFixed) == strings.ToLower(mfURIFixed) &&
+					discoMethod == mfMethod {
+					discoEndpointFixed = replaceParams(discoEndpointFixed, mpParams)
 
-					v2PathFixed = replaceParams(v2PathFixed, mpParams)
-
-					if _, ok := mapURLTests[v2PathFixed]; !ok {
-						mapURLTests[v2PathFixed] = map[string][]string{}
+					if _, ok := mapURLTests[discoEndpointFixed]; !ok {
+						mapURLTests[discoEndpointFixed] = map[string][]string{}
 					}
 
-					if _, ok := mapURLTests[v2PathFixed]; !ok {
-						mapURLTests[v2PathFixed][v3Method] = make([]string, 0)
+					if _, ok := mapURLTests[discoEndpointFixed]; !ok {
+						mapURLTests[discoEndpointFixed][mfMethod] = make([]string, 0)
 					}
-					mapURLTests[v2PathFixed][v3Method] = append(mapURLTests[v2PathFixed][v3Method], v3.ID)
+					mapURLTests[discoEndpointFixed][mfMethod] = append(mapURLTests[discoEndpointFixed][mfMethod], mfScript.ID)
 				}
 			}
 		}
