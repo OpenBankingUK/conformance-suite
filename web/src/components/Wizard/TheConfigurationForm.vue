@@ -45,7 +45,7 @@
                 @click="removeResourceAccountIDField(index)">-</b-button>
             </b-input-group-prepend>
             <b-form-input
-              id="resource_account_ids"
+              :id="`resource_account_ids-${index}`"
               v-model="resource_account_ids[index].account_id"
               :state="isNotEmpty(item.account_id)"
               label="Resource - Account IDs"
@@ -76,7 +76,7 @@
                 @click="removeResourceStatementIDField(index)">-</b-button>
             </b-input-group-prepend>
             <b-form-input
-              id="resource_statement_ids"
+              :id="`resource_statement_ids-${index}`"
               v-model="resource_statement_ids[index].statement_id"
               :state="isNotEmpty(item.statement_id)"
               label="Resource - Statement IDs"
@@ -355,9 +355,7 @@ export default {
   },
   methods: {
     ...mapActions('config', [
-      'addResourceAccountID',
       'removeResourceAccountID',
-      'addResourceStatementID',
       'removeResourceStatementID',
     ]),
     isNotEmpty(value) {
@@ -371,13 +369,13 @@ export default {
       }
     },
     addResourceAccountIDField(value) {
-      this.addResourceAccountID({ account_id: value });
+      this.$store.commit('config/ADD_RESOURCE_ACCOUNT_ID', { account_id: value });
     },
     removeResourceAccountIDField(index) {
       this.removeResourceAccountID(index);
     },
     addResourceStatementIDField(value) {
-      this.addResourceStatementID({ statement_id: value });
+      this.$store.commit('config/ADD_RESOURCE_STATEMENT_ID', { statement_id: value });
     },
     removeResourceStatementIDField(index) {
       this.removeResourceStatementID(index);
