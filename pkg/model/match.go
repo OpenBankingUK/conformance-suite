@@ -536,38 +536,3 @@ func checkAuthorisation(m *Match, tc *TestCase) (bool, error) {
 func checkCustom(m *Match, tc *TestCase) (bool, error) {
 	return true, nil //TODO: implement custom checks
 }
-
-// ProcessReplacementFields allows parameter replacement within match string fields
-func (m *Match) ProcessReplacementFields(ctx *Context) {
-	m.Header, _ = replaceContextField(m.Header, ctx)
-	m.HeaderPresent, _ = replaceContextField(m.HeaderPresent, ctx)
-	m.JSON, _ = replaceContextField(m.JSON, ctx)
-	m.Value, _ = replaceContextField(m.Value, ctx)
-	m.ContextName, _ = replaceContextField(m.ContextName, ctx)
-}
-
-// Clone duplicates a Match into a separate independent object
-// TODO: consider cloning the contextPut
-func (m *Match) Clone() Match {
-	var bodylen int64
-	if m.BodyLength != nil {
-		bodylen = *m.BodyLength
-	}
-	ma := Match{Authorisation: m.Authorisation,
-		BodyLength:      &bodylen,
-		ContextName:     m.ContextName,
-		Count:           m.Count,
-		Custom:          m.Custom,
-		Description:     m.Description,
-		Header:          m.Header,
-		HeaderPresent:   m.HeaderPresent,
-		JSON:            m.JSON,
-		MatchType:       m.MatchType,
-		Numeric:         m.Numeric,
-		Regex:           m.Regex,
-		Result:          m.Result,
-		ReplaceEndpoint: m.ReplaceEndpoint,
-		Value:           m.Value,
-	}
-	return ma
-}

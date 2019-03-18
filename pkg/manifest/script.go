@@ -103,15 +103,63 @@ func loadTestPlan(filename string) (TestPlan, error) {
 	return m, nil
 }
 
-func testCaseBuilder(s Script, refs map[string]Reference, ctx *model.Context, consents []string) (model.TestCase, error) {
-	tc := model.TestCase{}
+// GenerateTestCases examines a manifest file, asserts file and resources definition, then builds the associated test cases
+func GenerateTestCases(spec string, baseurl string) ([]model.TestCase, error) {
+	scripts, refs, resources, err := loadGenerationResources()
+	if err != nil {
+		return nil, err
+	}
+
+	// accumulate context data from accountsData ...
+	accountCtx := model.Context{}
+	for k, v := range resources.Ais {
+		accountCtx.PutString(k, v)
+	}
+
+	tests := []model.TestCase{}
+	for _, script := range scripts.Scripts {
+		localCtx := model.Context{}
+
+		for k, value := range script.Parameters {
+			if strings.Contains(value, "$") {
+				str := value[1:]
+				value, err = accountCtx.GetString(str)
+			}
+			switch k {
+			case "accountAccessConsent":
+				consent := getAccountConsent(refs, value)
+				localCtx.PutStringSlice("permissions", consent)
+			case "tokenRequestScope":
+				localCtx.PutString("tokenScope", value)
+			default:
+				localCtx.PutString(k, value)
+			}
+		}
+
+		consents := []string{}
+		tc, _ := testCaseBuilder(script, refs.References, &localCtx, consents, baseurl)
+		tests = append(tests, tc)
+	}
+
+	return tests, nil
+}
+
+func testCaseBuilder(s Script, refs map[string]Reference, ctx *model.Context, consents []string, baseurl string) (model.TestCase, error) {
+	tc := model.MakeTestCase()
 	tc.ID = s.ID
 	tc.Name = s.Description
-	tc.Input = buildInputSection(s)
+
+	//TODO: make these more configurable - header also get set in buildInput Section
+	tc.Input.Headers["x-fapi-financial-id"] = "$fapi_financial_id"
+	tc.Input.Headers["x-fapi-interaction-id"] = "b4405450-febe-11e8-80a5-0fcebb1574e1"
+	buildInputSection(s, &tc.Input)
+
 	tc.Purpose = s.Detail
 	tc.Context = model.Context{}
 
 	tc.Context.PutContext(ctx)
+	tc.Context.PutString("baseurl", baseurl)
+	tc.InjectBearerToken("$access_token")
 
 	for _, a := range s.Asserts {
 		ref, exists := refs[a]
@@ -122,9 +170,11 @@ func testCaseBuilder(s Script, refs map[string]Reference, ctx *model.Context, co
 		}
 		tc.Expect = ref.Expect
 		tc.Expect.SchemaValidation = s.SchemaCheck
+
 	}
 
 	tc.ProcessReplacementFields(ctx, false)
+	tc.ProcessReplacementFields(&tc.Context, false)
 	return tc, nil
 }
 
@@ -133,12 +183,63 @@ func getAccountConsent(refs References, vx string) []string {
 	return ref.Permissions
 }
 
-func buildInputSection(s Script) model.Input {
-	i := model.Input{}
+func buildInputSection(s Script, i *model.Input) {
 	i.Method = strings.ToUpper(s.Method)
 	i.Endpoint = s.URI
 	for k, v := range s.Headers {
 		i.Headers[k] = v
 	}
-	return i
+}
+
+func loadGenerationResources() (Scripts, References, AccountData, error) {
+	return loadScriptFiles()
+}
+
+func loadScriptFiles() (Scripts, References, AccountData, error) {
+	// sc, err := loadScripts("../../manifests/ob_3.1_accounts_transactions_fca.json")
+	// if err != nil {
+	// 	sc, err = loadScripts("manifests/ob_3.1_accounts_transactions_fca.json")
+	// 	if err != nil {
+	// 		return Scripts{}, References{}, AccountData{}, err
+	// 	}
+	// }
+
+	sc, err := loadScripts("testdata/oneAccountScript.json")
+	if err != nil {
+		sc, err = loadScripts("pkg/manifest/testdata/oneAccountScript.json")
+		if err != nil {
+			return Scripts{}, References{}, AccountData{}, err
+		}
+	}
+
+	refs, err := loadReferences("../../manifests/assertions.json")
+	if err != nil {
+		refs, err = loadReferences("manifests/assertions.json")
+		if err != nil {
+			return Scripts{}, References{}, AccountData{}, err
+		}
+	}
+
+	ad, err := loadAccountData("testdata/resources.json") // temp integration shiv
+	if err != nil {
+		ad, err = loadAccountData("pkg/manifest/testdata/resources.json")
+		if err != nil {
+			return Scripts{}, References{}, AccountData{}, err
+		}
+	}
+
+	return sc, refs, ad, nil
+}
+
+func loadAccountData(filename string) (AccountData, error) {
+	plan, err := ioutil.ReadFile(filename)
+	if err != nil {
+		return AccountData{}, err
+	}
+	var m AccountData
+	err = json.Unmarshal(plan, &m)
+	if err != nil {
+		return AccountData{}, err
+	}
+	return m, nil
 }

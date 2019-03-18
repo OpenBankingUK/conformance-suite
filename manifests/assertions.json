@@ -2,20 +2,59 @@
 	"references": {
         "OB3GLOAssertOn200": {
 			"expect": {
-				"status-code": 200,
-				"detail":"Expected status code 200 (OK)."
+				"status-code": 201,
+				"matches": [{
+                    "header-present": "x-fapi-interaction-id",
+                    "detail": "An RFC4122 UID used as a correlation id. The ASPSP 'plays back' the value given. If a value is not given the ASPSP MUST play back their own UUID."
+                    
+                }, 
+                {
+                    "JSON": "json.Data.Status",
+                    "Value": "AcceptedSettlementCompleted"
+                }
+            ]
 			}
 		},
 		"OB3GLOAssertOn201": {
 			"expect": {
-				"status-code": 201,
-				"detail":"Expected status code 201 (Created)"
+				"status-code": 200,
+				"matches": [{
+                    "header-present": "x-fapi-interaction-id",
+                    "detail": "An RFC4122 UID used as a correlation id. The ASPSP 'plays back' the value given. If a value is not given the ASPSP MUST play back their own UUID."
+                    
+				}, {
+					"custom": "areResourcesConsented"
+				}]
 			}
 		},
 		"OB3GLOAssertOn400": {
 			"expect": {
-				"status-code": 400,
-				"detail":"Expected status code 400 (Not Found)."
+				"status-code": 200,
+				"matches": [{
+                    "header-present": "x-fapi-interaction-id",
+                    "detail": "An RFC4122 UID used as a correlation id. The ASPSP 'plays back' the value given. If a value is not given the ASPSP MUST play back their own UUID."
+                    
+				}, {
+					"custom": "areResourcesConsented"
+				}, {
+					"custom": "hasAllConsentedResources"
+				}, {
+					"custom": "hasAccountsPermissionsApplied"
+				}]
+			}
+        },
+        "OB3BENAssertOnSuccess": {
+			"expect": {
+				"status-code": 200,
+				"matches": [{
+                    "header-present": "x-fapi-interaction-id",
+                    "detail": "An RFC4122 UID used as a correlation id. The ASPSP 'plays back' the value given. If a value is not given the ASPSP MUST play back their own UUID."
+                    
+				}, {
+					"custom": "areResourcesConsented"
+				}, {
+					"custom": "hasBeneficiaryPermissionsApplied"
+				}]
 			}
 		},
 		"OB3GLOAssertOn401": {
