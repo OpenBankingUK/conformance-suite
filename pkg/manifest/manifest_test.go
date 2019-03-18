@@ -75,7 +75,7 @@ func TestDiscoveryEndpointsMapToManifestCorrectly(t *testing.T) {
 				"tokenRequestScope": "accounts",
                 "accountId": "$consentedAccountId"         
             },
-            "uri": "accounts/$accountId",
+            "uri": "/accounts/{accountId}",
             "uriImplementation": "mandatory",
             "resource": "Account",
             "asserts": ["OB3ACCAssertOnSuccess"],
@@ -92,7 +92,7 @@ func TestDiscoveryEndpointsMapToManifestCorrectly(t *testing.T) {
 				"tokenRequestScope": "accounts",
 				"accountId": "$consentedAccountId"
             },
-            "uri": "accounts/$accountId",
+            "uri": "/accounts/{accountId}",
             "uriImplementation": "mandatory",
 			"resource": "Account",
             "asserts": ["OB3ACCAssertOnSuccess"],
@@ -109,7 +109,7 @@ func TestDiscoveryEndpointsMapToManifestCorrectly(t *testing.T) {
                 "paymentType": "domestic-payment-consents",
                 "post" : "minimalDomesticPaymentConsent"    
             },
-            "uri": "domestic-payment-consents",
+            "uri": "/domestic-payment-consents",
             "uriImplementation": "mandatory",
             "resource": "DomesticPayment",
             "asserts": ["OB3DOPAssertOnSuccess", "OB3GLOAAssertConsentId"],
@@ -127,9 +127,9 @@ func TestDiscoveryEndpointsMapToManifestCorrectly(t *testing.T) {
                 "paymentType": "domestic-payment-consents",
                 "post" : "minimalDomesticPaymentConsent"    
             },
-            "uri": "accounts/$accountId/statements/$statementId",
+            "uri": "/accounts/{accountId}/statements/{statementId}",
             "uriImplementation": "mandatory",
-            "resource": "accounts/$accountId/statements/$statementId",
+            "resource": "/accounts/{accountId}/statements/{statementId}",
             "asserts": ["OB3DOPAssertOnSuccess", "OB3GLOAAssertConsentId"],
             "keepContext": ["OB3GLOAAssertConsentId"],
             "method":"get",
@@ -146,22 +146,17 @@ func TestDiscoveryEndpointsMapToManifestCorrectly(t *testing.T) {
 	disco, err := discovery.UnmarshalDiscoveryJSON(discoJSON)
 	require.Nil(err)
 
-	mpParams := map[string]string{
-		"$AccountID":   "acct-123",
-		"$StatementID": "stmt-123",
-	}
-
-	mpResults := MapDiscoveryEndpointsToManifestTestIDs(disco, mf, mpParams)
+	mpResults := MapDiscoveryEndpointsToManifestTestIDs(disco, mf)
 
 	exp := DiscoveryPathsTestIDs{
-		"/accounts/acct-123": {
+		"/accounts/{accountid}": {
 			"GET":  {"OB-301-ACC-120382"},
 			"HEAD": {"OB-301-ACC-352203"},
 		},
 		"/domestic-payment-consents": {
 			"GET": {"OB-301-DOP-206111"},
 		},
-		"/accounts/acct-123/statements/stmt-123": {
+		"/accounts/{accountid}/statements/{statementid}": {
 			"GET": {"OB-301-DOP-2061133"},
 		},
 	}
@@ -236,7 +231,7 @@ func TestUnMappedManifestItemsReportedCorrectly(t *testing.T) {
 				"tokenRequestScope": "accounts",
                 "accountId": "$consentedAccountId"         
             },
-            "uri": "accounts/$accountId",
+            "uri": "/accounts/{accountId}",
             "uriImplementation": "mandatory",
             "resource": "Account",
             "asserts": ["OB3ACCAssertOnSuccess"],
@@ -253,7 +248,7 @@ func TestUnMappedManifestItemsReportedCorrectly(t *testing.T) {
 				"tokenRequestScope": "accounts",
 				"accountId": "$consentedAccountId"
             },
-            "uri": "accounts/$accountId",
+            "uri": "/accounts/{accountId}",
             "uriImplementation": "mandatory",
 			"resource": "Account",
             "asserts": ["OB3ACCAssertOnSuccess"],
@@ -266,7 +261,7 @@ func TestUnMappedManifestItemsReportedCorrectly(t *testing.T) {
             "refURI": "",
             "detail" : "",
 			"parameters": {},
-            "uri": "FOO-BAR",
+            "uri": "/FOO-BAR",
             "uriImplementation": "mandatory",
 			"resource": "Account",
             "asserts": [],
@@ -283,7 +278,7 @@ func TestUnMappedManifestItemsReportedCorrectly(t *testing.T) {
                 "paymentType": "domestic-payment-consents",
                 "post" : "minimalDomesticPaymentConsent"    
             },
-            "uri": "domestic-payment-consents",
+            "uri": "/domestic-payment-consents",
             "uriImplementation": "mandatory",
             "resource": "DomesticPayment",
             "asserts": ["OB3DOPAssertOnSuccess", "OB3GLOAAssertConsentId"],
@@ -303,13 +298,9 @@ func TestUnMappedManifestItemsReportedCorrectly(t *testing.T) {
 	disco, err := discovery.UnmarshalDiscoveryJSON(discoJSON)
 	require.Nil(err)
 
-	mpParams := map[string]string{
-		"$AccountID": "acct-123",
-	}
+	mpResults := MapDiscoveryEndpointsToManifestTestIDs(disco, mf)
 
-	mpResults := MapDiscoveryEndpointsToManifestTestIDs(disco, mf, mpParams)
-
-	unmatched := FindUnmatchedManifestTests(mf, mpResults, mpParams)
+	unmatched := FindUnmatchedManifestTests(mf, mpResults)
 
 	exp := []string{"unmapped-test-id", "OB-301-DOP-206111"}
 

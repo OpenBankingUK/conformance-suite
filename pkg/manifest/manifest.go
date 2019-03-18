@@ -91,30 +91,23 @@ type DiscoveryPathsTestIDs map[string]map[string][]string
 //		"HEAD-OB-301-ACC-431102"
 //	]
 //}
-func MapDiscoveryEndpointsToManifestTestIDs(disco *discovery.Model, mf Scripts, mpParams map[string]string) DiscoveryPathsTestIDs {
+func MapDiscoveryEndpointsToManifestTestIDs(disco *discovery.Model, mf Scripts) DiscoveryPathsTestIDs {
 	mapURLTests := make(DiscoveryPathsTestIDs)
 
 	// Iterate the discoveryModel.discoveryItems.endpoints
 	for _, discoItem := range disco.DiscoveryModel.DiscoveryItems {
 		for _, discoEndpoint := range discoItem.Endpoints {
-			discoEndpointFixed := fixReferenceStructure(discoEndpoint.Path)
+			discoEpLowerCase := strings.ToLower(discoEndpoint.Path)
 
 			// For each discovery item, iterate all the `uri` fields and see if there is a match.
 			for _, mfScript := range mf.Scripts {
-				discoMethod := strings.ToUpper(discoEndpoint.Method)
-				mfMethod := strings.ToUpper(mfScript.Method)
-
-				// Need to prepend '/' as manifest URIs do not contain it.
-				mfURIFixed := "/" + mfScript.URI
-				if strings.EqualFold(discoEndpointFixed, mfURIFixed) &&
-					discoMethod == mfMethod {
-					discoEndpointFixed = replaceParams(discoEndpointFixed, mpParams)
-
-					if _, ok := mapURLTests[discoEndpointFixed]; !ok {
-						mapURLTests[discoEndpointFixed] = map[string][]string{}
+				if strings.EqualFold(discoEpLowerCase, mfScript.URI) &&
+					strings.EqualFold(discoEndpoint.Method, mfScript.Method) {
+					if _, ok := mapURLTests[discoEpLowerCase]; !ok {
+						mapURLTests[discoEpLowerCase] = map[string][]string{}
 					}
-
-					mapURLTests[discoEndpointFixed][mfMethod] = append(mapURLTests[discoEndpointFixed][mfMethod], mfScript.ID)
+					mfMethod := strings.ToUpper(mfScript.Method)
+					mapURLTests[discoEpLowerCase][mfMethod] = append(mapURLTests[discoEpLowerCase][mfMethod], mfScript.ID)
 				}
 			}
 		}
@@ -124,13 +117,10 @@ func MapDiscoveryEndpointsToManifestTestIDs(disco *discovery.Model, mf Scripts, 
 
 // FindUnmatchedManifestTests
 // Find all the TestIDs from Manifest that have not been matched against an endpoint in the discovery model
-func FindUnmatchedManifestTests(mf Scripts, mappedTests DiscoveryPathsTestIDs, mpParams map[string]string) []string {
+func FindUnmatchedManifestTests(mf Scripts, mappedTests DiscoveryPathsTestIDs) []string {
 	var result []string
 	for _, script := range mf.Scripts {
-		uriFixed := replaceParams(script.URI, mpParams)
-		uriFixed = "/" + uriFixed
-
-		if methods, ok := mappedTests[uriFixed]; ok {
+		if methods, ok := mappedTests[strings.ToLower(script.URI)]; ok {
 			for method, testIDs := range methods {
 				if strings.EqualFold(method, script.Method) {
 					if !isInArray(script.ID, testIDs) {
@@ -153,26 +143,4 @@ func isInArray(s string, arr []string) bool {
 		}
 	}
 	return false
-}
-
-func fixReferenceStructure(url string) string {
-	// Need to manipulate URI placeholders in one file to match the other.
-	// For example:
-	// `/accounts/{AccountId}` in the discovery file
-	// is not equal the
-	// `accounts/$accountId` in manifest file.
-
-	urlFixed := strings.Replace(url, "{", "$", -1)
-	urlFixed = strings.Replace(urlFixed, "}", "", -1)
-
-	return urlFixed
-}
-
-func replaceParams(url string, params map[string]string) string {
-	result := url
-
-	for key, val := range params {
-		result = strings.Replace(strings.ToLower(result), strings.ToLower(key), val, -1)
-	}
-	return result
 }
