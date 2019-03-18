@@ -1,12 +1,13 @@
 package main
 
 import (
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/generation"
 	"fmt"
 	"os"
 	"strings"
 	"time"
+
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/generation"
 
 	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/version"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
@@ -96,10 +97,20 @@ func init() {
 }
 
 func initConfig() {
+
+	//TODO: make this configurable via a command line option
+	f, err := os.OpenFile("suite.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	if err != nil {
+		// Don't worry - be happy
+	} else {
+		//mw := io.MultiWriter(os.Stdout, f)
+		logrus.SetOutput(f)
+	}
+
 	logger.SetNoLock()
 	logger.SetFormatter(&prefixed.TextFormatter{
-		DisableColors:    false,
-		ForceColors:      true,
+		DisableColors:    true,
+		ForceColors:      false,
 		TimestampFormat:  time.RFC3339,
 		FullTimestamp:    true,
 		DisableTimestamp: false,
