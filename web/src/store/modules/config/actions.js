@@ -154,7 +154,7 @@ export default {
     commit(types.ADD_RESOURCE_ACCOUNT_ID, accountID);
   },
   removeResourceAccountID({ commit, state }, index) {
-    if (index < 0 || index > state.configuration.resource_ids.account_ids - 1) {
+    if (index < 0 || index >= state.configuration.resource_ids.account_ids) {
       return;
     }
 
@@ -164,7 +164,7 @@ export default {
     commit(types.ADD_RESOURCE_STATEMENT_ID, statementID);
   },
   removeResourceStatementID({ commit, state }, index) {
-    if (index < 0 || index > state.configuration.resource_ids.statement_ids - 1) {
+    if (index < 0 || index >= state.configuration.resource_ids.statement_ids) {
       return;
     }
 
