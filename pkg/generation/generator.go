@@ -4,6 +4,7 @@ package generation
 import (
 	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/names"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/manifest"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/permissions"
 	"github.com/sirupsen/logrus"
@@ -27,6 +28,7 @@ type GeneratorConfig struct {
 // Generator - generates test cases from discovery model
 type Generator interface {
 	GenerateSpecificationTestCases(log *logrus.Entry, config GeneratorConfig, discovery discovery.ModelDiscovery, ctx *model.Context) TestCasesRun
+	EnterParallelUniverse(log *logrus.Entry, config GeneratorConfig, discovery discovery.ModelDiscovery, ctx *model.Context) TestCasesRun
 }
 
 // NewGenerator - returns implementation of Generator interface
@@ -39,6 +41,60 @@ func NewGenerator() Generator {
 // generator - implements Generator interface
 type generator struct {
 	resolver func(groups []permissions.Group) permissions.CodeSetResultSet
+}
+
+// Work in progress to integrate Manifest Test
+func (g generator) EnterParallelUniverse(log *logrus.Entry, config GeneratorConfig, discovery discovery.ModelDiscovery, ctx *model.Context) TestCasesRun {
+	log = log.WithField("module", "EnterParallelUniverse")
+	headlessTokenAcquisition := discovery.TokenAcquisition == "headless"
+	specTestCases := []SpecificationTestCases{}
+	customTestCases := []SpecificationTestCases{}
+	customReplacements := make(map[string]string)
+
+	_ = specTestCases
+
+	for _, customTest := range discovery.CustomTests { // assume ordering is prerun i.e. customtest run before other tests
+		customTestCases = append(customTestCases, GetCustomTestCases(&customTest, ctx, headlessTokenAcquisition))
+		for k, v := range customTest.Replacements {
+			customReplacements[k] = v
+		}
+		for k, testcase := range customTest.Sequence {
+			if !headlessTokenAcquisition {
+				ctx := model.Context{}
+				ctx.PutMap(customReplacements)
+				testcase.ProcessReplacementFields(&ctx, true)
+			}
+			customTest.Sequence[k] = testcase
+		}
+	}
+
+	for _, item := range discovery.DiscoveryItems {
+		tcs, err := manifest.GenerateTestCases(item.APISpecification.Name, item.ResourceBaseURI)
+		if err != nil {
+			log.Warnf("manifest testcase generation failed for %s", item.APISpecification.Name)
+			continue
+		}
+		stc := SpecificationTestCases{Specification: item.APISpecification, TestCases: tcs}
+		logrus.Debugf("%d test cases generated", len(tcs))
+
+		//specTests, endpoints := generateSpecificationTestCases(log, item, nameGenerator, ctx, headlessTokenAcquisition)
+
+		specTestCases = append(specTestCases, stc)
+		for _, tc := range tcs {
+			log.Debug(tc.String())
+		}
+
+		break // integration scaffolding ... do it once for starters ...
+	}
+
+	perms := model.NamedPermissions{model.NamedPermission{Name: "to1001",
+		CodeSet: permissions.CodeSetResult{CodeSet: permissions.CodeSet{"ReadAccountsBasic", "ReadProducts", "ReadTransactionsBasic", "ReadTransactionsCredits", "ReadTransactionsDebits", "ReadBalances"},
+			TestIds: []permissions.TestId{"#co0001", "#co0002", "#co0003", "#t1001", "#t1002", "#t1003", "#t1004", "#t1005"}}, ConsentUrl: ""}}
+
+	scr := model.SpecConsentRequirements{Identifier: "to1001", NamedPermissions: perms}
+	scrSlice := []model.SpecConsentRequirements{scr}
+	//specTestCases = append(customTestCases, specTestCases...)
+	return TestCasesRun{specTestCases, scrSlice}
 }
 
 // GenerateSpecificationTestCases - generates test cases

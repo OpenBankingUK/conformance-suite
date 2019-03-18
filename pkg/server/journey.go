@@ -109,6 +109,9 @@ func (wj *journey) TestCases() (generation.TestCasesRun, error) {
 		config := wj.makeGeneratorConfig()
 		discovery := wj.validDiscoveryModel.DiscoveryModel
 		wj.testCasesRun = wj.generator.GenerateSpecificationTestCases(wj.log, config, discovery, &wj.context)
+		tcrun2 := wj.generator.EnterParallelUniverse(wj.log, config, discovery, &wj.context) // Integration work in progress
+		wj.testCasesRun.SpecConsentRequirements = append(wj.testCasesRun.SpecConsentRequirements, tcrun2.SpecConsentRequirements...)
+		wj.testCasesRun.TestCases = append(wj.testCasesRun.TestCases, tcrun2.TestCases...)
 		if discovery.TokenAcquisition == "psu" {
 			definition := wj.makeRunDefinition()
 			consentIds, err := executors.InitiationConsentAcquisition(wj.testCasesRun.SpecConsentRequirements, definition, &wj.context)

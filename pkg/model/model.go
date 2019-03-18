@@ -69,6 +69,18 @@ type TestCase struct {
 	Bearer     string         `json:"bearer,omitempty"`  // Bear token if presented
 }
 
+// MakeTestCase builds an empty testcase
+func MakeTestCase() TestCase {
+	i := Input{}
+	i.FormData = make(map[string]string)
+	i.Generation = make(map[string]string)
+	i.Headers = make(map[string]string)
+	i.Claims = make(map[string]string)
+
+	tc := TestCase{Input: i}
+	return tc
+}
+
 // Prepare a Testcase for execution at and endpoint,
 // results in a standard http request that encapsulates the testcase request
 // as defined in the test case object with any context inputs/replacements etc applied
@@ -218,6 +230,14 @@ func (t *TestCase) ApplyExpects(res *resty.Response, rulectx *Context) (bool, er
 	return true, nil
 }
 
+// InjectBearerToken injects a bear token header into the testcase, token can either be the actual bearer token or a parameter starting with '$'
+func (t *TestCase) InjectBearerToken(token string) {
+	if t.Input.Headers == nil {
+		t.Input.Headers = map[string]string{}
+	}
+	t.Input.Headers["authorization"] = "Bearer " + token
+}
+
 // AppMsg - application level trace
 func (t *TestCase) AppMsg(msg string) string {
 	tracer.AppMsg("TestCase", msg, "")
@@ -282,7 +302,7 @@ func replaceContextField(source string, ctx *Context) (string, error) {
 	return result, nil
 }
 
-var singleDollarRegex = regexp.MustCompile(`[^\$]?\$(\w*)`)
+var singleDollarRegex = regexp.MustCompile(`[^\$]?\$([\w|-]*)`)
 
 // GetReplacementField examines the input string and returns the first character
 // sequence beginning with '$' and ending with whitespace. '$$' sequence acts as an escape value
