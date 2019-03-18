@@ -184,7 +184,7 @@ func (wj *journey) RunTests() error {
 	}
 
 	runDefinition := wj.makeRunDefinition()
-	runner := executors.NewTestCaseRunner(runDefinition, wj.daemonController)
+	runner := executors.NewTestCaseRunner(wj.log, runDefinition, wj.daemonController)
 	wj.log.Debug("runTestCases with context ...")
 	return runner.RunTestCases(&wj.context)
 }

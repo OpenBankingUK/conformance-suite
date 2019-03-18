@@ -1,12 +1,13 @@
 package main
 
 import (
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/client"
 	"fmt"
 	"github.com/spf13/cobra"
-	"time"
+	"os"
 )
 
-func runCmd(service Service) *cobra.Command {
+func runCmd(service client.Service) *cobra.Command {
 	generatorCmd := &cobra.Command{
 		Use:   "run",
 		Short: "Run test cases from a discovery model",
@@ -20,7 +21,7 @@ func runCmd(service Service) *cobra.Command {
 }
 
 // run runs the functional conformance workflow to generate test case run report
-func run(service Service) func(cmd *cobra.Command, _ []string) {
+func run(service client.Service) func(cmd *cobra.Command, _ []string) {
 	return func(cmd *cobra.Command, _ []string) {
 		// check if input (discovery model) filename if provided
 		filenameFlag, err := cmd.Flags().GetString("filename")
@@ -36,58 +37,12 @@ func run(service Service) func(cmd *cobra.Command, _ []string) {
 			return
 		}
 
-		err = service.SetDiscoveryModel(filenameFlag)
+		results, err := service.Run(filenameFlag, configFlag)
 		if err != nil {
 			fmt.Printf("Error setting discovery model: %s\n", err.Error())
 			return
 		}
 
-		err = service.SetConfig(configFlag)
-		if err != nil {
-			fmt.Printf("Error setting config: %s\n", err.Error())
-			return
-		}
-
-		err = service.TestCases()
-		if err != nil {
-			fmt.Printf("Error generating test cases: %s\n", err.Error())
-			return
-		}
-
-		resultsChan := make(chan TestCase)
-		endedChan := make(chan struct{})
-
-		err = service.RunTests(resultsChan, endedChan)
-		if err != nil {
-			fmt.Printf("Error generating test cases: %s\n", err.Error())
-			return
-		}
-
-		resultPrinter(resultsChan, endedChan)
-	}
-}
-
-// resultPrinter print incoming results from channel to console
-func resultPrinter(resultChan chan TestCase, endedChan chan struct{}) {
-	var passMsg = map[bool]string{true: "PASS", false: "FAIL"}
-	const timeoutRunningTests = 5 * time.Minute
-
-	deadline := time.NewTicker(timeoutRunningTests)
-	defer deadline.Stop()
-	for {
-		select {
-		case result := <-resultChan:
-			fmt.Printf("=== %s: %s\n", passMsg[result.Pass], result.Id)
-			if !result.Pass {
-				fmt.Printf("\t %s\n", result.Fail)
-			}
-
-		case <-endedChan:
-			return
-
-		case <-deadline.C:
-			fmt.Println("=== FAIL: Timeout waiting for tests for finish.")
-			return
-		}
+		client.ResultWriter(os.Stdout, results)
 	}
 }

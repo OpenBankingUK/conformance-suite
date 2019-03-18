@@ -101,7 +101,7 @@ test: ## run the go tests.
 
 .PHONY: test_coverage
 test_coverage: ## run the go tests then open up coverage report.
-	@echo -e "\033[92m  ---> Testing wth coverage ... \033[0m"
+	@echo -e "\033[92m  ---> Testing with coverage ... \033[0m"
 	go test \
 		-v \
 		-cover \

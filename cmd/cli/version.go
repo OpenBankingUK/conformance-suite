@@ -1,13 +1,14 @@
 package main
 
 import (
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/client"
 	"fmt"
 	"github.com/spf13/cobra"
 )
 
 const cliVersion = "0.0.1"
 
-func versionCmd(service Service) *cobra.Command {
+func versionCmd(service client.Service) *cobra.Command {
 	return &cobra.Command{
 		Use:   "version",
 		Short: "Print the version number of FCS CLI and Server",
@@ -15,7 +16,7 @@ func versionCmd(service Service) *cobra.Command {
 	}
 }
 
-func versionCmdRun(service Service) func(_ *cobra.Command, _ []string) error {
+func versionCmdRun(service client.Service) func(_ *cobra.Command, _ []string) error {
 	return func(_ *cobra.Command, _ []string) error {
 		version, err := service.Version()
 		if err != nil {
