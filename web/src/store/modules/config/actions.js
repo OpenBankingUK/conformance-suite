@@ -107,6 +107,7 @@ export default {
         'x_fapi_financial_id',
         'issuer',
         'redirect_url',
+        'resource_ids',
       ];
       const newConfig = _.pick(merged, validKeys);
       commit(types.SET_CONFIGURATION, newConfig);
@@ -149,6 +150,20 @@ export default {
     commit(types.SET_CONFIGURATION_TRANSPORT_PUBLIC, transportPublic);
     commit(types.SET_WIZARD_STEP, constants.WIZARD.STEP_THREE);
   },
+  removeResourceAccountID({ commit, state }, index) {
+    if (index < 0 || index >= state.configuration.resource_ids.account_ids) {
+      return;
+    }
+
+    commit(types.REMOVE_RESOURCE_ACCOUNT_ID, index);
+  },
+  removeResourceStatementID({ commit, state }, index) {
+    if (index < 0 || index >= state.configuration.resource_ids.statement_ids) {
+      return;
+    }
+
+    commit(types.REMOVE_RESOURCE_STATEMENT_ID, index);
+  },
   /**
    * Step 3: Validate the configuration.
    * Route: `/wizard/configuration`.
@@ -168,6 +183,12 @@ export default {
     }
     if (_.isEmpty(state.configuration.transport_public)) {
       errors.push('Transport Public Certificate (.pem) empty');
+    }
+    if (_.isEmpty(state.configuration.resource_ids.account_ids) || state.configuration.resource_ids.account_ids[0].account_id.length === 0) {
+      errors.push('Account IDs empty');
+    }
+    if (_.isEmpty(state.configuration.resource_ids.statement_ids) || state.configuration.resource_ids.statement_ids[0].statement_id.length === 0) {
+      errors.push('Statement IDs empty');
     }
 
     if (_.isEmpty(state.configuration.client_id)) {

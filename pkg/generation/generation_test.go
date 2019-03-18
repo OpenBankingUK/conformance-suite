@@ -1,6 +1,7 @@
 package generation
 
 import (
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
 	"fmt"
 	"sort"
 	"testing"
@@ -77,10 +78,23 @@ func TestGetResourceIds(t *testing.T) {
 	assert := test.NewAssert(t)
 
 	item := &discovery.ModelDiscoveryItem{ResourceIds: map[string]string{"hello": "world"}}
+	genConfig := GeneratorConfig{
+		ResourceIDs: model.ResourceIDs{
+			AccountIDs: []model.ResourceAccountID{
+				{AccountID: "12345"},
+			},
+			StatementIDs: []model.ResourceStatementID{
+				{StatementID: "6789"},
+			},
+		},
+	}
 
-	result := getResourceIds(item, "/{hello}")
-
-	assert.Equal("/world", result)
+	result := getResourceIds(item, "/{AccountId}", genConfig)
+	assert.Equal("/12345", result)
+	result = getResourceIds(item, "/{StatementId}", genConfig)
+	assert.Equal("/6789", result)
+	result = getResourceIds(item, "/{AccountId}/{StatementId}", genConfig)
+	assert.Equal("/12345/6789", result)
 }
 
 func TestGetResourceIdsNoMatch(t *testing.T) {
@@ -88,7 +102,7 @@ func TestGetResourceIdsNoMatch(t *testing.T) {
 
 	item := &discovery.ModelDiscoveryItem{ResourceIds: map[string]string{}}
 
-	result := getResourceIds(item, "/{hello}")
+	result := getResourceIds(item, "/{hello}", GeneratorConfig{})
 
 	assert.Equal("/{hello}", result)
 }
