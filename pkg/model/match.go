@@ -536,3 +536,14 @@ func checkAuthorisation(m *Match, tc *TestCase) (bool, error) {
 func checkCustom(m *Match, tc *TestCase) (bool, error) {
 	return true, nil //TODO: implement custom checks
 }
+
+// ProcessReplacementFields allows parameter replacement within match string fields
+func (m *Match) ProcessReplacementFields(ctx *Context) {
+	m.Header, _ = replaceContextField(m.Header, ctx)
+	m.HeaderPresent, _ = replaceContextField(m.HeaderPresent, ctx)
+	m.JSON, _ = replaceContextField(m.JSON, ctx)
+	fmt.Printf("ctx: %#v - value %s\n", ctx, m.Value)
+	m.Value, _ = replaceContextField(m.Value, ctx)
+	fmt.Printf("Value after %s\n", m.Value)
+	m.ContextName, _ = replaceContextField(m.ContextName, ctx)
+}
