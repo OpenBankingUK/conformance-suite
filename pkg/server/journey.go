@@ -123,6 +123,7 @@ func (wj *journey) TestCases() (generation.TestCasesRun, error) {
 		config := wj.makeGeneratorConfig()
 		discovery := wj.validDiscoveryModel.DiscoveryModel
 		wj.testCasesRun = wj.generator.GenerateSpecificationTestCases(wj.log, config, discovery, &wj.context)
+		//TODO: merge parallel universe
 		tcrun2 := wj.generator.EnterParallelUniverse(wj.log, config, discovery, &wj.context) // Integration work in progress
 		wj.testCasesRun.SpecConsentRequirements = append(wj.testCasesRun.SpecConsentRequirements, tcrun2.SpecConsentRequirements...)
 		wj.testCasesRun.TestCases = append(wj.testCasesRun.TestCases, tcrun2.TestCases...)

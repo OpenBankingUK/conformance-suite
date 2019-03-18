@@ -1,7 +1,6 @@
 package manifest
 
 import (
-	"encoding/json"
 	"fmt"
 	"testing"
 
@@ -15,24 +14,6 @@ func TestReadScriptsFile(t *testing.T) {
 	assert.Nil(t, err)
 	dumpJSON(tp)
 	introspect(&tp)
-}
-
-func TestLoadStuff(t *testing.T) {
-	sc, err := loadScripts("testdata/ob31_testscript.json")
-	assert.Nil(t, err)
-	dumpJSON(sc)
-	as, err := loadReferences("testdata/assertions.json")
-	assert.Nil(t, err)
-	dumpJSON(as)
-	tp := TestPlan{Scripts: sc, References: as}
-	introspect(&tp)
-}
-
-// Utility to Dump Json
-func dumpJSON(i interface{}) {
-	var model []byte
-	model, _ = json.MarshalIndent(i, "", "    ")
-	fmt.Println(string(model))
 }
 
 func introspect(tp *TestPlan) {

@@ -104,7 +104,7 @@
                 "x-fapi-interaction-id": "aac-f5a10e5e-0c46-41c5-a7b7-c8f56020520c"
             },
             "headers": {
-                "x-fapi-interaction-id": "aac-f5a10e5e-0c46-41c5-a7b7-c8f56020520c"
+                "x-fapi-interaction-id": "$x-fapi-interaction-id"
             },
             "uri": "/accounts/$accountId",
             "uriImplementation": "mandatory",
@@ -122,6 +122,9 @@
 				"tokenRequestScope": "accounts",
                 "accountId": "$consentedAccountId",
                 "x-fapi-interaction-id": "aac-f5a10e5e-0c46-41c5-a7b7-c8f56020520x"
+            },
+            "headers": {
+                "x-fapi-interaction-id": "$x-fapi-interaction-id"
             },
             "uri": "/accounts/$accountId",
             "uriImplementation": "mandatory",
