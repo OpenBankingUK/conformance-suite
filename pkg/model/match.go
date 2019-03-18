@@ -28,6 +28,7 @@ const (
 	BodyJSONRegex
 	BodyLength
 	Authorisation
+	CustomCheck
 )
 
 // Match defines various types of response payload pattern and field checking.
@@ -209,6 +210,11 @@ func (m *Match) GetType() MatchType {
 		return m.MatchType
 	}
 
+	if fieldsPresent(m.Custom) {
+		m.MatchType = CustomCheck
+		return CustomCheck
+	}
+
 	if fieldsPresent(m.Authorisation) {
 		m.MatchType = Authorisation
 		return Authorisation
@@ -311,6 +317,7 @@ var matchFuncs = map[MatchType]func(*Match, *TestCase) (bool, error){
 	BodyJSONRegex:      checkBodyJSONRegex,
 	BodyLength:         checkBodyLength,
 	Authorisation:      checkAuthorisation,
+	CustomCheck:        checkCustom,
 }
 
 var matchTypeString = map[MatchType]string{
@@ -326,6 +333,7 @@ var matchTypeString = map[MatchType]string{
 	BodyJSONRegex:      "BodyJSONRegex",
 	BodyLength:         "BodyLength",
 	Authorisation:      "Authorisation",
+	CustomCheck:        "Custom",
 }
 
 func defaultMatch(m *Match, _ *TestCase) (bool, error) {
@@ -523,4 +531,8 @@ func checkAuthorisation(m *Match, tc *TestCase) (bool, error) {
 	}
 	m.Result = headerValue[idx+7:] // copy the token after 7 chars "Bearer "...
 	return true, nil
+}
+
+func checkCustom(m *Match, tc *TestCase) (bool, error) {
+	return true, nil //TODO: implement custom checks
 }

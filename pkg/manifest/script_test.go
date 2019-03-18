@@ -3,13 +3,10 @@ package manifest
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
-	"strings"
 	"testing"
 
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 )
 
 func TestReadScriptsFile(t *testing.T) {
@@ -81,49 +78,8 @@ func loadTestPlan2() (*TestPlan, error) {
 }
 
 func TestGenerateTestCases(t *testing.T) {
-	tp, err := loadTestPlan2()
+	tests, err := GenerateTestCases("TestSpec", "http://mybaseurl")
 	assert.Nil(t, err)
-
-	// Gather replacement parameters and account ids
-	accountCtx := model.Context{}
-	accountData, err := loadAccountData("testdata/resources.json")
-	require.Nil(t, err)
-
-	// accumulate context data from accountsData ...
-	for k, v := range accountData.Ais {
-		accountCtx.PutString(k, v)
-	}
-	refs := tp.References
-
-	scripts := tp.Scripts
-	tests := []model.TestCase{}
-	consents := []string{}
-	for _, v := range scripts.Scripts {
-		localCtx := model.Context{}
-
-		for k, value := range v.Parameters {
-			if strings.Contains(value, "$") {
-				str := value[1:]
-				value, err = accountCtx.GetString(str)
-			}
-			switch k {
-			case "accountAccessConsent":
-				consent := getAccountConsent(refs, value)
-				localCtx.PutStringSlice("permissions", consent)
-			case "tokenRequestScope":
-				localCtx.PutString("tokenScope", value)
-			default:
-				localCtx.PutString(k, value)
-			}
-		}
-
-		tc, _ := testCaseBuilder(v, refs.References, &localCtx, consents)
-		tests = append(tests, tc)
-	}
-
-	// for _, tc := range tests {
-	// 	fmt.Printf("%s\n", tc.String())
-	// }
 
 	perms, err := getPermissions(tests)
 	assert.Nil(t, err)
@@ -135,6 +91,10 @@ func TestGenerateTestCases(t *testing.T) {
 	fmt.Println("----------------------==")
 	for k := range m {
 		fmt.Println(k)
+	}
+
+	for _, v := range tests {
+		dumpJSON(v)
 	}
 
 }
@@ -164,17 +124,4 @@ func getPermissions(tests []model.TestCase) ([]ScriptPermission, error) {
 	}
 
 	return permCollector, nil
-}
-
-func loadAccountData(filename string) (AccountData, error) {
-	plan, err := ioutil.ReadFile(filename)
-	if err != nil {
-		return AccountData{}, err
-	}
-	var m AccountData
-	err = json.Unmarshal(plan, &m)
-	if err != nil {
-		return AccountData{}, err
-	}
-	return m, nil
 }
