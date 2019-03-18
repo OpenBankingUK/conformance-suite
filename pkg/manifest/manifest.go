@@ -106,7 +106,7 @@ func MapDiscoveryEndpointsToManifestTestIDs(disco *discovery.Model, mf Scripts, 
 
 				// Need to prepend '/' as manifest URIs do not contain it.
 				mfURIFixed := "/" + mfScript.URI
-				if strings.ToLower(discoEndpointFixed) == strings.ToLower(mfURIFixed) &&
+				if strings.EqualFold(discoEndpointFixed, mfURIFixed) &&
 					discoMethod == mfMethod {
 					discoEndpointFixed = replaceParams(discoEndpointFixed, mpParams)
 
@@ -135,7 +135,7 @@ func FindUnmatchedManifestTests(mf Scripts, mappedTests DiscoveryPathsTestIDs, m
 
 		if methods, ok := mappedTests[uriFixed]; ok {
 			for method, testIDs := range methods {
-				if strings.ToLower(method) == strings.ToLower(script.Method) {
+				if strings.EqualFold(method, script.Method) {
 					if !isInArray(script.ID, testIDs) {
 						result = append(result, script.ID)
 					}
