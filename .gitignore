@@ -1,3 +1,8 @@
+.DS_Store
+.ignore/
+
+*.env*
+suite.log
 # ignore binaries generated from `go build`
 /fcs
 /fcs_server

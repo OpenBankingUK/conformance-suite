@@ -85,9 +85,11 @@ func GenerateTestCases(spec string, baseurl string) ([]model.TestCase, error) {
 			return nil, err
 		}
 		consents := []string{}
+		fmt.Printf("Local context %#v\n", localCtx)
 		tc, _ := testCaseBuilder(script, refs.References, localCtx, consents, baseurl)
 		tc.ProcessReplacementFields(localCtx, false)
 		tests = append(tests, tc)
+		fmt.Println("---------------------------------------------------------")
 	}
 
 	return tests, nil
@@ -144,13 +146,19 @@ func testCaseBuilder(s Script, refs map[string]Reference, ctx *model.Context, co
 			logrus.Error(msg)
 			return tc, errors.New(msg)
 		}
-		tc.Expect = ref.Expect
+		tc.Expect = ref.Expect.Clone()
+		fmt.Printf("ref assert to expect: %#v\n", ref.Expect)
 		tc.Expect.SchemaValidation = s.SchemaCheck
 
 	}
-
+	fmt.Println("Before supplied ctx")
+	dumpJSON(tc)
 	tc.ProcessReplacementFields(ctx, false)
+	fmt.Println("Before tc ctx")
+	dumpJSON(tc)
 	tc.ProcessReplacementFields(&tc.Context, false)
+	fmt.Println("After both replacements")
+	dumpJSON(tc)
 	return tc, nil
 }
 
@@ -257,4 +265,11 @@ func loadTestPlan(filename string) (TestPlan, error) {
 		return TestPlan{}, err
 	}
 	return m, nil
+}
+
+// Utility to Dump Json
+func dumpJSON(i interface{}) {
+	var model []byte
+	model, _ = json.MarshalIndent(i, "", "    ")
+	fmt.Println(string(model))
 }
