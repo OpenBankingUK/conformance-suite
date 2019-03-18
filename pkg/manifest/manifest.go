@@ -114,9 +114,6 @@ func MapDiscoveryEndpointsToManifestTestIDs(disco *discovery.Model, mf Scripts, 
 						mapURLTests[discoEndpointFixed] = map[string][]string{}
 					}
 
-					if _, ok := mapURLTests[discoEndpointFixed]; !ok {
-						mapURLTests[discoEndpointFixed][mfMethod] = make([]string, 0)
-					}
 					mapURLTests[discoEndpointFixed][mfMethod] = append(mapURLTests[discoEndpointFixed][mfMethod], mfScript.ID)
 				}
 			}
