@@ -1,4 +1,4 @@
-package main
+package client
 
 import (
 	"crypto/tls"
@@ -14,10 +14,7 @@ import (
 // Service is a gateway to backend services provided by FCS
 type Service interface {
 	Version() (VersionResponse, error)
-	SetDiscoveryModel(filename string) error
-	SetConfig(filename string) error
-	TestCases() error
-	RunTests(resultChan chan<- TestCase, endedChan chan<- struct{}) error
+	Run(discoveryFile, configFile string) ([]TestCase, error)
 }
 
 const (
@@ -36,7 +33,7 @@ type service struct {
 	wsHost string
 }
 
-func newService(host, wsHost string, conn *Connection) Service {
+func NewService(host, wsHost string, conn *Connection) service {
 	return service{
 		conn:   conn,
 		host:   host,
@@ -48,6 +45,53 @@ type VersionResponse struct {
 	Version string `json:"version"`
 	Message string `json:"message"`
 	Update  bool   `json:"update"`
+}
+
+func (s service) Run(discovery, config string) ([]TestCase, error) {
+	err := s.setDiscoveryModel(discovery)
+	if err != nil {
+		return nil, err
+	}
+
+	err = s.setConfig(config)
+	if err != nil {
+		return nil, err
+	}
+
+	err = s.TestCases()
+	if err != nil {
+		return nil, err
+	}
+
+	resultsChan := make(chan TestCase)
+	endedChan := make(chan struct{})
+
+	err = s.runTests(resultsChan, endedChan)
+	if err != nil {
+		return nil, err
+	}
+
+	return aggregateResults(resultsChan, endedChan)
+}
+
+func aggregateResults(resultChan chan TestCase, endedChan chan struct{}) ([]TestCase, error) {
+	var results []TestCase
+	const timeoutRunningTests = 5 * time.Minute
+
+	deadline := time.NewTicker(timeoutRunningTests)
+	defer deadline.Stop()
+	for {
+		select {
+		case result := <-resultChan:
+			results = append(results, result)
+
+		case <-endedChan:
+			return results, nil
+
+		case <-deadline.C:
+			return nil, errors.New("timout running tests")
+		}
+	}
 }
 
 func (s service) Version() (VersionResponse, error) {
@@ -69,7 +113,7 @@ func (s service) Version() (VersionResponse, error) {
 	return versionResponse, nil
 }
 
-func (s service) SetDiscoveryModel(filename string) error {
+func (s service) setDiscoveryModel(filename string) error {
 	file, err := os.Open(filename)
 	if err != nil {
 		return errors.Wrap(err, "setting discovery model")
@@ -87,7 +131,7 @@ func (s service) SetDiscoveryModel(filename string) error {
 	return nil
 }
 
-func (s service) SetConfig(filename string) error {
+func (s service) setConfig(filename string) error {
 	file, err := os.Open(filename)
 	if err != nil {
 		return errors.Wrap(err, "setting config")
@@ -124,7 +168,7 @@ func (s service) TestCases() error {
 	return nil
 }
 
-func (s service) RunTests(resultChan chan<- TestCase, endedChan chan<- struct{}) error {
+func (s service) runTests(resultChan chan<- TestCase, endedChan chan<- struct{}) error {
 	err := s.handleResults(resultChan, endedChan)
 	if err != nil {
 		return errors.Wrap(err, "running test cases")

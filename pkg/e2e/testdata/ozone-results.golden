@@ -1,0 +1,14 @@
+=== PASS: #ct0001
+=== PASS: #ct0002
+=== PASS: #ct0003
+=== PASS: #ct0004
+=== PASS: #ct0005
+=== PASS: #co0001
+=== PASS: #co0002
+=== PASS: #co0003
+=== FAIL: #t1001
+	 (#t1001):Get Products: HTTP Status code does not match: expected 200 got 404
+=== PASS: #t1002
+=== PASS: #t1003
+=== PASS: #t1004
+=== PASS: #t1005

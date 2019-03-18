@@ -1,11 +1,4 @@
-.DS_Store
-.ignore/
-
-*.env*
-
 # ignore binaries generated from `go build`
-/server
-/conformance-suite
 /fcs
 /fcs_server
 

@@ -34,24 +34,24 @@ type TestCaseRunner struct {
 }
 
 // NewTestCaseRunner -
-func NewTestCaseRunner(definition RunDefinition, daemonController DaemonController) *TestCaseRunner {
+func NewTestCaseRunner(logger *logrus.Entry, definition RunDefinition, daemonController DaemonController) *TestCaseRunner {
 	return &TestCaseRunner{
 		executor:         NewExecutor(),
 		definition:       definition,
 		daemonController: daemonController,
-		logger:           logrus.StandardLogger().WithField("module", "TestCaseRunner"),
+		logger:           logger.WithField("module", "TestCaseRunner"),
 		runningLock:      &sync.Mutex{},
 		running:          false,
 	}
 }
 
 // NewConsentAcquisitionRunner -
-func NewConsentAcquisitionRunner(definition RunDefinition, daemonController DaemonController) *TestCaseRunner {
+func NewConsentAcquisitionRunner(logger *logrus.Entry, definition RunDefinition, daemonController DaemonController) *TestCaseRunner {
 	return &TestCaseRunner{
 		executor:         NewExecutor(),
 		definition:       definition,
 		daemonController: daemonController,
-		logger:           logrus.StandardLogger().WithField("module", "ConsentAcquisitionRunner"),
+		logger:           logger.WithField("module", "ConsentAcquisitionRunner"),
 		runningLock:      &sync.Mutex{},
 		running:          false,
 	}

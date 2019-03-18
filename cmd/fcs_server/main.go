@@ -46,7 +46,6 @@ Complete documentation is available at https://bitbucket.org/openbankingteam/con
 			journey := server.NewJourney(logger, testGenerator, validatorEngine)
 
 			echoServer := server.NewServer(journey, logger, ver)
-			echoServer.HideBanner = true
 			server.PrintRoutesInfo(echoServer, logger)
 			address := fmt.Sprintf("%s:%d", server.ListenHost, viper.GetInt("port"))
 			logger.Infof("listening on https://%s", address)

@@ -8,31 +8,34 @@ import (
 	"fmt"
 )
 
+// ReportCertifiedByEnvironment - the environment the `Report` was generated in.
 type ReportCertifiedByEnvironment int
 
 const (
+	// ReportCertifiedByEnvironmentTesting - testing environment.
 	ReportCertifiedByEnvironmentTesting ReportCertifiedByEnvironment = iota + 1
+	// ReportCertifiedByEnvironmentProduction - production environment.
 	ReportCertifiedByEnvironmentProduction
 )
 
-var ReportCertifiedByEnvironmentToString = map[ReportCertifiedByEnvironment]string{
+var reportCertifiedByEnvironmentToString = map[ReportCertifiedByEnvironment]string{
 	ReportCertifiedByEnvironmentTesting:    "testing",
 	ReportCertifiedByEnvironmentProduction: "production",
 }
 
-var ReportCertifiedByEnvironmentToID = map[string]ReportCertifiedByEnvironment{
+var reportCertifiedByEnvironmentToID = map[string]ReportCertifiedByEnvironment{
 	"testing":    ReportCertifiedByEnvironmentTesting,
 	"production": ReportCertifiedByEnvironmentProduction,
 }
 
 func (r ReportCertifiedByEnvironment) String() string {
-	return ReportCertifiedByEnvironmentToString[r]
+	return reportCertifiedByEnvironmentToString[r]
 }
 
 // MarshalJSON marshals the enum as a quoted json string
 func (r ReportCertifiedByEnvironment) MarshalJSON() ([]byte, error) {
 	buffer := bytes.NewBufferString(`"`)
-	value, ok := ReportCertifiedByEnvironmentToString[r]
+	value, ok := reportCertifiedByEnvironmentToString[r]
 	if !ok {
 		return nil, fmt.Errorf("%d is an invalid enum for ReportCertifiedByEnvironment", r)
 	}
@@ -49,7 +52,7 @@ func (r *ReportCertifiedByEnvironment) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	// Note that if the string cannot be found then it will be set to the zero value, 'Created' in this case.
-	value, ok := ReportCertifiedByEnvironmentToID[environment]
+	value, ok := reportCertifiedByEnvironmentToID[environment]
 	if !ok {
 		return fmt.Errorf("%q is an invalid enum for ReportCertifiedByEnvironment", environment)
 	}

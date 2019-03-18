@@ -1,4 +1,4 @@
-package main
+package client
 
 import (
 	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/test"

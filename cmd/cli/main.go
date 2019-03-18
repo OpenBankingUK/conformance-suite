@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/client"
 	"fmt"
 	"os"
 
@@ -16,14 +17,14 @@ const (
 func main() {
 	fmt.Println("Functional Conformance Suite CLI")
 
-	insecureConn, err := NewConnection()
-	if err == errInsecure {
+	insecureConn, err := client.NewConnection()
+	if err == client.ErrInsecure {
 		fmt.Println("server's certificate chain and host name not verified")
 	} else if err != nil {
 		fmt.Println(err.Error())
 		os.Exit(1)
 	}
-	service := newService(
+	service := client.NewService(
 		os2.GetEnvOrDefault("FCS_HOST", defaultHostServer),
 		os2.GetEnvOrDefault("FCS_WEBSOCKET_HOST", defaultWebsocketHostServer),
 		insecureConn,
@@ -36,7 +37,7 @@ func main() {
 	}
 }
 
-func newRootCommand(service Service) *cobra.Command {
+func newRootCommand(service client.Service) *cobra.Command {
 	rootCmd := &cobra.Command{
 		Use:   "fcs",
 		Short: "Functional Conformance Suite CLI",
