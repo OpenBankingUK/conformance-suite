@@ -46,6 +46,8 @@ func GatherTokens(tcps []TestCasePermission) ([]TokenGatherer, error) {
 func mixer(tcp *TestCasePermission, tg []TokenGatherer) {
 
 	fmt.Printf("testcasepermissions: %#v\n", tcp)
+	fmt.Printf("testcasepermissions: %#v\n", tcp)
+
 	for _, tgItem := range tg {
 		tcPermxConflict := false
 		tcPermConflict := false
