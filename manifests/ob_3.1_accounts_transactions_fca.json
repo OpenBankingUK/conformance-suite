@@ -69,7 +69,7 @@
             "schemaCheck": true
         },
 		{
-			"description": "Fails when no token is provided for a given account.",
+			"description": "Fails using incorrect permissions for a given account.",
             "id": "OB-301-ACC-100005",
             "refURI": "",
             "detail" : "Validates that the account resource fails correctly given an invalided or incorrect token.",
@@ -86,7 +86,7 @@
             "schemaCheck": false
         },
         {
-			"description": "Fails when no token is provided for bulk accounts.",
+			"description": "Fails using incorrect permissions for bulk accounts.",
             "id": "OB-301-ACC-100006",
             "refURI": "",
             "detail" : "Validates that the account list resource fails correctly given an invalided or incorrect token.",
