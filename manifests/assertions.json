@@ -14,31 +14,7 @@
         "OB3GLOAssertOnSuccess": {
 			"expect": {
 				"status-code": 200,
-				"matches": [{
-					"custom": "areResourcesConsented"
-				}]
-			}
-		},
-		"OB3ACCAssertOnSuccess": {
-			"expect": {
-				"status-code": 200,
-				"matches": [{
-					"custom": "areResourcesConsented"
-				}, {
-					"custom": "hasAllConsentedResources"
-				}, {
-					"custom": "hasAccountsPermissionsApplied"
-				}]
-			}
-        },
-        "OB3BENAssertOnSuccess": {
-			"expect": {
-				"status-code": 200,
-				"matches": [{
-					"custom": "areResourcesConsented"
-				}, {
-					"custom": "hasBeneficiaryPermissionsApplied"
-				}]
+				"detail":"Expected status code 200 (OK)."
 			}
 		},
 		"OB3GLOAssertOn404": {
