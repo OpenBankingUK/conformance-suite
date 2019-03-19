@@ -3,11 +3,7 @@
         "OB3DOPAssertOnSuccess": {
 			"expect": {
 				"status-code": 201,
-				"matches": [{
-                    "header-present": "x-fapi-interaction-id",
-                    "detail": "An RFC4122 UID used as a correlation id. The ASPSP 'plays back' the value given. If a value is not given the ASPSP MUST play back their own UUID."
-                    
-                }, 
+				"matches": [ 
                 {
                     "JSON": "json.Data.Status",
                     "Value": "AcceptedSettlementCompleted"
@@ -19,10 +15,6 @@
 			"expect": {
 				"status-code": 200,
 				"matches": [{
-                    "header-present": "x-fapi-interaction-id",
-                    "detail": "An RFC4122 UID used as a correlation id. The ASPSP 'plays back' the value given. If a value is not given the ASPSP MUST play back their own UUID."
-                    
-				}, {
 					"custom": "areResourcesConsented"
 				}]
 			}
@@ -31,10 +23,6 @@
 			"expect": {
 				"status-code": 200,
 				"matches": [{
-                    "header-present": "x-fapi-interaction-id",
-                    "detail": "An RFC4122 UID used as a correlation id. The ASPSP 'plays back' the value given. If a value is not given the ASPSP MUST play back their own UUID."
-                    
-				}, {
 					"custom": "areResourcesConsented"
 				}, {
 					"custom": "hasAllConsentedResources"
@@ -47,10 +35,6 @@
 			"expect": {
 				"status-code": 200,
 				"matches": [{
-                    "header-present": "x-fapi-interaction-id",
-                    "detail": "An RFC4122 UID used as a correlation id. The ASPSP 'plays back' the value given. If a value is not given the ASPSP MUST play back their own UUID."
-                    
-				}, {
 					"custom": "areResourcesConsented"
 				}, {
 					"custom": "hasBeneficiaryPermissionsApplied"
@@ -77,10 +61,14 @@
 		},
 		"OB3GLOAssertOn400": {
 			"expect": {
-				"status-code": 400,
+				"status-code": 400
+			}
+		},
+		"OB3GLOFAPIHeader": {
+			"expect": {
 				"matches": [{
                     "header": "x-fapi-interaction-id",
-                    "detail": "Expected a RFC4122 UID used as a correlation id."
+                    "detail": "Expected RFC4122 UID used as a correlation id. The ASPSP 'plays back' the value given. If a value is not given the ASPSP MUST play back their own UUID."
 				}]
 			}
 		},
