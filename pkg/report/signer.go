@@ -107,7 +107,7 @@ func verifyDigest(data []byte, expDigest string) error {
 func calculateDigest(data []byte) (string, error) {
 	calc := sha256.Sum256(data)
 
-	result := hex.EncodeToString([]byte(calc[0:]))
+	result := hex.EncodeToString(calc[0:])
 	if result == "" {
 		return "", errors.New("unknown hex encoding error")
 	}
