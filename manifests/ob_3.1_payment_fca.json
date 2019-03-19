@@ -8,7 +8,10 @@
 			"parameters": {
                 "tokenRequestScope": "payments",
                 "paymentType": "domestic-payment-consents",
-                "post" : "minimalDomesticPaymentConsent"    
+                "postData" : "$minimalDomesticPaymentConsent"    
+            },
+            "body": {
+                "data": "$postData"
             },
             "uri": "domestic-payment-consents",
             "uriImplementation": "mandatory",
@@ -26,7 +29,10 @@
 			"parameters": {
                 "tokenRequestScope": "payments",
                 "ConsentId": "$consentId",
-                "post" : "minimalDomesticPaymentConsent"    
+                "postData" : "$minimalDomesticPaymentConsent"    
+            },
+            "body": {
+                "data": "$postData"
             },
             "uri": "domestic-payment-consents/$consentId",
             "uriImplementation": "mandatory",
