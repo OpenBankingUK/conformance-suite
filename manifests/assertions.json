@@ -63,7 +63,7 @@
 				}]
 			}
 		},
-		"OB3GLOAAssertNoToken": {
+		"OB3GLOAssertContentType": {
 			"expect": {
 				"matches": [{
 					"header": "content-type",
@@ -71,6 +71,25 @@
 					"detail":"Expected the correct content type application/json; charset=utf-8"
 				}
 			]
+			}
+		},
+		"OB3GLOAAssert401": {
+			"expect": {
+				"status-code": 401,
+				"matches": [
+					{
+						"JSON": "Code",
+						"Value": "UK.OBIE.Header.Missing"
+					},
+					{
+						"JSON": "Errors.0.ErrorCode",
+						"Value": "UK.OBIE.Header.Missing"
+					},
+					{
+						"JSON": "Errors.0.Path",
+						"Value": "Authorization"
+					}
+				]
 			}
 		},
         "OB3GLOAssertFAPIPlayBack": {
