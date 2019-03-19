@@ -17,10 +17,30 @@
 				"detail":"Expected status code 200 (OK)."
 			}
 		},
-		"OB3GLOAssertOn404": {
+		"OB3GLOAssertOn400": {
 			"expect": {
-                "status-code": 404,
-                "detail":"Expected status code 404 (Not Found)."
+				"status-code": 400,
+				"detail":"Expected status code 400 (Not Found)."
+			}
+		},
+		"OB3GLOAssertOn401": {
+			"expect": {
+                "status-code": 401,
+				"detail":"Expected status code 401 (Unauthorized).",
+				"matches": [
+					{
+						"JSON": "Code",
+						"Value": "UK.OBIE.Header.Missing"
+					},
+					{
+						"JSON": "Errors.0.ErrorCode",
+						"Value": "UK.OBIE.Header.Missing"
+					},
+					{
+						"JSON": "Errors.0.Path",
+						"Value": "Authorization"
+					}
+				]
 			}
 		},
 		"OB3GLOAssertOn403": {
@@ -29,16 +49,10 @@
                 "detail":"Expected status code 403 (Forbidden)."
 			}
 		},
-		"OB3GLOAssertOn401": {
+		"OB3GLOAssertOn404": {
 			"expect": {
-                "status-code": 401,
-                "detail":"Expected status code 401 (Unauthorized)."
-			}
-		},
-		"OB3GLOAssertOn400": {
-			"expect": {
-				"status-code": 400,
-				"detail":"Expected status code 400 (Not Found)."
+                "status-code": 404,
+                "detail":"Expected status code 404 (Not Found)."
 			}
 		},
 		"OB3GLOFAPIHeader": {
@@ -59,25 +73,6 @@
 			]
 			}
 		},
-		"OB3GLOAAssert401": {
-			"expect": {
-				"status-code": 401,
-				"matches": [
-					{
-						"JSON": "Code",
-						"Value": "UK.OBIE.Header.Missing"
-					},
-					{
-						"JSON": "Errors.0.ErrorCode",
-						"Value": "UK.OBIE.Header.Missing"
-					},
-					{
-						"JSON": "Errors.0.Path",
-						"Value": "Authorization"
-					}
-				]
-			}
-        },
         "OB3GLOAssertFAPIPlayBack": {
 			"expect": {
 				"status-code": 200,
