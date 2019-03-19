@@ -3,7 +3,7 @@ package report
 import (
 	"crypto/rsa"
 	"crypto/sha256"
-	"encoding/base64"
+	"encoding/hex"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/pkg/errors"
 )
@@ -20,7 +20,7 @@ import (
 	the overall JWT is validated first, then each of the above digests is matched against the calculated digest of
 	each of the files.
 
-	Note: The digest is expected to be Base64 encoded
+	Note: The digests are represented as hex strings.
 */
 
 type reportClaims struct {
@@ -105,11 +105,11 @@ func verifyDigest(data []byte, expDigest string) error {
 }
 
 func calculateDigest(data []byte) (string, error) {
-	calc := sha256.New().Sum(data)
+	calc := sha256.Sum256(data)
 
-	result := base64.StdEncoding.EncodeToString(calc)
+	result := hex.EncodeToString([]byte(calc[0:]))
 	if result == "" {
-		return "", errors.New("unknown base64 encoding error")
+		return "", errors.New("unknown hex encoding error")
 	}
 
 	return result, nil

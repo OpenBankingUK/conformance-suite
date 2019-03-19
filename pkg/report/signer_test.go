@@ -174,19 +174,19 @@ func TestReportVerificationFailure(t *testing.T) {
 
 func TestDigestCalculation(t *testing.T) {
 	input := "foo-bar"
-	expB64Output := "Zm9vLWJhcuOwxEKY/BwUmvv0yJlvuSQnrkHkZJuTTKSVmRt4UrhV"
+	hexSHA256 := "7d89c4f517e3bd4b5e8e76687937005b602ea00c5cba3e25ef1fc6575a55103e"
 	require := test.NewRequire(t)
 
-	calcB64Output, err := calculateDigest([]byte(input))
+	calcSHA256Output, err := calculateDigest([]byte(input))
 	require.NoError(err, "calculateDigest")
-	require.Equal(expB64Output, calcB64Output)
+	require.Equal(hexSHA256, calcSHA256Output)
 
 }
 func TestDigestVerification(t *testing.T) {
 	input := "foo-bar"
-	expB64Output := "Zm9vLWJhcuOwxEKY/BwUmvv0yJlvuSQnrkHkZJuTTKSVmRt4UrhV"
+	hexSHA256 := "7d89c4f517e3bd4b5e8e76687937005b602ea00c5cba3e25ef1fc6575a55103e"
 	require := test.NewRequire(t)
 
-	err := verifyDigest([]byte(input), expB64Output)
+	err := verifyDigest([]byte(input), hexSHA256)
 	require.NoError(err)
 }
