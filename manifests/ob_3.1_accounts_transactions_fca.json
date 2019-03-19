@@ -145,41 +145,33 @@
         },
         {
 			"description": "Fails using 401 unauthorized given no token for accounts.",
-            "id": "OB-301-ACC-101000",
+            "id": "OB-301-ACC-218852",
             "refURI": "",
             "detail" : "Checks the correct response is returned 401 given if no token is used on an account.",
 			"parameters": {
 				"tokenRequestScope": "accounts",
-                "accountId": "foobar",
-                "authorizationHeader": ""
-            },
-            "headers": {
-                "Authorization": "Bearer $authorizationHeader"
+				"accountId": "foobar"
             },
             "uri": "/accounts/$accountId",
             "uriImplementation": "mandatory",
             "resource": "Account",
             "method":"get",
-            "asserts": ["OB3GLOAssertOn401", "OB3GLOAssertContentType"],
+            "asserts": ["OB3GLOAAssertNoToken"],
             "schemaCheck": false
         },
         {
 			"description": "Fails using 401 unauthorized given no token for bulk accounts.",
-            "id": "OB-301-ACC-101100",
+            "id": "OB-301-ACC-206140",
             "refURI": "",
             "detail" : "Checks the correct response is returned 401 given if no token is used on a bulk account.",
 			"parameters": {
-                "tokenRequestScope": "accounts",
-                "authorizationHeader": ""
-            },
-            "headers": {
-                "Authorization": "Bearer $authorizationHeader"
+				"tokenRequestScope": "accounts"
             },
             "uri": "/accounts",
             "uriImplementation": "mandatory",
             "resource": "Account",
             "method":"get",
-            "asserts": ["OB3GLOAssertOn401", "OB3GLOAssertContentType"],
+            "asserts": ["OB3GLOAAssertNoToken"],
             "schemaCheck": false
         },
         {
