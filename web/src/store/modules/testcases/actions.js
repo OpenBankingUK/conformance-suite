@@ -108,6 +108,8 @@ export default {
           commit(types.ADD_TOKEN_ACQUIRED, update);
         } else if (_.has(update, 'type') && update.type === 'ResultType_AcquiredAllAccessTokens') {
           commit(types.SET_ALL_TOKENS_ACQUIRED);
+        } else if (_.has(update, 'stopped') && update.stopped) {
+          // do nothing
         } else {
           // update = {"error":"createRequest: setHeaders Replaced Context value Bearer $access_token :replacement not found in context: Bearer $access_token"}
           const isErrorMsg = _.has(update, 'error');
