@@ -2,9 +2,26 @@ package report
 
 import (
 	"crypto/rsa"
+	"crypto/sha256"
+	"encoding/base64"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/pkg/errors"
 )
+
+/*
+	A report signature is manifested as a Json Web Token (JWT) saved in a simple plaintext file, e.g. signature.json
+	There are a number of claims in the payload, some of which are standard and others custom.
+	The custom claims added to the token are as follows:
+	- reportDigest: SHA256 digest of the report file.
+	- discoveryDigest: SHA256 digest of the discovery file.
+	- manifestDigest: SHA256 digest of the manifest file.
+
+	The intention is that during the signing process, the above digests are passed as claims. To verify the report
+	the overall JWT is validated first, then each of the above digests is matched against the calculated digest of
+	each of the files.
+
+	Note: The digest is expected to be Base64 encoded
+ */
 
 type reportClaims struct {
 	jwt.StandardClaims
@@ -45,7 +62,7 @@ func sign(claims reportClaims, meta map[string]string, privateKey *rsa.PrivateKe
 	return signed, nil
 }
 
-func verify(rawJwt string, publicKey *rsa.PublicKey, claims reportClaims) error {
+func verifySignature(rawJwt string, publicKey *rsa.PublicKey, claims reportClaims) error {
 	keyFunc := func(*jwt.Token) (interface{}, error) {
 		return publicKey, nil
 	}
@@ -73,4 +90,22 @@ func verify(rawJwt string, publicKey *rsa.PublicKey, claims reportClaims) error 
 	}
 
 	return nil
+}
+
+func verifyDigest(data []byte, expDigest string) error {
+	digest, err := calculateDigest(data)
+	if err != nil {
+		return errors.Wrap(err, "calculate digest")
+	}
+
+	if digest != expDigest {
+		return errors.New("digest mismatch")
+	}
+	return nil
+}
+
+func calculateDigest(data []byte) (string, error) {
+	calc := sha256.New().Sum(data)
+
+	return base64.StdEncoding.EncodeToString(calc), nil
 }

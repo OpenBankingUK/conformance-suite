@@ -117,7 +117,7 @@ func TestReportVerificationSuccess(t *testing.T) {
 		ManifestDigest:  "manifest-hash-sum",
 	}
 
-	err = verify(exampleRawJWT, publicKey, vps)
+	err = verifySignature(exampleRawJWT, publicKey, vps)
 	require.NoError(err, "verify error")
 }
 
@@ -167,7 +167,25 @@ func TestReportVerificationFailure(t *testing.T) {
 			ManifestDigest:  ti.ManifestDigest,
 		}
 
-		err = verify(exampleRawJWT, publicKey, vps)
+		err = verifySignature(exampleRawJWT, publicKey, vps)
 		require.EqualError(err, ti.Error.Error(), ti.Label)
 	}
+}
+
+func TestDigestCalculation(t *testing.T) {
+	input := "foo-bar"
+	expB64Output := "Zm9vLWJhcuOwxEKY/BwUmvv0yJlvuSQnrkHkZJuTTKSVmRt4UrhV"
+	require := test.NewRequire(t)
+
+	calcB64Output, _ := calculateDigest([]byte(input))
+	require.Equal(expB64Output, calcB64Output)
+
+}
+func TestDigestVerification(t *testing.T) {
+	input := "foo-bar"
+	expB64Output := "Zm9vLWJhcuOwxEKY/BwUmvv0yJlvuSQnrkHkZJuTTKSVmRt4UrhV"
+	require := test.NewRequire(t)
+
+	err := verifyDigest([]byte(input), expB64Output)
+	require.NoError(err)
 }
