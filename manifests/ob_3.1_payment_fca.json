@@ -13,7 +13,7 @@
             "body": {
                 "data": "$postData"
             },
-            "uri": "/domestic-payment-consents",
+            "uri": "domestic-payment-consents",
             "uriImplementation": "mandatory",
             "resource": "DomesticPayment",
             "asserts": ["OB3GLOAssertOn201", "OB3GLOFAPIHeader", "OB3DOPAssertOnAcceptedSettlementCompleted", "OB3GLOAAssertConsentId"],
@@ -34,7 +34,7 @@
             "body": {
                 "data": "$postData"
             },
-            "uri": "/domestic-payment-consents/{consentId}",
+            "uri": "domestic-payment-consents/$consentId",
             "uriImplementation": "mandatory",
             "resource": "DomesticPayment",
             "asserts": ["OB3GLOAssertOn400", "OB3GLOFAPIHeader", "OB3GLOAssertContentType"],
