@@ -49,19 +49,6 @@
 				}]
 			}
 		},
-		"basicAccountAccessConsent": {
-			"permissions": ["ReadAccountsBasic"]
-		},
-		"detailAccountAccessConsent": {
-			"permissions": ["ReadAccountDetail"]
-		},
-		"balancesAccessConsent": {
-			"permissions": ["ReadAccountBasic","ReadBalances"]
-		},
-
-		"2paccountAccessConsent": {
-			"permissions": ["ReadAccountsBasic", "ReadAccountsDetail"]
-		},
 		"OB3GLOAAssertNoToken": {
 			"expect": {
 				"status-code": 401,
