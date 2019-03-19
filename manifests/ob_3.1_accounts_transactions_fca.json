@@ -75,11 +75,7 @@
             "detail" : "Validates that the account resource fails correctly given an invalided or incorrect token.",
 			"parameters": {
 				"tokenRequestScope": "accounts",
-                "accountId": "$consentedAccountId",
-                "authorizationHeader": ""
-            },
-            "headers": {
-                "Authorization": "Bearer $authorizationHeader"
+                "accountId": "$consentedAccountId"
             },
             "permissions-excluded":["ReadAccountBasic","ReadAccountDetail"],
             "uri": "/accounts/$accountId",
@@ -95,11 +91,7 @@
             "refURI": "",
             "detail" : "Validates that the account list resource fails correctly given an invalided or incorrect token.",
 			"parameters": {
-                "tokenRequestScope": "accounts",
-                "authorizationHeader": ""
-            },
-            "headers": {
-                "Authorization": "Bearer $authorizationHeader"
+                "tokenRequestScope": "accounts"
             },
             "permissions-excluded":["ReadAccountBasic","ReadAccountDetail"],
             "uri": "/accounts",
@@ -158,7 +150,11 @@
             "detail" : "Checks the correct response is returned 401 given if no token is used on an account.",
 			"parameters": {
 				"tokenRequestScope": "accounts",
-				"accountId": "foobar"
+                "accountId": "foobar",
+                "authorizationHeader": ""
+            },
+            "headers": {
+                "Authorization": "Bearer $authorizationHeader"
             },
             "uri": "/accounts/$accountId",
             "uriImplementation": "mandatory",
@@ -173,7 +169,11 @@
             "refURI": "",
             "detail" : "Checks the correct response is returned 401 given if no token is used on a bulk account.",
 			"parameters": {
-				"tokenRequestScope": "accounts"
+                "tokenRequestScope": "accounts",
+                "authorizationHeader": ""
+            },
+            "headers": {
+                "Authorization": "Bearer $authorizationHeader"
             },
             "uri": "/accounts",
             "uriImplementation": "mandatory",
