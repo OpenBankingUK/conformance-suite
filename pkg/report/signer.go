@@ -107,5 +107,10 @@ func verifyDigest(data []byte, expDigest string) error {
 func calculateDigest(data []byte) (string, error) {
 	calc := sha256.New().Sum(data)
 
-	return base64.StdEncoding.EncodeToString(calc), nil
+	result := base64.StdEncoding.EncodeToString(calc)
+	if result == "" {
+		return "", errors.New("unknown base64 encoding error")
+	}
+
+	return result, nil
 }

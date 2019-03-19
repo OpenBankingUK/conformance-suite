@@ -177,7 +177,8 @@ func TestDigestCalculation(t *testing.T) {
 	expB64Output := "Zm9vLWJhcuOwxEKY/BwUmvv0yJlvuSQnrkHkZJuTTKSVmRt4UrhV"
 	require := test.NewRequire(t)
 
-	calcB64Output, _ := calculateDigest([]byte(input))
+	calcB64Output, err := calculateDigest([]byte(input))
+	require.NoError(err, "calculateDigest")
 	require.Equal(expB64Output, calcB64Output)
 
 }
