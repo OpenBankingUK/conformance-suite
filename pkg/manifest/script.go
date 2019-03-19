@@ -25,18 +25,20 @@ type Scripts struct {
 
 // Script represents a highlevel test definition
 type Script struct {
-	Description      string            `json:"description,omitempty"`
-	Detail           string            `json:"detail,omitempty"`
-	ID               string            `json:"id,omitempty"`
-	RefURI           string            `json:"refURI,omitempty"`
-	Parameters       map[string]string `json:"parameters,omitempty"`
-	Headers          map[string]string `json:"headers,omitempty"`
-	Resource         string            `json:"resource,omitempty"`
-	Asserts          []string          `json:"asserts,omitempty"`
-	Method           string            `json:"method,omitempty"`
-	URI              string            `json:"uri,omitempty"`
-	URIImplemenation string            `json:"uri_implemenation,omitempty"`
-	SchemaCheck      bool              `json:"schemaCheck,omitempty"`
+	Description         string            `json:"description,omitempty"`
+	Detail              string            `json:"detail,omitempty"`
+	ID                  string            `json:"id,omitempty"`
+	RefURI              string            `json:"refURI,omitempty"`
+	Parameters          map[string]string `json:"parameters,omitempty"`
+	Headers             map[string]string `json:"headers,omitempty"`
+	Permissions         []string          `json:"permissions,omitemtpy"`
+	PermissionsExcluded []string          `json:"permissions-excluded,omitemtpy"`
+	Resource            string            `json:"resource,omitempty"`
+	Asserts             []string          `json:"asserts,omitempty"`
+	Method              string            `json:"method,omitempty"`
+	URI                 string            `json:"uri,omitempty"`
+	URIImplemenation    string            `json:"uri_implemenation,omitempty"`
+	SchemaCheck         bool              `json:"schemaCheck,omitempty"`
 }
 
 // References - reference collection
@@ -85,11 +87,9 @@ func GenerateTestCases(spec string, baseurl string) ([]model.TestCase, error) {
 			return nil, err
 		}
 		consents := []string{}
-		fmt.Printf("Local context %#v\n", localCtx)
 		tc, _ := testCaseBuilder(script, refs.References, localCtx, consents, baseurl)
 		tc.ProcessReplacementFields(localCtx, false)
 		tests = append(tests, tc)
-		fmt.Println("---------------------------------------------------------")
 	}
 
 	return tests, nil
@@ -108,14 +108,20 @@ func (s *Script) processParameters(refs *References, resources *model.Context) (
 			}
 		}
 		switch k {
-		case "accountAccessConsent":
-			consent := getAccountConsent(refs, value)
-			localCtx.PutStringSlice("permissions", consent)
+		// case "accountAccessConsent":
+		// 	consent := getAccountConsent(refs, value)
+		// 	localCtx.PutStringSlice("permissions", consent)
 		case "tokenRequestScope":
 			localCtx.PutString("tokenScope", value)
 		default:
 			localCtx.PutString(k, value)
 		}
+	}
+	if len(s.Permissions) > 0 {
+		localCtx.PutStringSlice("permissions", s.Permissions)
+	}
+	if len(s.PermissionsExcluded) > 0 {
+		localCtx.PutStringSlice("permissions-excluded", s.PermissionsExcluded)
 	}
 
 	return &localCtx, nil
@@ -147,18 +153,11 @@ func testCaseBuilder(s Script, refs map[string]Reference, ctx *model.Context, co
 			return tc, errors.New(msg)
 		}
 		tc.Expect = ref.Expect.Clone()
-		fmt.Printf("ref assert to expect: %#v\n", ref.Expect)
 		tc.Expect.SchemaValidation = s.SchemaCheck
 
 	}
-	fmt.Println("Before supplied ctx")
-	dumpJSON(tc)
 	tc.ProcessReplacementFields(ctx, false)
-	fmt.Println("Before tc ctx")
-	dumpJSON(tc)
 	tc.ProcessReplacementFields(&tc.Context, false)
-	fmt.Println("After both replacements")
-	dumpJSON(tc)
 	return tc, nil
 }
 

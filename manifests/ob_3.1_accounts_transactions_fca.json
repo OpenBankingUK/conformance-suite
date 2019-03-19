@@ -2,13 +2,15 @@
 	"scripts": [
         {
 			"description": "Minimal data returned for a given account using the ReadAccountsBasic permission, status and headers.",
-            "id": "OB-301-ACC-100000",
+            "id": "OB-301-ACC-100001",
             "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937623627/Accounts+v3.1#Accountsv3.1-PermissionCodes",
             "detail" : "Checks that the resource differs depending on the permissions (ReadAccountsBasic and ReadAccountsDetail) used to access the resource with additional schema checks on status and headers.",
 			"parameters": {
 				"tokenRequestScope": "accounts",
                 "accountId": "$consentedAccountId"         
             },
+            "permissions":["ReadAccountBasic"],
+            "permissions-excluded":["ReadAccountDetail"],
             "uri": "/accounts/$accountId",
             "uriImplementation": "mandatory",
             "resource": "Account",
@@ -18,13 +20,14 @@
         },
         {
 			"description": "All data returned for a given account with ReadAccountsDetail permission, status and headers.",
-            "id": "OB-301-ACC-100200",
+            "id": "OB-301-ACC-100002",
             "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937623627/Accounts+v3.1#Accountsv3.1-PermissionCodes",
             "detail" : "Checks that the resource returns the correct data depending on the permissions ReadAccountsDetail with additional additional schema checks on status and headers.",
 			"parameters": {
 				"tokenRequestScope": "accounts",
 				"accountId": "$consentedAccountId"
             },
+            "permissions":["ReadAccountDetail"],
             "uri": "/accounts/$accountId",
             "uriImplementation": "mandatory",
 			"resource": "Account",
@@ -34,7 +37,7 @@
         },
         {
 			"description": "Minimal data returned for bulk accounts using the ReadAccountsBasic permission, status and headers.",
-            "id": "OB-301-ACC-100300",
+            "id": "OB-301-ACC-100003",
             "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937623627/Accounts+v3.1#Accountsv3.1-PermissionCodes",
             "detail" : "Checks that the resource differs depending on the permissions (ReadAccountsBasic and ReadAccountsDetail) used to access the resource with additional additional schema checks on status and headers.",
 			"parameters": {
@@ -49,12 +52,13 @@
         },
         {
 			"description": "All data returned for bulk accounts with ReadAccountsDetail permission, status and headers.",
-            "id": "OB-301-ACC-100400",
+            "id": "OB-301-ACC-100004",
             "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937623627/Accounts+v3.1#Accountsv3.1-PermissionCodes",
             "detail" : "Checks that the resource returns the correct data depending on the permissions ReadAccountsDetail with additional additional schema checks on status and headers.",
 			"parameters": {
 				"tokenRequestScope": "accounts"
             },
+            "permissions":["ReadAccountDetail"],
             "uri": "/accounts",
             "uriImplementation": "mandatory",
 			"resource": "Account",
@@ -63,14 +67,15 @@
             "schemaCheck": true
         },
 		{
-			"description": "Fails using incorrect permissions for a given account.",
-            "id": "OB-301-ACC-100500",
+			"description": "Fails when no token is provided for a given account.",
+            "id": "OB-301-ACC-100005",
             "refURI": "",
             "detail" : "Validates that the account resource fails correctly given an invalided or incorrect token.",
 			"parameters": {
 				"tokenRequestScope": "accounts",
                 "accountId": "$consentedAccountId"
             },
+            "permissions-excluded":["ReadAccountBasic","ReadAccountDetail"],
             "uri": "/accounts/$accountId",
             "uriImplementation": "mandatory",
             "resource": "Account",
@@ -79,13 +84,14 @@
             "schemaCheck": false
         },
         {
-			"description": "Fails using incorrect permissions for bulk accounts.",
-            "id": "OB-301-ACC-100600",
+			"description": "Fails when no token is provided for bulk accounts.",
+            "id": "OB-301-ACC-100006",
             "refURI": "",
             "detail" : "Validates that the account list resource fails correctly given an invalided or incorrect token.",
 			"parameters": {
-                "tokenRequestScope": "accounts"
+				"tokenRequestScope": "accounts"
             },
+            "permissions-excluded":["ReadAccountBasic","ReadAccountDetail"],
             "uri": "/accounts",
             "uriImplementation": "mandatory",
             "resource": "Account",
@@ -95,7 +101,7 @@
         },
         {
 			"description": "The x-fapi-interaction-id is replayed for an account if given.",
-            "id": "OB-301-ACC-100700",
+            "id": "OB-301-ACC-100007",
             "refURI": "",
             "detail" : "Checks that the x-fapi-interaction-id value is played-back for an account.",
 			"parameters": {
@@ -115,7 +121,7 @@
         },
         {
 			"description": "The x-fapi-interaction-id is replayed for bulk accounts if given.",
-            "id": "OB-301-ACC-100800",
+            "id": "OB-301-ACC-100008",
             "refURI": "",
             "detail" : "Checks that the x-fapi-interaction-id value is played-back for bulk accounts.",
 			"parameters": {
@@ -174,7 +180,7 @@
         },
         {
 			"description": "All data returned for an account with ReadBalances permission, status and headers.",
-            "id": "OB-301-BAL-101200",
+            "id": "OB-301-BAL-100009",
             "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937754673/Balances+v3.1#Balancesv3.1-PermissionCodes",
             "detail" : "Checks that the resource returns the correct data with additional schema checks status and headers for a given account. The resource response payload does not differ depending on the permissions granted.",
 			"parameters": {
@@ -190,7 +196,7 @@
         },
         {
 			"description": "All data returned for bulk account with ReadBalances permission, status and headers.",
-            "id": "OB-301-BAL-101300",
+            "id": "OB-301-BAL-100010",
             "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937754673/Balances+v3.1#Balancesv3.1-PermissionCodes",
             "detail" : "Checks that the bulk balances resource returns the correct data with additional schema checks, status and headers for a given account.",
 			"parameters": {
@@ -198,7 +204,6 @@
 				"tokenRequestScope": "accounts",
 				"accountId": "$consentedAccountId"
             },
-            "permissions":[ "ReadAccountsBasic", "ReadBalances"],
             "uri": "/balances",
             "uriImplementation": "optional",
 			"resource": "Balance",
@@ -207,8 +212,8 @@
             "schemaCheck": true
         },
         {
-			"description": "Fails on incorrect permissions are provided for balance.",
-            "id": "OB-301-BAL-101400",
+			"description": "Fails when no token is provided for balance.",
+            "id": "OB-301-BAL-100011",
             "refURI": "",
             "detail" : "Validates that the balance resource fails correctly given an invalided permissions",
 			"parameters": {
@@ -223,8 +228,8 @@
             "schemaCheck": false
         },
         {
-			"description": "Fails on incorrect permissions for bulk balances.",
-            "id": "OB-301-BAL-101500",
+			"description": "Fails when no token is provided for bulk balances.",
+            "id": "OB-301-BAL-100012",
             "refURI": "",
             "detail" : "Validates that the bulk balances resource fails correctly given an invalided permissions",
 			"parameters": {
@@ -239,7 +244,7 @@
         },
         {
 			"description": "Fails when account is invalid for balances.",
-            "id": "OB-301-BAL-101600",
+            "id": "OB-301-BAL-100013",
             "refURI": "",
             "detail" : "Checks the correct response is returned when given an invalid account for a balance.",
 			"parameters": {
@@ -255,7 +260,7 @@
         },
         {
 			"description": "Fails when token is from client grant.",
-            "id": "OB-301-BAL-101700",
+            "id": "OB-301-BAL-100014",
             "refURI": "",
             "detail" : "Checks the correct response is returned 401 using a CCG token",
 			"parameters": {
@@ -270,7 +275,7 @@
         },
         {
 			"description": "Minimal data returned for a given beneficiary using the ReadBeneficiariesBasic permission, status and headers.",
-            "id": "OB-301-BEN-101800",
+            "id": "OB-301-BEN-100015",
             "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937951315/Beneficiaries+v3.1#Beneficiariesv3.1-PermissionCodes",
             "detail" : "Checks that the resource differs depending on the permission ReadBeneficiariesBasic used to access the resource with additional schema checks on status and headers.",
 			"parameters": {
@@ -286,7 +291,7 @@
         },
         {
 			"description": "Minimal data returned for a given bulk beneficiaries using the ReadBeneficiariesBasic permission, status and headers.",
-            "id": "OB-301-BEN-101900",
+            "id": "OB-301-BEN-100016",
             "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937951315/Beneficiaries+v3.1#Beneficiariesv3.1-PermissionCodes",
             "detail" : "Checks that the resource differs depending on the permissions (ReadBeneficiariesBasic and ReadBeneficiariesDetail) used to access the resource with additional schema checks, status and headers.",
 			"parameters": {
@@ -300,8 +305,8 @@
             "schemaCheck": true
         },
         {
-			"description": "Fails when incorrect permissions are provided for bulk beneficiaries.",
-            "id": "OB-301-BEN-102000",
+			"description": "Fails when no token is provided for bulk beneficiaries.",
+            "id": "OB-301-BEN-100017",
             "refURI": "",
             "detail" : "Validates that the bulk beneficiaries resource fails correctly given an invalided permisison.",
 			"parameters": {
@@ -315,8 +320,8 @@
             "schemaCheck": false
         },
         {
-			"description": "Fails given incorrect permission is provided for a beneficiary.",
-            "id": "OB-301-BEN-102100",
+			"description": "Fails when no token is provided for a beneficiary.",
+            "id": "OB-301-BEN-100018",
             "refURI": "",
             "detail" : "Validates that the beneficiary resource fails correctly given an invalided permission.",
 			"parameters": {
@@ -331,8 +336,8 @@
             "schemaCheck": false
         },        
         {
-			"description": "Fails given an invalid account for beneficiary.",
-            "id": "OB-301-BEN-102200",
+			"description": "Fails when account is invalid for beneficiary.",
+            "id": "OB-301-BEN-100019",
             "refURI": "",
             "detail" : "Checks the correct response is returned when given an invalid account for a beneficiary.",
 			"parameters": {
@@ -349,7 +354,7 @@
         },
         {
 			"description": "All data returned for a given account with ReadDirectDebits permission, status and headers.",
-            "id": "OB-301-DIR-102300",
+            "id": "OB-301-DIR-100020",
             "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937558106/Direct+Debits+v3.1",
             "detail" : "Checks that the resource returns the correct data depending permission ReadDirectDebits with additional schema checks on status and headers.",
 			"parameters": {
@@ -365,7 +370,7 @@
         },
         {
 			"description": "All data returned for a given account with ReadDirectDebits permission, status and headers.",
-            "id": "OB-301-DIR-102400",
+            "id": "OB-301-DIR-100021",
             "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937558106/Direct+Debits+v3.1",
             "detail" : "Checks that the resource returns the correct data for the permission ReadDirectDebits bulk with additional schema checks on status and headers.",
 			"parameters": {
@@ -380,7 +385,7 @@
         },
         {
 			"description": "Fails when account is invalid for Direct Debits.",
-            "id": "OB-301-DIR-102500",
+            "id": "OB-301-DIR-100022",
             "refURI": "",
             "detail" : "Checks the correct response is returned when given an invalid account for Direct Debits.",
 			"parameters": {
@@ -396,7 +401,7 @@
         },
         {
 			"description": "All data returned for a given account with ReadOffers permission with additional schema checks, status and headers.",
-            "id": "OB-301-OFF-102600",
+            "id": "OB-301-OFF-100023",
             "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937558127/Offers+v3.1#Offersv3.1-PermissionCodes",
             "detail" : "Checks that the resource returns the correct data depending permission ReadOffers with additional schema checks on status and headers.",
 			"parameters": {
@@ -412,7 +417,7 @@
         },
         {
 			"description": "All data returned for Offers with ReadOffers permission with additional schema checks, status and headers.",
-            "id": "OB-301-OFF-102700",
+            "id": "OB-301-OFF-100024",
             "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937558127/Offers+v3.1#Offersv3.1-PermissionCodes",
             "detail" : "Checks that the resource returns the correct data depending permission ReadOffers with additional schema checks on status and headers.",
 			"parameters": {
@@ -427,8 +432,8 @@
             "schemaCheck": true
         },
         {
-			"description": "Fails given account is invalid for an Offer.",
-            "id": "OB-301-OFF-102800",
+			"description": "Fails when account is invalid for an Offer.",
+            "id": "OB-301-OFF-100025",
             "refURI": "",
             "detail" : "Checks the correct response is returned when given an invalid account for an Offer.",
 			"parameters": {
@@ -444,7 +449,7 @@
         },
         {
 			"description": "All data returned for a given account with ReadParty permission with additional schema checks, status and headers.",
-            "id": "OB-301-PAR-102900",
+            "id": "OB-301-PAR-100026",
             "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937984104/Party+v3.1#Partyv3.1-PermissionCodes",
             "detail" : "Checks that the resource returns the correct data depending permission ReadParty with additional schema checks on status and headers.",
 			"parameters": {
@@ -460,7 +465,7 @@
         },
         {
 			"description": "All data returned for ReadParty permission with additional schema checks, status and headers.",
-            "id": "OB-301-PAR-103000",
+            "id": "OB-301-PAR-100027",
             "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937984104/Party+v3.1#Partyv3.1-PermissionCodes",
             "detail" : "Checks that the bluk resource returns the correct data depending permission ReadParty with additional schema checks on status and headers.",
 			"parameters": {
@@ -475,7 +480,7 @@
         },
         {
 			"description": "Fails when account is invalid for an Party.",
-            "id": "OB-301-PAR-103100",
+            "id": "OB-301-PAR-100028",
             "refURI": "",
             "detail" : "Checks the correct response is returned when given an invalid account for an Party.",
 			"parameters": {
@@ -492,7 +497,7 @@
         },
         {
 			"description": "All data returned for a given account with ReadProducts permission with additional schema checks, status and headers.",
-            "id": "OB-301-PRO-103200",
+            "id": "OB-301-PRO-100029",
             "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937820288/Products+v3.1#Productsv3.1-PermissionCodes",
             "detail" : "Checks that the resource returns the correct data depending permission ReadProducts with additional schema checks on status and headers.",
 			"parameters": {
@@ -508,7 +513,7 @@
         },
         {
 			"description": "All data returned for ReadProducts permission with additional schema checks, status and headers.",
-            "id": "OB-301-PRO-103300",
+            "id": "OB-301-PRO-100030",
             "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937820288/Products+v3.1#Productsv3.1-PermissionCodes",
             "detail" : "Checks that the bulk resource returns the correct data depending permission ReadProducts with additional schema checks on status and headers.",
 			"parameters": {
@@ -523,7 +528,7 @@
         },
         {
 			"description": "Fails when account is invalid for a Product.",
-            "id": "OB-301-PAR-103400",
+            "id": "OB-301-PAR-100031",
             "refURI": "",
             "detail" : "Checks the correct response is returned when given an invalid account for a Product.",
 			"parameters": {
@@ -539,7 +544,7 @@
         },      
         {
 			"description": "Detailed level data returned for a given account using the ReadScheduledPaymentsDetail permission.",
-            "id": "OB-301-SCP-103500",
+            "id": "OB-301-SCP-100032",
             "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937066541/Scheduled+Payments+v3.1#ScheduledPaymentsv3.1-Endpoints",
             "detail" : "Checks that detail level is returned resource with permission ReadScheduledPaymentsDetail to access the resource with additional schema checks on status and headers.",
 			"parameters": {
@@ -555,7 +560,7 @@
         },
         {
 			"description": "All data returned for ReadScheduledPaymentsDetail permission with additional schema checks, status and headers.",
-            "id": "OB-301-SCP-103600",
+            "id": "OB-301-SCP-100033",
             "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937066541/Scheduled+Payments+v3.1#ScheduledPaymentsv3.1-Endpoints",
             "detail" : "Checks that the bulk resource returns the correct data depending permission ReadScheduledPaymentsDetail with additional schema checks on status and headers.",
 			"parameters": {
@@ -570,7 +575,7 @@
         },
         {
 			"description": "Fails when account is invalid for a Scheduled Payment.",
-            "id": "OB-301-SCP-103700",
+            "id": "OB-301-SCP-100034",
             "refURI": "",
             "detail" : "Checks the correct response is returned when given an invalid account for a Scheduled Payment.",
 			"parameters": {
@@ -586,7 +591,7 @@
         },
         {
 			"description": "Detailed level data returned for a given account using the ReadStandingOrdersDetail permission.",
-            "id": "OB-301-STO-103800",
+            "id": "OB-301-STO-100035",
             "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937721918/Standing+Orders+v3.1#StandingOrdersv3.1-PermissionCodes",
             "detail" : "Checks that detail level is returned resource with permission ReadStandingOrdersDetail to access the resource with additional schema checks on status and headers.",
 			"parameters": {
@@ -602,7 +607,7 @@
         },
         {
 			"description": "All data returned for a given account using the ReadStandingOrdersDetail permission.",
-            "id": "OB-301-STO-103900",
+            "id": "OB-301-STO-100036",
             "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937721918/Standing+Orders+v3.1#StandingOrdersv3.1-PermissionCodes",
             "detail" : "Checks that all data for bulk resource with permission ReadStandingOrdersDetail to access the resource with additional schema checks on status and headers.",
 			"parameters": {
@@ -617,7 +622,7 @@
         },
         {
 			"description": "Fails when account is invalid for a Standing Order.",
-            "id": "OB-301-STO-104000",
+            "id": "OB-301-STO-100037",
             "refURI": "",
             "detail" : "Checks the correct response is returned when given an invalid account for a Standing Order.",
 			"parameters": {

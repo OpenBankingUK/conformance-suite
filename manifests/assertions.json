@@ -103,6 +103,10 @@
 		"detailAccountAccessConsent": {
 			"permissions": ["ReadAccountDetail"]
 		},
+		"balancesAccessConsent": {
+			"permissions": ["ReadAccountBasic","ReadBalances"]
+		},
+
 		"2paccountAccessConsent": {
 			"permissions": ["ReadAccountsBasic", "ReadAccountsDetail"]
 		},
