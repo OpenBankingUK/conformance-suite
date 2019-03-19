@@ -23,7 +23,7 @@ TABLE A:
 | description       | 1..1       | A short description describing the and expected result. | String (max 256) |             |
 | refURI            | 0..1       | A URI to identify regulatory or specification.          | String (max 256) |             |
 | detail            | 0..1       | Long description describing the and expected result     | String (max 256) |             |
-| parameters        | 1..1       |                                                         | json             | see example |
+| parameters        | 1..1       | Maps to context                                         | json             | see example |
 | uri               | 1..1       | A resource to test.                                     | String           |             |
 | asserts           | 1..1       | List of linked asserts.                                 | List             |             |
 | uriImplementation | 1..1       |                                                         |                  |             |
