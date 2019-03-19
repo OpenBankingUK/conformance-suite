@@ -2,19 +2,14 @@
 	"references": {
         "OB3GLOAssertOn200": {
 			"expect": {
-				"status-code": 201,
-				"matches": [ 
-                {
-                    "JSON": "json.Data.Status",
-                    "Value": "AcceptedSettlementCompleted"
-                }
-            ]
+				"status-code": 200,
+				"detail":"Expected status code 200 (OK)."
 			}
 		},
 		"OB3GLOAssertOn201": {
 			"expect": {
-				"status-code": 200,
-				"detail":"Expected status code 200 (OK)."
+				"status-code": 201,
+				"detail":"Expected status code 201 (Created)"
 			}
 		},
 		"OB3GLOAssertOn400": {
