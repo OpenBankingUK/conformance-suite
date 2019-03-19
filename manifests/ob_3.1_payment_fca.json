@@ -16,7 +16,7 @@
             "uri": "domestic-payment-consents",
             "uriImplementation": "mandatory",
             "resource": "DomesticPayment",
-            "asserts": ["OB3DOPAssertOnSuccess", "OB3GLOAAssertConsentId", "OB3GLOFAPIHeader"],
+            "asserts": ["OB3GLOAssertOn201", "OB3GLOFAPIHeader", "OB3DOPAssertOnAcceptedSettlementCompleted", "OB3GLOAAssertConsentId"],
             "keepContext": ["OB3GLOAAssertConsentId", "OB3GLOFAPIHeader"],
             "method":"post",
             "schemaCheck": true

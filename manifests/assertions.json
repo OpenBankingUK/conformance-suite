@@ -1,20 +1,15 @@
 {
 	"references": {
-        "OB3DOPAssertOnSuccess": {
-			"expect": {
-				"status-code": 201,
-				"matches": [ 
-                {
-                    "JSON": "json.Data.Status",
-                    "Value": "AcceptedSettlementCompleted"
-                }
-            ]
-			}
-		},
-        "OB3GLOAssertOnSuccess": {
+        "OB3GLOAssertOn200": {
 			"expect": {
 				"status-code": 200,
 				"detail":"Expected status code 200 (OK)."
+			}
+		},
+		"OB3GLOAssertOn201": {
+			"expect": {
+				"status-code": 201,
+				"detail":"Expected status code 201 (Created)"
 			}
 		},
 		"OB3GLOAssertOn400": {
@@ -94,7 +89,17 @@
                 }
             ]
 			}
+		},
+		"OB3DOPAssertOnAcceptedSettlementCompleted": {
+			"expect": {
+				"matches": [ 
+                {
+                    "JSON": "json.Data.Status",
+					"Value": "AcceptedSettlementCompleted",
+					"detail" :"Expected status of the payment information group (AcceptedSettlementCompleted)."
+                }
+            ]
+			}
 		}
-
 	}
 }
