@@ -92,7 +92,7 @@ export default {
 
     try {
       const config = JSON.parse(editorString);
-      const merged = _.merge(_.clone(state.configuration), config);
+      const merged = _.merge(_.cloneDeep(state.configuration), config);
       const validKeys = [
         'signing_private',
         'signing_public',
