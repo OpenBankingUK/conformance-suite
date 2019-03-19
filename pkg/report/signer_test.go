@@ -58,18 +58,18 @@ func TestReportSigning(t *testing.T) {
 	privateKey, err := x509.ParsePKCS1PrivateKey(pb.Bytes)
 	require.NoError(err, "parse private key")
 
-	meta := map[string]string {
+	meta := map[string]string{
 		"header-foo": "header-bar",
 	}
 
 	knownClaims := reportClaims{
-		ReportDigest: "report-hash-sum",
+		ReportDigest:    "report-hash-sum",
 		DiscoveryDigest: "discovery-hash-sum",
-		ManifestDigest: "manifest-hash-sum",
+		ManifestDigest:  "manifest-hash-sum",
 		StandardClaims: jwt.StandardClaims{
-			Issuer: "https://openbanking.org.uk/fcs/reporting",
-			Subject: "openbanking.org.uk",
-			Id: "unique-jwt-id",
+			Issuer:    "https://openbanking.org.uk/fcs/reporting",
+			Subject:   "openbanking.org.uk",
+			Id:        "unique-jwt-id",
 			ExpiresAt: 4077614132,
 			NotBefore: 90000,
 		},
@@ -112,9 +112,9 @@ func TestReportVerificationSuccess(t *testing.T) {
 	require.NoError(err, "parse public key")
 
 	vps := reportClaims{
-		ReportDigest: "report-hash-sum",
+		ReportDigest:    "report-hash-sum",
 		DiscoveryDigest: "discovery-hash-sum",
-		ManifestDigest: "manifest-hash-sum",
+		ManifestDigest:  "manifest-hash-sum",
 	}
 
 	err = verify(exampleRawJWT, publicKey, vps)
@@ -130,41 +130,41 @@ func TestReportVerificationFailure(t *testing.T) {
 	publicKey, err := x509.ParsePKCS1PublicKey(pb.Bytes)
 	require.NoError(err, "parse public key")
 
-	tt := []struct{
-		Label string
-		ReportDigest string
+	tt := []struct {
+		Label           string
+		ReportDigest    string
 		DiscoveryDigest string
-		ManifestDigest string
-		Error error
+		ManifestDigest  string
+		Error           error
 	}{
 		{
-			Label: "Report digest mismatch",
-			Error: errors.New("report digest mismatch"),
-			ReportDigest: "invalid-report-hash-sum",
+			Label:           "Report digest mismatch",
+			Error:           errors.New("report digest mismatch"),
+			ReportDigest:    "invalid-report-hash-sum",
 			DiscoveryDigest: "discovery-hash-sum",
-			ManifestDigest: "manifest-hash-sum",
+			ManifestDigest:  "manifest-hash-sum",
 		},
 		{
-			Label: "Discovery digest mismatch",
-			Error: errors.New("discovery digest mismatch"),
-			ReportDigest: "report-hash-sum",
+			Label:           "Discovery digest mismatch",
+			Error:           errors.New("discovery digest mismatch"),
+			ReportDigest:    "report-hash-sum",
 			DiscoveryDigest: "invalid-discovery-hash-sum",
-			ManifestDigest: "manifest-hash-sum",
+			ManifestDigest:  "manifest-hash-sum",
 		},
 		{
-			Label: "Manifest digest mismatch",
-			Error: errors.New("manifest digest mismatch"),
-			ReportDigest: "report-hash-sum",
+			Label:           "Manifest digest mismatch",
+			Error:           errors.New("manifest digest mismatch"),
+			ReportDigest:    "report-hash-sum",
 			DiscoveryDigest: "discovery-hash-sum",
-			ManifestDigest: "invalid-manifest-hash-sum",
+			ManifestDigest:  "invalid-manifest-hash-sum",
 		},
 	}
 
 	for _, ti := range tt {
 		vps := reportClaims{
-			ReportDigest: ti.ReportDigest,
+			ReportDigest:    ti.ReportDigest,
 			DiscoveryDigest: ti.DiscoveryDigest,
-			ManifestDigest: ti.ManifestDigest,
+			ManifestDigest:  ti.ManifestDigest,
 		}
 
 		err = verify(exampleRawJWT, publicKey, vps)

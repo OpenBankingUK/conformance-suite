@@ -8,9 +8,9 @@ import (
 
 type reportClaims struct {
 	jwt.StandardClaims
-	ReportDigest string `json:"reportDigest,omitempty"`
+	ReportDigest    string `json:"reportDigest,omitempty"`
 	DiscoveryDigest string `json:"discoveryDigest,omitempty"`
-	ManifestDigest string `json:"manifestDigest,omitempty"`
+	ManifestDigest  string `json:"manifestDigest,omitempty"`
 }
 
 // Validate reportClaims
@@ -30,7 +30,7 @@ func (sc reportClaims) Valid() error {
 // - ReportDigest
 // - DiscoveryDigest
 // - ManifestDigest
-func sign(claims reportClaims, meta map[string]string, privateKey *rsa.PrivateKey) (string, error){
+func sign(claims reportClaims, meta map[string]string, privateKey *rsa.PrivateKey) (string, error) {
 	t := jwt.NewWithClaims(jwt.SigningMethodPS256, claims)
 
 	for k, v := range meta {
@@ -46,7 +46,7 @@ func sign(claims reportClaims, meta map[string]string, privateKey *rsa.PrivateKe
 }
 
 func verify(rawJwt string, publicKey *rsa.PublicKey, claims reportClaims) error {
-	keyFunc := func(*jwt.Token) (interface{}, error){
+	keyFunc := func(*jwt.Token) (interface{}, error) {
 		return publicKey, nil
 	}
 
