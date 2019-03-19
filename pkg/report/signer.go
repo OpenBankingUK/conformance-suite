@@ -21,7 +21,7 @@ import (
 	each of the files.
 
 	Note: The digest is expected to be Base64 encoded
- */
+*/
 
 type reportClaims struct {
 	jwt.StandardClaims
