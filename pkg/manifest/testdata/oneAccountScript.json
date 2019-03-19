@@ -5,11 +5,11 @@
       "refURI": "",
       "detail": "Checks that the x-fapi-interaction-id value is played-back for bulk accounts.",
       "parameters": {
-        "accountAccessConsent": "detailAccountAccessConsent",
         "tokenRequestScope": "accounts",
         "accountId": "$consentedAccountId",
         "x-fapi-interaction-id": "aac-f5a10e5e-0c46-41c5-a7b7-c8f56020520x"
       },
+      "permissions":["ReadAccountDetail"],
       "headers": {
         "x-fapi-interaction-id": "$x-fapi-interaction-id"
       },
@@ -27,11 +27,11 @@
       "refURI": "",
       "detail": "Checks that the x-fapi-interaction-id value is played-back for an account.",
       "parameters": {
-        "accountAccessConsent": "detailAccountAccessConsent",
         "tokenRequestScope": "accounts",
         "accountId": "$consentedAccountId",
         "x-fapi-interaction-id": "aac-f5a10e5e-0c46-41c5-a7b7-c8f56020520c"
       },
+      "permissions":["ReadAccountDetail"],
       "headers": {
         "x-fapi-interaction-id": "$x-fapi-interaction-id"
       },

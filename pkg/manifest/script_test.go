@@ -66,7 +66,7 @@ func TestGenerateTestCases(t *testing.T) {
 	assert.Nil(t, err)
 	m := make(map[string]string, 0)
 	for _, v := range perms {
-		fmt.Printf("perms: %#v\n", v)
+		fmt.Printf("perms: %s %-50.50s %s\n", v.ID, v.Path, v.Permissions)
 		m[v.Path] = v.ID
 	}
 	fmt.Println("----------------------==")
