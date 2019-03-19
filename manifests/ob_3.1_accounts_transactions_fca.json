@@ -75,7 +75,11 @@
             "detail" : "Validates that the account resource fails correctly given an invalided or incorrect token.",
 			"parameters": {
 				"tokenRequestScope": "accounts",
-                "accountId": "$consentedAccountId"
+                "accountId": "$consentedAccountId",
+                "authorizationHeader": ""
+            },
+            "headers": {
+                "Authorization": "Bearer $authorizationHeader"
             },
             "permissions-excluded":["ReadAccountBasic","ReadAccountDetail"],
             "uri": "/accounts/$accountId",
@@ -91,7 +95,11 @@
             "refURI": "",
             "detail" : "Validates that the account list resource fails correctly given an invalided or incorrect token.",
 			"parameters": {
-				"tokenRequestScope": "accounts"
+                "tokenRequestScope": "accounts",
+                "authorizationHeader": ""
+            },
+            "headers": {
+                "Authorization": "Bearer $authorizationHeader"
             },
             "permissions-excluded":["ReadAccountBasic","ReadAccountDetail"],
             "uri": "/accounts",
