@@ -43,6 +43,8 @@
 			"parameters": {
 				"tokenRequestScope": "accounts"       
             },
+            "permissions":["ReadAccountsBasic"],
+            "permissions-excluded":["ReadAccountDetail"],
             "uri": "/accounts",
             "uriImplementation": "mandatory",
 			"resource": "Account",
@@ -112,6 +114,7 @@
             "headers": {
                 "x-fapi-interaction-id": "$x-fapi-interaction-id"
             },
+            "permissions":["ReadAccountDetail"],
             "uri": "/accounts/$accountId",
             "uriImplementation": "mandatory",
             "resource": "Account",
@@ -132,6 +135,7 @@
             "headers": {
                 "x-fapi-interaction-id": "$x-fapi-interaction-id"
             },
+            "permissions":["ReadAccountDetail"],
             "uri": "/accounts/$accountId",
             "uriImplementation": "mandatory",
             "resource": "Account",
@@ -187,6 +191,7 @@
 				"tokenRequestScope": "accounts",
 				"accountId": "$consentedAccountId"
             },
+            "permissions":[ "ReadAccountsBasic", "ReadBalances"],
             "uri": "/accounts/$accountId/balances",
             "uriImplementation": "mandatory",
 			"resource": "Balance",
@@ -204,6 +209,7 @@
 				"tokenRequestScope": "accounts",
 				"accountId": "$consentedAccountId"
             },
+            "permissions":[ "ReadAccountsBasic", "ReadBalances"],
             "uri": "/balances",
             "uriImplementation": "optional",
 			"resource": "Balance",
@@ -212,7 +218,7 @@
             "schemaCheck": true
         },
         {
-			"description": "Fails when no token is provided for balance.",
+			"description": "Fails on incorrect permissions are provided for balance.",
             "id": "OB-301-BAL-100011",
             "refURI": "",
             "detail" : "Validates that the balance resource fails correctly given an invalided permissions",
@@ -220,6 +226,7 @@
 				"tokenRequestScope": "accounts",
 				"accountId": "$consentedAccountId"
             },
+            "permissions-excluded":[ "ReadAccountsBasic", "ReadBalances"],
             "uri": "/accounts/$accountId/balances",
             "uriImplementation": "mandatory",
             "resource": "Balance",
@@ -228,13 +235,14 @@
             "schemaCheck": false
         },
         {
-			"description": "Fails when no token is provided for bulk balances.",
+			"description": "Fails on incorrect permissions for bulk balances.",
             "id": "OB-301-BAL-100012",
             "refURI": "",
             "detail" : "Validates that the bulk balances resource fails correctly given an invalided permissions",
 			"parameters": {
 				"tokenRequestScope": "accounts"
             },
+            "permissions-excluded":[ "ReadAccountsBasic", "ReadBalances"],
             "uri": "/balances",
             "uriImplementation": "optional",
             "resource": "Balance",
@@ -251,6 +259,7 @@
 				"tokenRequestScope": "accounts",
 				"accountId": "foobar"
             },
+            "permissions":[ "ReadAccountsBasic", "ReadBalances"],
             "uri": "/accounts/$accountId/balances",
             "uriImplementation": "mandatory",
             "resource": "Balance",
@@ -266,6 +275,7 @@
 			"parameters": {
 				"tokenRequestScope": "accounts"
             },
+            "permissions":[ "ReadAccountsBasic", "ReadBalances"],
             "uri": "/balances",
             "uriImplementation": "optional",
             "resource": "Balance",
@@ -282,6 +292,7 @@
 				"tokenRequestScope": "accounts",
                 "accountId": "$consentedAccountId"         
             },
+            "permissions": [ "ReadAccountsBasic", "ReadBeneficiariesBasic"],
             "uri": "/accounts/$accountId/beneficiaries",
             "uriImplementation": "conditional",
 			"resource": "Beneficiary",
@@ -297,6 +308,7 @@
 			"parameters": {
 				"tokenRequestScope": "accounts"    
             },
+            "permissions": [ "ReadAccountsBasic", "ReadBeneficiariesBasic"],
             "uri": "/beneficiaries",
             "uriImplementation": "optional",
 			"resource": "Beneficiary",
@@ -305,13 +317,14 @@
             "schemaCheck": true
         },
         {
-			"description": "Fails when no token is provided for bulk beneficiaries.",
+			"description": "Fails when incorrect permissions are provided for bulk beneficiaries.",
             "id": "OB-301-BEN-100017",
             "refURI": "",
             "detail" : "Validates that the bulk beneficiaries resource fails correctly given an invalided permisison.",
 			"parameters": {
 				"tokenRequestScope": "accounts"
             },
+            "permissions-excluded":["ReadAccountBasic","ReadBeneficiariesBasic"],
             "uri": "/beneficiaries",
             "uriImplementation": "optional",
             "resource": "Beneficiary",
@@ -320,7 +333,7 @@
             "schemaCheck": false
         },
         {
-			"description": "Fails when no token is provided for a beneficiary.",
+			"description": "Fails given incorrect permission is provided for a beneficiary.",
             "id": "OB-301-BEN-100018",
             "refURI": "",
             "detail" : "Validates that the beneficiary resource fails correctly given an invalided permission.",
@@ -328,6 +341,7 @@
                 "tokenRequestScope": "accounts",
                 "accountId": "$consentedAccountId" 
             },
+            "permissions-excluded":["ReadAccountBasic","ReadBeneficiariesBasic"],
             "uri": "/accounts/$accountId/beneficiaries",
             "uriImplementation": "conditional",
             "resource": "Beneficiary",
@@ -336,7 +350,7 @@
             "schemaCheck": false
         },        
         {
-			"description": "Fails when account is invalid for beneficiary.",
+			"description": "Fails given an invalid account for beneficiary.",
             "id": "OB-301-BEN-100019",
             "refURI": "",
             "detail" : "Checks the correct response is returned when given an invalid account for a beneficiary.",
@@ -361,6 +375,7 @@
 				"tokenRequestScope": "accounts",
 				"accountId": "$consentedAccountId"
             },
+            "permissions":[ "ReadAccountsBasic", "ReadDirectDebits"],
             "uri": "/accounts/$accountId/direct-debits",
             "uriImplementation": "conditional",
 			"resource": "DirectDebit",
@@ -376,6 +391,7 @@
 			"parameters": {
 				"tokenRequestScope": "accounts"
             },
+            "permissions":[ "ReadAccountsBasic", "ReadDirectDebits"],
             "uri": "/direct-debits",
             "uriImplementation": "optional",
 			"resource": "DirectDebit",
@@ -392,6 +408,7 @@
 				"tokenRequestScope": "accounts",
 				"accountId": "foobar"
             },
+            "permissions-excluded":[ "ReadAccountsBasic", "ReadDirectDebits"],
             "uri": "/accounts/$accountId/direct-debits",
             "uriImplementation": "conditional",
             "resource": "DirectDebit",
@@ -408,6 +425,7 @@
 				"tokenRequestScope": "accounts",
 				"accountId": "$consentedAccountId"
             },
+            "permissions": [ "ReadAccountsBasic", "ReadOffers"],
             "uri": "/accounts/$accountId/offers",
             "uriImplementation": "conditional",
 			"resource": "Offer",
@@ -424,6 +442,7 @@
 				"tokenRequestScope": "accounts",
 				"accountId": "$consentedAccountId"
             },
+            "permissions": [ "ReadAccountsBasic", "ReadOffers"],
             "uri": "/offers",
             "resource": "Offer",
             "uriImplementation": "optional",
@@ -432,7 +451,7 @@
             "schemaCheck": true
         },
         {
-			"description": "Fails when account is invalid for an Offer.",
+			"description": "Fails given account is invalid for an Offer.",
             "id": "OB-301-OFF-100025",
             "refURI": "",
             "detail" : "Checks the correct response is returned when given an invalid account for an Offer.",
@@ -440,6 +459,7 @@
 				"tokenRequestScope": "accounts",
 				"accountId": "foobar"
             },
+            "permissions": [ "ReadAccountsBasic", "ReadOffers"],
             "uri": "/accounts/$accountId/offers",
             "uriImplementation": "conditional",
             "resource": "Offer",
@@ -456,6 +476,7 @@
 				"tokenRequestScope": "accounts",
 				"accountId": "$consentedAccountId"
             },
+            "permissions": [ "ReadAccountsBasic", "ReadParty"],
             "uri": "/accounts/$accountId/party",
             "uriImplementation": "conditional",
 			"resource": "Party",
@@ -471,6 +492,7 @@
 			"parameters": {
 				"tokenRequestScope": "accounts"
             },
+            "permissions": [ "ReadAccountsBasic", "ReadParty"],
             "uri": "/accounts/party",
             "uriImplementation": "conditional",
 			"resource": "Party",
@@ -488,6 +510,7 @@
 				"tokenRequestScope": "accounts",
 				"accountId": "foobar"
             },
+            "permissions": [ "ReadAccountsBasic", "ReadParty"],
             "uri": "/accounts/$accountId/party",
             "uriImplementation": "conditional",
             "resource": "Party",
@@ -504,6 +527,7 @@
 				"tokenRequestScope": "accounts",
 				"accountId": "$consentedAccountId"
             },
+            "permissions": [ "ReadAccountsBasic", "ReadProducts"],
             "uri": "/accounts/$accountId/product",
             "uriImplementation": "conditional",
 			"resource": "Product",
@@ -519,6 +543,7 @@
 			"parameters": {
 				"tokenRequestScope": "accounts"
             },
+            "permissions": [ "ReadAccountsBasic", "ReadProducts"],
             "uri": "/product",
             "uriImplementation": "optional",
 			"resource": "Product",
@@ -535,6 +560,7 @@
 				"tokenRequestScope": "accounts",
 				"accountId": "foobar"
             },
+            "permissions": [ "ReadAccountsBasic", "ReadProducts"],
             "uri": "/accounts/$accountId/product",
             "uriImplementation": "conditional",
             "resource": "Party",
@@ -551,6 +577,7 @@
 				"tokenRequestScope": "accounts",
                 "accountId": "$consentedAccountId"         
             },
+            "permissions": [ "ReadAccountsBasic", "ReadScheduledPaymentsDetail"],
             "uri": "/accounts/$accountId/scheduled-payments",
             "uriImplementation": "conditional",
 			"resource": "ScheduledPayment",
@@ -566,6 +593,7 @@
 			"parameters": {
 				"tokenRequestScope": "accounts"
             },
+            "permissions": [ "ReadAccountsBasic", "ReadScheduledPaymentsDetail"],
             "uri": "/scheduled-payments",
             "uriImplementation": "optional",
 			"resource": "ScheduledPayment",
@@ -582,6 +610,7 @@
 				"tokenRequestScope": "accounts",
 				"accountId": "foobar"
             },
+            "permissions": [ "ReadAccountsBasic", "ReadScheduledPaymentsDetail"],
             "uri": "/accounts/$accountId/scheduled-payments",
             "uriImplementation": "conditional",
             "resource": "ScheduledPayment",
@@ -598,6 +627,7 @@
 				"tokenRequestScope": "accounts",
                 "accountId": "$consentedAccountId"         
             },
+            "permissions": [ "ReadAccountsBasic", "ReadStandingOrdersDetail"],
             "uri": "/accounts/$accountId/standing-orders",
             "uriImplementation": "conditional",
 			"resource": "StandingOrder",
@@ -613,6 +643,7 @@
 			"parameters": {
 				"tokenRequestScope": "accounts"   
             },
+            "permissions": [ "ReadAccountsBasic", "ReadStandingOrdersDetail"],
             "uri": "/standing-orders",
             "uriImplementation": "optional",
 			"resource": "StandingOrder",
@@ -629,6 +660,7 @@
 				"tokenRequestScope": "accounts",
 				"accountId": "foobar"
             },
+            "permissions": [ "ReadAccountsBasic", "ReadStandingOrdersDetail"],
             "uri": "/accounts/$accountId/standing-orders",
             "uriImplementation": "conditional",
             "resource": "StandingOrder",
