@@ -41,9 +41,10 @@
             "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937623627/Accounts+v3.1#Accountsv3.1-PermissionCodes",
             "detail" : "Checks that the resource differs depending on the permissions (ReadAccountsBasic and ReadAccountsDetail) used to access the resource with additional additional schema checks on status and headers.",
 			"parameters": {
-				"accountAccessConsent": "basicAccountAccessConsent",
 				"tokenRequestScope": "accounts"       
             },
+            "permissions":["ReadAccountsBasic"],
+            "permissions-excluded":["ReadAccountDetail"],
             "uri": "/accounts",
             "uriImplementation": "mandatory",
 			"resource": "Account",
@@ -73,7 +74,6 @@
             "refURI": "",
             "detail" : "Validates that the account resource fails correctly given an invalided or incorrect token.",
 			"parameters": {
-				"accountAccessConsent": "basicAccountAccessConsent",
 				"tokenRequestScope": "accounts",
 				"accountId": "$consentedAccountId"
             },
@@ -107,7 +107,6 @@
             "refURI": "",
             "detail" : "Checks that the x-fapi-interaction-id value is played-back for an account.",
 			"parameters": {
-				"accountAccessConsent": "detailAccountAccessConsent",
 				"tokenRequestScope": "accounts",
                 "accountId": "$consentedAccountId",
                 "x-fapi-interaction-id": "aac-f5a10e5e-0c46-41c5-a7b7-c8f56020520c"
@@ -115,6 +114,7 @@
             "headers": {
                 "x-fapi-interaction-id": "$x-fapi-interaction-id"
             },
+            "permissions":["ReadAccountDetail"],
             "uri": "/accounts/$accountId",
             "uriImplementation": "mandatory",
             "resource": "Account",
@@ -128,7 +128,6 @@
             "refURI": "",
             "detail" : "Checks that the x-fapi-interaction-id value is played-back for bulk accounts.",
 			"parameters": {
-				"accountAccessConsent": "detailAccountAccessConsent",
 				"tokenRequestScope": "accounts",
                 "accountId": "$consentedAccountId",
                 "x-fapi-interaction-id": "aac-f5a10e5e-0c46-41c5-a7b7-c8f56020520x"
@@ -136,6 +135,7 @@
             "headers": {
                 "x-fapi-interaction-id": "$x-fapi-interaction-id"
             },
+            "permissions":["ReadAccountDetail"],
             "uri": "/accounts/$accountId",
             "uriImplementation": "mandatory",
             "resource": "Account",
@@ -144,15 +144,46 @@
             "schemaCheck": false
         },
         {
+			"description": "Fails using 401 unauthorized given no token for accounts.",
+            "id": "OB-301-ACC-218852",
+            "refURI": "",
+            "detail" : "Checks the correct response is returned 401 given if no token is used on an account.",
+			"parameters": {
+				"tokenRequestScope": "accounts",
+				"accountId": "foobar"
+            },
+            "uri": "/accounts/$accountId",
+            "uriImplementation": "mandatory",
+            "resource": "Account",
+            "method":"get",
+            "asserts": ["OB3GLOAAssertNoToken"],
+            "schemaCheck": false
+        },
+        {
+			"description": "Fails using 401 unauthorized given no token for bulk accounts.",
+            "id": "OB-301-ACC-206140",
+            "refURI": "",
+            "detail" : "Checks the correct response is returned 401 given if no token is used on a bulk account.",
+			"parameters": {
+				"tokenRequestScope": "accounts"
+            },
+            "uri": "/accounts",
+            "uriImplementation": "mandatory",
+            "resource": "Account",
+            "method":"get",
+            "asserts": ["OB3GLOAAssertNoToken"],
+            "schemaCheck": false
+        },
+        {
 			"description": "All data returned for an account with ReadBalances permission, status and headers.",
             "id": "OB-301-BAL-100009",
             "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937754673/Balances+v3.1#Balancesv3.1-PermissionCodes",
-            "detail" : "Checks that the resource returns the correct data with additional schema checks status and headers for a given account.",
+            "detail" : "Checks that the resource returns the correct data with additional schema checks status and headers for a given account. The resource response payload does not differ depending on the permissions granted.",
 			"parameters": {
-				"accountAccessConsent": "detailAccountAccessConsent",
 				"tokenRequestScope": "accounts",
 				"accountId": "$consentedAccountId"
             },
+            "permissions":[ "ReadAccountsBasic", "ReadBalances"],
             "uri": "/accounts/$accountId/balances",
             "uriImplementation": "mandatory",
 			"resource": "Balance",
@@ -170,6 +201,7 @@
 				"tokenRequestScope": "accounts",
 				"accountId": "$consentedAccountId"
             },
+            "permissions":[ "ReadAccountsBasic", "ReadBalances"],
             "uri": "/balances",
             "uriImplementation": "optional",
 			"resource": "Balance",
@@ -178,15 +210,15 @@
             "schemaCheck": true
         },
         {
-			"description": "Fails when no token is provided for balance.",
+			"description": "Fails on incorrect permissions are provided for balance.",
             "id": "OB-301-BAL-100011",
             "refURI": "",
-            "detail" : "Validates that the balance resource fails correctly given an invalided or incorrect token.",
+            "detail" : "Validates that the balance resource fails correctly given an invalided permissions",
 			"parameters": {
-				"accountAccessConsent": "basicAccountAccessConsent",
 				"tokenRequestScope": "accounts",
 				"accountId": "$consentedAccountId"
             },
+            "permissions-excluded":[ "ReadAccountsBasic", "ReadBalances"],
             "uri": "/accounts/$accountId/balances",
             "uriImplementation": "mandatory",
             "resource": "Balance",
@@ -195,14 +227,14 @@
             "schemaCheck": false
         },
         {
-			"description": "Fails when no token is provided for bulk balances.",
+			"description": "Fails on incorrect permissions for bulk balances.",
             "id": "OB-301-BAL-100012",
             "refURI": "",
-            "detail" : "Validates that the bulk balances resource fails correctly given an invalided or incorrect token.",
+            "detail" : "Validates that the bulk balances resource fails correctly given an invalided permissions",
 			"parameters": {
-				"accountAccessConsent": "basicAccountAccessConsent",
 				"tokenRequestScope": "accounts"
             },
+            "permissions-excluded":[ "ReadAccountsBasic", "ReadBalances"],
             "uri": "/balances",
             "uriImplementation": "optional",
             "resource": "Balance",
@@ -216,10 +248,10 @@
             "refURI": "",
             "detail" : "Checks the correct response is returned when given an invalid account for a balance.",
 			"parameters": {
-				"accountAccessConsent": "basicAccountAccessConsent",
 				"tokenRequestScope": "accounts",
 				"accountId": "foobar"
             },
+            "permissions":[ "ReadAccountsBasic", "ReadBalances"],
             "uri": "/accounts/$accountId/balances",
             "uriImplementation": "mandatory",
             "resource": "Balance",
@@ -233,9 +265,9 @@
             "refURI": "",
             "detail" : "Checks the correct response is returned 401 using a CCG token",
 			"parameters": {
-				"accountAccessConsent": "basicAccountAccessConsent",
 				"tokenRequestScope": "accounts"
             },
+            "permissions":[ "ReadAccountsBasic", "ReadBalances"],
             "uri": "/balances",
             "uriImplementation": "optional",
             "resource": "Balance",
@@ -247,12 +279,12 @@
 			"description": "Minimal data returned for a given beneficiary using the ReadBeneficiariesBasic permission, status and headers.",
             "id": "OB-301-BEN-100015",
             "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937951315/Beneficiaries+v3.1#Beneficiariesv3.1-PermissionCodes",
-            "detail" : "Checks that the resource differs depending on the permissions (ReadBeneficiariesBasic and ReadBeneficiariesDetail) used to access the resource with additional schema checks on status and headers.",
+            "detail" : "Checks that the resource differs depending on the permission ReadBeneficiariesBasic used to access the resource with additional schema checks on status and headers.",
 			"parameters": {
-				"accountAccessConsent": "basicAccountAccessConsent",
 				"tokenRequestScope": "accounts",
                 "accountId": "$consentedAccountId"         
             },
+            "permissions": [ "ReadAccountsBasic", "ReadBeneficiariesBasic"],
             "uri": "/accounts/$accountId/beneficiaries",
             "uriImplementation": "conditional",
 			"resource": "Beneficiary",
@@ -266,9 +298,9 @@
             "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937951315/Beneficiaries+v3.1#Beneficiariesv3.1-PermissionCodes",
             "detail" : "Checks that the resource differs depending on the permissions (ReadBeneficiariesBasic and ReadBeneficiariesDetail) used to access the resource with additional schema checks, status and headers.",
 			"parameters": {
-				"accountAccessConsent": "basicAccountAccessConsent",
 				"tokenRequestScope": "accounts"    
             },
+            "permissions": [ "ReadAccountsBasic", "ReadBeneficiariesBasic"],
             "uri": "/beneficiaries",
             "uriImplementation": "optional",
 			"resource": "Beneficiary",
@@ -277,14 +309,14 @@
             "schemaCheck": true
         },
         {
-			"description": "Fails when no token is provided for bulk beneficiaries.",
+			"description": "Fails when incorrect permissions are provided for bulk beneficiaries.",
             "id": "OB-301-BEN-100017",
             "refURI": "",
-            "detail" : "Validates that the bulk beneficiaries resource fails correctly given an invalided or incorrect token.",
+            "detail" : "Validates that the bulk beneficiaries resource fails correctly given an invalided permisison.",
 			"parameters": {
-				"accountAccessConsent": "basicAccountAccessConsent",
 				"tokenRequestScope": "accounts"
             },
+            "permissions-excluded":["ReadAccountBasic","ReadBeneficiariesBasic"],
             "uri": "/beneficiaries",
             "uriImplementation": "optional",
             "resource": "Beneficiary",
@@ -293,15 +325,15 @@
             "schemaCheck": false
         },
         {
-			"description": "Fails when no token is provided for a beneficiary.",
+			"description": "Fails given incorrect permission is provided for a beneficiary.",
             "id": "OB-301-BEN-100018",
             "refURI": "",
-            "detail" : "Validates that the beneficiary resource fails correctly given an invalided or incorrect token.",
+            "detail" : "Validates that the beneficiary resource fails correctly given an invalided permission.",
 			"parameters": {
-				"accountAccessConsent": "basicAccountAccessConsent",
                 "tokenRequestScope": "accounts",
                 "accountId": "$consentedAccountId" 
             },
+            "permissions-excluded":["ReadAccountBasic","ReadBeneficiariesBasic"],
             "uri": "/accounts/$accountId/beneficiaries",
             "uriImplementation": "conditional",
             "resource": "Beneficiary",
@@ -310,15 +342,15 @@
             "schemaCheck": false
         },        
         {
-			"description": "Fails when account is invalid for beneficiary.",
+			"description": "Fails given an invalid account for beneficiary.",
             "id": "OB-301-BEN-100019",
             "refURI": "",
             "detail" : "Checks the correct response is returned when given an invalid account for a beneficiary.",
 			"parameters": {
-				"accountAccessConsent": "basicAccountAccessConsent",
 				"tokenRequestScope": "accounts",
 				"accountId": "foobar"
             },
+            "permissions":["ReadAccountBasic","ReadBeneficiariesBasic"],
             "uri": "/accounts/$accountId/beneficiaries",
             "uriImplementation": "conditional",
             "resource": "Beneficiary",
@@ -332,10 +364,10 @@
             "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937558106/Direct+Debits+v3.1",
             "detail" : "Checks that the resource returns the correct data depending permission ReadDirectDebits with additional schema checks on status and headers.",
 			"parameters": {
-				"accountAccessConsent": "basicAccountAccessConsent",
 				"tokenRequestScope": "accounts",
 				"accountId": "$consentedAccountId"
             },
+            "permissions":[ "ReadAccountsBasic", "ReadDirectDebits"],
             "uri": "/accounts/$accountId/direct-debits",
             "uriImplementation": "conditional",
 			"resource": "DirectDebit",
@@ -349,9 +381,9 @@
             "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937558106/Direct+Debits+v3.1",
             "detail" : "Checks that the resource returns the correct data for the permission ReadDirectDebits bulk with additional schema checks on status and headers.",
 			"parameters": {
-				"accountAccessConsent": "basicAccountAccessConsent",
 				"tokenRequestScope": "accounts"
             },
+            "permissions":[ "ReadAccountsBasic", "ReadDirectDebits"],
             "uri": "/direct-debits",
             "uriImplementation": "optional",
 			"resource": "DirectDebit",
@@ -365,10 +397,10 @@
             "refURI": "",
             "detail" : "Checks the correct response is returned when given an invalid account for Direct Debits.",
 			"parameters": {
-				"accountAccessConsent": "basicAccountAccessConsent",
 				"tokenRequestScope": "accounts",
 				"accountId": "foobar"
             },
+            "permissions-excluded":[ "ReadAccountsBasic", "ReadDirectDebits"],
             "uri": "/accounts/$accountId/direct-debits",
             "uriImplementation": "conditional",
             "resource": "DirectDebit",
@@ -382,10 +414,10 @@
             "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937558127/Offers+v3.1#Offersv3.1-PermissionCodes",
             "detail" : "Checks that the resource returns the correct data depending permission ReadOffers with additional schema checks on status and headers.",
 			"parameters": {
-				"accountAccessConsent": "basicAccountAccessConsent",
 				"tokenRequestScope": "accounts",
 				"accountId": "$consentedAccountId"
             },
+            "permissions": [ "ReadAccountsBasic", "ReadOffers"],
             "uri": "/accounts/$accountId/offers",
             "uriImplementation": "conditional",
 			"resource": "Offer",
@@ -399,10 +431,10 @@
             "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937558127/Offers+v3.1#Offersv3.1-PermissionCodes",
             "detail" : "Checks that the resource returns the correct data depending permission ReadOffers with additional schema checks on status and headers.",
 			"parameters": {
-				"accountAccessConsent": "basicAccountAccessConsent",
 				"tokenRequestScope": "accounts",
 				"accountId": "$consentedAccountId"
             },
+            "permissions": [ "ReadAccountsBasic", "ReadOffers"],
             "uri": "/offers",
             "resource": "Offer",
             "uriImplementation": "optional",
@@ -411,15 +443,15 @@
             "schemaCheck": true
         },
         {
-			"description": "Fails when account is invalid for an Offer.",
+			"description": "Fails given account is invalid for an Offer.",
             "id": "OB-301-OFF-100025",
             "refURI": "",
             "detail" : "Checks the correct response is returned when given an invalid account for an Offer.",
 			"parameters": {
-				"accountAccessConsent": "basicAccountAccessConsent",
 				"tokenRequestScope": "accounts",
 				"accountId": "foobar"
             },
+            "permissions": [ "ReadAccountsBasic", "ReadOffers"],
             "uri": "/accounts/$accountId/offers",
             "uriImplementation": "conditional",
             "resource": "Offer",
@@ -433,10 +465,10 @@
             "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937984104/Party+v3.1#Partyv3.1-PermissionCodes",
             "detail" : "Checks that the resource returns the correct data depending permission ReadParty with additional schema checks on status and headers.",
 			"parameters": {
-				"accountAccessConsent": "basicAccountAccessConsent",
 				"tokenRequestScope": "accounts",
 				"accountId": "$consentedAccountId"
             },
+            "permissions": [ "ReadAccountsBasic", "ReadParty"],
             "uri": "/accounts/$accountId/party",
             "uriImplementation": "conditional",
 			"resource": "Party",
@@ -450,9 +482,9 @@
             "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937984104/Party+v3.1#Partyv3.1-PermissionCodes",
             "detail" : "Checks that the bluk resource returns the correct data depending permission ReadParty with additional schema checks on status and headers.",
 			"parameters": {
-				"accountAccessConsent": "basicAccountAccessConsent",
 				"tokenRequestScope": "accounts"
             },
+            "permissions": [ "ReadAccountsBasic", "ReadParty"],
             "uri": "/accounts/party",
             "uriImplementation": "conditional",
 			"resource": "Party",
@@ -466,10 +498,11 @@
             "refURI": "",
             "detail" : "Checks the correct response is returned when given an invalid account for an Party.",
 			"parameters": {
-				"accountAccessConsent": "basicAccountAccessConsent",
+				
 				"tokenRequestScope": "accounts",
 				"accountId": "foobar"
             },
+            "permissions": [ "ReadAccountsBasic", "ReadParty"],
             "uri": "/accounts/$accountId/party",
             "uriImplementation": "conditional",
             "resource": "Party",
@@ -483,10 +516,10 @@
             "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937820288/Products+v3.1#Productsv3.1-PermissionCodes",
             "detail" : "Checks that the resource returns the correct data depending permission ReadProducts with additional schema checks on status and headers.",
 			"parameters": {
-				"accountAccessConsent": "basicAccountAccessConsent",
 				"tokenRequestScope": "accounts",
 				"accountId": "$consentedAccountId"
             },
+            "permissions": [ "ReadAccountsBasic", "ReadProducts"],
             "uri": "/accounts/$accountId/product",
             "uriImplementation": "conditional",
 			"resource": "Product",
@@ -500,9 +533,9 @@
             "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937820288/Products+v3.1#Productsv3.1-PermissionCodes",
             "detail" : "Checks that the bulk resource returns the correct data depending permission ReadProducts with additional schema checks on status and headers.",
 			"parameters": {
-				"accountAccessConsent": "basicAccountAccessConsent",
 				"tokenRequestScope": "accounts"
             },
+            "permissions": [ "ReadAccountsBasic", "ReadProducts"],
             "uri": "/product",
             "uriImplementation": "optional",
 			"resource": "Product",
@@ -516,10 +549,10 @@
             "refURI": "",
             "detail" : "Checks the correct response is returned when given an invalid account for a Product.",
 			"parameters": {
-				"accountAccessConsent": "basicAccountAccessConsent",
 				"tokenRequestScope": "accounts",
 				"accountId": "foobar"
             },
+            "permissions": [ "ReadAccountsBasic", "ReadProducts"],
             "uri": "/accounts/$accountId/product",
             "uriImplementation": "conditional",
             "resource": "Party",
@@ -533,10 +566,10 @@
             "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937066541/Scheduled+Payments+v3.1#ScheduledPaymentsv3.1-Endpoints",
             "detail" : "Checks that detail level is returned resource with permission ReadScheduledPaymentsDetail to access the resource with additional schema checks on status and headers.",
 			"parameters": {
-				"accountAccessConsent": "basicAccountAccessConsent",
 				"tokenRequestScope": "accounts",
                 "accountId": "$consentedAccountId"         
             },
+            "permissions": [ "ReadAccountsBasic", "ReadScheduledPaymentsDetail"],
             "uri": "/accounts/$accountId/scheduled-payments",
             "uriImplementation": "conditional",
 			"resource": "ScheduledPayment",
@@ -550,9 +583,9 @@
             "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937066541/Scheduled+Payments+v3.1#ScheduledPaymentsv3.1-Endpoints",
             "detail" : "Checks that the bulk resource returns the correct data depending permission ReadScheduledPaymentsDetail with additional schema checks on status and headers.",
 			"parameters": {
-				"accountAccessConsent": "basicAccountAccessConsent",
 				"tokenRequestScope": "accounts"
             },
+            "permissions": [ "ReadAccountsBasic", "ReadScheduledPaymentsDetail"],
             "uri": "/scheduled-payments",
             "uriImplementation": "optional",
 			"resource": "ScheduledPayment",
@@ -566,10 +599,10 @@
             "refURI": "",
             "detail" : "Checks the correct response is returned when given an invalid account for a Scheduled Payment.",
 			"parameters": {
-				"accountAccessConsent": "basicAccountAccessConsent",
 				"tokenRequestScope": "accounts",
 				"accountId": "foobar"
             },
+            "permissions": [ "ReadAccountsBasic", "ReadScheduledPaymentsDetail"],
             "uri": "/accounts/$accountId/scheduled-payments",
             "uriImplementation": "conditional",
             "resource": "ScheduledPayment",
@@ -583,10 +616,10 @@
             "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937721918/Standing+Orders+v3.1#StandingOrdersv3.1-PermissionCodes",
             "detail" : "Checks that detail level is returned resource with permission ReadStandingOrdersDetail to access the resource with additional schema checks on status and headers.",
 			"parameters": {
-				"accountAccessConsent": "basicAccountAccessConsent",
 				"tokenRequestScope": "accounts",
                 "accountId": "$consentedAccountId"         
             },
+            "permissions": [ "ReadAccountsBasic", "ReadStandingOrdersDetail"],
             "uri": "/accounts/$accountId/standing-orders",
             "uriImplementation": "conditional",
 			"resource": "StandingOrder",
@@ -600,9 +633,9 @@
             "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937721918/Standing+Orders+v3.1#StandingOrdersv3.1-PermissionCodes",
             "detail" : "Checks that all data for bulk resource with permission ReadStandingOrdersDetail to access the resource with additional schema checks on status and headers.",
 			"parameters": {
-				"accountAccessConsent": "basicAccountAccessConsent",
 				"tokenRequestScope": "accounts"   
             },
+            "permissions": [ "ReadAccountsBasic", "ReadStandingOrdersDetail"],
             "uri": "/standing-orders",
             "uriImplementation": "optional",
 			"resource": "StandingOrder",
@@ -616,10 +649,10 @@
             "refURI": "",
             "detail" : "Checks the correct response is returned when given an invalid account for a Standing Order.",
 			"parameters": {
-				"accountAccessConsent": "basicAccountAccessConsent",
 				"tokenRequestScope": "accounts",
 				"accountId": "foobar"
             },
+            "permissions": [ "ReadAccountsBasic", "ReadStandingOrdersDetail"],
             "uri": "/accounts/$accountId/standing-orders",
             "uriImplementation": "conditional",
             "resource": "StandingOrder",
