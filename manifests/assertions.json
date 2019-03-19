@@ -51,7 +51,8 @@
 		},
 		"OB3GLOFAPIHeader": {
 			"expect": {
-				"status-code": 400
+				"status-code": 400,
+				"detail":"Expected status code 400 (Not Found)."
 			}
 		},
 		"OB3GLOFAPIHeader": {
