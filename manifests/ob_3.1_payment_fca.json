@@ -17,7 +17,7 @@
             "uriImplementation": "mandatory",
             "resource": "DomesticPayment",
             "asserts": ["OB3DOPAssertOnSuccess", "OB3GLOAAssertConsentId", "OB3GLOFAPIHeader"],
-            "keepContext": ["OB3GLOAAssertConsentId"],
+            "keepContext": ["OB3GLOAAssertConsentId", "OB3GLOFAPIHeader"],
             "method":"post",
             "schemaCheck": true
         },
@@ -37,7 +37,7 @@
             "uri": "/domestic-payment-consents/{consentId}",
             "uriImplementation": "mandatory",
             "resource": "DomesticPayment",
-            "asserts": ["OB3GLOAssertOn400", "OB3GLOFAPIHeader"],
+            "asserts": ["OB3GLOAssertOn400", "OB3GLOFAPIHeader", "OB3GLOAssertContentType"],
             "method":"post",
             "schemaCheck": true
         }
