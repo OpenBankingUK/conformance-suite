@@ -14,7 +14,7 @@
             "uri": "/accounts/$accountId",
             "uriImplementation": "mandatory",
             "resource": "Account",
-            "asserts": ["OB3ACCAssertOnSuccess", "OB3GLOFAPIHeader"],
+            "asserts": ["OB3GLOAssertOnSuccess", "OB3GLOFAPIHeader"],
             "method":"get",
             "schemaCheck": true
         },
@@ -31,7 +31,7 @@
             "uri": "/accounts/$accountId",
             "uriImplementation": "mandatory",
 			"resource": "Account",
-            "asserts": ["OB3ACCAssertOnSuccess", "OB3GLOFAPIHeader"],
+            "asserts": ["OB3GLOAssertOnSuccess", "OB3GLOFAPIHeader"],
             "method":"get",
             "schemaCheck": true
         },
@@ -48,7 +48,7 @@
             "uri": "/accounts",
             "uriImplementation": "mandatory",
 			"resource": "Account",
-            "asserts": ["OB3ACCAssertOnSuccess", "OB3GLOFAPIHeader"],
+            "asserts": ["OB3GLOAssertOnSuccess", "OB3GLOFAPIHeader"],
             "method":"get",
             "schemaCheck": true
         },
@@ -64,7 +64,7 @@
             "uri": "/accounts",
             "uriImplementation": "mandatory",
 			"resource": "Account",
-            "asserts": ["OB3ACCAssertOnSuccess", "OB3GLOFAPIHeader"],
+            "asserts": ["OB3GLOAssertOnSuccess", "OB3GLOFAPIHeader"],
             "method":"get",
             "schemaCheck": true
         },
@@ -195,7 +195,7 @@
             "uri": "/accounts/$accountId/balances",
             "uriImplementation": "mandatory",
 			"resource": "Balance",
-            "asserts": ["OB3ACCAssertOnSuccess", "OB3GLOFAPIHeader"],
+            "asserts": ["OB3GLOAssertOnSuccess", "OB3GLOFAPIHeader"],
             "method":"get",
             "schemaCheck": true
         },
@@ -213,7 +213,7 @@
             "uri": "/balances",
             "uriImplementation": "optional",
 			"resource": "Balance",
-            "asserts": ["OB3ACCAssertOnSuccess", "OB3GLOFAPIHeader"],
+            "asserts": ["OB3GLOAssertOnSuccess", "OB3GLOFAPIHeader"],
             "method":"get",
             "schemaCheck": true
         },
@@ -296,7 +296,7 @@
             "uri": "/accounts/$accountId/beneficiaries",
             "uriImplementation": "conditional",
 			"resource": "Beneficiary",
-            "asserts": ["OB3BENAssertOnSuccess", "OB3GLOFAPIHeader"],
+            "asserts": ["OB3GLOAssertOnSuccess", "OB3GLOFAPIHeader"],
             "method":"get",
             "schemaCheck": true
         },
@@ -312,7 +312,7 @@
             "uri": "/beneficiaries",
             "uriImplementation": "optional",
 			"resource": "Beneficiary",
-            "asserts": ["OB3BENAssertOnSuccess", "OB3GLOFAPIHeader"],
+            "asserts": ["OB3GLOAssertOnSuccess", "OB3GLOFAPIHeader"],
             "method":"get",
             "schemaCheck": true
         },
@@ -581,7 +581,7 @@
             "uri": "/accounts/$accountId/scheduled-payments",
             "uriImplementation": "conditional",
 			"resource": "ScheduledPayment",
-            "asserts": ["OB3ACCAssertOnSuccess", "OB3GLOFAPIHeader"],
+            "asserts": ["OB3GLOAssertOnSuccess", "OB3GLOFAPIHeader"],
             "method":"get",
             "schemaCheck": true
         },
@@ -631,7 +631,7 @@
             "uri": "/accounts/$accountId/standing-orders",
             "uriImplementation": "conditional",
 			"resource": "StandingOrder",
-            "asserts": ["OB3ACCAssertOnSuccess", "OB3GLOFAPIHeader"],
+            "asserts": ["OB3GLOAssertOnSuccess", "OB3GLOFAPIHeader"],
             "method":"get",
             "schemaCheck": true
         },
@@ -647,7 +647,7 @@
             "uri": "/standing-orders",
             "uriImplementation": "optional",
 			"resource": "StandingOrder",
-            "asserts": ["OB3ACCAssertOnSuccess", "OB3GLOFAPIHeader"],
+            "asserts": ["OB3GLOAssertOnSuccess", "OB3GLOFAPIHeader"],
             "method":"get",
             "schemaCheck": true
         },
