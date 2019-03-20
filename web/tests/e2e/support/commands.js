@@ -106,7 +106,7 @@ Cypress.Commands.add('runTestCases', () => {
   cy.clickNext();
 
   cy.contains('h6', 'PASSED', { timeout: 16000 });
-  cy.nextButtonContains('Next Export', { timeout: 16000 });
+  cy.nextButtonContains('Next Export', { timeout: 30000 });
 });
 
 Cypress.Commands.add('exportConformanceReport', () => {
