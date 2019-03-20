@@ -320,6 +320,70 @@
             "path": "/file-payments/{FilePaymentId}/report-file"
           }
         ]
+      },
+      {
+        "apiSpecification": {
+          "name": "Confirmation of Funds API Specification",
+          "url": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937951380/Confirmation+of+Funds+API+Specification+-+v3.1",
+          "version": "v3.1",
+          "schemaVersion": "https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.0/dist/confirmation-funds-swagger.json",
+          "manifest": "file://manifests/ob_3.1_cbpii_fca.json"
+        },
+        "openidConfigurationUri": "https://modelobankauth2018.o3bank.co.uk:4101/.well-known/openid-configuration",
+        "resourceBaseUri": "https://modelobank2018.o3bank.co.uk:4501/open-banking/v3.1/cbpii",
+        "endpoints": [
+          {
+            "method": "POST",
+            "path": "/funds-confirmation-consents",
+            "conditionalProperties": []
+          },
+          {
+            "method": "GET",
+            "path": "/funds-confirmation-consents/{ConsentId}",
+            "conditionalProperties": []
+          },
+          {
+            "method": "DELETE",
+            "path": "/funds-confirmation-consents/{ConsentId}",
+            "conditionalProperties": []
+          },
+          {
+            "method": "POST",
+            "path": "/funds-confirmations",
+            "conditionalProperties": []
+          }]
+      },
+      {
+        "apiSpecification": {
+          "name": "Event Notification API Specification - ASPSP Endpoints",
+          "url": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937951397/Event+Notification+API+Specification+-+v3.1",
+          "version": "v3.1",
+          "schemaVersion": "https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.0/dist/callback-urls-swagger.json",
+          "manifest": "file://manifests/ob_3.1_cbpii_fca.json"
+        },
+        "openidConfigurationUri": "https://modelobankauth2018.o3bank.co.uk:4101/.well-known/openid-configuration",
+        "resourceBaseUri": "https://modelobank2018.o3bank.co.uk:4501/open-banking/v3.1",
+        "endpoints": [
+          {
+            "method": "/callback-urls",
+            "path": "POST",
+            "conditionalProperties": []
+          },
+          {
+            "method": "/callback-urls",
+            "path": "GET",
+            "conditionalProperties": []
+          },
+          {
+            "method": "/callback-urls/{CallbackUrlId}",
+            "path": "PUT",
+            "conditionalProperties": []
+          },
+          {
+            "method": "/callback-urls/{CallbackUrlId}",
+            "path": "DELETE",
+            "conditionalProperties": []
+          }]
       }],
     "customTests": [
       {
