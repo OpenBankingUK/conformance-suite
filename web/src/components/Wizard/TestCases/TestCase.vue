@@ -95,23 +95,26 @@ export default {
         },
         'input.method': {
           tdClass: 'table-data-breakable',
+          label: 'Method',
         },
         'input.endpoint': {
           tdClass: 'table-data-breakable',
+          label: 'Endpoint',
         },
         'expect.status-code': {
           tdClass: 'table-data-breakable',
+          label: 'Expect',
         },
         'meta.status': {
           label: 'Status',
         },
         'meta.metrics.responseTime': {
           tdClass: 'response-time',
-          label: 'Response Time',
+          label: 'Time',
         },
         'meta.metrics.responseSize': {
           tdClass: 'response-size',
-          label: 'Response Bytes',
+          label: 'Bytes',
         },
       }),
     },
