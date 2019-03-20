@@ -188,7 +188,7 @@ func (wj *journey) RunTests() error {
 	}
 
 	runDefinition := wj.makeRunDefinition()
-	runner := executors.NewTestCaseRunner(runDefinition, wj.daemonController)
+	runner := executors.NewTestCaseRunner(wj.log, runDefinition, wj.daemonController)
 	wj.log.Debug("runTestCases with context ...")
 	return runner.RunTestCases(&wj.context)
 }
@@ -220,6 +220,7 @@ func (wj *journey) makeGeneratorConfig() generation.GeneratorConfig {
 		Scope:                 "openid accounts",
 		AuthorizationEndpoint: wj.config.authorizationEndpoint,
 		RedirectURL:           wj.config.redirectURL,
+		ResourceIDs:           wj.config.resourceIDs,
 	}
 }
 
@@ -244,6 +245,7 @@ type JourneyConfig struct {
 	xXFAPIFinancialID       string
 	issuer                  string
 	redirectURL             string
+	resourceIDs             model.ResourceIDs
 }
 
 func (wj *journey) SetConfig(config JourneyConfig) error {

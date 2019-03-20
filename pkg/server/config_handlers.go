@@ -1,6 +1,7 @@
 package server
 
 import (
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
 	"fmt"
 	"net/http"
 	"net/url"
@@ -20,19 +21,20 @@ type configHandlers struct {
 }
 
 type GlobalConfiguration struct {
-	SigningPrivate          string `json:"signing_private" validate:"not_empty"`
-	SigningPublic           string `json:"signing_public" validate:"not_empty"`
-	TransportPrivate        string `json:"transport_private" validate:"not_empty"`
-	TransportPublic         string `json:"transport_public" validate:"not_empty"`
-	ClientID                string `json:"client_id" validate:"not_empty"`
-	ClientSecret            string `json:"client_secret" validate:"not_empty"`
-	TokenEndpoint           string `json:"token_endpoint" validate:"valid_url"`
-	TokenEndpointAuthMethod string `json:"token_endpoint_auth_method" validate:"not_empty"`
-	AuthorizationEndpoint   string `json:"authorization_endpoint" validate:"valid_url"`
-	ResourceBaseURL         string `json:"resource_base_url" validate:"valid_url"`
-	XFAPIFinancialID        string `json:"x_fapi_financial_id" validate:"not_empty"`
-	Issuer                  string `json:"issuer" validate:"valid_url"`
-	RedirectURL             string `json:"redirect_url" validate:"valid_url"`
+	SigningPrivate          string            `json:"signing_private" validate:"not_empty"`
+	SigningPublic           string            `json:"signing_public" validate:"not_empty"`
+	TransportPrivate        string            `json:"transport_private" validate:"not_empty"`
+	TransportPublic         string            `json:"transport_public" validate:"not_empty"`
+	ClientID                string            `json:"client_id" validate:"not_empty"`
+	ClientSecret            string            `json:"client_secret" validate:"not_empty"`
+	TokenEndpoint           string            `json:"token_endpoint" validate:"valid_url"`
+	TokenEndpointAuthMethod string            `json:"token_endpoint_auth_method" validate:"not_empty"`
+	AuthorizationEndpoint   string            `json:"authorization_endpoint" validate:"valid_url"`
+	ResourceBaseURL         string            `json:"resource_base_url" validate:"valid_url"`
+	XFAPIFinancialID        string            `json:"x_fapi_financial_id" validate:"not_empty"`
+	Issuer                  string            `json:"issuer" validate:"valid_url"`
+	RedirectURL             string            `json:"redirect_url" validate:"valid_url"`
+	ResourceIDs             model.ResourceIDs `json:"resource_ids" validate:"not_empty"`
 }
 
 func newConfigHandlers(journey Journey, logger *logrus.Entry) configHandlers {
@@ -90,6 +92,7 @@ func MakeJourneyConfig(config *GlobalConfiguration) (JourneyConfig, error) {
 		xXFAPIFinancialID:       config.XFAPIFinancialID,
 		issuer:                  config.Issuer,
 		redirectURL:             config.RedirectURL,
+		resourceIDs:             config.ResourceIDs,
 	}, nil
 }
 
@@ -106,28 +109,63 @@ func validateConfig(config *GlobalConfiguration) (bool, string) {
 
 type validationRule struct {
 	property     string
-	value        string
+	value        interface{}
 	validateFunc validateFunc
 }
 
-type validateFunc func(key, value string) (bool, string)
+type validateFunc func(key, value interface{}) (bool, string)
 
-func notEmpty(key, value string) (bool, string) {
-	if value == "" {
-		return false, fmt.Sprintf("%s is empty", key)
+func notEmpty(key, value interface{}) (bool, string) {
+	switch v := value.(type) {
+	case string:
+		if v == "" {
+			return false, fmt.Sprintf("%s is empty", key)
+		}
+		return true, ""
+	case model.ResourceIDs:
+
+		emAccts := nilOrEmpty(v.AccountIDs)
+		emStmts := nilOrEmpty(v.StatementIDs)
+
+		if emAccts && emStmts {
+			return false, fmt.Sprintf("%s is empty", key)
+		}
+
+		if emAccts {
+			return false, fmt.Sprintf("%s.AccountIDs is empty", key)
+		}
+		// Some nested validation here, not great but need to think about validation for nested values
+		for i, v := range v.AccountIDs {
+			if v.AccountID == "" {
+				return false, fmt.Sprintf("%s.AccountIDs contains an empty value at index %d", key, i)
+			}
+		}
+
+		if emStmts {
+			return false, fmt.Sprintf("%s.StatementIDs is empty", key)
+		}
+		// Some nested validation here, not great but need to think about validation for nested values
+		for i, v := range v.StatementIDs {
+			if v.StatementID == "" {
+				return false, fmt.Sprintf("%s.StatementIDs contains an empty value at index %d", key, i)
+			}
+		}
+
+		return true, ""
 	}
-	return true, ""
+
+	return false, fmt.Sprintf("%s type not found", key)
 }
 
-func validURL(key, value string) (bool, string) {
-	if _, err := url.Parse(value); err != nil {
+func validURL(key, value interface{}) (bool, string) {
+	if _, err := url.Parse(value.(string)); err != nil {
 		return false, fmt.Sprintf("invalid %s url: %s", key, err.Error())
 	}
 	return true, ""
 }
 
 func and(left, right validateFunc) validateFunc {
-	return func(key, value string) (bool, string) {
+	return func(key, value interface{}) (bool, string) {
 		ok, msg := left(key, value)
 		if !ok {
 			return false, msg
@@ -166,9 +204,13 @@ func parseRules(config *GlobalConfiguration) []validationRule {
 
 		rules = append(rules, validationRule{
 			property:     tag.Get("json"),
-			value:        valueField.Interface().(string),
+			value:        valueField.Interface(),
 			validateFunc: validate,
 		})
 	}
 	return rules
+}
+
+func nilOrEmpty(v interface{}) bool {
+	return v == nil || reflect.ValueOf(v).Len() == 0
 }

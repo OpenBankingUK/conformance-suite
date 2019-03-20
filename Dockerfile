@@ -1,5 +1,5 @@
 # Image to compile go binaries
-FROM golang:1.11-alpine as gobuilder
+FROM golang:1.12-alpine as gobuilder
 RUN apk update && apk add git make bash
 
 # disable crosscompiling

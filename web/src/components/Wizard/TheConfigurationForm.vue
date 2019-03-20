@@ -31,6 +31,69 @@
         />
 
         <b-form-group
+          id="resource_account_id_group"
+          label-for="resource_account_ids"
+          label="Account IDs">
+          <b-input-group
+            v-for="(item, index) in resource_account_ids"
+            :key="index"
+            class="mt-3">
+            <b-input-group-prepend
+              v-if="resource_account_ids.length > 1">
+              <b-button
+                variant="danger"
+                @click="removeResourceAccountIDField(index)">-</b-button>
+            </b-input-group-prepend>
+            <b-form-input
+              :id="`resource_account_ids-${index}`"
+              v-model="resource_account_ids[index].account_id"
+              :state="isNotEmpty(item.account_id)"
+              label="Resource - Account IDs"
+              placeholder="At least one Account ID is required"
+              type="text"
+              required />
+            <b-input-group-append
+              v-if="index == resource_account_ids.length -1">
+              <b-button
+                variant="success"
+                @click="addResourceAccountIDField('')">+</b-button>
+            </b-input-group-append>
+          </b-input-group>
+        </b-form-group>
+
+        <b-form-group
+          id="resource_statement_id_group"
+          label-for="resource_statement_ids"
+          label="Statement IDs">
+          <b-input-group
+            v-for="(item, index) in resource_statement_ids"
+            :key="index"
+            class="mt-3">
+            <b-input-group-prepend
+              v-if="resource_statement_ids.length > 1">
+              <b-button
+                variant="danger"
+                @click="removeResourceStatementIDField(index)">-</b-button>
+            </b-input-group-prepend>
+            <b-form-input
+              :id="`resource_statement_ids-${index}`"
+              v-model="resource_statement_ids[index].statement_id"
+              :state="isNotEmpty(item.statement_id)"
+              label="Resource - Statement IDs"
+              placeholder="At least one Statement ID is required"
+              required
+              type="text"/>
+            <b-input-group-append
+              v-if="index == resource_statement_ids.length -1">
+              <b-button
+                variant="success"
+                @click="addResourceStatementIDField('')">+</b-button>
+            </b-input-group-append>
+          </b-input-group>
+        </b-form-group>
+
+
+        <b-form-group
           id="client_id_group"
           label-for="client_id"
           label="Client ID">
@@ -163,6 +226,7 @@
 </template>
 
 <script>
+import { mapActions } from 'vuex';
 import isEmpty from 'lodash/isEmpty';
 
 import ConfigurationFormFile from './ConfigurationFormFile.vue';
@@ -173,6 +237,32 @@ export default {
     ConfigurationFormFile,
   },
   computed: {
+    resource_account_ids: {
+      get() {
+        // Because the text fields in the UI are bound to this store, there should always be at least one
+        // Item in the list. If list is empty, add an empty item so that user can input.
+        if (this.$store.state.config.configuration.resource_ids.account_ids.length === 0) {
+          this.$store.commit('config/ADD_RESOURCE_STATEMENT_ID', { statement_id: '' });
+        }
+        return this.$store.state.config.configuration.resource_ids.account_ids;
+      },
+      set(value) {
+        this.$store.commit('config/SET_RESOURCE_ACCOUNT_IDS', value);
+      },
+    },
+    resource_statement_ids: {
+      // Because the text fields in the UI are bound to this store, there should always be at least one
+      // Item in the list. If list is empty, add an empty item so that user can input.
+      get() {
+        if (this.$store.state.config.configuration.resource_ids.statement_ids.length === 0) {
+          this.$store.commit('config/ADD_RESOURCE_ACCOUNT_ID', { account_id: '' });
+        }
+        return this.$store.state.config.configuration.resource_ids.statement_ids;
+      },
+      set(value) {
+        this.$store.commit('config/SET_RESOURCE_STATEMENT_IDS', value);
+      },
+    },
     token_endpoint_auth_methods() {
       const authMethods = this.$store.state.config.token_endpoint_auth_methods;
       return authMethods.map(m => ({
@@ -264,6 +354,10 @@ export default {
     },
   },
   methods: {
+    ...mapActions('config', [
+      'removeResourceAccountID',
+      'removeResourceStatementID',
+    ]),
     isNotEmpty(value) {
       return !isEmpty(value);
     },
@@ -273,6 +367,18 @@ export default {
       } catch (e) {
         return false;
       }
+    },
+    addResourceAccountIDField(value) {
+      this.$store.commit('config/ADD_RESOURCE_ACCOUNT_ID', { account_id: value });
+    },
+    removeResourceAccountIDField(index) {
+      this.removeResourceAccountID(index);
+    },
+    addResourceStatementIDField(value) {
+      this.$store.commit('config/ADD_RESOURCE_STATEMENT_ID', { statement_id: value });
+    },
+    removeResourceStatementIDField(index) {
+      this.removeResourceStatementID(index);
     },
   },
 };

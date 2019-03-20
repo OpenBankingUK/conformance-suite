@@ -8,34 +8,38 @@ import (
 	"fmt"
 )
 
+// ReportStatus - the status of the `Report`.
 type ReportStatus int
 
 const (
+	// ReportStatusPending - The `Report` is pending.
 	ReportStatusPending ReportStatus = iota + 1
+	// ReportStatusComplete - The `Report` is complete.
 	ReportStatusComplete
+	// ReportStatusError - The `Report` is in error.
 	ReportStatusError
 )
 
-var ReportStatusPendingToString = map[ReportStatus]string{
+var reportStatusPendingToString = map[ReportStatus]string{
 	ReportStatusPending:  "Pending",
 	ReportStatusComplete: "Complete",
 	ReportStatusError:    "Error",
 }
 
-var ReportStatusPendingToID = map[string]ReportStatus{
+var reportStatusPendingToID = map[string]ReportStatus{
 	"Pending":  ReportStatusPending,
 	"Complete": ReportStatusComplete,
 	"Error":    ReportStatusError,
 }
 
 func (r ReportStatus) String() string {
-	return ReportStatusPendingToString[r]
+	return reportStatusPendingToString[r]
 }
 
-// MarshalJSON marshals the enum as a quoted json string
+// MarshalJSON - marshals the enum as a quoted json string
 func (r ReportStatus) MarshalJSON() ([]byte, error) {
 	buffer := bytes.NewBufferString(`"`)
-	value, ok := ReportStatusPendingToString[r]
+	value, ok := reportStatusPendingToString[r]
 	if !ok {
 		return nil, fmt.Errorf("%d is an invalid enum for ReportStatus", r)
 	}
@@ -44,7 +48,7 @@ func (r ReportStatus) MarshalJSON() ([]byte, error) {
 	return buffer.Bytes(), nil
 }
 
-// UnmarshalJSON unmashals a quoted json string to the enum value
+// UnmarshalJSON - unmashals a quoted json string to the enum value
 func (r *ReportStatus) UnmarshalJSON(data []byte) error {
 	var status string
 	err := json.Unmarshal(data, &status)
@@ -52,7 +56,7 @@ func (r *ReportStatus) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	// Note that if the string cannot be found then it will be set to the zero value, 'Created' in this case.
-	value, ok := ReportStatusPendingToID[status]
+	value, ok := reportStatusPendingToID[status]
 	if !ok {
 		return fmt.Errorf("%q is an invalid enum for ReportStatus", status)
 	}

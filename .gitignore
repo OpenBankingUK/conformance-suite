@@ -4,8 +4,6 @@
 *.env*
 suite.log
 # ignore binaries generated from `go build`
-/server
-/conformance-suite
 /fcs
 /fcs_server
 

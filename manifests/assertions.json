@@ -1,110 +1,28 @@
 {
 	"references": {
-        "OB3DOPAssertOnSuccess": {
+        "OB3GLOAssertOn200": {
+			"expect": {
+				"status-code": 200,
+				"detail":"Expected status code 200 (OK)."
+			}
+		},
+		"OB3GLOAssertOn201": {
 			"expect": {
 				"status-code": 201,
-				"matches": [{
-                    "header-present": "x-fapi-interaction-id",
-                    "detail": "An RFC4122 UID used as a correlation id. The ASPSP 'plays back' the value given. If a value is not given the ASPSP MUST play back their own UUID."
-                    
-                }, 
-                {
-                    "JSON": "json.Data.Status",
-                    "Value": "AcceptedSettlementCompleted"
-                }
-            ]
-			}
-		},
-        "OB3GLOAssertOnSuccess": {
-			"expect": {
-				"status-code": 200,
-				"matches": [{
-                    "header-present": "x-fapi-interaction-id",
-                    "detail": "An RFC4122 UID used as a correlation id. The ASPSP 'plays back' the value given. If a value is not given the ASPSP MUST play back their own UUID."
-                    
-				}, {
-					"custom": "areResourcesConsented"
-				}]
-			}
-		},
-		"OB3ACCAssertOnSuccess": {
-			"expect": {
-				"status-code": 200,
-				"matches": [{
-                    "header-present": "x-fapi-interaction-id",
-                    "detail": "An RFC4122 UID used as a correlation id. The ASPSP 'plays back' the value given. If a value is not given the ASPSP MUST play back their own UUID."
-                    
-				}, {
-					"custom": "areResourcesConsented"
-				}, {
-					"custom": "hasAllConsentedResources"
-				}, {
-					"custom": "hasAccountsPermissionsApplied"
-				}]
-			}
-        },
-        "OB3BENAssertOnSuccess": {
-			"expect": {
-				"status-code": 200,
-				"matches": [{
-                    "header-present": "x-fapi-interaction-id",
-                    "detail": "An RFC4122 UID used as a correlation id. The ASPSP 'plays back' the value given. If a value is not given the ASPSP MUST play back their own UUID."
-                    
-				}, {
-					"custom": "areResourcesConsented"
-				}, {
-					"custom": "hasBeneficiaryPermissionsApplied"
-				}]
-			}
-		},
-		"OB3GLOAssertOn404": {
-			"expect": {
-                "status-code": 404,
-                "detail":"Expected status code 404 (Not Found)."
-			}
-		},
-		"OB3GLOAssertOn403": {
-			"expect": {
-                "status-code": 403,
-                "detail":"Expected status code 403 (Forbidden)."
-			}
-		},
-		"OB3GLOAssertOn401": {
-			"expect": {
-                "status-code": 401,
-                "detail":"Expected status code 401 (Unauthorized)."
+				"detail":"Expected status code 201 (Created)"
 			}
 		},
 		"OB3GLOAssertOn400": {
 			"expect": {
 				"status-code": 400,
-				"matches": [{
-                    "header": "x-fapi-interaction-id",
-                    "detail": "Expected a RFC4122 UID used as a correlation id."
-				}]
+				"detail":"Expected status code 400 (Not Found)."
 			}
 		},
-		"basicAccountAccessConsent": {
-			"permissions": ["ReadAccountsBasic"]
-		},
-		"detailAccountAccessConsent": {
-			"permissions": ["ReadAccountDetail"]
-		},
-		"balancesAccessConsent": {
-			"permissions": ["ReadAccountBasic","ReadBalances"]
-		},
-
-		"2paccountAccessConsent": {
-			"permissions": ["ReadAccountsBasic", "ReadAccountsDetail"]
-		},
-		"OB3GLOAAssertNoToken": {
+		"OB3GLOAssertOn401": {
 			"expect": {
-				"status-code": 401,
-				"matches": [{
-						"header": "content-type",
-                        "value": "application/json; charset=utf-8",
-                        "detail":"Expected the correct content type application/json; charset=utf-8"
-					},
+                "status-code": 401,
+				"detail":"Expected status code 401 (Unauthorized).",
+				"matches": [
 					{
 						"JSON": "Code",
 						"Value": "UK.OBIE.Header.Missing"
@@ -119,7 +37,37 @@
 					}
 				]
 			}
-        },
+		},
+		"OB3GLOAssertOn403": {
+			"expect": {
+                "status-code": 403,
+                "detail":"Expected status code 403 (Forbidden)."
+			}
+		},
+		"OB3GLOAssertOn404": {
+			"expect": {
+                "status-code": 404,
+                "detail":"Expected status code 404 (Not Found)."
+			}
+		},
+		"OB3GLOFAPIHeader": {
+			"expect": {
+				"matches": [{
+                    "header": "x-fapi-interaction-id",
+                    "detail": "Expected RFC4122 UID used as a correlation id. The ASPSP 'plays back' the value given. If a value is not given the ASPSP MUST play back their own UUID."
+				}]
+			}
+		},
+		"OB3GLOAssertContentType": {
+			"expect": {
+				"matches": [{
+					"header": "content-type",
+					"value": "application/json; charset=utf-8",
+					"detail":"Expected the correct content type application/json; charset=utf-8"
+				}
+			]
+			}
+		},
         "OB3GLOAssertFAPIPlayBack": {
 			"expect": {
 				"status-code": 200,
@@ -141,7 +89,17 @@
                 }
             ]
 			}
+		},
+		"OB3DOPAssertOnAcceptedSettlementCompleted": {
+			"expect": {
+				"matches": [ 
+                {
+                    "JSON": "json.Data.Status",
+					"Value": "AcceptedSettlementCompleted",
+					"detail" :"Expected status of the payment information group (AcceptedSettlementCompleted)."
+                }
+            ]
+			}
 		}
-
 	}
 }

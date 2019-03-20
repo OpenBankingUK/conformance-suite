@@ -32,7 +32,7 @@ func init() {
 // GetImplementedTestCases takes a discovery Model and determines the implemented endpoints.
 // Currently this function is experimental - meaning it contains fmt.Printlns as an aid to understanding
 // and conceptualisation
-func GetImplementedTestCases(disco *discovery.ModelDiscoveryItem, nameGenerator names.Generator, ctx *model.Context, headlessTokenAcquisition bool) ([]model.TestCase, map[string]string) {
+func GetImplementedTestCases(disco *discovery.ModelDiscoveryItem, nameGenerator names.Generator, ctx *model.Context, headlessTokenAcquisition bool, genConfig GeneratorConfig) ([]model.TestCase, map[string]string) {
 	logger := logrus.StandardLogger()
 	originalEndpoints := make(map[string]string)
 	var testcases []model.TestCase
@@ -46,7 +46,7 @@ func GetImplementedTestCases(disco *discovery.ModelDiscoveryItem, nameGenerator 
 	for _, v := range endpoints {
 		var responseCodes []int
 		var goodResponseCode int
-		newpath := getResourceIds(disco, v.Path)
+		newpath := getResourceIds(disco, v.Path, genConfig)
 
 		for path, props := range doc.Spec().Paths.Paths {
 			for meth, op := range getOperations(&props) {
@@ -165,15 +165,33 @@ func getResponseCodes(op *spec.Operation) (result []int) {
 	return
 }
 
-// helper to replace path name resource ids specificed between brackets e.g. `{AccountId}`
+// helper to replace path name resource ids specified between brackets e.g. `{AccountId}`
 // with the values "ResourceIds" section of the discovery model
-func getResourceIds(item *discovery.ModelDiscoveryItem, path string) string {
-	newstr := path
+func getResourceIds(item *discovery.ModelDiscoveryItem, path string, genConfig GeneratorConfig) string {
+	result := path
 	for k, v := range item.ResourceIds {
 		key := strings.Join([]string{"{", k, "}"}, "")
-		newstr = strings.Replace(newstr, key, v, 1)
+		result = strings.Replace(result, key, v, 1)
 	}
-	return newstr
+
+	// Update the account ids in based on the discovery configuration
+	if len(genConfig.ResourceIDs.AccountIDs) > 0 {
+		// At the moment, according to requirements, we only need support the first ID.
+		logrus.StandardLogger().Warn("Using the {AccountId} value at index 0 - ignoring others")
+
+		v := genConfig.ResourceIDs.AccountIDs[0]
+		result = strings.Replace(result, "{AccountId}", v.AccountID, 1)
+	}
+	// Update the statement ids in based on the discovery configuration
+	if len(genConfig.ResourceIDs.StatementIDs) > 0 {
+		// At the moment, according to requirements, we only need support the first ID.
+		logrus.StandardLogger().Warn("Using the {StatementId} value at index 0 - ignoring others")
+
+		v := genConfig.ResourceIDs.StatementIDs[0]
+		result = strings.Replace(result, "{StatementId}", v.StatementID, 1)
+	}
+
+	return result
 }
 
 // loads an openapi specification via http or file

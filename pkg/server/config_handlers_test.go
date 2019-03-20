@@ -40,6 +40,10 @@ func TestValidateConfig(t *testing.T) {
 		RedirectURL:             "https://localhost",
 		Issuer:                  "https://modelobankauth2018.o3bank.co.uk:4101",
 		ClientID:                "8672384e-9a33-439f-8924-67bb14340d71",
+		ResourceIDs: model.ResourceIDs{
+			AccountIDs:   []model.ResourceAccountID{{AccountID: "account-id"}},
+			StatementIDs: []model.ResourceStatementID{{StatementID: "statement-id"}},
+		},
 	}
 
 	ok, msg := validateConfig(config)
@@ -188,6 +192,10 @@ func TestServerConfigGlobalPostValid(t *testing.T) {
 		AuthorizationEndpoint:   `https://modelobank2018.o3bank.co.uk:4201/token`,
 		ResourceBaseURL:         `https://modelobank2018.o3bank.co.uk:4501`,
 		Issuer:                  "https://modelobankauth2018.o3bank.co.uk:4101",
+		ResourceIDs: model.ResourceIDs{
+			AccountIDs:   []model.ResourceAccountID{{AccountID: "account-id"}},
+			StatementIDs: []model.ResourceStatementID{{StatementID: "statement-id"}},
+		},
 	}
 	globalConfigurationJSON, err := json.MarshalIndent(globalConfiguration, ``, `  `)
 	require.NoError(err)
@@ -235,6 +243,14 @@ func TestServerConfigGlobalPostInvalid(t *testing.T) {
 				RedirectURL:             "http://server",
 				XFAPIFinancialID:        "123",
 				Issuer:                  "https://modelobankauth2018.o3bank.co.uk:4101",
+				ResourceIDs: model.ResourceIDs{
+					AccountIDs: []model.ResourceAccountID{
+						{AccountID: "account-id"},
+					},
+					StatementIDs: []model.ResourceStatementID{
+						{StatementID: "statement-id"},
+					},
+				},
 			},
 		},
 		{
@@ -255,6 +271,142 @@ func TestServerConfigGlobalPostInvalid(t *testing.T) {
 				RedirectURL:             "http://server",
 				XFAPIFinancialID:        "123",
 				Issuer:                  "https://modelobankauth2018.o3bank.co.uk:4101",
+				ResourceIDs: model.ResourceIDs{
+					AccountIDs: []model.ResourceAccountID{
+						{AccountID: "account-id"},
+					},
+					StatementIDs: []model.ResourceStatementID{
+						{StatementID: "statement-id"},
+					},
+				},
+			},
+		},
+		{
+			name:               `EmptyResourceIDs`,
+			expectedBody:       `{"error": "resource_ids is empty"}`,
+			expectedStatusCode: http.StatusBadRequest,
+			config: GlobalConfiguration{
+				SigningPrivate:          privateKey,
+				SigningPublic:           publicKey,
+				TransportPrivate:        "--------------",
+				TransportPublic:         "--------------",
+				ClientID:                "client_id",
+				ClientSecret:            "client_secret",
+				TokenEndpoint:           "token_endpoint",
+				TokenEndpointAuthMethod: "client_secret_basic",
+				AuthorizationEndpoint:   "http://server",
+				ResourceBaseURL:         "https://server",
+				RedirectURL:             "http://server",
+				XFAPIFinancialID:        "123",
+				Issuer:                  "https://modelobankauth2018.o3bank.co.uk:4101",
+			},
+		},
+		{
+			name:               `MissingResourcesAccountID`,
+			expectedBody:       `{"error": "resource_ids.AccountIDs is empty"}`,
+			expectedStatusCode: http.StatusBadRequest,
+			config: GlobalConfiguration{
+				SigningPrivate:          privateKey,
+				SigningPublic:           publicKey,
+				TransportPrivate:        "--------------",
+				TransportPublic:         "--------------",
+				ClientID:                "client_id",
+				ClientSecret:            "client_secret",
+				TokenEndpoint:           "token_endpoint",
+				TokenEndpointAuthMethod: "client_secret_basic",
+				AuthorizationEndpoint:   "http://server",
+				ResourceBaseURL:         "https://server",
+				RedirectURL:             "http://server",
+				XFAPIFinancialID:        "123",
+				Issuer:                  "https://modelobankauth2018.o3bank.co.uk:4101",
+				ResourceIDs: model.ResourceIDs{
+					StatementIDs: []model.ResourceStatementID{
+						{StatementID: "statement-id"},
+					},
+				},
+			},
+		},
+		{
+			name:               `HasEmptyAccountID`,
+			expectedBody:       `{"error": "resource_ids.AccountIDs contains an empty value at index 1"}`,
+			expectedStatusCode: http.StatusBadRequest,
+			config: GlobalConfiguration{
+				SigningPrivate:          privateKey,
+				SigningPublic:           publicKey,
+				TransportPrivate:        "--------------",
+				TransportPublic:         "--------------",
+				ClientID:                "client_id",
+				ClientSecret:            "client_secret",
+				TokenEndpoint:           "token_endpoint",
+				TokenEndpointAuthMethod: "client_secret_basic",
+				AuthorizationEndpoint:   "http://server",
+				ResourceBaseURL:         "https://server",
+				RedirectURL:             "http://server",
+				XFAPIFinancialID:        "123",
+				Issuer:                  "https://modelobankauth2018.o3bank.co.uk:4101",
+				ResourceIDs: model.ResourceIDs{
+					AccountIDs: []model.ResourceAccountID{
+						{AccountID: "account-id"},
+						{AccountID: ""},
+					},
+					StatementIDs: []model.ResourceStatementID{
+						{StatementID: "statement-id"},
+					},
+				},
+			},
+		},
+		{
+			name:               `MissingResourcesStatementID`,
+			expectedBody:       `{"error": "resource_ids.StatementIDs is empty"}`,
+			expectedStatusCode: http.StatusBadRequest,
+			config: GlobalConfiguration{
+				SigningPrivate:          privateKey,
+				SigningPublic:           publicKey,
+				TransportPrivate:        "--------------",
+				TransportPublic:         "--------------",
+				ClientID:                "client_id",
+				ClientSecret:            "client_secret",
+				TokenEndpoint:           "token_endpoint",
+				TokenEndpointAuthMethod: "client_secret_basic",
+				AuthorizationEndpoint:   "http://server",
+				ResourceBaseURL:         "https://server",
+				RedirectURL:             "http://server",
+				XFAPIFinancialID:        "123",
+				Issuer:                  "https://modelobankauth2018.o3bank.co.uk:4101",
+				ResourceIDs: model.ResourceIDs{
+					AccountIDs: []model.ResourceAccountID{
+						{AccountID: "account-id"},
+					},
+				},
+			},
+		},
+		{
+			name:               `HasEmptyStatementID`,
+			expectedBody:       `{"error": "resource_ids.StatementIDs contains an empty value at index 0"}`,
+			expectedStatusCode: http.StatusBadRequest,
+			config: GlobalConfiguration{
+				SigningPrivate:          privateKey,
+				SigningPublic:           publicKey,
+				TransportPrivate:        "--------------",
+				TransportPublic:         "--------------",
+				ClientID:                "client_id",
+				ClientSecret:            "client_secret",
+				TokenEndpoint:           "token_endpoint",
+				TokenEndpointAuthMethod: "client_secret_basic",
+				AuthorizationEndpoint:   "http://server",
+				ResourceBaseURL:         "https://server",
+				RedirectURL:             "http://server",
+				XFAPIFinancialID:        "123",
+				Issuer:                  "https://modelobankauth2018.o3bank.co.uk:4101",
+				ResourceIDs: model.ResourceIDs{
+					AccountIDs: []model.ResourceAccountID{
+						{AccountID: "account-id"},
+					},
+					StatementIDs: []model.ResourceStatementID{
+						{StatementID: ""},
+						{StatementID: "statement-id"},
+					},
+				},
 			},
 		},
 	}

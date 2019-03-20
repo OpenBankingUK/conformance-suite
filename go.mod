@@ -13,6 +13,7 @@ require (
 	github.com/go-ozzo/ozzo-validation v3.5.0+incompatible
 	github.com/go-playground/locales v0.12.1 // indirect
 	github.com/go-playground/universal-translator v0.16.0 // indirect
+	github.com/google/go-cmp v0.2.0
 	github.com/google/uuid v1.0.0
 	github.com/gorilla/websocket v1.4.0
 	github.com/inconshreveable/mousetrap v1.0.0 // indirect

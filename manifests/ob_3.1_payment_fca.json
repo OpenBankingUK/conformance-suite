@@ -2,7 +2,7 @@
 	"scripts": [
         {
 			"description": "Domestic Payment consents succeeds with minimal data set with additional schema checks.",
-            "id": "OB-301-DOP-206111",
+            "id": "OB-301-DOP-100000",
             "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937984109/Domestic+Payments+v3.1#DomesticPaymentsv3.1-POST/domestic-payment-consents",
             "detail" : "Checks that the resource succeeds posting a domestic payment consents with a minimal data set and checks additional schema.",
 			"parameters": {
@@ -16,14 +16,14 @@
             "uri": "domestic-payment-consents",
             "uriImplementation": "mandatory",
             "resource": "DomesticPayment",
-            "asserts": ["OB3DOPAssertOnSuccess", "OB3GLOAAssertConsentId"],
-            "keepContext": ["OB3GLOAAssertConsentId"],
+            "asserts": ["OB3GLOAssertOn201", "OB3GLOFAPIHeader", "OB3DOPAssertOnAcceptedSettlementCompleted", "OB3GLOAAssertConsentId"],
+            "keepContext": ["OB3GLOAAssertConsentId", "OB3GLOFAPIHeader"],
             "method":"post",
             "schemaCheck": true
         },
         {
 			"description": "Domestic Payment consents fails when given an invalid ConsentId",
-            "id": "OB-301-DOP-311740",
+            "id": "OB-301-DOP-100100",
             "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937984109/Domestic+Payments+v3.1#DomesticPaymentsv3.1-POST/domestic-payment-consents",
             "detail" : "Checks that the resource correctly fails posting an invalid domestic payment consent.",
 			"parameters": {
@@ -37,7 +37,7 @@
             "uri": "domestic-payment-consents/$consentId",
             "uriImplementation": "mandatory",
             "resource": "DomesticPayment",
-            "asserts": ["OB3GLOAssertOn400"],
+            "asserts": ["OB3GLOAssertOn400", "OB3GLOFAPIHeader", "OB3GLOAssertContentType"],
             "method":"post",
             "schemaCheck": true
         }

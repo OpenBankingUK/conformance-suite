@@ -1,5 +1,6 @@
 package report
 
+// ReportSignatureChain -
 type ReportSignatureChain struct {
 	Type    string `json:"type"`
 	Creator string `json:"creator"`
