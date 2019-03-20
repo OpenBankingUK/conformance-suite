@@ -70,6 +70,7 @@ export default {
   async computeTestCases({ commit, dispatch, state }) {
     try {
       const setShowLoading = flag => dispatch('status/setShowLoading', flag, { root: true });
+      await api.stopTestRun(setShowLoading); // ensure any previous run is stopped
       const testCases = await api.computeTestCases(setShowLoading);
       if (_.isEqual(testCases.specCases, state.testCases)) {
         return;
