@@ -9,9 +9,8 @@ import (
 func TestPermx(t *testing.T) {
 	tests, err := GenerateTestCases("TestSpec", "http://mybaseurl")
 	assert.Nil(t, err)
-	tcp, err := GetTestCasePermissions(tests)
+	testcasePermissions, err := GetTestCasePermissions(tests)
 	assert.Nil(t, err)
-	dumpJSON(tcp)
-	requiredTokens, err := GatherTokens(tcp)
+	requiredTokens, err := GatherTokens(testcasePermissions)
 	dumpJSON(requiredTokens)
 }

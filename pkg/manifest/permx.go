@@ -17,6 +17,11 @@ type TokenGatherer struct {
 	Permsx []string `json:"permsx,omitempty"`
 }
 
+// TokenStore eats tokens
+type TokenStore struct {
+	store []TokenGatherer
+}
+
 // GetTestCasePermissions -
 func GetTestCasePermissions(tcs []model.TestCase) ([]TestCasePermission, error) {
 	tcps := []TestCasePermission{}
@@ -32,19 +37,37 @@ func GetTestCasePermissions(tcs []model.TestCase) ([]TestCasePermission, error) 
 
 // GatherTokens - gathers all tokens
 func GatherTokens(tcps []TestCasePermission) ([]TokenGatherer, error) {
-	tg := []TokenGatherer{}
-	for _, tcp := range tcps {
-		mixer(&tcp, tg)
+	tg := make([]TokenGatherer, 0)
+	te := TokenStore{}
+	for _, tcp := range tcps { // for each TestCasePermission
+		te.createOrUpdate(tcp)
+		//tg = append(tg, *newItem)
 	}
+	dumpJSON(te.store)
 	return tg, nil
 }
 
-func mixer(tcp *TestCasePermission, tg []TokenGatherer) {
+func dumpTG(tg []TokenGatherer) {
+	for _, v := range tg {
+		fmt.Printf("grouplineitem: %v - %v -  %v\n", v.IDs, v.Perms, v.Permsx)
+	}
+}
 
-	for _, tgItem := range tg {
+// create or update TokenGethereer
+func (te *TokenStore) createOrUpdate(tcp TestCasePermission) {
+
+	if len(te.store) == 0 { // First time - no permissions - just add
+		tpg := TokenGatherer{IDs: []string{tcp.ID}, Perms: tcp.Perms, Permsx: tcp.Permsx}
+		te.store = append(te.store, tpg)
+		return
+	}
+
+	for idx, tgItem := range te.store { // loop through each Gathered Item
 		tcPermxConflict := false
 		tcPermConflict := false
-		for _, tgperm := range tgItem.Perms {
+
+		// Check groupPermissions against testcaseExclusions
+		for _, tgperm := range tgItem.Perms { // loop through all
 			for _, tcpermx := range tcp.Permsx {
 				if tgperm == tcpermx {
 					tcPermxConflict = true
@@ -55,6 +78,11 @@ func mixer(tcp *TestCasePermission, tg []TokenGatherer) {
 				break
 			}
 		}
+		if tcPermxConflict { //move onto next group item
+			continue
+		}
+
+		// Check groupExclusions against testcasePermissions
 		for _, tgpermx := range tgItem.Permsx {
 			for _, tcperm := range tcp.Perms {
 				if tgpermx == tcperm {
@@ -66,12 +94,56 @@ func mixer(tcp *TestCasePermission, tg []TokenGatherer) {
 				break
 			}
 		}
-
+		if tcPermConflict {
+			continue
+		}
+		newItem := addPermToGathererItem(tcp, tgItem)
+		te.store[idx] = newItem
+		return
 	}
+	tpg := TokenGatherer{IDs: []string{tcp.ID}, Perms: tcp.Perms, Permsx: tcp.Permsx}
+	te.store = append(te.store, tpg)
+
+	return
 }
 
-// check included doesn't include excluded
-// check exluded doesn't include included
-// if ok add
-// if not ok, check next
-// if not added at end add
+func addPermToGathererItem(tp TestCasePermission, tg TokenGatherer) TokenGatherer {
+	var newPerm, newPermx string
+	var permMatch, permxMatch bool
+
+	tg.IDs = append(tg.IDs, tp.ID)
+	for _, tgPerm := range tg.Perms { // Loop through all Gathered Permissions
+		for _, tpPerm := range tp.Perms { //
+			if tpPerm == tgPerm {
+				permMatch = true
+				newPerm = tpPerm
+				break
+			}
+		}
+		if permMatch {
+			break
+		} else {
+			if newPerm != "" {
+				tg.Perms = append(tg.Perms, newPerm)
+			}
+		}
+	}
+
+	for _, tgPermx := range tg.Permsx {
+		for _, tpPermx := range tp.Permsx {
+			if tpPermx == tgPermx {
+				permxMatch = true
+				newPermx = tpPermx
+				break
+			}
+		}
+		if permxMatch {
+			break
+		} else {
+			if newPermx != "" {
+				tg.Permsx = append(tg.Permsx, newPermx)
+			}
+		}
+	}
+	return tg
+}
