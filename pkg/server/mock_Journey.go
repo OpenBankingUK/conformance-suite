@@ -129,6 +129,11 @@ func (_m *MockJourney) StopTestRun() {
 	_m.Called()
 }
 
+// StopTestRun provides a mock function with given fields:
+func (_m *MockJourney) NewDaemonController() {
+	_m.Called()
+}
+
 // TestCases provides a mock function with given fields:
 func (_m *MockJourney) TestCases() (generation.TestCasesRun, error) {
 	ret := _m.Called()
