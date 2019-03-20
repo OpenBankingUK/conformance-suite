@@ -52,8 +52,6 @@ func (g generator) EnterParallelUniverse(log *logrus.Entry, config GeneratorConf
 	customTestCases := []SpecificationTestCases{}
 	customReplacements := make(map[string]string)
 
-	_ = specTestCases
-
 	for _, customTest := range discovery.CustomTests { // assume ordering is prerun i.e. customtest run before other tests
 		customTestCases = append(customTestCases, GetCustomTestCases(&customTest, ctx, headlessTokenAcquisition))
 		for k, v := range customTest.Replacements {

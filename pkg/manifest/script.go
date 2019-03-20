@@ -187,7 +187,7 @@ func loadScriptFiles() (Scripts, References, AccountData, error) {
 		}
 	}
 
-	// sc, err := loadScripts("testdata/oneAccountScript.json")
+	// sc, err = loadScripts("testdata/oneAccountScript.json")
 	// if err != nil {
 	// 	sc, err = loadScripts("pkg/manifest/testdata/oneAccountScript.json")
 	// 	if err != nil {
