@@ -439,7 +439,8 @@ func TestServerConfigGlobalPostInvalid(t *testing.T) {
 }
 
 func testJourney() Journey {
+	logger := nullLogger()
 	validatorEngine := discovery.NewFuncValidator(model.NewConditionalityChecker())
-	testGenerator := generation.NewGenerator()
-	return NewJourney(nullLogger(), testGenerator, validatorEngine)
+	testGenerator := generation.NewGenerator(logger)
+	return NewJourney(logger, testGenerator, validatorEngine)
 }

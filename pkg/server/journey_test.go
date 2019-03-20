@@ -2,7 +2,6 @@ package server
 
 import (
 	"fmt"
-	"github.com/stretchr/testify/mock"
 	"testing"
 
 	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/test"
@@ -116,7 +115,7 @@ func TestJourneyTestCasesGenerate(t *testing.T) {
 	expectedTestCases := generation.TestCasesRun{}
 	generator := &gmocks.MockGenerator{}
 	config := generation.GeneratorConfig{ClientID: "", Aud: "", ResponseType: "code id_token", Scope: "openid accounts", AuthorizationEndpoint: "", RedirectURL: ""}
-	generator.On("GenerateSpecificationTestCases", mock.Anything, config, discoveryModel.DiscoveryModel, &model.Context{}).Return(expectedTestCases)
+	generator.On("GenerateSpecificationTestCases", config, discoveryModel.DiscoveryModel, &model.Context{}).Return(expectedTestCases)
 	journey := NewJourney(nullLogger(), generator, validator)
 	_, err := journey.SetDiscoveryModel(discoveryModel)
 	require.NoError(t, err)
@@ -136,7 +135,7 @@ func TestJourneyTestCasesDoesntREGenerate(t *testing.T) {
 	expectedTestCases := generation.TestCasesRun{}
 	generator := &gmocks.MockGenerator{}
 	config := generation.GeneratorConfig{ClientID: "", Aud: "", ResponseType: "code id_token", Scope: "openid accounts", AuthorizationEndpoint: "", RedirectURL: ""}
-	generator.On("GenerateSpecificationTestCases", mock.Anything, config, discoveryModel.DiscoveryModel, &model.Context{}).
+	generator.On("GenerateSpecificationTestCases", config, discoveryModel.DiscoveryModel, &model.Context{}).
 		Return(expectedTestCases).Times(1)
 
 	journey := NewJourney(nullLogger(), generator, validator)

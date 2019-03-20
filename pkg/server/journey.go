@@ -108,7 +108,7 @@ func (wj *journey) TestCases() (generation.TestCasesRun, error) {
 	if !wj.testCasesRunGenerated {
 		config := wj.makeGeneratorConfig()
 		discovery := wj.validDiscoveryModel.DiscoveryModel
-		wj.testCasesRun = wj.generator.GenerateSpecificationTestCases(wj.log, config, discovery, &wj.context)
+		wj.testCasesRun = wj.generator.GenerateSpecificationTestCases(config, discovery, &wj.context)
 		if discovery.TokenAcquisition == "psu" {
 			definition := wj.makeRunDefinition()
 			consentIds, err := executors.InitiationConsentAcquisition(wj.testCasesRun.SpecConsentRequirements, definition, &wj.context)
