@@ -106,8 +106,9 @@ func (wj *journey) TestCases() (generation.TestCasesRun, error) {
 		config := wj.makeGeneratorConfig()
 		discovery := wj.validDiscoveryModel.DiscoveryModel
 		//TODO: Remove standard testcase generation
-		wj.testCasesRun = wj.generator.GenerateSpecificationTestCases(wj.log, config, discovery, &wj.context)
+		//wj.testCasesRun = wj.generator.GenerateSpecificationTestCases(wj.log, config, discovery, &wj.context)
 		//TODO: Generate all tests from manifests
+		wj.log.Debugln("Journey:GenerationManifestTests")
 		tcrun2 := wj.generator.GenerateManifestTests(wj.log, config, discovery, &wj.context) // Integration work in progress
 		wj.testCasesRun.SpecConsentRequirements = append(wj.testCasesRun.SpecConsentRequirements, tcrun2.SpecConsentRequirements...)
 		wj.testCasesRun.TestCases = append(wj.testCasesRun.TestCases, tcrun2.TestCases...)
@@ -120,11 +121,13 @@ func (wj *journey) TestCases() (generation.TestCasesRun, error) {
 			wj.createTokenCollector(consentIds)
 		} else {
 			// TODO: Acquire headless tokens
+			wj.log.Debugln("Journey:AcquireHeadlessTokens")
 			runDefinition := wj.makeRunDefinition()
-			_ = runDefinition
-			// pass context
-			// pass token stuff
-			//
+			executors.AcquireHeadlessTokens(tcrun2.TestCases[0].TestCases, &wj.context, runDefinition)
+			wj.log.Debugln("Dump WebJourney Context for headless...")
+			for k, v := range wj.context {
+				wj.log.Debugf("%s : %s\n", k, v)
+			}
 
 			wj.allCollected = true
 		}
@@ -263,7 +266,7 @@ const ctxConstClientID = "client_id"
 const ctxConstClientSecret = "client_secret"
 const ctxConstTokenEndpoint = "token_endpoint"
 const ctxConstTokenEndpointAuthMethod = "token_endpoint_auth_method"
-const ctxConstFapiFinancialID = "fapi_financial_id"
+const ctxConstFapiFinancialID = "x-fapi-financial-id"
 const ctxConstRedirectURL = "redirect_url"
 const ctxConstAuthorisationEndpoint = "authorisation_endpoint"
 const ctxConstBasicAuthentication = "basic_authentication"

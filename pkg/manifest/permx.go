@@ -14,7 +14,7 @@ type TestCasePermission struct {
 }
 
 // TokenGatherer -
-type TokenGatherer struct {
+type RequiredTokens struct {
 	Name   string   `json:"name,omitempty"`
 	Token  string   `json:"token,omitempty"`
 	IDs    []string `json:"ids,omitempty"`
@@ -25,7 +25,7 @@ type TokenGatherer struct {
 // TokenStore eats tokens
 type TokenStore struct {
 	currentID int
-	store     []TokenGatherer
+	store     []RequiredTokens
 }
 
 // GetTestCasePermissions -
@@ -41,8 +41,8 @@ func GetTestCasePermissions(tcs []model.TestCase) ([]TestCasePermission, error) 
 	return tcps, nil
 }
 
-// GatherTokens - gathers all tokens
-func GatherTokens(tcps []TestCasePermission) ([]TokenGatherer, error) {
+// GetRequiredTokens - gathers all tokens
+func GetRequiredTokens(tcps []TestCasePermission) ([]RequiredTokens, error) {
 	te := TokenStore{}
 	for _, tcp := range tcps {
 		te.createOrUpdate(tcp)
@@ -50,7 +50,7 @@ func GatherTokens(tcps []TestCasePermission) ([]TokenGatherer, error) {
 	return te.store, nil
 }
 
-func dumpTG(tg []TokenGatherer) {
+func dumpTG(tg []RequiredTokens) {
 	for _, v := range tg {
 		fmt.Printf("grouplineitem: %v - %v -  %v\n", v.IDs, v.Perms, v.Permsx)
 	}
@@ -66,7 +66,7 @@ func (te *TokenStore) GetNextTokenName() string {
 func (te *TokenStore) createOrUpdate(tcp TestCasePermission) {
 
 	if len(te.store) == 0 { // First time - no permissions - just add
-		tpg := TokenGatherer{Name: te.GetNextTokenName(), IDs: []string{tcp.ID}, Perms: tcp.Perms, Permsx: tcp.Permsx}
+		tpg := RequiredTokens{Name: te.GetNextTokenName(), IDs: []string{tcp.ID}, Perms: tcp.Perms, Permsx: tcp.Permsx}
 		te.store = append(te.store, tpg)
 		return
 	}
@@ -110,13 +110,13 @@ func (te *TokenStore) createOrUpdate(tcp TestCasePermission) {
 		te.store[idx] = newItem
 		return
 	}
-	tpg := TokenGatherer{Name: te.GetNextTokenName(), IDs: []string{tcp.ID}, Perms: tcp.Perms, Permsx: tcp.Permsx}
+	tpg := RequiredTokens{Name: te.GetNextTokenName(), IDs: []string{tcp.ID}, Perms: tcp.Perms, Permsx: tcp.Permsx}
 	te.store = append(te.store, tpg)
 
 	return
 }
 
-func addPermToGathererItem(tp TestCasePermission, tg TokenGatherer) TokenGatherer {
+func addPermToGathererItem(tp TestCasePermission, tg RequiredTokens) RequiredTokens {
 	tg.IDs = append(tg.IDs, tp.ID)
 	permsToAdd := []string{}
 	permsxToAdd := []string{}

@@ -99,18 +99,18 @@ func init() {
 func initConfig() {
 
 	//TODO: make this configurable via a command line option
-	f, err := os.OpenFile("suite.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
-	if err != nil {
-		// Don't worry - be happy
-	} else {
-		//mw := io.MultiWriter(os.Stdout, f)
-		logrus.SetOutput(f)
-	}
+	// f, err := os.OpenFile("suite.log", os.O_CREATE|os.O_WRONLY, 0644)
+	// if err != nil {
+
+	// } else {
+	// 	//mw := io.MultiWriter(os.Stdout, f)
+	// 	//logrus.SetOutput(f)
+	// }
 
 	logger.SetNoLock()
 	logger.SetFormatter(&prefixed.TextFormatter{
-		DisableColors:    true,
-		ForceColors:      false,
+		DisableColors:    false,
+		ForceColors:      true,
 		TimestampFormat:  time.RFC3339,
 		FullTimestamp:    true,
 		DisableTimestamp: false,

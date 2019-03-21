@@ -302,7 +302,7 @@ func replaceContextField(source string, ctx *Context) (string, error) {
 	return result, nil
 }
 
-var singleDollarRegex = regexp.MustCompile(`[^\$]?\$([\w|-]*)`)
+var singleDollarRegex = regexp.MustCompile(`[^\$]?\$([\w|-|_]*)`)
 
 // GetReplacementField examines the input string and returns the first character
 // sequence beginning with '$' and ending with whitespace. '$$' sequence acts as an escape value

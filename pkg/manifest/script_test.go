@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"testing"
 
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -62,7 +61,7 @@ func TestGenerateTestCases(t *testing.T) {
 	tests, err := GenerateTestCases("TestSpec", "http://mybaseurl")
 	assert.Nil(t, err)
 
-	perms, err := getPermissions(tests)
+	perms, err := GetPermissions(tests)
 	assert.Nil(t, err)
 	m := make(map[string]string, 0)
 	for _, v := range perms {
@@ -78,31 +77,4 @@ func TestGenerateTestCases(t *testing.T) {
 		dumpJSON(v)
 	}
 
-}
-
-type ScriptPermission struct {
-	ID          string
-	Permissions []string
-	Path        string
-}
-
-func getPermissions(tests []model.TestCase) ([]ScriptPermission, error) {
-	permCollector := []ScriptPermission{}
-
-	for _, test := range tests {
-		ctx := test.Context
-		// for k, v := range ctx {
-		// 	fmt.Printf("[Context] %s:%v\n", k, v)
-		// }
-
-		perms, err := ctx.GetStringSlice("permissions")
-		if err != nil {
-			return nil, err
-		}
-
-		sp := ScriptPermission{ID: test.ID, Permissions: perms, Path: test.Input.Method + " " + test.Input.Endpoint}
-		permCollector = append(permCollector, sp)
-	}
-
-	return permCollector, nil
 }

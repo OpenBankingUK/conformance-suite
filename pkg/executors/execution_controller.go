@@ -214,10 +214,7 @@ func (r *TestCaseRunner) setNotRunning() {
 func (r *TestCaseRunner) makeRuleCtx(ctx *model.Context) *model.Context {
 	ruleCtx := &model.Context{}
 	ruleCtx.Put("SigningCert", r.definition.SigningCert)
-	for k, v := range *ctx {
-		ruleCtx.Put(k, v)
-	}
-
+	ruleCtx.PutContext(ctx)
 	return ruleCtx
 }
 

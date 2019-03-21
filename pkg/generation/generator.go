@@ -46,26 +46,28 @@ type generator struct {
 
 // Work in progress to integrate Manifest Test
 func (g generator) GenerateManifestTests(log *logrus.Entry, config GeneratorConfig, discovery discovery.ModelDiscovery, ctx *model.Context) TestCasesRun {
-	log = log.WithField("module", "EnterParallelUniverse")
-	headlessTokenAcquisition := discovery.TokenAcquisition == "headless"
-	specTestCases := []SpecificationTestCases{}
-	customTestCases := []SpecificationTestCases{}
-	customReplacements := make(map[string]string)
+	logrus.Debug("GenerateManifestTests - entry")
+	log = log.WithField("module", "GenerateManifestTests")
 
-	for _, customTest := range discovery.CustomTests { // assume ordering is prerun i.e. customtest run before other tests
-		customTestCases = append(customTestCases, GetCustomTestCases(&customTest, ctx, headlessTokenAcquisition))
-		for k, v := range customTest.Replacements {
-			customReplacements[k] = v
-		}
-		for k, testcase := range customTest.Sequence {
-			if !headlessTokenAcquisition {
-				ctx := model.Context{}
-				ctx.PutMap(customReplacements)
-				testcase.ProcessReplacementFields(&ctx, true)
-			}
-			customTest.Sequence[k] = testcase
-		}
-	}
+	//	headlessTokenAcquisition := discovery.TokenAcquisition == "headless"
+	specTestCases := []SpecificationTestCases{}
+	//	customTestCases := []SpecificationTestCases{}
+	//customReplacements := make(map[string]string)
+
+	// for _, customTest := range discovery.CustomTests { // assume ordering is prerun i.e. customtest run before other tests
+	// 	customTestCases = append(customTestCases, GetCustomTestCases(&customTest, ctx, headlessTokenAcquisition))
+	// 	for k, v := range customTest.Replacements {
+	// 		customReplacements[k] = v
+	// 	}
+	// 	for k, testcase := range customTest.Sequence {
+	// 		if !headlessTokenAcquisition {
+	// 			ctx := model.Context{}
+	// 			ctx.PutMap(customReplacements)
+	// 			testcase.ProcessReplacementFields(&ctx, true)
+	// 		}
+	// 		customTest.Sequence[k] = testcase
+	// 	}
+	// }
 
 	for _, item := range discovery.DiscoveryItems { //TODO: sort out different specs etc
 		tcs, err := manifest.GenerateTestCases(item.APISpecification.Name, item.ResourceBaseURI)
@@ -77,9 +79,9 @@ func (g generator) GenerateManifestTests(log *logrus.Entry, config GeneratorConf
 		logrus.Debugf("%d test cases generated", len(tcs))
 
 		specTestCases = append(specTestCases, stc)
-		for _, tc := range tcs {
-			log.Debug(tc.String())
-		}
+		// for _, tc := range tcs {
+		// 	log.Debug(tc.String())
+		// }
 
 		break //TODO: sort this out integration scaffolding ... do it once for starters ...
 	}

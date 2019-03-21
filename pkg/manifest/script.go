@@ -131,7 +131,7 @@ func testCaseBuilder(s Script, refs map[string]Reference, ctx *model.Context, co
 	tc.Name = s.Description
 
 	//TODO: make these more configurable - header also get set in buildInput Section
-	tc.Input.Headers["x-fapi-financial-id"] = "$fapi_financial_id"
+	tc.Input.Headers["x-fapi-financial-id"] = "$x-fapi-financial-id"
 	tc.Input.Headers["x-fapi-interaction-id"] = "b4405450-febe-11e8-80a5-0fcebb1574e1"
 	buildInputSection(s, &tc.Input)
 
@@ -184,13 +184,13 @@ func loadScriptFiles() (Scripts, References, AccountData, error) {
 		}
 	}
 
-	// sc, err = loadScripts("testdata/oneAccountScript.json")
-	// if err != nil {
-	// 	sc, err = loadScripts("pkg/manifest/testdata/oneAccountScript.json")
-	// 	if err != nil {
-	// 		return Scripts{}, References{}, AccountData{}, err
-	// 	}
-	// }
+	sc, err = loadScripts("testdata/oneAccountScript.json")
+	if err != nil {
+		sc, err = loadScripts("pkg/manifest/testdata/oneAccountScript.json")
+		if err != nil {
+			return Scripts{}, References{}, AccountData{}, err
+		}
+	}
 
 	refs, err := loadReferences("../../manifests/assertions.json")
 	if err != nil {
@@ -204,7 +204,10 @@ func loadScriptFiles() (Scripts, References, AccountData, error) {
 	if err != nil {
 		ad, err = loadAccountData("pkg/manifest/testdata/resources.json")
 		if err != nil {
-			return Scripts{}, References{}, AccountData{}, err
+			ad, err = loadAccountData("../manifest/testdata/resources.json")
+			if err != nil {
+				return Scripts{}, References{}, AccountData{}, err
+			}
 		}
 	}
 
@@ -261,6 +264,32 @@ func loadTestPlan(filename string) (TestPlan, error) {
 		return TestPlan{}, err
 	}
 	return m, nil
+}
+
+// ScriptPermission -
+type ScriptPermission struct {
+	ID          string
+	Permissions []string
+	Path        string
+}
+
+// GetPermissions -
+func GetPermissions(tests []model.TestCase) ([]ScriptPermission, error) {
+	permCollector := []ScriptPermission{}
+
+	for _, test := range tests {
+		ctx := test.Context
+		perms, err := ctx.GetStringSlice("permissions")
+		if err != nil {
+			continue
+			//return nil, err
+		}
+
+		sp := ScriptPermission{ID: test.ID, Permissions: perms, Path: test.Input.Method + " " + test.Input.Endpoint}
+		permCollector = append(permCollector, sp)
+	}
+
+	return permCollector, nil
 }
 
 // Utility to Dump Json
