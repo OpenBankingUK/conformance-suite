@@ -14,12 +14,13 @@ import (
 // Service is a gateway to backend services provided by FCS
 type Service interface {
 	Version() (VersionResponse, error)
-	Run(discoveryFile, configFile string) ([]TestCase, error)
+	Run(discoveryFile, configFile, exportConfig string) ([]TestCase, error)
 }
 
 const (
 	setDiscoveryModelPath = "/api/discovery-model"
 	setConfigPath         = "/api/config/global"
+	exportReport          = "/api/export"
 	generateTestCases     = "/api/test-cases"
 	runTestCases          = "/api/run"
 	runTestCasesResultsWS = "/api/run/ws"
@@ -47,7 +48,7 @@ type VersionResponse struct {
 	Update  bool   `json:"update"`
 }
 
-func (s service) Run(discovery, config string) ([]TestCase, error) {
+func (s service) Run(discovery, config, report string) ([]TestCase, error) {
 	err := s.setDiscoveryModel(discovery)
 	if err != nil {
 		return nil, err
@@ -71,7 +72,17 @@ func (s service) Run(discovery, config string) ([]TestCase, error) {
 		return nil, err
 	}
 
-	return aggregateResults(resultsChan, endedChan)
+	results, err := aggregateResults(resultsChan, endedChan)
+	if err != nil {
+		return nil, err
+	}
+
+	err = s.exportReport(report)
+	if err != nil {
+		return nil, err
+	}
+
+	return results, nil
 }
 
 func aggregateResults(resultChan chan TestCase, endedChan chan struct{}) ([]TestCase, error) {
@@ -187,6 +198,24 @@ func (s service) runTests(resultChan chan<- TestCase, endedChan chan<- struct{})
 		}
 
 		return errors.Errorf(" unexpected status code generating test cases: %d, %s", response.StatusCode, responseBody)
+	}
+
+	return nil
+}
+
+func (s service) exportReport(reportConfig string) error {
+	file, err := os.Open(reportConfig)
+	if err != nil {
+		return errors.Wrap(err, "export report")
+	}
+
+	response, err := s.conn.Post(s.host+exportReport, "application/json", file)
+	if err != nil {
+		return errors.Wrap(err, "export config")
+	}
+
+	if response.StatusCode != http.StatusOK {
+		return fmt.Errorf("unexpected status code export report config %d", response.StatusCode)
 	}
 
 	return nil

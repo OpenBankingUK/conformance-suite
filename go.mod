@@ -13,6 +13,7 @@ require (
 	github.com/go-ozzo/ozzo-validation v3.5.0+incompatible
 	github.com/go-playground/locales v0.12.1 // indirect
 	github.com/go-playground/universal-translator v0.16.0 // indirect
+	github.com/golang/protobuf v1.3.1 // indirect
 	github.com/google/go-cmp v0.2.0
 	github.com/google/uuid v1.0.0
 	github.com/gorilla/websocket v1.4.0
@@ -35,7 +36,6 @@ require (
 	github.com/valyala/fasttemplate v0.0.0-20170224212429-dcecefd839c4 // indirect
 	github.com/x-cray/logrus-prefixed-formatter v0.5.2
 	golang.org/x/net v0.0.0-20181201002055-351d144fa1fc // indirect
-	golang.org/x/sync v0.0.0-20181108010431-42b317875d0f // indirect
 	gopkg.in/go-playground/assert.v1 v1.2.1 // indirect
 	gopkg.in/go-playground/validator.v9 v9.21.1
 	gopkg.in/resty.v1 v1.10.3

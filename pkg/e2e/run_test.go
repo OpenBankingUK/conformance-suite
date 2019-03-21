@@ -68,7 +68,10 @@ func TestRun(t *testing.T) {
 
 	goldenFile := filepath.Join("testdata", "ozone-results.golden")
 
-	results, err := service.Run("../discovery/templates/ob-v3.1-ozone-headless.json", "../../config/config-ozone.json")
+	results, err := service.Run(
+		"../discovery/templates/ob-v3.1-ozone-headless.json",
+		"../../config/config-ozone.json",
+		"../../config/report.json")
 	require.NoError(t, err)
 
 	w := bytes.NewBufferString("")
