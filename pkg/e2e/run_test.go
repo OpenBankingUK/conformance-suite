@@ -38,7 +38,7 @@ func TestRun(t *testing.T) {
 
 	ver := version.NewBitBucket(version.BitBucketAPIRepository)
 	validatorEngine := discovery.NewFuncValidator(model.NewConditionalityChecker())
-	testGenerator := generation.NewGenerator(logger)
+	testGenerator := generation.NewGenerator(test.NullLogger())
 	journey := server.NewJourney(logger, testGenerator, validatorEngine)
 	address := fmt.Sprintf("%s:%d", "127.0.0.1", freePort)
 
@@ -68,7 +68,10 @@ func TestRun(t *testing.T) {
 
 	goldenFile := filepath.Join("testdata", "ozone-results.golden")
 
-	results, err := service.Run("../discovery/templates/ob-v3.1-ozone-headless.json", "../../config/config-ozone.json")
+	results, err := service.Run(
+		"../discovery/templates/ob-v3.1-ozone-headless.json",
+		"../../config/config-ozone.json",
+		"../../config/report.json")
 	require.NoError(t, err)
 
 	w := bytes.NewBufferString("")
