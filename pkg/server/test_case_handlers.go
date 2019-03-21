@@ -23,6 +23,7 @@ func newTestCaseHandlers(journey Journey, upgrader *websocket.Upgrader, logger *
 }
 
 func (d testCaseHandlers) testCasesHandler(c echo.Context) error {
+	d.journey.NewDaemonController() // fix for not sending events to correct websocket after a websocket reconnect
 	testCases, err := d.journey.TestCases()
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, NewErrorResponse(err))
