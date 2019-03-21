@@ -10,7 +10,7 @@
                 "paymentType": "domestic-payment-consents",
                 "post" : "minimalDomesticPaymentConsent"    
             },
-            "uri": "domestic-payment-consents",
+            "uri": "/domestic-payment-consents",
             "uriImplementation": "mandatory",
             "resource": "DomesticPayment",
             "asserts": ["OB3DOPAssertOnSuccess", "OB3GLOAAssertConsentId"],
@@ -28,7 +28,7 @@
                 "ConsentId": "$consentId",
                 "post" : "minimalDomesticPaymentConsent"    
             },
-            "uri": "domestic-payment-consents/$consentId",
+            "uri": "/domestic-payment-consents/{consentId}",
             "uriImplementation": "mandatory",
             "resource": "DomesticPayment",
             "asserts": ["OB3GLOAssertOn400"],
