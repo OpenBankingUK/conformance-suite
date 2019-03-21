@@ -108,9 +108,6 @@ func (s *Script) processParameters(refs *References, resources *model.Context) (
 			}
 		}
 		switch k {
-		// case "accountAccessConsent":
-		// 	consent := getAccountConsent(refs, value)
-		// 	localCtx.PutStringSlice("permissions", consent)
 		case "tokenRequestScope":
 			localCtx.PutString("tokenScope", value)
 		default:

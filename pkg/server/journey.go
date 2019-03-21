@@ -93,11 +93,8 @@ func (wj *journey) SetDiscoveryModel(discoveryModel *discovery.Model) (discovery
 }
 
 func (wj *journey) TestCases() (generation.TestCasesRun, error) {
-	wj.log.Debug("journey.TestCases, journeyLock=false")
 	wj.journeyLock.Lock()
-	wj.log.Debug("journey.TestCases, journeyLock=true")
 	defer func() {
-		wj.log.Debug("journey.TestCases, journeyLock=false")
 		wj.journeyLock.Unlock()
 	}()
 
@@ -108,9 +105,10 @@ func (wj *journey) TestCases() (generation.TestCasesRun, error) {
 	if !wj.testCasesRunGenerated {
 		config := wj.makeGeneratorConfig()
 		discovery := wj.validDiscoveryModel.DiscoveryModel
+		//TODO: Remove standard testcase generation
 		wj.testCasesRun = wj.generator.GenerateSpecificationTestCases(wj.log, config, discovery, &wj.context)
-		//TODO: merge parallel universe
-		tcrun2 := wj.generator.EnterParallelUniverse(wj.log, config, discovery, &wj.context) // Integration work in progress
+		//TODO: Generate all tests from manifests
+		tcrun2 := wj.generator.GenerateManifestTests(wj.log, config, discovery, &wj.context) // Integration work in progress
 		wj.testCasesRun.SpecConsentRequirements = append(wj.testCasesRun.SpecConsentRequirements, tcrun2.SpecConsentRequirements...)
 		wj.testCasesRun.TestCases = append(wj.testCasesRun.TestCases, tcrun2.TestCases...)
 		if discovery.TokenAcquisition == "psu" {
@@ -119,9 +117,15 @@ func (wj *journey) TestCases() (generation.TestCasesRun, error) {
 			if err != nil {
 				return generation.TestCasesRun{}, errConsentIDAcquisitionFailed
 			}
-
 			wj.createTokenCollector(consentIds)
 		} else {
+			// TODO: Acquire headless tokens
+			runDefinition := wj.makeRunDefinition()
+			_ = runDefinition
+			// pass context
+			// pass token stuff
+			//
+
 			wj.allCollected = true
 		}
 		wj.testCasesRunGenerated = true
@@ -131,15 +135,11 @@ func (wj *journey) TestCases() (generation.TestCasesRun, error) {
 }
 
 func (wj *journey) CollectToken(code, state, scope string) error {
-	wj.log.Debug("journey.CollectToken, journeyLock=false")
 	wj.journeyLock.Lock()
-	wj.log.Debug("journey.CollectToken, journeyLock=true")
 	defer func() {
-		wj.log.Debug("journey.CollectToken, journeyLock=false")
 		wj.journeyLock.Unlock()
 	}()
 
-	wj.log.Debugf("state: %s, code: %s", state, code)
 	if !wj.testCasesRunGenerated {
 		return errTestCasesNotGenerated
 	}
@@ -160,23 +160,16 @@ func (wj *journey) CollectToken(code, state, scope string) error {
 }
 
 func (wj *journey) AllTokenCollected() bool {
-	// wj.journeyLock.Lock()
-	// defer wj.journeyLock.Unlock()
 	wj.log.Debugf("All tokens collected %t", wj.allCollected)
 	return wj.allCollected
 }
 
 func (wj *journey) doneCollectionCallback() {
-	// TODO: ensure lock is acquired and released.
-	//wj.journeyLock.Lock()
-	//defer wj.journeyLock.Unlock()
 	wj.log.Debug("Setting wj.allCollection=true")
 	wj.allCollected = true
 }
 
 func (wj *journey) RunTests() error {
-	//wj.journeyLock.Lock()
-	//defer wj.journeyLock.Unlock()
 	wj.log.Debug("RunTests ...")
 
 	if !wj.testCasesRunGenerated {

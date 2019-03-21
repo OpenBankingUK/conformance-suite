@@ -16,6 +16,7 @@ type TestCasePermission struct {
 // TokenGatherer -
 type TokenGatherer struct {
 	Name   string   `json:"name,omitempty"`
+	Token  string   `json:"token,omitempty"`
 	IDs    []string `json:"ids,omitempty"`
 	Perms  []string `json:"perms,omitempty"`
 	Permsx []string `json:"permsx,omitempty"`
@@ -23,7 +24,8 @@ type TokenGatherer struct {
 
 // TokenStore eats tokens
 type TokenStore struct {
-	store []TokenGatherer
+	currentID int
+	store     []TokenGatherer
 }
 
 // GetTestCasePermissions -
@@ -41,14 +43,11 @@ func GetTestCasePermissions(tcs []model.TestCase) ([]TestCasePermission, error) 
 
 // GatherTokens - gathers all tokens
 func GatherTokens(tcps []TestCasePermission) ([]TokenGatherer, error) {
-	tg := make([]TokenGatherer, 0)
 	te := TokenStore{}
-	for _, tcp := range tcps { // for each TestCasePermission
+	for _, tcp := range tcps {
 		te.createOrUpdate(tcp)
-		//tg = append(tg, *newItem)
 	}
-	dumpJSON(te.store)
-	return tg, nil
+	return te.store, nil
 }
 
 func dumpTG(tg []TokenGatherer) {
@@ -57,11 +56,17 @@ func dumpTG(tg []TokenGatherer) {
 	}
 }
 
+// GetNextTokenName -
+func (te *TokenStore) GetNextTokenName() string {
+	te.currentID++
+	return fmt.Sprintf("Token%4.4d", te.currentID)
+}
+
 // create or update TokenGethereer
 func (te *TokenStore) createOrUpdate(tcp TestCasePermission) {
 
 	if len(te.store) == 0 { // First time - no permissions - just add
-		tpg := TokenGatherer{IDs: []string{tcp.ID}, Perms: tcp.Perms, Permsx: tcp.Permsx}
+		tpg := TokenGatherer{Name: te.GetNextTokenName(), IDs: []string{tcp.ID}, Perms: tcp.Perms, Permsx: tcp.Permsx}
 		te.store = append(te.store, tpg)
 		return
 	}
@@ -105,49 +110,55 @@ func (te *TokenStore) createOrUpdate(tcp TestCasePermission) {
 		te.store[idx] = newItem
 		return
 	}
-	tpg := TokenGatherer{IDs: []string{tcp.ID}, Perms: tcp.Perms, Permsx: tcp.Permsx}
+	tpg := TokenGatherer{Name: te.GetNextTokenName(), IDs: []string{tcp.ID}, Perms: tcp.Perms, Permsx: tcp.Permsx}
 	te.store = append(te.store, tpg)
 
 	return
 }
 
 func addPermToGathererItem(tp TestCasePermission, tg TokenGatherer) TokenGatherer {
-	var newPerm, newPermx string
-	var permMatch, permxMatch bool
-
 	tg.IDs = append(tg.IDs, tp.ID)
-	for _, tgPerm := range tg.Perms { // Loop through all Gathered Permissions
-		for _, tpPerm := range tp.Perms { //
+	permsToAdd := []string{}
+	permsxToAdd := []string{}
+	for _, tgPerm := range tg.Perms {
+		for _, tpPerm := range tp.Perms {
 			if tpPerm == tgPerm {
-				permMatch = true
-				newPerm = tpPerm
-				break
-			}
-		}
-		if permMatch {
-			break
-		} else {
-			if newPerm != "" {
-				tg.Perms = append(tg.Perms, newPerm)
+				continue
+			} else {
+				if tpPerm != "" {
+					permsToAdd = append(permsToAdd, tpPerm)
+				}
 			}
 		}
 	}
-
 	for _, tgPermx := range tg.Permsx {
 		for _, tpPermx := range tp.Permsx {
 			if tpPermx == tgPermx {
-				permxMatch = true
-				newPermx = tpPermx
-				break
-			}
-		}
-		if permxMatch {
-			break
-		} else {
-			if newPermx != "" {
-				tg.Permsx = append(tg.Permsx, newPermx)
+				continue
+			} else {
+				if tpPermx != "" {
+					permsxToAdd = append(permsxToAdd, tpPermx)
+				}
 			}
 		}
 	}
+	tg.Perms = append(tg.Perms, permsToAdd...)
+	tg.Perms = uniqueSlice(tg.Perms)
+	tg.Permsx = append(tg.Permsx, permsxToAdd...)
+	tg.Permsx = uniqueSlice(tg.Permsx)
+
 	return tg
+}
+
+func uniqueSlice(inslice []string) []string {
+	compressor := map[string]bool{}
+	for _, v := range inslice {
+		compressor[v] = true
+	}
+	tmpslice := []string{}
+	for k := range compressor {
+		tmpslice = append(tmpslice, k)
+	}
+	return tmpslice
+
 }

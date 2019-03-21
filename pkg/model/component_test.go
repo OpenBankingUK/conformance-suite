@@ -92,3 +92,22 @@ func TestComponentGetTests(t *testing.T) {
 	assert.Equal(t, 4, len(tests))
 	assert.Equal(t, "Code Exchange", tests[3].Name)
 }
+
+func TestComponentHeadlessLoad(t *testing.T) {
+	c, err := LoadComponent("../../components/headlessTokenProviderComponent.json")
+	require.Nil(t, err)
+	ctx := Context{
+		"client_id":              "myid",
+		"fapi_financial_id":      "finid",
+		"basic_authentication":   "basicauth",
+		"token_endpoint":         "tokend",
+		"authorisation_endpoint": "authend",
+		"resource_server":        "resend",
+		"redirect_url":           "redirurl",
+		"permission_payload":     "permpay",
+		"result_token":           "mytoken",
+	}
+	err = c.ValidateParameters(&ctx)
+	assert.Nil(t, err)
+
+}

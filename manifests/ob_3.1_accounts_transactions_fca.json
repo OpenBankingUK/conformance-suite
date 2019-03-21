@@ -9,7 +9,7 @@
 				"tokenRequestScope": "accounts",
                 "accountId": "$consentedAccountId"         
             },
-            "permissions":["ReadAccountBasic"],
+            "permissions":["ReadAccountsBasic"],
             "permissions-excluded":["ReadAccountDetail"],
             "uri": "/accounts/$accountId",
             "uriImplementation": "mandatory",
@@ -77,7 +77,7 @@
 				"tokenRequestScope": "accounts",
                 "accountId": "$consentedAccountId"
             },
-            "permissions-excluded":["ReadAccountBasic","ReadAccountDetail"],
+            "permissions-excluded":["ReadAccountsBasic","ReadAccountDetail"],
             "uri": "/accounts/$accountId",
             "uriImplementation": "mandatory",
             "resource": "Account",
@@ -93,7 +93,7 @@
 			"parameters": {
                 "tokenRequestScope": "accounts"
             },
-            "permissions-excluded":["ReadAccountBasic","ReadAccountDetail"],
+            "permissions-excluded":["ReadAccountsBasic","ReadAccountDetail"],
             "uri": "/accounts",
             "uriImplementation": "mandatory",
             "resource": "Account",
@@ -324,7 +324,7 @@
 			"parameters": {
 				"tokenRequestScope": "accounts"
             },
-            "permissions-excluded":["ReadAccountBasic","ReadBeneficiariesBasic"],
+            "permissions-excluded":["ReadAccountsBasic","ReadBeneficiariesBasic"],
             "uri": "/beneficiaries",
             "uriImplementation": "optional",
             "resource": "Beneficiary",
@@ -341,7 +341,7 @@
                 "tokenRequestScope": "accounts",
                 "accountId": "$consentedAccountId" 
             },
-            "permissions-excluded":["ReadAccountBasic","ReadBeneficiariesBasic"],
+            "permissions-excluded":["ReadAccountsBasic","ReadBeneficiariesBasic"],
             "uri": "/accounts/$accountId/beneficiaries",
             "uriImplementation": "conditional",
             "resource": "Beneficiary",
@@ -358,7 +358,7 @@
 				"tokenRequestScope": "accounts",
 				"accountId": "foobar"
             },
-            "permissions":["ReadAccountBasic","ReadBeneficiariesBasic"],
+            "permissions":["ReadAccountsBasic","ReadBeneficiariesBasic"],
             "uri": "/accounts/$accountId/beneficiaries",
             "uriImplementation": "conditional",
             "resource": "Beneficiary",

@@ -29,7 +29,7 @@ type GeneratorConfig struct {
 // Generator - generates test cases from discovery model
 type Generator interface {
 	GenerateSpecificationTestCases(log *logrus.Entry, config GeneratorConfig, discovery discovery.ModelDiscovery, ctx *model.Context) TestCasesRun
-	EnterParallelUniverse(log *logrus.Entry, config GeneratorConfig, discovery discovery.ModelDiscovery, ctx *model.Context) TestCasesRun
+	GenerateManifestTests(log *logrus.Entry, config GeneratorConfig, discovery discovery.ModelDiscovery, ctx *model.Context) TestCasesRun
 }
 
 // NewGenerator - returns implementation of Generator interface
@@ -45,7 +45,7 @@ type generator struct {
 }
 
 // Work in progress to integrate Manifest Test
-func (g generator) EnterParallelUniverse(log *logrus.Entry, config GeneratorConfig, discovery discovery.ModelDiscovery, ctx *model.Context) TestCasesRun {
+func (g generator) GenerateManifestTests(log *logrus.Entry, config GeneratorConfig, discovery discovery.ModelDiscovery, ctx *model.Context) TestCasesRun {
 	log = log.WithField("module", "EnterParallelUniverse")
 	headlessTokenAcquisition := discovery.TokenAcquisition == "headless"
 	specTestCases := []SpecificationTestCases{}
@@ -67,7 +67,7 @@ func (g generator) EnterParallelUniverse(log *logrus.Entry, config GeneratorConf
 		}
 	}
 
-	for _, item := range discovery.DiscoveryItems {
+	for _, item := range discovery.DiscoveryItems { //TODO: sort out different specs etc
 		tcs, err := manifest.GenerateTestCases(item.APISpecification.Name, item.ResourceBaseURI)
 		if err != nil {
 			log.Warnf("manifest testcase generation failed for %s", item.APISpecification.Name)
@@ -76,16 +76,15 @@ func (g generator) EnterParallelUniverse(log *logrus.Entry, config GeneratorConf
 		stc := SpecificationTestCases{Specification: item.APISpecification, TestCases: tcs}
 		logrus.Debugf("%d test cases generated", len(tcs))
 
-		//specTests, endpoints := generateSpecificationTestCases(log, item, nameGenerator, ctx, headlessTokenAcquisition)
-
 		specTestCases = append(specTestCases, stc)
 		for _, tc := range tcs {
 			log.Debug(tc.String())
 		}
 
-		break // integration scaffolding ... do it once for starters ...
+		break //TODO: sort this out integration scaffolding ... do it once for starters ...
 	}
 
+	// TODO:Remove this permission stuff for manifests
 	perms := model.NamedPermissions{model.NamedPermission{Name: "to1001",
 		CodeSet: permissions.CodeSetResult{CodeSet: permissions.CodeSet{"ReadAccountsBasic", "ReadProducts", "ReadTransactionsBasic", "ReadTransactionsCredits", "ReadTransactionsDebits", "ReadBalances"},
 			TestIds: []permissions.TestId{"#co0001", "#co0002", "#co0003", "#t1001", "#t1002", "#t1003", "#t1004", "#t1005"}}, ConsentUrl: ""}}
