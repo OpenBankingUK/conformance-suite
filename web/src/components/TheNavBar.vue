@@ -79,6 +79,11 @@
           target="_blank">
           <file-text-icon class="icon-class"/>Integrations
         </b-nav-item>
+        <b-nav-item
+          href="https://bitbucket.org/openbankingteam/conformance-suite/src/develop/README.md"
+          target="_blank">
+          {{ suite_version }}
+        </b-nav-item>
       </b-nav>
     </div>
   </div>
@@ -110,6 +115,13 @@ export default {
     return {
       specifications,
     };
+  },
+  computed: {
+    suite_version: {
+      get() {
+        return this.$store.state.status.suiteVersion;
+      },
+    },
   },
   methods: {
   },
