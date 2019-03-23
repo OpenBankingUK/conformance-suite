@@ -93,7 +93,6 @@
 			"parameters": {
                 "tokenRequestScope": "accounts"
             },
-            "permissions-excluded":["ReadAccountsBasic","ReadAccountsDetail"],
             "uri": "/accounts",
             "uriImplementation": "mandatory",
             "resource": "Account",
@@ -150,11 +149,7 @@
             "detail" : "Checks the correct response is returned 401 given if no token is used on an account.",
 			"parameters": {
 				"tokenRequestScope": "accounts",
-                "accountId": "foobar",
-                "authorizationHeader": ""
-            },
-            "headers": {
-                "Authorization": "Bearer $authorizationHeader"
+                "accountId": "$consentedAccountId"
             },
             "uri": "/accounts/$accountId",
             "uriImplementation": "mandatory",
@@ -169,11 +164,7 @@
             "refURI": "",
             "detail" : "Checks the correct response is returned 401 given if no token is used on a bulk account.",
 			"parameters": {
-                "tokenRequestScope": "accounts",
-                "authorizationHeader": ""
-            },
-            "headers": {
-                "Authorization": "Bearer $authorizationHeader"
+                "tokenRequestScope": "accounts"
             },
             "uri": "/accounts",
             "uriImplementation": "mandatory",
@@ -275,12 +266,15 @@
 			"parameters": {
 				"tokenRequestScope": "accounts"
             },
-            "permissions":[ "ReadAccountsBasic", "ReadBalances"],
+            "headers": {
+                "Authorization": "Bearer $client_access_token"
+            },        
             "uri": "/balances",
             "uriImplementation": "optional",
             "resource": "Balance",
             "method":"get",
-            "asserts": ["OB3GLOAssertOn401"],
+            "asserts":["OB3GLOAssertOn401Invalid"],
+            "assertsold": ["OB3GLOAssertOn401"],
             "schemaCheck": false
         },
         {
@@ -356,7 +350,7 @@
             "detail" : "Checks the correct response is returned when given an invalid account for a beneficiary.",
 			"parameters": {
 				"tokenRequestScope": "accounts",
-				"accountId": "foobar"
+				"accountId": "$consentedBusinessAccountId"
             },
             "permissions":["ReadAccountsBasic","ReadBeneficiariesBasic"],
             "uri": "/accounts/$accountId/beneficiaries",
@@ -490,10 +484,11 @@
             "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937984104/Party+v3.1#Partyv3.1-PermissionCodes",
             "detail" : "Checks that the bluk resource returns the correct data depending permission ReadParty with additional schema checks on status and headers.",
 			"parameters": {
-				"tokenRequestScope": "accounts"
+                "tokenRequestScope": "accounts",
+				"accountId": "$consentedAccountId"                
             },
             "permissions": [ "ReadAccountsBasic", "ReadParty"],
-            "uri": "/accounts/party",
+            "uri": "/accounts/$accountId/party",
             "uriImplementation": "conditional",
 			"resource": "Party",
             "asserts": ["OB3GLOAssertOn200", "OB3GLOFAPIHeader"],

@@ -8,7 +8,6 @@ import (
 	"strings"
 
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/tracer"
-	"github.com/sirupsen/logrus"
 	"github.com/tidwall/gjson"
 )
 
@@ -566,8 +565,5 @@ func (m *Match) Clone() Match {
 		ReplaceEndpoint: m.ReplaceEndpoint,
 		Value:           m.Value,
 	}
-	logrus.Debug("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
-	logrus.Debugf("\nbefore m: %#v\nafter m: %#v\n", m, ma)
-	logrus.Debug("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
 	return ma
 }

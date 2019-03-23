@@ -95,9 +95,6 @@ func GenerateTestCases(spec string, baseurl string, ctx *model.Context) ([]model
 		tc.ProcessReplacementFields(localCtx, false)
 		tests = append(tests, tc)
 	}
-	logrus.Debug("== Dumping Manifest Tests ==")
-	dumpJSON(tests)
-	logrus.Debug("=============================================")
 	return tests, nil
 }
 
@@ -131,7 +128,6 @@ func (s *Script) processParameters(refs *References, resources *model.Context) (
 }
 
 func testCaseBuilder(s Script, refs map[string]Reference, ctx *model.Context, consents []string, baseurl string) (model.TestCase, error) {
-	logrus.Debug("build testcase")
 	tc := model.MakeTestCase()
 	tc.ID = s.ID
 	tc.Name = s.Description
@@ -147,11 +143,9 @@ func testCaseBuilder(s Script, refs map[string]Reference, ctx *model.Context, co
 	tc.Context.PutContext(ctx)
 	tc.Context.PutString("x-fapi-financial-id", "$x-fapi-financial-id")
 	tc.Context.PutString("baseurl", baseurl)
-	tc.InjectBearerToken("$access_token")
 
 	for _, a := range s.Asserts {
 		ref, exists := refs[a]
-		dumpJSON(ref)
 		if !exists {
 			msg := fmt.Sprintf("assertion %s do not exist in reference data", a)
 			logrus.Error(msg)
@@ -294,7 +288,6 @@ func GetPermissions(tests []model.TestCase) ([]ScriptPermission, error) {
 		perms, err := ctx.GetStringSlice("permissions")
 		if err != nil {
 			continue
-			//return nil, err
 		}
 
 		sp := ScriptPermission{ID: test.ID, Permissions: perms, Path: test.Input.Method + " " + test.Input.Endpoint}

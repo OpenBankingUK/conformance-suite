@@ -120,8 +120,6 @@ func (i *Input) setClaims(tc *TestCase, ctx *Context) error {
 			i.AppMsg(fmt.Sprintf("jwt-bearer Token: %s", token))
 			ctx.Put("jwtbearer", token) // Result - set jwt-bearer token in context
 		}
-	} else {
-		i.AppMsg("no claims to set!")
 	}
 
 	return nil

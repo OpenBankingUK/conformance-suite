@@ -1,20 +1,95 @@
 {
   "scripts": [{
-    "description": "Minimal data returned for a given account using the ReadAccountsBasic permission, status and headers.",
-    "id": "OB-301-ACC-100000",
-    "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937623627/Accounts+v3.1#Accountsv3.1-PermissionCodes",
-    "detail": "Checks that the resource differs depending on the permissions (ReadAccountsBasic and ReadAccountsDetail) used to access the resource with additional schema checks on status and headers.",
-    "parameters": {
-      "tokenRequestScope": "accounts",
-      "accountId": "$consentedAccountId"
+      "description": "Minimal data returned for a given account using the ReadAccountsBasic permission, status and headers.",
+      "id": "OB-301-ACC-100000",
+      "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937623627/Accounts+v3.1#Accountsv3.1-PermissionCodes",
+      "detail": "Checks that the resource differs depending on the permissions (ReadAccountsBasic and ReadAccountsDetail) used to access the resource with additional schema checks on status and headers.",
+      "parameters": {
+        "tokenRequestScope": "accounts",
+        "accountId": "$consentedAccountId"
+      },
+      "permissions": ["ReadAccountsBasic"],
+      "permissions-excluded": ["ReadAccountsDetail"],
+      "uri": "/accounts/$accountId",
+      "uriImplementation": "mandatory",
+      "resource": "Account",
+      "asserts": ["OB3GLOAssertOn200", "OB3GLOFAPIHeader"],
+      "method": "get",
+      "schemaCheck": true
+    }, {
+      "description": "Fails using incorrect permissions for bulk accounts.",
+      "id": "OB-301-ACC-100600",
+      "refURI": "",
+      "detail": "Validates that the account list resource fails correctly given an invalided or incorrect token.",
+      "parameters": {
+        "tokenRequestScope": "accounts"
+      },
+      "headers": {
+        "Authorization": "Bearer thecatsatonthemat"
+      },
+      "uri": "/accounts",
+      "uriImplementation": "mandatory",
+      "resource": "Account",
+      "method": "get",
+      "asserts": ["OB3GLOAssertOn401", "OB3GLOAssertContentType"],
+      "schemaCheck": false
     },
-    "permissions": ["ReadAccountsBasic"],
-    "permissions-excluded": ["ReadAccountDetail"],
-    "uri": "/accounts/$accountId",
-    "uriImplementation": "mandatory",
-    "resource": "Account",
-    "asserts": ["OB3GLOAssertOn200", "OB3GLOFAPIHeader"],
-    "method": "get",
-    "schemaCheck": true
-  }]
+    {
+      "description": "Fails using 401 unauthorized given no token for accounts.",
+      "id": "OB-301-ACC-101000",
+      "refURI": "",
+      "detail": "Checks the correct response is returned 401 given if no token is used on an account.",
+      "parameters": {
+        "tokenRequestScope": "accounts",
+        "accountId": "foobar",
+        "authorizationHeader": ""
+      },
+      "headers": {
+        "Authorization": "Bearer $authorizationHeader"
+      },
+      "uri": "/accounts/$accountId",
+      "uriImplementation": "mandatory",
+      "resource": "Account",
+      "method": "get",
+      "asserts": ["OB3GLOAssertOn401", "OB3GLOAssertContentType"],
+      "schemaCheck": false
+    },
+    {
+      "description": "Fails using 401 unauthorized given no token for bulk accounts.",
+      "id": "OB-301-ACC-101100",
+      "refURI": "",
+      "detail": "Checks the correct response is returned 401 given if no token is used on a bulk account.",
+      "parameters": {
+        "tokenRequestScope": "accounts",
+        "authorizationHeader": ""
+      },
+      "headers": {
+        "Authorization": "Bearer $authorizationHeader"
+      },
+      "uri": "/accounts",
+      "uriImplementation": "mandatory",
+      "resource": "Account",
+      "method": "get",
+      "asserts": ["OB3GLOAssertOn401", "OB3GLOAssertContentType"],
+      "schemaCheck": false
+    },
+    {
+      "description": "All data returned for an account with ReadBalances permission, status and headers.",
+      "id": "OB-301-BAL-101200",
+      "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937754673/Balances+v3.1#Balancesv3.1-PermissionCodes",
+      "detail": "Checks that the resource returns the correct data with additional schema checks status and headers for a given account. The resource response payload does not differ depending on the permissions granted.",
+      "parameters": {
+        "tokenRequestScope": "accounts",
+        "accountId": "$consentedAccountId"
+      },
+      "permissions": ["ReadAccountsBasic", "ReadBalances"],
+      "uri": "/accounts/$accountId/balances",
+      "uriImplementation": "mandatory",
+      "resource": "Balance",
+      "asserts": ["OB3GLOAssertOn200", "OB3GLOFAPIHeader"],
+      "method": "get",
+      "schemaCheck": true
+    }
+
+  ]
 }

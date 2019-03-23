@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"testing"
 
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -58,7 +59,7 @@ func loadTestPlan2() (*TestPlan, error) {
 }
 
 func TestGenerateTestCases(t *testing.T) {
-	tests, err := GenerateTestCases("TestSpec", "http://mybaseurl")
+	tests, err := GenerateTestCases("TestSpec", "http://mybaseurl", &model.Context{})
 	assert.Nil(t, err)
 
 	perms, err := GetPermissions(tests)

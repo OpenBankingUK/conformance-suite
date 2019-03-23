@@ -12,17 +12,15 @@ import (
 
 // AcquireHeadlessTokens from manifest generated test cases
 func AcquireHeadlessTokens(tests []model.TestCase, ctx *model.Context, definition RunDefinition) ([]manifest.RequiredTokens, error) {
+	logrus.Debug("=================================================================================================================")
+	defer logrus.Debug("=================================================================================================================")
 	logrus.Debug("AcquireHeadlessTokens")
 	bodyDataStart := "{\"Data\": { \"Permissions\": ["
 	//TODO: sort out consent transaction timestamps
 	bodyDataEnd := "], \"TransactionFromDateTime\": \"2016-01-01T10:40:00+02:00\", \"TransactionToDateTime\": \"2025-12-31T10:40:00+02:00\" },  \"Risk\": {} }"
-	component, err := getHeadlessTokenComponent()
-	if err != nil {
-		return nil, err
-	}
 
 	executor := NewExecutor()
-	err = executor.SetCertificates(definition.SigningCert, definition.TransportCert)
+	err := executor.SetCertificates(definition.SigningCert, definition.TransportCert)
 	if err != nil {
 		return nil, err
 	}
@@ -35,21 +33,26 @@ func AcquireHeadlessTokens(tests []model.TestCase, ctx *model.Context, definitio
 	logrus.Debugf("required tokens %#v\n", requiredTokens)
 
 	for k, tokenGatherer := range requiredTokens {
+
 		localCtx := model.Context{}
 		localCtx.PutContext(ctx)
 		localCtx.Put("SigningCert", definition.SigningCert) // For RS256 Claim signing
 		permString := buildPermissionString(tokenGatherer.Perms)
+		if len(permString) == 0 {
+			continue
+		}
 		bodyData := bodyDataStart + permString + bodyDataEnd
 		tokenName := tokenGatherer.Name
 		localCtx.PutString("permission_payload", bodyData)
 		localCtx.PutString("result_token", tokenName)
 
-		//TODO: Implement component call + error return
-		returnCtx, err := executeComponent(component, &localCtx, executor)
+		returnCtx, err := executeComponent(&localCtx, executor)
 		if err != nil {
 			return nil, err
 		}
-		returnCtx.DumpContext("Return Context", tokenName)
+		returnCtx.DumpContext("Return Context", tokenName, "client_access_token")
+		clientGrantToken, _ := returnCtx.GetString("client_access_token")
+		ctx.PutString("client_access_token", clientGrantToken)
 		token, err := returnCtx.GetString(tokenName)
 		if err != nil {
 			return nil, err
@@ -71,9 +74,14 @@ func getHeadlessTokenComponent() (*model.Component, error) {
 }
 
 // ExecuteComponent -
-func executeComponent(comp *model.Component, ctx *model.Context, executor TestCaseExecutor) (*model.Context, error) {
+func executeComponent(ctx *model.Context, executor TestCaseExecutor) (*model.Context, error) {
+	comp, err := getHeadlessTokenComponent()
+	if err != nil {
+		return nil, err
+	}
+
 	logrus.Debug("executeComponent - entry")
-	err := comp.ValidateParameters(ctx)
+	err = comp.ValidateParameters(ctx)
 	if err != nil {
 		msg := fmt.Sprintf("error validating headlesstTokenProvider component %s", err.Error())
 		logrus.Debug(msg)

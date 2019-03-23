@@ -15,7 +15,7 @@ func setHeader(consentRequirements []model.SpecConsentRequirements, tc model.Tes
 	}
 	nameSet, ok := authorizationNamedSet(consentRequirements, tc.ID)
 	if ok {
-		tc.Input.Headers["authorization"] = "Bearer $" + nameSet
+		tc.Input.Headers["Authorization"] = "Bearer $" + nameSet
 	}
 	return tc
 }

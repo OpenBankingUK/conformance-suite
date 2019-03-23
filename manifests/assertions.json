@@ -38,6 +38,27 @@
 				]
 			}
 		},
+		"OB3GLOAssertOn401Invalid": {
+			"expect": {
+                "status-code": 401,
+				"detail":"Expected status code 401 (Unauthorized).",
+				"matches": [
+					{
+						"JSON": "Code",
+						"Value": "UK.OBIE.Header.Invalid"
+					},
+					{
+						"JSON": "Errors.0.ErrorCode",
+						"Value": "UK.OBIE.Header.Invalid"
+					},
+					{
+						"JSON": "Errors.0.Path",
+						"Value": "Authorization"
+					}
+				]
+			}
+		},
+
 		"OB3GLOAssertOn403": {
 			"expect": {
                 "status-code": 403,

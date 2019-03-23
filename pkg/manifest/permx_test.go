@@ -4,29 +4,30 @@ import (
 	"fmt"
 	"testing"
 
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestPermx(t *testing.T) {
-	tests, err := GenerateTestCases("TestSpec", "http://mybaseurl")
+	tests, err := GenerateTestCases("TestSpec", "http://mybaseurl", &model.Context{})
 	assert.Nil(t, err)
 	testcasePermissions, err := GetTestCasePermissions(tests)
 	assert.Nil(t, err)
-	requiredTokens, err := GatherTokens(testcasePermissions)
+	requiredTokens, err := GetRequiredTokens(testcasePermissions)
 	dumpJSON(requiredTokens)
 }
 
 func TestGetScriptConsentTokens(t *testing.T) {
-	tests, err := GenerateTestCases("TestSpec", "http://mybaseurl")
+	tests, err := GenerateTestCases("TestSpec", "http://mybaseurl", &model.Context{})
 	assert.Nil(t, err)
 	testcasePermissions, err := GetTestCasePermissions(tests)
 	assert.Nil(t, err)
-	requiredTokens, err := GatherTokens(testcasePermissions)
+	requiredTokens, err := GetRequiredTokens(testcasePermissions)
 	populateTokens(requiredTokens)
 	dumpJSON(requiredTokens)
 }
 
-func populateTokens(gatherer []TokenGatherer) error {
+func populateTokens(gatherer []RequiredTokens) error {
 	fmt.Printf("%d entries found\n", len(gatherer))
 	for k, tokenGatherer := range gatherer {
 		if len(tokenGatherer.Perms) == 0 {

@@ -35,7 +35,10 @@ func GetTestCasePermissions(tcs []model.TestCase) ([]TestCasePermission, error) 
 	tcps := []TestCasePermission{}
 	for _, tc := range tcs {
 		ctx := tc.Context
-		perms, _ := ctx.GetStringSlice("permissions")
+		perms, found := ctx.GetStringSlice("permissions")
+		if found != nil {
+			continue
+		}
 		permsx, _ := ctx.GetStringSlice("permissions-excluded")
 		tcp := TestCasePermission{ID: tc.ID, Perms: perms, Permsx: permsx}
 		tcps = append(tcps, tcp)
@@ -56,12 +59,14 @@ func GetRequiredTokens(tcps []TestCasePermission) ([]RequiredTokens, error) {
 func MapTokensToTestCases(rt []RequiredTokens, tcs []model.TestCase) map[string]string {
 	tokenMap := make(map[string]string, 0)
 	for k, test := range tcs {
-		tokenName, err := getRequiredTokenForTestcase(rt, test.ID)
+		tokenName, isEmptyToken, err := getRequiredTokenForTestcase(rt, test.ID)
 		if err != nil {
 			logrus.Warnf("no token for testcase %s", test.ID)
 			continue
 		}
-		test.InjectBearerToken("$" + tokenName)
+		if !isEmptyToken {
+			test.InjectBearerToken("$" + tokenName)
+		}
 		tcs[k] = test
 	}
 	for _, v := range rt {
@@ -71,15 +76,18 @@ func MapTokensToTestCases(rt []RequiredTokens, tcs []model.TestCase) map[string]
 	return tokenMap
 }
 
-func getRequiredTokenForTestcase(rt []RequiredTokens, testcaseID string) (string, error) {
+func getRequiredTokenForTestcase(rt []RequiredTokens, testcaseID string) (tokenName string, isEmptyToken bool, err error) {
 	for _, v := range rt {
+		if len(v.Perms) == 0 {
+			return "", true, nil
+		}
 		for _, id := range v.IDs {
 			if testcaseID == id {
-				return v.Name, nil
+				return v.Name, false, nil
 			}
 		}
 	}
-	return "", errors.New("token not found for " + testcaseID)
+	return "", false, errors.New("token not found for " + testcaseID)
 }
 
 func dumpTG(tg []RequiredTokens) {
@@ -101,6 +109,17 @@ func (te *TokenStore) createOrUpdate(tcp TestCasePermission) {
 		tpg := RequiredTokens{Name: te.GetNextTokenName(), IDs: []string{tcp.ID}, Perms: tcp.Perms, Permsx: tcp.Permsx}
 		te.store = append(te.store, tpg)
 		return
+	}
+
+	if len(tcp.Perms) == 0 && len(tcp.Permsx) == 0 {
+		for idx, tgItem := range te.store {
+			if len(tgItem.Perms) == 0 && len(tgItem.Permsx) == 0 {
+				te.store[idx].IDs = append(te.store[idx].IDs, tcp.ID)
+				return
+			}
+		}
+		tpg := RequiredTokens{Name: te.GetNextTokenName(), IDs: []string{tcp.ID}, Perms: tcp.Perms, Permsx: tcp.Permsx}
+		te.store = append(te.store, tpg)
 	}
 
 	for idx, tgItem := range te.store { // loop through each Gathered Item
