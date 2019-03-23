@@ -67,7 +67,8 @@ type PisData struct {
 }
 
 // GenerateTestCases examines a manifest file, asserts file and resources definition, then builds the associated test cases
-func GenerateTestCases(spec string, baseurl string) ([]model.TestCase, error) {
+func GenerateTestCases(spec string, baseurl string, ctx *model.Context) ([]model.TestCase, error) {
+	logrus.Debug("GenerateManifestTestCases")
 	scripts, refs, resources, err := loadGenerationResources()
 	if err != nil {
 		return nil, err
@@ -79,19 +80,24 @@ func GenerateTestCases(spec string, baseurl string) ([]model.TestCase, error) {
 		accountCtx.PutString(k, v)
 	}
 
+	ctx.DumpContext("Incoming Ctx")
+
 	tests := []model.TestCase{}
 	for _, script := range scripts.Scripts {
-
+		logrus.Debug("Process Script:" + script.ID)
 		localCtx, err := script.processParameters(&refs, &accountCtx)
 		if err != nil {
 			return nil, err
 		}
 		consents := []string{}
 		tc, _ := testCaseBuilder(script, refs.References, localCtx, consents, baseurl)
+		localCtx.PutContext(ctx)
 		tc.ProcessReplacementFields(localCtx, false)
 		tests = append(tests, tc)
 	}
-
+	logrus.Debug("== Dumping Manifest Tests ==")
+	dumpJSON(tests)
+	logrus.Debug("=============================================")
 	return tests, nil
 }
 
@@ -122,10 +128,10 @@ func (s *Script) processParameters(refs *References, resources *model.Context) (
 	}
 
 	return &localCtx, nil
-
 }
 
 func testCaseBuilder(s Script, refs map[string]Reference, ctx *model.Context, consents []string, baseurl string) (model.TestCase, error) {
+	logrus.Debug("build testcase")
 	tc := model.MakeTestCase()
 	tc.ID = s.ID
 	tc.Name = s.Description
@@ -139,22 +145,28 @@ func testCaseBuilder(s Script, refs map[string]Reference, ctx *model.Context, co
 	tc.Context = model.Context{}
 
 	tc.Context.PutContext(ctx)
+	tc.Context.PutString("x-fapi-financial-id", "$x-fapi-financial-id")
 	tc.Context.PutString("baseurl", baseurl)
 	tc.InjectBearerToken("$access_token")
 
 	for _, a := range s.Asserts {
 		ref, exists := refs[a]
+		dumpJSON(ref)
 		if !exists {
 			msg := fmt.Sprintf("assertion %s do not exist in reference data", a)
 			logrus.Error(msg)
 			return tc, errors.New(msg)
 		}
-		tc.Expect = ref.Expect.Clone()
+		clone := ref.Expect.Clone()
+		if ref.Expect.StatusCode != 0 {
+			tc.Expect.StatusCode = clone.StatusCode
+		}
+		tc.Expect.Matches = append(tc.Expect.Matches, clone.Matches...)
 		tc.Expect.SchemaValidation = s.SchemaCheck
 
 	}
+	ctx.PutContext(&tc.Context)
 	tc.ProcessReplacementFields(ctx, false)
-	tc.ProcessReplacementFields(&tc.Context, false)
 	return tc, nil
 }
 
@@ -184,13 +196,13 @@ func loadScriptFiles() (Scripts, References, AccountData, error) {
 		}
 	}
 
-	sc, err = loadScripts("testdata/oneAccountScript.json")
-	if err != nil {
-		sc, err = loadScripts("pkg/manifest/testdata/oneAccountScript.json")
-		if err != nil {
-			return Scripts{}, References{}, AccountData{}, err
-		}
-	}
+	// sc, err = loadScripts("testdata/oneAccountScript.json")
+	// if err != nil {
+	// 	sc, err = loadScripts("pkg/manifest/testdata/oneAccountScript.json")
+	// 	if err != nil {
+	// 		return Scripts{}, References{}, AccountData{}, err
+	// 	}
+	// }
 
 	refs, err := loadReferences("../../manifests/assertions.json")
 	if err != nil {

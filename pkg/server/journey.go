@@ -9,6 +9,7 @@ import (
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/executors"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/executors/events"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/generation"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/manifest"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
@@ -123,10 +124,13 @@ func (wj *journey) TestCases() (generation.TestCasesRun, error) {
 			// TODO: Acquire headless tokens
 			wj.log.Debugln("Journey:AcquireHeadlessTokens")
 			runDefinition := wj.makeRunDefinition()
-			executors.AcquireHeadlessTokens(tcrun2.TestCases[0].TestCases, &wj.context, runDefinition)
-			wj.log.Debugln("Dump WebJourney Context for headless...")
-			for k, v := range wj.context {
-				wj.log.Debugf("%s : %s\n", k, v)
+			tokenPermissionsMap, err := executors.AcquireHeadlessTokens(tcrun2.TestCases[0].TestCases, &wj.context, runDefinition)
+			if err != nil {
+				return generation.TestCasesRun{}, errConsentIDAcquisitionFailed
+			}
+			tokenMap := manifest.MapTokensToTestCases(tokenPermissionsMap, tcrun2.TestCases[0].TestCases)
+			for k, v := range tokenMap {
+				wj.context.PutString(k, v)
 			}
 
 			wj.allCollected = true
@@ -287,11 +291,8 @@ func (wj *journey) configParametersToJourneyContext() error {
 	if err != nil {
 		return err
 	}
-
 	wj.context.PutString(ctxConstBasicAuthentication, basicauth)
 	wj.context.PutString(ctxConstIssuer, wj.config.issuer)
-
-	wj.context.DumpContext("configParameters - dumpcontext")
 	return nil
 }
 

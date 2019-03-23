@@ -95,5 +95,10 @@ func (c *Component) checkOutputParamsInContext(ctx *Context) error {
 
 // GetTests - returns the tests that need to be run for this component
 func (c *Component) GetTests() []TestCase {
-	return c.Tests
+	cloned := []TestCase{}
+	for _, test := range c.Tests {
+		newtc := test.Clone()
+		cloned = append(cloned, newtc)
+	}
+	return cloned
 }

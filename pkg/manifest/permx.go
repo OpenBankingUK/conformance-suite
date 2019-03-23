@@ -1,9 +1,11 @@
 package manifest
 
 import (
+	"errors"
 	"fmt"
 
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
+	"github.com/sirupsen/logrus"
 )
 
 // TestCasePermission -
@@ -13,7 +15,7 @@ type TestCasePermission struct {
 	Permsx []string `json:"permsx,omitempty"`
 }
 
-// TokenGatherer -
+// RequiredTokens -
 type RequiredTokens struct {
 	Name   string   `json:"name,omitempty"`
 	Token  string   `json:"token,omitempty"`
@@ -48,6 +50,36 @@ func GetRequiredTokens(tcps []TestCasePermission) ([]RequiredTokens, error) {
 		te.createOrUpdate(tcp)
 	}
 	return te.store, nil
+}
+
+// MapTokensToTestCases - applies consented tokens to testcases
+func MapTokensToTestCases(rt []RequiredTokens, tcs []model.TestCase) map[string]string {
+	tokenMap := make(map[string]string, 0)
+	for k, test := range tcs {
+		tokenName, err := getRequiredTokenForTestcase(rt, test.ID)
+		if err != nil {
+			logrus.Warnf("no token for testcase %s", test.ID)
+			continue
+		}
+		test.InjectBearerToken("$" + tokenName)
+		tcs[k] = test
+	}
+	for _, v := range rt {
+		tokenMap[v.Name] = v.Token
+	}
+
+	return tokenMap
+}
+
+func getRequiredTokenForTestcase(rt []RequiredTokens, testcaseID string) (string, error) {
+	for _, v := range rt {
+		for _, id := range v.IDs {
+			if testcaseID == id {
+				return v.Name, nil
+			}
+		}
+	}
+	return "", errors.New("token not found for " + testcaseID)
 }
 
 func dumpTG(tg []RequiredTokens) {

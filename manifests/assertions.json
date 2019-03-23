@@ -53,7 +53,7 @@
 		"OB3GLOFAPIHeader": {
 			"expect": {
 				"matches": [{
-                    "header": "x-fapi-interaction-id",
+                    "header-present": "x-fapi-interaction-id",
                     "detail": "Expected RFC4122 UID used as a correlation id. The ASPSP 'plays back' the value given. If a value is not given the ASPSP MUST play back their own UUID."
 				}]
 			}
@@ -61,7 +61,7 @@
 		"OB3GLOAssertContentType": {
 			"expect": {
 				"matches": [{
-					"header": "content-type",
+					"header-present": "content-type",
 					"value": "application/json; charset=utf-8",
 					"detail":"Expected the correct content type application/json; charset=utf-8"
 				}

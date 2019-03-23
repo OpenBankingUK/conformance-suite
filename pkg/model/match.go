@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/tracer"
+	"github.com/sirupsen/logrus"
 	"github.com/tidwall/gjson"
 )
 
@@ -548,13 +549,9 @@ func (m *Match) ProcessReplacementFields(ctx *Context) {
 
 // Clone duplicates a Match into a separate independent object
 // TODO: consider cloning the contextPut
+// Omit bodylength for now...
 func (m *Match) Clone() Match {
-	var bodylen int64
-	if m.BodyLength != nil {
-		bodylen = *m.BodyLength
-	}
 	ma := Match{Authorisation: m.Authorisation,
-		BodyLength:      &bodylen,
 		ContextName:     m.ContextName,
 		Count:           m.Count,
 		Custom:          m.Custom,
@@ -569,5 +566,8 @@ func (m *Match) Clone() Match {
 		ReplaceEndpoint: m.ReplaceEndpoint,
 		Value:           m.Value,
 	}
+	logrus.Debug("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
+	logrus.Debugf("\nbefore m: %#v\nafter m: %#v\n", m, ma)
+	logrus.Debug("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
 	return ma
 }

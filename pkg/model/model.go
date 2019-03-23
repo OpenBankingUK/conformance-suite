@@ -213,6 +213,8 @@ func (t *TestCase) ApplyExpects(res *resty.Response, rulectx *Context) (bool, er
 		return false, t.AppErr(fmt.Sprintf("(%s):%s: HTTP Status code does not match: expected %d got %d", t.ID, t.Name, t.Expect.StatusCode, res.StatusCode()))
 	}
 
+	logrus.Debugf("Matches DUMP: %#v\n", t.Expect.Matches)
+
 	t.AppMsg(fmt.Sprintf("Status check isReplacement: expected [%d] got [%d]", t.Expect.StatusCode, res.StatusCode()))
 	for k, match := range t.Expect.Matches {
 		checkResult, got := match.Check(t)
@@ -270,6 +272,24 @@ func (t *TestCase) String() string {
 	return string(bites)
 }
 
+// Clone a testcase
+func (t *TestCase) Clone() TestCase {
+	tc := TestCase{}
+
+	tc.ID = t.ID
+	tc.Type = t.Type
+	tc.Name = t.Name
+	tc.Purpose = t.Purpose
+	tc.Bearer = t.Bearer
+	tc.Input = t.Input.Clone()
+	tc.Context = Context{}
+	tc.Context.PutContext(&t.Context)
+	tc.Expect = t.Expect.Clone()
+
+	logrus.Debugf("cloned test -\n before: %#v\nafter : %#v\n ", t, tc)
+	return tc
+}
+
 // Various helpers - main to dump struct contents to console
 
 func (m *Manifest) String() string {
@@ -302,7 +322,7 @@ func replaceContextField(source string, ctx *Context) (string, error) {
 	return result, nil
 }
 
-var singleDollarRegex = regexp.MustCompile(`[^\$]?\$([\w|-|_]*)`)
+var singleDollarRegex = regexp.MustCompile(`[^\$]?\$([\w|\-|_]*)`)
 
 // GetReplacementField examines the input string and returns the first character
 // sequence beginning with '$' and ending with whitespace. '$$' sequence acts as an escape value
@@ -411,13 +431,15 @@ func (t *TestCase) processReplacementClaims(ctx *Context) {
 
 // Clone - preforms deep copy of expect object
 func (e *Expect) Clone() Expect {
+	logrus.Debug("------Cloning Expect-----")
 	ex := Expect{}
 	ex.StatusCode = e.StatusCode
 	ex.SchemaValidation = e.SchemaValidation
-	for k, match := range e.Matches {
-		_, _ = k, match
+	logrus.Debugf("%d matches found\n", len(e.Matches))
+	for _, match := range e.Matches {
 		m := match.Clone()
 		ex.Matches = append(ex.Matches, m)
 	}
+
 	return ex
 }

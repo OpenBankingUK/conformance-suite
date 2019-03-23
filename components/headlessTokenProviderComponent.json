@@ -11,10 +11,7 @@
       "authorisation_endpoint": "",
       "resource_server": "",
       "redirect_url": "",
-      "permission_payload": "",
-      "baseurl":"$baseurl",
-      "consent_id":"$consent_id"
-
+      "permission_payload": ""
     },
     "outputParameters": {
       "result_token":""
@@ -24,7 +21,7 @@
         "name": "ClientCredential Grant",
         "input": {
           "method": "POST",
-          "endpoint": "/token",
+          "endpoint": "$token_endpoint",
           "headers": {
             "content-type": "application/x-www-form-urlencoded",
             "accept": "*/*",
@@ -36,7 +33,7 @@
           }
         },
         "context": {
-          "baseurl": "$token_endpoint"
+          "baseurl": ""
         },
         "expect": {
           "status-code": 200,
@@ -88,12 +85,12 @@
         "name": "Ozone Headless Consent Flow",
         "input": {
           "method": "GET",
-          "endpoint": "/auth?clientid",
+          "endpoint": "?clientid",
           "generation": {
             "strategy": "consenturl"
           },
           "claims": {
-            "aud": "$baseurl",
+            "aud": "$issuer",
             "iss": "$client_id",
             "scope": "openid accounts",
             "redirect_url": "$redirect_url",
@@ -111,7 +108,7 @@
               "name": "xchange_code",
               "description": "Get the xchange code from the location redirect header on hitting consent url for headless",
               "header": "Location",
-              "regex": "code=(.*)&?.*"
+              "regex": "code=(.*)&"
             }]
           }
         }
@@ -121,7 +118,7 @@
         "name": "Code Exchange",
         "input": {
           "method": "POST",
-          "endpoint": "/token",
+          "endpoint": "$token_endpoint",
           "headers": {
             "content-type": "application/x-www-form-urlencoded",
             "authorization": "Basic $basic_authentication",
@@ -135,7 +132,7 @@
           }
         },
         "context": {
-          "baseurl": "$token_endpoint"
+          "baseurl": ""
         },
         "expect": {
           "status-code": 200,
