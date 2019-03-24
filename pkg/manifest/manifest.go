@@ -1,59 +1,13 @@
 package manifest
 
 import (
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"strings"
+
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
 )
-
-// Scripts -
-type Scripts struct {
-	Scripts []Script `json:"scripts,omitempty"`
-}
-
-// Script represents a high level test definition
-type Script struct {
-	Description       string            `json:"description,omitempty"`
-	Detail            string            `json:"detail,omitempty"`
-	ID                string            `json:"id,omitempty"`
-	RefURI            string            `json:"refURI,omitempty"`
-	Parameters        map[string]string `json:"parameters,omitempty"`
-	Headers           map[string]string `json:"headers,omitempty"`
-	Resource          string            `json:"resource,omitempty"`
-	Asserts           []string          `json:"asserts,omitempty"`
-	Method            string            `json:"method,omitempty"`
-	URI               string            `json:"uri,omitempty"`
-	URIImplementation string            `json:"uri_implementation,omitempty"`
-	SchemaCheck       bool              `json:"schemaCheck,omitempty"`
-}
-
-// References - reference collection
-type References struct {
-	References map[string]Reference `json:"references,omitempty"`
-}
-
-// Reference is an item referred to by the test script list an assert of token requirement
-type Reference struct {
-	Expect      model.Expect `json:"expect,omitempty"`
-	Permissions []string     `json:"permissions,omitempty"`
-}
-
-// AccountData stores account number to be used in the test scripts
-type AccountData struct {
-	Ais           map[string]string `json:"ais,omitempty"`
-	AisConsentIds []string          `json:"ais.ConsentAccountId,omitempty"`
-	Pis           PisData           `json:"pis,omitempty"`
-}
-
-// PisData contains information about PIS accounts required for the test scrips
-type PisData struct {
-	Currency        string            `json:"Currency,omitempty"`
-	DebtorAccount   map[string]string `json:"DebtorAccount,omitempty"`
-	MADebtorAccount map[string]string `json:"MADebtorAccount,omitempty"`
-}
 
 // LoadScripts loads the scripts from JSON encoded contents of filename
 // and returns Scripts objects

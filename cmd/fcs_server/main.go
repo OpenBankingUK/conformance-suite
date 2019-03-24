@@ -43,7 +43,7 @@ Complete documentation is available at https://bitbucket.org/openbankingteam/con
 			printVersionInfo(ver, logger)
 
 			validatorEngine := discovery.NewFuncValidator(model.NewConditionalityChecker())
-			testGenerator := generation.NewGenerator(logger)
+			testGenerator := generation.NewGenerator()
 			journey := server.NewJourney(logger, testGenerator, validatorEngine)
 
 			echoServer := server.NewServer(journey, logger, ver)
