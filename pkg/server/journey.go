@@ -123,21 +123,32 @@ func (wj *journey) TestCases() (generation.TestCasesRun, error) {
 		//TODO: Remove standard testcase generation
 		//wj.testCasesRun = wj.generator.GenerateSpecificationTestCases(wj.log, config, discovery, &wj.context)
 		//TODO: Generate all tests from manifests
+
 		wj.log.Debugln("Journey:GenerationManifestTests")
 		tcrun2 := wj.generator.GenerateManifestTests(wj.log, config, discovery, &wj.context) // Integration work in progress
+
 		wj.testCasesRun.SpecConsentRequirements = append(wj.testCasesRun.SpecConsentRequirements, tcrun2.SpecConsentRequirements...)
 		wj.testCasesRun.TestCases = append(wj.testCasesRun.TestCases, tcrun2.TestCases...)
+
+		wj.testCasesRun.SpecConsentRequirements = tcrun2.SpecConsentRequirements
+		wj.testCasesRun.TestCases = tcrun2.TestCases
+
 		if discovery.TokenAcquisition == "psu" {
+			wj.log.Debugln("Journey:AcquirePSUTokens")
 			definition := wj.makeRunDefinition()
-			consentIds, err := executors.InitiationConsentAcquisition(wj.testCasesRun.SpecConsentRequirements, definition, &wj.context)
+
+			consentIds, tokenMap, err := executors.InitiationConsentAcquisition(wj.testCasesRun.SpecConsentRequirements, definition, &wj.context, &tcrun2)
 			if err != nil {
 				return generation.TestCasesRun{}, errConsentIDAcquisitionFailed
 			}
+			for k, v := range tokenMap {
+				wj.context.PutString(k, v)
+			}
 			wj.createTokenCollector(consentIds)
 		} else {
-			// TODO: Acquire headless tokens
 			wj.log.Debugln("Journey:AcquireHeadlessTokens")
 			runDefinition := wj.makeRunDefinition()
+			// TODO:Process multiple specs ...
 			tokenPermissionsMap, err := executors.AcquireHeadlessTokens(tcrun2.TestCases[0].TestCases, &wj.context, runDefinition)
 			if err != nil {
 				return generation.TestCasesRun{}, errConsentIDAcquisitionFailed

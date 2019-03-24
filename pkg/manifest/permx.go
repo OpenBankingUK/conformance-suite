@@ -17,11 +17,13 @@ type TestCasePermission struct {
 
 // RequiredTokens -
 type RequiredTokens struct {
-	Name   string   `json:"name,omitempty"`
-	Token  string   `json:"token,omitempty"`
-	IDs    []string `json:"ids,omitempty"`
-	Perms  []string `json:"perms,omitempty"`
-	Permsx []string `json:"permsx,omitempty"`
+	Name        string   `json:"name,omitempty"`
+	Token       string   `json:"token,omitempty"`
+	IDs         []string `json:"ids,omitempty"`
+	Perms       []string `json:"perms,omitempty"`
+	Permsx      []string `json:"permsx,omitempty"`
+	AccessToken string
+	ConsentURL  string
 }
 
 // TokenStore eats tokens
