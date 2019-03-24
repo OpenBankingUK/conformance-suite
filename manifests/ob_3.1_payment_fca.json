@@ -10,9 +10,7 @@
                 "paymentType": "domestic-payment-consents",
                 "postData" : "$minimalDomesticPaymentConsent"    
             },
-            "body": {
-                "data": "$postData"
-            },
+            "body": "$postData",
             "uri": "domestic-payment-consents",
             "uriImplementation": "mandatory",
             "resource": "DomesticPayment",
@@ -31,9 +29,7 @@
                 "ConsentId": "$consentId",
                 "postData" : "$minimalDomesticPaymentConsent"    
             },
-            "body": {
-                "data": "$postData"
-            },
+            "body": "$postData",
             "uri": "domestic-payment-consents/$consentId",
             "uriImplementation": "mandatory",
             "resource": "DomesticPayment",

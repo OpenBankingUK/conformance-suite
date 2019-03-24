@@ -14,6 +14,25 @@
           :apiSpecification="apiSpecification"
         />
       </template>
+      <template
+        slot="name"
+        slot-scope="row">
+        <truncate
+          :text="row.value"
+          :length="60"
+          clamp="..."
+          less="Show Less" />
+      </template>
+
+      <template
+        slot="input.endpoint"
+        slot-scope="row">
+        <truncate
+          :text="row.value"
+          :length="30"
+          clamp="..."
+          less="Show Less" />
+      </template>
 
       <!-- format status column as Bootstrap badge. -->
       <template
@@ -41,12 +60,15 @@
 </template>
 
 <script>
+import truncate from 'vue-truncate-collapsed';
+// https://github.com/kavalcante/vue-truncate-collapsed
 import SpecificationHeader from './SpecificationHeader.vue';
 
 export default {
   name: 'TestCase',
   components: {
     SpecificationHeader,
+    truncate,
   },
   props: {
     // Example value for `testGroup`.
@@ -88,6 +110,7 @@ export default {
         show_details: {
           label: '',
           tdClass: 'table-data-breakable',
+          fixed: true,
         },
         '@id': {},
         name: {
@@ -95,23 +118,29 @@ export default {
         },
         'input.method': {
           tdClass: 'table-data-breakable',
+          label: 'Method',
         },
         'input.endpoint': {
           tdClass: 'table-data-breakable',
+          label: 'Endpoint',
         },
         'expect.status-code': {
           tdClass: 'table-data-breakable',
+          sortable: true,
+          label: 'Expect',
         },
         'meta.status': {
           label: 'Status',
         },
         'meta.metrics.responseTime': {
           tdClass: 'response-time',
-          label: 'Response Time',
+          sortable: true,
+          label: 'Time',
         },
         'meta.metrics.responseSize': {
           tdClass: 'response-size',
-          label: 'Response Bytes',
+          sortable: true,
+          label: 'Bytes',
         },
       }),
     },

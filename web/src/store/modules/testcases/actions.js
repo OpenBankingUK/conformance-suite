@@ -70,6 +70,7 @@ export default {
   async computeTestCases({ commit, dispatch, state }) {
     try {
       const setShowLoading = flag => dispatch('status/setShowLoading', flag, { root: true });
+      await api.stopTestRun(setShowLoading); // ensure any previous run is stopped
       const testCases = await api.computeTestCases(setShowLoading);
       if (_.isEqual(testCases.specCases, state.testCases)) {
         return;
@@ -108,6 +109,8 @@ export default {
           commit(types.ADD_TOKEN_ACQUIRED, update);
         } else if (_.has(update, 'type') && update.type === 'ResultType_AcquiredAllAccessTokens') {
           commit(types.SET_ALL_TOKENS_ACQUIRED);
+        } else if (_.has(update, 'stopped') && update.stopped) {
+          // do nothing
         } else {
           // update = {"error":"createRequest: setHeaders Replaced Context value Bearer $access_token :replacement not found in context: Bearer $access_token"}
           const isErrorMsg = _.has(update, 'error');

@@ -16,30 +16,34 @@ func runCmd(service client.Service) *cobra.Command {
 	}
 	generatorCmd.Flags().StringP("filename", "f", "", "Discovery filename")
 	generatorCmd.Flags().StringP("config", "c", "", "Config filename")
-	generatorCmd.Flags().StringP("output", "o", "", "Output filename, defaults to stdout")
+	generatorCmd.Flags().StringP("export", "e", "", "Export config filename")
 	return generatorCmd
 }
 
 // run runs the functional conformance workflow to generate test case run report
 func run(service client.Service) func(cmd *cobra.Command, _ []string) {
 	return func(cmd *cobra.Command, _ []string) {
-		// check if input (discovery model) filename if provided
 		filenameFlag, err := cmd.Flags().GetString("filename")
 		if err != nil || filenameFlag == "" {
 			fmt.Println("You need to provide a discovery filename.")
 			return
 		}
 
-		// check if input (discovery model) filename if provided
 		configFlag, err := cmd.Flags().GetString("config")
 		if err != nil || filenameFlag == "" {
-			fmt.Println("You need to provide a discovery filename.")
+			fmt.Println("You need to provide a config filename.")
 			return
 		}
 
-		results, err := service.Run(filenameFlag, configFlag)
+		exportFlag, err := cmd.Flags().GetString("export")
+		if err != nil || filenameFlag == "" {
+			fmt.Println("You need to provide a export config filename.")
+			return
+		}
+
+		results, err := service.Run(filenameFlag, configFlag, exportFlag)
 		if err != nil {
-			fmt.Printf("Error setting discovery model: %s\n", err.Error())
+			fmt.Printf("Error running tests: %s\n", err.Error())
 			return
 		}
 

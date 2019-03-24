@@ -209,7 +209,7 @@
             "schemaCheck": true
         },
         {
-			"description": "Fails on incorrect permissions are provided for balance.",
+			"description": "Fails when incorrect permissions are provided for balance.",
             "id": "OB-301-BAL-101400",
             "refURI": "",
             "detail" : "Validates that the balance resource fails correctly given an invalided permissions",
@@ -226,7 +226,7 @@
             "schemaCheck": false
         },
         {
-			"description": "Fails on incorrect permissions for bulk balances.",
+			"description": "Fails when incorrect permissions for bulk balances.",
             "id": "OB-301-BAL-101500",
             "refURI": "",
             "detail" : "Validates that the bulk balances resource fails correctly given an invalided permissions",

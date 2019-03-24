@@ -38,6 +38,7 @@ type Journey interface {
 	AllTokenCollected() bool
 	RunTests() error
 	StopTestRun()
+	NewDaemonController()
 	Results() executors.DaemonController
 	SetConfig(config JourneyConfig) error
 	Events() events.Events
@@ -72,6 +73,19 @@ func NewJourney(logger *logrus.Entry, generator generation.Generator, validator 
 		log:                   logger.WithField("module", "Journey"),
 		events:                events.NewEvents(),
 	}
+}
+
+// NewDaemonController - calls StopTestRun and then sets new daemonController
+// and new events on journey.
+// This is a solution to prevent events being sent to a disconnected
+// websocket instead of new websocket after the client reconnects.
+func (wj *journey) NewDaemonController() {
+	wj.StopTestRun()
+
+	wj.journeyLock.Lock()
+	defer wj.journeyLock.Unlock()
+	wj.daemonController = executors.NewBufferedDaemonController()
+	wj.events = events.NewEvents()
 }
 
 func (wj *journey) SetDiscoveryModel(discoveryModel *discovery.Model) (discovery.ValidationFailures, error) {

@@ -23,6 +23,7 @@
 //
 // -- This is will overwrite an existing command --
 // Cypress.Commands.overwrite("visit", (originalFn, url, options) => { ... })
+import * as _ from 'lodash';
 
 // Loads config fixture JSON and replaces ENV variables with ENV variable values.
 Cypress.Commands.add('configFixture', (file) => {
@@ -78,9 +79,22 @@ Cypress.Commands.add('nextButtonContains', (text, opts) => {
   cy.contains(nextButtonId, text, opts);
 });
 
+Cypress.Commands.add('removePaymentDiscoveryItem', () => {
+  cy.window().then((win) => {
+    const editor = win.ace.edit('discovery-config-editor');
+    const json = editor.getSession().getValue();
+    const discovery = JSON.parse(json);
+    const items = discovery.discoveryModel.discoveryItems;
+    discovery.discoveryModel.discoveryItems = _.filter(items,
+      item => item.apiSpecification.name !== 'Payment Initiation API');
+    editor.getSession().setValue(JSON.stringify(discovery, null, 2));
+  });
+});
+
 Cypress.Commands.add('selectDiscoveryTemplate', (templateSelectorId) => {
   cy.visit('https://localhost:8443', { timeout: 16000 });
   cy.get(templateSelectorId).click();
+  cy.removePaymentDiscoveryItem();
   cy.clickNext();
 });
 

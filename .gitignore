@@ -7,6 +7,9 @@ suite.log
 /fcs
 /fcs_server
 
+/config/report.json
+/config/config-ozone.json
+
 web/dist
 # For testing purposes we symbolic link web/public to lib/server/web/dist
 # so that we can test out that static file are being served by the Echo web server.

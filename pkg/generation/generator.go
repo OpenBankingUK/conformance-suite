@@ -32,9 +32,16 @@ type Generator interface {
 	GenerateManifestTests(log *logrus.Entry, config GeneratorConfig, discovery discovery.ModelDiscovery, ctx *model.Context) TestCasesRun
 }
 
+// generator - implements Generator interface
+type generator struct {
+	logger   *logrus.Entry
+	resolver func(groups []permissions.Group) permissions.CodeSetResultSet
+}
+
 // NewGenerator - returns implementation of Generator interface
-func NewGenerator() Generator {
+func NewGenerator(logger *logrus.Entry) Generator {
 	return generator{
+		logger:   logger.WithField("module", "generator"),
 		resolver: permissions.Resolver,
 	}
 }
@@ -98,8 +105,8 @@ func (g generator) GenerateManifestTests(log *logrus.Entry, config GeneratorConf
 }
 
 // GenerateSpecificationTestCases - generates test cases
-func (g generator) GenerateSpecificationTestCases(log *logrus.Entry, config GeneratorConfig, discovery discovery.ModelDiscovery, ctx *model.Context) TestCasesRun {
-	log = log.WithField("module", "GenerateSpecificationTestCases")
+func (g generator) GenerateSpecificationTestCases(config GeneratorConfig, discovery discovery.ModelDiscovery, ctx *model.Context) TestCasesRun {
+	log := g.logger.WithField("function", "GenerateSpecificationTestCases")
 	headlessTokenAcquisition := discovery.TokenAcquisition == "headless"
 
 	specTestCases := []SpecificationTestCases{}
