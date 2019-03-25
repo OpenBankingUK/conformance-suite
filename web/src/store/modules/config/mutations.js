@@ -59,6 +59,14 @@ export default {
   [types.SET_ISSUER](state, value) {
     state.configuration.issuer = value;
   },
+  [types.SET_RESOURCE_ACCOUNT_ID](state, { index, value }) {
+    // Need to use Vue.set to trigger JSON view update on change.
+    Vue.set(state.configuration.resource_ids.account_ids, index, { account_id: value });
+  },
+  [types.SET_RESOURCE_STATEMENT_ID](state, { index, value }) {
+    // Need to use Vue.set to trigger JSON view update on change.
+    Vue.set(state.configuration.resource_ids.statement_ids, index, { statement_id: value });
+  },
   [types.SET_RESOURCE_ACCOUNT_IDS](state, value) {
     state.configuration.resource_ids.account_ids = value;
   },

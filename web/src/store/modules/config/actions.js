@@ -150,18 +150,28 @@ export default {
     commit(types.SET_CONFIGURATION_TRANSPORT_PUBLIC, transportPublic);
     commit(types.SET_WIZARD_STEP, constants.WIZARD.STEP_THREE);
   },
+  setResourceAccountID({ commit, state }, { index, value }) {
+    if (index < 0 || index >= state.configuration.resource_ids.account_ids) {
+      return;
+    }
+    commit(types.SET_RESOURCE_ACCOUNT_ID, { index, value });
+  },
+  setResourceStatementID({ commit, state }, { index, value }) {
+    if (index < 0 || index >= state.configuration.resource_ids.statement_ids) {
+      return;
+    }
+    commit(types.SET_RESOURCE_STATEMENT_ID, { index, value });
+  },
   removeResourceAccountID({ commit, state }, index) {
     if (index < 0 || index >= state.configuration.resource_ids.account_ids) {
       return;
     }
-
     commit(types.REMOVE_RESOURCE_ACCOUNT_ID, index);
   },
   removeResourceStatementID({ commit, state }, index) {
     if (index < 0 || index >= state.configuration.resource_ids.statement_ids) {
       return;
     }
-
     commit(types.REMOVE_RESOURCE_STATEMENT_ID, index);
   },
   /**
