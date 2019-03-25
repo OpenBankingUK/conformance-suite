@@ -77,16 +77,17 @@ func (g generator) GenerateManifestTests(log *logrus.Entry, config GeneratorConf
 func getSpecConsentsFromRequiredTokens(rt []manifest.RequiredTokens) ([]model.SpecConsentRequirements, error) {
 	specConsents := make([]model.SpecConsentRequirements, 0)
 
+	npa := []model.NamedPermission{}
 	for _, v := range rt {
 		np := model.NamedPermission{}
 		np.Name = v.Name
 		np.CodeSet = permissions.CodeSetResult{}
 		np.CodeSet.TestIds = append(np.CodeSet.TestIds, permissions.StringSliceToTestID(v.IDs)...)
 		np.CodeSet.CodeSet = append(np.CodeSet.CodeSet, permissions.StringSliceToCodeSet(v.Perms)...)
-		npa := []model.NamedPermission{np}
-		specConsentReq := model.SpecConsentRequirements{Identifier: "Account and Transaction API Specification", NamedPermissions: npa}
-		specConsents = append(specConsents, specConsentReq)
+		npa = append(npa, np)
 	}
+	specConsentReq := model.SpecConsentRequirements{Identifier: "Account and Transaction API Specification", NamedPermissions: npa}
+	specConsents = append(specConsents, specConsentReq)
 
 	// perms := model.NamedPermissions{model.NamedPermission{Name: "to1001",
 	// 	CodeSet: permissions.CodeSetResult{CodeSet: permissions.CodeSet{"ReadAccountsBasic", "ReadProducts", "ReadTransactionsBasic", "ReadTransactionsCredits", "ReadTransactionsDebits", "ReadBalances"},

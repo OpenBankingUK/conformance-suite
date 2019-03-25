@@ -20,6 +20,7 @@ var (
 	errTestCasesNotGenerated       = errors.New("error test cases not generated")
 	errNotFinishedCollectingTokens = errors.New("error not finished collecting tokens")
 	errConsentIDAcquisitionFailed  = errors.New("ConsentId acquistion failed")
+	errTokenMappingFailed          = errors.New("token mapping to testcases ailed")
 )
 
 // Journey represents all possible steps for a user test conformance journey
@@ -153,6 +154,7 @@ func (wj *journey) TestCases() (generation.TestCasesRun, error) {
 			if err != nil {
 				return generation.TestCasesRun{}, errConsentIDAcquisitionFailed
 			}
+			// TODO:Process multipe specs
 			tokenMap := manifest.MapTokensToTestCases(tokenPermissionsMap, wj.testCasesRun.TestCases[0].TestCases)
 			for k, v := range tokenMap {
 				wj.context.PutString(k, v)
@@ -175,7 +177,6 @@ func (wj *journey) TestCases() (generation.TestCasesRun, error) {
 		}
 	}
 	wj.log.Tracef("Dumping Consents:---------------------------End\n")
-	//wj.log.Tracef("#v\n", wj.testCasesRun.SpecConsentRequirements)
 	return wj.testCasesRun, nil
 }
 
@@ -224,6 +225,20 @@ func (wj *journey) RunTests() error {
 	if !wj.allCollected {
 		return errNotFinishedCollectingTokens
 	}
+
+	requiredTokens := []manifest.RequiredTokens{}
+	// map tokens to Testcases
+	var err error
+	for _, tests := range wj.testCasesRun.TestCases {
+		requiredTokens, err = manifest.GetRequiredTokensFromTests(tests.TestCases)
+		if err != nil {
+			wj.log.Warn("Testcase Token setup failed")
+			return errTokenMappingFailed
+		}
+	}
+
+	//TODO Extend to cover more that one set of testcases
+	manifest.MapTokensToTestCases(requiredTokens, wj.testCasesRun.TestCases[0].TestCases)
 
 	runDefinition := wj.makeRunDefinition()
 	runner := executors.NewTestCaseRunner(wj.log, runDefinition, wj.daemonController)
