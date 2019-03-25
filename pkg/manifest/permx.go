@@ -32,8 +32,20 @@ type TokenStore struct {
 	store     []RequiredTokens
 }
 
+// GetRequiredTokensFromTests - Given a set of testcases with the permissions defined
+// in the context using 'permissions' and 'permissions-excluded'
+// provides a RequiredTokens structure which can be used to capture token requirements
+func GetRequiredTokensFromTests(tcs []model.TestCase) ([]RequiredTokens, error) {
+	tcp, err := getTestCasePermissions(tcs)
+	if err != nil {
+		return nil, err
+	}
+	rt, err := getRequiredTokens(tcp)
+	return rt, err
+}
+
 // GetTestCasePermissions -
-func GetTestCasePermissions(tcs []model.TestCase) ([]TestCasePermission, error) {
+func getTestCasePermissions(tcs []model.TestCase) ([]TestCasePermission, error) {
 	tcps := []TestCasePermission{}
 	for _, tc := range tcs {
 		ctx := tc.Context
@@ -49,7 +61,7 @@ func GetTestCasePermissions(tcs []model.TestCase) ([]TestCasePermission, error) 
 }
 
 // GetRequiredTokens - gathers all tokens
-func GetRequiredTokens(tcps []TestCasePermission) ([]RequiredTokens, error) {
+func getRequiredTokens(tcps []TestCasePermission) ([]RequiredTokens, error) {
 	te := TokenStore{}
 	for _, tcp := range tcps {
 		te.createOrUpdate(tcp)

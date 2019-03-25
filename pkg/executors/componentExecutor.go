@@ -25,11 +25,7 @@ func AcquireHeadlessTokens(tests []model.TestCase, ctx *model.Context, definitio
 		return nil, err
 	}
 
-	testcasePermissions, err := manifest.GetTestCasePermissions(tests)
-	if err != nil {
-		return nil, err
-	}
-	requiredTokens, err := manifest.GetRequiredTokens(testcasePermissions)
+	requiredTokens, err := manifest.GetRequiredTokensFromTests(tests)
 	logrus.Debugf("required tokens %#v\n", requiredTokens)
 
 	for k, tokenGatherer := range requiredTokens {

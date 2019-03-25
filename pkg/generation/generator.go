@@ -49,28 +49,10 @@ func (g generator) GenerateManifestTests(log *logrus.Entry, config GeneratorConf
 	logrus.Debug("GenerateManifestTests - entry")
 	log = log.WithField("module", "GenerateManifestTests")
 
-	//	headlessTokenAcquisition := discovery.TokenAcquisition == "headless"
 	specTestCases := []SpecificationTestCases{}
-	//	customTestCases := []SpecificationTestCases{}
-	//customReplacements := make(map[string]string)
-
-	// for _, customTest := range discovery.CustomTests { // assume ordering is prerun i.e. customtest run before other tests
-	// 	customTestCases = append(customTestCases, GetCustomTestCases(&customTest, ctx, headlessTokenAcquisition))
-	// 	for k, v := range customTest.Replacements {
-	// 		customReplacements[k] = v
-	// 	}
-	// 	for k, testcase := range customTest.Sequence {
-	// 		if !headlessTokenAcquisition {
-	// 			ctx := model.Context{}
-	// 			ctx.PutMap(customReplacements)
-	// 			testcase.ProcessReplacementFields(&ctx, true)
-	// 		}
-	// 		customTest.Sequence[k] = testcase
-	// 	}
-	// }
 
 	for _, item := range discovery.DiscoveryItems { //TODO: sort out different specs etc
-		tcs, err := manifest.GenerateTestCases(item.APISpecification.Name, item.ResourceBaseURI, ctx)
+		tcs, err := manifest.GenerateTestCases(item.APISpecification.Name, item.ResourceBaseURI, ctx) //TODO: ensure we can handle multiple specs
 		if err != nil {
 			log.Warnf("manifest testcase generation failed for %s", item.APISpecification.Name)
 			continue
@@ -79,22 +61,41 @@ func (g generator) GenerateManifestTests(log *logrus.Entry, config GeneratorConf
 		logrus.Debugf("%d test cases generated", len(tcs))
 
 		specTestCases = append(specTestCases, stc)
-		// for _, tc := range tcs {
-		// 	log.Debug(tc.String())
-		// }
 
 		break //TODO: sort this out integration scaffolding ... do it once for starters ...
 	}
 
-	// TODO:Remove this permission stuff for manifests
-	perms := model.NamedPermissions{model.NamedPermission{Name: "to1001",
-		CodeSet: permissions.CodeSetResult{CodeSet: permissions.CodeSet{"ReadAccountsBasic", "ReadProducts", "ReadTransactionsBasic", "ReadTransactionsCredits", "ReadTransactionsDebits", "ReadBalances"},
-			TestIds: []permissions.TestId{"#co0001", "#co0002", "#co0003", "#t1001", "#t1002", "#t1003", "#t1004", "#t1005"}}, ConsentUrl: ""}}
+	requiredTokens, err := manifest.GetRequiredTokensFromTests(specTestCases[0].TestCases)
+	if err != nil {
 
-	scr := model.SpecConsentRequirements{Identifier: "to1001", NamedPermissions: perms}
-	scrSlice := []model.SpecConsentRequirements{scr}
+	}
+	scrSlice, err := getSpecConsentsFromRequiredTokens(requiredTokens)
 	//specTestCases = append(customTestCases, specTestCases...)
 	return TestCasesRun{specTestCases, scrSlice}
+}
+
+func getSpecConsentsFromRequiredTokens(rt []manifest.RequiredTokens) ([]model.SpecConsentRequirements, error) {
+	specConsents := make([]model.SpecConsentRequirements, 0)
+
+	for _, v := range rt {
+		np := model.NamedPermission{}
+		np.Name = v.Name
+		np.CodeSet = permissions.CodeSetResult{}
+		np.CodeSet.TestIds = append(np.CodeSet.TestIds, permissions.StringSliceToTestID(v.IDs)...)
+		np.CodeSet.CodeSet = append(np.CodeSet.CodeSet, permissions.StringSliceToCodeSet(v.Perms)...)
+		npa := []model.NamedPermission{np}
+		specConsentReq := model.SpecConsentRequirements{Identifier: "Account and Transaction API Specification", NamedPermissions: npa}
+		specConsents = append(specConsents, specConsentReq)
+	}
+
+	// perms := model.NamedPermissions{model.NamedPermission{Name: "to1001",
+	// 	CodeSet: permissions.CodeSetResult{CodeSet: permissions.CodeSet{"ReadAccountsBasic", "ReadProducts", "ReadTransactionsBasic", "ReadTransactionsCredits", "ReadTransactionsDebits", "ReadBalances"},
+	// 		TestIds: []permissions.TestId{"#co0001", "#co0002", "#co0003", "#t1001", "#t1002", "#t1003", "#t1004", "#t1005"}}, ConsentUrl: ""}}
+
+	// scr := model.SpecConsentRequirements{Identifier: "to1001", NamedPermissions: perms}
+	// scrSlice := []model.SpecConsentRequirements{scr}
+
+	return specConsents, nil
 }
 
 // GenerateSpecificationTestCases - generates test cases

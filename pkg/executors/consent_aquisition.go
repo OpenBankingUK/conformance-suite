@@ -27,18 +27,12 @@ func InitiationConsentAcquisition(consentRequirements []model.SpecConsentRequire
 		tests = append(tests, v.TestCases...)
 	}
 
-	testcasePermissions, err := manifest.GetTestCasePermissions(tests)
-	if err != nil {
-		return nil, tokenMap, err
-	}
-	requiredTokens, err := manifest.GetRequiredTokens(testcasePermissions)
+	requiredTokens, err := manifest.GetRequiredTokensFromTests(tests)
+	//tokenParameters = getTokenParametersFromRequiredTokens(requiredTokens)
+	_ = requiredTokens
 	logrus.Debugf("required tokens %#v\n", requiredTokens)
-	for _, v := range requiredTokens {
-		tokenName := v.Name
-		permissionList := v.Perms
 
-		// end new stuff
-		//	for tokenName, permissionList := range tokenParameters {
+	for tokenName, permissionList := range tokenParameters {
 		runner := NewConsentAcquisitionRunner(logrus.StandardLogger().WithField("module", "InitiationConsentAcquisition"), definition, NewBufferedDaemonController())
 		tokenAcquisitionType := definition.DiscoModel.DiscoveryModel.TokenAcquisition
 		permissionString := buildPermissionString(permissionList)
@@ -56,6 +50,14 @@ func InitiationConsentAcquisition(consentRequirements []model.SpecConsentRequire
 	}
 
 	return consentItems, tokenMap, err
+}
+
+func getTokenParametersFromRequiredTokens(tokens []manifest.RequiredTokens) map[string][]string {
+	tokenParameters := make(map[string][]string, 0)
+	for _, reqToken := range tokens {
+		tokenParameters[reqToken.Name] = reqToken.Perms
+	}
+	return tokenParameters
 }
 
 func waitForConsentIDs(consentIDChannel chan TokenConsentIDItem, tokenParameters map[string][]string, logger *logrus.Entry) (TokenConsentIDs, error) {

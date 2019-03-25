@@ -122,22 +122,22 @@ func (wj *journey) TestCases() (generation.TestCasesRun, error) {
 		discovery := wj.validDiscoveryModel.DiscoveryModel
 		//TODO: Remove standard testcase generation
 		//wj.testCasesRun = wj.generator.GenerateSpecificationTestCases(wj.log, config, discovery, &wj.context)
-		//TODO: Generate all tests from manifests
 
 		wj.log.Debugln("Journey:GenerationManifestTests")
-		tcrun2 := wj.generator.GenerateManifestTests(wj.log, config, discovery, &wj.context) // Integration work in progress
+		//tcrun2 := wj.generator.GenerateManifestTests(wj.log, config, discovery, &wj.context) // Integration work in progress
+		wj.testCasesRun = wj.generator.GenerateManifestTests(wj.log, config, discovery, &wj.context) // Integration work in progress
 
-		wj.testCasesRun.SpecConsentRequirements = append(wj.testCasesRun.SpecConsentRequirements, tcrun2.SpecConsentRequirements...)
-		wj.testCasesRun.TestCases = append(wj.testCasesRun.TestCases, tcrun2.TestCases...)
+		// wj.testCasesRun.SpecConsentRequirements = append(wj.testCasesRun.SpecConsentRequirements, tcrun2.SpecConsentRequirements...)
+		// wj.testCasesRun.TestCases = append(wj.testCasesRun.TestCases, tcrun2.TestCases...)
 
-		wj.testCasesRun.SpecConsentRequirements = tcrun2.SpecConsentRequirements
-		wj.testCasesRun.TestCases = tcrun2.TestCases
+		//wj.testCasesRun.SpecConsentRequirements = tcrun2.SpecConsentRequirements
+		//wj.testCasesRun.TestCases = tcrun2.TestCases
 
 		if discovery.TokenAcquisition == "psu" {
 			wj.log.Debugln("Journey:AcquirePSUTokens")
 			definition := wj.makeRunDefinition()
 
-			consentIds, tokenMap, err := executors.InitiationConsentAcquisition(wj.testCasesRun.SpecConsentRequirements, definition, &wj.context, &tcrun2)
+			consentIds, tokenMap, err := executors.InitiationConsentAcquisition(wj.testCasesRun.SpecConsentRequirements, definition, &wj.context, &wj.testCasesRun)
 			if err != nil {
 				return generation.TestCasesRun{}, errConsentIDAcquisitionFailed
 			}
@@ -148,12 +148,12 @@ func (wj *journey) TestCases() (generation.TestCasesRun, error) {
 		} else {
 			wj.log.Debugln("Journey:AcquireHeadlessTokens")
 			runDefinition := wj.makeRunDefinition()
-			// TODO:Process multiple specs ...
-			tokenPermissionsMap, err := executors.AcquireHeadlessTokens(tcrun2.TestCases[0].TestCases, &wj.context, runDefinition)
+			// TODO:Process multiple specs ... don't restrict to element [0]!!
+			tokenPermissionsMap, err := executors.AcquireHeadlessTokens(wj.testCasesRun.TestCases[0].TestCases, &wj.context, runDefinition)
 			if err != nil {
 				return generation.TestCasesRun{}, errConsentIDAcquisitionFailed
 			}
-			tokenMap := manifest.MapTokensToTestCases(tokenPermissionsMap, tcrun2.TestCases[0].TestCases)
+			tokenMap := manifest.MapTokensToTestCases(tokenPermissionsMap, wj.testCasesRun.TestCases[0].TestCases)
 			for k, v := range tokenMap {
 				wj.context.PutString(k, v)
 			}
@@ -163,6 +163,19 @@ func (wj *journey) TestCases() (generation.TestCasesRun, error) {
 		wj.testCasesRunGenerated = true
 	}
 
+	wj.log.Tracef("TestCaseRun.SpecConsentRequirements: %#v\n", wj.testCasesRun.SpecConsentRequirements)
+	for k := range wj.testCasesRun.TestCases {
+		wj.log.Tracef("TestCaseRun-Specificatino: %#v\n", wj.testCasesRun.TestCases[k].Specification)
+	}
+	wj.log.Tracef("Dumping Consents:---------------------------\n")
+	for _, v := range wj.testCasesRun.SpecConsentRequirements {
+		wj.log.Tracef("%s", v.Identifier)
+		for _, x := range v.NamedPermissions {
+			wj.log.Tracef("\tname: %s codeset: %#v\n\tconsent Url: %s", x.Name, x.CodeSet.CodeSet, x.ConsentUrl)
+		}
+	}
+	wj.log.Tracef("Dumping Consents:---------------------------End\n")
+	//wj.log.Tracef("#v\n", wj.testCasesRun.SpecConsentRequirements)
 	return wj.testCasesRun, nil
 }
 
@@ -183,7 +196,7 @@ func (wj *journey) CollectToken(code, state, scope string) error {
 	}
 
 	wj.context.PutString(state, accessToken)
-	if state == "to1001" {
+	if state == "Token001" {
 		wj.log.Warnf("Setting 'access_token' to %s", accessToken)
 		wj.context.PutString("access_token", accessToken) // tmp measure to get testcases running
 	}
