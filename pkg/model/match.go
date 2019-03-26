@@ -28,6 +28,7 @@ const (
 	BodyJSONRegex
 	BodyLength
 	Authorisation
+	CustomCheck
 )
 
 // Match defines various types of response payload pattern and field checking.
@@ -63,6 +64,7 @@ type Match struct {
 	ReplaceEndpoint string    `json:"replaceInEndpoint,omitempty"` // allows substitution of resourceIds
 	Authorisation   string    `json:"authorisation,omitempty"`     // allows capturing of bearer tokens
 	Result          string    `json:"result,omitempty"`            // capturing match values
+	Custom          string    `json:"custom,omitempty"`            // specifies custom matching routine
 }
 
 // ContextAccessor - Manages access to matches for Put and Get value operations on a context
@@ -208,6 +210,11 @@ func (m *Match) GetType() MatchType {
 		return m.MatchType
 	}
 
+	if fieldsPresent(m.Custom) {
+		m.MatchType = CustomCheck
+		return CustomCheck
+	}
+
 	if fieldsPresent(m.Authorisation) {
 		m.MatchType = Authorisation
 		return Authorisation
@@ -310,6 +317,7 @@ var matchFuncs = map[MatchType]func(*Match, *TestCase) (bool, error){
 	BodyJSONRegex:      checkBodyJSONRegex,
 	BodyLength:         checkBodyLength,
 	Authorisation:      checkAuthorisation,
+	CustomCheck:        checkCustom,
 }
 
 var matchTypeString = map[MatchType]string{
@@ -325,6 +333,7 @@ var matchTypeString = map[MatchType]string{
 	BodyJSONRegex:      "BodyJSONRegex",
 	BodyLength:         "BodyLength",
 	Authorisation:      "Authorisation",
+	CustomCheck:        "Custom",
 }
 
 func defaultMatch(m *Match, _ *TestCase) (bool, error) {
@@ -522,4 +531,39 @@ func checkAuthorisation(m *Match, tc *TestCase) (bool, error) {
 	}
 	m.Result = headerValue[idx+7:] // copy the token after 7 chars "Bearer "...
 	return true, nil
+}
+
+func checkCustom(m *Match, tc *TestCase) (bool, error) {
+	return true, nil //TODO: implement custom checks
+}
+
+// ProcessReplacementFields allows parameter replacement within match string fields
+func (m *Match) ProcessReplacementFields(ctx *Context) {
+	m.Header, _ = replaceContextField(m.Header, ctx)
+	m.HeaderPresent, _ = replaceContextField(m.HeaderPresent, ctx)
+	m.JSON, _ = replaceContextField(m.JSON, ctx)
+	m.Value, _ = replaceContextField(m.Value, ctx)
+	m.ContextName, _ = replaceContextField(m.ContextName, ctx)
+}
+
+// Clone duplicates a Match into a separate independent object
+// TODO: consider cloning the contextPut
+// Omit bodylength for now...
+func (m *Match) Clone() Match {
+	ma := Match{Authorisation: m.Authorisation,
+		ContextName:     m.ContextName,
+		Count:           m.Count,
+		Custom:          m.Custom,
+		Description:     m.Description,
+		Header:          m.Header,
+		HeaderPresent:   m.HeaderPresent,
+		JSON:            m.JSON,
+		MatchType:       m.MatchType,
+		Numeric:         m.Numeric,
+		Regex:           m.Regex,
+		Result:          m.Result,
+		ReplaceEndpoint: m.ReplaceEndpoint,
+		Value:           m.Value,
+	}
+	return ma
 }

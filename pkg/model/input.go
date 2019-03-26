@@ -120,8 +120,6 @@ func (i *Input) setClaims(tc *TestCase, ctx *Context) error {
 			i.AppMsg(fmt.Sprintf("jwt-bearer Token: %s", token))
 			ctx.Put("jwtbearer", token) // Result - set jwt-bearer token in context
 		}
-	} else {
-		i.AppMsg("no claims to set!")
 	}
 
 	return nil
@@ -200,6 +198,20 @@ func (i *Input) String() string {
 		return i.AppErr(fmt.Sprintf("error converting Input %s %s %s", i.Method, i.Endpoint, err.Error())).Error()
 	}
 	return string(bites)
+}
+
+// Clone an Input
+func (i *Input) Clone() Input {
+	in := Input{}
+	in.Endpoint = i.Endpoint
+	in.FormData = i.FormData
+	in.Generation = i.Generation
+	in.Headers = i.Headers
+	in.Method = i.Method
+	in.RequestBody = i.RequestBody
+	in.Claims = i.Claims
+
+	return in
 }
 
 func (i *Input) createAlgRS256JWT(ctx *Context) (string, error) {

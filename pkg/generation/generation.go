@@ -4,12 +4,13 @@ package generation
 // As such the code is necessarily 'experimental' and subject to change.
 
 import (
-	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/version"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"io/ioutil"
 	"strings"
+
+	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/version"
 
 	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/names"
 
@@ -64,7 +65,7 @@ func GetImplementedTestCases(disco *discovery.ModelDiscoveryItem, nameGenerator 
 					}
 
 					headers := map[string]string{
-						"authorization":         "Bearer $access_token",
+						"Authorization":         "Bearer $access_token",
 						"X-Fapi-Financial-Id":   "$fapi_financial_id",
 						"X-Fapi-Interaction-Id": "b4405450-febe-11e8-80a5-0fcebb1574e1",
 						"Content-Type":          "application/json",
@@ -73,7 +74,7 @@ func GetImplementedTestCases(disco *discovery.ModelDiscoveryItem, nameGenerator 
 					}
 
 					if strings.Contains(newpath, "account-access-consents") { // consent endpoints require a different access_token + custom chain
-						headers["authorization"] = "Bearer $client_access_token"
+						headers["Authorization"] = "Bearer $client_access_token"
 						customTestCases, err := getTemplatedTestCases(newpath)
 						if err != nil {
 							logger.WithFields(logrus.Fields{

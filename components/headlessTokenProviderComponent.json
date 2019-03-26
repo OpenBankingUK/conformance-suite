@@ -5,7 +5,7 @@
     "documentation":"The TestTokenProvider takes eight input parameters, one output parameter. The input paramters define credential, endpoints and consent permssions, the output parameter names the the key under which the resulting token will be placed in the context ",
     "inputParameters": {
       "client_id": "",
-      "fapi_financial_id": "",
+      "x-fapi-financial-id": "$x-fapi-financial-id",
       "basic_authentication": "",
       "token_endpoint": "",
       "authorisation_endpoint": "",
@@ -21,7 +21,7 @@
         "name": "ClientCredential Grant",
         "input": {
           "method": "POST",
-          "endpoint": "/token",
+          "endpoint": "$token_endpoint",
           "headers": {
             "content-type": "application/x-www-form-urlencoded",
             "accept": "*/*",
@@ -33,7 +33,7 @@
           }
         },
         "context": {
-          "baseurl": "$token_endpoint"
+          "baseurl": ""
         },
         "expect": {
           "status-code": 200,
@@ -56,7 +56,7 @@
             "content-type": "application/json",
             "accept": "*/*",
             "x-fapi-interaction-id": "b4405450-febe-11e8-80a5-0fcebb1574e5",
-            "x-fapi-financial-id": "$fapi_financial_id",
+            "x-fapi-financial-id": "$x-fapi-financial-id",
             "authorization": "bearer $client_access_token"
           },
           "bodyData": "$permission_payload"
@@ -85,12 +85,12 @@
         "name": "Ozone Headless Consent Flow",
         "input": {
           "method": "GET",
-          "endpoint": "/auth?clientid",
+          "endpoint": "?clientid",
           "generation": {
             "strategy": "consenturl"
           },
           "claims": {
-            "aud": "$baseurl",
+            "aud": "$issuer",
             "iss": "$client_id",
             "scope": "openid accounts",
             "redirect_url": "$redirect_url",
@@ -108,7 +108,7 @@
               "name": "xchange_code",
               "description": "Get the xchange code from the location redirect header on hitting consent url for headless",
               "header": "Location",
-              "regex": "code=(.*)&?.*"
+              "regex": "code=(.*)&"
             }]
           }
         }
@@ -118,7 +118,7 @@
         "name": "Code Exchange",
         "input": {
           "method": "POST",
-          "endpoint": "/token",
+          "endpoint": "$token_endpoint",
           "headers": {
             "content-type": "application/x-www-form-urlencoded",
             "authorization": "Basic $basic_authentication",
@@ -132,7 +132,7 @@
           }
         },
         "context": {
-          "baseurl": "$token_endpoint"
+          "baseurl": ""
         },
         "expect": {
           "status-code": 200,

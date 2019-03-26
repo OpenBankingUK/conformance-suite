@@ -318,7 +318,7 @@ var (
           "condition": "conditional"
         }
       ],
-			"account-transaction-v3.0": [
+	  "account-transaction-v3.0": [
         {
           "condition": "mandatory",
           "method": "POST",
@@ -616,7 +616,51 @@ var (
           "method": "GET",
           "condition": "conditional"
         }
-      ]
+	  ],
+	  "confirmation-funds-v3.1": [
+        {
+            "condition": "mandatory",
+            "method": "POST",
+            "endpoint": "/funds-confirmation-consents"
+        },
+        {
+            "condition": "mandatory",
+            "method": "GET",
+            "endpoint": "/funds-confirmation-consents/{ConsentId}"
+        },
+        {
+            "condition": "mandatory",
+            "method": "DELETE",
+            "endpoint": "/funds-confirmation-consents/{ConsentId}"
+        },
+        {
+            "condition": "mandatory",
+            "method": "POST",
+            "endpoint": "/funds-confirmations"
+        }
+	  ],
+	  "event-notification-aspsp-v3.1": [
+        {
+            "condition": "mandatory",
+            "method": "POST",
+            "endpoint": "/callback-urls"
+        },
+        {
+            "condition": "mandatory",
+            "method": "GET",
+            "endpoint": "/callback-urls"
+        },
+        {
+            "condition": "mandatory",
+            "method": "PUT",
+            "endpoint": "/callback-urls/{CallbackUrlId}"
+        },
+        {
+            "condition": "mandatory",
+            "method": "DELETE",
+            "endpoint": "/callback-urls/{CallbackUrlId}"
+        }
+	  ]
     }
     `)
 )

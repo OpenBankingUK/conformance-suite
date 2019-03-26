@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"time"
 
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/generation"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/manifest"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
 	"github.com/sirupsen/logrus"
 	resty "gopkg.in/resty.v1"
@@ -14,10 +16,21 @@ import (
 var consentChannelTimeout = 30
 
 // InitiationConsentAcquisition - get required tokens
-func InitiationConsentAcquisition(consentRequirements []model.SpecConsentRequirements, definition RunDefinition, ctx *model.Context) (TokenConsentIDs, error) {
+func InitiationConsentAcquisition(consentRequirements []model.SpecConsentRequirements, definition RunDefinition, ctx *model.Context, runTests *generation.TestCasesRun) (TokenConsentIDs, map[string]string, error) {
+	tokenMap := make(map[string]string, 0)
 	consentIDChannel := make(chan TokenConsentIDItem, 100)
 	logger := logrus.StandardLogger().WithField("module", "InitiationConsentAcquisition")
 	tokenParameters := getConsentTokensAndPermissions(consentRequirements, logger)
+
+	tests := make([]model.TestCase, 0)
+	for _, v := range runTests.TestCases {
+		tests = append(tests, v.TestCases...)
+	}
+
+	requiredTokens, err := manifest.GetRequiredTokensFromTests(tests)
+	//tokenParameters = getTokenParametersFromRequiredTokens(requiredTokens)
+	_ = requiredTokens
+	logrus.Debugf("required tokens %#v\n", requiredTokens)
 
 	for tokenName, permissionList := range tokenParameters {
 		runner := NewConsentAcquisitionRunner(logrus.StandardLogger().WithField("module", "InitiationConsentAcquisition"), definition, NewBufferedDaemonController())
@@ -36,7 +49,15 @@ func InitiationConsentAcquisition(consentRequirements []model.SpecConsentRequire
 		ctx.PutString(v.TokenName, v.ConsentID)
 	}
 
-	return consentItems, err
+	return consentItems, tokenMap, err
+}
+
+func getTokenParametersFromRequiredTokens(tokens []manifest.RequiredTokens) map[string][]string {
+	tokenParameters := make(map[string][]string, 0)
+	for _, reqToken := range tokens {
+		tokenParameters[reqToken.Name] = reqToken.Perms
+	}
+	return tokenParameters
 }
 
 func waitForConsentIDs(consentIDChannel chan TokenConsentIDItem, tokenParameters map[string][]string, logger *logrus.Entry) (TokenConsentIDs, error) {

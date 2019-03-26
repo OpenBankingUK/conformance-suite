@@ -10,7 +10,7 @@
           "url": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937820271/Account+and+Transaction+API+Specification+-+v3.1",
           "version": "v3.1",
           "schemaVersion": "https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.0/dist/account-info-swagger.json",
-          "manifest": "file://manifests/ob_3.1__accounts_fca.json"
+          "manifest": "file://manifests/ob_3.1_accounts_transactions_fca.json"
         },
         "openidConfigurationUri": "https://modelobankauth2018.o3bank.co.uk:4101/.well-known/openid-configuration",
         "resourceBaseUri": "https://modelobank2018.o3bank.co.uk:4501/open-banking/v3.1/aisp",
@@ -158,7 +158,7 @@
           "url": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937754701/Payment+Initiation+API+Specification+-+v3.1",
           "version": "v3.1",
           "schemaVersion": "https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.0/dist/payment-initiation-swagger.json",
-          "manifest": "file://manifests/ob_3.1__payment_fca.json"
+          "manifest": "file://manifests/ob_3.1_payment_fca.json"
         },
         "openidConfigurationUri": "https://modelobankauth2018.o3bank.co.uk:4101/.well-known/openid-configuration",
         "resourceBaseUri": "https://modelobank2018.o3bank.co.uk:4501/open-banking/v3.1/",
@@ -320,6 +320,70 @@
             "path": "/file-payments/{FilePaymentId}/report-file"
           }
         ]
+      },
+      {
+        "apiSpecification": {
+          "name": "Confirmation of Funds API Specification",
+          "url": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937951380/Confirmation+of+Funds+API+Specification+-+v3.1",
+          "version": "v3.1",
+          "schemaVersion": "https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.0/dist/confirmation-funds-swagger.json",
+          "manifest": "file://manifests/ob_3.1_cbpii_fca.json"
+        },
+        "openidConfigurationUri": "https://modelobankauth2018.o3bank.co.uk:4101/.well-known/openid-configuration",
+        "resourceBaseUri": "https://modelobank2018.o3bank.co.uk:4501/open-banking/v3.1/cbpii",
+        "endpoints": [
+          {
+            "method": "POST",
+            "path": "/funds-confirmation-consents",
+            "conditionalProperties": []
+          },
+          {
+            "method": "GET",
+            "path": "/funds-confirmation-consents/{ConsentId}",
+            "conditionalProperties": []
+          },
+          {
+            "method": "DELETE",
+            "path": "/funds-confirmation-consents/{ConsentId}",
+            "conditionalProperties": []
+          },
+          {
+            "method": "POST",
+            "path": "/funds-confirmations",
+            "conditionalProperties": []
+          }]
+      },
+      {
+        "apiSpecification": {
+          "name": "Event Notification API Specification - ASPSP Endpoints",
+          "url": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937951397/Event+Notification+API+Specification+-+v3.1",
+          "version": "v3.1",
+          "schemaVersion": "https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.0/dist/callback-urls-swagger.yaml",
+          "manifest": "file://manifests/ob_3.1_cbpii_fca.json"
+        },
+        "openidConfigurationUri": "https://modelobankauth2018.o3bank.co.uk:4101/.well-known/openid-configuration",
+        "resourceBaseUri": "https://modelobank2018.o3bank.co.uk:4501/open-banking/v3.1",
+        "endpoints": [
+          {
+            "method": "POST",
+            "path": "/callback-urls",
+            "conditionalProperties": []
+          },
+          {
+            "method": "GET",
+            "path": "/callback-urls",
+            "conditionalProperties": []
+          },
+          {
+            "method": "PUT",
+            "path": "/callback-urls/{CallbackUrlId}",
+            "conditionalProperties": []
+          },
+          {
+            "method": "DELETE",
+            "path": "/callback-urls/{CallbackUrlId}",
+            "conditionalProperties": []
+          }]
       }],
     "customTests": [
       {

@@ -1,12 +1,13 @@
 package main
 
 import (
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/generation"
 	"fmt"
 	"os"
 	"strings"
 	"time"
+
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/generation"
 
 	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/version"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
@@ -42,7 +43,7 @@ Complete documentation is available at https://bitbucket.org/openbankingteam/con
 			printVersionInfo(ver, logger)
 
 			validatorEngine := discovery.NewFuncValidator(model.NewConditionalityChecker())
-			testGenerator := generation.NewGenerator(logger)
+			testGenerator := generation.NewGenerator()
 			journey := server.NewJourney(logger, testGenerator, validatorEngine)
 
 			echoServer := server.NewServer(journey, logger, ver)
@@ -96,6 +97,16 @@ func init() {
 }
 
 func initConfig() {
+
+	//TODO: make this configurable via a command line option
+	// f, err := os.OpenFile("suite.log", os.O_CREATE|os.O_WRONLY, 0644)
+	// if err != nil {
+
+	// } else {
+	// 	//mw := io.MultiWriter(os.Stdout, f)
+	// 	//logrus.SetOutput(f)
+	// }
+
 	logger.SetNoLock()
 	logger.SetFormatter(&prefixed.TextFormatter{
 		DisableColors:    false,

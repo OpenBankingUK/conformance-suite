@@ -36,6 +36,13 @@ func (c Context) GetString(key string) (string, error) {
 	return valueStr, nil
 }
 
+// PutContext - puts another context into this one
+func (c Context) PutContext(ctx *Context) {
+	for k, v := range *ctx {
+		c.Put(k, v)
+	}
+}
+
 // Put a value indexed by 'key' into the context. The value can be any type
 func (c Context) Put(key string, value interface{}) {
 	c[key] = value
@@ -84,13 +91,22 @@ func (c Context) GetStringSlice(key string) ([]string, error) {
 
 // DumpContext - send the contents of a context to a logger
 func (c *Context) DumpContext(text ...string) {
-	for _, title := range text {
-		logrus.StandardLogger().Debug("[Context] " + title)
+	if len(text) > 0 {
+		logrus.StandardLogger().Trace("[Context] |=== " + text[0] + "===|")
 	}
-	for k, v := range *c {
-		if k == "client_secret" || k == "basic_authentication" || k == "SigningCert" { // skip potentially sensitive fields - likely need to be more robust
-			continue
+
+	if len(text) > 1 {
+		for i := 1; i < len(text); i++ {
+			key := text[i]
+			value, _ := c.Get(key)
+			logrus.StandardLogger().Tracef("[Context] %s:%v", key, value)
 		}
-		logrus.StandardLogger().Debugf("[Context] %s:%v", k, v)
+	} else {
+		for k, v := range *c {
+			if k == "client_secret" || k == "basic_authentication" || k == "SigningCert" { // skip potentially sensitive fields - likely need to be more robust
+				continue
+			}
+			logrus.StandardLogger().Tracef("[Context] %s:%v", k, v)
+		}
 	}
 }

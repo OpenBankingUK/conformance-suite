@@ -71,11 +71,8 @@ func NewExchangeComponentRunner(definition RunDefinition, daemonController Daemo
 
 // RunTestCases runs the testCases
 func (r *TestCaseRunner) RunTestCases(ctx *model.Context) error {
-	logrus.StandardLogger().Debug("TestCaseRunner.RunTestCases, runningLock=false")
 	r.runningLock.Lock()
-	logrus.StandardLogger().Debug("TestCaseRunner.RunTestCases, runningLock=true")
 	defer func() {
-		logrus.StandardLogger().Debug("TestCaseRunner.RunTestCases, runningLock=false")
 		r.runningLock.Unlock()
 	}()
 	if r.running {
@@ -90,11 +87,8 @@ func (r *TestCaseRunner) RunTestCases(ctx *model.Context) error {
 
 // RunConsentAcquisition -
 func (r *TestCaseRunner) RunConsentAcquisition(item TokenConsentIDItem, ctx *model.Context, consentType string, consentIDChannel chan<- TokenConsentIDItem) error {
-	logrus.StandardLogger().Debug("RunConsentAcquisition, runningLock=false")
 	r.runningLock.Lock()
-	logrus.StandardLogger().Debug("RunConsentAcquisition, runningLock=true")
 	defer func() {
-		logrus.StandardLogger().Debug("RunConsentAcquisition, runningLock=false")
 		r.runningLock.Unlock()
 	}()
 	if r.running {
@@ -220,10 +214,7 @@ func (r *TestCaseRunner) setNotRunning() {
 func (r *TestCaseRunner) makeRuleCtx(ctx *model.Context) *model.Context {
 	ruleCtx := &model.Context{}
 	ruleCtx.Put("SigningCert", r.definition.SigningCert)
-	for k, v := range *ctx {
-		ruleCtx.Put(k, v)
-	}
-
+	ruleCtx.PutContext(ctx)
 	return ruleCtx
 }
 

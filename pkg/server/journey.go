@@ -9,6 +9,7 @@ import (
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/executors"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/executors/events"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/generation"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/manifest"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
@@ -19,6 +20,7 @@ var (
 	errTestCasesNotGenerated       = errors.New("error test cases not generated")
 	errNotFinishedCollectingTokens = errors.New("error not finished collecting tokens")
 	errConsentIDAcquisitionFailed  = errors.New("ConsentId acquistion failed")
+	errTokenMappingFailed          = errors.New("token mapping to testcases ailed")
 )
 
 // Journey represents all possible steps for a user test conformance journey
@@ -107,11 +109,8 @@ func (wj *journey) SetDiscoveryModel(discoveryModel *discovery.Model) (discovery
 }
 
 func (wj *journey) TestCases() (generation.TestCasesRun, error) {
-	wj.log.Debug("journey.TestCases, journeyLock=false")
 	wj.journeyLock.Lock()
-	wj.log.Debug("journey.TestCases, journeyLock=true")
 	defer func() {
-		wj.log.Debug("journey.TestCases, journeyLock=false")
 		wj.journeyLock.Unlock()
 	}()
 
@@ -122,34 +121,70 @@ func (wj *journey) TestCases() (generation.TestCasesRun, error) {
 	if !wj.testCasesRunGenerated {
 		config := wj.makeGeneratorConfig()
 		discovery := wj.validDiscoveryModel.DiscoveryModel
-		wj.testCasesRun = wj.generator.GenerateSpecificationTestCases(config, discovery, &wj.context)
+		//TODO: Remove standard testcase generation
+		//wj.testCasesRun = wj.generator.GenerateSpecificationTestCases(wj.log, config, discovery, &wj.context)
+
+		wj.log.Debugln("Journey:GenerationManifestTests")
+		//tcrun2 := wj.generator.GenerateManifestTests(wj.log, config, discovery, &wj.context) // Integration work in progress
+		wj.testCasesRun = wj.generator.GenerateManifestTests(wj.log, config, discovery, &wj.context) // Integration work in progress
+
+		// wj.testCasesRun.SpecConsentRequirements = append(wj.testCasesRun.SpecConsentRequirements, tcrun2.SpecConsentRequirements...)
+		// wj.testCasesRun.TestCases = append(wj.testCasesRun.TestCases, tcrun2.TestCases...)
+
+		//wj.testCasesRun.SpecConsentRequirements = tcrun2.SpecConsentRequirements
+		//wj.testCasesRun.TestCases = tcrun2.TestCases
+
 		if discovery.TokenAcquisition == "psu" {
+			wj.log.Debugln("Journey:AcquirePSUTokens")
 			definition := wj.makeRunDefinition()
-			consentIds, err := executors.InitiationConsentAcquisition(wj.testCasesRun.SpecConsentRequirements, definition, &wj.context)
+
+			consentIds, tokenMap, err := executors.InitiationConsentAcquisition(wj.testCasesRun.SpecConsentRequirements, definition, &wj.context, &wj.testCasesRun)
 			if err != nil {
 				return generation.TestCasesRun{}, errConsentIDAcquisitionFailed
 			}
-
+			for k, v := range tokenMap {
+				wj.context.PutString(k, v)
+			}
 			wj.createTokenCollector(consentIds)
 		} else {
+			wj.log.Debugln("Journey:AcquireHeadlessTokens")
+			runDefinition := wj.makeRunDefinition()
+			// TODO:Process multiple specs ... don't restrict to element [0]!!
+			tokenPermissionsMap, err := executors.AcquireHeadlessTokens(wj.testCasesRun.TestCases[0].TestCases, &wj.context, runDefinition)
+			if err != nil {
+				return generation.TestCasesRun{}, errConsentIDAcquisitionFailed
+			}
+			// TODO:Process multipe specs
+			tokenMap := manifest.MapTokensToTestCases(tokenPermissionsMap, wj.testCasesRun.TestCases[0].TestCases)
+			for k, v := range tokenMap {
+				wj.context.PutString(k, v)
+			}
+
 			wj.allCollected = true
 		}
 		wj.testCasesRunGenerated = true
 	}
 
+	wj.log.Tracef("TestCaseRun.SpecConsentRequirements: %#v\n", wj.testCasesRun.SpecConsentRequirements)
+	for k := range wj.testCasesRun.TestCases {
+		wj.log.Tracef("TestCaseRun-Specificatino: %#v\n", wj.testCasesRun.TestCases[k].Specification)
+	}
+	wj.log.Tracef("Dumping Consents:---------------------------\n")
+	for _, v := range wj.testCasesRun.SpecConsentRequirements {
+		wj.log.Tracef("%s", v.Identifier)
+		for _, x := range v.NamedPermissions {
+			wj.log.Tracef("\tname: %s codeset: %#v\n\tconsent Url: %s", x.Name, x.CodeSet.CodeSet, x.ConsentUrl)
+		}
+	}
 	return wj.testCasesRun, nil
 }
 
 func (wj *journey) CollectToken(code, state, scope string) error {
-	wj.log.Debug("journey.CollectToken, journeyLock=false")
 	wj.journeyLock.Lock()
-	wj.log.Debug("journey.CollectToken, journeyLock=true")
 	defer func() {
-		wj.log.Debug("journey.CollectToken, journeyLock=false")
 		wj.journeyLock.Unlock()
 	}()
 
-	wj.log.Debugf("state: %s, code: %s", state, code)
 	if !wj.testCasesRunGenerated {
 		return errTestCasesNotGenerated
 	}
@@ -161,7 +196,7 @@ func (wj *journey) CollectToken(code, state, scope string) error {
 	}
 
 	wj.context.PutString(state, accessToken)
-	if state == "to1001" {
+	if state == "Token001" {
 		wj.log.Warnf("Setting 'access_token' to %s", accessToken)
 		wj.context.PutString("access_token", accessToken) // tmp measure to get testcases running
 	}
@@ -170,23 +205,16 @@ func (wj *journey) CollectToken(code, state, scope string) error {
 }
 
 func (wj *journey) AllTokenCollected() bool {
-	// wj.journeyLock.Lock()
-	// defer wj.journeyLock.Unlock()
 	wj.log.Debugf("All tokens collected %t", wj.allCollected)
 	return wj.allCollected
 }
 
 func (wj *journey) doneCollectionCallback() {
-	// TODO: ensure lock is acquired and released.
-	//wj.journeyLock.Lock()
-	//defer wj.journeyLock.Unlock()
 	wj.log.Debug("Setting wj.allCollection=true")
 	wj.allCollected = true
 }
 
 func (wj *journey) RunTests() error {
-	//wj.journeyLock.Lock()
-	//defer wj.journeyLock.Unlock()
 	wj.log.Debug("RunTests ...")
 
 	if !wj.testCasesRunGenerated {
@@ -196,6 +224,20 @@ func (wj *journey) RunTests() error {
 	if !wj.allCollected {
 		return errNotFinishedCollectingTokens
 	}
+
+	requiredTokens := []manifest.RequiredTokens{}
+	// map tokens to Testcases
+	var err error
+	for _, tests := range wj.testCasesRun.TestCases {
+		requiredTokens, err = manifest.GetRequiredTokensFromTests(tests.TestCases)
+		if err != nil {
+			wj.log.Warn("Testcase Token setup failed")
+			return errTokenMappingFailed
+		}
+	}
+
+	//TODO Extend to cover more that one set of testcases
+	manifest.MapTokensToTestCases(requiredTokens, wj.testCasesRun.TestCases[0].TestCases)
 
 	runDefinition := wj.makeRunDefinition()
 	runner := executors.NewTestCaseRunner(wj.log, runDefinition, wj.daemonController)
@@ -280,7 +322,7 @@ const ctxConstClientID = "client_id"
 const ctxConstClientSecret = "client_secret"
 const ctxConstTokenEndpoint = "token_endpoint"
 const ctxConstTokenEndpointAuthMethod = "token_endpoint_auth_method"
-const ctxConstFapiFinancialID = "fapi_financial_id"
+const ctxConstFapiFinancialID = "x-fapi-financial-id"
 const ctxConstRedirectURL = "redirect_url"
 const ctxConstAuthorisationEndpoint = "authorisation_endpoint"
 const ctxConstBasicAuthentication = "basic_authentication"
@@ -301,11 +343,8 @@ func (wj *journey) configParametersToJourneyContext() error {
 	if err != nil {
 		return err
 	}
-
 	wj.context.PutString(ctxConstBasicAuthentication, basicauth)
 	wj.context.PutString(ctxConstIssuer, wj.config.issuer)
-
-	wj.context.DumpContext("configParameters - dumpcontext")
 	return nil
 }
 

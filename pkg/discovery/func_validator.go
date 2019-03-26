@@ -2,9 +2,10 @@ package discovery
 
 import (
 	"fmt"
-	"github.com/pkg/errors"
 	"net/url"
 	"strings"
+
+	"github.com/pkg/errors"
 
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
 
@@ -144,7 +145,6 @@ func hasValidTokenAcquisitionMethod(_ model.ConditionalityChecker, discovery *Mo
 func hasValidAPISpecifications(_ model.ConditionalityChecker, discoveryConfig *Model) (bool, []ValidationFailure) {
 	var failures []ValidationFailure
 	for discoveryItemIndex, discoveryItem := range discoveryConfig.DiscoveryModel.DiscoveryItems {
-
 		schemaVersion := discoveryItem.APISpecification.SchemaVersion
 		specification, err := model.SpecificationFromSchemaVersion(schemaVersion)
 		if err != nil {

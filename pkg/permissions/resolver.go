@@ -43,6 +43,25 @@ func Resolver(groups []Group) CodeSetResultSet {
 	return mapToCodeSets(groups, groupsFound)
 }
 
+// StringSliceToTestID -
+func StringSliceToTestID(s []string) []TestId {
+	tids := make([]TestId, 0)
+	for _, v := range s {
+		tids = append(tids, TestId(v))
+	}
+	return tids
+}
+
+// StringSliceToCodeSet -
+func StringSliceToCodeSet(s []string) CodeSet {
+	var cs CodeSet
+	for _, v := range s {
+		cs = append(cs, Code(v))
+	}
+	return cs
+
+}
+
 // mapToCodeSets maps all permission groups found to results that include test id list
 // for each group found
 func mapToCodeSets(groups []Group, groupsFound []*Group) []CodeSetResult {

@@ -4,6 +4,7 @@ package generation
 import (
 	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/names"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/manifest"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/permissions"
 	"github.com/sirupsen/logrus"
@@ -27,26 +28,80 @@ type GeneratorConfig struct {
 
 // Generator - generates test cases from discovery model
 type Generator interface {
-	GenerateSpecificationTestCases(config GeneratorConfig, discovery discovery.ModelDiscovery, ctx *model.Context) TestCasesRun
-}
-
-// generator - implements Generator interface
-type generator struct {
-	logger   *logrus.Entry
-	resolver func(groups []permissions.Group) permissions.CodeSetResultSet
+	GenerateSpecificationTestCases(log *logrus.Entry, config GeneratorConfig, discovery discovery.ModelDiscovery, ctx *model.Context) TestCasesRun
+	GenerateManifestTests(log *logrus.Entry, config GeneratorConfig, discovery discovery.ModelDiscovery, ctx *model.Context) TestCasesRun
 }
 
 // NewGenerator - returns implementation of Generator interface
-func NewGenerator(logger *logrus.Entry) Generator {
+func NewGenerator() Generator {
 	return generator{
-		logger:   logger.WithField("module", "generator"),
 		resolver: permissions.Resolver,
 	}
 }
 
+// generator - implements Generator interface
+type generator struct {
+	resolver func(groups []permissions.Group) permissions.CodeSetResultSet
+}
+
+// Work in progress to integrate Manifest Test
+func (g generator) GenerateManifestTests(log *logrus.Entry, config GeneratorConfig, discovery discovery.ModelDiscovery, ctx *model.Context) TestCasesRun {
+	logrus.Debug("GenerateManifestTests - entry")
+	log = log.WithField("module", "GenerateManifestTests")
+
+	specTestCases := []SpecificationTestCases{}
+
+	for _, item := range discovery.DiscoveryItems { //TODO: sort out different specs etc
+		tcs, err := manifest.GenerateTestCases(item.APISpecification.Name, item.ResourceBaseURI, ctx) //TODO: ensure we can handle multiple specs
+		if err != nil {
+			log.Warnf("manifest testcase generation failed for %s", item.APISpecification.Name)
+			continue
+		}
+		stc := SpecificationTestCases{Specification: item.APISpecification, TestCases: tcs}
+		logrus.Debugf("%d test cases generated", len(tcs))
+
+		specTestCases = append(specTestCases, stc)
+
+		break //TODO: sort this out integration scaffolding ... do it once for starters ...
+	}
+
+	requiredTokens, err := manifest.GetRequiredTokensFromTests(specTestCases[0].TestCases)
+	if err != nil {
+
+	}
+	scrSlice, err := getSpecConsentsFromRequiredTokens(requiredTokens)
+	//specTestCases = append(customTestCases, specTestCases...)
+	return TestCasesRun{specTestCases, scrSlice}
+}
+
+func getSpecConsentsFromRequiredTokens(rt []manifest.RequiredTokens) ([]model.SpecConsentRequirements, error) {
+	specConsents := make([]model.SpecConsentRequirements, 0)
+
+	npa := []model.NamedPermission{}
+	for _, v := range rt {
+		np := model.NamedPermission{}
+		np.Name = v.Name
+		np.CodeSet = permissions.CodeSetResult{}
+		np.CodeSet.TestIds = append(np.CodeSet.TestIds, permissions.StringSliceToTestID(v.IDs)...)
+		np.CodeSet.CodeSet = append(np.CodeSet.CodeSet, permissions.StringSliceToCodeSet(v.Perms)...)
+		npa = append(npa, np)
+	}
+	specConsentReq := model.SpecConsentRequirements{Identifier: "Account and Transaction API Specification", NamedPermissions: npa}
+	specConsents = append(specConsents, specConsentReq)
+
+	// perms := model.NamedPermissions{model.NamedPermission{Name: "to1001",
+	// 	CodeSet: permissions.CodeSetResult{CodeSet: permissions.CodeSet{"ReadAccountsBasic", "ReadProducts", "ReadTransactionsBasic", "ReadTransactionsCredits", "ReadTransactionsDebits", "ReadBalances"},
+	// 		TestIds: []permissions.TestId{"#co0001", "#co0002", "#co0003", "#t1001", "#t1002", "#t1003", "#t1004", "#t1005"}}, ConsentUrl: ""}}
+
+	// scr := model.SpecConsentRequirements{Identifier: "to1001", NamedPermissions: perms}
+	// scrSlice := []model.SpecConsentRequirements{scr}
+
+	return specConsents, nil
+}
+
 // GenerateSpecificationTestCases - generates test cases
-func (g generator) GenerateSpecificationTestCases(config GeneratorConfig, discovery discovery.ModelDiscovery, ctx *model.Context) TestCasesRun {
-	log := g.logger.WithField("function", "GenerateSpecificationTestCases")
+func (g generator) GenerateSpecificationTestCases(log *logrus.Entry, config GeneratorConfig, discovery discovery.ModelDiscovery, ctx *model.Context) TestCasesRun {
+	log = log.WithField("module", "GenerateSpecificationTestCases")
 	headlessTokenAcquisition := discovery.TokenAcquisition == "headless"
 
 	specTestCases := []SpecificationTestCases{}

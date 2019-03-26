@@ -69,16 +69,23 @@ type TestCase struct {
 	Bearer     string         `json:"bearer,omitempty"`  // Bear token if presented
 }
 
+// MakeTestCase builds an empty testcase
+func MakeTestCase() TestCase {
+	i := Input{}
+	i.FormData = make(map[string]string)
+	i.Generation = make(map[string]string)
+	i.Headers = make(map[string]string)
+	i.Claims = make(map[string]string)
+
+	tc := TestCase{Input: i}
+	return tc
+}
+
 // Prepare a Testcase for execution at and endpoint,
 // results in a standard http request that encapsulates the testcase request
 // as defined in the test case object with any context inputs/replacements etc applied
 func (t *TestCase) Prepare(ctx *Context) (*resty.Request, error) {
-	t.AppEntry("Prepare Entry")
-	defer t.AppExit("Prepare Exit")
-
-	// Apply Context at end of creating request - get/put values into contexts
 	t.ApplyContext(ctx)
-
 	return t.ApplyInput(ctx)
 }
 
@@ -139,9 +146,6 @@ type Expect struct {
 //     Testcase evaluates the http response object using its 'Expects' clause
 //     Testcase passes or fails depending on the 'Expects' outcome
 func (t *TestCase) ApplyInput(rulectx *Context) (*resty.Request, error) {
-	t.AppEntry("ApplyInput entry")
-	defer t.AppExit("ApplyInput exit")
-
 	if t.Input.Method == "" {
 		return nil, t.AppErr("error: TestCase input cannot have empty input.Method")
 	}
@@ -159,9 +163,6 @@ func (t *TestCase) ApplyInput(rulectx *Context) (*resty.Request, error) {
 // Context parameter typically involve variables that originated in discovery
 // The functionality of ApplyContext will grow significantly over time.
 func (t *TestCase) ApplyContext(rulectx *Context) {
-	t.AppEntry("ApplyContext entry")
-	defer t.AppExit("ApplyContext exit")
-
 	if rulectx != nil {
 		for k, v := range t.Context { // put testcase context values into rule context ...
 			rulectx.Put(k, v)
@@ -190,9 +191,6 @@ func (t *TestCase) ApplyContext(rulectx *Context) {
 // contextPuts will only be executed if the ApplyExpects standards match tests pass
 // if any of the ApplyExpects match tests fail - ApplyExpects returns false and contextPuts aren't executed
 func (t *TestCase) ApplyExpects(res *resty.Response, rulectx *Context) (bool, error) {
-	t.AppEntry("ApplyExpects entry")
-	defer t.AppExit("ApplyExpects exit")
-
 	if res == nil { // if we've not got a response object to check, always return false
 		return false, t.AppErr("nil http.Response - cannot process ApplyExpects")
 	}
@@ -216,6 +214,14 @@ func (t *TestCase) ApplyExpects(res *resty.Response, rulectx *Context) (bool, er
 		return false, t.AppErr("ApplyExpects Returns FALSE " + err.Error())
 	}
 	return true, nil
+}
+
+// InjectBearerToken injects a bear token header into the testcase, token can either be the actual bearer token or a parameter starting with '$'
+func (t *TestCase) InjectBearerToken(token string) {
+	if t.Input.Headers == nil {
+		t.Input.Headers = map[string]string{}
+	}
+	t.Input.Headers["Authorization"] = "Bearer " + token
 }
 
 // AppMsg - application level trace
@@ -250,6 +256,24 @@ func (t *TestCase) String() string {
 	return string(bites)
 }
 
+// Clone a testcase
+func (t *TestCase) Clone() TestCase {
+	tc := TestCase{}
+
+	tc.ID = t.ID
+	tc.Type = t.Type
+	tc.Name = t.Name
+	tc.Purpose = t.Purpose
+	tc.Bearer = t.Bearer
+	tc.Input = t.Input.Clone()
+	tc.Context = Context{}
+	tc.Context.PutContext(&t.Context)
+	tc.Expect = t.Expect.Clone()
+
+	logrus.Debugf("cloned test -\n before: %#v\nafter : %#v\n ", t, tc)
+	return tc
+}
+
 // Various helpers - main to dump struct contents to console
 
 func (m *Manifest) String() string {
@@ -282,7 +306,7 @@ func replaceContextField(source string, ctx *Context) (string, error) {
 	return result, nil
 }
 
-var singleDollarRegex = regexp.MustCompile(`[^\$]?\$(\w*)`)
+var singleDollarRegex = regexp.MustCompile(`[^\$]?\$([\w|\-|_]*)`)
 
 // GetReplacementField examines the input string and returns the first character
 // sequence beginning with '$' and ending with whitespace. '$$' sequence acts as an escape value
@@ -342,6 +366,12 @@ func (t *TestCase) ProcessReplacementFields(ctx *Context, showReplacementErrors 
 			t.logReplaceError("ContextName", err, logger, showReplacementErrors)
 		}
 	}
+
+	for idx, match := range t.Expect.Matches {
+		match.ProcessReplacementFields(ctx)
+		t.Expect.Matches[idx] = match
+	}
+
 }
 
 func (t *TestCase) logReplaceError(field string, err error, logger *logrus.Logger, showReplacementErrors bool) {
@@ -381,4 +411,16 @@ func (t *TestCase) processReplacementClaims(ctx *Context) {
 			logrus.StandardLogger().WithError(err).Error("processing replacement fields")
 		}
 	}
+}
+
+// Clone - preforms deep copy of expect object
+func (e *Expect) Clone() Expect {
+	ex := Expect{}
+	ex.StatusCode = e.StatusCode
+	ex.SchemaValidation = e.SchemaValidation
+	for _, match := range e.Matches {
+		m := match.Clone()
+		ex.Matches = append(ex.Matches, m)
+	}
+	return ex
 }

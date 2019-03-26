@@ -26,6 +26,7 @@ func MakeComponent(name string) Component {
 
 const (
 	productionComponentDirectory = "components/"
+	relativeComponentDirectory   = "../../components/"
 	testComponentDirectory       = "../model/component/testdata/"
 )
 
@@ -36,11 +37,14 @@ func LoadComponent(filename string) (Component, error) {
 	// handle varying location of component directory depending on test/prod
 	fileContents, err := ioutil.ReadFile(productionComponentDirectory + filename)
 	if err != nil {
-		fileContents, err = ioutil.ReadFile(testComponentDirectory + filename)
+		fileContents, err = ioutil.ReadFile(relativeComponentDirectory + filename)
 		if err != nil {
-			fileContents, err = ioutil.ReadFile(filename)
+			fileContents, err = ioutil.ReadFile(testComponentDirectory + filename)
 			if err != nil {
-				return c, err
+				fileContents, err = ioutil.ReadFile(filename)
+				if err != nil {
+					return c, err
+				}
 			}
 		}
 	}
@@ -92,4 +96,10 @@ func (c *Component) checkOutputParamsInContext(ctx *Context) error {
 // GetTests - returns the tests that need to be run for this component
 func (c *Component) GetTests() []TestCase {
 	return c.Tests
+	// cloned := []TestCase{}
+	// for _, test := range c.Tests {
+	// 	newtc := test.Clone()
+	// 	cloned = append(cloned, newtc)
+	// }
+	//	return cloned
 }
