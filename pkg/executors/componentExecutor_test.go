@@ -9,7 +9,7 @@ import (
 )
 
 func TestGenerateTestCases(t *testing.T) {
-	tests, err := manifest.GenerateTestCases("TestSpec", "http://mybaseurl")
+	tests, err := manifest.GenerateTestCases("TestSpec", "http://mybaseurl", &model.Context{})
 	assert.Nil(t, err)
 
 	// perms, err := manifest.GetTestCasePermissions(tests)
@@ -30,7 +30,7 @@ func TestGenerateTestCases(t *testing.T) {
 		"result_token":           "****mytoken",
 	}
 
-	err = AcquireHeadlessTokens(tests, &ctx, RunDefinition{})
+	_, err = AcquireHeadlessTokens(tests, &ctx, RunDefinition{})
 	assert.Nil(t, err)
 
 }
