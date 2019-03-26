@@ -358,7 +358,7 @@
           "name": "Event Notification API Specification - ASPSP Endpoints",
           "url": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937951397/Event+Notification+API+Specification+-+v3.1",
           "version": "v3.1",
-          "schemaVersion": "https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.0/dist/callback-urls-swagger.json",
+          "schemaVersion": "https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.0/dist/callback-urls-swagger.yaml",
           "manifest": "file://manifests/ob_3.1_cbpii_fca.json"
         },
         "openidConfigurationUri": "https://modelobankauth2018.o3bank.co.uk:4101/.well-known/openid-configuration",

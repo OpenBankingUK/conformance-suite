@@ -230,5 +230,6 @@ func loadConditions() error {
 		}
 		endpointConditionality[specification] = list
 	}
+
 	return nil
 }
