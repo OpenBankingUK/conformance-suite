@@ -140,7 +140,7 @@ func (wj *journey) TestCases() (generation.TestCasesRun, error) {
 
 			consentIds, tokenMap, err := executors.InitiationConsentAcquisition(wj.testCasesRun.SpecConsentRequirements, definition, &wj.context, &wj.testCasesRun)
 			if err != nil {
-				return generation.TestCasesRun{}, errConsentIDAcquisitionFailed
+				return generation.TestCasesRun{}, errors.WithMessage(errConsentIDAcquisitionFailed, err.Error())
 			}
 			for k, v := range tokenMap {
 				wj.context.PutString(k, v)

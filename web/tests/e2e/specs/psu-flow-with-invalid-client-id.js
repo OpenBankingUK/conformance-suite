@@ -7,10 +7,9 @@ describe('PSU consent enter config', () => {
     cy.selectDiscoveryTemplate(discoveryTemplateId);
     cy.enterConfiguration(configTemplate);
 
+    cy.contains('div.alert', 'invalid_client');
+    cy.contains('div.alert', 'invalid authorization token');
+    cy.contains('div.alert', 'ClientCredential Grant: HTTP Status code does not match: expected 200 got 400');
     cy.nextButtonContains('Pending PSU Consent');
-
-    cy.get('.psu-consent-link:first').invoke('attr', 'title').then((consentUrl) => {
-      cy.writeFile('consentUrl.txt', consentUrl);
-    });
   });
 });

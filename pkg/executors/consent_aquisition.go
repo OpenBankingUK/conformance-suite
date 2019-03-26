@@ -2,7 +2,6 @@ package executors
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 	"time"
 
@@ -10,6 +9,7 @@ import (
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/manifest"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
 	"github.com/sirupsen/logrus"
+	"github.com/pkg/errors"
 	resty "gopkg.in/resty.v1"
 )
 
@@ -45,6 +45,9 @@ func InitiationConsentAcquisition(consentRequirements []model.SpecConsentRequire
 
 	consentItems, err := waitForConsentIDs(consentIDChannel, tokenParameters, logger)
 	for _, v := range consentItems {
+		if len(v.Error) > 0 {
+			continue
+		}
 		logger.Debugf("Setting Token: %s, ConsentId: %s", v.TokenName, v.ConsentID)
 		ctx.PutString(v.TokenName, v.ConsentID)
 	}
@@ -71,10 +74,18 @@ func waitForConsentIDs(consentIDChannel chan TokenConsentIDItem, tokenParameters
 			logger.Debugf("received consent channel item item %#v", item)
 			consentIDsReceived++
 			consentItems = append(consentItems, item)
+			errs := errors.New("")
 			if consentIDsReceived == consentIDsRequired {
 				logger.Infof("Got %d required tokens - progressing..", consentIDsReceived)
 				for _, v := range consentItems {
-					logger.Infof("token: %s, consentid: %s", v.TokenName, v.ConsentID)
+					if len(v.Error) > 0 {
+						errs = errors.WithMessage(errs, v.Error)
+					} else {
+						logger.Infof("token: %s, consentid: %s", v.TokenName, v.ConsentID)
+					}
+				}
+				if len(errs.Error()) > 0 {
+					return consentItems, errs
 				}
 				return consentItems, nil
 			}
