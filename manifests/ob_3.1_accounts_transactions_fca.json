@@ -255,7 +255,7 @@
             "uriImplementation": "mandatory",
             "resource": "Balance",
             "method":"get",
-            "asserts": ["OB3GLOAssertOn404"],
+            "asserts": ["OB3GLOAssertOn401"],
             "schemaCheck": false
         },
         {
@@ -273,8 +273,7 @@
             "uriImplementation": "optional",
             "resource": "Balance",
             "method":"get",
-            "asserts":["OB3GLOAssertOn401Invalid"],
-            "assertsold": ["OB3GLOAssertOn401"],
+            "asserts":["OB3GLOAssertOn401"],
             "schemaCheck": false
         },
         {
@@ -397,7 +396,7 @@
 			"description": "Fails when account is invalid for Direct Debits.",
             "id": "OB-301-DIR-102500",
             "refURI": "",
-            "detail" : "Checks the correct response is returned when given an invalid account for Direct Debits.",
+            "detail" : "Checks the correct response (401) is returned when given an invalid account for Direct Debits.",
 			"parameters": {
 				"tokenRequestScope": "accounts",
 				"accountId": "foobar"
@@ -407,7 +406,7 @@
             "uriImplementation": "conditional",
             "resource": "DirectDebit",
             "method":"get",
-            "asserts": ["OB3GLOAssertOn404"],
+            "asserts": ["OB3GLOAssertOn401"],
             "schemaCheck": false
         },
         {
@@ -458,7 +457,7 @@
             "uriImplementation": "conditional",
             "resource": "Offer",
             "method":"get",
-            "asserts": ["OB3GLOAssertOn404"],
+            "asserts": ["OB3GLOAssertOn401"],
             "schemaCheck": false
         },
         {
@@ -510,7 +509,7 @@
             "uriImplementation": "conditional",
             "resource": "Party",
             "method":"get",
-            "asserts": ["OB3GLOAssertOn404"],
+            "asserts": ["OB3GLOAssertOn401"],
             "schemaCheck": false
         },
         {
@@ -610,7 +609,7 @@
             "uriImplementation": "conditional",
             "resource": "ScheduledPayment",
             "method":"get",
-            "asserts": ["OB3GLOAssertOn404"],
+            "asserts": ["OB3GLOAssertOn401"],
             "schemaCheck": false
         },
         {
@@ -660,7 +659,7 @@
             "uriImplementation": "conditional",
             "resource": "StandingOrder",
             "method":"get",
-            "asserts": ["OB3GLOAssertOn404"],
+            "asserts": ["OB3GLOAssertOn401"],
             "schemaCheck": false
         }
 	]
