@@ -365,23 +365,23 @@
         "resourceBaseUri": "https://modelobank2018.o3bank.co.uk:4501/open-banking/v3.1",
         "endpoints": [
           {
-            "method": "/callback-urls",
-            "path": "POST",
+            "method": "POST",
+            "path": "/callback-urls",
             "conditionalProperties": []
           },
           {
-            "method": "/callback-urls",
-            "path": "GET",
+            "method": "GET",
+            "path": "/callback-urls",
             "conditionalProperties": []
           },
           {
-            "method": "/callback-urls/{CallbackUrlId}",
-            "path": "PUT",
+            "method": "PUT",
+            "path": "/callback-urls/{CallbackUrlId}",
             "conditionalProperties": []
           },
           {
-            "method": "/callback-urls/{CallbackUrlId}",
-            "path": "DELETE",
+            "method": "DELETE",
+            "path": "/callback-urls/{CallbackUrlId}",
             "conditionalProperties": []
           }]
       }],
