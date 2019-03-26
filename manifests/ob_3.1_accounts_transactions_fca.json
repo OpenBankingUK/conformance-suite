@@ -349,14 +349,14 @@
             "detail" : "Checks the correct response is returned when given an invalid account for a beneficiary.",
 			"parameters": {
 				"tokenRequestScope": "accounts",
-				"accountId": "$consentedBusinessAccountId"
+				"accountId": "foobar"
             },
             "permissions":["ReadAccountsBasic","ReadBeneficiariesBasic"],
             "uri": "/accounts/$accountId/beneficiaries",
             "uriImplementation": "conditional",
             "resource": "Beneficiary",
             "method":"get",
-            "asserts": ["OB3GLOAssertOn404"],
+            "asserts": ["OB3GLOAssertOn401"],
             "schemaCheck": false
         },
         {
@@ -538,7 +538,7 @@
 				"tokenRequestScope": "accounts"
             },
             "permissions": [ "ReadAccountsBasic", "ReadProducts"],
-            "uri": "/product",
+            "uri": "/products",
             "uriImplementation": "optional",
 			"resource": "Product",
             "asserts": ["OB3GLOAssertOn200", "OB3GLOFAPIHeader"],
@@ -557,7 +557,7 @@
             "permissions": [ "ReadAccountsBasic", "ReadProducts"],
             "uri": "/accounts/$accountId/product",
             "uriImplementation": "conditional",
-            "resource": "Party",
+            "resource": "Product",
             "method":"get",
             "asserts": ["OB3GLOAssertOn404"],
             "schemaCheck": false
