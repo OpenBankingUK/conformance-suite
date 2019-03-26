@@ -86,7 +86,7 @@ func GetImplementedTestCases(disco *discovery.ModelDiscoveryItem, nameGenerator 
 							return nil, nil
 						}
 						for i := range customTestCases {
-							showReplacementErrors := !headlessTokenAcquisition
+							showReplacementErrors := false
 							customTestCases[i].ProcessReplacementFields(ctx, showReplacementErrors)
 						}
 						if customTestCases != nil {
@@ -100,7 +100,8 @@ func GetImplementedTestCases(disco *discovery.ModelDiscoveryItem, nameGenerator 
 					context := model.Context{"baseurl": disco.ResourceBaseURI}
 					testcase := model.TestCase{ID: nameGenerator.Generate(), Input: input, Context: context, Expect: expect, Name: op.Summary}
 					if !headlessTokenAcquisition {
-						testcase.ProcessReplacementFields(ctx, true)
+						showReplacementErrors := false
+						testcase.ProcessReplacementFields(ctx, showReplacementErrors)
 					}
 					originalEndpoints[testcase.ID] = v.Path // capture original spec paths
 					testcases = append(testcases, testcase)
@@ -140,7 +141,8 @@ func GetCustomTestCases(discoReader *discovery.CustomTest, ctx *model.Context, h
 	testcases := []model.TestCase{}
 	for _, testcase := range discoReader.Sequence {
 		if !headlessTokenAcquisition {
-			testcase.ProcessReplacementFields(ctx, true)
+			showReplacementErrors := false
+			testcase.ProcessReplacementFields(ctx, showReplacementErrors)
 		}
 		testcases = append(testcases, testcase)
 	}
