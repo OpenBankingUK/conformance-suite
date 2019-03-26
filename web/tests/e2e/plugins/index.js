@@ -14,6 +14,8 @@ module.exports = (on, config) => {
   //  watchOptions: {}
   // }))
 
+  config.env.INVALID_CLIENT_ID = 'invalid-client-id'; // eslint-disable-line
+
   return Object.assign({}, config, {
     fixturesFolder: 'tests/e2e/fixtures',
     integrationFolder: 'tests/e2e/specs',
