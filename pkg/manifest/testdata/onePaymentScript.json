@@ -11,7 +11,7 @@
                 "postData" : "$minimalDomesticPaymentConsent"    
             },
             "body": "$postData",
-            "uri": "domestic-payment-consents",
+            "uri": "/domestic-payment-consents",
             "uriImplementation": "mandatory",
             "resource": "DomesticPayment",
             "asserts": ["OB3GLOAssertOn201", "OB3GLOFAPIHeader", "OB3DOPAssertOnAcceptedSettlementCompleted", "OB3GLOAAssertConsentId"],

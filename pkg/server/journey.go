@@ -176,7 +176,6 @@ func (wj *journey) TestCases() (generation.TestCasesRun, error) {
 			wj.log.Tracef("\tname: %s codeset: %#v\n\tconsent Url: %s", x.Name, x.CodeSet.CodeSet, x.ConsentUrl)
 		}
 	}
-	wj.log.Tracef("Dumping Consents:---------------------------End\n")
 	return wj.testCasesRun, nil
 }
 

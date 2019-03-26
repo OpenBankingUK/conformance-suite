@@ -14,7 +14,7 @@
             "manifest": "file://manifests/ob_3.1_payment_fca.json"
           },
           "openidConfigurationUri": "https://modelobankauth2018.o3bank.co.uk:4101/.well-known/openid-configuration",
-          "resourceBaseUri": "https://modelobank2018.o3bank.co.uk:4501/open-banking/v3.1/",
+          "resourceBaseUri": "https://modelobank2018.o3bank.co.uk:4501/open-banking/v3.1/pisp",
           "endpoints": [{
             "method": "POST",
             "path": "/domestic-payment-consents",
