@@ -98,7 +98,7 @@ func TestComponentHeadlessLoad(t *testing.T) {
 	require.Nil(t, err)
 	ctx := Context{
 		"client_id":              "myid",
-		"fapi_financial_id":      "finid",
+		"x-fapi-financial-id":    "finid",
 		"basic_authentication":   "basicauth",
 		"token_endpoint":         "tokend",
 		"authorisation_endpoint": "authend",
