@@ -1,6 +1,22 @@
 {
 	"scripts": [
         {
+			"description": "Fails 404 on an invalided endpoint.",
+            "id": "OB-301-ACC-001000",
+            "refURI": "",
+            "detail" : "Validates that the base resource returns the correct status code (404 Not Found) given an invalided endpoint.",
+			"parameters": {
+				"tokenRequestScope": "accounts"      
+            },
+            "permissions":["ReadAccountsBasic"],
+            "uri": "/foobar",
+            "uriImplementation": "optional",
+            "resource": "Account",
+            "asserts": ["OB3GLOAssertOn404"],
+            "method":"get",
+            "schemaCheck": false
+        },
+        {
 			"description": "Minimal data returned for a given account using the ReadAccountsBasic permission, status and headers.",
             "id": "OB-301-ACC-100000",
             "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937623627/Accounts+v3.1#Accountsv3.1-PermissionCodes",
@@ -146,7 +162,7 @@
 			"description": "Fails using 401 unauthorized given no token for accounts.",
             "id": "OB-301-ACC-101000",
             "refURI": "",
-            "detail" : "Checks the correct response is returned 401 given if no token is used on an account.",
+            "detail" : "Checks the correct response is returned 401 if no token is used on an account.",
 			"parameters": {
 				"tokenRequestScope": "accounts",
                 "accountId": "$consentedAccountId"
@@ -171,6 +187,23 @@
             "resource": "Account",
             "method":"get",
             "asserts": ["OB3GLOAssertOn401", "OB3GLOAssertContentType"],
+            "schemaCheck": false
+        },
+        {
+			"description": "Fails 404 on an invalided account resource.",
+            "id": "OB-301-ACC-101101",
+            "refURI": "",
+            "detail" : "Validates that the account resource returns the correct status code (404 Not Found) given an invalided endpoint.",
+			"parameters": {
+                "tokenRequestScope": "accounts" ,
+                "accountId": "$consentedAccountId"     
+            },
+            "permissions":["ReadAccountsBasic"],
+            "uri": "/accounts/$accountId/foobar",
+            "uriImplementation": "mandatory",
+            "resource": "Account",
+            "asserts": ["OB3GLOAssertOn404"],
+            "method":"get",
             "schemaCheck": false
         },
         {
@@ -277,6 +310,23 @@
             "schemaCheck": false
         },
         {
+			"description": "Fails 404 on an invalided balance resource.",
+            "id": "OB-301-ACC-101701",
+            "refURI": "",
+            "detail" : "Validates that the balance resource returns the correct status code (404 Not Found) given an invalided endpoint.",
+			"parameters": {
+                "tokenRequestScope": "accounts" ,
+                "accountId": "$consentedAccountId"     
+            },
+            "permissions":[ "ReadAccountsBasic", "ReadBalances"],
+            "uri": "/accounts/$accountId/balances/foobar",
+            "uriImplementation": "optional",
+            "resource": "Balance",
+            "asserts": ["OB3GLOAssertOn404"],
+            "method":"get",
+            "schemaCheck": false
+        },
+        {
 			"description": "Minimal data returned for a given beneficiary using the ReadBeneficiariesBasic permission, status and headers.",
             "id": "OB-301-BEN-101800",
             "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937951315/Beneficiaries+v3.1#Beneficiariesv3.1-PermissionCodes",
@@ -360,6 +410,23 @@
             "schemaCheck": false
         },
         {
+			"description": "Fails 404 on an invalided beneficiary resource.",
+            "id": "OB-301-ACC-101701",
+            "refURI": "",
+            "detail" : "Validates that the beneficiary resource returns the correct status code (404 Not Found) given an invalided endpoint.",
+			"parameters": {
+                "tokenRequestScope": "accounts" ,
+                "accountId": "$consentedAccountId"     
+            },
+            "permissions":["ReadAccountsBasic","ReadBeneficiariesBasic"],
+            "uri": "/accounts/$accountId/beneficiaries/foobar",
+            "uriImplementation": "conditional",
+            "resource": "Beneficiary",
+            "asserts": ["OB3GLOAssertOn404"],
+            "method":"get",
+            "schemaCheck": false
+        },
+        {
 			"description": "All data returned for a given account with ReadDirectDebits permission, status and headers.",
             "id": "OB-301-DIR-102300",
             "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937558106/Direct+Debits+v3.1",
@@ -393,10 +460,10 @@
             "schemaCheck": true
         },
         {
-			"description": "Fails when account is invalid for Direct Debits.",
+			"description": "Fails when account is invalid for direct debit.",
             "id": "OB-301-DIR-102500",
             "refURI": "",
-            "detail" : "Checks the correct response (401) is returned when given an invalid account for Direct Debits.",
+            "detail" : "Checks the correct response (401) is returned when given an invalid account for direct debit.",
 			"parameters": {
 				"tokenRequestScope": "accounts",
 				"accountId": "foobar"
@@ -407,6 +474,23 @@
             "resource": "DirectDebit",
             "method":"get",
             "asserts": ["OB3GLOAssertOn401"],
+            "schemaCheck": false
+        },
+        {
+			"description": "Fails 404 on an invalided direct debit resource.",
+            "id": "OB-301-ACC-102501",
+            "refURI": "",
+            "detail" : "Validates that the direct debit resource returns the correct status code (404 Not Found) given an invalided endpoint.",
+			"parameters": {
+                "tokenRequestScope": "accounts" ,
+                "accountId": "$consentedAccountId"     
+            },
+            "permissions":[ "ReadAccountsBasic", "ReadDirectDebits"],
+            "uri": "/accounts/$accountId/direct-debits/foobar",
+            "uriImplementation": "conditional",
+            "resource": "DirectDebit",
+            "asserts": ["OB3GLOAssertOn404"],
+            "method":"get",
             "schemaCheck": false
         },
         {
@@ -461,6 +545,24 @@
             "schemaCheck": false
         },
         {
+			"description": "Fails 404 on an invalided offer resource.",
+            "id": "OB-301-ACC-102801",
+            "refURI": "",
+            "detail" : "Validates that the offer resource returns the correct status code (404 Not Found) given an invalided endpoint.",
+			"parameters": {
+                "tokenRequestScope": "accounts" ,
+                "accountId": "$consentedAccountId"     
+            },
+            "permissions": [ "ReadAccountsBasic", "ReadOffers"],
+            "uri": "/accounts/$accountId/offers/foobar",
+            "uriImplementation": "conditional",
+            "resource": "Offer",
+            "asserts": ["OB3GLOAssertOn404"],
+            "method":"get",
+            "schemaCheck": false
+        },
+
+        {
 			"description": "All data returned for a given account with ReadParty permission with additional schema checks, status and headers.",
             "id": "OB-301-PAR-102900",
             "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937984104/Party+v3.1#Partyv3.1-PermissionCodes",
@@ -513,6 +615,23 @@
             "schemaCheck": false
         },
         {
+			"description": "Fails 404 on an invalided party resource.",
+            "id": "OB-301-ACC-103101",
+            "refURI": "",
+            "detail" : "Validates that the party resource returns the correct status code (404 Not Found) given an invalided endpoint.",
+			"parameters": {
+                "tokenRequestScope": "accounts" ,
+                "accountId": "$consentedAccountId"     
+            },
+            "permissions": [ "ReadAccountsBasic", "ReadParty"],
+            "uri": "/accounts/$accountId/party/foobar",
+            "uriImplementation": "conditional",
+            "resource": "Party",
+            "asserts": ["OB3GLOAssertOn404"],
+            "method":"get",
+            "schemaCheck": false
+        },
+        {
 			"description": "All data returned for a given account with ReadProducts permission with additional schema checks, status and headers.",
             "id": "OB-301-PRO-103200",
             "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937820288/Products+v3.1#Productsv3.1-PermissionCodes",
@@ -561,7 +680,23 @@
             "method":"get",
             "asserts": ["OB3GLOAssertOn404"],
             "schemaCheck": false
-        },      
+        },   
+        {
+			"description": "Fails 404 on an invalided product resource.",
+            "id": "OB-301-ACC-103401",
+            "refURI": "",
+            "detail" : "Validates that the product resource returns the correct status code (404 Not Found) given an invalided endpoint.",
+			"parameters": {
+                "tokenRequestScope": "accounts" ,
+                "accountId": "$consentedAccountId"     
+            },
+            "permissions": [ "ReadAccountsBasic", "ReadProducts"],
+            "uri": "/accounts/$accountId/product/foobar",
+            "resource": "Product",
+            "asserts": ["OB3GLOAssertOn404"],
+            "method":"get",
+            "schemaCheck": false
+        },   
         {
 			"description": "Detailed level data returned for a given account using the ReadScheduledPaymentsDetail permission.",
             "id": "OB-301-SCP-103500",
@@ -613,6 +748,22 @@
             "schemaCheck": false
         },
         {
+			"description": "Fails 404 on an invalided scheduled payment resource.",
+            "id": "OB-301-ACC-103401",
+            "refURI": "",
+            "detail" : "Validates that the scheduled payment resource returns the correct status code (404 Not Found) given an invalided endpoint.",
+			"parameters": {
+                "tokenRequestScope": "accounts" ,
+                "accountId": "$consentedAccountId"     
+            },
+            "permissions": [ "ReadAccountsBasic", "ReadProducts"],
+            "uri": "/accounts/$accountId/scheduled-payments/foobar",
+            "resource": "ScheduledPayment",
+            "asserts": ["OB3GLOAssertOn404"],
+            "method":"get",
+            "schemaCheck": false
+        },   
+        {
 			"description": "Detailed level data returned for a given account using the ReadStandingOrdersDetail permission.",
             "id": "OB-301-STO-103800",
             "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937721918/Standing+Orders+v3.1#StandingOrdersv3.1-PermissionCodes",
@@ -661,6 +812,22 @@
             "method":"get",
             "asserts": ["OB3GLOAssertOn401"],
             "schemaCheck": false
-        }
+        },
+        {
+			"description": "Fails 404 on an invalided Standing Order resource.",
+            "id": "OB-301-ACC-104100",
+            "refURI": "",
+            "detail" : "Validates that the Standing Order resource returns the correct status code (404 Not Found) given an invalided endpoint.",
+			"parameters": {
+                "tokenRequestScope": "accounts" ,
+                "accountId": "$consentedAccountId"     
+            },
+            "permissions": [ "ReadAccountsBasic", "ReadStandingOrdersDetail"],
+            "uri": "/accounts/$accountId/standing-orders/foobar",
+            "resource": "StandingOrder",
+            "asserts": ["OB3GLOAssertOn404"],
+            "method":"get",
+            "schemaCheck": false
+        } 
 	]
 }
