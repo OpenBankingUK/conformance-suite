@@ -281,7 +281,99 @@
             ],
             "method": "get",
             "schemaCheck": false
+        },
+        {
+            "description": "Domestic standing order consents succeeds with minimal data set with additional schema checks.",
+            "id": "OB-301-DOP-101200",
+            "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1000670131/Domestic+Standing+Orders+v3.1.1#DomesticStandingOrdersv3.1.1-POST/domestic-standing-order-consents",
+            "detail": "Checks that the resource succeeds for a PISP posting a Domestic Standing Order consent with a minimal data set and checks additional schema.",
+            "parameters": {
+                "tokenRequestScope": "payments",
+                "postData": "$minimalDomesticPaymentConsent",
+                "requestConsent": true
+            },
+            "body": "$postData",
+            "uri": "/domestic-scheduled-payment-consents",
+            "uriImplementation": "conditional",
+            "resource": "DomesticStandingOrder",
+            "asserts": [
+                "OB3GLOAssertOn201",
+                "OB3GLOFAPIHeader",
+                "OB3GLOAAssertConsentId"
+            ],
+            "keepContextOnSuccess": [
+                {
+                    "name": "OB-301-DOP-101200-ConsentId",
+                    "value": "json.Data.ConsentId"
+                }
+            ],
+            "method": "post",
+            "schemaCheck": true
+        },
+        {
+            "description": "Check PISP can retrieve Domestic Standing Order consent resource status.",
+            "id": "OB-301-DOP-101300",
+            "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/999786587/Domestic+Scheduled+Payment+v3.1.1#DomesticScheduledPaymentv3.1.1-GET/domestic-scheduled-payment-consents/{ConsentId}",
+            "detail": "Check PISP can retrieve Domestic Standing Order consent resource and status is Authorised.",
+            "parameters": {
+                "tokenRequestScope": "payments",
+                "paymentType": "domestic-payment-consents",
+                "consentId": "&OB-301-DOP-101200-ConsentId"
+            },
+            "uri": "/domestic-standing-order-consents/$consentId",
+            "uriImplementation": "conditional",
+            "resource": "DomesticStandingOrder",
+            "asserts": [
+                "OB3GLOAssertOn200",
+                "OB3DOPAssertAuthorised"
+            ],
+            "method": "get",
+            "schemaCheck": false
+        },
+        {
+            "description": "Domestic Standing Order succeeds with minimal data set with additional schema checks.",
+            "id": "OB-301-DOP-101400",
+            "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1000670131/Domestic+Standing+Orders+v3.1.1#DomesticStandingOrdersv3.1.1-POST/domestic-standing-orders",
+            "detail": "Checks that the resource succeeds posting a Domestic Standing Order with a minimal data set and checks additional schema.",
+            "parameters": {
+                "tokenRequestScope": "payments",
+                "paymentType": "domestic-payment-consents",
+                "postData": "$minimalDomesticPaymentConsent"
+            },
+            "body": "$postData",
+            "uri": "/domestic-standing-orders",
+            "uriImplementation": "conditional",
+            "resource": "DomesticScheduledPayment",
+            "asserts": [
+                "OB3GLOAssertOn201"
+            ],
+            "keepContextOnSuccess": [
+                {
+                    "name": "OB-301-DOP-101000-DomesticScheduledPaymentId",
+                    "value": "json.Data.DomesticScheduledPaymentId"
+                }
+            ],
+            "method": "post",
+            "schemaCheck": true
+        },
+        {
+            "description": "Check PISP A PISP can retrieve the Domestic Standing Order to check its status.",
+            "id": "OB-301-DOP-101500",
+            "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1000670131/Domestic+Standing+Orders+v3.1.1#DomesticStandingOrdersv3.1.1-GET/domestic-standing-orders/{DomesticStandingOrderId}",
+            "detail": "Check PISP A PISP can retrieve the Domestic Standing Order.",
+            "parameters": {
+                "tokenRequestScope": "payments",
+                "paymentType": "domestic-payment-consents",
+                "paymentID": "&OB-301-DOP-101000-DomesticScheduledPaymentId"
+            },
+            "uri": "/domestic-standing-orders/&paymentID",
+            "uriImplementation": "conditional",
+            "resource": "DomesticScheduledPayment",
+            "asserts": [
+                "OB3GLOAssertOn200"
+            ],
+            "method": "get",
+            "schemaCheck": false
         }
-
     ]
 }
