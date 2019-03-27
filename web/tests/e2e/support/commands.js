@@ -79,14 +79,14 @@ Cypress.Commands.add('nextButtonContains', (text, opts) => {
   cy.contains(nextButtonId, text, opts);
 });
 
-Cypress.Commands.add('removePaymentDiscoveryItem', () => {
+Cypress.Commands.add('removeNonAccountsDiscoveryItems', () => {
   cy.window().then((win) => {
     const editor = win.ace.edit('discovery-config-editor');
     const json = editor.getSession().getValue();
     const discovery = JSON.parse(json);
     const items = discovery.discoveryModel.discoveryItems;
     discovery.discoveryModel.discoveryItems = _.filter(items,
-      item => item.apiSpecification.name !== 'Payment Initiation API');
+      item => item.apiSpecification.name === 'Account and Transaction API Specification');
     editor.getSession().setValue(JSON.stringify(discovery, null, 2));
   });
 });
@@ -94,7 +94,7 @@ Cypress.Commands.add('removePaymentDiscoveryItem', () => {
 Cypress.Commands.add('selectDiscoveryTemplate', (templateSelectorId) => {
   cy.visit('https://localhost:8443', { timeout: 24000 });
   cy.get(templateSelectorId).click();
-  cy.removePaymentDiscoveryItem();
+  cy.removeNonAccountsDiscoveryItems();
   cy.clickNext();
 });
 
