@@ -11,7 +11,7 @@
   "resource_base_url": "https://modelobank2018.o3bank.co.uk:4501",
   "x_fapi_financial_id": "0015800001041RHAAY",
   "issuer": "https://modelobankauth2018.o3bank.co.uk:4101",
-  "redirect_url": "https://127.0.0.1:8443/conformancesuite/callback",
+  "redirect_url": "https://0.0.0.0:8443/conformancesuite/callback",
   "resource_ids": {
     "account_ids": [
       {
