@@ -33,30 +33,27 @@ var update = flag.Bool("update", false, "update .golden files")
 func TestRun(t *testing.T) {
 	logger := test.NullLogger()
 
-	freePort, err := getFreePort()
-	require.NoError(t, err)
-
 	ver := version.NewBitBucket(version.BitBucketAPIRepository)
 	validatorEngine := discovery.NewFuncValidator(model.NewConditionalityChecker())
 	testGenerator := generation.NewGenerator()
 	journey := server.NewJourney(logger, testGenerator, validatorEngine)
-	address := fmt.Sprintf("%s:%d", "127.0.0.1", freePort)
 
 	echoServer := server.NewServer(journey, logger, ver)
 
 	go func() {
-		logger.Debugf("starting server %s", address)
-		errEcho := echoServer.StartTLS(address, certFile, keyFile)
-		require.NoError(t, errEcho)
+		require.EqualError(t, echoServer.StartTLS(":0", certFile, keyFile), "http: Server closed")
 	}()
+	time.Sleep(100 * time.Millisecond)
+
 	defer func() {
 		errEcho := echoServer.Shutdown(context.TODO())
-		if errEcho != nil {
-			require.NoError(t, errEcho)
-		}
+		require.NoError(t, errEcho)
 	}()
 
-	waitForServerReady(t, address)
+	tcpAddr, ok := echoServer.TLSListener.Addr().(*net.TCPAddr)
+	require.True(t, ok)
+	serverHost := fmt.Sprintf("localhost:%d", tcpAddr.Port)
+	waitForServerReady(t, serverHost)
 
 	insecureConn, err := client.NewConnection()
 	if err == client.ErrInsecure {
@@ -64,7 +61,7 @@ func TestRun(t *testing.T) {
 	} else {
 		require.NoError(t, err)
 	}
-	service := client.NewService("https://"+address, "wss://"+address, insecureConn)
+	service := client.NewService("https://"+serverHost, "wss://"+serverHost, insecureConn)
 
 	goldenFile := filepath.Join("testdata", "ozone-results.golden")
 
@@ -91,21 +88,6 @@ func TestRun(t *testing.T) {
 		t.Log(cmp.Diff(string(expected), w.String()))
 		t.Fail()
 	}
-}
-
-// GetFreePort asks the kernel for a free open port that is ready to use.
-func getFreePort() (int, error) {
-	addr, err := net.ResolveTCPAddr("tcp", "localhost:0")
-	if err != nil {
-		return 0, err
-	}
-	l, err := net.ListenTCP("tcp", addr)
-	if err != nil {
-		return 0, err
-	}
-	port := l.Addr().(*net.TCPAddr).Port
-	err = l.Close()
-	return port, err
 }
 
 func waitForServerReady(t *testing.T, address string) {
