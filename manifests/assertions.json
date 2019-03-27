@@ -107,6 +107,16 @@
 					}
 				]
 				}
-		}
+		},
+			"OB3DOPAssertAuthorised": {
+				"expect": {
+					"matches": [ 
+					{
+						"JSON": "json.Data.Status",
+						"Value": "Authorised",
+						"detail" :"Expected that the consent resource has been successfully authorised."
+					}
+				]
+				}
 	}
-}
+}}
