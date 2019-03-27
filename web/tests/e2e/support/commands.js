@@ -92,7 +92,7 @@ Cypress.Commands.add('removePaymentDiscoveryItem', () => {
 });
 
 Cypress.Commands.add('selectDiscoveryTemplate', (templateSelectorId) => {
-  cy.visit('https://localhost:8443', { timeout: 16000 });
+  cy.visit('https://localhost:8443', { timeout: 24000 });
   cy.get(templateSelectorId).click();
   cy.removePaymentDiscoveryItem();
   cy.clickNext();
