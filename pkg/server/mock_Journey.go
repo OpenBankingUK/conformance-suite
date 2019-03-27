@@ -57,6 +57,11 @@ func (_m *MockJourney) Events() events.Events {
 	return r0
 }
 
+// NewDaemonController provides a mock function with given fields:
+func (_m *MockJourney) NewDaemonController() {
+	_m.Called()
+}
+
 // Results provides a mock function with given fields:
 func (_m *MockJourney) Results() executors.DaemonController {
 	ret := _m.Called()
@@ -126,11 +131,6 @@ func (_m *MockJourney) SetDiscoveryModel(discoveryModel *discovery.Model) (disco
 
 // StopTestRun provides a mock function with given fields:
 func (_m *MockJourney) StopTestRun() {
-	_m.Called()
-}
-
-// StopTestRun provides a mock function with given fields:
-func (_m *MockJourney) NewDaemonController() {
 	_m.Called()
 }
 

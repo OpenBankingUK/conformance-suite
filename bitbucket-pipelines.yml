@@ -27,7 +27,6 @@ pipelines:
               - make devtools
               - make build
               - make test
-              - make lint
 
         # lint and test the Vue.js app
         - step:

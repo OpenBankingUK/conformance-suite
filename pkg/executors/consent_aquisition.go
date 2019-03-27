@@ -37,9 +37,9 @@ func InitiationConsentAcquisition(consentRequirements []model.SpecConsentRequire
 		tokenAcquisitionType := definition.DiscoModel.DiscoveryModel.TokenAcquisition
 		permissionString := buildPermissionString(permissionList)
 		consentInfo := TokenConsentIDItem{TokenName: tokenName, Permissions: permissionString}
-		err := runner.RunConsentAcquisition(consentInfo, ctx, tokenAcquisitionType, consentIDChannel)
-		if err != nil {
-			logger.WithError(err).Debug("InitiationConsentAcquisition")
+		errRun := runner.RunConsentAcquisition(consentInfo, ctx, tokenAcquisitionType, consentIDChannel)
+		if errRun != nil {
+			logger.WithError(errRun).Debug("InitiationConsentAcquisition")
 		}
 	}
 

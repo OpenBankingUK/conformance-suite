@@ -11,18 +11,18 @@ import (
 func TestPermx(t *testing.T) {
 	tests, err := GenerateTestCases("TestSpec", "http://mybaseurl", &model.Context{})
 	assert.Nil(t, err)
-	testcasePermissions, err := GetTestCasePermissions(tests)
+	testcasePermissions, err := getTestCasePermissions(tests)
 	assert.Nil(t, err)
-	requiredTokens, err := GetRequiredTokens(testcasePermissions)
+	requiredTokens, err := getRequiredTokens(testcasePermissions)
 	dumpJSON(requiredTokens)
 }
 
 func TestGetScriptConsentTokens(t *testing.T) {
 	tests, err := GenerateTestCases("TestSpec", "http://mybaseurl", &model.Context{})
 	assert.Nil(t, err)
-	testcasePermissions, err := GetTestCasePermissions(tests)
+	testcasePermissions, err := getTestCasePermissions(tests)
 	assert.Nil(t, err)
-	requiredTokens, err := GetRequiredTokens(testcasePermissions)
+	requiredTokens, err := getRequiredTokens(testcasePermissions)
 	populateTokens(requiredTokens)
 	dumpJSON(requiredTokens)
 }

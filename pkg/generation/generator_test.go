@@ -26,9 +26,9 @@ func testLoadDiscoveryModel(t *testing.T) *discovery.ModelDiscovery {
 func TestGenerateSpecificationTestCases(t *testing.T) {
 	logger := test.NullLogger()
 	discovery := *testLoadDiscoveryModel(t)
-	generator := NewGenerator(logger)
+	generator := NewGenerator()
 	config := GeneratorConfig{}
-	testCasesRun := generator.GenerateSpecificationTestCases(config, discovery, &model.Context{})
+	testCasesRun := generator.GenerateSpecificationTestCases(logger, config, discovery, &model.Context{})
 	cases := testCasesRun.TestCases
 
 	t.Run("returns slice of SpecificationTestCases, one per discovery item", func(t *testing.T) {

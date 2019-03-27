@@ -20,38 +20,6 @@ func TestSetHeaderDoesNothingOnAccountAccessConsent(t *testing.T) {
 	assert.Nil(updatedTc.Input.Headers)
 }
 
-func TestSetHeader(t *testing.T) {
-	assert := test.NewAssert(t)
-
-	consentRequirements := []model.SpecConsentRequirements{
-		{
-			NamedPermissions: []model.NamedPermission{
-				{
-					Name: "permission-set-1",
-					CodeSet: permissions.CodeSetResult{
-						TestIds: []permissions.TestId{"1"},
-					},
-				},
-			},
-		},
-	}
-	tc := model.TestCase{}
-
-	// Creates headers with authorization
-	tc.ID = "1"
-	updatedTc := setHeader(consentRequirements, tc)
-	assert.NotNil(updatedTc.Input.Headers)
-	assert.NotNil(updatedTc.Input.Headers["authorization"])
-	assert.Equal("Bearer $permission-set-1", updatedTc.Input.Headers["authorization"])
-
-	// replaces header with authorization
-	tc.ID = "1"
-	updatedTc.Input.Headers["authorization"] = "123"
-	updatedTc = setHeader(consentRequirements, tc)
-	assert.NotNil(updatedTc.Input.Headers)
-	assert.Equal("Bearer $permission-set-1", updatedTc.Input.Headers["authorization"])
-}
-
 func TestAuthorizationNamedSet(t *testing.T) {
 	assert := test.NewAssert(t)
 

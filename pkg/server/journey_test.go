@@ -10,7 +10,6 @@ import (
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery/mocks"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/generation"
 	gmocks "bitbucket.org/openbankingteam/conformance-suite/pkg/generation"
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
 	"github.com/pkg/errors"
 	"github.com/stretchr/testify/require"
 )
@@ -104,52 +103,6 @@ func TestJourneyTestCasesCantGenerateIfDiscoveryNotSet(t *testing.T) {
 
 	assert.Error(err)
 	assert.Equal(generation.TestCasesRun{}, testCases)
-}
-
-func TestJourneyTestCasesGenerate(t *testing.T) {
-	assert := test.NewAssert(t)
-
-	validator := &mocks.Validator{}
-	discoveryModel := &discovery.Model{}
-	validator.On("Validate", discoveryModel).Return(discovery.NoValidationFailures, nil)
-	expectedTestCases := generation.TestCasesRun{}
-	generator := &gmocks.MockGenerator{}
-	config := generation.GeneratorConfig{ClientID: "", Aud: "", ResponseType: "code id_token", Scope: "openid accounts", AuthorizationEndpoint: "", RedirectURL: ""}
-	generator.On("GenerateSpecificationTestCases", config, discoveryModel.DiscoveryModel, &model.Context{}).Return(expectedTestCases)
-	journey := NewJourney(nullLogger(), generator, validator)
-	_, err := journey.SetDiscoveryModel(discoveryModel)
-	require.NoError(t, err)
-
-	testCasesRun, err := journey.TestCases()
-
-	assert.NoError(err)
-	assert.Equal(expectedTestCases, testCasesRun)
-}
-
-func TestJourneyTestCasesDoesntREGenerate(t *testing.T) {
-	assert := test.NewAssert(t)
-
-	validator := &mocks.Validator{}
-	discoveryModel := &discovery.Model{}
-	validator.On("Validate", discoveryModel).Return(discovery.NoValidationFailures, nil)
-	expectedTestCases := generation.TestCasesRun{}
-	generator := &gmocks.MockGenerator{}
-	config := generation.GeneratorConfig{ClientID: "", Aud: "", ResponseType: "code id_token", Scope: "openid accounts", AuthorizationEndpoint: "", RedirectURL: ""}
-	generator.On("GenerateSpecificationTestCases", config, discoveryModel.DiscoveryModel, &model.Context{}).
-		Return(expectedTestCases).Times(1)
-
-	journey := NewJourney(nullLogger(), generator, validator)
-	_, err := journey.SetDiscoveryModel(discoveryModel)
-	require.NoError(t, err)
-	firstRunTestCases, err := journey.TestCases()
-	require.NoError(t, err)
-
-	testCases, err := journey.TestCases()
-
-	assert.NoError(err)
-	assert.Equal(expectedTestCases, testCases)
-	assert.Equal(firstRunTestCases.TestCases, testCases.TestCases)
-	generator.AssertExpectations(t)
 }
 
 func TestJourneyRunTestCasesCantRunIfNoTestCases(t *testing.T) {

@@ -38,7 +38,7 @@ func TestRun(t *testing.T) {
 
 	ver := version.NewBitBucket(version.BitBucketAPIRepository)
 	validatorEngine := discovery.NewFuncValidator(model.NewConditionalityChecker())
-	testGenerator := generation.NewGenerator(test.NullLogger())
+	testGenerator := generation.NewGenerator()
 	journey := server.NewJourney(logger, testGenerator, validatorEngine)
 	address := fmt.Sprintf("%s:%d", "127.0.0.1", freePort)
 
