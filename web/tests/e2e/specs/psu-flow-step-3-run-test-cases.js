@@ -14,21 +14,34 @@ describe('PSU consent granted model bank test case run', () => {
     // wait for Web socket to be connected:
     cy.get('#ws-connected', { timeout: 16000 });
 
-    cy.readFile('redirectBackUrl.txt').then((redirectBackUrl) => {
-      // Use localhost domain to avoid security warnings in browser:
-      const url = redirectBackUrl.replace('0.0.0.0', 'localhost').replace('127.0.0.1', 'localhost');
-      const uri = new URI(url);
-      const params = {
-        method: 'POST',
-        url: api.consentCallbackEndpoint(uri),
-        body: api.consentParams(uri),
+    cy.readFile('redirectBackUrls.json').then((urls) => {
+      const calls = urls.map((redirectBackUrl) => {
+        // Use localhost domain to avoid security warnings in browser:
+        const url = redirectBackUrl.replace('0.0.0.0', 'localhost').replace('127.0.0.1', 'localhost');
+        const uri = new URI(url);
+        return {
+          method: 'POST',
+          url: api.consentCallbackEndpoint(uri),
+          body: api.consentParams(uri),
+        };
+      });
+
+      const req = (list) => {
+        const params = list.pop();
+        cy
+          .request(params)
+          .then(() => {
+            if (calls.length === 0) {
+              cy.runTestCases();
+              cy.exportConformanceReport();
+              return;
+            }
+            // else recurse
+            req(calls);
+          });
       };
 
-      cy.request(params).then((response) => {
-        console.log(response.status); // eslint-disable-line
-        cy.runTestCases();
-        cy.exportConformanceReport();
-      });
+      req(calls);
     });
   });
 });
