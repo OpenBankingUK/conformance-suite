@@ -29,7 +29,16 @@
 === PASS: OB-301-PAR-103000
 === PASS: OB-301-PAR-103100
 === FAIL: OB-301-PRO-103200
-	 (OB-301-PRO-103200):All data returned for a given account with ReadProducts permission with additional schema checks, status and headers.: HTTP Status code does not match: expected 200 got 404
+	 Response: (<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Error</title>
+</head>
+<body>
+<pre>Cannot GET /open-banking/v3.1/aisp/accounts/500000000000000000000001/product</pre>
+</body>
+</html>): (OB-301-PRO-103200):All data returned for a given account with ReadProducts permission with additional schema checks, status and headers.: HTTP Status code does not match: expected 200 got 404
 === PASS: OB-301-PRO-103300
 === PASS: OB-301-PAR-103400
 === PASS: OB-301-SCP-103500
