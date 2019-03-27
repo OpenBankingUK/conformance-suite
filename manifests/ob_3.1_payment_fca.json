@@ -32,7 +32,7 @@
                 "tokenRequestScope": "payments",
                 "paymentType": "domestic-payment-consents",
                 "postData": "$minimalDomesticPaymentConsent",
-                "requestConsent": false
+                "requestConsent": "false"
             },
             "body": "$postData",
             "uri": "/domestic-payment-consents",
@@ -81,7 +81,7 @@
                 "tokenRequestScope": "payments",
                 "paymentType": "domestic-payment-consents",
                 "postData": "$minimalDomesticPaymentConsent",
-                "requestConsent": true
+                "requestConsent": "true"
             },
             "body": "$postData",
             "uri": "/domestic-payment-consents",
@@ -196,7 +196,7 @@
             "parameters": {
                 "tokenRequestScope": "payments",
                 "postData": "$minimalDomesticPaymentConsent",
-                "requestConsent": true
+                "requestConsent": "true"
             },
             "body": "$postData",
             "uri": "/domestic-scheduled-payment-consents",
@@ -290,7 +290,7 @@
             "parameters": {
                 "tokenRequestScope": "payments",
                 "postData": "$minimalDomesticPaymentConsent",
-                "requestConsent": true
+                "requestConsent": "true"
             },
             "body": "$postData",
             "uri": "/domestic-scheduled-payment-consents",
