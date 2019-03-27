@@ -86,6 +86,17 @@
                 }
             ]
 			}
+		},
+		"OB3DOPAssertInvalidConsentStatus": {
+			"expect": {
+				"matches": [ 
+                {
+                    "JSON": "json.Data.Error",
+					"Value": "UK.OBIE.Resource.InvalidConsentStatus",
+					"detail" :"Expected error UK.OBIE.Resource.InvalidConsentStatus error code if the status is not Authorised"
+                }
+            ]
+			}
 		}
 	}
 }
