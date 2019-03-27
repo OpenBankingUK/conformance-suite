@@ -96,7 +96,17 @@
 					"detail" :"Expected error UK.OBIE.Resource.InvalidConsentStatus error code if the status is not Authorised"
                 }
             ]
-			}
+			},
+			"OB3DOPAssertAwaitingAuthorisation": {
+				"expect": {
+					"matches": [ 
+					{
+						"JSON": "json.Data.Status",
+						"Value": "AwaitingAuthorisation",
+						"detail" :"Expected AwaitingAuthorisation, consent resource awaiting PSU authorisation."
+					}
+				]
+				}
 		}
 	}
 }
