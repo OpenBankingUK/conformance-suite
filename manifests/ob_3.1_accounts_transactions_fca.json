@@ -1,10 +1,10 @@
 {
     "scripts": [
         {
-            "description": "Fails 404 on an invalided endpoint.",
+            "description": "Fails 404 on an invalid endpoint.",
             "id": "OB-301-ACC-001000",
             "refURI": "",
-            "detail": "Validates that the base resource returns the correct status code (404 Not Found) given an invalided endpoint.",
+            "detail": "Validates that the base resource returns the correct status code (404 Not Found) given an invalid endpoint.",
             "parameters": {
                 "tokenRequestScope": "accounts"
             },
@@ -116,7 +116,7 @@
             "description": "Fails using incorrect permissions for a given account.",
             "id": "OB-301-ACC-100500",
             "refURI": "",
-            "detail": "Validates that the account resource fails correctly given an invalided or incorrect token.",
+            "detail": "Validates that the account resource fails correctly given an invalid or incorrect token.",
             "parameters": {
                 "tokenRequestScope": "accounts",
                 "accountId": "$consentedAccountId"
@@ -139,7 +139,7 @@
             "description": "Fails using incorrect permissions for bulk accounts.",
             "id": "OB-301-ACC-100600",
             "refURI": "",
-            "detail": "Validates that the account list resource fails correctly given an invalided or incorrect token.",
+            "detail": "Validates that the account list resource fails correctly given an invalid or incorrect token.",
             "parameters": {
                 "tokenRequestScope": "accounts"
             },
@@ -241,10 +241,10 @@
             "schemaCheck": false
         },
         {
-            "description": "Fails 404 on an invalided account resource.",
+            "description": "Fails 404 on an invalid account resource.",
             "id": "OB-301-ACC-101101",
             "refURI": "",
-            "detail": "Validates that the account resource returns the correct status code (404 Not Found) given an invalided endpoint.",
+            "detail": "Validates that the account resource returns the correct status code (404 Not Found) given an invalid endpoint.",
             "parameters": {
                 "tokenRequestScope": "accounts",
                 "accountId": "$consentedAccountId"
@@ -312,7 +312,7 @@
             "description": "Fails on incorrect permissions are provided for balance.",
             "id": "OB-301-BAL-101400",
             "refURI": "",
-            "detail": "Validates that the balance resource fails correctly given an invalided permissions",
+            "detail": "Validates that the balance resource fails correctly given an invalid permissions",
             "parameters": {
                 "tokenRequestScope": "accounts",
                 "accountId": "$consentedAccountId"
@@ -335,7 +335,7 @@
             "description": "Fails on incorrect permissions for bulk balances.",
             "id": "OB-301-BAL-101500",
             "refURI": "",
-            "detail": "Validates that the bulk balances resource fails correctly given an invalided permissions",
+            "detail": "Validates that the bulk balances resource fails correctly given an invalid permissions",
             "parameters": {
                 "tokenRequestScope": "accounts"
             },
@@ -396,10 +396,10 @@
             "schemaCheck": false
         },
         {
-            "description": "Fails 404 on an invalided balance resource.",
+            "description": "Fails 404 on an invalid balance resource.",
             "id": "OB-301-ACC-101701",
             "refURI": "",
-            "detail": "Validates that the balance resource returns the correct status code (404 Not Found) given an invalided endpoint.",
+            "detail": "Validates that the balance resource returns the correct status code (404 Not Found) given an invalid endpoint.",
             "parameters": {
                 "tokenRequestScope": "accounts",
                 "accountId": "$consentedAccountId"
@@ -466,7 +466,7 @@
             "description": "Fails when incorrect permissions are provided for bulk beneficiaries.",
             "id": "OB-301-BEN-102000",
             "refURI": "",
-            "detail": "Validates that the bulk beneficiaries resource fails correctly given an invalided permisison.",
+            "detail": "Validates that the bulk beneficiaries resource fails correctly given an invalid permisison.",
             "parameters": {
                 "tokenRequestScope": "accounts"
             },
@@ -488,7 +488,7 @@
             "description": "Fails given incorrect permission is provided for a beneficiary.",
             "id": "OB-301-BEN-102100",
             "refURI": "",
-            "detail": "Validates that the beneficiary resource fails correctly given an invalided permission.",
+            "detail": "Validates that the beneficiary resource fails correctly given an invalid permission.",
             "parameters": {
                 "tokenRequestScope": "accounts",
                 "accountId": "$consentedAccountId"
@@ -530,10 +530,10 @@
             "schemaCheck": false
         },
         {
-            "description": "Fails 404 on an invalided beneficiary resource.",
+            "description": "Fails 404 on an invalid beneficiary resource.",
             "id": "OB-301-ACC-101701",
             "refURI": "",
-            "detail": "Validates that the beneficiary resource returns the correct status code (404 Not Found) given an invalided endpoint.",
+            "detail": "Validates that the beneficiary resource returns the correct status code (404 Not Found) given an invalid endpoint.",
             "parameters": {
                 "tokenRequestScope": "accounts",
                 "accountId": "$consentedAccountId"
@@ -619,10 +619,10 @@
             "schemaCheck": false
         },
         {
-            "description": "Fails 404 on an invalided direct debit resource.",
+            "description": "Fails 404 on an invalid direct debit resource.",
             "id": "OB-301-ACC-102501",
             "refURI": "",
-            "detail": "Validates that the direct debit resource returns the correct status code (404 Not Found) given an invalided endpoint.",
+            "detail": "Validates that the direct debit resource returns the correct status code (404 Not Found) given an invalid endpoint.",
             "parameters": {
                 "tokenRequestScope": "accounts",
                 "accountId": "$consentedAccountId"
@@ -709,10 +709,10 @@
             "schemaCheck": false
         },
         {
-            "description": "Fails 404 on an invalided offer resource.",
+            "description": "Fails 404 on an invalid offer resource.",
             "id": "OB-301-ACC-102801",
             "refURI": "",
-            "detail": "Validates that the offer resource returns the correct status code (404 Not Found) given an invalided endpoint.",
+            "detail": "Validates that the offer resource returns the correct status code (404 Not Found) given an invalid endpoint.",
             "parameters": {
                 "tokenRequestScope": "accounts",
                 "accountId": "$consentedAccountId"
@@ -799,10 +799,10 @@
             "schemaCheck": false
         },
         {
-            "description": "Fails 404 on an invalided party resource.",
+            "description": "Fails 404 on an invalid party resource.",
             "id": "OB-301-ACC-103101",
             "refURI": "",
-            "detail": "Validates that the party resource returns the correct status code (404 Not Found) given an invalided endpoint.",
+            "detail": "Validates that the party resource returns the correct status code (404 Not Found) given an invalid endpoint.",
             "parameters": {
                 "tokenRequestScope": "accounts",
                 "accountId": "$consentedAccountId"
@@ -888,10 +888,10 @@
             "schemaCheck": false
         },
         {
-            "description": "Fails 404 on an invalided product resource.",
+            "description": "Fails 404 on an invalid product resource.",
             "id": "OB-301-ACC-103401",
             "refURI": "",
-            "detail": "Validates that the product resource returns the correct status code (404 Not Found) given an invalided endpoint.",
+            "detail": "Validates that the product resource returns the correct status code (404 Not Found) given an invalid endpoint.",
             "parameters": {
                 "tokenRequestScope": "accounts",
                 "accountId": "$consentedAccountId"
@@ -976,10 +976,10 @@
             "schemaCheck": false
         },
         {
-            "description": "Fails 404 on an invalided scheduled payment resource.",
+            "description": "Fails 404 on an invalid scheduled payment resource.",
             "id": "OB-301-ACC-103401",
             "refURI": "",
-            "detail": "Validates that the scheduled payment resource returns the correct status code (404 Not Found) given an invalided endpoint.",
+            "detail": "Validates that the scheduled payment resource returns the correct status code (404 Not Found) given an invalid endpoint.",
             "parameters": {
                 "tokenRequestScope": "accounts",
                 "accountId": "$consentedAccountId"
@@ -1064,10 +1064,10 @@
             "schemaCheck": false
         },
         {
-            "description": "Fails 404 on an invalided Standing Order resource.",
+            "description": "Fails 404 on an invalid Standing Order resource.",
             "id": "OB-301-ACC-104100",
             "refURI": "",
-            "detail": "Validates that the Standing Order resource returns the correct status code (404 Not Found) given an invalided endpoint.",
+            "detail": "Validates that the Standing Order resource returns the correct status code (404 Not Found) given an invalid endpoint.",
             "parameters": {
                 "tokenRequestScope": "accounts",
                 "accountId": "$consentedAccountId"

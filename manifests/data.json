@@ -7,7 +7,7 @@
             "InstructionIdentification": "Excaliber",
             "EndToEndIdentification": "Excaliber",
             "InstructedAmount": {
-              "Amount": "10.00",
+              "Amount": "1.00",
               "Currency": "GBP"
             },
             "CreditorAccount": {
@@ -20,53 +20,114 @@
         "Risk": {}
       }
     },
-
-    "maxDomesticPaymentConsent": {
+    "minimalInternationalPaymentConsent": {
       "body": {
         "Data": {
           "Initiation": {
-            "InstructionIdentification": "Excaliber",
-            "EndToEndIdentification": "Excaliber",
-            "LocalInstrument": "BICFI",
+            "InstructionIdentification": "Excaliber International",
+            "EndToEndIdentification": "Excaliber International",
+            "CurrencyOfTransfer": "USD",
             "InstructedAmount": {
-              "Amount": "10.00",
-              "Currency": "GBP"
-            },
-            "DebtorAccount": {
-              "$ref": "#/globals/pis/DebtorAccount"
+              "Amount": "1.00",
+              "Currency": "USD"
             },
             "CreditorAccount": {
               "SchemeName": "SortCodeAccountNumber",
               "Identification": "20202010981789",
-              "Name": "Dr Foo",
-              "SecondaryIdentification": "Foo"
+              "Name": "Dr Foo"
+            }
+          }
+        }
+      },
+      "Risk": {}
+    },
+    "minimalInternationalStandingOrderConsent": {
+      "body": {
+        "Data": {
+          "Permission": "Create",
+          "Initiation": {
+            "Frequency": "EvryDay",
+            "FirstPaymentDateTime": "2020-10-01T13:14:25+00:00",
+            "CurrencyOfTransfer": "USD",
+            "InstructedAmount": {
+              "Amount": "1.00",
+              "Currency": "USD"
             },
-            "CreditorPostalAddress": {
-              "AddressType": "Business",
-              "Department": "Sales",
-              "SubDepartment": "Fashion accessories",
-              "StreetName": "Jehangir Vimadalal Road",
-              "BuildingNumber": "729",
-              "PostCode": "400 014",
-              "TownName": "Mumbai",
-              "CountrySubDivision": "Maharaashtra",
-              "Country": "IN",
-              "AddressLine": [
-                "Jehangir Vimadalal Road",
-                "729",
-                "400 014",
-                "Mumbai",
-                "Maharaashtra",
-                "India"
-              ]
-            },
-            "RemittanceInformation": {
-              "Unstructured": "Call of the wild",
-              "Reference": "Card"
+            "CreditorAccount": {
+              "SchemeName": "SortCodeAccountNumber",
+              "Identification": "20202010981789",
+              "Name": "Dr Foo"
             }
           }
         },
         "Risk": {}
+      }
+    },
+    "minimalInternationalStandingOrder": {
+      "body": {
+        "Data": {
+          "Initiation": {
+            "Frequency": "EvryDay",
+            "FirstPaymentDateTime": "2020-10-01T13:14:25+00:00",
+            "CurrencyOfTransfer": "USD",
+            "InstructedAmount": {
+              "Amount": "1.00",
+              "Currency": "USD"
+            },
+            "CreditorAccount": {
+              "SchemeName": "SortCodeAccountNumber",
+              "Identification": "20202010981789",
+              "Name": "Dr Foo"
+            }
+          }
+        },
+        "Risk": {}
+      }
+    },
+    "minimalInternationalScheduledPaymentConsent": {
+      "body": {
+        "Data": {
+          "Permission": "Create",
+          "Initiation": {
+            "RequestedExecutionDateTime": "2020-10-01T13:14:25+00:00",
+            "InstructionIdentification": "Excaliber International",
+            "EndToEndIdentification": "Excaliber International",
+            "CurrencyOfTransfer": "USD",
+            "InstructedAmount": {
+              "Amount": "1.00",
+              "Currency": "USD"
+            },
+            "CreditorAccount": {
+              "SchemeName": "SortCodeAccountNumber",
+              "Identification": "20202010981789",
+              "Name": "Dr Foo"
+            }
+          }
+        },
+        "Risk": {}
+      }
+    },
+    "minimalInternationalScheduledPayment": {
+      "body": {
+       "Data": {
+        "Initiation": {
+          "RequestedExecutionDateTime": "2020-10-01T13:14:25+00:00",
+          "InstructionIdentification": "Excaliber International",
+          "EndToEndIdentification": "Excaliber International",
+          "CurrencyOfTransfer": "USD",
+          "InstructedAmount": {
+            "Amount": "1.00",
+            "Currency": "USD"
+          },
+          "CreditorAccount": {
+              "SchemeName" : "UK.OBIE.IBAN",
+              "Identification" : "GB29PAPA20000390210002",
+              "Name" : "Charitable Funds"
+          }
+        }
+      },
+      "Risk": {}
+
       }
     }
   }
