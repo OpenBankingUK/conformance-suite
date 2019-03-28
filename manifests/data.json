@@ -20,54 +20,6 @@
         "Risk": {}
       }
     },
-    "maxDomesticPaymentConsent": {
-      "body": {
-        "Data": {
-          "Initiation": {
-            "InstructionIdentification": "Excaliber",
-            "EndToEndIdentification": "Excaliber",
-            "LocalInstrument": "BICFI",
-            "InstructedAmount": {
-              "Amount": "10.00",
-              "Currency": "GBP"
-            },
-            "DebtorAccount": {
-              "$ref": "#/globals/pis/DebtorAccount"
-            },
-            "CreditorAccount": {
-              "SchemeName": "SortCodeAccountNumber",
-              "Identification": "20202010981789",
-              "Name": "Dr Foo",
-              "SecondaryIdentification": "Foo"
-            },
-            "CreditorPostalAddress": {
-              "AddressType": "Business",
-              "Department": "Sales",
-              "SubDepartment": "Fashion accessories",
-              "StreetName": "Jehangir Vimadalal Road",
-              "BuildingNumber": "729",
-              "PostCode": "400 014",
-              "TownName": "Mumbai",
-              "CountrySubDivision": "Maharaashtra",
-              "Country": "IN",
-              "AddressLine": [
-                "Jehangir Vimadalal Road",
-                "729",
-                "400 014",
-                "Mumbai",
-                "Maharaashtra",
-                "India"
-              ]
-            },
-            "RemittanceInformation": {
-              "Unstructured": "Call of the wild",
-              "Reference": "Card"
-            }
-          }
-        },
-        "Risk": {}
-      }
-    },
     "minimalInternationalPaymentConsent": {
       "Data": {
         "Initiation": {
