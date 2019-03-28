@@ -7,7 +7,7 @@
             "InstructionIdentification": "Excaliber",
             "EndToEndIdentification": "Excaliber",
             "InstructedAmount": {
-              "Amount": "10.00",
+              "Amount": "1.00",
               "Currency": "GBP"
             },
             "CreditorAccount": {
@@ -28,7 +28,7 @@
             "EndToEndIdentification": "Excaliber International",
             "CurrencyOfTransfer": "USD",
             "InstructedAmount": {
-              "Amount": "7.41",
+              "Amount": "1.00",
               "Currency": "USD"
             },
             "CreditorAccount": {
@@ -50,7 +50,7 @@
             "FirstPaymentDateTime": "2020-10-01T13:14:25+00:00",
             "CurrencyOfTransfer": "USD",
             "InstructedAmount": {
-              "Amount": "7.41",
+              "Amount": "1.00",
               "Currency": "USD"
             },
             "CreditorAccount": {
@@ -71,7 +71,7 @@
             "FirstPaymentDateTime": "2020-10-01T13:14:25+00:00",
             "CurrencyOfTransfer": "USD",
             "InstructedAmount": {
-              "Amount": "7.41",
+              "Amount": "1.00",
               "Currency": "USD"
             },
             "CreditorAccount": {
@@ -94,7 +94,7 @@
             "EndToEndIdentification": "Excaliber International",
             "CurrencyOfTransfer": "USD",
             "InstructedAmount": {
-              "Amount": "7.41",
+              "Amount": "1.00",
               "Currency": "USD"
             },
             "CreditorAccount": {
@@ -116,13 +116,13 @@
           "EndToEndIdentification": "Excaliber International",
           "CurrencyOfTransfer": "USD",
           "InstructedAmount": {
-            "Amount": "7.13",
+            "Amount": "1.00",
             "Currency": "USD"
           },
           "CreditorAccount": {
               "SchemeName" : "UK.OBIE.IBAN",
               "Identification" : "GB29PAPA20000390210002",
-              "Name" : "pectre Charitable Funds"
+              "Name" : "Charitable Funds"
           }
         }
       },
