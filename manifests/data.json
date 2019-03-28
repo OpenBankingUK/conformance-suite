@@ -20,7 +20,6 @@
         "Risk": {}
       }
     },
-
     "maxDomesticPaymentConsent": {
       "body": {
         "Data": {
@@ -68,6 +67,25 @@
         },
         "Risk": {}
       }
+    },
+    "minimalInternationalPaymentConsent": {
+      "Data": {
+        "Initiation": {
+          "InstructionIdentification": "Excaliber International",
+          "EndToEndIdentification": "Excaliber International",
+          "CurrencyOfTransfer": "USD",
+          "InstructedAmount": {
+            "Amount": "7.41",
+            "Currency": "USD"
+          },
+          "CreditorAccount": {
+            "SchemeName": "SortCodeAccountNumber",
+            "Identification": "20202010981789",
+            "Name": "Dr Foo"
+          }
+        }
+      },
+      "Risk": {}
     }
   }
 }

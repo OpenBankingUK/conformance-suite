@@ -118,5 +118,18 @@
 					}
 				]
 				}
+	},
+	"OB3IPAssertInternationalPaymentId": {
+		"expect": {
+			"matches": [ 
+			{
+				"JSON": "json.Data.InternationalPaymentId",
+				"detail" :"Expected a unique identification as assigned by the ASPSP to uniquely identify the international payment resource."
+			}
+		]
+		}
 	}
-}}
+
+
+
+}}}
