@@ -531,7 +531,7 @@
         },
         {
             "description": "Fails 404 on an invalid Beneficiary resource.",
-            "id": "OB-301-ACC-101701",
+            "id": "OB-301-BEN-102201",
             "refURI": "",
             "detail": "Validates that the beneficiary resource returns the correct status code (404 Not Found) given an invalid endpoint.",
             "parameters": {
@@ -553,7 +553,7 @@
         },
         {
             "description": "Fails using client grant token on Beneficiaries.",
-            "id": "OB-301-BAL-101702",
+            "id": "OB-301-BAL-102203",
             "refURI": "",
             "detail": "Checks the correct response is returned 401 using a CCG token on Beneficiaries",
             "parameters": {
