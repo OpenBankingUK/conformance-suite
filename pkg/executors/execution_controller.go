@@ -196,6 +196,9 @@ func (r *TestCaseRunner) executeComponentTests(comp *model.Component, ruleCtx *m
 			item.ConsentID = consentID
 			logrus.StandardLogger().Debugf("Sending Item %s:%s:%s to consentIDChannel", item.TokenName, item.ConsentID, item.ConsentURL)
 			consentIDChannel <- item
+		} else if len(testResult.Fail) > 0 {
+			item.Error = testResult.Fail
+			consentIDChannel <- item
 		}
 	}
 }
@@ -247,12 +250,13 @@ func (r *TestCaseRunner) executeTest(tc model.TestCase, ruleCtx *model.Context, 
 
 	result, err := tc.Validate(resp, ruleCtx)
 	if err != nil {
-		ctxLogger.WithError(err).WithFields(logrus.Fields{"result": passText[result], "ID": tc.ID}).Error("test result")
-		return results.NewTestCaseFail(tc.ID, metrics, err)
+		errAndResponse := errors.WithMessage(err, fmt.Sprintf("Response: (%.250s)", resp.String()))
+		ctxLogger.WithError(errAndResponse).WithFields(logrus.Fields{"result": passText[result], "ID": tc.ID}).Error("test result validate")
+		return results.NewTestCaseFail(tc.ID, metrics, errAndResponse)
 	}
 
 	if !result {
-		ctxLogger.WithError(err).WithFields(logrus.Fields{"result": passText[result], "ID": tc.ID}).Error("test result")
+		ctxLogger.WithError(err).WithFields(logrus.Fields{"result": passText[result], "ID": tc.ID}).Error("test result blank")
 	} else {
 		ctxLogger.WithError(err).WithFields(logrus.Fields{"result": passText[result], "ID": tc.ID}).Info("test result")
 	}

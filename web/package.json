@@ -10,6 +10,7 @@
     "test:e2e": "vue-cli-service test:e2e --url https://localhost:8443/",
     "test:e2e:headless-consent": "vue-cli-service test:e2e --spec \"./tests/e2e/specs/headless-consent-flow-run.js\" --url https://localhost:8443/ --headless ",
     "test:e2e:psu-consent": "vue-cli-service test:e2e --spec \"./tests/e2e/specs/psu-*.js\" --url https://localhost:8443/ --headless ",
+    "test:e2e:psu-invalid": "vue-cli-service test:e2e --spec \"./tests/e2e/specs/psu-flow-with-invalid*.js\" --url https://localhost:8443/ --headless ",
     "test:e2e:all": "vue-cli-service test:e2e --url https://localhost:8443/ --headless ",
     "test:unit": "vue-cli-service test:unit --detectOpenHandles",
     "test:watch": "vue-cli-service test:unit --watch",
@@ -35,6 +36,9 @@
     "vue2-brace-editor": "^2.0.2",
     "vuex": "^3.0.1",
     "whatwg-fetch": "^3.0.0"
+  },
+  "resolutions": {
+    "cypress": "3.1.5"
   },
   "devDependencies": {
     "@babel/runtime": "7.3.1",

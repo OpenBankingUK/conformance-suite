@@ -33,6 +33,7 @@ type TokenConsentIDItem struct {
 	Permissions string
 	AccessToken string
 	ConsentURL  string
+	Error       string
 }
 
 // TokenCollector - collects tokens

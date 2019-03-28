@@ -1,3 +1,4 @@
+=== PASS: OB-301-ACC-001000
 === PASS: OB-301-ACC-100000
 === PASS: OB-301-ACC-100200
 === PASS: OB-301-ACC-100300
@@ -8,33 +9,51 @@
 === PASS: OB-301-ACC-100800
 === PASS: OB-301-ACC-101000
 === PASS: OB-301-ACC-101100
+=== PASS: OB-301-ACC-101101
 === PASS: OB-301-BAL-101200
 === PASS: OB-301-BAL-101300
 === PASS: OB-301-BAL-101400
 === PASS: OB-301-BAL-101500
 === PASS: OB-301-BAL-101600
 === PASS: OB-301-BAL-101700
+=== PASS: OB-301-ACC-101701
 === PASS: OB-301-BEN-101800
 === PASS: OB-301-BEN-101900
 === PASS: OB-301-BEN-102000
 === PASS: OB-301-BEN-102100
 === PASS: OB-301-BEN-102200
+=== PASS: OB-301-ACC-101701
 === PASS: OB-301-DIR-102300
 === PASS: OB-301-DIR-102400
 === PASS: OB-301-DIR-102500
+=== PASS: OB-301-ACC-102501
 === PASS: OB-301-OFF-102600
 === PASS: OB-301-OFF-102700
 === PASS: OB-301-OFF-102800
+=== PASS: OB-301-ACC-102801
 === PASS: OB-301-PAR-102900
 === PASS: OB-301-PAR-103000
 === PASS: OB-301-PAR-103100
+=== PASS: OB-301-ACC-103101
 === FAIL: OB-301-PRO-103200
-	 (OB-301-PRO-103200):All data returned for a given account with ReadProducts permission with additional schema checks, status and headers.: HTTP Status code does not match: expected 200 got 404
+	 Response: (<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Error</title>
+</head>
+<body>
+<pre>Cannot GET /open-banking/v3.1/aisp/accounts/500000000000000000000001/product</pre>
+</body>
+</html>): (OB-301-PRO-103200):All data returned for a given account with ReadProducts permission with additional schema checks, status and headers.: HTTP Status code does not match: expected 200 got 404
 === PASS: OB-301-PRO-103300
 === PASS: OB-301-PAR-103400
+=== PASS: OB-301-ACC-103401
 === PASS: OB-301-SCP-103500
 === PASS: OB-301-SCP-103600
 === PASS: OB-301-SCP-103700
+=== PASS: OB-301-ACC-103401
 === PASS: OB-301-STO-103800
 === PASS: OB-301-STO-103900
 === PASS: OB-301-STO-104000
+=== PASS: OB-301-ACC-104100
