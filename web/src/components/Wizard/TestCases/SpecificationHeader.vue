@@ -36,8 +36,8 @@
             :title="url"
             class="psu-consent-link"
             href="#"
-            @click="openPopup(url, 'PSU Consent', 1074, 800)">
-            Start PSU Consent
+            @click="startPsuConsent(url, $event.target)">
+            PSU Consent
           </a>
           <br :key="index">
         </template>
@@ -108,6 +108,10 @@ export default {
     },
   },
   methods: {
+    startPsuConsent(url, targetElement) {
+      this.openPopup(url, 'PSU Consent', 1074, 800);
+      targetElement.innerHTML = 'PSU Consent (Started)'; // eslint-disable-line
+    },
     openPopup(url, title, w, h) {
       // Open a window popup via Javascript and supports single/dual displays
       // Credit: https://stackoverflow.com/a/16861050/225885
