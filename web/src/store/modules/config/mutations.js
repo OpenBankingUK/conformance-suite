@@ -59,6 +59,18 @@ export default {
   [types.SET_ISSUER](state, value) {
     state.configuration.issuer = value;
   },
+  [types.SET_RESOURCE_ACCOUNT_ID](state, { index, value }) {
+    // Without the use of Vue.set the JSON editor tab view does not update on form input change.
+    // https://vuejs.org/v2/api/#Vue-set
+    const id = { account_id: value };
+    Vue.set(state.configuration.resource_ids.account_ids, index, id);
+  },
+  [types.SET_RESOURCE_STATEMENT_ID](state, { index, value }) {
+    // Without the use of Vue.set the JSON editor tab view does not update on form input change.
+    // https://vuejs.org/v2/api/#Vue-set
+    const id = { statement_id: value };
+    Vue.set(state.configuration.resource_ids.statement_ids, index, id);
+  },
   [types.SET_RESOURCE_ACCOUNT_IDS](state, value) {
     state.configuration.resource_ids.account_ids = value;
   },
