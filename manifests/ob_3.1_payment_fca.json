@@ -236,6 +236,7 @@
             "detail": "Checks that the resource succeeds posting a domestic scheduled payment with a minimal data set and checks additional schema.",
             "parameters": {
                 "tokenRequestScope": "payments",
+                "consentId": "$OB-301-DOP-100800-ConsentId",
                 "postData": "$minimalDomesticPaymentConsent"
             },
             "body": "$postData",
@@ -326,7 +327,8 @@
             "detail": "Checks that the resource succeeds posting a Domestic Standing Order with a minimal data set and checks additional schema.",
             "parameters": {
                 "tokenRequestScope": "payments",
-                "postData": "$minimalDomesticPaymentConsent"
+                "postData": "$minimalDomesticPaymentConsent",
+                "consentId": "$OB-301-DOP-101200-ConsentId"
             },
             "body": "$postData",
             "uri": "/domestic-standing-orders",
@@ -416,7 +418,8 @@
             "detail": "Checks that the resource succeeds posting a  International Payment with a minimal data set and checks additional schema.",
             "parameters": {
                 "tokenRequestScope": "payments",
-                "postData": "$minimalInternationalPaymentConsent"
+                "postData": "$minimalInternationalPaymentConsent",
+                "consentId": "$OB-301-DOP-101600-ConsentId"
             },
             "body": "$postData",
             "uri": "/international-payments",
@@ -507,7 +510,8 @@
             "detail": "Checks that the resource succeeds posting an International Scheduled Payment with a minimal data set and checks additional schema.",
             "parameters": {
                 "tokenRequestScope": "payments",
-                "postData": "$minimalInternationalScheduledPayment"
+                "postData": "$minimalInternationalScheduledPayment",
+                "consentId": "$OB-301-DOP-102000-ConsentId"
             },
             "body": "$postData",
             "uri": "/international-scheduled-payments",
@@ -598,7 +602,8 @@
             "detail": "Checks that the resource succeeds posting an International Scheduled Payment with a minimal data set and checks additional schema.",
             "parameters": {
                 "tokenRequestScope": "payments",
-                "postData": "$minimalInternationalStandingOrder"
+                "postData": "$minimalInternationalStandingOrder",
+                "consentId": "$OB-301-DOP-102400-ConsentId"
             },
             "body": "$postData",
             "uri": "/international-standing-orders",
