@@ -21,7 +21,7 @@
             "schemaCheck": false
         },
         {
-            "description": "Minimal data returned for a given account using the ReadAccountsBasic permission, status and headers.",
+            "description": "Minimal data returned for a given Account using the ReadAccountsBasic permission, status and headers.",
             "id": "OB-301-ACC-100000",
             "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937623627/Accounts+v3.1#Accountsv3.1-PermissionCodes",
             "detail": "Checks that the resource differs depending on the permissions (ReadAccountsBasic and ReadAccountsDetail) used to access the resource with additional schema checks on status and headers.",
@@ -46,7 +46,7 @@
             "schemaCheck": true
         },
         {
-            "description": "All data returned for a given account with ReadAccountsDetail permission, status and headers.",
+            "description": "All data returned for a given Account with ReadAccountsDetail permission, status and headers.",
             "id": "OB-301-ACC-100200",
             "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937623627/Accounts+v3.1#Accountsv3.1-PermissionCodes",
             "detail": "Checks that the resource returns the correct data depending on the permissions ReadAccountsDetail with additional additional schema checks on status and headers.",
@@ -68,7 +68,7 @@
             "schemaCheck": true
         },
         {
-            "description": "Minimal data returned for bulk accounts using the ReadAccountsBasic permission, status and headers.",
+            "description": "Minimal data returned for bulk Accounts using the ReadAccountsBasic permission, status and headers.",
             "id": "OB-301-ACC-100300",
             "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937623627/Accounts+v3.1#Accountsv3.1-PermissionCodes",
             "detail": "Checks that the resource differs depending on the permissions (ReadAccountsBasic and ReadAccountsDetail) used to access the resource with additional additional schema checks on status and headers.",
@@ -92,7 +92,7 @@
             "schemaCheck": true
         },
         {
-            "description": "All data returned for bulk accounts with ReadAccountsDetail permission, status and headers.",
+            "description": "All data returned for bulk Accounts with ReadAccountsDetail permission, status and headers.",
             "id": "OB-301-ACC-100400",
             "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937623627/Accounts+v3.1#Accountsv3.1-PermissionCodes",
             "detail": "Checks that the resource returns the correct data depending on the permissions ReadAccountsDetail with additional additional schema checks on status and headers.",
@@ -113,7 +113,7 @@
             "schemaCheck": true
         },
         {
-            "description": "Fails using incorrect permissions for a given account.",
+            "description": "Fails using incorrect permissions for a given Account.",
             "id": "OB-301-ACC-100500",
             "refURI": "",
             "detail": "Validates that the account resource fails correctly given an invalid or incorrect token.",
@@ -136,7 +136,7 @@
             "schemaCheck": false
         },
         {
-            "description": "Fails using incorrect permissions for bulk accounts.",
+            "description": "Fails using incorrect permissions for Bulk Account.",
             "id": "OB-301-ACC-100600",
             "refURI": "",
             "detail": "Validates that the account list resource fails correctly given an invalid or incorrect token.",
@@ -154,10 +154,10 @@
             "schemaCheck": false
         },
         {
-            "description": "The x-fapi-interaction-id is replayed for an account if given.",
+            "description": "The x-fapi-interaction-id is replayed for an Account.",
             "id": "OB-301-ACC-100700",
             "refURI": "",
-            "detail": "Checks that the x-fapi-interaction-id value is played-back for an account.",
+            "detail": "Checks that the x-fapi-interaction-id value is played-back for an Account.",
             "parameters": {
                 "tokenRequestScope": "accounts",
                 "accountId": "$consentedAccountId",
@@ -182,7 +182,7 @@
             "description": "The x-fapi-interaction-id is replayed for bulk accounts if given.",
             "id": "OB-301-ACC-100800",
             "refURI": "",
-            "detail": "Checks that the x-fapi-interaction-id value is played-back for bulk accounts.",
+            "detail": "Checks that the x-fapi-interaction-id value is played-back for bulk Account.",
             "parameters": {
                 "tokenRequestScope": "accounts",
                 "accountId": "$consentedAccountId",
@@ -204,10 +204,10 @@
             "schemaCheck": false
         },
         {
-            "description": "Fails using 401 unauthorized given no token for accounts.",
+            "description": "Fails using 401 unauthorized given no token for Accounts.",
             "id": "OB-301-ACC-101000",
             "refURI": "",
-            "detail": "Checks the correct response is returned 401 if no token is used on an account.",
+            "detail": "Checks the correct response is returned 401 if no token is used on an Account.",
             "parameters": {
                 "tokenRequestScope": "accounts",
                 "accountId": "$consentedAccountId"
@@ -223,7 +223,7 @@
             "schemaCheck": false
         },
         {
-            "description": "Fails using 401 unauthorized given no token for bulk accounts.",
+            "description": "Fails using 401 unauthorized given no token for Bulk Accounts.",
             "id": "OB-301-ACC-101100",
             "refURI": "",
             "detail": "Checks the correct response is returned 401 given if no token is used on a bulk account.",
@@ -241,10 +241,10 @@
             "schemaCheck": false
         },
         {
-            "description": "Fails 404 on an invalid account resource.",
+            "description": "Fails 404 on an invalid Account resource.",
             "id": "OB-301-ACC-101101",
             "refURI": "",
-            "detail": "Validates that the account resource returns the correct status code (404 Not Found) given an invalid endpoint.",
+            "detail": "Validates that the Account resource returns the correct status code (404 Not Found) given an invalid endpoint.",
             "parameters": {
                 "tokenRequestScope": "accounts",
                 "accountId": "$consentedAccountId"
@@ -262,7 +262,7 @@
             "schemaCheck": false
         },
         {
-            "description": "All data returned for an account with ReadBalances permission, status and headers.",
+            "description": "All data returned for an Account with ReadBalances permission, status and headers.",
             "id": "OB-301-BAL-101200",
             "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937754673/Balances+v3.1#Balancesv3.1-PermissionCodes",
             "detail": "Checks that the resource returns the correct data with additional schema checks status and headers for a given account. The resource response payload does not differ depending on the permissions granted.",
@@ -285,7 +285,7 @@
             "schemaCheck": true
         },
         {
-            "description": "All data returned for bulk account with ReadBalances permission, status and headers.",
+            "description": "All data returned for Bulk Accounts with ReadBalances permission, status and headers.",
             "id": "OB-301-BAL-101300",
             "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937754673/Balances+v3.1#Balancesv3.1-PermissionCodes",
             "detail": "Checks that the bulk balances resource returns the correct data with additional schema checks, status and headers for a given account.",
@@ -332,7 +332,7 @@
             "schemaCheck": false
         },
         {
-            "description": "Fails on incorrect permissions for bulk balances.",
+            "description": "Fails on incorrect permissions for Bulk Balances.",
             "id": "OB-301-BAL-101500",
             "refURI": "",
             "detail": "Validates that the bulk balances resource fails correctly given an invalid permissions",
@@ -354,10 +354,10 @@
             "schemaCheck": false
         },
         {
-            "description": "Fails when account is invalid for balances.",
+            "description": "Fails when account is invalid for Balances.",
             "id": "OB-301-BAL-101600",
             "refURI": "",
-            "detail": "Checks the correct response is returned when given an invalid account for a balance.",
+            "detail": "Checks the correct response is returned when given an invalid Account for a Balance.",
             "parameters": {
                 "tokenRequestScope": "accounts",
                 "accountId": "foobar"
@@ -396,7 +396,7 @@
             "schemaCheck": false
         },
         {
-            "description": "Fails 404 on an invalid balance resource.",
+            "description": "Fails 404 on an invalid Balance resource.",
             "id": "OB-301-ACC-101701",
             "refURI": "",
             "detail": "Validates that the balance resource returns the correct status code (404 Not Found) given an invalid endpoint.",
@@ -418,7 +418,7 @@
             "schemaCheck": false
         },
         {
-            "description": "Minimal data returned for a given beneficiary using the ReadBeneficiariesBasic permission, status and headers.",
+            "description": "Minimal data returned for a given Beneficiary using the ReadBeneficiariesBasic permission, status and headers.",
             "id": "OB-301-BEN-101800",
             "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937951315/Beneficiaries+v3.1#Beneficiariesv3.1-PermissionCodes",
             "detail": "Checks that the resource differs depending on the permission ReadBeneficiariesBasic used to access the resource with additional schema checks on status and headers.",
@@ -441,7 +441,7 @@
             "schemaCheck": true
         },
         {
-            "description": "Minimal data returned for a given bulk beneficiaries using the ReadBeneficiariesBasic permission, status and headers.",
+            "description": "Minimal data returned for a given Bulk Beneficiaries using the ReadBeneficiariesBasic permission, status and headers.",
             "id": "OB-301-BEN-101900",
             "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937951315/Beneficiaries+v3.1#Beneficiariesv3.1-PermissionCodes",
             "detail": "Checks that the resource differs depending on the permissions (ReadBeneficiariesBasic and ReadBeneficiariesDetail) used to access the resource with additional schema checks, status and headers.",
@@ -463,10 +463,10 @@
             "schemaCheck": true
         },
         {
-            "description": "Fails when incorrect permissions are provided for bulk beneficiaries.",
+            "description": "Fails when incorrect permissions are provided for Bulk Beneficiaries.",
             "id": "OB-301-BEN-102000",
             "refURI": "",
-            "detail": "Validates that the bulk beneficiaries resource fails correctly given an invalid permisison.",
+            "detail": "Validates that the bulk Beneficiaries resource fails correctly given an invalid permission.",
             "parameters": {
                 "tokenRequestScope": "accounts"
             },
@@ -485,7 +485,7 @@
             "schemaCheck": false
         },
         {
-            "description": "Fails given incorrect permission is provided for a beneficiary.",
+            "description": "Fails given incorrect permission is provided for a Beneficiary.",
             "id": "OB-301-BEN-102100",
             "refURI": "",
             "detail": "Validates that the beneficiary resource fails correctly given an invalid permission.",
@@ -508,7 +508,7 @@
             "schemaCheck": false
         },
         {
-            "description": "Fails given an invalid account for beneficiary.",
+            "description": "Fails given an invalid account for Beneficiary.",
             "id": "OB-301-BEN-102200",
             "refURI": "",
             "detail": "Checks the correct response is returned when given an invalid account for a beneficiary.",
@@ -530,7 +530,7 @@
             "schemaCheck": false
         },
         {
-            "description": "Fails 404 on an invalid beneficiary resource.",
+            "description": "Fails 404 on an invalid Beneficiary resource.",
             "id": "OB-301-ACC-101701",
             "refURI": "",
             "detail": "Validates that the beneficiary resource returns the correct status code (404 Not Found) given an invalid endpoint.",
@@ -549,6 +549,26 @@
                 "OB3GLOAssertOn404"
             ],
             "method": "get",
+            "schemaCheck": false
+        },
+        {
+            "description": "Fails using client grant token on Beneficiaries.",
+            "id": "OB-301-BAL-101702",
+            "refURI": "",
+            "detail": "Checks the correct response is returned 401 using a CCG token on Beneficiaries",
+            "parameters": {
+                "tokenRequestScope": "accounts"
+            },
+            "headers": {
+                "Authorization": "Bearer $client_access_token"
+            },
+            "uri": "/beneficiaries",
+            "uriImplementation": "optional",
+            "resource": "Beneficiary",
+            "method": "get",
+            "asserts": [
+                "OB3GLOAssertOn401"
+            ],
             "schemaCheck": false
         },
         {
@@ -597,7 +617,7 @@
             "schemaCheck": true
         },
         {
-            "description": "Fails when account is invalid for direct debit.",
+            "description": "Fails when account is invalid for Direct Debit.",
             "id": "OB-301-DIR-102500",
             "refURI": "",
             "detail": "Checks the correct response (401) is returned when given an invalid account for direct debit.",
@@ -619,10 +639,10 @@
             "schemaCheck": false
         },
         {
-            "description": "Fails 404 on an invalid direct debit resource.",
-            "id": "OB-301-ACC-102501",
+            "description": "Fails 404 on an invalid Direct Debit resource.",
+            "id": "OB-301-DIR-102501",
             "refURI": "",
-            "detail": "Validates that the direct debit resource returns the correct status code (404 Not Found) given an invalid endpoint.",
+            "detail": "Validates that the Direct Debit resource returns the correct status code (404 Not Found) given an invalid endpoint.",
             "parameters": {
                 "tokenRequestScope": "accounts",
                 "accountId": "$consentedAccountId"
@@ -641,7 +661,27 @@
             "schemaCheck": false
         },
         {
-            "description": "All data returned for a given account with ReadOffers permission with additional schema checks, status and headers.",
+            "description": "Fails when token using on Direct Debit is from client grant.",
+            "id": "OB-301-DIR-102502",
+            "refURI": "",
+            "detail": "Checks the correct response is returned 401 using a CCG token",
+            "parameters": {
+                "tokenRequestScope": "accounts"
+            },
+            "headers": {
+                "Authorization": "Bearer $client_access_token"
+            },
+            "uri": "/direct-debits",
+            "uriImplementation": "optional",
+            "resource": "DirectDebit",
+            "method": "get",
+            "asserts": [
+                "OB3GLOAssertOn401"
+            ],
+            "schemaCheck": false
+        },
+        {
+            "description": "All data returned for a given Account with ReadOffers permission with additional schema checks, status and headers.",
             "id": "OB-301-OFF-102600",
             "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937558127/Offers+v3.1#Offersv3.1-PermissionCodes",
             "detail": "Checks that the resource returns the correct data depending permission ReadOffers with additional schema checks on status and headers.",
@@ -687,7 +727,7 @@
             "schemaCheck": true
         },
         {
-            "description": "Fails given account is invalid for an Offer.",
+            "description": "Fails given Account is invalid for an Offer.",
             "id": "OB-301-OFF-102800",
             "refURI": "",
             "detail": "Checks the correct response is returned when given an invalid account for an Offer.",
@@ -709,8 +749,8 @@
             "schemaCheck": false
         },
         {
-            "description": "Fails 404 on an invalid offer resource.",
-            "id": "OB-301-ACC-102801",
+            "description": "Fails 404 on an invalid Offer resource.",
+            "id": "OB-301-OFF-102801",
             "refURI": "",
             "detail": "Validates that the offer resource returns the correct status code (404 Not Found) given an invalid endpoint.",
             "parameters": {
@@ -731,7 +771,27 @@
             "schemaCheck": false
         },
         {
-            "description": "All data returned for a given account with ReadParty permission with additional schema checks, status and headers.",
+            "description": "Fails when token using on Offers is from client grant.",
+            "id": "OB-301-OFF-102802",
+            "refURI": "",
+            "detail": "Checks the correct response is returned 401 using a CCG token",
+            "parameters": {
+                "tokenRequestScope": "accounts"
+            },
+            "headers": {
+                "Authorization": "Bearer $client_access_token"
+            },
+            "uri": "/offers",
+            "uriImplementation": "optional",
+            "resource": "Offer",
+            "method": "get",
+            "asserts": [
+                "OB3GLOAssertOn401"
+            ],
+            "schemaCheck": false
+        },
+        {
+            "description": "All data returned for a given Account with ReadParty permission with additional schema checks, status and headers.",
             "id": "OB-301-PAR-102900",
             "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937984104/Party+v3.1#Partyv3.1-PermissionCodes",
             "detail": "Checks that the resource returns the correct data depending permission ReadParty with additional schema checks on status and headers.",
@@ -754,10 +814,32 @@
             "schemaCheck": true
         },
         {
+            "description": "Data returned for a given Bulk Party using ReadPartyPSU permission, status and headers.",
+            "id": "OB-301-PAR-102901",
+            "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1000015561/Parties+v3.1.1#Partiesv3.1.1-GET/party",
+            "detail": "Checks that data is returned for ReadPartyPSU with additional schema checks, status and headers.",
+            "parameters": {
+                "tokenRequestScope": "accounts"
+            },
+            "permissions": [
+                "ReadAccountsBasic",
+                "ReadPartyPSU"
+            ],
+            "uri": "/party",
+            "uriImplementation": "optional",
+            "resource": "Beneficiary",
+            "asserts": [
+                "OB3GLOAssertOn200",
+                "OB3GLOFAPIHeader"
+            ],
+            "method": "get",
+            "schemaCheck": true
+        },
+        {
             "description": "All data returned for ReadParty permission with additional schema checks, status and headers.",
             "id": "OB-301-PAR-103000",
             "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937984104/Party+v3.1#Partyv3.1-PermissionCodes",
-            "detail": "Checks that the bluk resource returns the correct data depending permission ReadParty with additional schema checks on status and headers.",
+            "detail": "Checks that the resource returns the correct data depending permission ReadParty with additional schema checks on status and headers.",
             "parameters": {
                 "tokenRequestScope": "accounts",
                 "accountId": "$consentedAccountId"
@@ -799,8 +881,8 @@
             "schemaCheck": false
         },
         {
-            "description": "Fails 404 on an invalid party resource.",
-            "id": "OB-301-ACC-103101",
+            "description": "Fails 404 on an invalid Party resource.",
+            "id": "OB-301-PAR-103101",
             "refURI": "",
             "detail": "Validates that the party resource returns the correct status code (404 Not Found) given an invalid endpoint.",
             "parameters": {
@@ -818,6 +900,48 @@
                 "OB3GLOAssertOn404"
             ],
             "method": "get",
+            "schemaCheck": false
+        },
+        {
+            "description": "Fails when token using on Party is from client grant.",
+            "id": "OB-301-PAR-103102",
+            "refURI": "",
+            "detail": "Checks the correct response is returned 401 using a CCG token",
+            "parameters": {
+                "tokenRequestScope": "accounts"
+            },
+            "headers": {
+                "Authorization": "Bearer $client_access_token"
+            },
+            "uri": "/party",
+            "uriImplementation": "optional",
+            "resource": "Party",
+            "method": "get",
+            "asserts": [
+                "OB3GLOAssertOn401"
+            ],
+            "schemaCheck": false
+        },
+        {
+            "description": "Fails when incorrect permissions are provided for Bulk Party.",
+            "id": "OB-301-PAR-103103",
+            "refURI": "",
+            "detail": "Validates that the Bulk Party resource fails correctly given an invalid permission.",
+            "parameters": {
+                "tokenRequestScope": "accounts"
+            },
+            "permissions-excluded": [
+                "ReadAccountsBasic",
+                "ReadParty"
+            ],
+            "uri": "/beneficiaries",
+            "uriImplementation": "optional",
+            "resource": "Beneficiary",
+            "method": "get",
+            "asserts": [
+                "OB3GLOAssertOn401",
+                "OB3GLOAssertContentType"
+            ],
             "schemaCheck": false
         },
         {
@@ -867,7 +991,7 @@
         },
         {
             "description": "Fails when account is invalid for a Product.",
-            "id": "OB-301-PAR-103400",
+            "id": "OB-301-PRO-103400",
             "refURI": "",
             "detail": "Checks the correct response is returned when given an invalid account for a Product.",
             "parameters": {
@@ -888,8 +1012,8 @@
             "schemaCheck": false
         },
         {
-            "description": "Fails 404 on an invalid product resource.",
-            "id": "OB-301-ACC-103401",
+            "description": "Fails 404 on an invalid Product resource.",
+            "id": "OB-301-PRO-103401",
             "refURI": "",
             "detail": "Validates that the product resource returns the correct status code (404 Not Found) given an invalid endpoint.",
             "parameters": {
@@ -906,6 +1030,26 @@
                 "OB3GLOAssertOn404"
             ],
             "method": "get",
+            "schemaCheck": false
+        },
+        {
+            "description": "Fails when token using on Product is from client grant.",
+            "id": "OB-301-PRO-102802",
+            "refURI": "",
+            "detail": "Checks the correct response is returned 401 using a CCG token.",
+            "parameters": {
+                "tokenRequestScope": "accounts"
+            },
+            "headers": {
+                "Authorization": "Bearer $client_access_token"
+            },
+            "uri": "/products",
+            "uriImplementation": "optional",
+            "resource": "Product",
+            "method": "get",
+            "asserts": [
+                "OB3GLOAssertOn401"
+            ],
             "schemaCheck": false
         },
         {
@@ -976,10 +1120,10 @@
             "schemaCheck": false
         },
         {
-            "description": "Fails 404 on an invalid scheduled payment resource.",
-            "id": "OB-301-ACC-103701",
+            "description": "Fails 404 on an invalid Scheduled Payment resource.",
+            "id": "OB-301-SCP-103701",
             "refURI": "",
-            "detail": "Validates that the scheduled payment resource returns the correct status code (404 Not Found) given an invalid endpoint.",
+            "detail": "Validates that the Scheduled Payment resource returns the correct status code (404 Not Found) given an invalid endpoint.",
             "parameters": {
                 "tokenRequestScope": "accounts",
                 "accountId": "$consentedAccountId"
@@ -994,6 +1138,26 @@
                 "OB3GLOAssertOn404"
             ],
             "method": "get",
+            "schemaCheck": false
+        },
+        {
+            "description": "Fails when token is from client grant.",
+            "id": "OB-301-SCP-103702",
+            "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/999623000/Scheduled+Payments+v3.1.1#ScheduledPaymentsv3.1.1-GET/scheduled-payments",
+            "detail": "Checks the correct response is returned 401 using a CCG token",
+            "parameters": {
+                "tokenRequestScope": "accounts"
+            },
+            "headers": {
+                "Authorization": "Bearer $client_access_token"
+            },
+            "uri": "/scheduled-payments",
+            "uriImplementation": "optional",
+            "resource": "ScheduledPayment",
+            "method": "get",
+            "asserts": [
+                "OB3GLOAssertOn401"
+            ],
             "schemaCheck": false
         },
         {
@@ -1065,7 +1229,7 @@
         },
         {
             "description": "Fails 404 on an invalid Standing Order resource.",
-            "id": "OB-301-ACC-104100",
+            "id": "OB-301-STO-104100",
             "refURI": "",
             "detail": "Validates that the Standing Order resource returns the correct status code (404 Not Found) given an invalid endpoint.",
             "parameters": {
@@ -1082,6 +1246,26 @@
                 "OB3GLOAssertOn404"
             ],
             "method": "get",
+            "schemaCheck": false
+        },
+        {
+            "description": "Fails when token is from client grant.",
+            "id": "OB-301-STO-104101",
+            "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1000113950/Standing+Orders+v3.1.1#StandingOrdersv3.1.1-GET/standing-orders",
+            "detail": "Checks the correct response is returned 401 using a CCG token",
+            "parameters": {
+                "tokenRequestScope": "accounts"
+            },
+            "headers": {
+                "Authorization": "Bearer $client_access_token"
+            },
+            "uri": "/standing-orders",
+            "uriImplementation": "optional",
+            "resource": "StandingOrder",
+            "method": "get",
+            "asserts": [
+                "OB3GLOAssertOn401"
+            ],
             "schemaCheck": false
         }
     ]
