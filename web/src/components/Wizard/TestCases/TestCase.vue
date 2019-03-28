@@ -51,8 +51,8 @@
         slot="row-details"
         slot-scope="row">
         <b-card>
-          <strong>Test ID:</strong> {{ row.item.id }}<br>
-          <strong>Error:</strong> {{ row.item.error }}<br>
+          <b-card-text><strong>Test ID:</strong> {{ row.item.id }}</b-card-text>
+          <b-card-text><strong>Errors:</strong> {{ row.item.error }}</b-card-text>
         </b-card>
       </template>
     </b-table>

@@ -100,9 +100,9 @@ func (t *TestCase) Prepare(ctx *Context) (*resty.Request, error) {
 //         false - validation unsuccessful
 //         error - adds detail to validation failure
 //         NOTE: Validate will only return false if a check fails - no checks = true
-func (t *TestCase) Validate(resp *resty.Response, rulectx *Context) (bool, error) {
+func (t *TestCase) Validate(resp *resty.Response, rulectx *Context) (bool, []error) {
 	if rulectx == nil {
-		return false, t.AppErr("error Valdate:rulectx == nil")
+		return false, []error{t.AppErr("error Valdate:rulectx == nil")}
 	}
 	t.Body = resp.String()
 	if len(t.Body) == 0 { // The response body can only be read once from the raw response
@@ -114,7 +114,7 @@ func (t *TestCase) Validate(resp *resty.Response, rulectx *Context) (bool, error
 				buf := new(bytes.Buffer)
 				_, err := buf.ReadFrom(resp.RawResponse.Body)
 				if err != nil {
-					return false, t.AppErr("Validate: " + err.Error())
+					return false, []error{t.AppErr("Validate: " + err.Error())}
 				}
 				t.Body = buf.String()
 			}
@@ -190,20 +190,20 @@ func (t *TestCase) ApplyContext(rulectx *Context) {
 // contextPuts are responsible for updated context variables with values selected from the test case response
 // contextPuts will only be executed if the ApplyExpects standards match tests pass
 // if any of the ApplyExpects match tests fail - ApplyExpects returns false and contextPuts aren't executed
-func (t *TestCase) ApplyExpects(res *resty.Response, rulectx *Context) (bool, error) {
+func (t *TestCase) ApplyExpects(res *resty.Response, rulectx *Context) (bool, []error) {
 	if res == nil { // if we've not got a response object to check, always return false
-		return false, t.AppErr("nil http.Response - cannot process ApplyExpects")
+		return false, []error{t.AppErr("nil http.Response - cannot process ApplyExpects")}
 	}
 
 	if t.Expect.StatusCode != res.StatusCode() { // Status codes don't match
-		return false, t.AppErr(fmt.Sprintf("(%s):%s: HTTP Status code does not match: expected %d got %d", t.ID, t.Name, t.Expect.StatusCode, res.StatusCode()))
+		return false, []error{t.AppErr(fmt.Sprintf("(%s):%s: HTTP Status code does not match: expected %d got %d", t.ID, t.Name, t.Expect.StatusCode, res.StatusCode()))}
 	}
 
 	t.AppMsg(fmt.Sprintf("Status check isReplacement: expected [%d] got [%d]", t.Expect.StatusCode, res.StatusCode()))
 	for k, match := range t.Expect.Matches {
 		checkResult, got := match.Check(t)
 		if !checkResult {
-			return false, t.AppErr(fmt.Sprintf("ApplyExpects Returns False on match %s : %s", match.String(), got.Error()))
+			return false, []error{t.AppErr(fmt.Sprintf("ApplyExpects Returns False on match %s : %s", match.String(), got.Error()))}
 		}
 
 		t.Expect.Matches[k].Result = match.Result
@@ -211,7 +211,7 @@ func (t *TestCase) ApplyExpects(res *resty.Response, rulectx *Context) (bool, er
 	}
 
 	if err := t.Expect.ContextPut.PutValues(t, rulectx); err != nil {
-		return false, t.AppErr("ApplyExpects Returns FALSE " + err.Error())
+		return false, []error{t.AppErr("ApplyExpects Returns FALSE " + err.Error())}
 	}
 	return true, nil
 }

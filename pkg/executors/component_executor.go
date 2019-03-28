@@ -104,9 +104,9 @@ func executeComponent(ctx *model.Context, executor TestCaseExecutor) (*model.Con
 			return &model.Context{}, fmt.Errorf("Test case %s failed with error %s", test.ID, err.Error())
 		}
 
-		result, err := test.Validate(resp, executeCtx)
-		if err != nil {
-			return &model.Context{}, fmt.Errorf("Test case %s Validation faiilure error %s", test.ID, err.Error())
+		result, errs := test.Validate(resp, executeCtx)
+		if errs != nil {
+			return &model.Context{}, fmt.Errorf("Test case %s Validation faiilure error %s", test.ID, errs[0].Error())
 		}
 
 		if !result {

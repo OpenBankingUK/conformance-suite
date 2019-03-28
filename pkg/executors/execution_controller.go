@@ -3,6 +3,8 @@ package executors
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/pkg/errors"
+	"gopkg.in/resty.v1"
 	"sync"
 
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/authentication"
@@ -12,7 +14,6 @@ import (
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/tracer"
 	"github.com/google/uuid"
-	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 )
 
@@ -197,7 +198,7 @@ func (r *TestCaseRunner) executeComponentTests(comp *model.Component, ruleCtx *m
 			logrus.StandardLogger().Debugf("Sending Item %s:%s:%s to consentIDChannel", item.TokenName, item.ConsentID, item.ConsentURL)
 			consentIDChannel <- item
 		} else if len(testResult.Fail) > 0 {
-			item.Error = testResult.Fail
+			item.Error = testResult.Fail[0]
 			consentIDChannel <- item
 		}
 	}
@@ -239,20 +240,20 @@ func (r *TestCaseRunner) executeTest(tc model.TestCase, ruleCtx *model.Context, 
 	req, err := tc.Prepare(ruleCtx)
 	if err != nil {
 		ctxLogger.WithError(err).Error("preparing executing test")
-		return results.NewTestCaseFail(tc.ID, results.NoMetrics, err)
+		return results.NewTestCaseFail(tc.ID, results.NoMetrics, []error{err})
 	}
 	resp, metrics, err := r.executor.ExecuteTestCase(req, &tc, ruleCtx)
 	ctxLogger = logWithMetrics(ctxLogger, metrics)
 	if err != nil {
 		ctxLogger.WithError(err).WithFields(logrus.Fields{"result": "FAIL", "ID": tc.ID}).Error("test result")
-		return results.NewTestCaseFail(tc.ID, metrics, err)
+		return results.NewTestCaseFail(tc.ID, metrics, []error{err})
 	}
 
-	result, err := tc.Validate(resp, ruleCtx)
-	if err != nil {
-		errAndResponse := errors.WithMessage(err, fmt.Sprintf("Response: (%.250s)", resp.String()))
-		ctxLogger.WithError(errAndResponse).WithFields(logrus.Fields{"result": passText[result], "ID": tc.ID}).Error("test result validate")
-		return results.NewTestCaseFail(tc.ID, metrics, errAndResponse)
+	result, errs := tc.Validate(resp, ruleCtx)
+	if errs != nil {
+		detailedErrors := detailedErrors(errs, resp)
+		ctxLogger.WithField("errs", detailedErrors).WithFields(logrus.Fields{"result": passText[result], "ID": tc.ID}).Error("test result validate")
+		return results.NewTestCaseFail(tc.ID, metrics, detailedErrors)
 	}
 
 	if !result {
@@ -261,7 +262,16 @@ func (r *TestCaseRunner) executeTest(tc model.TestCase, ruleCtx *model.Context, 
 		ctxLogger.WithError(err).WithFields(logrus.Fields{"result": passText[result], "ID": tc.ID}).Info("test result")
 	}
 
-	return results.NewTestCaseResult(tc.ID, result, metrics, err)
+	return results.NewTestCaseResult(tc.ID, result, metrics, []error{})
+}
+
+func detailedErrors(errs []error, resp *resty.Response) []error {
+	var detailedErrors []error
+	for _, err := range errs {
+		detailedError := errors.WithMessagef(err, "Response: (%.250s)", resp.String())
+		detailedErrors = append(detailedErrors, detailedError)
+	}
+	return detailedErrors
 }
 
 var passText = map[bool]string{
