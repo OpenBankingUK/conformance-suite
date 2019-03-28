@@ -128,7 +128,16 @@
 			}
 		]
 		}
-	}
+	},
+	"OB3IPAssertInternationalStandingOrderPaymentId": {
+		"expect": {
+			"matches": [ 
+			{
+				"JSON": "json.Data.InternationalStandingOrderPaymentId",
+				"detail" :"Expected a unique identification as assigned by the ASPSP to uniquely identify the international payment resource."
+			}
+		]
+		}
 
 
 

@@ -41,6 +41,49 @@
       },
       "Risk": {}
     },
+    "minimalInternationalStandingOrderConsent": {
+      "body": {
+        "Data": {
+          "Permission": "Create",
+          "Initiation": {
+            "Frequency": "EvryDay",
+            "FirstPaymentDateTime": "2020-10-01T13:14:25+00:00",
+            "CurrencyOfTransfer": "USD",
+            "InstructedAmount": {
+              "Amount": "7.41",
+              "Currency": "USD"
+            },
+            "CreditorAccount": {
+              "SchemeName": "SortCodeAccountNumber",
+              "Identification": "20202010981789",
+              "Name": "Dr Foo"
+            }
+          }
+        },
+        "Risk": {}
+      }
+    },
+    "minimalInternationalStandingOrder": {
+      "body": {
+        "Data": {
+          "Initiation": {
+            "Frequency": "EvryDay",
+            "FirstPaymentDateTime": "2020-10-01T13:14:25+00:00",
+            "CurrencyOfTransfer": "USD",
+            "InstructedAmount": {
+              "Amount": "7.41",
+              "Currency": "USD"
+            },
+            "CreditorAccount": {
+              "SchemeName": "SortCodeAccountNumber",
+              "Identification": "20202010981789",
+              "Name": "Dr Foo"
+            }
+          }
+        },
+        "Risk": {}
+      }
+    },
     "minimalInternationalScheduledPaymentConsent": {
       "body": {
         "Data": {
@@ -66,24 +109,25 @@
     },
     "minimalInternationalScheduledPayment": {
       "body": {
-        "Data": {
-          "Initiation": {
-            "RequestedExecutionDateTime": "2020-10-01T13:14:25+00:00",
-            "InstructionIdentification": "Excaliber International",
-            "EndToEndIdentification": "Excaliber International",
-            "CurrencyOfTransfer": "USD",
-            "InstructedAmount": {
-              "Amount": "7.13",
-              "Currency": "USD"
-            },
-            "CreditorAccount": {
-                "SchemeName" : "UK.OBIE.IBAN",
-                "Identification" : "GB29PAPA20000390210002",
-                "Name" : "pectre Charitable Funds"
-            }
+       "Data": {
+        "Initiation": {
+          "RequestedExecutionDateTime": "2020-10-01T13:14:25+00:00",
+          "InstructionIdentification": "Excaliber International",
+          "EndToEndIdentification": "Excaliber International",
+          "CurrencyOfTransfer": "USD",
+          "InstructedAmount": {
+            "Amount": "7.13",
+            "Currency": "USD"
+          },
+          "CreditorAccount": {
+              "SchemeName" : "UK.OBIE.IBAN",
+              "Identification" : "GB29PAPA20000390210002",
+              "Name" : "pectre Charitable Funds"
           }
-        },
-        "Risk": {}  
+        }
+      },
+      "Risk": {}
+
       }
     }
   }

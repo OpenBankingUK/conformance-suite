@@ -512,7 +512,7 @@
             "body": "$postData",
             "uri": "/international-scheduled-payments",
             "uriImplementation": "conditional",
-            "resource": "InternationalPayment",
+            "resource": "InternationalScheduledPayment",
             "asserts": [
                 "OB3GLOAssertOn201",
                 "OB3IPAssertInternationalPaymentId"
@@ -537,22 +537,104 @@
             },
             "uri": "/international-scheduled-payments/&paymentID",
             "uriImplementation": "conditional",
-            "resource": "InternationalPayment",
+            "resource": "InternationalScheduledPayment",
+            "asserts": [
+                "OB3GLOAssertOn200"
+            ],
+            "method": "get",
+            "schemaCheck": false
+        },
+        {
+            "description": "Check International Standing Orders consent succeeds with minimal data set with additional schema checks.",
+            "id": "OB-301-DOP-102400",
+            "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1000702388/International+Standing+Orders+v3.1.1#InternationalStandingOrdersv3.1.1-POST/international-standing-order-consents",
+            "detail": "Checks that the resource succeeds for a PISP asking for a International Standing Orders consent with a minimal data set and checks additional schema.",
+            "parameters": {
+                "tokenRequestScope": "payments",
+                "postData": "$minimalInternationalStandingOrderConsent",
+                "requestConsent": "true"
+            },
+            "body": "$postData",
+            "uri": "/international-standing-order-consents",
+            "uriImplementation": "conditional",
+            "resource": "InternationalStandingOrders",
+            "asserts": [
+                "OB3GLOAssertOn201",
+                "OB3GLOFAPIHeader",
+                "OB3GLOAAssertConsentId"
+            ],
+            "keepContextOnSuccess": [
+                {
+                    "name": "OB-301-DOP-102400-ConsentId",
+                    "value": "json.Data.ConsentId"
+                }
+            ],
+            "method": "post",
+            "schemaCheck": true
+        },
+        {
+            "description": "Check PISP can retrieve International Standing Orders consent resource status.",
+            "id": "OB-301-DOP-102500",
+            "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1000702388/International+Standing+Orders+v3.1.1#InternationalStandingOrdersv3.1.1-GET/international-standing-order-consents/{ConsentId}",
+            "detail": "Check PISP can retrieve International Standing Orders consent resource and status is Authorised.",
+            "parameters": {
+                "tokenRequestScope": "payments",
+                "consentId": "&OB-301-DOP-102400-ConsentId"
+            },
+            "uri": "/international-standing-order-consents/$consentId",
+            "uriImplementation": "conditional",
+            "resource": "InternationalStandingOrders",
+            "asserts": [
+                "OB3GLOAssertOn200",
+                "OB3DOPAssertAuthorised"
+            ],
+            "method": "get",
+            "schemaCheck": false
+        },
+        {
+            "description": "Check International Standing Orders succeeds with minimal data set with additional schema checks.",
+            "id": "OB-301-DOP-102600",
+            "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1000702388/International+Standing+Orders+v3.1.1#InternationalStandingOrdersv3.1.1-POST/international-standing-orders",
+            "detail": "Checks that the resource succeeds posting an International Scheduled Payment with a minimal data set and checks additional schema.",
+            "parameters": {
+                "tokenRequestScope": "payments",
+                "postData": "$minimalInternationalStandingOrder"
+            },
+            "body": "$postData",
+            "uri": "/international-standing-orders",
+            "uriImplementation": "conditional",
+            "resource": "InternationalStandingOrders",
+            "asserts": [
+                "OB3GLOAssertOn201",
+                "OB3IPAssertInternationalStandingOrderPaymentId"
+            ],
+            "keepContextOnSuccess": [
+                {
+                    "name": "OB-301-DOP-102600-InternationalStandingOrderPaymentId",
+                    "value": "json.Data.InternationalStandingOrderPaymentId"
+                }
+            ],
+            "method": "post",
+            "schemaCheck": true
+        },
+        {
+            "description": "Check PISP can retrieve the International Standing Orders, status checks and response.",
+            "id": "OB-301-DOP-102700",
+            "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1000702388/International+Standing+Orders+v3.1.1#InternationalStandingOrdersv3.1.1-GET/international-standing-orders/{InternationalStandingOrderPaymentId}",
+            "detail": "Check PISP can retrieve the International Standing Orders.",
+            "parameters": {
+                "tokenRequestScope": "payments",
+                "paymentID": "&OB-301-DOP-102600-InternationalStandingOrderPaymentId"
+            },
+            "uri": "/international-standing-orders/&paymentID",
+            "uriImplementation": "conditional",
+            "resource": "InternationalStandingOrders",
             "asserts": [
                 "OB3GLOAssertOn200"
             ],
             "method": "get",
             "schemaCheck": false
         }
-
-
-
-
-
-
-
-
-
 
 
 
