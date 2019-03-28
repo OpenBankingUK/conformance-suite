@@ -170,7 +170,7 @@
             "detail": "Check PISP can retrieve the domestic-payment to check its status.",
             "parameters": {
                 "tokenRequestScope": "payments",
-                "paymentId": "&OB-301-DOP-100600-DomesticPaymentId"
+                "paymentId": "$OB-301-DOP-100600-DomesticPaymentId"
             },
             "uri": "/domestic-payments/$paymentId",
             "uriImplementation": "mandatory",
@@ -217,7 +217,7 @@
             "detail": "Check PISP can retrieve Domestic Scheduled Payment consent resource status is Authorised.",
             "parameters": {
                 "tokenRequestScope": "payments",
-                "consentId": "&OB-301-DOP-100800-ConsentId"
+                "consentId": "$OB-301-DOP-100800-ConsentId"
             },
             "uri": "/domestic-scheduled-payments/$consentId",
             "uriImplementation": "conditional",
@@ -262,9 +262,9 @@
             "detail": "Check PISP A PISP can retrieve the domestic-scheduled-payment to check its status InitiationPending or InitiationCompleted.",
             "parameters": {
                 "tokenRequestScope": "payments",
-                "paymentID": "&OB-301-DOP-101000-DomesticScheduledPaymentId"
+                "paymentID": "$OB-301-DOP-101000-DomesticScheduledPaymentId"
             },
-            "uri": "/domestic-scheduled-payments/&OB-301-DOP-101000-DomesticScheduledPaymentId",
+            "uri": "/domestic-scheduled-payments/$OB-301-DOP-101000-DomesticScheduledPaymentId",
             "uriImplementation": "conditional",
             "resource": "DomesticScheduledPayment",
             "asserts": [
@@ -308,7 +308,7 @@
             "detail": "Check PISP can retrieve Domestic Standing Order consent resource and status is Authorised.",
             "parameters": {
                 "tokenRequestScope": "payments",
-                "consentId": "&OB-301-DOP-101200-ConsentId"
+                "consentId": "$OB-301-DOP-101200-ConsentId"
             },
             "uri": "/domestic-standing-order-consents/$consentId",
             "uriImplementation": "conditional",
@@ -353,9 +353,9 @@
             "detail": "Check PISP A PISP can retrieve the Domestic Standing Order.",
             "parameters": {
                 "tokenRequestScope": "payments",
-                "paymentID": "&OB-301-DOP-101000-DomesticScheduledPaymentId"
+                "paymentID": "$OB-301-DOP-101000-DomesticScheduledPaymentId"
             },
-            "uri": "/domestic-standing-orders/&paymentID",
+            "uri": "/domestic-standing-orders/$paymentID",
             "uriImplementation": "conditional",
             "resource": "DomesticScheduledPayment",
             "asserts": [
@@ -399,7 +399,7 @@
             "detail": "Check PISP can retrieve International Payment consent resource and status is Authorised.",
             "parameters": {
                 "tokenRequestScope": "payments",
-                "consentId": "&OB-301-DOP-101600-ConsentId"
+                "consentId": "$OB-301-DOP-101600-ConsentId"
             },
             "uri": "/international-payment-consents/$consentId",
             "uriImplementation": "conditional",
@@ -445,9 +445,9 @@
             "detail": "Check PISP can retrieve the International Payment.",
             "parameters": {
                 "tokenRequestScope": "payments",
-                "paymentID": "&OB-301-DOP-101800-InternationalPaymentId"
+                "paymentID": "$OB-301-DOP-101800-InternationalPaymentId"
             },
-            "uri": "/international-payments/&paymentID",
+            "uri": "/international-payments/$paymentID",
             "uriImplementation": "conditional",
             "resource": "InternationalPayment",
             "asserts": [
@@ -491,7 +491,7 @@
             "detail": "Check PISP can retrieve International Scheduled Payment consent resource and status is Authorised.",
             "parameters": {
                 "tokenRequestScope": "payments",
-                "consentId": "&OB-301-DOP-102000-ConsentId"
+                "consentId": "$OB-301-DOP-102000-ConsentId"
             },
             "uri": "/international-scheduled-payment-consents/$consentId",
             "uriImplementation": "conditional",
@@ -537,9 +537,9 @@
             "detail": "Check PISP can retrieve the International Scheduled Payment.",
             "parameters": {
                 "tokenRequestScope": "payments",
-                "paymentID": "&OB-301-DOP-101800-InternationalPaymentId"
+                "paymentID": "$OB-301-DOP-101800-InternationalPaymentId"
             },
-            "uri": "/international-scheduled-payments/&paymentID",
+            "uri": "/international-scheduled-payments/$paymentID",
             "uriImplementation": "conditional",
             "resource": "InternationalScheduledPayment",
             "asserts": [
@@ -583,7 +583,7 @@
             "detail": "Check PISP can retrieve International Standing Orders consent resource and status is Authorised.",
             "parameters": {
                 "tokenRequestScope": "payments",
-                "consentId": "&OB-301-DOP-102400-ConsentId"
+                "consentId": "$OB-301-DOP-102400-ConsentId"
             },
             "uri": "/international-standing-order-consents/$consentId",
             "uriImplementation": "conditional",
@@ -629,9 +629,9 @@
             "detail": "Check PISP can retrieve the International Standing Orders.",
             "parameters": {
                 "tokenRequestScope": "payments",
-                "paymentID": "&OB-301-DOP-102600-InternationalStandingOrderPaymentId"
+                "paymentID": "$OB-301-DOP-102600-InternationalStandingOrderPaymentId"
             },
-            "uri": "/international-standing-orders/&paymentID",
+            "uri": "/international-standing-orders/$paymentID",
             "uriImplementation": "conditional",
             "resource": "InternationalStandingOrders",
             "asserts": [
