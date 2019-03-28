@@ -82,12 +82,16 @@ export default {
         if (response.status !== 200) {
           const updateError = `Failed to check for updates. Got ${response.status} from server.`;
           this.setErrors([updateError]);
-        } else if (data.update) {
-          const note = {
-            extURL: 'https://bitbucket.org/openbankingteam/conformance-suite/src/develop/README.md',
-            message: data.message,
-          };
-          this.pushNotification(note);
+        } else {
+          this.$store.commit('status/SET_SUITE_VERSION', data.version);
+
+          if (data.update) {
+            const note = {
+              extURL: 'https://bitbucket.org/openbankingteam/conformance-suite/src/develop/README.md',
+              message: data.message,
+            };
+            this.pushNotification(note);
+          }
         }
       } catch (err) {
         const updateError = `Failed to check for updates: ${err}.`;

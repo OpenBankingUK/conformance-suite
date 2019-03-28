@@ -4,4 +4,5 @@ export default {
   hasNotifications: state => state.notifications && state.notifications.length > 0,
   notifications: state => state.notifications,
   showLoading: state => state.showLoading,
+  suiteVersion: state => state.suiteVersion,
 };
