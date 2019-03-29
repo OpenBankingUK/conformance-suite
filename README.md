@@ -15,6 +15,12 @@ To provide feedback, please use the public [issue tracker](https://bitbucket.org
 ## Release Notes 
 * * *
 
+### v1.0.0-rc1 (29th March 2019)
+
+This **v1.0.0-rc1** release introduces manual PSU consent (hybrid flow) for for v3.1 of the OBIE Accounts and Transactions specifications and Payments.
+
+Read the full [release notes](docs/releases/v1.0.0.md) (v1.0.0-rc1.md)
+
 ### v1.0.0-beta (19th February 2019)
 
 This **v1.0.0-beta** release introduces manual PSU consent (hybrid flow) and a example Discovery Template to demonstrate the hybrid flow for Ozone Model Bank for v3.1 of the OBIE Accounts and Transactions specifications.
