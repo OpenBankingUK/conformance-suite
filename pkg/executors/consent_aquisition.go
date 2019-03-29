@@ -8,8 +8,8 @@ import (
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/generation"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/manifest"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
-	"github.com/sirupsen/logrus"
 	"github.com/pkg/errors"
+	"github.com/sirupsen/logrus"
 	resty "gopkg.in/resty.v1"
 )
 
@@ -27,7 +27,7 @@ func InitiationConsentAcquisition(consentRequirements []model.SpecConsentRequire
 		tests = append(tests, v.TestCases...)
 	}
 
-	requiredTokens, err := manifest.GetRequiredTokensFromTests(tests)
+	requiredTokens, err := manifest.GetRequiredTokensFromTests(tests, "accounts")
 	//tokenParameters = getTokenParametersFromRequiredTokens(requiredTokens)
 	_ = requiredTokens
 	logrus.Debugf("required tokens %#v\n", requiredTokens)

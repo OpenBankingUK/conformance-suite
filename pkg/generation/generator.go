@@ -46,8 +46,15 @@ type generator struct {
 
 // Work in progress to integrate Manifest Test
 func (g generator) GenerateManifestTests(log *logrus.Entry, config GeneratorConfig, discovery discovery.ModelDiscovery, ctx *model.Context) TestCasesRun {
-	logrus.Debug("GenerateManifestTests - entry")
 	log = log.WithField("module", "GenerateManifestTests")
+	for _, item := range discovery.DiscoveryItems {
+		spectype, err := manifest.GetSpecType(item.APISpecification.Name)
+		if err != nil {
+			log.Warnf("specification %s not found\n", item.APISpecification.Name)
+			continue
+		}
+		log.Tracef("usging specification type %s", spectype)
+	}
 
 	specTestCases := []SpecificationTestCases{}
 
@@ -65,7 +72,7 @@ func (g generator) GenerateManifestTests(log *logrus.Entry, config GeneratorConf
 		break //TODO: sort this out integration scaffolding ... do it once for starters ...
 	}
 
-	requiredTokens, err := manifest.GetRequiredTokensFromTests(specTestCases[0].TestCases)
+	requiredTokens, err := manifest.GetRequiredTokensFromTests(specTestCases[0].TestCases, "accounts")
 	if err != nil {
 
 	}

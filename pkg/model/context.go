@@ -89,6 +89,11 @@ func (c Context) GetStringSlice(key string) ([]string, error) {
 	return result, nil
 }
 
+// Delete Key from Context
+func (c *Context) Delete(delKey string) {
+	delete(*c, delKey)
+}
+
 // DumpContext - send the contents of a context to a logger
 func (c *Context) DumpContext(text ...string) {
 	if len(text) > 0 {

@@ -25,7 +25,12 @@ func AcquireHeadlessTokens(tests []model.TestCase, ctx *model.Context, definitio
 		return nil, err
 	}
 
-	requiredTokens, err := manifest.GetRequiredTokensFromTests(tests)
+	specType, err := manifest.GetSpecType("Account and Transaction API Specification")
+	if err != nil {
+		return nil, errors.New("Error trying to determine specification type: " + err.Error())
+	}
+
+	requiredTokens, err := manifest.GetRequiredTokensFromTests(tests, specType)
 	logrus.Debugf("required tokens %#v\n", requiredTokens)
 
 	for k, tokenGatherer := range requiredTokens {

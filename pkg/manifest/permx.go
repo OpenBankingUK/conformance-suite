@@ -17,13 +17,15 @@ type TestCasePermission struct {
 
 // RequiredTokens -
 type RequiredTokens struct {
-	Name        string   `json:"name,omitempty"`
-	Token       string   `json:"token,omitempty"`
-	IDs         []string `json:"ids,omitempty"`
-	Perms       []string `json:"perms,omitempty"`
-	Permsx      []string `json:"permsx,omitempty"`
-	AccessToken string
-	ConsentURL  string
+	Name         string   `json:"name,omitempty"`
+	Token        string   `json:"token,omitempty"`
+	IDs          []string `json:"ids,omitempty"`
+	Perms        []string `json:"perms,omitempty"`
+	Permsx       []string `json:"permsx,omitempty"`
+	AccessToken  string
+	ConsentURL   string
+	ConsentID    string
+	ConsentParam string
 }
 
 // TokenStore eats tokens
@@ -32,16 +34,82 @@ type TokenStore struct {
 	store     []RequiredTokens
 }
 
+// GetSpecType -
+func GetSpecType(spec string) (string, error) {
+	switch spec {
+	case "Account and Transaction API Specification":
+		return "accounts", nil
+	case "Payment Initiation API Specification":
+		return "payments", nil
+	}
+	return "unknown", errors.New("Unknown specification " + spec)
+}
+
 // GetRequiredTokensFromTests - Given a set of testcases with the permissions defined
 // in the context using 'permissions' and 'permissions-excluded'
 // provides a RequiredTokens structure which can be used to capture token requirements
-func GetRequiredTokensFromTests(tcs []model.TestCase) ([]RequiredTokens, error) {
-	tcp, err := getTestCasePermissions(tcs)
-	if err != nil {
-		return nil, err
+func GetRequiredTokensFromTests(tcs []model.TestCase, spec string) (rt []RequiredTokens, err error) {
+	switch spec {
+	case "accounts":
+		tcp, err := getTestCasePermissions(tcs)
+		if err != nil {
+			return nil, err
+		}
+		rt, err = getRequiredTokens(tcp)
+	case "payments":
+		rt, err = getPaymentPermissions(tcs)
 	}
-	rt, err := getRequiredTokens(tcp)
 	return rt, err
+}
+
+func getPaymentPermissions(tcs []model.TestCase) ([]RequiredTokens, error) {
+	rt := make([]RequiredTokens, 0)
+	ts := TokenStore{}
+	ts.store = rt
+
+	for _, tc := range tcs {
+		ctx := tc.Context
+		consentRequired, found := ctx.GetString("requestConsent")
+		if found != nil {
+			continue
+		}
+		if consentRequired == "true" {
+			// get consentid
+			consentID := getConsentIDFromMatches(tc)
+
+			rx := RequiredTokens{Name: ts.GetNextTokenName("payment"), ConsentParam: consentID}
+			rx.IDs = append(rx.IDs, tc.ID)
+			rt = append(rt, rx)
+		}
+	}
+
+	return rt, nil
+}
+
+func updateTokensFromConsent(rts []RequiredTokens, tcs []model.TestCase) ([]RequiredTokens, error) {
+	for rtidx, rt := range rts {
+		for _, test := range tcs {
+			ctx := test.Context
+			value, _ := ctx.GetString("consentId")
+			if len(value) > 1 {
+				if rt.ConsentParam == value[1:] {
+					rt.IDs = append(rt.IDs, test.ID)
+					rts[rtidx] = rt
+				}
+			}
+		}
+	}
+	return rts, nil
+}
+
+func getConsentIDFromMatches(tc model.TestCase) string {
+	matches := tc.Expect.ContextPut.Matches
+	for _, m := range matches {
+		if m.Value == "json.Data.ConsentId" {
+			return m.ContextName
+		}
+	}
+	return ""
 }
 
 // GetTestCasePermissions -
@@ -111,16 +179,16 @@ func dumpTG(tg []RequiredTokens) {
 }
 
 // GetNextTokenName -
-func (te *TokenStore) GetNextTokenName() string {
+func (te *TokenStore) GetNextTokenName(s string) string {
 	te.currentID++
-	return fmt.Sprintf("Token%4.4d", te.currentID)
+	return fmt.Sprintf("%sToken%4.4d", s, te.currentID)
 }
 
 // create or update TokenGethereer
 func (te *TokenStore) createOrUpdate(tcp TestCasePermission) {
 
 	if len(te.store) == 0 { // First time - no permissions - just add
-		tpg := RequiredTokens{Name: te.GetNextTokenName(), IDs: []string{tcp.ID}, Perms: tcp.Perms, Permsx: tcp.Permsx}
+		tpg := RequiredTokens{Name: te.GetNextTokenName("account"), IDs: []string{tcp.ID}, Perms: tcp.Perms, Permsx: tcp.Permsx}
 		te.store = append(te.store, tpg)
 		return
 	}
@@ -132,7 +200,7 @@ func (te *TokenStore) createOrUpdate(tcp TestCasePermission) {
 				return
 			}
 		}
-		tpg := RequiredTokens{Name: te.GetNextTokenName(), IDs: []string{tcp.ID}, Perms: tcp.Perms, Permsx: tcp.Permsx}
+		tpg := RequiredTokens{Name: te.GetNextTokenName("account"), IDs: []string{tcp.ID}, Perms: tcp.Perms, Permsx: tcp.Permsx}
 		te.store = append(te.store, tpg)
 	}
 
@@ -175,7 +243,7 @@ func (te *TokenStore) createOrUpdate(tcp TestCasePermission) {
 		te.store[idx] = newItem
 		return
 	}
-	tpg := RequiredTokens{Name: te.GetNextTokenName(), IDs: []string{tcp.ID}, Perms: tcp.Perms, Permsx: tcp.Permsx}
+	tpg := RequiredTokens{Name: te.GetNextTokenName("account"), IDs: []string{tcp.ID}, Perms: tcp.Perms, Permsx: tcp.Permsx}
 	te.store = append(te.store, tpg)
 
 	return
@@ -225,5 +293,4 @@ func uniqueSlice(inslice []string) []string {
 		tmpslice = append(tmpslice, k)
 	}
 	return tmpslice
-
 }

@@ -1,5 +1,5 @@
 {
-  "references ": {
+  "references": {
     "minimalDomesticPaymentConsent": {
       "body": {
         "Data": {
@@ -37,9 +37,9 @@
               "Name": "Dr Foo"
             }
           }
-        }
-      },
-      "Risk": {}
+        },
+        "Risk": {}
+      }
     },
     "minimalInternationalStandingOrderConsent": {
       "body": {
@@ -109,24 +109,24 @@
     },
     "minimalInternationalScheduledPayment": {
       "body": {
-       "Data": {
-        "Initiation": {
-          "RequestedExecutionDateTime": "2020-10-01T13:14:25+00:00",
-          "InstructionIdentification": "Excaliber International",
-          "EndToEndIdentification": "Excaliber International",
-          "CurrencyOfTransfer": "USD",
-          "InstructedAmount": {
-            "Amount": "1.00",
-            "Currency": "USD"
-          },
-          "CreditorAccount": {
-              "SchemeName" : "UK.OBIE.IBAN",
-              "Identification" : "GB29PAPA20000390210002",
-              "Name" : "Charitable Funds"
+        "Data": {
+          "Initiation": {
+            "RequestedExecutionDateTime": "2020-10-01T13:14:25+00:00",
+            "InstructionIdentification": "Excaliber International",
+            "EndToEndIdentification": "Excaliber International",
+            "CurrencyOfTransfer": "USD",
+            "InstructedAmount": {
+              "Amount": "1.00",
+              "Currency": "USD"
+            },
+            "CreditorAccount": {
+              "SchemeName": "UK.OBIE.IBAN",
+              "Identification": "GB29PAPA20000390210002",
+              "Name": "Charitable Funds"
+            }
           }
-        }
-      },
-      "Risk": {}
+        },
+        "Risk": {}
 
       }
     }
