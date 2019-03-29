@@ -41,12 +41,12 @@ func TestPaymentPermissionsCases(t *testing.T) {
 	updateTestAuthenticationFromToken(tests, requiredTokens)
 
 	fmt.Println("where are my tests?")
-	for x, v := range tests {
-		if x > 15 {
-			break
-		}
-		dumpJSON(v)
-	}
+	// for x, v := range tests {
+	// 	if x > 15 {
+	// 		break
+	// 	}
+	// 	//dumpJSON(v)
+	// }
 }
 
 func TestDataReferencesAndDump(t *testing.T) {
