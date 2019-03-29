@@ -139,8 +139,8 @@ func TestChainedTestCases(t *testing.T) {
 	require.NoError(t, err)
 	resp, err := executor.ExecuteTestCase(req, &tc01, &rulectx) // send the request to be executed resulting in a response
 	assert.NoError(t, err)
-	result, err := tc01.Validate(resp, &rulectx) // Validate checks response against the match rules and processes any contextPuts present
-	assert.NoError(t, err)
+	result, errs := tc01.Validate(resp, &rulectx) // Validate checks response against the match rules and processes any contextPuts present
+	assert.Nil(t, errs)
 	assert.True(t, result)
 
 	tc02 := rule.Tests[0][1]          // get the second testcase of the first rule
@@ -148,8 +148,8 @@ func TestChainedTestCases(t *testing.T) {
 	assert.NoError(t, err)
 	resp, err = executor.ExecuteTestCase(req, &tc02, &rulectx) // Execute
 	assert.NoError(t, err)
-	result, err = tc02.Validate(resp, &rulectx) // Validate checks the match rules and processes any contextPuts present
-	assert.NoError(t, err)
+	result, errs = tc02.Validate(resp, &rulectx) // Validate checks the match rules and processes any contextPuts present
+	assert.Nil(t, errs)
 	assert.True(t, result)
 	acctid, exist := rulectx.Get("AccountId")
 	assert.True(t, exist)

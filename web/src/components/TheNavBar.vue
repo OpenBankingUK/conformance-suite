@@ -79,6 +79,11 @@
           target="_blank">
           <file-text-icon class="icon-class"/>Integrations
         </b-nav-item>
+        <b-nav-item
+          href="https://bitbucket.org/openbankingteam/conformance-suite/src/develop/README.md"
+          target="_blank">
+          {{ suiteVersion }}
+        </b-nav-item>
       </b-nav>
     </div>
   </div>
@@ -86,6 +91,7 @@
 
 <script>
 import { PlusCircleIcon, FileTextIcon } from 'vue-feather-icons';
+import { mapGetters } from 'vuex';
 import TheNavBarItem from './TheNavBarItem.vue';
 import Specifications from '../../../pkg/model/testdata/spec-config.golden.json';
 
@@ -110,6 +116,9 @@ export default {
     return {
       specifications,
     };
+  },
+  computed: {
+    ...mapGetters('status', ['suiteVersion']),
   },
   methods: {
   },

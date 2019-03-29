@@ -13,4 +13,7 @@ export default {
   [types.SET_SHOW_LOADING](state, showLoading) {
     state.showLoading = showLoading;
   },
+  [types.SET_SUITE_VERSION](state, version) {
+    state.suiteVersion = version;
+  },
 };

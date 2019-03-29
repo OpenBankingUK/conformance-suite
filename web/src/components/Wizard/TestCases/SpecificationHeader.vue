@@ -36,9 +36,10 @@
             :title="url"
             class="psu-consent-link"
             href="#"
-            @click="openPopup(url, 'PSU Consent', 1074, 800)">
-            Start PSU Consent
+            @click="startPsuConsent(url, $event.target)">
+            PSU Consent
           </a>
+          <span :key="'s' + index">{{ acquired(tokenName(url)) }}</span>
           <br :key="index">
         </template>
       </template>
@@ -50,6 +51,7 @@
 import { createNamespacedHelpers } from 'vuex';
 
 const {
+  mapGetters,
   mapState,
 } = createNamespacedHelpers('testcases');
 
@@ -108,6 +110,28 @@ export default {
     },
   },
   methods: {
+    ...mapGetters([
+      'tokenAcquired',
+    ]),
+    acquired(tokenName) {
+      if (this.tokenAcquired()(tokenName)) {
+        return ' Acquired';
+      }
+      return '';
+    },
+    tokenName(url) {
+      const u = new URL(url);
+      const state = u.searchParams.get('state');
+      if (state) {
+        // returns state value, e.g. 'Token0001' or 'Token0002'
+        return state;
+      }
+      return null;
+    },
+    startPsuConsent(url, targetElement) {
+      this.openPopup(url, 'PSU Consent', 1074, 800);
+      targetElement.innerHTML = 'PSU Consent (Started)'; // eslint-disable-line
+    },
     openPopup(url, title, w, h) {
       // Open a window popup via Javascript and supports single/dual displays
       // Credit: https://stackoverflow.com/a/16861050/225885

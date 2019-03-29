@@ -13,12 +13,12 @@ func TestNewTestCaseResult123(t *testing.T) {
 	assert := test.NewAssert(t)
 
 	err := errors.New("some error")
-	result := NewTestCaseResult("123", true, NoMetrics, err)
+	result := NewTestCaseResult("123", true, NoMetrics, []error{err})
 
 	assert.Equal("123", result.Id)
 	assert.True(result.Pass)
 	assert.Equal(NoMetrics, result.Metrics)
-	assert.Equal(err.Error(), result.Fail)
+	assert.Equal(err.Error(), result.Fail[0])
 }
 
 func TestNewTestCaseResult321(t *testing.T) {
@@ -26,23 +26,23 @@ func TestNewTestCaseResult321(t *testing.T) {
 
 	err := errors.New("some error")
 
-	result := NewTestCaseResult("321", true, NoMetrics, err)
+	result := NewTestCaseResult("321", true, NoMetrics, []error{err})
 	assert.Equal("321", result.Id)
 	assert.True(result.Pass)
 	assert.Equal(NoMetrics, result.Metrics)
-	assert.Equal(err.Error(), result.Fail)
+	assert.Equal(err.Error(), result.Fail[0])
 }
 
 func TestNewTestCaseFailResult(t *testing.T) {
 	assert := test.NewAssert(t)
 	err := errors.New("some error")
 
-	result := NewTestCaseFail("id", NoMetrics, err)
+	result := NewTestCaseFail("id", NoMetrics, []error{err})
 
 	assert.Equal("id", result.Id)
 	assert.False(result.Pass)
 	assert.Equal(NoMetrics, result.Metrics)
-	assert.Equal(err.Error(), result.Fail)
+	assert.Equal(err.Error(), result.Fail[0])
 }
 
 func TestTestCaseResultJsonMarshal(t *testing.T) {
