@@ -129,7 +129,7 @@ func (wj *journey) TestCases() (generation.TestCasesRun, error) {
 			wj.log.Debugln("Journey:AcquirePSUTokens")
 			definition := wj.makeRunDefinition()
 
-			consentIds, tokenMap, err := executors.InitiationConsentAcquisition(wj.testCasesRun.SpecConsentRequirements, definition, &wj.context, &wj.testCasesRun)
+			consentIds, tokenMap, err := executors.InitiateConsentAcquisition(wj.testCasesRun.SpecConsentRequirements, definition, &wj.context, &wj.testCasesRun)
 			if err != nil {
 				return generation.TestCasesRun{}, errors.WithMessage(errConsentIDAcquisitionFailed, err.Error())
 			}

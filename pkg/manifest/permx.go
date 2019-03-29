@@ -3,6 +3,7 @@ package manifest
 import (
 	"errors"
 	"fmt"
+	"strings"
 
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
 	"github.com/sirupsen/logrus"
@@ -35,14 +36,19 @@ type TokenStore struct {
 }
 
 // GetSpecType -
-func GetSpecType(spec string) (string, error) {
+func GetSpecType(s string) (string, error) {
+	spec := strings.TrimSpace(s)
 	switch spec {
 	case "Account and Transaction API Specification":
 		return "accounts", nil
-	case "Payment Initiation API Specification":
+	case "Payment Initiation API":
 		return "payments", nil
+	case "Confirmation of Funds API Specification":
+		return "funds", nil
+	case "Event Notification API Specification - ASPSP Endpoints":
+		return "notifications", nil
 	}
-	return "unknown", errors.New("Unknown specification " + spec)
+	return "unknown", errors.New("Unknown specification:  `" + spec + "`")
 }
 
 // GetRequiredTokensFromTests - Given a set of testcases with the permissions defined

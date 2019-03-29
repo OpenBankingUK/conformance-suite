@@ -12,12 +12,6 @@ import (
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
 )
 
-// TestPlan species a list of scripts, asserts and other entities required to run a set of test
-type TestPlan struct {
-	Scripts    Scripts
-	References References
-}
-
 // Scripts -
 type Scripts struct {
 	Scripts []Script `json:"scripts,omitempty"`
@@ -93,7 +87,6 @@ func GenerateTestCases(spec string, baseurl string, ctx *model.Context) ([]model
 
 	tests := []model.TestCase{}
 	for _, script := range scripts.Scripts {
-		logrus.Debug("Process Script:" + script.ID)
 		localCtx, err := script.processParameters(&refs, &accountCtx)
 		if err != nil {
 			return nil, err
@@ -272,31 +265,33 @@ func loadGenerationResources(specType string) (Scripts, References, AccountData,
 }
 
 func loadPayments31() (Scripts, error) {
-
-	sc, err := loadScripts("../../manifests/ob_3.1_payment_fca.json")
+	sc, err := loadScripts("manifests/ob_3.1_payment_fca.json")
 	if err != nil {
-		sc, err = loadScripts("manifests/ob_3.1_payment_fca.json")
+		sc, err = loadScripts("../../manifests/ob_3.1_payment_fca.json")
 	}
-
 	return sc, err
 }
 
 func loadTransactions31() (Scripts, error) {
-	sc, err := loadScripts("../../manifests/ob_3.1_accounts_transactions_fca.json")
+	sc, err := loadScripts("manifests/ob_3.1_accounts_transactions_fca.json")
 	if err != nil {
-		sc, err = loadScripts("manifests/ob_3.1_accounts_transactions_fca.json")
+		sc, err = loadScripts("../../manifests/ob_3.1_accounts_transactions_fca.json")
 	}
 	return sc, err
 }
 
 func loadAssertions() (References, error) {
-	refs, err := loadReferences("../../manifests/assertions.json")
+	refs, err := loadReferences("manifests/assertions.json")
 	if err != nil {
-		refs, err = loadReferences("manifests/assertions.json")
+		refs, err = loadReferences("../../manifests/assertions.json")
+		if err != nil {
+			return References{}, err
+		}
 	}
-	refs2, err := loadReferences("../../manifests/data.json")
+	refs2, err := loadReferences("manifests/data.json")
+
 	if err != nil {
-		refs2, err = loadReferences("manifests/data.json")
+		refs2, err = loadReferences("../../manifests/data.json")
 		if err != nil {
 			return References{}, err
 		}
@@ -333,36 +328,36 @@ func loadAccounts() (AccountData, error) {
 
 }
 
-func loadScriptFiles() (Scripts, References, AccountData, error) {
-	sc, err := loadScripts("../../manifests/ob_3.1_accounts_transactions_fca.json")
-	if err != nil {
-		sc, err = loadScripts("manifests/ob_3.1_accounts_transactions_fca.json")
-		if err != nil {
-			return Scripts{}, References{}, AccountData{}, err
-		}
-	}
+// func loadScriptFiles() (Scripts, References, AccountData, error) {
+// 	sc, err := loadScripts("../../manifests/ob_3.1_accounts_transactions_fca.json")
+// 	if err != nil {
+// 		sc, err = loadScripts("manifests/ob_3.1_accounts_transactions_fca.json")
+// 		if err != nil {
+// 			return Scripts{}, References{}, AccountData{}, err
+// 		}
+// 	}
 
-	refs, err := loadReferences("../../manifests/assertions.json")
-	if err != nil {
-		refs, err = loadReferences("manifests/assertions.json")
-		if err != nil {
-			return Scripts{}, References{}, AccountData{}, err
-		}
-	}
+// 	refs, err := loadReferences("../../manifests/assertions.json")
+// 	if err != nil {
+// 		refs, err = loadReferences("manifests/assertions.json")
+// 		if err != nil {
+// 			return Scripts{}, References{}, AccountData{}, err
+// 		}
+// 	}
 
-	ad, err := loadAccountData("testdata/resources.json") // temp integration shiv
-	if err != nil {
-		ad, err = loadAccountData("pkg/manifest/testdata/resources.json")
-		if err != nil {
-			ad, err = loadAccountData("../manifest/testdata/resources.json")
-			if err != nil {
-				return Scripts{}, References{}, AccountData{}, err
-			}
-		}
-	}
+// 	ad, err := loadAccountData("testdata/resources.json") // temp integration shiv
+// 	if err != nil {
+// 		ad, err = loadAccountData("pkg/manifest/testdata/resources.json")
+// 		if err != nil {
+// 			ad, err = loadAccountData("../manifest/testdata/resources.json")
+// 			if err != nil {
+// 				return Scripts{}, References{}, AccountData{}, err
+// 			}
+// 		}
+// 	}
 
-	return sc, refs, ad, nil
-}
+// 	return sc, refs, ad, nil
+// }
 
 func loadAccountData(filename string) (AccountData, error) {
 	plan, err := ioutil.ReadFile(filename)
@@ -393,27 +388,12 @@ func loadScripts(filename string) (Scripts, error) {
 func loadReferences(filename string) (References, error) {
 	plan, err := ioutil.ReadFile(filename)
 	if err != nil {
-		fmt.Println("error reading reference file " + err.Error())
 		return References{}, err
 	}
 	var m References
 	err = json.Unmarshal(plan, &m)
 	if err != nil {
-		fmt.Println("error unmarshalling reference file " + err.Error())
 		return References{}, err
-	}
-	return m, nil
-}
-
-func loadTestPlan(filename string) (TestPlan, error) {
-	plan, err := ioutil.ReadFile(filename)
-	if err != nil {
-		return TestPlan{}, err
-	}
-	var m TestPlan
-	err = json.Unmarshal(plan, &m)
-	if err != nil {
-		return TestPlan{}, err
 	}
 	return m, nil
 }

@@ -49,11 +49,13 @@ func (g generator) GenerateManifestTests(log *logrus.Entry, config GeneratorConf
 	log = log.WithField("module", "GenerateManifestTests")
 	for _, item := range discovery.DiscoveryItems {
 		spectype, err := manifest.GetSpecType(item.APISpecification.Name)
+		item.APISpecification.SpecType = spectype
+		log.Debugf("Generating testcases for %s API\n", spectype)
 		if err != nil {
 			log.Warnf("specification %s not found\n", item.APISpecification.Name)
 			continue
 		}
-		log.Tracef("usging specification type %s", spectype)
+		item.APISpecification.SpecType = spectype
 	}
 
 	specTestCases := []SpecificationTestCases{}
@@ -65,19 +67,26 @@ func (g generator) GenerateManifestTests(log *logrus.Entry, config GeneratorConf
 			continue
 		}
 		stc := SpecificationTestCases{Specification: item.APISpecification, TestCases: tcs}
-		logrus.Debugf("%d test cases generated", len(tcs))
+		logrus.Debugf("%d test cases generated for %s", len(tcs), item.APISpecification.Name)
 
 		specTestCases = append(specTestCases, stc)
-
-		break //TODO: sort this out integration scaffolding ... do it once for starters ...
 	}
 
-	requiredTokens, err := manifest.GetRequiredTokensFromTests(specTestCases[0].TestCases, "accounts")
+	var allRequiredTokens []manifest.RequiredTokens
+	for _, v := range specTestCases {
+		requiredSpecTokens, err := manifest.GetRequiredTokensFromTests(v.TestCases, v.Specification.SpecType)
+		if err != nil {
+			log.Warnf("getRequiredTokensFromTests return error:%s", err.Error())
+		}
+		allRequiredTokens = append(allRequiredTokens, requiredSpecTokens...)
+
+	}
+
+	scrSlice, err := getSpecConsentsFromRequiredTokens(allRequiredTokens)
 	if err != nil {
-
+		log.Warnf("getSpecConsentsFromRequiredTokens return error:%s", err.Error())
 	}
-	scrSlice, err := getSpecConsentsFromRequiredTokens(requiredTokens)
-	//specTestCases = append(customTestCases, specTestCases...)
+
 	return TestCasesRun{specTestCases, scrSlice}
 }
 
@@ -95,14 +104,6 @@ func getSpecConsentsFromRequiredTokens(rt []manifest.RequiredTokens) ([]model.Sp
 	}
 	specConsentReq := model.SpecConsentRequirements{Identifier: "Account and Transaction API Specification", NamedPermissions: npa}
 	specConsents = append(specConsents, specConsentReq)
-
-	// perms := model.NamedPermissions{model.NamedPermission{Name: "to1001",
-	// 	CodeSet: permissions.CodeSetResult{CodeSet: permissions.CodeSet{"ReadAccountsBasic", "ReadProducts", "ReadTransactionsBasic", "ReadTransactionsCredits", "ReadTransactionsDebits", "ReadBalances"},
-	// 		TestIds: []permissions.TestId{"#co0001", "#co0002", "#co0003", "#t1001", "#t1002", "#t1003", "#t1004", "#t1005"}}, ConsentUrl: ""}}
-
-	// scr := model.SpecConsentRequirements{Identifier: "to1001", NamedPermissions: perms}
-	// scrSlice := []model.SpecConsentRequirements{scr}
-
 	return specConsents, nil
 }
 
