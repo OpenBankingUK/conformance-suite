@@ -41,12 +41,10 @@
                 "OB3GLOFAPIHeader",
                 "OB3GLOAAssertConsentId"
             ],
-            "keepContextOnSuccess": [
-                {
-                    "name": "OB-301-DOP-100100-ConsentId",
-                    "value": "json.Data.ConsentId"
-                }
-            ],
+            "keepContextOnSuccess": {
+                "name": "OB-301-DOP-100100-ConsentId",
+                "value": "json.Data.ConsentId"
+            },
             "method": "post",
             "schemaCheck": false
         },
@@ -89,12 +87,10 @@
                 "OB3DOPAssertOnAcceptedSettlementCompleted",
                 "OB3GLOAAssertConsentId"
             ],
-            "keepContextOnSuccess": [
-                {
-                    "name": "OB-301-DOP-100300-ConsentId",
-                    "value": "json.Data.ConsentId"
-                }
-            ],
+            "keepContextOnSuccess": {
+                "name": "OB-301-DOP-100300-ConsentId",
+                "value": "json.Data.ConsentId"
+            },
             "method": "post",
             "schemaCheck": true
         },
@@ -154,12 +150,10 @@
             "asserts": [
                 "OB3GLOAssertOn201"
             ],
-            "keepContextOnSuccess": [
-                {
-                    "name": "OB-301-DOP-100600-DomesticPaymentId",
-                    "value": "json.Data.DomesticPaymentId"
-                }
-            ],
+            "keepContextOnSuccess": {
+                "name": "OB-301-DOP-100600-DomesticPaymentId",
+                "value": "json.Data.DomesticPaymentId"
+            },
             "method": "post",
             "schemaCheck": false
         },
@@ -201,12 +195,10 @@
                 "OB3DOPAssertAwaitingAuthorisation",
                 "OB3GLOAAssertConsentId"
             ],
-            "keepContextOnSuccess": [
-                {
-                    "name": "OB-301-DOP-100800-ConsentId",
-                    "value": "json.Data.ConsentId"
-                }
-            ],
+            "keepContextOnSuccess": {
+                "name": "OB-301-DOP-100800-ConsentId",
+                "value": "json.Data.ConsentId"
+            },
             "method": "post",
             "schemaCheck": true
         },
@@ -246,12 +238,10 @@
             "asserts": [
                 "OB3GLOAssertOn201"
             ],
-            "keepContextOnSuccess": [
-                {
-                    "name": "OB-301-DOP-101000-DomesticScheduledPaymentId",
-                    "value": "json.Data.DomesticScheduledPaymentId"
-                }
-            ],
+            "keepContextOnSuccess": {
+                "name": "OB-301-DOP-101000-DomesticScheduledPaymentId",
+                "value": "json.Data.DomesticScheduledPaymentId"
+            },
             "method": "post",
             "schemaCheck": true
         },
@@ -292,12 +282,10 @@
                 "OB3GLOFAPIHeader",
                 "OB3GLOAAssertConsentId"
             ],
-            "keepContextOnSuccess": [
-                {
-                    "name": "OB-301-DOP-101200-ConsentId",
-                    "value": "json.Data.ConsentId"
-                }
-            ],
+            "keepContextOnSuccess": {
+                "name": "OB-301-DOP-101200-ConsentId",
+                "value": "json.Data.ConsentId"
+            },
             "method": "post",
             "schemaCheck": true
         },
@@ -337,12 +325,10 @@
             "asserts": [
                 "OB3GLOAssertOn201"
             ],
-            "keepContextOnSuccess": [
-                {
-                    "name": "OB-301-DOP-101000-DomesticScheduledPaymentId",
-                    "value": "json.Data.DomesticScheduledPaymentId"
-                }
-            ],
+            "keepContextOnSuccess": {
+                "name": "OB-301-DOP-101000-DomesticScheduledPaymentId",
+                "value": "json.Data.DomesticScheduledPaymentId"
+            },
             "method": "post",
             "schemaCheck": true
         },
@@ -383,12 +369,10 @@
                 "OB3GLOFAPIHeader",
                 "OB3GLOAAssertConsentId"
             ],
-            "keepContextOnSuccess": [
-                {
-                    "name": "OB-301-DOP-101600-ConsentId",
-                    "value": "json.Data.ConsentId"
-                }
-            ],
+            "keepContextOnSuccess": {
+                "name": "OB-301-DOP-101600-ConsentId",
+                "value": "json.Data.ConsentId"
+            },
             "method": "post",
             "schemaCheck": true
         },
@@ -429,12 +413,10 @@
                 "OB3GLOAssertOn201",
                 "OB3IPAssertInternationalPaymentId"
             ],
-            "keepContextOnSuccess": [
-                {
-                    "name": "OB-301-DOP-101800-InternationalPaymentId",
-                    "value": "json.Data.InternationalPaymentId"
-                }
-            ],
+            "keepContextOnSuccess": {
+                "name": "OB-301-DOP-101800-InternationalPaymentId",
+                "value": "json.Data.InternationalPaymentId"
+            },
             "method": "post",
             "schemaCheck": true
         },
@@ -475,12 +457,10 @@
                 "OB3GLOFAPIHeader",
                 "OB3GLOAAssertConsentId"
             ],
-            "keepContextOnSuccess": [
-                {
-                    "name": "OB-301-DOP-102000-ConsentId",
-                    "value": "json.Data.ConsentId"
-                }
-            ],
+            "keepContextOnSuccess": {
+                "name": "OB-301-DOP-102000-ConsentId",
+                "value": "json.Data.ConsentId"
+            },
             "method": "post",
             "schemaCheck": true
         },
@@ -521,12 +501,10 @@
                 "OB3GLOAssertOn201",
                 "OB3IPAssertInternationalPaymentId"
             ],
-            "keepContextOnSuccess": [
-                {
-                    "name": "OB-301-DOP-102200-InternationalPaymentId",
-                    "value": "json.Data.InternationalPaymentId"
-                }
-            ],
+            "keepContextOnSuccess": {
+                "name": "OB-301-DOP-102200-InternationalPaymentId",
+                "value": "json.Data.InternationalPaymentId"
+            },
             "method": "post",
             "schemaCheck": true
         },
@@ -567,12 +545,10 @@
                 "OB3GLOFAPIHeader",
                 "OB3GLOAAssertConsentId"
             ],
-            "keepContextOnSuccess": [
-                {
-                    "name": "OB-301-DOP-102400-ConsentId",
-                    "value": "json.Data.ConsentId"
-                }
-            ],
+            "keepContextOnSuccess": {
+                "name": "OB-301-DOP-102400-ConsentId",
+                "value": "json.Data.ConsentId"
+            },
             "method": "post",
             "schemaCheck": true
         },
@@ -613,12 +589,10 @@
                 "OB3GLOAssertOn201",
                 "OB3IPAssertInternationalStandingOrderPaymentId"
             ],
-            "keepContextOnSuccess": [
-                {
-                    "name": "OB-301-DOP-102600-InternationalStandingOrderPaymentId",
-                    "value": "json.Data.InternationalStandingOrderPaymentId"
-                }
-            ],
+            "keepContextOnSuccess": {
+                "name": "OB-301-DOP-102600-InternationalStandingOrderPaymentId",
+                "value": "json.Data.InternationalStandingOrderPaymentId"
+            },
             "method": "post",
             "schemaCheck": true
         },
