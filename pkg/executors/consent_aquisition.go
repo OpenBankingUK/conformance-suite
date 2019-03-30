@@ -16,43 +16,44 @@ import (
 var consentChannelTimeout = 30
 
 // InitiateConsentAcquisition -
-func InitiateConsentAcquisition(consentRequirements []model.SpecConsentRequirements, definition RunDefinition, ctx *model.Context, runTests *generation.TestCasesRun) (TokenConsentIDs, map[string]string, error) {
+func InitiateConsentAcquisition(definition RunDefinition, ctx *model.Context, runTests *generation.TestCasesRun) (TokenConsentIDs, map[string]string, error) {
 
-	for _, v := range runTests.TestCases {
-		specType, err := manifest.GetSpecType(v.Specification.Name)
+	consentRequirements := runTests.SpecConsentRequirements
+	logrus.Tracef("consentRequirements:\n%#v\n", consentRequirements)
+
+	for _, spec := range runTests.TestCases {
+		specType, err := manifest.GetSpecType(spec.Specification.Name)
 		if err != nil {
-			logrus.Warnf("cannot get spec type fo name %s\n", v.Specification.Name)
+			logrus.Warnf("cannot get spec type fo name %s\n", spec.Specification.Name)
 		}
 		switch specType {
 		case "accounts":
-			return InitiateAccountConsentAcquisition(consentRequirements, definition, ctx, runTests) // accounts consent handling
+			return InitiateAccountConsentAcquisition(consentRequirements, definition, ctx, spec) // accounts consent handling
 		case "payments":
-			panic("OMG WTF!!!! Heeeeeelppppp")
+			logrus.Fatal("Payment Token Acquisition not implemented yet")
 		default:
-			logrus.Fatalf("wtf type of spec is: `%s`", specType)
-			panic("OMG WTF!!!! Heeeeeelppppp D E F A U L T !!!! nooooooo o o o  o   o   o   o     o     o     o     o!!!")
+			logrus.Fatalf("Invalid spec type: `%s`", specType)
 		}
 	}
-
-	return InitiateAccountConsentAcquisition(consentRequirements, definition, ctx, runTests)
+	logrus.Warnf("No Consent Squistion Performed\n")
+	return nil, nil, errors.New("No Consent Acquisition performed")
 }
 
 // InitiateAccountConsentAcquisition - get required tokens
-func InitiateAccountConsentAcquisition(consentRequirements []model.SpecConsentRequirements, definition RunDefinition, ctx *model.Context, runTests *generation.TestCasesRun) (TokenConsentIDs, map[string]string, error) {
-	tokenMap := make(map[string]string, 0)
+func InitiateAccountConsentAcquisition(consentRequirements []model.SpecConsentRequirements, definition RunDefinition, ctx *model.Context, spec generation.SpecificationTestCases) (TokenConsentIDs, map[string]string, error) {
+
 	consentIDChannel := make(chan TokenConsentIDItem, 100)
 	logger := logrus.StandardLogger().WithField("module", "InitiateAccountConsentAcquisition")
-	tokenParameters := getConsentTokensAndPermissions(consentRequirements, logger)
+	logger.Tracef("InitiateAccountConsentAcquistion")
 
-	tests := make([]model.TestCase, 0)
-	for _, v := range runTests.TestCases {
-		tests = append(tests, v.TestCases...)
+	tokenParameters := make(map[string]string, 0)
+
+	requiredTokens, err := manifest.GetRequiredTokensFromTests(spec.TestCases, "accounts")
+	logrus.Tracef("required tokens %#v\n", requiredTokens)
+	for _, rt := range requiredTokens {
+		tokenParameters[rt.Name] = buildPermissionString(rt.Perms)
 	}
-
-	requiredTokens, err := manifest.GetRequiredTokensFromTests(tests, "accounts")
-	tokenParameters = getTokenParametersFromRequiredTokens(requiredTokens)
-	logrus.Debugf("InitiateAccountConsentAcquisition: required tokens %#v\n", requiredTokens)
-
+	logrus.Tracef("required tokens %#v\n", tokenParameters)
 	//for tokenName, permissionList := range tokenParameters {
 	for _, rt := range requiredTokens {
 		permissionList := rt.Perms
@@ -70,53 +71,13 @@ func InitiateAccountConsentAcquisition(consentRequirements []model.SpecConsentRe
 	logrus.Trace("<<==========================")
 	dumpJSON(tokenParameters)
 	logrus.Trace("<<==========================")
-	consentItems, err := waitForConsentIDs(consentIDChannel, tokenParameters, logger)
+	consentItems, err := waitForConsentIDs(consentIDChannel, len(tokenParameters), logger)
 	for _, v := range consentItems {
 		logger.Debugf("Setting Token: %s, ConsentId: %s", v.TokenName, v.ConsentID)
 		ctx.PutString(v.TokenName, v.ConsentID)
 	}
-
-	return consentItems, tokenMap, err
-}
-
-// InitiateConsentAcquisition1 - get required tokens
-func InitiateAccountConsentAcquisition1(consentRequirements []model.SpecConsentRequirements, definition RunDefinition, ctx *model.Context, runTests *generation.TestCasesRun) (TokenConsentIDs, map[string]string, error) {
-	tokenMap := make(map[string]string, 0)
-	consentIDChannel := make(chan TokenConsentIDItem, 100)
-	logger := logrus.StandardLogger().WithField("module", "InitiationConsentAcquisition")
-	tokenParameters := getConsentTokensAndPermissions(consentRequirements, logger)
-
-	tests := make([]model.TestCase, 0)
-	for _, v := range runTests.TestCases {
-		tests = append(tests, v.TestCases...)
-	}
-
-	requiredTokens, err := manifest.GetRequiredTokensFromTests(tests, "accounts")
-	//tokenParameters = getTokenParametersFromRequiredTokens(requiredTokens)
-	_ = requiredTokens
-	logrus.Debugf("required tokens %#v\n", requiredTokens)
-
-	for tokenName, permissionList := range tokenParameters {
-		runner := NewConsentAcquisitionRunner(logrus.StandardLogger().WithField("module", "InitiationConsentAcquisition"), definition, NewBufferedDaemonController())
-		tokenAcquisitionType := definition.DiscoModel.DiscoveryModel.TokenAcquisition
-		permissionString := buildPermissionString(permissionList)
-		consentInfo := TokenConsentIDItem{TokenName: tokenName, Permissions: permissionString}
-		errRun := runner.RunConsentAcquisition(consentInfo, ctx, tokenAcquisitionType, consentIDChannel)
-		if errRun != nil {
-			logger.WithError(errRun).Debug("InitiationConsentAcquisition")
-		}
-	}
-
-	consentItems, err := waitForConsentIDs(consentIDChannel, tokenParameters, logger)
-	for _, v := range consentItems {
-		if len(v.Error) > 0 {
-			continue
-		}
-		logger.Debugf("Setting Token: %s, ConsentId: %s", v.TokenName, v.ConsentID)
-		ctx.PutString(v.TokenName, v.ConsentID)
-	}
-
-	return consentItems, tokenMap, err
+	logrus.Debugf("we have %d consentIds: %#v\n", len(consentItems), consentItems)
+	return consentItems, tokenParameters, err
 }
 
 func getTokenParametersFromRequiredTokens(tokens []manifest.RequiredTokens) map[string][]string {
@@ -127,9 +88,8 @@ func getTokenParametersFromRequiredTokens(tokens []manifest.RequiredTokens) map[
 	return tokenParameters
 }
 
-func waitForConsentIDs(consentIDChannel chan TokenConsentIDItem, tokenParameters map[string][]string, logger *logrus.Entry) (TokenConsentIDs, error) {
+func waitForConsentIDs(consentIDChannel chan TokenConsentIDItem, consentIDsRequired int, logger *logrus.Entry) (TokenConsentIDs, error) {
 	consentItems := TokenConsentIDs{}
-	consentIDsRequired := len(tokenParameters)
 	consentIDsReceived := 0
 	logger.Debugf("waiting for consentids items ...")
 	for {

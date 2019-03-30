@@ -9,23 +9,26 @@ import (
 )
 
 func TestGenerateTestCases(t *testing.T) {
-	tests, err := GenerateTestCases("Payment Initiation API Specification", "http://mybaseurl", &model.Context{})
+	//tests, err := GenerateTestCases("Payment Initiation API Specification", "http://mybaseurl", &model.Context{})
+
+	tests, err := GenerateTestCases("Account and Transaction API Specification", "http://mybaseurl", &model.Context{})
 	assert.Nil(t, err)
 
-	perms, err := GetPermissions(tests)
+	perms, err := getAccountPermissions(tests)
 	assert.Nil(t, err)
 	m := make(map[string]string, 0)
 	for _, v := range perms {
 		fmt.Printf("perms: %s %-50.50s %s\n", v.ID, v.Path, v.Permissions)
 		m[v.Path] = v.ID
 	}
-	for k := range m {
-		fmt.Println(k)
+	requiredTokens, err := GetRequiredTokensFromTests(tests, "accounts")
+	for _, v := range requiredTokens {
+		fmt.Println(v)
 	}
 
-	for _, v := range tests {
-		dumpJSON(v)
-	}
+	// for _, v := range tests {
+	// 	dumpJSON(v)
+	// }
 }
 
 func TestPaymentPermissionsCases(t *testing.T) {

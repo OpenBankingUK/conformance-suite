@@ -125,21 +125,22 @@ func (wj *journey) TestCases() (generation.TestCasesRun, error) {
 		wj.log.Debugln("Journey:GenerationManifestTests")
 		wj.testCasesRun = wj.generator.GenerateManifestTests(wj.log, config, discovery, &wj.context) // Integration work in progress
 
+		runDefinition := wj.makeRunDefinition()
 		if discovery.TokenAcquisition == "psu" {
 			wj.log.Debugln("Journey:AcquirePSUTokens")
-			definition := wj.makeRunDefinition()
-
-			consentIds, tokenMap, err := executors.InitiateConsentAcquisition(wj.testCasesRun.SpecConsentRequirements, definition, &wj.context, &wj.testCasesRun)
+			consentIds, tokenMap, err := executors.InitiateConsentAcquisition(runDefinition, &wj.context, &wj.testCasesRun)
+			wj.log.Tracef("Journey:psu-consentIds: %#v\n", consentIds)
 			if err != nil {
 				return generation.TestCasesRun{}, errors.WithMessage(errConsentIDAcquisitionFailed, err.Error())
 			}
 			for k, v := range tokenMap {
 				wj.context.PutString(k, v)
 			}
+			//consentIdsToTestCaseRun(wj.log, consentIds, &wj.testCasesRun)
+			wj.testCasesRun.SpecConsentRequirements[0].NamedPermissions = getNamedPermissions(consentIds)
 			wj.createTokenCollector(consentIds)
 		} else {
 			wj.log.Debugln("Journey:AcquireHeadlessTokens")
-			runDefinition := wj.makeRunDefinition()
 			// TODO:Process multiple specs ... don't restrict to element [0]!!
 			tokenPermissionsMap, err := executors.AcquireHeadlessTokens(wj.testCasesRun.TestCases[0].TestCases, &wj.context, runDefinition)
 			if err != nil {
@@ -155,11 +156,7 @@ func (wj *journey) TestCases() (generation.TestCasesRun, error) {
 		}
 		wj.testCasesRunGenerated = true
 	}
-
-	wj.log.Tracef("TestCaseRun.SpecConsentRequirements: %#v\n", wj.testCasesRun.SpecConsentRequirements)
-	for k := range wj.testCasesRun.TestCases {
-		wj.log.Tracef("TestCaseRun-Specificatino: %#v\n", wj.testCasesRun.TestCases[k].Specification)
-	}
+	wj.log.Traceln(">>=================================================================================<<")
 	wj.log.Tracef("Dumping Consents:---------------------------\n")
 	for _, v := range wj.testCasesRun.SpecConsentRequirements {
 		wj.log.Tracef("%s", v.Identifier)
@@ -167,6 +164,7 @@ func (wj *journey) TestCases() (generation.TestCasesRun, error) {
 			wj.log.Tracef("\tname: %s codeset: %#v\n\tconsent Url: %s", x.Name, x.CodeSet.CodeSet, x.ConsentUrl)
 		}
 	}
+	wj.log.Traceln(">>=================================================================================<<")
 	return wj.testCasesRun, nil
 }
 
@@ -353,15 +351,25 @@ func (wj *journey) customTestParametersToJourneyContext() {
 }
 
 func consentIdsToTestCaseRun(log *logrus.Entry, consentIds []executors.TokenConsentIDItem, testCasesRun *generation.TestCasesRun) {
-	for _, v := range testCasesRun.SpecConsentRequirements {
+	for k, v := range testCasesRun.SpecConsentRequirements {
 		for x, permission := range v.NamedPermissions {
 			for _, item := range consentIds {
 				if item.TokenName == permission.Name {
 					permission.ConsentUrl = item.ConsentURL
 					log.Debugf("Setting consent url for token %s to %s", permission.Name, permission.ConsentUrl)
 					v.NamedPermissions[x] = permission
+					testCasesRun.SpecConsentRequirements[k] = v
 				}
 			}
 		}
 	}
+}
+
+func getNamedPermissions(consentIds []executors.TokenConsentIDItem) model.NamedPermissions {
+	named := model.NamedPermissions{}
+	for _, consent := range consentIds {
+		namedp := model.NamedPermission{Name: consent.TokenName, ConsentUrl: consent.ConsentURL}
+		named = append(named, namedp)
+	}
+	return named
 }

@@ -328,37 +328,6 @@ func loadAccounts() (AccountData, error) {
 
 }
 
-// func loadScriptFiles() (Scripts, References, AccountData, error) {
-// 	sc, err := loadScripts("../../manifests/ob_3.1_accounts_transactions_fca.json")
-// 	if err != nil {
-// 		sc, err = loadScripts("manifests/ob_3.1_accounts_transactions_fca.json")
-// 		if err != nil {
-// 			return Scripts{}, References{}, AccountData{}, err
-// 		}
-// 	}
-
-// 	refs, err := loadReferences("../../manifests/assertions.json")
-// 	if err != nil {
-// 		refs, err = loadReferences("manifests/assertions.json")
-// 		if err != nil {
-// 			return Scripts{}, References{}, AccountData{}, err
-// 		}
-// 	}
-
-// 	ad, err := loadAccountData("testdata/resources.json") // temp integration shiv
-// 	if err != nil {
-// 		ad, err = loadAccountData("pkg/manifest/testdata/resources.json")
-// 		if err != nil {
-// 			ad, err = loadAccountData("../manifest/testdata/resources.json")
-// 			if err != nil {
-// 				return Scripts{}, References{}, AccountData{}, err
-// 			}
-// 		}
-// 	}
-
-// 	return sc, refs, ad, nil
-// }
-
 func loadAccountData(filename string) (AccountData, error) {
 	plan, err := ioutil.ReadFile(filename)
 	if err != nil {
@@ -406,7 +375,7 @@ type ScriptPermission struct {
 }
 
 // GetPermissions -
-func GetPermissions(tests []model.TestCase) ([]ScriptPermission, error) {
+func getAccountPermissions(tests []model.TestCase) ([]ScriptPermission, error) {
 	permCollector := []ScriptPermission{}
 
 	for _, test := range tests {
