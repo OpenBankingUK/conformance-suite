@@ -176,8 +176,8 @@ func TestMockedTestCase(t *testing.T) {
 	assert.NotNil(t, req)
 
 	res := test.CreateHTTPResponse(200, "OK", string(getAccountResponse))
-	result, err := testcase.ApplyExpects(res, nil)
-	assert.NoError(t, err)
+	result, errs := testcase.ApplyExpects(res, nil)
+	assert.Nil(t, errs)
 	assert.Equal(t, res.StatusCode(), 200)
 	assert.Nil(t, err)
 	assert.Equal(t, result, true)
@@ -192,8 +192,8 @@ func TestResponseStatusCodeMismatch(t *testing.T) {
 
 	res := test.CreateHTTPResponse(201, "OK", string(getAccountResponse))
 
-	result, err := testcase.ApplyExpects(res, nil)
-	assert.NotNil(t, err)
+	result, errs := testcase.ApplyExpects(res, nil)
+	assert.NotNil(t, errs)
 	assert.Equal(t, result, false)
 
 }
@@ -206,8 +206,8 @@ func TestJsonExpectMatch(t *testing.T) {
 
 	res := test.CreateHTTPResponse(200, "OK", string(getAccountResponse))
 
-	result, err := testcase.Validate(res, emptyContext)
-	assert.Nil(t, err)
+	result, errs := testcase.Validate(res, emptyContext)
+	assert.Nil(t, errs)
 	assert.Equal(t, result, true)
 }
 

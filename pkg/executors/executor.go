@@ -17,12 +17,12 @@ import (
 
 // TestCaseExecutor defines an interface capable of executing a testcase
 type TestCaseExecutor interface {
-	ExecuteTestCase(r *resty.Request, t *model.TestCase, ctx *model.Context) (*resty.Response, error)
+	ExecuteTestCase(r *resty.Request, t *model.TestCase, ctx *model.Context) (*resty.Response, results.Metrics, error)
 	SetCertificates(certificateSigning, certificationTransport authentication.Certificate) error
 }
 
 // NewExecutor creates an executor
-func NewExecutor() *Executor {
+func NewExecutor() TestCaseExecutor {
 	return &Executor{}
 }
 
@@ -42,11 +42,12 @@ func (e *Executor) SetCertificates(certificateSigning, certificationTransport au
 // ExecuteTestCase - makes this a generic executor
 func (e *Executor) ExecuteTestCase(r *resty.Request, t *model.TestCase, ctx *model.Context) (*resty.Response, results.Metrics, error) {
 	e.appMsg(fmt.Sprintf("Execute Testcase: %s: %s", t.ID, t.Name))
+	e.appMsg(fmt.Sprintf("attempting %s %s", r.Method, r.URL))
 	resp, err := r.Execute(r.Method, r.URL)
 	if err != nil {
 		if resp.StatusCode() == http.StatusFound { // catch status code 302 redirects and pass back as good response
 			header := resp.Header()
-			logrus.Printf("redirection headers: %#v\n", header)
+			logrus.StandardLogger().Printf("redirection headers: %#v\n", header)
 			e.appMsg(fmt.Sprintf("Response: (%.250s)", resp.String()))
 			return resp, metrics(t, resp), nil
 		}
@@ -107,17 +108,4 @@ func (e *Executor) setupTLSCertificate(tlsCert tls.Certificate) error {
 
 func (e *Executor) appMsg(msg string) {
 	tracer.AppMsg("Executor", msg, "")
-}
-
-func (e *Executor) appErr(msg string) error {
-	tracer.AppErr("Executor", msg, "")
-	return errors.New(msg)
-}
-
-func (e *Executor) appEntry(msg string) {
-	tracer.AppEntry("Executor", msg)
-}
-
-func (e *Executor) appExit(msg string) {
-	tracer.AppExit("Executor", msg)
 }

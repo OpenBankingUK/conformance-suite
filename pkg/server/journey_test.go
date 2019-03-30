@@ -1,6 +1,7 @@
 package server
 
 import (
+	"fmt"
 	"testing"
 
 	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/test"
@@ -8,8 +9,7 @@ import (
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery/mocks"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/generation"
-	gmocks "bitbucket.org/openbankingteam/conformance-suite/pkg/generation/mocks"
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
+	gmocks "bitbucket.org/openbankingteam/conformance-suite/pkg/generation"
 	"github.com/pkg/errors"
 	"github.com/stretchr/testify/require"
 )
@@ -44,7 +44,7 @@ func TestJourneySetDiscoveryModelValidatesModel(t *testing.T) {
 	discoveryModel := &discovery.Model{}
 	validator := &mocks.Validator{}
 	validator.On("Validate", discoveryModel).Return(discovery.NoValidationFailures, nil)
-	generator := &gmocks.Generator{}
+	generator := &gmocks.MockGenerator{}
 	journey := NewJourney(nullLogger(), generator, validator)
 
 	failures, err := journey.SetDiscoveryModel(discoveryModel)
@@ -62,7 +62,7 @@ func TestJourneySetDiscoveryModelHandlesErrorFromValidator(t *testing.T) {
 	validator := &mocks.Validator{}
 	expectedFailures := discovery.ValidationFailures{}
 	validator.On("Validate", discoveryModel).Return(expectedFailures, errors.New("validator error"))
-	generator := &gmocks.Generator{}
+	generator := &gmocks.MockGenerator{}
 	journey := NewJourney(nullLogger(), generator, validator)
 
 	failures, err := journey.SetDiscoveryModel(discoveryModel)
@@ -83,7 +83,7 @@ func TestJourneySetDiscoveryModelReturnsFailuresFromValidator(t *testing.T) {
 	}
 	expectedFailures := discovery.ValidationFailures{failure}
 	validator.On("Validate", discoveryModel).Return(expectedFailures, nil)
-	generator := &gmocks.Generator{}
+	generator := &gmocks.MockGenerator{}
 	journey := NewJourney(nullLogger(), generator, validator)
 
 	failures, err := journey.SetDiscoveryModel(discoveryModel)
@@ -96,7 +96,7 @@ func TestJourneyTestCasesCantGenerateIfDiscoveryNotSet(t *testing.T) {
 	assert := test.NewAssert(t)
 
 	validator := &mocks.Validator{}
-	generator := &gmocks.Generator{}
+	generator := &gmocks.MockGenerator{}
 	journey := NewJourney(nullLogger(), generator, validator)
 
 	testCases, err := journey.TestCases()
@@ -105,57 +105,11 @@ func TestJourneyTestCasesCantGenerateIfDiscoveryNotSet(t *testing.T) {
 	assert.Equal(generation.TestCasesRun{}, testCases)
 }
 
-func TestJourneyTestCasesGenerate(t *testing.T) {
-	assert := test.NewAssert(t)
-
-	validator := &mocks.Validator{}
-	discoveryModel := &discovery.Model{}
-	validator.On("Validate", discoveryModel).Return(discovery.NoValidationFailures, nil)
-	expectedTestCases := generation.TestCasesRun{}
-	generator := &gmocks.Generator{}
-	config := generation.GeneratorConfig{ClientID: "", Aud: "", ResponseType: "code id_token", Scope: "openid accounts", AuthorizationEndpoint: "", RedirectURL: ""}
-	generator.On("GenerateSpecificationTestCases", config, discoveryModel.DiscoveryModel, &model.Context{}).Return(expectedTestCases)
-	journey := NewJourney(nullLogger(), generator, validator)
-	_, err := journey.SetDiscoveryModel(discoveryModel)
-	require.NoError(t, err)
-
-	testCasesRun, err := journey.TestCases()
-
-	assert.NoError(err)
-	assert.Equal(expectedTestCases, testCasesRun)
-}
-
-func TestJourneyTestCasesDoesntREGenerate(t *testing.T) {
-	assert := test.NewAssert(t)
-
-	validator := &mocks.Validator{}
-	discoveryModel := &discovery.Model{}
-	validator.On("Validate", discoveryModel).Return(discovery.NoValidationFailures, nil)
-	expectedTestCases := generation.TestCasesRun{}
-	generator := &gmocks.Generator{}
-	config := generation.GeneratorConfig{ClientID: "", Aud: "", ResponseType: "code id_token", Scope: "openid accounts", AuthorizationEndpoint: "", RedirectURL: ""}
-	generator.On("GenerateSpecificationTestCases", config, discoveryModel.DiscoveryModel, &model.Context{}).
-		Return(expectedTestCases).Times(1)
-
-	journey := NewJourney(nullLogger(), generator, validator)
-	_, err := journey.SetDiscoveryModel(discoveryModel)
-	require.NoError(t, err)
-	firstRunTestCases, err := journey.TestCases()
-	require.NoError(t, err)
-
-	testCases, err := journey.TestCases()
-
-	assert.NoError(err)
-	assert.Equal(expectedTestCases, testCases)
-	assert.Equal(firstRunTestCases.TestCases, testCases.TestCases)
-	generator.AssertExpectations(t)
-}
-
 func TestJourneyRunTestCasesCantRunIfNoTestCases(t *testing.T) {
 	assert := test.NewAssert(t)
 
 	validator := &mocks.Validator{}
-	generator := &gmocks.Generator{}
+	generator := &gmocks.MockGenerator{}
 	journey := NewJourney(nullLogger(), generator, validator)
 
 	err := journey.RunTests()
@@ -167,19 +121,10 @@ func TestJourneySetConfig(t *testing.T) {
 	require := test.NewRequire(t)
 
 	validator := &mocks.Validator{}
-	generator := &gmocks.Generator{}
+	generator := &gmocks.MockGenerator{}
 	journey := NewJourney(nullLogger(), generator, validator)
 
-	require.Nil(journey.certificateTransport)
-	require.Nil(journey.certificateSigning)
-	require.Empty(journey.clientID)
-	require.Empty(journey.clientSecret)
-	require.Empty(journey.tokenEndpoint)
-	require.Empty(journey.authorizationEndpoint)
-	require.Empty(journey.resourceBaseURL)
-	require.Empty(journey.xXFAPIFinancialID)
-	require.Empty(journey.issuer)
-	require.Empty(journey.redirectURL)
+	require.Equal(JourneyConfig{}, journey.config)
 
 	certificateSigning, err := authentication.NewCertificate(publicCertValid, privateCertValid)
 	require.NoError(err)
@@ -187,25 +132,20 @@ func TestJourneySetConfig(t *testing.T) {
 	certificateTransport, err := authentication.NewCertificate(publicCertValid, privateCertValid)
 	require.NoError(err)
 	require.NotNil(certificateTransport)
-	clientID := "8672384e-9a33-439f-8924-67bb14340d71"
-	clientSecret := "2cfb31a3-5443-4e65-b2bc-ef8e00266a77"
-	tokenEndpoint := "https://modelobank2018.o3bank.co.uk:4201/token"
-	authorizationEndpoint := "https://modelobankauth2018.o3bank.co.uk:4101/auth"
-	resourceBaseURL := "https://modelobank2018.o3bank.co.uk:4501"
-	xXFAPIFinancialID := "0015800001041RHAAY"
-	issuer := "https://modelobankauth2018.o3bank.co.uk:4101"
-	redirectURL := "https://0.0.0.0:8443/conformancesuite/callback"
+	config := JourneyConfig{
+		certificateSigning:    certificateSigning,
+		certificateTransport:  certificateTransport,
+		clientID:              "8672384e-9a33-439f-8924-67bb14340d71",
+		clientSecret:          "2cfb31a3-5443-4e65-b2bc-ef8e00266a77",
+		tokenEndpoint:         "https://modelobank2018.o3bank.co.uk:4201/token",
+		authorizationEndpoint: "https://modelobankauth2018.o3bank.co.uk:4101/auth",
+		resourceBaseURL:       "https://modelobank2018.o3bank.co.uk:4501",
+		xXFAPIFinancialID:     "0015800001041RHAAY",
+		issuer:                "https://modelobankauth2018.o3bank.co.uk:4101",
+		redirectURL:           fmt.Sprintf("https://%s:8443/conformancesuite/callback", ListenHost),
+	}
+	err = journey.SetConfig(config)
+	require.NoError(err)
 
-	journey.SetConfig(certificateSigning, certificateTransport, clientID, clientSecret, tokenEndpoint, authorizationEndpoint, resourceBaseURL, xXFAPIFinancialID, issuer, redirectURL)
-
-	require.Equal(certificateTransport, journey.certificateTransport)
-	require.Equal(certificateSigning, journey.certificateSigning)
-	require.Equal(clientID, journey.clientID)
-	require.Equal(clientSecret, journey.clientSecret)
-	require.Equal(tokenEndpoint, journey.tokenEndpoint)
-	require.Equal(authorizationEndpoint, journey.authorizationEndpoint)
-	require.Equal(resourceBaseURL, journey.resourceBaseURL)
-	require.Equal(xXFAPIFinancialID, journey.xXFAPIFinancialID)
-	require.Equal(issuer, journey.issuer)
-	require.Equal(redirectURL, journey.redirectURL)
+	require.Equal(config, journey.config)
 }

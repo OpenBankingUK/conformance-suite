@@ -1,9 +1,10 @@
 package results
 
 import (
+	"time"
+
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
 	"gopkg.in/resty.v1"
-	"time"
 )
 
 type Metrics struct {

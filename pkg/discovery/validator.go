@@ -1,3 +1,4 @@
+//go:generate mockery -name Validator
 package discovery
 
 import (

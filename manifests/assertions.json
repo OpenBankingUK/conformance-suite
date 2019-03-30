@@ -1,0 +1,148 @@
+{
+	"references": {
+		"OB3GLOAssertOn200": {
+			"expect": {
+				"status-code": 200,
+				"detail": "Expected status code 200 (OK)."
+			}
+		},
+		"OB3GLOAssertOn201": {
+			"expect": {
+				"status-code": 201,
+				"detail": "Expected status code 201 (Created)"
+			}
+		},
+		"OB3GLOAssertOn400": {
+			"expect": {
+				"status-code": 400,
+				"detail": "Expected status code 400 (Not Found)."
+			}
+		},
+		"OB3GLOAssertOn401": {
+			"expect": {
+				"status-code": 401,
+				"detail": "Expected status code 401 (Unauthorized)."
+			}
+		},
+		"OB3GLOAssertOn403": {
+			"expect": {
+				"status-code": 403,
+				"detail": "Expected status code 403 (Forbidden)."
+			}
+		},
+		"OB3GLOAssertOn404": {
+			"expect": {
+				"status-code": 404,
+				"detail": "Expected status code 404 (Not Found)."
+			}
+		},
+		"OB3GLOFAPIHeader": {
+			"expect": {
+				"matches": [
+					{
+						"header-present": "x-fapi-interaction-id",
+						"detail": "Expected RFC4122 UID used as a correlation id. The ASPSP 'plays back' the value given. If a value is not given the ASPSP MUST play back their own UUID."
+					}
+				]
+			}
+		},
+		"OB3GLOAssertContentType": {
+			"expect": {
+				"matches": [
+					{
+						"header-present": "content-type",
+						"value": "application/json; charset=utf-8",
+						"detail": "Expected the correct content type application/json; charset=utf-8"
+					}
+				]
+			}
+		},
+		"OB3GLOAssertFAPIPlayBack": {
+			"expect": {
+				"status-code": 200,
+				"matches": [
+					{
+						"header": "x-fapi-interaction-id",
+						"value": "$x-fapi-interaction-id",
+						"detail": "Expected playback of in the x-fapi-interaction-id given."
+					}
+				]
+			}
+		},
+		"OB3GLOAAssertConsentId": {
+			"expect": {
+				"matches": [
+					{
+						"type": "ConsentId",
+						"JSON": "json.Data.ConsentId",
+						"detail": "Expected a unique identification as assigned by the ASPSP to uniquely identify the consent resource."
+					}
+				]
+			}
+		},
+		"OB3DOPAssertOnAcceptedSettlementCompleted": {
+			"expect": {
+				"matches": [
+					{
+						"JSON": "json.Data.Status",
+						"Value": "AcceptedSettlementCompleted",
+						"detail": "Expected status of the payment information group (AcceptedSettlementCompleted)."
+					}
+				]
+			}
+		},
+		"OB3DOPAssertInvalidConsentStatus": {
+			"expect": {
+				"matches": [
+					{
+						"JSON": "json.Data.Error",
+						"Value": "UK.OBIE.Resource.InvalidConsentStatus",
+						"detail": "Expected error UK.OBIE.Resource.InvalidConsentStatus error code if the status is not Authorised"
+					}
+				]
+			},
+			"OB3DOPAssertAwaitingAuthorisation": {
+				"expect": {
+					"matches": [
+						{
+							"JSON": "json.Data.Status",
+							"Value": "AwaitingAuthorisation",
+							"detail": "Expected AwaitingAuthorisation, consent resource awaiting PSU authorisation."
+						}
+					]
+				}
+			},
+			"OB3DOPAssertAuthorised": {
+				"expect": {
+					"matches": [
+						{
+							"JSON": "json.Data.Status",
+							"Value": "Authorised",
+							"detail": "Expected that the consent resource has been successfully authorised."
+						}
+					]
+				}
+			},
+			"OB3IPAssertInternationalPaymentId": {
+				"expect": {
+					"matches": [
+						{
+							"JSON": "json.Data.InternationalPaymentId",
+							"detail": "Expected a unique identification as assigned by the ASPSP to uniquely identify the international payment resource."
+						}
+					]
+				}
+			},
+			"OB3IPAssertInternationalStandingOrderPaymentId": {
+				"expect": {
+					"matches": [
+						{
+							"JSON": "json.Data.InternationalStandingOrderPaymentId",
+							"detail": "Expected a unique identification as assigned by the ASPSP to uniquely identify the international payment resource."
+						}
+					]
+				}
+			}
+		}
+	}
+}

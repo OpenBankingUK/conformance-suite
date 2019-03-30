@@ -20,16 +20,14 @@ This guide assumes the following tools are installed and functioning correctly. 
 * Google login if using Ozone "self-serve"
 * Access to the following hosts from your computer - See Appendix A.
 
-
 *Note for Windows 10 users - Docker on Windows 10 requires Hyper-V to be installed. Hyper-V is only available
 on Pro or Enterprise versions. Please refer to [this guide](https://techcommunity.microsoft.com/t5/ITOps-Talk-Blog/Step-By-Step-Enabling-Hyper-V-for-use-on-Windows-10/ba-p/267945) for more information.*
 
-
 ## Step 1: Register with Ozone Bank (Model Bank)
 
-Ozone Bank is an Mock Account Servicing Payment Service Provider (ASPSP), which the FCS will connect to as a TPP. 
+Ozone Bank is an Mock Account Servicing Payment Service Provider (ASPSP), which the FCS will connect to as a TPP.
 
-* [Enrol with Ozone](https://ob2018.o3bank.co.uk:444/pub/home). 
+* [Enrol with Ozone](https://ob2018.o3bank.co.uk:444/pub/home).
 
 Following the enrolment screens:
 
@@ -37,7 +35,7 @@ Following the enrolment screens:
 * Enter an organisation name
 * Enter the following redirect URI: `https://0.0.0.0:8443/conformancesuite/callback`
 
-Once completed, make a note of the certificates and the "CLIENT ID" and "CLIENT SECRET" values. 
+Once completed, make a note of the certificates and the `CLIENT ID` and `CLIENT SECRET` values.
 
 ### Generate transport and signing certificates
 
@@ -68,14 +66,14 @@ under the Certificates tab:
 
 * C (Country Name) = GB
 * O (Organisation Name) = Ozone Financial Technology Limited
-* OU (Organisation Unit) 
+* OU (Organisation Unit)
 * CN (Common Name)
 
 #### Transport Certificate
 
 * Execute `openssl genrsa -out transport.key 2048`
 
-* Execute `openssl req -new -sha256 -key transport.key -out transport.csr` (Provide same DN information as above, no passphrase) 
+* Execute `openssl req -new -sha256 -key transport.key -out transport.csr` (Provide same DN information as above, no passphrase)
 
 * Execute `openssl x509 -req -days 3650 -in transport.csr -CA ca.pem -CAkey ca.key -CAcreateserial -out transport.pem`
 
@@ -83,20 +81,20 @@ under the Certificates tab:
 
 * Execute `openssl genrsa -out signing.key 2048`
 
-* Execute `openssl req -new -sha256 -key signing.key -out signing.csr` (Provide same DN information as above, no passphrase) 
+* Execute `openssl req -new -sha256 -key signing.key -out signing.csr` (Provide same DN information as above, no passphrase)
 
 * Execute `openssl x509 -req -days 3650 -in signing.csr -CA ca.pem -CAkey ca.key -CAcreateserial -out signing.pem`
 
-## Step 2: Add Functional Conformance Suite Server Certificates 
+## Step 2: Add Functional Conformance Suite Server Certificates
 
-The suite runs on https using localhost, you can trust the certificate or add as an exception. 
+The suite runs on https using localhost, you can trust the certificate or add as an exception.
 
-Certificates and be downloaded (here)[https://bitbucket.org/openbankingteam/conformance-suite/src/develop/certs/]
+Certificates and be downloaded [https://bitbucket.org/openbankingteam/conformance-suite/src/develop/certs/](here).
 
 ## Step 3: Download the Functional Conformance Suite
 
 The following command will download the latest FCS image from docker hub and run it. You may need to login to Docker Hub
-at this point by running `docker login`. 
+at this point by running `docker login`.
 
 `docker run --rm -it -p 8443:8443 "openbanking/conformance-suite:v1.0.1-beta"`
 
@@ -104,7 +102,7 @@ If all goes well you should be able to launch the FCS UI from you browser via `h
 
 ### Optional - Docker Content Trust
 
-Docker ensures that all content is securely received and verified by Open Banking. Docker cryptographically signs the images upon completion of a satisfactory image check, so 
+Docker ensures that all content is securely received and verified by Open Banking. Docker cryptographically signs the images upon completion of a satisfactory image check, so
 that implementers can verify and trust certified content.
 
 To verify the content has not been tampered with you can you the `DOCKER_CONTENT_TRUST` flag, for example:
@@ -126,15 +124,16 @@ Select the Ozone PSU template.
 
 * Provide the keys, as created earlier signing and transport.
 * Enter a cleint ID and secret from Ozone Bank
-* x-fapi-financial-id = 0015800001041RHAAY
-* Resource Base URL = https://modelobank2018.o3bank.co.uk:4501/open-banking/v3.1/aisp
+* x-fapi-financial-id = `0015800001041RHAAY`
+* Resource Base URL = <https://modelobank2018.o3bank.co.uk:4501/open-banking/v3.1/aisp>
 
 The rest of the values are taken from the well-known.
 
-
 4. Run / Overview
 
-    This screen shows the tests that will be run. Once ready, click "Run" at the end of the page. The tests should run and go to the "PENDING" status. Once complete the status should move to "PASSED", if everything ran ok. If any of the tests failed, you can click the "FAILED" badge to view more information on the cause of failure. 
+    This screen shows the tests that will be run. Once ready, click "Start PSU Consent" in API Specification section. This should load up Ozone PSU authentication page. Provide mits/mits as login name and password.
+    On the account selection page that follows, select at least one account and click Confirm button. On the next page, click Yes button to grant consent and see the authorization code page.
+    Go back to the FCS Testcases page to select Pending PSU Consent button at the bottom of the page. The tests should run and go to the "PENDING" status. Once complete the status should move to "PASSED", if everything ran ok. If any of the tests failed, you can click the "FAILED" badge to view more information on the cause of failure.
 
 5. Export Report
 
@@ -161,4 +160,3 @@ The following hosts are required to be accessible for the Functional Conformance
 | TCP, HTTPS | production.cloudflare.docker.com | 443 | Access to Docker repository.
 | TCP, HTTPS | registry-1.docker.io | 443 | Access to Docker repository.
 | TCP, HTTPS | auth.docker.io | 443 | Authenticating with Docker Hub.
-| TCP, HTTPS | rebilly.github.io | 443 | Accessed by web browser frontend code.

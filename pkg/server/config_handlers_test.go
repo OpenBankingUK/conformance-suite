@@ -5,11 +5,16 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/stretchr/testify/assert"
 	"io/ioutil"
 	"net/http"
 	"os"
+	"reflect"
 	"testing"
+
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/generation"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
+	"github.com/stretchr/testify/assert"
 
 	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/test"
 	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/version/mocks"
@@ -22,18 +27,23 @@ var (
 
 func TestValidateConfig(t *testing.T) {
 	config := &GlobalConfiguration{
-		SigningPrivate:        "---",
-		SigningPublic:         "---",
-		TransportPrivate:      "---",
-		TransportPublic:       "--",
-		ClientSecret:          "secret",
-		AuthorizationEndpoint: "https://server/auth",
-		TokenEndpoint:         "https://server/token",
-		ResourceBaseURL:       "https://server",
-		XFAPIFinancialID:      "2cfb31a3-5443-4e65-b2bc-ef8e00266a77",
-		RedirectURL:           "https://localhost",
-		Issuer:                "https://modelobankauth2018.o3bank.co.uk:4101",
-		ClientID:              "8672384e-9a33-439f-8924-67bb14340d71",
+		SigningPrivate:          "---",
+		SigningPublic:           "---",
+		TransportPrivate:        "---",
+		TransportPublic:         "--",
+		ClientSecret:            "secret",
+		AuthorizationEndpoint:   "https://server/auth",
+		TokenEndpoint:           "https://server/token",
+		TokenEndpointAuthMethod: "client_secret_basic",
+		ResourceBaseURL:         "https://server",
+		XFAPIFinancialID:        "2cfb31a3-5443-4e65-b2bc-ef8e00266a77",
+		RedirectURL:             "https://localhost",
+		Issuer:                  "https://modelobankauth2018.o3bank.co.uk:4101",
+		ClientID:                "8672384e-9a33-439f-8924-67bb14340d71",
+		ResourceIDs: model.ResourceIDs{
+			AccountIDs:   []model.ResourceAccountID{{AccountID: "account-id"}},
+			StatementIDs: []model.ResourceStatementID{{StatementID: "statement-id"}},
+		},
 	}
 
 	ok, msg := validateConfig(config)
@@ -42,218 +52,97 @@ func TestValidateConfig(t *testing.T) {
 	assert.Empty(t, msg)
 }
 
+func configStubMissing(missingField string) GlobalConfiguration {
+	c := &GlobalConfiguration{
+		SigningPublic:           "------------",
+		SigningPrivate:          "------------",
+		TransportPrivate:        privateKey,
+		TransportPublic:         publicKey,
+		ClientID:                "client_id",
+		ClientSecret:            "client_secret",
+		ResourceBaseURL:         "http://server",
+		TokenEndpoint:           "http://server",
+		TokenEndpointAuthMethod: "client_secret_basic",
+		AuthorizationEndpoint:   "http://server",
+		RedirectURL:             "http://server",
+		XFAPIFinancialID:        "123",
+		Issuer:                  "https://modelobankauth2018.o3bank.co.uk:4101",
+	}
+	v := reflect.ValueOf(c).Elem()
+	f := v.FieldByName(missingField)
+	f.SetString("")
+	return *c
+}
+
 func TestValidateConfigTestsEmpty(t *testing.T) {
 	testCases := []struct {
 		name        string
 		config      GlobalConfiguration
-		expectedOk  bool
 		expectedMsg string
 	}{
 		{
-			name: "missing signing private",
-			config: GlobalConfiguration{
-				SigningPublic:         `------------`,
-				TransportPrivate:      privateKey,
-				TransportPublic:       publicKey,
-				ClientID:              "client_id",
-				ClientSecret:          "client_secret",
-				TokenEndpoint:         "http://server",
-				AuthorizationEndpoint: "http://server",
-				RedirectURL:           "http://server",
-				XFAPIFinancialID:      "123",
-				Issuer:                "https://modelobankauth2018.o3bank.co.uk:4101",
-			},
-			expectedOk:  false,
+			name:        "missing signing private",
+			config:      configStubMissing("SigningPrivate"),
 			expectedMsg: "signing_private is empty",
 		},
 		{
-			name: "missing signing public",
-			config: GlobalConfiguration{
-				SigningPrivate:        `------------`,
-				TransportPrivate:      privateKey,
-				TransportPublic:       publicKey,
-				ClientID:              "client_id",
-				ClientSecret:          "client_secret",
-				TokenEndpoint:         "http://server",
-				AuthorizationEndpoint: "http://server",
-				RedirectURL:           "http://server",
-				XFAPIFinancialID:      "123",
-				Issuer:                "https://modelobankauth2018.o3bank.co.uk:4101",
-			},
-			expectedOk:  false,
+			name:        "missing signing public",
+			config:      configStubMissing("SigningPublic"),
 			expectedMsg: "signing_public is empty",
 		},
 		{
-			name: "missing transport private",
-			config: GlobalConfiguration{
-				SigningPrivate:        `------------`,
-				SigningPublic:         `------------`,
-				TransportPublic:       publicKey,
-				ClientID:              "client_id",
-				ClientSecret:          "client_secret",
-				TokenEndpoint:         "http://server",
-				AuthorizationEndpoint: "http://server",
-				RedirectURL:           "http://server",
-				XFAPIFinancialID:      "123",
-				Issuer:                "https://modelobankauth2018.o3bank.co.uk:4101",
-			},
-			expectedOk:  false,
+			name:        "missing transport private",
+			config:      configStubMissing("TransportPrivate"),
 			expectedMsg: "transport_private is empty",
 		},
 		{
-			name: "missing transport public",
-			config: GlobalConfiguration{
-				SigningPrivate:        `------------`,
-				SigningPublic:         `------------`,
-				TransportPrivate:      privateKey,
-				ClientID:              "client_id",
-				ClientSecret:          "client_secret",
-				TokenEndpoint:         "http://server",
-				AuthorizationEndpoint: "http://server",
-				RedirectURL:           "http://server",
-				XFAPIFinancialID:      "123",
-				Issuer:                "https://modelobankauth2018.o3bank.co.uk:4101",
-			},
-			expectedOk:  false,
+			name:        "missing transport public",
+			config:      configStubMissing("TransportPublic"),
 			expectedMsg: "transport_public is empty",
 		},
 		{
-			name: "missing client id",
-			config: GlobalConfiguration{
-				SigningPrivate:        `------------`,
-				SigningPublic:         `------------`,
-				TransportPrivate:      privateKey,
-				TransportPublic:       publicKey,
-				ClientSecret:          "client_secret",
-				TokenEndpoint:         "http://server",
-				AuthorizationEndpoint: "http://server",
-				RedirectURL:           "http://server",
-				XFAPIFinancialID:      "123",
-				Issuer:                "https://modelobankauth2018.o3bank.co.uk:4101",
-			},
-			expectedOk:  false,
+			name:        "missing client id",
+			config:      configStubMissing("ClientID"),
 			expectedMsg: "client_id is empty",
 		},
 		{
-			name: "missing client secret",
-			config: GlobalConfiguration{
-				SigningPrivate:        `------------`,
-				SigningPublic:         `------------`,
-				TransportPrivate:      privateKey,
-				TransportPublic:       publicKey,
-				ClientID:              "client_id",
-				TokenEndpoint:         "http://server",
-				AuthorizationEndpoint: "http://server",
-				RedirectURL:           "http://server",
-				XFAPIFinancialID:      "123",
-				Issuer:                "https://modelobankauth2018.o3bank.co.uk:4101",
-			},
-			expectedOk:  false,
+			name:        "missing client secret",
+			config:      configStubMissing("ClientSecret"),
 			expectedMsg: "client_secret is empty",
 		},
 		{
-			name: "missing token endpoint",
-			config: GlobalConfiguration{
-				SigningPrivate:        `------------`,
-				SigningPublic:         `------------`,
-				TransportPrivate:      privateKey,
-				TransportPublic:       publicKey,
-				ClientID:              "client_id",
-				ClientSecret:          "client_secret",
-				AuthorizationEndpoint: "http://server",
-				RedirectURL:           "http://server",
-				XFAPIFinancialID:      "123",
-				Issuer:                "https://modelobankauth2018.o3bank.co.uk:4101",
-			},
-			expectedOk:  false,
+			name:        "missing token endpoint",
+			config:      configStubMissing("TokenEndpoint"),
 			expectedMsg: "token_endpoint is empty",
 		},
 		{
-			name: "missing client authorization_endpoint",
-			config: GlobalConfiguration{
-				SigningPrivate:   `------------`,
-				SigningPublic:    `------------`,
-				TransportPrivate: privateKey,
-				TransportPublic:  publicKey,
-				ClientID:         "client_id",
-				ClientSecret:     "client_secret",
-				TokenEndpoint:    "http://server",
-				RedirectURL:      "http://server",
-				XFAPIFinancialID: "123",
-				Issuer:           "https://modelobankauth2018.o3bank.co.uk:4101",
-			},
-			expectedOk:  false,
+			name:        "missing token endpoint auth method",
+			config:      configStubMissing("TokenEndpointAuthMethod"),
+			expectedMsg: "token_endpoint_auth_method is empty",
+		},
+		{
+			name:        "missing client authorization_endpoint",
+			config:      configStubMissing("AuthorizationEndpoint"),
 			expectedMsg: "authorization_endpoint is empty",
 		},
 		{
-			name: "missing client redirect_url",
-			config: GlobalConfiguration{
-				SigningPrivate:        `------------`,
-				SigningPublic:         `------------`,
-				TransportPrivate:      privateKey,
-				TransportPublic:       publicKey,
-				ClientID:              "client_id",
-				ClientSecret:          "client_secret",
-				TokenEndpoint:         "http://server",
-				ResourceBaseURL:       "http://server",
-				AuthorizationEndpoint: "http://server",
-				XFAPIFinancialID:      "123",
-				Issuer:                "https://modelobankauth2018.o3bank.co.uk:4101",
-			},
-			expectedOk:  false,
+			name:        "missing resource base URL",
+			config:      configStubMissing("ResourceBaseURL"),
+			expectedMsg: "resource_base_url is empty",
+		},
+		{
+			name:        "missing client redirect_url",
+			config:      configStubMissing("RedirectURL"),
 			expectedMsg: "redirect_url is empty",
 		},
 		{
-			name: "missing client redirect_url",
-			config: GlobalConfiguration{
-				SigningPrivate:        `------------`,
-				SigningPublic:         `------------`,
-				TransportPrivate:      privateKey,
-				TransportPublic:       publicKey,
-				ClientID:              "client_id",
-				ClientSecret:          "client_secret",
-				TokenEndpoint:         "http://server",
-				AuthorizationEndpoint: "http://server",
-				ResourceBaseURL:       "http://server",
-				XFAPIFinancialID:      "123",
-				Issuer:                "https://modelobankauth2018.o3bank.co.uk:4101",
-			},
-			expectedOk:  false,
-			expectedMsg: "redirect_url is empty",
-		},
-		{
-			name: "missing client issuer",
-			config: GlobalConfiguration{
-				SigningPrivate:        `------------`,
-				SigningPublic:         `------------`,
-				TransportPrivate:      privateKey,
-				TransportPublic:       publicKey,
-				ClientID:              "client_id",
-				ClientSecret:          "client_secret",
-				TokenEndpoint:         "http://server",
-				AuthorizationEndpoint: "http://server",
-				ResourceBaseURL:       "http://server",
-				XFAPIFinancialID:      "123",
-			},
-			expectedOk:  false,
+			name:        "missing client issuer",
+			config:      configStubMissing("Issuer"),
 			expectedMsg: "issuer is empty",
 		},
 		{
-			name: "missing x_fapi_financial_id id",
-			config: GlobalConfiguration{
-				SigningPrivate:        `------------`,
-				SigningPublic:         `------------`,
-				TransportPrivate:      privateKey,
-				TransportPublic:       publicKey,
-				ClientID:              "client_id",
-				ClientSecret:          "client_secret",
-				TokenEndpoint:         "http://server",
-				ResourceBaseURL:       "http://server",
-				AuthorizationEndpoint: "http://server",
-				RedirectURL:           "http://server",
-				Issuer:                "https://modelobankauth2018.o3bank.co.uk:4101",
-			},
-			expectedOk:  false,
+			name:        "missing x_fapi_financial_id id",
+			config:      configStubMissing("XFAPIFinancialID"),
 			expectedMsg: "x_fapi_financial_id is empty",
 		},
 	}
@@ -263,7 +152,7 @@ func TestValidateConfigTestsEmpty(t *testing.T) {
 		t.Run(testCase.name, func(t *testing.T) {
 			assert := test.NewAssert(t)
 			ok, msg := validateConfig(&testCase.config)
-			assert.Equal(testCase.expectedOk, ok)
+			assert.Equal(false, ok)
 			assert.Equal(testCase.expectedMsg, msg)
 		})
 	}
@@ -283,25 +172,30 @@ func readFile(filename string) string {
 func TestServerConfigGlobalPostValid(t *testing.T) {
 	require := test.NewRequire(t)
 
-	server := NewServer(nullLogger(), conditionalityCheckerMock{}, &mocks.Version{})
+	server := NewServer(testJourney(), nullLogger(), &mocks.Version{})
 	defer func() {
 		require.NoError(server.Shutdown(context.TODO()))
 	}()
 	require.NotNil(server)
 
 	globalConfiguration := &GlobalConfiguration{
-		SigningPrivate:        privateKey,
-		SigningPublic:         publicKey,
-		TransportPrivate:      privateKey,
-		TransportPublic:       publicKey,
-		ClientID:              `8672384e-9a33-439f-8924-67bb14340d71`,
-		ClientSecret:          `2cfb31a3-5443-4e65-b2bc-ef8e00266a77`,
-		TokenEndpoint:         `https://modelobank2018.o3bank.co.uk:4201/token`,
-		XFAPIFinancialID:      `0015800001041RHAAY`,
-		RedirectURL:           `https://0.0.0.0:8443/conformancesuite/callback`,
-		AuthorizationEndpoint: `https://modelobank2018.o3bank.co.uk:4201/token`,
-		ResourceBaseURL:       `https://modelobank2018.o3bank.co.uk:4501`,
-		Issuer:                "https://modelobankauth2018.o3bank.co.uk:4101",
+		SigningPrivate:          privateKey,
+		SigningPublic:           publicKey,
+		TransportPrivate:        privateKey,
+		TransportPublic:         publicKey,
+		ClientID:                `8672384e-9a33-439f-8924-67bb14340d71`,
+		ClientSecret:            `2cfb31a3-5443-4e65-b2bc-ef8e00266a77`,
+		TokenEndpoint:           `https://modelobank2018.o3bank.co.uk:4201/token`,
+		TokenEndpointAuthMethod: "client_secret_basic",
+		XFAPIFinancialID:        `0015800001041RHAAY`,
+		RedirectURL:             fmt.Sprintf(`https://%s:8443/conformancesuite/callback`, ListenHost),
+		AuthorizationEndpoint:   `https://modelobank2018.o3bank.co.uk:4201/token`,
+		ResourceBaseURL:         `https://modelobank2018.o3bank.co.uk:4501`,
+		Issuer:                  "https://modelobankauth2018.o3bank.co.uk:4101",
+		ResourceIDs: model.ResourceIDs{
+			AccountIDs:   []model.ResourceAccountID{{AccountID: "account-id"}},
+			StatementIDs: []model.ResourceStatementID{{StatementID: "statement-id"}},
+		},
 	}
 	globalConfigurationJSON, err := json.MarshalIndent(globalConfiguration, ``, `  `)
 	require.NoError(err)
@@ -320,10 +214,7 @@ func TestServerConfigGlobalPostValid(t *testing.T) {
 	require.JSONEq(bodyExpected, bodyActual)
 
 	require.Equal(http.StatusCreated, code)
-	require.Equal(http.Header{
-		"Vary":         []string{"Accept-Encoding"},
-		"Content-Type": []string{"application/json; charset=UTF-8"},
-	}, headers)
+	require.Equal(expectedJsonHeaders, headers)
 }
 
 // TestServerConfigGlobalPostInvalid - tests /api/config/global invalid cases.
@@ -339,18 +230,27 @@ func TestServerConfigGlobalPostInvalid(t *testing.T) {
 			expectedBody:       `{"error": "error with signing certificate: error with public key: Invalid Key: Key must be PEM encoded PKCS1 or PKCS8 private key"}`,
 			expectedStatusCode: http.StatusBadRequest,
 			config: GlobalConfiguration{
-				SigningPrivate:        `------------`,
-				SigningPublic:         `------------`,
-				TransportPrivate:      privateKey,
-				TransportPublic:       publicKey,
-				ClientID:              "client_id",
-				ClientSecret:          "client_secret",
-				TokenEndpoint:         "http://server",
-				AuthorizationEndpoint: "http://server",
-				ResourceBaseURL:       "http://server",
-				RedirectURL:           "http://server",
-				XFAPIFinancialID:      "123",
-				Issuer:                "https://modelobankauth2018.o3bank.co.uk:4101",
+				SigningPrivate:          "------------",
+				SigningPublic:           "------------",
+				TransportPrivate:        privateKey,
+				TransportPublic:         publicKey,
+				ClientID:                "client_id",
+				ClientSecret:            "client_secret",
+				TokenEndpoint:           "http://server",
+				TokenEndpointAuthMethod: "client_secret_basic",
+				AuthorizationEndpoint:   "http://server",
+				ResourceBaseURL:         "http://server",
+				RedirectURL:             "http://server",
+				XFAPIFinancialID:        "123",
+				Issuer:                  "https://modelobankauth2018.o3bank.co.uk:4101",
+				ResourceIDs: model.ResourceIDs{
+					AccountIDs: []model.ResourceAccountID{
+						{AccountID: "account-id"},
+					},
+					StatementIDs: []model.ResourceStatementID{
+						{StatementID: "statement-id"},
+					},
+				},
 			},
 		},
 		{
@@ -358,18 +258,155 @@ func TestServerConfigGlobalPostInvalid(t *testing.T) {
 			expectedBody:       `{"error": "error with transport certificate: error with public key: Invalid Key: Key must be PEM encoded PKCS1 or PKCS8 private key"}`,
 			expectedStatusCode: http.StatusBadRequest,
 			config: GlobalConfiguration{
-				SigningPrivate:        privateKey,
-				SigningPublic:         publicKey,
-				TransportPrivate:      `--------------`,
-				TransportPublic:       `--------------`,
-				ClientID:              "client_id",
-				ClientSecret:          "client_secret",
-				TokenEndpoint:         "token_endpoint",
-				AuthorizationEndpoint: "http://server",
-				ResourceBaseURL:       `https://server`,
-				RedirectURL:           "http://server",
-				XFAPIFinancialID:      "123",
-				Issuer:                "https://modelobankauth2018.o3bank.co.uk:4101",
+				SigningPrivate:          privateKey,
+				SigningPublic:           publicKey,
+				TransportPrivate:        "--------------",
+				TransportPublic:         "--------------",
+				ClientID:                "client_id",
+				ClientSecret:            "client_secret",
+				TokenEndpoint:           "token_endpoint",
+				TokenEndpointAuthMethod: "client_secret_basic",
+				AuthorizationEndpoint:   "http://server",
+				ResourceBaseURL:         "https://server",
+				RedirectURL:             "http://server",
+				XFAPIFinancialID:        "123",
+				Issuer:                  "https://modelobankauth2018.o3bank.co.uk:4101",
+				ResourceIDs: model.ResourceIDs{
+					AccountIDs: []model.ResourceAccountID{
+						{AccountID: "account-id"},
+					},
+					StatementIDs: []model.ResourceStatementID{
+						{StatementID: "statement-id"},
+					},
+				},
+			},
+		},
+		{
+			name:               `EmptyResourceIDs`,
+			expectedBody:       `{"error": "resource_ids is empty"}`,
+			expectedStatusCode: http.StatusBadRequest,
+			config: GlobalConfiguration{
+				SigningPrivate:          privateKey,
+				SigningPublic:           publicKey,
+				TransportPrivate:        "--------------",
+				TransportPublic:         "--------------",
+				ClientID:                "client_id",
+				ClientSecret:            "client_secret",
+				TokenEndpoint:           "token_endpoint",
+				TokenEndpointAuthMethod: "client_secret_basic",
+				AuthorizationEndpoint:   "http://server",
+				ResourceBaseURL:         "https://server",
+				RedirectURL:             "http://server",
+				XFAPIFinancialID:        "123",
+				Issuer:                  "https://modelobankauth2018.o3bank.co.uk:4101",
+			},
+		},
+		{
+			name:               `MissingResourcesAccountID`,
+			expectedBody:       `{"error": "resource_ids.AccountIDs is empty"}`,
+			expectedStatusCode: http.StatusBadRequest,
+			config: GlobalConfiguration{
+				SigningPrivate:          privateKey,
+				SigningPublic:           publicKey,
+				TransportPrivate:        "--------------",
+				TransportPublic:         "--------------",
+				ClientID:                "client_id",
+				ClientSecret:            "client_secret",
+				TokenEndpoint:           "token_endpoint",
+				TokenEndpointAuthMethod: "client_secret_basic",
+				AuthorizationEndpoint:   "http://server",
+				ResourceBaseURL:         "https://server",
+				RedirectURL:             "http://server",
+				XFAPIFinancialID:        "123",
+				Issuer:                  "https://modelobankauth2018.o3bank.co.uk:4101",
+				ResourceIDs: model.ResourceIDs{
+					StatementIDs: []model.ResourceStatementID{
+						{StatementID: "statement-id"},
+					},
+				},
+			},
+		},
+		{
+			name:               `HasEmptyAccountID`,
+			expectedBody:       `{"error": "resource_ids.AccountIDs contains an empty value at index 1"}`,
+			expectedStatusCode: http.StatusBadRequest,
+			config: GlobalConfiguration{
+				SigningPrivate:          privateKey,
+				SigningPublic:           publicKey,
+				TransportPrivate:        "--------------",
+				TransportPublic:         "--------------",
+				ClientID:                "client_id",
+				ClientSecret:            "client_secret",
+				TokenEndpoint:           "token_endpoint",
+				TokenEndpointAuthMethod: "client_secret_basic",
+				AuthorizationEndpoint:   "http://server",
+				ResourceBaseURL:         "https://server",
+				RedirectURL:             "http://server",
+				XFAPIFinancialID:        "123",
+				Issuer:                  "https://modelobankauth2018.o3bank.co.uk:4101",
+				ResourceIDs: model.ResourceIDs{
+					AccountIDs: []model.ResourceAccountID{
+						{AccountID: "account-id"},
+						{AccountID: ""},
+					},
+					StatementIDs: []model.ResourceStatementID{
+						{StatementID: "statement-id"},
+					},
+				},
+			},
+		},
+		{
+			name:               `MissingResourcesStatementID`,
+			expectedBody:       `{"error": "resource_ids.StatementIDs is empty"}`,
+			expectedStatusCode: http.StatusBadRequest,
+			config: GlobalConfiguration{
+				SigningPrivate:          privateKey,
+				SigningPublic:           publicKey,
+				TransportPrivate:        "--------------",
+				TransportPublic:         "--------------",
+				ClientID:                "client_id",
+				ClientSecret:            "client_secret",
+				TokenEndpoint:           "token_endpoint",
+				TokenEndpointAuthMethod: "client_secret_basic",
+				AuthorizationEndpoint:   "http://server",
+				ResourceBaseURL:         "https://server",
+				RedirectURL:             "http://server",
+				XFAPIFinancialID:        "123",
+				Issuer:                  "https://modelobankauth2018.o3bank.co.uk:4101",
+				ResourceIDs: model.ResourceIDs{
+					AccountIDs: []model.ResourceAccountID{
+						{AccountID: "account-id"},
+					},
+				},
+			},
+		},
+		{
+			name:               `HasEmptyStatementID`,
+			expectedBody:       `{"error": "resource_ids.StatementIDs contains an empty value at index 0"}`,
+			expectedStatusCode: http.StatusBadRequest,
+			config: GlobalConfiguration{
+				SigningPrivate:          privateKey,
+				SigningPublic:           publicKey,
+				TransportPrivate:        "--------------",
+				TransportPublic:         "--------------",
+				ClientID:                "client_id",
+				ClientSecret:            "client_secret",
+				TokenEndpoint:           "token_endpoint",
+				TokenEndpointAuthMethod: "client_secret_basic",
+				AuthorizationEndpoint:   "http://server",
+				ResourceBaseURL:         "https://server",
+				RedirectURL:             "http://server",
+				XFAPIFinancialID:        "123",
+				Issuer:                  "https://modelobankauth2018.o3bank.co.uk:4101",
+				ResourceIDs: model.ResourceIDs{
+					AccountIDs: []model.ResourceAccountID{
+						{AccountID: "account-id"},
+					},
+					StatementIDs: []model.ResourceStatementID{
+						{StatementID: ""},
+						{StatementID: "statement-id"},
+					},
+				},
 			},
 		},
 	}
@@ -378,7 +415,7 @@ func TestServerConfigGlobalPostInvalid(t *testing.T) {
 		t.Run(testCase.name, func(t *testing.T) {
 			require := test.NewRequire(t)
 
-			server := NewServer(nullLogger(), conditionalityCheckerMock{}, &mocks.Version{})
+			server := NewServer(testJourney(), nullLogger(), &mocks.Version{})
 			defer func() {
 				require.NoError(server.Shutdown(context.TODO()))
 			}()
@@ -396,10 +433,14 @@ func TestServerConfigGlobalPostInvalid(t *testing.T) {
 			require.JSONEq(testCase.expectedBody, bodyActual)
 
 			require.Equal(testCase.expectedStatusCode, code)
-			require.Equal(http.Header{
-				"Vary":         []string{"Accept-Encoding"},
-				"Content-Type": []string{"application/json; charset=UTF-8"},
-			}, headers)
+			require.Equal(expectedJsonHeaders, headers)
 		})
 	}
+}
+
+func testJourney() Journey {
+	logger := nullLogger()
+	validatorEngine := discovery.NewFuncValidator(model.NewConditionalityChecker())
+	testGenerator := generation.NewGenerator()
+	return NewJourney(logger, testGenerator, validatorEngine)
 }

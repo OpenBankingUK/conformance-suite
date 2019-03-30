@@ -1,0 +1,15 @@
+{
+  "signing_private": "-----BEGIN PRIVATE KEY-----",
+  "signing_public": "-----BEGIN CERTIFICATE-----",
+  "transport_private": "-----BEGIN PRIVATE KEY-----",
+  "transport_public": "-----BEGIN CERTIFICATE-----",
+  "client_id": "",
+  "client_secret": "",
+  "token_endpoint": "https://modelobank2018.o3bank.co.uk:4201/token",
+  "token_endpoint_auth_method": "client_secret_basic",
+  "authorization_endpoint": "https://modelobankauth2018.o3bank.co.uk:4101/auth",
+  "resource_base_url": "https://modelobank2018.o3bank.co.uk:4501",
+  "x_fapi_financial_id": "0015800001041RHAAY",
+  "issuer": "https://modelobankauth2018.o3bank.co.uk:4101",
+  "redirect_url": "https://0.0.0.0:8443/conformancesuite/callback"
+}

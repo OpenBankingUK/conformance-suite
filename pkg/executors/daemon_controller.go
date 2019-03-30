@@ -1,23 +1,33 @@
+//go:generate mockery -name DaemonController
 package executors
 
 import (
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/executors/results"
 	"sync"
+
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/executors/results"
 )
 
 type DaemonController interface {
 	Stop()
 	ShouldStop() bool
 	Stopped()
-	Results() chan results.TestCase
+
+	AddResult(result results.TestCase)
+	AllResults() []results.TestCase
+	Results() <-chan results.TestCase
+
+	SetCompleted()
+	IsCompleted() <-chan bool
 }
 
 // daemonController manages routine running tests
 // allowing to stop and collect results/errors
 type daemonController struct {
-	resultChan chan results.TestCase
-	stopLock   *sync.Mutex
-	shouldStop bool
+	results         []results.TestCase
+	resultChan      chan results.TestCase
+	stopLock        *sync.Mutex
+	shouldStop      bool
+	isCompletedChan chan bool
 }
 
 // NewBufferedDaemonController new instance to control a background routine with 100 objects
@@ -31,24 +41,26 @@ func NewBufferedDaemonController() *daemonController {
 // NewDaemonController new instance to control a background routine
 func NewDaemonController(resultChan chan results.TestCase) *daemonController {
 	return &daemonController{
-		resultChan: resultChan,
-		stopLock:   &sync.Mutex{},
-		shouldStop: false,
+		results:         []results.TestCase{},
+		resultChan:      resultChan,
+		stopLock:        &sync.Mutex{},
+		shouldStop:      false,
+		isCompletedChan: make(chan bool, 1),
 	}
 }
 
 // Stop tell the daemon to stop
 func (rc *daemonController) Stop() {
 	rc.stopLock.Lock()
+	defer rc.stopLock.Unlock()
 	rc.shouldStop = true
-	rc.stopLock.Unlock()
 }
 
 // Stopped tell the daemon service has stopped
 func (rc *daemonController) Stopped() {
 	rc.stopLock.Lock()
+	defer rc.stopLock.Unlock()
 	rc.shouldStop = false
-	rc.stopLock.Unlock()
 }
 
 // ShouldStop indicates that the daemon should stop
@@ -56,11 +68,33 @@ func (rc *daemonController) Stopped() {
 // if this true
 func (rc *daemonController) ShouldStop() bool {
 	rc.stopLock.Lock()
+	defer rc.stopLock.Unlock()
 	shouldStop := rc.shouldStop
-	rc.stopLock.Unlock()
 	return shouldStop
 }
 
-func (rc *daemonController) Results() chan results.TestCase {
+// AddResult - add result.
+func (rc *daemonController) AddResult(result results.TestCase) {
+	rc.results = append(rc.results, result)
+	rc.resultChan <- result
+}
+
+// AllResults - returns all the accumulated results.
+func (rc *daemonController) AllResults() []results.TestCase {
+	return rc.results
+}
+
+// ResultsChannel - return channel for receiving results.
+func (rc *daemonController) Results() <-chan results.TestCase {
 	return rc.resultChan
+}
+
+// SetCompleted - mark the tests as completed.
+func (rc *daemonController) SetCompleted() {
+	rc.isCompletedChan <- true
+}
+
+// IsCompleted - channel to subscribe to completed event.
+func (rc *daemonController) IsCompleted() <-chan bool {
+	return rc.isCompletedChan
 }

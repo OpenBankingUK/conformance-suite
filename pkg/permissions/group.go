@@ -48,11 +48,7 @@ func (g *Group) isSatisfiedBy(group *Group) bool {
 }
 
 func (g *Group) isCompatible(group *Group) bool {
-	if group.Included.HasAny(g.Excluded) {
-		return false
-	}
-
-	return true
+	return !group.Included.HasAny(g.Excluded)
 }
 
 func (g *Group) add(g2 *Group) {

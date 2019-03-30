@@ -9,6 +9,8 @@ import (
 	"regexp"
 	"strings"
 
+	"github.com/sirupsen/logrus"
+
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/tracer"
 	"gopkg.in/resty.v1"
 )
@@ -67,16 +69,23 @@ type TestCase struct {
 	Bearer     string         `json:"bearer,omitempty"`  // Bear token if presented
 }
 
+// MakeTestCase builds an empty testcase
+func MakeTestCase() TestCase {
+	i := Input{}
+	i.FormData = make(map[string]string)
+	i.Generation = make(map[string]string)
+	i.Headers = make(map[string]string)
+	i.Claims = make(map[string]string)
+
+	tc := TestCase{Input: i}
+	return tc
+}
+
 // Prepare a Testcase for execution at and endpoint,
 // results in a standard http request that encapsulates the testcase request
 // as defined in the test case object with any context inputs/replacements etc applied
 func (t *TestCase) Prepare(ctx *Context) (*resty.Request, error) {
-	t.AppEntry("Prepare Entry")
-	defer t.AppExit("Prepare Exit")
-
-	// Apply Context at end of creating request - get/put values into contexts
 	t.ApplyContext(ctx)
-
 	return t.ApplyInput(ctx)
 }
 
@@ -91,9 +100,9 @@ func (t *TestCase) Prepare(ctx *Context) (*resty.Request, error) {
 //         false - validation unsuccessful
 //         error - adds detail to validation failure
 //         NOTE: Validate will only return false if a check fails - no checks = true
-func (t *TestCase) Validate(resp *resty.Response, rulectx *Context) (bool, error) {
+func (t *TestCase) Validate(resp *resty.Response, rulectx *Context) (bool, []error) {
 	if rulectx == nil {
-		return false, t.AppErr("error Valdate:rulectx == nil")
+		return false, []error{t.AppErr("error Valdate:rulectx == nil")}
 	}
 	t.Body = resp.String()
 	if len(t.Body) == 0 { // The response body can only be read once from the raw response
@@ -105,7 +114,7 @@ func (t *TestCase) Validate(resp *resty.Response, rulectx *Context) (bool, error
 				buf := new(bytes.Buffer)
 				_, err := buf.ReadFrom(resp.RawResponse.Body)
 				if err != nil {
-					return false, t.AppErr("Validate: " + err.Error())
+					return false, []error{t.AppErr("Validate: " + err.Error())}
 				}
 				t.Body = buf.String()
 			}
@@ -137,9 +146,6 @@ type Expect struct {
 //     Testcase evaluates the http response object using its 'Expects' clause
 //     Testcase passes or fails depending on the 'Expects' outcome
 func (t *TestCase) ApplyInput(rulectx *Context) (*resty.Request, error) {
-	t.AppEntry("ApplyInput entry")
-	defer t.AppExit("ApplyInput exit")
-
 	if t.Input.Method == "" {
 		return nil, t.AppErr("error: TestCase input cannot have empty input.Method")
 	}
@@ -157,9 +163,6 @@ func (t *TestCase) ApplyInput(rulectx *Context) (*resty.Request, error) {
 // Context parameter typically involve variables that originated in discovery
 // The functionality of ApplyContext will grow significantly over time.
 func (t *TestCase) ApplyContext(rulectx *Context) {
-	t.AppEntry("ApplyContext entry")
-	defer t.AppExit("ApplyContext exit")
-
 	if rulectx != nil {
 		for k, v := range t.Context { // put testcase context values into rule context ...
 			rulectx.Put(k, v)
@@ -187,23 +190,20 @@ func (t *TestCase) ApplyContext(rulectx *Context) {
 // contextPuts are responsible for updated context variables with values selected from the test case response
 // contextPuts will only be executed if the ApplyExpects standards match tests pass
 // if any of the ApplyExpects match tests fail - ApplyExpects returns false and contextPuts aren't executed
-func (t *TestCase) ApplyExpects(res *resty.Response, rulectx *Context) (bool, error) {
-	t.AppEntry("ApplyExpects entry")
-	defer t.AppExit("ApplyExpects exit")
-
+func (t *TestCase) ApplyExpects(res *resty.Response, rulectx *Context) (bool, []error) {
 	if res == nil { // if we've not got a response object to check, always return false
-		return false, t.AppErr("nil http.Response - cannot process ApplyExpects")
+		return false, []error{t.AppErr("nil http.Response - cannot process ApplyExpects")}
 	}
 
 	if t.Expect.StatusCode != res.StatusCode() { // Status codes don't match
-		return false, t.AppErr(fmt.Sprintf("(%s):%s: HTTP Status code does not match: expected %d got %d", t.ID, t.Name, t.Expect.StatusCode, res.StatusCode()))
+		return false, []error{t.AppErr(fmt.Sprintf("(%s):%s: HTTP Status code does not match: expected %d got %d", t.ID, t.Name, t.Expect.StatusCode, res.StatusCode()))}
 	}
 
 	t.AppMsg(fmt.Sprintf("Status check isReplacement: expected [%d] got [%d]", t.Expect.StatusCode, res.StatusCode()))
 	for k, match := range t.Expect.Matches {
 		checkResult, got := match.Check(t)
-		if checkResult == false {
-			return false, t.AppErr(fmt.Sprintf("ApplyExpects Returns False on match %s : %s", match.String(), got.Error()))
+		if !checkResult {
+			return false, []error{t.AppErr(fmt.Sprintf("ApplyExpects Returns False on match %s : %s", match.String(), got.Error()))}
 		}
 
 		t.Expect.Matches[k].Result = match.Result
@@ -211,9 +211,17 @@ func (t *TestCase) ApplyExpects(res *resty.Response, rulectx *Context) (bool, er
 	}
 
 	if err := t.Expect.ContextPut.PutValues(t, rulectx); err != nil {
-		return false, t.AppErr("ApplyExpects Returns FALSE " + err.Error())
+		return false, []error{t.AppErr("ApplyExpects Returns FALSE " + err.Error())}
 	}
 	return true, nil
+}
+
+// InjectBearerToken injects a bear token header into the testcase, token can either be the actual bearer token or a parameter starting with '$'
+func (t *TestCase) InjectBearerToken(token string) {
+	if t.Input.Headers == nil {
+		t.Input.Headers = map[string]string{}
+	}
+	t.Input.Headers["Authorization"] = "Bearer " + token
 }
 
 // AppMsg - application level trace
@@ -248,6 +256,24 @@ func (t *TestCase) String() string {
 	return string(bites)
 }
 
+// Clone a testcase
+func (t *TestCase) Clone() TestCase {
+	tc := TestCase{}
+
+	tc.ID = t.ID
+	tc.Type = t.Type
+	tc.Name = t.Name
+	tc.Purpose = t.Purpose
+	tc.Bearer = t.Bearer
+	tc.Input = t.Input.Clone()
+	tc.Context = Context{}
+	tc.Context.PutContext(&t.Context)
+	tc.Expect = t.Expect.Clone()
+
+	logrus.Debugf("cloned test -\n before: %#v\nafter : %#v\n ", t, tc)
+	return tc
+}
+
 // Various helpers - main to dump struct contents to console
 
 func (m *Manifest) String() string {
@@ -280,7 +306,7 @@ func replaceContextField(source string, ctx *Context) (string, error) {
 	return result, nil
 }
 
-var singleDollarRegex = regexp.MustCompile(`[^\$]?\$(\w*)`)
+var singleDollarRegex = regexp.MustCompile(`[^\$]?\$([\w|\-|_]*)`)
 
 // GetReplacementField examines the input string and returns the first character
 // sequence beginning with '$' and ending with whitespace. '$$' sequence acts as an escape value
@@ -305,28 +331,96 @@ func isReplacementField(value string) bool {
 
 // ProcessReplacementFields prefixed by '$' in the testcase Input and Context sections
 // Call to pre-process custom test cases from discovery model
-func (t *TestCase) ProcessReplacementFields(ctx *Context) {
+func (t *TestCase) ProcessReplacementFields(ctx *Context, showReplacementErrors bool) {
+	var err error
+	logger := logrus.StandardLogger()
 
-	t.Input.Endpoint, _ = replaceContextField(t.Input.Endpoint, ctx) // errors if field not present in context - which is isReplacement for this function
-	t.Input.RequestBody, _ = replaceContextField(t.Input.RequestBody, ctx)
+	t.Input.Endpoint, err = replaceContextField(t.Input.Endpoint, ctx) // errors if field not present in context - which is isReplacement for this function
+	if err != nil {
+		t.logReplaceError("Endpoint", err, logger, showReplacementErrors)
+	}
 
-	for k := range t.Input.FormData {
-		t.Input.FormData[k], _ = replaceContextField(t.Input.FormData[k], ctx)
+	t.Input.RequestBody, err = replaceContextField(t.Input.RequestBody, ctx)
+	if err != nil {
+		t.logReplaceError("RequestBody", err, logger, showReplacementErrors)
 	}
-	for k := range t.Input.Headers {
-		t.Input.Headers[k], _ = replaceContextField(t.Input.Headers[k], ctx)
-	}
-	for k := range t.Input.Claims {
-		t.Input.Claims[k], _ = replaceContextField(t.Input.Claims[k], ctx)
-	}
+
+	t.processReplacementFormData(ctx)
+	t.processReplacementHeaders(ctx, logger, showReplacementErrors)
+	t.processReplacementClaims(ctx)
+
 	for k := range t.Context {
 		param, ok := t.Context[k].(string)
 		if !ok {
 			continue
 		}
-		t.Context[k], _ = replaceContextField(param, ctx)
+		t.Context[k], err = replaceContextField(param, ctx)
+		if err != nil {
+			t.logReplaceError("param", err, logger, showReplacementErrors)
+		}
 	}
+
 	for k, v := range t.Expect.ContextPut.Matches {
-		t.Expect.ContextPut.Matches[k].ContextName, _ = replaceContextField(v.ContextName, ctx)
+		t.Expect.ContextPut.Matches[k].ContextName, err = replaceContextField(v.ContextName, ctx)
+		if err != nil {
+			t.logReplaceError("ContextName", err, logger, showReplacementErrors)
+		}
 	}
+
+	for idx, match := range t.Expect.Matches {
+		match.ProcessReplacementFields(ctx)
+		t.Expect.Matches[idx] = match
+	}
+
+}
+
+func (t *TestCase) logReplaceError(field string, err error, logger *logrus.Logger, showReplacementErrors bool) {
+	if showReplacementErrors {
+		logger.WithError(err).Errorf("processing %s replacement fields", field)
+	} else {
+		logger.WithError(err).Debugf("processing %s replacement fields", field)
+	}
+}
+
+func (t *TestCase) processReplacementFormData(ctx *Context) {
+	var err error
+	for k := range t.Input.FormData {
+		t.Input.FormData[k], err = replaceContextField(t.Input.FormData[k], ctx)
+		if err != nil {
+			logrus.StandardLogger().WithError(err).Error("processing replacement fields")
+		}
+	}
+}
+
+func (t *TestCase) processReplacementHeaders(ctx *Context, logger *logrus.Logger, showReplacementErrors bool) {
+	var err error
+	for k := range t.Input.Headers {
+		t.Input.Headers[k], err = replaceContextField(t.Input.Headers[k], ctx)
+		if err != nil {
+			field := fmt.Sprintf("Headers[%s]", k)
+			t.logReplaceError(field, err, logger, showReplacementErrors)
+		}
+	}
+}
+
+func (t *TestCase) processReplacementClaims(ctx *Context) {
+	var err error
+	for k := range t.Input.Claims {
+		t.Input.Claims[k], err = replaceContextField(t.Input.Claims[k], ctx)
+		if err != nil {
+			logrus.StandardLogger().WithError(err).Error("processing replacement fields")
+		}
+	}
+}
+
+// Clone - preforms deep copy of expect object
+func (e *Expect) Clone() Expect {
+	ex := Expect{}
+	ex.StatusCode = e.StatusCode
+	ex.SchemaValidation = e.SchemaValidation
+	for _, match := range e.Matches {
+		m := match.Clone()
+		ex.Matches = append(ex.Matches, m)
+	}
+	return ex
 }

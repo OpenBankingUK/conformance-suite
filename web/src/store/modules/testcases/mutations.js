@@ -6,6 +6,9 @@ export default {
   [types.SET_TEST_CASES](state, testCases) {
     state.testCases = testCases;
   },
+  [types.SET_TEST_CASES_COMPLETED](state, value) {
+    state.test_cases_completed = value;
+  },
   [types.SET_HAS_RUN_STARTED](state, hasRunStarted) {
     state.hasRunStarted = hasRunStarted;
   },
@@ -74,5 +77,15 @@ export default {
     _.merge(item, {
       _showDetails: !_.get(item, '_showDetails'),
     });
+  },
+
+  [types.ADD_TOKEN_ACQUIRED](state, value) {
+    state.tokens.acquired = [
+      ...state.tokens.acquired,
+      value,
+    ];
+  },
+  [types.SET_ALL_TOKENS_ACQUIRED](state) {
+    state.tokens.all_acquired = true;
   },
 };

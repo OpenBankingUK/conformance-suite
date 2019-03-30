@@ -66,15 +66,19 @@ func TestCreateAlgNoneJWTUsesClaims(t *testing.T) {
 	token, err := jwt.Parse(jwtString, nil)
 
 	assert.Error(t, err) // error expected as we using no keyFunc to parse
-	c := token.Claims.(jwt.MapClaims)
+	c, ok := token.Claims.(jwt.MapClaims)
+	require.True(t, ok)
 	assert.Equal(t, "http://server", c["aud"])
 	assert.Equal(t, "iss", c["iss"])
 	assert.Equal(t, "scope", c["scope"])
 	assert.Equal(t, "redirect_uri", c["redirect_uri"])
 
 	// extraction consent id
-	cc := c["claims"].(map[string]interface{})
-	idt := cc["id_token"].(map[string]interface{})
-	iid := idt["openbanking_intent_id"].(map[string]interface{})
+	cc, ok := c["claims"].(map[string]interface{})
+	require.True(t, ok)
+	idt, ok := cc["id_token"].(map[string]interface{})
+	require.True(t, ok)
+	iid, ok := idt["openbanking_intent_id"].(map[string]interface{})
+	require.True(t, ok)
 	assert.Equal(t, "123", iid["value"])
 }

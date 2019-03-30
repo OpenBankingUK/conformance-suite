@@ -77,9 +77,8 @@ export default {
       return BLANK_ANNOTATION_MARKER;
     }
     const paths = jsonLocation.parse(discoveryModelString);
-    const locatableProblems = discoveryProblems.filter(p =>
-      p.path &&
-      (paths[p.path] || paths[p.parent]));
+    const locatableProblems = discoveryProblems.filter(p => p.path
+      && (paths[p.path] || paths[p.parent]));
 
     if (locatableProblems.length === 0) {
       return BLANK_ANNOTATION_MARKER;

@@ -28,6 +28,7 @@ const (
 	BodyJSONRegex
 	BodyLength
 	Authorisation
+	CustomCheck
 )
 
 // Match defines various types of response payload pattern and field checking.
@@ -45,8 +46,8 @@ const (
 // - check that a response body has a specific value of a specified json field
 // - check that a response body has a specific json field and that the specific json field matches a regular expression
 // - check that a response body is a specified length
-// - allow for replacment of endpoint text ... e.g. {AccountId}
-// - Authoriation: allow for manipulation of Bearer tokens in http headers
+// - allow for replacement of endpoint text ... e.g. {AccountId}
+// - Authorization: allow for manipulation of Bearer tokens in http headers
 // - Result: allow for capturing of match values for further processing - like putting into a context
 type Match struct {
 	MatchType       MatchType `json:"match_type,omitempty"`        // Type of Match we're doing
@@ -63,6 +64,7 @@ type Match struct {
 	ReplaceEndpoint string    `json:"replaceInEndpoint,omitempty"` // allows substitution of resourceIds
 	Authorisation   string    `json:"authorisation,omitempty"`     // allows capturing of bearer tokens
 	Result          string    `json:"result,omitempty"`            // capturing match values
+	Custom          string    `json:"custom,omitempty"`            // specifies custom matching routine
 }
 
 // ContextAccessor - Manages access to matches for Put and Get value operations on a context
@@ -119,20 +121,20 @@ func (m *Match) Check(tc *TestCase) (bool, error) {
 
 // PutValue puts the value from the json match along with a context variable to put it into
 func (m *Match) PutValue(tc *TestCase, ctx *Context) bool {
-	success := false
-	var err error
 	switch m.GetType() {
 	case BodyJSONPresent:
-		success, err = m.setContextFromBodyPresent(tc, ctx)
+		success, err := m.setContextFromBodyPresent(tc, ctx)
 		if err != nil {
 			m.AppMsg(err.Error())
 			return false
 		}
+		return success
 	case BodyJSONValue:
-		success, err = m.setContextFromCheckBodyJSONValue(tc, ctx)
+		success, err := m.setContextFromCheckBodyJSONValue(tc, ctx)
 		if err != nil {
 			return false
 		}
+		return success
 	case Authorisation:
 		if strings.EqualFold("bearer", m.Authorisation) {
 			success, err := checkAuthorisation(m, tc)
@@ -155,8 +157,7 @@ func (m *Match) PutValue(tc *TestCase, ctx *Context) bool {
 		return handleBodyRegex(tc, m, ctx)
 
 	}
-
-	return success
+	return false
 }
 
 func handleBodyRegex(tc *TestCase, m *Match, ctx *Context) bool {
@@ -207,6 +208,11 @@ func (m *Match) GetType() MatchType {
 
 	if m.MatchType != UnknownMatchType { // only figure out match type if its the default
 		return m.MatchType
+	}
+
+	if fieldsPresent(m.Custom) {
+		m.MatchType = CustomCheck
+		return CustomCheck
 	}
 
 	if fieldsPresent(m.Authorisation) {
@@ -311,6 +317,7 @@ var matchFuncs = map[MatchType]func(*Match, *TestCase) (bool, error){
 	BodyJSONRegex:      checkBodyJSONRegex,
 	BodyLength:         checkBodyLength,
 	Authorisation:      checkAuthorisation,
+	CustomCheck:        checkCustom,
 }
 
 var matchTypeString = map[MatchType]string{
@@ -326,9 +333,10 @@ var matchTypeString = map[MatchType]string{
 	BodyJSONRegex:      "BodyJSONRegex",
 	BodyLength:         "BodyLength",
 	Authorisation:      "Authorisation",
+	CustomCheck:        "Custom",
 }
 
-func defaultMatch(m *Match, tc *TestCase) (bool, error) {
+func defaultMatch(m *Match, _ *TestCase) (bool, error) {
 	return false, m.AppErr("Unknown match type fails by default")
 }
 
@@ -523,4 +531,39 @@ func checkAuthorisation(m *Match, tc *TestCase) (bool, error) {
 	}
 	m.Result = headerValue[idx+7:] // copy the token after 7 chars "Bearer "...
 	return true, nil
+}
+
+func checkCustom(m *Match, tc *TestCase) (bool, error) {
+	return true, nil //TODO: implement custom checks
+}
+
+// ProcessReplacementFields allows parameter replacement within match string fields
+func (m *Match) ProcessReplacementFields(ctx *Context) {
+	m.Header, _ = replaceContextField(m.Header, ctx)
+	m.HeaderPresent, _ = replaceContextField(m.HeaderPresent, ctx)
+	m.JSON, _ = replaceContextField(m.JSON, ctx)
+	m.Value, _ = replaceContextField(m.Value, ctx)
+	m.ContextName, _ = replaceContextField(m.ContextName, ctx)
+}
+
+// Clone duplicates a Match into a separate independent object
+// TODO: consider cloning the contextPut
+// Omit bodylength for now...
+func (m *Match) Clone() Match {
+	ma := Match{Authorisation: m.Authorisation,
+		ContextName:     m.ContextName,
+		Count:           m.Count,
+		Custom:          m.Custom,
+		Description:     m.Description,
+		Header:          m.Header,
+		HeaderPresent:   m.HeaderPresent,
+		JSON:            m.JSON,
+		MatchType:       m.MatchType,
+		Numeric:         m.Numeric,
+		Regex:           m.Regex,
+		Result:          m.Result,
+		ReplaceEndpoint: m.ReplaceEndpoint,
+		Value:           m.Value,
+	}
+	return ma
 }

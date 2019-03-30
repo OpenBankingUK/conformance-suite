@@ -34,6 +34,62 @@ yarn run lint
 yarn run test:unit
 ```
 
+### Run e2e integration tests - all in headless browser
+```
+cd ..
+make run
+
+# in new tab
+cd web
+
+# Add TPP client values for ENV VAR in cypress.env.json
+cp cypress.sample.env.json cypress.env.json # first time only
+
+yarn test:e2e:all
+```
+
+### Run e2e integration tests - just headless consent
+```
+cd ..
+make run
+
+# in new tab
+cd web
+
+# Add TPP client values for ENV VAR in cypress.env.json
+cp cypress.sample.env.json cypress.env.json # first time only
+
+yarn test:e2e:headless-consent
+```
+
+### Run e2e integration tests - just PSU consent
+```
+cd ..
+make run
+
+# in new tab
+cd web
+
+# Add TPP client values for ENV VAR in cypress.env.json
+cp cypress.sample.env.json cypress.env.json # first time only
+
+yarn test:e2e:psu-consent
+```
+
+### Run e2e integration tests - browser open
+```
+cd ..
+make run
+
+# in new tab
+cd web
+
+# Add TPP client values for ENV VAR in cypress.env.json
+cp cypress.sample.env.json cypress.env.json # first time only
+
+yarn test:e2e
+```
+
 ---
 
 # UI

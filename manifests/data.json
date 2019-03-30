@@ -1,0 +1,133 @@
+{
+  "references": {
+    "minimalDomesticPaymentConsent": {
+      "body": {
+        "Data": {
+          "Initiation": {
+            "InstructionIdentification": "Excaliber",
+            "EndToEndIdentification": "Excaliber",
+            "InstructedAmount": {
+              "Amount": "1.00",
+              "Currency": "GBP"
+            },
+            "CreditorAccount": {
+              "SchemeName": "IBAN",
+              "Identification": "GB29PAPA20000390210002",
+              "Name": "Dr Foo"
+            }
+          }
+        },
+        "Risk": {}
+      }
+    },
+    "minimalInternationalPaymentConsent": {
+      "body": {
+        "Data": {
+          "Initiation": {
+            "InstructionIdentification": "Excaliber International",
+            "EndToEndIdentification": "Excaliber International",
+            "CurrencyOfTransfer": "USD",
+            "InstructedAmount": {
+              "Amount": "1.00",
+              "Currency": "USD"
+            },
+            "CreditorAccount": {
+              "SchemeName": "SortCodeAccountNumber",
+              "Identification": "20202010981789",
+              "Name": "Dr Foo"
+            }
+          }
+        }
+      },
+      "Risk": {}
+    },
+    "minimalInternationalStandingOrderConsent": {
+      "body": {
+        "Data": {
+          "Permission": "Create",
+          "Initiation": {
+            "Frequency": "EvryDay",
+            "FirstPaymentDateTime": "2020-10-01T13:14:25+00:00",
+            "CurrencyOfTransfer": "USD",
+            "InstructedAmount": {
+              "Amount": "1.00",
+              "Currency": "USD"
+            },
+            "CreditorAccount": {
+              "SchemeName": "SortCodeAccountNumber",
+              "Identification": "20202010981789",
+              "Name": "Dr Foo"
+            }
+          }
+        },
+        "Risk": {}
+      }
+    },
+    "minimalInternationalStandingOrder": {
+      "body": {
+        "Data": {
+          "Initiation": {
+            "Frequency": "EvryDay",
+            "FirstPaymentDateTime": "2020-10-01T13:14:25+00:00",
+            "CurrencyOfTransfer": "USD",
+            "InstructedAmount": {
+              "Amount": "1.00",
+              "Currency": "USD"
+            },
+            "CreditorAccount": {
+              "SchemeName": "SortCodeAccountNumber",
+              "Identification": "20202010981789",
+              "Name": "Dr Foo"
+            }
+          }
+        },
+        "Risk": {}
+      }
+    },
+    "minimalInternationalScheduledPaymentConsent": {
+      "body": {
+        "Data": {
+          "Permission": "Create",
+          "Initiation": {
+            "RequestedExecutionDateTime": "2020-10-01T13:14:25+00:00",
+            "InstructionIdentification": "Excaliber International",
+            "EndToEndIdentification": "Excaliber International",
+            "CurrencyOfTransfer": "USD",
+            "InstructedAmount": {
+              "Amount": "1.00",
+              "Currency": "USD"
+            },
+            "CreditorAccount": {
+              "SchemeName": "SortCodeAccountNumber",
+              "Identification": "20202010981789",
+              "Name": "Dr Foo"
+            }
+          }
+        },
+        "Risk": {}
+      }
+    },
+    "minimalInternationalScheduledPayment": {
+      "body": {
+        "Data": {
+          "Initiation": {
+            "RequestedExecutionDateTime": "2020-10-01T13:14:25+00:00",
+            "InstructionIdentification": "Excaliber International",
+            "EndToEndIdentification": "Excaliber International",
+            "CurrencyOfTransfer": "USD",
+            "InstructedAmount": {
+              "Amount": "1.00",
+              "Currency": "USD"
+            },
+            "CreditorAccount": {
+              "SchemeName": "UK.OBIE.IBAN",
+              "Identification": "GB29PAPA20000390210002",
+              "Name": "Charitable Funds"
+            }
+          }
+        },
+        "Risk": {}
+      }
+    }
+  }
+}

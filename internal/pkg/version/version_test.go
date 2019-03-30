@@ -10,10 +10,8 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-// TestOutOfDateUpdateWarningVersion asserts that given an outdated version of
-// the suite an update boolean is returned.
-func TestOutOfDateUpdateWarningVersion(t *testing.T) {
-	mockResponse := `
+const (
+	versionTestMockResponse = `
 {
 	"values": [{
 		"name": "0.0.2",
@@ -21,6 +19,12 @@ func TestOutOfDateUpdateWarningVersion(t *testing.T) {
 		"message": "mocked response"
 	}]
 }`
+)
+
+// TestOutOfDateUpdateWarningVersion asserts that given an outdated version of
+// the suite an update boolean is returned.
+func TestOutOfDateUpdateWarningVersion(t *testing.T) {
+	mockResponse := versionTestMockResponse
 	mockedServer, serverURL := test.HTTPServer(http.StatusOK, mockResponse, nil)
 	defer mockedServer.Close()
 
@@ -40,14 +44,7 @@ func TestOutOfDateUpdateWarningVersion(t *testing.T) {
 // TestNoUpdateUpdateWarningVersion asserts no updated required boolean when
 // local version matches or is higher.
 func TestNoUpdateUpdateWarningVersion(t *testing.T) {
-	mockResponse := `
-{
-	"values": [{
-		"name": "0.0.2",
-		"date": "2019-01-11T13:56:34+0000",
-		"message": "mocked response"
-	}]
-}`
+	mockResponse := versionTestMockResponse
 	mockedServer, serverURL := test.HTTPServer(http.StatusOK, mockResponse, nil)
 	defer mockedServer.Close()
 
@@ -61,21 +58,15 @@ func TestNoUpdateUpdateWarningVersion(t *testing.T) {
 	assert.Equal(t, false, flag)
 	assert.Equal(t, "Conformance Suite is running the latest version "+v.GetHumanVersion(), message)
 	version = FullVersion
-	_, flag, _ = v.UpdateWarningVersion(version)
+	_, flag, err = v.UpdateWarningVersion(version)
+	assert.NoError(t, err)
 	assert.Equal(t, false, flag)
 }
 
 // TestBadStatusUpdateWarningVersionFail asserts that an appropriate/correct
 // error message is return if BitBucket 40x status code is given.
 func TestBadStatusUpdateWarningVersionFail(t *testing.T) {
-	mockResponse := `
-{
-	"values": [{
-		"name": "0.0.2",
-		"date": "2019-01-11T13:56:34+0000",
-		"message": "mocked response"
-	}]
-}`
+	mockResponse := versionTestMockResponse
 	mockedServer, serverURL := test.HTTPServer(http.StatusBadRequest, mockResponse, nil)
 	defer mockedServer.Close()
 
@@ -84,7 +75,8 @@ func TestBadStatusUpdateWarningVersionFail(t *testing.T) {
 
 	message := ""
 	// Check we get the appropriate error message.
-	message, _, _ = v.UpdateWarningVersion(FullVersion)
+	message, _, err := v.UpdateWarningVersion(FullVersion)
+	assert.NoError(t, err)
 	assert.Equal(t, message, "Version check is unavailable at this time.")
 
 }

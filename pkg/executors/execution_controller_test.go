@@ -1,6 +1,7 @@
 package executors
 
 import (
+	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/test"
 	"testing"
 
 	mocks2 "bitbucket.org/openbankingteam/conformance-suite/pkg/authentication/mocks"
@@ -13,7 +14,7 @@ import (
 func TestNewTestCaseRunner(t *testing.T) {
 	controller := &mocks.DaemonController{}
 	definition := RunDefinition{}
-	runner := NewTestCaseRunner(definition, controller)
+	runner := NewTestCaseRunner(test.NullLogger(), definition, controller)
 
 	assert.NotNil(t, runner.runningLock)
 	assert.Equal(t, definition, runner.definition)
@@ -30,7 +31,7 @@ func TestMakeRuleContext(t *testing.T) {
 			DiscoveryModel: discovery.ModelDiscovery{},
 		},
 	}
-	runner := NewTestCaseRunner(definition, controller)
+	runner := NewTestCaseRunner(test.NullLogger(), definition, controller)
 
 	ctx := runner.makeRuleCtx(&model.Context{})
 

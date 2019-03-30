@@ -9,8 +9,6 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/sirupsen/logrus"
-
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
 
@@ -22,13 +20,12 @@ import (
 // writing out endpoint paths to the draft template.
 //
 // Not intended to be run in production.
-func DraftDiscovery() bool {
+func DraftDiscovery() error {
 	template := newModel()
 	for _, config := range specConfigs() {
 		doc, err := loadSpec(config.SchemaVersion.String(), false)
 		if err != nil {
-			logrus.Errorln(err)
-			return false
+			return err
 		}
 		specVersion := checkVersion(doc, config)
 		checkName(doc, config)
@@ -38,13 +35,14 @@ func DraftDiscovery() bool {
 		addEndpoints(&item, doc)
 		template.DiscoveryItems = append(template.DiscoveryItems, item)
 	}
-	model := discovery.Model{
+	discModel := discovery.Model{
 		DiscoveryModel: template,
 	}
-	r, _ := json.MarshalIndent(model, "", "  ")
-	// fmt.Println(string(r))
-	ioutil.WriteFile("draft-"+model.DiscoveryModel.Name+".json", r, 0644)
-	return true
+	r, err := json.MarshalIndent(discModel, "", "  ")
+	if err != nil {
+		return err
+	}
+	return ioutil.WriteFile("draft-"+discModel.DiscoveryModel.Name+".json", r, 0644)
 }
 
 func updateSpecVersion(template *discovery.ModelDiscovery, specVersion string) {
@@ -77,7 +75,7 @@ func newModel() discovery.ModelDiscovery {
 	template := discovery.ModelDiscovery{
 		Name:             "ob-[VERSION]-generic",
 		Description:      "An Open Banking UK generic discovery template for [VERSION] of Accounts and Payments.",
-		DiscoveryVersion: "v0.2.1",
+		DiscoveryVersion: "v0.3.0",
 		TokenAcquisition: "psu",
 		DiscoveryItems:   []discovery.ModelDiscoveryItem{},
 	}

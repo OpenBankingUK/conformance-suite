@@ -125,7 +125,7 @@ var endpointConditionality map[string][]Conditionality
 func init() {
 	err := loadConditions()
 	if err != nil {
-		logrus.Error(err)
+		logrus.StandardLogger().Error(err)
 		os.Exit(1) // Abort if we can't read the config correctly
 	}
 }
@@ -220,7 +220,7 @@ func loadConditions() error {
 			case "optional":
 				condition.Condition = Optional
 			default:
-				logrus.WithFields(logrus.Fields{
+				logrus.StandardLogger().WithFields(logrus.Fields{
 					"Condition": item.StringCondition,
 					"Method":    item.Method,
 					"Endpoint":  item.Endpoint,
@@ -230,5 +230,6 @@ func loadConditions() error {
 		}
 		endpointConditionality[specification] = list
 	}
+
 	return nil
 }

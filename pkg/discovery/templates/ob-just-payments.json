@@ -1,0 +1,179 @@
+{
+    "discoveryModel": {
+      "name": "ob-Just-Payments",
+      "description": "An Open Banking UK discovery template for v3.1 of Accounts and Payments with pre-populated model Bank (Ozone) data.",
+      "discoveryVersion": "v0.3.0",
+      "tokenAcquisition": "headless",
+      "discoveryItems": [          
+        {
+          "apiSpecification": {
+            "name": "Payment Initiation API",
+            "url": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937754701/Payment+Initiation+API+Specification+-+v3.1",
+            "version": "v3.1",
+            "schemaVersion": "https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.0/dist/payment-initiation-swagger.json",
+            "manifest": "file://manifests/ob_3.1_payment_fca.json"
+          },
+          "openidConfigurationUri": "https://modelobankauth2018.o3bank.co.uk:4101/.well-known/openid-configuration",
+          "resourceBaseUri": "https://modelobank2018.o3bank.co.uk:4501/open-banking/v3.1/pisp",
+          "endpoints": [{
+            "method": "POST",
+            "path": "/domestic-payment-consents",
+            "conditionalProperties": [{
+              "schema": "OBWriteDataDomesticConsentResponse1",
+              "property": "Charges",
+  
+              "path": "Data.Charges"
+            }]
+          },
+            {
+              "method": "GET",
+              "path": "/domestic-payment-consents/{ConsentId}",
+              "conditionalProperties": [{
+                "schema": "OBWriteDataDomesticConsentResponse1",
+                "property": "Charges",
+                "path": "Data.Charges"
+              }]
+            },
+            {
+              "method": "GET",
+              "path": "/domestic-payment-consents/{ConsentId}/funds-confirmation"
+            },
+            {
+              "method": "POST",
+              "path": "/domestic-payments",
+              "conditionalProperties": [{
+                "schema": "OBWriteDataDomesticResponse1",
+                "property": "Charges",
+                "path": "Data.Charges"
+              }]
+            },
+            {
+              "method": "GET",
+              "path": "/domestic-payments/{DomesticPaymentId}",
+              "conditionalProperties": [{
+                "schema": "OBWriteDataDomesticResponse1",
+                "property": "Charges",
+                "path": "Data.Charges"
+              }]
+            },
+            {
+              "method": "POST",
+              "path": "/domestic-scheduled-payment-consents"
+            },
+            {
+              "method": "GET",
+              "path": "/domestic-scheduled-payment-consents/{ConsentId}"
+            },
+            {
+              "method": "POST",
+              "path": "/domestic-scheduled-payments"
+            },
+            {
+              "method": "GET",
+              "path": "/domestic-scheduled-payments/{DomesticScheduledPaymentId}"
+            },
+            {
+              "method": "POST",
+              "path": "/domestic-standing-order-consents"
+            },
+            {
+              "method": "GET",
+              "path": "/domestic-standing-order-consents/{ConsentId}"
+            },
+            {
+              "method": "POST",
+              "path": "/domestic-standing-orders"
+            },
+            {
+              "method": "GET",
+              "path": "/domestic-standing-orders/{DomesticStandingOrderId}"
+            },
+            {
+              "method": "POST",
+              "path": "/international-payment-consents"
+            },
+            {
+              "method": "GET",
+              "path": "/international-payment-consents/{ConsentId}"
+            },
+            {
+              "method": "GET",
+              "path": "/international-payment-consents/{ConsentId}/funds-confirmation"
+            },
+            {
+              "method": "POST",
+              "path": "/international-payments"
+            },
+            {
+              "method": "GET",
+              "path": "/international-payments/{InternationalPaymentId}"
+            },
+            {
+              "method": "POST",
+              "path": "/international-scheduled-payment-consents"
+            },
+            {
+              "method": "GET",
+              "path": "/international-scheduled-payment-consents/{ConsentId}"
+            },
+            {
+              "method": "GET",
+              "path": "/international-scheduled-payment-consents/{ConsentId}/funds-confirmation"
+            },
+            {
+              "method": "POST",
+              "path": "/international-scheduled-payments"
+            },
+            {
+              "method": "GET",
+              "path": "/international-scheduled-payments/{InternationalScheduledPaymentId}"
+            },
+            {
+              "method": "POST",
+              "path": "/international-standing-order-consents"
+            },
+            {
+              "method": "GET",
+              "path": "/international-standing-order-consents/{ConsentId}"
+            },
+            {
+              "method": "POST",
+              "path": "/international-standing-orders"
+            },
+            {
+              "method": "GET",
+              "path": "/international-standing-orders/{InternationalStandingOrderPaymentId}"
+            },
+            {
+              "method": "POST",
+              "path": "/file-payment-consents"
+            },
+            {
+              "method": "GET",
+              "path": "/file-payment-consents/{ConsentId}"
+            },
+            {
+              "method": "POST",
+              "path": "/file-payment-consents/{ConsentId}/file"
+            },
+            {
+              "method": "GET",
+              "path": "/file-payment-consents/{ConsentId}/file"
+            },
+            {
+              "method": "POST",
+              "path": "/file-payments"
+            },
+            {
+              "method": "GET",
+              "path": "/file-payments/{FilePaymentId}"
+            },
+            {
+              "method": "GET",
+              "path": "/file-payments/{FilePaymentId}/report-file"
+            }
+          ]
+        }]
+    }
+  }
+  

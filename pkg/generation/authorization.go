@@ -5,25 +5,6 @@ import (
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/permissions"
 )
 
-func updateSpecsBearer(consentRequirements []model.SpecConsentRequirements, specs []SpecificationTestCases) []SpecificationTestCases {
-	updatedTests := make([]SpecificationTestCases, len(specs))
-	for key, spec := range specs {
-		updatedTests[key] = updateSpecBearer(consentRequirements, spec)
-	}
-	return updatedTests
-}
-
-func updateSpecBearer(consentRequirements []model.SpecConsentRequirements, spec SpecificationTestCases) SpecificationTestCases {
-	tcs := make([]model.TestCase, len(spec.TestCases))
-	for key, tc := range spec.TestCases {
-		updatedTc := setHeader(consentRequirements, tc)
-		tcs[key] = updatedTc
-	}
-	updateSpec := spec
-	updateSpec.TestCases = tcs
-	return updateSpec
-}
-
 func setHeader(consentRequirements []model.SpecConsentRequirements, tc model.TestCase) model.TestCase {
 	if isAccountAccessConsentEndpoint(tc.Input.Endpoint) {
 		// do nothing it's a special case
@@ -34,7 +15,7 @@ func setHeader(consentRequirements []model.SpecConsentRequirements, tc model.Tes
 	}
 	nameSet, ok := authorizationNamedSet(consentRequirements, tc.ID)
 	if ok {
-		tc.Input.Headers["authorization"] = "Bearer $" + nameSet
+		tc.Input.Headers["Authorization"] = "Bearer $" + nameSet
 	}
 	return tc
 }

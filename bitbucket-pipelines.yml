@@ -15,25 +15,29 @@ pipelines:
         # build go app
         - step:
             name: go-test
-            image: golang:1.11-stretch
+            image: golang:1.12-alpine
             script:
               - |
-                CGO_ENABLED=0
-                GOOS=linux
-                GOARCH=amd64
-              - make devtools
+                export CGO_ENABLED=0
+                export GOOS=linux
+                export GOARCH=amd64
+              - apk update && apk add git make bash curl
+              - echo ${OZONE_CONFIG} | base64 -d  > config/config-ozone.json
               - make init
+              - make devtools
               - make build
               - make test
-              - make lint
 
         # lint and test the Vue.js app
         - step:
             name: web-lint-test
-            image: node:8.11.1-slim
+            image: node:dubnium-alpine
             # caches:
             #   - cache-web
             script:
+              - |
+                export FORCE_COLOR=1
+                export NODE_DISABLE_COLORS=0
               - cd web/
               - yarn install
               - yarn lint --no-fix
@@ -42,8 +46,8 @@ pipelines:
         # build docker image
         - step:
             name: docker-image-build
-            # caches:
-            #   - docker
+            caches:
+              - docker
             script:
               - make build_image
               - docker images

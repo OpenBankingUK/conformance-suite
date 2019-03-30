@@ -3,9 +3,10 @@ package server
 import (
 	"crypto/sha256"
 	"encoding/base64"
-	"errors"
 	"fmt"
 	"net/http"
+
+	"github.com/pkg/errors"
 
 	"github.com/dgrijalva/jwt-go"
 
@@ -56,8 +57,15 @@ type redirectHandlers struct {
 	logger  *logrus.Entry
 }
 
+func newRedirectHandlers(journey Journey, logger *logrus.Entry) redirectHandlers {
+	return redirectHandlers{
+		journey: journey,
+		logger:  logger.WithField("module", "redirectHandlers"),
+	}
+}
+
 // postFragmentOKHandler - POST /api/redirect/fragment/ok
-func (h *redirectHandlers) postFragmentOKHandler(c echo.Context) error {
+func (h redirectHandlers) postFragmentOKHandler(c echo.Context) error {
 	fragment := new(RedirectFragment)
 	if err := c.Bind(fragment); err != nil {
 		return err
@@ -74,9 +82,12 @@ func (h *redirectHandlers) postFragmentOKHandler(c echo.Context) error {
 
 	claim := &AuthClaim{}
 
-	// If not providing Keyfunc (3rd param), don't check for error here
-	// as it will always be error("no Keyfunc was provided")
-	t, _ := jwt.ParseWithClaims(fragment.IDToken, claim, nil)
+	t, err := jwt.ParseWithClaims(fragment.IDToken, claim, nil)
+	if err != nil {
+		// If not providing Keyfunc (3rd param), don't check for error here
+		// as it will always be error("no Keyfunc was provided")
+		h.logger.Debug("Keyfunc not provided")
+	}
 
 	cHash, err := calculateCHash(t.Header["alg"].(string), fragment.Code)
 	if err != nil {
@@ -91,7 +102,7 @@ func (h *redirectHandlers) postFragmentOKHandler(c echo.Context) error {
 }
 
 // postQueryOKHandler - POST /redirect/query/ok
-func (h *redirectHandlers) postQueryOKHandler(c echo.Context) error {
+func (h redirectHandlers) postQueryOKHandler(c echo.Context) error {
 	query := new(RedirectQuery)
 	if err := c.Bind(query); err != nil {
 		return err
@@ -103,7 +114,7 @@ func (h *redirectHandlers) postQueryOKHandler(c echo.Context) error {
 		if query.Code != "" {
 			err := h.handleCodeExchange(query)
 			if err != nil {
-				resp := NewErrorResponse(errors.New("unable to handle redirect"))
+				resp := NewErrorResponse(errors.Wrap(err, "unable to handle redirect"))
 				return c.JSON(http.StatusBadRequest, resp)
 			}
 			return c.JSON(http.StatusOK, nil)
@@ -113,9 +124,12 @@ func (h *redirectHandlers) postQueryOKHandler(c echo.Context) error {
 
 	claim := &AuthClaim{}
 
-	// If not providing Keyfunc (3rd param), don't check for error here
-	// as it will always be error("no Keyfunc was provided")
-	t, _ := jwt.ParseWithClaims(query.IDToken, claim, nil)
+	t, err := jwt.ParseWithClaims(query.IDToken, claim, nil)
+	if err != nil {
+		// If not providing Keyfunc (3rd param), don't check for error here
+		// as it will always be error("no Keyfunc was provided")
+		h.logger.Debug("Keyfunc not provided")
+	}
 
 	cHash, err := calculateCHash(t.Header["alg"].(string), query.Code)
 	if err != nil {
@@ -124,7 +138,7 @@ func (h *redirectHandlers) postQueryOKHandler(c echo.Context) error {
 	if cHash == claim.CHash {
 		err = h.handleCodeExchange(query)
 		if err != nil {
-			resp := NewErrorResponse(errors.New("unable to handle redirect"))
+			resp := NewErrorResponse(errors.Wrap(err, "unable to handle redirect"))
 			return c.JSON(http.StatusBadRequest, resp)
 		}
 		return c.JSON(http.StatusOK, nil)
@@ -134,14 +148,13 @@ func (h *redirectHandlers) postQueryOKHandler(c echo.Context) error {
 	return c.JSON(http.StatusBadRequest, resp)
 }
 
-func (h *redirectHandlers) handleCodeExchange(query *RedirectQuery) error {
-	logrus.Warnf("received redirect Query %#v", query)
-	h.journey.CollectToken(query.Code, query.State, query.Scope)
-	return nil
+func (h redirectHandlers) handleCodeExchange(query *RedirectQuery) error {
+	logrus.StandardLogger().Warnf("received redirect Query %#v", query)
+	return h.journey.CollectToken(query.Code, query.State, query.Scope)
 }
 
 // postErrorHandler - POST /api/redirect/error
-func (h *redirectHandlers) postErrorHandler(c echo.Context) error {
+func (h redirectHandlers) postErrorHandler(c echo.Context) error {
 	redirectError := new(RedirectError)
 	if err := c.Bind(redirectError); err != nil {
 		return err
@@ -163,7 +176,7 @@ func calculateCHash(alg string, code string) (string, error) {
 		d := sha256.Sum256([]byte(code))
 		//left most 256 bits.. 256/8 = 32bytes
 		// no need to validate length as sha256.Sum256 returns fixed length
-		digest = []byte(d[0:32])
+		digest = d[0:32]
 	default:
 		return "", fmt.Errorf("%s algorithm not supported", alg)
 	}

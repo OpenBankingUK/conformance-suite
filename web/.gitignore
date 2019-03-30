@@ -1,10 +1,17 @@
 .DS_Store
 node_modules
 /dist
+tests/e2e/videos/
+tests/e2e/screenshots/
+
+# test files
+consentUrl.txt
+redirectBackUrl.txt
 
 # local env files
 .env.local
 .env.*.local
+cypress.env.json
 
 # Log files
 npm-debug.log*

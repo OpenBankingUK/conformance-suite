@@ -41,6 +41,12 @@ export default {
   [types.SET_TOKEN_ENDPOINT](state, value) {
     state.configuration.token_endpoint = value;
   },
+  [types.SET_TOKEN_ENDPOINT_AUTH_METHOD](state, value) {
+    state.configuration.token_endpoint_auth_method = value;
+  },
+  [types.SET_TOKEN_ENDPOINT_AUTH_METHODS](state, list) {
+    state.token_endpoint_auth_methods = list;
+  },
   [types.SET_AUTHORIZATION_ENDPOINT](state, value) {
     state.configuration.authorization_endpoint = value;
   },
@@ -53,7 +59,34 @@ export default {
   [types.SET_ISSUER](state, value) {
     state.configuration.issuer = value;
   },
-  [types.SET_REDIRECT_URL](state, value) {
-    state.configuration.redirect_url = value;
+  [types.SET_RESOURCE_ACCOUNT_ID](state, { index, value }) {
+    // Without the use of Vue.set the JSON editor tab view does not update on form input change.
+    // https://vuejs.org/v2/api/#Vue-set
+    const id = { account_id: value };
+    Vue.set(state.configuration.resource_ids.account_ids, index, id);
+  },
+  [types.SET_RESOURCE_STATEMENT_ID](state, { index, value }) {
+    // Without the use of Vue.set the JSON editor tab view does not update on form input change.
+    // https://vuejs.org/v2/api/#Vue-set
+    const id = { statement_id: value };
+    Vue.set(state.configuration.resource_ids.statement_ids, index, id);
+  },
+  [types.SET_RESOURCE_ACCOUNT_IDS](state, value) {
+    state.configuration.resource_ids.account_ids = value;
+  },
+  [types.SET_RESOURCE_STATEMENT_IDS](state, value) {
+    state.configuration.resource_ids.statement_ids = value;
+  },
+  [types.ADD_RESOURCE_ACCOUNT_ID](state, value) {
+    state.configuration.resource_ids.account_ids.push(value);
+  },
+  [types.REMOVE_RESOURCE_ACCOUNT_ID](state, index) {
+    state.configuration.resource_ids.account_ids.splice(index, 1);
+  },
+  [types.ADD_RESOURCE_STATEMENT_ID](state, value) {
+    state.configuration.resource_ids.statement_ids.push(value);
+  },
+  [types.REMOVE_RESOURCE_STATEMENT_ID](state, index) {
+    state.configuration.resource_ids.statement_ids.splice(index, 1);
   },
 };

@@ -63,7 +63,7 @@ init_web: ./web/node_modules ## install node_modules when not present.
 .PHONY: devtools
 devtools: ## install dev tools.
 	@echo -e "\033[92m  ---> Installing mockery (github.com/vektra/mockery) ... \033[0m"
-	go get -u github.com/vektra/mockery
+	go get github.com/vektra/mockery
 	@echo -e "\033[92m  ---> Installing golangci-lint (https://github.com/golangci/golangci-lint) ... \033[0m"
 	curl -sfL "https://install.goreleaser.com/github.com/golangci/golangci-lint.sh" | sh -s -- -b $(shell go env GOPATH)/bin v1.12.5
 
@@ -72,7 +72,7 @@ devtools: ## install dev tools.
 .PHONY: lint
 lint: ## lint the go code.
 	@echo -e "\033[92m  ---> Checking other qa tools ... \033[0m"
-	golangci-lint run --config ./.golangci.yml --new ./...
+	golangci-lint run --config ./.golangci.yml ./...
 
 .PHONY: qa
 qa: test lint ## run all known quality assurance tools
@@ -101,7 +101,7 @@ test: ## run the go tests.
 
 .PHONY: test_coverage
 test_coverage: ## run the go tests then open up coverage report.
-	@echo -e "\033[92m  ---> Testing wth coverage ... \033[0m"
+	@echo -e "\033[92m  ---> Testing with coverage ... \033[0m"
 	go test \
 		-v \
 		-cover \

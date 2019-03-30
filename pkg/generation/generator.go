@@ -1,10 +1,10 @@
-//go:generate mockery -name Generator
+//go:generate mockery -name Generator -inpkg
 package generation
 
 import (
 	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/names"
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/authentication"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/manifest"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/permissions"
 	"github.com/sirupsen/logrus"
@@ -23,11 +23,13 @@ type GeneratorConfig struct {
 	Scope                 string
 	AuthorizationEndpoint string
 	RedirectURL           string
+	ResourceIDs           model.ResourceIDs
 }
 
 // Generator - generates test cases from discovery model
 type Generator interface {
-	GenerateSpecificationTestCases(GeneratorConfig, discovery.ModelDiscovery, *model.Context) TestCasesRun
+	GenerateSpecificationTestCases(log *logrus.Entry, config GeneratorConfig, discovery discovery.ModelDiscovery, ctx *model.Context) TestCasesRun
+	GenerateManifestTests(log *logrus.Entry, config GeneratorConfig, discovery discovery.ModelDiscovery, ctx *model.Context) TestCasesRun
 }
 
 // NewGenerator - returns implementation of Generator interface
@@ -42,30 +44,90 @@ type generator struct {
 	resolver func(groups []permissions.Group) permissions.CodeSetResultSet
 }
 
+// Work in progress to integrate Manifest Test
+func (g generator) GenerateManifestTests(log *logrus.Entry, config GeneratorConfig, discovery discovery.ModelDiscovery, ctx *model.Context) TestCasesRun {
+	logrus.Debug("GenerateManifestTests - entry")
+	log = log.WithField("module", "GenerateManifestTests")
+
+	specTestCases := []SpecificationTestCases{}
+
+	for _, item := range discovery.DiscoveryItems { //TODO: sort out different specs etc
+		tcs, err := manifest.GenerateTestCases(item.APISpecification.Name, item.ResourceBaseURI, ctx) //TODO: ensure we can handle multiple specs
+		if err != nil {
+			log.Warnf("manifest testcase generation failed for %s", item.APISpecification.Name)
+			continue
+		}
+		stc := SpecificationTestCases{Specification: item.APISpecification, TestCases: tcs}
+		logrus.Debugf("%d test cases generated", len(tcs))
+
+		specTestCases = append(specTestCases, stc)
+
+		break //TODO: sort this out integration scaffolding ... do it once for starters ...
+	}
+
+	requiredTokens, err := manifest.GetRequiredTokensFromTests(specTestCases[0].TestCases)
+	if err != nil {
+
+	}
+	scrSlice, err := getSpecConsentsFromRequiredTokens(requiredTokens)
+	//specTestCases = append(customTestCases, specTestCases...)
+	return TestCasesRun{specTestCases, scrSlice}
+}
+
+func getSpecConsentsFromRequiredTokens(rt []manifest.RequiredTokens) ([]model.SpecConsentRequirements, error) {
+	specConsents := make([]model.SpecConsentRequirements, 0)
+
+	npa := []model.NamedPermission{}
+	for _, v := range rt {
+		np := model.NamedPermission{}
+		np.Name = v.Name
+		np.CodeSet = permissions.CodeSetResult{}
+		np.CodeSet.TestIds = append(np.CodeSet.TestIds, permissions.StringSliceToTestID(v.IDs)...)
+		np.CodeSet.CodeSet = append(np.CodeSet.CodeSet, permissions.StringSliceToCodeSet(v.Perms)...)
+		npa = append(npa, np)
+	}
+	specConsentReq := model.SpecConsentRequirements{Identifier: "Account and Transaction API Specification", NamedPermissions: npa}
+	specConsents = append(specConsents, specConsentReq)
+
+	// perms := model.NamedPermissions{model.NamedPermission{Name: "to1001",
+	// 	CodeSet: permissions.CodeSetResult{CodeSet: permissions.CodeSet{"ReadAccountsBasic", "ReadProducts", "ReadTransactionsBasic", "ReadTransactionsCredits", "ReadTransactionsDebits", "ReadBalances"},
+	// 		TestIds: []permissions.TestId{"#co0001", "#co0002", "#co0003", "#t1001", "#t1002", "#t1003", "#t1004", "#t1005"}}, ConsentUrl: ""}}
+
+	// scr := model.SpecConsentRequirements{Identifier: "to1001", NamedPermissions: perms}
+	// scrSlice := []model.SpecConsentRequirements{scr}
+
+	return specConsents, nil
+}
+
 // GenerateSpecificationTestCases - generates test cases
-func (g generator) GenerateSpecificationTestCases(config GeneratorConfig, discovery discovery.ModelDiscovery, ctx *model.Context) TestCasesRun {
+func (g generator) GenerateSpecificationTestCases(log *logrus.Entry, config GeneratorConfig, discovery discovery.ModelDiscovery, ctx *model.Context) TestCasesRun {
+	log = log.WithField("module", "GenerateSpecificationTestCases")
+	headlessTokenAcquisition := discovery.TokenAcquisition == "headless"
+
 	specTestCases := []SpecificationTestCases{}
 	customTestCases := []SpecificationTestCases{}
 	customReplacements := make(map[string]string)
-	originalEndpoints := make(map[string]string, 0)
+	originalEndpoints := make(map[string]string)
 	backupEndpoints := make(map[string]string)
 
 	for _, customTest := range discovery.CustomTests { // assume ordering is prerun i.e. customtest run before other tests
-		customTestCases = append(customTestCases, GetCustomTestCases(&customTest, ctx))
+		customTestCases = append(customTestCases, GetCustomTestCases(&customTest, ctx, headlessTokenAcquisition))
 		for k, v := range customTest.Replacements {
 			customReplacements[k] = v
 		}
 		for k, testcase := range customTest.Sequence {
-			ctx := model.Context{}
-			ctx.PutMap(customReplacements)
-			testcase.ProcessReplacementFields(&ctx)
+			if !headlessTokenAcquisition {
+				ctx := model.Context{}
+				ctx.PutMap(customReplacements)
+				testcase.ProcessReplacementFields(&ctx, true)
+			}
 			customTest.Sequence[k] = testcase
 		}
 	}
 
 	nameGenerator := names.NewSequentialPrefixedName("#t")
 	for _, item := range discovery.DiscoveryItems {
-		specTests, endpoints := generateSpecificationTestCases(item, nameGenerator, ctx)
+		specTests, endpoints := generateSpecificationTestCases(log, item, nameGenerator, ctx, headlessTokenAcquisition, config)
 		specTestCases = append(specTestCases, specTests)
 		for k, v := range endpoints {
 			originalEndpoints[k] = v
@@ -85,10 +147,7 @@ func (g generator) GenerateSpecificationTestCases(config GeneratorConfig, discov
 
 	// // calculate permission set required and update the header token in the test case request
 	consentRequirements := g.consentRequirements(tmpSpecTestCases) // uses pre-modified swagger urls
-	logrus.Warnf("Consent Requirements: %#v", consentRequirements)
-
-	// // generate PSU consent URL onto the perm set structure
-	//consentRequirements = withConsentUrl(config, consentRequirements)
+	log.Infof("Consent Requirements: %#v", consentRequirements)
 
 	for _, specTest := range specTestCases {
 		for x, y := range specTest.TestCases {
@@ -102,45 +161,10 @@ func (g generator) GenerateSpecificationTestCases(config GeneratorConfig, discov
 
 }
 
-// withConsentUrl copies the full requirement consent structure into a new one with the Consent url populated
-func withConsentUrl(config GeneratorConfig, consentRequirements []model.SpecConsentRequirements) []model.SpecConsentRequirements {
-	var withUrlSpecs []model.SpecConsentRequirements
-	for _, spec := range consentRequirements {
-		var namedPermsWithUrl model.NamedPermissions
-		for _, namedPerm := range spec.NamedPermissions {
-			claims := authentication.PSUConsentClaims{
-				AuthorizationEndpoint: config.AuthorizationEndpoint,
-				Aud:                   config.Aud,
-				Iss:                   config.ClientID,
-				ResponseType:          config.ResponseType,
-				Scope:                 config.Scope,
-				RedirectURI:           config.RedirectURL,
-				ConsentId:             "",
-				State:                 namedPerm.Name,
-			}
-			consentUrl, _ := authentication.PSUURLGenerate(claims)
-			namedPermsWithUrl = append(
-				namedPermsWithUrl,
-				model.NamedPermission{
-					Name:       namedPerm.Name,
-					CodeSet:    namedPerm.CodeSet,
-					ConsentUrl: consentUrl.String(),
-				},
-			)
-		}
-		specWithUrl := model.SpecConsentRequirements{
-			Identifier:       spec.Identifier,
-			NamedPermissions: namedPermsWithUrl,
-		}
-		withUrlSpecs = append(withUrlSpecs, specWithUrl)
-	}
-	return withUrlSpecs
-}
-
 // consentRequirements calls resolver to get list of permission sets required to run all test cases
 func (g generator) consentRequirements(specTestCases []SpecificationTestCases) []model.SpecConsentRequirements {
 	nameGenerator := names.NewSequentialPrefixedName("to")
-	var specConsentRequirements []model.SpecConsentRequirements
+	specConsentRequirements := []model.SpecConsentRequirements{}
 	for _, spec := range specTestCases {
 		var groups []permissions.Group
 		for _, tc := range spec.TestCases {
@@ -161,11 +185,11 @@ type TestCasesRun struct {
 	SpecConsentRequirements []model.SpecConsentRequirements `json:"specTokens"`
 }
 
-func generateSpecificationTestCases(item discovery.ModelDiscoveryItem, nameGenerator names.Generator, ctx *model.Context) (SpecificationTestCases, map[string]string) {
-	testcases, originalEndpoints := GetImplementedTestCases(&item, nameGenerator, ctx)
+func generateSpecificationTestCases(log *logrus.Entry, item discovery.ModelDiscoveryItem, nameGenerator names.Generator, ctx *model.Context, headlessTokenAcquisition bool, genConfig GeneratorConfig) (SpecificationTestCases, map[string]string) {
+	testcases, originalEndpoints := GetImplementedTestCases(&item, nameGenerator, ctx, headlessTokenAcquisition, genConfig)
 
 	for _, tc := range testcases {
-		logrus.Debug(tc.String())
+		log.Debug(tc.String())
 	}
 	return SpecificationTestCases{Specification: item.APISpecification, TestCases: testcases}, originalEndpoints
 }

@@ -9,6 +9,8 @@ import (
 	"regexp"
 	"strings"
 
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/client"
+
 	"github.com/pkg/errors"
 )
 
@@ -17,13 +19,13 @@ const (
 	// Checker must conform to the format expected, major, minor and patch.
 	major = "1"
 	minor = "0"
-	patch = "1"
+	patch = "0"
 	// Checker is the full string version of Conformance Suite.
 	FullVersion = major + "." + minor + "." + patch
 	// VersionPrerelease is pre-release marker for the version. If this is "" (empty string)
 	// then it means that it is a final release. Otherwise, this is a pre-release
 	// such as "alpha", "beta", "rc1", etc.
-	Prerelease             = "beta"
+	Prerelease             = ""
 	BitBucketAPIRepository = "https://api.bitbucket.org/2.0/repositories/openbankingteam/conformance-suite/refs/tags"
 )
 
@@ -109,12 +111,7 @@ func (v BitBucket) VersionFormatter(version string) (string, error) {
 		vo[j]++
 	}
 	// Regex to remove all (non numeric OR period).
-	reg, err := regexp.Compile("[^0-9.]")
-	// Raise any errors running the expression.
-	if err != nil {
-		return "", errors.Wrap(err, "could not format version number.")
-
-	}
+	reg := regexp.MustCompile("[^0-9.]")
 	processedString := reg.ReplaceAllString(string(vo), "")
 
 	return processedString, nil
@@ -133,7 +130,7 @@ func (v BitBucket) UpdateWarningVersion(version string) (string, bool, error) {
 		return errorMessageUI, false, fmt.Errorf("no version found")
 	}
 	// Try to get the latest tag using the BitBucket API.
-	resp, err := http.Get(v.bitBucketAPIRepository)
+	resp, err := client.NewHTTPClient(client.DefaultTimeout).Get(v.bitBucketAPIRepository)
 	if err != nil {
 		// If network error then return message, flag to NOT update and actual error.
 		return errorMessageUI, false, errors.Wrap(err, "HTTP on GET to BitBucket API")
@@ -150,7 +147,10 @@ func (v BitBucket) UpdateWarningVersion(version string) (string, bool, error) {
 			return errorMessageUI, false, errors.Wrap(err, "error on update warning version")
 		}
 
-		s, _ := getTags([]byte(body))
+		s, err := getTags(body)
+		if err != nil {
+			return errorMessageUI, false, errors.Wrap(err, "error on update warning version")
+		}
 
 		if len(s.TagList) == 0 {
 			return errorMessageUI, false, fmt.Errorf("no Tags found")
@@ -160,7 +160,13 @@ func (v BitBucket) UpdateWarningVersion(version string) (string, bool, error) {
 
 		// Format version string to compare.
 		versionLocal, err := v.VersionFormatter(version)
+		if err != nil {
+			return errorMessageUI, false, errors.Wrap(err, "error on update warning version")
+		}
 		versionRemote, err := v.VersionFormatter(latestTag)
+		if err != nil {
+			return errorMessageUI, false, errors.Wrap(err, "error on update warning version")
+		}
 
 		if versionLocal < versionRemote {
 			errorMessageUI = fmt.Sprintf("Version v%s of the Conformance Suite is out-of-date, please update to v%s", versionLocal, versionRemote)

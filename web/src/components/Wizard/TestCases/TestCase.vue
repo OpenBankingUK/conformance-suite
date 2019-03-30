@@ -1,7 +1,7 @@
 <template>
   <div class="test-case border p-2 mt-2">
     <b-table
-      :items="testCase.testCases"
+      :items="testGroup.testCases"
       :fields="tableFields"
       head-variant="dark"
       caption-top
@@ -14,6 +14,25 @@
           :apiSpecification="apiSpecification"
         />
       </template>
+      <template
+        slot="name"
+        slot-scope="row">
+        <truncate
+          :text="row.value"
+          :length="60"
+          clamp="..."
+          less="Show Less" />
+      </template>
+
+      <template
+        slot="input.endpoint"
+        slot-scope="row">
+        <truncate
+          :text="row.value"
+          :length="30"
+          clamp="..."
+          less="Show Less" />
+      </template>
 
       <!-- format status column as Bootstrap badge. -->
       <template
@@ -22,6 +41,7 @@
         <b-badge
           :variant="row.value === 'PASSED' ? 'success' : (row.value === 'FAILED' ? 'danger' : (row.value === 'PENDING' ? 'info' : 'secondary'))"
           :class="row.value === 'FAILED' ? 'clickable' : ''"
+          :id="statusIdSelector(row)"
           tag="h6"
           @click.stop="toggleError(row)"
         >{{ row.value }}</b-badge>
@@ -31,8 +51,8 @@
         slot="row-details"
         slot-scope="row">
         <b-card>
-          <strong>Test ID:</strong> {{ row.item.id }}<br>
-          <strong>Error:</strong> {{ row.item.error }}<br>
+          <b-card-text><strong>Test ID:</strong> {{ row.item.id }}</b-card-text>
+          <b-card-text><strong>Errors:</strong> {{ row.item.error }}</b-card-text>
         </b-card>
       </template>
     </b-table>
@@ -40,15 +60,18 @@
 </template>
 
 <script>
+import truncate from 'vue-truncate-collapsed';
+// https://github.com/kavalcante/vue-truncate-collapsed
 import SpecificationHeader from './SpecificationHeader.vue';
 
 export default {
   name: 'TestCase',
   components: {
     SpecificationHeader,
+    truncate,
   },
   props: {
-    // Example value for `testCase`.
+    // Example value for `testGroup`.
     // {
     //   "apiSpecification": {
     //     "name": "Account and Transaction API Specification",
@@ -73,7 +96,7 @@ export default {
     //     }
     //   ]
     // }
-    testCase: {
+    testGroup: {
       type: Object,
       required: true,
     },
@@ -87,6 +110,7 @@ export default {
         show_details: {
           label: '',
           tdClass: 'table-data-breakable',
+          fixed: true,
         },
         '@id': {},
         name: {
@@ -94,33 +118,42 @@ export default {
         },
         'input.method': {
           tdClass: 'table-data-breakable',
+          label: 'Method',
         },
         'input.endpoint': {
           tdClass: 'table-data-breakable',
+          label: 'Endpoint',
         },
         'expect.status-code': {
           tdClass: 'table-data-breakable',
+          sortable: true,
+          label: 'Expect',
         },
         'meta.status': {
           label: 'Status',
         },
         'meta.metrics.responseTime': {
           tdClass: 'response-time',
-          label: 'Response Time',
+          sortable: true,
+          label: 'Time',
         },
         'meta.metrics.responseSize': {
           tdClass: 'response-size',
-          label: 'Response Bytes',
+          sortable: true,
+          label: 'Bytes',
         },
       }),
     },
   },
   computed: {
     apiSpecification() {
-      return this.testCase.apiSpecification;
+      return this.testGroup.apiSpecification;
     },
   },
   methods: {
+    statusIdSelector(row) {
+      return row.item['@id'].replace('#', '');
+    },
     toggleError(row) {
       if (row.item.error) {
         this.$store.commit('testcases/TOGGLE_ROW_DETAILS', row.item);

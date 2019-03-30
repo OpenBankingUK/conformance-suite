@@ -3,76 +3,26 @@ package server
 // Note: Do not run the server tests in parallel.
 
 import (
-	"bytes"
 	"context"
 	"crypto/tls"
-	"flag"
 	"fmt"
-	"io"
 	"io/ioutil"
 	"net"
 	"net/http"
-	"net/http/httptest"
-	"os"
 	"strings"
 	"testing"
 	"time"
 
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/client"
+
 	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/test"
 	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/version/mocks"
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
-
 	"github.com/labstack/echo"
-	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/require"
 )
 
-// conditionalityCheckerMock - implements model.ConditionalityChecker interface for tests
-type conditionalityCheckerMock struct {
-}
-
-// IsOptional - not used in discovery test
-func (c conditionalityCheckerMock) IsOptional(method, endpoint string, specification string) (bool, error) {
-	return false, nil
-}
-
-// Returns IsMandatory true for POST /account-access-consents, false for all other endpoint/methods.
-func (c conditionalityCheckerMock) IsMandatory(method, endpoint string, specification string) (bool, error) {
-	if method == "POST" && endpoint == "/account-access-consents" {
-		return true, nil
-	}
-	return false, nil
-}
-
-// IsOptional - not used in discovery test
-func (c conditionalityCheckerMock) IsConditional(method, endpoint string, specification string) (bool, error) {
-	return false, nil
-}
-
-// Returns IsPresent true for valid GET/POST/DELETE endpoints.
-func (c conditionalityCheckerMock) IsPresent(method, endpoint string, specification string) (bool, error) {
-	if method == "GET" || method == "POST" || method == "DELETE" {
-		return true, nil
-	}
-	return false, nil
-}
-
-func (c conditionalityCheckerMock) MissingMandatory(endpoints []model.Input, specification string) ([]model.Input, error) {
-	return []model.Input{}, nil
-}
-
-func TestMain(m *testing.M) {
-	// call flag.Parse() here if TestMain uses flags
-	flag.Parse()
-
-	// silence log output when running tests...
-	logrus.SetLevel(logrus.WarnLevel)
-
-	os.Exit(m.Run())
-}
-
 func TestServer(t *testing.T) {
-	server := NewServer(nullLogger(), conditionalityCheckerMock{}, &mocks.Version{})
+	server := NewServer(testJourney(), nullLogger(), &mocks.Version{})
 
 	t.Run("NewServer() returns non-nil value", func(t *testing.T) {
 		assert := test.NewAssert(t)
@@ -102,7 +52,7 @@ func TestServer(t *testing.T) {
 func TestServerConformanceSuiteCallback(t *testing.T) {
 	require := test.NewRequire(t)
 
-	server := NewServer(nullLogger(), conditionalityCheckerMock{}, &mocks.Version{})
+	server := NewServer(testJourney(), nullLogger(), &mocks.Version{})
 	defer func() {
 		require.NoError(server.Shutdown(context.TODO()))
 	}()
@@ -165,9 +115,9 @@ func TestServerHTTPS(t *testing.T) {
 			InsecureSkipVerify: true,
 		},
 	}
-	client := &http.Client{Transport: transport}
+	httpClient := client.NewHTTPClientWithTransport(client.DefaultTimeout, transport)
 
-	server := NewServer(nullLogger(), conditionalityCheckerMock{}, &mocks.Version{})
+	server := NewServer(testJourney(), nullLogger(), &mocks.Version{})
 	defer func() {
 		require.NoError(server.Shutdown(context.TODO()))
 	}()
@@ -183,8 +133,9 @@ func TestServerHTTPS(t *testing.T) {
 
 	tcpAddr, ok := server.TLSListener.Addr().(*net.TCPAddr)
 	require.True(ok)
+	require.NotNil(tcpAddr)
 	url := fmt.Sprintf("https://localhost:%d/", tcpAddr.Port)
-	res, err := client.Get(url)
+	res, err := httpClient.Get(url)
 	require.NoError(err)
 	require.NotNil(res)
 	require.Equal(http.StatusOK, res.StatusCode)
@@ -200,22 +151,4 @@ func TestServerHTTPS(t *testing.T) {
 	require.NoError(err)
 
 	require.Equal(string(bodyExpected), string(bodyActual))
-}
-
-// Generic util function for making test requests.
-func request(method, path string, body io.Reader, server *Server) (int, *bytes.Buffer, http.Header) {
-	req := httptest.NewRequest(method, path, body)
-	rec := httptest.NewRecorder()
-
-	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
-	server.ServeHTTP(rec, req)
-
-	return rec.Code, rec.Body, rec.HeaderMap
-}
-
-// nullLogger - create a logger that discards output.
-func nullLogger() *logrus.Entry {
-	logger := logrus.New()
-	logger.Out = ioutil.Discard
-	return logger.WithField("app", "test")
 }

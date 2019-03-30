@@ -5,8 +5,6 @@ import (
 	"regexp"
 	"testing"
 
-	"github.com/stretchr/testify/assert"
-
 	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/test"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
@@ -26,10 +24,11 @@ func testLoadDiscoveryModel(t *testing.T) *discovery.ModelDiscovery {
 }
 
 func TestGenerateSpecificationTestCases(t *testing.T) {
+	logger := test.NullLogger()
 	discovery := *testLoadDiscoveryModel(t)
 	generator := NewGenerator()
 	config := GeneratorConfig{}
-	testCasesRun := generator.GenerateSpecificationTestCases(config, discovery, &model.Context{})
+	testCasesRun := generator.GenerateSpecificationTestCases(logger, config, discovery, &model.Context{})
 	cases := testCasesRun.TestCases
 
 	t.Run("returns slice of SpecificationTestCases, one per discovery item", func(t *testing.T) {
@@ -68,7 +67,7 @@ func TestPermissionsSetsEmpty(t *testing.T) {
 func TestPermissionsShouldPassAllTestsToResolver(t *testing.T) {
 	assert := test.NewAssert(t)
 
-	generator := generator{
+	g := generator{
 		resolver: func(groups []permissions.Group) permissions.CodeSetResultSet {
 			return permissions.CodeSetResultSet{
 				{
@@ -88,53 +87,11 @@ func TestPermissionsShouldPassAllTestsToResolver(t *testing.T) {
 		},
 	}
 
-	specTokens := generator.consentRequirements(specTestCases)
+	specTokens := g.consentRequirements(specTestCases)
 
 	assert.Len(specTokens, 1)
 	assert.Len(specTokens[0].NamedPermissions, 2)
 	matchName := regexp.MustCompile(`to\w{4}`)
 	assert.Regexp(matchName, specTokens[0].NamedPermissions[0].Name)
 	assert.Regexp(matchName, specTokens[0].NamedPermissions[1].Name)
-}
-
-func TestConsentRequirementsWithConsentUrlMapsEmpty(t *testing.T) {
-	var consentRequirements []model.SpecConsentRequirements
-	config := GeneratorConfig{}
-
-	result := withConsentUrl(config, consentRequirements)
-
-	var expected []model.SpecConsentRequirements
-	assert.Equal(t, expected, result)
-}
-
-func TestConsentRequirementsWithConsentUrlMapsAllProperties(t *testing.T) {
-	consentRequirements := []model.SpecConsentRequirements{
-		{
-			Identifier: "spec name",
-			NamedPermissions: []model.NamedPermission{
-				{
-					Name:       "set1",
-					CodeSet:    permissions.CodeSetResult{CodeSet: []permissions.Code{"a"}},
-					ConsentUrl: "",
-				},
-			},
-		},
-	}
-	config := GeneratorConfig{AuthorizationEndpoint: "/auth"}
-
-	result := withConsentUrl(config, consentRequirements)
-
-	expected := []model.SpecConsentRequirements{
-		{
-			Identifier: "spec name",
-			NamedPermissions: []model.NamedPermission{
-				{
-					Name:       "set1",
-					CodeSet:    permissions.CodeSetResult{CodeSet: []permissions.Code{"a"}},
-					ConsentUrl: "/auth?client_id=&request=eyJhbGciOiJub25lIn0.eyJhdWQiOiIiLCJjbGFpbXMiOnsiaWRfdG9rZW4iOnsib3BlbmJhbmtpbmdfaW50ZW50X2lkIjp7ImVzc2VudGlhbCI6dHJ1ZSwidmFsdWUiOiIifX19LCJpc3MiOiIiLCJyZWRpcmVjdF91cmkiOiIiLCJzY29wZSI6IiJ9.&response_type=&scope=&state=set1",
-				},
-			},
-		},
-	}
-	assert.Equal(t, expected, result)
 }

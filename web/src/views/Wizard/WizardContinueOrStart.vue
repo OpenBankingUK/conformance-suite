@@ -10,7 +10,6 @@
         </div>
         <div class="panel-body">
           <p>The Functional Conformance Suite is an Open Source test tool provided by Open Banking. The goal of the suite is to provide an easy and comprehensive tool that enables implementers to test interfaces and data endpoints against the Functional API standard.</p>
-          <p>This <strong>v1.0-beta</strong> release introduces an example Discovery Template to demonstrate the headless flow for Ozone Model Bank for v3.1 of the OBIE  Accounts and Transactions specifications.</p>
         </div>
       </div>
       <div
@@ -52,7 +51,7 @@ import { mapActions, mapGetters } from 'vuex';
 import DiscoveryTemplateCard from '@/components/Wizard/DiscoveryTemplateCard.vue';
 import TheErrorStatus from '@/components/TheErrorStatus.vue';
 
-import api from '../../api/apiUtil';
+import api from '../../api';
 
 export default {
   name: 'WizardContinueOrStart',
@@ -83,12 +82,16 @@ export default {
         if (response.status !== 200) {
           const updateError = `Failed to check for updates. Got ${response.status} from server.`;
           this.setErrors([updateError]);
-        } else if (data.update) {
-          const note = {
-            extURL: 'https://bitbucket.org/openbankingteam/conformance-suite/src/develop/README.md',
-            message: data.message,
-          };
-          this.pushNotification(note);
+        } else {
+          this.$store.commit('status/SET_SUITE_VERSION', data.version);
+
+          if (data.update) {
+            const note = {
+              extURL: 'https://bitbucket.org/openbankingteam/conformance-suite/src/develop/README.md',
+              message: data.message,
+            };
+            this.pushNotification(note);
+          }
         }
       } catch (err) {
         const updateError = `Failed to check for updates: ${err}.`;

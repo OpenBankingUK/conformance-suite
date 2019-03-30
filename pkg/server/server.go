@@ -4,15 +4,15 @@ import (
 	"strings"
 
 	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/version"
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/generation"
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
 
 	"github.com/gorilla/websocket"
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
 	"github.com/sirupsen/logrus"
 )
+
+// ListenHost defines the name/address by which the service can be accessed.
+const ListenHost = "127.0.0.1"
 
 // Server - wraps *echo.Echo.
 type Server struct {
@@ -22,13 +22,14 @@ type Server struct {
 }
 
 // NewServer returns new echo.Echo server.
-func NewServer(logger *logrus.Entry, checker model.ConditionalityChecker, version version.Checker) *Server {
+func NewServer(journey Journey, logger *logrus.Entry, version version.Checker) *Server {
 	server := &Server{
 		Echo:    echo.New(),
 		logger:  logger,
 		version: version,
 	}
 	server.Validator = newEchoValidatorAdapter()
+	server.HideBanner = true
 
 	// Use custom logger config so that we can control where log lines like below get sent to - either /dev/null or stdout.
 	// {"time":"2018-12-18T13:00:40.291032Z","id":"","remote_ip":"192.0.2.1","host":"example.com","method":"POST","uri":"/api/config/global?pretty","status":400, "latency":627320,"latency_human":"627.32µs","bytes_in":0,"bytes_out":137}
@@ -52,24 +53,23 @@ func NewServer(logger *logrus.Entry, checker model.ConditionalityChecker, versio
 		Browse:  false,
 	}))
 
-	registerRoutes(server, logger, checker, version)
+	registerRoutes(journey, server, logger, version)
 
 	return server
 }
 
-func registerRoutes(server *Server, logger *logrus.Entry, checker model.ConditionalityChecker, version version.Checker) {
+func registerRoutes(journey Journey, server *Server, logger *logrus.Entry, version version.Checker) {
 	// swagger ui endpoints
 	for path, handler := range swaggerHandlers(logger) {
 		server.GET(path, handler)
 	}
-	validatorEngine := discovery.NewFuncValidator(checker)
-	testGenerator := generation.NewGenerator()
-	journey := NewJourney(logger, testGenerator, validatorEngine)
 
 	// anything prefixed with api
 	api := server.Group("/api")
 
-	configHandlers := &configHandlers{logger: logger, journey: journey}
+	api.GET("/ping", func(c echo.Context) error { return nil })
+
+	configHandlers := newConfigHandlers(journey, logger)
 	// endpoint to post global configuration
 	api.POST("/config/global", configHandlers.configGlobalPostHandler)
 
@@ -80,7 +80,6 @@ func registerRoutes(server *Server, logger *logrus.Entry, checker model.Conditio
 	// endpoints for test cases
 	testCaseHandlers := newTestCaseHandlers(journey, NewWebSocketUpgrader(), logger)
 	api.GET("/test-cases", testCaseHandlers.testCasesHandler)
-	api.GET("/test-cases/ws", testCaseHandlers.listenCodeWebSocket)
 
 	// endpoints for test runner
 	runHandlers := newRunHandlers(journey, NewWebSocketUpgrader(), logger)
@@ -94,10 +93,13 @@ func registerRoutes(server *Server, logger *logrus.Entry, checker model.Conditio
 
 	// endpoints for validating and storing the token retrieved in `/conformancesuite/callback`
 	// `pkg/server/assets/main.js` calls into this endpoint.
-	redirectHandlers := &redirectHandlers{journey, logger.WithField("module", "redirectHandlers")}
+	redirectHandlers := newRedirectHandlers(journey, logger)
 	api.POST("/redirect/fragment/ok", redirectHandlers.postFragmentOKHandler)
 	api.POST("/redirect/query/ok", redirectHandlers.postQueryOKHandler)
 	api.POST("/redirect/error", redirectHandlers.postErrorHandler)
+
+	exportHandlers := newExportHandlers(journey, logger)
+	api.POST("/export", exportHandlers.postExport)
 }
 
 // skipper - ensures that all requests not prefixed with any string in `pathsToSkip` is skipped.

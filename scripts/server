@@ -2,5 +2,11 @@
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 cd "${SCRIPT_DIR}/.."
 
-echo -e '\033[92m  ---> Starting server ... \033[0m'
-go run cmd/fcs_server/main.go
+RACE=${RACE:-0}
+if [[ "${RACE}" -gt 0 ]] || [[ "${RACE}" == "true" ]]; then
+    echo -e "\\033[92m  ---> Starting server (race=true) ... \\033[0m"
+    go run -race cmd/fcs_server/main.go
+else
+    echo -e "\\033[92m  ---> Starting server (race=false) ... \\033[0m"
+    go run cmd/fcs_server/main.go
+fi

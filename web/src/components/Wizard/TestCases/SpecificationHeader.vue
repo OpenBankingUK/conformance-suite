@@ -32,11 +32,14 @@
         slot-scope="data">
         <template v-for="(url, index) in data.value">
           <a
-            :href="url"
             :key="url"
-            target="_blank">
-            Start PSU Consent
+            :title="url"
+            class="psu-consent-link"
+            href="#"
+            @click="startPsuConsent(url, $event.target)">
+            PSU Consent
           </a>
+          <span :key="'s' + index">{{ acquired(tokenName(url)) }}</span>
           <br :key="index">
         </template>
       </template>
@@ -48,6 +51,7 @@
 import { createNamespacedHelpers } from 'vuex';
 
 const {
+  mapGetters,
   mapState,
 } = createNamespacedHelpers('testcases');
 
@@ -103,6 +107,54 @@ export default {
         });
       }
       return fields;
+    },
+  },
+  methods: {
+    ...mapGetters([
+      'tokenAcquired',
+    ]),
+    acquired(tokenName) {
+      if (this.tokenAcquired()(tokenName)) {
+        return ' Acquired';
+      }
+      return '';
+    },
+    tokenName(url) {
+      const u = new URL(url);
+      const state = u.searchParams.get('state');
+      if (state) {
+        // returns state value, e.g. 'Token0001' or 'Token0002'
+        return state;
+      }
+      return null;
+    },
+    startPsuConsent(url, targetElement) {
+      this.openPopup(url, 'PSU Consent', 1074, 800);
+      targetElement.innerHTML = 'PSU Consent (Started)'; // eslint-disable-line
+    },
+    openPopup(url, title, w, h) {
+      // Open a window popup via Javascript and supports single/dual displays
+      // Credit: https://stackoverflow.com/a/16861050/225885
+      // Fixes dual-screen position                         Most browsers      Firefox
+      const dualScreenLeft = window.screenLeft !== undefined ? window.screenLeft : window.screenX;
+      const dualScreenTop = window.screenTop !== undefined ? window.screenTop : window.screenY;
+
+      const clientWidth = document.documentElement.clientWidth ? document.documentElement.clientWidth : window.screen.width;
+      const width = window.innerWidth ? window.innerWidth : clientWidth;
+      const clientHeight = document.documentElement.clientHeight ? document.documentElement.clientHeight : window.screen.height;
+      const height = (window.innerHeight ? window.innerHeight : clientHeight) + 15;
+
+      const systemZoom = width / window.screen.availWidth;
+      const left = (width - w) / 2 / (systemZoom + dualScreenLeft);
+      const top = (height - h) / 2 / (systemZoom + dualScreenTop);
+
+      const wLocation = `width=${w / systemZoom}, height=${h / systemZoom}, top=${top}, left=${left}`;
+      const wParams = `scrollbars=yes, ${wLocation}`;
+      const newWindow = window.open(url, title, wParams);
+
+      if (newWindow != null && window.focus) {
+        newWindow.focus();
+      }
     },
   },
 };

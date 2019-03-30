@@ -1,7 +1,7 @@
 // Package appconfig - Package to read certs and parameters via the config/config.json file
 /*
 
-Typically this files looks like the following or simplar:-
+Typically this files looks like the following or simpler:-
 
     // config.json
 	{
@@ -61,7 +61,7 @@ type AppConfig struct {
 
 // PrintAppConfig - dumps application config to console
 func (a *AppConfig) PrintAppConfig() {
-	logrus.WithFields(logrus.Fields{
+	logrus.StandardLogger().WithFields(logrus.Fields{
 		"SoftwareStatementId": a.SoftwareStatementID,
 		"KeyID":               a.KeyID,
 		"TargetHost":          a.TargetHost,

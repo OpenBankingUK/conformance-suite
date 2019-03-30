@@ -54,6 +54,12 @@ export default {
         const tokenEndpoint = _.first(_.values(response.token_endpoints));
         commit(types.SET_TOKEN_ENDPOINT, tokenEndpoint);
 
+        const defaultAuthMethod = _.first(_.values(response.default_token_endpoint_auth_method));
+        commit(types.SET_TOKEN_ENDPOINT_AUTH_METHOD, defaultAuthMethod);
+
+        const authMethods = _.first(_.values(response.token_endpoint_auth_methods));
+        commit(types.SET_TOKEN_ENDPOINT_AUTH_METHODS, authMethods);
+
         const authorizationEndpoint = _.first(_.values(response.authorization_endpoints));
         commit(types.SET_AUTHORIZATION_ENDPOINT, authorizationEndpoint);
 
@@ -86,7 +92,7 @@ export default {
 
     try {
       const config = JSON.parse(editorString);
-      const merged = _.merge(_.clone(state.configuration), config);
+      const merged = _.merge(_.cloneDeep(state.configuration), config);
       const validKeys = [
         'signing_private',
         'signing_public',
@@ -95,11 +101,13 @@ export default {
         'client_id',
         'client_secret',
         'token_endpoint',
+        'token_endpoint_auth_method',
         'authorization_endpoint',
         'resource_base_url',
         'x_fapi_financial_id',
         'issuer',
         'redirect_url',
+        'resource_ids',
       ];
       const newConfig = _.pick(merged, validKeys);
       commit(types.SET_CONFIGURATION, newConfig);
@@ -142,6 +150,30 @@ export default {
     commit(types.SET_CONFIGURATION_TRANSPORT_PUBLIC, transportPublic);
     commit(types.SET_WIZARD_STEP, constants.WIZARD.STEP_THREE);
   },
+  setResourceAccountID({ commit, state }, { index, value }) {
+    if (index < 0 || index >= state.configuration.resource_ids.account_ids) {
+      return;
+    }
+    commit(types.SET_RESOURCE_ACCOUNT_ID, { index, value });
+  },
+  setResourceStatementID({ commit, state }, { index, value }) {
+    if (index < 0 || index >= state.configuration.resource_ids.statement_ids) {
+      return;
+    }
+    commit(types.SET_RESOURCE_STATEMENT_ID, { index, value });
+  },
+  removeResourceAccountID({ commit, state }, index) {
+    if (index < 0 || index >= state.configuration.resource_ids.account_ids) {
+      return;
+    }
+    commit(types.REMOVE_RESOURCE_ACCOUNT_ID, index);
+  },
+  removeResourceStatementID({ commit, state }, index) {
+    if (index < 0 || index >= state.configuration.resource_ids.statement_ids) {
+      return;
+    }
+    commit(types.REMOVE_RESOURCE_STATEMENT_ID, index);
+  },
   /**
    * Step 3: Validate the configuration.
    * Route: `/wizard/configuration`.
@@ -162,6 +194,12 @@ export default {
     if (_.isEmpty(state.configuration.transport_public)) {
       errors.push('Transport Public Certificate (.pem) empty');
     }
+    if (_.isEmpty(state.configuration.resource_ids.account_ids) || state.configuration.resource_ids.account_ids[0].account_id.length === 0) {
+      errors.push('Account IDs empty');
+    }
+    if (_.isEmpty(state.configuration.resource_ids.statement_ids) || state.configuration.resource_ids.statement_ids[0].statement_id.length === 0) {
+      errors.push('Statement IDs empty');
+    }
 
     if (_.isEmpty(state.configuration.client_id)) {
       errors.push('Client ID empty');
@@ -171,6 +209,9 @@ export default {
     }
     if (_.isEmpty(state.configuration.token_endpoint)) {
       errors.push('Token Endpoint empty');
+    }
+    if (_.isEmpty(state.configuration.token_endpoint_auth_method)) {
+      errors.push('Token Endpoint Auth Method empty');
     }
     if (_.isEmpty(state.configuration.authorization_endpoint)) {
       errors.push('Authorization Endpoint empty');

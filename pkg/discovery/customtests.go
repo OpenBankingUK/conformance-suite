@@ -31,9 +31,7 @@ func getCustomTestCases(discoReader *CustomTest) SpecificationTestCases {
 	spec := ModelAPISpecification{Name: discoReader.Name}
 	specTestCases := SpecificationTestCases{Specification: spec}
 	testcases := []model.TestCase{}
-	for _, testcase := range discoReader.Sequence {
-		testcases = append(testcases, testcase)
-	}
+	testcases = append(testcases, discoReader.Sequence...)
 	specTestCases.TestCases = testcases
 	return specTestCases
 }

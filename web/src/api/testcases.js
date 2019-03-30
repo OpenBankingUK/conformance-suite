@@ -34,4 +34,10 @@ export default {
 
     return data;
   },
+  /**
+   * Calls DELETE `/api/run`.
+   */
+  async stopTestRun(setShowLoading) {
+    await api.delete(EXECUTE_URL, setShowLoading);
+  },
 };
