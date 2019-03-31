@@ -180,7 +180,9 @@ func (t *TestCase) ApplyContext(rulectx *Context) {
 	}
 
 	// "convention" puts baseurl as prefix to endpoint in testcase"
-	t.Input.Endpoint = baseURL + t.Input.Endpoint
+	if !strings.HasPrefix(t.Input.Endpoint, baseURL) {
+		t.Input.Endpoint = baseURL + t.Input.Endpoint
+	}
 }
 
 // ApplyExpects runs the Expects section of the testcase to evaluate if the response from the system under test passes or fails

@@ -72,25 +72,40 @@ func (g generator) GenerateManifestTests(log *logrus.Entry, config GeneratorConf
 		specTestCases = append(specTestCases, stc)
 	}
 
-	var allRequiredTokens []manifest.RequiredTokens
+	var scrSlice []model.SpecConsentRequirements
 	for _, v := range specTestCases {
 		requiredSpecTokens, err := manifest.GetRequiredTokensFromTests(v.TestCases, v.Specification.SpecType)
 		if err != nil {
 			log.Warnf("getRequiredTokensFromTests return error:%s", err.Error())
 		}
-		allRequiredTokens = append(allRequiredTokens, requiredSpecTokens...)
-
+		specreq, err := getSpecConsentsFromRequiredTokens(requiredSpecTokens, v.Specification.Name)
+		logrus.Tracef("%#v\n", specreq)
+		scrSlice = append(scrSlice, specreq)
 	}
-
-	scrSlice, err := getSpecConsentsFromRequiredTokens(allRequiredTokens)
-	if err != nil {
-		log.Warnf("getSpecConsentsFromRequiredTokens return error:%s", err.Error())
+	logrus.Trace("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
+	for _, item := range scrSlice {
+		logrus.Tracef("#v\n", item)
 	}
-
+	logrus.Trace("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
 	return TestCasesRun{specTestCases, scrSlice}
 }
 
-func getSpecConsentsFromRequiredTokens(rt []manifest.RequiredTokens) ([]model.SpecConsentRequirements, error) {
+func getSpecConsentsFromRequiredTokens(rt []manifest.RequiredTokens, apiName string) (model.SpecConsentRequirements, error) {
+	npa := []model.NamedPermission{}
+	for _, v := range rt {
+		np := model.NamedPermission{}
+		np.Name = v.Name
+		np.CodeSet = permissions.CodeSetResult{}
+		np.CodeSet.TestIds = append(np.CodeSet.TestIds, permissions.StringSliceToTestID(v.IDs)...)
+		np.CodeSet.CodeSet = append(np.CodeSet.CodeSet, permissions.StringSliceToCodeSet(v.Perms)...)
+		npa = append(npa, np)
+	}
+	specConsentReq := model.SpecConsentRequirements{Identifier: apiName, NamedPermissions: npa}
+
+	return specConsentReq, nil
+}
+
+func getSpecConsentsFromRequiredTokens1(rt []manifest.RequiredTokens) ([]model.SpecConsentRequirements, error) {
 	specConsents := make([]model.SpecConsentRequirements, 0)
 
 	npa := []model.NamedPermission{}

@@ -27,7 +27,7 @@ func GetPsuConsent(definition RunDefinition, ctx *model.Context, runTests *gener
 		switch specType {
 		case "accounts":
 			return getAccountConsents(consentRequirements, definition, ctx, spec)
-		case "payments":
+		case "payments": //TODO: Handle multipe spec returns
 			consentIds, err := getPaymentConsents(spec, definition, ctx)
 			return consentIds, nil, err
 		default:
@@ -39,7 +39,8 @@ func GetPsuConsent(definition RunDefinition, ctx *model.Context, runTests *gener
 }
 
 // getAccountConsents - get required tokens
-func getAccountConsents(consentRequirements []model.SpecConsentRequirements, definition RunDefinition, ctx *model.Context, spec generation.SpecificationTestCases) (TokenConsentIDs, map[string]string, error) {
+func getAccountConsents(consentRequirements []model.SpecConsentRequirements, definition RunDefinition, ctx *model.Context,
+	spec generation.SpecificationTestCases) (TokenConsentIDs, map[string]string, error) {
 
 	consentIDChannel := make(chan TokenConsentIDItem, 100)
 	logger := logrus.StandardLogger().WithField("module", "getAccountConsents")

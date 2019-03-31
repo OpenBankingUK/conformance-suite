@@ -182,6 +182,7 @@ func MapTokensToTestCases(rt []RequiredTokens, tcs []model.TestCase) map[string]
 	return tokenMap
 }
 
+// gets token name from a testcase id
 func getRequiredTokenForTestcase(rt []RequiredTokens, testcaseID string) (tokenName string, isEmptyToken bool, err error) {
 	for _, v := range rt {
 		if len(v.Perms) == 0 {

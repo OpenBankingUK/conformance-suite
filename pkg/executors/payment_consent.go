@@ -10,7 +10,6 @@ import (
 )
 
 func getPaymentConsents(spec generation.SpecificationTestCases, definition RunDefinition, ctx *model.Context) (TokenConsentIDs, error) {
-	psuConsentIDChannel := make(chan TokenConsentIDItem, 100)
 	executor := &Executor{}
 	err := executor.SetCertificates(definition.SigningCert, definition.TransportCert)
 	if err != nil {
@@ -26,20 +25,18 @@ func getPaymentConsents(spec generation.SpecificationTestCases, definition RunDe
 		logrus.Tracef("%#v\n", rt)
 	}
 
-	err = runPaymentConsents(tests, requiredTokens, ctx, psuConsentIDChannel, executor)
+	requiredTokens, err = runPaymentConsents(tests, requiredTokens, ctx, executor)
 	if err != nil {
 		logrus.Errorf("getPaymentConsents error: " + err.Error())
 	}
 
-	tokenParameters := make(map[string]string, 0)
+	consentItems := make([]TokenConsentIDItem, 0)
 	for _, rt := range requiredTokens {
-		tokenParameters[rt.Name] = buildPermissionString(rt.Perms)
+		tci := TokenConsentIDItem{TokenName: rt.Name, ConsentURL: rt.ConsentURL, ConsentID: rt.ConsentID}
+		consentItems = append(consentItems, tci)
 	}
 
-	logrus.Trace("<<==========================")
-	dumpJSON(tokenParameters)
-	logrus.Trace("<<==========================")
-	consentItems, err := waitForConsentIDs(psuConsentIDChannel, len(tokenParameters))
+	// consentItems, err := waitForConsentIDs(psuConsentIDChannel, len(tokenParameters))
 	for _, v := range consentItems {
 		logrus.Debugf("Setting Token: %s, ConsentId: %s", v.TokenName, v.ConsentID)
 		ctx.PutString(v.TokenName, v.ConsentID)
@@ -48,38 +45,30 @@ func getPaymentConsents(spec generation.SpecificationTestCases, definition RunDe
 	return consentItems, err
 }
 
-func runPaymentConsents(tcs []model.TestCase, rt []manifest.RequiredTokens, ctx *model.Context,
-	consentIDChannel chan<- TokenConsentIDItem, executor *Executor) error {
+func runPaymentConsents(tcs []model.TestCase, rt []manifest.RequiredTokens, ctx *model.Context, executor *Executor) ([]manifest.RequiredTokens, error) {
 
-	// Execute client credential grant
-	// load
-	// process replacement fields
-	// execute ccg
-	// check we have access token
-	// the for each in required tokens
-	// execute POST consent - store consentid
-	// return
-
-	// $scope $token_endpoint $basic_authentication
-	// client_access_token
 	localCtx := model.Context{}
 	localCtx.PutContext(ctx)
 	localCtx.PutString("scope", "payments")
 
 	tc, err := readClientCredentialGrant()
 	if err != nil {
-		return errors.New("Payment PSU consent load clientCredentials testcase failed")
+		return nil, errors.New("Payment PSU consent load clientCredentials testcase failed")
 	}
+	// exchange, err := readPsuExchange()
+	// if err != nil {
+	// 	return nil, errors.New("Payment PSU consent load psu_exchange testcase failed")
+	// }
 
 	tc.ProcessReplacementFields(&localCtx, true)
 	err = executePaymentTest(&tc, &localCtx, executor)
 	if err != nil {
-		return errors.New("Payment PSU consent execute clientCredential grant testcase failed :" + err.Error())
+		return nil, errors.New("Payment PSU consent execute clientCredential grant testcase failed :" + err.Error())
 	}
 
 	bearerToken, err := localCtx.GetString("client_access_token")
 	if err != nil {
-		return errors.New("Cannot get Token for consent client credentials grant: " + err.Error())
+		return nil, errors.New("Cannot get Token for consent client credentials grant: " + err.Error())
 	}
 
 	for k, v := range rt {
@@ -87,19 +76,36 @@ func runPaymentConsents(tcs []model.TestCase, rt []manifest.RequiredTokens, ctx 
 		logrus.Warnln("Loop through requesting consent authorisation")
 		test, err := findTest(tcs, v.ConsentProvider)
 		if err != nil {
-			return err
+			return nil, err
 		}
-		test.InjectBearerToken(bearerToken)
+		test.InjectBearerToken(bearerToken) //client credential grant token
 		test.Input.Headers["Content-Type"] = "application/json"
 		logrus.Tracef("%v\n", test)
 		err = executePaymentTest(test, &localCtx, executor)
 		if err != nil {
-			return errors.New("Payment PSU consent test case failed " + err.Error())
+			return nil, errors.New("Payment PSU consent test case failed " + err.Error())
 		}
 		v.ConsentID, err = localCtx.GetString(v.ConsentParam)
 		if err != nil {
-			return errors.New("Payment PSU consent test case failed - cannot find consentID in context " + err.Error())
+			return nil, errors.New("Payment PSU consent test case failed - cannot find consentID in context " + err.Error())
 		}
+		localCtx.PutString("consent_id", v.ConsentID)
+		localCtx.PutString("token_name", v.Name)
+
+		exchange, err := readPsuExchange()
+		if err != nil {
+			return nil, errors.New("Payment PSU consent load psu_exchange testcase failed")
+		}
+		localCtx.DumpContext("before exchange", "token_name", "consent_id")
+		err = executePaymentTest(&exchange, &localCtx, executor)
+		if err != nil {
+			return nil, errors.New("Payment PSU consent exchange code failed " + err.Error())
+		}
+		v.ConsentURL, err = localCtx.GetString("consent_url")
+		if err != nil {
+			return nil, errors.New("Payment PSU exchange test case failed - cannot find `consent_url` in context " + err.Error())
+		}
+		localCtx.Delete("consent_url")
 		rt[k] = v
 	}
 
@@ -110,7 +116,7 @@ func runPaymentConsents(tcs []model.TestCase, rt []manifest.RequiredTokens, ctx 
 	}
 	logrus.Debug("Exit runPayment Consents")
 	logrus.Tracef("%#v\n", rt)
-	return nil
+	return rt, nil
 }
 
 func findTest(tcs []model.TestCase, testID string) (*model.TestCase, error) {
@@ -146,6 +152,14 @@ func readClientCredentialGrant() (model.TestCase, error) {
 	sc, err := model.LoadTestCaseFromJSONFile("components/clientcredentialgrant.json")
 	if err != nil {
 		sc, err = model.LoadTestCaseFromJSONFile("../../components/clientcredentialgrant.json")
+	}
+	return sc, err
+}
+
+func readPsuExchange() (model.TestCase, error) {
+	sc, err := model.LoadTestCaseFromJSONFile("components/psu_exchange.json")
+	if err != nil {
+		sc, err = model.LoadTestCaseFromJSONFile("../../components/psu_exchange.json")
 	}
 	return sc, err
 }

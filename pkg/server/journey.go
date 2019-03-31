@@ -2,6 +2,8 @@
 package server
 
 import (
+	"encoding/json"
+	"fmt"
 	"sync"
 
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/authentication"
@@ -59,6 +61,7 @@ type journey struct {
 	log                   *logrus.Entry
 	config                JourneyConfig
 	events                events.Events
+	permissions           map[string][]manifest.RequiredTokens
 }
 
 // NewJourney creates an instance for a user journey
@@ -73,6 +76,7 @@ func NewJourney(logger *logrus.Entry, generator generation.Generator, validator 
 		context:               model.Context{},
 		log:                   logger.WithField("module", "Journey"),
 		events:                events.NewEvents(),
+		permissions:           make(map[string][]manifest.RequiredTokens, 0),
 	}
 }
 
@@ -203,7 +207,7 @@ func (wj *journey) doneCollectionCallback() {
 }
 
 func (wj *journey) RunTests() error {
-	wj.log.Debug("RunTests ...")
+	wj.log.Debug("RunTests !======================!")
 
 	if !wj.testCasesRunGenerated {
 		return errTestCasesNotGenerated
@@ -212,25 +216,56 @@ func (wj *journey) RunTests() error {
 	if !wj.allCollected {
 		return errNotFinishedCollectingTokens
 	}
+	tokens := wj.collector.Tokens()
+	for _, v := range tokens {
+		wj.log.Debugf("token name: %s token value: %s\n", v.TokenName, v.AccessToken)
+	}
+	// Figure out premissions ... again !!!!
 
 	requiredTokens := []manifest.RequiredTokens{}
 	// map tokens to Testcases
-	var err error
+
+	// TODO - handle multipe test case types
 	for _, tests := range wj.testCasesRun.TestCases {
-		requiredTokens, err = manifest.GetRequiredTokensFromTests(tests.TestCases, "accounts")
+		spectype, err := manifest.GetSpecType(tests.Specification.Name)
+		if err != nil {
+			wj.log.Warn("Cannot file spec type for spec named " + tests.Specification.Name)
+		}
+		tests.Specification.SpecType = spectype
+		wj.log.Debugf("mapping spec type %s\n", tests.Specification.SpecType)
+		tokens, err := manifest.GetRequiredTokensFromTests(tests.TestCases, spectype)
+		requiredTokens = append(requiredTokens, tokens...)
 		if err != nil {
 			wj.log.Warn("Testcase Token setup failed")
 			return errTokenMappingFailed
 		}
 	}
+	for _, v := range requiredTokens {
+		wj.log.Debugf("requiredTokens %#v\n", v)
+	}
 
 	//TODO Extend to cover more that one set of testcases
 	manifest.MapTokensToTestCases(requiredTokens, wj.testCasesRun.TestCases[0].TestCases)
+
+	// for _, tests := range wj.testCasesRun.TestCases {
+	// 	for _, v := range tests.TestCases {
+	// 		// dump out all tests cases
+	// 		dumpJSON(v)
+	// 	}
+
+	// }
 
 	runDefinition := wj.makeRunDefinition()
 	runner := executors.NewTestCaseRunner(wj.log, runDefinition, wj.daemonController)
 	wj.log.Debug("runTestCases with context ...")
 	return runner.RunTestCases(&wj.context)
+}
+
+// Utility to Dump Json
+func dumpJSON(i interface{}) {
+	var model []byte
+	model, _ = json.MarshalIndent(i, "", "    ")
+	fmt.Println(string(model))
 }
 
 func (wj *journey) Results() executors.DaemonController {
