@@ -67,7 +67,7 @@
       "expect": {
         "matches": [{
           "type": "ConsentId",
-          "JSON": "json.Data.ConsentId",
+          "JSON": "Data.ConsentId",
           "detail": "Expected a unique identification as assigned by the ASPSP to uniquely identify the consent resource."
         }]
       }
@@ -75,7 +75,7 @@
     "OB3DOPAssertOnAcceptedSettlementCompleted": {
       "expect": {
         "matches": [{
-          "JSON": "json.Data.Status",
+          "JSON": "Data.Status",
           "Value": "AcceptedSettlementCompleted",
           "detail": "Expected status of the payment information group (AcceptedSettlementCompleted)."
         }]
@@ -84,7 +84,7 @@
     "OB3DOPAssertInvalidConsentStatus": {
       "expect": {
         "matches": [{
-          "JSON": "json.Data.Error",
+          "JSON": "Data.Error",
           "Value": "UK.OBIE.Resource.InvalidConsentStatus",
           "detail": "Expected error UK.OBIE.Resource.InvalidConsentStatus error code if the status is not Authorised"
         }]
@@ -93,7 +93,7 @@
     "OB3DOPAssertAwaitingAuthorisation": {
       "expect": {
         "matches": [{
-          "JSON": "json.Data.Status",
+          "JSON": "Data.Status",
           "Value": "AwaitingAuthorisation",
           "detail": "Expected AwaitingAuthorisation, consent resource awaiting PSU authorisation."
         }]
@@ -102,7 +102,7 @@
     "OB3DOPAssertAuthorised": {
       "expect": {
         "matches": [{
-          "JSON": "json.Data.Status",
+          "JSON": "Data.Status",
           "Value": "Authorised",
           "detail": "Expected that the consent resource has been successfully authorised."
         }]
@@ -111,7 +111,7 @@
     "OB3IPAssertInternationalPaymentId": {
       "expect": {
         "matches": [{
-          "JSON": "json.Data.InternationalPaymentId",
+          "JSON": "Data.InternationalPaymentId",
           "detail": "Expected a unique identification as assigned by the ASPSP to uniquely identify the international payment resource."
         }]
       }
@@ -119,7 +119,7 @@
     "OB3IPAssertInternationalStandingOrderPaymentId": {
       "expect": {
         "matches": [{
-          "JSON": "json.Data.InternationalStandingOrderPaymentId",
+          "JSON": "Data.InternationalStandingOrderPaymentId",
           "detail": "Expected a unique identification as assigned by the ASPSP to uniquely identify the international payment resource."
         }]
       }

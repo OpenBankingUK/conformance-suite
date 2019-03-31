@@ -123,20 +123,19 @@ func (wj *journey) TestCases() (generation.TestCasesRun, error) {
 		discovery := wj.validDiscoveryModel.DiscoveryModel
 
 		wj.log.Debugln("Journey:GenerationManifestTests")
-		wj.testCasesRun = wj.generator.GenerateManifestTests(wj.log, config, discovery, &wj.context) // Integration work in progress
+		wj.testCasesRun = wj.generator.GenerateManifestTests(wj.log, config, discovery, &wj.context)
 
 		runDefinition := wj.makeRunDefinition()
 		if discovery.TokenAcquisition == "psu" {
-			wj.log.Debugln("Journey:AcquirePSUTokens")
-			consentIds, tokenMap, err := executors.InitiateConsentAcquisition(runDefinition, &wj.context, &wj.testCasesRun)
+			wj.log.Debugln("Journey:GetPsuConsent")
+			consentIds, tokenMap, err := executors.GetPsuConsent(runDefinition, &wj.context, &wj.testCasesRun)
 			wj.log.Tracef("Journey:psu-consentIds: %#v\n", consentIds)
 			if err != nil {
 				return generation.TestCasesRun{}, errors.WithMessage(errConsentIDAcquisitionFailed, err.Error())
 			}
-			for k, v := range tokenMap {
+			for k, v := range tokenMap { // TODO: Check why this is relevant
 				wj.context.PutString(k, v)
 			}
-			//consentIdsToTestCaseRun(wj.log, consentIds, &wj.testCasesRun)
 			wj.testCasesRun.SpecConsentRequirements[0].NamedPermissions = getNamedPermissions(consentIds)
 			wj.createTokenCollector(consentIds)
 		} else {

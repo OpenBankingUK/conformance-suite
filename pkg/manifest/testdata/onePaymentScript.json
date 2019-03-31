@@ -21,7 +21,7 @@
             ],
             "keepContextOnSuccess": {
                 "name": "OB-301-DOP-100100-ConsentId",
-                "value": "json.Data.ConsentId"
+                "value": "Data.ConsentId"
             },
             "method": "post",
             "schemaCheck": false

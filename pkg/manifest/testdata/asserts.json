@@ -8,7 +8,7 @@
               "detail": "An RFC4122 UID used as a correlation id. The ASPSP 'plays back' the value given. If a value is not given the ASPSP MUST play back their own UUID."
             },
             {
-              "JSON": "json.Data.Status",
+              "JSON": "Data.Status",
               "Value": "AcceptedSettlementCompleted"
             }
           ]
@@ -130,7 +130,7 @@
         "expect": {
           "matches": [{
             "type": "ConsentId",
-            "JSON": "json.Data.ConsentId",
+            "JSON": "Data.ConsentId",
             "detail": "Expected a unique identification as assigned by the ASPSP to uniquely identify the consent resource."
           }]
         }

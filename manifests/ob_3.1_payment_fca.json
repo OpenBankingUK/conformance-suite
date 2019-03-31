@@ -43,7 +43,7 @@
             ],
             "keepContextOnSuccess": {
                 "name": "OB-301-DOP-100100-ConsentId",
-                "value": "json.Data.ConsentId"
+                "value": "Data.ConsentId"
             },
             "method": "post",
             "schemaCheck": false
@@ -84,12 +84,12 @@
             "asserts": [
                 "OB3GLOAssertOn201",
                 "OB3GLOFAPIHeader",
-                "OB3DOPAssertOnAcceptedSettlementCompleted",
+                "OB3DOPAssertAwaitingAuthorisation",
                 "OB3GLOAAssertConsentId"
             ],
             "keepContextOnSuccess": {
                 "name": "OB-301-DOP-100300-ConsentId",
-                "value": "json.Data.ConsentId"
+                "value": "Data.ConsentId"
             },
             "method": "post",
             "schemaCheck": true
@@ -152,7 +152,7 @@
             ],
             "keepContextOnSuccess": {
                 "name": "OB-301-DOP-100600-DomesticPaymentId",
-                "value": "json.Data.DomesticPaymentId"
+                "value": "Data.DomesticPaymentId"
             },
             "method": "post",
             "schemaCheck": false
@@ -182,7 +182,7 @@
             "detail": "Checks that the resource succeeds for a PISP posting a Domestic Scheduled Payment consent with a minimal data set and checks additional schema.",
             "parameters": {
                 "tokenRequestScope": "payments",
-                "postData": "$minimalDomesticPaymentConsent",
+                "postData": "$minimalScheduledDomesticPaymentConsent",
                 "requestConsent": "true"
             },
             "body": "$postData",
@@ -197,7 +197,7 @@
             ],
             "keepContextOnSuccess": {
                 "name": "OB-301-DOP-100800-ConsentId",
-                "value": "json.Data.ConsentId"
+                "value": "Data.ConsentId"
             },
             "method": "post",
             "schemaCheck": true
@@ -240,7 +240,7 @@
             ],
             "keepContextOnSuccess": {
                 "name": "OB-301-DOP-101000-DomesticScheduledPaymentId",
-                "value": "json.Data.DomesticScheduledPaymentId"
+                "value": "Data.DomesticScheduledPaymentId"
             },
             "method": "post",
             "schemaCheck": true
@@ -270,7 +270,7 @@
             "detail": "Checks that the resource succeeds for a PISP posting a Domestic Standing Order consent with a minimal data set and checks additional schema.",
             "parameters": {
                 "tokenRequestScope": "payments",
-                "postData": "$minimalDomesticPaymentConsent",
+                "postData": "$minimalScheduledDomesticPaymentConsent",
                 "requestConsent": "true"
             },
             "body": "$postData",
@@ -284,7 +284,7 @@
             ],
             "keepContextOnSuccess": {
                 "name": "OB-301-DOP-101200-ConsentId",
-                "value": "json.Data.ConsentId"
+                "value": "Data.ConsentId"
             },
             "method": "post",
             "schemaCheck": true
@@ -327,7 +327,7 @@
             ],
             "keepContextOnSuccess": {
                 "name": "OB-301-DOP-101000-DomesticScheduledPaymentId",
-                "value": "json.Data.DomesticScheduledPaymentId"
+                "value": "Data.DomesticScheduledPaymentId"
             },
             "method": "post",
             "schemaCheck": true
@@ -371,7 +371,7 @@
             ],
             "keepContextOnSuccess": {
                 "name": "OB-301-DOP-101600-ConsentId",
-                "value": "json.Data.ConsentId"
+                "value": "Data.ConsentId"
             },
             "method": "post",
             "schemaCheck": true
@@ -415,7 +415,7 @@
             ],
             "keepContextOnSuccess": {
                 "name": "OB-301-DOP-101800-InternationalPaymentId",
-                "value": "json.Data.InternationalPaymentId"
+                "value": "Data.InternationalPaymentId"
             },
             "method": "post",
             "schemaCheck": true
@@ -459,7 +459,7 @@
             ],
             "keepContextOnSuccess": {
                 "name": "OB-301-DOP-102000-ConsentId",
-                "value": "json.Data.ConsentId"
+                "value": "Data.ConsentId"
             },
             "method": "post",
             "schemaCheck": true
@@ -503,7 +503,7 @@
             ],
             "keepContextOnSuccess": {
                 "name": "OB-301-DOP-102200-InternationalPaymentId",
-                "value": "json.Data.InternationalPaymentId"
+                "value": "Data.InternationalPaymentId"
             },
             "method": "post",
             "schemaCheck": true
@@ -547,7 +547,7 @@
             ],
             "keepContextOnSuccess": {
                 "name": "OB-301-DOP-102400-ConsentId",
-                "value": "json.Data.ConsentId"
+                "value": "Data.ConsentId"
             },
             "method": "post",
             "schemaCheck": true
@@ -591,7 +591,7 @@
             ],
             "keepContextOnSuccess": {
                 "name": "OB-301-DOP-102600-InternationalStandingOrderPaymentId",
-                "value": "json.Data.InternationalStandingOrderPaymentId"
+                "value": "Data.InternationalStandingOrderPaymentId"
             },
             "method": "post",
             "schemaCheck": true

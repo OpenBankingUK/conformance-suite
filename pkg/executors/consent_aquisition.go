@@ -15,11 +15,9 @@ import (
 
 var consentChannelTimeout = 30
 
-// InitiateConsentAcquisition -
-func InitiateConsentAcquisition(definition RunDefinition, ctx *model.Context, runTests *generation.TestCasesRun) (TokenConsentIDs, map[string]string, error) {
-
+// GetPsuConsent -
+func GetPsuConsent(definition RunDefinition, ctx *model.Context, runTests *generation.TestCasesRun) (TokenConsentIDs, map[string]string, error) {
 	consentRequirements := runTests.SpecConsentRequirements
-	logrus.Tracef("consentRequirements:\n%#v\n", consentRequirements)
 
 	for _, spec := range runTests.TestCases {
 		specType, err := manifest.GetSpecType(spec.Specification.Name)
@@ -28,23 +26,24 @@ func InitiateConsentAcquisition(definition RunDefinition, ctx *model.Context, ru
 		}
 		switch specType {
 		case "accounts":
-			return InitiateAccountConsentAcquisition(consentRequirements, definition, ctx, spec) // accounts consent handling
+			return getAccountConsents(consentRequirements, definition, ctx, spec)
 		case "payments":
-			logrus.Fatal("Payment Token Acquisition not implemented yet")
+			consentIds, err := getPaymentConsents(spec, definition, ctx)
+			return consentIds, nil, err
 		default:
-			logrus.Fatalf("Invalid spec type: `%s`", specType)
+			logrus.Fatalf("Support for spec (%s) %s not implemented yet", specType, spec.Specification.Name)
 		}
 	}
-	logrus.Warnf("No Consent Squistion Performed\n")
+	logrus.Warnf("No Consent Acquistion Performed\n")
 	return nil, nil, errors.New("No Consent Acquisition performed")
 }
 
-// InitiateAccountConsentAcquisition - get required tokens
-func InitiateAccountConsentAcquisition(consentRequirements []model.SpecConsentRequirements, definition RunDefinition, ctx *model.Context, spec generation.SpecificationTestCases) (TokenConsentIDs, map[string]string, error) {
+// getAccountConsents - get required tokens
+func getAccountConsents(consentRequirements []model.SpecConsentRequirements, definition RunDefinition, ctx *model.Context, spec generation.SpecificationTestCases) (TokenConsentIDs, map[string]string, error) {
 
 	consentIDChannel := make(chan TokenConsentIDItem, 100)
-	logger := logrus.StandardLogger().WithField("module", "InitiateAccountConsentAcquisition")
-	logger.Tracef("InitiateAccountConsentAcquistion")
+	logger := logrus.StandardLogger().WithField("module", "getAccountConsents")
+	logger.Tracef("getAccountConsents")
 
 	tokenParameters := make(map[string]string, 0)
 
@@ -71,7 +70,7 @@ func InitiateAccountConsentAcquisition(consentRequirements []model.SpecConsentRe
 	logrus.Trace("<<==========================")
 	dumpJSON(tokenParameters)
 	logrus.Trace("<<==========================")
-	consentItems, err := waitForConsentIDs(consentIDChannel, len(tokenParameters), logger)
+	consentItems, err := waitForConsentIDs(consentIDChannel, len(tokenParameters))
 	for _, v := range consentItems {
 		logger.Debugf("Setting Token: %s, ConsentId: %s", v.TokenName, v.ConsentID)
 		ctx.PutString(v.TokenName, v.ConsentID)
@@ -88,24 +87,24 @@ func getTokenParametersFromRequiredTokens(tokens []manifest.RequiredTokens) map[
 	return tokenParameters
 }
 
-func waitForConsentIDs(consentIDChannel chan TokenConsentIDItem, consentIDsRequired int, logger *logrus.Entry) (TokenConsentIDs, error) {
+func waitForConsentIDs(consentIDChannel chan TokenConsentIDItem, consentIDsRequired int) (TokenConsentIDs, error) {
 	consentItems := TokenConsentIDs{}
 	consentIDsReceived := 0
-	logger.Debugf("waiting for consentids items ...")
+	logrus.Debugf("waiting for consentids items ...")
 	for {
 		select {
 		case item := <-consentIDChannel:
-			logger.Debugf("received consent channel item item %#v", item)
+			logrus.Debugf("received consent channel item item %#v", item)
 			consentIDsReceived++
 			consentItems = append(consentItems, item)
 			errs := errors.New("")
 			if consentIDsReceived == consentIDsRequired {
-				logger.Infof("Got %d required tokens - progressing..", consentIDsReceived)
+				logrus.Infof("Got %d required tokens - progressing..", consentIDsReceived)
 				for _, v := range consentItems {
 					if len(v.Error) > 0 {
 						errs = errors.WithMessage(errs, v.Error)
 					} else {
-						logger.Infof("token: %s, consentid: %s", v.TokenName, v.ConsentID)
+						logrus.Infof("token: %s, consentid: %s", v.TokenName, v.ConsentID)
 					}
 				}
 				if len(errs.Error()) > 0 {
@@ -114,7 +113,7 @@ func waitForConsentIDs(consentIDChannel chan TokenConsentIDItem, consentIDsRequi
 				return consentItems, nil
 			}
 		case <-time.After(time.Duration(consentChannelTimeout) * time.Second):
-			logger.Warnf("consent channel timeout after %d seconds", consentChannelTimeout)
+			logrus.Warnf("consent channel timeout after %d seconds", consentChannelTimeout)
 			return consentItems, errors.New("ConsentChannel Timeout")
 		}
 	}

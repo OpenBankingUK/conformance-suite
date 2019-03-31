@@ -18,15 +18,16 @@ type TestCasePermission struct {
 
 // RequiredTokens -
 type RequiredTokens struct {
-	Name         string   `json:"name,omitempty"`
-	Token        string   `json:"token,omitempty"`
-	IDs          []string `json:"ids,omitempty"`
-	Perms        []string `json:"perms,omitempty"`
-	Permsx       []string `json:"permsx,omitempty"`
-	AccessToken  string
-	ConsentURL   string
-	ConsentID    string
-	ConsentParam string
+	Name            string   `json:"name,omitempty"`
+	Token           string   `json:"token,omitempty"`
+	IDs             []string `json:"ids,omitempty"`
+	Perms           []string `json:"perms,omitempty"`
+	Permsx          []string `json:"permsx,omitempty"`
+	AccessToken     string
+	ConsentURL      string
+	ConsentID       string
+	ConsentParam    string
+	ConsentProvider string
 }
 
 // TokenStore eats tokens
@@ -36,6 +37,7 @@ type TokenStore struct {
 }
 
 // GetSpecType -
+// TODO - check that this mapping is reasonable
 func GetSpecType(s string) (string, error) {
 	spec := strings.TrimSpace(s)
 	switch spec {
@@ -63,11 +65,27 @@ func GetRequiredTokensFromTests(tcs []model.TestCase, spec string) (rt []Require
 		}
 		rt, err = getRequiredTokens(tcp)
 	case "payments":
-		rt, err = getPaymentPermissions(tcs)
+		rt, err = GetPaymentPermissions(tcs)
 	}
 	return rt, err
 }
 
+// GetPaymentPermissions - and annotate test cases with token ids
+func GetPaymentPermissions(tests []model.TestCase) ([]RequiredTokens, error) {
+	requiredTokens, err := getPaymentPermissions(tests)
+	if err != nil {
+		return nil, err
+	}
+	requiredTokens, err = updateTokensFromConsent(requiredTokens, tests)
+	if err != nil {
+		return nil, err
+	}
+	updateTestAuthenticationFromToken(tests, requiredTokens)
+
+	return requiredTokens, nil
+}
+
+// looks for post consent Tests that need to be run to get consentIds
 func getPaymentPermissions(tcs []model.TestCase) ([]RequiredTokens, error) {
 	rt := make([]RequiredTokens, 0)
 	ts := TokenStore{}
@@ -81,10 +99,8 @@ func getPaymentPermissions(tcs []model.TestCase) ([]RequiredTokens, error) {
 		}
 		if consentRequired == "true" {
 			// get consentid
-			consentID := getConsentIDFromMatches(tc)
-
-			rx := RequiredTokens{Name: ts.GetNextTokenName("payment"), ConsentParam: consentID}
-			rx.IDs = append(rx.IDs, tc.ID)
+			consentID := GetConsentIDFromMatches(tc)
+			rx := RequiredTokens{Name: ts.GetNextTokenName("payment"), ConsentParam: consentID, ConsentProvider: tc.ID}
 			rt = append(rt, rx)
 		}
 	}
@@ -92,6 +108,7 @@ func getPaymentPermissions(tcs []model.TestCase) ([]RequiredTokens, error) {
 	return rt, nil
 }
 
+// scans all payment test to make test against consent provider
 func updateTokensFromConsent(rts []RequiredTokens, tcs []model.TestCase) ([]RequiredTokens, error) {
 	for rtidx, rt := range rts {
 		for _, test := range tcs {
@@ -108,10 +125,11 @@ func updateTokensFromConsent(rts []RequiredTokens, tcs []model.TestCase) ([]Requ
 	return rts, nil
 }
 
-func getConsentIDFromMatches(tc model.TestCase) string {
+// GetConsentIDFromMatches -
+func GetConsentIDFromMatches(tc model.TestCase) string {
 	matches := tc.Expect.ContextPut.Matches
 	for _, m := range matches {
-		if m.Value == "json.Data.ConsentId" {
+		if m.JSON == "Data.ConsentId" {
 			return m.ContextName
 		}
 	}

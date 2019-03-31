@@ -31,25 +31,17 @@ func TestGenerateTestCases(t *testing.T) {
 	// }
 }
 
-func TestPaymentPermissionsCases(t *testing.T) {
-	tests, err := GenerateTestCases("Payment Initiation API Specification", "http://mybaseurl", &model.Context{})
-	assert.Nil(t, err)
+func TestPaymentPermissions(t *testing.T) {
+	tests, err := GenerateTestCases("Payment Initiation API", "http://mybaseurl", &model.Context{})
 	fmt.Printf("we have %d tests\n", len(tests))
-	requiredTokens, err := getPaymentPermissions(tests)
-	requiredTokens, err = updateTokensFromConsent(requiredTokens, tests)
+	requiredTokens, err := GetPaymentPermissions(tests)
 	assert.Nil(t, err)
+
 	for _, v := range requiredTokens {
-		fmt.Printf("perms: %s\n", v.IDs)
+		fmt.Printf("%#v\n", v)
 	}
-	updateTestAuthenticationFromToken(tests, requiredTokens)
 
 	fmt.Println("where are my tests?")
-	// for x, v := range tests {
-	// 	if x > 15 {
-	// 		break
-	// 	}
-	// 	//dumpJSON(v)
-	// }
 }
 
 func TestDataReferencesAndDump(t *testing.T) {

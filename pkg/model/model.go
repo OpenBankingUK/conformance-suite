@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 	"regexp"
 	"strings"
@@ -423,4 +424,18 @@ func (e *Expect) Clone() Expect {
 		ex.Matches = append(ex.Matches, m)
 	}
 	return ex
+}
+
+// LoadTestCaseFromJSONFile a single testcase from a json file
+func LoadTestCaseFromJSONFile(filename string) (TestCase, error) {
+	bytes, err := ioutil.ReadFile(filename)
+	if err != nil {
+		return TestCase{}, err
+	}
+	var m TestCase
+	err = json.Unmarshal(bytes, &m)
+	if err != nil {
+		return TestCase{}, err
+	}
+	return m, nil
 }

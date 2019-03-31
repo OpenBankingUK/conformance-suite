@@ -143,6 +143,7 @@ func (r *Reference) getValue() string {
 	return r.BodyData
 }
 
+// sets testCase Bearer Header to match requested consent token
 func updateTestAuthenticationFromToken(tcs []model.TestCase, rts []RequiredTokens) []model.TestCase {
 	for _, rt := range rts {
 		for x, tc := range tcs {
@@ -222,7 +223,7 @@ func processPutContext(s *Script) []model.Match {
 	if !exists {
 		return m
 	}
-	mx := model.Match{ContextName: name, Value: value}
+	mx := model.Match{ContextName: name, JSON: value}
 	m = append(m, mx)
 	return m
 
