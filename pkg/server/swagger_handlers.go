@@ -3,13 +3,13 @@ package server
 import (
 	"fmt"
 	"net/http"
+	"net/url"
 
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
 	openapi_middleware "github.com/go-openapi/runtime/middleware"
 	"github.com/labstack/echo"
 	"github.com/sirupsen/logrus"
 
-	"net/url"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
 )
 
 // swaggerHandlers - maps paths (e.g., /swagger/account-transaction-v3.0/v3.0/docs) below to handlers.

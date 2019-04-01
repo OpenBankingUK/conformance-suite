@@ -20,7 +20,14 @@
         </div>
         <div class="panel-body">
           <p>Upload a signed and compatible report to view the results or to rerun.</p>
-          <b-button class="mb-4">Unavailable</b-button>
+          <div class="d-flex flex-row justify-content-around">
+            <b-btn
+              variant="primary"
+              @click="onReview()">Review</b-btn>
+            <b-btn
+              variant="success"
+              @click="onRerun()">Rerun</b-btn>
+          </div>
         </div>
       </div>
     </div>
@@ -97,6 +104,12 @@ export default {
         const updateError = `Failed to check for updates: ${err}.`;
         this.setErrors([updateError]);
       }
+    },
+    async onReview() {
+      this.$router.push('/wizard/import/review');
+    },
+    async onRerun() {
+      this.$router.push('/wizard/import/rerun');
     },
   },
   beforeRouteLeave(to, from, next) {

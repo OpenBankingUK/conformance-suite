@@ -37,16 +37,20 @@ func NewServer(journey Journey, logger *logrus.Entry, version version.Checker) *
 		Output: logger.Writer(),
 	}))
 	server.Use(middleware.Recover())
+	// TODO(mbana): figure out if this will break the downloading the report.zip file from the `/api/export` route.
+	// https://github.com/labstack/echo/issues/873. If it doesn't break it, enable Gzip compression.
+	// Another approach is to skip `/api/export` route using a skipper, see https://github.com/labstack/echo/issues/964.
 	server.Use(middleware.GzipWithConfig(middleware.GzipConfig{
 		// level between 1-9
 		// where 1 indicates the fastest compression (less compression), and
 		// 9 indicates the slowest compression method (best compression)
-		Level: 5,
+		Level:   5,
+		Skipper: skipperGzip,
 	}))
 
 	// serve Vue.js site
 	server.Use(middleware.StaticWithConfig(middleware.StaticConfig{
-		Skipper: skipper,
+		Skipper: skipperSwagger,
 		Root:    "web/dist",
 		Index:   "index.html",
 		HTML5:   true,
@@ -69,6 +73,10 @@ func registerRoutes(journey Journey, server *Server, logger *logrus.Entry, versi
 
 	api.GET("/ping", func(c echo.Context) error { return nil })
 
+	importHandlers := newImportHandlers(journey, logger)
+	api.POST("/import/review", importHandlers.postImportReview)
+	api.POST("/import/rerun", importHandlers.postImportRerun)
+
 	configHandlers := newConfigHandlers(journey, logger)
 	// endpoint to post global configuration
 	api.POST("/config/global", configHandlers.configGlobalPostHandler)
@@ -87,10 +95,6 @@ func registerRoutes(journey Journey, server *Server, logger *logrus.Entry, versi
 	api.GET("/run/ws", runHandlers.listenResultWebSocket)
 	api.DELETE("/run", runHandlers.stopRunHandler)
 
-	// endpoints for utility function such as version/update checking.
-	utilityEndpoints := newUtilityEndpoints(version)
-	api.GET("/version", utilityEndpoints.versionCheck)
-
 	// endpoints for validating and storing the token retrieved in `/conformancesuite/callback`
 	// `pkg/server/assets/main.js` calls into this endpoint.
 	redirectHandlers := newRedirectHandlers(journey, logger)
@@ -100,14 +104,36 @@ func registerRoutes(journey Journey, server *Server, logger *logrus.Entry, versi
 
 	exportHandlers := newExportHandlers(journey, logger)
 	api.POST("/export", exportHandlers.postExport)
+
+	// endpoints for utility function such as version/update checking.
+	utilityEndpoints := newUtilityEndpoints(version)
+	api.GET("/version", utilityEndpoints.versionCheck)
 }
 
-// skipper - ensures that all requests not prefixed with any string in `pathsToSkip` is skipped.
+// skipperSwagger - ensures that all requests not prefixed with any string in `pathsToSkip` is skipped.
 // E.g., ensure that `/api/validation-runs` or `/swagger/docs` is not handled by the static middleware.
-func skipper(c echo.Context) bool {
+func skipperSwagger(c echo.Context) bool {
 	pathsToSkip := []string{
 		"/api",
 		"/swagger",
+	}
+
+	path := c.Path()
+	for _, pathToSkip := range pathsToSkip {
+		if strings.HasPrefix(path, pathToSkip) {
+			return true
+		}
+	}
+
+	return false
+}
+
+// skipperGzip - ensures that gzip compression is not turned on for the `/api/export` and `/api/import` paths.
+// I.e., don't run the Gzip middleware for certain paths.
+func skipperGzip(c echo.Context) bool {
+	pathsToSkip := []string{
+		"/api/export",
+		"/api/import",
 	}
 
 	path := c.Path()

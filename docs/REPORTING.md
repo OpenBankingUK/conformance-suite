@@ -31,10 +31,10 @@ TBD
 | expiration     | 0..1       | Date and time when the report should not longer be accepted.   | timestamp              | `2006-01-02T15:04:05Z07:00`            | Formatted accorrding to RFC3339 (<https://tools.ietf.org/html/rfc3339>)       | RFC3339 is derived from ISO 8601 (<https://en.wikipedia.org/wiki/ISO_8601>) |
 | version        | 1..1       | The current version of the report model used.                  | string                 |                                        |                                                                               |                                                                             |
 | status         | 1..1       | A status describing overall condition of the report.           | string(8)              | `Complete`                             | One of [`Pending`, `Complete`, `Error`]                                       |                                                                             |
-| signatureChain | 0..1       | TBD                                                            | `ReportSignatureChain` |                                        |                                                                               |                                                                             |
-| certifiedBy    | 1..1       | The certifier of the report.                                   | `ReportCertifiedBy`    |                                        |                                                                               |                                                                             |
+| signatureChain | 0..1       | TBD                                                            | `SignatureChain`       |                                        |                                                                               |                                                                             |
+| certifiedBy    | 1..1       | The certifier of the report.                                   | `CertifiedBy`          |                                        |                                                                               |                                                                             |
 
-### `ReportCertifiedBy`
+### `CertifiedBy`
 
 | Name         | Occurrence | Description                     | Class      | Value(s)                         |
 |--------------|------------|---------------------------------|------------|----------------------------------|
@@ -43,8 +43,7 @@ TBD
 | authorisedBy | 1..1       | Full name of the authoriser.    | string(60) |                                  |
 | jobTitle     | 1..1       | Job title of the authoriser.    | string(60) |                                  |
 
-
-### `ReportSignatureChain`
+### `SignatureChain`
 
 TDB
 

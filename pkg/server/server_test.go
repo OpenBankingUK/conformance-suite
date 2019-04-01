@@ -79,7 +79,7 @@ func TestServerConformanceSuiteCallback(t *testing.T) {
 	require.Equal(bodyExpected, bodyActual)
 }
 
-func TestServerSkipper(t *testing.T) {
+func TestServerSkipperSwagger(t *testing.T) {
 	require := test.NewRequire(t)
 
 	echo := echo.New()
@@ -98,8 +98,35 @@ func TestServerSkipper(t *testing.T) {
 		"/swagger":                   true,
 	}
 	for path, shouldSkip := range paths {
-		context.SetPath(path)         // set path on the Context
-		isSkipped := skipper(context) // check if the `skipper` skips the path
+		context.SetPath(path)                // set path on the Context
+		isSkipped := skipperSwagger(context) // check if the `skipper` skips the path
+		require.Equal(shouldSkip, isSkipped)
+	}
+}
+
+func TestServerSkipperGzip(t *testing.T) {
+	require := test.NewRequire(t)
+
+	echo := echo.New()
+	context := echo.AcquireContext()
+	defer func() {
+		echo.ReleaseContext(context)
+	}()
+
+	paths := map[string]bool{
+		"/index.html":                false,
+		"/index.js":                  false,
+		"/conformancesuite/callback": false,
+		"/ipa":                       false,
+		"/reggaws":                   false,
+		"/api":                       false,
+		"/swagger":                   false,
+		"/api/export":                true,
+		"/api/import":                true,
+	}
+	for path, shouldSkip := range paths {
+		context.SetPath(path)             // set path on the Context
+		isSkipped := skipperGzip(context) // check if the `skipper` skips the path
 		require.Equal(shouldSkip, isSkipped)
 	}
 }
