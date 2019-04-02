@@ -52,37 +52,45 @@
         "schemaCheck": false
       },
       {
+        "description": "PISP Domestic Payment funds-confirmation for none authorised status consent status",
+        "id": "OB-301-DOP-100200",
+        "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937984109/Domestic+Payments+v3.1#DomesticPaymentsv3.1-GET/domestic-payment-consents/{ConsentId}/funds-confirmation",
+        "detail": "Check PISP Domestic Payment funds-confirmation is not Authorised, responds with a 400 (Bad Request) and a UK.OBIE.Resource.InvalidConsentStatus error code.",
+        "parameters": {
+          "tokenRequestScope": "payments",
+          "consentId": "$OB-301-DOP-100100-ConsentId"
+        },
+        "headers": {
+          "Content-Type": "application/json; charset=utf-8"
+        },
+        "uri": "/domestic-payment-consents/$consentId/funds-confirmation",
+        "uriImplementation": "mandatory",
+        "resource": "DomesticPayment",
+        "asserts": [
+          "OB3GLOAssertOn400",
+          "OB3DOPAssertInvalidConsentStatus"
+        ],
+        "method": "get",
+        "schemaCheck": false
+      },
+      {
         "description": "Domestic Payment consents succeeds with minimal data set with additional schema checks.",
         "id": "OB-301-DOP-100300",
         "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937984109/Domestic+Payments+v3.1#DomesticPaymentsv3.1-POST/domestic-payment-consents",
         "detail": "Check that the resource succeeds posting a domestic payment consents with a minimal data set and checks additional schema.",
         "parameters": {
           "tokenRequestScope": "payments",
-          "requestConsent": "true",
+          "postData": "$minimalDomesticPaymentConsent",
           "thisSchemeName": "$schemeName",
-          "thisIdentification": "$identification"
+          "thisIdentification": "$identification",
+          "thisInstructionIdentification": "OB-301-DOP-100300",
+          "thisCurrency" :"GBP",
+          "requestConsent": "true"
         },
         "headers": {
           "Content-Type": "application/json; charset=utf-8"
         },
-        "body": {
-          "Data": {
-            "Initiation": {
-              "InstructionIdentification": "OB-301-DOP-100300",
-              "EndToEndIdentification": "100300",
-              "InstructedAmount": {
-                "Amount": "1.00",
-                "Currency": "GBP"
-              },
-              "CreditorAccount": {
-                "SchemeName": "$thisSchemeName",
-                "Identification": "$thisIdentification",
-                "Name": "CF Tool"
-              }
-            }
-          },
-          "Risk": {}
-        },
+        "body": "$postData",
         "uri": "/domestic-payment-consents",
         "uriImplementation": "mandatory",
         "resource": "DomesticPayment",
@@ -154,30 +162,15 @@
           "tokenRequestScope": "payments",
           "consentId": "$OB-301-DOP-100300-ConsentId",
           "thisSchemeName": "$schemeName",
-          "thisIdentification": "$identification"
+          "thisIdentification": "$identification",
+          "thisInstructionIdentification": "OB-301-DOP-100300",
+          "thisCurrency" :"GBP",
+          "postData": "$minimalDomesticPaymentPost"
         },
         "headers": {
           "Content-Type": "application/json; charset=utf-8"
         },
-        "body": {
-          "Data": {
-            "ConsentId": "$consentId",
-            "Initiation": {
-              "InstructionIdentification": "OB-301-DOP-100300",
-              "EndToEndIdentification": "100300",
-              "InstructedAmount": {
-                "Amount": "1.00",
-                "Currency": "GBP"
-              },
-              "CreditorAccount": {
-                "SchemeName": "$thisSchemeName",
-                "Identification": "$thisIdentification",
-                "Name": "CF Tool"
-              }
-            }
-          },
-          "Risk": {}
-        },
+        "body": "$postData",
         "uri": "/domestic-payments",
         "uriImplementation": "mandatory",
         "resource": "DomesticPayment",
