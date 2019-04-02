@@ -301,6 +301,7 @@ type JourneyConfig struct {
 	issuer                  string
 	redirectURL             string
 	resourceIDs             model.ResourceIDs
+	apiVersion              string
 }
 
 func (wj *journey) SetConfig(config JourneyConfig) error {
@@ -331,6 +332,7 @@ const ctxConstAuthorisationEndpoint = "authorisation_endpoint"
 const ctxConstBasicAuthentication = "basic_authentication"
 const ctxConstResourceBaseURL = "resource_server"
 const ctxConstIssuer = "issuer"
+const ctxAPIVersion = "api-version"
 
 func (wj *journey) configParametersToJourneyContext() error {
 	wj.context.PutString(ctxConstClientID, wj.config.clientID)
@@ -341,6 +343,8 @@ func (wj *journey) configParametersToJourneyContext() error {
 	wj.context.PutString(ctxConstRedirectURL, wj.config.redirectURL)
 	wj.context.PutString(ctxConstAuthorisationEndpoint, wj.config.authorizationEndpoint)
 	wj.context.PutString(ctxConstResourceBaseURL, wj.config.resourceBaseURL)
+	wj.config.apiVersion = "v3.1"
+	wj.context.PutString(ctxAPIVersion, wj.config.apiVersion)
 
 	basicauth, err := authentication.CalculateClientSecretBasicToken(wj.config.clientID, wj.config.clientSecret)
 	if err != nil {
