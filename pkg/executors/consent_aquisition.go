@@ -16,19 +16,22 @@ import (
 var consentChannelTimeout = 30
 
 // GetPsuConsent -
-func GetPsuConsent(definition RunDefinition, ctx *model.Context, runTests *generation.TestCasesRun) (TokenConsentIDs, map[string]string, error) {
+func GetPsuConsent(definition RunDefinition, ctx *model.Context, runTests *generation.TestCasesRun, permissions map[string][]manifest.RequiredTokens) (TokenConsentIDs, map[string]string, error) {
 	consentRequirements := runTests.SpecConsentRequirements
 
+	logrus.Debugf("running with %#v\n", permissions)
 	for _, spec := range runTests.TestCases {
 		specType, err := manifest.GetSpecType(spec.Specification.Name)
 		if err != nil {
 			logrus.Warnf("cannot get spec type fo name %s\n", spec.Specification.Name)
 		}
+		logrus.Tracef("Getting PSU Consent for api type: %s\n", specType)
+
 		switch specType {
 		case "accounts":
-			return getAccountConsents(consentRequirements, definition, ctx, spec)
+			return getAccountConsents(consentRequirements, definition, permissions["accounts"], ctx, spec)
 		case "payments": //TODO: Handle multipe spec returns
-			consentIds, err := getPaymentConsents(spec, definition, ctx)
+			consentIds, err := getPaymentConsents(spec, definition, permissions["payments"], ctx)
 			return consentIds, nil, err
 		default:
 			logrus.Fatalf("Support for spec (%s) %s not implemented yet", specType, spec.Specification.Name)
@@ -39,7 +42,7 @@ func GetPsuConsent(definition RunDefinition, ctx *model.Context, runTests *gener
 }
 
 // getAccountConsents - get required tokens
-func getAccountConsents(consentRequirements []model.SpecConsentRequirements, definition RunDefinition, ctx *model.Context,
+func getAccountConsents(consentRequirements []model.SpecConsentRequirements, definition RunDefinition, permissions []manifest.RequiredTokens, ctx *model.Context,
 	spec generation.SpecificationTestCases) (TokenConsentIDs, map[string]string, error) {
 
 	consentIDChannel := make(chan TokenConsentIDItem, 100)
@@ -48,7 +51,9 @@ func getAccountConsents(consentRequirements []model.SpecConsentRequirements, def
 
 	tokenParameters := make(map[string]string, 0)
 
-	requiredTokens, err := manifest.GetRequiredTokensFromTests(spec.TestCases, "accounts")
+	//requiredTokens, err := manifest.GetRequiredTokensFromTests(spec.TestCases, "accounts")
+	requiredTokens := permissions
+	logrus.Tracef("we require %d tokens for `accounts`", len(requiredTokens))
 	logrus.Tracef("required tokens %#v\n", requiredTokens)
 	for _, rt := range requiredTokens {
 		tokenParameters[rt.Name] = buildPermissionString(rt.Perms)

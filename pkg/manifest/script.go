@@ -64,6 +64,38 @@ type PisData struct {
 	MADebtorAccount map[string]string `json:"MADebtorAccount,omitempty"`
 }
 
+// ConsentJobs Holds jobs required only to provide consent so should not show on the ui
+type ConsentJobs struct {
+	jobs map[string]model.TestCase
+}
+
+var cj *ConsentJobs
+
+// GetConsentJobs - makes a structure to hold a list of payment consent jobs than need to be run before the main tests
+// and so aren't included in the main test list
+func GetConsentJobs() *ConsentJobs {
+	if cj == nil {
+		jobs := make(map[string]model.TestCase)
+		cj = &ConsentJobs{jobs: jobs}
+		return cj
+	}
+	return cj
+}
+
+// Add a consent Job
+func (cj *ConsentJobs) Add(tc model.TestCase) {
+	cj.jobs[tc.ID] = tc
+}
+
+// Get a consentJob
+func (cj *ConsentJobs) Get(testid string) (model.TestCase, bool) {
+	value, exist := cj.jobs[testid]
+	return value, exist
+
+}
+
+// add/get ....
+
 // GenerateTestCases examines a manifest file, asserts file and resources definition, then builds the associated test cases
 func GenerateTestCases(spec string, baseurl string, ctx *model.Context) ([]model.TestCase, error) {
 	specType, err := GetSpecType(spec)
@@ -71,7 +103,6 @@ func GenerateTestCases(spec string, baseurl string, ctx *model.Context) ([]model
 		return nil, errors.New("unknown specification " + spec)
 	}
 	logrus.Debug("GenerateManifestTestCases for spec type:" + specType)
-	fmt.Println("GenerateManifestTestCases for spec type:" + specType)
 	scripts, refs, resources, err := loadGenerationResources(specType)
 	if err != nil {
 		return nil, err
@@ -79,7 +110,7 @@ func GenerateTestCases(spec string, baseurl string, ctx *model.Context) ([]model
 
 	// accumulate context data from accountsData ...
 	accountCtx := model.Context{}
-	for k, v := range resources.Ais {
+	for k, v := range resources.Ais { //TODO:Get Account info from config file
 		accountCtx.PutString(k, v)
 	}
 
@@ -143,7 +174,7 @@ func (r *Reference) getValue() string {
 	return r.BodyData
 }
 
-// sets testCase Bearer Header to match requested consent token
+// sets testCase Bearer Header to match requested consent token - for non-consent tests
 func updateTestAuthenticationFromToken(tcs []model.TestCase, rts []RequiredTokens) []model.TestCase {
 	for _, rt := range rts {
 		for x, tc := range tcs {
@@ -171,6 +202,7 @@ func testCaseBuilder(s Script, refs map[string]Reference, ctx *model.Context, co
 	//TODO: make these more configurable - header also get set in buildInput Section
 	tc.Input.Headers["x-fapi-financial-id"] = "$x-fapi-financial-id"
 	tc.Input.Headers["x-fapi-interaction-id"] = "b4405450-febe-11e8-80a5-0fcebb1574e1"
+	tc.Input.Headers["x-fcs-testcase-id"] = tc.ID
 	buildInputSection(s, &tc.Input)
 
 	tc.Purpose = s.Detail

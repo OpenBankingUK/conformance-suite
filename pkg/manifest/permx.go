@@ -90,8 +90,8 @@ func getPaymentPermissions(tcs []model.TestCase) ([]RequiredTokens, error) {
 	rt := make([]RequiredTokens, 0)
 	ts := TokenStore{}
 	ts.store = rt
-
-	for _, tc := range tcs {
+	consentJobs := GetConsentJobs()
+	for k, tc := range tcs {
 		ctx := tc.Context
 		consentRequired, found := ctx.GetString("requestConsent")
 		if found != nil {
@@ -102,6 +102,10 @@ func getPaymentPermissions(tcs []model.TestCase) ([]RequiredTokens, error) {
 			consentID := GetConsentIDFromMatches(tc)
 			rx := RequiredTokens{Name: ts.GetNextTokenName("payment"), ConsentParam: consentID, ConsentProvider: tc.ID}
 			rt = append(rt, rx)
+			logrus.Tracef("adding %s to consentJobs\n", tc.ID)
+			consentJobs.Add(tc)
+		} else {
+			tcs[k].InjectBearerToken("$client_access_token")
 		}
 	}
 
