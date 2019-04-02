@@ -27,7 +27,7 @@ var (
 //
 // Example value:
 // {
-//     "SchemeName": "SortCodeAccountNumber",
+//     "SchemeName": "UK.OBIE.SortCodeAccountNumber",
 //     "Identification": "20202010981789",
 //     "Name": "Dr Foo"
 // }
