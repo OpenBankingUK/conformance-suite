@@ -52,41 +52,37 @@
         "schemaCheck": false
       },
       {
-        "description": "PISP Domestic Payment funds-confirmation for none authorised status consent status",
-        "id": "OB-301-DOP-100200",
-        "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937984109/Domestic+Payments+v3.1#DomesticPaymentsv3.1-GET/domestic-payment-consents/{ConsentId}/funds-confirmation",
-        "detail": "Check PISP Domestic Payment funds-confirmation is not Authorised, responds with a 400 (Bad Request) and a UK.OBIE.Resource.InvalidConsentStatus error code.",
-        "parameters": {
-          "tokenRequestScope": "payments",
-          "consentId": "$OB-301-DOP-100100-ConsentId"
-        },
-        "headers": {
-          "Content-Type": "application/json; charset=utf-8"
-        },
-        "uri": "/domestic-payment-consents/$consentId/funds-confirmation",
-        "uriImplementation": "mandatory",
-        "resource": "DomesticPayment",
-        "asserts": [
-          "OB3GLOAssertOn400",
-          "OB3DOPAssertInvalidConsentStatus"
-        ],
-        "method": "get",
-        "schemaCheck": false
-      },
-      {
         "description": "Domestic Payment consents succeeds with minimal data set with additional schema checks.",
         "id": "OB-301-DOP-100300",
         "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937984109/Domestic+Payments+v3.1#DomesticPaymentsv3.1-POST/domestic-payment-consents",
         "detail": "Check that the resource succeeds posting a domestic payment consents with a minimal data set and checks additional schema.",
         "parameters": {
           "tokenRequestScope": "payments",
-          "postData": "$minimalDomesticPaymentConsent",
-          "requestConsent": "true"
+          "requestConsent": "true",
+          "thisSchemeName": "$schemeName",
+          "thisIdentification": "$identification"
         },
         "headers": {
           "Content-Type": "application/json; charset=utf-8"
         },
-        "body": "$postData",
+        "body": {
+          "Data": {
+            "Initiation": {
+              "InstructionIdentification": "OB-301-DOP-100300",
+              "EndToEndIdentification": "100300",
+              "InstructedAmount": {
+                "Amount": "1.00",
+                "Currency": "GBP"
+              },
+              "CreditorAccount": {
+                "SchemeName": "$thisSchemeName",
+                "Identification": "$thisIdentification",
+                "Name": "CF Tool"
+              }
+            }
+          },
+          "Risk": {}
+        },
         "uri": "/domestic-payment-consents",
         "uriImplementation": "mandatory",
         "resource": "DomesticPayment",
@@ -156,12 +152,32 @@
         "detail": "Check that once the domestic-payment-consent has been authorised by the PSU, the PISP can proceed to submitting the domestic-payment for processing.",
         "parameters": {
           "tokenRequestScope": "payments",
-          "consentId": "$OB-301-DOP-100300-ConsentId"
+          "consentId": "$OB-301-DOP-100300-ConsentId",
+          "thisSchemeName": "$schemeName",
+          "thisIdentification": "$identification"
         },
         "headers": {
           "Content-Type": "application/json; charset=utf-8"
         },
-        "body": "$postData",
+        "body": {
+          "Data": {
+            "ConsentId": "$consentId",
+            "Initiation": {
+              "InstructionIdentification": "OB-301-DOP-100300",
+              "EndToEndIdentification": "100300",
+              "InstructedAmount": {
+                "Amount": "1.00",
+                "Currency": "GBP"
+              },
+              "CreditorAccount": {
+                "SchemeName": "$thisSchemeName",
+                "Identification": "$thisIdentification",
+                "Name": "CF Tool"
+              }
+            }
+          },
+          "Risk": {}
+        },
         "uri": "/domestic-payments",
         "uriImplementation": "mandatory",
         "resource": "DomesticPayment",
