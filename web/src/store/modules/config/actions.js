@@ -107,6 +107,7 @@ export default {
         'issuer',
         'redirect_url',
         'resource_ids',
+        'creditor_account',
       ];
       const newConfig = _.pick(merged, validKeys);
       commit(types.SET_CONFIGURATION, newConfig);

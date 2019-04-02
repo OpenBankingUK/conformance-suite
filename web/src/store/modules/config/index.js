@@ -32,6 +32,9 @@ export const mutationTypes = {
   REMOVE_RESOURCE_ACCOUNT_ID: 'REMOVE_RESOURCE_ACCOUNT_ID',
   ADD_RESOURCE_STATEMENT_ID: 'ADD_RESOURCE_STATEMENT_ID',
   REMOVE_RESOURCE_STATEMENT_ID: 'REMOVE_RESOURCE_STATEMENT_ID',
+  SET_CREDITOR_ACCOUNT_NAME_SCHEME_NAME: 'SET_CREDITOR_ACCOUNT_NAME_SCHEME_NAME',
+  SET_CREDITOR_ACCOUNT_IDENTIFICATION: 'SET_CREDITOR_ACCOUNT_IDENTIFICATION',
+  SET_CREDITOR_ACCOUNT_NAME: 'SET_CREDITOR_ACCOUNT_NAME',
 };
 
 export const mutations = {
@@ -122,6 +125,16 @@ export const mutations = {
   [mutationTypes.REMOVE_RESOURCE_STATEMENT_ID](state, index) {
     state.configuration.resource_ids.statement_ids.splice(index, 1);
   },
+
+  [mutationTypes.SET_CREDITOR_ACCOUNT_NAME_SCHEME_NAME](state, value) {
+    state.configuration.creditor_account.scheme_name = value;
+  },
+  [mutationTypes.SET_CREDITOR_ACCOUNT_IDENTIFICATION](state, value) {
+    state.configuration.creditor_account.identification = value;
+  },
+  [mutationTypes.SET_CREDITOR_ACCOUNT_NAME](state, value) {
+    state.configuration.creditor_account.name = value;
+  },
 };
 
 // Converts problem key to discovery model JSON path.
@@ -200,6 +213,11 @@ export const state = {
     resource_ids: {
       account_ids: [{ account_id: '' }],
       statement_ids: [{ statement_id: '' }],
+    },
+    creditor_account: {
+      scheme_name: '',
+      identification: '',
+      name: '',
     },
   },
 
