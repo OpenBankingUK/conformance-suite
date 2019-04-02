@@ -237,12 +237,17 @@
             label-for="creditor_account_scheme_name"
             label="SchemeName"
             description="OBExternalAccountIdentification4Code">
-            <b-form-input
+            <b-form-select
               id="creditor_account_scheme_name"
               v-model="creditor_account.scheme_name"
-              :state="isNotEmpty(creditor_account.scheme_name)"
-              required
-            />
+              :options="[
+                'UK.OBIE.BBAN',
+                'UK.OBIE.IBAN',
+                'UK.OBIE.PAN' ,
+                'UK.OBIE.Paym',
+                'UK.OBIE.SortCodeAccountNumber'
+              ]"
+              required/>
           </b-form-group>
           <b-form-group
             id="creditor_account_identification_group"
