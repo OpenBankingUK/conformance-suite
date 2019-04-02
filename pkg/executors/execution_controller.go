@@ -179,9 +179,7 @@ func (r *TestCaseRunner) executeComponentTests(comp *model.Component, ruleCtx *m
 			logrus.StandardLogger().Debugln("stop component test run received, aborting runner")
 			return
 		}
-		if testcase.ID == "#compPsuConsent03" {
-			logrus.Tracef("compPsuConsent03:  %#v\n", testcase)
-		}
+
 		testResult := r.executeTest(testcase, ruleCtx, ctxLogger)
 		r.daemonController.AddResult(testResult)
 

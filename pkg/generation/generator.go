@@ -169,12 +169,3 @@ type TestCasesRun struct {
 	TestCases               []SpecificationTestCases        `json:"specCases"`
 	SpecConsentRequirements []model.SpecConsentRequirements `json:"specTokens"`
 }
-
-func generateSpecificationTestCases(log *logrus.Entry, item discovery.ModelDiscoveryItem, nameGenerator names.Generator, ctx *model.Context, headlessTokenAcquisition bool, genConfig GeneratorConfig) (SpecificationTestCases, map[string]string) {
-	testcases, originalEndpoints := GetImplementedTestCases(&item, nameGenerator, ctx, headlessTokenAcquisition, genConfig)
-
-	for _, tc := range testcases {
-		log.Debug(tc.String())
-	}
-	return SpecificationTestCases{Specification: item.APISpecification, TestCases: testcases}, originalEndpoints
-}
