@@ -1,4 +1,4 @@
-import getters from './getters';
+import { getters } from './index';
 
 describe('discoveryTemplates', () => {
   let state;
@@ -55,7 +55,7 @@ describe('discoveryProblems', () => {
 
   it('returns object with `error` property and null `path` for non Key/Error problem string', () => {
     const list = getters.discoveryProblems(state);
-    expect(list[1].path).toEqual(null); // eslint-disable-line
+    expect(list[1].path).toEqual(null);
     expect(list[1].error).toEqual(`Unexpected token { in JSON at position 108`); // eslint-disable-line
   });
 

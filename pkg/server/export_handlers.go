@@ -2,6 +2,7 @@ package server
 
 import (
 	"bytes"
+	"github.com/pkg/errors"
 	"net/http"
 
 	"github.com/labstack/echo"
@@ -44,11 +45,17 @@ func (h exportHandlers) postExport(c echo.Context) error {
 
 	results := h.journey.Results().AllResults()
 	tokens := h.journey.Events().AllAcquiredAccessToken()
+	discovery, err := h.journey.DiscoveryModel()
+	if err != nil {
+		return errors.Wrap(err, "exporting report")
+
+	}
 	exportResults := models.ExportResults{
-		ExportRequest: request,
-		HasPassed:     true,
-		Results:       results,
-		Tokens:        tokens,
+		ExportRequest:  request,
+		HasPassed:      false,
+		Results:        results,
+		Tokens:         tokens,
+		DiscoveryModel: discovery,
 	}
 	logger.WithField("exportResults", exportResults).Info("Exported")
 

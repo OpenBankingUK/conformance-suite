@@ -18,6 +18,7 @@ import (
 
 	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/test"
 	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/version/mocks"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/server/models"
 )
 
 var (
@@ -53,6 +54,10 @@ func TestValidateConfig(t *testing.T) {
 }
 
 func configStubMissing(missingField string) GlobalConfiguration {
+	creditorAccount := models.Payment{
+		SchemeName:     "UK.OBIE.SortCodeAccountNumber",
+		Identification: "20202010981789",
+	}
 	c := &GlobalConfiguration{
 		SigningPublic:           "------------",
 		SigningPrivate:          "------------",
@@ -67,6 +72,7 @@ func configStubMissing(missingField string) GlobalConfiguration {
 		RedirectURL:             "http://server",
 		XFAPIFinancialID:        "123",
 		Issuer:                  "https://modelobankauth2018.o3bank.co.uk:4101",
+		CreditorAccount:         creditorAccount,
 	}
 	v := reflect.ValueOf(c).Elem()
 	f := v.FieldByName(missingField)
@@ -196,6 +202,10 @@ func TestServerConfigGlobalPostValid(t *testing.T) {
 			AccountIDs:   []model.ResourceAccountID{{AccountID: "account-id"}},
 			StatementIDs: []model.ResourceStatementID{{StatementID: "statement-id"}},
 		},
+		CreditorAccount: models.Payment{
+			SchemeName:     "UK.OBIE.SortCodeAccountNumber",
+			Identification: "20202010981789",
+		},
 	}
 	globalConfigurationJSON, err := json.MarshalIndent(globalConfiguration, ``, `  `)
 	require.NoError(err)
@@ -251,6 +261,10 @@ func TestServerConfigGlobalPostInvalid(t *testing.T) {
 						{StatementID: "statement-id"},
 					},
 				},
+				CreditorAccount: models.Payment{
+					SchemeName:     "UK.OBIE.SortCodeAccountNumber",
+					Identification: "20202010981789",
+				},
 			},
 		},
 		{
@@ -279,6 +293,10 @@ func TestServerConfigGlobalPostInvalid(t *testing.T) {
 						{StatementID: "statement-id"},
 					},
 				},
+				CreditorAccount: models.Payment{
+					SchemeName:     "UK.OBIE.SortCodeAccountNumber",
+					Identification: "20202010981789",
+				},
 			},
 		},
 		{
@@ -299,6 +317,10 @@ func TestServerConfigGlobalPostInvalid(t *testing.T) {
 				RedirectURL:             "http://server",
 				XFAPIFinancialID:        "123",
 				Issuer:                  "https://modelobankauth2018.o3bank.co.uk:4101",
+				CreditorAccount: models.Payment{
+					SchemeName:     "UK.OBIE.SortCodeAccountNumber",
+					Identification: "20202010981789",
+				},
 			},
 		},
 		{
@@ -323,6 +345,10 @@ func TestServerConfigGlobalPostInvalid(t *testing.T) {
 					StatementIDs: []model.ResourceStatementID{
 						{StatementID: "statement-id"},
 					},
+				},
+				CreditorAccount: models.Payment{
+					SchemeName:     "UK.OBIE.SortCodeAccountNumber",
+					Identification: "20202010981789",
 				},
 			},
 		},
@@ -353,6 +379,10 @@ func TestServerConfigGlobalPostInvalid(t *testing.T) {
 						{StatementID: "statement-id"},
 					},
 				},
+				CreditorAccount: models.Payment{
+					SchemeName:     "UK.OBIE.SortCodeAccountNumber",
+					Identification: "20202010981789",
+				},
 			},
 		},
 		{
@@ -377,6 +407,10 @@ func TestServerConfigGlobalPostInvalid(t *testing.T) {
 					AccountIDs: []model.ResourceAccountID{
 						{AccountID: "account-id"},
 					},
+				},
+				CreditorAccount: models.Payment{
+					SchemeName:     "UK.OBIE.SortCodeAccountNumber",
+					Identification: "20202010981789",
 				},
 			},
 		},
@@ -406,6 +440,71 @@ func TestServerConfigGlobalPostInvalid(t *testing.T) {
 						{StatementID: ""},
 						{StatementID: "statement-id"},
 					},
+				},
+				CreditorAccount: models.Payment{
+					SchemeName:     "UK.OBIE.SortCodeAccountNumber",
+					Identification: "20202010981789",
+				},
+			},
+		},
+		{
+			name:               `invalid_credit_account_1`,
+			expectedBody:       `{"error":"creditor_account: (identification: cannot be blank; scheme_name: cannot be blank.)."}`,
+			expectedStatusCode: http.StatusBadRequest,
+			config: GlobalConfiguration{
+				SigningPrivate:          privateKey,
+				SigningPublic:           publicKey,
+				TransportPrivate:        "--------------",
+				TransportPublic:         "--------------",
+				ClientID:                "client_id",
+				ClientSecret:            "client_secret",
+				TokenEndpoint:           "token_endpoint",
+				TokenEndpointAuthMethod: "client_secret_basic",
+				AuthorizationEndpoint:   "http://server",
+				ResourceBaseURL:         "https://server",
+				RedirectURL:             "http://server",
+				XFAPIFinancialID:        "123",
+				Issuer:                  "https://modelobankauth2018.o3bank.co.uk:4101",
+				ResourceIDs: model.ResourceIDs{
+					AccountIDs: []model.ResourceAccountID{
+						{AccountID: "account-id"},
+					},
+					StatementIDs: []model.ResourceStatementID{
+						{StatementID: ""},
+						{StatementID: "statement-id"},
+					},
+				},
+			},
+		},
+		{
+			name:               `invalid_credit_account_2`,
+			expectedBody:       `{"error":"creditor_account: (identification: cannot be blank.)."}`,
+			expectedStatusCode: http.StatusBadRequest,
+			config: GlobalConfiguration{
+				SigningPrivate:          privateKey,
+				SigningPublic:           publicKey,
+				TransportPrivate:        "--------------",
+				TransportPublic:         "--------------",
+				ClientID:                "client_id",
+				ClientSecret:            "client_secret",
+				TokenEndpoint:           "token_endpoint",
+				TokenEndpointAuthMethod: "client_secret_basic",
+				AuthorizationEndpoint:   "http://server",
+				ResourceBaseURL:         "https://server",
+				RedirectURL:             "http://server",
+				XFAPIFinancialID:        "123",
+				Issuer:                  "https://modelobankauth2018.o3bank.co.uk:4101",
+				ResourceIDs: model.ResourceIDs{
+					AccountIDs: []model.ResourceAccountID{
+						{AccountID: "account-id"},
+					},
+					StatementIDs: []model.ResourceStatementID{
+						{StatementID: ""},
+						{StatementID: "statement-id"},
+					},
+				},
+				CreditorAccount: models.Payment{
+					SchemeName: "UK.OBIE.SortCodeAccountNumber",
 				},
 			},
 		},

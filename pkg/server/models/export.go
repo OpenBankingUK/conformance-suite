@@ -1,9 +1,10 @@
 package models
 
 import (
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/executors/events"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/executors/results"
-	validation "github.com/go-ozzo/ozzo-validation"
+	"github.com/go-ozzo/ozzo-validation"
 )
 
 // ExportRequest - Request to `/api/export`.
@@ -26,8 +27,9 @@ func (e ExportRequest) Validate() error {
 
 // ExportResults - Contains `ExportRequest` and results of test run.
 type ExportResults struct {
-	ExportRequest ExportRequest                `json:"export_request"`
-	HasPassed     bool                         `json:"has_passed"`
-	Results       []results.TestCase           `json:"results"`
-	Tokens        []events.AcquiredAccessToken `json:"tokens"`
+	ExportRequest  ExportRequest                `json:"export_request"`
+	HasPassed      bool                         `json:"has_passed"`
+	Results        []results.TestCase           `json:"results"`
+	Tokens         []events.AcquiredAccessToken `json:"tokens"`
+	DiscoveryModel discovery.Model              `json:"discovery_model"`
 }

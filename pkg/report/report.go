@@ -1,12 +1,13 @@
 package report
 
 import (
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
 	"time"
 
 	internal_time "bitbucket.org/openbankingteam/conformance-suite/internal/pkg/time"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/server/models"
 
-	validation "github.com/go-ozzo/ozzo-validation"
+	"github.com/go-ozzo/ozzo-validation"
 	"github.com/go-ozzo/ozzo-validation/is"
 	"github.com/google/uuid"
 )
@@ -26,6 +27,7 @@ type Report struct {
 	Status         Status            `json:"status"`                   // A status describing overall condition of the report.
 	CertifiedBy    CertifiedBy       `json:"certifiedBy"`              // The certifier of the report.
 	SignatureChain *[]SignatureChain `json:"signatureChain,omitempty"` // When Add digital signature is set this contains the signature chain.
+	Discovery      discovery.Model   `json:"-"`                        // Original used discovery model
 }
 
 // Validate - called by `github.com/go-ozzo/ozzo-validation` to validate struct.
@@ -70,5 +72,6 @@ func NewReport(exportResults models.ExportResults) (Report, error) {
 		Status:         StatusComplete,
 		CertifiedBy:    certifiedBy,
 		SignatureChain: &signatureChain,
+		Discovery:      exportResults.DiscoveryModel,
 	}, nil
 }
