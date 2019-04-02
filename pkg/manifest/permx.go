@@ -36,8 +36,11 @@ type TokenStore struct {
 	store     []RequiredTokens
 }
 
-var accountSwaggerLocation = "https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.0/dist/account-info-swagger.json"
-var paymentsSwaggerLocation = "https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.0/dist/payment-initiation-swagger.json"
+var accountSwaggerLocation31 = "https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.0/dist/account-info-swagger.json"
+var accountSwaggerLocation30 = "https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.0.0/dist/account-info-swagger.json"
+var paymentsSwaggerLocation31 = "https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.0/dist/payment-initiation-swagger.json"
+var paymentsSwaggerLocation30 = "https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.0.0/dist/payment-initiation-swagger.json"
+
 var confirmSwaggerLocation = ""
 var notificationSwaggerLocation = ""
 
@@ -46,9 +49,13 @@ var notificationSwaggerLocation = ""
 func GetSpecType(s string) (string, error) {
 	spec := strings.TrimSpace(s)
 	switch spec {
-	case accountSwaggerLocation:
+	case accountSwaggerLocation31:
+		fallthrough
+	case accountSwaggerLocation30:
 		return "accounts", nil
-	case paymentsSwaggerLocation:
+	case paymentsSwaggerLocation31:
+		fallthrough
+	case paymentsSwaggerLocation30:
 		return "payments", nil
 	case confirmSwaggerLocation:
 		return "funds", nil
