@@ -99,7 +99,7 @@
       },
       "context": {
         "baseurl": "$authorisation_endpoint"
-      },
+      },  
       "expect": {
         "status-code": 404        
       }
