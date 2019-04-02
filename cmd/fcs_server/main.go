@@ -17,7 +17,7 @@ import (
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"github.com/x-cray/logrus-prefixed-formatter"
+	prefixed "github.com/x-cray/logrus-prefixed-formatter"
 	"gopkg.in/resty.v1"
 )
 
@@ -106,6 +106,9 @@ func initConfig() {
 	// 	//mw := io.MultiWriter(os.Stdout, f)
 	// 	//logrus.SetOutput(f)
 	// }
+	// TODO: sort out separate trace logging and logging to file in generaal
+	//file, _ := os.OpenFile("http-trace.log", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0644)
+	//resty.SetLogger(file)
 
 	logger.SetNoLock()
 	logger.SetFormatter(&prefixed.TextFormatter{

@@ -2,6 +2,7 @@
 package server
 
 import (
+	"encoding/json"
 	"sync"
 
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/authentication"
@@ -59,6 +60,7 @@ type journey struct {
 	log                   *logrus.Entry
 	config                JourneyConfig
 	events                events.Events
+	permissions           map[string][]manifest.RequiredTokens
 }
 
 // NewJourney creates an instance for a user journey
@@ -73,6 +75,7 @@ func NewJourney(logger *logrus.Entry, generator generation.Generator, validator 
 		context:               model.Context{},
 		log:                   logger.WithField("module", "Journey"),
 		events:                events.NewEvents(),
+		permissions:           make(map[string][]manifest.RequiredTokens, 0),
 	}
 }
 
@@ -121,24 +124,19 @@ func (wj *journey) TestCases() (generation.TestCasesRun, error) {
 	if !wj.testCasesRunGenerated {
 		config := wj.makeGeneratorConfig()
 		discovery := wj.validDiscoveryModel.DiscoveryModel
-		//TODO: Remove standard testcase generation
-		//wj.testCasesRun = wj.generator.GenerateSpecificationTestCases(wj.log, config, discovery, &wj.context)
 
 		wj.log.Debugln("Journey:GenerationManifestTests")
-		//tcrun2 := wj.generator.GenerateManifestTests(wj.log, config, discovery, &wj.context) // Integration work in progress
-		wj.testCasesRun = wj.generator.GenerateManifestTests(wj.log, config, discovery, &wj.context) // Integration work in progress
-
-		// wj.testCasesRun.SpecConsentRequirements = append(wj.testCasesRun.SpecConsentRequirements, tcrun2.SpecConsentRequirements...)
-		// wj.testCasesRun.TestCases = append(wj.testCasesRun.TestCases, tcrun2.TestCases...)
-
-		//wj.testCasesRun.SpecConsentRequirements = tcrun2.SpecConsentRequirements
-		//wj.testCasesRun.TestCases = tcrun2.TestCases
+		wj.testCasesRun, wj.permissions = wj.generator.GenerateManifestTests(wj.log, config, discovery, &wj.context)
+		wj.log.Tracef("we have %d permissions\n", len(wj.permissions))
+		for _, v := range wj.permissions {
+			wj.log.Tracef("%#v\n", v)
+		}
 
 		if discovery.TokenAcquisition == "psu" {
-			wj.log.Debugln("Journey:AcquirePSUTokens")
+			wj.log.Traceln("Journey:AcquirePSUTokens")
 			definition := wj.makeRunDefinition()
 
-			consentIds, tokenMap, err := executors.InitiationConsentAcquisition(wj.testCasesRun.SpecConsentRequirements, definition, &wj.context, &wj.testCasesRun)
+			consentIds, tokenMap, err := executors.GetPsuConsent(definition, &wj.context, &wj.testCasesRun, wj.permissions)
 			if err != nil {
 				return generation.TestCasesRun{}, errors.WithMessage(errConsentIDAcquisitionFailed, err.Error())
 			}
@@ -147,7 +145,7 @@ func (wj *journey) TestCases() (generation.TestCasesRun, error) {
 			}
 			wj.createTokenCollector(consentIds)
 		} else {
-			wj.log.Debugln("Journey:AcquireHeadlessTokens")
+			wj.log.Traceln("Journey:AcquireHeadlessTokens")
 			runDefinition := wj.makeRunDefinition()
 			// TODO:Process multiple specs ... don't restrict to element [0]!!
 			tokenPermissionsMap, err := executors.AcquireHeadlessTokens(wj.testCasesRun.TestCases[0].TestCases, &wj.context, runDefinition)
@@ -215,7 +213,7 @@ func (wj *journey) doneCollectionCallback() {
 }
 
 func (wj *journey) RunTests() error {
-	wj.log.Debug("RunTests ...")
+	wj.log.Debug("--- RunTests ---")
 
 	if !wj.testCasesRunGenerated {
 		return errTestCasesNotGenerated
@@ -225,23 +223,16 @@ func (wj *journey) RunTests() error {
 		return errNotFinishedCollectingTokens
 	}
 
-	requiredTokens := []manifest.RequiredTokens{}
-	// map tokens to Testcases
-	var err error
-	for _, tests := range wj.testCasesRun.TestCases {
-		requiredTokens, err = manifest.GetRequiredTokensFromTests(tests.TestCases)
-		if err != nil {
-			wj.log.Warn("Testcase Token setup failed")
-			return errTokenMappingFailed
-		}
+	requiredTokens := wj.permissions
+	for k := range wj.testCasesRun.TestCases {
+		specType := wj.testCasesRun.TestCases[k].Specification.SpecType
+		manifest.MapTokensToTestCases(requiredTokens[specType], wj.testCasesRun.TestCases[k].TestCases)
+		wj.dumpJSON(wj.testCasesRun.TestCases[k].TestCases)
 	}
-
-	//TODO Extend to cover more that one set of testcases
-	manifest.MapTokensToTestCases(requiredTokens, wj.testCasesRun.TestCases[0].TestCases)
 
 	runDefinition := wj.makeRunDefinition()
 	runner := executors.NewTestCaseRunner(wj.log, runDefinition, wj.daemonController)
-	wj.log.Debug("runTestCases with context ...")
+	wj.context.DumpContext("runTestCases with context")
 	return runner.RunTestCases(&wj.context)
 }
 
@@ -373,4 +364,18 @@ func consentIdsToTestCaseRun(log *logrus.Entry, consentIds []executors.TokenCons
 			}
 		}
 	}
+}
+
+func dumpPermissions(p map[string][]manifest.RequiredTokens, title string) {
+	logrus.Tracef("Dump Permissions at %s \n", title)
+	for _, v := range p {
+		logrus.Tracef("%#v\n", v)
+	}
+}
+
+// Utility to Dump Json
+func (wj *journey) dumpJSON(i interface{}) {
+	var model []byte
+	model, _ = json.MarshalIndent(i, "", "    ")
+	wj.log.Traceln(string(model))
 }

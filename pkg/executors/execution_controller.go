@@ -3,9 +3,10 @@ package executors
 import (
 	"encoding/json"
 	"fmt"
+	"sync"
+
 	"github.com/pkg/errors"
 	"gopkg.in/resty.v1"
-	"sync"
 
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/authentication"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
@@ -96,7 +97,7 @@ func (r *TestCaseRunner) RunConsentAcquisition(item TokenConsentIDItem, ctx *mod
 		return errors.New("consent acquisition test cases runner already running")
 	}
 	r.running = true
-
+	logrus.Tracef("runConsentAquisition with %s, %s, %s\n", item.TokenName, item.ConsentURL, item.Permissions)
 	go r.runConsentAcquisitionAsync(item, ctx, consentType, consentIDChannel)
 
 	return nil
@@ -178,7 +179,9 @@ func (r *TestCaseRunner) executeComponentTests(comp *model.Component, ruleCtx *m
 			logrus.StandardLogger().Debugln("stop component test run received, aborting runner")
 			return
 		}
-
+		if testcase.ID == "#compPsuConsent03" {
+			logrus.Tracef("compPsuConsent03:  %#v\n", testcase)
+		}
 		testResult := r.executeTest(testcase, ruleCtx, ctxLogger)
 		r.daemonController.AddResult(testResult)
 
@@ -229,7 +232,7 @@ func (r *TestCaseRunner) executeSpecTests(spec generation.SpecificationTestCases
 			ctxLogger.Info("stop test run received, aborting runner")
 			return
 		}
-
+		ruleCtx.DumpContext("ruleCtx before: " + testcase.ID)
 		testResult := r.executeTest(testcase, ruleCtx, ctxLogger)
 		r.daemonController.AddResult(testResult)
 	}

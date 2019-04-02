@@ -3,6 +3,7 @@ package manifest
 import (
 	"errors"
 	"fmt"
+	"strings"
 
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
 	"github.com/sirupsen/logrus"
@@ -17,13 +18,16 @@ type TestCasePermission struct {
 
 // RequiredTokens -
 type RequiredTokens struct {
-	Name        string   `json:"name,omitempty"`
-	Token       string   `json:"token,omitempty"`
-	IDs         []string `json:"ids,omitempty"`
-	Perms       []string `json:"perms,omitempty"`
-	Permsx      []string `json:"permsx,omitempty"`
-	AccessToken string
-	ConsentURL  string
+	Name            string   `json:"name,omitempty"`
+	Token           string   `json:"token,omitempty"`
+	IDs             []string `json:"ids,omitempty"`
+	Perms           []string `json:"perms,omitempty"`
+	Permsx          []string `json:"permsx,omitempty"`
+	AccessToken     string
+	ConsentURL      string
+	ConsentID       string
+	ConsentParam    string
+	ConsentProvider string
 }
 
 // TokenStore eats tokens
@@ -32,16 +36,108 @@ type TokenStore struct {
 	store     []RequiredTokens
 }
 
+// GetSpecType -
+// TODO - check that this mapping is reasonable
+func GetSpecType(s string) (string, error) {
+	spec := strings.TrimSpace(s)
+	switch spec {
+	case "Account and Transaction API Specification":
+		return "accounts", nil
+	case "Payment Initiation API":
+		return "payments", nil
+	case "Confirmation of Funds API Specification":
+		return "funds", nil
+	case "Event Notification API Specification - ASPSP Endpoints":
+		return "notifications", nil
+	}
+	return "unknown", errors.New("Unknown specification:  `" + spec + "`")
+}
+
 // GetRequiredTokensFromTests - Given a set of testcases with the permissions defined
 // in the context using 'permissions' and 'permissions-excluded'
 // provides a RequiredTokens structure which can be used to capture token requirements
-func GetRequiredTokensFromTests(tcs []model.TestCase) ([]RequiredTokens, error) {
-	tcp, err := getTestCasePermissions(tcs)
+func GetRequiredTokensFromTests(tcs []model.TestCase, spec string) (rt []RequiredTokens, err error) {
+	switch spec {
+	case "accounts":
+		tcp, err := getTestCasePermissions(tcs)
+		if err != nil {
+			return nil, err
+		}
+		rt, err = getRequiredTokens(tcp)
+	case "payments":
+		rt, err = GetPaymentPermissions(tcs)
+	}
+	return rt, err
+}
+
+// GetPaymentPermissions - and annotate test cases with token ids
+func GetPaymentPermissions(tests []model.TestCase) ([]RequiredTokens, error) {
+	requiredTokens, err := getPaymentPermissions(tests)
 	if err != nil {
 		return nil, err
 	}
-	rt, err := getRequiredTokens(tcp)
-	return rt, err
+	requiredTokens, err = updateTokensFromConsent(requiredTokens, tests)
+	if err != nil {
+		return nil, err
+	}
+	updateTestAuthenticationFromToken(tests, requiredTokens)
+
+	return requiredTokens, nil
+}
+
+// looks for post consent Tests that need to be run to get consentIds
+func getPaymentPermissions(tcs []model.TestCase) ([]RequiredTokens, error) {
+	rt := make([]RequiredTokens, 0)
+	ts := TokenStore{}
+	ts.store = rt
+	consentJobs := GetConsentJobs()
+	for k, tc := range tcs {
+		ctx := tc.Context
+		consentRequired, found := ctx.GetString("requestConsent")
+		if found != nil {
+			continue
+		}
+		if consentRequired == "true" {
+			// get consentid
+			consentID := GetConsentIDFromMatches(tc)
+			rx := RequiredTokens{Name: ts.GetNextTokenName("payment"), ConsentParam: consentID, ConsentProvider: tc.ID}
+			rt = append(rt, rx)
+			logrus.Tracef("adding %s to consentJobs\n", tc.ID)
+			consentJobs.Add(tc)
+		} else {
+			tcs[k].InjectBearerToken("$client_access_token")
+		}
+	}
+
+	return rt, nil
+}
+
+// scans all payment test to make test against consent provider
+func updateTokensFromConsent(rts []RequiredTokens, tcs []model.TestCase) ([]RequiredTokens, error) {
+	for rtidx, rt := range rts {
+		for _, test := range tcs {
+			ctx := test.Context
+			value, _ := ctx.GetString("consentId")
+			if len(value) > 1 {
+				if rt.ConsentParam == value[1:] {
+					rt.IDs = append(rt.IDs, test.ID)
+					rts[rtidx] = rt
+				}
+			}
+		}
+	}
+	return rts, nil
+}
+
+// GetConsentIDFromMatches -
+func GetConsentIDFromMatches(tc model.TestCase) string {
+	matches := tc.Expect.ContextPut.Matches
+	for _, m := range matches {
+		if m.JSON == "Data.ConsentId" {
+			return m.ContextName
+		}
+	}
+	return ""
 }
 
 // GetTestCasePermissions -
@@ -90,6 +186,7 @@ func MapTokensToTestCases(rt []RequiredTokens, tcs []model.TestCase) map[string]
 	return tokenMap
 }
 
+// gets token name from a testcase id
 func getRequiredTokenForTestcase(rt []RequiredTokens, testcaseID string) (tokenName string, isEmptyToken bool, err error) {
 	for _, v := range rt {
 		if len(v.Perms) == 0 {
@@ -111,16 +208,16 @@ func dumpTG(tg []RequiredTokens) {
 }
 
 // GetNextTokenName -
-func (te *TokenStore) GetNextTokenName() string {
+func (te *TokenStore) GetNextTokenName(s string) string {
 	te.currentID++
-	return fmt.Sprintf("Token%4.4d", te.currentID)
+	return fmt.Sprintf("%sToken%4.4d", s, te.currentID)
 }
 
 // create or update TokenGethereer
 func (te *TokenStore) createOrUpdate(tcp TestCasePermission) {
 
 	if len(te.store) == 0 { // First time - no permissions - just add
-		tpg := RequiredTokens{Name: te.GetNextTokenName(), IDs: []string{tcp.ID}, Perms: tcp.Perms, Permsx: tcp.Permsx}
+		tpg := RequiredTokens{Name: te.GetNextTokenName("account"), IDs: []string{tcp.ID}, Perms: tcp.Perms, Permsx: tcp.Permsx}
 		te.store = append(te.store, tpg)
 		return
 	}
@@ -132,7 +229,7 @@ func (te *TokenStore) createOrUpdate(tcp TestCasePermission) {
 				return
 			}
 		}
-		tpg := RequiredTokens{Name: te.GetNextTokenName(), IDs: []string{tcp.ID}, Perms: tcp.Perms, Permsx: tcp.Permsx}
+		tpg := RequiredTokens{Name: te.GetNextTokenName("account"), IDs: []string{tcp.ID}, Perms: tcp.Perms, Permsx: tcp.Permsx}
 		te.store = append(te.store, tpg)
 	}
 
@@ -175,7 +272,7 @@ func (te *TokenStore) createOrUpdate(tcp TestCasePermission) {
 		te.store[idx] = newItem
 		return
 	}
-	tpg := RequiredTokens{Name: te.GetNextTokenName(), IDs: []string{tcp.ID}, Perms: tcp.Perms, Permsx: tcp.Permsx}
+	tpg := RequiredTokens{Name: te.GetNextTokenName("account"), IDs: []string{tcp.ID}, Perms: tcp.Perms, Permsx: tcp.Permsx}
 	te.store = append(te.store, tpg)
 
 	return
@@ -225,5 +322,4 @@ func uniqueSlice(inslice []string) []string {
 		tmpslice = append(tmpslice, k)
 	}
 	return tmpslice
-
 }

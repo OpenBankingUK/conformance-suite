@@ -1,0 +1,26 @@
+{
+    "@id": "#compPsuConsent03",
+    "name": "PSU Consent Token Exchange",
+    "input": {
+      "method": "GET",
+      "endpoint": "$authorisation_endpoint?clientid",
+      "generation": {
+        "strategy": "psuConsenturl"
+      },
+      "claims": {
+        "aud": "$issuer",
+        "iss": "$client_id",
+        "scope": "openid $scope",
+        "redirect_url": "$redirect_url",
+        "consentId": "$consent_id",
+        "responseType": "code",
+        "state":"$token_name"
+      }
+    },
+    "context": {
+      "baseurl": ""
+    },
+    "expect": {
+      "status-code": 404        
+    }
+  }

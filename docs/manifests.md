@@ -92,7 +92,7 @@ _In the following example `assertion-ref` is the reference of the assertion._
                     "value": "ba70ddff-b9ea-43a2-8ade-567746f39fff"
                 },
                 {
-                    "JSON": "json.Data.Status",
+                    "JSON": "Data.Status",
                     "detail: "Status label for request",
                     "Value": "AcceptedSettlementCompleted"
                 }

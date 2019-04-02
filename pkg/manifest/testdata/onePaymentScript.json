@@ -1,23 +1,30 @@
 {
 	"scripts": [
         {
-			"description": "Domestic Payment consents succeeds with minimal data set with additional schema checks.",
-            "id": "OB-301-DOP-100000",
+            "description": "Domestic Payment consents is AwaitingAuthorisation",
+            "id": "OB-301-DOP-100100",
             "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937984109/Domestic+Payments+v3.1#DomesticPaymentsv3.1-POST/domestic-payment-consents",
-            "detail" : "Checks that the resource succeeds posting a domestic payment consents with a minimal data set and checks additional schema.",
-			"parameters": {
+            "detail": "Check Domestic Payment consents returns in AwaitingAuthorisation.",
+            "parameters": {
                 "tokenRequestScope": "payments",
-                "paymentType": "domestic-payment-consents",
-                "postData" : "$minimalDomesticPaymentConsent"    
+                "postData": "$minimalDomesticPaymentConsent",
+                "requestConsent": "false"
             },
             "body": "$postData",
             "uri": "/domestic-payment-consents",
             "uriImplementation": "mandatory",
             "resource": "DomesticPayment",
-            "asserts": ["OB3GLOAssertOn201", "OB3GLOFAPIHeader", "OB3DOPAssertOnAcceptedSettlementCompleted", "OB3GLOAAssertConsentId"],
-            "keepContext": ["OB3GLOAAssertConsentId", "OB3GLOFAPIHeader"],
-            "method":"post",
-            "schemaCheck": true
+            "asserts": [
+                "OB3GLOAssertOn201",
+                "OB3GLOFAPIHeader",
+                "OB3GLOAAssertConsentId"
+            ],
+            "keepContextOnSuccess": {
+                "name": "OB-301-DOP-100100-ConsentId",
+                "value": "Data.ConsentId"
+            },
+            "method": "post",
+            "schemaCheck": false
         }
 	]
 }

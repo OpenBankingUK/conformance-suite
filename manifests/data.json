@@ -20,6 +20,28 @@
         "Risk": {}
       }
     },
+    "minimalScheduledDomesticPaymentConsent": {
+      "body": {
+        "Data": {
+          "Permission": "Create",
+          "Initiation": {
+            "RequestedExecutionDateTime": "2020-10-01T13:14:25+00:00",
+            "InstructionIdentification": "ACME412",
+            "EndToEndIdentification": "FRESCO.21302.GFX.20",
+            "InstructedAmount": {
+              "Amount": "15.00",
+              "Currency": "GBP"
+            },
+            "CreditorAccount": {
+              "SchemeName": "SortCodeAccountNumber",
+              "Identification": "20000319470104",
+              "Name": "Messers Simplex & Co"
+            }
+          }
+        },
+        "Risk": {}
+      }
+    },
     "minimalInternationalPaymentConsent": {
       "body": {
         "Data": {
@@ -37,9 +59,9 @@
               "Name": "Dr Foo"
             }
           }
-        }
-      },
-      "Risk": {}
+        },
+        "Risk": {}
+      }
     },
     "minimalInternationalStandingOrderConsent": {
       "body": {
