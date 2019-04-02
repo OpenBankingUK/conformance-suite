@@ -23,6 +23,7 @@ func TestNewZipExporter(t *testing.T) {
 }
 
 func Test_zipExporter_Export(t *testing.T) {
+	t.Skip()
 	tempDir, err := ioutil.TempDir("", "Test_zipExporter_Export")
 	require.NoError(t, err)
 

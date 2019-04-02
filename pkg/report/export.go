@@ -12,6 +12,7 @@ const (
 	marshalIndentPrefix = ""
 	marshalIndent       = "  "
 	reportFilename      = "report.json"
+	discoveryFilename   = "discovery.json"
 )
 
 // Exporter - allows the exporting of a `Report`.
@@ -58,6 +59,21 @@ func (e *zipExporter) Export() error {
 	// Create report contents to zip
 	if _, err := reportFile.Write(reportJSON); err != nil {
 		return errors.Wrapf(err, "zipExporter.Export: zip.Writer.Write failed, could write to %q, reportJSON=%+v", reportFilename, string(reportJSON))
+	}
+
+	discoveryJSON, err := json.MarshalIndent(e.report.Discovery, marshalIndentPrefix, marshalIndent)
+	if err != nil {
+		return errors.Wrapf(err, "zipExporter.Export: json.MarshalIndent failed, report=%+v", e.report)
+	}
+
+	// Create file within ZIP archive
+	discoveryFile, err := zipWriter.Create(discoveryFilename)
+	if err != nil {
+		return errors.Wrapf(err, "zipExporter.Export: zip.Writer.Create failed, could not create file %q", discoveryFilename)
+	}
+	// Create report contents to zip
+	if _, err := discoveryFile.Write(discoveryJSON); err != nil {
+		return errors.Wrapf(err, "zipExporter.Export: zip.Writer.Write failed, could write to %q, discoveryJSON=%+v", discoveryFilename, string(reportJSON))
 	}
 
 	return nil

@@ -41,6 +41,27 @@ func (_m *MockJourney) CollectToken(code string, state string, scope string) err
 	return r0
 }
 
+// DiscoveryModel provides a mock function with given fields:
+func (_m *MockJourney) DiscoveryModel() (discovery.Model, error) {
+	ret := _m.Called()
+
+	var r0 discovery.Model
+	if rf, ok := ret.Get(0).(func() discovery.Model); ok {
+		r0 = rf()
+	} else {
+		r0 = ret.Get(0).(discovery.Model)
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func() error); ok {
+		r1 = rf()
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // Events provides a mock function with given fields:
 func (_m *MockJourney) Events() events.Events {
 	ret := _m.Called()

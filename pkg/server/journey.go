@@ -35,6 +35,7 @@ var (
 // 5. Results - returns a background process control, so we can monitor on finished tests
 type Journey interface {
 	SetDiscoveryModel(discoveryModel *discovery.Model) (discovery.ValidationFailures, error)
+	DiscoveryModel() (discovery.Model, error)
 	TestCases() (generation.TestCasesRun, error)
 	CollectToken(code, state, scope string) error
 	AllTokenCollected() bool
@@ -109,6 +110,17 @@ func (wj *journey) SetDiscoveryModel(discoveryModel *discovery.Model) (discovery
 	wj.allCollected = false
 
 	return discovery.NoValidationFailures, nil
+}
+
+func (wj *journey) DiscoveryModel() (discovery.Model, error) {
+	wj.journeyLock.Lock()
+	discoveryModel := wj.validDiscoveryModel
+	wj.journeyLock.Unlock()
+
+	if discoveryModel == nil {
+		return discovery.Model{}, errors.New("discovery model not set yet")
+	}
+	return *discoveryModel, nil
 }
 
 func (wj *journey) TestCases() (generation.TestCasesRun, error) {
