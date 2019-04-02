@@ -10,10 +10,9 @@ import Vuex from 'vuex';
 import { cloneDeep } from 'lodash';
 
 import actions from './actions';
-import mutations from './mutations';
-import getters from './getters';
-import state from './state';
-import * as types from './mutation-types';
+import {
+  mutationTypes as types, mutations, state, getters,
+} from './index';
 
 import api from '../../../api';
 // https://jestjs.io/docs/en/mock-functions#mocking-modules

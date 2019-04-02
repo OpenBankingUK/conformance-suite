@@ -34,6 +34,7 @@ describe('ConfigurationFormFile.vue', () => {
           namespaced: true,
           state,
           actions,
+          // eslint-disable-next-line import/no-named-as-default-member
           getters: config.getters,
         },
       },

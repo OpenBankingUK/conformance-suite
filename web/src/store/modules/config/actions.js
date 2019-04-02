@@ -1,8 +1,7 @@
 import * as _ from 'lodash';
-import * as types from './mutation-types';
+import { mutationTypes as types } from './index';
 import constants from './constants';
 
-// import discovery from '../../../api/discovery';
 import api from '../../../api';
 
 const findImageData = (model, images) => {
