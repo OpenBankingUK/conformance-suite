@@ -36,18 +36,30 @@ type TokenStore struct {
 	store     []RequiredTokens
 }
 
+var accountSwaggerLocation31 = "https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.0/dist/account-info-swagger.json"
+var accountSwaggerLocation30 = "https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.0.0/dist/account-info-swagger.json"
+var paymentsSwaggerLocation31 = "https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.0/dist/payment-initiation-swagger.json"
+var paymentsSwaggerLocation30 = "https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.0.0/dist/payment-initiation-swagger.json"
+
+var confirmSwaggerLocation = ""
+var notificationSwaggerLocation = ""
+
 // GetSpecType -
 // TODO - check that this mapping is reasonable
 func GetSpecType(s string) (string, error) {
 	spec := strings.TrimSpace(s)
 	switch spec {
-	case "Account and Transaction API Specification":
+	case accountSwaggerLocation31:
+		fallthrough
+	case accountSwaggerLocation30:
 		return "accounts", nil
-	case "Payment Initiation API":
+	case paymentsSwaggerLocation31:
+		fallthrough
+	case paymentsSwaggerLocation30:
 		return "payments", nil
-	case "Confirmation of Funds API Specification":
+	case confirmSwaggerLocation:
 		return "funds", nil
-	case "Event Notification API Specification - ASPSP Endpoints":
+	case notificationSwaggerLocation:
 		return "notifications", nil
 	}
 	return "unknown", errors.New("Unknown specification:  `" + spec + "`")

@@ -32,8 +32,12 @@ func TestGenerateTestCases(t *testing.T) {
 }
 
 func TestPaymentPermissions(t *testing.T) {
-	tests, err := GenerateTestCases("Payment Initiation API", "http://mybaseurl", &model.Context{})
+	tests, err := GenerateTestCases(paymentsSwaggerLocation30, "http://mybaseurl", &model.Context{})
 	fmt.Printf("we have %d tests\n", len(tests))
+	for _, v := range tests {
+		dumpJSON(v)
+	}
+
 	requiredTokens, err := GetPaymentPermissions(tests)
 	assert.Nil(t, err)
 
