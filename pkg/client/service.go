@@ -4,11 +4,13 @@ import (
 	"crypto/tls"
 	"encoding/json"
 	"fmt"
-	"github.com/gorilla/websocket"
-	"github.com/pkg/errors"
+	"io/ioutil"
 	"net/http"
 	"os"
 	"time"
+
+	"github.com/gorilla/websocket"
+	"github.com/pkg/errors"
 )
 
 // Service is a gateway to backend services provided by FCS
@@ -154,7 +156,13 @@ func (s service) setConfig(filename string) error {
 	}
 
 	if response.StatusCode != http.StatusCreated {
-		return fmt.Errorf("unexpected status code setting config %d", response.StatusCode)
+		responseBody, err := ioutil.ReadAll(response.Body)
+		defer response.Body.Close()
+		if err != nil {
+			return errors.Wrap(err, "reading error response from setting config")
+		}
+
+		return fmt.Errorf("unexpected status code setting config %d, %s", response.StatusCode, string(responseBody))
 	}
 
 	return nil
