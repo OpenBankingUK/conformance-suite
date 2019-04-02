@@ -225,6 +225,56 @@
           />
         </b-form-group>
       </b-card>
+      <br>
+      <b-card bg-variant="light">
+        <b-form-group
+          id="creditor_account_group"
+          label-for="creditor_account"
+          label="CreditorAccount"
+          description="OBCashAccount5">
+          <b-form-group
+            id="creditor_account_scheme_name_group"
+            label-for="creditor_account_scheme_name"
+            label="SchemeName"
+            description="OBExternalAccountIdentification4Code">
+            <b-form-select
+              id="creditor_account_scheme_name"
+              v-model="creditor_account.scheme_name"
+              :options="[
+                'UK.OBIE.BBAN',
+                'UK.OBIE.IBAN',
+                'UK.OBIE.PAN' ,
+                'UK.OBIE.Paym',
+                'UK.OBIE.SortCodeAccountNumber'
+              ]"
+              required/>
+          </b-form-group>
+          <b-form-group
+            id="creditor_account_identification_group"
+            label-for="creditor_account_identification"
+            label="Identification"
+            description="Beneficiary account identification">
+            <b-form-input
+              id="creditor_account_identification"
+              v-model="creditor_account.identification"
+              :state="isNotEmpty(creditor_account.identification)"
+              required
+            />
+          </b-form-group>
+          <b-form-group
+            id="creditor_account_name_group"
+            label-for="creditor_account_name"
+            label="Name"
+            description="Name of the account, as assigned by the account servicing institution.\nUsage: The account name is the name or names of the account owner(s) represented at an account level. The account name is not the product name or the nickname of the account.">
+            <b-form-input
+              id="creditor_account_name"
+              v-model="creditor_account.name"
+              :state="isNotEmpty(creditor_account.name)"
+              required
+            />
+          </b-form-group>
+        </b-form-group>
+      </b-card>
     </b-form>
   </div>
 </template>
@@ -334,6 +384,32 @@ export default {
       },
       set(value) {
         this.$store.commit('config/SET_REDIRECT_URL', value);
+      },
+    },
+
+    creditor_account: {
+      get() {
+        const self = this;
+        return {
+          get scheme_name() {
+            return self.$store.state.config.configuration.creditor_account.scheme_name;
+          },
+          set scheme_name(value) {
+            self.$store.commit('config/SET_CREDITOR_ACCOUNT_NAME_SCHEME_NAME', value);
+          },
+          get identification() {
+            return self.$store.state.config.configuration.creditor_account.identification;
+          },
+          set identification(value) {
+            self.$store.commit('config/SET_CREDITOR_ACCOUNT_IDENTIFICATION', value);
+          },
+          get name() {
+            return self.$store.state.config.configuration.creditor_account.name;
+          },
+          set name(value) {
+            self.$store.commit('config/SET_CREDITOR_ACCOUNT_NAME', value);
+          },
+        };
       },
     },
   },

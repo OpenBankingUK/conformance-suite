@@ -1,8 +1,7 @@
 import * as _ from 'lodash';
-import * as types from './mutation-types';
+import { mutationTypes as types } from './index';
 import constants from './constants';
 
-// import discovery from '../../../api/discovery';
 import api from '../../../api';
 
 const findImageData = (model, images) => {
@@ -108,6 +107,7 @@ export default {
         'issuer',
         'redirect_url',
         'resource_ids',
+        'creditor_account',
       ];
       const newConfig = _.pick(merged, validKeys);
       commit(types.SET_CONFIGURATION, newConfig);
