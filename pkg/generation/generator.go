@@ -47,13 +47,14 @@ type generator struct {
 func (g generator) GenerateManifestTests(log *logrus.Entry, config GeneratorConfig, discovery discovery.ModelDiscovery, ctx *model.Context) (TestCasesRun, map[string][]manifest.RequiredTokens) {
 	log = log.WithField("module", "GenerateManifestTests")
 	for k, item := range discovery.DiscoveryItems {
-		spectype, err := manifest.GetSpecType(item.APISpecification.Name)
-		item.APISpecification.SpecType = spectype
-		log.Debugf("Generating testcases for %s API\n", spectype)
+		spectype, err := manifest.GetSpecType(item.APISpecification.SchemaVersion)
 		if err != nil {
-			log.Warnf("specification %s not found\n", item.APISpecification.Name)
+			logrus.Warnf("Cannot get spec type from scheam version: " + item.APISpecification.SchemaVersion)
+			log.Warnf("specification %s not found\n", item.APISpecification.SchemaVersion)
 			continue
 		}
+		item.APISpecification.SpecType = spectype
+		log.Debugf("Generating testcases for %s API\n", spectype)
 		discovery.DiscoveryItems[k].APISpecification.SpecType = spectype
 	}
 
@@ -62,9 +63,9 @@ func (g generator) GenerateManifestTests(log *logrus.Entry, config GeneratorConf
 	tokens := map[string][]manifest.RequiredTokens{}
 
 	for _, item := range discovery.DiscoveryItems { //TODO: sort out different specs etc
-		tcs, err := manifest.GenerateTestCases(item.APISpecification.Name, item.ResourceBaseURI, ctx) //TODO: ensure we can handle multiple specs
+		tcs, err := manifest.GenerateTestCases(item.APISpecification.SchemaVersion, item.ResourceBaseURI, ctx) //TODO: ensure we can handle multiple specs
 		if err != nil {
-			log.Warnf("manifest testcase generation failed for %s", item.APISpecification.Name)
+			log.Warnf("manifest testcase generation failed for %s", item.APISpecification.SchemaVersion)
 			continue
 		}
 		spectype := item.APISpecification.SpecType

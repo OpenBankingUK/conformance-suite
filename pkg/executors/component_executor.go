@@ -12,8 +12,6 @@ import (
 
 // AcquireHeadlessTokens from manifest generated test cases
 func AcquireHeadlessTokens(tests []model.TestCase, ctx *model.Context, definition RunDefinition) ([]manifest.RequiredTokens, error) {
-	logrus.Debug("=================================================================================================================")
-	defer logrus.Debug("=================================================================================================================")
 	logrus.Debug("AcquireHeadlessTokens")
 	bodyDataStart := "{\"Data\": { \"Permissions\": ["
 	//TODO: sort out consent transaction timestamps
@@ -24,10 +22,10 @@ func AcquireHeadlessTokens(tests []model.TestCase, ctx *model.Context, definitio
 	if err != nil {
 		return nil, err
 	}
-
-	specType, err := manifest.GetSpecType("Account and Transaction API Specification")
+	schemaVersion := definition.DiscoModel.DiscoveryModel.DiscoveryItems[0].APISpecification.SchemaVersion //TODO: Fix for more that one specification
+	specType, err := manifest.GetSpecType(schemaVersion)
 	if err != nil {
-		return nil, errors.New("Error trying to determine specification type: " + err.Error())
+		return nil, errors.New("Error trying to determine specification type from API schemaVersion: " + err.Error())
 	}
 
 	requiredTokens, err := manifest.GetRequiredTokensFromTests(tests, specType)
