@@ -18,32 +18,59 @@ var consentChannelTimeout = 30
 // GetPsuConsent -
 func GetPsuConsent(definition RunDefinition, ctx *model.Context, runTests *generation.TestCasesRun, permissions map[string][]manifest.RequiredTokens) (TokenConsentIDs, map[string]string, error) {
 	consentRequirements := runTests.SpecConsentRequirements
-
+	var consentIdsToReturn TokenConsentIDs
 	logrus.Debugf("running with %#v\n", permissions)
+
+	for specType := range permissions {
+		logrus.Tracef("Getting PSU Consent for api type: %s\n", specType)
+		tests, err := getSpecForSpecType(specType, runTests)
+		if err != nil {
+			return nil, nil, err
+		}
+
+		switch specType {
+		case "accounts":
+			consentIds, _, err := getAccountConsents(consentRequirements, definition, permissions["accounts"], ctx)
+			consentIdsToReturn = append(consentIdsToReturn, consentIds...)
+			if err != nil {
+				logrus.Error("GetPSUConsent - accounts error: " + err.Error())
+				return nil, nil, err
+			}
+
+		case "payments": //TODO: Handle multipe spec returns
+			consentIds, err := getPaymentConsents(tests, definition, permissions["payments"], ctx)
+			consentIdsToReturn = append(consentIdsToReturn, consentIds...)
+			if err != nil {
+				logrus.Error("GetPSUConsent - payments error: " + err.Error())
+				return nil, nil, err
+			}
+		default:
+			logrus.Fatalf("Support for spec type (%s) not implemented yet", specType)
+		}
+	}
+
+	logrus.Warnf("No Consent Acquistion Performed\n")
+	return consentIdsToReturn, nil, nil
+}
+
+func getSpecForSpecType(stype string, runTests *generation.TestCasesRun) ([]model.TestCase, error) {
 	for _, spec := range runTests.TestCases {
 		specType, err := manifest.GetSpecType(spec.Specification.Name)
 		if err != nil {
 			logrus.Warnf("cannot get spec type fo name %s\n", spec.Specification.Name)
+			return nil, errors.New("Cannot get spec type for " + spec.Specification.Name)
 		}
-		logrus.Tracef("Getting PSU Consent for api type: %s\n", specType)
-
-		switch specType {
-		case "accounts":
-			return getAccountConsents(consentRequirements, definition, permissions["accounts"], ctx, spec)
-		case "payments": //TODO: Handle multipe spec returns
-			consentIds, err := getPaymentConsents(spec, definition, permissions["payments"], ctx)
-			return consentIds, nil, err
-		default:
-			logrus.Fatalf("Support for spec (%s) %s not implemented yet", specType, spec.Specification.Name)
+		if stype == specType {
+			return spec.TestCases, nil
 		}
 	}
-	logrus.Warnf("No Consent Acquistion Performed\n")
-	return nil, nil, errors.New("No Consent Acquisition performed")
+
+	return nil, errors.New("Cannot find test cases for spec type " + stype)
 }
 
 // getAccountConsents - get required tokens
 func getAccountConsents(consentRequirements []model.SpecConsentRequirements, definition RunDefinition, permissions []manifest.RequiredTokens, ctx *model.Context,
-	spec generation.SpecificationTestCases) (TokenConsentIDs, map[string]string, error) {
+) (TokenConsentIDs, map[string]string, error) {
 
 	consentIDChannel := make(chan TokenConsentIDItem, 100)
 	logger := logrus.StandardLogger().WithField("module", "getAccountConsents")
@@ -73,9 +100,6 @@ func getAccountConsents(consentRequirements []model.SpecConsentRequirements, def
 		}
 	}
 
-	logrus.Trace("<<==========================")
-	dumpJSON(tokenParameters)
-	logrus.Trace("<<==========================")
 	consentItems, err := waitForConsentIDs(consentIDChannel, len(tokenParameters))
 	for _, v := range consentItems {
 		logger.Debugf("Setting Token: %s, ConsentId: %s", v.TokenName, v.ConsentID)

@@ -127,21 +127,13 @@ func (wj *journey) TestCases() (generation.TestCasesRun, error) {
 
 		wj.log.Debugln("Journey:GenerationManifestTests")
 		wj.testCasesRun, wj.permissions = wj.generator.GenerateManifestTests(wj.log, config, discovery, &wj.context)
-
-		wj.log.Trace("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
-		dumpPermissions(wj.permissions, "TestCases:after GenerateManifestTests")
-		for k, spec := range wj.testCasesRun.TestCases {
-			spectype, _ := manifest.GetSpecType(spec.Specification.Name)
-			wj.testCasesRun.TestCases[k].Specification.SpecType = spectype
-			wj.log.Tracef("TestCaseRun-Specificatino: %#v\n", wj.testCasesRun.TestCases[k].Specification)
-		}
 		wj.log.Tracef("we have %d permissions\n", len(wj.permissions))
 		for _, v := range wj.permissions {
 			wj.log.Tracef("%#v\n", v)
 		}
-		wj.log.Trace("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
+
 		if discovery.TokenAcquisition == "psu" {
-			wj.log.Debugln("Journey:AcquirePSUTokens")
+			wj.log.Traceln("Journey:AcquirePSUTokens")
 			definition := wj.makeRunDefinition()
 
 			consentIds, tokenMap, err := executors.GetPsuConsent(definition, &wj.context, &wj.testCasesRun, wj.permissions)
@@ -153,7 +145,7 @@ func (wj *journey) TestCases() (generation.TestCasesRun, error) {
 			}
 			wj.createTokenCollector(consentIds)
 		} else {
-			wj.log.Debugln("Journey:AcquireHeadlessTokens")
+			wj.log.Traceln("Journey:AcquireHeadlessTokens")
 			runDefinition := wj.makeRunDefinition()
 			// TODO:Process multiple specs ... don't restrict to element [0]!!
 			tokenPermissionsMap, err := executors.AcquireHeadlessTokens(wj.testCasesRun.TestCases[0].TestCases, &wj.context, runDefinition)
@@ -221,7 +213,7 @@ func (wj *journey) doneCollectionCallback() {
 }
 
 func (wj *journey) RunTests() error {
-	wj.log.Debug("RunTests*************************************************************************.")
+	wj.log.Debug("--- RunTests ---")
 
 	if !wj.testCasesRunGenerated {
 		return errTestCasesNotGenerated
@@ -232,9 +224,6 @@ func (wj *journey) RunTests() error {
 	}
 
 	requiredTokens := wj.permissions
-	// map tokens to Testcases
-
-	//TODO Extend to cover more that one set of testcases
 	for k := range wj.testCasesRun.TestCases {
 		specType := wj.testCasesRun.TestCases[k].Specification.SpecType
 		manifest.MapTokensToTestCases(requiredTokens[specType], wj.testCasesRun.TestCases[k].TestCases)

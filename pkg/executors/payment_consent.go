@@ -3,13 +3,12 @@ package executors
 import (
 	"errors"
 
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/generation"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/manifest"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
 	"github.com/sirupsen/logrus"
 )
 
-func getPaymentConsents(spec generation.SpecificationTestCases, definition RunDefinition, requiredTokens []manifest.RequiredTokens, ctx *model.Context) (TokenConsentIDs, error) {
+func getPaymentConsents(tests []model.TestCase, definition RunDefinition, requiredTokens []manifest.RequiredTokens, ctx *model.Context) (TokenConsentIDs, error) {
 	executor := &Executor{}
 	err := executor.SetCertificates(definition.SigningCert, definition.TransportCert)
 	if err != nil {
@@ -17,7 +16,6 @@ func getPaymentConsents(spec generation.SpecificationTestCases, definition RunDe
 		return nil, err
 	}
 
-	tests := spec.TestCases
 	logrus.Debugf("we have %d required tokens\n", len(requiredTokens))
 	for _, rt := range requiredTokens {
 		logrus.Tracef("%#v\n", rt)
