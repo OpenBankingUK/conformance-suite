@@ -81,6 +81,10 @@
         "parameters": {
           "tokenRequestScope": "payments",
           "postData": "$minimalDomesticPaymentConsent",
+          "thisSchemeName": "$schemeName",
+          "thisIdentification": "$identification",
+          "thisInstructionIdentification": "OB-301-DOP-100300",
+          "thisCurrency" :"GBP",
           "requestConsent": "true"
         },
         "headers": {
@@ -156,7 +160,12 @@
         "detail": "Check that once the domestic-payment-consent has been authorised by the PSU, the PISP can proceed to submitting the domestic-payment for processing.",
         "parameters": {
           "tokenRequestScope": "payments",
-          "consentId": "$OB-301-DOP-100300-ConsentId"
+          "consentId": "$OB-301-DOP-100300-ConsentId",
+          "thisSchemeName": "$schemeName",
+          "thisIdentification": "$identification",
+          "thisInstructionIdentification": "OB-301-DOP-100300",
+          "thisCurrency" :"GBP",
+          "postData": "$minimalDomesticPaymentPost"
         },
         "headers": {
           "Content-Type": "application/json; charset=utf-8"
