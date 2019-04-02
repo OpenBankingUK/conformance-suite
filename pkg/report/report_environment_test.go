@@ -9,17 +9,17 @@ import (
 func TestReportCertifiedByEnvironment_String(t *testing.T) {
 	tests := []struct {
 		name string
-		r    ReportCertifiedByEnvironment
+		r    CertifiedByEnvironment
 		want string
 	}{
 		{
-			name: "ReportCertifiedByEnvironmentTesting",
-			r:    ReportCertifiedByEnvironmentTesting,
+			name: "CertifiedByEnvironmentTesting",
+			r:    CertifiedByEnvironmentTesting,
 			want: "testing",
 		},
 		{
-			name: "ReportCertifiedByEnvironmentProduction",
-			r:    ReportCertifiedByEnvironmentProduction,
+			name: "CertifiedByEnvironmentProduction",
+			r:    CertifiedByEnvironmentProduction,
 			want: "production",
 		},
 	}
@@ -35,25 +35,25 @@ func TestReportCertifiedByEnvironment_String(t *testing.T) {
 func TestReportCertifiedByEnvironment_MarshalJSON(t *testing.T) {
 	tests := []struct {
 		name    string
-		r       ReportCertifiedByEnvironment
+		r       CertifiedByEnvironment
 		want    []byte
 		wantErr string
 	}{
 		{
-			name: "ReportCertifiedByEnvironmentTesting",
-			r:    ReportCertifiedByEnvironmentTesting,
+			name: "CertifiedByEnvironmentTesting",
+			r:    CertifiedByEnvironmentTesting,
 			want: []byte(`"testing"`),
 		},
 		{
-			name: "ReportCertifiedByEnvironmentProduction",
-			r:    ReportCertifiedByEnvironmentProduction,
+			name: "CertifiedByEnvironmentProduction",
+			r:    CertifiedByEnvironmentProduction,
 			want: []byte(`"production"`),
 		},
 		{
-			name:    "ReportCertifiedByEnvironmentFake",
-			r:       ReportCertifiedByEnvironment(-1),
+			name:    "CertifiedByEnvironmentFake",
+			r:       CertifiedByEnvironment(-1),
 			want:    []byte(nil),
-			wantErr: "-1 is an invalid enum for ReportCertifiedByEnvironment",
+			wantErr: "-1 is an invalid enum for CertifiedByEnvironment",
 		},
 	}
 	for _, tt := range tests {
@@ -78,31 +78,31 @@ func TestReportCertifiedByEnvironment_UnmarshalJSON(t *testing.T) {
 	}
 	tests := []struct {
 		name    string
-		r       *ReportCertifiedByEnvironment
+		r       *CertifiedByEnvironment
 		args    args
 		wantErr string
 	}{
 		{
-			name: "ReportCertifiedByEnvironmentTesting",
-			r:    envToEnvPointer(ReportCertifiedByEnvironmentTesting),
+			name: "CertifiedByEnvironmentTesting",
+			r:    envToEnvPointer(CertifiedByEnvironmentTesting),
 			args: args{
 				data: []byte(`"testing"`),
 			},
 		},
 		{
-			name: "ReportCertifiedByEnvironmentProduction",
-			r:    envToEnvPointer(ReportCertifiedByEnvironmentProduction),
+			name: "CertifiedByEnvironmentProduction",
+			r:    envToEnvPointer(CertifiedByEnvironmentProduction),
 			args: args{
 				data: []byte(`"production"`),
 			},
 		},
 		{
-			name: "ReportCertifiedByEnvironmentFake",
-			r:    envToEnvPointer(ReportCertifiedByEnvironment(-1)),
+			name: "CertifiedByEnvironmentFake",
+			r:    envToEnvPointer(CertifiedByEnvironment(-1)),
 			args: args{
 				data: []byte(`"fake"`),
 			},
-			wantErr: `"fake" is an invalid enum for ReportCertifiedByEnvironment`,
+			wantErr: `"fake" is an invalid enum for CertifiedByEnvironment`,
 		},
 	}
 	for _, tt := range tests {
@@ -120,6 +120,6 @@ func TestReportCertifiedByEnvironment_UnmarshalJSON(t *testing.T) {
 	}
 }
 
-func envToEnvPointer(r ReportCertifiedByEnvironment) *ReportCertifiedByEnvironment {
+func envToEnvPointer(r CertifiedByEnvironment) *CertifiedByEnvironment {
 	return &r
 }

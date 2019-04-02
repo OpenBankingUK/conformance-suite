@@ -73,10 +73,10 @@ export default {
       return Boolean(contents);
     },
     /**
-         * Description of the file uploaded (when one is selected).
-         * Returns the size and last modification date.
-         * Else returns contents length from vuex store.
-         */
+     * Description of the file uploaded (when one is selected).
+     * Returns the size and last modification date.
+     * Else returns contents length from vuex store.
+     */
     description() {
       const contents = this.configuration[this.id];
       if (this.file && (contents === '' || contents === this.data)) {
@@ -116,10 +116,10 @@ export default {
       }
     },
     /**
-         * readFile turns FileReader API into a Promise-based one,
-         * returning a resolved Promise with the contents of the file
-         * when it has been loaded.
-         */
+     * readFile turns FileReader API into a Promise-based one,
+     * returning a resolved Promise with the contents of the file
+     * when it has been loaded.
+     */
     readFile(file) {
       return new Promise((resolve, reject) => {
         const reader = new FileReader();
@@ -130,9 +130,9 @@ export default {
       });
     },
     /**
-         * When a file is selected, read its content and set the value in the store.
-         * See: https://stackoverflow.com/questions/45179061/file-input-on-change-in-vue-js
-         */
+     * When a file is selected, read its content and set the value in the store.
+     * See: https://stackoverflow.com/questions/45179061/file-input-on-change-in-vue-js
+     */
     async onFileChanged() {
       // Clear previous error.
       this.clearErrors();

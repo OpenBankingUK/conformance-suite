@@ -6,25 +6,25 @@ import (
 	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/test"
 )
 
-func TestReportStatus_String(t *testing.T) {
+func TestStatus_String(t *testing.T) {
 	tests := []struct {
 		name string
-		r    ReportStatus
+		r    Status
 		want string
 	}{
 		{
-			name: "ReportStatusPending",
-			r:    ReportStatusPending,
+			name: "StatusPending",
+			r:    StatusPending,
 			want: "Pending",
 		},
 		{
-			name: "ReportStatusComplete",
-			r:    ReportStatusComplete,
+			name: "StatusComplete",
+			r:    StatusComplete,
 			want: "Complete",
 		},
 		{
-			name: "ReportStatusError",
-			r:    ReportStatusError,
+			name: "StatusError",
+			r:    StatusError,
 			want: "Error",
 		},
 	}
@@ -37,32 +37,32 @@ func TestReportStatus_String(t *testing.T) {
 	}
 }
 
-func TestReportStatus_MarshalJSON(t *testing.T) {
+func TestStatus_MarshalJSON(t *testing.T) {
 	tests := []struct {
 		name    string
-		r       ReportStatus
+		r       Status
 		want    []byte
 		wantErr string
 	}{
 		{
-			name: "ReportStatusPending",
-			r:    ReportStatusPending,
+			name: "StatusPending",
+			r:    StatusPending,
 			want: []byte(`"Pending"`),
 		},
 		{
-			name: "ReportStatusComplete",
-			r:    ReportStatusComplete,
+			name: "StatusComplete",
+			r:    StatusComplete,
 			want: []byte(`"Complete"`),
 		},
 		{
-			name: "ReportStatusError",
-			r:    ReportStatusError,
+			name: "StatusError",
+			r:    StatusError,
 			want: []byte(`"Error"`),
 		},
 		{
-			name:    "ReportStatusFake",
-			r:       ReportStatus(-1),
-			wantErr: "-1 is an invalid enum for ReportStatus",
+			name:    "StatusFake",
+			r:       Status(-1),
+			wantErr: "-1 is an invalid enum for Status",
 		},
 	}
 	for _, tt := range tests {
@@ -81,44 +81,44 @@ func TestReportStatus_MarshalJSON(t *testing.T) {
 	}
 }
 
-func TestReportStatus_UnmarshalJSON(t *testing.T) {
+func TestStatus_UnmarshalJSON(t *testing.T) {
 	type args struct {
 		data []byte
 	}
 	tests := []struct {
 		name    string
-		r       *ReportStatus
+		r       *Status
 		args    args
 		wantErr string
 	}{
 		{
-			name: "ReportStatusPending",
-			r:    statusToStatusPointer(ReportStatusPending),
+			name: "StatusPending",
+			r:    statusToStatusPointer(StatusPending),
 			args: args{
 				data: []byte(`"Pending"`),
 			},
 		},
 		{
-			name: "ReportStatusComplete",
-			r:    statusToStatusPointer(ReportStatusComplete),
+			name: "StatusComplete",
+			r:    statusToStatusPointer(StatusComplete),
 			args: args{
 				data: []byte(`"Complete"`),
 			},
 		},
 		{
-			name: "ReportStatusError",
-			r:    statusToStatusPointer(ReportStatusError),
+			name: "StatusError",
+			r:    statusToStatusPointer(StatusError),
 			args: args{
 				data: []byte(`"Error"`),
 			},
 		},
 		{
-			name: "ReportStatusFake",
-			r:    statusToStatusPointer(ReportStatus(-1)),
+			name: "StatusFake",
+			r:    statusToStatusPointer(Status(-1)),
 			args: args{
 				data: []byte(`"fake"`),
 			},
-			wantErr: `"fake" is an invalid enum for ReportStatus`,
+			wantErr: `"fake" is an invalid enum for Status`,
 		},
 	}
 	for _, tt := range tests {
@@ -136,6 +136,6 @@ func TestReportStatus_UnmarshalJSON(t *testing.T) {
 	}
 }
 
-func statusToStatusPointer(r ReportStatus) *ReportStatus {
+func statusToStatusPointer(r Status) *Status {
 	return &r
 }

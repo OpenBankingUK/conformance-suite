@@ -95,7 +95,6 @@ test: ## run the go tests.
 		ln -s $(shell pwd)/web/public $(shell pwd)/pkg/server/web/dist; \
 	fi
 	go test \
-		-v \
 		-cover \
 		./...
 

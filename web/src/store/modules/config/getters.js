@@ -43,6 +43,8 @@ export default {
     const { step } = state.wizard;
     const navigation = {
       '/wizard/continue-or-start': step > 0,
+      '/wizard/import/review': step > 0,
+      '/wizard/import/rerun': step > 0,
       '/wizard/discovery-config': step > constants.WIZARD.STEP_ONE,
       '/wizard/configuration': step > constants.WIZARD.STEP_TWO,
       '/wizard/overview-run': step > constants.WIZARD.STEP_THREE,
