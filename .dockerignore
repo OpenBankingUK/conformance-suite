@@ -30,6 +30,8 @@
 !**/swagger/**/*.json
 !**/components
 !**/components/**/*.json
+!**/manifests
+!**/manifests/**/*
 
 !**/cmd
 !**/cmd/**
