@@ -106,6 +106,7 @@ func MakeJourneyConfig(config *GlobalConfiguration) (JourneyConfig, error) {
 		issuer:                  config.Issuer,
 		redirectURL:             config.RedirectURL,
 		resourceIDs:             config.ResourceIDs,
+		creditorAccount:         config.CreditorAccount,
 	}, nil
 }
 

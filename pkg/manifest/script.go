@@ -103,22 +103,22 @@ func GenerateTestCases(spec string, baseurl string, ctx *model.Context) ([]model
 		return nil, errors.New("unknown specification " + spec)
 	}
 	logrus.Debug("GenerateManifestTestCases for spec type:" + specType)
-	scripts, refs, resources, err := loadGenerationResources(specType)
+	scripts, refs, err := loadGenerationResources(specType)
 	if err != nil {
 		return nil, err
 	}
 
 	// accumulate context data from accountsData ...
-	accountCtx := model.Context{}
-	for k, v := range resources.Ais { //TODO:Get Account info from config file
-		accountCtx.PutString(k, v)
-	}
+	// accountCtx := model.Context{}
+	// for k, v := range resources.Ais { //TODO:Get Account info from config file
+	// 	accountCtx.PutString(k, v)
+	// }
 
 	ctx.DumpContext("Incoming Ctx")
 
 	tests := []model.TestCase{}
 	for _, script := range scripts.Scripts {
-		localCtx, err := script.processParameters(&refs, &accountCtx)
+		localCtx, err := script.processParameters(&refs, ctx)
 		if err != nil {
 			return nil, err
 		}
@@ -275,26 +275,22 @@ func buildInputSection(s Script, i *model.Input) {
 	i.RequestBody = s.Body
 }
 
-func loadGenerationResources(specType string) (Scripts, References, AccountData, error) {
+func loadGenerationResources(specType string) (Scripts, References, error) {
 	assertions, err := loadAssertions()
 	if err != nil {
-		return Scripts{}, References{}, AccountData{}, err
-	}
-	accountData, err := loadAccounts()
-	if err != nil {
-		return Scripts{}, References{}, AccountData{}, err
+		return Scripts{}, References{}, err
 	}
 	switch specType {
 	case "accounts":
 		sc, err := loadTransactions31()
-		return sc, assertions, accountData, err
+		return sc, assertions, err
 	case "payments":
 		pay, err := loadPayments31()
-		return pay, assertions, accountData, err
+		return pay, assertions, err
 	case "cbpii":
 	case "notifications":
 	}
-	return Scripts{}, References{}, AccountData{}, errors.New("loadGenerationResources: invalid spec type")
+	return Scripts{}, References{}, errors.New("loadGenerationResources: invalid spec type")
 }
 
 func loadPayments31() (Scripts, error) {
@@ -347,31 +343,6 @@ func jsonString(i interface{}) string {
 	var model []byte
 	model, _ = json.MarshalIndent(i, "", "    ")
 	return string(model)
-}
-
-func loadAccounts() (AccountData, error) {
-	ad, err := loadAccountData("testdata/resources.json") // temp integration shiv
-	if err != nil {
-		ad, err = loadAccountData("pkg/manifest/testdata/resources.json")
-		if err != nil {
-			ad, err = loadAccountData("../manifest/testdata/resources.json")
-		}
-	}
-	return ad, err
-
-}
-
-func loadAccountData(filename string) (AccountData, error) {
-	plan, err := ioutil.ReadFile(filename)
-	if err != nil {
-		return AccountData{}, err
-	}
-	var m AccountData
-	err = json.Unmarshal(plan, &m)
-	if err != nil {
-		return AccountData{}, err
-	}
-	return m, nil
 }
 
 func loadScripts(filename string) (Scripts, error) {

@@ -4,16 +4,37 @@
       "body": {
         "Data": {
           "Initiation": {
-            "InstructionIdentification": "Excaliber",
-            "EndToEndIdentification": "Excaliber",
+            "InstructionIdentification": "$creditorIdentification",
+            "EndToEndIdentification": "$creditorIdentification",
             "InstructedAmount": {
               "Amount": "1.00",
-              "Currency": "GBP"
+              "Currency": "$thisCurrency"
             },
             "CreditorAccount": {
-              "SchemeName": "IBAN",
-              "Identification": "GB29PAPA20000390210002",
-              "Name": "Dr Foo"
+              "SchemeName": "$creditorScheme",
+              "Identification": "$creditorIdentification",
+              "Name": "CF Tool"
+            }
+          }
+        },
+        "Risk": {}
+      }
+    },
+    "minimalDomesticPaymentPost": {
+      "body": {
+        "Data": {
+          "ConsentId": "$consentId",
+          "Initiation": {
+            "InstructionIdentification": "$creditorIdentification",
+            "EndToEndIdentification": "$creditorIdentification",
+            "InstructedAmount": {
+              "Amount": "1.00",
+              "Currency": "$thisCurrency"
+            },
+            "CreditorAccount": {
+              "SchemeName": "$creditorScheme",
+              "Identification": "$creditorIdentification",
+              "Name": "CF Tool"
             }
           }
         },
