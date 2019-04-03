@@ -4,15 +4,15 @@
       "body": {
         "Data": {
           "Initiation": {
-            "InstructionIdentification": "$thisInstructionIdentification",
-            "EndToEndIdentification": "$thisInstructionIdentification",
+            "InstructionIdentification": "$creditorIdentification",
+            "EndToEndIdentification": "$creditorIdentification",
             "InstructedAmount": {
               "Amount": "1.00",
               "Currency": "$thisCurrency"
             },
             "CreditorAccount": {
-              "SchemeName": "$thisSchemeName",
-              "Identification": "$thisIdentification",
+              "SchemeName": "$creditorScheme",
+              "Identification": "$creditorIdentification",
               "Name": "CF Tool"
             }
           }
@@ -25,15 +25,15 @@
         "Data": {
           "ConsentId": "$consentId",
           "Initiation": {
-            "InstructionIdentification": "$thisInstructionIdentification",
-            "EndToEndIdentification": "$thisInstructionIdentification",
+            "InstructionIdentification": "$creditorIdentification",
+            "EndToEndIdentification": "$creditorIdentification",
             "InstructedAmount": {
               "Amount": "1.00",
               "Currency": "$thisCurrency"
             },
             "CreditorAccount": {
-              "SchemeName": "$thisSchemeName",
-              "Identification": "$thisIdentification",
+              "SchemeName": "$creditorScheme",
+              "Identification": "$creditorIdentification",
               "Name": "CF Tool"
             }
           }

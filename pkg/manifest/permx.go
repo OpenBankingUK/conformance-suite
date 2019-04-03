@@ -198,6 +198,26 @@ func MapTokensToTestCases(rt []RequiredTokens, tcs []model.TestCase) map[string]
 	return tokenMap
 }
 
+// MapTokensToPaymentTestCases -
+func MapTokensToPaymentTestCases(rt []RequiredTokens, tcs []model.TestCase, ctx *model.Context) {
+	for k, test := range tcs {
+		tokenName, isEmptyToken, err := getRequiredTokenForTestcase(rt, test.ID)
+		if err != nil {
+			logrus.Warnf("no token for testcase %s", test.ID)
+			continue
+		}
+		if !isEmptyToken {
+			token, exists := ctx.GetString(tokenName)
+			if exists == nil {
+				test.InjectBearerToken(token)
+			} else {
+				test.InjectBearerToken("$" + tokenName)
+			}
+		}
+		tcs[k] = test
+	}
+}
+
 // gets token name from a testcase id
 func getRequiredTokenForTestcase(rt []RequiredTokens, testcaseID string) (tokenName string, isEmptyToken bool, err error) {
 	for _, v := range rt {
