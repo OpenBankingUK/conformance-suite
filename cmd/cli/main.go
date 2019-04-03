@@ -10,8 +10,8 @@ import (
 )
 
 const (
-	defaultHostServer          = "https://localhost:8443"
-	defaultWebsocketHostServer = "wss://localhost:8443"
+	defaultHostServer          = "https://0.0.0.0:8443"
+	defaultWebsocketHostServer = "wss://0.0.0.0:8443"
 )
 
 func main() {

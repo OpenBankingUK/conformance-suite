@@ -98,12 +98,13 @@ func (i *Input) setClaims(tc *TestCase, ctx *Context) error {
 			fallthrough
 		case "consenturl":
 			i.AppMsg("==> executing consenturl strategy")
-			token, err := i.createAlgNoneJWT()
+			token, err := i.generateRequestToken(ctx)
 			if err != nil {
-				return i.AppErr(fmt.Sprintf("error creating AlgNoneJWT %s", err.Error()))
+				return i.AppErr(fmt.Sprintf("error creating request token %s", err.Error()))
 			}
 			i.AppMsg(fmt.Sprintf("jwt consent Token: %s", token))
-			consent := i.Claims["aud"] + "/auth?" + "client_id=" + i.Claims["iss"] + "&response_type=" + i.Claims["responseType"] + "&scope=" + url.QueryEscape(i.Claims["scope"]) + "&request=" + token + "&state=" + i.Claims["state"]
+
+			consent := consentUrl(i.Claims, token)
 
 			tc.Input.Endpoint = consent           // Result - set jwt token in endpoint url
 			ctx.PutString("consent_url", consent) // make consent available in context
@@ -114,7 +115,7 @@ func (i *Input) setClaims(tc *TestCase, ctx *Context) error {
 			}
 		case "jwt-bearer":
 			i.AppMsg("==> executing jwt-bearer strategy")
-			token, err := i.createAlgRS256JWT(ctx)
+			token, err := i.signJWT(ctx, jwt.SigningMethodRS256)
 			if err != nil {
 				return i.AppErr(fmt.Sprintf("error creating AlgRS256JWT %s", err.Error()))
 			}
@@ -124,6 +125,35 @@ func (i *Input) setClaims(tc *TestCase, ctx *Context) error {
 	}
 
 	return nil
+}
+
+func (i *Input) generateRequestToken(ctx *Context) (string, error) {
+	alg, err := ctx.GetString("request_alg")
+	if err != nil {
+		return "", err
+	}
+
+	var token string
+	switch alg {
+	case "PS256":
+		token, err = i.signJWT(ctx, jwt.SigningMethodPS256)
+	case "RS256":
+		token, err = i.signJWT(ctx, jwt.SigningMethodRS256)
+	case "NONE":
+		fallthrough
+	default:
+		token, err = i.createAlgNoneJWT()
+	}
+	return token, err
+}
+
+func consentUrl(claims map[string]string, token string) string {
+	return claims["aud"] + "/auth?" +
+		"client_id=" + claims["iss"] +
+		"&response_type=" + claims["responseType"] +
+		"&scope=" + url.QueryEscape(claims["scope"]) +
+		"&request=" + token +
+		"&state=" + claims["state"]
 }
 
 func (i *Input) setFormData(req *resty.Request, ctx *Context) error {
@@ -215,7 +245,7 @@ func (i *Input) Clone() Input {
 	return in
 }
 
-func (i *Input) createAlgRS256JWT(ctx *Context) (string, error) {
+func (i *Input) signJWT(ctx *Context, alg jwt.SigningMethod) (string, error) {
 	uuid := uuid.New()
 	claims := jwt.MapClaims{}
 	claims["iss"] = i.Claims["iss"]
@@ -226,12 +256,6 @@ func (i *Input) createAlgRS256JWT(ctx *Context) (string, error) {
 	claims["exp"] = time.Now().Add(time.Minute * time.Duration(60)).Unix()
 	claims["jti"] = uuid
 
-	alg := jwt.GetSigningMethod("RS256")
-	if alg == nil {
-		msg := fmt.Sprintf("couldn't find RS256 signing method: %v", alg)
-		logrus.StandardLogger().Error(msg)
-		return "", errors.New(msg)
-	}
 	token := jwt.NewWithClaims(alg, claims) // create new token
 	token.Header["kid"] = i.Claims["kid"]
 
