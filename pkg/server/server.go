@@ -12,7 +12,7 @@ import (
 )
 
 // ListenHost defines the name/address by which the service can be accessed.
-const ListenHost = "127.0.0.1"
+const ListenHost = "0.0.0.0"
 
 // Server - wraps *echo.Echo.
 type Server struct {
