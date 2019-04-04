@@ -133,7 +133,7 @@ func (i *Input) setClaims(tc *TestCase, ctx *Context) error {
 
 func (i *Input) generateRequestToken(ctx *Context) (string, error) {
 	alg, err := ctx.GetString("request_alg")
-	if err != nil {
+	if err != nil && err != ErrNotFound {
 		return "", err
 	}
 
