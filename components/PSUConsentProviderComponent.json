@@ -27,7 +27,7 @@
         },
         "formData": {
           "grant_type": "client_credentials",
-          "scope": "accounts openid"
+          "scope": "accounts"
         }
       },
       "context": {
@@ -99,9 +99,9 @@
       },
       "context": {
         "baseurl": "$authorisation_endpoint"
-      },  
+      },
       "expect": {
-        "status-code": 404        
+        "status-code": 404
       }
     }
   ]
