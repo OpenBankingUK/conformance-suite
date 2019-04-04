@@ -298,7 +298,7 @@ func calcKid(modulus string) (string, error) {
 	sum := sumer.Sum(nil)
 
 	sumBase64 := base64.StdEncoding.EncodeToString(sum)
-	sumBase64NoTrailingEquals := strings.ReplaceAll(sumBase64, "=", "")
+	sumBase64NoTrailingEquals := strings.TrimSuffix(sumBase64, "=")
 
 	return sumBase64NoTrailingEquals, nil
 }
