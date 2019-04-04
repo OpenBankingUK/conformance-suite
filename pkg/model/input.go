@@ -115,7 +115,7 @@ func (i *Input) setClaims(tc *TestCase, ctx *Context) error {
 			}
 		case "jwt-bearer":
 			i.AppMsg("==> executing jwt-bearer strategy")
-			token, err := i.signJWT(ctx, jwt.SigningMethodRS256)
+			token, err := i.generateSignedJWT(ctx, jwt.SigningMethodRS256)
 			if err != nil {
 				return i.AppErr(fmt.Sprintf("error creating AlgRS256JWT %s", err.Error()))
 			}
@@ -136,13 +136,13 @@ func (i *Input) generateRequestToken(ctx *Context) (string, error) {
 	var token string
 	switch alg {
 	case "PS256":
-		token, err = i.signJWT(ctx, jwt.SigningMethodPS256)
+		token, err = i.generateSignedJWT(ctx, jwt.SigningMethodPS256)
 	case "RS256":
-		token, err = i.signJWT(ctx, jwt.SigningMethodRS256)
+		token, err = i.generateSignedJWT(ctx, jwt.SigningMethodRS256)
 	case "NONE":
 		fallthrough
 	default:
-		token, err = i.createAlgNoneJWT()
+		token, err = i.generateUnsignedJWT()
 	}
 	return token, err
 }
@@ -245,7 +245,7 @@ func (i *Input) Clone() Input {
 	return in
 }
 
-func (i *Input) signJWT(ctx *Context, alg jwt.SigningMethod) (string, error) {
+func (i *Input) generateSignedJWT(ctx *Context, alg jwt.SigningMethod) (string, error) {
 	uuid := uuid.New()
 	claims := jwt.MapClaims{}
 	claims["iss"] = i.Claims["iss"]
@@ -290,7 +290,7 @@ type consentIDTok struct {
 
 // Initial implementation of JWT creation with algorithm 'None'
 // Used only to support the PSU consent URL generation for headless consent flow
-func (i *Input) createAlgNoneJWT() (string, error) {
+func (i *Input) generateUnsignedJWT() (string, error) {
 	claims := jwt.MapClaims{}
 	claims["iss"] = i.Claims["iss"]
 	claims["scope"] = i.Claims["scope"]
