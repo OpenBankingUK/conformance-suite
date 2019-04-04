@@ -37,7 +37,6 @@ func getPaymentConsents(tests []model.TestCase, definition RunDefinition, requir
 }
 
 func runPaymentConsents(tcs []model.TestCase, rt []manifest.RequiredTokens, ctx *model.Context, executor *Executor) ([]manifest.RequiredTokens, error) {
-
 	localCtx := model.Context{}
 	localCtx.PutContext(ctx)
 	localCtx.PutString("scope", "payments")
