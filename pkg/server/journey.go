@@ -448,6 +448,9 @@ func (wj *journey) configParametersToJourneyContext() error {
 	}
 	wj.context.PutString(ctxConstBasicAuthentication, basicauth)
 	wj.context.PutString(ctxConstIssuer, wj.config.issuer)
+
+	wj.context.PutString("token_endpoint_auth_methods_supported", "tls_client_auth") /// allows testing of mtls auth --- will need to pickup config parameter when available
+
 	return nil
 }
 

@@ -22,12 +22,11 @@
         "endpoint": "$token_endpoint",
         "headers": {
           "content-type": "application/x-www-form-urlencoded",
-          "accept": "*/*",
-          "authorization": "Basic $basic_authentication"
+          "accept": "*/*"
         },
         "formData": {
           "grant_type": "client_credentials",
-          "scope": "accounts openid"
+          "scope": "accounts"
         }
       },
       "context": {
