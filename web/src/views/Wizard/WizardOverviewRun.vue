@@ -14,6 +14,7 @@
               v-if="wsConnected"
               id="ws-connected"
             />
+            <h5>Tokens</h5>
             <b-table
               :items="tokens_acquired"
               :fields="tokenTableFields"

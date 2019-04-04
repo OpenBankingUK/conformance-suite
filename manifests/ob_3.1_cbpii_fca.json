@@ -1,3 +1,15 @@
 {
-  "scripts": []
+  "scripts": [
+    {
+      "description": "CreateFundsConfirmationConsents",
+      "id": "OB-301-CBPII-000001",
+      "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937951380/Confirmation+of+Funds+API+Specification+-+v3.1",
+      "detail": "CreateFundsConfirmationConsents",
+      "uri": "/funds-confirmation-consents",
+      "uriImplementation": "mandatory",
+      "resource": "CreateFundsConfirmationConsents",
+      "method": "post",
+      "schemaCheck": false
+    }
+  ]
 }

@@ -4,6 +4,7 @@ package generation
 
 import discovery "bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
 import logrus "github.com/sirupsen/logrus"
+import manifest "bitbucket.org/openbankingteam/conformance-suite/pkg/manifest"
 import mock "github.com/stretchr/testify/mock"
 import model "bitbucket.org/openbankingteam/conformance-suite/pkg/model"
 
@@ -13,7 +14,7 @@ type MockGenerator struct {
 }
 
 // GenerateManifestTests provides a mock function with given fields: log, config, _a2, ctx
-func (_m *MockGenerator) GenerateManifestTests(log *logrus.Entry, config GeneratorConfig, _a2 discovery.ModelDiscovery, ctx *model.Context) TestCasesRun {
+func (_m *MockGenerator) GenerateManifestTests(log *logrus.Entry, config GeneratorConfig, _a2 discovery.ModelDiscovery, ctx *model.Context) (TestCasesRun, map[string][]manifest.RequiredTokens) {
 	ret := _m.Called(log, config, _a2, ctx)
 
 	var r0 TestCasesRun
@@ -23,19 +24,14 @@ func (_m *MockGenerator) GenerateManifestTests(log *logrus.Entry, config Generat
 		r0 = ret.Get(0).(TestCasesRun)
 	}
 
-	return r0
-}
-
-// GenerateSpecificationTestCases provides a mock function with given fields: log, config, _a2, ctx
-func (_m *MockGenerator) GenerateSpecificationTestCases(log *logrus.Entry, config GeneratorConfig, _a2 discovery.ModelDiscovery, ctx *model.Context) TestCasesRun {
-	ret := _m.Called(log, config, _a2, ctx)
-
-	var r0 TestCasesRun
-	if rf, ok := ret.Get(0).(func(*logrus.Entry, GeneratorConfig, discovery.ModelDiscovery, *model.Context) TestCasesRun); ok {
-		r0 = rf(log, config, _a2, ctx)
+	var r1 map[string][]manifest.RequiredTokens
+	if rf, ok := ret.Get(1).(func(*logrus.Entry, GeneratorConfig, discovery.ModelDiscovery, *model.Context) map[string][]manifest.RequiredTokens); ok {
+		r1 = rf(log, config, _a2, ctx)
 	} else {
-		r0 = ret.Get(0).(TestCasesRun)
+		if ret.Get(1) != nil {
+			r1 = ret.Get(1).(map[string][]manifest.RequiredTokens)
+		}
 	}
 
-	return r0
+	return r0, r1
 }

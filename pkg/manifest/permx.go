@@ -5,8 +5,9 @@ import (
 	"fmt"
 	"strings"
 
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
 	"github.com/sirupsen/logrus"
+
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
 )
 
 // TestCasePermission -
@@ -179,21 +180,43 @@ func getRequiredTokens(tcps []TestCasePermission) ([]RequiredTokens, error) {
 
 // MapTokensToTestCases - applies consented tokens to testcases
 func MapTokensToTestCases(rt []RequiredTokens, tcs []model.TestCase) map[string]string {
-	tokenMap := make(map[string]string, 0)
+	ctxLogger := logrus.StandardLogger().WithFields(logrus.Fields{
+		"function": "MapTokensToTestCases",
+		"rt":       fmt.Sprintf("%#v", rt),
+	})
+
+	ctxLogger.Debug("MapTokensToTestCases ...")
+	tokenMap := map[string]string{}
 	for k, test := range tcs {
 		tokenName, isEmptyToken, err := getRequiredTokenForTestcase(rt, test.ID)
 		if err != nil {
-			logrus.Warnf("no token for testcase %s", test.ID)
+			ctxLogger.WithFields(logrus.Fields{
+				"test":         fmt.Sprintf("%#v", test),
+				"tokenName":    tokenName,
+				"isEmptyToken": isEmptyToken,
+				"err":          err,
+			}).Error("Error getRequiredTokenForTestcase")
 			continue
 		}
+
 		if !isEmptyToken {
+			ctxLogger.WithFields(logrus.Fields{
+				"test":         fmt.Sprintf("%#v", test),
+				"tokenName":    tokenName,
+				"isEmptyToken": isEmptyToken,
+			}).Info("InjectBearerToken ...")
 			test.InjectBearerToken("$" + tokenName)
 		}
+
 		tcs[k] = test
 	}
 	for _, v := range rt {
 		tokenMap[v.Name] = v.Token
 	}
+
+	ctxLogger.WithFields(logrus.Fields{
+		"tokenMap": fmt.Sprintf("%#v", tokenMap),
+	}).Info("Mapped RequiredTokens to TestCases")
 
 	return tokenMap
 }

@@ -110,7 +110,7 @@ func getAccountConsents(consentRequirements []model.SpecConsentRequirements, def
 }
 
 func getTokenParametersFromRequiredTokens(tokens []manifest.RequiredTokens) map[string][]string {
-	tokenParameters := make(map[string][]string, 0)
+	tokenParameters := map[string][]string{}
 	for _, reqToken := range tokens {
 		tokenParameters[reqToken.Name] = reqToken.Perms
 	}
@@ -118,15 +118,27 @@ func getTokenParametersFromRequiredTokens(tokens []manifest.RequiredTokens) map[
 }
 
 func waitForConsentIDs(consentIDChannel chan TokenConsentIDItem, consentIDsRequired int) (TokenConsentIDs, error) {
+	logger := logrus.StandardLogger().WithFields(logrus.Fields{
+		"function":           "waitForConsentIDs",
+		"consentIDsRequired": consentIDsRequired,
+	})
+
 	consentItems := TokenConsentIDs{}
 	consentIDsReceived := 0
-	logrus.Debugf("waiting for consentids items ...")
+	logger.Debug("Waiting for items on consentIDChannel ...")
 	for {
 		select {
 		case item := <-consentIDChannel:
 			logrus.Debugf("received consent channel item item %#v", item)
 			consentIDsReceived++
 			consentItems = append(consentItems, item)
+
+			logger.WithFields(logrus.Fields{
+				"consentIDsReceived": consentIDsReceived,
+				"consentIDsRequired": consentIDsRequired,
+				"item":               fmt.Sprintf("%#v", item),
+			}).Info("Progressing ...")
+
 			errs := errors.New("")
 			if consentIDsReceived == consentIDsRequired {
 				logrus.Infof("Got %d required tokens - progressing..", consentIDsReceived)
@@ -137,6 +149,7 @@ func waitForConsentIDs(consentIDChannel chan TokenConsentIDItem, consentIDsRequi
 						logrus.Infof("token: %s, consentid: %s", v.TokenName, v.ConsentID)
 					}
 				}
+
 				if len(errs.Error()) > 0 {
 					return consentItems, errs
 				}
@@ -162,10 +175,14 @@ func getConsentTokensAndPermissions(consentRequirements []model.SpecConsentRequi
 			}
 		}
 	}
-	for k, v := range tokenParameters {
-		logger.Debugf("Getting ConsentToken: %s: %s", k, buildPermissionString(v))
-	}
 
+	for tokenParameterKey, tokenParameterValue := range tokenParameters {
+		logger.WithFields(logrus.Fields{
+			"tokenParameterValue":   tokenParameterValue,
+			"tokenParameterKey":     tokenParameterKey,
+			"buildPermissionString": buildPermissionString(tokenParameterValue),
+		}).Debugf("Getting ConsentToken")
+	}
 	return tokenParameters
 }
 
@@ -196,10 +213,17 @@ type ExchangeParameters struct {
 // ExchangeCodeForAccessToken - runs a testcase to perform this operation
 func ExchangeCodeForAccessToken(tokenName, code, scope string, definition RunDefinition, ctx *model.Context) (accesstoken string, err error) {
 	logger := logrus.StandardLogger().WithField("module", "ExchangeCodeForAccessToken")
-	logger.Debugf("Looking to exchange code %s, tokenName: %s", code, tokenName)
+	logger.WithFields(logrus.Fields{
+		"code":      code,
+		"tokenName": tokenName,
+	}).Debug("Exchanging code for token")
 	grantToken, err := exchangeCodeForToken(code, scope, ctx, logger)
 	if err != nil {
-		logger.Errorf("error attempting to exchange token %s", err.Error())
+		logger.WithFields(logrus.Fields{
+			"code":      code,
+			"tokenName": tokenName,
+			"err":       err,
+		}).Error("Exchanging code for token failed")
 	}
 	return grantToken.AccessToken, err
 }
@@ -213,6 +237,10 @@ type grantToken struct {
 }
 
 func exchangeCodeForToken(code, scope string, ctx *model.Context, logger *logrus.Entry) (grantToken, error) {
+	logger = logger.WithFields(logrus.Fields{
+		"function": "exchangeCodeForToken",
+	})
+
 	basicAuth, err := ctx.GetString("basic_authentication")
 	if err != nil {
 		return grantToken{}, errors.New("cannot get basic authentication for code")
@@ -229,7 +257,9 @@ func exchangeCodeForToken(code, scope string, ctx *model.Context, logger *logrus
 		scope = "accounts" // lets default to a scope of accounts
 	}
 
-	logger.Debugf("[%s] attempting POST %s", "exchangeCodeForToken", tokenEndpoint)
+	logger.WithFields(logrus.Fields{
+		"tokenEndpoint": tokenEndpoint,
+	}).Debugf("Attempting POST")
 	resp, err := resty.R().
 		SetHeader("content-type", "application/x-www-form-urlencoded").
 		SetHeader("accept", "*/*").
@@ -243,14 +273,20 @@ func exchangeCodeForToken(code, scope string, ctx *model.Context, logger *logrus
 		Post(tokenEndpoint)
 
 	if err != nil {
-		logger.Debugf("error accessing exchange code url %s: %s ", tokenEndpoint, err.Error())
+		logger.WithFields(logrus.Fields{
+			"tokenEndpoint": tokenEndpoint,
+			"err":           err,
+		}).Debug("Error accessing exchange code")
 		return grantToken{}, err
 	}
 	if resp.StatusCode() != 200 {
 		return grantToken{}, fmt.Errorf("bad status code %d from exchange token %s/token", resp.StatusCode(), tokenEndpoint)
 	}
+
 	var t grantToken
 	err = json.Unmarshal(resp.Body(), &t)
-	logger.Debugf("exchangeCodeForToken  token: %#v", t)
+	logger.WithFields(logrus.Fields{
+		"t": fmt.Sprintf("%#v", t),
+	}).Debugf("OK")
 	return t, err
 }
