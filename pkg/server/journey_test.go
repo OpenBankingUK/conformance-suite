@@ -9,6 +9,8 @@ import (
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery/mocks"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/generation"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
+
 	gmocks "bitbucket.org/openbankingteam/conformance-suite/pkg/generation"
 	"github.com/pkg/errors"
 	"github.com/stretchr/testify/require"
@@ -132,6 +134,11 @@ func TestJourneySetConfig(t *testing.T) {
 	certificateTransport, err := authentication.NewCertificate(publicCertValid, privateCertValid)
 	require.NoError(err)
 	require.NotNil(certificateTransport)
+
+	resourceIDs := model.ResourceIDs{
+		AccountIDs:   []model.ResourceAccountID{{AccountID: "account-id"}},
+		StatementIDs: []model.ResourceStatementID{{StatementID: "statement-id"}},
+	}
 	config := JourneyConfig{
 		certificateSigning:    certificateSigning,
 		certificateTransport:  certificateTransport,
@@ -143,6 +150,8 @@ func TestJourneySetConfig(t *testing.T) {
 		xXFAPIFinancialID:     "0015800001041RHAAY",
 		issuer:                "https://modelobankauth2018.o3bank.co.uk:4101",
 		redirectURL:           fmt.Sprintf("https://%s:8443/conformancesuite/callback", ListenHost),
+		resourceIDs:           resourceIDs,
+		apiVersion:            "v3.1",
 	}
 	err = journey.SetConfig(config)
 	require.NoError(err)
