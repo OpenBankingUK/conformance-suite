@@ -10,10 +10,9 @@ import Vuex from 'vuex';
 import { cloneDeep } from 'lodash';
 
 import actions from './actions';
-import mutations from './mutations';
-import getters from './getters';
-import state from './state';
-import * as types from './mutation-types';
+import {
+  mutationTypes as types, mutations, state, getters,
+} from './index';
 
 import api from '../../../api';
 // https://jestjs.io/docs/en/mock-functions#mocking-modules
@@ -60,6 +59,11 @@ describe('web/src/store/modules/config', () => {
         resource_ids: {
           account_ids: [{ account_id: '' }],
           statement_ids: [{ statement_id: '' }],
+        },
+        creditor_account: {
+          scheme_name: '',
+          identification: '',
+          name: '',
         },
       });
     });
@@ -121,6 +125,11 @@ describe('web/src/store/modules/config', () => {
           account_ids: [{ account_id: '' }],
           statement_ids: [{ statement_id: '' }],
         },
+        creditor_account: {
+          scheme_name: '',
+          identification: '',
+          name: '',
+        },
       });
 
       store.commit(types.SET_TOKEN_ENDPOINT_AUTH_METHODS, ['tls_client_auth', 'client_secret_basic']);
@@ -143,6 +152,11 @@ describe('web/src/store/modules/config', () => {
           account_ids: [{ account_id: '' }],
           statement_ids: [{ statement_id: '' }],
         },
+        creditor_account: {
+          scheme_name: '',
+          identification: '',
+          name: '',
+        },
       });
 
       store.commit(types.SET_CLIENT_SECRET, '2cfb31a3-5443-4e65-b2bc-ef8e00266a77');
@@ -164,6 +178,11 @@ describe('web/src/store/modules/config', () => {
           account_ids: [{ account_id: '' }],
           statement_ids: [{ statement_id: '' }],
         },
+        creditor_account: {
+          scheme_name: '',
+          identification: '',
+          name: '',
+        },
       });
 
       store.commit(types.SET_TOKEN_ENDPOINT, 'https://modelobank2018.o3bank.co.uk:4201/token');
@@ -184,6 +203,11 @@ describe('web/src/store/modules/config', () => {
         resource_ids: {
           account_ids: [{ account_id: '' }],
           statement_ids: [{ statement_id: '' }],
+        },
+        creditor_account: {
+          scheme_name: '',
+          identification: '',
+          name: '',
         },
       });
 
@@ -209,6 +233,11 @@ describe('web/src/store/modules/config', () => {
           account_ids: [{ account_id: '' }],
           statement_ids: [{ statement_id: '' }],
         },
+        creditor_account: {
+          scheme_name: '',
+          identification: '',
+          name: '',
+        },
       });
 
       store.commit(types.SET_RESOURCE_BASE_URL, 'https://modelobank2018.o3bank.co.uk:4501');
@@ -229,6 +258,11 @@ describe('web/src/store/modules/config', () => {
         resource_ids: {
           account_ids: [{ account_id: '' }],
           statement_ids: [{ statement_id: '' }],
+        },
+        creditor_account: {
+          scheme_name: '',
+          identification: '',
+          name: '',
         },
       });
 
@@ -251,6 +285,11 @@ describe('web/src/store/modules/config', () => {
           account_ids: [{ account_id: '' }],
           statement_ids: [{ statement_id: '' }],
         },
+        creditor_account: {
+          scheme_name: '',
+          identification: '',
+          name: '',
+        },
       });
 
       store.commit(types.SET_ISSUER, 'https://modelobankauth2018.o3bank.co.uk:4101');
@@ -271,6 +310,11 @@ describe('web/src/store/modules/config', () => {
         resource_ids: {
           account_ids: [{ account_id: '' }],
           statement_ids: [{ statement_id: '' }],
+        },
+        creditor_account: {
+          scheme_name: '',
+          identification: '',
+          name: '',
         },
       });
 
@@ -293,6 +337,11 @@ describe('web/src/store/modules/config', () => {
           account_ids: [{ account_id: '' }, { account_id: 'account-id' }],
           statement_ids: [{ statement_id: '' }],
         },
+        creditor_account: {
+          scheme_name: '',
+          identification: '',
+          name: '',
+        },
       });
 
       store.commit(types.ADD_RESOURCE_STATEMENT_ID, { statement_id: 'statement-id' });
@@ -313,6 +362,11 @@ describe('web/src/store/modules/config', () => {
         resource_ids: {
           account_ids: [{ account_id: '' }, { account_id: 'account-id' }],
           statement_ids: [{ statement_id: '' }, { statement_id: 'statement-id' }],
+        },
+        creditor_account: {
+          scheme_name: '',
+          identification: '',
+          name: '',
         },
       });
     });
@@ -338,6 +392,11 @@ describe('web/src/store/modules/config', () => {
           account_ids: [{ account_id: '' }],
           statement_ids: [{ statement_id: '' }],
         },
+        creditor_account: {
+          scheme_name: '',
+          identification: '',
+          name: '',
+        },
       });
 
       const acctIDs = [{ account_id: '123' }, { account_id: '456' }];
@@ -361,6 +420,11 @@ describe('web/src/store/modules/config', () => {
           account_ids: [{ account_id: '123' }, { account_id: '456' }],
           statement_ids: [{ statement_id: '' }],
         },
+        creditor_account: {
+          scheme_name: '',
+          identification: '',
+          name: '',
+        },
       });
 
       const stmtIDs = [{ statement_id: '123' }, { statement_id: '456' }];
@@ -383,6 +447,11 @@ describe('web/src/store/modules/config', () => {
         resource_ids: {
           account_ids: [{ account_id: '123' }, { account_id: '456' }],
           statement_ids: [{ statement_id: '123' }, { statement_id: '456' }],
+        },
+        creditor_account: {
+          scheme_name: '',
+          identification: '',
+          name: '',
         },
       });
     });
@@ -412,6 +481,11 @@ describe('web/src/store/modules/config', () => {
           resource_ids: {
             account_ids: [{ account_id: '' }],
             statement_ids: [{ statement_id: '' }],
+          },
+          creditor_account: {
+            scheme_name: '',
+            identification: '',
+            name: '',
           },
         });
 
@@ -461,6 +535,11 @@ describe('web/src/store/modules/config', () => {
           resource_ids: {
             account_ids: [{ account_id: '' }],
             statement_ids: [{ statement_id: '' }],
+          },
+          creditor_account: {
+            scheme_name: '',
+            identification: '',
+            name: '',
           },
         });
       });

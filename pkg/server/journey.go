@@ -12,6 +12,7 @@ import (
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/generation"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/manifest"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/server/models"
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 )
@@ -136,6 +137,11 @@ func (wj *journey) TestCases() (generation.TestCasesRun, error) {
 	if !wj.testCasesRunGenerated {
 		config := wj.makeGeneratorConfig()
 		discovery := wj.validDiscoveryModel.DiscoveryModel
+		if len(discovery.DiscoveryItems) > 0 { // default currently "v3.1" ... allow "v3.0"
+			// version string gets replaced in URLS like  "endpoint": "/open-banking/$api-version/aisp/account-access-consents",
+			wj.config.apiVersion = discovery.DiscoveryItems[0].APISpecification.Version
+			wj.context.PutString(ctxAPIVersion, wj.config.apiVersion)
+		}
 
 		wj.log.Debugln("Journey:GenerationManifestTests")
 		wj.testCasesRun, wj.permissions = wj.generator.GenerateManifestTests(wj.log, config, discovery, &wj.context)
@@ -151,6 +157,16 @@ func (wj *journey) TestCases() (generation.TestCasesRun, error) {
 			consentIds, tokenMap, err := executors.GetPsuConsent(definition, &wj.context, &wj.testCasesRun, wj.permissions)
 			if err != nil {
 				return generation.TestCasesRun{}, errors.WithMessage(errConsentIDAcquisitionFailed, err.Error())
+			}
+			for k := range wj.permissions {
+				if k == "payments" {
+					paymentpermissions := wj.permissions["payments"]
+					if len(paymentpermissions) > 0 {
+						for _, spec := range wj.testCasesRun.TestCases {
+							manifest.MapTokensToPaymentTestCases(paymentpermissions, spec.TestCases, &wj.context)
+						}
+					}
+				}
 			}
 			for k, v := range tokenMap {
 				wj.context.PutString(k, v)
@@ -301,6 +317,8 @@ type JourneyConfig struct {
 	issuer                  string
 	redirectURL             string
 	resourceIDs             model.ResourceIDs
+	creditorAccount         models.Payment
+	apiVersion              string
 }
 
 func (wj *journey) SetConfig(config JourneyConfig) error {
@@ -331,6 +349,12 @@ const ctxConstAuthorisationEndpoint = "authorisation_endpoint"
 const ctxConstBasicAuthentication = "basic_authentication"
 const ctxConstResourceBaseURL = "resource_server"
 const ctxConstIssuer = "issuer"
+const ctxAPIVersion = "api-version"
+const ctxConsentedAccountID = "consentedAccountId"
+const ctxStatementID = "statementId"
+const ctxCreditorSchema = "creditorScheme"
+const ctxCreditorIdentification = "creditorIdentification"
+const ctxCreditorName = "creditorName"
 
 func (wj *journey) configParametersToJourneyContext() error {
 	wj.context.PutString(ctxConstClientID, wj.config.clientID)
@@ -341,6 +365,13 @@ func (wj *journey) configParametersToJourneyContext() error {
 	wj.context.PutString(ctxConstRedirectURL, wj.config.redirectURL)
 	wj.context.PutString(ctxConstAuthorisationEndpoint, wj.config.authorizationEndpoint)
 	wj.context.PutString(ctxConstResourceBaseURL, wj.config.resourceBaseURL)
+	wj.config.apiVersion = "v3.1"
+	wj.context.PutString(ctxAPIVersion, wj.config.apiVersion)
+	wj.context.PutString(ctxConsentedAccountID, wj.config.resourceIDs.AccountIDs[0].AccountID)
+	wj.context.PutString(ctxStatementID, wj.config.resourceIDs.StatementIDs[0].StatementID)
+	wj.context.PutString(ctxCreditorSchema, wj.config.creditorAccount.SchemeName)
+	wj.context.PutString(ctxCreditorIdentification, wj.config.creditorAccount.Identification)
+	wj.context.PutString(ctxCreditorName, wj.config.creditorAccount.Name)
 
 	basicauth, err := authentication.CalculateClientSecretBasicToken(wj.config.clientID, wj.config.clientSecret)
 	if err != nil {

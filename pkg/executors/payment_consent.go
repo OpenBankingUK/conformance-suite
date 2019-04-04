@@ -97,6 +97,7 @@ func runPaymentConsents(tcs []model.TestCase, rt []manifest.RequiredTokens, ctx 
 			return nil, errors.New("Payment PSU exchange test case failed - cannot find `consent_url` in context " + err.Error())
 		}
 		localCtx.Delete("consent_url")
+		ctx.PutContext(&localCtx)
 		rt[k] = v
 	}
 

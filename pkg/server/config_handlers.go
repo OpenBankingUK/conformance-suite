@@ -1,19 +1,20 @@
 package server
 
 import (
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
 	"fmt"
 	"gopkg.in/resty.v1"
 	"net/http"
 	"net/url"
 	"reflect"
 
-	"github.com/sirupsen/logrus"
-
+	validation "github.com/go-ozzo/ozzo-validation"
 	"github.com/labstack/echo"
 	"github.com/pkg/errors"
+	"github.com/sirupsen/logrus"
 
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/authentication"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/server/models"
 )
 
 type configHandlers struct {
@@ -36,6 +37,14 @@ type GlobalConfiguration struct {
 	Issuer                  string            `json:"issuer" validate:"valid_url"`
 	RedirectURL             string            `json:"redirect_url" validate:"valid_url"`
 	ResourceIDs             model.ResourceIDs `json:"resource_ids" validate:"not_empty"`
+	CreditorAccount         models.Payment    `json:"creditor_account"`
+}
+
+// Validate - used by https://github.com/go-ozzo/ozzo-validation to validate struct.
+func (c GlobalConfiguration) Validate() error {
+	return validation.ValidateStruct(&c,
+		validation.Field(&c.CreditorAccount, validation.Required),
+	)
 }
 
 func newConfigHandlers(journey Journey, logger *logrus.Entry) configHandlers {
@@ -50,6 +59,10 @@ func (h configHandlers) configGlobalPostHandler(c echo.Context) error {
 	config := new(GlobalConfiguration)
 	if err := c.Bind(config); err != nil {
 		return c.JSON(http.StatusBadRequest, NewErrorResponse(errors.Wrap(err, "error with Bind")))
+	}
+
+	if err := config.Validate(); err != nil {
+		return c.JSON(http.StatusBadRequest, NewErrorResponse(err))
 	}
 
 	journeyConfig, err := MakeJourneyConfig(config)
@@ -97,6 +110,7 @@ func MakeJourneyConfig(config *GlobalConfiguration) (JourneyConfig, error) {
 		issuer:                  config.Issuer,
 		redirectURL:             config.RedirectURL,
 		resourceIDs:             config.ResourceIDs,
+		creditorAccount:         config.CreditorAccount,
 	}, nil
 }
 

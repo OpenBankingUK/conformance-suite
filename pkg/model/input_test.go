@@ -1,13 +1,16 @@
 package model
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/url"
+	"os"
 	"testing"
 	"time"
 
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/authentication"
 	"github.com/dgrijalva/jwt-go"
+	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -339,6 +342,79 @@ func TestPaymentBodyReplace(t *testing.T) {
 	assert.Nil(t, err)
 	assert.Equal(t, "{\"Data\": {\"ConsentId\": \"sdp-1-b5bbdb18-eeb1-4c11-919d-9a237c8f1c7d\",\"Initiation\":{\"InstructionIdentification\":\"SIDP01\",\"EndToEndIdentification\":\"FRESCO.21302.GFX.20\",\"InstructedAmount\":{\"Amount\":\"15.00\",\"Currency\":\"GBP\"},\"CreditorAccount\":{\"SchemeName\":\"SortCodeAccountNumber\",\"Identification\":\"20000319470104\",\"Name\":\"Messers Simplex & Co\"}} },\"Risk\":{}}", req.Body)
 }
+
+func TestPaymentBodyReplaceTestCase100300(t *testing.T) {
+	ctx := Context{
+		"x-fapi-financial-id": "myfapiid",
+		"thisSchemeName":      "myscheme",
+		"thisIdentification":  "myid",
+	}
+	_ = ctx
+	var tc TestCase
+	err := json.Unmarshal(paymentTestCaseData100300, &tc)
+	assert.Nil(t, err)
+	fmt.Printf("%#v\n", tc)
+	ctx.PutContext(&tc.Context)
+	logrus.SetOutput(os.Stdout)
+	logrus.SetLevel(logrus.TraceLevel)
+	ctx.DumpContext("Testcase")
+	req, err := tc.Prepare(&ctx)
+
+	assert.Nil(t, err)
+	_ = req
+	fmt.Printf("%#v\n", tc)
+
+}
+
+var paymentTestCaseData100300 = []byte(`
+{
+    "@id": "OB-301-DOP-100300",
+    "name": "Domestic Payment consents succeeds with minimal data set with additional schema checks.",
+    "purpose": "Check that the resource succeeds posting a domestic payment consents with a minimal data set and checks additional schema.",
+    "input": {
+        "method": "POST",
+        "endpoint": "/domestic-payment-consents",
+        "headers": {
+            "Content-Type": "application/json; charset=utf-8",
+            "x-fapi-financial-id": "$x-fapi-financial-id",
+            "x-fapi-interaction-id": "b4405450-febe-11e8-80a5-0fcebb1574e1",
+            "x-fcs-testcase-id": "OB-301-DOP-100300"
+        },
+        "bodyData": "{\n    \"Data\": {\n        \"Initiation\": {\n            \"CreditorAccount\": {\n                \"Identification\": \"$thisIdentification\",\n                \"Name\": \"CF Tool\",\n                \"SchemeName\": \"$thisSchemeName\"\n            },\n            \"EndToEndIdentification\": \"$thisInstructionIdentification\",\n            \"InstructedAmount\": {\n                \"Amount\": \"1.00\",\n                \"Currency\": \"$thisCurrency\"\n            },\n            \"InstructionIdentification\": \"$thisInstructionIdentification\"\n        }\n    },\n    \"Risk\": {}\n}"
+    },
+    "context": {
+        "baseurl": "http://mybaseurl",
+        "requestConsent": "true",
+        "thisCurrency": "GBP",
+        "thisInstructionIdentification": "OB-301-DOP-100300",
+        "tokenScope": "payments",
+        "x-fapi-financial-id": "$x-fapi-financial-id"
+    },
+    "expect": {
+        "status-code": 201,
+        "schema-validation": true,
+        "matches": [
+            {
+                "header-present": "x-fapi-interaction-id"
+            },
+            {
+                "json": "Data.Status",
+                "value": "AwaitingAuthorisation"
+            },
+            {
+                "json": "Data.ConsentId"
+            }
+        ],
+        "contextPut": {
+            "matches": [
+                {
+                    "name": "OB-301-DOP-100300-ConsentId",
+                    "json": "Data.ConsentId"
+                }
+            ]
+        }
+    }
+}`)
 
 var selfsignedDummykey = `-----BEGIN RSA PRIVATE KEY----- 
 MIIEpAIBAAKCAQEA8Gl2x9KsmqwdmZd+BdZYtDWHNRXtPd/kwiR6luU+4w76T+9m

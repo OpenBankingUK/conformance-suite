@@ -49,7 +49,7 @@
       "name": "PostAccount Request",
       "input": {
         "method": "POST",
-        "endpoint": "/open-banking/v3.1/aisp/account-access-consents",
+        "endpoint": "/open-banking/$api-version/aisp/account-access-consents",
         "headers": {
           "content-type": "application/json",
           "accept": "*/*",
@@ -71,7 +71,7 @@
         }],
         "contextPut": {
           "matches": [{
-            "name": "my_id",
+            "name": "post-account-consent-id",
             "description": "gets the consentid from PostAccountRequest ",
             "json": "Data.ConsentId"
           }]
@@ -92,14 +92,14 @@
           "iss": "$client_id",
           "scope": "openid accounts",
           "redirect_url": "$redirect_url",
-          "consentId": "$my_id",
+          "consentId": "$post-account-consent-id",
           "responseType": "code",
           "state":"$token_name"
         }
       },
       "context": {
         "baseurl": "$authorisation_endpoint"
-      },
+      },  
       "expect": {
         "status-code": 404        
       }

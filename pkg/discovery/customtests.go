@@ -18,20 +18,3 @@ type SpecificationTestCases struct {
 	Specification ModelAPISpecification `json:"apiSpecification"`
 	TestCases     []model.TestCase      `json:"testCases"`
 }
-
-func generateSpecificationTestCases(model *ModelDiscovery) []SpecificationTestCases {
-	results := []SpecificationTestCases{}
-	for _, customTest := range model.CustomTests { // assume ordering is prerun ...  ...
-		results = append(results, getCustomTestCases(&customTest))
-	}
-	return results
-}
-
-func getCustomTestCases(discoReader *CustomTest) SpecificationTestCases {
-	spec := ModelAPISpecification{Name: discoReader.Name}
-	specTestCases := SpecificationTestCases{Specification: spec}
-	testcases := []model.TestCase{}
-	testcases = append(testcases, discoReader.Sequence...)
-	specTestCases.TestCases = testcases
-	return specTestCases
-}
