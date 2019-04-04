@@ -12,10 +12,11 @@ import (
 // OpenIDConfiguration - The OpenID Connect discovery document retrieved by calling /.well-known/openid-configuration.
 // https://openid.net/specs/openid-connect-discovery-1_0.html
 type OpenIDConfiguration struct {
-	TokenEndpoint                     string   `json:"token_endpoint"`
-	TokenEndpointAuthMethodsSupported []string `json:"token_endpoint_auth_methods_supported"`
-	AuthorizationEndpoint             string   `json:"authorization_endpoint"`
-	Issuer                            string   `json:"issuer"`
+	TokenEndpoint                          string   `json:"token_endpoint"`
+	TokenEndpointAuthMethodsSupported      []string `json:"token_endpoint_auth_methods_supported"`
+	RequestObjectSigningAlgValuesSupported []string `json:"request_object_signing_alg_values_supported"`
+	AuthorizationEndpoint                  string   `json:"authorization_endpoint"`
+	Issuer                                 string   `json:"issuer"`
 }
 
 func OpenIdConfig(url string) (OpenIDConfiguration, error) {

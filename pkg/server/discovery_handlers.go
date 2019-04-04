@@ -12,11 +12,12 @@ import (
 )
 
 type PostDiscoveryModelResponse struct {
-	TokenEndpoints                 map[string]string   `json:"token_endpoints"`
-	TokenEndpointAuthMethods       map[string][]string `json:"token_endpoint_auth_methods"`
-	DefaultTokenEndpointAuthMethod map[string]string   `json:"default_token_endpoint_auth_method"`
-	AuthorizationEndpoints         map[string]string   `json:"authorization_endpoints"`
-	Issuers                        map[string]string   `json:"issuers"`
+	TokenEndpoints                         map[string]string   `json:"token_endpoints"`
+	TokenEndpointAuthMethods               map[string][]string `json:"token_endpoint_auth_methods"`
+	DefaultTokenEndpointAuthMethod         map[string]string   `json:"default_token_endpoint_auth_method"`
+	RequestObjectSigningAlgValuesSupported map[string][]string `json:"request_object_signing_alg_values_supported"`
+	AuthorizationEndpoints                 map[string]string   `json:"authorization_endpoints"`
+	Issuers                                map[string]string   `json:"issuers"`
 }
 
 type validationFailuresResponse struct {
@@ -53,11 +54,12 @@ func (d discoveryHandlers) setDiscoveryModelHandler(c echo.Context) error {
 
 	failures = discovery.ValidationFailures{}
 	response := PostDiscoveryModelResponse{
-		TokenEndpoints:                 map[string]string{},
-		TokenEndpointAuthMethods:       map[string][]string{},
-		DefaultTokenEndpointAuthMethod: map[string]string{},
-		AuthorizationEndpoints:         map[string]string{},
-		Issuers:                        map[string]string{},
+		TokenEndpoints:                         map[string]string{},
+		TokenEndpointAuthMethods:               map[string][]string{},
+		RequestObjectSigningAlgValuesSupported: map[string][]string{},
+		DefaultTokenEndpointAuthMethod:         map[string]string{},
+		AuthorizationEndpoints:                 map[string]string{},
+		Issuers:                                map[string]string{},
 	}
 	for discoveryItemIndex, discoveryItem := range discoveryModel.DiscoveryModel.DiscoveryItems {
 		key := fmt.Sprintf("schema_version=%s", discoveryItem.APISpecification.SchemaVersion)
@@ -79,6 +81,7 @@ func (d discoveryHandlers) setDiscoveryModelHandler(c echo.Context) error {
 			response.Issuers[key] = config.Issuer
 			response.TokenEndpointAuthMethods[key] = authentication.SuiteSupportedAuthMethodsMostSecureFirst
 			response.DefaultTokenEndpointAuthMethod[key] = authentication.DefaultAuthMethod(config.TokenEndpointAuthMethodsSupported, d.logger)
+			response.RequestObjectSigningAlgValuesSupported[key] = config.RequestObjectSigningAlgValuesSupported
 		}
 	}
 
