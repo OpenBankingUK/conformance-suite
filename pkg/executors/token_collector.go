@@ -65,23 +65,35 @@ func NewTokenCollector(log *logrus.Entry, consentIds TokenConsentIDs, doneFunc f
 
 // Collect receives an accesstoken to match a named token for which we have a consentid
 func (c *tokenCollector) Collect(tokenName, accessToken string) error {
-	c.log.Debug("tokenCollector.Collect, tokensLock=false")
+	logger := c.log.WithFields(logrus.Fields{
+		"module":   "tokenCollector",
+		"function": "Collect",
+	})
+
+	logger.Debug("acquiring tokensLock")
 	c.tokensLock.Lock()
-	c.log.Debug("tokenCollector.Collect, tokensLock=true")
+	logger.Debug("acquired tokensLock")
 	defer func() {
-		c.log.Debug("tokenCollector.Collect, tokensLock=false")
+		logger.Debug("releasing tokensLock")
 		c.tokensLock.Unlock()
 	}()
 
-	c.log.Debugf("entry with tokenname %s: accessToken: %s", tokenName, accessToken)
-	if !c.tokenNameExists(tokenName) {
+	tokenNameExists := c.tokenNameExists(tokenName)
+	logger.WithFields(logrus.Fields{
+		"tokenName":       tokenName,
+		"accessToken":     accessToken,
+		"tokenNameExists": tokenNameExists,
+	}).Debug("Collecting ...")
+	if !tokenNameExists {
 		return errors.New("invalid token name: " + tokenName)
 	}
 
 	c.addAccessToken(tokenName, accessToken)
-	c.log.Debugf("collected: %d, total to be collected: %d", c.collected, len(c.consentTable))
+	logger.WithFields(logrus.Fields{
+		"collected": c.collected,
+		"total":     len(c.consentTable),
+	}).Debug("Collected")
 	if c.isDone() {
-		c.log.Debug("calling done!")
 		tokenNames := []string{}
 		for _, item := range c.consentTable {
 			tokenNames = append(tokenNames, item.TokenName)
@@ -90,18 +102,26 @@ func (c *tokenCollector) Collect(tokenName, accessToken string) error {
 		acquiredAllAccessTokens := events.NewAcquiredAllAccessTokens(tokenNames)
 		c.events.AddAcquiredAllAccessTokens(acquiredAllAccessTokens)
 
-		c.doneFunc()
+		if c.doneFunc != nil {
+			logger.Debug("Calling doneFunc ...")
+			c.doneFunc()
+		}
 	}
 
 	return nil
 }
 
 func (c *tokenCollector) Tokens() TokenConsentIDs {
-	c.log.Debug("tokenCollector.Tokens, tokensLock=false")
+	logger := c.log.WithFields(logrus.Fields{
+		"module":   "tokenCollector",
+		"function": "Tokens",
+	})
+
+	logger.Debug("acquiring tokensLock")
 	c.tokensLock.Lock()
-	c.log.Debug("tokenCollector.Collect, tokensLock=true")
+	logger.Debug("acquired tokensLock")
 	defer func() {
-		c.log.Debug("tokenCollector.Tokens, tokensLock=false")
+		logger.Debug("releasing tokensLock")
 		c.tokensLock.Unlock()
 	}()
 

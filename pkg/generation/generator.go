@@ -2,12 +2,13 @@
 package generation
 
 import (
+	"github.com/sirupsen/logrus"
+
 	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/names"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/manifest"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/permissions"
-	"github.com/sirupsen/logrus"
 )
 
 // SpecificationTestCases - test cases generated for a specification
@@ -41,6 +42,29 @@ func NewGenerator() Generator {
 // generator - implements Generator interface
 type generator struct {
 	resolver func(groups []permissions.Group) permissions.CodeSetResultSet
+}
+
+// shouldIgnoreDiscoveryItem - determine if we should process a `SchemaVersion`. Currently only the following are supported:
+// * `Account and Transaction API Specification`
+// * `Confirmation of Funds API Specification`
+//
+// All else returns `true`.
+func shouldIgnoreDiscoveryItem(apiSpecification discovery.ModelAPISpecification) bool {
+	shouldIgnore := true
+
+	supportedSchemaVersions := []string{
+		// `Account and Transaction API Specification
+		"https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.0/dist/account-info-swagger.json",
+		// `Confirmation of Funds API Specification`
+		"https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.0/dist/confirmation-funds-swagger.json",
+	}
+	for _, supportedSchemaVersion := range supportedSchemaVersions {
+		if apiSpecification.SchemaVersion == supportedSchemaVersion {
+			return false
+		}
+	}
+
+	return shouldIgnore
 }
 
 // Work in progress to integrate Manifest Test

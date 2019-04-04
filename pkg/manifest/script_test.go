@@ -4,8 +4,9 @@ import (
 	"fmt"
 	"testing"
 
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
 	"github.com/stretchr/testify/assert"
+
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
 )
 
 func TestGenerateTestCases(t *testing.T) {
@@ -16,9 +17,9 @@ func TestGenerateTestCases(t *testing.T) {
 
 	perms, err := getAccountPermissions(tests)
 	assert.Nil(t, err)
-	m := make(map[string]string, 0)
+	m := map[string]string{}
 	for _, v := range perms {
-		fmt.Printf("perms: %s %-50.50s %s\n", v.ID, v.Path, v.Permissions)
+		t.Logf("perms: %s %-50.50s %s\n", v.ID, v.Path, v.Permissions)
 		m[v.Path] = v.ID
 	}
 	requiredTokens, err := GetRequiredTokensFromTests(tests, "accounts")

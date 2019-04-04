@@ -1,10 +1,14 @@
 package model
 
 import (
+	"crypto/sha1"
+	"encoding/base64"
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
 	"net/url"
+	"strings"
 	"time"
 
 	"github.com/google/uuid"
@@ -129,7 +133,7 @@ func (i *Input) setClaims(tc *TestCase, ctx *Context) error {
 
 func (i *Input) generateRequestToken(ctx *Context) (string, error) {
 	alg, err := ctx.GetString("request_alg")
-	if err != nil {
+	if err != nil && err != ErrNotFound {
 		return "", err
 	}
 
@@ -257,7 +261,6 @@ func (i *Input) generateSignedJWT(ctx *Context, alg jwt.SigningMethod) (string, 
 	claims["jti"] = uuid
 
 	token := jwt.NewWithClaims(alg, claims) // create new token
-	token.Header["kid"] = i.Claims["kid"]
 
 	pk, ok := ctx.Get("SigningCert")
 	if !ok {
@@ -267,12 +270,37 @@ func (i *Input) generateSignedJWT(ctx *Context, alg jwt.SigningMethod) (string, 
 	if !ok {
 		return "", i.AppErr(fmt.Sprintf("input, cannot convert `SigningCert` to certificate"))
 	}
+
+	var err error
+	modulus := cert.PublicKey().N.Bytes()
+	modulusBase64 := base64.StdEncoding.EncodeToString(modulus)
+	token.Header["kid"], err = calcKid(modulusBase64)
+	if err != nil {
+		return "", i.AppErr(fmt.Sprintf("error calculating kid: %s", err.Error()))
+	}
+
 	tokenString, err := token.SignedString(cert.PrivateKey()) // sign the token - get as encoded string
 	if err != nil {
 		return "", i.AppErr(fmt.Sprintf("error siging jwt: %s", err.Error()))
 	}
 	logrus.StandardLogger().Debugf("\nCreated JWT:\n-------------\n%s\n", tokenString)
 	return tokenString, nil
+}
+
+func calcKid(modulus string) (string, error) {
+	canonicalInput := fmt.Sprintf(`{"e":"AQAB","kty":"RSA","n":"%s"}`, modulus)
+
+	sumer := sha1.New()
+	_, err := io.WriteString(sumer, canonicalInput)
+	if err != nil {
+		return "", nil
+	}
+	sum := sumer.Sum(nil)
+
+	sumBase64 := base64.StdEncoding.EncodeToString(sum)
+	sumBase64NoTrailingEquals := strings.TrimSuffix(sumBase64, "=")
+
+	return sumBase64NoTrailingEquals, nil
 }
 
 type obintentID struct {

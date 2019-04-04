@@ -1,11 +1,11 @@
 package manifest
 
 import (
-	"fmt"
 	"testing"
 
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
 	"github.com/stretchr/testify/assert"
+
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
 )
 
 func TestPermx(t *testing.T) {
@@ -14,6 +14,7 @@ func TestPermx(t *testing.T) {
 	testcasePermissions, err := getTestCasePermissions(tests)
 	assert.Nil(t, err)
 	requiredTokens, err := getRequiredTokens(testcasePermissions)
+	assert.Nil(t, err)
 	dumpJSON(requiredTokens)
 }
 
@@ -23,12 +24,15 @@ func TestGetScriptConsentTokens(t *testing.T) {
 	testcasePermissions, err := getTestCasePermissions(tests)
 	assert.Nil(t, err)
 	requiredTokens, err := getRequiredTokens(testcasePermissions)
-	populateTokens(requiredTokens)
+	assert.Nil(t, err)
+	populateTokens(t, requiredTokens)
 	dumpJSON(requiredTokens)
 }
 
-func populateTokens(gatherer []RequiredTokens) error {
-	fmt.Printf("%d entries found\n", len(gatherer))
+func populateTokens(t *testing.T, gatherer []RequiredTokens) error {
+	t.Helper()
+
+	t.Logf("%d entries found\n", len(gatherer))
 	for k, tokenGatherer := range gatherer {
 		if len(tokenGatherer.Perms) == 0 {
 			continue
@@ -46,6 +50,5 @@ func populateTokens(gatherer []RequiredTokens) error {
 
 func getToken(perms []string) (string, error) {
 	// for headless - get the okens for the permissions here
-
 	return "abigfattoken", nil
 }

@@ -6,13 +6,14 @@ import (
 
 	"time"
 
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/executors"
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/executors/events"
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/executors/results"
 	"github.com/gorilla/websocket"
 	"github.com/labstack/echo"
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
+
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/executors"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/executors/events"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/executors/results"
 )
 
 const (
@@ -152,7 +153,8 @@ func (h runHandlers) processTestCasesCompleted(ws *websocket.Conn, logger *logru
 
 	wsEvent := newTestCasesCompletedWebSocketEvent(isCompleted)
 	logger.WithFields(logrus.Fields{
-		"wsEvent": wsEvent,
+		"wsEvent.Type": wsEvent.Type,
+		"isCompleted":  isCompleted,
 	}).Info("sending event")
 	if err := ws.WriteJSON(wsEvent); err != nil {
 		logger.WithError(err).Error("[processTestCasesCompleted] writing json to websocket")
@@ -171,7 +173,8 @@ func (h runHandlers) processTestCaseResult(ws *websocket.Conn, logger *logrus.En
 
 	wsEvent := newTestCaseResultWebSocketEvent(result)
 	logger.WithFields(logrus.Fields{
-		"wsEvent": wsEvent,
+		"wsEvent.Type": wsEvent.Type,
+		"result.Id":    result.Id,
 	}).Info("sending event")
 	if err := ws.WriteJSON(wsEvent); err != nil {
 		logger.WithError(err).Error("[processTestCaseResult] writing json to websocket")
@@ -190,7 +193,8 @@ func (h runHandlers) processAcquiredAccessTokenEvent(ws *websocket.Conn, logger 
 
 	wsEvent := newAcquiredAccessTokenWebSocketEvent(event)
 	logger.WithFields(logrus.Fields{
-		"wsEvent": wsEvent,
+		"wsEvent.Type":    wsEvent.Type,
+		"event.TokenName": event.TokenName,
 	}).Info("sending event")
 	if err := ws.WriteJSON(wsEvent); err != nil {
 		logger.WithError(err).Error("[processAcquiredAccessTokenEvent] writing json to websocket")
@@ -209,7 +213,8 @@ func (h runHandlers) processAcquiredAllAccessTokensEvent(ws *websocket.Conn, log
 
 	wsEvent := newAcquiredAllAccessTokensWebSocketEvent(event)
 	logger.WithFields(logrus.Fields{
-		"wsEvent": wsEvent,
+		"wsEvent.Type":     wsEvent.Type,
+		"event.TokenNames": event.TokenNames,
 	}).Info("sending event")
 	if err := ws.WriteJSON(wsEvent); err != nil {
 		logger.WithError(err).Error("[processAcquiredAllAccessTokensEvent] writing json to websocket")
