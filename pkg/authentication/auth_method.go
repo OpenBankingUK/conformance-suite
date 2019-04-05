@@ -31,7 +31,9 @@ func defaultAuthMethod(suiteSupportedAuthMethods []string, openIDConfigAuthMetho
 
 	for _, method := range remaining {
 		if method != "" {
-			logger.Infof("Conformance suite doesn't support `%s` token endpoint auth method in OpenID config", method)
+			logger.WithFields(logrus.Fields{
+				"method": method,
+			}).Info("Invalid 'token_endpoint_auth_methods_supported' in OpenIDConfiguration")
 		}
 	}
 	for _, methodMatch := range intersection {

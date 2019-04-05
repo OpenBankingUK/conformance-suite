@@ -98,6 +98,10 @@ func (cj *ConsentJobs) Get(testid string) (model.TestCase, bool) {
 
 // GenerateTestCases examines a manifest file, asserts file and resources definition, then builds the associated test cases
 func GenerateTestCases(spec string, baseurl string, ctx *model.Context) ([]model.TestCase, error) {
+	logger := logrus.WithFields(logrus.Fields{
+		"function": "GenerateTestCases",
+	})
+
 	specType, err := GetSpecType(spec)
 	if err != nil {
 		return nil, errors.New("unknown specification " + spec)
@@ -105,6 +109,9 @@ func GenerateTestCases(spec string, baseurl string, ctx *model.Context) ([]model
 	logrus.Debug("GenerateManifestTestCases for spec type:" + specType)
 	scripts, refs, err := loadGenerationResources(specType)
 	if err != nil {
+		logger.WithFields(logrus.Fields{
+			"err": err,
+		}).Error("Error on loadGenerationResources")
 		return nil, err
 	}
 
@@ -120,12 +127,24 @@ func GenerateTestCases(spec string, baseurl string, ctx *model.Context) ([]model
 	for _, script := range scripts.Scripts {
 		localCtx, err := script.processParameters(&refs, ctx)
 		if err != nil {
+			logger.WithFields(logrus.Fields{
+				"err": err,
+			}).Error("Error on processParameters")
 			return nil, err
 		}
+
 		consents := []string{}
-		tc, _ := testCaseBuilder(script, refs.References, localCtx, consents, baseurl)
+		tc, err := testCaseBuilder(script, refs.References, localCtx, consents, baseurl)
+		if err != nil {
+			logger.WithFields(logrus.Fields{
+				"err": err,
+			}).Error("Error on testCaseBuilder")
+		}
+
 		localCtx.PutContext(ctx)
-		tc.ProcessReplacementFields(localCtx, false)
+		showReplacementErrors := true
+		tc.ProcessReplacementFields(localCtx, showReplacementErrors)
+
 		tests = append(tests, tc)
 	}
 	return tests, nil

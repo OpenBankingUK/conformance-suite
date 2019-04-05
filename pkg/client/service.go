@@ -175,13 +175,12 @@ func (s service) TestCases() error {
 	}
 
 	if response.StatusCode != http.StatusOK {
-		var responseBody []byte
-		_, err = response.Body.Read(responseBody)
+		responseBody, err := ioutil.ReadAll(response.Body)
 		if err != nil {
 			return errors.Wrap(err, "reading error response from generating test cases")
 		}
 
-		return errors.Errorf("unexpected status code generating test cases: %d, %s", response.StatusCode, responseBody)
+		return errors.Errorf("unexpected status code generating test cases: %d, %s", response.StatusCode, string(responseBody))
 	}
 
 	return nil

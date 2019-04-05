@@ -4,10 +4,11 @@ import (
 	"fmt"
 	"net/http"
 
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/authentication"
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
 	"github.com/labstack/echo"
 	"github.com/sirupsen/logrus"
+
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/authentication"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
 )
 
 type PostDiscoveryModelResponse struct {
@@ -28,10 +29,14 @@ type discoveryHandlers struct {
 }
 
 func newDiscoveryHandlers(webJourney Journey, logger *logrus.Entry) discoveryHandlers {
-	return discoveryHandlers{webJourney, logger.WithField("handler", "discoveryHandler")}
+	return discoveryHandlers{webJourney, logger.WithField("handler", "discoveryHandlers")}
 }
 
 func (d discoveryHandlers) setDiscoveryModelHandler(c echo.Context) error {
+	ctxLogger := d.logger.WithFields(logrus.Fields{
+		"function": "setDiscoveryModelHandler",
+	})
+
 	discoveryModel := &discovery.Model{}
 	if err := c.Bind(discoveryModel); err != nil {
 		return c.JSON(http.StatusBadRequest, NewErrorResponse(err))
@@ -58,10 +63,15 @@ func (d discoveryHandlers) setDiscoveryModelHandler(c echo.Context) error {
 		key := fmt.Sprintf("schema_version=%s", discoveryItem.APISpecification.SchemaVersion)
 
 		url := discoveryItem.OpenidConfigurationURI
-		d.logger.Info(fmt.Sprintf("GET OpenID config: %s", url))
+		ctxLogger.WithFields(logrus.Fields{
+			"url": url,
+		}).Info("GET /.well-known/openid-configuration")
 		config, e := authentication.OpenIdConfig(url)
 		if e != nil {
-			d.logger.WithError(e).Warn(fmt.Sprintf("Failed to GET %s", url))
+			ctxLogger.WithFields(logrus.Fields{
+				"url": url,
+				"err": e,
+			}).Error("Error on /.well-known/openid-configuration")
 			failures = append(failures, newOpenidConfigurationURIFailure(discoveryItemIndex, e))
 		} else {
 			response.TokenEndpoints[key] = config.TokenEndpoint
