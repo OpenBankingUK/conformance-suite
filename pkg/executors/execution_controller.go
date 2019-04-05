@@ -134,6 +134,13 @@ func (r *TestCaseRunner) runConsentAcquisitionAsync(item TokenConsentIDItem, ctx
 
 	ctxLogger := r.logger.WithField("id", uuid.New())
 	var comp model.Component
+
+	// Check for MTLS vs client basic authentication
+	authMethod, err := ctx.GetString("token_endpoint_auth_method")
+	if err != nil {
+		authMethod = "client_secret_basic"
+	}
+
 	if consentType == "psu" {
 		comp, err = model.LoadComponent("PSUConsentProviderComponent.json")
 		if err != nil {
@@ -141,6 +148,7 @@ func (r *TestCaseRunner) runConsentAcquisitionAsync(item TokenConsentIDItem, ctx
 			r.setNotRunning()
 			return
 		}
+
 	} else {
 		comp, err = model.LoadComponent("headlessTokenProviderProviderComponent.json")
 		if err != nil {
@@ -163,7 +171,7 @@ func (r *TestCaseRunner) runConsentAcquisitionAsync(item TokenConsentIDItem, ctx
 		comp.Tests[k] = v
 	}
 
-	r.executeComponentTests(&comp, ruleCtx, ctxLogger, item, consentIDChannel)
+	r.executeComponentTests(&comp, ruleCtx, ctxLogger, item, consentIDChannel, authMethod)
 	clientGrantToken, err := ruleCtx.GetString("client_access_token")
 	if err == nil {
 		logrus.StandardLogger().WithFields(logrus.Fields{
@@ -175,7 +183,7 @@ func (r *TestCaseRunner) runConsentAcquisitionAsync(item TokenConsentIDItem, ctx
 	r.setNotRunning()
 }
 
-func (r *TestCaseRunner) executeComponentTests(comp *model.Component, ruleCtx *model.Context, logger *logrus.Entry, item TokenConsentIDItem, consentIDChannel chan<- TokenConsentIDItem) {
+func (r *TestCaseRunner) executeComponentTests(comp *model.Component, ruleCtx *model.Context, logger *logrus.Entry, item TokenConsentIDItem, consentIDChannel chan<- TokenConsentIDItem, authMethod string) {
 	ctxLogger := logger.WithFields(logrus.Fields{
 		"component": comp.Name,
 		"module":    "TestCaseRunner",
@@ -188,6 +196,18 @@ func (r *TestCaseRunner) executeComponentTests(comp *model.Component, ruleCtx *m
 			return
 		}
 
+		if testcase.ID == "#compPsuConsent01" {
+			if authMethod == "client_secret_basic" {
+				testcase.Input.SetHeader("authorization", "Basic $basic_authentication")
+			}
+			if authMethod == "tls_client_auth" {
+				clientid, err := ruleCtx.GetString("client_id")
+				if err != nil {
+					ctxLogger.Warn("cannot locate client_id for tls_client_auth form field")
+				}
+				testcase.Input.SetFormField("client_id", clientid)
+			}
+		}
 		testResult := r.executeTest(testcase, ruleCtx, logger)
 		r.daemonController.AddResult(testResult)
 

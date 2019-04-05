@@ -22,8 +22,7 @@
         "endpoint": "$token_endpoint",
         "headers": {
           "content-type": "application/x-www-form-urlencoded",
-          "accept": "*/*",
-          "authorization": "Basic $basic_authentication"
+          "accept": "*/*"
         },
         "formData": {
           "grant_type": "client_credentials",
@@ -45,7 +44,7 @@
       }
     },
     {
-      "@id": "#compPsuConsent01",
+      "@id": "#compPsuConsent02",
       "name": "PostAccount Request",
       "input": {
         "method": "POST",

@@ -448,6 +448,7 @@ func (wj *journey) configParametersToJourneyContext() error {
 	}
 	wj.context.PutString(ctxConstBasicAuthentication, basicauth)
 	wj.context.PutString(ctxConstIssuer, wj.config.issuer)
+
 	return nil
 }
 

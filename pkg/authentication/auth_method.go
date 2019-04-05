@@ -16,7 +16,7 @@ const (
 // We have made our own determination of security offered by each auth method.
 // It is not from a formal definition.
 var SuiteSupportedAuthMethodsMostSecureFirst = []string{
-	ClientSecretBasic,
+	TlsClientAuth, ClientSecretBasic,
 }
 
 func DefaultAuthMethod(openIDConfigAuthMethods []string, logger *logrus.Entry) string {

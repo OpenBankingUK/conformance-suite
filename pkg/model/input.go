@@ -300,3 +300,19 @@ func (i *Input) createAlgNoneJWT() (string, error) {
 	tokenString += "."
 	return tokenString, nil
 }
+
+// SetHeader - on the testcase input object
+func (i *Input) SetHeader(key, value string) {
+	if i.Headers == nil {
+		i.Headers = map[string]string{}
+	}
+	i.Headers[key] = value
+}
+
+// SetFormField - sets a field in the form
+func (i *Input) SetFormField(key, value string) {
+	if i.FormData == nil {
+		i.FormData = map[string]string{}
+	}
+	i.FormData[key] = value
+}

@@ -47,6 +47,22 @@ func runPaymentConsents(tcs []model.TestCase, rt []manifest.RequiredTokens, ctx 
 		return nil, errors.New("Payment PSU consent load clientCredentials testcase failed")
 	}
 
+	// Check for MTLS vs client basic authentication
+	authMethod, err := ctx.GetString("token_endpoint_auth_method")
+	if err != nil {
+		authMethod = "client_secret_basic"
+	}
+	if authMethod == "client_secret_basic" {
+		tc.Input.SetHeader("authorization", "Basic $basic_authentication")
+	}
+	if authMethod == "tls_client_auth" {
+		clientid, err := ctx.GetString("client_id")
+		if err != nil {
+			logrus.Warn("cannot locate client_id for tls_client_auth form field")
+		}
+		tc.Input.SetFormField("client_id", clientid)
+	}
+
 	tc.ProcessReplacementFields(&localCtx, true)
 	err = executePaymentTest(&tc, &localCtx, executor)
 	if err != nil {
