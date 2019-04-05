@@ -174,6 +174,21 @@
         </b-form-group>
 
         <b-form-group
+          id="request_object_signing_alg_group"
+          label-for="request_object_signing_alg"
+          label="Request object signing algorithm"
+          description="Algorithm used to sign requests objects"
+        >
+          <b-form-select
+            id="request_object_signing_alg"
+            v-model="request_object_signing_alg"
+            :options="request_object_signing_alg_values_supported"
+            :state="isNotEmpty(request_object_signing_alg)"
+            required
+          />
+        </b-form-group>
+
+        <b-form-group
           id="authorization_endpoint_group"
           label-for="authorization_endpoint"
           label="Authorization Endpoint">
@@ -340,6 +355,45 @@ export default {
       },
       set(value) {
         this.$store.commit('config/SET_TOKEN_ENDPOINT_AUTH_METHOD', value);
+      },
+    },
+    request_object_signing_alg_values_supported: {
+      get() {
+        return this.$store.state.config.request_object_signing_alg_values_supported;
+      },
+    },
+    request_object_signing_alg: {
+      get() {
+        return this.$store.state.config.configuration.request_object_signing_alg;
+      },
+      set(value) {
+        this.$store.commit('config/SET_REQUEST_OBJECT_SIGNING_ALG', value);
+      },
+    },
+    token_endpoint_auth_signing_alg_values_supported: {
+      get() {
+        return this.$store.state.config.configuration.token_endpoint_auth_signing_alg_values_supported;
+      },
+    },
+    token_endpoint_auth_signing_alg: {
+      get() {
+        return this.$store.state.config.configuration.token_endpoint_auth_signing_alg;
+      },
+      set(value) {
+        this.$store.commit('config/SET_TOKEN_ENDPOINT_AUTH_SIGNING_ALG', value);
+      },
+    },
+    id_token_signing_alg_values_supported: {
+      get() {
+        return this.$store.state.config.configuration.id_token_signing_alg_values_supported;
+      },
+    },
+    id_token_signing_alg: {
+      get() {
+        return this.$store.state.config.configuration.id_token_signing_alg;
+      },
+      set(value) {
+        this.$store.commit('config/SET_ID_TOKEN_SIGNING_ALG', value);
       },
     },
     authorization_endpoint: {
