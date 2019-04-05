@@ -530,12 +530,17 @@ describe('web/src/store/modules/config', () => {
               'schema_version=https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.0/dist/account-info-swagger.json': 'https://modelobankauth2018.o3bank.co.uk:4101_1',
               'schema_version=https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.0/dist/payment-initiation-swagger.json': 'https://modelobankauth2018.o3bank.co.uk:4101_2',
             },
+            request_object_signing_alg_values_supported: {
+                'schema_version=https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.0.0/dist/account-info-swagger.json':
+                ['PS256', 'RS256'],
+            },
           },
         });
 
         await actions.validateDiscoveryConfig(store);
 
         expect(store.state.token_endpoint_auth_methods).toEqual(['tls_client_auth', 'client_secret_basic']);
+        expect(store.state.request_object_signing_alg_values_supported).toEqual(['PS256', 'RS256']);
         expect(store.state.configuration).toEqual({
           signing_private: '',
           signing_public: '',
