@@ -44,7 +44,7 @@
       }
     },
     {
-      "@id": "#compPsuConsent01",
+      "@id": "#compPsuConsent02",
       "name": "PostAccount Request",
       "input": {
         "method": "POST",
