@@ -1,23 +1,26 @@
 package server
 
 import (
+	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/sets"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
 	"fmt"
-	"net/http"
-
 	"github.com/labstack/echo"
+	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
+	"net/http"
 
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/authentication"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
 )
 
 type PostDiscoveryModelResponse struct {
-	TokenEndpoints                         map[string]string   `json:"token_endpoints"`
-	TokenEndpointAuthMethods               map[string][]string `json:"token_endpoint_auth_methods"`
-	DefaultTokenEndpointAuthMethod         map[string]string   `json:"default_token_endpoint_auth_method"`
-	RequestObjectSigningAlgValuesSupported map[string][]string `json:"request_object_signing_alg_values_supported"`
-	AuthorizationEndpoints                 map[string]string   `json:"authorization_endpoints"`
-	Issuers                                map[string]string   `json:"issuers"`
+	TokenEndpoints                                map[string]string   `json:"token_endpoints"`
+	TokenEndpointAuthMethods                      map[string][]string `json:"token_endpoint_auth_methods"`
+	DefaultTokenEndpointAuthMethod                map[string]string   `json:"default_token_endpoint_auth_method"`
+	RequestObjectSigningAlgValuesSupported        map[string][]string `json:"request_object_signing_alg_values_supported"`
+	DefaultRequestObjectSigningAlgValuesSupported map[string]string   `json:"default?request_object_signing_alg_values_supported"`
+	AuthorizationEndpoints                        map[string]string   `json:"authorization_endpoints"`
+	Issuers                                       map[string]string   `json:"issuers"`
 }
 
 type validationFailuresResponse struct {
@@ -54,12 +57,13 @@ func (d discoveryHandlers) setDiscoveryModelHandler(c echo.Context) error {
 
 	failures = discovery.ValidationFailures{}
 	response := PostDiscoveryModelResponse{
-		TokenEndpoints:                         map[string]string{},
-		TokenEndpointAuthMethods:               map[string][]string{},
-		RequestObjectSigningAlgValuesSupported: map[string][]string{},
-		DefaultTokenEndpointAuthMethod:         map[string]string{},
-		AuthorizationEndpoints:                 map[string]string{},
-		Issuers:                                map[string]string{},
+		TokenEndpoints:                                map[string]string{},
+		TokenEndpointAuthMethods:                      map[string][]string{},
+		DefaultTokenEndpointAuthMethod:                map[string]string{},
+		RequestObjectSigningAlgValuesSupported:        map[string][]string{},
+		DefaultRequestObjectSigningAlgValuesSupported: map[string]string{},
+		AuthorizationEndpoints:                        map[string]string{},
+		Issuers:                                       map[string]string{},
 	}
 	for discoveryItemIndex, discoveryItem := range discoveryModel.DiscoveryModel.DiscoveryItems {
 		key := fmt.Sprintf("schema_version=%s", discoveryItem.APISpecification.SchemaVersion)
@@ -76,12 +80,18 @@ func (d discoveryHandlers) setDiscoveryModelHandler(c echo.Context) error {
 			}).Error("Error on /.well-known/openid-configuration")
 			failures = append(failures, newOpenidConfigurationURIFailure(discoveryItemIndex, e))
 		} else {
+			requestObjectSigningAlgValuesSupported := sets.InsensitiveIntersection(config.RequestObjectSigningAlgValuesSupported, model.SupportedRequestSignAlg)
+			if len(requestObjectSigningAlgValuesSupported) == 0 {
+				return errors.New("no supported request object signing alg found")
+			}
+
 			response.TokenEndpoints[key] = config.TokenEndpoint
 			response.AuthorizationEndpoints[key] = config.AuthorizationEndpoint
 			response.Issuers[key] = config.Issuer
 			response.TokenEndpointAuthMethods[key] = authentication.SuiteSupportedAuthMethodsMostSecureFirst
 			response.DefaultTokenEndpointAuthMethod[key] = authentication.DefaultAuthMethod(config.TokenEndpointAuthMethodsSupported, d.logger)
-			response.RequestObjectSigningAlgValuesSupported[key] = config.RequestObjectSigningAlgValuesSupported
+			response.RequestObjectSigningAlgValuesSupported[key] = requestObjectSigningAlgValuesSupported
+			response.DefaultRequestObjectSigningAlgValuesSupported[key] = config.RequestObjectSigningAlgValuesSupported[0]
 		}
 	}
 
