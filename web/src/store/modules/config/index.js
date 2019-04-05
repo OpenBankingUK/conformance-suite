@@ -19,6 +19,8 @@ export const mutationTypes = {
   SET_TOKEN_ENDPOINT: 'SET_TOKEN_ENDPOINT',
   SET_TOKEN_ENDPOINT_AUTH_METHOD: 'SET_TOKEN_ENDPOINT_AUTH_METHOD',
   SET_TOKEN_ENDPOINT_AUTH_METHODS: 'SET_TOKEN_ENDPOINT_AUTH_METHODS',
+  SET_REQUEST_OBJECT_SIGNING_ALG_VALUES_SUPPORTED: 'SET_REQUEST_OBJECT_SIGNING_ALG_VALUES_SUPPORTED',
+  SET_REQUEST_OBJECT_SIGNING_ALG: 'SET_REQUEST_OBJECT_SIGNING_ALG',
   SET_AUTHORIZATION_ENDPOINT: 'SET_AUTHORIZATION_ENDPOINT',
   SET_RESOURCE_BASE_URL: 'SET_RESOURCE_BASE_URL',
   SET_X_FAPI_FINANCIAL_ID: 'SET_X_FAPI_FINANCIAL_ID',
@@ -82,6 +84,12 @@ export const mutations = {
   },
   [mutationTypes.SET_TOKEN_ENDPOINT_AUTH_METHODS](state, list) {
     state.token_endpoint_auth_methods = list;
+  },
+  [mutationTypes.SET_REQUEST_OBJECT_SIGNING_ALG_VALUES_SUPPORTED](state, list) {
+    state.request_object_signing_alg_values_supported = list;
+  },
+  [mutationTypes.SET_REQUEST_OBJECT_SIGNING_ALG](state, value) {
+    state.configuration.request_object_signing_alg = value;
   },
   [mutationTypes.SET_AUTHORIZATION_ENDPOINT](state, value) {
     state.configuration.authorization_endpoint = value;
@@ -195,6 +203,7 @@ export const state = {
   discoveryModel: null,
   problems: null,
   token_endpoint_auth_methods: [],
+  request_object_signing_alg_values_supported: [],
 
   configuration: {
     signing_private: '',
@@ -205,6 +214,7 @@ export const state = {
     client_secret: '',
     token_endpoint: '',
     token_endpoint_auth_method: 'client_secret_basic',
+    request_object_signing_alg: '',
     authorization_endpoint: '',
     resource_base_url: '',
     x_fapi_financial_id: '',

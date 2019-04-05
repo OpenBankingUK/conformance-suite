@@ -59,6 +59,9 @@ export default {
         const authMethods = _.first(_.values(response.token_endpoint_auth_methods));
         commit(types.SET_TOKEN_ENDPOINT_AUTH_METHODS, authMethods);
 
+        const reqObjSignMethods = _.first(_.values(response.request_object_signing_alg_values_supported));
+        commit(types.SET_REQUEST_OBJECT_SIGNING_ALG_VALUES_SUPPORTED, reqObjSignMethods);
+
         const authorizationEndpoint = _.first(_.values(response.authorization_endpoints));
         commit(types.SET_AUTHORIZATION_ENDPOINT, authorizationEndpoint);
 
@@ -101,6 +104,7 @@ export default {
         'client_secret',
         'token_endpoint',
         'token_endpoint_auth_method',
+        'request_object_signing_alg',
         'authorization_endpoint',
         'resource_base_url',
         'x_fapi_financial_id',
@@ -212,6 +216,9 @@ export default {
     }
     if (_.isEmpty(state.configuration.token_endpoint_auth_method)) {
       errors.push('Token Endpoint Auth Method empty');
+    }
+    if (_.isEmpty(state.configuration.request_object_signing_alg)) {
+      errors.push('Request object signing algorithm empty');
     }
     if (_.isEmpty(state.configuration.authorization_endpoint)) {
       errors.push('Authorization Endpoint empty');
