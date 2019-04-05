@@ -140,7 +140,7 @@ func (i *Input) generateRequestToken(ctx *Context) (string, error) {
 	}
 
 	var token string
-	switch alg {
+	switch strings.ToUpper(alg) {
 	case "PS256":
 		token, err = i.generateSignedJWT(ctx, jwt.SigningMethodPS256)
 	case "RS256":

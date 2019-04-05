@@ -80,7 +80,7 @@ func (d discoveryHandlers) setDiscoveryModelHandler(c echo.Context) error {
 			}).Error("Error on /.well-known/openid-configuration")
 			failures = append(failures, newOpenidConfigurationURIFailure(discoveryItemIndex, e))
 		} else {
-			requestObjectSigningAlgValuesSupported := sets.Intersection(config.RequestObjectSigningAlgValuesSupported, model.SupportedRequestSignAlg)
+			requestObjectSigningAlgValuesSupported := sets.InsensitiveIntersection(config.RequestObjectSigningAlgValuesSupported, model.SupportedRequestSignAlg)
 			if len(requestObjectSigningAlgValuesSupported) == 0 {
 				return errors.New("no supported request object signing alg found")
 			}
