@@ -131,6 +131,8 @@ func (i *Input) setClaims(tc *TestCase, ctx *Context) error {
 	return nil
 }
 
+var SupportedRequestSignAlg = []string{"PS256", "RS256", "NONE"}
+
 func (i *Input) generateRequestToken(ctx *Context) (string, error) {
 	alg, err := ctx.GetString("request_alg")
 	if err != nil && err != ErrNotFound {
