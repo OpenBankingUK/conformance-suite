@@ -146,7 +146,6 @@ func (i *Input) generateRequestToken(ctx *Context) (string, error) {
 	case "RS256":
 		token, err = i.generateSignedJWT(ctx, jwt.SigningMethodRS256)
 	case "NONE":
-	case "none":
 		fallthrough
 	default:
 		token, err = i.generateUnsignedJWT()
