@@ -531,7 +531,7 @@ describe('web/src/store/modules/config', () => {
               'schema_version=https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.0/dist/payment-initiation-swagger.json': 'https://modelobankauth2018.o3bank.co.uk:4101_2',
             },
             request_object_signing_alg_values_supported: {
-                'schema_version=https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.0.0/dist/account-info-swagger.json':
+              'schema_version=https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.0.0/dist/account-info-swagger.json':
                 ['PS256', 'RS256'],
             },
           },
