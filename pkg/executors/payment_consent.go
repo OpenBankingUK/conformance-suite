@@ -49,7 +49,7 @@ func runPaymentConsents(tcs []model.TestCase, rt []manifest.RequiredTokens, ctx 
 	}
 
 	// Check for MTLS vs client basic authentication
-	authMethod, err := ctx.GetString("token_endpoint_auth_methods_supported")
+	authMethod, err := ctx.GetString("token_endpoint_auth_method")
 	if err != nil {
 		authMethod = "client_secret_basic"
 	}
