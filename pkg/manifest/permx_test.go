@@ -9,7 +9,7 @@ import (
 )
 
 func TestPermx(t *testing.T) {
-	tests, err := GenerateTestCases("Account and Transaction API Specification", "http://mybaseurl", &model.Context{})
+	tests, err := GenerateTestCases(accountSwaggerLocation31, "http://mybaseurl", &model.Context{})
 	assert.Nil(t, err)
 	testcasePermissions, err := getTestCasePermissions(tests)
 	assert.Nil(t, err)
@@ -19,7 +19,7 @@ func TestPermx(t *testing.T) {
 }
 
 func TestGetScriptConsentTokens(t *testing.T) {
-	tests, err := GenerateTestCases("Account and Transaction API Specification", "http://mybaseurl", &model.Context{})
+	tests, err := GenerateTestCases(accountSwaggerLocation31, "http://mybaseurl", &model.Context{})
 	assert.Nil(t, err)
 	testcasePermissions, err := getTestCasePermissions(tests)
 	assert.Nil(t, err)
