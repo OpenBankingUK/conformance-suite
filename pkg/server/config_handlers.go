@@ -2,6 +2,7 @@ package server
 
 import (
 	"fmt"
+	"gopkg.in/resty.v1"
 	"net/http"
 	"net/url"
 	"reflect"
@@ -68,6 +69,9 @@ func (h configHandlers) configGlobalPostHandler(c echo.Context) error {
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, NewErrorResponse(err))
 	}
+
+	// Use the transport keys for MATLS as some endpoints require this
+	resty.SetCertificates(journeyConfig.certificateTransport.TLSCert())
 
 	err = h.journey.SetConfig(journeyConfig)
 	if err != nil {
