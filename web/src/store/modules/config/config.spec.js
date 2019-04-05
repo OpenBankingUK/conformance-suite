@@ -51,6 +51,7 @@ describe('web/src/store/modules/config', () => {
         client_secret: '',
         token_endpoint: '',
         token_endpoint_auth_method: 'client_secret_basic',
+        request_object_signing_alg: '',
         authorization_endpoint: '',
         resource_base_url: '',
         x_fapi_financial_id: '',
@@ -104,7 +105,7 @@ describe('web/src/store/modules/config', () => {
       expect(store.getters.configuration.transport_public).toEqual(transportPublic);
     });
 
-    it('commits client_id, client_secret, token_endpoint, authorization_endpoint, resource_base_url, x_fapi_financial_id, issuer, redirect_url and resource_ids', async () => {
+    it('commits client_id, client_secret, token_endpoint, request_object_signing_alg, authorization_endpoint, resource_base_url, x_fapi_financial_id, issuer, redirect_url and resource_ids', async () => {
       const store = createRealStore();
 
       expect(store.state.configuration).toEqual({
@@ -116,6 +117,7 @@ describe('web/src/store/modules/config', () => {
         client_secret: '',
         token_endpoint: '',
         token_endpoint_auth_method: 'client_secret_basic',
+        request_object_signing_alg: '',
         authorization_endpoint: '',
         resource_base_url: '',
         x_fapi_financial_id: '',
@@ -143,6 +145,7 @@ describe('web/src/store/modules/config', () => {
         client_secret: '',
         token_endpoint: '',
         token_endpoint_auth_method: 'client_secret_basic',
+        request_object_signing_alg: '',
         authorization_endpoint: '',
         resource_base_url: '',
         x_fapi_financial_id: '',
@@ -169,6 +172,7 @@ describe('web/src/store/modules/config', () => {
         client_secret: '2cfb31a3-5443-4e65-b2bc-ef8e00266a77',
         token_endpoint: '',
         token_endpoint_auth_method: 'client_secret_basic',
+        request_object_signing_alg: '',
         authorization_endpoint: '',
         resource_base_url: '',
         x_fapi_financial_id: '',
@@ -195,6 +199,7 @@ describe('web/src/store/modules/config', () => {
         client_secret: '2cfb31a3-5443-4e65-b2bc-ef8e00266a77',
         token_endpoint: 'https://modelobank2018.o3bank.co.uk:4201/token',
         token_endpoint_auth_method: 'client_secret_basic',
+        request_object_signing_alg: '',
         authorization_endpoint: '',
         resource_base_url: '',
         x_fapi_financial_id: '',
@@ -224,6 +229,7 @@ describe('web/src/store/modules/config', () => {
         client_secret: '2cfb31a3-5443-4e65-b2bc-ef8e00266a77',
         token_endpoint: 'https://modelobank2018.o3bank.co.uk:4201/token',
         token_endpoint_auth_method: 'client_secret_basic',
+        request_object_signing_alg: '',
         authorization_endpoint: 'https://modelobankauth2018.o3bank.co.uk:4101/auth',
         resource_base_url: '',
         x_fapi_financial_id: '',
@@ -250,6 +256,7 @@ describe('web/src/store/modules/config', () => {
         client_secret: '2cfb31a3-5443-4e65-b2bc-ef8e00266a77',
         token_endpoint: 'https://modelobank2018.o3bank.co.uk:4201/token',
         token_endpoint_auth_method: 'client_secret_basic',
+        request_object_signing_alg: '',
         authorization_endpoint: 'https://modelobankauth2018.o3bank.co.uk:4101/auth',
         resource_base_url: 'https://modelobank2018.o3bank.co.uk:4501',
         x_fapi_financial_id: '',
@@ -276,6 +283,7 @@ describe('web/src/store/modules/config', () => {
         client_secret: '2cfb31a3-5443-4e65-b2bc-ef8e00266a77',
         token_endpoint: 'https://modelobank2018.o3bank.co.uk:4201/token',
         token_endpoint_auth_method: 'client_secret_basic',
+        request_object_signing_alg: '',
         authorization_endpoint: 'https://modelobankauth2018.o3bank.co.uk:4101/auth',
         resource_base_url: 'https://modelobank2018.o3bank.co.uk:4501',
         x_fapi_financial_id: '0015800001041RHAAY',
@@ -302,6 +310,7 @@ describe('web/src/store/modules/config', () => {
         client_secret: '2cfb31a3-5443-4e65-b2bc-ef8e00266a77',
         token_endpoint: 'https://modelobank2018.o3bank.co.uk:4201/token',
         token_endpoint_auth_method: 'client_secret_basic',
+        request_object_signing_alg: '',
         authorization_endpoint: 'https://modelobankauth2018.o3bank.co.uk:4101/auth',
         resource_base_url: 'https://modelobank2018.o3bank.co.uk:4501',
         x_fapi_financial_id: '0015800001041RHAAY',
@@ -328,6 +337,7 @@ describe('web/src/store/modules/config', () => {
         client_secret: '2cfb31a3-5443-4e65-b2bc-ef8e00266a77',
         token_endpoint: 'https://modelobank2018.o3bank.co.uk:4201/token',
         token_endpoint_auth_method: 'client_secret_basic',
+        request_object_signing_alg: '',
         authorization_endpoint: 'https://modelobankauth2018.o3bank.co.uk:4101/auth',
         resource_base_url: 'https://modelobank2018.o3bank.co.uk:4501',
         x_fapi_financial_id: '0015800001041RHAAY',
@@ -354,6 +364,7 @@ describe('web/src/store/modules/config', () => {
         client_secret: '2cfb31a3-5443-4e65-b2bc-ef8e00266a77',
         token_endpoint: 'https://modelobank2018.o3bank.co.uk:4201/token',
         token_endpoint_auth_method: 'client_secret_basic',
+        request_object_signing_alg: '',
         authorization_endpoint: 'https://modelobankauth2018.o3bank.co.uk:4101/auth',
         resource_base_url: 'https://modelobank2018.o3bank.co.uk:4501',
         x_fapi_financial_id: '0015800001041RHAAY',
@@ -369,6 +380,9 @@ describe('web/src/store/modules/config', () => {
           name: '',
         },
       });
+
+      store.commit(types.SET_REQUEST_OBJECT_SIGNING_ALG, 'PS256');
+      expect(store.state.configuration.request_object_signing_alg).toEqual('PS256');
     });
 
     it('sets resource_ids', async () => {
@@ -383,6 +397,7 @@ describe('web/src/store/modules/config', () => {
         client_secret: '',
         token_endpoint: '',
         token_endpoint_auth_method: 'client_secret_basic',
+        request_object_signing_alg: '',
         authorization_endpoint: '',
         resource_base_url: '',
         x_fapi_financial_id: '',
@@ -411,6 +426,7 @@ describe('web/src/store/modules/config', () => {
         client_secret: '',
         token_endpoint: '',
         token_endpoint_auth_method: 'client_secret_basic',
+        request_object_signing_alg: '',
         authorization_endpoint: '',
         resource_base_url: '',
         x_fapi_financial_id: '',
@@ -439,6 +455,7 @@ describe('web/src/store/modules/config', () => {
         client_secret: '',
         token_endpoint: '',
         token_endpoint_auth_method: 'client_secret_basic',
+        request_object_signing_alg: '',
         authorization_endpoint: '',
         resource_base_url: '',
         x_fapi_financial_id: '',
@@ -473,6 +490,7 @@ describe('web/src/store/modules/config', () => {
           client_secret: '',
           token_endpoint: '',
           token_endpoint_auth_method: 'client_secret_basic',
+          request_object_signing_alg: '',
           authorization_endpoint: '',
           resource_base_url: '',
           x_fapi_financial_id: '',
@@ -527,6 +545,7 @@ describe('web/src/store/modules/config', () => {
           client_secret: '',
           token_endpoint: '',
           token_endpoint_auth_method: 'client_secret_basic',
+          request_object_signing_alg: '',
           authorization_endpoint: 'https://modelobankauth2018.o3bank.co.uk:4101/auth_1',
           resource_base_url: '',
           x_fapi_financial_id: '',
@@ -567,6 +586,7 @@ describe('web/src/store/modules/config', () => {
           'Client ID empty',
           'Client Secret empty',
           'Token Endpoint empty',
+          'Request object signing algorithm empty',
           'Authorization Endpoint empty',
           'Resource Base URL empty',
           'x-fapi-financial-id empty',
@@ -592,6 +612,7 @@ describe('web/src/store/modules/config', () => {
           'Client ID empty',
           'Client Secret empty',
           'Token Endpoint empty',
+          'Request object signing algorithm empty',
           'Authorization Endpoint empty',
           'Resource Base URL empty',
           'x-fapi-financial-id empty',
@@ -617,6 +638,7 @@ describe('web/src/store/modules/config', () => {
           'Client ID empty',
           'Client Secret empty',
           'Token Endpoint empty',
+          'Request object signing algorithm empty',
           'Authorization Endpoint empty',
           'Resource Base URL empty',
           'x-fapi-financial-id empty',
@@ -642,6 +664,7 @@ describe('web/src/store/modules/config', () => {
           'Client ID empty',
           'Client Secret empty',
           'Token Endpoint empty',
+          'Request object signing algorithm empty',
           'Authorization Endpoint empty',
           'Resource Base URL empty',
           'x-fapi-financial-id empty',
@@ -666,6 +689,7 @@ describe('web/src/store/modules/config', () => {
           'Client ID empty',
           'Client Secret empty',
           'Token Endpoint empty',
+          'Request object signing algorithm empty',
           'Authorization Endpoint empty',
           'Resource Base URL empty',
           'x-fapi-financial-id empty',
@@ -690,6 +714,7 @@ describe('web/src/store/modules/config', () => {
         store.commit(types.SET_RESOURCE_BASE_URL, 'https://modelobank2018.o3bank.co.uk:4501');
         store.commit(types.SET_X_FAPI_FINANCIAL_ID, '0015800001041RHAAY');
         store.commit(types.SET_ISSUER, 'https://modelobankauth2018.o3bank.co.uk:4101');
+        store.commit(types.SET_REQUEST_OBJECT_SIGNING_ALG, 'PS256');
 
         await actions.setConfigurationSigningPublic(store, 'setConfigurationSigningPublic');
         await actions.setConfigurationSigningPrivate(store, 'setConfigurationSigningPrivate');
@@ -719,6 +744,7 @@ describe('web/src/store/modules/config', () => {
         store.commit(types.SET_RESOURCE_BASE_URL, 'https://modelobank2018.o3bank.co.uk:4501');
         store.commit(types.SET_X_FAPI_FINANCIAL_ID, '0015800001041RHAAY');
         store.commit(types.SET_ISSUER, 'https://modelobankauth2018.o3bank.co.uk:4101');
+        store.commit(types.SET_REQUEST_OBJECT_SIGNING_ALG, 'PS256');
 
         await actions.setConfigurationSigningPublic(store, 'not_a_certificate');
         await actions.setConfigurationSigningPrivate(store, 'not_a_certificate');
@@ -753,6 +779,7 @@ describe('web/src/store/modules/config', () => {
           'Client ID empty',
           'Client Secret empty',
           'Token Endpoint empty',
+          'Request object signing algorithm empty',
           'Authorization Endpoint empty',
           'Resource Base URL empty',
           'x-fapi-financial-id empty',
@@ -784,6 +811,7 @@ describe('web/src/store/modules/config', () => {
         store.commit(types.SET_RESOURCE_BASE_URL, 'https://modelobank2018.o3bank.co.uk:4501');
         store.commit(types.SET_X_FAPI_FINANCIAL_ID, '0015800001041RHAAY');
         store.commit(types.SET_ISSUER, 'https://modelobankauth2018.o3bank.co.uk:4101');
+        store.commit(types.SET_REQUEST_OBJECT_SIGNING_ALG, 'PS256');
 
         // This will clear out the previous errors, and will result in configurationErrors
         // being empty since they are not any errors.
