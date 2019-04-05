@@ -10,9 +10,7 @@ import (
 )
 
 func TestGenerateTestCases(t *testing.T) {
-	//tests, err := GenerateTestCases("Payment Initiation API Specification", "http://mybaseurl", &model.Context{})
-
-	tests, err := GenerateTestCases("Account and Transaction API Specification", "http://mybaseurl", &model.Context{})
+	tests, err := GenerateTestCases(accountSwaggerLocation31, "http://mybaseurl", &model.Context{})
 	assert.Nil(t, err)
 
 	perms, err := getAccountPermissions(tests)
@@ -26,10 +24,6 @@ func TestGenerateTestCases(t *testing.T) {
 	for _, v := range requiredTokens {
 		fmt.Println(v)
 	}
-
-	// for _, v := range tests {
-	// 	dumpJSON(v)
-	// }
 }
 
 func TestPaymentPermissions(t *testing.T) {
