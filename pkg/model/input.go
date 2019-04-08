@@ -162,7 +162,10 @@ func consentUrl(authEndpoint string, claims map[string]string, token string) str
 	queryString.Set("request", token)
 	queryString.Set("state", claims["state"])
 	fmt.Printf("%s?%s", authEndpoint, queryString.Encode())
-	return fmt.Sprintf("%s?%s", authEndpoint, queryString.Encode())
+
+	consentURL := fmt.Sprintf("%s?%s", authEndpoint, queryString.Encode())
+	logrus.StandardLogger().Debugf("Consent URL: %s", consentURL)
+	return consentURL
 }
 
 func (i *Input) setFormData(req *resty.Request, ctx *Context) error {
