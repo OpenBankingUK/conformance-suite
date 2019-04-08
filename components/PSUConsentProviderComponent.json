@@ -51,7 +51,7 @@
         "endpoint": "/open-banking/$api-version/aisp/account-access-consents",
         "headers": {
           "content-type": "application/json",
-          "accept": "*/*",
+          "accept": "application/json",
           "x-fapi-interaction-id": "Eb4405450-febe-11e8-80a5-0fcebb1574e5",
           "x-fapi-financial-id": "$x-fapi-financial-id",
           "authorization": "Bearer $client_access_token"
