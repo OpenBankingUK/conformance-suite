@@ -108,7 +108,8 @@ func (i *Input) setClaims(tc *TestCase, ctx *Context) error {
 			}
 			i.AppMsg(fmt.Sprintf("jwt consent Token: %s", token))
 
-			consent := consentUrl(i.Claims, token)
+			authEndpoint, _ := ctx.Get("authorisation_endpoint")
+			consent := consentUrl(authEndpoint.(string), i.Claims, token)
 
 			tc.Input.Endpoint = consent           // Result - set jwt token in endpoint url
 			ctx.PutString("consent_url", consent) // make consent available in context
@@ -153,13 +154,18 @@ func (i *Input) generateRequestToken(ctx *Context) (string, error) {
 	return token, err
 }
 
-func consentUrl(claims map[string]string, token string) string {
-	return claims["aud"] + "/auth?" +
-		"client_id=" + claims["iss"] +
-		"&response_type=" + claims["responseType"] +
-		"&scope=" + url.QueryEscape(claims["scope"]) +
-		"&request=" + token +
-		"&state=" + claims["state"]
+func consentUrl(authEndpoint string, claims map[string]string, token string) string {
+	queryString := url.Values{}
+	queryString.Set("client_id", claims["iss"])
+	queryString.Set("response_type", claims["responseType"])
+	queryString.Set("scope", claims["scope"])
+	queryString.Set("request", token)
+	queryString.Set("state", claims["state"])
+	fmt.Printf("%s?%s", authEndpoint, queryString.Encode())
+
+	consentURL := fmt.Sprintf("%s?%s", authEndpoint, queryString.Encode())
+	logrus.StandardLogger().Debugf("Consent URL: %s", consentURL)
+	return consentURL
 }
 
 func (i *Input) setFormData(req *resty.Request, ctx *Context) error {
