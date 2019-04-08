@@ -6,7 +6,7 @@
       "endpoint": "/open-banking/v3.1/aisp/account-access-consents",
       "headers": {
         "content-type": "application/json",
-        "accept": "*/*",
+        "accept": "application/json",
         "x-fapi-interaction-id": "Ab4405450-febe-11e8-80a5-0fcebb1574e5",
         "x-fapi-financial-id": "$fapi_financial_id",
         "authorization": "Bearer $client_access_token"
@@ -40,7 +40,7 @@
       "endpoint": "/open-banking/v3.1/aisp/account-access-consents/$test_consent_id",
       "headers": {
         "content-type": "application/json",
-        "accept": "*/*",
+        "accept": "application/json",
         "x-fapi-interaction-id": "Bb4405450-febe-11e8-80a5-0fcebb1574e5",
         "x-fapi-financial-id": "$fapi_financial_id",
         "authorization": "Bearer $client_access_token"
