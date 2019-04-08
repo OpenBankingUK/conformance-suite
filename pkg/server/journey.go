@@ -388,8 +388,8 @@ type JourneyConfig struct {
 	resourceIDs             model.ResourceIDs
 	creditorAccount         models.Payment
 	apiVersion              string
-	transactionFromDate 	string
-	transactionToDate 		string
+	transactionFromDate     string
+	transactionToDate       string
 }
 
 func (wj *journey) SetConfig(config JourneyConfig) error {

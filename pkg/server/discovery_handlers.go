@@ -15,7 +15,7 @@ import (
 
 const (
 	defaultTxnFrom = "2016-01-01T10:40:00+02:00"
-	defaultTxnTo = "2025-12-31T10:40:00+02:00"
+	defaultTxnTo   = "2025-12-31T10:40:00+02:00"
 )
 
 type PostDiscoveryModelResponse struct {
@@ -26,8 +26,8 @@ type PostDiscoveryModelResponse struct {
 	DefaultRequestObjectSigningAlgValuesSupported map[string]string   `json:"default_request_object_signing_alg_values_supported"`
 	AuthorizationEndpoints                        map[string]string   `json:"authorization_endpoints"`
 	Issuers                                       map[string]string   `json:"issuers"`
-	DefaultTxnFromDateTime						  string 			  `json:"default_transaction_from_date"`
-	DefaultTxnToDateTime						  string 			  `json:"default_transaction_to_date"`
+	DefaultTxnFromDateTime                        string              `json:"default_transaction_from_date"`
+	DefaultTxnToDateTime                          string              `json:"default_transaction_to_date"`
 }
 
 type validationFailuresResponse struct {
