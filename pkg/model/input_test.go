@@ -75,6 +75,7 @@ func TestCreateRequestHeaderContext(t *testing.T) {
 	}
 	ctx := Context{
 		"replacement": "myNewValue",
+		"authorisation_endpoint": "https://example.com/authorisation",
 	}
 	i := &Input{Method: "GET", Endpoint: "http://google.com", Headers: headers}
 	req, err := i.CreateRequest(emptyTestCase, &ctx)
@@ -92,6 +93,7 @@ func TestSetBearerAuthTokenFromContext(t *testing.T) {
 	}
 	ctx := Context{
 		"access_token": "myShineyNewAccessTokenHotOffThePress",
+		"authorisation_endpoint": "https://example.com/authorisation",
 	}
 	i := &Input{Method: "GET", Endpoint: "http://google.com", Headers: headers}
 	req, err := i.CreateRequest(emptyTestCase, &ctx)
@@ -106,6 +108,7 @@ func TestSetBearerAuthTokenFromContext(t *testing.T) {
 func TestCreateHeaderContextMissingForReplacement(t *testing.T) {
 	ctx := Context{
 		"nomatch": "myNewValue",
+		"authorisation_endpoint": "https://example.com/authorisation",
 	}
 	result, err := replaceContextField("$replacement", &ctx)
 	assert.NotNil(t, err)
@@ -137,7 +140,7 @@ func TestFormData(t *testing.T) {
 	i := Input{Endpoint: "/accounts", Method: "POST", FormData: map[string]string{
 		"grant_type": "client_credentials",
 		"scope":      "accounts openid"}}
-	ctx := Context{"baseurl": "http://mybaseurl"}
+	ctx := Context{"baseurl": "http://mybaseurl", "authorisation_endpoint": "https://example.com/authorisation"}
 	tc := TestCase{Input: i, Context: ctx}
 	req, err := tc.Prepare(emptyContext)
 	assert.Nil(t, err)
@@ -149,7 +152,7 @@ func TestFormDataMissingContextVariable(t *testing.T) {
 	i := Input{Endpoint: "/accounts", Method: "POST", FormData: map[string]string{
 		"grant_type": "$client_credentials",
 		"scope":      "accounts openid"}}
-	ctx := Context{"baseurl": "http://mybaseurl"}
+	ctx := Context{"baseurl": "http://mybaseurl", "authorisation_endpoint": "https://example.com/authorisation"}
 	tc := TestCase{Input: i, Context: ctx}
 	req, err := tc.Prepare(emptyContext)
 	assert.NotNil(t, err)
@@ -158,7 +161,7 @@ func TestFormDataMissingContextVariable(t *testing.T) {
 
 func TestInputBody(t *testing.T) {
 	i := Input{Endpoint: "/accounts", Method: "POST", RequestBody: "The Rain in Spain Falls Mainly on the Plain"}
-	ctx := Context{"baseurl": "http://mybaseurl"}
+	ctx := Context{"baseurl": "http://mybaseurl", "authorisation_endpoint": "https://example.com/authorisation"}
 	tc := TestCase{Input: i, Context: ctx}
 	req, err := tc.Prepare(emptyContext)
 	assert.Nil(t, err)
@@ -177,7 +180,7 @@ func TestInputClaims(t *testing.T) {
 			"redirect_url": "https://test.example.co.uk/redir",
 			"responseType": "code",
 		}}
-	ctx := Context{"baseurl": "http://mybaseurl"}
+	ctx := Context{"baseurl": "http://mybaseurl", "authorisation_endpoint": "https://example.com/authorisation"}
 	tc := TestCase{Input: i, Context: ctx}
 	req, err := tc.Prepare(emptyContext)
 	assert.Nil(t, err)
@@ -201,7 +204,7 @@ func TestInputClaimsWithContextReplacementParameters(t *testing.T) {
 			"consentId":    "$consent_id",
 			"responseType": "code",
 		}}
-	ctx := Context{"baseurl": "http://mybaseurl", "consent_id": "myconsentid"}
+	ctx := Context{"baseurl": "http://mybaseurl", "consent_id": "myconsentid", "authorisation_endpoint": "https://example.com/authorisation"}
 	tc := TestCase{Input: i, Context: ctx}
 	req, err := tc.Prepare(emptyContext)
 	assert.Nil(t, err)
@@ -214,7 +217,7 @@ func TestInputClaimsWithContextReplacementParameters(t *testing.T) {
 }
 
 func TestInputClaimsConsentId(t *testing.T) {
-	ctx := Context{"consent_id": "aac-fee2b8eb-ce1b-48f1-af7f-dc8f576d53dc", "xchange_code": "10e9d80b-10d4-4abd-9fe0-15789cc512b5", "baseurl": "https://modelobankauth2018.o3bank.co.uk:4101", "access_token": "18d5a754-0b76-4a8f-9c68-dc5caaf812e2"}
+	ctx := Context{"consent_id": "aac-fee2b8eb-ce1b-48f1-af7f-dc8f576d53dc", "xchange_code": "10e9d80b-10d4-4abd-9fe0-15789cc512b5", "baseurl": "https://modelobankauth2018.o3bank.co.uk:4101", "access_token": "18d5a754-0b76-4a8f-9c68-dc5caaf812e2", "authorisation_endpoint": "https://example.com/authorisation"}
 	i := Input{Endpoint: "/accounts", Method: "POST",
 		Generation: map[string]string{
 			"strategy": "consenturl",
@@ -244,7 +247,9 @@ func TestClaimsJWTBearer(t *testing.T) {
 		"client_id":    "12312",
 		"scope":        "AuthoritiesReadAccess ASPSPReadAccess TPPReadAll",
 		"SigningCert":  cert,
+		"authorisation_endpoint": "https://example.com/authorisation",
 	}
+
 	i := Input{Endpoint: "/as/token.oauth2", Method: "POST",
 		Generation: map[string]string{
 			"strategy": "jwt-bearer",
@@ -295,6 +300,7 @@ func TestJWTSignRS256(t *testing.T) {
 func TestBodyLiteral(t *testing.T) {
 	ctx := Context{
 		"replacebody": "this is my body",
+		"authorisation_endpoint": "https://example.com/authorisation",
 	}
 
 	i := Input{Method: "POST", Endpoint: "https://google.com", RequestBody: "This is my literal body"}
@@ -307,6 +313,7 @@ func TestBodyLiteral(t *testing.T) {
 func TestBodyReplacement(t *testing.T) {
 	ctx := Context{
 		"replacebody": "this is my body",
+		"authorisation_endpoint": "https://example.com/authorisation",
 	}
 
 	i := Input{Method: "POST", Endpoint: "https://google.com", RequestBody: "$replacebody"}
@@ -320,6 +327,7 @@ func TestBodyTwoReplacements(t *testing.T) {
 	ctx := Context{
 		"replacebody": "this is my body",
 		"replace2":    "and this is my heart",
+		"authorisation_endpoint": "https://example.com/authorisation",
 	}
 
 	i := Input{Method: "POST", Endpoint: "https://google.com", RequestBody: "$replacebody $replace2"}
@@ -334,6 +342,7 @@ func TestPaymentBodyReplace(t *testing.T) {
 		"initiation":                "{\"InstructionIdentification\":\"SIDP01\",\"EndToEndIdentification\":\"FRESCO.21302.GFX.20\",\"InstructedAmount\":{\"Amount\":\"15.00\",\"Currency\":\"GBP\"},\"CreditorAccount\":{\"SchemeName\":\"SortCodeAccountNumber\",\"Identification\":\"20000319470104\",\"Name\":\"Messers Simplex & Co\"}}",
 		"consent_id":                "sdp-1-b5bbdb18-eeb1-4c11-919d-9a237c8f1c7d",
 		"domestic_payment_template": "{\"Data\": {\"ConsentId\": \"$consent_id\",\"Initiation\":$initiation },\"Risk\":{}}",
+		"authorisation_endpoint": "https://example.com/authorisation",
 	}
 
 	i := Input{Method: "POST", Endpoint: "https://google.com", RequestBody: "$domestic_payment_template"}
@@ -348,6 +357,7 @@ func TestPaymentBodyReplaceTestCase100300(t *testing.T) {
 		"x-fapi-financial-id": "myfapiid",
 		"thisSchemeName":      "myscheme",
 		"thisIdentification":  "myid",
+		"authorisation_endpoint": "https://example.com/authorisation",
 	}
 	_ = ctx
 	var tc TestCase
