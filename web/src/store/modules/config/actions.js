@@ -210,7 +210,7 @@ export default {
 
     if (_.isEmpty(state.configuration.transaction_from_date)) {
       errors.push('Transaction From Date empty');
-    } else if (!moment(state.configuration.transaction_to_date, moment.ISO_8601).isValid()) {
+    } else if (!moment(state.configuration.transaction_from_date, moment.ISO_8601).isValid()) {
       errors.push('Transaction From Date not ISO 8601 format');
     }
     if (_.isEmpty(state.configuration.transaction_to_date)) {
