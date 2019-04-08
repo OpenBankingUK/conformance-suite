@@ -374,20 +374,21 @@ func (wj *journey) makeRunDefinition() executors.RunDefinition {
 }
 
 type JourneyConfig struct {
-	certificateSigning      authentication.Certificate
-	certificateTransport    authentication.Certificate
-	clientID                string
-	clientSecret            string
-	tokenEndpoint           string
-	tokenEndpointAuthMethod string
-	authorizationEndpoint   string
-	resourceBaseURL         string
-	xXFAPIFinancialID       string
-	issuer                  string
-	redirectURL             string
-	resourceIDs             model.ResourceIDs
-	creditorAccount         models.Payment
-	apiVersion              string
+	certificateSigning            authentication.Certificate
+	certificateTransport          authentication.Certificate
+	clientID                      string
+	clientSecret                  string
+	tokenEndpoint                 string
+	tokenEndpointAuthMethod       string
+	authorizationEndpoint         string
+	resourceBaseURL               string
+	xXFAPIFinancialID             string
+	issuer                        string
+	redirectURL                   string
+	resourceIDs                   model.ResourceIDs
+	creditorAccount               models.Payment
+	apiVersion                    string
+	requestObjectSigningAlgorithm string
 }
 
 func (wj *journey) SetConfig(config JourneyConfig) error {
@@ -424,6 +425,7 @@ const ctxStatementID = "statementId"
 const ctxCreditorSchema = "creditorScheme"
 const ctxCreditorIdentification = "creditorIdentification"
 const ctxCreditorName = "creditorName"
+const ctxRequestObjectSigningAlg = "requestObjectSigningAlg"
 
 func (wj *journey) configParametersToJourneyContext() error {
 	wj.context.PutString(ctxConstClientID, wj.config.clientID)
@@ -441,6 +443,7 @@ func (wj *journey) configParametersToJourneyContext() error {
 	wj.context.PutString(ctxCreditorSchema, wj.config.creditorAccount.SchemeName)
 	wj.context.PutString(ctxCreditorIdentification, wj.config.creditorAccount.Identification)
 	wj.context.PutString(ctxCreditorName, wj.config.creditorAccount.Name)
+	wj.context.PutString(ctxRequestObjectSigningAlg, wj.config.requestObjectSigningAlgorithm)
 
 	basicauth, err := authentication.CalculateClientSecretBasicToken(wj.config.clientID, wj.config.clientSecret)
 	if err != nil {

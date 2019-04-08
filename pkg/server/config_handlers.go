@@ -23,21 +23,22 @@ type configHandlers struct {
 }
 
 type GlobalConfiguration struct {
-	SigningPrivate          string            `json:"signing_private" validate:"not_empty"`
-	SigningPublic           string            `json:"signing_public" validate:"not_empty"`
-	TransportPrivate        string            `json:"transport_private" validate:"not_empty"`
-	TransportPublic         string            `json:"transport_public" validate:"not_empty"`
-	ClientID                string            `json:"client_id" validate:"not_empty"`
-	ClientSecret            string            `json:"client_secret" validate:"not_empty"`
-	TokenEndpoint           string            `json:"token_endpoint" validate:"valid_url"`
-	TokenEndpointAuthMethod string            `json:"token_endpoint_auth_method" validate:"not_empty"`
-	AuthorizationEndpoint   string            `json:"authorization_endpoint" validate:"valid_url"`
-	ResourceBaseURL         string            `json:"resource_base_url" validate:"valid_url"`
-	XFAPIFinancialID        string            `json:"x_fapi_financial_id" validate:"not_empty"`
-	Issuer                  string            `json:"issuer" validate:"valid_url"`
-	RedirectURL             string            `json:"redirect_url" validate:"valid_url"`
-	ResourceIDs             model.ResourceIDs `json:"resource_ids" validate:"not_empty"`
-	CreditorAccount         models.Payment    `json:"creditor_account"`
+	SigningPrivate                string            `json:"signing_private" validate:"not_empty"`
+	SigningPublic                 string            `json:"signing_public" validate:"not_empty"`
+	TransportPrivate              string            `json:"transport_private" validate:"not_empty"`
+	TransportPublic               string            `json:"transport_public" validate:"not_empty"`
+	ClientID                      string            `json:"client_id" validate:"not_empty"`
+	ClientSecret                  string            `json:"client_secret" validate:"not_empty"`
+	TokenEndpoint                 string            `json:"token_endpoint" validate:"valid_url"`
+	TokenEndpointAuthMethod       string            `json:"token_endpoint_auth_method" validate:"not_empty"`
+	AuthorizationEndpoint         string            `json:"authorization_endpoint" validate:"valid_url"`
+	ResourceBaseURL               string            `json:"resource_base_url" validate:"valid_url"`
+	XFAPIFinancialID              string            `json:"x_fapi_financial_id" validate:"not_empty"`
+	Issuer                        string            `json:"issuer" validate:"valid_url"`
+	RedirectURL                   string            `json:"redirect_url" validate:"valid_url"`
+	ResourceIDs                   model.ResourceIDs `json:"resource_ids" validate:"not_empty"`
+	CreditorAccount               models.Payment    `json:"creditor_account"`
+	RequestObjectSigningAlgorithm string            `json:"request_object_signing_alg" validate"not_empty"`
 }
 
 // Validate - used by https://github.com/go-ozzo/ozzo-validation to validate struct.
