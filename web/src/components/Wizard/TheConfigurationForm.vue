@@ -96,6 +96,33 @@
           </b-input-group>
         </b-form-group>
 
+        <b-form-group
+          id="transaction_from_date_group"
+          label-for="transaction_from_date"
+          label="Transaction From Date">
+          <b-form-input
+            id="transaction_from_date"
+            v-model="transaction_from_date"
+            :state="isNotEmpty(transaction_from_date)"
+            placeholder="e.g. 2006-01-02T15:04:05Z07:00"
+            required
+            type="text"
+          />
+        </b-form-group>
+
+        <b-form-group
+          id="transaction_to_date_group"
+          label-for="transaction_to_date"
+          label="Transaction To Date">
+          <b-form-input
+            id="transaction_to_date"
+            v-model="transaction_to_date"
+            :state="isNotEmpty(transaction_to_date)"
+            placeholder="e.g. 2006-01-02T15:04:05Z07:00"
+            required
+            type="text"
+          />
+        </b-form-group>
 
         <b-form-group
           id="client_id_group"
@@ -318,6 +345,22 @@ export default {
         value: m,
         text: m,
       }));
+    },
+    transaction_from_date: {
+      get() {
+        return this.$store.state.config.configuration.transaction_from_date;
+      },
+      set(value) {
+        this.$store.commit('config/SET_TRANSACTION_FROM_DATE', value);
+      },
+    },
+    transaction_to_date: {
+      get() {
+        return this.$store.state.config.configuration.transaction_to_date;
+      },
+      set(value) {
+        this.$store.commit('config/SET_TRANSACTION_TO_DATE', value);
+      },
     },
     // For an explanation on how these work. See:
     // * https://stackoverflow.com/a/45841419/241993

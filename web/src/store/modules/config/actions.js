@@ -1,4 +1,5 @@
 import * as _ from 'lodash';
+import * as moment from 'moment';
 import { mutationTypes as types } from './index';
 import constants from './constants';
 
@@ -100,6 +101,8 @@ export default {
         'signing_public',
         'transport_private',
         'transport_public',
+        'transaction_from_date',
+        'transaction_to_date',
         'client_id',
         'client_secret',
         'token_endpoint',
@@ -205,6 +208,16 @@ export default {
       errors.push('Statement IDs empty');
     }
 
+    if (_.isEmpty(state.configuration.transaction_from_date)) {
+      errors.push('Transaction From Date empty');
+    } else if (!moment(state.configuration.transaction_to_date, moment.ISO_8601).isValid()) {
+      errors.push('Transaction From Date not ISO 8601 format');
+    }
+    if (_.isEmpty(state.configuration.transaction_to_date)) {
+      errors.push('Transaction To Date empty');
+    } else if (!moment(state.configuration.transaction_to_date, moment.ISO_8601).isValid()) {
+      errors.push('Transaction To Date not ISO 8601 format');
+    }
     if (_.isEmpty(state.configuration.client_id)) {
       errors.push('Client ID empty');
     }
