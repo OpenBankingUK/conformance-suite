@@ -9,6 +9,7 @@ import (
 
 	"github.com/sirupsen/logrus"
 
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
 )
 
@@ -97,7 +98,7 @@ func (cj *ConsentJobs) Get(testid string) (model.TestCase, bool) {
 // add/get ....
 
 // GenerateTestCases examines a manifest file, asserts file and resources definition, then builds the associated test cases
-func GenerateTestCases(spec string, baseurl string, ctx *model.Context) ([]model.TestCase, error) {
+func GenerateTestCases(spec string, baseurl string, ctx *model.Context, endpoints []discovery.ModelEndpoint) ([]model.TestCase, error) {
 	logger := logrus.WithFields(logrus.Fields{
 		"function": "GenerateTestCases",
 	})
@@ -115,11 +116,11 @@ func GenerateTestCases(spec string, baseurl string, ctx *model.Context) ([]model
 		return nil, err
 	}
 
-	// accumulate context data from accountsData ...
-	// accountCtx := model.Context{}
-	// for k, v := range resources.Ais { //TODO:Get Account info from config file
-	// 	accountCtx.PutString(k, v)
-	// }
+	filteredScripts, err := filterTestsBasedOnDiscoveryEndpoints(scripts.Scripts, endpoints)
+	if err != nil {
+		logger.WithFields(logrus.Fields{"err": err}).Error("error filter scripts based on discovery")
+	}
+	_ = filteredScripts
 
 	ctx.DumpContext("Incoming Ctx")
 
@@ -413,6 +414,13 @@ func getAccountPermissions(tests []model.TestCase) ([]ScriptPermission, error) {
 	}
 
 	return permCollector, nil
+}
+
+func filterTestsBasedOnDiscoveryEndpoints(scripts []Script, endpoints []discovery.ModelEndpoint) ([]Script, error) {
+	for _, v := range endpoints {
+		logrus.Debugf("%#v", v)
+	}
+	return nil, nil
 }
 
 // Utility to Dump Json
