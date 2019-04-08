@@ -15,9 +15,15 @@ To provide feedback, please use the public [issue tracker](https://bitbucket.org
 ## Release Notes 
 * * *
 
+### v1.1.1 (8th April 2019)
+
+Release v1.1.1 addresses permission mapping issues and other bugs following feedback from users at the OBIE Functional Workshop. **(recommended)**.
+
+[Full Release Notes](docs/releases/v1.1.1.md) (v1.1.1.md)
+
 ### v1.1.0 (4th April 2019)
 
-Release v1.1.0 addresses known issues following feedback from users at the OBIE Functional Workshop. (recommended).
+Release v1.1.0 addresses known issues following feedback from users at the OBIE Functional Workshop.
 
 [Full Release Notes](docs/releases/v1.1.0.md) (v1.1.0.md)
 
