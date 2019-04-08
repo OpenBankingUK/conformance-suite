@@ -56,7 +56,7 @@
           "x-fapi-financial-id": "$x-fapi-financial-id",
           "authorization": "Bearer $client_access_token"
         },
-        "bodyData": "{\"Data\": { \"Permissions\": [ $permission_list ],  \"TransactionFromDateTime\": \"2016-01-01T10:40:00+02:00\", \"TransactionToDateTime\": \"2025-12-31T10:40:00+02:00\" },  \"Risk\": {} }"
+        "bodyData": "{\"Data\": { \"Permissions\": [ $permission_list ],  \"TransactionFromDateTime\": \"$transactionFromDate\", \"TransactionToDateTime\": \"$transactionToDate\" },  \"Risk\": {} }"
       },
       "context": {
         "baseurl": "$resource_server"

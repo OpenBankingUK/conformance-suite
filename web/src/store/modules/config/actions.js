@@ -69,6 +69,9 @@ export default {
         const issuer = _.first(_.values(response.issuers));
         commit(types.SET_ISSUER, issuer);
 
+        commit(types.SET_TRANSACTION_FROM_DATE, response.default_transaction_from_date);
+        commit(types.SET_TRANSACTION_TO_DATE, response.default_transaction_to_date);
+
         dispatch('status/clearErrors', null, { root: true });
         commit(types.SET_WIZARD_STEP, constants.WIZARD.STEP_THREE);
       } else {
