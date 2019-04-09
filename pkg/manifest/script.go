@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"regexp"
+	"sort"
 	"strings"
 
 	"github.com/sirupsen/logrus"
@@ -446,6 +447,7 @@ func filterTestsBasedOnDiscoveryEndpoints(scripts Scripts, endpoints []discovery
 		}
 	}
 	resultscripts := Scripts{Scripts: filteredScripts}
+	sort.Slice(resultscripts.Scripts, func(i, j int) bool { return resultscripts.Scripts[i].ID < resultscripts.Scripts[j].ID })
 
 	return resultscripts, nil
 }

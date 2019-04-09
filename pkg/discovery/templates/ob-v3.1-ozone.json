@@ -13,7 +13,8 @@
       },
       "openidConfigurationUri": "https://modelobankauth2018.o3bank.co.uk:4101/.well-known/openid-configuration",
       "resourceBaseUri": "https://modelobank2018.o3bank.co.uk:4501/open-banking/v3.1/aisp",
-      "endpoints": [{
+      "endpoints": [  
+        {
           "method": "POST",
           "path": "/account-access-consents"
         },
@@ -27,14 +28,6 @@
         },
         {
           "method": "GET",
-          "path": "/accounts/{AccountId}/product"
-        },
-        {
-          "method": "GET",
-          "path": "/accounts/{AccountId}/transactions"
-        },
-        {
-          "method": "GET",
           "path": "/accounts"
         },
         {
@@ -44,6 +37,94 @@
         {
           "method": "GET",
           "path": "/accounts/{AccountId}/balances"
+        },
+        {
+          "method": "GET",
+          "path": "/accounts/{AccountId}/beneficiaries"
+        },
+        {
+          "method": "GET",
+          "path": "/accounts/{AccountId}/direct-debits"
+        },
+        {
+          "method": "GET",
+          "path": "/accounts/{AccountId}/offers"
+        },
+        {
+          "method": "GET",
+          "path": "/accounts/{AccountId}/party"
+        },
+        {
+          "method": "GET",
+          "path": "/accounts/{AccountId}/product"
+        },
+        {
+          "method": "GET",
+          "path": "/accounts/{AccountId}/scheduled-payments"
+        },
+        {
+          "method": "GET",
+          "path": "/accounts/{AccountId}/standing-orders"
+        },
+        {
+          "method": "GET",
+          "path": "/accounts/{AccountId}/statements"
+        },
+        {
+          "method": "GET",
+          "path": "/accounts/{AccountId}/statements/{StatementId}"
+        },
+        {
+          "method": "GET",
+          "path": "/accounts/{AccountId}/statements/{StatementId}/file"
+        },
+        {
+          "method": "GET",
+          "path": "/accounts/{AccountId}/statements/{StatementId}/transactions"
+        },
+        {
+          "method": "GET",
+          "path": "/accounts/{AccountId}/transactions"
+        },
+        {
+          "method": "GET",
+          "path": "/balances"
+        },
+        {
+          "method": "GET",
+          "path": "/beneficiaries"
+        },
+        {
+          "method": "GET",
+          "path": "/direct-debits"
+        },
+        {
+          "method": "GET",
+          "path": "/offers"
+        },
+        {
+          "method": "GET",
+          "path": "/party"
+        },
+        {
+          "method": "GET",
+          "path": "/products"
+        },
+        {
+          "method": "GET",
+          "path": "/scheduled-payments"
+        },
+        {
+          "method": "GET",
+          "path": "/standing-orders"
+        },
+        {
+          "method": "GET",
+          "path": "/statements"
+        },
+        {
+          "method": "GET",
+          "path": "/transactions"
         }
       ]
     }, {
