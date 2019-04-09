@@ -26,7 +26,7 @@ type configHandlers struct {
 // https://github.com/go-ozzo/ozzo-validation/blob/master/in_test.go
 type SupportedRequestSignAlg interface{}
 
-var SupportedRequestSignAlgValues = []string{"PS256", "RS256", "NONE"}
+var SupportedRequestSignAlgValues = []interface{}{"PS256", "RS256", "NONE"}
 
 type GlobalConfiguration struct {
 	SigningPrivate                string            `json:"signing_private" validate:"not_empty"`
@@ -44,7 +44,7 @@ type GlobalConfiguration struct {
 	RedirectURL                   string            `json:"redirect_url" validate:"valid_url"`
 	ResourceIDs                   model.ResourceIDs `json:"resource_ids" validate:"not_empty"`
 	CreditorAccount               models.Payment    `json:"creditor_account"`
-	RequestObjectSigningAlgorithm string            `json:"request_object_signing_alg" validate"not_empty"`
+	RequestObjectSigningAlgorithm string            `json:"request_object_signing_alg" validate:"not_empty"`
 }
 
 // Validate - used by https://github.com/go-ozzo/ozzo-validation to validate struct.
@@ -53,6 +53,7 @@ func (c GlobalConfiguration) Validate() error {
 		validation.Field(&c.CreditorAccount, validation.Required),
 		validation.Field(&c.RequestObjectSigningAlgorithm,
 			validation.Required,
+			validation.In(SupportedRequestSignAlgValues[:]...),
 		),
 	)
 }

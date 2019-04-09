@@ -79,6 +79,7 @@ func (d discoveryHandlers) setDiscoveryModelHandler(c echo.Context) error {
 			}).Error("Error on /.well-known/openid-configuration")
 			failures = append(failures, newOpenidConfigurationURIFailure(discoveryItemIndex, e))
 		} else {
+			var SupportedRequestSignAlgValues = []string{"PS256", "RS256", "NONE"}
 			requestObjectSigningAlgValuesSupported := sets.InsensitiveIntersection(config.RequestObjectSigningAlgValuesSupported, SupportedRequestSignAlgValues)
 			if len(requestObjectSigningAlgValuesSupported) == 0 {
 				return errors.New("no supported request object signing alg found")
