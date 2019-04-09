@@ -88,6 +88,11 @@ func (i *Input) CreateRequest(tc *TestCase, ctx *Context) (*resty.Request, error
 }
 
 func (i *Input) setClaims(tc *TestCase, ctx *Context) error {
+	logrus.WithFields(logrus.Fields{
+		"ctx":      ctx,
+		"i.Claims": i.Claims,
+	}).Debug("Input.setClaims before ...")
+
 	for k, v := range i.Claims {
 		value, err := replaceContextField(v, ctx)
 		if err != nil {
@@ -129,6 +134,11 @@ func (i *Input) setClaims(tc *TestCase, ctx *Context) error {
 			ctx.Put("jwtbearer", token) // Result - set jwt-bearer token in context
 		}
 	}
+
+	logrus.WithFields(logrus.Fields{
+		"ctx":      ctx,
+		"i.Claims": i.Claims,
+	}).Debug("Input.setClaims after ...")
 
 	return nil
 }
@@ -172,6 +182,14 @@ func consentUrl(authEndpoint string, claims map[string]string, token string) str
 
 	consentURL := fmt.Sprintf("%s?%s", authEndpoint, queryString.Encode())
 	logrus.StandardLogger().Debugf("Consent URL: %s", consentURL)
+
+	logrus.WithFields(logrus.Fields{
+		"claims":       claims,
+		"authEndpoint": authEndpoint,
+		"token":        token,
+		"consentURL":   consentURL,
+	}).Info("Generating consentURL")
+
 	return consentURL
 }
 
@@ -273,9 +291,22 @@ func certFromContext(ctx *Context) (authentication.Certificate, error) {
 	if err != nil {
 		return nil, errors.New("input, couldn't find `SigningPublic` in context")
 	}
+
+	fmt.Println("*************************************")
+	fmt.Println("*************************************")
+	fmt.Println("*************************************")
+	fmt.Println("*************************************")
+	fmt.Println("*************************************")
+	fmt.Println(privKey)
+	fmt.Println("======================================")
+	fmt.Println(pubKey)
+	fmt.Println("*************************************")
+	fmt.Println("*************************************")
+	fmt.Println("*************************************")
+
 	cert, err := authentication.NewCertificate(pubKey, privKey)
 	if err != nil {
-		return nil, errors.New("input, couldn't create `certificate` from pub/priv keys")
+		return nil, errors.Wrap(err, "input, couldn't create `certificate` from pub/priv keys")
 	}
 	return cert, nil
 }
@@ -293,12 +324,18 @@ func (i *Input) generateSignedJWT(ctx *Context, alg jwt.SigningMethod) (string, 
 	claims["redirect_uri"] = i.Claims["redirect_url"]
 	claims["nonce"] = uuid
 	claims["client_id"] = i.Claims["iss"]
-	claims["response_type"] = i.Claims["responseType"]
 	claims["state"] = i.Claims["state"]
 	consentClaim := consentClaims{Essential: true, Value: i.Claims["consentId"]}
 	myIdent := obintentID{IntentID: consentClaim}
 	var consentIDToken = consentIDTok{Token: myIdent}
 	claims["claims"] = consentIDToken
+	claims["response_type"] = i.Claims["responseType"]
+
+	logrus.WithFields(logrus.Fields{
+		"claims":   claims,
+		"alg":      alg,
+		"i.Claims": i.Claims,
+	}).Debug("Input.generateSignedJWT ...")
 
 	token := jwt.NewWithClaims(alg, claims) // create new token
 

@@ -92,7 +92,7 @@
           "scope": "openid accounts",
           "redirect_url": "$redirect_url",
           "consentId": "$post-account-consent-id",
-          "responseType": "code",
+          "responseType": "$responseType",
           "state":"$token_name"
         }
       },

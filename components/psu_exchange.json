@@ -13,7 +13,7 @@
         "scope": "openid $scope",
         "redirect_url": "$redirect_url",
         "consentId": "$consent_id",
-        "responseType": "code",
+        "responseType": "$responseType",
         "state":"$token_name"
       }
     },
@@ -21,6 +21,6 @@
       "baseurl": ""
     },
     "expect": {
-      "status-code": 404        
+      "status-code": 404
     }
   }

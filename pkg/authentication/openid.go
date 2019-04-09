@@ -1,12 +1,13 @@
 package authentication
 
 import (
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/client"
 	"encoding/json"
 	"fmt"
-	"github.com/pkg/errors"
-	"io"
+	"io/ioutil"
 	"net/http"
+
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/client"
+	"github.com/pkg/errors"
 )
 
 // OpenIDConfiguration - The OpenID Connect discovery document retrieved by calling /.well-known/openid-configuration.
@@ -17,31 +18,34 @@ type OpenIDConfiguration struct {
 	RequestObjectSigningAlgValuesSupported []string `json:"request_object_signing_alg_values_supported"`
 	AuthorizationEndpoint                  string   `json:"authorization_endpoint"`
 	Issuer                                 string   `json:"issuer"`
+	ResponseTypesSupported                 []string `json:"response_types_supported"`
 }
 
 func OpenIdConfig(url string) (OpenIDConfiguration, error) {
-	body, e := retrieveConfig(url)
-	if body != nil {
-		defer body.Close()
-	}
-	if e != nil {
-		return OpenIDConfiguration{}, e
-	}
-
-	config := OpenIDConfiguration{}
-	if err := json.NewDecoder(body).Decode(&config); err != nil {
-		return config, errors.Wrap(err, fmt.Sprintf("Invalid OpenID config JSON returned: %s ", url))
-	}
-	return config, nil
-}
-
-func retrieveConfig(url string) (io.ReadCloser, error) {
 	resp, err := client.NewHTTPClient(client.DefaultTimeout).Get(url)
 	if err != nil {
-		return nil, errors.Wrapf(err, "Failed to GET OpenID config: %s", url)
+		return OpenIDConfiguration{}, errors.Wrapf(err, "Failed to GET OpenIDConfiguration: url=%+v", url)
 	}
+
 	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("failed to GET OpenID config: %s : HTTP response status: %d", url, resp.StatusCode)
+		responseBody, err := ioutil.ReadAll(resp.Body)
+		defer resp.Body.Close()
+		if err != nil {
+			return OpenIDConfiguration{}, errors.Wrap(err, "error reading error response from GET OpenIDConfiguration")
+		}
+
+		return OpenIDConfiguration{}, fmt.Errorf(
+			"failed to GET OpenIDConfiguration config: url=%+v, StatusCode=%+v, body=%+v",
+			url,
+			resp.StatusCode,
+			string(responseBody),
+		)
 	}
-	return resp.Body, nil
+
+	defer resp.Body.Close()
+	config := OpenIDConfiguration{}
+	if err := json.NewDecoder(resp.Body).Decode(&config); err != nil {
+		return config, errors.Wrap(err, fmt.Sprintf("Invalid OpenIDConfiguration: url=%+v", url))
+	}
+	return config, nil
 }

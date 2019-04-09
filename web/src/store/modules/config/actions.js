@@ -1,9 +1,8 @@
 import * as _ from 'lodash';
 import moment from 'moment';
-import { mutationTypes as types } from './index';
-import constants from './constants';
-
 import api from '../../../api';
+import constants from './constants';
+import { mutationTypes as types } from './index';
 
 const findImageData = (model, images) => {
   const { name } = model.discoveryModel;
@@ -57,6 +56,8 @@ export default {
         const defaultAuthMethod = _.first(_.values(response.default_token_endpoint_auth_method));
         commit(types.SET_TOKEN_ENDPOINT_AUTH_METHOD, defaultAuthMethod);
 
+        commit(types.SET_RESPONSE_TYPES_SUPPORTED, response.response_types_supported);
+
         const authMethods = _.first(_.values(response.token_endpoint_auth_methods));
         commit(types.SET_TOKEN_ENDPOINT_AUTH_METHODS, authMethods);
 
@@ -109,6 +110,7 @@ export default {
         'client_id',
         'client_secret',
         'token_endpoint',
+        'response_type',
         'token_endpoint_auth_method',
         'request_object_signing_alg',
         'authorization_endpoint',
@@ -229,6 +231,9 @@ export default {
     }
     if (_.isEmpty(state.configuration.token_endpoint)) {
       errors.push('Token Endpoint empty');
+    }
+    if (_.isEmpty(state.configuration.response_type)) {
+      errors.push('response_type empty');
     }
     if (_.isEmpty(state.configuration.token_endpoint_auth_method)) {
       errors.push('Token Endpoint Auth Method empty');

@@ -1,6 +1,6 @@
 
-import Vue from 'vue';
 import * as _ from 'lodash';
+import Vue from 'vue';
 import actions from './actions';
 import constants from './constants';
 
@@ -19,6 +19,8 @@ export const mutationTypes = {
   SET_CLIENT_ID: 'SET_CLIENT_ID',
   SET_CLIENT_SECRET: 'SET_CLIENT_SECRET',
   SET_TOKEN_ENDPOINT: 'SET_TOKEN_ENDPOINT',
+  SET_RESPONSE_TYPE: 'SET_RESPONSE_TYPE',
+  SET_RESPONSE_TYPES_SUPPORTED: 'SET_RESPONSE_TYPES_SUPPORTED',
   SET_TOKEN_ENDPOINT_AUTH_METHOD: 'SET_TOKEN_ENDPOINT_AUTH_METHOD',
   SET_TOKEN_ENDPOINT_AUTH_METHODS: 'SET_TOKEN_ENDPOINT_AUTH_METHODS',
   SET_REQUEST_OBJECT_SIGNING_ALG_VALUES_SUPPORTED: 'SET_REQUEST_OBJECT_SIGNING_ALG_VALUES_SUPPORTED',
@@ -85,6 +87,12 @@ export const mutations = {
   },
   [mutationTypes.SET_TOKEN_ENDPOINT](state, value) {
     state.configuration.token_endpoint = value;
+  },
+  [mutationTypes.SET_RESPONSE_TYPE](state, value) {
+    state.configuration.response_type = value;
+  },
+  [mutationTypes.SET_RESPONSE_TYPES_SUPPORTED](state, value) {
+    state.response_types_supported = value;
   },
   [mutationTypes.SET_TOKEN_ENDPOINT_AUTH_METHOD](state, value) {
     state.configuration.token_endpoint_auth_method = value;
@@ -211,6 +219,7 @@ export const state = {
   problems: null,
   token_endpoint_auth_methods: [],
   request_object_signing_alg_values_supported: [],
+  response_types_supported: [],
 
   configuration: {
     signing_private: '',
@@ -222,6 +231,7 @@ export const state = {
     client_id: '',
     client_secret: '',
     token_endpoint: '',
+    response_type: '',
     token_endpoint_auth_method: 'client_secret_basic',
     request_object_signing_alg: '',
     authorization_endpoint: '',
