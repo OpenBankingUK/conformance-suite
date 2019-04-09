@@ -120,6 +120,7 @@ func MakeJourneyConfig(config *GlobalConfiguration) (JourneyConfig, error) {
 		clientID:                config.ClientID,
 		clientSecret:            config.ClientSecret,
 		tokenEndpoint:           config.TokenEndpoint,
+		ResponseType:            config.ResponseType,
 		tokenEndpointAuthMethod: config.TokenEndpointAuthMethod,
 		authorizationEndpoint:   config.AuthorizationEndpoint,
 		resourceBaseURL:         config.ResourceBaseURL,
