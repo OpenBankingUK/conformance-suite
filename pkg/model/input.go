@@ -308,7 +308,7 @@ func (i *Input) generateSignedJWT(ctx *Context, alg jwt.SigningMethod) (string, 
 	}
 
 	modulus := cert.PublicKey().N.Bytes()
-	modulusBase64 := base64.StdEncoding.EncodeToString(modulus)
+	modulusBase64 := base64.RawURLEncoding.EncodeToString(modulus)
 	token.Header["kid"], err = calcKid(modulusBase64)
 	if err != nil {
 		return "", i.AppErr(fmt.Sprintf("error calculating kid: %s", err.Error()))
@@ -332,7 +332,7 @@ func calcKid(modulus string) (string, error) {
 	}
 	sum := sumer.Sum(nil)
 
-	sumBase64 := base64.StdEncoding.EncodeToString(sum)
+	sumBase64 := base64.RawURLEncoding.EncodeToString(sum)
 	sumBase64NoTrailingEquals := strings.TrimSuffix(sumBase64, "=")
 
 	return sumBase64NoTrailingEquals, nil
