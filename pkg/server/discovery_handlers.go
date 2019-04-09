@@ -13,14 +13,21 @@ import (
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
 )
 
+const (
+	defaultTxnFrom = "2016-01-01T10:40:00+02:00"
+	defaultTxnTo   = "2025-12-31T10:40:00+02:00"
+)
+
 type PostDiscoveryModelResponse struct {
 	TokenEndpoints                                map[string]string   `json:"token_endpoints"`
 	TokenEndpointAuthMethods                      map[string][]string `json:"token_endpoint_auth_methods"`
 	DefaultTokenEndpointAuthMethod                map[string]string   `json:"default_token_endpoint_auth_method"`
 	RequestObjectSigningAlgValuesSupported        map[string][]string `json:"request_object_signing_alg_values_supported"`
-	DefaultRequestObjectSigningAlgValuesSupported map[string]string   `json:"default?request_object_signing_alg_values_supported"`
+	DefaultRequestObjectSigningAlgValuesSupported map[string]string   `json:"default_request_object_signing_alg_values_supported"`
 	AuthorizationEndpoints                        map[string]string   `json:"authorization_endpoints"`
 	Issuers                                       map[string]string   `json:"issuers"`
+	DefaultTxnFromDateTime                        string              `json:"default_transaction_from_date"`
+	DefaultTxnToDateTime                          string              `json:"default_transaction_to_date"`
 }
 
 type validationFailuresResponse struct {
@@ -92,6 +99,8 @@ func (d discoveryHandlers) setDiscoveryModelHandler(c echo.Context) error {
 			response.DefaultTokenEndpointAuthMethod[key] = authentication.DefaultAuthMethod(config.TokenEndpointAuthMethodsSupported, d.logger)
 			response.RequestObjectSigningAlgValuesSupported[key] = requestObjectSigningAlgValuesSupported
 			response.DefaultRequestObjectSigningAlgValuesSupported[key] = config.RequestObjectSigningAlgValuesSupported[0]
+			response.DefaultTxnFromDateTime = defaultTxnFrom
+			response.DefaultTxnToDateTime = defaultTxnTo
 		}
 	}
 

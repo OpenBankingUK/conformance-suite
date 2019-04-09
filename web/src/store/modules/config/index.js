@@ -14,6 +14,8 @@ export const mutationTypes = {
   SET_CONFIGURATION_TRANSPORT_PUBLIC: 'SET_CONFIGURATION_TRANSPORT_PUBLIC',
   SET_DISCOVERY_TEMPLATES: 'SET_DISCOVERY_TEMPLATES',
   SET_WIZARD_STEP: 'SET_WIZARD_STEP',
+  SET_TRANSACTION_FROM_DATE: 'SET_TRANSACTION_FROM_DATE',
+  SET_TRANSACTION_TO_DATE: 'SET_TRANSACTION_TO_DATE',
   SET_CLIENT_ID: 'SET_CLIENT_ID',
   SET_CLIENT_SECRET: 'SET_CLIENT_SECRET',
   SET_TOKEN_ENDPOINT: 'SET_TOKEN_ENDPOINT',
@@ -69,7 +71,12 @@ export const mutations = {
   [mutationTypes.SET_WIZARD_STEP](state, step) {
     state.wizard.step = step;
   },
-
+  [mutationTypes.SET_TRANSACTION_FROM_DATE](state, value) {
+    state.configuration.transaction_from_date = value;
+  },
+  [mutationTypes.SET_TRANSACTION_TO_DATE](state, value) {
+    state.configuration.transaction_to_date = value;
+  },
   [mutationTypes.SET_CLIENT_ID](state, value) {
     state.configuration.client_id = value;
   },
@@ -210,6 +217,8 @@ export const state = {
     signing_public: '',
     transport_private: '',
     transport_public: '',
+    transaction_from_date: '',
+    transaction_to_date: '',
     client_id: '',
     client_secret: '',
     token_endpoint: '',

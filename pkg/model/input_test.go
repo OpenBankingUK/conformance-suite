@@ -74,7 +74,7 @@ func TestCreateRequestHeaderContext(t *testing.T) {
 		"Myheader": "$replacement",
 	}
 	ctx := Context{
-		"replacement": "myNewValue",
+		"replacement":            "myNewValue",
 		"authorisation_endpoint": "https://example.com/authorisation",
 	}
 	i := &Input{Method: "GET", Endpoint: "http://google.com", Headers: headers}
@@ -92,7 +92,7 @@ func TestSetBearerAuthTokenFromContext(t *testing.T) {
 		"authorization": "Bearer $access_token",
 	}
 	ctx := Context{
-		"access_token": "myShineyNewAccessTokenHotOffThePress",
+		"access_token":           "myShineyNewAccessTokenHotOffThePress",
 		"authorisation_endpoint": "https://example.com/authorisation",
 	}
 	i := &Input{Method: "GET", Endpoint: "http://google.com", Headers: headers}
@@ -107,7 +107,7 @@ func TestSetBearerAuthTokenFromContext(t *testing.T) {
 
 func TestCreateHeaderContextMissingForReplacement(t *testing.T) {
 	ctx := Context{
-		"nomatch": "myNewValue",
+		"nomatch":                "myNewValue",
 		"authorisation_endpoint": "https://example.com/authorisation",
 	}
 	result, err := replaceContextField("$replacement", &ctx)
@@ -240,13 +240,13 @@ func TestClaimsJWTBearer(t *testing.T) {
 	cert, err := authentication.NewCertificate(selfsignedDummypub, selfsignedDummykey)
 	require.NoError(t, err)
 	ctx := Context{
-		"consent_id":   "aac-fee2b8eb-ce1b-48f1-af7f-dc8f576d53dc",
-		"xchange_code": "10e9d80b-10d4-4abd-9fe0-15789cc512b5",
-		"baseurl":      "https://matls-sso.openbankingtest.org.uk",
-		"access_token": "18d5a754-0b76-4a8f-9c68-dc5caaf812e2",
-		"client_id":    "12312",
-		"scope":        "AuthoritiesReadAccess ASPSPReadAccess TPPReadAll",
-		"SigningCert":  cert,
+		"consent_id":             "aac-fee2b8eb-ce1b-48f1-af7f-dc8f576d53dc",
+		"xchange_code":           "10e9d80b-10d4-4abd-9fe0-15789cc512b5",
+		"baseurl":                "https://matls-sso.openbankingtest.org.uk",
+		"access_token":           "18d5a754-0b76-4a8f-9c68-dc5caaf812e2",
+		"client_id":              "12312",
+		"scope":                  "AuthoritiesReadAccess ASPSPReadAccess TPPReadAll",
+		"SigningCert":            cert,
 		"authorisation_endpoint": "https://example.com/authorisation",
 	}
 
@@ -299,7 +299,7 @@ func TestJWTSignRS256(t *testing.T) {
 
 func TestBodyLiteral(t *testing.T) {
 	ctx := Context{
-		"replacebody": "this is my body",
+		"replacebody":            "this is my body",
 		"authorisation_endpoint": "https://example.com/authorisation",
 	}
 
@@ -312,7 +312,7 @@ func TestBodyLiteral(t *testing.T) {
 
 func TestBodyReplacement(t *testing.T) {
 	ctx := Context{
-		"replacebody": "this is my body",
+		"replacebody":            "this is my body",
 		"authorisation_endpoint": "https://example.com/authorisation",
 	}
 
@@ -325,8 +325,8 @@ func TestBodyReplacement(t *testing.T) {
 
 func TestBodyTwoReplacements(t *testing.T) {
 	ctx := Context{
-		"replacebody": "this is my body",
-		"replace2":    "and this is my heart",
+		"replacebody":            "this is my body",
+		"replace2":               "and this is my heart",
 		"authorisation_endpoint": "https://example.com/authorisation",
 	}
 
@@ -342,7 +342,7 @@ func TestPaymentBodyReplace(t *testing.T) {
 		"initiation":                "{\"InstructionIdentification\":\"SIDP01\",\"EndToEndIdentification\":\"FRESCO.21302.GFX.20\",\"InstructedAmount\":{\"Amount\":\"15.00\",\"Currency\":\"GBP\"},\"CreditorAccount\":{\"SchemeName\":\"SortCodeAccountNumber\",\"Identification\":\"20000319470104\",\"Name\":\"Messers Simplex & Co\"}}",
 		"consent_id":                "sdp-1-b5bbdb18-eeb1-4c11-919d-9a237c8f1c7d",
 		"domestic_payment_template": "{\"Data\": {\"ConsentId\": \"$consent_id\",\"Initiation\":$initiation },\"Risk\":{}}",
-		"authorisation_endpoint": "https://example.com/authorisation",
+		"authorisation_endpoint":    "https://example.com/authorisation",
 	}
 
 	i := Input{Method: "POST", Endpoint: "https://google.com", RequestBody: "$domestic_payment_template"}
@@ -354,9 +354,9 @@ func TestPaymentBodyReplace(t *testing.T) {
 
 func TestPaymentBodyReplaceTestCase100300(t *testing.T) {
 	ctx := Context{
-		"x-fapi-financial-id": "myfapiid",
-		"thisSchemeName":      "myscheme",
-		"thisIdentification":  "myid",
+		"x-fapi-financial-id":    "myfapiid",
+		"thisSchemeName":         "myscheme",
+		"thisIdentification":     "myid",
 		"authorisation_endpoint": "https://example.com/authorisation",
 	}
 	_ = ctx

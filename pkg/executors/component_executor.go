@@ -2,8 +2,8 @@ package executors
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
+	"github.com/pkg/errors"
 
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/manifest"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
@@ -15,10 +15,18 @@ func AcquireHeadlessTokens(tests []model.TestCase, ctx *model.Context, definitio
 	logrus.Debug("AcquireHeadlessTokens")
 	bodyDataStart := "{\"Data\": { \"Permissions\": ["
 	//TODO: sort out consent transaction timestamps
-	bodyDataEnd := "], \"TransactionFromDateTime\": \"2016-01-01T10:40:00+02:00\", \"TransactionToDateTime\": \"2025-12-31T10:40:00+02:00\" },  \"Risk\": {} }"
+	txnFrom, err := ctx.GetString("transactionFromDate")
+	if err != nil {
+		return nil, errors.Wrap(err, "`transaction from date` not in context")
+	}
+	txnTo, err := ctx.GetString("transactionToDate")
+	if err != nil {
+		return nil, errors.Wrap(err, "`transaction to date` not in context")
+	}
 
+	bodyDataEnd := fmt.Sprintf(`], "TransactionFromDateTime": "%s", "TransactionToDateTime": "%s" },  "Risk": {} }`, txnFrom, txnTo)
 	executor := NewExecutor()
-	err := executor.SetCertificates(definition.SigningCert, definition.TransportCert)
+	err = executor.SetCertificates(definition.SigningCert, definition.TransportCert)
 	if err != nil {
 		return nil, err
 	}

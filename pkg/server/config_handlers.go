@@ -38,6 +38,8 @@ type GlobalConfiguration struct {
 	RedirectURL             string            `json:"redirect_url" validate:"valid_url"`
 	ResourceIDs             model.ResourceIDs `json:"resource_ids" validate:"not_empty"`
 	CreditorAccount         models.Payment    `json:"creditor_account"`
+	TransactionFromDate     string            `json:"transaction_from_date" validate:"not_empty"`
+	TransactionToDate       string            `json:"transaction_to_date" validate:"not_empty"`
 }
 
 // Validate - used by https://github.com/go-ozzo/ozzo-validation to validate struct.
@@ -111,6 +113,8 @@ func MakeJourneyConfig(config *GlobalConfiguration) (JourneyConfig, error) {
 		redirectURL:             config.RedirectURL,
 		resourceIDs:             config.ResourceIDs,
 		creditorAccount:         config.CreditorAccount,
+		transactionFromDate:     config.TransactionFromDate,
+		transactionToDate:       config.TransactionToDate,
 	}, nil
 }
 

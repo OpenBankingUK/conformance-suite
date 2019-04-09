@@ -388,6 +388,8 @@ type JourneyConfig struct {
 	resourceIDs             model.ResourceIDs
 	creditorAccount         models.Payment
 	apiVersion              string
+	transactionFromDate     string
+	transactionToDate       string
 }
 
 func (wj *journey) SetConfig(config JourneyConfig) error {
@@ -424,6 +426,8 @@ const ctxStatementID = "statementId"
 const ctxCreditorSchema = "creditorScheme"
 const ctxCreditorIdentification = "creditorIdentification"
 const ctxCreditorName = "creditorName"
+const ctxTransactionFromDate = "transactionFromDate"
+const ctxTransactionToDate = "transactionToDate"
 
 func (wj *journey) configParametersToJourneyContext() error {
 	wj.context.PutString(ctxConstClientID, wj.config.clientID)
@@ -441,6 +445,8 @@ func (wj *journey) configParametersToJourneyContext() error {
 	wj.context.PutString(ctxCreditorSchema, wj.config.creditorAccount.SchemeName)
 	wj.context.PutString(ctxCreditorIdentification, wj.config.creditorAccount.Identification)
 	wj.context.PutString(ctxCreditorName, wj.config.creditorAccount.Name)
+	wj.context.PutString(ctxTransactionFromDate, wj.config.transactionFromDate)
+	wj.context.PutString(ctxTransactionToDate, wj.config.transactionToDate)
 
 	basicauth, err := authentication.CalculateClientSecretBasicToken(wj.config.clientID, wj.config.clientSecret)
 	if err != nil {
