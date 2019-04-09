@@ -86,8 +86,8 @@ func (g generator) GenerateManifestTests(log *logrus.Entry, config GeneratorConf
 	var scrSlice []model.SpecConsentRequirements
 	tokens := map[string][]manifest.RequiredTokens{}
 
-	for _, item := range discovery.DiscoveryItems { //TODO: sort out different specs etc
-		tcs, err := manifest.GenerateTestCases(item.APISpecification.SchemaVersion, item.ResourceBaseURI, ctx) //TODO: ensure we can handle multiple specs
+	for _, item := range discovery.DiscoveryItems {
+		tcs, err := manifest.GenerateTestCases(item.APISpecification.SchemaVersion, item.ResourceBaseURI, ctx, item.Endpoints)
 		if err != nil {
 			log.Warnf("manifest testcase generation failed for %s", item.APISpecification.SchemaVersion)
 			continue

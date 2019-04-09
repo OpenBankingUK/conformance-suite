@@ -3,6 +3,7 @@
 
 *.env*
 suite.log
+http-trace.log
 # ignore binaries generated from `go build`
 /fcs
 /fcs_server

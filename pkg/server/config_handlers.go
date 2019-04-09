@@ -1,6 +1,7 @@
 package server
 
 import (
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/server/models"
 	"fmt"
 	"gopkg.in/resty.v1"
 	"net/http"
@@ -14,7 +15,6 @@ import (
 
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/authentication"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/server/models"
 )
 
 type configHandlers struct {
@@ -44,17 +44,15 @@ type GlobalConfiguration struct {
 	RedirectURL                   string            `json:"redirect_url" validate:"valid_url"`
 	ResourceIDs                   model.ResourceIDs `json:"resource_ids" validate:"not_empty"`
 	CreditorAccount               models.Payment    `json:"creditor_account"`
-	RequestObjectSigningAlgorithm string            `json:"request_object_signing_alg" validate:"not_empty"`
+	TransactionFromDate           string            `json:"transaction_from_date" validate:"not_empty"`
+	TransactionToDate             string            `json:"transaction_to_date" validate:"not_empty"`
+	RequestObjectSigningAlgorithm string            `json:"request_object_signing_alg"`
 }
 
 // Validate - used by https://github.com/go-ozzo/ozzo-validation to validate struct.
 func (c GlobalConfiguration) Validate() error {
 	return validation.ValidateStruct(&c,
 		validation.Field(&c.CreditorAccount, validation.Required),
-		validation.Field(&c.RequestObjectSigningAlgorithm,
-			validation.Required,
-			validation.In(SupportedRequestSignAlgValues[:]...),
-		),
 	)
 }
 
@@ -122,6 +120,8 @@ func MakeJourneyConfig(config *GlobalConfiguration) (JourneyConfig, error) {
 		redirectURL:                   config.RedirectURL,
 		resourceIDs:                   config.ResourceIDs,
 		creditorAccount:               config.CreditorAccount,
+		transactionFromDate:           config.TransactionFromDate,
+		transactionToDate:             config.TransactionToDate,
 		requestObjectSigningAlgorithm: config.RequestObjectSigningAlgorithm,
 		signingPrivate:                config.SigningPrivate,
 		signingPublic:                 config.SigningPublic,

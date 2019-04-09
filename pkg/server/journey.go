@@ -388,6 +388,8 @@ type JourneyConfig struct {
 	resourceIDs                   model.ResourceIDs
 	creditorAccount               models.Payment
 	apiVersion                    string
+	transactionFromDate           string
+	transactionToDate             string
 	requestObjectSigningAlgorithm string
 	signingPrivate                string
 	signingPublic                 string
@@ -427,6 +429,8 @@ const ctxStatementID = "statementId"
 const ctxCreditorSchema = "creditorScheme"
 const ctxCreditorIdentification = "creditorIdentification"
 const ctxCreditorName = "creditorName"
+const ctxTransactionFromDate = "transactionFromDate"
+const ctxTransactionToDate = "transactionToDate"
 const ctxRequestObjectSigningAlg = "requestObjectSigningAlg"
 const ctxSigningPrivate = "signingPrivate"
 const ctxSigningPublic = "signingPublic"
@@ -450,6 +454,8 @@ func (wj *journey) configParametersToJourneyContext() error {
 	wj.context.PutString(ctxRequestObjectSigningAlg, wj.config.requestObjectSigningAlgorithm)
 	wj.context.PutString(ctxSigningPrivate, wj.config.signingPrivate)
 	wj.context.PutString(ctxSigningPublic, wj.config.signingPublic)
+	wj.context.PutString(ctxTransactionFromDate, wj.config.transactionFromDate)
+	wj.context.PutString(ctxTransactionToDate, wj.config.transactionToDate)
 
 	basicauth, err := authentication.CalculateClientSecretBasicToken(wj.config.clientID, wj.config.clientSecret)
 	if err != nil {
