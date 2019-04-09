@@ -291,19 +291,6 @@ func certFromContext(ctx *Context) (authentication.Certificate, error) {
 	if err != nil {
 		return nil, errors.New("input, couldn't find `SigningPublic` in context")
 	}
-
-	fmt.Println("*************************************")
-	fmt.Println("*************************************")
-	fmt.Println("*************************************")
-	fmt.Println("*************************************")
-	fmt.Println("*************************************")
-	fmt.Println(privKey)
-	fmt.Println("======================================")
-	fmt.Println(pubKey)
-	fmt.Println("*************************************")
-	fmt.Println("*************************************")
-	fmt.Println("*************************************")
-
 	cert, err := authentication.NewCertificate(pubKey, privKey)
 	if err != nil {
 		return nil, errors.Wrap(err, "input, couldn't create `certificate` from pub/priv keys")
