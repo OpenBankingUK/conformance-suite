@@ -7,11 +7,11 @@ import (
 )
 
 func TestCalcKid(t *testing.T) {
-	modulus := "tPS6lkBEFf9MuVEfK7BET0oLYe7r6QjQR1SzXqwm37TmcnB8koB66ExmeFizSl8eJuTTjsNCDliGqbGdoe8p_Xw4hRLAPqtEEbq1-sQAAwPUHwgyAABOhIlWBsI6KxYX20UCp5pR4EzqM5cEj_nIvCjw7lmXZaOasMis9utAMw3iKFitduNS5Mj0g523CAes6CnlKusYf--k2l4TpgFRiYFGdVb7T-07xAqlyo5ljLguu8Tz_iwLaqvFKjb_m8gO7dy8P3h8wCv_nbdntxzh17EzsXiMIyh3PNKmxJUmUoAuKkOkpzaRVB5NsjIguIGZrrv0k_hZirxGA_SobsxAvQ"
+	modulus := "tGzvc5H2KLufptikvbL1crtdSaV901mJY4dAxjWK2V-W6hhgNIgdQgusn3k8AW6KKFckDLIs0hYKmIJTVN0MGaruG4USN4sRlRT2kkizJaXU9ZtHZ5yiwP9BMEiaKgY6IGWy4vVxR9ii83HhAXbTo-gI9HaK73i2kLIYUYwiAUG32Oo5Z226dISMBiGxDU7EeLCJ8uhdKPTi05z5fPE0Lw3eszLwaJN8qQ1BIFON_QXCVS7BDMdmWh2XEEljD_h5d6W1SPXikWod2XWK9PbxbKzGkpIJHV_Ty74c48eQE3_0rkUEZ9iCHtuFxgN0SEy1Hj5-5TDMVXkVQO_rGyYv4w"
 
 	kid, err := calcKid(modulus)
 
 	require.NoError(t, err)
-	expected := "X3idGb9VFwA3FK101sgNnaHmM2Y"
+	expected := "QuFYBRJnWdI6_NHFgamuXNr5R20"
 	assert.Equal(t, expected, kid)
 }

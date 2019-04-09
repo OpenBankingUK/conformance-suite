@@ -374,23 +374,26 @@ func (wj *journey) makeRunDefinition() executors.RunDefinition {
 }
 
 type JourneyConfig struct {
-	certificateSigning      authentication.Certificate
-	certificateTransport    authentication.Certificate
-	clientID                string
-	clientSecret            string
-	tokenEndpoint           string
-	ResponseType            string
-	tokenEndpointAuthMethod string
-	authorizationEndpoint   string
-	resourceBaseURL         string
-	xXFAPIFinancialID       string
-	issuer                  string
-	redirectURL             string
-	resourceIDs             model.ResourceIDs
-	creditorAccount         models.Payment
-	apiVersion              string
-	transactionFromDate     string
-	transactionToDate       string
+	certificateSigning            authentication.Certificate
+	certificateTransport          authentication.Certificate
+	clientID                      string
+	clientSecret                  string
+	tokenEndpoint                 string
+	ResponseType                  string
+	tokenEndpointAuthMethod       string
+	authorizationEndpoint         string
+	resourceBaseURL               string
+	xXFAPIFinancialID             string
+	issuer                        string
+	redirectURL                   string
+	resourceIDs                   model.ResourceIDs
+	creditorAccount               models.Payment
+	apiVersion                    string
+	transactionFromDate           string
+	transactionToDate             string
+	requestObjectSigningAlgorithm string
+	signingPrivate                string
+	signingPublic                 string
 }
 
 func (wj *journey) SetConfig(config JourneyConfig) error {
@@ -431,6 +434,9 @@ const (
 	ctxCreditorName                 = "creditorName"
 	ctxTransactionFromDate          = "transactionFromDate"
 	ctxTransactionToDate            = "transactionToDate"
+	ctxRequestObjectSigningAlg      = "requestObjectSigningAlg"
+	ctxSigningPrivate               = "signingPrivate"
+	ctxSigningPublic                = "signingPublic"
 )
 
 func (wj *journey) configParametersToJourneyContext() error {
@@ -450,6 +456,9 @@ func (wj *journey) configParametersToJourneyContext() error {
 	wj.context.PutString(ctxCreditorSchema, wj.config.creditorAccount.SchemeName)
 	wj.context.PutString(ctxCreditorIdentification, wj.config.creditorAccount.Identification)
 	wj.context.PutString(ctxCreditorName, wj.config.creditorAccount.Name)
+	wj.context.PutString(ctxRequestObjectSigningAlg, wj.config.requestObjectSigningAlgorithm)
+	wj.context.PutString(ctxSigningPrivate, wj.config.signingPrivate)
+	wj.context.PutString(ctxSigningPublic, wj.config.signingPublic)
 	wj.context.PutString(ctxTransactionFromDate, wj.config.transactionFromDate)
 	wj.context.PutString(ctxTransactionToDate, wj.config.transactionToDate)
 
