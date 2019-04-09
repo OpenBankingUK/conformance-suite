@@ -974,7 +974,7 @@ describe('web/src/store/modules/config', () => {
         const errors1 = [
           'Transaction From Date not ISO 8601 format',
           'Transaction To Date empty',
-          'response_type empty'
+          'response_type empty',
         ];
         expect(dispatch).toHaveBeenCalledWith('status/setErrors', errors1, { root: true });
       });
