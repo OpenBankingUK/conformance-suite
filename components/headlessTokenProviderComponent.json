@@ -55,7 +55,7 @@
           "headers": {
             "content-type": "application/json",
             "accept": "*/*",
-            "x-fapi-interaction-id": "Db4405450-febe-11e8-80a5-0fcebb1574e5",
+            "x-fapi-interaction-id": "b4405450-febe-11e8-80a5-0fcebb1574e5",
             "x-fapi-financial-id": "$x-fapi-financial-id",
             "authorization": "Bearer $client_access_token"
           },
@@ -148,4 +148,3 @@
     ],
     "components": []
   }
-  
