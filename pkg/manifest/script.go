@@ -52,20 +52,6 @@ type Reference struct {
 	BodyData    string       `json:"bodyData"`
 }
 
-// AccountData stores account number to be used in the test scripts
-type AccountData struct {
-	Ais           map[string]string `json:"ais,omitempty"`
-	AisConsentIds []string          `json:"ais.ConsetnAccoutId,omitempty"`
-	Pis           PisData           `json:"pis,omitempty"`
-}
-
-// PisData contains information about PIS accounts required for the test scrips
-type PisData struct {
-	Currency        string            `json:"Currency,omitempty"`
-	DebtorAccount   map[string]string `json:"DebtorAccount,omitempty"`
-	MADebtorAccount map[string]string `json:"MADebtorAccount,omitempty"`
-}
-
 // ConsentJobs Holds jobs required only to provide consent so should not show on the ui
 type ConsentJobs struct {
 	jobs map[string]model.TestCase
@@ -422,11 +408,8 @@ func getAccountPermissions(tests []model.TestCase) ([]ScriptPermission, error) {
 }
 
 func filterTestsBasedOnDiscoveryEndpoints(scripts Scripts, endpoints []discovery.ModelEndpoint) (Scripts, error) {
-
 	lookupMap := make(map[string]bool)
-	_ = lookupMap
 	filteredScripts := []Script{}
-	fmt.Println("***Discovery Endpoint URLs")
 
 	for _, ep := range endpoints {
 		for _, regpath := range accountsRegex {
@@ -436,28 +419,44 @@ func filterTestsBasedOnDiscoveryEndpoints(scripts Scripts, endpoints []discovery
 			}
 			if matched {
 				lookupMap[regpath.Regex] = true
-				fmt.Printf("endpoint %40.40s matched by regex %42.42s: %s\n", ep.Path, regpath.Regex, regpath.Name)
+				logrus.Tracef("endpoint %40.40s matched by regex %42.42s: %s", ep.Path, regpath.Regex, regpath.Name)
 			}
 		}
 	}
 
-	fmt.Println("***Lookup Map")
 	for k := range lookupMap {
 		for i, scr := range scripts.Scripts {
+			if strings.Contains(scr.URI, "foobar") { //exceptions
+				if !contains(filteredScripts, scripts.Scripts[i]) {
+					filteredScripts = append(filteredScripts, scripts.Scripts[i])
+				}
+				continue
+			}
 			stripped := strings.Replace(scr.URI, "$", "", -1) // only works with a single character
 			matched, err := regexp.MatchString(k, stripped)
 			if err != nil {
 				continue
 			}
 			if matched {
-				fmt.Printf("endpoint %40.40s matched by regex %42.42s\n", scr.URI, k)
-				filteredScripts = append(filteredScripts, scripts.Scripts[i])
+				if !contains(filteredScripts, scripts.Scripts[i]) {
+					logrus.Tracef("endpoint %40.40s matched by regex %42.42s", scr.URI, k)
+					filteredScripts = append(filteredScripts, scripts.Scripts[i])
+				}
 			}
 		}
 	}
 	resultscripts := Scripts{Scripts: filteredScripts}
 
 	return resultscripts, nil
+}
+
+func contains(s []Script, e Script) bool {
+	for _, a := range s {
+		if a.ID == e.ID {
+			return true
+		}
+	}
+	return false
 }
 
 // Utility to Dump Json
@@ -467,18 +466,7 @@ func dumpJSON(i interface{}) {
 	fmt.Println(string(model))
 }
 
-type permission struct {
-	string            string
-	Endpoints         []string
-	Default           bool
-	RequiredOneOrMore []string
-	Optional          []string
-}
-
 var subPathx = "[a-zA-Z0-9_{}-]+" // url sub path regex
-
-// staticApiPermission is the standard for OB permission
-// accesses to account endpoints
 
 type pathRegex struct {
 	Regex string
@@ -510,274 +498,4 @@ var accountsRegex = []pathRegex{
 	{"^/standing-orders$", "Get Orders"},
 	{"^/statements$", "Get Statements"},
 	{"^/transactions$", "Get Transactions"},
-}
-
-var staticAPIPermissionsRegex = []permission{
-	{
-		string: "ReadAccountsBasic",
-		Endpoints: []string{
-			"^/accounts$",
-			"^/accounts/" + subPathx + "$",
-			"^/accounts/" + subPathx + "/balances$",
-			"^/accounts/" + subPathx + "/beneficiaries$",
-			"^/accounts/" + subPathx + "/direct-debits$",
-			"^/accounts/" + subPathx + "/offers$",
-			"^/accounts/" + subPathx + "/party$",
-			"^/accounts/" + subPathx + "/product$",
-			"^/accounts/" + subPathx + "/scheduled-payments$",
-			"^/accounts/" + subPathx + "/standing-orders$",
-			"^/accounts/" + subPathx + "/statements$",
-			"^/accounts/" + subPathx + "/statements/" + subPathx + "/file$",
-			"^/accounts/" + subPathx + "/statements/" + subPathx + "/transactions$",
-			"^/accounts/" + subPathx + "/transactions$",
-			"^/balances$",
-			"^/beneficiaries$",
-			"^/direct-debits$",
-			"^/offers$",
-			"^/party$",
-			"^/products$",
-			"^/scheduled-payments$",
-			"^/standing-orders$",
-			"^/statements$",
-			"^/transactions$",
-		},
-		Default:           true,
-		RequiredOneOrMore: []string{},
-		Optional:          []string{},
-	},
-	{
-		string: "ReadAccountsDetail",
-		Endpoints: []string{
-			"^/accounts$",
-			"^/accounts/" + subPathx + "$",
-		},
-		Default:           false,
-		RequiredOneOrMore: []string{},
-		Optional:          []string{},
-	},
-	{
-		string: "ReadBalances",
-		Endpoints: []string{
-			"^/balances$",
-			"^/accounts/" + subPathx + "/balances$",
-		},
-		Default:           true,
-		RequiredOneOrMore: []string{},
-		Optional:          []string{},
-	},
-	{
-		string: "ReadBeneficiariesBasic",
-		Endpoints: []string{
-			"^/beneficiaries$",
-			"^/accounts/" + subPathx + "/beneficiaries$",
-		},
-		Default:           true,
-		RequiredOneOrMore: []string{},
-		Optional:          []string{},
-	},
-	{
-		string: "ReadBeneficiariesDetail",
-		Endpoints: []string{
-			"^/beneficiaries$",
-			"^/accounts/" + subPathx + "/beneficiaries$",
-		},
-		Default:           false,
-		RequiredOneOrMore: []string{},
-		Optional:          []string{},
-	},
-	{
-		string: "ReadDirectDebits",
-		Endpoints: []string{
-			"^/direct-debits$",
-			"^/accounts/" + subPathx + "/direct-debits$",
-		},
-		Default:           true,
-		RequiredOneOrMore: []string{},
-		Optional:          []string{},
-	},
-	{
-		string: "ReadStandingOrdersBasic",
-		Endpoints: []string{
-			"^/standing-orders$",
-			"^/accounts/" + subPathx + "/standing-orders$",
-		},
-		Default:           true,
-		RequiredOneOrMore: []string{},
-		Optional:          []string{},
-	},
-	{
-		string: "ReadStandingOrdersDetail",
-		Endpoints: []string{
-			"^/standing-orders$",
-			"^/accounts/" + subPathx + "/standing-orders$",
-		},
-		Default:           false,
-		RequiredOneOrMore: []string{},
-		Optional:          []string{},
-	},
-	{
-		string: "ReadTransactionsBasic",
-		Endpoints: []string{
-			"^/transactions$",
-			"^/accounts/" + subPathx + "/transactions$",
-			"^/accounts/" + subPathx + "/statements/" + subPathx + "/transactions$",
-		},
-		Default: true,
-		RequiredOneOrMore: []string{
-			"ReadTransactionsCredits",
-			"ReadTransactionsDebits",
-		},
-		Optional: []string{"ReadPAN"},
-	},
-	{
-		string: "ReadTransactionsDetail",
-		Endpoints: []string{
-			"^/transactions$",
-			"^/accounts/" + subPathx + "/transactions$",
-			"^/accounts/" + subPathx + "/statements/" + subPathx + "/transactions$",
-		},
-		Default: false,
-		RequiredOneOrMore: []string{
-			"ReadTransactionsCredits",
-			"ReadTransactionsDebits",
-		},
-		Optional: []string{"ReadPAN"},
-	},
-	{
-		string: "ReadTransactionsCredits",
-		Endpoints: []string{
-			"^/transactions$",
-			"^/accounts/" + subPathx + "/transactions$",
-			"^/accounts/" + subPathx + "/statements/" + subPathx + "/transactions$",
-		},
-		Default: true,
-		RequiredOneOrMore: []string{
-			"ReadTransactionsBasic",
-			"ReadTransactionsDetail",
-		},
-		Optional: []string{"ReadPAN"},
-	},
-	{
-		string: "ReadTransactionsDebits",
-		Endpoints: []string{
-			"^/transactions",
-			"^/accounts/" + subPathx + "/transactions$",
-			"^/accounts/" + subPathx + "/statements/" + subPathx + "/transactions$",
-		},
-		Default: true,
-		RequiredOneOrMore: []string{
-			"ReadTransactionsBasic",
-			"ReadTransactionsDetail",
-		},
-		Optional: []string{"ReadPAN"},
-	},
-	{
-		string: "ReadStatementsBasic",
-		Endpoints: []string{
-			"^/statements$",
-			"^/accounts/" + subPathx + "/statements$",
-			"^/accounts/" + subPathx + "/statements/" + subPathx + "/transactions$",
-		},
-		Default:           true,
-		RequiredOneOrMore: []string{},
-		Optional:          []string{},
-	},
-	{
-		string: "ReadStatementsDetail",
-		Endpoints: []string{
-			"^/statements$",
-			"^/accounts/" + subPathx + "/statements$",
-			"^/accounts/" + subPathx + "/statements/" + subPathx + "/file$",
-			"^/accounts/" + subPathx + "/statements/" + subPathx + "/transactions$",
-		},
-		Default:           false,
-		RequiredOneOrMore: []string{},
-		Optional:          []string{},
-	},
-	{
-		string: "ReadProducts",
-		Endpoints: []string{
-			"^/products$",
-			"^/accounts/" + subPathx + "/product$",
-		},
-		Default:           true,
-		RequiredOneOrMore: []string{},
-		Optional:          []string{},
-	},
-	{
-		string: "ReadOffers",
-		Endpoints: []string{
-			"^/offers$",
-			"^/accounts/" + subPathx + "/offers$",
-		},
-		Default:           true,
-		RequiredOneOrMore: []string{},
-		Optional:          []string{},
-	},
-	{
-		string: "ReadParty",
-		Endpoints: []string{
-			"^/accounts/" + subPathx + "/party$",
-		},
-		Default:           true,
-		RequiredOneOrMore: []string{},
-		Optional:          []string{},
-	},
-	{
-		string: "ReadPartyPSU",
-		Endpoints: []string{
-			"^/party$",
-		},
-		Default:           true,
-		RequiredOneOrMore: []string{},
-		Optional:          []string{},
-	},
-	{
-		string: "ReadScheduledPaymentsBasic",
-		Endpoints: []string{
-			"^/scheduled-payments$",
-			"^/accounts/" + subPathx + "/scheduled-payments$",
-		},
-		Default:           true,
-		RequiredOneOrMore: []string{},
-		Optional:          []string{},
-	},
-	{
-		string: "ReadScheduledPaymentsDetail",
-		Endpoints: []string{
-			"^/scheduled-payments$",
-			"^/accounts/" + subPathx + "/scheduled-payments$",
-		},
-		Default:           false,
-		RequiredOneOrMore: []string{},
-		Optional:          []string{},
-	},
-	//  {
-	// 	string: "ReadPAN",
-	// 	Endpoints: []string{
-	// 		"",
-	// 		"",
-	// 	},
-	// 	Default:           false,
-	// 	RequiredOneOrMore: []string{},
-	// 	Optional:          []string{},
-	// },
-}
-
-// GetPermissionList returns all the permissions for a given endpoint
-func GetPermissionList(path string, detail bool) ([]string, error) {
-	permissionList := []string{}
-	for _, perm := range staticAPIPermissionsRegex {
-		for _, ep := range perm.Endpoints {
-			matched, err := regexp.MatchString(ep, path)
-			if err != nil {
-				return []string{}, err
-			}
-			if matched {
-				permissionList = append(permissionList, string(perm.string))
-				break
-			}
-		}
-	}
-	return permissionList, nil
 }
