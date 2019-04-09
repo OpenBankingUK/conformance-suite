@@ -71,34 +71,52 @@ func (h redirectHandlers) postFragmentOKHandler(c echo.Context) error {
 		return err
 	}
 
-	// If ID Token has not been set in the query, then there is no need to validate
+	// If ID Token has not been set in the fragment, then there is no need to validate
 	// (Nothing to validate)
 	if fragment.IDToken == "" {
 		if fragment.Code != "" {
+			err := h.handleCodeExchange(fragment.Code, fragment.State, fragment.Scope)
+			if err != nil {
+				resp := NewErrorResponse(errors.Wrap(err, "unable to handle redirect"))
+				return c.JSON(http.StatusBadRequest, resp)
+			}
 			return c.JSON(http.StatusOK, nil)
 		}
 		return c.JSON(http.StatusBadRequest, errors.New("code not set"))
 	}
 
-	claim := &AuthClaim{}
-
-	t, err := jwt.ParseWithClaims(fragment.IDToken, claim, nil)
+	err := h.handleCodeExchange(fragment.Code, fragment.State, fragment.Scope)
 	if err != nil {
-		// If not providing Keyfunc (3rd param), don't check for error here
-		// as it will always be error("no Keyfunc was provided")
-		h.logger.Debug("Keyfunc not provided")
+		resp := NewErrorResponse(errors.Wrap(err, "unable to handle redirect"))
+		return c.JSON(http.StatusBadRequest, resp)
 	}
+	return c.JSON(http.StatusOK, nil)
 
-	cHash, err := calculateCHash(t.Header["alg"].(string), fragment.Code)
-	if err != nil {
-		return c.JSON(http.StatusBadRequest, NewErrorResponse(err))
-	}
-	if cHash == claim.CHash {
-		return c.JSON(http.StatusOK, nil)
-	}
+	// TODO(mbana): Turned off validation for now.
+	// claim := &AuthClaim{}
 
-	resp := NewErrorResponse(errors.New("c_hash invalid"))
-	return c.JSON(http.StatusBadRequest, resp)
+	// t, err := jwt.ParseWithClaims(fragment.IDToken, claim, nil)
+	// if err != nil {
+	// 	// If not providing Keyfunc (3rd param), don't check for error here
+	// 	// as it will always be error("no Keyfunc was provided")
+	// 	h.logger.Debug("Keyfunc not provided")
+	// }
+
+	// cHash, err := calculateCHash(t.Header["alg"].(string), fragment.Code)
+	// if err != nil {
+	// 	return c.JSON(http.StatusBadRequest, NewErrorResponse(err))
+	// }
+	// if cHash == claim.CHash {
+	// 	err := h.handleCodeExchange(fragment.Code, fragment.State, fragment.Scope)
+	// 	if err != nil {
+	// 		resp := NewErrorResponse(errors.Wrap(err, "unable to handle redirect"))
+	// 		return c.JSON(http.StatusBadRequest, resp)
+	// 	}
+	// 	return c.JSON(http.StatusOK, nil)
+	// }
+
+	// resp := NewErrorResponse(errors.New("c_hash invalid"))
+	// return c.JSON(http.StatusBadRequest, resp)
 }
 
 // postQueryOKHandler - POST /redirect/query/ok
@@ -112,7 +130,7 @@ func (h redirectHandlers) postQueryOKHandler(c echo.Context) error {
 	// (Nothing to validate)
 	if query.IDToken == "" {
 		if query.Code != "" {
-			err := h.handleCodeExchange(query)
+			err := h.handleCodeExchange(query.Code, query.State, query.Scope)
 			if err != nil {
 				resp := NewErrorResponse(errors.Wrap(err, "unable to handle redirect"))
 				return c.JSON(http.StatusBadRequest, resp)
@@ -122,39 +140,49 @@ func (h redirectHandlers) postQueryOKHandler(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, errors.New("code not set"))
 	}
 
-	claim := &AuthClaim{}
-
-	t, err := jwt.ParseWithClaims(query.IDToken, claim, nil)
+	err := h.handleCodeExchange(query.Code, query.State, query.Scope)
 	if err != nil {
-		// If not providing Keyfunc (3rd param), don't check for error here
-		// as it will always be error("no Keyfunc was provided")
-		h.logger.Debug("Keyfunc not provided")
+		resp := NewErrorResponse(errors.Wrap(err, "unable to handle redirect"))
+		return c.JSON(http.StatusBadRequest, resp)
 	}
+	return c.JSON(http.StatusOK, nil)
 
-	cHash, err := calculateCHash(t.Header["alg"].(string), query.Code)
-	if err != nil {
-		return c.JSON(http.StatusBadRequest, NewErrorResponse(err))
-	}
-	if cHash == claim.CHash {
-		err = h.handleCodeExchange(query)
-		if err != nil {
-			resp := NewErrorResponse(errors.Wrap(err, "unable to handle redirect"))
-			return c.JSON(http.StatusBadRequest, resp)
-		}
-		return c.JSON(http.StatusOK, nil)
-	}
+	// TODO(mbana): Turned off validation for now.
+	// claim := &AuthClaim{}
 
-	resp := NewErrorResponse(errors.New("c_hash invalid"))
-	return c.JSON(http.StatusBadRequest, resp)
+	// t, err := jwt.ParseWithClaims(query.IDToken, claim, nil)
+	// if err != nil {
+	// 	// If not providing Keyfunc (3rd param), don't check for error here
+	// 	// as it will always be error("no Keyfunc was provided")
+	// 	h.logger.Debug("Keyfunc not provided")
+	// }
+
+	// cHash, err := calculateCHash(t.Header["alg"].(string), query.Code)
+	// if err != nil {
+	// 	return c.JSON(http.StatusBadRequest, NewErrorResponse(err))
+	// }
+	// if cHash == claim.CHash {
+	// 	err := h.handleCodeExchange(query.Code, query.State, query.Scope)
+	// 	if err != nil {
+	// 		resp := NewErrorResponse(errors.Wrap(err, "unable to handle redirect"))
+	// 		return c.JSON(http.StatusBadRequest, resp)
+	// 	}
+	// 	return c.JSON(http.StatusOK, nil)
+	// }
+
+	// resp := NewErrorResponse(errors.New("c_hash invalid"))
+	// return c.JSON(http.StatusBadRequest, resp)
 }
 
-func (h redirectHandlers) handleCodeExchange(query *RedirectQuery) error {
+func (h redirectHandlers) handleCodeExchange(code string, state string, scope string) error {
 	logrus.StandardLogger().WithFields(logrus.Fields{
-		"query":    fmt.Sprintf("%#v", query),
 		"function": "handleCodeExchange",
 		"module":   "redirectHandlers",
+		"code":     code,
+		"state":    state,
+		"scope":    scope,
 	}).Warn("received query")
-	return h.journey.CollectToken(query.Code, query.State, query.Scope)
+	return h.journey.CollectToken(code, state, scope)
 }
 
 // postErrorHandler - POST /api/redirect/error
