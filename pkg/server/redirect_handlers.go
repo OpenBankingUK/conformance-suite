@@ -182,7 +182,7 @@ func calculateCHash(alg string, code string) (string, error) {
 		// no need to validate length as sha256.Sum256 returns fixed length
 		digest = d[0:32]
 	default:
-		return "", fmt.Errorf("%s algorithm not supported", alg)
+		return "", fmt.Errorf("calculateCHash: %q algorithm not supported", alg)
 	}
 
 	left := digest[0 : len(digest)/2]

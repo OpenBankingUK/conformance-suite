@@ -237,9 +237,12 @@ type grantToken struct {
 	IDToken     string `json:"id_token,omitempty"`
 }
 
-func exchangeCodeForToken(code, scope string, ctx *model.Context, logger *logrus.Entry) (grantToken, error) {
+func exchangeCodeForToken(code string, scope string, ctx *model.Context, logger *logrus.Entry) (grantToken, error) {
 	logger = logger.WithFields(logrus.Fields{
 		"function": "exchangeCodeForToken",
+		"code":     code,
+		"scope":    scope,
+		"ctx":      ctx,
 	})
 
 	basicAuth, err := ctx.GetString("basic_authentication")
@@ -260,7 +263,7 @@ func exchangeCodeForToken(code, scope string, ctx *model.Context, logger *logrus
 
 	logger.WithFields(logrus.Fields{
 		"tokenEndpoint": tokenEndpoint,
-	}).Debugf("Attempting POST")
+	}).Debug("Attempting POST")
 	resp, err := resty.R().
 		SetHeader("content-type", "application/x-www-form-urlencoded").
 		SetHeader("accept", "*/*").

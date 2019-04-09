@@ -285,6 +285,13 @@ func (i *Input) generateSignedJWT(ctx *Context, alg jwt.SigningMethod) (string, 
 	claims["iat"] = time.Now().Unix()
 	claims["exp"] = time.Now().Add(time.Minute * time.Duration(60)).Unix()
 	claims["jti"] = uuid
+	claims["response_type"] = i.Claims["responseType"]
+
+	logrus.WithFields(logrus.Fields{
+		"claims":   claims,
+		"alg":      alg,
+		"i.Claims": i.Claims,
+	}).Debug("Input.generateSignedJWT ...")
 
 	token := jwt.NewWithClaims(alg, claims) // create new token
 
