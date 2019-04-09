@@ -6,15 +6,15 @@
  * https://vue-test-utils.vuejs.org/guides/using-with-vuex.html#testing-a-running-store
  */
 import { createLocalVue } from '@vue/test-utils';
-import Vuex from 'vuex';
 import { cloneDeep } from 'lodash';
-
+import Vuex from 'vuex';
+import api from '../../../api';
 import actions from './actions';
 import {
-  mutationTypes as types, mutations, state, getters,
+ getters, mutations, mutationTypes as types, state 
 } from './index';
 
-import api from '../../../api';
+
 // https://jestjs.io/docs/en/mock-functions#mocking-modules
 jest.mock('../../../api');
 
@@ -52,6 +52,7 @@ describe('web/src/store/modules/config', () => {
         client_id: '',
         client_secret: '',
         token_endpoint: '',
+        response_type: '',
         token_endpoint_auth_method: 'client_secret_basic',
         request_object_signing_alg: '',
         authorization_endpoint: '',
@@ -120,6 +121,7 @@ describe('web/src/store/modules/config', () => {
         client_id: '',
         client_secret: '',
         token_endpoint: '',
+        response_type: '',
         token_endpoint_auth_method: 'client_secret_basic',
         request_object_signing_alg: '',
         authorization_endpoint: '',
@@ -150,6 +152,7 @@ describe('web/src/store/modules/config', () => {
         client_id: '8672384e-9a33-439f-8924-67bb14340d71',
         client_secret: '',
         token_endpoint: '',
+        response_type: '',
         token_endpoint_auth_method: 'client_secret_basic',
         request_object_signing_alg: '',
         authorization_endpoint: '',
@@ -179,6 +182,7 @@ describe('web/src/store/modules/config', () => {
         client_id: '8672384e-9a33-439f-8924-67bb14340d71',
         client_secret: '2cfb31a3-5443-4e65-b2bc-ef8e00266a77',
         token_endpoint: '',
+        response_type: '',
         token_endpoint_auth_method: 'client_secret_basic',
         request_object_signing_alg: '',
         authorization_endpoint: '',
@@ -208,6 +212,7 @@ describe('web/src/store/modules/config', () => {
         client_id: '8672384e-9a33-439f-8924-67bb14340d71',
         client_secret: '2cfb31a3-5443-4e65-b2bc-ef8e00266a77',
         token_endpoint: 'https://modelobank2018.o3bank.co.uk:4201/token',
+        response_type: '',
         token_endpoint_auth_method: 'client_secret_basic',
         request_object_signing_alg: '',
         authorization_endpoint: '',
@@ -240,6 +245,7 @@ describe('web/src/store/modules/config', () => {
         client_id: '8672384e-9a33-439f-8924-67bb14340d71',
         client_secret: '2cfb31a3-5443-4e65-b2bc-ef8e00266a77',
         token_endpoint: 'https://modelobank2018.o3bank.co.uk:4201/token',
+        response_type: '',
         token_endpoint_auth_method: 'client_secret_basic',
         request_object_signing_alg: '',
         authorization_endpoint: 'https://modelobankauth2018.o3bank.co.uk:4101/auth',
@@ -269,6 +275,7 @@ describe('web/src/store/modules/config', () => {
         client_id: '8672384e-9a33-439f-8924-67bb14340d71',
         client_secret: '2cfb31a3-5443-4e65-b2bc-ef8e00266a77',
         token_endpoint: 'https://modelobank2018.o3bank.co.uk:4201/token',
+        response_type: '',
         token_endpoint_auth_method: 'client_secret_basic',
         request_object_signing_alg: '',
         authorization_endpoint: 'https://modelobankauth2018.o3bank.co.uk:4101/auth',
@@ -298,6 +305,7 @@ describe('web/src/store/modules/config', () => {
         client_id: '8672384e-9a33-439f-8924-67bb14340d71',
         client_secret: '2cfb31a3-5443-4e65-b2bc-ef8e00266a77',
         token_endpoint: 'https://modelobank2018.o3bank.co.uk:4201/token',
+        response_type: '',
         token_endpoint_auth_method: 'client_secret_basic',
         request_object_signing_alg: '',
         authorization_endpoint: 'https://modelobankauth2018.o3bank.co.uk:4101/auth',
@@ -327,6 +335,7 @@ describe('web/src/store/modules/config', () => {
         client_id: '8672384e-9a33-439f-8924-67bb14340d71',
         client_secret: '2cfb31a3-5443-4e65-b2bc-ef8e00266a77',
         token_endpoint: 'https://modelobank2018.o3bank.co.uk:4201/token',
+        response_type: '',
         token_endpoint_auth_method: 'client_secret_basic',
         request_object_signing_alg: '',
         authorization_endpoint: 'https://modelobankauth2018.o3bank.co.uk:4101/auth',
@@ -356,6 +365,7 @@ describe('web/src/store/modules/config', () => {
         client_id: '8672384e-9a33-439f-8924-67bb14340d71',
         client_secret: '2cfb31a3-5443-4e65-b2bc-ef8e00266a77',
         token_endpoint: 'https://modelobank2018.o3bank.co.uk:4201/token',
+        response_type: '',
         token_endpoint_auth_method: 'client_secret_basic',
         request_object_signing_alg: '',
         authorization_endpoint: 'https://modelobankauth2018.o3bank.co.uk:4101/auth',
@@ -385,6 +395,7 @@ describe('web/src/store/modules/config', () => {
         client_id: '8672384e-9a33-439f-8924-67bb14340d71',
         client_secret: '2cfb31a3-5443-4e65-b2bc-ef8e00266a77',
         token_endpoint: 'https://modelobank2018.o3bank.co.uk:4201/token',
+        response_type: '',
         token_endpoint_auth_method: 'client_secret_basic',
         request_object_signing_alg: '',
         authorization_endpoint: 'https://modelobankauth2018.o3bank.co.uk:4101/auth',
@@ -420,6 +431,7 @@ describe('web/src/store/modules/config', () => {
         client_id: '',
         client_secret: '',
         token_endpoint: '',
+        response_type: '',
         token_endpoint_auth_method: 'client_secret_basic',
         request_object_signing_alg: '',
         authorization_endpoint: '',
@@ -451,6 +463,7 @@ describe('web/src/store/modules/config', () => {
         client_id: '',
         client_secret: '',
         token_endpoint: '',
+        response_type: '',
         token_endpoint_auth_method: 'client_secret_basic',
         request_object_signing_alg: '',
         authorization_endpoint: '',
@@ -513,6 +526,7 @@ describe('web/src/store/modules/config', () => {
         client_id: '',
         client_secret: '',
         token_endpoint: '',
+        response_type: '',
         token_endpoint_auth_method: 'client_secret_basic',
         request_object_signing_alg: '',
         authorization_endpoint: '',
@@ -550,6 +564,7 @@ describe('web/src/store/modules/config', () => {
           client_id: '',
           client_secret: '',
           token_endpoint: '',
+          response_type: '',
           token_endpoint_auth_method: 'client_secret_basic',
           request_object_signing_alg: '',
           authorization_endpoint: '',
@@ -597,6 +612,10 @@ describe('web/src/store/modules/config', () => {
             },
             default_transaction_from_date: '2016-01-01T10:40:00+02:00',
             default_transaction_to_date: '2025-12-31T10:40:00+02:00',
+            response_types_supported: [
+              'code',
+              'code id_token',
+            ],
           },
         });
 
@@ -604,6 +623,7 @@ describe('web/src/store/modules/config', () => {
 
         expect(store.state.token_endpoint_auth_methods).toEqual(['tls_client_auth', 'client_secret_basic']);
         expect(store.state.request_object_signing_alg_values_supported).toEqual(['PS256', 'RS256']);
+        expect(store.state.response_types_supported).toEqual(['code', 'code id_token']);
         expect(store.state.configuration).toEqual({
           signing_private: '',
           signing_public: '',
@@ -614,6 +634,7 @@ describe('web/src/store/modules/config', () => {
           client_id: '',
           client_secret: '',
           token_endpoint: '',
+          response_type: '',
           token_endpoint_auth_method: 'client_secret_basic',
           request_object_signing_alg: '',
           authorization_endpoint: 'https://modelobankauth2018.o3bank.co.uk:4101/auth_1',
@@ -658,6 +679,7 @@ describe('web/src/store/modules/config', () => {
           'Client ID empty',
           'Client Secret empty',
           'Token Endpoint empty',
+          'response_type empty',
           'Request object signing algorithm empty',
           'Authorization Endpoint empty',
           'Resource Base URL empty',
@@ -686,6 +708,7 @@ describe('web/src/store/modules/config', () => {
           'Client ID empty',
           'Client Secret empty',
           'Token Endpoint empty',
+          'response_type empty',
           'Request object signing algorithm empty',
           'Authorization Endpoint empty',
           'Resource Base URL empty',
@@ -714,6 +737,7 @@ describe('web/src/store/modules/config', () => {
           'Client ID empty',
           'Client Secret empty',
           'Token Endpoint empty',
+          'response_type empty',
           'Request object signing algorithm empty',
           'Authorization Endpoint empty',
           'Resource Base URL empty',
@@ -742,6 +766,7 @@ describe('web/src/store/modules/config', () => {
           'Client ID empty',
           'Client Secret empty',
           'Token Endpoint empty',
+          'response_type empty',
           'Request object signing algorithm empty',
           'Authorization Endpoint empty',
           'Resource Base URL empty',
@@ -769,6 +794,7 @@ describe('web/src/store/modules/config', () => {
           'Client ID empty',
           'Client Secret empty',
           'Token Endpoint empty',
+          'response_type empty',
           'Request object signing algorithm empty',
           'Authorization Endpoint empty',
           'Resource Base URL empty',
@@ -792,6 +818,7 @@ describe('web/src/store/modules/config', () => {
         store.commit(types.SET_CLIENT_ID, '8672384e-9a33-439f-8924-67bb14340d71');
         store.commit(types.SET_CLIENT_SECRET, '2cfb31a3-5443-4e65-b2bc-ef8e00266a77');
         store.commit(types.SET_TOKEN_ENDPOINT, 'https://modelobank2018.o3bank.co.uk:4201/token');
+        store.commit(types.SET_RESPONSE_TYPE, 'code id_token');
         store.commit(types.SET_AUTHORIZATION_ENDPOINT, 'https://modelobankauth2018.o3bank.co.uk:4101/auth');
         store.commit(types.SET_RESOURCE_BASE_URL, 'https://modelobank2018.o3bank.co.uk:4501');
         store.commit(types.SET_X_FAPI_FINANCIAL_ID, '0015800001041RHAAY');
@@ -826,6 +853,7 @@ describe('web/src/store/modules/config', () => {
         store.commit(types.SET_CLIENT_ID, '8672384e-9a33-439f-8924-67bb14340d71');
         store.commit(types.SET_CLIENT_SECRET, '2cfb31a3-5443-4e65-b2bc-ef8e00266a77');
         store.commit(types.SET_TOKEN_ENDPOINT, 'https://modelobank2018.o3bank.co.uk:4201/token');
+        store.commit(types.SET_RESPONSE_TYPE, 'code id_token');
         store.commit(types.SET_AUTHORIZATION_ENDPOINT, 'https://modelobankauth2018.o3bank.co.uk:4101/auth');
         store.commit(types.SET_RESOURCE_BASE_URL, 'https://modelobank2018.o3bank.co.uk:4501');
         store.commit(types.SET_X_FAPI_FINANCIAL_ID, '0015800001041RHAAY');
@@ -869,6 +897,7 @@ describe('web/src/store/modules/config', () => {
           'Client ID empty',
           'Client Secret empty',
           'Token Endpoint empty',
+          'response_type empty',
           'Request object signing algorithm empty',
           'Authorization Endpoint empty',
           'Resource Base URL empty',
@@ -899,6 +928,7 @@ describe('web/src/store/modules/config', () => {
         store.commit(types.SET_CLIENT_ID, '8672384e-9a33-439f-8924-67bb14340d71');
         store.commit(types.SET_CLIENT_SECRET, '2cfb31a3-5443-4e65-b2bc-ef8e00266a77');
         store.commit(types.SET_TOKEN_ENDPOINT, 'https://modelobank2018.o3bank.co.uk:4201/token');
+        store.commit(types.SET_RESPONSE_TYPE, 'code id_token');
         store.commit(types.SET_AUTHORIZATION_ENDPOINT, 'https://modelobankauth2018.o3bank.co.uk:4101/auth');
         store.commit(types.SET_RESOURCE_BASE_URL, 'https://modelobank2018.o3bank.co.uk:4501');
         store.commit(types.SET_X_FAPI_FINANCIAL_ID, '0015800001041RHAAY');

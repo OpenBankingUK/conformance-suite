@@ -28,11 +28,16 @@ func TestOpenIdConfigWhenGetSuccessful(t *testing.T) {
 		"client_secret_post",
 		"private_key_jwt",
 	}
+	responseTypesSupported := []string{
+		"code",
+		"code id_token",
+	}
 	expected := OpenIDConfiguration{
 		TokenEndpoint:                     "https://modelobank2018.o3bank.co.uk:4201/<token_mock>",
 		AuthorizationEndpoint:             "https://modelobankauth2018.o3bank.co.uk:4101/<auth_mock>",
 		Issuer:                            "https://modelobankauth2018.o3bank.co.uk:4101",
 		TokenEndpointAuthMethodsSupported: authMethods,
+		ResponseTypesSupported:            responseTypesSupported,
 	}
 
 	require.Equal(expected, config)
@@ -41,21 +46,22 @@ func TestOpenIdConfigWhenGetSuccessful(t *testing.T) {
 func TestOpenIdConfigWhenHttpResponseError(t *testing.T) {
 	require := test.NewRequire(t)
 
-	mockedBadServer, mockedBadServerURL := test.HTTPServer(http.StatusServiceUnavailable,
-		"<h1>503 Service Temporarily Unavailable</h1>", nil)
+	mockedBody := "<h1>503 Service Temporarily Unavailable</h1>"
+	mockedBadServer, mockedBadServerURL := test.HTTPServer(http.StatusServiceUnavailable, mockedBody, nil)
 	defer mockedBadServer.Close()
 
 	_, err := OpenIdConfig(mockedBadServerURL)
-	require.EqualError(err, fmt.Sprintf("failed to GET OpenID config: %s : HTTP response status: 503", mockedBadServerURL))
+	expected := fmt.Sprintf("failed to GET OpenIDConfiguration config: url=%+v, StatusCode=503, body=<h1>503 Service Temporarily Unavailable</h1>", mockedBadServerURL)
+	require.EqualError(err, expected)
 }
 
 func TestOpenIdConfigWhenJsonParseFails(t *testing.T) {
 	require := test.NewRequire(t)
 	mockedBody := "<bad>json</bad>"
-	mockedServer, mockedServerURL := test.HTTPServer(http.StatusOK,
-		mockedBody, nil)
+	mockedServer, mockedServerURL := test.HTTPServer(http.StatusOK, mockedBody, nil)
 	defer mockedServer.Close()
 
 	_, err := OpenIdConfig(mockedServerURL)
-	require.EqualError(err, fmt.Sprintf("Invalid OpenID config JSON returned: %s : invalid character '<' looking for beginning of value", mockedServerURL))
+	expected := fmt.Sprintf("Invalid OpenIDConfiguration: url=%+v: invalid character '<' looking for beginning of value", mockedServerURL)
+	require.EqualError(err, expected)
 }

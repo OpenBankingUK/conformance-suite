@@ -28,6 +28,7 @@ type PostDiscoveryModelResponse struct {
 	Issuers                                       map[string]string   `json:"issuers"`
 	DefaultTxnFromDateTime                        string              `json:"default_transaction_from_date"`
 	DefaultTxnToDateTime                          string              `json:"default_transaction_to_date"`
+	ResponseTypesSupported                        []string            `json:"response_types_supported"`
 }
 
 type validationFailuresResponse struct {
@@ -71,6 +72,7 @@ func (d discoveryHandlers) setDiscoveryModelHandler(c echo.Context) error {
 		DefaultRequestObjectSigningAlgValuesSupported: map[string]string{},
 		AuthorizationEndpoints:                        map[string]string{},
 		Issuers:                                       map[string]string{},
+		ResponseTypesSupported:                        []string{},
 	}
 	for discoveryItemIndex, discoveryItem := range discoveryModel.DiscoveryModel.DiscoveryItems {
 		key := fmt.Sprintf("schema_version=%s", discoveryItem.APISpecification.SchemaVersion)
@@ -101,6 +103,7 @@ func (d discoveryHandlers) setDiscoveryModelHandler(c echo.Context) error {
 			response.DefaultRequestObjectSigningAlgValuesSupported[key] = config.RequestObjectSigningAlgValuesSupported[0]
 			response.DefaultTxnFromDateTime = defaultTxnFrom
 			response.DefaultTxnToDateTime = defaultTxnTo
+			response.ResponseTypesSupported = config.ResponseTypesSupported
 		}
 	}
 
