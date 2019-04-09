@@ -99,19 +99,22 @@ func MakeJourneyConfig(config *GlobalConfiguration) (JourneyConfig, error) {
 	}
 
 	return JourneyConfig{
-		certificateSigning:      certificateSigning,
-		certificateTransport:    certificateTransport,
-		clientID:                config.ClientID,
-		clientSecret:            config.ClientSecret,
-		tokenEndpoint:           config.TokenEndpoint,
-		tokenEndpointAuthMethod: config.TokenEndpointAuthMethod,
-		authorizationEndpoint:   config.AuthorizationEndpoint,
-		resourceBaseURL:         config.ResourceBaseURL,
-		xXFAPIFinancialID:       config.XFAPIFinancialID,
-		issuer:                  config.Issuer,
-		redirectURL:             config.RedirectURL,
-		resourceIDs:             config.ResourceIDs,
-		creditorAccount:         config.CreditorAccount,
+		certificateSigning:            certificateSigning,
+		certificateTransport:          certificateTransport,
+		clientID:                      config.ClientID,
+		clientSecret:                  config.ClientSecret,
+		tokenEndpoint:                 config.TokenEndpoint,
+		tokenEndpointAuthMethod:       config.TokenEndpointAuthMethod,
+		authorizationEndpoint:         config.AuthorizationEndpoint,
+		resourceBaseURL:               config.ResourceBaseURL,
+		xXFAPIFinancialID:             config.XFAPIFinancialID,
+		issuer:                        config.Issuer,
+		redirectURL:                   config.RedirectURL,
+		resourceIDs:                   config.ResourceIDs,
+		creditorAccount:               config.CreditorAccount,
+		requestObjectSigningAlgorithm: config.RequestObjectSigningAlgorithm,
+		signingPrivate:                config.SigningPrivate,
+		signingPublic:                 config.SigningPublic,
 	}, nil
 }
 

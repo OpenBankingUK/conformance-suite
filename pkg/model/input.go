@@ -1,11 +1,13 @@
 package model
 
 import (
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/authentication"
+	"crypto/rsa"
 	"crypto/sha1"
 	"encoding/base64"
 	"encoding/json"
-	"errors"
 	"fmt"
+	"github.com/pkg/errors"
 	"io"
 	"net/url"
 	"strings"
@@ -14,7 +16,6 @@ import (
 	"github.com/google/uuid"
 	"github.com/sirupsen/logrus"
 
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/authentication"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/tracer"
 	"github.com/dgrijalva/jwt-go"
 	"gopkg.in/resty.v1"
@@ -143,7 +144,15 @@ func (i *Input) generateRequestToken(ctx *Context) (string, error) {
 	var token string
 	switch strings.ToUpper(alg) {
 	case "PS256":
-		token, err = i.generateSignedJWT(ctx, jwt.SigningMethodPS256)
+		// Workaround
+		// https://github.com/dgrijalva/jwt-go/issues/285
+		fixedSigningMethodPS256 := &jwt.SigningMethodRSAPSS{
+			SigningMethodRSA: jwt.SigningMethodPS256.SigningMethodRSA,
+			Options: &rsa.PSSOptions{
+				SaltLength: rsa.PSSSaltLengthEqualsHash,
+			},
+		}
+		token, err = i.generateSignedJWT(ctx, fixedSigningMethodPS256)
 	case "RS256":
 		token, err = i.generateSignedJWT(ctx, jwt.SigningMethodRS256)
 	case "NONE":
@@ -257,6 +266,22 @@ func (i *Input) Clone() Input {
 	return in
 }
 
+func certFromContext(ctx *Context) (authentication.Certificate, error) {
+	privKey, err := ctx.GetString("signingPrivate")
+	if err != nil {
+		return nil, errors.New("input, couldn't find `SigningPrivate` in context")
+	}
+	pubKey, err := ctx.GetString("signingPublic")
+	if err != nil {
+		return nil, errors.New("input, couldn't find `SigningPublic` in context")
+	}
+	cert, err := authentication.NewCertificate(pubKey, privKey)
+	if err != nil {
+		return nil, errors.New("input, couldn't create `certificate` from pub/priv keys")
+	}
+	return cert, nil
+}
+
 func (i *Input) generateSignedJWT(ctx *Context, alg jwt.SigningMethod) (string, error) {
 	uuid := uuid.New()
 	claims := jwt.MapClaims{}
@@ -267,19 +292,23 @@ func (i *Input) generateSignedJWT(ctx *Context, alg jwt.SigningMethod) (string, 
 	claims["iat"] = time.Now().Unix()
 	claims["exp"] = time.Now().Add(time.Minute * time.Duration(60)).Unix()
 	claims["jti"] = uuid
+	claims["redirect_uri"] = i.Claims["redirect_url"]
+	claims["nonce"] = uuid
+	claims["client_id"] = i.Claims["iss"]
+	claims["response_type"] = i.Claims["responseType"]
+	claims["state"] = i.Claims["state"]
+	consentClaim := consentClaims{Essential: true, Value: i.Claims["consentId"]}
+	myIdent := obintentID{IntentID: consentClaim}
+	var consentIDToken = consentIDTok{Token: myIdent}
+	claims["claims"] = consentIDToken
 
 	token := jwt.NewWithClaims(alg, claims) // create new token
 
-	pk, ok := ctx.Get("SigningCert")
-	if !ok {
-		return "", i.AppErr(fmt.Sprintf("input, couldn't find `SigningCert` in context"))
-	}
-	cert, ok := pk.(authentication.Certificate)
-	if !ok {
-		return "", i.AppErr(fmt.Sprintf("input, cannot convert `SigningCert` to certificate"))
+	cert, err := certFromContext(ctx)
+	if err != nil {
+		return "", i.AppErr(errors.Wrap(err, "Create certificate from context").Error())
 	}
 
-	var err error
 	modulus := cert.PublicKey().N.Bytes()
 	modulusBase64 := base64.StdEncoding.EncodeToString(modulus)
 	token.Header["kid"], err = calcKid(modulusBase64)

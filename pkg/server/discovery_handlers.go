@@ -18,7 +18,7 @@ type PostDiscoveryModelResponse struct {
 	TokenEndpointAuthMethods                      map[string][]string `json:"token_endpoint_auth_methods"`
 	DefaultTokenEndpointAuthMethod                map[string]string   `json:"default_token_endpoint_auth_method"`
 	RequestObjectSigningAlgValuesSupported        map[string][]string `json:"request_object_signing_alg_values_supported"`
-	DefaultRequestObjectSigningAlgValuesSupported map[string]string   `json:"default?request_object_signing_alg_values_supported"`
+	DefaultRequestObjectSigningAlgValuesSupported map[string]string   `json:"default_request_object_signing_alg_values_supported"`
 	AuthorizationEndpoints                        map[string]string   `json:"authorization_endpoints"`
 	Issuers                                       map[string]string   `json:"issuers"`
 }
