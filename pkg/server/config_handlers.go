@@ -22,6 +22,12 @@ type configHandlers struct {
 	journey Journey
 }
 
+// Needs to be a interface{} slice, see the official test for an example
+// https://github.com/go-ozzo/ozzo-validation/blob/master/in_test.go
+type SupportedRequestSignAlg interface{}
+
+var SupportedRequestSignAlgValues = []string{"PS256", "RS256", "NONE"}
+
 type GlobalConfiguration struct {
 	SigningPrivate                string            `json:"signing_private" validate:"not_empty"`
 	SigningPublic                 string            `json:"signing_public" validate:"not_empty"`
@@ -45,6 +51,9 @@ type GlobalConfiguration struct {
 func (c GlobalConfiguration) Validate() error {
 	return validation.ValidateStruct(&c,
 		validation.Field(&c.CreditorAccount, validation.Required),
+		validation.Field(&c.RequestObjectSigningAlgorithm,
+			validation.Required,
+		),
 	)
 }
 

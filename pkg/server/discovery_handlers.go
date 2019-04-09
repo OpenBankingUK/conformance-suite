@@ -2,7 +2,6 @@ package server
 
 import (
 	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/sets"
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
 	"fmt"
 	"github.com/labstack/echo"
 	"github.com/pkg/errors"
@@ -80,7 +79,7 @@ func (d discoveryHandlers) setDiscoveryModelHandler(c echo.Context) error {
 			}).Error("Error on /.well-known/openid-configuration")
 			failures = append(failures, newOpenidConfigurationURIFailure(discoveryItemIndex, e))
 		} else {
-			requestObjectSigningAlgValuesSupported := sets.InsensitiveIntersection(config.RequestObjectSigningAlgValuesSupported, model.SupportedRequestSignAlg)
+			requestObjectSigningAlgValuesSupported := sets.InsensitiveIntersection(config.RequestObjectSigningAlgValuesSupported, SupportedRequestSignAlgValues)
 			if len(requestObjectSigningAlgValuesSupported) == 0 {
 				return errors.New("no supported request object signing alg found")
 			}
