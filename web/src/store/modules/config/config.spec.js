@@ -11,7 +11,7 @@ import Vuex from 'vuex';
 import api from '../../../api';
 import actions from './actions';
 import {
- getters, mutations, mutationTypes as types, state 
+  getters, mutations, mutationTypes as types, state,
 } from './index';
 
 
