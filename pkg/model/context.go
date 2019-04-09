@@ -104,7 +104,7 @@ func (c *Context) DumpContext(text ...string) {
 		for i := 1; i < len(text); i++ {
 			key := text[i]
 			value, _ := c.Get(key)
-			logrus.StandardLogger().Tracef("[Context] %s:%v", key, value)
+			logrus.StandardLogger().Tracef("[Context] %s : %v", key, value)
 		}
 	} else {
 		for k, v := range *c {

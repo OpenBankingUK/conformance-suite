@@ -5,10 +5,13 @@ import (
 	"errors"
 	"fmt"
 	"io/ioutil"
+	"regexp"
+	"sort"
 	"strings"
 
 	"github.com/sirupsen/logrus"
 
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
 )
 
@@ -50,20 +53,6 @@ type Reference struct {
 	BodyData    string       `json:"bodyData"`
 }
 
-// AccountData stores account number to be used in the test scripts
-type AccountData struct {
-	Ais           map[string]string `json:"ais,omitempty"`
-	AisConsentIds []string          `json:"ais.ConsetnAccoutId,omitempty"`
-	Pis           PisData           `json:"pis,omitempty"`
-}
-
-// PisData contains information about PIS accounts required for the test scrips
-type PisData struct {
-	Currency        string            `json:"Currency,omitempty"`
-	DebtorAccount   map[string]string `json:"DebtorAccount,omitempty"`
-	MADebtorAccount map[string]string `json:"MADebtorAccount,omitempty"`
-}
-
 // ConsentJobs Holds jobs required only to provide consent so should not show on the ui
 type ConsentJobs struct {
 	jobs map[string]model.TestCase
@@ -97,7 +86,7 @@ func (cj *ConsentJobs) Get(testid string) (model.TestCase, bool) {
 // add/get ....
 
 // GenerateTestCases examines a manifest file, asserts file and resources definition, then builds the associated test cases
-func GenerateTestCases(spec string, baseurl string, ctx *model.Context) ([]model.TestCase, error) {
+func GenerateTestCases(spec string, baseurl string, ctx *model.Context, endpoints []discovery.ModelEndpoint) ([]model.TestCase, error) {
 	logger := logrus.WithFields(logrus.Fields{
 		"function": "GenerateTestCases",
 	})
@@ -114,17 +103,21 @@ func GenerateTestCases(spec string, baseurl string, ctx *model.Context) ([]model
 		}).Error("Error on loadGenerationResources")
 		return nil, err
 	}
-
-	// accumulate context data from accountsData ...
-	// accountCtx := model.Context{}
-	// for k, v := range resources.Ais { //TODO:Get Account info from config file
-	// 	accountCtx.PutString(k, v)
-	// }
+	var filteredScripts Scripts
+	if specType == "accounts" { //TODO: Complete so it makes sense for payments
+		filteredScripts, err = filterTestsBasedOnDiscoveryEndpoints(scripts, endpoints)
+		if err != nil {
+			logger.WithFields(logrus.Fields{"err": err}).Error("error filter scripts based on discovery")
+		}
+	} else {
+		filteredScripts = scripts // normal processing
+	}
 
 	ctx.DumpContext("Incoming Ctx")
 
 	tests := []model.TestCase{}
-	for _, script := range scripts.Scripts {
+	//for _, script := range scripts.Scripts {
+	for _, script := range filteredScripts.Scripts {
 		localCtx, err := script.processParameters(&refs, ctx)
 		if err != nil {
 			logger.WithFields(logrus.Fields{
@@ -415,9 +408,111 @@ func getAccountPermissions(tests []model.TestCase) ([]ScriptPermission, error) {
 	return permCollector, nil
 }
 
+func filterTestsBasedOnDiscoveryEndpoints(scripts Scripts, endpoints []discovery.ModelEndpoint) (Scripts, error) {
+	lookupMap := make(map[string]bool)
+	filteredScripts := []Script{}
+
+	for _, ep := range endpoints {
+		for _, regpath := range accountsRegex {
+			matched, err := regexp.MatchString(regpath.Regex, ep.Path)
+			if err != nil {
+				continue
+			}
+			if matched {
+				lookupMap[regpath.Regex] = true
+				logrus.Tracef("endpoint %40.40s matched by regex %42.42s: %s", ep.Path, regpath.Regex, regpath.Name)
+			}
+		}
+	}
+
+	for k := range lookupMap {
+		for i, scr := range scripts.Scripts {
+			stripped := strings.Replace(scr.URI, "$", "", -1) // only works with a single character
+			if strings.Contains(stripped, "foobar") {         //exceptions
+				nofoobar := strings.Replace(stripped, "/foobar", "", -1) // only works with a single character
+				matched, err := regexp.MatchString(k, nofoobar)
+				if err != nil {
+					continue
+				}
+				if matched {
+					if !contains(filteredScripts, scripts.Scripts[i]) {
+						logrus.Tracef("endpoint %40.40s matched by regex %42.42s", scr.URI, k)
+						filteredScripts = append(filteredScripts, scripts.Scripts[i])
+					}
+				}
+
+				if scr.URI == "/foobar" {
+					if !contains(filteredScripts, scripts.Scripts[i]) {
+						filteredScripts = append(filteredScripts, scripts.Scripts[i])
+					}
+					continue
+				}
+			}
+
+			matched, err := regexp.MatchString(k, stripped)
+			if err != nil {
+				continue
+			}
+			if matched {
+				if !contains(filteredScripts, scripts.Scripts[i]) {
+					logrus.Tracef("endpoint %40.40s matched by regex %42.42s", scr.URI, k)
+					filteredScripts = append(filteredScripts, scripts.Scripts[i])
+				}
+			}
+		}
+	}
+	resultscripts := Scripts{Scripts: filteredScripts}
+	sort.Slice(resultscripts.Scripts, func(i, j int) bool { return resultscripts.Scripts[i].ID < resultscripts.Scripts[j].ID })
+
+	return resultscripts, nil
+}
+
+func contains(s []Script, e Script) bool {
+	for _, a := range s {
+		if a.ID == e.ID {
+			return true
+		}
+	}
+	return false
+}
+
 // Utility to Dump Json
 func dumpJSON(i interface{}) {
 	var model []byte
 	model, _ = json.MarshalIndent(i, "", "    ")
 	fmt.Println(string(model))
+}
+
+var subPathx = "[a-zA-Z0-9_{}-]+" // url sub path regex
+
+type pathRegex struct {
+	Regex string
+	Name  string
+}
+
+var accountsRegex = []pathRegex{
+	{"^/accounts$", "Get Accounts"},
+	{"^/accounts/" + subPathx + "$", "Get Accounts Resource"},
+	{"^/accounts/" + subPathx + "/balances$", "Get Balances Resource"},
+	{"^/accounts/" + subPathx + "/beneficiaries$", "Get Beneficiaries Resource"},
+	{"^/accounts/" + subPathx + "/direct-debits$", "Get Direct Debits Resource"},
+	{"^/accounts/" + subPathx + "/offers$", "Get Offers Resource"},
+	{"^/accounts/" + subPathx + "/party$", "Get Party Rsource"},
+	{"^/accounts/" + subPathx + "/product$", "Get Product Resource"},
+	{"^/accounts/" + subPathx + "/scheduled-payments$", "Get Schedulated Payment resource"},
+	{"^/accounts/" + subPathx + "/standing-orders$", "Get Standing Orders resource"},
+	{"^/accounts/" + subPathx + "/statements$", "Get Statements Resource"},
+	{"^/accounts/" + subPathx + "/statements/" + subPathx + "/file$", "Get statement files resource"},
+	{"^/accounts/" + subPathx + "/statements/" + subPathx + "/transactions$", "Get statement transactions resource"},
+	{"^/accounts/" + subPathx + "/transactions$", "Get transactions resource"},
+	{"^/balances$", "Get Balances"},
+	{"^/beneficiaries$", "Get Beneficiaries"},
+	{"^/direct-debits$", "Get directory debits"},
+	{"^/offers$", "Get Offers"},
+	{"^/party$", "Get party"},
+	{"^/products$", "Get Products"},
+	{"^/scheduled-payments$", "Get Payments"},
+	{"^/standing-orders$", "Get Orders"},
+	{"^/statements$", "Get Statements"},
+	{"^/transactions$", "Get Transactions"},
 }

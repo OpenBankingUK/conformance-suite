@@ -8,6 +8,7 @@ import (
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/generation"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/manifest"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
+
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 	resty "gopkg.in/resty.v1"
