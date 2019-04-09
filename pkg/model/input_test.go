@@ -247,6 +247,8 @@ func TestClaimsJWTBearer(t *testing.T) {
 		"client_id":              "12312",
 		"scope":                  "AuthoritiesReadAccess ASPSPReadAccess TPPReadAll",
 		"SigningCert":            cert,
+		"signingPrivate": selfsignedDummykey,
+		"signingPublic": selfsignedDummypub,
 		"authorisation_endpoint": "https://example.com/authorisation",
 	}
 
