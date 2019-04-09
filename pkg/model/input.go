@@ -87,6 +87,11 @@ func (i *Input) CreateRequest(tc *TestCase, ctx *Context) (*resty.Request, error
 }
 
 func (i *Input) setClaims(tc *TestCase, ctx *Context) error {
+	logrus.WithFields(logrus.Fields{
+		"ctx":      ctx,
+		"i.Claims": i.Claims,
+	}).Debug("Input.setClaims before ...")
+
 	for k, v := range i.Claims {
 		value, err := replaceContextField(v, ctx)
 		if err != nil {
@@ -129,6 +134,11 @@ func (i *Input) setClaims(tc *TestCase, ctx *Context) error {
 		}
 	}
 
+	logrus.WithFields(logrus.Fields{
+		"ctx":      ctx,
+		"i.Claims": i.Claims,
+	}).Debug("Input.setClaims after ...")
+
 	return nil
 }
 
@@ -165,6 +175,14 @@ func consentUrl(authEndpoint string, claims map[string]string, token string) str
 
 	consentURL := fmt.Sprintf("%s?%s", authEndpoint, queryString.Encode())
 	logrus.StandardLogger().Debugf("Consent URL: %s", consentURL)
+
+	logrus.WithFields(logrus.Fields{
+		"claims":       claims,
+		"authEndpoint": authEndpoint,
+		"token":        token,
+		"consentURL":   consentURL,
+	}).Info("Generating consentURL")
+
 	return consentURL
 }
 
@@ -267,6 +285,13 @@ func (i *Input) generateSignedJWT(ctx *Context, alg jwt.SigningMethod) (string, 
 	claims["iat"] = time.Now().Unix()
 	claims["exp"] = time.Now().Add(time.Minute * time.Duration(60)).Unix()
 	claims["jti"] = uuid
+	claims["response_type"] = i.Claims["responseType"]
+
+	logrus.WithFields(logrus.Fields{
+		"claims":   claims,
+		"alg":      alg,
+		"i.Claims": i.Claims,
+	}).Debug("Input.generateSignedJWT ...")
 
 	token := jwt.NewWithClaims(alg, claims) // create new token
 

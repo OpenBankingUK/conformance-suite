@@ -17,6 +17,19 @@ import (
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/server/models"
 )
 
+// Needs to be a interface{} slice, see the official test for an example
+// https://github.com/go-ozzo/ozzo-validation/blob/master/in_test.go
+type ResponseType = interface{}
+
+var (
+	// responseTypesSupported REQUIRED. JSON array containing a list of the OAuth 2.0 response_type values that this OP supports. Dynamic OpenID Providers MUST support the code, id_token, and the token id_token Response Type values
+	responseTypesSupported = [3]ResponseType{
+		"code",
+		"code id_token",
+		"id_token",
+	}
+)
+
 type configHandlers struct {
 	logger  *logrus.Entry
 	journey Journey
@@ -30,6 +43,7 @@ type GlobalConfiguration struct {
 	ClientID                string            `json:"client_id" validate:"not_empty"`
 	ClientSecret            string            `json:"client_secret" validate:"not_empty"`
 	TokenEndpoint           string            `json:"token_endpoint" validate:"valid_url"`
+	ResponseType            string            `json:"response_type" validate:"not_empty"`
 	TokenEndpointAuthMethod string            `json:"token_endpoint_auth_method" validate:"not_empty"`
 	AuthorizationEndpoint   string            `json:"authorization_endpoint" validate:"valid_url"`
 	ResourceBaseURL         string            `json:"resource_base_url" validate:"valid_url"`
@@ -46,6 +60,7 @@ type GlobalConfiguration struct {
 func (c GlobalConfiguration) Validate() error {
 	return validation.ValidateStruct(&c,
 		validation.Field(&c.CreditorAccount, validation.Required),
+		validation.Field(&c.ResponseType, validation.Required, validation.In(responseTypesSupported[:]...)),
 	)
 }
 
@@ -105,6 +120,7 @@ func MakeJourneyConfig(config *GlobalConfiguration) (JourneyConfig, error) {
 		clientID:                config.ClientID,
 		clientSecret:            config.ClientSecret,
 		tokenEndpoint:           config.TokenEndpoint,
+		ResponseType:            config.ResponseType,
 		tokenEndpointAuthMethod: config.TokenEndpointAuthMethod,
 		authorizationEndpoint:   config.AuthorizationEndpoint,
 		resourceBaseURL:         config.ResourceBaseURL,

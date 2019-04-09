@@ -186,6 +186,21 @@
         </b-form-group>
 
         <b-form-group
+          id="response_type_group"
+          label-for="response_type"
+          label="OAuth 2.0 response_type"
+          description="REQUIRED. JSON array containing a list of the OAuth 2.0 response_type values that this OP supports. Dynamic OpenID Providers MUST support the code, id_token, and the token id_token Response Type values"
+        >
+          <b-form-select
+            id="response_type"
+            v-model="response_type"
+            :options="response_types_supported"
+            :state="isNotEmpty(response_type)"
+            required
+          />
+        </b-form-group>
+
+        <b-form-group
           id="token_endpoint_auth_method_group"
           label-for="token_endpoint_auth_method"
           label="Token Endpoint Auth Method"
@@ -392,6 +407,19 @@ export default {
       },
     },
 
+    response_types_supported: {
+      get() {
+        return this.$store.state.config.response_types_supported;
+      },
+    },
+    response_type: {
+      get() {
+        return this.$store.state.config.configuration.response_type;
+      },
+      set(value) {
+        this.$store.commit('config/SET_RESPONSE_TYPE', value);
+      },
+    },
     token_endpoint_auth_method: {
       get() {
         return this.$store.state.config.configuration.token_endpoint_auth_method;

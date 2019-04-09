@@ -379,6 +379,7 @@ type JourneyConfig struct {
 	clientID                string
 	clientSecret            string
 	tokenEndpoint           string
+	ResponseType            string
 	tokenEndpointAuthMethod string
 	authorizationEndpoint   string
 	resourceBaseURL         string
@@ -410,29 +411,33 @@ func (wj *journey) Events() events.Events {
 	return wj.events
 }
 
-const ctxConstClientID = "client_id"
-const ctxConstClientSecret = "client_secret"
-const ctxConstTokenEndpoint = "token_endpoint"
-const ctxConstTokenEndpointAuthMethod = "token_endpoint_auth_method"
-const ctxConstFapiFinancialID = "x-fapi-financial-id"
-const ctxConstRedirectURL = "redirect_url"
-const ctxConstAuthorisationEndpoint = "authorisation_endpoint"
-const ctxConstBasicAuthentication = "basic_authentication"
-const ctxConstResourceBaseURL = "resource_server"
-const ctxConstIssuer = "issuer"
-const ctxAPIVersion = "api-version"
-const ctxConsentedAccountID = "consentedAccountId"
-const ctxStatementID = "statementId"
-const ctxCreditorSchema = "creditorScheme"
-const ctxCreditorIdentification = "creditorIdentification"
-const ctxCreditorName = "creditorName"
-const ctxTransactionFromDate = "transactionFromDate"
-const ctxTransactionToDate = "transactionToDate"
+const (
+	ctxConstClientID                = "client_id"
+	ctxConstClientSecret            = "client_secret"
+	ctxConstTokenEndpoint           = "token_endpoint"
+	ctxResponseType                 = "responseType"
+	ctxConstTokenEndpointAuthMethod = "token_endpoint_auth_method"
+	ctxConstFapiFinancialID         = "x-fapi-financial-id"
+	ctxConstRedirectURL             = "redirect_url"
+	ctxConstAuthorisationEndpoint   = "authorisation_endpoint"
+	ctxConstBasicAuthentication     = "basic_authentication"
+	ctxConstResourceBaseURL         = "resource_server"
+	ctxConstIssuer                  = "issuer"
+	ctxAPIVersion                   = "api-version"
+	ctxConsentedAccountID           = "consentedAccountId"
+	ctxStatementID                  = "statementId"
+	ctxCreditorSchema               = "creditorScheme"
+	ctxCreditorIdentification       = "creditorIdentification"
+	ctxCreditorName                 = "creditorName"
+	ctxTransactionFromDate          = "transactionFromDate"
+	ctxTransactionToDate            = "transactionToDate"
+)
 
 func (wj *journey) configParametersToJourneyContext() error {
 	wj.context.PutString(ctxConstClientID, wj.config.clientID)
 	wj.context.PutString(ctxConstClientSecret, wj.config.clientSecret)
 	wj.context.PutString(ctxConstTokenEndpoint, wj.config.tokenEndpoint)
+	wj.context.PutString(ctxResponseType, wj.config.ResponseType)
 	wj.context.PutString(ctxConstTokenEndpointAuthMethod, wj.config.tokenEndpointAuthMethod)
 	wj.context.PutString(ctxConstFapiFinancialID, wj.config.xXFAPIFinancialID)
 	wj.context.PutString(ctxConstRedirectURL, wj.config.redirectURL)
