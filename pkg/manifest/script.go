@@ -427,13 +427,28 @@ func filterTestsBasedOnDiscoveryEndpoints(scripts Scripts, endpoints []discovery
 
 	for k := range lookupMap {
 		for i, scr := range scripts.Scripts {
-			if strings.Contains(scr.URI, "foobar") { //exceptions
-				if !contains(filteredScripts, scripts.Scripts[i]) {
-					filteredScripts = append(filteredScripts, scripts.Scripts[i])
-				}
-				continue
-			}
 			stripped := strings.Replace(scr.URI, "$", "", -1) // only works with a single character
+			if strings.Contains(stripped, "foobar") {         //exceptions
+				nofoobar := strings.Replace(stripped, "/foobar", "", -1) // only works with a single character
+				matched, err := regexp.MatchString(k, nofoobar)
+				if err != nil {
+					continue
+				}
+				if matched {
+					if !contains(filteredScripts, scripts.Scripts[i]) {
+						logrus.Tracef("endpoint %40.40s matched by regex %42.42s", scr.URI, k)
+						filteredScripts = append(filteredScripts, scripts.Scripts[i])
+					}
+				}
+
+				if scr.URI == "/foobar" {
+					if !contains(filteredScripts, scripts.Scripts[i]) {
+						filteredScripts = append(filteredScripts, scripts.Scripts[i])
+					}
+					continue
+				}
+			}
+
 			matched, err := regexp.MatchString(k, stripped)
 			if err != nil {
 				continue
