@@ -495,6 +495,7 @@ describe('web/src/store/modules/config', () => {
         client_id: '',
         client_secret: '',
         token_endpoint: '',
+        response_type: '',
         token_endpoint_auth_method: 'client_secret_basic',
         request_object_signing_alg: '',
         authorization_endpoint: '',
@@ -973,6 +974,7 @@ describe('web/src/store/modules/config', () => {
         const errors1 = [
           'Transaction From Date not ISO 8601 format',
           'Transaction To Date empty',
+          'response_type empty'
         ];
         expect(dispatch).toHaveBeenCalledWith('status/setErrors', errors1, { root: true });
       });
