@@ -100,7 +100,7 @@
         "baseurl": "$authorisation_endpoint"
       },
       "expect": {
-        "status-code": 404
+        "status-code": -1
       }
     }
   ]

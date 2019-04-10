@@ -16,6 +16,8 @@ import (
 	"gopkg.in/resty.v1"
 )
 
+const ignoreHTTPStatus = -1
+
 // Manifest is the high level container for test suite definition
 // It contains a list of all the rules required to be passed for conformance testing
 // Each rule can have multiple testcases which contribute to testing that particular rule
@@ -198,7 +200,8 @@ func (t *TestCase) ApplyExpects(res *resty.Response, rulectx *Context) (bool, []
 		return false, []error{t.AppErr("nil http.Response - cannot process ApplyExpects")}
 	}
 
-	if t.Expect.StatusCode != res.StatusCode() { // Status codes don't match
+	// Status code `-1` is specified in test cases if we want to ignore the HTTP status code.
+	if t.Expect.StatusCode != ignoreHTTPStatus && t.Expect.StatusCode != res.StatusCode() { // Status codes don't match
 		return false, []error{t.AppErr(fmt.Sprintf("(%s):%s: HTTP Status code does not match: expected %d got %d", t.ID, t.Name, t.Expect.StatusCode, res.StatusCode()))}
 	}
 
