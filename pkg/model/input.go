@@ -178,6 +178,7 @@ func consentUrl(authEndpoint string, claims map[string]string, token string) str
 	queryString.Set("scope", claims["scope"])
 	queryString.Set("request", token)
 	queryString.Set("state", claims["state"])
+	queryString.Set("redirect_uri", claims["redirect_uri"])
 	fmt.Printf("%s?%s", authEndpoint, queryString.Encode())
 
 	consentURL := fmt.Sprintf("%s?%s", authEndpoint, queryString.Encode())
