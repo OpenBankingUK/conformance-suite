@@ -1,17 +1,18 @@
 package model
 
 import (
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/authentication"
 	"crypto/rsa"
 	"crypto/sha1"
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
-	"github.com/pkg/errors"
 	"io"
 	"net/url"
 	"strings"
 	"time"
+
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/authentication"
+	"github.com/pkg/errors"
 
 	"github.com/google/uuid"
 	"github.com/sirupsen/logrus"
@@ -35,6 +36,7 @@ type Input struct {
 	RequestBody string            `json:"bodyData,omitempty"`   // Optional request body raw data
 	Generation  map[string]string `json:"generation,omitempty"` // Allows for different ways of generating testcases
 	Claims      map[string]string `json:"claims,omitempty"`     // collects claims for input strategies that require them
+	JwsSig      bool              `json:"jws,omitempty"`        // controls inclusion of x-jws-signature header
 }
 
 // CreateRequest is the main Input work horse which examines the various Input parameters and generates an
@@ -61,10 +63,6 @@ func (i *Input) CreateRequest(tc *TestCase, ctx *Context) (*resty.Request, error
 		return nil, err
 	}
 
-	if err = i.setHeaders(req, ctx); err != nil {
-		return nil, err
-	}
-
 	if err = i.setClaims(tc, ctx); err != nil {
 		return nil, err
 	}
@@ -80,6 +78,19 @@ func (i *Input) CreateRequest(tc *TestCase, ctx *Context) (*resty.Request, error
 		}
 		i.RequestBody = body
 		req.SetBody(body)
+	}
+
+	if i.JwsSig {
+		// create jws detached signature - add to headers
+		if i.Method == "POST" {
+			i.createJWSDetachedSignature()
+		} else {
+			return nil, errors.New("cannot apply jws signature to method that isn't POST")
+		}
+	}
+
+	if err = i.setHeaders(req, ctx); err != nil {
+		return nil, err
 	}
 
 	req.Method = tc.Input.Method
@@ -227,6 +238,15 @@ func (i *Input) setHeaders(req *resty.Request, ctx *Context) error {
 		req.SetHeader(k, value)
 	}
 	return nil
+}
+
+func (i *Input) createJWSDetachedSignature() {
+	// get the body
+	// create the signature
+	// throw away the body
+	// add to header
+
+	i.SetHeader("x-jws-signature", "mydummysignature")
 }
 
 func (i *Input) getBody(_ *resty.Request, ctx *Context) (string, error) {

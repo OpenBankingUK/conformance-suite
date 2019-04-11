@@ -378,6 +378,37 @@ func TestPaymentBodyReplaceTestCase100300(t *testing.T) {
 
 }
 
+func TestJWSDetachedSignature(t *testing.T) {
+	ctx := Context{
+		"initiation":                "{\"InstructionIdentification\":\"SIDP01\",\"EndToEndIdentification\":\"FRESCO.21302.GFX.20\",\"InstructedAmount\":{\"Amount\":\"15.00\",\"Currency\":\"GBP\"},\"CreditorAccount\":{\"SchemeName\":\"SortCodeAccountNumber\",\"Identification\":\"20000319470104\",\"Name\":\"Messers Simplex & Co\"}}",
+		"consent_id":                "sdp-1-b5bbdb18-eeb1-4c11-919d-9a237c8f1c7d",
+		"domestic_payment_template": "{\"Data\": {\"ConsentId\": \"$consent_id\",\"Initiation\":$initiation },\"Risk\":{}}",
+		"authorisation_endpoint":    "https://example.com/authorisation",
+	}
+
+	i := Input{JwsSig: true, Method: "POST", Endpoint: "https://google.com", RequestBody: "$domestic_payment_template"}
+	tc := TestCase{Input: i}
+	req, err := tc.Prepare(&ctx)
+	assert.Nil(t, err)
+	sig := req.Header.Get("x-jws-signature")
+	assert.NotEmpty(t, sig)
+}
+
+func TestJWSDetachedSignatureGET(t *testing.T) {
+	ctx := Context{
+		"initiation":                "{\"InstructionIdentification\":\"SIDP01\",\"EndToEndIdentification\":\"FRESCO.21302.GFX.20\",\"InstructedAmount\":{\"Amount\":\"15.00\",\"Currency\":\"GBP\"},\"CreditorAccount\":{\"SchemeName\":\"SortCodeAccountNumber\",\"Identification\":\"20000319470104\",\"Name\":\"Messers Simplex & Co\"}}",
+		"consent_id":                "sdp-1-b5bbdb18-eeb1-4c11-919d-9a237c8f1c7d",
+		"domestic_payment_template": "{\"Data\": {\"ConsentId\": \"$consent_id\",\"Initiation\":$initiation },\"Risk\":{}}",
+		"authorisation_endpoint":    "https://example.com/authorisation",
+	}
+
+	i := Input{JwsSig: true, Method: "GET", Endpoint: "https://google.com", RequestBody: "$domestic_payment_template"}
+	tc := TestCase{Input: i}
+	req, err := tc.Prepare(&ctx)
+	assert.NotNil(t, err)
+	assert.Nil(t, req)
+}
+
 var paymentTestCaseData100300 = []byte(`
 {
     "@id": "OB-301-DOP-100300",
