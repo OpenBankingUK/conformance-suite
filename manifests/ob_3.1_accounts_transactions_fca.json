@@ -397,7 +397,7 @@
         },
         {
             "description": "Fails 404 on an invalid Balance resource.",
-            "id": "OB-301-ACC-101701",
+            "id": "OB-301-BAL-101701",
             "refURI": "",
             "detail": "Validates that the balance resource returns the correct status code (404 Not Found) given an invalid endpoint.",
             "parameters": {
@@ -415,6 +415,58 @@
                 "OB3GLOAssertOn404"
             ],
             "method": "get",
+            "schemaCheck": false
+        },
+        {
+            "description": "The x-fapi-interaction-id is played-black for account Balances.",
+            "id": "OB-301-BAL-101702",
+            "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1000015541/Balances+v3.1.1",
+            "detail": "Checks that the value in the x-fapi-interaction-id response header is played-back for account Balances.",
+            "parameters": {
+                "tokenRequestScope": "accounts",
+                "accountId": "$consentedAccountId",
+                "x-fapi-interaction-id": "93bac548-d2de-4546-b106-880a5018460d"
+            },
+            "headers": {
+                "x-fapi-interaction-id": "$x-fapi-interaction-id"
+            },
+            "permissions": [
+                "ReadAccountsBasic",
+                "ReadBalances"
+            ],
+            "uri": "/accounts/$accountId/balances",
+            "uriImplementation": "mandatory",
+            "resource": "Balance",
+            "method": "get",
+            "asserts": [
+                "OB3GLOAssertFAPIPlayBack"
+            ],
+            "schemaCheck": false
+        },
+        {
+            "description": "The x-fapi-interaction-id is played-black for Balances.",
+            "id": "OB-301-BAL-101703",
+            "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1000015541/Balances+v3.1.1",
+            "detail": "Checks that the value in the x-fapi-interaction-id response header is played-back for Balances.",
+            "parameters": {
+                "tokenRequestScope": "accounts",
+                "accountId": "$consentedAccountId",
+                "x-fapi-interaction-id": "aac-f5a10e5e-0c46-41c5-a7b7-c8f56020520x"
+            },
+            "headers": {
+                "x-fapi-interaction-id": "$x-fapi-interaction-id"
+            },
+            "permissions": [
+                "ReadAccountsBasic",
+                "ReadBalances"
+            ],
+            "uri": "/balances",
+            "uriImplementation": "optional",
+            "resource": "Account",
+            "method": "get",
+            "asserts": [
+                "OB3GLOAssertFAPIPlayBack"
+            ],
             "schemaCheck": false
         },
         {
