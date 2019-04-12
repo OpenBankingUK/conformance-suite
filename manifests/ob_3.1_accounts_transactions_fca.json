@@ -785,6 +785,57 @@
             "schemaCheck": false
         },
         {
+            "description": "The x-fapi-interaction-id is played-black for account Direct Debit.",
+            "id": "OB-301-DIR-102503",
+            "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/999426259/Direct+Debits+v3.1.1",
+            "detail": "Checks that the value in the x-fapi-interaction-id response header is played-back for account Direct Debit.",
+            "parameters": {
+                "tokenRequestScope": "accounts",
+                "accountId": "$consentedAccountId",
+                "x-fapi-interaction-id": "93bac548-d2de-4546-b106-880a5018460d"
+            },
+            "headers": {
+                "x-fapi-interaction-id": "$x-fapi-interaction-id"
+            },
+            "permissions": [
+                "ReadAccountsBasic",
+                "ReadDirectDebits"
+            ],
+            "uri": "/accounts/$accountId/direct-debits",
+            "uriImplementation": "conditional",
+            "resource": "DirectDebit",
+            "method": "get",
+            "asserts": [
+                "OB3GLOAssertFAPIPlayBack"
+            ],
+            "schemaCheck": false
+        },
+        {
+            "description": "The x-fapi-interaction-id is played-black for Direct Debit.",
+            "id": "OB-301-DIR-102504",
+            "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/999426259/Direct+Debits+v3.1.1",
+            "detail": "Checks that the value in the x-fapi-interaction-id response header is played-back for Direct Debit.",
+            "parameters": {
+                "tokenRequestScope": "accounts",
+                "x-fapi-interaction-id": "aac-f5a10e5e-0c46-41c5-a7b7-c8f56020520x"
+            },
+            "headers": {
+                "x-fapi-interaction-id": "$x-fapi-interaction-id"
+            },
+            "permissions": [
+                "ReadAccountsBasic",
+                "ReadDirectDebits"
+            ],
+            "uri": "/direct-debits",
+            "uriImplementation": "optional",
+            "resource": "DirectDebit",
+            "method": "get",
+            "asserts": [
+                "OB3GLOAssertFAPIPlayBack"
+            ],
+            "schemaCheck": false
+        },
+        {
             "description": "All data returned for a given Account with ReadOffers permission with additional schema checks, status and headers.",
             "id": "OB-301-OFF-102600",
             "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937558127/Offers+v3.1#Offersv3.1-PermissionCodes",
@@ -891,6 +942,57 @@
             "method": "get",
             "asserts": [
                 "OB3GLOAssertOn401"
+            ],
+            "schemaCheck": false
+        },
+        {
+            "description": "The x-fapi-interaction-id is played-black for account Offer.",
+            "id": "OB-301-OFF-102803",
+            "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1000571846/Offers+v3.1.1",
+            "detail": "Checks that the value in the x-fapi-interaction-id response header is played-back for account Offer.",
+            "parameters": {
+                "tokenRequestScope": "accounts",
+                "accountId": "$consentedAccountId",
+                "x-fapi-interaction-id": "93bac548-d2de-4546-b106-880a5018460d"
+            },
+            "headers": {
+                "x-fapi-interaction-id": "$x-fapi-interaction-id"
+            },
+            "permissions": [
+                "ReadAccountsBasic",
+                "ReadOffers"
+            ],
+            "uri": "/accounts/$accountId/offers",
+            "uriImplementation": "conditional",
+            "resource": "Offer",
+            "method": "get",
+            "asserts": [
+                "OB3GLOAssertFAPIPlayBack"
+            ],
+            "schemaCheck": false
+        },
+        {
+            "description": "The x-fapi-interaction-id is played-black for Offer.",
+            "id": "B-301-OFF-102804",
+            "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1000571846/Offers+v3.1.1",
+            "detail": "Checks that the value in the x-fapi-interaction-id response header is played-back for Offer.",
+            "parameters": {
+                "tokenRequestScope": "accounts",
+                "x-fapi-interaction-id": "aac-f5a10e5e-0c46-41c5-a7b7-c8f56020520x"
+            },
+            "headers": {
+                "x-fapi-interaction-id": "$x-fapi-interaction-id"
+            },
+            "permissions": [
+                "ReadAccountsBasic",
+                "ReadOffers"
+            ],
+            "uri": "/offers",
+            "uriImplementation": "optional",
+            "resource": "Offer",
+            "method": "get",
+            "asserts": [
+                "OB3GLOAssertFAPIPlayBack"
             ],
             "schemaCheck": false
         },
@@ -1040,7 +1142,7 @@
             ],
             "uri": "/beneficiaries",
             "uriImplementation": "optional",
-            "resource": "Beneficiary",
+            "resource": "Party",
             "method": "get",
             "asserts": [
                 "OB3GLOAssertOn401",
@@ -1048,6 +1150,59 @@
             ],
             "schemaCheck": false
         },
+        {
+            "description": "The x-fapi-interaction-id is played-black for account Party.",
+            "id": "OB-301-PAR-103104",
+            "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1000015561/Parties+v3.1.1",
+            "detail": "Checks that the value in the x-fapi-interaction-id response header is played-back for account Party.",
+            "parameters": {
+                "tokenRequestScope": "accounts",
+                "accountId": "$consentedAccountId",
+                "x-fapi-interaction-id": "93bac548-d2de-4546-b106-880a5018460d"
+            },
+            "headers": {
+                "x-fapi-interaction-id": "$x-fapi-interaction-id"
+            },
+            "permissions": [
+                "ReadAccountsBasic",
+                "ReadParty"
+            ],
+            "uri": "/accounts/$accountId/party",
+            "uriImplementation": "conditional",
+            "resource": "Party",
+            "method": "get",
+            "asserts": [
+                "OB3GLOAssertFAPIPlayBack"
+            ],
+            "schemaCheck": false
+        },
+        {
+            "description": "The x-fapi-interaction-id is played-black for Party.",
+            "id": "OB-301-PAR-103105",
+            "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1000015561/Parties+v3.1.1",
+            "detail": "Checks that the value in the x-fapi-interaction-id response header is played-back for Party.",
+            "parameters": {
+                "tokenRequestScope": "accounts",
+                "x-fapi-interaction-id": "aac-f5a10e5e-0c46-41c5-a7b7-c8f56020520x"
+            },
+            "headers": {
+                "x-fapi-interaction-id": "$x-fapi-interaction-id"
+            },
+            "permissions": [
+                "ReadAccountsBasic",
+                "ReadParty"
+            ],
+            "uri": "/party",
+            "uriImplementation": "optional",
+            "resource": "Party",
+            "method": "get",
+            "asserts": [
+                "OB3GLOAssertFAPIPlayBack"
+            ],
+            "schemaCheck": false
+        },
+
+
         {
             "description": "All data returned for a given account with ReadProducts permission with additional schema checks, status and headers.",
             "id": "OB-301-PRO-103200",
@@ -1156,6 +1311,59 @@
             ],
             "schemaCheck": false
         },
+        {
+            "description": "The x-fapi-interaction-id is played-black for account Product.",
+            "id": "OB-301-PRO-103402",
+            "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1000604814/Products+v3.1.1",
+            "detail": "Checks that the value in the x-fapi-interaction-id response header is played-back for account Product.",
+            "parameters": {
+                "tokenRequestScope": "accounts",
+                "accountId": "$consentedAccountId",
+                "x-fapi-interaction-id": "93bac548-d2de-4546-b106-880a5018460d"
+            },
+            "headers": {
+                "x-fapi-interaction-id": "$x-fapi-interaction-id"
+            },
+            "permissions": [
+                "ReadAccountsBasic",
+                "ReadProducts"
+            ],
+            "uri": "/accounts/$accountId/product",
+            "uriImplementation": "conditional",
+            "resource": "Product",
+            "method": "get",
+            "asserts": [
+                "OB3GLOAssertFAPIPlayBack"
+            ],
+            "schemaCheck": false
+        },
+        {
+            "description": "The x-fapi-interaction-id is played-black for Product.",
+            "id": "OB-301-PRO-103403",
+            "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1000604814/Products+v3.1.1",
+            "detail": "Checks that the value in the x-fapi-interaction-id response header is played-back for Product.",
+            "parameters": {
+                "tokenRequestScope": "accounts",
+                "x-fapi-interaction-id": "aac-f5a10e5e-0c46-41c5-a7b7-c8f56020520x"
+            },
+            "headers": {
+                "x-fapi-interaction-id": "$x-fapi-interaction-id"
+            },
+            "permissions": [
+                "ReadAccountsBasic",
+                "ReadProducts"
+            ],
+            "uri": "/product",
+            "uriImplementation": "optional",
+            "resource": "Product",
+            "method": "get",
+            "asserts": [
+                "OB3GLOAssertFAPIPlayBack"
+            ],
+            "schemaCheck": false
+        },
+
+
         {
             "description": "Detailed level data returned for a given account using the ReadScheduledPaymentsDetail permission.",
             "id": "OB-301-SCP-103500",
