@@ -13,7 +13,7 @@
             ],
             "uri": "/foobar",
             "uriImplementation": "optional",
-            "resource": "Account",
+            "resource": "Global",
             "asserts": [
                 "OB3GLOAssertOn404"
             ],
@@ -973,7 +973,7 @@
         },
         {
             "description": "The x-fapi-interaction-id is played-black for Offer.",
-            "id": "B-301-OFF-102804",
+            "id": "OB-301-OFF-102804",
             "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1000571846/Offers+v3.1.1",
             "detail": "Checks that the value in the x-fapi-interaction-id response header is played-back for Offer.",
             "parameters": {
