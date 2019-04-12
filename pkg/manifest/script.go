@@ -2,8 +2,8 @@ package manifest
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
+	"github.com/pkg/errors"
 	"io/ioutil"
 	"os"
 	"regexp"
@@ -350,15 +350,17 @@ func loadScripts(filename string) (Scripts, error) {
 	if strings.HasPrefix(strings.ToLower(filename), schemeHttps) {
 		return Scripts{}, errors.New("https:// download of scripts not yet supported")
 	} else if strings.HasPrefix(strings.ToLower(filename), schemeFile) {
-		f := strings.TrimPrefix(filename, schemeFile)
-		sb, err := ioutil.ReadFile(f)
+		fp := strings.TrimPrefix(filename, schemeFile)
+		sb, err := ioutil.ReadFile(fp)
 		if err != nil && os.IsNotExist(err) {
-			sb, err = ioutil.ReadFile(f)
+			sb, err = ioutil.ReadFile(fmt.Sprintf("../../%s", fp))
+			if err != nil {
+				return Scripts{}, errors.Wrap(err, "ioutil.ReadFile()")
+			}
+		} else if err != nil {
+			return Scripts{}, errors.Wrap(err, "ioutil.ReadFile()")
 		}
 		scrBytes = sb
-		if err != nil {
-			return Scripts{}, err
-		}
 
 	} else {
 		return Scripts{}, errors.New("unable to load scripts")

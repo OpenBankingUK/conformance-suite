@@ -8,7 +8,7 @@ import (
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
 )
 
-const manifestPath = "file://../../manifests/ob_3.1_payment_fca.json"
+const manifestPath = "file://manifests/ob_3.1_payment_fca.json"
 
 func TestPermx(t *testing.T) {
 	tests, err := GenerateTestCases(accountSwaggerLocation31, "http://mybaseurl", &model.Context{}, readDiscovery(), manifestPath)
