@@ -1201,8 +1201,6 @@
             ],
             "schemaCheck": false
         },
-
-
         {
             "description": "All data returned for a given account with ReadProducts permission with additional schema checks, status and headers.",
             "id": "OB-301-PRO-103200",
