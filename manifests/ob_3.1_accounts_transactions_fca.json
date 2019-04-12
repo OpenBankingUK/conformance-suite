@@ -1362,8 +1362,6 @@
             ],
             "schemaCheck": false
         },
-
-
         {
             "description": "Detailed level data returned for a given account using the ReadScheduledPaymentsDetail permission.",
             "id": "OB-301-SCP-103500",
@@ -1442,7 +1440,7 @@
             },
             "permissions": [
                 "ReadAccountsBasic",
-                "ReadProducts"
+                "ReadScheduledPaymentsDetail"
             ],
             "uri": "/accounts/$accountId/scheduled-payments/foobar",
             "resource": "ScheduledPayment",
@@ -1472,6 +1470,64 @@
             ],
             "schemaCheck": false
         },
+        {
+            "description": "The x-fapi-interaction-id is played-black for account Scheduled Payments.",
+            "id": "OB-301-SCP-103703",
+            "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/999623000/Scheduled+Payments+v3.1.1",
+            "detail": "Checks that the value in the x-fapi-interaction-id response header is played-back for account Product.",
+            "parameters": {
+                "tokenRequestScope": "accounts",
+                "accountId": "$consentedAccountId",
+                "x-fapi-interaction-id": "93bac548-d2de-4546-b106-880a5018460d"
+            },
+            "headers": {
+                "x-fapi-interaction-id": "$x-fapi-interaction-id"
+            },
+            "permissions": [
+                "ReadAccountsBasic",
+                "ReadScheduledPaymentsDetail"
+            ],
+            "uri": "/accounts/$accountId/scheduled-payments",
+            "uriImplementation": "conditional",
+            "resource": "ScheduledPayment",
+            "method": "get",
+            "asserts": [
+                "OB3GLOAssertFAPIPlayBack"
+            ],
+            "schemaCheck": false
+        },
+        {
+            "description": "The x-fapi-interaction-id is played-black for Scheduled Payments.",
+            "id": "OB-301-SCP-103704",
+            "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/999623000/Scheduled+Payments+v3.1.1",
+            "detail": "Checks that the value in the x-fapi-interaction-id response header is played-back for Product.",
+            "parameters": {
+                "tokenRequestScope": "accounts",
+                "x-fapi-interaction-id": "aac-f5a10e5e-0c46-41c5-a7b7-c8f56020520x"
+            },
+            "headers": {
+                "x-fapi-interaction-id": "$x-fapi-interaction-id"
+            },
+            "permissions": [
+                "ReadAccountsBasic",
+                "ReadScheduledPaymentsDetail"
+            ],
+            "uri": "/scheduled-payments",
+            "uriImplementation": "optional",
+            "resource": "ScheduledPayment",
+            "method": "get",
+            "asserts": [
+                "OB3GLOAssertFAPIPlayBack"
+            ],
+            "schemaCheck": false
+        },
+
+
+
+
+
+
+
         {
             "description": "Detailed level data returned for a given account using the ReadStandingOrdersDetail permission.",
             "id": "OB-301-STO-103800",
