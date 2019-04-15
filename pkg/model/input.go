@@ -83,7 +83,10 @@ func (i *Input) CreateRequest(tc *TestCase, ctx *Context) (*resty.Request, error
 	if i.JwsSig {
 		// create jws detached signature - add to headers
 		if i.Method == "POST" {
-			i.createJWSDetachedSignature()
+			err := i.createJWSDetachedSignature(ctx)
+			if err != nil {
+				return nil, err
+			}
 		} else {
 			return nil, errors.New("cannot apply jws signature to method that isn't POST")
 		}
@@ -100,9 +103,9 @@ func (i *Input) CreateRequest(tc *TestCase, ctx *Context) (*resty.Request, error
 
 func (i *Input) setClaims(tc *TestCase, ctx *Context) error {
 	logrus.WithFields(logrus.Fields{
-		"ctx":      ctx,
 		"i.Claims": i.Claims,
 	}).Debug("Input.setClaims before ...")
+	ctx.DumpContext()
 
 	for k, v := range i.Claims {
 		value, err := replaceContextField(v, ctx)
@@ -147,9 +150,9 @@ func (i *Input) setClaims(tc *TestCase, ctx *Context) error {
 	}
 
 	logrus.WithFields(logrus.Fields{
-		"ctx":      ctx,
 		"i.Claims": i.Claims,
 	}).Debug("Input.setClaims after ...")
+	ctx.DumpContext()
 
 	return nil
 }
@@ -240,13 +243,22 @@ func (i *Input) setHeaders(req *resty.Request, ctx *Context) error {
 	return nil
 }
 
-func (i *Input) createJWSDetachedSignature() {
-	// get the body
-	// create the signature
-	// throw away the body
-	// add to header
+func (i *Input) createJWSDetachedSignature(ctx *Context) error {
 
-	i.SetHeader("x-jws-signature", "mydummysignature")
+	if len(i.RequestBody) > 0 {
+
+		token, err := i.generateJWSSignature(ctx, jwt.SigningMethodRS256)
+
+		if err != nil {
+			return i.AppErr(fmt.Sprintf("error generating jws signature %s", err.Error()))
+		}
+		i.SetHeader("x-jws-signature", token)
+
+		return nil
+	}
+
+	return i.AppErr("cannot create x-jws-signature, as request body is empty")
+
 }
 
 func (i *Input) getBody(_ *resty.Request, ctx *Context) (string, error) {
@@ -367,6 +379,98 @@ func (i *Input) generateSignedJWT(ctx *Context, alg jwt.SigningMethod) (string, 
 	return tokenString, nil
 }
 
+type payload []byte
+
+func (p payload) Valid() error {
+	return nil
+}
+
+func (i *Input) generateJWSSignature(ctx *Context, alg jwt.SigningMethod) (string, error) {
+
+	p := payload{}
+	p = []byte(i.RequestBody)
+
+	cert, err := certFromContext(ctx)
+	if err != nil {
+		return "", err
+	}
+	modulus := cert.PublicKey().N.Bytes()
+	modulusBase64 := base64.RawURLEncoding.EncodeToString(modulus)
+	kid, _ := calcKid(modulusBase64)
+	issuer, err := cert.DN()
+	if err != nil {
+		logrus.Warn("cannot get certificate DN: ", err.Error())
+	}
+
+	issuer = "C=GB,O=OpenBanking,OU=0015800001041RdAAI,CN=4XQsc1dvWnggAqjZLV3sH2"
+	logrus.Tracef("kid:%s iss:%s\n", kid, issuer)
+
+	//fmt.Printf("kid:%s iss:%s\n", kid, issuer)
+
+	tok := jwt.Token{
+		Header: map[string]interface{}{
+			"typ":                           "JOSE",
+			"kid":                           kid,
+			"b64":                           false,
+			"cty":                           "application/json",
+			"http://openbanking.org.uk/iat": time.Now().Unix(),
+			"http://openbanking.org.uk/iss": issuer,               //ASPSP ORGID or TTP ORGID/SSAID
+			"http://openbanking.org.uk/tan": "openbanking.org.uk", //Trust anchor
+			"alg":                           alg.Alg(),
+			"crit":                          []string{"b64", "http://openbanking.org.uk/iat", "http://openbanking.org.uk/iss", "http://openbanking.org.uk/tan"},
+		},
+		Claims: p,
+		Method: jwt.SigningMethodRS256,
+		//Method: jwt.SigningMethodPS256.SigningMethodRSA,
+	}
+
+	tokenString, err := tok.SignedString(cert.PrivateKey()) // sign the token - get as encoded string
+
+	logrus.Tracef("jws is := \n%v\n", tokenString)
+	fmt.Printf("jws is := \n%v\n", tokenString)
+
+	parts := strings.Split(tokenString, ".")
+	detachedJWS := parts[0] + ".." + parts[2]
+
+	logrus.Tracef("jws detached signature is := \n%v\n", detachedJWS)
+	fmt.Printf("jws detached signature is := \n%v\n", detachedJWS)
+
+	return detachedJWS, nil
+}
+
+func (i *Input) generateDummyJWS(ctx *Context, alg jwt.SigningMethod) (string, error) {
+	uuid := uuid.New()
+	claims := jwt.MapClaims{}
+	claims["iss"] = "dummyjwt"
+	claims["sub"] = "dummySubject"
+	claims["aud"] = "theworld"
+	claims["iat"] = time.Now().Unix()
+	claims["exp"] = time.Now().Add(time.Minute * time.Duration(60)).Unix()
+	claims["jti"] = uuid
+	claims["nonce"] = uuid
+
+	token := jwt.NewWithClaims(alg, claims) // create new token
+
+	cert, err := certFromContext(ctx)
+	if err != nil {
+		return "", i.AppErr(errors.Wrap(err, "Create certificate from context").Error())
+	}
+
+	modulus := cert.PublicKey().N.Bytes()
+	modulusBase64 := base64.RawURLEncoding.EncodeToString(modulus)
+	token.Header["kid"], err = calcKid(modulusBase64)
+	if err != nil {
+		return "", i.AppErr(fmt.Sprintf("error calculating kid: %s", err.Error()))
+	}
+
+	tokenString, err := token.SignedString(cert.PrivateKey()) // sign the token - get as encoded string
+	if err != nil {
+		return "", i.AppErr(fmt.Sprintf("error siging jwt: %s", err.Error()))
+	}
+	logrus.StandardLogger().Debugf("\nCreated Dummy JWT:\n-------------\n%s\n", tokenString)
+	return tokenString, nil
+}
+
 func calcKid(modulus string) (string, error) {
 	canonicalInput := fmt.Sprintf(`{"e":"AQAB","kty":"RSA","n":"%s"}`, modulus)
 
@@ -400,10 +504,6 @@ type consentIDTok struct {
 // Used only to support the PSU consent URL generation for headless consent flow
 func (i *Input) generateUnsignedJWT() (string, error) {
 	claims := jwt.MapClaims{}
-	claims["iss"] = i.Claims["iss"]
-	claims["scope"] = i.Claims["scope"]
-	claims["aud"] = i.Claims["aud"]
-	claims["redirect_uri"] = i.Claims["redirect_url"]
 
 	consentClaim := consentClaims{Essential: true, Value: i.Claims["consentId"]}
 	myident := obintentID{IntentID: consentClaim}

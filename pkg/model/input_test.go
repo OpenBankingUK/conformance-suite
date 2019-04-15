@@ -1,8 +1,10 @@
 package model
 
 import (
+	"crypto/tls"
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"net/url"
 	"os"
 	"testing"
@@ -380,6 +382,8 @@ func TestPaymentBodyReplaceTestCase100300(t *testing.T) {
 
 func TestJWSDetachedSignature(t *testing.T) {
 	ctx := Context{
+		"signingPrivate":            selfsignedDummykey,
+		"signingPublic":             selfsignedDummypub,
 		"initiation":                "{\"InstructionIdentification\":\"SIDP01\",\"EndToEndIdentification\":\"FRESCO.21302.GFX.20\",\"InstructedAmount\":{\"Amount\":\"15.00\",\"Currency\":\"GBP\"},\"CreditorAccount\":{\"SchemeName\":\"SortCodeAccountNumber\",\"Identification\":\"20000319470104\",\"Name\":\"Messers Simplex & Co\"}}",
 		"consent_id":                "sdp-1-b5bbdb18-eeb1-4c11-919d-9a237c8f1c7d",
 		"domestic_payment_template": "{\"Data\": {\"ConsentId\": \"$consent_id\",\"Initiation\":$initiation },\"Risk\":{}}",
@@ -392,6 +396,36 @@ func TestJWSDetachedSignature(t *testing.T) {
 	assert.Nil(t, err)
 	sig := req.Header.Get("x-jws-signature")
 	assert.NotEmpty(t, sig)
+}
+
+func TestJWSSignaturNotPOST(t *testing.T) {
+	ctx := Context{
+		"initiation":                "{\"InstructionIdentification\":\"SIDP01\",\"EndToEndIdentification\":\"FRESCO.21302.GFX.20\",\"InstructedAmount\":{\"Amount\":\"15.00\",\"Currency\":\"GBP\"},\"CreditorAccount\":{\"SchemeName\":\"SortCodeAccountNumber\",\"Identification\":\"20000319470104\",\"Name\":\"Messers Simplex & Co\"}}",
+		"consent_id":                "sdp-1-b5bbdb18-eeb1-4c11-919d-9a237c8f1c7d",
+		"domestic_payment_template": "{\"Data\": {\"ConsentId\": \"$consent_id\",\"Initiation\":$initiation },\"Risk\":{}}",
+		"authorisation_endpoint":    "https://example.com/authorisation",
+	}
+
+	i := Input{JwsSig: true, Method: "GET", Endpoint: "https://google.com", RequestBody: ""}
+	tc := TestCase{Input: i}
+	req, err := tc.Prepare(&ctx)
+	assert.Nil(t, err)
+	assert.Nil(t, req)
+}
+
+func TestJWSSignatureEmptyBody(t *testing.T) {
+	ctx := Context{
+		"initiation":                "{\"InstructionIdentification\":\"SIDP01\",\"EndToEndIdentification\":\"FRESCO.21302.GFX.20\",\"InstructedAmount\":{\"Amount\":\"15.00\",\"Currency\":\"GBP\"},\"CreditorAccount\":{\"SchemeName\":\"SortCodeAccountNumber\",\"Identification\":\"20000319470104\",\"Name\":\"Messers Simplex & Co\"}}",
+		"consent_id":                "sdp-1-b5bbdb18-eeb1-4c11-919d-9a237c8f1c7d",
+		"domestic_payment_template": "{\"Data\": {\"ConsentId\": \"$consent_id\",\"Initiation\":$initiation },\"Risk\":{}}",
+		"authorisation_endpoint":    "https://example.com/authorisation",
+	}
+
+	i := Input{JwsSig: true, Method: "POST", Endpoint: "https://google.com", RequestBody: ""}
+	tc := TestCase{Input: i}
+	req, err := tc.Prepare(&ctx)
+	assert.Nil(t, err)
+	assert.Nil(t, req)
 }
 
 func TestJWSDetachedSignatureGET(t *testing.T) {
@@ -407,6 +441,33 @@ func TestJWSDetachedSignatureGET(t *testing.T) {
 	req, err := tc.Prepare(&ctx)
 	assert.NotNil(t, err)
 	assert.Nil(t, req)
+}
+
+func TestCertDNRetrieval(t *testing.T) {
+	cert, err := loadSigningCert()
+	if err != nil {
+		t.Log("Certs not found, skip test")
+		return
+	}
+	_ = cert
+
+}
+
+func loadSigningCert() (tls.Certificate, error) {
+	certSigning, err := ioutil.ReadFile("../../../certstore/testcertSigning.pem")
+	if err != nil {
+		fmt.Println("cannot read signing certificate")
+		return tls.Certificate{}, err
+	}
+	keySigning, err := ioutil.ReadFile("../../../certstore/testprivateKeySigning.key")
+	if err != nil {
+		fmt.Println("cannot read signing key")
+		return tls.Certificate{}, err
+	}
+
+	cert, err := tls.X509KeyPair([]byte(certSigning), []byte(keySigning))
+
+	return cert, nil
 }
 
 var paymentTestCaseData100300 = []byte(`

@@ -6,6 +6,9 @@ import (
 	"crypto/rsa"
 	"crypto/sha256"
 	"crypto/tls"
+	"crypto/x509/pkix"
+	"fmt"
+	"strings"
 
 	jwt "github.com/dgrijalva/jwt-go"
 	"github.com/pkg/errors"
@@ -17,6 +20,7 @@ type Certificate interface {
 	PublicKey() *rsa.PublicKey
 	PrivateKey() *rsa.PrivateKey
 	TLSCert() tls.Certificate
+	DN() (string, error)
 }
 
 // certificate implements Certificate
@@ -90,4 +94,57 @@ func validateKeys(publicKey *rsa.PublicKey, privateKey *rsa.PrivateKey) error {
 	}
 
 	return nil
+}
+
+// from https://stackoverflow.com/questions/39125873/golang-subject-dn-from-x509-cert
+var oid = map[string]string{
+	"2.5.4.6":  "C",
+	"2.5.4.10": "O",
+	"2.5.4.11": "OU",
+	"2.5.4.3":  "CN",
+}
+
+// OB require /C=/O=/OU=/CN=
+func getDNFromCert(namespace pkix.Name, sep string) (string, error) {
+	subject := []string{}
+	for _, s := range namespace.ToRDNSequence() {
+		for _, i := range s {
+			if v, ok := i.Value.(string); ok {
+				if name, ok := oid[i.Type.String()]; ok {
+					// <oid name>=<value>
+					subject = append(subject, fmt.Sprintf("%s=%s", name, v))
+				} else {
+					// <oid>=<value> if no <oid name> is found
+					subject = append(subject, fmt.Sprintf("%s=%s", i.Type.String(), v))
+				}
+			} else {
+				// <oid>=<value in default format> if value is not string
+				subject = append(subject, fmt.Sprintf("%s=%v", i.Type.String, v))
+			}
+		}
+	}
+	return sep + strings.Join(subject, sep), nil
+}
+
+func (c certificate) DN() (string, error) {
+	leaf := c.tlsCert.Leaf
+	if leaf == nil {
+		fmt.Printf("getDN invalid leaf")
+		return "", errors.New("certificate.DN invalid leaf")
+
+	}
+	subject := c.tlsCert.Leaf.Subject
+	if leaf == nil {
+
+		fmt.Printf("getDN invalid subject")
+		return "", errors.New("certificate.DN invlid subject")
+	}
+
+	dn, err := getDNFromCert(subject, "/")
+	if err != nil {
+		fmt.Printf("getDN error: " + err.Error())
+		logrus.Error("certification.DN error: " + err.Error())
+		return "", err
+	}
+	return dn, nil
 }
