@@ -371,7 +371,7 @@
             "resource": "Balance",
             "method": "get",
             "asserts": [
-                "OB3GLOAssertOn401"
+                "OB3GLOAssertOn400"
             ],
             "schemaCheck": false
         },
@@ -577,7 +577,7 @@
             "resource": "Beneficiary",
             "method": "get",
             "asserts": [
-                "OB3GLOAssertOn401"
+                "OB3GLOAssertOn400"
             ],
             "schemaCheck": false
         },
@@ -738,7 +738,7 @@
             "resource": "DirectDebit",
             "method": "get",
             "asserts": [
-                "OB3GLOAssertOn401"
+                "OB3GLOAssertOn400"
             ],
             "schemaCheck": false
         },
@@ -899,7 +899,7 @@
             "resource": "Offer",
             "method": "get",
             "asserts": [
-                "OB3GLOAssertOn401"
+                "OB3GLOAssertOn400"
             ],
             "schemaCheck": false
         },
@@ -1082,7 +1082,7 @@
             "resource": "Party",
             "method": "get",
             "asserts": [
-                "OB3GLOAssertOn401"
+                "OB3GLOAssertOn400"
             ],
             "schemaCheck": false
         },
@@ -1423,7 +1423,7 @@
             "resource": "ScheduledPayment",
             "method": "get",
             "asserts": [
-                "OB3GLOAssertOn401"
+                "OB3GLOAssertOn400"
             ],
             "schemaCheck": false
         },
@@ -1582,7 +1582,7 @@
             "resource": "StandingOrder",
             "method": "get",
             "asserts": [
-                "OB3GLOAssertOn401"
+                "OB3GLOAssertOn400"
             ],
             "schemaCheck": false
         },
@@ -1672,6 +1672,187 @@
             "uri": "/standing-orders",
             "uriImplementation": "optional",
             "resource": "StandingOrder",
+            "method": "get",
+            "asserts": [
+                "OB3GLOAssertFAPIPlayBack"
+            ],
+            "schemaCheck": false
+        },
+        {
+            "description": "Minimal data returned for a given Transactions using the ReadTransactionsBasic permission, status and headers.",
+            "id": "OB-301-TRA-105000",
+            "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1004208451/Transactions+v3.1.1#Transactionsv3.1.1-PermissionCodes",
+            "detail": "Checks that the resource differs depending on the permissions (ReadTransactionsBasic and ReadTransactionsDetail) used to access the resource with additional schema checks on status and headers.",
+            "parameters": {
+                "tokenRequestScope": "accounts",
+                "accountId": "$consentedAccountId"
+            },
+            "permissions": [
+                "ReadAccountsBasic",
+                "ReadTransactionsBasic",
+                "ReadTransactionsDebits",
+                "ReadTransactionsCredits"
+            ],
+            "permissions-excluded": [
+                "ReadTransactionsDetail"
+            ],
+            "uri": "/accounts/$accountId/transactions",
+            "uriImplementation": "mandatory",
+            "resource": "Transaction",
+            "asserts": [
+                "OB3GLOAssertOn200",
+                "OB3GLOFAPIHeader"
+            ],
+            "method": "get",
+            "schemaCheck": true
+        },
+        {
+            "description": "All data returned for a given Account with ReadTransactionsBasic permission, status and headers.",
+            "id": "OB-301-TRA-105100",
+            "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1004208451/Transactions+v3.1.1#Transactionsv3.1.1-PermissionCodes",
+            "detail": "Checks that the resource returns the correct data depending on the permissions ReadTransactionsBasic with additional additional schema checks on status and headers.",
+            "parameters": {
+                "tokenRequestScope": "accounts",
+                "accountId": "$consentedAccountId"
+            },
+            "permissions": [
+                "ReadAccountsBasic",
+                "ReadTransactionsDetail",
+                "ReadTransactionsBasic",
+                "ReadTransactionsDebits",
+                "ReadTransactionsCredits"
+            ],
+            "uri": "/accounts/$accountId/transactions",
+            "uriImplementation": "mandatory",
+            "resource": "Transaction",
+            "asserts": [
+                "OB3GLOAssertOn200",
+                "OB3GLOFAPIHeader"
+            ],
+            "method": "get",
+            "schemaCheck": true
+        },
+        {
+            "description": "Minimal data returned for bulk Transaction using the ReadTransactionsBasic permission, status and headers.",
+            "id": "OB-301-TRA-105200",
+            "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937623627/Accounts+v3.1#Accountsv3.1-PermissionCodes",
+            "detail": "Checks that the resource differs depending on the permissions (ReadTransactionsBasic and ReadTransactionsDetail) used to access the resource with additional additional schema checks on status and headers.",
+            "parameters": {
+                "tokenRequestScope": "accounts"
+            },
+            "permissions": [
+                "ReadAccountsBasic",
+                "ReadTransactionsBasic",
+                "ReadTransactionsDebits",
+                "ReadTransactionsCredits"
+            ],
+            "permissions-excluded": [
+                "ReadTransactionsDetail"
+            ],
+            "uri": "/transactions",
+            "uriImplementation": "optional",
+            "resource": "Transaction",
+            "asserts": [
+                "OB3GLOAssertOn200",
+                "OB3GLOFAPIHeader"
+            ],
+            "method": "get",
+            "schemaCheck": true
+        },
+        {
+            "description": "Fails using incorrect permissions for a given Transaction.",
+            "id": "OB-301-TRA-105300",
+            "refURI": "",
+            "detail": "Validates that the Transaction resource fails correctly given an invalid or incorrect token.",
+            "parameters": {
+                "tokenRequestScope": "accounts",
+                "accountId": "$consentedAccountId"
+            },
+            "permissions-excluded": [
+                "ReadAccountsBasic",
+                "ReadTransactionsBasic",
+                "ReadTransactionsDebits",
+                "ReadTransactionsCredits"
+            ],
+            "uri": "/accounts/$accountId/transactions",
+            "uriImplementation": "mandatory",
+            "resource": "Transaction",
+            "method": "get",
+            "asserts": [
+                "OB3GLOAssertOn401",
+                "OB3GLOAssertContentType"
+            ],
+            "schemaCheck": false
+        },
+        {
+            "description": "Fails using incorrect permissions for Bulk Transaction.",
+            "id": "OB-301-TRA-105400",
+            "refURI": "",
+            "detail": "Validates that the Transaction list resource fails correctly given an invalid or incorrect token.",
+            "parameters": {
+                "tokenRequestScope": "accounts"
+            },
+            "uri": "/transactions",
+            "uriImplementation": "optional",
+            "resource": "Transaction",
+            "method": "get",
+            "asserts": [
+                "OB3GLOAssertOn401",
+                "OB3GLOAssertContentType"
+            ],
+            "schemaCheck": false
+        },
+
+
+        {
+            "description": "The x-fapi-interaction-id is replayed for an Transaction.",
+            "id": "OB-301-TRA-105500",
+            "refURI": "",
+            "detail": "Checks that the x-fapi-interaction-id value is played-back for an Transaction.",
+            "parameters": {
+                "tokenRequestScope": "accounts",
+                "accountId": "$consentedAccountId",
+                "x-fapi-interaction-id": "aac-f5a10e5e-0c46-41c5-a7b7-c8f56020520c"
+            },
+            "headers": {
+                "x-fapi-interaction-id": "$x-fapi-interaction-id"
+            },
+            "permissions": [
+                "ReadAccountsBasic",
+                "ReadTransactionsBasic",
+                "ReadTransactionsDebits",
+                "ReadTransactionsCredits"
+            ],
+            "uri": "/accounts/$accountId/transactions",
+            "uriImplementation": "mandatory",
+            "resource": "Transaction",
+            "method": "get",
+            "asserts": [
+                "OB3GLOAssertFAPIPlayBack"
+            ],
+            "schemaCheck": false
+        },
+        {
+            "description": "The x-fapi-interaction-id is replayed for bulk Transaction if given.",
+            "id": "OB-301-TRA-105600",
+            "refURI": "",
+            "detail": "Checks that the x-fapi-interaction-id value is played-back for bulk Transaction.",
+            "parameters": {
+                "tokenRequestScope": "accounts",
+                "x-fapi-interaction-id": "aac-f5a10e5e-0c46-41c5-a7b7-c8f56020520x"
+            },
+            "headers": {
+                "x-fapi-interaction-id": "$x-fapi-interaction-id"
+            },
+            "permissions": [
+                "ReadAccountsBasic",
+                "ReadTransactionsBasic",
+                "ReadTransactionsDebits",
+                "ReadTransactionsCredits"
+            ],
+            "uri": "/transactions",
+            "uriImplementation": "mandatory",
+            "resource": "Account",
             "method": "get",
             "asserts": [
                 "OB3GLOAssertFAPIPlayBack"
