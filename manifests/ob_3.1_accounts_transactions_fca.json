@@ -356,7 +356,7 @@
         {
             "description": "Fails when account is invalid for Balances.",
             "id": "OB-301-BAL-101600",
-            "refURI": "",
+            "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1000702294/Read+Write+Data+API+Specification+-+v3.1.1#Read/WriteDataAPISpecification-v3.1.1-400(BadRequest)v/s404(NotFound)",
             "detail": "Checks the correct response is returned when given an invalid Account for a Balance.",
             "parameters": {
                 "tokenRequestScope": "accounts",
@@ -560,10 +560,10 @@
             "schemaCheck": false
         },
         {
-            "description": "Fails given an invalid account for Beneficiary.",
+            "description": "Fails when account is invalid for Beneficiary.",
             "id": "OB-301-BEN-102200",
-            "refURI": "",
-            "detail": "Checks the correct response is returned when given an invalid account for a beneficiary.",
+            "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1000702294/Read+Write+Data+API+Specification+-+v3.1.1#Read/WriteDataAPISpecification-v3.1.1-400(BadRequest)v/s404(NotFound)",
+            "detail": "Checks the correct response is returned when given an invalid account for a Beneficiary.",
             "parameters": {
                 "tokenRequestScope": "accounts",
                 "accountId": "foobar"
@@ -723,8 +723,8 @@
         {
             "description": "Fails when account is invalid for Direct Debit.",
             "id": "OB-301-DIR-102500",
-            "refURI": "",
-            "detail": "Checks the correct response (401) is returned when given an invalid account for direct debit.",
+            "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1000702294/Read+Write+Data+API+Specification+-+v3.1.1#Read/WriteDataAPISpecification-v3.1.1-400(BadRequest)v/s404(NotFound)",
+            "detail": "Checks the correct response is returned when given an invalid account for Direct Debit.",
             "parameters": {
                 "tokenRequestScope": "accounts",
                 "accountId": "foobar"
@@ -882,9 +882,9 @@
             "schemaCheck": true
         },
         {
-            "description": "Fails given Account is invalid for an Offer.",
+            "description": "Fails when account is invalid for Offer.",
             "id": "OB-301-OFF-102800",
-            "refURI": "",
+            "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1000702294/Read+Write+Data+API+Specification+-+v3.1.1#Read/WriteDataAPISpecification-v3.1.1-400(BadRequest)v/s404(NotFound)",
             "detail": "Checks the correct response is returned when given an invalid account for an Offer.",
             "parameters": {
                 "tokenRequestScope": "accounts",
@@ -1067,7 +1067,7 @@
         {
             "description": "Fails when account is invalid for an Party.",
             "id": "OB-301-PAR-103100",
-            "refURI": "",
+            "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1000702294/Read+Write+Data+API+Specification+-+v3.1.1#Read/WriteDataAPISpecification-v3.1.1-400(BadRequest)v/s404(NotFound)",
             "detail": "Checks the correct response is returned when given an invalid account for an Party.",
             "parameters": {
                 "tokenRequestScope": "accounts",
@@ -1249,7 +1249,7 @@
         {
             "description": "Fails when account is invalid for a Product.",
             "id": "OB-301-PRO-103400",
-            "refURI": "",
+            "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1000702294/Read+Write+Data+API+Specification+-+v3.1.1#Read/WriteDataAPISpecification-v3.1.1-400(BadRequest)v/s404(NotFound)",
             "detail": "Checks the correct response is returned when given an invalid account for a Product.",
             "parameters": {
                 "tokenRequestScope": "accounts",
@@ -1406,9 +1406,9 @@
             "schemaCheck": true
         },
         {
-            "description": "Fails when account is invalid for a Scheduled Payment.",
+            "description": "Fails when account is invalid for Scheduled Payment.",
             "id": "OB-301-SCP-103700",
-            "refURI": "",
+            "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1000702294/Read+Write+Data+API+Specification+-+v3.1.1#Read/WriteDataAPISpecification-v3.1.1-400(BadRequest)v/s404(NotFound)",
             "detail": "Checks the correct response is returned when given an invalid account for a Scheduled Payment.",
             "parameters": {
                 "tokenRequestScope": "accounts",
@@ -1567,7 +1567,7 @@
         {
             "description": "Fails when account is invalid for a Standing Order.",
             "id": "OB-301-STO-104000",
-            "refURI": "",
+            "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1000702294/Read+Write+Data+API+Specification+-+v3.1.1#Read/WriteDataAPISpecification-v3.1.1-400(BadRequest)v/s404(NotFound)",
             "detail": "Checks the correct response is returned when given an invalid account for a Standing Order.",
             "parameters": {
                 "tokenRequestScope": "accounts",
@@ -1852,10 +1852,32 @@
             ],
             "uri": "/transactions",
             "uriImplementation": "mandatory",
-            "resource": "Account",
+            "resource": "Transaction",
             "method": "get",
             "asserts": [
                 "OB3GLOAssertFAPIPlayBack"
+            ],
+            "schemaCheck": false
+        },
+        {
+            "description": "Fails when account is invalid for a Transaction.",
+            "id": "OB-301-TRA-105700",
+            "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1000702294/Read+Write+Data+API+Specification+-+v3.1.1#Read/WriteDataAPISpecification-v3.1.1-400(BadRequest)v/s404(NotFound)",
+            "detail": "Checks the correct response is returned when given an invalid account for a Transaction.",
+            "parameters": {
+                "tokenRequestScope": "accounts",
+                "accountId": "foobar"
+            },
+            "permissions": [
+                "ReadAccountsBasic",
+                "ReadScheduledPaymentsDetail"
+            ],
+            "uri": "/accounts/$accountId/transactions",
+            "uriImplementation": "mandatory",
+            "resource": "Transaction",
+            "method": "get",
+            "asserts": [
+                "OB3GLOAssertOn400"
             ],
             "schemaCheck": false
         }
