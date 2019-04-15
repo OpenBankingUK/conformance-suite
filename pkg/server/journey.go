@@ -469,6 +469,9 @@ func (wj *journey) configParametersToJourneyContext() error {
 	wj.context.PutString(ctxConstBasicAuthentication, basicauth)
 	wj.context.PutString(ctxConstIssuer, wj.config.issuer)
 
+	// TODO: Remove this before pull request!!!!!
+	wj.context.PutString(ctxConstBasicAuthentication, "invalid")
+
 	return nil
 }
 
