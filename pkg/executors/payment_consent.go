@@ -102,6 +102,17 @@ func runPaymentConsents(tcs []model.TestCase, rt []manifest.RequiredTokens, ctx 
 		if err != nil {
 			return nil, errors.New("Payment PSU consent load psu_exchange testcase failed")
 		}
+		if authMethod == "tls_client_auth" {
+			clientid, err := ctx.GetString("client_id")
+			if err != nil {
+				logrus.Warn("cannot locate client_id for tls_client_auth form field")
+			}
+			exchange.Input.SetFormField("client_id", clientid)
+
+		} else {
+			exchange.Input.SetHeader("authorization", "Basic $basic_authentication")
+		}
+
 		localCtx.DumpContext("before exchange", "token_name", "consent_id")
 		err = executePaymentTest(&exchange, &localCtx, executor)
 		if err != nil {

@@ -261,20 +261,48 @@ func exchangeCodeForToken(code string, scope string, ctx *model.Context, logger 
 		scope = "accounts" // lets default to a scope of accounts
 	}
 
+	clientID, err := ctx.GetString("client_id")
+	if err != nil {
+		return grantToken{}, errors.New("cannot get clientid for exchange code")
+	}
+
+	// Check for MTLS vs client basic authentication
+	authMethod, err := ctx.GetString("token_endpoint_auth_method")
+	if err != nil {
+		authMethod = "client_secret_basic"
+	}
+	var resp *resty.Response
+	if authMethod == "client_secret_basic" {
+		resp, err = resty.R().
+			SetHeader("content-type", "application/x-www-form-urlencoded").
+			SetHeader("accept", "*/*").
+			SetHeader("authorization", "Basic "+basicAuth).
+			SetFormData(map[string]string{
+				"grant_type":   "authorization_code",
+				"scope":        scope, // accounts or payments currently
+				"code":         code,
+				"redirect_uri": redirectURL,
+			}).
+			Post(tokenEndpoint)
+
+	}
+	if authMethod == "tls_client_auth" {
+		resp, err = resty.R().
+			SetHeader("content-type", "application/x-www-form-urlencoded").
+			SetHeader("accept", "*/*").
+			SetFormData(map[string]string{
+				"grant_type":   "authorization_code",
+				"scope":        scope, // accounts or payments currently
+				"code":         code,
+				"redirect_uri": redirectURL,
+				"client_id":    clientID,
+			}).
+			Post(tokenEndpoint)
+	}
+
 	logger.WithFields(logrus.Fields{
 		"tokenEndpoint": tokenEndpoint,
 	}).Debug("Attempting POST")
-	resp, err := resty.R().
-		SetHeader("content-type", "application/x-www-form-urlencoded").
-		SetHeader("accept", "*/*").
-		SetHeader("authorization", "Basic "+basicAuth).
-		SetFormData(map[string]string{
-			"grant_type":   "authorization_code",
-			"scope":        scope, // accounts or payments currently
-			"code":         code,
-			"redirect_uri": redirectURL,
-		}).
-		Post(tokenEndpoint)
 
 	if err != nil {
 		logger.WithFields(logrus.Fields{
