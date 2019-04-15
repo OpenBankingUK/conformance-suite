@@ -59,7 +59,7 @@
         "matches": [{
           "header": "x-fapi-interaction-id",
           "value": "$x-fapi-interaction-id",
-          "detail": "Expected playback of in the x-fapi-interaction-id given."
+          "detail": "Expected playback of in the x-fapi-interaction-id given. An RFC4122 UID used as a correlation id. If provided, the ASPSP must play back the value in the x-fapi-interaction-id response header."
         }]
       }
     },
