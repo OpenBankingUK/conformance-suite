@@ -453,6 +453,11 @@ func TestCertDNRetrieval(t *testing.T) {
 
 }
 
+func TestGenSig(t *testing.T) {
+	
+}
+
+
 func loadSigningCert() (tls.Certificate, error) {
 	certSigning, err := ioutil.ReadFile("../../../certstore/testcertSigning.pem")
 	if err != nil {
@@ -519,6 +524,26 @@ var paymentTestCaseData100300 = []byte(`
         }
     }
 }`)
+
+var paymentPayload = `{
+	"Data": {
+		"Initiation": {
+			"InstructionIdentification": "SIDP01",
+			"EndToEndIdentification": "FRESCO.21302.GFX.20",
+			"InstructedAmount": {
+				"Amount": "15.00",
+				"Currency": "GBP"
+			},
+			"CreditorAccount": {
+				"SchemeName": "SortCodeAccountNumber",
+				"Identification": "20000319470104",
+				"Name": "Messers Simplex & Co"
+			}
+		}
+	},
+	"Risk": {}
+}`
+
 
 var selfsignedDummykey = `-----BEGIN RSA PRIVATE KEY----- 
 MIIEpAIBAAKCAQEA8Gl2x9KsmqwdmZd+BdZYtDWHNRXtPd/kwiR6luU+4w76T+9m

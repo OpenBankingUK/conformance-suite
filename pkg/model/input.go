@@ -402,7 +402,7 @@ func (i *Input) generateJWSSignature(ctx *Context, alg jwt.SigningMethod) (strin
 		logrus.Warn("cannot get certificate DN: ", err.Error())
 	}
 
-	issuer = "C=GB,O=OpenBanking,OU=0015800001041RdAAI,CN=4XQsc1dvWnggAqjZLV3sH2"
+	issuer = "C=GB, O=OpenBanking, OU=0015800001041RdAAI, CN=4XQsc1dvWnggAqjZLV3sH2"
 	logrus.Tracef("kid:%s iss:%s\n", kid, issuer)
 
 	//fmt.Printf("kid:%s iss:%s\n", kid, issuer)
@@ -420,11 +420,11 @@ func (i *Input) generateJWSSignature(ctx *Context, alg jwt.SigningMethod) (strin
 			"crit":                          []string{"b64", "http://openbanking.org.uk/iat", "http://openbanking.org.uk/iss", "http://openbanking.org.uk/tan"},
 		},
 		Claims: p,
-		Method: jwt.SigningMethodRS256,
-		//Method: jwt.SigningMethodPS256.SigningMethodRSA,
+		Method: alg,
 	}
 
-	tokenString, err := tok.SignedString(cert.PrivateKey()) // sign the token - get as encoded string
+	//tokenString, err := tok.SignedString(cert.PrivateKey()) // sign the token - get as encoded string
+	tokenString, err := SignedString(&tok, cert.PrivateKey()) // sign the token - get as encoded string
 
 	logrus.Tracef("jws is := \n%v\n", tokenString)
 	fmt.Printf("jws is := \n%v\n", tokenString)
@@ -438,37 +438,41 @@ func (i *Input) generateJWSSignature(ctx *Context, alg jwt.SigningMethod) (strin
 	return detachedJWS, nil
 }
 
-func (i *Input) generateDummyJWS(ctx *Context, alg jwt.SigningMethod) (string, error) {
-	uuid := uuid.New()
-	claims := jwt.MapClaims{}
-	claims["iss"] = "dummyjwt"
-	claims["sub"] = "dummySubject"
-	claims["aud"] = "theworld"
-	claims["iat"] = time.Now().Unix()
-	claims["exp"] = time.Now().Add(time.Minute * time.Duration(60)).Unix()
-	claims["jti"] = uuid
-	claims["nonce"] = uuid
-
-	token := jwt.NewWithClaims(alg, claims) // create new token
-
-	cert, err := certFromContext(ctx)
-	if err != nil {
-		return "", i.AppErr(errors.Wrap(err, "Create certificate from context").Error())
+// SignedString Get the complete, signed token for jws usage
+func SignedString(t *jwt.Token, key interface{}) (string, error) {
+	var sig, sstr string
+	var err error
+	if sstr, err = SigningString(t); err != nil {
+		return "", err
 	}
-
-	modulus := cert.PublicKey().N.Bytes()
-	modulusBase64 := base64.RawURLEncoding.EncodeToString(modulus)
-	token.Header["kid"], err = calcKid(modulusBase64)
-	if err != nil {
-		return "", i.AppErr(fmt.Sprintf("error calculating kid: %s", err.Error()))
+	if sig, err = t.Method.Sign(sstr, key); err != nil {
+		return "", err
 	}
+	return strings.Join([]string{sstr, sig}, "."), nil
+}
 
-	tokenString, err := token.SignedString(cert.PrivateKey()) // sign the token - get as encoded string
-	if err != nil {
-		return "", i.AppErr(fmt.Sprintf("error siging jwt: %s", err.Error()))
+// SigningString
+func SigningString(t *jwt.Token) (string, error) {
+	var err error
+	parts := make([]string, 2)
+	for i := range parts {
+		var jsonValue []byte
+		if i == 0 {
+			if jsonValue, err = json.Marshal(t.Header); err != nil {
+				return "", err
+			}
+		} else {
+			if jsonValue, err = json.Marshal(t.Claims); err != nil {
+				return "", err
+			}
+		}
+		if i == 0 {
+			parts[i] = jwt.EncodeSegment(jsonValue)
+		} else {
+			parts[i] = string(jsonValue)
+		}
 	}
-	logrus.StandardLogger().Debugf("\nCreated Dummy JWT:\n-------------\n%s\n", tokenString)
-	return tokenString, nil
+	return strings.Join(parts, "."), nil
 }
 
 func calcKid(modulus string) (string, error) {
