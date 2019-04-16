@@ -8,11 +8,14 @@ import (
 	"fmt"
 	"io"
 	"net/url"
+	"regexp"
 	"strings"
 	"time"
 
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/authentication"
 	"github.com/pkg/errors"
+	"github.com/tdewolff/minify/v2"
+	minjson "github.com/tdewolff/minify/v2/json"
 
 	"github.com/google/uuid"
 	"github.com/sirupsen/logrus"
@@ -77,6 +80,7 @@ func (i *Input) CreateRequest(tc *TestCase, ctx *Context) (*resty.Request, error
 			return nil, err
 		}
 		i.RequestBody = body
+		logrus.Tracef("setting resty body to: %s", body)
 		req.SetBody(body)
 	}
 
@@ -276,7 +280,16 @@ func (i *Input) getBody(_ *resty.Request, ctx *Context) (string, error) {
 		}
 		value = val2
 	}
-	return value, nil
+
+	m := minify.New()
+	m.AddFuncRegexp(regexp.MustCompile("[/+]json$"), minjson.Minify)
+	minifiedbody, err := m.String("application/json", value)
+	if err != nil {
+		return "", err
+	}
+	logrus.Tracef("minified body: %s", minifiedbody)
+	i.RequestBody = minifiedbody
+	return minifiedbody, nil
 }
 
 // AppMsg - application level trace
@@ -403,7 +416,9 @@ func (i *Input) generateJWSSignature(ctx *Context, alg jwt.SigningMethod) (strin
 	}
 
 	issuer = "C=GB, O=OpenBanking, OU=0015800001041RdAAI, CN=4XQsc1dvWnggAqjZLV3sH2"
-	logrus.Tracef("kid:%s iss:%s\n", kid, issuer)
+	issuer = "C=GB, O=OpenBanking, OU=0015800001041RbAAI, CN=REfZKo7zN2IeE0X2RFGTb4"
+
+	logrus.Tracef("----\nkid:%s\n iss:%s\n----\n", kid, issuer)
 
 	//fmt.Printf("kid:%s iss:%s\n", kid, issuer)
 

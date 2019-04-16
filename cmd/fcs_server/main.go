@@ -145,6 +145,7 @@ func initConfig() {
 	}
 
 	resty.SetDebug(viper.GetBool("log_http_trace"))
+	resty.SetOutputDirectory("/home/julianc/restylog")
 
 	printConfigurationFlags()
 }
