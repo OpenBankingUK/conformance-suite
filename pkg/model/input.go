@@ -329,7 +329,7 @@ func (i *Input) Clone() Input {
 	return in
 }
 
-func certFromContext(ctx *Context) (authentication.Certificate, error) {
+func signingCertFromContext(ctx *Context) (authentication.Certificate, error) {
 	privKey, err := ctx.GetString("signingPrivate")
 	if err != nil {
 		return nil, errors.New("input, couldn't find `SigningPrivate` in context")
@@ -373,7 +373,7 @@ func (i *Input) generateSignedJWT(ctx *Context, alg jwt.SigningMethod) (string, 
 
 	token := jwt.NewWithClaims(alg, claims) // create new token
 
-	cert, err := certFromContext(ctx)
+	cert, err := signingCertFromContext(ctx)
 	if err != nil {
 		return "", i.AppErr(errors.Wrap(err, "Create certificate from context").Error())
 	}
@@ -408,7 +408,7 @@ func (i *Input) generateJWSSignature(ctx *Context, alg jwt.SigningMethod) (strin
 		return "", err
 	}
 
-	cert, err := certFromContext(ctx)
+	cert, err := signingCertFromContext(ctx)
 	if err != nil {
 		return "", err
 	}
