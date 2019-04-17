@@ -517,10 +517,12 @@ type consentIDTok struct {
 	Token obintentID `json:"id_token,omitempty"`
 }
 
-// Initial implementation of JWT creation with algorithm 'None'
-// Used only to support the PSU consent URL generation for headless consent flow
 func (i *Input) generateUnsignedJWT() (string, error) {
 	claims := jwt.MapClaims{}
+	claims["iss"] = i.Claims["iss"]
+	claims["scope"] = i.Claims["scope"]
+	claims["aud"] = i.Claims["aud"]
+	claims["redirect_uri"] = i.Claims["redirect_url"]
 
 	consentClaim := consentClaims{Essential: true, Value: i.Claims["consentId"]}
 	myident := obintentID{IntentID: consentClaim}
