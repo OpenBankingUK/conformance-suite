@@ -2,13 +2,19 @@ package model
 
 import (
 	"crypto/tls"
+	"crypto/x509"
 	"encoding/json"
+	"encoding/pem"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"net/url"
 	"os"
+	"strings"
 	"testing"
 	"time"
+
+	"github.com/davecgh/go-spew/spew"
 
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/authentication"
 	"github.com/dgrijalva/jwt-go"
@@ -454,9 +460,78 @@ func TestCertDNRetrieval(t *testing.T) {
 }
 
 func TestGenSig(t *testing.T) {
-	
+	transportCert, err := tls.LoadX509KeyPair("../../../certs/sig-xRWcKt4rSGqsIhqJ3xKC6DOjblY.pem", "../../../certs/4XQsc1dvWnggAqjZLV3sH2-sign.key")
+	if err != nil {
+		t.Logf("cannot get certs %s", err.Error())
+		return
+	}
+	fmt.Println("Good to go!")
+	x509 := transportCert.Leaf
+
+	subject := x509.Subject
+	fmt.Printf("subject %#v\n", subject)
+	c := subject.Country
+	o := subject.Organization
+	ou := subject.OrganizationalUnit
+	cn := subject.CommonName
+	dn := fmt.Sprintf("C=%s, O=%s, OU=%s, CN=%s", c, o, ou, cn)
+	fmt.Printf("DN is :%s\n" + dn)
+
 }
 
+func TestReadCerts(t *testing.T) {
+	certPEMBlock, err := ioutil.ReadFile("../../../certs/sig-xRWcKt4rSGqsIhqJ3xKC6DOjblY.pem")
+	if err != nil {
+		fmt.Println(err.Error())
+	}
+	var cert tls.Certificate
+	var skippedBlockTypes []string
+	for {
+		var certDERBlock *pem.Block
+		certDERBlock, certPEMBlock = pem.Decode(certPEMBlock)
+		if certDERBlock == nil {
+			break
+		}
+		if certDERBlock.Type == "CERTIFICATE" {
+			cert.Certificate = append(cert.Certificate, certDERBlock.Bytes)
+		} else {
+			skippedBlockTypes = append(skippedBlockTypes, certDERBlock.Type)
+		}
+	}
+	if len(cert.Certificate) == 0 {
+		if len(skippedBlockTypes) == 0 {
+			fmt.Print("tls: failed to find any PEM data in certificate input")
+		}
+		if len(skippedBlockTypes) == 1 && strings.HasSuffix(skippedBlockTypes[0], "PRIVATE KEY") {
+			fmt.Print(errors.New("tls: failed to find certificate PEM data in certificate input, but did find a private key; PEM inputs may have been switched"))
+		}
+		fmt.Print(fmt.Errorf("tls: failed to find \"CERTIFICATE\" PEM block in certificate input after skipping PEM blocks of the following types: %v", skippedBlockTypes))
+	}
+	spew.Dump(cert)
+
+}
+
+func TestLoadX509Cert(t *testing.T) {
+	cf, err := ioutil.ReadFile("../../../certs/sig-xRWcKt4rSGqsIhqJ3xKC6DOjblY.pem")
+	if err != nil {
+		fmt.Println("cfload:", err.Error())
+		return
+	}
+	cpb, _ := pem.Decode(cf)
+	crt, err := x509.ParseCertificate(cpb.Bytes)
+	if err != nil {
+		t.Logf("cannont parse cert %s", err.Error())
+		return
+	}
+	subject := crt.Subject
+	c := subject.Country[0]
+	o := subject.Organization[0]
+	ou := subject.OrganizationalUnit[0]
+	cn := subject.CommonName
+	dn := fmt.Sprintf("C=%s, O=%s, OU=%s, CN=%s", c, o, ou, cn)
+	fmt.Printf("DN is\n %s \n", dn)
+
+}
 
 func loadSigningCert() (tls.Certificate, error) {
 	certSigning, err := ioutil.ReadFile("../../../certstore/testcertSigning.pem")
@@ -543,7 +618,6 @@ var paymentPayload = `{
 	},
 	"Risk": {}
 }`
-
 
 var selfsignedDummykey = `-----BEGIN RSA PRIVATE KEY----- 
 MIIEpAIBAAKCAQEA8Gl2x9KsmqwdmZd+BdZYtDWHNRXtPd/kwiR6luU+4w76T+9m

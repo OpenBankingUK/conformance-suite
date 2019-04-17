@@ -94,8 +94,6 @@ func (c *Context) Delete(delKey string) {
 	delete(*c, delKey)
 }
 
-var secureDebug = false
-
 // DumpContext - send the contents of a context to a logger
 func (c *Context) DumpContext(text ...string) {
 	if len(text) > 0 {
@@ -111,12 +109,9 @@ func (c *Context) DumpContext(text ...string) {
 	} else {
 		for k, v := range *c {
 			if k == "client_secret" || k == "basic_authentication" || k == "signingPublic" || k == "signingPrivate" { // skip potentially sensitive fields - likely need to be more robust
-				if secureDebug {
-					continue
-				}
+				continue
 			}
 			logrus.StandardLogger().Tracef("[Context] %s:%v\n", k, v)
 		}
 	}
-	secureDebug = true
 }

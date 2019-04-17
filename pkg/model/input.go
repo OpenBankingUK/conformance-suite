@@ -133,7 +133,7 @@ func (i *Input) setClaims(tc *TestCase, ctx *Context) error {
 			i.AppMsg(fmt.Sprintf("jwt consent Token: %s", token))
 
 			authEndpoint, _ := ctx.Get("authorisation_endpoint")
-			consent := consentUrl(authEndpoint.(string), i.Claims, token)
+			consent := consentURL(authEndpoint.(string), i.Claims, token)
 
 			tc.Input.Endpoint = consent           // Result - set jwt token in endpoint url
 			ctx.PutString("consent_url", consent) // make consent available in context
@@ -189,7 +189,7 @@ func (i *Input) generateRequestToken(ctx *Context) (string, error) {
 	return token, err
 }
 
-func consentUrl(authEndpoint string, claims map[string]string, token string) string {
+func consentURL(authEndpoint string, claims map[string]string, token string) string {
 	queryString := url.Values{}
 	queryString.Set("client_id", claims["iss"])
 	queryString.Set("response_type", claims["responseType"])
@@ -265,7 +265,7 @@ func (i *Input) createJWSDetachedSignature(ctx *Context) error {
 
 }
 
-func (i *Input) getBody(_ *resty.Request, ctx *Context) (string, error) {
+func (i *Input) getBody(req *resty.Request, ctx *Context) (string, error) {
 	value := i.RequestBody
 	for {
 		val2, err := replaceContextField(value, ctx)
@@ -289,6 +289,7 @@ func (i *Input) getBody(_ *resty.Request, ctx *Context) (string, error) {
 	}
 	logrus.Tracef("minified body: %s", minifiedbody)
 	i.RequestBody = minifiedbody
+	req.SetBody(minifiedbody)
 	return minifiedbody, nil
 }
 
@@ -400,8 +401,12 @@ func (p payload) Valid() error {
 
 func (i *Input) generateJWSSignature(ctx *Context, alg jwt.SigningMethod) (string, error) {
 
-	p := payload{}
-	p = []byte(i.RequestBody)
+	m := minify.New()
+	m.AddFuncRegexp(regexp.MustCompile("[/+]json$"), minjson.Minify)
+	minifiedBody, err := m.String("application/json", i.RequestBody)
+	if err != nil {
+		return "", err
+	}
 
 	cert, err := certFromContext(ctx)
 	if err != nil {
@@ -415,12 +420,12 @@ func (i *Input) generateJWSSignature(ctx *Context, alg jwt.SigningMethod) (strin
 		logrus.Warn("cannot get certificate DN: ", err.Error())
 	}
 
-	issuer = "C=GB, O=OpenBanking, OU=0015800001041RdAAI, CN=4XQsc1dvWnggAqjZLV3sH2"
-	issuer = "C=GB, O=OpenBanking, OU=0015800001041RbAAI, CN=REfZKo7zN2IeE0X2RFGTb4"
-
-	logrus.Tracef("----\nkid:%s\n iss:%s\n----\n", kid, issuer)
-
-	//fmt.Printf("kid:%s iss:%s\n", kid, issuer)
+	logrus.WithFields(logrus.Fields{
+		"kid":    kid,
+		"issuer": issuer,
+		"alg":    alg.Alg(),
+		"claims": minifiedBody,
+	}).Trace("jws signature creation")
 
 	tok := jwt.Token{
 		Header: map[string]interface{}{
@@ -434,30 +439,25 @@ func (i *Input) generateJWSSignature(ctx *Context, alg jwt.SigningMethod) (strin
 			"alg":                           alg.Alg(),
 			"crit":                          []string{"b64", "http://openbanking.org.uk/iat", "http://openbanking.org.uk/iss", "http://openbanking.org.uk/tan"},
 		},
-		Claims: p,
 		Method: alg,
 	}
 
-	//tokenString, err := tok.SignedString(cert.PrivateKey()) // sign the token - get as encoded string
-	tokenString, err := SignedString(&tok, cert.PrivateKey()) // sign the token - get as encoded string
-
-	logrus.Tracef("jws is := \n%v\n", tokenString)
-	fmt.Printf("jws is := \n%v\n", tokenString)
+	tokenString, err := SignedString(&tok, cert.PrivateKey(), minifiedBody) // sign the token - get as encoded string
 
 	parts := strings.Split(tokenString, ".")
 	detachedJWS := parts[0] + ".." + parts[2]
 
-	logrus.Tracef("jws detached signature is := \n%v\n", detachedJWS)
-	fmt.Printf("jws detached signature is := \n%v\n", detachedJWS)
+	logrus.Tracef("jws:  %v", tokenString)
+	logrus.Tracef("detached jws: %v", detachedJWS)
 
 	return detachedJWS, nil
 }
 
 // SignedString Get the complete, signed token for jws usage
-func SignedString(t *jwt.Token, key interface{}) (string, error) {
+func SignedString(t *jwt.Token, key interface{}, body string) (string, error) {
 	var sig, sstr string
 	var err error
-	if sstr, err = SigningString(t); err != nil {
+	if sstr, err = SigningString(t, body); err != nil {
 		return "", err
 	}
 	if sig, err = t.Method.Sign(sstr, key); err != nil {
@@ -466,8 +466,8 @@ func SignedString(t *jwt.Token, key interface{}) (string, error) {
 	return strings.Join([]string{sstr, sig}, "."), nil
 }
 
-// SigningString
-func SigningString(t *jwt.Token) (string, error) {
+// SigningString -
+func SigningString(t *jwt.Token, body string) (string, error) {
 	var err error
 	parts := make([]string, 2)
 	for i := range parts {
@@ -477,9 +477,7 @@ func SigningString(t *jwt.Token) (string, error) {
 				return "", err
 			}
 		} else {
-			if jsonValue, err = json.Marshal(t.Claims); err != nil {
-				return "", err
-			}
+			jsonValue = []byte(body)
 		}
 		if i == 0 {
 			parts[i] = jwt.EncodeSegment(jsonValue)

@@ -2,6 +2,7 @@ module bitbucket.org/openbankingteam/conformance-suite
 
 require (
 	github.com/BurntSushi/toml v0.3.1 // indirect
+	github.com/davecgh/go-spew v1.1.1
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/go-openapi/errors v0.17.2 // indirect
 	github.com/go-openapi/loads v0.17.2
