@@ -15,9 +15,15 @@ To provide feedback, please use the public [issue tracker](https://bitbucket.org
 ## Release Notes 
 * * *
 
+### v1.1.4 (17th April 2019)
+
+Release v1.1.4 addresses known issues with PIS payment message signing. **(recommended)**.
+
+[Full Release Notes](docs/releases/v1.1.4.md) (v1.1.4.md)
+
 ### v1.1.1 (8th April 2019)
 
-Release v1.1.1 addresses permission mapping issues and other bugs following feedback from users at the OBIE Functional Workshop. **(recommended)**.
+Release v1.1.1 addresses permission mapping issues and other bugs following feedback from users at the OBIE Functional Workshop.
 
 [Full Release Notes](docs/releases/v1.1.1.md) (v1.1.1.md)
 
