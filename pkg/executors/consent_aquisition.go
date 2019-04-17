@@ -242,8 +242,8 @@ func exchangeCodeForToken(code string, scope string, ctx *model.Context, logger 
 		"function": "exchangeCodeForToken",
 		"code":     code,
 		"scope":    scope,
-		"ctx":      ctx,
 	})
+	ctx.DumpContext()
 
 	basicAuth, err := ctx.GetString("basic_authentication")
 	if err != nil {

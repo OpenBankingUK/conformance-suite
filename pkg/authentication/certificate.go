@@ -6,6 +6,9 @@ import (
 	"crypto/rsa"
 	"crypto/sha256"
 	"crypto/tls"
+	"crypto/x509"
+	"encoding/pem"
+	"fmt"
 
 	jwt "github.com/dgrijalva/jwt-go"
 	"github.com/pkg/errors"
@@ -17,13 +20,15 @@ type Certificate interface {
 	PublicKey() *rsa.PublicKey
 	PrivateKey() *rsa.PrivateKey
 	TLSCert() tls.Certificate
+	DN() (string, error)
 }
 
 // certificate implements Certificate
 type certificate struct {
-	publicKey  *rsa.PublicKey
-	privateKey *rsa.PrivateKey
-	tlsCert    tls.Certificate
+	publicKey     *rsa.PublicKey
+	privateKey    *rsa.PrivateKey
+	tlsCert       tls.Certificate
+	publicCertPem []byte
 }
 
 // NewCertificate - create new Certificate.
@@ -38,6 +43,7 @@ func NewCertificate(publicKeyPem, privateKeyPem string) (Certificate, error) {
 	if err != nil {
 		return nil, errors.Wrap(err, "error with public key")
 	}
+	publicPem := []byte(publicKeyPem)
 
 	privateKey, err := jwt.ParseRSAPrivateKeyFromPEM([]byte(privateKeyPem))
 	if err != nil {
@@ -54,9 +60,10 @@ func NewCertificate(publicKeyPem, privateKeyPem string) (Certificate, error) {
 	}
 
 	return &certificate{
-		publicKey:  publicKey,
-		privateKey: privateKey,
-		tlsCert:    tlsCert,
+		publicKey:     publicKey,
+		privateKey:    privateKey,
+		tlsCert:       tlsCert,
+		publicCertPem: publicPem,
 	}, nil
 }
 
@@ -90,4 +97,22 @@ func validateKeys(publicKey *rsa.PublicKey, privateKey *rsa.PrivateKey) error {
 	}
 
 	return nil
+}
+
+func (c certificate) DN() (string, error) {
+
+	cpb, _ := pem.Decode(c.publicCertPem)
+	crt, err := x509.ParseCertificate(cpb.Bytes)
+	if err != nil {
+		logrus.Errorf("cannot parse cert %s", err.Error())
+		return "", err
+	}
+	subject := crt.Subject
+	co := subject.Country[0]
+	o := subject.Organization[0]
+	ou := subject.OrganizationalUnit[0]
+	cn := subject.CommonName
+	dn := fmt.Sprintf("C=%s, O=%s, OU=%s, CN=%s", co, o, ou, cn)
+
+	return dn, nil
 }

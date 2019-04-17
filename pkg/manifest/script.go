@@ -127,7 +127,7 @@ func GenerateTestCases(spec string, baseurl string, ctx *model.Context, endpoint
 		}
 
 		consents := []string{}
-		tc, err := testCaseBuilder(script, refs.References, localCtx, consents, baseurl)
+		tc, err := testCaseBuilder(script, refs.References, localCtx, consents, baseurl, specType)
 		if err != nil {
 			logger.WithFields(logrus.Fields{
 				"err": err,
@@ -206,14 +206,15 @@ func updateTestAuthenticationFromToken(tcs []model.TestCase, rts []RequiredToken
 	return tcs
 }
 
-func testCaseBuilder(s Script, refs map[string]Reference, ctx *model.Context, consents []string, baseurl string) (model.TestCase, error) {
+func testCaseBuilder(s Script, refs map[string]Reference, ctx *model.Context, consents []string, baseurl string, specType string) (model.TestCase, error) {
 	tc := model.MakeTestCase()
 	tc.ID = s.ID
 	tc.Name = s.Description
 
 	//TODO: make these more configurable - header also get set in buildInput Section
 	tc.Input.Headers["x-fapi-financial-id"] = "$x-fapi-financial-id"
-	tc.Input.Headers["x-fapi-interaction-id"] = "b4405450-febe-11e8-80a5-0fcebb1574e1"
+	// TODO: use automated interaction-id generation - one id per run - injected into context at journey
+	tc.Input.Headers["x-fapi-interaction-id"] = "c4405450-febe-11e8-80a5-0fcebb157400"
 	tc.Input.Headers["x-fcs-testcase-id"] = tc.ID
 	buildInputSection(s, &tc.Input)
 
@@ -254,6 +255,9 @@ func testCaseBuilder(s Script, refs map[string]Reference, ctx *model.Context, co
 		tc.Context.Delete("postData") // tidy context as bodydata potentially large
 	}
 
+	if specType == "payments" && tc.Input.Method == "POST" {
+		tc.Input.JwsSig = true
+	}
 	return tc, nil
 }
 
