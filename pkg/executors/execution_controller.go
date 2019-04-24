@@ -261,7 +261,6 @@ func (r *TestCaseRunner) setNotRunning() {
 
 func (r *TestCaseRunner) makeRuleCtx(ctx *model.Context) *model.Context {
 	ruleCtx := &model.Context{}
-	ruleCtx.Put("SigningCert", r.definition.SigningCert)
 	ruleCtx.PutContext(ctx)
 	return ruleCtx
 }

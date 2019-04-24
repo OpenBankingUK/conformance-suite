@@ -190,3 +190,30 @@ func filterTestsBasedOnDiscoveryEndpointsPlayground(scripts Scripts, endpoints [
 
 	return myscripts, nil
 }
+
+func TestPaymentTestCaseCreatino(t *testing.T) {
+	ctx := &model.Context{
+		"consent_id":                           "aac-fee2b8eb-ce1b-48f1-af7f-dc8f576d53dc",
+		"xchange_code":                         "10e9d80b-10d4-4abd-9fe0-15789cc512b5",
+		"baseurl":                              "https://matls-sso.openbankingtest.org.uk",
+		"access_token":                         "18d5a754-0b76-4a8f-9c68-dc5caaf812e2",
+		"client_id":                            "12312",
+		"scope":                                "AuthoritiesReadAccess ASPSPReadAccess TPPReadAll",
+		"authorisation_endpoint":               "https://example.com/authorisation",
+		"OB-301-DOP-100300-ConsentId":          "myconsentid",
+		"OB-301-DOP-100600-DomesticPaymentIdx": "yourpaymentid",
+		"creditorIdentification":               "1231231231",
+		"thisCurrency":                         "GBP",
+		"creditorScheme":                       "default",
+	}
+
+	tests, err := GenerateTestCases(paymentsSwaggerLocation31, "http://mybaseurl", ctx, readDiscovery())
+	assert.Nil(t, err)
+	fmt.Printf("we have %d tests\n", len(tests))
+	for _, v := range tests {
+		if v.ID == "OB-301-DOP-100700" {
+			dumpJSON(v)
+		}
+	}
+
+}

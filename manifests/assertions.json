@@ -108,6 +108,15 @@
         }]
       }
     },
+    "OB3DOPFundsAvailable": {
+      "expect": {
+        "matches": [{
+          "JSON": "Data.FundsAvailable",
+          "Value": "true",
+          "detail": "Expected FundsAvailable to be set to 'true'"
+        }]
+      }
+    },
     "OB3IPAssertInternationalPaymentId": {
       "expect": {
         "matches": [{

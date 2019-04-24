@@ -256,7 +256,7 @@ func (i *Input) createJWSDetachedSignature(ctx *Context) error {
 		if err != nil {
 			return i.AppErr(fmt.Sprintf("error generating jws signature %s", err.Error()))
 		}
-		i.SetHeader("x-jws-signature", token)
+		i.SetHeader("x-jws-signature-disabled", token)
 
 		return nil
 	}

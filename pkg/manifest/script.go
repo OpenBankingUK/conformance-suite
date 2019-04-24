@@ -85,6 +85,17 @@ func (cj *ConsentJobs) Get(testid string) (model.TestCase, bool) {
 
 // add/get ....
 
+var includedTests = []string{"OB-301-DOP-100300", "OB-301-DOP-100400", "OB-301-DOP-100500", "OB-301-DOP-100600", "OB-301-DOP-100700"}
+
+func isDevelopmentIncludedTest(id string) bool {
+	for _, v := range includedTests {
+		if v == id {
+			return true
+		}
+	}
+	return false
+}
+
 // GenerateTestCases examines a manifest file, asserts file and resources definition, then builds the associated test cases
 func GenerateTestCases(spec string, baseurl string, ctx *model.Context, endpoints []discovery.ModelEndpoint) ([]model.TestCase, error) {
 	logger := logrus.WithFields(logrus.Fields{
@@ -116,22 +127,21 @@ func GenerateTestCases(spec string, baseurl string, ctx *model.Context, endpoint
 	ctx.DumpContext("Incoming Ctx")
 
 	tests := []model.TestCase{}
-	//for _, script := range scripts.Scripts {
+
 	for _, script := range filteredScripts.Scripts {
+		if !isDevelopmentIncludedTest(script.ID) {
+			continue
+		}
 		localCtx, err := script.processParameters(&refs, ctx)
 		if err != nil {
-			logger.WithFields(logrus.Fields{
-				"err": err,
-			}).Error("Error on processParameters")
+			logger.WithError(err).Error("Error on processParameters")
 			return nil, err
 		}
 
 		consents := []string{}
 		tc, err := testCaseBuilder(script, refs.References, localCtx, consents, baseurl, specType)
 		if err != nil {
-			logger.WithFields(logrus.Fields{
-				"err": err,
-			}).Error("Error on testCaseBuilder")
+			logger.WithError(err).Error("Error on testCaseBuilder")
 		}
 
 		localCtx.PutContext(ctx)
@@ -147,6 +157,7 @@ func (s *Script) processParameters(refs *References, resources *model.Context) (
 	localCtx := model.Context{}
 
 	for k, value := range s.Parameters {
+		contextValue := value
 		if k == "consentId" {
 			localCtx.PutString("consentId", value)
 			continue
@@ -159,9 +170,10 @@ func (s *Script) processParameters(refs *References, resources *model.Context) (
 			ref := refs.References[str]
 			val := ref.getValue()
 			if len(val) != 0 {
-				value = val
+				contextValue = val
 			}
 			if len(value) == 0 {
+				localCtx.PutString(k, contextValue)
 				continue
 			}
 		}
@@ -178,7 +190,6 @@ func (s *Script) processParameters(refs *References, resources *model.Context) (
 	if len(s.PermissionsExcluded) > 0 {
 		localCtx.PutStringSlice("permissions-excluded", s.PermissionsExcluded)
 	}
-
 	return &localCtx, nil
 }
 

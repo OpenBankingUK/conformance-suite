@@ -1,81 +1,5 @@
 {
   "scripts": [{
-      "description": "Domestic Payment consents fails when given an invalid ConsentId",
-      "id": "OB-301-DOP-100000",
-      "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937984109/Domestic+Payments+v3.1#DomesticPaymentsv3.1-POST/domestic-payment-consents",
-      "detail": "Checks that the resource correctly fails posting an invalid domestic payment consent.",
-      "parameters": {
-        "tokenRequestScope": "payments",
-        "consentId": "foobar",
-        "postData": "$minimalDomesticPaymentConsent",
-        "thisCurrency": "GBP"
-      },
-      "headers": {
-        "Content-Type": "application/json; charset=utf-8"
-      },
-      "body": "$postData",
-      "uri": "/domestic-payment-consents/$consentId",
-      "uriImplementation": "mandatory",
-      "resource": "DomesticPayment",
-      "asserts": [
-        "OB3GLOAssertOn404"
-      ],
-      "method": "post",
-      "schemaCheck": false
-    },
-    {
-      "description": "Domestic Payment consents is AwaitingAuthorisation",
-      "id": "OB-301-DOP-100100",
-      "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937984109/Domestic+Payments+v3.1#DomesticPaymentsv3.1-POST/domestic-payment-consents",
-      "detail": "Check Domestic Payment consents returns in AwaitingAuthorisation.",
-      "parameters": {
-        "tokenRequestScope": "payments",
-        "postData": "$minimalDomesticPaymentConsent",
-        "requestConsent": "false",
-        "thisCurrency": "GBP"
-      },
-      "headers": {
-        "Content-Type": "application/json; charset=utf-8"
-      },
-      "body": "$postData",
-      "uri": "/domestic-payment-consents",
-      "uriImplementation": "mandatory",
-      "resource": "DomesticPayment",
-      "asserts": [
-        "OB3GLOAssertOn201",
-        "OB3GLOFAPIHeader",
-        "OB3GLOAAssertConsentId"
-      ],
-      "keepContextOnSuccess": {
-        "name": "OB-301-DOP-100100-ConsentId",
-        "value": "Data.ConsentId"
-      },
-      "method": "post",
-      "schemaCheck": false
-    },
-    {
-      "description": "PISP Domestic Payment funds-confirmation for none authorised status consent status",
-      "id": "OB-301-DOP-100200",
-      "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937984109/Domestic+Payments+v3.1#DomesticPaymentsv3.1-GET/domestic-payment-consents/{ConsentId}/funds-confirmation",
-      "detail": "Check PISP Domestic Payment funds-confirmation is not Authorised, responds with a 400 (Bad Request) and a UK.OBIE.Resource.InvalidConsentStatus error code.",
-      "parameters": {
-        "tokenRequestScope": "payments",
-        "consentId": "$OB-301-DOP-100100-ConsentId"
-      },
-      "headers": {
-        "Content-Type": "application/json; charset=utf-8"
-      },
-      "uri": "/domestic-payment-consents/$consentId/funds-confirmation",
-      "uriImplementation": "mandatory",
-      "resource": "DomesticPayment",
-      "asserts": [
-        "OB3GLOAssertOn400",
-        "OB3DOPAssertInvalidConsentStatus"
-      ],
-      "method": "get",
-      "schemaCheck": false
-    },
-    {
       "description": "Domestic Payment consents succeeds with minimal data set with additional schema checks.",
       "id": "OB-301-DOP-100300",
       "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937984109/Domestic+Payments+v3.1#DomesticPaymentsv3.1-POST/domestic-payment-consents",
@@ -127,7 +51,7 @@
       "asserts": [
         "OB3GLOFAPIHeader",
         "OB3GLOAssertOn200",
-        "OB3DOPAssertAwaitingAuthorisation"
+        "OB3DOPAssertAuthorised"
       ],
       "method": "get",
       "schemaCheck": false
@@ -149,8 +73,8 @@
       "uriImplementation": "mandatory",
       "resource": "DomesticPayment",
       "asserts": [
-        "OB3GLOAssertOn400",
-        "OB3DOPAssertInvalidConsentStatus"
+        "OB3GLOAssertOn200",
+        "OB3DOPFundsAvailable"
       ],
       "method": "get",
       "schemaCheck": false
@@ -185,6 +109,100 @@
       },
       "method": "post",
       "schemaCheck": false
+    },
+
+    
+    {
+      "description": "PISP can retrieve the Domestic Payment status.",
+      "id": "OB-301-DOP-100700",
+      "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/999623013/Domestic+Payments+v3.1.1#DomesticPaymentsv3.1.1-GET/domestic-payments/{DomesticPaymentId}",
+      "detail": "Check PISP can retrieve the domestic-payment to check its status.",
+      "parameters": {
+        "tokenRequestScope": "payments",
+        "paymentId": "$OB-301-DOP-100600-DomesticPaymentId"
+      },
+      "headers": {
+        "Content-Type": "application/json; charset=utf-8"
+      },
+      "uri": "/domestic-payments/$paymentId",
+      "uriImplementation": "mandatory",
+      "resource": "DomesticPayment",
+      "asserts": [
+        "OB3GLOAssertOn200"
+      ],
+      "method": "get",
+      "schemaCheck": false
+    },
+    {
+      "description": "Domestic Scheduled Payment consents succeeds with minimal data set with additional schema checks.",
+      "id": "OB-301-DOP-100800",
+      "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/999786587/Domestic+Scheduled+Payment+v3.1.1#DomesticScheduledPaymentv3.1.1-POST/domestic-scheduled-payment-consents",
+      "detail": "Checks that the resource succeeds for a PISP posting a Domestic Scheduled Payment consent with a minimal data set and checks additional schema.",
+      "parameters": {
+        "tokenRequestScope": "payments",
+        "postData": "$minimalScheduledDomesticPaymentConsent",
+        "requestConsent": "true"
+      },
+      "body": "$postData",
+      "uri": "/domestic-scheduled-payment-consents",
+      "uriImplementation": "conditional",
+      "resource": "DomesticScheduledPayment",
+      "asserts": [
+        "OB3GLOAssertOn201",
+        "OB3GLOFAPIHeader",
+        "OB3DOPAssertAwaitingAuthorisation",
+        "OB3GLOAAssertConsentId"
+      ],
+      "keepContextOnSuccess": {
+        "name": "OB-301-DOP-100800-ConsentId",
+        "value": "Data.ConsentId"
+      },
+      "method": "post",
+      "schemaCheck": true
+    },
+    {
+      "description": "PISP can retrieve Domestic Scheduled Payment consent resource status.",
+      "id": "OB-301-DOP-100900",
+      "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/999786587/Domestic+Scheduled+Payment+v3.1.1#DomesticScheduledPaymentv3.1.1-GET/domestic-scheduled-payment-consents/{ConsentId}",
+      "detail": "Check PISP can retrieve Domestic Scheduled Payment consent resource status is Authorised.",
+      "parameters": {
+        "tokenRequestScope": "payments",
+        "consentId": "$OB-301-DOP-100800-ConsentId"
+      },
+      "uri": "/domestic-scheduled-payments/$consentId",
+      "uriImplementation": "conditional",
+      "resource": "DomesticScheduledPayment",
+      "asserts": [
+        "OB3GLOAssertOn200",
+        "OB3DOPAssertAuthorised"
+      ],
+      "method": "get",
+      "schemaCheck": false
+    },
+    {
+      "description": "Domestic Scheduled Payment succeeds with minimal data set with additional schema checks.",
+      "id": "OB-301-DOP-101000",
+      "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/999786587/Domestic+Scheduled+Payment+v3.1.1#DomesticScheduledPaymentv3.1.1-POST/domestic-scheduled-payments",
+      "detail": "Checks that the resource succeeds posting a domestic scheduled payment with a minimal data set and checks additional schema.",
+      "parameters": {
+        "tokenRequestScope": "payments",
+        "consentId": "$OB-301-DOP-100800-ConsentId",
+        "postData": "$minimalDomesticPaymentConsent"
+      },
+      "body": "$postData",
+      "uri": "/domestic-scheduled-payments",
+      "uriImplementation": "conditional",
+      "resource": "DomesticScheduledPayment",
+      "asserts": [
+        "OB3GLOAssertOn201"
+      ],
+      "keepContextOnSuccess": {
+        "name": "OB-301-DOP-101000-DomesticScheduledPaymentId",
+        "value": "Data.DomesticScheduledPaymentId"
+      },
+      "method": "post",
+      "schemaCheck": true
     }
+
   ]
 }
