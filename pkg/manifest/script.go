@@ -22,8 +22,8 @@ type Scripts struct {
 
 // Script represents a highlevel test definition
 type Script struct {
-	APIName string `json:"apiName"`
-	APIVersion string `json:"apiVersion"`
+	APIName             string            `json:"apiName"`
+	APIVersion          string            `json:"apiVersion"`
 	Description         string            `json:"description,omitempty"`
 	Detail              string            `json:"detail,omitempty"`
 	ID                  string            `json:"id,omitempty"`

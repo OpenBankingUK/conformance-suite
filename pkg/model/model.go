@@ -70,8 +70,8 @@ type TestCase struct {
 	Header     http.Header    `json:"-"`                 // ResponseHeader
 	Body       string         `json:"-"`                 // ResponseBody
 	Bearer     string         `json:"bearer,omitempty"`  // Bear token if presented
-	APIName string `json:"apiName"`
-	APIVersion string `json:"apiVersion"`
+	APIName    string         `json:"apiName"`
+	APIVersion string         `json:"apiVersion"`
 }
 
 // MakeTestCase builds an empty testcase

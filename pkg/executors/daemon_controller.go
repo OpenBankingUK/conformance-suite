@@ -25,7 +25,7 @@ type DaemonController interface {
 // allowing to stop and collect results/errors
 type daemonController struct {
 	results         []results.TestCase
-	resultsGrouped map[ResultKey][]results.TestCase
+	resultsGrouped  map[ResultKey][]results.TestCase
 	resultChan      chan results.TestCase
 	stopLock        *sync.Mutex
 	shouldStop      bool
@@ -48,7 +48,7 @@ func NewDaemonController(resultChan chan results.TestCase) *daemonController {
 		stopLock:        &sync.Mutex{},
 		shouldStop:      false,
 		isCompletedChan: make(chan bool, 1),
-		resultsGrouped: make(map[ResultKey][]results.TestCase),
+		resultsGrouped:  make(map[ResultKey][]results.TestCase),
 	}
 }
 
@@ -77,7 +77,7 @@ func (rc *daemonController) ShouldStop() bool {
 }
 
 type ResultKey struct {
-	APIName string
+	APIName    string
 	APIVersion string
 }
 
@@ -86,7 +86,7 @@ func (rc *daemonController) AddResult(result results.TestCase) {
 	rc.results = append(rc.results, result)
 	mpKey := ResultKey{
 		APIVersion: result.APIVersion,
-		APIName: result.API,
+		APIName:    result.API,
 	}
 	if _, ok := rc.resultsGrouped[mpKey]; !ok {
 		rc.resultsGrouped[mpKey] = make([]results.TestCase, 0)

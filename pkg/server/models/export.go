@@ -28,9 +28,9 @@ func (e ExportRequest) Validate() error {
 
 // ExportResults - Contains `ExportRequest` and results of test run.
 type ExportResults struct {
-	ExportRequest  ExportRequest                `json:"export_request"`
-	HasPassed      bool                         `json:"has_passed"`
-	Results        map[executors.ResultKey][]results.TestCase           `json:"results"`
-	Tokens         []events.AcquiredAccessToken `json:"tokens"`
-	DiscoveryModel discovery.Model              `json:"discovery_model"`
+	ExportRequest  ExportRequest                              `json:"export_request"`
+	HasPassed      bool                                       `json:"has_passed"`
+	Results        map[executors.ResultKey][]results.TestCase `json:"results"`
+	Tokens         []events.AcquiredAccessToken               `json:"tokens"`
+	DiscoveryModel discovery.Model                            `json:"discovery_model"`
 }

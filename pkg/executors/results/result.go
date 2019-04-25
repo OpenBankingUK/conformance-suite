@@ -2,13 +2,13 @@ package results
 
 // TestCase result for a run
 type TestCase struct {
-	Id      string   `json:"id"`
-	Pass    bool     `json:"pass"`
-	Metrics Metrics  `json:"metrics"`
-	Fail    []string `json:"fail,omitempty"`
-	Endpoint string `json:"endpoint"`
-	API string `json:"-"`
-	APIVersion string `json:"-"`
+	Id         string   `json:"id"`
+	Pass       bool     `json:"pass"`
+	Metrics    Metrics  `json:"metrics"`
+	Fail       []string `json:"fail,omitempty"`
+	Endpoint   string   `json:"endpoint"`
+	API        string   `json:"-"`
+	APIVersion string   `json:"-"`
 }
 
 // NewTestCaseFail returns a failed test
@@ -23,12 +23,12 @@ func NewTestCaseResult(id string, pass bool, metrics Metrics, errs []error, endp
 		reasons = append(reasons, err.Error())
 	}
 	return TestCase{
-		API: apiName,
+		API:        apiName,
 		APIVersion: apiVersion,
-		Id:      id,
-		Pass:    pass,
-		Metrics: metrics,
-		Fail:    reasons,
-		Endpoint: endpoint,
+		Id:         id,
+		Pass:       pass,
+		Metrics:    metrics,
+		Fail:       reasons,
+		Endpoint:   endpoint,
 	}
 }
