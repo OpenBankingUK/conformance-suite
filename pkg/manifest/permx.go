@@ -227,6 +227,11 @@ func MapTokensToPaymentTestCases(rt []RequiredTokens, tcs []model.TestCase, ctx 
 			test.InjectBearerToken("$payment_ccg_token")
 			continue
 		}
+		useCCGToken, _ := test.Context.Get("useCCGToken")
+		if useCCGToken == "yes" { // payment POSTs
+			test.InjectBearerToken("$payment_ccg_token")
+			continue
+		}
 		tokenName, isEmptyToken, err := getRequiredTokenForTestcase(rt, test.ID)
 		if err != nil {
 			logrus.Warnf("no token for testcase %s", test.ID)

@@ -8,6 +8,7 @@ import (
 	"regexp"
 	"sort"
 	"strings"
+	"time"
 
 	"github.com/sirupsen/logrus"
 
@@ -38,6 +39,7 @@ type Script struct {
 	URIImplemenation    string            `json:"uri_implemenation,omitempty"`
 	SchemaCheck         bool              `json:"schemaCheck,omitempty"`
 	ContextPut          map[string]string `json:"keepContextOnSuccess,omitempty"`
+	UseCCGToken         bool              `json:"useCCGToken,omitempty"`
 }
 
 // References - reference collection
@@ -83,19 +85,6 @@ func (cj *ConsentJobs) Get(testid string) (model.TestCase, bool) {
 
 }
 
-// add/get ....
-
-var includedTests = []string{"OB-301-DOP-100300", "OB-301-DOP-100400", "OB-301-DOP-100500", "OB-301-DOP-100600", "OB-301-DOP-100700"}
-
-func isDevelopmentIncludedTest(id string) bool {
-	for _, v := range includedTests {
-		if v == id {
-			return true
-		}
-	}
-	return false
-}
-
 // GenerateTestCases examines a manifest file, asserts file and resources definition, then builds the associated test cases
 func GenerateTestCases(spec string, baseurl string, ctx *model.Context, endpoints []discovery.ModelEndpoint) ([]model.TestCase, error) {
 	logger := logrus.WithFields(logrus.Fields{
@@ -129,9 +118,6 @@ func GenerateTestCases(spec string, baseurl string, ctx *model.Context, endpoint
 	tests := []model.TestCase{}
 
 	for _, script := range filteredScripts.Scripts {
-		if !isDevelopmentIncludedTest(script.ID) {
-			continue
-		}
 		localCtx, err := script.processParameters(&refs, ctx)
 		if err != nil {
 			logger.WithError(err).Error("Error on processParameters")
@@ -150,6 +136,7 @@ func GenerateTestCases(spec string, baseurl string, ctx *model.Context, endpoint
 
 		tests = append(tests, tc)
 	}
+
 	return tests, nil
 }
 
@@ -235,6 +222,9 @@ func testCaseBuilder(s Script, refs map[string]Reference, ctx *model.Context, co
 	tc.Context.PutContext(ctx)
 	tc.Context.PutString("x-fapi-financial-id", "$x-fapi-financial-id")
 	tc.Context.PutString("baseurl", baseurl)
+	if s.UseCCGToken {
+		tc.Context.PutString("useCCGToken", "yes") // used for payment posts
+	}
 
 	for _, a := range s.Asserts {
 		ref, exists := refs[a]
@@ -260,7 +250,6 @@ func testCaseBuilder(s Script, refs map[string]Reference, ctx *model.Context, co
 
 	ctx.PutContext(&tc.Context)
 	tc.ProcessReplacementFields(ctx, false)
-
 	_, exists := tc.Context.GetString("postData")
 	if exists == nil {
 		tc.Context.Delete("postData") // tidy context as bodydata potentially large
@@ -530,4 +519,9 @@ var accountsRegex = []pathRegex{
 	{"^/standing-orders$", "Get Orders"},
 	{"^/statements$", "Get Statements"},
 	{"^/transactions$", "Get Transactions"},
+}
+
+func timeNowMillis() string {
+	tm := time.Now().UnixNano() / int64(time.Millisecond)
+	return fmt.Sprintf("%d", tm)
 }

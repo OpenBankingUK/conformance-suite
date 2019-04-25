@@ -197,17 +197,15 @@ func consentURL(authEndpoint string, claims map[string]string, token string) str
 	queryString.Set("request", token)
 	queryString.Set("state", claims["state"])
 	queryString.Set("redirect_uri", claims["redirect_url"])
-	fmt.Printf("%s?%s", authEndpoint, queryString.Encode())
 
 	consentURL := fmt.Sprintf("%s?%s", authEndpoint, queryString.Encode())
-	logrus.StandardLogger().Debugf("Consent URL: %s", consentURL)
 
 	logrus.WithFields(logrus.Fields{
 		"claims":       claims,
 		"authEndpoint": authEndpoint,
 		"token":        token,
 		"consentURL":   consentURL,
-	}).Info("Generating consentURL")
+	}).Trace("Generating consentURL")
 
 	return consentURL
 }
@@ -389,7 +387,6 @@ func (i *Input) generateSignedJWT(ctx *Context, alg jwt.SigningMethod) (string, 
 	if err != nil {
 		return "", i.AppErr(fmt.Sprintf("error siging jwt: %s", err.Error()))
 	}
-	logrus.StandardLogger().Debugf("\nCreated JWT:\n-------------\n%s\n", tokenString)
 	return tokenString, nil
 }
 
@@ -407,7 +404,6 @@ func (i *Input) generateJWSSignature(ctx *Context, alg jwt.SigningMethod) (strin
 	if err != nil {
 		return "", err
 	}
-
 	cert, err := signingCertFromContext(ctx)
 	if err != nil {
 		return "", err
