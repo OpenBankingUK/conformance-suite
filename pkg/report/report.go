@@ -2,6 +2,7 @@ package report
 
 import (
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/executors/results"
 	"time"
 
 	internal_time "bitbucket.org/openbankingteam/conformance-suite/internal/pkg/time"
@@ -28,6 +29,13 @@ type Report struct {
 	CertifiedBy    CertifiedBy       `json:"certifiedBy"`              // The certifier of the report.
 	SignatureChain *[]SignatureChain `json:"signatureChain,omitempty"` // When Add digital signature is set this contains the signature chain.
 	Discovery      discovery.Model   `json:"-"`                        // Original used discovery model
+	APISpecification []APISpecification `json:"apiSpecification"`	   // API and version tested, along with test cases
+}
+
+type APISpecification struct {
+	Name string `json:"name"`
+	Version string `json:"version"`
+	Results []results.TestCase `json:"results"`
 }
 
 // Validate - called by `github.com/go-ozzo/ozzo-validation` to validate struct.
@@ -64,6 +72,17 @@ func NewReport(exportResults models.ExportResults) (Report, error) {
 	}
 	signatureChain := []SignatureChain{}
 
+	var apiSpecs []APISpecification
+
+	for k, v := range exportResults.Results {
+		apiSpec := APISpecification{
+			Name: k.APIName,
+			Version: k.APIVersion,
+			Results: v,
+		}
+		apiSpecs = append(apiSpecs, apiSpec)
+	}
+
 	return Report{
 		ID:             uuid.String(),
 		Created:        created,
@@ -73,5 +92,6 @@ func NewReport(exportResults models.ExportResults) (Report, error) {
 		CertifiedBy:    certifiedBy,
 		SignatureChain: &signatureChain,
 		Discovery:      exportResults.DiscoveryModel,
+		APISpecification: apiSpecs,
 	}, nil
 }

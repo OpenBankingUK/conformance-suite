@@ -14,6 +14,7 @@ type DaemonController interface {
 
 	AddResult(result results.TestCase)
 	AllResults() []results.TestCase
+	AllResultsGrouped() map[ResultKey][]results.TestCase
 	Results() <-chan results.TestCase
 
 	SetCompleted()
@@ -24,6 +25,7 @@ type DaemonController interface {
 // allowing to stop and collect results/errors
 type daemonController struct {
 	results         []results.TestCase
+	resultsGrouped map[ResultKey][]results.TestCase
 	resultChan      chan results.TestCase
 	stopLock        *sync.Mutex
 	shouldStop      bool
@@ -46,6 +48,7 @@ func NewDaemonController(resultChan chan results.TestCase) *daemonController {
 		stopLock:        &sync.Mutex{},
 		shouldStop:      false,
 		isCompletedChan: make(chan bool, 1),
+		resultsGrouped: make(map[ResultKey][]results.TestCase),
 	}
 }
 
@@ -73,15 +76,33 @@ func (rc *daemonController) ShouldStop() bool {
 	return shouldStop
 }
 
+type ResultKey struct {
+	APIName string
+	APIVersion string
+}
+
 // AddResult - add result.
 func (rc *daemonController) AddResult(result results.TestCase) {
 	rc.results = append(rc.results, result)
+	mpKey := ResultKey{
+		APIVersion: result.APIVersion,
+		APIName: result.API,
+	}
+	if _, ok := rc.resultsGrouped[mpKey]; !ok {
+		rc.resultsGrouped[mpKey] = make([]results.TestCase, 0)
+	}
+	rc.resultsGrouped[mpKey] = append(rc.resultsGrouped[mpKey], result)
 	rc.resultChan <- result
 }
 
 // AllResults - returns all the accumulated results.
 func (rc *daemonController) AllResults() []results.TestCase {
 	return rc.results
+}
+
+// AllResultsGrouped - returns all the accumulated results Grouped by the type `ResultKey`.
+func (rc *daemonController) AllResultsGrouped() map[ResultKey][]results.TestCase {
+	return rc.resultsGrouped
 }
 
 // ResultsChannel - return channel for receiving results.

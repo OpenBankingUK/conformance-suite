@@ -43,7 +43,7 @@ func (h exportHandlers) postExport(c echo.Context) error {
 
 	logger.WithField("request", request).Info("Exporting ...")
 
-	results := h.journey.Results().AllResults()
+	results := h.journey.Results().AllResultsGrouped()
 	tokens := h.journey.Events().AllAcquiredAccessToken()
 	discovery, err := h.journey.DiscoveryModel()
 	if err != nil {

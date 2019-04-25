@@ -22,6 +22,8 @@ type Scripts struct {
 
 // Script represents a highlevel test definition
 type Script struct {
+	APIName string `json:"apiName"`
+	APIVersion string `json:"apiVersion"`
 	Description         string            `json:"description,omitempty"`
 	Detail              string            `json:"detail,omitempty"`
 	ID                  string            `json:"id,omitempty"`
@@ -86,14 +88,14 @@ func (cj *ConsentJobs) Get(testid string) (model.TestCase, bool) {
 // add/get ....
 
 // GenerateTestCases examines a manifest file, asserts file and resources definition, then builds the associated test cases
-func GenerateTestCases(spec string, baseurl string, ctx *model.Context, endpoints []discovery.ModelEndpoint) ([]model.TestCase, error) {
+func GenerateTestCases(spec discovery.ModelAPISpecification, baseurl string, ctx *model.Context, endpoints []discovery.ModelEndpoint) ([]model.TestCase, error) {
 	logger := logrus.WithFields(logrus.Fields{
 		"function": "GenerateTestCases",
 	})
 
-	specType, err := GetSpecType(spec)
+	specType, err := GetSpecType(spec.SchemaVersion)
 	if err != nil {
-		return nil, errors.New("unknown specification " + spec)
+		return nil, errors.New("unknown specification " + spec.SchemaVersion)
 	}
 	logrus.Debug("GenerateManifestTestCases for spec type:" + specType)
 	scripts, refs, err := loadGenerationResources(specType)
@@ -127,7 +129,7 @@ func GenerateTestCases(spec string, baseurl string, ctx *model.Context, endpoint
 		}
 
 		consents := []string{}
-		tc, err := testCaseBuilder(script, refs.References, localCtx, consents, baseurl, specType)
+		tc, err := testCaseBuilder(script, refs.References, localCtx, consents, baseurl, specType, spec)
 		if err != nil {
 			logger.WithFields(logrus.Fields{
 				"err": err,
@@ -206,10 +208,12 @@ func updateTestAuthenticationFromToken(tcs []model.TestCase, rts []RequiredToken
 	return tcs
 }
 
-func testCaseBuilder(s Script, refs map[string]Reference, ctx *model.Context, consents []string, baseurl string, specType string) (model.TestCase, error) {
+func testCaseBuilder(s Script, refs map[string]Reference, ctx *model.Context, consents []string, baseurl string, specType string, apiSpec discovery.ModelAPISpecification) (model.TestCase, error) {
 	tc := model.MakeTestCase()
 	tc.ID = s.ID
 	tc.Name = s.Description
+	tc.APIName = apiSpec.Name
+	tc.APIVersion = apiSpec.Version
 
 	//TODO: make these more configurable - header also get set in buildInput Section
 	tc.Input.Headers["x-fapi-financial-id"] = "$x-fapi-financial-id"
