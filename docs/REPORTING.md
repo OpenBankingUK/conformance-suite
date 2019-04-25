@@ -33,6 +33,7 @@ TBD
 | status         | 1..1       | A status describing overall condition of the report.           | string(8)              | `Complete`                             | One of [`Pending`, `Complete`, `Error`]                                       |                                                                             |
 | signatureChain | 0..1       | TBD                                                            | `SignatureChain`       |                                        |                                                                               |                                                                             |
 | certifiedBy    | 1..1       | The certifier of the report.                                   | `CertifiedBy`          |                                        |                                                                               |                                                                             |
+| apiSpecification|0..n       | The name of API being specified, version and tests that were run.| Array of `APISpecification`   | See class definition.                  |                                                                               |                                                                             |
 
 ### `CertifiedBy`
 
@@ -50,3 +51,40 @@ TDB
 ## `Report` Example
 
 TDB
+
+## `APISpecification`
+
+| Name      | Occurrence | Description          | Class     | Value(s)                          |
+|-----------|------------|----------------------|-----------|-----------------------------------|
+| name      | 1..1       | Name of the API      | string    |
+| version   | 1..1       | Version of the API   | string    |
+| results   | 0..n       | Results of tests     | string    |
+
+### `APISpecification.Result`
+
+| Name      | Occurrence | Description          | Class     | Value(s)                          |
+|-----------|------------|----------------------|-----------|-----------------------------------|
+| id        | 1..1       | Test case ID         | string    ||
+| pass      | 1..1       | Test passed (true/false) | boolean ||
+| metrics   | 0..n       | Metrics (response time/size) | `Metrics` | See example |
+| endpoint  | 1..1       | Endpoint under test | string | ||
+
+### Example
+
+```json
+    {
+     "name": "Account and Transaction API Specification",
+     "version": "v3.1",
+     "results": [
+       {
+         "id": "OB-301-ACC-001000",
+         "pass": true,
+         "metrics": {
+           "response_time": 17000526,
+           "response_size": 168
+         },
+         "endpoint": "https://modelobank2018.o3bank.co.uk:4501/open-banking/v3.1/aisp/foobar"
+       }
+     ]
+    }
+```
