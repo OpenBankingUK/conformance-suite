@@ -15,7 +15,10 @@ import (
 )
 
 func TestGenerateTestCases(t *testing.T) {
-	tests, err := GenerateTestCases(accountSwaggerLocation31, "http://mybaseurl", &model.Context{}, readDiscovery())
+	apiSpec := discovery.ModelAPISpecification{
+		SchemaVersion: accountSwaggerLocation31,
+	}
+	tests, err := GenerateTestCases(apiSpec, "http://mybaseurl", &model.Context{}, readDiscovery())
 	assert.Nil(t, err)
 
 	perms, err := getAccountPermissions(tests)
@@ -32,7 +35,10 @@ func TestGenerateTestCases(t *testing.T) {
 }
 
 func TestPaymentPermissions(t *testing.T) {
-	tests, err := GenerateTestCases(paymentsSwaggerLocation30, "http://mybaseurl", &model.Context{}, readDiscovery())
+	apiSpec := discovery.ModelAPISpecification{
+		SchemaVersion: accountSwaggerLocation30,
+	}
+	tests, err := GenerateTestCases(apiSpec, "http://mybaseurl", &model.Context{}, readDiscovery())
 	fmt.Printf("we have %d tests\n", len(tests))
 	for _, v := range tests {
 		dumpJSON(v)
@@ -96,7 +102,10 @@ func TestPermissionFiteringAccounts(t *testing.T) {
 	}
 
 	endpoints := readDiscovery()
-	tests, err := GenerateTestCases(accountSwaggerLocation31, "http://mybaseurl", &ctx, endpoints)
+	apiSpec := discovery.ModelAPISpecification{
+		SchemaVersion: accountSwaggerLocation31,
+	}
+	tests, err := GenerateTestCases(apiSpec, "http://mybaseurl", &ctx, endpoints)
 	assert.Nil(t, err)
 	fmt.Printf("%d tests loaded", len(tests))
 

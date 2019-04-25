@@ -32,3 +32,9 @@ func NewTestCaseResult(id string, pass bool, metrics Metrics, errs []error, endp
 		Endpoint:   endpoint,
 	}
 }
+
+type ResultKey struct {
+	APIName    string
+	APIVersion string
+}
+
