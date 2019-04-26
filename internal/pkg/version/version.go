@@ -84,7 +84,6 @@ func (t tagList) Swap(i, j int) {
 	t[i], t[j] = t[j], t[i]
 }
 
-
 func getTags(body []byte) (*TagsAPIResponse, error) {
 	var s = new(TagsAPIResponse)
 	err := json.Unmarshal(body, &s)
