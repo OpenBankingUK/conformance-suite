@@ -11,7 +11,7 @@ import (
 	"strings"
 
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/client"
-	verVer "github.com/hashicorp/go-version"
+	hashiVer "github.com/hashicorp/go-version"
 
 	"github.com/pkg/errors"
 )
@@ -64,8 +64,8 @@ type TagsAPIResponse struct {
 }
 
 func (t Tag) LessThan(subject string) bool {
-	tv, _ := verVer.NewVersion(t.Name)
-	sv, _ := verVer.NewVersion(subject)
+	tv, _ := hashiVer.NewVersion(t.Name)
+	sv, _ := hashiVer.NewVersion(subject)
 	return tv.LessThan(sv)
 
 }
