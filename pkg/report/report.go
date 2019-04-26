@@ -2,6 +2,7 @@ package report
 
 import (
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/executors/results"
 	"time"
 
 	internal_time "bitbucket.org/openbankingteam/conformance-suite/internal/pkg/time"
@@ -20,14 +21,21 @@ const (
 
 // Report - The Report.
 type Report struct {
-	ID             string            `json:"id"`                       // A unique and immutable identifier used to identify the report. The v4 UUIDs generated conform to RFC 4122.
-	Created        string            `json:"created"`                  // Date and time when the report was created, formatted accorrding to RFC3339 (https://tools.ietf.org/html/rfc3339). Note RFC3339 is derived from ISO 8601 (https://en.wikipedia.org/wiki/ISO_8601).
-	Expiration     *string           `json:"expiration,omitempty"`     // Date and time when the report should not longer be accepted, formatted accorrding to RFC3339 (https://tools.ietf.org/html/rfc3339). Note RFC3339 is derived from ISO 8601 (https://en.wikipedia.org/wiki/ISO_8601).
-	Version        string            `json:"version"`                  // The current version of the report model used.
-	Status         Status            `json:"status"`                   // A status describing overall condition of the report.
-	CertifiedBy    CertifiedBy       `json:"certifiedBy"`              // The certifier of the report.
-	SignatureChain *[]SignatureChain `json:"signatureChain,omitempty"` // When Add digital signature is set this contains the signature chain.
-	Discovery      discovery.Model   `json:"-"`                        // Original used discovery model
+	ID               string             `json:"id"`                       // A unique and immutable identifier used to identify the report. The v4 UUIDs generated conform to RFC 4122.
+	Created          string             `json:"created"`                  // Date and time when the report was created, formatted accorrding to RFC3339 (https://tools.ietf.org/html/rfc3339). Note RFC3339 is derived from ISO 8601 (https://en.wikipedia.org/wiki/ISO_8601).
+	Expiration       *string            `json:"expiration,omitempty"`     // Date and time when the report should not longer be accepted, formatted accorrding to RFC3339 (https://tools.ietf.org/html/rfc3339). Note RFC3339 is derived from ISO 8601 (https://en.wikipedia.org/wiki/ISO_8601).
+	Version          string             `json:"version"`                  // The current version of the report model used.
+	Status           Status             `json:"status"`                   // A status describing overall condition of the report.
+	CertifiedBy      CertifiedBy        `json:"certifiedBy"`              // The certifier of the report.
+	SignatureChain   *[]SignatureChain  `json:"signatureChain,omitempty"` // When Add digital signature is set this contains the signature chain.
+	Discovery        discovery.Model    `json:"-"`                        // Original used discovery model
+	APISpecification []APISpecification `json:"apiSpecification"`         // API and version tested, along with test cases
+}
+
+type APISpecification struct {
+	Name    string             `json:"name"`
+	Version string             `json:"version"`
+	Results []results.TestCase `json:"results"`
 }
 
 // Validate - called by `github.com/go-ozzo/ozzo-validation` to validate struct.
@@ -64,14 +72,26 @@ func NewReport(exportResults models.ExportResults) (Report, error) {
 	}
 	signatureChain := []SignatureChain{}
 
+	var apiSpecs []APISpecification
+
+	for k, v := range exportResults.Results {
+		apiSpec := APISpecification{
+			Name:    k.APIName,
+			Version: k.APIVersion,
+			Results: v,
+		}
+		apiSpecs = append(apiSpecs, apiSpec)
+	}
+
 	return Report{
-		ID:             uuid.String(),
-		Created:        created,
-		Expiration:     &expiration,
-		Version:        Version,
-		Status:         StatusComplete,
-		CertifiedBy:    certifiedBy,
-		SignatureChain: &signatureChain,
-		Discovery:      exportResults.DiscoveryModel,
+		ID:               uuid.String(),
+		Created:          created,
+		Expiration:       &expiration,
+		Version:          Version,
+		Status:           StatusComplete,
+		CertifiedBy:      certifiedBy,
+		SignatureChain:   &signatureChain,
+		Discovery:        exportResults.DiscoveryModel,
+		APISpecification: apiSpecs,
 	}, nil
 }

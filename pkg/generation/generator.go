@@ -87,7 +87,7 @@ func (g generator) GenerateManifestTests(log *logrus.Entry, config GeneratorConf
 	tokens := map[string][]manifest.RequiredTokens{}
 
 	for _, item := range discovery.DiscoveryItems {
-		tcs, err := manifest.GenerateTestCases(item.APISpecification.SchemaVersion, item.ResourceBaseURI, ctx, item.Endpoints)
+		tcs, err := manifest.GenerateTestCases(item.APISpecification, item.ResourceBaseURI, ctx, item.Endpoints)
 		if err != nil {
 			log.Warnf("manifest testcase generation failed for %s", item.APISpecification.SchemaVersion)
 			continue
