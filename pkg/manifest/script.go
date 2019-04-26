@@ -257,6 +257,7 @@ func testCaseBuilder(s Script, refs map[string]Reference, ctx *model.Context, co
 
 	if specType == "payments" && tc.Input.Method == "POST" {
 		tc.Input.JwsSig = true
+		tc.Input.IdempotencyKey = true
 	}
 	return tc, nil
 }
