@@ -7,9 +7,11 @@ import (
 	"io/ioutil"
 	"net/http"
 	"regexp"
+	"sort"
 	"strings"
 
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/client"
+	verVer "github.com/hashicorp/go-version"
 
 	"github.com/pkg/errors"
 )
@@ -60,6 +62,28 @@ type Tag struct {
 type TagsAPIResponse struct {
 	TagList []Tag `json:"values"`
 }
+
+func (t Tag) LessThan(subject string) bool {
+	tv, _ := verVer.NewVersion(t.Name)
+	sv, _ := verVer.NewVersion(subject)
+	return tv.LessThan(sv)
+
+}
+
+type tagList []Tag
+
+func (t tagList) Len() int {
+	return len(t)
+}
+
+func (t tagList) Less(i, j int) bool {
+	return t[i].LessThan(t[j].Name)
+}
+
+func (t tagList) Swap(i, j int) {
+	t[i], t[j] = t[j], t[i]
+}
+
 
 func getTags(body []byte) (*TagsAPIResponse, error) {
 	var s = new(TagsAPIResponse)
@@ -156,7 +180,15 @@ func (v BitBucket) UpdateWarningVersion(version string) (string, bool, error) {
 			return errorMessageUI, false, fmt.Errorf("no Tags found")
 		}
 
-		latestTag := s.TagList[0].Name
+		// Convert the list of tags to tagList for sorting
+		var tagList tagList
+		for _, v := range s.TagList {
+			tagList = append(tagList, v)
+		}
+		sort.Sort(tagList)
+
+		// Get latest tag
+		latestTag := tagList[len(tagList)-1].Name
 
 		// Format version string to compare.
 		versionLocal, err := v.VersionFormatter(version)
