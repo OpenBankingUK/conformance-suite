@@ -259,7 +259,7 @@ func (i *Input) createJWSDetachedSignature(ctx *Context) error {
 		if err != nil {
 			return i.AppErr(fmt.Sprintf("error generating jws signature %s", err.Error()))
 		}
-		i.SetHeader("x-jws-signature-disabled", token)
+		i.SetHeader("x-jws-signature", token)
 
 		return nil
 	}
@@ -445,13 +445,18 @@ func (i *Input) generateJWSSignature(ctx *Context, alg jwt.SigningMethod) (strin
 
 	tokenString, err := SignedString(&tok, cert.PrivateKey(), minifiedBody) // sign the token - get as encoded string
 
-	parts := strings.Split(tokenString, ".")
-	detachedJWS := parts[0] + ".." + parts[2]
-
 	logrus.Tracef("jws:  %v", tokenString)
+	detachedJWS := splitJwsWithBody(tokenString)
 	logrus.Tracef("detached jws: %v", detachedJWS)
 
 	return detachedJWS, nil
+}
+
+func splitJwsWithBody(token string) string {
+	firstPart := token[:strings.IndexByte(token, '.')]
+	idx := strings.LastIndex(token, ".")
+	lastPart := token[idx:]
+	return firstPart + "." + lastPart
 }
 
 // SignedString Get the complete, signed token for jws usage

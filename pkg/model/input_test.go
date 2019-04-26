@@ -550,6 +550,16 @@ func loadSigningCert() (tls.Certificate, error) {
 	return cert, nil
 }
 
+func TestInputTest(t *testing.T) {
+	fmt.Println("Running...")
+	x := "123.1......45.789"
+	firstPart := x[:strings.IndexByte(x, '.')]
+	idx := strings.LastIndex(x, ".")
+	lastPart := x[idx:]
+	fmt.Printf("%s.%s\n", firstPart, lastPart)
+
+}
+
 var paymentTestCaseData100300 = []byte(`
 {
     "@id": "OB-301-DOP-100300",
