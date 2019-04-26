@@ -3,6 +3,7 @@ package executors
 import (
 	"encoding/json"
 	"fmt"
+
 	"github.com/pkg/errors"
 
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/manifest"
@@ -43,7 +44,6 @@ func AcquireHeadlessTokens(tests []model.TestCase, ctx *model.Context, definitio
 
 		localCtx := model.Context{}
 		localCtx.PutContext(ctx)
-		localCtx.Put("SigningCert", definition.SigningCert) // For RS256 Claim signing
 		permString := buildPermissionString(tokenGatherer.Perms)
 		if len(permString) == 0 {
 			continue

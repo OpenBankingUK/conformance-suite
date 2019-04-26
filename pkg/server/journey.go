@@ -195,9 +195,6 @@ func (wj *journey) TestCases() (generation.TestCasesRun, error) {
 			for k, v := range tokenMap {
 				wj.context.PutString(k, v)
 			}
-			logger.WithFields(logrus.Fields{
-				"context": fmt.Sprintf("%#v", wj.context),
-			}).Debug("Context updated ...")
 
 			wj.createTokenCollector(consentIds)
 		} else {
@@ -218,9 +215,6 @@ func (wj *journey) TestCases() (generation.TestCasesRun, error) {
 			for k, v := range tokenMap {
 				wj.context.PutString(k, v)
 			}
-			logger.WithFields(logrus.Fields{
-				"context": fmt.Sprintf("%#v", wj.context),
-			}).Debug("Context updated ...")
 
 			wj.allCollected = true
 		}
@@ -280,9 +274,6 @@ func (wj *journey) CollectToken(code, state, scope string) error {
 		}).Warn(`Setting 'access_token' because state == "Token001"`)
 		wj.context.PutString("access_token", accessToken) // tmp measure to get testcases running
 	}
-	logger.WithFields(logrus.Fields{
-		"context": fmt.Sprintf("%#v", wj.context),
-	}).Debug("Context updated ...")
 
 	return wj.collector.Collect(state, accessToken)
 }

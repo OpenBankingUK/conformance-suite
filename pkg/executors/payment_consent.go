@@ -32,7 +32,7 @@ func getPaymentConsents(tests []model.TestCase, definition RunDefinition, requir
 		consentItems = append(consentItems, tci)
 	}
 
-	logrus.Debugf("we have %d consentIds: %#v\n", len(consentItems), consentItems)
+	logrus.Debugf("we have %d consentIds: %#v", len(consentItems), consentItems)
 	return consentItems, err
 }
 
@@ -70,11 +70,12 @@ func runPaymentConsents(tcs []model.TestCase, rt []manifest.RequiredTokens, ctx 
 	}
 
 	bearerToken, err := localCtx.GetString("client_access_token")
+	ctx.PutString("payment_ccg_token", bearerToken) // store payment ccg token for later
 	if err != nil {
 		return nil, errors.New("Cannot get Token for consent client credentials grant: " + err.Error())
 	}
 
-	logrus.Tracef("runPaymentConsents:requiredTokens: %#v\n", rt)
+	logrus.Tracef("runPaymentConsents:requiredTokens: %#v", rt)
 
 	for k, v := range rt {
 		localCtx.PutString("token_name", v.Name)

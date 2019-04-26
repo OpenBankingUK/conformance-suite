@@ -32,14 +32,15 @@ import (
 // to the parent Rule which determine how to execute the requestion object. On execution an http response object
 // is received and passed back to the testcase for validation using the Expects object.
 type Input struct {
-	Method      string            `json:"method,omitempty"`     // http Method that this test case uses
-	Endpoint    string            `json:"endpoint,omitempty"`   // resource endpoint where the http object needs to be sent to get a response
-	Headers     map[string]string `json:"headers,omitempty"`    // Allows for provision of specific http headers
-	FormData    map[string]string `json:"formData,omitempty"`   // Allow for provision of http form data
-	RequestBody string            `json:"bodyData,omitempty"`   // Optional request body raw data
-	Generation  map[string]string `json:"generation,omitempty"` // Allows for different ways of generating testcases
-	Claims      map[string]string `json:"claims,omitempty"`     // collects claims for input strategies that require them
-	JwsSig      bool              `json:"jws,omitempty"`        // controls inclusion of x-jws-signature header
+	Method         string            `json:"method,omitempty"`      // http Method that this test case uses
+	Endpoint       string            `json:"endpoint,omitempty"`    // resource endpoint where the http object needs to be sent to get a response
+	Headers        map[string]string `json:"headers,omitempty"`     // Allows for provision of specific http headers
+	FormData       map[string]string `json:"formData,omitempty"`    // Allow for provision of http form data
+	RequestBody    string            `json:"bodyData,omitempty"`    // Optional request body raw data
+	Generation     map[string]string `json:"generation,omitempty"`  // Allows for different ways of generating testcases
+	Claims         map[string]string `json:"claims,omitempty"`      // collects claims for input strategies that require them
+	JwsSig         bool              `json:"jws,omitempty"`         // controls inclusion of x-jws-signature header
+	IdempotencyKey bool              `json:"idempotency,omitempty"` // specifices the inclusion of x-idempotency-key in the request
 }
 
 // CreateRequest is the main Input work horse which examines the various Input parameters and generates an
@@ -94,6 +95,10 @@ func (i *Input) CreateRequest(tc *TestCase, ctx *Context) (*resty.Request, error
 		} else {
 			return nil, errors.New("cannot apply jws signature to method that isn't POST")
 		}
+	}
+
+	if i.IdempotencyKey {
+		i.SetHeader("x-idempotency-key", tc.ID+"-"+makeMiliSecondStringTimestamp()) // initial trivial x-idempotency-key implementation
 	}
 
 	if err = i.setHeaders(req, ctx); err != nil {
@@ -197,17 +202,15 @@ func consentURL(authEndpoint string, claims map[string]string, token string) str
 	queryString.Set("request", token)
 	queryString.Set("state", claims["state"])
 	queryString.Set("redirect_uri", claims["redirect_url"])
-	fmt.Printf("%s?%s", authEndpoint, queryString.Encode())
 
 	consentURL := fmt.Sprintf("%s?%s", authEndpoint, queryString.Encode())
-	logrus.StandardLogger().Debugf("Consent URL: %s", consentURL)
 
 	logrus.WithFields(logrus.Fields{
 		"claims":       claims,
 		"authEndpoint": authEndpoint,
 		"token":        token,
 		"consentURL":   consentURL,
-	}).Info("Generating consentURL")
+	}).Trace("Generating consentURL")
 
 	return consentURL
 }
@@ -389,7 +392,6 @@ func (i *Input) generateSignedJWT(ctx *Context, alg jwt.SigningMethod) (string, 
 	if err != nil {
 		return "", i.AppErr(fmt.Sprintf("error siging jwt: %s", err.Error()))
 	}
-	logrus.StandardLogger().Debugf("\nCreated JWT:\n-------------\n%s\n", tokenString)
 	return tokenString, nil
 }
 
@@ -407,7 +409,6 @@ func (i *Input) generateJWSSignature(ctx *Context, alg jwt.SigningMethod) (strin
 	if err != nil {
 		return "", err
 	}
-
 	cert, err := signingCertFromContext(ctx)
 	if err != nil {
 		return "", err
@@ -444,13 +445,18 @@ func (i *Input) generateJWSSignature(ctx *Context, alg jwt.SigningMethod) (strin
 
 	tokenString, err := SignedString(&tok, cert.PrivateKey(), minifiedBody) // sign the token - get as encoded string
 
-	parts := strings.Split(tokenString, ".")
-	detachedJWS := parts[0] + ".." + parts[2]
-
 	logrus.Tracef("jws:  %v", tokenString)
+	detachedJWS := splitJwsWithBody(tokenString)
 	logrus.Tracef("detached jws: %v", detachedJWS)
 
 	return detachedJWS, nil
+}
+
+func splitJwsWithBody(token string) string {
+	firstPart := token[:strings.IndexByte(token, '.')]
+	idx := strings.LastIndex(token, ".")
+	lastPart := token[idx:]
+	return firstPart + "." + lastPart
 }
 
 // SignedString Get the complete, signed token for jws usage
@@ -566,4 +572,10 @@ func (i *Input) SetFormField(key, value string) {
 		i.FormData = map[string]string{}
 	}
 	i.FormData[key] = value
+}
+
+func makeMiliSecondStringTimestamp() string {
+	a := time.Now().UnixNano() / int64(time.Millisecond)
+	milliString := fmt.Sprintf("%d", a)
+	return milliString
 }
