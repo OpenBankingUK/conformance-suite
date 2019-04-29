@@ -4,6 +4,7 @@ import (
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/executors/events"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/executors/results"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/manifest"
 	"github.com/go-ozzo/ozzo-validation"
 )
 
@@ -32,4 +33,5 @@ type ExportResults struct {
 	Results        []results.TestCase           `json:"results"`
 	Tokens         []events.AcquiredAccessToken `json:"tokens"`
 	DiscoveryModel discovery.Model              `json:"discovery_model"`
+	Manifests      []manifest.Scripts           `json:"manifests"`
 }

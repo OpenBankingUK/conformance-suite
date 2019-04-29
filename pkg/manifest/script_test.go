@@ -15,7 +15,10 @@ import (
 )
 
 func TestGenerateTestCases(t *testing.T) {
-	tests, err := GenerateTestCases(accountSwaggerLocation31, "http://mybaseurl", &model.Context{}, readDiscovery())
+	specType, err := GetSpecType(accountSwaggerLocation31)
+	assert.Nil(t, err)
+	scripts, _, err := LoadGenerationResources(specType)
+	tests, err := GenerateTestCases(scripts, accountSwaggerLocation31, "http://mybaseurl", &model.Context{}, readDiscovery())
 	assert.Nil(t, err)
 
 	perms, err := getAccountPermissions(tests)
@@ -32,7 +35,10 @@ func TestGenerateTestCases(t *testing.T) {
 }
 
 func TestPaymentPermissions(t *testing.T) {
-	tests, err := GenerateTestCases(paymentsSwaggerLocation30, "http://mybaseurl", &model.Context{}, readDiscovery())
+	specType, err := GetSpecType(accountSwaggerLocation31)
+	assert.Nil(t, err)
+	scripts, _, err := LoadGenerationResources(specType)
+	tests, err := GenerateTestCases(scripts, paymentsSwaggerLocation30, "http://mybaseurl", &model.Context{}, readDiscovery())
 	fmt.Printf("we have %d tests\n", len(tests))
 	for _, v := range tests {
 		dumpJSON(v)
@@ -96,15 +102,14 @@ func TestPermissionFiteringAccounts(t *testing.T) {
 	}
 
 	endpoints := readDiscovery()
-	tests, err := GenerateTestCases(accountSwaggerLocation31, "http://mybaseurl", &ctx, endpoints)
-	assert.Nil(t, err)
-	fmt.Printf("%d tests loaded", len(tests))
-
-	scripts, _, err := loadGenerationResources("accounts")
+	scripts, _, err := LoadGenerationResources("accounts")
 	if err != nil {
 		fmt.Println("Error on loadGenerationResources")
 		return
 	}
+	tests, err := GenerateTestCases(scripts, accountSwaggerLocation31, "http://mybaseurl", &ctx, endpoints)
+	assert.Nil(t, err)
+	fmt.Printf("%d tests loaded", len(tests))
 
 	filteredScripts, err := filterTestsBasedOnDiscoveryEndpointsPlayground(scripts, endpoints)
 	if err != nil {

@@ -40,6 +40,8 @@ var (
 type Journey interface {
 	SetDiscoveryModel(discoveryModel *discovery.Model) (discovery.ValidationFailures, error)
 	DiscoveryModel() (discovery.Model, error)
+	SetManifests([]manifest.Scripts) error
+	Manifests() ([]manifest.Scripts, error)
 	TestCases() (generation.TestCasesRun, error)
 	CollectToken(code, state, scope string) error
 	AllTokenCollected() bool
@@ -66,6 +68,7 @@ type journey struct {
 	config                JourneyConfig
 	events                events.Events
 	permissions           map[string][]manifest.RequiredTokens
+	manifests             []manifest.Scripts
 }
 
 // NewJourney creates an instance for a user journey
@@ -81,6 +84,7 @@ func NewJourney(logger *logrus.Entry, generator generation.Generator, validator 
 		log:                   logger.WithField("module", "Journey"),
 		events:                events.NewEvents(),
 		permissions:           make(map[string][]manifest.RequiredTokens, 0),
+		manifests:             make([]manifest.Scripts, 0),
 	}
 }
 
@@ -127,6 +131,20 @@ func (wj *journey) DiscoveryModel() (discovery.Model, error) {
 	return *discoveryModel, nil
 }
 
+func (wj *journey) SetManifests(mfs []manifest.Scripts) error {
+	if mfs == nil {
+		wj.manifests = make([]manifest.Scripts, 0)
+		return nil
+	}
+
+	wj.manifests = mfs
+	return nil
+}
+
+func (wj *journey) Manifests() ([]manifest.Scripts, error) {
+	return wj.manifests, nil
+}
+
 func (wj *journey) TestCases() (generation.TestCasesRun, error) {
 	wj.journeyLock.Lock()
 	defer wj.journeyLock.Unlock()
@@ -157,7 +175,21 @@ func (wj *journey) TestCases() (generation.TestCasesRun, error) {
 		}
 
 		logger.Debug("generator.GenerateManifestTests ...")
+
 		wj.testCasesRun, wj.permissions = wj.generator.GenerateManifestTests(wj.log, config, discovery, &wj.context)
+
+		// Now specifically load the manifests of each test case into the journey
+		// so we can reference later.
+		var jms []manifest.Scripts
+		for _, tc := range wj.testCasesRun.TestCases {
+			s, err := manifest.LoadScripts(tc.Specification.Manifest)
+			if err != nil {
+				return generation.TestCasesRun{}, errors.Wrap(err, "loadScripts()")
+			}
+			jms = append(jms, s)
+		}
+		wj.SetManifests(jms)
+
 		logger.WithFields(logrus.Fields{
 			"len(wj.permissions)": len(wj.permissions),
 		}).Debug("manifest.RequiredTokens")

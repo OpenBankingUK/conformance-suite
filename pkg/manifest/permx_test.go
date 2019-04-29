@@ -9,7 +9,10 @@ import (
 )
 
 func TestPermx(t *testing.T) {
-	tests, err := GenerateTestCases(accountSwaggerLocation31, "http://mybaseurl", &model.Context{}, readDiscovery())
+	specType, err := GetSpecType(accountSwaggerLocation31)
+	assert.Nil(t, err)
+	scripts, _, err := LoadGenerationResources(specType)
+	tests, err := GenerateTestCases(scripts, accountSwaggerLocation31, "http://mybaseurl", &model.Context{}, readDiscovery())
 	assert.Nil(t, err)
 	testcasePermissions, err := getTestCasePermissions(tests)
 	assert.Nil(t, err)
@@ -19,7 +22,10 @@ func TestPermx(t *testing.T) {
 }
 
 func TestGetScriptConsentTokens(t *testing.T) {
-	tests, err := GenerateTestCases(accountSwaggerLocation31, "http://mybaseurl", &model.Context{}, readDiscovery())
+	specType, err := GetSpecType(accountSwaggerLocation31)
+	assert.Nil(t, err)
+	scripts, _, err := LoadGenerationResources(specType)
+	tests, err := GenerateTestCases(scripts, accountSwaggerLocation31, "http://mybaseurl", &model.Context{}, readDiscovery())
 	assert.Nil(t, err)
 	testcasePermissions, err := getTestCasePermissions(tests)
 	assert.Nil(t, err)

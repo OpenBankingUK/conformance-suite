@@ -86,7 +86,7 @@ func (cj *ConsentJobs) Get(testid string) (model.TestCase, bool) {
 // add/get ....
 
 // GenerateTestCases examines a manifest file, asserts file and resources definition, then builds the associated test cases
-func GenerateTestCases(spec string, baseurl string, ctx *model.Context, endpoints []discovery.ModelEndpoint) ([]model.TestCase, error) {
+func GenerateTestCases(scripts Scripts, spec string, baseurl string, ctx *model.Context, endpoints []discovery.ModelEndpoint) ([]model.TestCase, error) {
 	logger := logrus.WithFields(logrus.Fields{
 		"function": "GenerateTestCases",
 	})
@@ -96,7 +96,7 @@ func GenerateTestCases(spec string, baseurl string, ctx *model.Context, endpoint
 		return nil, errors.New("unknown specification " + spec)
 	}
 	logrus.Debug("GenerateManifestTestCases for spec type:" + specType)
-	scripts, refs, err := loadGenerationResources(specType)
+	_, refs, err := LoadGenerationResources(specType)
 	if err != nil {
 		logger.WithFields(logrus.Fields{
 			"err": err,
@@ -116,7 +116,6 @@ func GenerateTestCases(spec string, baseurl string, ctx *model.Context, endpoint
 	ctx.DumpContext("Incoming Ctx")
 
 	tests := []model.TestCase{}
-	//for _, script := range scripts.Scripts {
 	for _, script := range filteredScripts.Scripts {
 		localCtx, err := script.processParameters(&refs, ctx)
 		if err != nil {
@@ -291,7 +290,7 @@ func buildInputSection(s Script, i *model.Input) {
 	i.RequestBody = s.Body
 }
 
-func loadGenerationResources(specType string) (Scripts, References, error) {
+func LoadGenerationResources(specType string) (Scripts, References, error) {
 	assertions, err := loadAssertions()
 	if err != nil {
 		return Scripts{}, References{}, err
