@@ -9,6 +9,7 @@ import (
 	"regexp"
 	"sort"
 	"strings"
+	"time"
 
 	"github.com/sirupsen/logrus"
 
@@ -23,6 +24,8 @@ type Scripts struct {
 
 // Script represents a highlevel test definition
 type Script struct {
+	APIName             string            `json:"apiName"`
+	APIVersion          string            `json:"apiVersion"`
 	Description         string            `json:"description,omitempty"`
 	Detail              string            `json:"detail,omitempty"`
 	ID                  string            `json:"id,omitempty"`
@@ -39,6 +42,7 @@ type Script struct {
 	URIImplemenation    string            `json:"uri_implemenation,omitempty"`
 	SchemaCheck         bool              `json:"schemaCheck,omitempty"`
 	ContextPut          map[string]string `json:"keepContextOnSuccess,omitempty"`
+	UseCCGToken         bool              `json:"useCCGToken,omitempty"`
 }
 
 // References - reference collection
@@ -84,17 +88,15 @@ func (cj *ConsentJobs) Get(testid string) (model.TestCase, bool) {
 
 }
 
-// add/get ....
-
 // GenerateTestCases examines a manifest file, asserts file and resources definition, then builds the associated test cases
-func GenerateTestCases(spec string, baseurl string, ctx *model.Context, endpoints []discovery.ModelEndpoint, manifestPath string) ([]model.TestCase, error) {
+func GenerateTestCases(spec discovery.ModelAPISpecification, baseurl string, ctx *model.Context, endpoints []discovery.ModelEndpoint, manifestPath string) ([]model.TestCase, error) {
 	logger := logrus.WithFields(logrus.Fields{
 		"function": "GenerateTestCases",
 	})
 
-	specType, err := GetSpecType(spec)
+	specType, err := GetSpecType(spec.SchemaVersion)
 	if err != nil {
-		return nil, errors.New("unknown specification " + spec)
+		return nil, errors.New("unknown specification " + spec.SchemaVersion)
 	}
 	logrus.Debug("GenerateManifestTestCases for spec type:" + specType)
 	scripts, refs, err := loadGenerationResources(specType, manifestPath)
@@ -117,22 +119,18 @@ func GenerateTestCases(spec string, baseurl string, ctx *model.Context, endpoint
 	ctx.DumpContext("Incoming Ctx")
 
 	tests := []model.TestCase{}
-	//for _, script := range scripts.Scripts {
+
 	for _, script := range filteredScripts.Scripts {
 		localCtx, err := script.processParameters(&refs, ctx)
 		if err != nil {
-			logger.WithFields(logrus.Fields{
-				"err": err,
-			}).Error("Error on processParameters")
+			logger.WithError(err).Error("Error on processParameters")
 			return nil, err
 		}
 
 		consents := []string{}
-		tc, err := testCaseBuilder(script, refs.References, localCtx, consents, baseurl)
+		tc, err := testCaseBuilder(script, refs.References, localCtx, consents, baseurl, specType, spec)
 		if err != nil {
-			logger.WithFields(logrus.Fields{
-				"err": err,
-			}).Error("Error on testCaseBuilder")
+			logger.WithError(err).Error("Error on testCaseBuilder")
 		}
 
 		localCtx.PutContext(ctx)
@@ -141,6 +139,7 @@ func GenerateTestCases(spec string, baseurl string, ctx *model.Context, endpoint
 
 		tests = append(tests, tc)
 	}
+
 	return tests, nil
 }
 
@@ -148,6 +147,7 @@ func (s *Script) processParameters(refs *References, resources *model.Context) (
 	localCtx := model.Context{}
 
 	for k, value := range s.Parameters {
+		contextValue := value
 		if k == "consentId" {
 			localCtx.PutString("consentId", value)
 			continue
@@ -160,9 +160,10 @@ func (s *Script) processParameters(refs *References, resources *model.Context) (
 			ref := refs.References[str]
 			val := ref.getValue()
 			if len(val) != 0 {
-				value = val
+				contextValue = val
 			}
 			if len(value) == 0 {
+				localCtx.PutString(k, contextValue)
 				continue
 			}
 		}
@@ -179,7 +180,6 @@ func (s *Script) processParameters(refs *References, resources *model.Context) (
 	if len(s.PermissionsExcluded) > 0 {
 		localCtx.PutStringSlice("permissions-excluded", s.PermissionsExcluded)
 	}
-
 	return &localCtx, nil
 }
 
@@ -207,14 +207,17 @@ func updateTestAuthenticationFromToken(tcs []model.TestCase, rts []RequiredToken
 	return tcs
 }
 
-func testCaseBuilder(s Script, refs map[string]Reference, ctx *model.Context, consents []string, baseurl string) (model.TestCase, error) {
+func testCaseBuilder(s Script, refs map[string]Reference, ctx *model.Context, consents []string, baseurl string, specType string, apiSpec discovery.ModelAPISpecification) (model.TestCase, error) {
 	tc := model.MakeTestCase()
 	tc.ID = s.ID
 	tc.Name = s.Description
+	tc.APIName = apiSpec.Name
+	tc.APIVersion = apiSpec.Version
 
 	//TODO: make these more configurable - header also get set in buildInput Section
 	tc.Input.Headers["x-fapi-financial-id"] = "$x-fapi-financial-id"
-	tc.Input.Headers["x-fapi-interaction-id"] = "b4405450-febe-11e8-80a5-0fcebb1574e1"
+	// TODO: use automated interaction-id generation - one id per run - injected into context at journey
+	tc.Input.Headers["x-fapi-interaction-id"] = "c4405450-febe-11e8-80a5-0fcebb157400"
 	tc.Input.Headers["x-fcs-testcase-id"] = tc.ID
 	buildInputSection(s, &tc.Input)
 
@@ -224,6 +227,9 @@ func testCaseBuilder(s Script, refs map[string]Reference, ctx *model.Context, co
 	tc.Context.PutContext(ctx)
 	tc.Context.PutString("x-fapi-financial-id", "$x-fapi-financial-id")
 	tc.Context.PutString("baseurl", baseurl)
+	if s.UseCCGToken {
+		tc.Context.PutString("useCCGToken", "yes") // used for payment posts
+	}
 
 	for _, a := range s.Asserts {
 		ref, exists := refs[a]
@@ -249,12 +255,15 @@ func testCaseBuilder(s Script, refs map[string]Reference, ctx *model.Context, co
 
 	ctx.PutContext(&tc.Context)
 	tc.ProcessReplacementFields(ctx, false)
-
 	_, exists := tc.Context.GetString("postData")
 	if exists == nil {
 		tc.Context.Delete("postData") // tidy context as bodydata potentially large
 	}
 
+	if specType == "payments" && tc.Input.Method == "POST" {
+		tc.Input.JwsSig = true
+		tc.Input.IdempotencyKey = true
+	}
 	return tc, nil
 }
 
@@ -519,4 +528,9 @@ var accountsRegex = []pathRegex{
 	{"^/standing-orders$", "Get Orders"},
 	{"^/statements$", "Get Statements"},
 	{"^/transactions$", "Get Transactions"},
+}
+
+func timeNowMillis() string {
+	tm := time.Now().UnixNano() / int64(time.Millisecond)
+	return fmt.Sprintf("%d", tm)
 }

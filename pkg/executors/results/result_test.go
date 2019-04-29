@@ -13,7 +13,7 @@ func TestNewTestCaseResult123(t *testing.T) {
 	assert := test.NewAssert(t)
 
 	err := errors.New("some error")
-	result := NewTestCaseResult("123", true, NoMetrics, []error{err})
+	result := NewTestCaseResult("123", true, NoMetrics, []error{err}, "endpoint", "api-name", "api-version")
 
 	assert.Equal("123", result.Id)
 	assert.True(result.Pass)
@@ -26,7 +26,7 @@ func TestNewTestCaseResult321(t *testing.T) {
 
 	err := errors.New("some error")
 
-	result := NewTestCaseResult("321", true, NoMetrics, []error{err})
+	result := NewTestCaseResult("321", true, NoMetrics, []error{err}, "endpoint", "api-name", "api-version")
 	assert.Equal("321", result.Id)
 	assert.True(result.Pass)
 	assert.Equal(NoMetrics, result.Metrics)
@@ -37,7 +37,7 @@ func TestNewTestCaseFailResult(t *testing.T) {
 	assert := test.NewAssert(t)
 	err := errors.New("some error")
 
-	result := NewTestCaseFail("id", NoMetrics, []error{err})
+	result := NewTestCaseFail("id", NoMetrics, []error{err}, "endpoint", "api-name", "api-version")
 
 	assert.Equal("id", result.Id)
 	assert.False(result.Pass)
@@ -48,10 +48,11 @@ func TestNewTestCaseFailResult(t *testing.T) {
 func TestTestCaseResultJsonMarshal(t *testing.T) {
 	require := test.NewRequire(t)
 
-	result := NewTestCaseResult("123", true, NoMetrics, nil)
+	result := NewTestCaseResult("123", true, NoMetrics, nil, "endpoint", "api-name", "api-version")
 
 	expected := `
 {
+	"endpoint": "endpoint",
 	"id": "123",
 	"pass": true,
 	"metrics": {

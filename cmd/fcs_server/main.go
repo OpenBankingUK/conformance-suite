@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"io"
 	"os"
 	"strings"
 	"time"
@@ -122,7 +121,7 @@ func initConfig() {
 		if err != nil {
 			// continue as normal
 		} else {
-			mw := io.MultiWriter(os.Stdout, f)
+			mw := f // io.MultiWriter(os.Stdout, f)
 			logrus.SetOutput(mw)
 			logger.SetFormatter(&prefixed.TextFormatter{
 				DisableColors:    true,

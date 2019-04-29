@@ -32,7 +32,7 @@ func getPaymentConsents(tests []model.TestCase, definition RunDefinition, requir
 		consentItems = append(consentItems, tci)
 	}
 
-	logrus.Debugf("we have %d consentIds: %#v\n", len(consentItems), consentItems)
+	logrus.Debugf("we have %d consentIds: %#v", len(consentItems), consentItems)
 	return consentItems, err
 }
 
@@ -70,11 +70,12 @@ func runPaymentConsents(tcs []model.TestCase, rt []manifest.RequiredTokens, ctx 
 	}
 
 	bearerToken, err := localCtx.GetString("client_access_token")
+	ctx.PutString("payment_ccg_token", bearerToken) // store payment ccg token for later
 	if err != nil {
 		return nil, errors.New("Cannot get Token for consent client credentials grant: " + err.Error())
 	}
 
-	logrus.Tracef("runPaymentConsents:requiredTokens: %#v\n", rt)
+	logrus.Tracef("runPaymentConsents:requiredTokens: %#v", rt)
 
 	for k, v := range rt {
 		localCtx.PutString("token_name", v.Name)
@@ -102,6 +103,17 @@ func runPaymentConsents(tcs []model.TestCase, rt []manifest.RequiredTokens, ctx 
 		if err != nil {
 			return nil, errors.New("Payment PSU consent load psu_exchange testcase failed")
 		}
+		if authMethod == "tls_client_auth" {
+			clientid, err := ctx.GetString("client_id")
+			if err != nil {
+				logrus.Warn("cannot locate client_id for tls_client_auth form field")
+			}
+			exchange.Input.SetFormField("client_id", clientid)
+
+		} else {
+			exchange.Input.SetHeader("authorization", "Basic $basic_authentication")
+		}
+
 		localCtx.DumpContext("before exchange", "token_name", "consent_id")
 		err = executePaymentTest(&exchange, &localCtx, executor)
 		if err != nil {

@@ -1,6 +1,7 @@
 package manifest
 
 import (
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -11,7 +12,10 @@ import (
 const manifestPath = "file://manifests/ob_3.1_payment_fca.json"
 
 func TestPermx(t *testing.T) {
-	tests, err := GenerateTestCases(accountSwaggerLocation31, "http://mybaseurl", &model.Context{}, readDiscovery(), manifestPath)
+	apiSpec := discovery.ModelAPISpecification{
+		SchemaVersion: accountSwaggerLocation31,
+	}
+	tests, err := GenerateTestCases(apiSpec, "http://mybaseurl", &model.Context{}, readDiscovery(), manifestPath)
 	assert.Nil(t, err)
 	testcasePermissions, err := getTestCasePermissions(tests)
 	assert.Nil(t, err)
@@ -21,7 +25,10 @@ func TestPermx(t *testing.T) {
 }
 
 func TestGetScriptConsentTokens(t *testing.T) {
-	tests, err := GenerateTestCases(accountSwaggerLocation31, "http://mybaseurl", &model.Context{}, readDiscovery(), manifestPath)
+	apiSpec := discovery.ModelAPISpecification{
+		SchemaVersion: accountSwaggerLocation31,
+	}
+	tests, err := GenerateTestCases(apiSpec, "http://mybaseurl", &model.Context{}, readDiscovery(), manifestPath)
 	assert.Nil(t, err)
 	testcasePermissions, err := getTestCasePermissions(tests)
 	assert.Nil(t, err)

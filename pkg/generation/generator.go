@@ -87,7 +87,7 @@ func (g generator) GenerateManifestTests(log *logrus.Entry, config GeneratorConf
 	tokens := map[string][]manifest.RequiredTokens{}
 
 	for _, item := range discovery.DiscoveryItems {
-		tcs, err := manifest.GenerateTestCases(item.APISpecification.SchemaVersion, item.ResourceBaseURI, ctx, item.Endpoints, item.APISpecification.Manifest)
+		tcs, err := manifest.GenerateTestCases(item.APISpecification, item.ResourceBaseURI, ctx, item.Endpoints, item.APISpecification.Manifest)
 		if err != nil {
 			log.Warnf("manifest testcase generation failed for %s", item.APISpecification.SchemaVersion)
 			continue
@@ -123,13 +123,13 @@ func (g generator) GenerateManifestTests(log *logrus.Entry, config GeneratorConf
 	// }
 
 	logrus.Trace("---------------------------------------")
-	logrus.Tracef("we have %d specConsentRequirement items\n", len(scrSlice))
+	logrus.Tracef("we have %d specConsentRequirement items", len(scrSlice))
 	for _, item := range scrSlice {
-		logrus.Tracef("%#v\n", item)
+		logrus.Tracef("%#v", item)
 	}
-	logrus.Tracef("Dumping required %d tokens from GenerateManifestTests\n", len(tokens))
+	logrus.Tracef("Dumping required %d tokens from GenerateManifestTests", len(tokens))
 	for _, v := range tokens {
-		logrus.Tracef("%#v\n", v)
+		logrus.Tracef("%#v", v)
 	}
 	logrus.Trace("---------------------------------------")
 	return TestCasesRun{specTestCases, scrSlice}, tokens
@@ -147,7 +147,7 @@ func getPaymentUITests(tcs []model.TestCase) ([]model.TestCase, error) {
 	for _, test := range tcs {
 		_, exists := consentJobs.Get(test.ID)
 		if exists {
-			logrus.Tracef("skipping job %s\n", test.ID)
+			logrus.Tracef("skipping job %s", test.ID)
 			continue
 		}
 		uiTests = append(uiTests, test)
