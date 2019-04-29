@@ -179,12 +179,8 @@ func (v BitBucket) UpdateWarningVersion(version string) (string, bool, error) {
 			return errorMessageUI, false, fmt.Errorf("no Tags found")
 		}
 
-		// Convert the list of tags to tagList for sorting
-		var tagList tagList
-		for _, v := range s.TagList {
-			tagList = append(tagList, v)
-		}
-		sort.Sort(tagList)
+		// Convert the list of tags to tagList and sort
+		tagList := convertSortTags(s)
 
 		// Get latest tag
 		latestTag := tagList[len(tagList)-1].Name
@@ -215,4 +211,13 @@ func (v BitBucket) UpdateWarningVersion(version string) (string, bool, error) {
 	}
 
 	return errorMessageUI, false, nil
+}
+
+func convertSortTags(tar *TagsAPIResponse) tagList {
+	var tagList tagList
+	for _, v := range tar.TagList {
+		tagList = append(tagList, v)
+	}
+	sort.Sort(tagList)
+	return tagList
 }
