@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/pkg/errors"
 	"io/ioutil"
+	"os"
 	"strings"
 
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
@@ -18,6 +19,9 @@ func LoadScripts(filename string) (Scripts, error) {
 	}
 	path := strings.TrimPrefix(filename, "file://")
 	plan, err := ioutil.ReadFile(path)
+	if err != nil && os.IsNotExist(err) {
+		plan, err = ioutil.ReadFile("../../"+path)
+	}
 	if err != nil {
 		return Scripts{}, err
 	}
