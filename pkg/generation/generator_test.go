@@ -25,7 +25,6 @@ func testLoadDiscoveryModel(t *testing.T) *discovery.ModelDiscovery {
 }
 
 func TestGenerateSpecificationTestCases(t *testing.T) {
-	t.Skip("Skipping this test I can't seem to figure out how to get it to pass new way of loading files.")
 	logger := test.NullLogger()
 	discovery := *testLoadDiscoveryModel(t)
 	generator := NewGenerator()
