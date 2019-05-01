@@ -1,6 +1,7 @@
 package version
 
 import (
+	"fmt"
 	"net/http"
 	"testing"
 
@@ -116,4 +117,64 @@ func TestHaveVersionUpdateWarningVersion(t *testing.T) {
 	// Assert error message is correct.
 	assert.Errorf(t, err, "no version found")
 
+}
+
+func TestTagLessThanComparator(t *testing.T) {
+
+	tcs := []struct{
+		VerA     string
+		VerB     string
+		Expected bool
+	}{
+		{
+			VerA:     "1.0.0",
+			VerB:     "2.0",
+			Expected: true,
+		},
+		{
+			VerA:     "2.0",
+			VerB:     "1.0.0",
+			Expected: false,
+		},
+		{
+			VerA:     "1.0",
+			VerB:     "1.0",
+			Expected: false,
+		},
+		{
+			VerA:     "v1.0.0",
+			VerB:     "v2.0",
+			Expected: true,
+		},
+		{
+			VerA:     "v2.0",
+			VerB:     "v1.0",
+			Expected: false,
+		},
+		{
+			VerA:     "v1.0",
+			VerB:     "v1.0.0",
+			Expected: false,
+		},
+		{
+			VerA:     "1.0",
+			VerB:     "foobar",
+			Expected: false,
+		},
+		{
+			VerA:     "foobar",
+			VerB:     "2.0",
+			Expected: false,
+		},
+	}
+
+	for i, tc := range tcs {
+		t.Run(fmt.Sprintf("Test case item: %d", i), func(t *testing.T){
+			tag := Tag{
+				Name: tc.VerA,
+			}
+			result := tag.LessThan(tc.VerB)
+			assert.Equal(t, tc.Expected, result)
+		})
+	}
 }

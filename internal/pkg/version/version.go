@@ -64,10 +64,16 @@ type TagsAPIResponse struct {
 }
 
 func (t Tag) LessThan(subject string) bool {
-	tv, _ := hashiVer.NewVersion(t.Name)
-	sv, _ := hashiVer.NewVersion(subject)
-	return tv.LessThan(sv)
+	tv, err := hashiVer.NewVersion(t.Name)
+	if err != nil {
+		return false
+	}
+	sv, err := hashiVer.NewVersion(subject)
+	if err != nil {
+		return false
+	}
 
+	return tv.LessThan(sv)
 }
 
 type tagList []Tag
@@ -145,7 +151,7 @@ func (v BitBucket) VersionFormatter(version string) (string, error) {
 // returns a message and bool value that can be used to inform a user
 // a newer version is available for download.
 func (v BitBucket) UpdateWarningVersion(version string) (string, bool, error) {
-	// A default message that can be presented to an end user.
+	// VerA default message that can be presented to an end user.
 	errorMessageUI := "Version check is unavailable at this time."
 
 	// Some basic validation, check we have a version,
