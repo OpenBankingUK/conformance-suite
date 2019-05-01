@@ -9,7 +9,7 @@ import (
 
 type Metrics struct {
 	TestCase     *model.TestCase `json:"-"`
-	ResponseTime time.Duration   `json:"response_time"` // Http Response Time
+	ResponseTime int64           `json:"response_time"` // Http Response Time
 	ResponseSize int             `json:"response_size"` // Size of the HTTP Response body
 }
 
@@ -22,7 +22,7 @@ func NewMetricsFromRestyResponse(testCase *model.TestCase, response *resty.Respo
 func NewMetrics(testCase *model.TestCase, responseTime time.Duration, responseSize int) Metrics {
 	return Metrics{
 		TestCase:     testCase,
-		ResponseTime: responseTime,
+		ResponseTime: int64(responseTime / time.Millisecond),
 		ResponseSize: responseSize,
 	}
 }
