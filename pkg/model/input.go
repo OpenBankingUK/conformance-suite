@@ -284,16 +284,30 @@ func (i *Input) getBody(req *resty.Request, ctx *Context) (string, error) {
 		value = val2
 	}
 
-	m := minify.New()
-	m.AddFuncRegexp(regexp.MustCompile("[/+]json$"), minjson.Minify)
-	minifiedbody, err := m.String("application/json", value)
-	if err != nil {
-		return "", err
+	body := value
+	contentType := i.contentTypeHeader()
+	if strings.Contains(contentType, "application/json") {
+		m := minify.New()
+		m.AddFuncRegexp(regexp.MustCompile("[/+]json$"), minjson.Minify)
+		var err error
+		body, err = m.String("application/json", value)
+		if err != nil {
+			return "", err
+		}
 	}
-	logrus.Tracef("minified body: %s", minifiedbody)
-	i.RequestBody = minifiedbody
-	req.SetBody(minifiedbody)
-	return minifiedbody, nil
+	i.RequestBody = body
+	req.SetBody(body)
+
+	return body, nil
+}
+
+func (i *Input) contentTypeHeader() string {
+	for key, value := range i.Headers {
+		if strings.ToLower(key) == "content-type" {
+			return value
+		}
+	}
+	return ""
 }
 
 // AppMsg - application level trace

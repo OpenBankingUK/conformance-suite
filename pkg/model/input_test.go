@@ -415,7 +415,7 @@ func TestJWSSignaturNotPOST(t *testing.T) {
 	i := Input{JwsSig: true, Method: "GET", Endpoint: "https://google.com", RequestBody: ""}
 	tc := TestCase{Input: i}
 	req, err := tc.Prepare(&ctx)
-	assert.Nil(t, err)
+	assert.EqualError(t, err, "createRequest: cannot apply jws signature to method that isn't POST")
 	assert.Nil(t, req)
 }
 
@@ -430,7 +430,7 @@ func TestJWSSignatureEmptyBody(t *testing.T) {
 	i := Input{JwsSig: true, Method: "POST", Endpoint: "https://google.com", RequestBody: ""}
 	tc := TestCase{Input: i}
 	req, err := tc.Prepare(&ctx)
-	assert.Nil(t, err)
+	assert.EqualError(t, err, "createRequest: cannot create x-jws-signature, as request body is empty")
 	assert.Nil(t, req)
 }
 
