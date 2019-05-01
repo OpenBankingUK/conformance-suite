@@ -15,8 +15,8 @@ type Metrics struct {
 }
 
 // MarshalJSON is a custom marshaler which formats a Metrics struct
-// with a response time represented as milliseconds
-// response time precision is up to 6 decimal places of precision (nanosecond)
+// with a response time represented as unit of milliseconds
+// response time decimal precision is up the nanosecond eg: 1.234ms
 func (m Metrics) MarshalJSON() ([]byte, error) {
 	return json.Marshal(struct {
 		ResponseTime float64 `json:"response_time"`
