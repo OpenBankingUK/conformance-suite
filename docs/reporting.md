@@ -80,7 +80,7 @@ TDB
          "id": "OB-301-ACC-001000",
          "pass": true,
          "metrics": {
-           "response_time": 17000526,
+           "response_time": 17.000526,
            "response_size": 168
          },
          "endpoint": "https://modelobank2018.o3bank.co.uk:4501/open-banking/v3.1/aisp/foobar"
