@@ -106,7 +106,7 @@ func getAccountConsents(consentRequirements []model.SpecConsentRequirements, def
 		logger.Debugf("Setting Token: %s, ConsentId: %s", v.TokenName, v.ConsentID)
 		ctx.PutString(v.TokenName, v.ConsentID)
 	}
-	logrus.Debugf("we have %d consentIds: %#v\n", len(consentItems), consentItems)
+	logrus.Debugf("we have %d consentIds: %#v", len(consentItems), consentItems)
 	return consentItems, tokenParameters, err
 }
 

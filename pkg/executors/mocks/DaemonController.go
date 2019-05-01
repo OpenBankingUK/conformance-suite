@@ -31,6 +31,22 @@ func (_m *DaemonController) AllResults() []results.TestCase {
 	return r0
 }
 
+// AllResultsGrouped provides a mock function with given fields:
+func (_m *DaemonController) AllResultsGrouped() map[results.ResultKey][]results.TestCase {
+	ret := _m.Called()
+
+	var r0 map[results.ResultKey][]results.TestCase
+	if rf, ok := ret.Get(0).(func() map[results.ResultKey][]results.TestCase); ok {
+		r0 = rf()
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(map[results.ResultKey][]results.TestCase)
+		}
+	}
+
+	return r0
+}
+
 // IsCompleted provides a mock function with given fields:
 func (_m *DaemonController) IsCompleted() <-chan bool {
 	ret := _m.Called()

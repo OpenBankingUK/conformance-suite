@@ -415,7 +415,7 @@ func TestJWSSignaturNotPOST(t *testing.T) {
 	i := Input{JwsSig: true, Method: "GET", Endpoint: "https://google.com", RequestBody: ""}
 	tc := TestCase{Input: i}
 	req, err := tc.Prepare(&ctx)
-	assert.Nil(t, err)
+	assert.EqualError(t, err, "createRequest: cannot apply jws signature to method that isn't POST")
 	assert.Nil(t, req)
 }
 
@@ -430,7 +430,7 @@ func TestJWSSignatureEmptyBody(t *testing.T) {
 	i := Input{JwsSig: true, Method: "POST", Endpoint: "https://google.com", RequestBody: ""}
 	tc := TestCase{Input: i}
 	req, err := tc.Prepare(&ctx)
-	assert.Nil(t, err)
+	assert.EqualError(t, err, "createRequest: cannot create x-jws-signature, as request body is empty")
 	assert.Nil(t, req)
 }
 
@@ -548,6 +548,16 @@ func loadSigningCert() (tls.Certificate, error) {
 	cert, err := tls.X509KeyPair([]byte(certSigning), []byte(keySigning))
 
 	return cert, nil
+}
+
+func TestInputTest(t *testing.T) {
+	fmt.Println("Running...")
+	x := "123.1......45.789"
+	firstPart := x[:strings.IndexByte(x, '.')]
+	idx := strings.LastIndex(x, ".")
+	lastPart := x[idx:]
+	fmt.Printf("%s.%s\n", firstPart, lastPart)
+
 }
 
 var paymentTestCaseData100300 = []byte(`

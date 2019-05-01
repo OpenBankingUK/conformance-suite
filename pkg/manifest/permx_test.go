@@ -1,6 +1,7 @@
 package manifest
 
 import (
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -9,28 +10,45 @@ import (
 )
 
 func TestPermx(t *testing.T) {
-	specType, err := GetSpecType(accountSwaggerLocation31)
+	apiSpec := discovery.ModelAPISpecification{
+		SchemaVersion: accountSwaggerLocation31,
+	}
+	specType, err := GetSpecType(apiSpec.SchemaVersion)
 	assert.Nil(t, err)
+
 	scripts, _, err := LoadGenerationResources(specType)
-	tests, err := GenerateTestCases(scripts, accountSwaggerLocation31, "http://mybaseurl", &model.Context{}, readDiscovery())
 	assert.Nil(t, err)
+
+	tests, _, err := GenerateTestCases(scripts, apiSpec, "http://mybaseurl", &model.Context{}, readDiscovery())
+	assert.Nil(t, err)
+
 	testcasePermissions, err := getTestCasePermissions(tests)
 	assert.Nil(t, err)
+
 	requiredTokens, err := getRequiredTokens(testcasePermissions)
 	assert.Nil(t, err)
 	dumpJSON(requiredTokens)
 }
 
 func TestGetScriptConsentTokens(t *testing.T) {
-	specType, err := GetSpecType(accountSwaggerLocation31)
+	apiSpec := discovery.ModelAPISpecification{
+		SchemaVersion: accountSwaggerLocation31,
+	}
+	specType, err := GetSpecType(apiSpec.SchemaVersion)
 	assert.Nil(t, err)
+
 	scripts, _, err := LoadGenerationResources(specType)
-	tests, err := GenerateTestCases(scripts, accountSwaggerLocation31, "http://mybaseurl", &model.Context{}, readDiscovery())
 	assert.Nil(t, err)
+
+	tests, scripts, err := GenerateTestCases(scripts, apiSpec, "http://mybaseurl", &model.Context{}, readDiscovery())
+	assert.Nil(t, err)
+
 	testcasePermissions, err := getTestCasePermissions(tests)
 	assert.Nil(t, err)
+
 	requiredTokens, err := getRequiredTokens(testcasePermissions)
 	assert.Nil(t, err)
+
 	populateTokens(t, requiredTokens)
 	dumpJSON(requiredTokens)
 }
@@ -55,6 +73,6 @@ func populateTokens(t *testing.T, gatherer []RequiredTokens) error {
 }
 
 func getToken(perms []string) (string, error) {
-	// for headless - get the okens for the permissions here
+	// for headless - get the tokens for the permissions here
 	return "abigfattoken", nil
 }

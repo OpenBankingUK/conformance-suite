@@ -15,10 +15,13 @@ import (
 )
 
 func TestGenerateTestCases(t *testing.T) {
-	specType, err := GetSpecType(accountSwaggerLocation31)
+	apiSpec := discovery.ModelAPISpecification{
+		SchemaVersion: accountSwaggerLocation31,
+	}
+	specType, err := GetSpecType(apiSpec.SchemaVersion)
 	assert.Nil(t, err)
 	scripts, _, err := LoadGenerationResources(specType)
-	tests, err := GenerateTestCases(scripts, accountSwaggerLocation31, "http://mybaseurl", &model.Context{}, readDiscovery())
+	tests, _, err := GenerateTestCases(scripts, apiSpec, "http://mybaseurl", &model.Context{}, readDiscovery())
 	assert.Nil(t, err)
 
 	perms, err := getAccountPermissions(tests)
@@ -35,10 +38,13 @@ func TestGenerateTestCases(t *testing.T) {
 }
 
 func TestPaymentPermissions(t *testing.T) {
-	specType, err := GetSpecType(accountSwaggerLocation31)
+	apiSpec := discovery.ModelAPISpecification{
+		SchemaVersion: accountSwaggerLocation31,
+	}
+	specType, err := GetSpecType(apiSpec.SchemaVersion)
 	assert.Nil(t, err)
 	scripts, _, err := LoadGenerationResources(specType)
-	tests, err := GenerateTestCases(scripts, paymentsSwaggerLocation30, "http://mybaseurl", &model.Context{}, readDiscovery())
+	tests, _, err := GenerateTestCases(scripts, apiSpec,"http://mybaseurl", &model.Context{}, readDiscovery())
 	fmt.Printf("we have %d tests\n", len(tests))
 	for _, v := range tests {
 		dumpJSON(v)
@@ -102,12 +108,15 @@ func TestPermissionFiteringAccounts(t *testing.T) {
 	}
 
 	endpoints := readDiscovery()
+	apiSpec := discovery.ModelAPISpecification{
+		SchemaVersion: accountSwaggerLocation31,
+	}
 	scripts, _, err := LoadGenerationResources("accounts")
 	if err != nil {
 		fmt.Println("Error on loadGenerationResources")
 		return
 	}
-	tests, err := GenerateTestCases(scripts, accountSwaggerLocation31, "http://mybaseurl", &ctx, endpoints)
+	tests, _, err := GenerateTestCases(scripts, apiSpec, "http://mybaseurl", &ctx, endpoints)
 	assert.Nil(t, err)
 	fmt.Printf("%d tests loaded", len(tests))
 
@@ -194,4 +203,42 @@ func FilterTestsBasedOnDiscoveryEndpointsPlayground(scripts Scripts, endpoints [
 	myscripts := Scripts{Scripts: filteredScripts}
 
 	return myscripts, nil
+}
+
+func TestPaymentTestCaseCreation(t *testing.T) {
+	ctx := &model.Context{
+		"consent_id":                          "aac-fee2b8eb-ce1b-48f1-af7f-dc8f576d53dc",
+		"xchange_code":                        "10e9d80b-10d4-4abd-9fe0-15789cc512b5",
+		"baseurl":                             "https://matls-sso.openbankingtest.org.uk",
+		"access_token":                        "18d5a754-0b76-4a8f-9c68-dc5caaf812e2",
+		"client_id":                           "12312",
+		"scope":                               "AuthoritiesReadAccess ASPSPReadAccess TPPReadAll",
+		"authorisation_endpoint":              "https://example.com/authorisation",
+		"OB-301-DOP-100300-ConsentId":         "100100-ConsentId",
+		"OB-301-DOP-100600-DomesticPaymentId": "100600-DomesticPaymentId-PaymentId",
+		"OB-301-DOP-100100-ConsentId":         "100100-ConsentId",
+		"OB-301-DOP-100800-ConsentId":         "100800-Consentid",
+		"creditorIdentification":              "1231231231",
+		"thisCurrency":                        "GBP",
+		"creditorScheme":                      "default",
+	}
+
+	apiSpec := discovery.ModelAPISpecification{
+		SchemaVersion: accountSwaggerLocation31,
+	}
+
+	specType, err := GetSpecType(apiSpec.SchemaVersion)
+	assert.Nil(t, err)
+	scripts, _, err := LoadGenerationResources(specType)
+	assert.Nil(t, err)
+
+	tests, _, err := GenerateTestCases(scripts, apiSpec, "http://mybaseurl", ctx, readDiscovery())
+	assert.Nil(t, err)
+	fmt.Printf("we have %d tests\n", len(tests))
+	for _, v := range tests {
+		//if v.ID == "OB-301-DOP-101000" {
+		dumpJSON(v)
+		//}
+	}
+
 }

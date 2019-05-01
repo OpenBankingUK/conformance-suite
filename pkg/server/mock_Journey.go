@@ -79,6 +79,27 @@ func (_m *MockJourney) Events() events.Events {
 	return r0
 }
 
+// FilteredManifests provides a mock function with given fields:
+func (_m *MockJourney) FilteredManifests() (manifest.Scripts, error) {
+	ret := _m.Called()
+
+	var r0 manifest.Scripts
+	if rf, ok := ret.Get(0).(func() manifest.Scripts); ok {
+		r0 = rf()
+	} else {
+		r0 = ret.Get(0).(manifest.Scripts)
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func() error); ok {
+		r1 = rf()
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // Manifests provides a mock function with given fields:
 func (_m *MockJourney) Manifests() ([]manifest.Scripts, error) {
 	ret := _m.Called()
@@ -172,6 +193,20 @@ func (_m *MockJourney) SetDiscoveryModel(discoveryModel *discovery.Model) (disco
 	}
 
 	return r0, r1
+}
+
+// SetFilteredManifests provides a mock function with given fields: _a0
+func (_m *MockJourney) SetFilteredManifests(_a0 manifest.Scripts) error {
+	ret := _m.Called(_a0)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(manifest.Scripts) error); ok {
+		r0 = rf(_a0)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
 }
 
 // SetManifests provides a mock function with given fields: _a0
