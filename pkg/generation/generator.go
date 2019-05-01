@@ -29,7 +29,7 @@ type GeneratorConfig struct {
 
 // Generator - generates test cases from discovery model
 type Generator interface {
-	GenerateManifestTests(log *logrus.Entry, config GeneratorConfig, discovery discovery.ModelDiscovery, ctx *model.Context) (TestCasesRun, map[string][]manifest.RequiredTokens)
+	GenerateManifestTests(log *logrus.Entry, config GeneratorConfig, discovery discovery.ModelDiscovery, ctx *model.Context) (TestCasesRun, manifest.Scripts, map[string][]manifest.RequiredTokens)
 }
 
 // NewGenerator - returns implementation of Generator interface
@@ -68,7 +68,7 @@ func shouldIgnoreDiscoveryItem(apiSpecification discovery.ModelAPISpecification)
 }
 
 // Work in progress to integrate Manifest Test
-func (g generator) GenerateManifestTests(log *logrus.Entry, config GeneratorConfig, discovery discovery.ModelDiscovery, ctx *model.Context) (TestCasesRun, map[string][]manifest.RequiredTokens) {
+func (g generator) GenerateManifestTests(log *logrus.Entry, config GeneratorConfig, discovery discovery.ModelDiscovery, ctx *model.Context) (TestCasesRun, manifest.Scripts, map[string][]manifest.RequiredTokens) {
 	log = log.WithField("module", "GenerateManifestTests")
 	for k, item := range discovery.DiscoveryItems {
 		spectype, err := manifest.GetSpecType(item.APISpecification.SchemaVersion)
@@ -84,6 +84,7 @@ func (g generator) GenerateManifestTests(log *logrus.Entry, config GeneratorConf
 
 	specTestCases := []SpecificationTestCases{}
 	var scrSlice []model.SpecConsentRequirements
+	var filteredScripts manifest.Scripts
 	tokens := map[string][]manifest.RequiredTokens{}
 
 	for _, item := range discovery.DiscoveryItems {
@@ -94,7 +95,8 @@ func (g generator) GenerateManifestTests(log *logrus.Entry, config GeneratorConf
 		}
 		scripts, _, err := manifest.LoadGenerationResources(specType)
 
-		tcs, err := manifest.GenerateTestCases(scripts, item.APISpecification.SchemaVersion, item.ResourceBaseURI, ctx, item.Endpoints)
+		tcs, fsc, err := manifest.GenerateTestCases(scripts, item.APISpecification.SchemaVersion, item.ResourceBaseURI, ctx, item.Endpoints)
+		filteredScripts = fsc
 		if err != nil {
 			log.Warnf("manifest testcase generation failed for %s", item.APISpecification.SchemaVersion)
 			continue
@@ -139,7 +141,7 @@ func (g generator) GenerateManifestTests(log *logrus.Entry, config GeneratorConf
 		logrus.Tracef("%#v\n", v)
 	}
 	logrus.Trace("---------------------------------------")
-	return TestCasesRun{specTestCases, scrSlice}, tokens
+	return TestCasesRun{specTestCases, scrSlice}, filteredScripts, tokens
 }
 
 // taks all the payment testscases

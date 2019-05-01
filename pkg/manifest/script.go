@@ -86,14 +86,14 @@ func (cj *ConsentJobs) Get(testid string) (model.TestCase, bool) {
 // add/get ....
 
 // GenerateTestCases examines a manifest file, asserts file and resources definition, then builds the associated test cases
-func GenerateTestCases(scripts Scripts, spec string, baseurl string, ctx *model.Context, endpoints []discovery.ModelEndpoint) ([]model.TestCase, error) {
+func GenerateTestCases(scripts Scripts, spec string, baseurl string, ctx *model.Context, endpoints []discovery.ModelEndpoint) ([]model.TestCase, Scripts, error) {
 	logger := logrus.WithFields(logrus.Fields{
 		"function": "GenerateTestCases",
 	})
 
 	specType, err := GetSpecType(spec)
 	if err != nil {
-		return nil, errors.New("unknown specification " + spec)
+		return nil, Scripts{}, errors.New("unknown specification " + spec)
 	}
 	logrus.Debug("GenerateManifestTestCases for spec type:" + specType)
 	_, refs, err := LoadGenerationResources(specType)
@@ -101,11 +101,11 @@ func GenerateTestCases(scripts Scripts, spec string, baseurl string, ctx *model.
 		logger.WithFields(logrus.Fields{
 			"err": err,
 		}).Error("Error on loadGenerationResources")
-		return nil, err
+		return nil, Scripts{}, err
 	}
 	var filteredScripts Scripts
 	if specType == "accounts" { //TODO: Complete so it makes sense for payments
-		filteredScripts, err = filterTestsBasedOnDiscoveryEndpoints(scripts, endpoints)
+		filteredScripts, err = FilterTestsBasedOnDiscoveryEndpoints(scripts, endpoints)
 		if err != nil {
 			logger.WithFields(logrus.Fields{"err": err}).Error("error filter scripts based on discovery")
 		}
@@ -122,7 +122,7 @@ func GenerateTestCases(scripts Scripts, spec string, baseurl string, ctx *model.
 			logger.WithFields(logrus.Fields{
 				"err": err,
 			}).Error("Error on processParameters")
-			return nil, err
+			return nil, Scripts{}, err
 		}
 
 		consents := []string{}
@@ -139,7 +139,7 @@ func GenerateTestCases(scripts Scripts, spec string, baseurl string, ctx *model.
 
 		tests = append(tests, tc)
 	}
-	return tests, nil
+	return tests, filteredScripts, nil
 }
 
 func (s *Script) processParameters(refs *References, resources *model.Context) (*model.Context, error) {
@@ -411,7 +411,7 @@ func getAccountPermissions(tests []model.TestCase) ([]ScriptPermission, error) {
 	return permCollector, nil
 }
 
-func filterTestsBasedOnDiscoveryEndpoints(scripts Scripts, endpoints []discovery.ModelEndpoint) (Scripts, error) {
+func FilterTestsBasedOnDiscoveryEndpoints(scripts Scripts, endpoints []discovery.ModelEndpoint) (Scripts, error) {
 	lookupMap := make(map[string]bool)
 	filteredScripts := []Script{}
 

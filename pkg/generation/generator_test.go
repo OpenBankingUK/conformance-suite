@@ -29,7 +29,7 @@ func TestGenerateSpecificationTestCases(t *testing.T) {
 	discovery := *testLoadDiscoveryModel(t)
 	generator := NewGenerator()
 	config := GeneratorConfig{}
-	testCasesRun, _ := generator.GenerateManifestTests(logger, config, discovery, &model.Context{})
+	testCasesRun, filteredScripts, _ := generator.GenerateManifestTests(logger, config, discovery, &model.Context{})
 	cases := testCasesRun.TestCases
 
 	t.Run("returns slice of SpecificationTestCases, one per discovery item", func(t *testing.T) {
@@ -50,6 +50,25 @@ func TestGenerateSpecificationTestCases(t *testing.T) {
 			}
 			expectedSpec := discovery.DiscoveryItems[i].APISpecification
 			assert.Equal(expectedSpec, specificationCases.Specification)
+		}
+	})
+
+	t.Run("Check that the test cases that were run are based on the filtered tests", func(t *testing.T) {
+		assert := test.NewAssert(t)
+
+		require.Equal(t, len(discovery.DiscoveryItems), len(cases))
+
+		for _, casee := range cases {
+			for _, ca := range casee.TestCases {
+				var found bool
+				for _, cc := range filteredScripts.Scripts {
+					if ca.ID == cc.ID {
+						found = true
+						break
+					}
+				}
+				assert.True(found)
+			}
 		}
 	})
 }

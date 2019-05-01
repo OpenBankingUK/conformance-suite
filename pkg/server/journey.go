@@ -42,6 +42,8 @@ type Journey interface {
 	DiscoveryModel() (discovery.Model, error)
 	SetManifests([]manifest.Scripts) error
 	Manifests() ([]manifest.Scripts, error)
+	SetFilteredManifests(manifest.Scripts) error
+	FilteredManifests()(manifest.Scripts, error)
 	TestCases() (generation.TestCasesRun, error)
 	CollectToken(code, state, scope string) error
 	AllTokenCollected() bool
@@ -69,6 +71,7 @@ type journey struct {
 	events                events.Events
 	permissions           map[string][]manifest.RequiredTokens
 	manifests             []manifest.Scripts
+	filteredManifests	manifest.Scripts
 }
 
 // NewJourney creates an instance for a user journey
@@ -145,6 +148,15 @@ func (wj *journey) Manifests() ([]manifest.Scripts, error) {
 	return wj.manifests, nil
 }
 
+func (wj *journey) SetFilteredManifests(fmfs manifest.Scripts) error {
+	wj.filteredManifests = fmfs
+	return nil
+}
+
+func (wj *journey) FilteredManifests()(manifest.Scripts, error) {
+	return wj.filteredManifests, nil
+}
+
 func (wj *journey) TestCases() (generation.TestCasesRun, error) {
 	wj.journeyLock.Lock()
 	defer wj.journeyLock.Unlock()
@@ -176,19 +188,19 @@ func (wj *journey) TestCases() (generation.TestCasesRun, error) {
 
 		logger.Debug("generator.GenerateManifestTests ...")
 
-		wj.testCasesRun, wj.permissions = wj.generator.GenerateManifestTests(wj.log, config, discovery, &wj.context)
+		wj.testCasesRun, wj.filteredManifests, wj.permissions = wj.generator.GenerateManifestTests(wj.log, config, discovery, &wj.context)
 
 		// Now specifically load the manifests of each test case into the journey
 		// so we can reference later.
-		var jms []manifest.Scripts
+		var journeyManifests []manifest.Scripts
 		for _, tc := range wj.testCasesRun.TestCases {
 			s, err := manifest.LoadScripts(tc.Specification.Manifest)
 			if err != nil {
 				return generation.TestCasesRun{}, errors.Wrap(err, "loadScripts()")
 			}
-			jms = append(jms, s)
+			journeyManifests = append(journeyManifests, s)
 		}
-		wj.SetManifests(jms)
+		wj.SetManifests(journeyManifests)
 
 		logger.WithFields(logrus.Fields{
 			"len(wj.permissions)": len(wj.permissions),

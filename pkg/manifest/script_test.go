@@ -111,7 +111,7 @@ func TestPermissionFiteringAccounts(t *testing.T) {
 	assert.Nil(t, err)
 	fmt.Printf("%d tests loaded", len(tests))
 
-	filteredScripts, err := filterTestsBasedOnDiscoveryEndpointsPlayground(scripts, endpoints)
+	filteredScripts, err := FilterTestsBasedOnDiscoveryEndpointsPlayground(scripts, endpoints)
 	if err != nil {
 
 	}
@@ -135,7 +135,7 @@ func readDiscovery() []discovery.ModelEndpoint {
 
 }
 
-func filterTestsBasedOnDiscoveryEndpointsPlayground(scripts Scripts, endpoints []discovery.ModelEndpoint) (Scripts, error) {
+func FilterTestsBasedOnDiscoveryEndpointsPlayground(scripts Scripts, endpoints []discovery.ModelEndpoint) (Scripts, error) {
 
 	lookupMap := make(map[string]bool)
 	_ = lookupMap
