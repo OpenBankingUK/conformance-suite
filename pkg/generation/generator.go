@@ -2,12 +2,13 @@
 package generation
 
 import (
+	"github.com/sirupsen/logrus"
+
 	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/names"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/manifest"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/permissions"
-	"github.com/sirupsen/logrus"
 )
 
 // SpecificationTestCases - test cases generated for a specification
@@ -28,8 +29,7 @@ type GeneratorConfig struct {
 
 // Generator - generates test cases from discovery model
 type Generator interface {
-	GenerateSpecificationTestCases(log *logrus.Entry, config GeneratorConfig, discovery discovery.ModelDiscovery, ctx *model.Context) TestCasesRun
-	GenerateManifestTests(log *logrus.Entry, config GeneratorConfig, discovery discovery.ModelDiscovery, ctx *model.Context) TestCasesRun
+	GenerateManifestTests(log *logrus.Entry, config GeneratorConfig, discovery discovery.ModelDiscovery, ctx *model.Context) (TestCasesRun, map[string][]manifest.RequiredTokens)
 }
 
 // NewGenerator - returns implementation of Generator interface
@@ -44,39 +44,120 @@ type generator struct {
 	resolver func(groups []permissions.Group) permissions.CodeSetResultSet
 }
 
-// Work in progress to integrate Manifest Test
-func (g generator) GenerateManifestTests(log *logrus.Entry, config GeneratorConfig, discovery discovery.ModelDiscovery, ctx *model.Context) TestCasesRun {
-	logrus.Debug("GenerateManifestTests - entry")
-	log = log.WithField("module", "GenerateManifestTests")
+// shouldIgnoreDiscoveryItem - determine if we should process a `SchemaVersion`. Currently only the following are supported:
+// * `Account and Transaction API Specification`
+// * `Confirmation of Funds API Specification`
+//
+// All else returns `true`.
+func shouldIgnoreDiscoveryItem(apiSpecification discovery.ModelAPISpecification) bool {
+	shouldIgnore := true
 
-	specTestCases := []SpecificationTestCases{}
-
-	for _, item := range discovery.DiscoveryItems { //TODO: sort out different specs etc
-		tcs, err := manifest.GenerateTestCases(item.APISpecification.Name, item.ResourceBaseURI, ctx) //TODO: ensure we can handle multiple specs
-		if err != nil {
-			log.Warnf("manifest testcase generation failed for %s", item.APISpecification.Name)
-			continue
+	supportedSchemaVersions := []string{
+		// `Account and Transaction API Specification
+		"https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.0/dist/account-info-swagger.json",
+		// `Confirmation of Funds API Specification`
+		"https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.0/dist/confirmation-funds-swagger.json",
+	}
+	for _, supportedSchemaVersion := range supportedSchemaVersions {
+		if apiSpecification.SchemaVersion == supportedSchemaVersion {
+			return false
 		}
-		stc := SpecificationTestCases{Specification: item.APISpecification, TestCases: tcs}
-		logrus.Debugf("%d test cases generated", len(tcs))
-
-		specTestCases = append(specTestCases, stc)
-
-		break //TODO: sort this out integration scaffolding ... do it once for starters ...
 	}
 
-	requiredTokens, err := manifest.GetRequiredTokensFromTests(specTestCases[0].TestCases)
-	if err != nil {
-
-	}
-	scrSlice, err := getSpecConsentsFromRequiredTokens(requiredTokens)
-	//specTestCases = append(customTestCases, specTestCases...)
-	return TestCasesRun{specTestCases, scrSlice}
+	return shouldIgnore
 }
 
-func getSpecConsentsFromRequiredTokens(rt []manifest.RequiredTokens) ([]model.SpecConsentRequirements, error) {
-	specConsents := make([]model.SpecConsentRequirements, 0)
+// Work in progress to integrate Manifest Test
+func (g generator) GenerateManifestTests(log *logrus.Entry, config GeneratorConfig, discovery discovery.ModelDiscovery, ctx *model.Context) (TestCasesRun, map[string][]manifest.RequiredTokens) {
+	log = log.WithField("module", "GenerateManifestTests")
+	for k, item := range discovery.DiscoveryItems {
+		spectype, err := manifest.GetSpecType(item.APISpecification.SchemaVersion)
+		if err != nil {
+			logrus.Warnf("Cannot get spec type from scheam version: " + item.APISpecification.SchemaVersion)
+			log.Warnf("specification %s not found\n", item.APISpecification.SchemaVersion)
+			continue
+		}
+		item.APISpecification.SpecType = spectype
+		log.Debugf("Generating testcases for %s API\n", spectype)
+		discovery.DiscoveryItems[k].APISpecification.SpecType = spectype
+	}
 
+	specTestCases := []SpecificationTestCases{}
+	var scrSlice []model.SpecConsentRequirements
+	tokens := map[string][]manifest.RequiredTokens{}
+
+	for _, item := range discovery.DiscoveryItems {
+		tcs, err := manifest.GenerateTestCases(item.APISpecification, item.ResourceBaseURI, ctx, item.Endpoints)
+		if err != nil {
+			log.Warnf("manifest testcase generation failed for %s", item.APISpecification.SchemaVersion)
+			continue
+		}
+		spectype := item.APISpecification.SpecType
+		requiredSpecTokens, err := manifest.GetRequiredTokensFromTests(tcs, spectype)
+		specreq, err := getSpecConsentsFromRequiredTokens(requiredSpecTokens, item.APISpecification.Name)
+		scrSlice = append(scrSlice, specreq)
+		if spectype == "payments" { //
+			// three sets of test case. all, UI, consent (Non-ui)
+			uiTestCases, err := getPaymentUITests(tcs)
+			if err != nil {
+				log.Error("error processing getPaymentUITests")
+				continue
+			}
+			tcs = uiTestCases
+			_ = uiTestCases
+		}
+		stc := SpecificationTestCases{Specification: item.APISpecification, TestCases: tcs}
+		logrus.Debugf("%d test cases generated for %s", len(tcs), item.APISpecification.Name)
+		specTestCases = append(specTestCases, stc)
+		tokens[spectype] = requiredSpecTokens
+	}
+
+	// for _, v := range specTestCases {
+	// 	requiredSpecTokens, err := manifest.GetRequiredTokensFromTests(v.TestCases, v.Specification.SpecType)
+	// 	if err != nil {
+	// 		log.Warnf("getRequiredTokensFromTests return error:%s", err.Error())
+	// 	}
+	// 	specreq, err := getSpecConsentsFromRequiredTokens(requiredSpecTokens, v.Specification.Name)
+	// 	scrSlice = append(scrSlice, specreq)
+	// 	tokens[v.Specification.SpecType] = requiredSpecTokens
+	// }
+
+	logrus.Trace("---------------------------------------")
+	logrus.Tracef("we have %d specConsentRequirement items", len(scrSlice))
+	for _, item := range scrSlice {
+		logrus.Tracef("%#v", item)
+	}
+	logrus.Tracef("Dumping required %d tokens from GenerateManifestTests", len(tokens))
+	for _, v := range tokens {
+		logrus.Tracef("%#v", v)
+	}
+	logrus.Trace("---------------------------------------")
+	return TestCasesRun{specTestCases, scrSlice}, tokens
+}
+
+// taks all the payment testscases
+// returns two sets
+// set 1) - payment tests that show in the UI and execution when runtests is called
+// set 2) - payment consent tests that need to be authorised before runtests can happen
+func getPaymentUITests(tcs []model.TestCase) ([]model.TestCase, error) {
+
+	uiTests := []model.TestCase{}
+	consentJobs := manifest.GetConsentJobs()
+
+	for _, test := range tcs {
+		_, exists := consentJobs.Get(test.ID)
+		if exists {
+			logrus.Tracef("skipping job %s", test.ID)
+			continue
+		}
+		uiTests = append(uiTests, test)
+	}
+
+	return uiTests, nil
+}
+
+// Packages up Required tokens into a SpecConsentRequirements structure
+func getSpecConsentsFromRequiredTokens(rt []manifest.RequiredTokens, apiName string) (model.SpecConsentRequirements, error) {
 	npa := []model.NamedPermission{}
 	for _, v := range rt {
 		np := model.NamedPermission{}
@@ -86,79 +167,8 @@ func getSpecConsentsFromRequiredTokens(rt []manifest.RequiredTokens) ([]model.Sp
 		np.CodeSet.CodeSet = append(np.CodeSet.CodeSet, permissions.StringSliceToCodeSet(v.Perms)...)
 		npa = append(npa, np)
 	}
-	specConsentReq := model.SpecConsentRequirements{Identifier: "Account and Transaction API Specification", NamedPermissions: npa}
-	specConsents = append(specConsents, specConsentReq)
-
-	// perms := model.NamedPermissions{model.NamedPermission{Name: "to1001",
-	// 	CodeSet: permissions.CodeSetResult{CodeSet: permissions.CodeSet{"ReadAccountsBasic", "ReadProducts", "ReadTransactionsBasic", "ReadTransactionsCredits", "ReadTransactionsDebits", "ReadBalances"},
-	// 		TestIds: []permissions.TestId{"#co0001", "#co0002", "#co0003", "#t1001", "#t1002", "#t1003", "#t1004", "#t1005"}}, ConsentUrl: ""}}
-
-	// scr := model.SpecConsentRequirements{Identifier: "to1001", NamedPermissions: perms}
-	// scrSlice := []model.SpecConsentRequirements{scr}
-
-	return specConsents, nil
-}
-
-// GenerateSpecificationTestCases - generates test cases
-func (g generator) GenerateSpecificationTestCases(log *logrus.Entry, config GeneratorConfig, discovery discovery.ModelDiscovery, ctx *model.Context) TestCasesRun {
-	log = log.WithField("module", "GenerateSpecificationTestCases")
-	headlessTokenAcquisition := discovery.TokenAcquisition == "headless"
-
-	specTestCases := []SpecificationTestCases{}
-	customTestCases := []SpecificationTestCases{}
-	customReplacements := make(map[string]string)
-	originalEndpoints := make(map[string]string)
-	backupEndpoints := make(map[string]string)
-
-	for _, customTest := range discovery.CustomTests { // assume ordering is prerun i.e. customtest run before other tests
-		customTestCases = append(customTestCases, GetCustomTestCases(&customTest, ctx, headlessTokenAcquisition))
-		for k, v := range customTest.Replacements {
-			customReplacements[k] = v
-		}
-		for k, testcase := range customTest.Sequence {
-			if !headlessTokenAcquisition {
-				ctx := model.Context{}
-				ctx.PutMap(customReplacements)
-				testcase.ProcessReplacementFields(&ctx, true)
-			}
-			customTest.Sequence[k] = testcase
-		}
-	}
-
-	nameGenerator := names.NewSequentialPrefixedName("#t")
-	for _, item := range discovery.DiscoveryItems {
-		specTests, endpoints := generateSpecificationTestCases(log, item, nameGenerator, ctx, headlessTokenAcquisition, config)
-		specTestCases = append(specTestCases, specTests)
-		for k, v := range endpoints {
-			originalEndpoints[k] = v
-		}
-	}
-
-	tmpSpecTestCases := []SpecificationTestCases{}
-	for _, specTest := range specTestCases {
-		tmpSpecTestCases = append(tmpSpecTestCases, specTest)
-		for x, y := range specTest.TestCases {
-			backupEndpoints[y.ID] = y.Input.Endpoint
-			y.Input.Endpoint = originalEndpoints[y.ID]
-
-			specTest.TestCases[x] = y
-		}
-	}
-
-	// // calculate permission set required and update the header token in the test case request
-	consentRequirements := g.consentRequirements(tmpSpecTestCases) // uses pre-modified swagger urls
-	log.Infof("Consent Requirements: %#v", consentRequirements)
-
-	for _, specTest := range specTestCases {
-		for x, y := range specTest.TestCases {
-			y.Input.Endpoint = backupEndpoints[y.ID]
-			specTest.TestCases[x] = y
-		}
-	}
-
-	specTestCases = append(customTestCases, specTestCases...)
-	return TestCasesRun{specTestCases, consentRequirements}
-
+	specConsentReq := model.SpecConsentRequirements{Identifier: apiName, NamedPermissions: npa}
+	return specConsentReq, nil
 }
 
 // consentRequirements calls resolver to get list of permission sets required to run all test cases
@@ -183,13 +193,4 @@ func (g generator) consentRequirements(specTestCases []SpecificationTestCases) [
 type TestCasesRun struct {
 	TestCases               []SpecificationTestCases        `json:"specCases"`
 	SpecConsentRequirements []model.SpecConsentRequirements `json:"specTokens"`
-}
-
-func generateSpecificationTestCases(log *logrus.Entry, item discovery.ModelDiscoveryItem, nameGenerator names.Generator, ctx *model.Context, headlessTokenAcquisition bool, genConfig GeneratorConfig) (SpecificationTestCases, map[string]string) {
-	testcases, originalEndpoints := GetImplementedTestCases(&item, nameGenerator, ctx, headlessTokenAcquisition, genConfig)
-
-	for _, tc := range testcases {
-		log.Debug(tc.String())
-	}
-	return SpecificationTestCases{Specification: item.APISpecification, TestCases: testcases}, originalEndpoints
 }

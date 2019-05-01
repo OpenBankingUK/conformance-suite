@@ -4,16 +4,59 @@
       "body": {
         "Data": {
           "Initiation": {
-            "InstructionIdentification": "Excaliber",
-            "EndToEndIdentification": "Excaliber",
+            "InstructionIdentification": "$creditorIdentification",
+            "EndToEndIdentification": "$creditorIdentification",
             "InstructedAmount": {
               "Amount": "1.00",
+              "Currency": "$thisCurrency"
+            },
+            "CreditorAccount": {
+              "SchemeName": "$creditorScheme",
+              "Identification": "$creditorIdentification",
+              "Name": "CF Tool"
+            }
+          }
+        },
+        "Risk": {}
+      }
+    },
+    "minimalDomesticPaymentPost": {
+      "body": {
+        "Data": {
+          "ConsentId": "$consentId",
+          "Initiation": {
+            "InstructionIdentification": "$creditorIdentification",
+            "EndToEndIdentification": "$creditorIdentification",
+            "InstructedAmount": {
+              "Amount": "1.00",
+              "Currency": "$thisCurrency"
+            },
+            "CreditorAccount": {
+              "SchemeName": "$creditorScheme",
+              "Identification": "$creditorIdentification",
+              "Name": "CF Tool"
+            }
+          }
+        },
+        "Risk": {}
+      }
+    },
+    "minimalScheduledDomesticPaymentConsent": {
+      "body": {
+        "Data": {
+          "Permission": "Create",
+          "Initiation": {
+            "RequestedExecutionDateTime": "2020-10-01T13:14:25+00:00",
+            "InstructionIdentification": "ACME412",
+            "EndToEndIdentification": "FRESCO.21302.GFX.20",
+            "InstructedAmount": {
+              "Amount": "15.00",
               "Currency": "GBP"
             },
             "CreditorAccount": {
-              "SchemeName": "IBAN",
-              "Identification": "GB29PAPA20000390210002",
-              "Name": "Dr Foo"
+              "SchemeName": "SortCodeAccountNumber",
+              "Identification": "20000319470104",
+              "Name": "Messers Simplex & Co"
             }
           }
         },
@@ -37,9 +80,9 @@
               "Name": "Dr Foo"
             }
           }
-        }
-      },
-      "Risk": {}
+        },
+        "Risk": {}
+      }
     },
     "minimalInternationalStandingOrderConsent": {
       "body": {

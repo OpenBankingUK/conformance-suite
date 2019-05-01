@@ -1,6 +1,7 @@
 <template>
   <div class="d-flex flex-row justify-content-between p-3">
     <b-btn
+      id="back"
       :disabled="isBackDisabled"
       variant="primary"
       @click="onBack()">Back</b-btn>

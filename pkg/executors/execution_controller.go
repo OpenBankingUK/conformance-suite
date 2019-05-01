@@ -3,9 +3,13 @@ package executors
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/pkg/errors"
-	"gopkg.in/resty.v1"
 	"sync"
+
+	"gopkg.in/resty.v1"
+
+	"github.com/google/uuid"
+	"github.com/pkg/errors"
+	"github.com/sirupsen/logrus"
 
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/authentication"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
@@ -13,8 +17,6 @@ import (
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/generation"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/tracer"
-	"github.com/google/uuid"
-	"github.com/sirupsen/logrus"
 )
 
 // RunDefinition captures all the information required to run the test cases
@@ -96,7 +98,7 @@ func (r *TestCaseRunner) RunConsentAcquisition(item TokenConsentIDItem, ctx *mod
 		return errors.New("consent acquisition test cases runner already running")
 	}
 	r.running = true
-
+	logrus.Tracef("runConsentAquisition with %s, %s, %s\n", item.TokenName, item.ConsentURL, item.Permissions)
 	go r.runConsentAcquisitionAsync(item, ctx, consentType, consentIDChannel)
 
 	return nil
@@ -132,6 +134,13 @@ func (r *TestCaseRunner) runConsentAcquisitionAsync(item TokenConsentIDItem, ctx
 
 	ctxLogger := r.logger.WithField("id", uuid.New())
 	var comp model.Component
+
+	// Check for MTLS vs client basic authentication
+	authMethod, err := ctx.GetString("token_endpoint_auth_method")
+	if err != nil {
+		authMethod = "client_secret_basic"
+	}
+
 	if consentType == "psu" {
 		comp, err = model.LoadComponent("PSUConsentProviderComponent.json")
 		if err != nil {
@@ -139,6 +148,7 @@ func (r *TestCaseRunner) runConsentAcquisitionAsync(item TokenConsentIDItem, ctx
 			r.setNotRunning()
 			return
 		}
+
 	} else {
 		comp, err = model.LoadComponent("headlessTokenProviderProviderComponent.json")
 		if err != nil {
@@ -161,41 +171,69 @@ func (r *TestCaseRunner) runConsentAcquisitionAsync(item TokenConsentIDItem, ctx
 		comp.Tests[k] = v
 	}
 
-	r.executeComponentTests(&comp, ruleCtx, ctxLogger, item, consentIDChannel)
+	r.executeComponentTests(&comp, ruleCtx, ctxLogger, item, consentIDChannel, authMethod)
 	clientGrantToken, err := ruleCtx.GetString("client_access_token")
 	if err == nil {
-		logrus.StandardLogger().Debugf("setting client credential grant token to %s", clientGrantToken)
+		logrus.StandardLogger().WithFields(logrus.Fields{
+			"clientGrantToken": clientGrantToken,
+		}).Debugf("Setting client_access_token")
 		ctx.PutString("client_access_token", clientGrantToken)
 	}
 
 	r.setNotRunning()
 }
 
-func (r *TestCaseRunner) executeComponentTests(comp *model.Component, ruleCtx *model.Context, ctxLogger *logrus.Entry, item TokenConsentIDItem, consentIDChannel chan<- TokenConsentIDItem) {
-	ctxLogger = ctxLogger.WithField("component", comp.Name)
+func (r *TestCaseRunner) executeComponentTests(comp *model.Component, ruleCtx *model.Context, logger *logrus.Entry, item TokenConsentIDItem, consentIDChannel chan<- TokenConsentIDItem, authMethod string) {
+	ctxLogger := logger.WithFields(logrus.Fields{
+		"component": comp.Name,
+		"module":    "TestCaseRunner",
+		"function":  "executeComponentTests",
+	})
+
 	for _, testcase := range comp.Tests {
 		if r.daemonController.ShouldStop() {
-			logrus.StandardLogger().Debugln("stop component test run received, aborting runner")
+			ctxLogger.Debug("stop component test run received, aborting runner")
 			return
 		}
 
-		testResult := r.executeTest(testcase, ruleCtx, ctxLogger)
+		if testcase.ID == "#compPsuConsent01" {
+			if authMethod == "client_secret_basic" {
+				testcase.Input.SetHeader("authorization", "Basic $basic_authentication")
+			}
+			if authMethod == "tls_client_auth" {
+				clientid, err := ruleCtx.GetString("client_id")
+				if err != nil {
+					ctxLogger.Warn("cannot locate client_id for tls_client_auth form field")
+				}
+				testcase.Input.SetFormField("client_id", clientid)
+			}
+		}
+		testResult := r.executeTest(testcase, ruleCtx, logger)
 		r.daemonController.AddResult(testResult)
 
 		if testResult.Pass {
-			logrus.StandardLogger().Debugf("hanging around for tokennamed %s", item.TokenName)
+			ctxLogger.WithFields(logrus.Fields{
+				"item": fmt.Sprintf("%#v", item),
+			}).Debug("hanging around for token (TokenConsentIDItem)")
 			consentURL, err := ruleCtx.GetString("consent_url")
 			if err == model.ErrNotFound {
 				continue
 			}
+
 			item.ConsentURL = consentURL
 			ruleCtx.DumpContext()
 			consentID, err := ruleCtx.GetString(item.TokenName)
 			if err == model.ErrNotFound {
-				logrus.StandardLogger().Debugf("consentId not found in context")
+				ctxLogger.WithFields(logrus.Fields{
+					"item.TokenName": fmt.Sprintf("%+v", item.TokenName),
+					"err":            err,
+				}).Warn("Did not find consentID in context for item.TokenName")
 			}
 			item.ConsentID = consentID
-			logrus.StandardLogger().Debugf("Sending Item %s:%s:%s to consentIDChannel", item.TokenName, item.ConsentID, item.ConsentURL)
+
+			ctxLogger.WithFields(logrus.Fields{
+				"item": fmt.Sprintf("%#v", item),
+			}).Debug("Sending item (TokenConsentIDItem) to consentIDChannel")
 			consentIDChannel <- item
 		} else if len(testResult.Fail) > 0 {
 			item.Error = testResult.Fail[0]
@@ -205,19 +243,24 @@ func (r *TestCaseRunner) executeComponentTests(comp *model.Component, ruleCtx *m
 }
 
 func (r *TestCaseRunner) setNotRunning() {
-	logrus.StandardLogger().Debug("TestCaseRunner.setNotRunning, runningLock=false")
+	logger := logrus.StandardLogger().WithFields(logrus.Fields{
+		"function": "setNotRunning",
+		"module":   "TestCaseRunner",
+	})
+
+	logger.Debug("acquiring runningLock")
 	r.runningLock.Lock()
-	logrus.StandardLogger().Debug("TestCaseRunner.setNotRunning, runningLock=true")
+	logger.Debug("acquired runningLock")
 	defer func() {
-		logrus.StandardLogger().Debug("TestCaseRunner.setNotRunning, runningLock=false")
+		logger.Debug("releasing runningLock")
 		r.runningLock.Unlock()
+
 	}()
 	r.running = false
 }
 
 func (r *TestCaseRunner) makeRuleCtx(ctx *model.Context) *model.Context {
 	ruleCtx := &model.Context{}
-	ruleCtx.Put("SigningCert", r.definition.SigningCert)
 	ruleCtx.PutContext(ctx)
 	return ruleCtx
 }
@@ -229,31 +272,31 @@ func (r *TestCaseRunner) executeSpecTests(spec generation.SpecificationTestCases
 			ctxLogger.Info("stop test run received, aborting runner")
 			return
 		}
-
+		ruleCtx.DumpContext("ruleCtx before: " + testcase.ID)
 		testResult := r.executeTest(testcase, ruleCtx, ctxLogger)
 		r.daemonController.AddResult(testResult)
 	}
 }
 
-func (r *TestCaseRunner) executeTest(tc model.TestCase, ruleCtx *model.Context, ctxLogger *logrus.Entry) results.TestCase {
-	ctxLogger = logWithTestCase(ctxLogger, tc)
+func (r *TestCaseRunner) executeTest(tc model.TestCase, ruleCtx *model.Context, logger *logrus.Entry) results.TestCase {
+	ctxLogger := logWithTestCase(logger, tc)
 	req, err := tc.Prepare(ruleCtx)
 	if err != nil {
 		ctxLogger.WithError(err).Error("preparing executing test")
-		return results.NewTestCaseFail(tc.ID, results.NoMetrics, []error{err})
+		return results.NewTestCaseFail(tc.ID, results.NoMetrics, []error{err}, tc.Input.Endpoint, tc.APIName, tc.APIVersion)
 	}
 	resp, metrics, err := r.executor.ExecuteTestCase(req, &tc, ruleCtx)
 	ctxLogger = logWithMetrics(ctxLogger, metrics)
 	if err != nil {
 		ctxLogger.WithError(err).WithFields(logrus.Fields{"result": "FAIL", "ID": tc.ID}).Error("test result")
-		return results.NewTestCaseFail(tc.ID, metrics, []error{err})
+		return results.NewTestCaseFail(tc.ID, metrics, []error{err}, tc.Input.Endpoint, tc.APIName, tc.APIVersion)
 	}
 
 	result, errs := tc.Validate(resp, ruleCtx)
 	if errs != nil {
 		detailedErrors := detailedErrors(errs, resp)
 		ctxLogger.WithField("errs", detailedErrors).WithFields(logrus.Fields{"result": passText[result], "ID": tc.ID}).Error("test result validate")
-		return results.NewTestCaseFail(tc.ID, metrics, detailedErrors)
+		return results.NewTestCaseFail(tc.ID, metrics, detailedErrors, tc.Input.Endpoint, tc.APIName, tc.APIVersion)
 	}
 
 	if !result {
@@ -262,7 +305,7 @@ func (r *TestCaseRunner) executeTest(tc model.TestCase, ruleCtx *model.Context, 
 		ctxLogger.WithError(err).WithFields(logrus.Fields{"result": passText[result], "ID": tc.ID}).Info("test result")
 	}
 
-	return results.NewTestCaseResult(tc.ID, result, metrics, []error{})
+	return results.NewTestCaseResult(tc.ID, result, metrics, []error{}, tc.Input.Endpoint, tc.APIName, tc.APIVersion)
 }
 
 func detailedErrors(errs []error, resp *resty.Response) []error {
@@ -281,10 +324,10 @@ var passText = map[bool]string{
 
 func logWithTestCase(logger *logrus.Entry, tc model.TestCase) *logrus.Entry {
 	return logger.WithFields(logrus.Fields{
-		"testcase":   tc.Name,
-		"method":     tc.Input.Method,
-		"endpoint":   tc.Input.Endpoint,
-		"statuscode": tc.Expect.StatusCode,
+		"TestCase.Name":              tc.Name,
+		"TestCase.Input.Method":      tc.Input.Method,
+		"TestCase.Input.Endpoint":    tc.Input.Endpoint,
+		"TestCase.Expect.StatusCode": tc.Expect.StatusCode,
 	})
 }
 

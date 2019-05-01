@@ -89,6 +89,11 @@ func (c Context) GetStringSlice(key string) ([]string, error) {
 	return result, nil
 }
 
+// Delete Key from Context
+func (c *Context) Delete(delKey string) {
+	delete(*c, delKey)
+}
+
 // DumpContext - send the contents of a context to a logger
 func (c *Context) DumpContext(text ...string) {
 	if len(text) > 0 {
@@ -99,14 +104,14 @@ func (c *Context) DumpContext(text ...string) {
 		for i := 1; i < len(text); i++ {
 			key := text[i]
 			value, _ := c.Get(key)
-			logrus.StandardLogger().Tracef("[Context] %s:%v", key, value)
+			logrus.StandardLogger().Tracef("[Context] %s : %v\n", key, value)
 		}
 	} else {
 		for k, v := range *c {
-			if k == "client_secret" || k == "basic_authentication" || k == "SigningCert" { // skip potentially sensitive fields - likely need to be more robust
+			if k == "client_secret" || k == "basic_authentication" || k == "signingPublic" || k == "signingPrivate" { // skip potentially sensitive fields - likely need to be more robust
 				continue
 			}
-			logrus.StandardLogger().Tracef("[Context] %s:%v", k, v)
+			logrus.StandardLogger().Tracef("[Context] %s:%v\n", k, v)
 		}
 	}
 }

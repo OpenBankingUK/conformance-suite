@@ -1,9 +1,8 @@
 import * as _ from 'lodash';
-import * as types from './mutation-types';
-import constants from './constants';
-
-// import discovery from '../../../api/discovery';
+import moment from 'moment';
 import api from '../../../api';
+import constants from './constants';
+import { mutationTypes as types } from './index';
 
 const findImageData = (model, images) => {
   const { name } = model.discoveryModel;
@@ -57,14 +56,22 @@ export default {
         const defaultAuthMethod = _.first(_.values(response.default_token_endpoint_auth_method));
         commit(types.SET_TOKEN_ENDPOINT_AUTH_METHOD, defaultAuthMethod);
 
+        commit(types.SET_RESPONSE_TYPES_SUPPORTED, response.response_types_supported);
+
         const authMethods = _.first(_.values(response.token_endpoint_auth_methods));
         commit(types.SET_TOKEN_ENDPOINT_AUTH_METHODS, authMethods);
+
+        const reqObjSignMethods = _.first(_.values(response.request_object_signing_alg_values_supported));
+        commit(types.SET_REQUEST_OBJECT_SIGNING_ALG_VALUES_SUPPORTED, reqObjSignMethods);
 
         const authorizationEndpoint = _.first(_.values(response.authorization_endpoints));
         commit(types.SET_AUTHORIZATION_ENDPOINT, authorizationEndpoint);
 
         const issuer = _.first(_.values(response.issuers));
         commit(types.SET_ISSUER, issuer);
+
+        commit(types.SET_TRANSACTION_FROM_DATE, response.default_transaction_from_date);
+        commit(types.SET_TRANSACTION_TO_DATE, response.default_transaction_to_date);
 
         dispatch('status/clearErrors', null, { root: true });
         commit(types.SET_WIZARD_STEP, constants.WIZARD.STEP_THREE);
@@ -98,16 +105,21 @@ export default {
         'signing_public',
         'transport_private',
         'transport_public',
+        'transaction_from_date',
+        'transaction_to_date',
         'client_id',
         'client_secret',
         'token_endpoint',
+        'response_type',
         'token_endpoint_auth_method',
+        'request_object_signing_alg',
         'authorization_endpoint',
         'resource_base_url',
         'x_fapi_financial_id',
         'issuer',
         'redirect_url',
         'resource_ids',
+        'creditor_account',
       ];
       const newConfig = _.pick(merged, validKeys);
       commit(types.SET_CONFIGURATION, newConfig);
@@ -201,6 +213,16 @@ export default {
       errors.push('Statement IDs empty');
     }
 
+    if (_.isEmpty(state.configuration.transaction_from_date)) {
+      errors.push('Transaction From Date empty');
+    } else if (!moment(state.configuration.transaction_from_date, moment.ISO_8601).isValid()) {
+      errors.push('Transaction From Date not ISO 8601 format');
+    }
+    if (_.isEmpty(state.configuration.transaction_to_date)) {
+      errors.push('Transaction To Date empty');
+    } else if (!moment(state.configuration.transaction_to_date, moment.ISO_8601).isValid()) {
+      errors.push('Transaction To Date not ISO 8601 format');
+    }
     if (_.isEmpty(state.configuration.client_id)) {
       errors.push('Client ID empty');
     }
@@ -210,8 +232,14 @@ export default {
     if (_.isEmpty(state.configuration.token_endpoint)) {
       errors.push('Token Endpoint empty');
     }
+    if (_.isEmpty(state.configuration.response_type)) {
+      errors.push('response_type empty');
+    }
     if (_.isEmpty(state.configuration.token_endpoint_auth_method)) {
       errors.push('Token Endpoint Auth Method empty');
+    }
+    if (_.isEmpty(state.configuration.request_object_signing_alg)) {
+      errors.push('Request object signing algorithm empty');
     }
     if (_.isEmpty(state.configuration.authorization_endpoint)) {
       errors.push('Authorization Endpoint empty');

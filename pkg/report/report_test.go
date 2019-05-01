@@ -1,12 +1,16 @@
 package report
 
 import (
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/executors/events"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/executors/results"
+	"github.com/stretchr/testify/assert"
 	"reflect"
 	"testing"
 	"time"
 
 	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/test"
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/server"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/server/models"
 )
 
 func TestReport_Validate(t *testing.T) {
@@ -15,9 +19,9 @@ func TestReport_Validate(t *testing.T) {
 		Created        string
 		Expiration     string
 		Version        string
-		Status         ReportStatus
-		CertifiedBy    ReportCertifiedBy
-		SignatureChain *[]ReportSignatureChain
+		Status         Status
+		CertifiedBy    CertifiedBy
+		SignatureChain *[]SignatureChain
 	}
 	tests := []struct {
 		name    string
@@ -36,9 +40,9 @@ func TestReport_Validate(t *testing.T) {
 				Created:    time.Now().Format(time.RFC3339),
 				Expiration: time.Now().Format(time.RFC3339),
 				Version:    "Version",
-				Status:     ReportStatusPending,
-				CertifiedBy: ReportCertifiedBy{
-					Environment:  ReportCertifiedByEnvironmentTesting,
+				Status:     StatusPending,
+				CertifiedBy: CertifiedBy{
+					Environment:  CertifiedByEnvironmentTesting,
 					Brand:        "Brand",
 					AuthorisedBy: "AuthorisedBy",
 					JobTitle:     "JobTitle",
@@ -53,9 +57,9 @@ func TestReport_Validate(t *testing.T) {
 				Created:    time.Now().Format(time.RFC3339),
 				Expiration: time.Now().Format(time.RFC3339),
 				Version:    "Version",
-				Status:     ReportStatusPending,
-				CertifiedBy: ReportCertifiedBy{
-					Environment:  ReportCertifiedByEnvironmentTesting,
+				Status:     StatusPending,
+				CertifiedBy: CertifiedBy{
+					Environment:  CertifiedByEnvironmentTesting,
 					Brand:        "Brand",
 					AuthorisedBy: "AuthorisedBy",
 					JobTitle:     "JobTitle",
@@ -69,9 +73,9 @@ func TestReport_Validate(t *testing.T) {
 				ID:         "f47ac10b-58cc-4372-8567-0e02b2c3d479",
 				Expiration: time.Now().Format(time.RFC3339),
 				Version:    "Version",
-				Status:     ReportStatusPending,
-				CertifiedBy: ReportCertifiedBy{
-					Environment:  ReportCertifiedByEnvironmentTesting,
+				Status:     StatusPending,
+				CertifiedBy: CertifiedBy{
+					Environment:  CertifiedByEnvironmentTesting,
 					Brand:        "Brand",
 					AuthorisedBy: "AuthorisedBy",
 					JobTitle:     "JobTitle",
@@ -86,9 +90,9 @@ func TestReport_Validate(t *testing.T) {
 				Created:    time.Now().Format(time.ANSIC),
 				Expiration: time.Now().Format(time.RFC3339),
 				Version:    "Version",
-				Status:     ReportStatusPending,
-				CertifiedBy: ReportCertifiedBy{
-					Environment:  ReportCertifiedByEnvironmentTesting,
+				Status:     StatusPending,
+				CertifiedBy: CertifiedBy{
+					Environment:  CertifiedByEnvironmentTesting,
 					Brand:        "Brand",
 					AuthorisedBy: "AuthorisedBy",
 					JobTitle:     "JobTitle",
@@ -103,9 +107,9 @@ func TestReport_Validate(t *testing.T) {
 				Created:    time.Now().Format(time.RFC3339),
 				Expiration: time.Now().Format(time.ANSIC),
 				Version:    "Version",
-				Status:     ReportStatusPending,
-				CertifiedBy: ReportCertifiedBy{
-					Environment:  ReportCertifiedByEnvironmentTesting,
+				Status:     StatusPending,
+				CertifiedBy: CertifiedBy{
+					Environment:  CertifiedByEnvironmentTesting,
 					Brand:        "Brand",
 					AuthorisedBy: "AuthorisedBy",
 					JobTitle:     "JobTitle",
@@ -120,9 +124,9 @@ func TestReport_Validate(t *testing.T) {
 				Created:    time.Now().Format(time.RFC3339),
 				Expiration: time.Now().Format(time.RFC3339),
 				Version:    "Version",
-				Status:     ReportStatus(-1),
-				CertifiedBy: ReportCertifiedBy{
-					Environment:  ReportCertifiedByEnvironmentTesting,
+				Status:     Status(-1),
+				CertifiedBy: CertifiedBy{
+					Environment:  CertifiedByEnvironmentTesting,
 					Brand:        "Brand",
 					AuthorisedBy: "AuthorisedBy",
 					JobTitle:     "JobTitle",
@@ -138,9 +142,9 @@ func TestReport_Validate(t *testing.T) {
 				Created:    time.Now().Format(time.RFC3339),
 				Expiration: time.Now().Format(time.RFC3339),
 				Version:    "Version",
-				Status:     ReportStatusComplete,
-				CertifiedBy: ReportCertifiedBy{
-					Environment:  ReportCertifiedByEnvironmentTesting,
+				Status:     StatusComplete,
+				CertifiedBy: CertifiedBy{
+					Environment:  CertifiedByEnvironmentTesting,
 					Brand:        "Brand",
 					AuthorisedBy: "AuthorisedBy",
 					JobTitle:     "JobTitle",
@@ -156,7 +160,7 @@ func TestReport_Validate(t *testing.T) {
 			r := Report{
 				ID:             tt.fields.ID,
 				Created:        tt.fields.Created,
-				Expiration:     tt.fields.Expiration,
+				Expiration:     stringToPointer(tt.fields.Expiration),
 				Version:        tt.fields.Version,
 				Status:         tt.fields.Status,
 				CertifiedBy:    tt.fields.CertifiedBy,
@@ -173,32 +177,94 @@ func TestReport_Validate(t *testing.T) {
 	}
 }
 
+func stubExportResults() models.ExportResults {
+	return models.ExportResults{
+		Tokens: []events.AcquiredAccessToken{
+			{
+				TokenName: "token-name",
+			},
+		},
+		DiscoveryModel: discovery.Model{
+			DiscoveryModel: discovery.ModelDiscovery{
+				Name:             "Name",
+				Description:      "Description",
+				DiscoveryVersion: "Discovery version",
+				TokenAcquisition: "Token Acquisition",
+				DiscoveryItems: []discovery.ModelDiscoveryItem{
+					{
+						APISpecification: discovery.ModelAPISpecification{
+							Name:          "Name",
+							SchemaVersion: "schema-version",
+							Version:       "version",
+							Manifest:      "manifest",
+							URL:           "url",
+							SpecType:      "specType",
+						},
+						ResourceBaseURI:        "resource-base-uri",
+						OpenidConfigurationURI: "open-id-configuration-id",
+						ResourceIds: discovery.ResourceIds{
+							"foo": "bar",
+						},
+						Endpoints: []discovery.ModelEndpoint{
+							{
+								Method:                "GET",
+								Path:                  "/",
+								ConditionalProperties: nil,
+							},
+						},
+					},
+				},
+				CustomTests: []discovery.CustomTest{},
+			},
+		},
+		ExportRequest: models.ExportRequest{
+			Implementer:         "Implemented",
+			AuthorisedBy:        "Authorised by",
+			JobTitle:            "Job title",
+			HasAgreed:           false,
+			AddDigitalSignature: false,
+		},
+		HasPassed: false,
+		Results:   map[results.ResultKey][]results.TestCase{},
+	}
+}
+
 func TestNewReport(t *testing.T) {
 	t.Parallel()
 	// TODO: add test cases once functionality is read. Intentionally skipping test for now.
 	t.Skip()
 
 	type args struct {
-		exportResponse server.ExportResponse
+		exportResults models.ExportResults
 	}
 	tests := []struct {
-		name    string
-		args    args
-		want    Report
-		wantErr bool
+		name string
+		args args
+		want Report
+		err  error // wantErr can be inferred by this being nil or not
 	}{
-		// TODO: Add test cases.
+		{
+			name: "Valid report",
+			args: args{
+				exportResults: stubExportResults(),
+			},
+			want: Report{},
+			err:  nil,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := NewReport(tt.args.exportResponse)
-			if (err != nil) != tt.wantErr {
-				t.Errorf("NewReport() error = %v, wantErr %v", err, tt.wantErr)
-				return
+			got, err := NewReport(tt.args.exportResults)
+			if tt.err != nil {
+				assert.New(t).Equal(tt.err, err)
 			}
 			if !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("NewReport() = %v, want %v", got, tt.want)
 			}
 		})
 	}
+}
+
+func stringToPointer(str string) *string {
+	return &str
 }

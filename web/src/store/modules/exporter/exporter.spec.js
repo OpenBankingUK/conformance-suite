@@ -8,8 +8,9 @@
 import { createLocalVue } from '@vue/test-utils';
 import Vuex from 'vuex';
 import cloneDeep from 'lodash/cloneDeep';
-import exporter from './index';
+import moment from 'moment';
 
+import exporter from './index';
 import api from '../../../api';
 // https://jestjs.io/docs/en/mock-functions#mocking-modules
 jest.mock('../../../api');
@@ -44,31 +45,30 @@ describe('store/modules/exporter', () => {
       job_title: '',
       has_agreed: false,
       add_digital_signature: false,
-      export_results: null,
+      export_results_blob: null,
+      export_results_filename: '',
     });
   });
 
   describe('actions', () => {
     it('exportResults ok', async () => {
-      expect.assertions(2);
+      expect.assertions(5);
       const store = createRealStore();
-      const EXPORT_RESULTS = {
-        export_request: {
-          implementer: 'The Implementer',
-          authorised_by: 'The Authorised By',
-          job_title: 'The Job Title',
-          has_agreed: true,
-          add_digital_signature: true,
-        },
-        has_passed: true,
-      };
+      const EXPORT_RESULTS = 'blob';
 
-      expect(store.state.export_results).toBeNull();
+      expect(store.state.export_results_blob).toBeNull();
+
       api.exportResults.mockReturnValueOnce(EXPORT_RESULTS);
-
       await store.dispatch('exportResults');
 
-      expect(store.state.export_results).toBe(EXPORT_RESULTS);
+      expect(store.state.export_results_blob).toBe(EXPORT_RESULTS);
+      expect(store.state.export_results_filename).toMatch(/^report_/);
+      expect(store.state.export_results_filename).toMatch(/\.zip$/);
+
+      // remove prefix and post and check it is valid date
+      const filename = store.state.export_results_filename.replace(/^report_/, '').replace(/\.zip$/, '');
+      const date = moment(filename, 'report_YYYY-MM-DDTHH:mm:ssZ.zip');
+      expect(date.isValid()).toBe(true);
     });
   });
 
@@ -123,23 +123,14 @@ describe('store/modules/exporter', () => {
       expect(store.state.add_digital_signature).toBe(VALUE);
     });
 
-    it('SET_EXPORT_RESULTS', async () => {
+    it('SET_EXPORT_RESULTS_BLOB', async () => {
       expect.assertions(2);
       const store = createRealStore();
-      const VALUE = {
-        export_request: {
-          implementer: 'The Implementer',
-          authorised_by: 'The Authorised By',
-          job_title: 'The Job Title',
-          has_agreed: true,
-          add_digital_signature: true,
-        },
-        has_passed: true,
-      };
+      const VALUE = 'blob';
 
-      expect(store.state.export_results).toBeNull();
-      store.commit(exporter.mutationTypes.SET_EXPORT_RESULTS, VALUE);
-      expect(store.state.export_results).toBe(VALUE);
+      expect(store.state.export_results_blob).toBeNull();
+      store.commit(exporter.mutationTypes.SET_EXPORT_RESULTS_BLOB, VALUE);
+      expect(store.state.export_results_blob).toBe(VALUE);
     });
   });
 });

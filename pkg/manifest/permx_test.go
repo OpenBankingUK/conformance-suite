@@ -1,34 +1,45 @@
 package manifest
 
 import (
-	"fmt"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
 	"testing"
 
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
 	"github.com/stretchr/testify/assert"
+
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
 )
 
 func TestPermx(t *testing.T) {
-	tests, err := GenerateTestCases("TestSpec", "http://mybaseurl", &model.Context{})
+	apiSpec := discovery.ModelAPISpecification{
+		SchemaVersion: accountSwaggerLocation31,
+	}
+	tests, err := GenerateTestCases(apiSpec, "http://mybaseurl", &model.Context{}, readDiscovery())
 	assert.Nil(t, err)
 	testcasePermissions, err := getTestCasePermissions(tests)
 	assert.Nil(t, err)
 	requiredTokens, err := getRequiredTokens(testcasePermissions)
+	assert.Nil(t, err)
 	dumpJSON(requiredTokens)
 }
 
 func TestGetScriptConsentTokens(t *testing.T) {
-	tests, err := GenerateTestCases("TestSpec", "http://mybaseurl", &model.Context{})
+	apiSpec := discovery.ModelAPISpecification{
+		SchemaVersion: accountSwaggerLocation31,
+	}
+	tests, err := GenerateTestCases(apiSpec, "http://mybaseurl", &model.Context{}, readDiscovery())
 	assert.Nil(t, err)
 	testcasePermissions, err := getTestCasePermissions(tests)
 	assert.Nil(t, err)
 	requiredTokens, err := getRequiredTokens(testcasePermissions)
-	populateTokens(requiredTokens)
+	assert.Nil(t, err)
+	populateTokens(t, requiredTokens)
 	dumpJSON(requiredTokens)
 }
 
-func populateTokens(gatherer []RequiredTokens) error {
-	fmt.Printf("%d entries found\n", len(gatherer))
+func populateTokens(t *testing.T, gatherer []RequiredTokens) error {
+	t.Helper()
+
+	t.Logf("%d entries found\n", len(gatherer))
 	for k, tokenGatherer := range gatherer {
 		if len(tokenGatherer.Perms) == 0 {
 			continue
@@ -46,6 +57,5 @@ func populateTokens(gatherer []RequiredTokens) error {
 
 func getToken(perms []string) (string, error) {
 	// for headless - get the okens for the permissions here
-
 	return "abigfattoken", nil
 }

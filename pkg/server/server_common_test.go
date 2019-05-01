@@ -16,6 +16,8 @@ var (
 		"Vary":         []string{"Accept-Encoding"},
 		"Content-Type": []string{"application/json; charset=UTF-8"},
 	}
+	marshalIndentPrefix = ``
+	marshalIndentindent = `  `
 )
 
 // Generic util function for making test requests.

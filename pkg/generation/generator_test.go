@@ -5,11 +5,12 @@ import (
 	"regexp"
 	"testing"
 
+	"github.com/stretchr/testify/require"
+
 	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/test"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/permissions"
-	"github.com/stretchr/testify/require"
 )
 
 func testLoadDiscoveryModel(t *testing.T) *discovery.ModelDiscovery {
@@ -28,7 +29,7 @@ func TestGenerateSpecificationTestCases(t *testing.T) {
 	discovery := *testLoadDiscoveryModel(t)
 	generator := NewGenerator()
 	config := GeneratorConfig{}
-	testCasesRun := generator.GenerateSpecificationTestCases(logger, config, discovery, &model.Context{})
+	testCasesRun, _ := generator.GenerateManifestTests(logger, config, discovery, &model.Context{})
 	cases := testCasesRun.TestCases
 
 	t.Run("returns slice of SpecificationTestCases, one per discovery item", func(t *testing.T) {
@@ -94,4 +95,30 @@ func TestPermissionsShouldPassAllTestsToResolver(t *testing.T) {
 	matchName := regexp.MustCompile(`to\w{4}`)
 	assert.Regexp(matchName, specTokens[0].NamedPermissions[0].Name)
 	assert.Regexp(matchName, specTokens[0].NamedPermissions[1].Name)
+}
+
+func TestShouldIgnoreDiscoveryItem(t *testing.T) {
+	require := test.NewAssert(t)
+
+	supportedSchemaVersions := []string{
+		// Account and Transaction API Specification
+		"https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.0/dist/account-info-swagger.json",
+		// "Confirmation of Funds API Specification"
+		"https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.0/dist/confirmation-funds-swagger.json",
+	}
+	for _, supportedSchemaVersion := range supportedSchemaVersions {
+		require.False(shouldIgnoreDiscoveryItem(discovery.ModelAPISpecification{
+			SchemaVersion: supportedSchemaVersion,
+		}))
+	}
+
+	unsupportedSchemaVersions := []string{
+		// Payment Initiation API
+		"https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.0/dist/payment-initiation-swagger.json",
+	}
+	for _, unsupportedSchemaVersion := range unsupportedSchemaVersions {
+		require.True(shouldIgnoreDiscoveryItem(discovery.ModelAPISpecification{
+			SchemaVersion: unsupportedSchemaVersion,
+		}))
+	}
 }

@@ -2,76 +2,11 @@ import Vue from 'vue';
 import VueRouter from 'vue-router';
 import has from 'lodash/has';
 import store from './store';
-
-import TheWizard from './views/TheWizard.vue';
-import WizardContinueOrStart from './views/Wizard/WizardContinueOrStart.vue';
-import WizardDiscoveryConfig from './views/Wizard/WizardDiscoveryConfig.vue';
-import WizardConfigurationTabs from './views/Wizard/WizardConfigurationTabs.vue';
-import WizardOverviewRun from './views/Wizard/WizardOverviewRun.vue';
-import WizardExport from './views/Wizard/WizardExport.vue';
-import NotFound from './views/NotFound.vue';
-import ConformanceSuiteCallback from './views/ConformanceSuiteCallback/ConformanceSuiteCallback.vue';
+import routes from './routes';
 
 Vue.use(VueRouter);
 
-const router = new VueRouter({
-  // Use the HTML5 history API, so that routes look normal
-  // (e.g. `/about`) instead of using a hash (e.g. `/#/about`).
-  mode: 'history',
-  base: process.env.BASE_URL,
-  routes: [
-    {
-      path: '/',
-      name: 'TheWizard',
-      redirect: '/wizard/continue-or-start',
-      component: TheWizard,
-      children: [
-        {
-          path: '/wizard/continue-or-start',
-          name: 'WizardContinueOrStart',
-          component: WizardContinueOrStart,
-        },
-        {
-          path: '/wizard/discovery-config',
-          name: 'WizardDiscoveryConfig',
-          component: WizardDiscoveryConfig,
-        },
-        {
-          path: '/wizard/configuration',
-          name: 'WizardConfigurationTabs',
-          component: WizardConfigurationTabs,
-        },
-        {
-          path: '/wizard/overview-run',
-          name: 'WizardOverviewRun',
-          component: WizardOverviewRun,
-        },
-        {
-          path: '/wizard/export',
-          name: 'WizardExport',
-          component: WizardExport,
-        },
-      ],
-    },
-    {
-      path: '/conformancesuite/callback',
-      name: 'ConformanceSuiteCallback',
-      component: ConformanceSuiteCallback,
-    },
-    // ---
-    // Handle 404s
-    // ---
-    {
-      path: '/404',
-      name: 'NotFound',
-      component: NotFound,
-    },
-    {
-      path: '*',
-      redirect: '404',
-    },
-  ],
-});
+const router = new VueRouter(routes);
 
 /**
  * Prevent access to a route if the previous step has not been completed.

@@ -96,6 +96,33 @@
           </b-input-group>
         </b-form-group>
 
+        <b-form-group
+          id="transaction_from_date_group"
+          label-for="transaction_from_date"
+          label="Transaction From Date">
+          <b-form-input
+            id="transaction_from_date"
+            v-model="transaction_from_date"
+            :state="isNotEmpty(transaction_from_date)"
+            placeholder="e.g. 2006-01-02T15:04:05Z07:00"
+            required
+            type="text"
+          />
+        </b-form-group>
+
+        <b-form-group
+          id="transaction_to_date_group"
+          label-for="transaction_to_date"
+          label="Transaction To Date">
+          <b-form-input
+            id="transaction_to_date"
+            v-model="transaction_to_date"
+            :state="isNotEmpty(transaction_to_date)"
+            placeholder="e.g. 2006-01-02T15:04:05Z07:00"
+            required
+            type="text"
+          />
+        </b-form-group>
 
         <b-form-group
           id="client_id_group"
@@ -159,6 +186,21 @@
         </b-form-group>
 
         <b-form-group
+          id="response_type_group"
+          label-for="response_type"
+          label="OAuth 2.0 response_type"
+          description="REQUIRED. JSON array containing a list of the OAuth 2.0 response_type values that this OP supports. Dynamic OpenID Providers MUST support the code, id_token, and the token id_token Response Type values"
+        >
+          <b-form-select
+            id="response_type"
+            v-model="response_type"
+            :options="response_types_supported"
+            :state="isNotEmpty(response_type)"
+            required
+          />
+        </b-form-group>
+
+        <b-form-group
           id="token_endpoint_auth_method_group"
           label-for="token_endpoint_auth_method"
           label="Token Endpoint Auth Method"
@@ -169,6 +211,21 @@
             v-model="token_endpoint_auth_method"
             :options="token_endpoint_auth_methods"
             :state="true"
+            required
+          />
+        </b-form-group>
+
+        <b-form-group
+          id="request_object_signing_alg_group"
+          label-for="request_object_signing_alg"
+          label="Request object signing algorithm"
+          description="Algorithm used to sign requests objects"
+        >
+          <b-form-select
+            id="request_object_signing_alg"
+            v-model="request_object_signing_alg"
+            :options="request_object_signing_alg_values_supported"
+            :state="isNotEmpty(request_object_signing_alg)"
             required
           />
         </b-form-group>
@@ -225,6 +282,56 @@
           />
         </b-form-group>
       </b-card>
+      <br>
+      <b-card bg-variant="light">
+        <b-form-group
+          id="creditor_account_group"
+          label-for="creditor_account"
+          label="CreditorAccount"
+          description="OBCashAccount5">
+          <b-form-group
+            id="creditor_account_scheme_name_group"
+            label-for="creditor_account_scheme_name"
+            label="SchemeName"
+            description="OBExternalAccountIdentification4Code">
+            <b-form-select
+              id="creditor_account_scheme_name"
+              v-model="creditor_account.scheme_name"
+              :options="[
+                'UK.OBIE.BBAN',
+                'UK.OBIE.IBAN',
+                'UK.OBIE.PAN' ,
+                'UK.OBIE.Paym',
+                'UK.OBIE.SortCodeAccountNumber'
+              ]"
+              required/>
+          </b-form-group>
+          <b-form-group
+            id="creditor_account_identification_group"
+            label-for="creditor_account_identification"
+            label="Identification"
+            description="Beneficiary account identification">
+            <b-form-input
+              id="creditor_account_identification"
+              v-model="creditor_account.identification"
+              :state="isNotEmpty(creditor_account.identification)"
+              required
+            />
+          </b-form-group>
+          <b-form-group
+            id="creditor_account_name_group"
+            label-for="creditor_account_name"
+            label="Name"
+            description="Name of the account, as assigned by the account servicing institution.\nUsage: The account name is the name or names of the account owner(s) represented at an account level. The account name is not the product name or the nickname of the account.">
+            <b-form-input
+              id="creditor_account_name"
+              v-model="creditor_account.name"
+              :state="isNotEmpty(creditor_account.name)"
+              required
+            />
+          </b-form-group>
+        </b-form-group>
+      </b-card>
     </b-form>
   </div>
 </template>
@@ -253,6 +360,22 @@ export default {
         value: m,
         text: m,
       }));
+    },
+    transaction_from_date: {
+      get() {
+        return this.$store.state.config.configuration.transaction_from_date;
+      },
+      set(value) {
+        this.$store.commit('config/SET_TRANSACTION_FROM_DATE', value);
+      },
+    },
+    transaction_to_date: {
+      get() {
+        return this.$store.state.config.configuration.transaction_to_date;
+      },
+      set(value) {
+        this.$store.commit('config/SET_TRANSACTION_TO_DATE', value);
+      },
     },
     // For an explanation on how these work. See:
     // * https://stackoverflow.com/a/45841419/241993
@@ -284,12 +407,64 @@ export default {
       },
     },
 
+    response_types_supported: {
+      get() {
+        return this.$store.state.config.response_types_supported;
+      },
+    },
+    response_type: {
+      get() {
+        return this.$store.state.config.configuration.response_type;
+      },
+      set(value) {
+        this.$store.commit('config/SET_RESPONSE_TYPE', value);
+      },
+    },
     token_endpoint_auth_method: {
       get() {
         return this.$store.state.config.configuration.token_endpoint_auth_method;
       },
       set(value) {
         this.$store.commit('config/SET_TOKEN_ENDPOINT_AUTH_METHOD', value);
+      },
+    },
+    request_object_signing_alg_values_supported: {
+      get() {
+        return this.$store.state.config.request_object_signing_alg_values_supported;
+      },
+    },
+    request_object_signing_alg: {
+      get() {
+        return this.$store.state.config.configuration.request_object_signing_alg;
+      },
+      set(value) {
+        this.$store.commit('config/SET_REQUEST_OBJECT_SIGNING_ALG', value);
+      },
+    },
+    token_endpoint_auth_signing_alg_values_supported: {
+      get() {
+        return this.$store.state.config.configuration.token_endpoint_auth_signing_alg_values_supported;
+      },
+    },
+    token_endpoint_auth_signing_alg: {
+      get() {
+        return this.$store.state.config.configuration.token_endpoint_auth_signing_alg;
+      },
+      set(value) {
+        this.$store.commit('config/SET_TOKEN_ENDPOINT_AUTH_SIGNING_ALG', value);
+      },
+    },
+    id_token_signing_alg_values_supported: {
+      get() {
+        return this.$store.state.config.configuration.id_token_signing_alg_values_supported;
+      },
+    },
+    id_token_signing_alg: {
+      get() {
+        return this.$store.state.config.configuration.id_token_signing_alg;
+      },
+      set(value) {
+        this.$store.commit('config/SET_ID_TOKEN_SIGNING_ALG', value);
       },
     },
     authorization_endpoint: {
@@ -334,6 +509,32 @@ export default {
       },
       set(value) {
         this.$store.commit('config/SET_REDIRECT_URL', value);
+      },
+    },
+
+    creditor_account: {
+      get() {
+        const self = this;
+        return {
+          get scheme_name() {
+            return self.$store.state.config.configuration.creditor_account.scheme_name;
+          },
+          set scheme_name(value) {
+            self.$store.commit('config/SET_CREDITOR_ACCOUNT_NAME_SCHEME_NAME', value);
+          },
+          get identification() {
+            return self.$store.state.config.configuration.creditor_account.identification;
+          },
+          set identification(value) {
+            self.$store.commit('config/SET_CREDITOR_ACCOUNT_IDENTIFICATION', value);
+          },
+          get name() {
+            return self.$store.state.config.configuration.creditor_account.name;
+          },
+          set name(value) {
+            self.$store.commit('config/SET_CREDITOR_ACCOUNT_NAME', value);
+          },
+        };
       },
     },
   },

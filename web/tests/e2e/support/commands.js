@@ -125,11 +125,19 @@ Cypress.Commands.add('runTestCases', () => {
 
 Cypress.Commands.add('exportConformanceReport', () => {
   cy.clickNext();
+
   cy.get('#implementer').type('implementer_example');
   cy.get('#authorised_by').type('authorised_by_example');
   cy.get('#job_title').type('job_title_example');
   cy.get('#has_agreed').click({ force: true });
+
   cy.nextButtonContains('Export Conformance Report');
+
+  // "Download report_2019-03-26T16:31:59+00:00.zip" should not be present
+  cy.get('.download-report-link', { timeout: 30000 }).should('not.exist');
+
   cy.clickNext();
-  cy.contains('h5', 'Exported Results');
+
+  // "Download report_2019-03-26T16:31:59+00:00.zip" link should appear
+  cy.get('.download-report-link', { timeout: 30000 }).contains(/Download report_.*\.zip/);
 });

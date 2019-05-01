@@ -1,4 +1,3 @@
-
 describe('PSU gives consent', () => {
   it('gets redirect back URL', () => {
     cy.readFile('consentUrls.json').then((consentUrls) => {

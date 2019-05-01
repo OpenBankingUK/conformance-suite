@@ -2,8 +2,9 @@ package executors
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
+
+	"github.com/pkg/errors"
 
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/manifest"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
@@ -12,27 +13,37 @@ import (
 
 // AcquireHeadlessTokens from manifest generated test cases
 func AcquireHeadlessTokens(tests []model.TestCase, ctx *model.Context, definition RunDefinition) ([]manifest.RequiredTokens, error) {
-	logrus.Debug("=================================================================================================================")
-	defer logrus.Debug("=================================================================================================================")
 	logrus.Debug("AcquireHeadlessTokens")
 	bodyDataStart := "{\"Data\": { \"Permissions\": ["
 	//TODO: sort out consent transaction timestamps
-	bodyDataEnd := "], \"TransactionFromDateTime\": \"2016-01-01T10:40:00+02:00\", \"TransactionToDateTime\": \"2025-12-31T10:40:00+02:00\" },  \"Risk\": {} }"
+	txnFrom, err := ctx.GetString("transactionFromDate")
+	if err != nil {
+		return nil, errors.Wrap(err, "`transaction from date` not in context")
+	}
+	txnTo, err := ctx.GetString("transactionToDate")
+	if err != nil {
+		return nil, errors.Wrap(err, "`transaction to date` not in context")
+	}
 
+	bodyDataEnd := fmt.Sprintf(`], "TransactionFromDateTime": "%s", "TransactionToDateTime": "%s" },  "Risk": {} }`, txnFrom, txnTo)
 	executor := NewExecutor()
-	err := executor.SetCertificates(definition.SigningCert, definition.TransportCert)
+	err = executor.SetCertificates(definition.SigningCert, definition.TransportCert)
 	if err != nil {
 		return nil, err
 	}
+	schemaVersion := definition.DiscoModel.DiscoveryModel.DiscoveryItems[0].APISpecification.SchemaVersion //TODO: Fix for more that one specification
+	specType, err := manifest.GetSpecType(schemaVersion)
+	if err != nil {
+		return nil, errors.New("Error trying to determine specification type from API schemaVersion: " + err.Error())
+	}
 
-	requiredTokens, err := manifest.GetRequiredTokensFromTests(tests)
+	requiredTokens, err := manifest.GetRequiredTokensFromTests(tests, specType)
 	logrus.Debugf("required tokens %#v\n", requiredTokens)
 
 	for k, tokenGatherer := range requiredTokens {
 
 		localCtx := model.Context{}
 		localCtx.PutContext(ctx)
-		localCtx.Put("SigningCert", definition.SigningCert) // For RS256 Claim signing
 		permString := buildPermissionString(tokenGatherer.Perms)
 		if len(permString) == 0 {
 			continue

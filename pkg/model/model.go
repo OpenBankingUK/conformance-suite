@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 	"regexp"
 	"strings"
@@ -14,6 +15,8 @@ import (
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/tracer"
 	"gopkg.in/resty.v1"
 )
+
+const ignoreHTTPStatus = -1
 
 // Manifest is the high level container for test suite definition
 // It contains a list of all the rules required to be passed for conformance testing
@@ -67,6 +70,8 @@ type TestCase struct {
 	Header     http.Header    `json:"-"`                 // ResponseHeader
 	Body       string         `json:"-"`                 // ResponseBody
 	Bearer     string         `json:"bearer,omitempty"`  // Bear token if presented
+	APIName    string         `json:"apiName"`
+	APIVersion string         `json:"apiVersion"`
 }
 
 // MakeTestCase builds an empty testcase
@@ -179,7 +184,9 @@ func (t *TestCase) ApplyContext(rulectx *Context) {
 	}
 
 	// "convention" puts baseurl as prefix to endpoint in testcase"
-	t.Input.Endpoint = baseURL + t.Input.Endpoint
+	if !strings.HasPrefix(t.Input.Endpoint, baseURL) {
+		t.Input.Endpoint = baseURL + t.Input.Endpoint
+	}
 }
 
 // ApplyExpects runs the Expects section of the testcase to evaluate if the response from the system under test passes or fails
@@ -195,7 +202,8 @@ func (t *TestCase) ApplyExpects(res *resty.Response, rulectx *Context) (bool, []
 		return false, []error{t.AppErr("nil http.Response - cannot process ApplyExpects")}
 	}
 
-	if t.Expect.StatusCode != res.StatusCode() { // Status codes don't match
+	// Status code `-1` is specified in test cases if we want to ignore the HTTP status code.
+	if t.Expect.StatusCode != ignoreHTTPStatus && t.Expect.StatusCode != res.StatusCode() { // Status codes don't match
 		return false, []error{t.AppErr(fmt.Sprintf("(%s):%s: HTTP Status code does not match: expected %d got %d", t.ID, t.Name, t.Expect.StatusCode, res.StatusCode()))}
 	}
 
@@ -423,4 +431,18 @@ func (e *Expect) Clone() Expect {
 		ex.Matches = append(ex.Matches, m)
 	}
 	return ex
+}
+
+// LoadTestCaseFromJSONFile a single testcase from a json file
+func LoadTestCaseFromJSONFile(filename string) (TestCase, error) {
+	bytes, err := ioutil.ReadFile(filename)
+	if err != nil {
+		return TestCase{}, err
+	}
+	var m TestCase
+	err = json.Unmarshal(bytes, &m)
+	if err != nil {
+		return TestCase{}, err
+	}
+	return m, nil
 }

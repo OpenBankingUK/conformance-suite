@@ -1,13 +1,24 @@
 package model
 
 import (
+	"crypto/tls"
+	"crypto/x509"
+	"encoding/json"
+	"encoding/pem"
+	"errors"
 	"fmt"
+	"io/ioutil"
 	"net/url"
+	"os"
+	"strings"
 	"testing"
 	"time"
 
+	"github.com/davecgh/go-spew/spew"
+
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/authentication"
 	"github.com/dgrijalva/jwt-go"
+	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -71,7 +82,8 @@ func TestCreateRequestHeaderContext(t *testing.T) {
 		"Myheader": "$replacement",
 	}
 	ctx := Context{
-		"replacement": "myNewValue",
+		"replacement":            "myNewValue",
+		"authorisation_endpoint": "https://example.com/authorisation",
 	}
 	i := &Input{Method: "GET", Endpoint: "http://google.com", Headers: headers}
 	req, err := i.CreateRequest(emptyTestCase, &ctx)
@@ -88,7 +100,8 @@ func TestSetBearerAuthTokenFromContext(t *testing.T) {
 		"authorization": "Bearer $access_token",
 	}
 	ctx := Context{
-		"access_token": "myShineyNewAccessTokenHotOffThePress",
+		"access_token":           "myShineyNewAccessTokenHotOffThePress",
+		"authorisation_endpoint": "https://example.com/authorisation",
 	}
 	i := &Input{Method: "GET", Endpoint: "http://google.com", Headers: headers}
 	req, err := i.CreateRequest(emptyTestCase, &ctx)
@@ -102,7 +115,8 @@ func TestSetBearerAuthTokenFromContext(t *testing.T) {
 
 func TestCreateHeaderContextMissingForReplacement(t *testing.T) {
 	ctx := Context{
-		"nomatch": "myNewValue",
+		"nomatch":                "myNewValue",
+		"authorisation_endpoint": "https://example.com/authorisation",
 	}
 	result, err := replaceContextField("$replacement", &ctx)
 	assert.NotNil(t, err)
@@ -134,7 +148,7 @@ func TestFormData(t *testing.T) {
 	i := Input{Endpoint: "/accounts", Method: "POST", FormData: map[string]string{
 		"grant_type": "client_credentials",
 		"scope":      "accounts openid"}}
-	ctx := Context{"baseurl": "http://mybaseurl"}
+	ctx := Context{"baseurl": "http://mybaseurl", "authorisation_endpoint": "https://example.com/authorisation"}
 	tc := TestCase{Input: i, Context: ctx}
 	req, err := tc.Prepare(emptyContext)
 	assert.Nil(t, err)
@@ -146,7 +160,7 @@ func TestFormDataMissingContextVariable(t *testing.T) {
 	i := Input{Endpoint: "/accounts", Method: "POST", FormData: map[string]string{
 		"grant_type": "$client_credentials",
 		"scope":      "accounts openid"}}
-	ctx := Context{"baseurl": "http://mybaseurl"}
+	ctx := Context{"baseurl": "http://mybaseurl", "authorisation_endpoint": "https://example.com/authorisation"}
 	tc := TestCase{Input: i, Context: ctx}
 	req, err := tc.Prepare(emptyContext)
 	assert.NotNil(t, err)
@@ -155,7 +169,7 @@ func TestFormDataMissingContextVariable(t *testing.T) {
 
 func TestInputBody(t *testing.T) {
 	i := Input{Endpoint: "/accounts", Method: "POST", RequestBody: "The Rain in Spain Falls Mainly on the Plain"}
-	ctx := Context{"baseurl": "http://mybaseurl"}
+	ctx := Context{"baseurl": "http://mybaseurl", "authorisation_endpoint": "https://example.com/authorisation"}
 	tc := TestCase{Input: i, Context: ctx}
 	req, err := tc.Prepare(emptyContext)
 	assert.Nil(t, err)
@@ -174,7 +188,7 @@ func TestInputClaims(t *testing.T) {
 			"redirect_url": "https://test.example.co.uk/redir",
 			"responseType": "code",
 		}}
-	ctx := Context{"baseurl": "http://mybaseurl"}
+	ctx := Context{"baseurl": "http://mybaseurl", "authorisation_endpoint": "https://example.com/authorisation"}
 	tc := TestCase{Input: i, Context: ctx}
 	req, err := tc.Prepare(emptyContext)
 	assert.Nil(t, err)
@@ -198,7 +212,7 @@ func TestInputClaimsWithContextReplacementParameters(t *testing.T) {
 			"consentId":    "$consent_id",
 			"responseType": "code",
 		}}
-	ctx := Context{"baseurl": "http://mybaseurl", "consent_id": "myconsentid"}
+	ctx := Context{"baseurl": "http://mybaseurl", "consent_id": "myconsentid", "authorisation_endpoint": "https://example.com/authorisation"}
 	tc := TestCase{Input: i, Context: ctx}
 	req, err := tc.Prepare(emptyContext)
 	assert.Nil(t, err)
@@ -211,7 +225,7 @@ func TestInputClaimsWithContextReplacementParameters(t *testing.T) {
 }
 
 func TestInputClaimsConsentId(t *testing.T) {
-	ctx := Context{"consent_id": "aac-fee2b8eb-ce1b-48f1-af7f-dc8f576d53dc", "xchange_code": "10e9d80b-10d4-4abd-9fe0-15789cc512b5", "baseurl": "https://modelobankauth2018.o3bank.co.uk:4101", "access_token": "18d5a754-0b76-4a8f-9c68-dc5caaf812e2"}
+	ctx := Context{"consent_id": "aac-fee2b8eb-ce1b-48f1-af7f-dc8f576d53dc", "xchange_code": "10e9d80b-10d4-4abd-9fe0-15789cc512b5", "baseurl": "https://modelobankauth2018.o3bank.co.uk:4101", "access_token": "18d5a754-0b76-4a8f-9c68-dc5caaf812e2", "authorisation_endpoint": "https://example.com/authorisation"}
 	i := Input{Endpoint: "/accounts", Method: "POST",
 		Generation: map[string]string{
 			"strategy": "consenturl",
@@ -234,14 +248,18 @@ func TestClaimsJWTBearer(t *testing.T) {
 	cert, err := authentication.NewCertificate(selfsignedDummypub, selfsignedDummykey)
 	require.NoError(t, err)
 	ctx := Context{
-		"consent_id":   "aac-fee2b8eb-ce1b-48f1-af7f-dc8f576d53dc",
-		"xchange_code": "10e9d80b-10d4-4abd-9fe0-15789cc512b5",
-		"baseurl":      "https://matls-sso.openbankingtest.org.uk",
-		"access_token": "18d5a754-0b76-4a8f-9c68-dc5caaf812e2",
-		"client_id":    "12312",
-		"scope":        "AuthoritiesReadAccess ASPSPReadAccess TPPReadAll",
-		"SigningCert":  cert,
+		"consent_id":             "aac-fee2b8eb-ce1b-48f1-af7f-dc8f576d53dc",
+		"xchange_code":           "10e9d80b-10d4-4abd-9fe0-15789cc512b5",
+		"baseurl":                "https://matls-sso.openbankingtest.org.uk",
+		"access_token":           "18d5a754-0b76-4a8f-9c68-dc5caaf812e2",
+		"client_id":              "12312",
+		"scope":                  "AuthoritiesReadAccess ASPSPReadAccess TPPReadAll",
+		"SigningCert":            cert,
+		"signingPrivate":         selfsignedDummykey,
+		"signingPublic":          selfsignedDummypub,
+		"authorisation_endpoint": "https://example.com/authorisation",
 	}
+
 	i := Input{Endpoint: "/as/token.oauth2", Method: "POST",
 		Generation: map[string]string{
 			"strategy": "jwt-bearer",
@@ -291,7 +309,8 @@ func TestJWTSignRS256(t *testing.T) {
 
 func TestBodyLiteral(t *testing.T) {
 	ctx := Context{
-		"replacebody": "this is my body",
+		"replacebody":            "this is my body",
+		"authorisation_endpoint": "https://example.com/authorisation",
 	}
 
 	i := Input{Method: "POST", Endpoint: "https://google.com", RequestBody: "This is my literal body"}
@@ -303,7 +322,8 @@ func TestBodyLiteral(t *testing.T) {
 
 func TestBodyReplacement(t *testing.T) {
 	ctx := Context{
-		"replacebody": "this is my body",
+		"replacebody":            "this is my body",
+		"authorisation_endpoint": "https://example.com/authorisation",
 	}
 
 	i := Input{Method: "POST", Endpoint: "https://google.com", RequestBody: "$replacebody"}
@@ -315,8 +335,9 @@ func TestBodyReplacement(t *testing.T) {
 
 func TestBodyTwoReplacements(t *testing.T) {
 	ctx := Context{
-		"replacebody": "this is my body",
-		"replace2":    "and this is my heart",
+		"replacebody":            "this is my body",
+		"replace2":               "and this is my heart",
+		"authorisation_endpoint": "https://example.com/authorisation",
 	}
 
 	i := Input{Method: "POST", Endpoint: "https://google.com", RequestBody: "$replacebody $replace2"}
@@ -331,6 +352,7 @@ func TestPaymentBodyReplace(t *testing.T) {
 		"initiation":                "{\"InstructionIdentification\":\"SIDP01\",\"EndToEndIdentification\":\"FRESCO.21302.GFX.20\",\"InstructedAmount\":{\"Amount\":\"15.00\",\"Currency\":\"GBP\"},\"CreditorAccount\":{\"SchemeName\":\"SortCodeAccountNumber\",\"Identification\":\"20000319470104\",\"Name\":\"Messers Simplex & Co\"}}",
 		"consent_id":                "sdp-1-b5bbdb18-eeb1-4c11-919d-9a237c8f1c7d",
 		"domestic_payment_template": "{\"Data\": {\"ConsentId\": \"$consent_id\",\"Initiation\":$initiation },\"Risk\":{}}",
+		"authorisation_endpoint":    "https://example.com/authorisation",
 	}
 
 	i := Input{Method: "POST", Endpoint: "https://google.com", RequestBody: "$domestic_payment_template"}
@@ -339,6 +361,273 @@ func TestPaymentBodyReplace(t *testing.T) {
 	assert.Nil(t, err)
 	assert.Equal(t, "{\"Data\": {\"ConsentId\": \"sdp-1-b5bbdb18-eeb1-4c11-919d-9a237c8f1c7d\",\"Initiation\":{\"InstructionIdentification\":\"SIDP01\",\"EndToEndIdentification\":\"FRESCO.21302.GFX.20\",\"InstructedAmount\":{\"Amount\":\"15.00\",\"Currency\":\"GBP\"},\"CreditorAccount\":{\"SchemeName\":\"SortCodeAccountNumber\",\"Identification\":\"20000319470104\",\"Name\":\"Messers Simplex & Co\"}} },\"Risk\":{}}", req.Body)
 }
+
+func TestPaymentBodyReplaceTestCase100300(t *testing.T) {
+	ctx := Context{
+		"x-fapi-financial-id":    "myfapiid",
+		"thisSchemeName":         "myscheme",
+		"thisIdentification":     "myid",
+		"authorisation_endpoint": "https://example.com/authorisation",
+	}
+	_ = ctx
+	var tc TestCase
+	err := json.Unmarshal(paymentTestCaseData100300, &tc)
+	assert.Nil(t, err)
+	fmt.Printf("%#v\n", tc)
+	ctx.PutContext(&tc.Context)
+	logrus.SetOutput(os.Stdout)
+	logrus.SetLevel(logrus.TraceLevel)
+	ctx.DumpContext("Testcase")
+	req, err := tc.Prepare(&ctx)
+
+	assert.Nil(t, err)
+	_ = req
+	fmt.Printf("%#v\n", tc)
+
+}
+
+func TestJWSDetachedSignature(t *testing.T) {
+	ctx := Context{
+		"signingPrivate":            selfsignedDummykey,
+		"signingPublic":             selfsignedDummypub,
+		"initiation":                "{\"InstructionIdentification\":\"SIDP01\",\"EndToEndIdentification\":\"FRESCO.21302.GFX.20\",\"InstructedAmount\":{\"Amount\":\"15.00\",\"Currency\":\"GBP\"},\"CreditorAccount\":{\"SchemeName\":\"SortCodeAccountNumber\",\"Identification\":\"20000319470104\",\"Name\":\"Messers Simplex & Co\"}}",
+		"consent_id":                "sdp-1-b5bbdb18-eeb1-4c11-919d-9a237c8f1c7d",
+		"domestic_payment_template": "{\"Data\": {\"ConsentId\": \"$consent_id\",\"Initiation\":$initiation },\"Risk\":{}}",
+		"authorisation_endpoint":    "https://example.com/authorisation",
+	}
+
+	i := Input{JwsSig: true, Method: "POST", Endpoint: "https://google.com", RequestBody: "$domestic_payment_template"}
+	tc := TestCase{Input: i}
+	req, err := tc.Prepare(&ctx)
+	assert.Nil(t, err)
+	sig := req.Header.Get("x-jws-signature")
+	assert.NotEmpty(t, sig)
+}
+
+func TestJWSSignaturNotPOST(t *testing.T) {
+	ctx := Context{
+		"initiation":                "{\"InstructionIdentification\":\"SIDP01\",\"EndToEndIdentification\":\"FRESCO.21302.GFX.20\",\"InstructedAmount\":{\"Amount\":\"15.00\",\"Currency\":\"GBP\"},\"CreditorAccount\":{\"SchemeName\":\"SortCodeAccountNumber\",\"Identification\":\"20000319470104\",\"Name\":\"Messers Simplex & Co\"}}",
+		"consent_id":                "sdp-1-b5bbdb18-eeb1-4c11-919d-9a237c8f1c7d",
+		"domestic_payment_template": "{\"Data\": {\"ConsentId\": \"$consent_id\",\"Initiation\":$initiation },\"Risk\":{}}",
+		"authorisation_endpoint":    "https://example.com/authorisation",
+	}
+
+	i := Input{JwsSig: true, Method: "GET", Endpoint: "https://google.com", RequestBody: ""}
+	tc := TestCase{Input: i}
+	req, err := tc.Prepare(&ctx)
+	assert.EqualError(t, err, "createRequest: cannot apply jws signature to method that isn't POST")
+	assert.Nil(t, req)
+}
+
+func TestJWSSignatureEmptyBody(t *testing.T) {
+	ctx := Context{
+		"initiation":                "{\"InstructionIdentification\":\"SIDP01\",\"EndToEndIdentification\":\"FRESCO.21302.GFX.20\",\"InstructedAmount\":{\"Amount\":\"15.00\",\"Currency\":\"GBP\"},\"CreditorAccount\":{\"SchemeName\":\"SortCodeAccountNumber\",\"Identification\":\"20000319470104\",\"Name\":\"Messers Simplex & Co\"}}",
+		"consent_id":                "sdp-1-b5bbdb18-eeb1-4c11-919d-9a237c8f1c7d",
+		"domestic_payment_template": "{\"Data\": {\"ConsentId\": \"$consent_id\",\"Initiation\":$initiation },\"Risk\":{}}",
+		"authorisation_endpoint":    "https://example.com/authorisation",
+	}
+
+	i := Input{JwsSig: true, Method: "POST", Endpoint: "https://google.com", RequestBody: ""}
+	tc := TestCase{Input: i}
+	req, err := tc.Prepare(&ctx)
+	assert.EqualError(t, err, "createRequest: cannot create x-jws-signature, as request body is empty")
+	assert.Nil(t, req)
+}
+
+func TestJWSDetachedSignatureGET(t *testing.T) {
+	ctx := Context{
+		"initiation":                "{\"InstructionIdentification\":\"SIDP01\",\"EndToEndIdentification\":\"FRESCO.21302.GFX.20\",\"InstructedAmount\":{\"Amount\":\"15.00\",\"Currency\":\"GBP\"},\"CreditorAccount\":{\"SchemeName\":\"SortCodeAccountNumber\",\"Identification\":\"20000319470104\",\"Name\":\"Messers Simplex & Co\"}}",
+		"consent_id":                "sdp-1-b5bbdb18-eeb1-4c11-919d-9a237c8f1c7d",
+		"domestic_payment_template": "{\"Data\": {\"ConsentId\": \"$consent_id\",\"Initiation\":$initiation },\"Risk\":{}}",
+		"authorisation_endpoint":    "https://example.com/authorisation",
+	}
+
+	i := Input{JwsSig: true, Method: "GET", Endpoint: "https://google.com", RequestBody: "$domestic_payment_template"}
+	tc := TestCase{Input: i}
+	req, err := tc.Prepare(&ctx)
+	assert.NotNil(t, err)
+	assert.Nil(t, req)
+}
+
+func TestCertDNRetrieval(t *testing.T) {
+	cert, err := loadSigningCert()
+	if err != nil {
+		t.Log("Certs not found, skip test")
+		return
+	}
+	_ = cert
+
+}
+
+func TestGenSig(t *testing.T) {
+	transportCert, err := tls.LoadX509KeyPair("../../../certs/sig-xRWcKt4rSGqsIhqJ3xKC6DOjblY.pem", "../../../certs/4XQsc1dvWnggAqjZLV3sH2-sign.key")
+	if err != nil {
+		t.Logf("cannot get certs %s", err.Error())
+		return
+	}
+	fmt.Println("Good to go!")
+	x509 := transportCert.Leaf
+
+	subject := x509.Subject
+	fmt.Printf("subject %#v\n", subject)
+	c := subject.Country
+	o := subject.Organization
+	ou := subject.OrganizationalUnit
+	cn := subject.CommonName
+	dn := fmt.Sprintf("C=%s, O=%s, OU=%s, CN=%s", c, o, ou, cn)
+	fmt.Printf("DN is :%s\n" + dn)
+
+}
+
+func TestReadCerts(t *testing.T) {
+	certPEMBlock, err := ioutil.ReadFile("../../../certs/sig-xRWcKt4rSGqsIhqJ3xKC6DOjblY.pem")
+	if err != nil {
+		fmt.Println(err.Error())
+	}
+	var cert tls.Certificate
+	var skippedBlockTypes []string
+	for {
+		var certDERBlock *pem.Block
+		certDERBlock, certPEMBlock = pem.Decode(certPEMBlock)
+		if certDERBlock == nil {
+			break
+		}
+		if certDERBlock.Type == "CERTIFICATE" {
+			cert.Certificate = append(cert.Certificate, certDERBlock.Bytes)
+		} else {
+			skippedBlockTypes = append(skippedBlockTypes, certDERBlock.Type)
+		}
+	}
+	if len(cert.Certificate) == 0 {
+		if len(skippedBlockTypes) == 0 {
+			fmt.Print("tls: failed to find any PEM data in certificate input")
+		}
+		if len(skippedBlockTypes) == 1 && strings.HasSuffix(skippedBlockTypes[0], "PRIVATE KEY") {
+			fmt.Print(errors.New("tls: failed to find certificate PEM data in certificate input, but did find a private key; PEM inputs may have been switched"))
+		}
+		fmt.Print(fmt.Errorf("tls: failed to find \"CERTIFICATE\" PEM block in certificate input after skipping PEM blocks of the following types: %v", skippedBlockTypes))
+	}
+	spew.Dump(cert)
+
+}
+
+func TestLoadX509Cert(t *testing.T) {
+	cf, err := ioutil.ReadFile("../../../certs/sig-xRWcKt4rSGqsIhqJ3xKC6DOjblY.pem")
+	if err != nil {
+		fmt.Println("cfload:", err.Error())
+		return
+	}
+	cpb, _ := pem.Decode(cf)
+	crt, err := x509.ParseCertificate(cpb.Bytes)
+	if err != nil {
+		t.Logf("cannont parse cert %s", err.Error())
+		return
+	}
+	subject := crt.Subject
+	c := subject.Country[0]
+	o := subject.Organization[0]
+	ou := subject.OrganizationalUnit[0]
+	cn := subject.CommonName
+	dn := fmt.Sprintf("C=%s, O=%s, OU=%s, CN=%s", c, o, ou, cn)
+	fmt.Printf("DN is\n %s \n", dn)
+
+}
+
+func loadSigningCert() (tls.Certificate, error) {
+	certSigning, err := ioutil.ReadFile("../../../certstore/testcertSigning.pem")
+	if err != nil {
+		fmt.Println("cannot read signing certificate")
+		return tls.Certificate{}, err
+	}
+	keySigning, err := ioutil.ReadFile("../../../certstore/testprivateKeySigning.key")
+	if err != nil {
+		fmt.Println("cannot read signing key")
+		return tls.Certificate{}, err
+	}
+
+	cert, err := tls.X509KeyPair([]byte(certSigning), []byte(keySigning))
+
+	return cert, nil
+}
+
+func TestInputTest(t *testing.T) {
+	fmt.Println("Running...")
+	x := "123.1......45.789"
+	firstPart := x[:strings.IndexByte(x, '.')]
+	idx := strings.LastIndex(x, ".")
+	lastPart := x[idx:]
+	fmt.Printf("%s.%s\n", firstPart, lastPart)
+
+}
+
+var paymentTestCaseData100300 = []byte(`
+{
+    "@id": "OB-301-DOP-100300",
+    "name": "Domestic Payment consents succeeds with minimal data set with additional schema checks.",
+    "purpose": "Check that the resource succeeds posting a domestic payment consents with a minimal data set and checks additional schema.",
+    "input": {
+        "method": "POST",
+        "endpoint": "/domestic-payment-consents",
+        "headers": {
+            "Content-Type": "application/json; charset=utf-8",
+            "x-fapi-financial-id": "$x-fapi-financial-id",
+            "x-fapi-interaction-id": "b4405450-febe-11e8-80a5-0fcebb1574e1",
+            "x-fcs-testcase-id": "OB-301-DOP-100300"
+        },
+        "bodyData": "{\n    \"Data\": {\n        \"Initiation\": {\n            \"CreditorAccount\": {\n                \"Identification\": \"$thisIdentification\",\n                \"Name\": \"CF Tool\",\n                \"SchemeName\": \"$thisSchemeName\"\n            },\n            \"EndToEndIdentification\": \"$thisInstructionIdentification\",\n            \"InstructedAmount\": {\n                \"Amount\": \"1.00\",\n                \"Currency\": \"$thisCurrency\"\n            },\n            \"InstructionIdentification\": \"$thisInstructionIdentification\"\n        }\n    },\n    \"Risk\": {}\n}"
+    },
+    "context": {
+        "baseurl": "http://mybaseurl",
+        "requestConsent": "true",
+        "thisCurrency": "GBP",
+        "thisInstructionIdentification": "OB-301-DOP-100300",
+        "tokenScope": "payments",
+        "x-fapi-financial-id": "$x-fapi-financial-id"
+    },
+    "expect": {
+        "status-code": 201,
+        "schema-validation": true,
+        "matches": [
+            {
+                "header-present": "x-fapi-interaction-id"
+            },
+            {
+                "json": "Data.Status",
+                "value": "AwaitingAuthorisation"
+            },
+            {
+                "json": "Data.ConsentId"
+            }
+        ],
+        "contextPut": {
+            "matches": [
+                {
+                    "name": "OB-301-DOP-100300-ConsentId",
+                    "json": "Data.ConsentId"
+                }
+            ]
+        }
+    }
+}`)
+
+var paymentPayload = `{
+	"Data": {
+		"Initiation": {
+			"InstructionIdentification": "SIDP01",
+			"EndToEndIdentification": "FRESCO.21302.GFX.20",
+			"InstructedAmount": {
+				"Amount": "15.00",
+				"Currency": "GBP"
+			},
+			"CreditorAccount": {
+				"SchemeName": "SortCodeAccountNumber",
+				"Identification": "20000319470104",
+				"Name": "Messers Simplex & Co"
+			}
+		}
+	},
+	"Risk": {}
+}`
 
 var selfsignedDummykey = `-----BEGIN RSA PRIVATE KEY----- 
 MIIEpAIBAAKCAQEA8Gl2x9KsmqwdmZd+BdZYtDWHNRXtPd/kwiR6luU+4w76T+9m

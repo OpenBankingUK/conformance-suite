@@ -3,14 +3,16 @@ package report
 import (
 	"archive/zip"
 	"encoding/json"
-	"fmt"
 	"io"
+
+	"github.com/pkg/errors"
 )
 
 const (
 	marshalIndentPrefix = ""
 	marshalIndent       = "  "
 	reportFilename      = "report.json"
+	discoveryFilename   = "discovery.json"
 )
 
 // Exporter - allows the exporting of a `Report`.
@@ -46,18 +48,32 @@ func (e *zipExporter) Export() error {
 
 	reportJSON, err := json.MarshalIndent(e.report, marshalIndentPrefix, marshalIndent)
 	if err != nil {
-		return fmt.Errorf("zip exporter cannot MarshalIndent report: %+v", err)
+		return errors.Wrapf(err, "zipExporter.Export: json.MarshalIndent failed, report=%+v", e.report)
 	}
 
 	// Create file within ZIP archive
 	reportFile, err := zipWriter.Create(reportFilename)
 	if err != nil {
-		return fmt.Errorf("zip exporter cannot Create %q file: %+v", reportFilename, err)
+		return errors.Wrapf(err, "zipExporter.Export: zip.Writer.Create failed, could not create file %q", reportFilename)
 	}
 	// Create report contents to zip
 	if _, err := reportFile.Write(reportJSON); err != nil {
-		// Only print the first 20 bytes of what we failed to write.
-		return fmt.Errorf("zip exporter cannot Write %q: %+v", string(reportJSON), err)
+		return errors.Wrapf(err, "zipExporter.Export: zip.Writer.Write failed, could write to %q, reportJSON=%+v", reportFilename, string(reportJSON))
+	}
+
+	discoveryJSON, err := json.MarshalIndent(e.report.Discovery, marshalIndentPrefix, marshalIndent)
+	if err != nil {
+		return errors.Wrapf(err, "zipExporter.Export: json.MarshalIndent failed, report=%+v", e.report)
+	}
+
+	// Create file within ZIP archive
+	discoveryFile, err := zipWriter.Create(discoveryFilename)
+	if err != nil {
+		return errors.Wrapf(err, "zipExporter.Export: zip.Writer.Create failed, could not create file %q", discoveryFilename)
+	}
+	// Create report contents to zip
+	if _, err := discoveryFile.Write(discoveryJSON); err != nil {
+		return errors.Wrapf(err, "zipExporter.Export: zip.Writer.Write failed, could write to %q, discoveryJSON=%+v", discoveryFilename, string(reportJSON))
 	}
 
 	return nil

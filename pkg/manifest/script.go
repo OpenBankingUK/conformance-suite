@@ -5,18 +5,16 @@ import (
 	"errors"
 	"fmt"
 	"io/ioutil"
+	"regexp"
+	"sort"
 	"strings"
+	"time"
 
 	"github.com/sirupsen/logrus"
 
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
 )
-
-// TestPlan species a list of scripts, asserts and other entities required to run a set of test
-type TestPlan struct {
-	Scripts    Scripts
-	References References
-}
 
 // Scripts -
 type Scripts struct {
@@ -25,12 +23,15 @@ type Scripts struct {
 
 // Script represents a highlevel test definition
 type Script struct {
+	APIName             string            `json:"apiName"`
+	APIVersion          string            `json:"apiVersion"`
 	Description         string            `json:"description,omitempty"`
 	Detail              string            `json:"detail,omitempty"`
 	ID                  string            `json:"id,omitempty"`
 	RefURI              string            `json:"refURI,omitempty"`
 	Parameters          map[string]string `json:"parameters,omitempty"`
 	Headers             map[string]string `json:"headers,omitempty"`
+	Body                string            `json:"body,omitempty"`
 	Permissions         []string          `json:"permissions,omitemtpy"`
 	PermissionsExcluded []string          `json:"permissions-excluded,omitemtpy"`
 	Resource            string            `json:"resource,omitempty"`
@@ -39,6 +40,8 @@ type Script struct {
 	URI                 string            `json:"uri,omitempty"`
 	URIImplemenation    string            `json:"uri_implemenation,omitempty"`
 	SchemaCheck         bool              `json:"schemaCheck,omitempty"`
+	ContextPut          map[string]string `json:"keepContextOnSuccess,omitempty"`
+	UseCCGToken         bool              `json:"useCCGToken,omitempty"`
 }
 
 // References - reference collection
@@ -50,63 +53,116 @@ type References struct {
 type Reference struct {
 	Expect      model.Expect `json:"expect,omitempty"`
 	Permissions []string     `json:"permissions,omitempty"`
+	Body        interface{}  `json:"body,omitempty"`
+	BodyData    string       `json:"bodyData"`
 }
 
-// AccountData stores account number to be used in the test scripts
-type AccountData struct {
-	Ais           map[string]string `json:"ais,omitempty"`
-	AisConsentIds []string          `json:"ais.ConsetnAccoutId,omitempty"`
-	Pis           PisData           `json:"pis,omitempty"`
+// ConsentJobs Holds jobs required only to provide consent so should not show on the ui
+type ConsentJobs struct {
+	jobs map[string]model.TestCase
 }
 
-// PisData contains information about PIS accounts required for the test scrips
-type PisData struct {
-	Currency        string            `json:"Currency,omitempty"`
-	DebtorAccount   map[string]string `json:"DebtorAccount,omitempty"`
-	MADebtorAccount map[string]string `json:"MADebtorAccount,omitempty"`
+var cj *ConsentJobs
+
+// GetConsentJobs - makes a structure to hold a list of payment consent jobs than need to be run before the main tests
+// and so aren't included in the main test list
+func GetConsentJobs() *ConsentJobs {
+	if cj == nil {
+		jobs := make(map[string]model.TestCase)
+		cj = &ConsentJobs{jobs: jobs}
+		return cj
+	}
+	return cj
+}
+
+// Add a consent Job
+func (cj *ConsentJobs) Add(tc model.TestCase) {
+	cj.jobs[tc.ID] = tc
+}
+
+// Get a consentJob
+func (cj *ConsentJobs) Get(testid string) (model.TestCase, bool) {
+	value, exist := cj.jobs[testid]
+	return value, exist
+
 }
 
 // GenerateTestCases examines a manifest file, asserts file and resources definition, then builds the associated test cases
-func GenerateTestCases(spec string, baseurl string, ctx *model.Context) ([]model.TestCase, error) {
-	logrus.Debug("GenerateManifestTestCases")
-	scripts, refs, resources, err := loadGenerationResources()
+func GenerateTestCases(spec discovery.ModelAPISpecification, baseurl string, ctx *model.Context, endpoints []discovery.ModelEndpoint) ([]model.TestCase, error) {
+	logger := logrus.WithFields(logrus.Fields{
+		"function": "GenerateTestCases",
+	})
+
+	specType, err := GetSpecType(spec.SchemaVersion)
 	if err != nil {
+		return nil, errors.New("unknown specification " + spec.SchemaVersion)
+	}
+	logrus.Debug("GenerateManifestTestCases for spec type:" + specType)
+	scripts, refs, err := loadGenerationResources(specType)
+	if err != nil {
+		logger.WithFields(logrus.Fields{
+			"err": err,
+		}).Error("Error on loadGenerationResources")
 		return nil, err
 	}
-
-	// accumulate context data from accountsData ...
-	accountCtx := model.Context{}
-	for k, v := range resources.Ais {
-		accountCtx.PutString(k, v)
+	var filteredScripts Scripts
+	if specType == "accounts" { //TODO: Complete so it makes sense for payments
+		filteredScripts, err = filterTestsBasedOnDiscoveryEndpoints(scripts, endpoints)
+		if err != nil {
+			logger.WithFields(logrus.Fields{"err": err}).Error("error filter scripts based on discovery")
+		}
+	} else {
+		filteredScripts = scripts // normal processing
 	}
 
 	ctx.DumpContext("Incoming Ctx")
 
 	tests := []model.TestCase{}
-	for _, script := range scripts.Scripts {
-		logrus.Debug("Process Script:" + script.ID)
-		localCtx, err := script.processParameters(&refs, &accountCtx)
+
+	for _, script := range filteredScripts.Scripts {
+		localCtx, err := script.processParameters(&refs, ctx)
 		if err != nil {
+			logger.WithError(err).Error("Error on processParameters")
 			return nil, err
 		}
+
 		consents := []string{}
-		tc, _ := testCaseBuilder(script, refs.References, localCtx, consents, baseurl)
+		tc, err := testCaseBuilder(script, refs.References, localCtx, consents, baseurl, specType, spec)
+		if err != nil {
+			logger.WithError(err).Error("Error on testCaseBuilder")
+		}
+
 		localCtx.PutContext(ctx)
-		tc.ProcessReplacementFields(localCtx, false)
+		showReplacementErrors := true
+		tc.ProcessReplacementFields(localCtx, showReplacementErrors)
+
 		tests = append(tests, tc)
 	}
+
 	return tests, nil
 }
 
 func (s *Script) processParameters(refs *References, resources *model.Context) (*model.Context, error) {
 	localCtx := model.Context{}
-	var err error
 
 	for k, value := range s.Parameters {
+		contextValue := value
+		if k == "consentId" {
+			localCtx.PutString("consentId", value)
+			continue
+		}
 		if strings.Contains(value, "$") {
 			str := value[1:]
-			value, err = resources.GetString(str)
-			if err != nil {
+			//lookup parameter in resources - accountids
+			value, _ = resources.GetString(str)
+			//lookup parameter in reference data
+			ref := refs.References[str]
+			val := ref.getValue()
+			if len(val) != 0 {
+				contextValue = val
+			}
+			if len(value) == 0 {
+				localCtx.PutString(k, contextValue)
 				continue
 			}
 		}
@@ -123,18 +179,45 @@ func (s *Script) processParameters(refs *References, resources *model.Context) (
 	if len(s.PermissionsExcluded) > 0 {
 		localCtx.PutStringSlice("permissions-excluded", s.PermissionsExcluded)
 	}
-
 	return &localCtx, nil
 }
 
-func testCaseBuilder(s Script, refs map[string]Reference, ctx *model.Context, consents []string, baseurl string) (model.TestCase, error) {
+func (r *Reference) getValue() string {
+	return r.BodyData
+}
+
+// sets testCase Bearer Header to match requested consent token - for non-consent tests
+func updateTestAuthenticationFromToken(tcs []model.TestCase, rts []RequiredTokens) []model.TestCase {
+	for _, rt := range rts {
+		for x, tc := range tcs {
+			for _, id := range rt.IDs {
+				if id == tc.ID {
+					reqConsent, err := tc.Context.GetString("requestConsent")
+					if err == nil && len(reqConsent) > 0 {
+						continue
+					}
+
+					tc.InjectBearerToken("$" + rt.Name)
+					tcs[x] = tc
+				}
+			}
+		}
+	}
+	return tcs
+}
+
+func testCaseBuilder(s Script, refs map[string]Reference, ctx *model.Context, consents []string, baseurl string, specType string, apiSpec discovery.ModelAPISpecification) (model.TestCase, error) {
 	tc := model.MakeTestCase()
 	tc.ID = s.ID
 	tc.Name = s.Description
+	tc.APIName = apiSpec.Name
+	tc.APIVersion = apiSpec.Version
 
 	//TODO: make these more configurable - header also get set in buildInput Section
 	tc.Input.Headers["x-fapi-financial-id"] = "$x-fapi-financial-id"
-	tc.Input.Headers["x-fapi-interaction-id"] = "b4405450-febe-11e8-80a5-0fcebb1574e1"
+	// TODO: use automated interaction-id generation - one id per run - injected into context at journey
+	tc.Input.Headers["x-fapi-interaction-id"] = "c4405450-febe-11e8-80a5-0fcebb157400"
+	tc.Input.Headers["x-fcs-testcase-id"] = tc.ID
 	buildInputSection(s, &tc.Input)
 
 	tc.Purpose = s.Detail
@@ -143,6 +226,9 @@ func testCaseBuilder(s Script, refs map[string]Reference, ctx *model.Context, co
 	tc.Context.PutContext(ctx)
 	tc.Context.PutString("x-fapi-financial-id", "$x-fapi-financial-id")
 	tc.Context.PutString("baseurl", baseurl)
+	if s.UseCCGToken {
+		tc.Context.PutString("useCCGToken", "yes") // used for payment posts
+	}
 
 	for _, a := range s.Asserts {
 		ref, exists := refs[a]
@@ -159,9 +245,41 @@ func testCaseBuilder(s Script, refs map[string]Reference, ctx *model.Context, co
 		tc.Expect.SchemaValidation = s.SchemaCheck
 
 	}
+
+	// Handled PutContext parameters
+	putMatches := processPutContext(&s)
+	if len(putMatches) > 0 {
+		tc.Expect.ContextPut.Matches = putMatches
+	}
+
 	ctx.PutContext(&tc.Context)
 	tc.ProcessReplacementFields(ctx, false)
+	_, exists := tc.Context.GetString("postData")
+	if exists == nil {
+		tc.Context.Delete("postData") // tidy context as bodydata potentially large
+	}
+
+	if specType == "payments" && tc.Input.Method == "POST" {
+		tc.Input.JwsSig = true
+		tc.Input.IdempotencyKey = true
+	}
 	return tc, nil
+}
+
+func processPutContext(s *Script) []model.Match {
+	m := []model.Match{}
+	name, exists := s.ContextPut["name"]
+	if !exists {
+		return m
+	}
+	value, exists := s.ContextPut["value"]
+	if !exists {
+		return m
+	}
+	mx := model.Match{ContextName: name, JSON: value}
+	m = append(m, mx)
+	return m
+
 }
 
 func getAccountConsent(refs *References, vx string) []string {
@@ -175,78 +293,77 @@ func buildInputSection(s Script, i *model.Input) {
 	for k, v := range s.Headers {
 		i.Headers[k] = v
 	}
+	i.RequestBody = s.Body
 }
 
-func loadGenerationResources() (Scripts, References, AccountData, error) {
-	return loadScriptFiles()
+func loadGenerationResources(specType string) (Scripts, References, error) {
+	assertions, err := loadAssertions()
+	if err != nil {
+		return Scripts{}, References{}, err
+	}
+	switch specType {
+	case "accounts":
+		sc, err := loadTransactions31()
+		return sc, assertions, err
+	case "payments":
+		pay, err := loadPayments31()
+		return pay, assertions, err
+	case "cbpii":
+	case "notifications":
+	}
+	return Scripts{}, References{}, errors.New("loadGenerationResources: invalid spec type")
 }
 
-func loadScriptFiles() (Scripts, References, AccountData, error) {
-	sc, err := loadScripts("../../manifests/ob_3.1_accounts_transactions_fca.json")
+func loadPayments31() (Scripts, error) {
+	sc, err := loadScripts("manifests/ob_3.1_payment_fca.json")
 	if err != nil {
-		sc, err = loadScripts("manifests/ob_3.1_accounts_transactions_fca.json")
-		if err != nil {
-			return Scripts{}, References{}, AccountData{}, err
-		}
+		sc, err = loadScripts("../../manifests/ob_3.1_payment_fca.json")
 	}
-
-	// sc, err = loadScripts("../../manifests/ob_3.1_payment_fca.json")
-	// if err != nil {
-	// 	sc, err = loadScripts("manifests/ob_3.1_payment_fca.json")
-	// 	if err != nil {
-	// 		return Scripts{}, References{}, AccountData{}, err
-	// 	}
-	// }
-
-	// sc, err = loadScripts("testdata/onePaymentScript.json")
-	// if err != nil {
-	// 	sc, err = loadScripts("pkg/manifest/testdata/onePaymentScript.json")
-	// 	if err != nil {
-	// 		return Scripts{}, References{}, AccountData{}, err
-	// 	}
-	// }
-
-	// sc, err = loadScripts("testdata/oneAccountScript.json")
-	// if err != nil {
-	// 	sc, err = loadScripts("pkg/manifest/testdata/oneAccountScript.json")
-	// 	if err != nil {
-	// 		return Scripts{}, References{}, AccountData{}, err
-	// 	}
-	// }
-
-	refs, err := loadReferences("../../manifests/assertions.json")
-	if err != nil {
-		refs, err = loadReferences("manifests/assertions.json")
-		if err != nil {
-			return Scripts{}, References{}, AccountData{}, err
-		}
-	}
-
-	ad, err := loadAccountData("testdata/resources.json") // temp integration shiv
-	if err != nil {
-		ad, err = loadAccountData("pkg/manifest/testdata/resources.json")
-		if err != nil {
-			ad, err = loadAccountData("../manifest/testdata/resources.json")
-			if err != nil {
-				return Scripts{}, References{}, AccountData{}, err
-			}
-		}
-	}
-
-	return sc, refs, ad, nil
+	return sc, err
 }
 
-func loadAccountData(filename string) (AccountData, error) {
-	plan, err := ioutil.ReadFile(filename)
+func loadTransactions31() (Scripts, error) {
+	sc, err := loadScripts("manifests/ob_3.1_accounts_transactions_fca.json")
 	if err != nil {
-		return AccountData{}, err
+		sc, err = loadScripts("../../manifests/ob_3.1_accounts_transactions_fca.json")
 	}
-	var m AccountData
-	err = json.Unmarshal(plan, &m)
+	return sc, err
+}
+
+func loadAssertions() (References, error) {
+	refs, err := loadReferences("manifests/assertions.json")
 	if err != nil {
-		return AccountData{}, err
+		refs, err = loadReferences("../../manifests/assertions.json")
+		if err != nil {
+			return References{}, err
+		}
 	}
-	return m, nil
+	refs2, err := loadReferences("manifests/data.json")
+
+	if err != nil {
+		refs2, err = loadReferences("../../manifests/data.json")
+		if err != nil {
+			return References{}, err
+		}
+	}
+	for k, v := range refs2.References { // read in data references with body payloads
+		body := jsonString(v.Body)
+		l := len(body)
+		if l > 0 {
+			v.BodyData = body
+			v.Body = ""
+			refs2.References[k] = v
+		}
+		refs.References[k] = refs2.References[k]
+	}
+
+	return refs, err
+}
+
+func jsonString(i interface{}) string {
+	var model []byte
+	model, _ = json.MarshalIndent(i, "", "    ")
+	return string(model)
 }
 
 func loadScripts(filename string) (Scripts, error) {
@@ -275,19 +392,6 @@ func loadReferences(filename string) (References, error) {
 	return m, nil
 }
 
-func loadTestPlan(filename string) (TestPlan, error) {
-	plan, err := ioutil.ReadFile(filename)
-	if err != nil {
-		return TestPlan{}, err
-	}
-	var m TestPlan
-	err = json.Unmarshal(plan, &m)
-	if err != nil {
-		return TestPlan{}, err
-	}
-	return m, nil
-}
-
 // ScriptPermission -
 type ScriptPermission struct {
 	ID          string
@@ -296,7 +400,7 @@ type ScriptPermission struct {
 }
 
 // GetPermissions -
-func GetPermissions(tests []model.TestCase) ([]ScriptPermission, error) {
+func getAccountPermissions(tests []model.TestCase) ([]ScriptPermission, error) {
 	permCollector := []ScriptPermission{}
 
 	for _, test := range tests {
@@ -313,9 +417,116 @@ func GetPermissions(tests []model.TestCase) ([]ScriptPermission, error) {
 	return permCollector, nil
 }
 
+func filterTestsBasedOnDiscoveryEndpoints(scripts Scripts, endpoints []discovery.ModelEndpoint) (Scripts, error) {
+	lookupMap := make(map[string]bool)
+	filteredScripts := []Script{}
+
+	for _, ep := range endpoints {
+		for _, regpath := range accountsRegex {
+			matched, err := regexp.MatchString(regpath.Regex, ep.Path)
+			if err != nil {
+				continue
+			}
+			if matched {
+				lookupMap[regpath.Regex] = true
+				logrus.Tracef("endpoint %40.40s matched by regex %42.42s: %s", ep.Path, regpath.Regex, regpath.Name)
+			}
+		}
+	}
+
+	for k := range lookupMap {
+		for i, scr := range scripts.Scripts {
+			stripped := strings.Replace(scr.URI, "$", "", -1) // only works with a single character
+			if strings.Contains(stripped, "foobar") {         //exceptions
+				nofoobar := strings.Replace(stripped, "/foobar", "", -1) // only works with a single character
+				matched, err := regexp.MatchString(k, nofoobar)
+				if err != nil {
+					continue
+				}
+				if matched {
+					if !contains(filteredScripts, scripts.Scripts[i]) {
+						logrus.Tracef("endpoint %40.40s matched by regex %42.42s", scr.URI, k)
+						filteredScripts = append(filteredScripts, scripts.Scripts[i])
+					}
+				}
+
+				if scr.URI == "/foobar" {
+					if !contains(filteredScripts, scripts.Scripts[i]) {
+						filteredScripts = append(filteredScripts, scripts.Scripts[i])
+					}
+					continue
+				}
+			}
+
+			matched, err := regexp.MatchString(k, stripped)
+			if err != nil {
+				continue
+			}
+			if matched {
+				if !contains(filteredScripts, scripts.Scripts[i]) {
+					logrus.Tracef("endpoint %40.40s matched by regex %42.42s", scr.URI, k)
+					filteredScripts = append(filteredScripts, scripts.Scripts[i])
+				}
+			}
+		}
+	}
+	resultscripts := Scripts{Scripts: filteredScripts}
+	sort.Slice(resultscripts.Scripts, func(i, j int) bool { return resultscripts.Scripts[i].ID < resultscripts.Scripts[j].ID })
+
+	return resultscripts, nil
+}
+
+func contains(s []Script, e Script) bool {
+	for _, a := range s {
+		if a.ID == e.ID {
+			return true
+		}
+	}
+	return false
+}
+
 // Utility to Dump Json
 func dumpJSON(i interface{}) {
 	var model []byte
 	model, _ = json.MarshalIndent(i, "", "    ")
 	fmt.Println(string(model))
+}
+
+var subPathx = "[a-zA-Z0-9_{}-]+" // url sub path regex
+
+type pathRegex struct {
+	Regex string
+	Name  string
+}
+
+var accountsRegex = []pathRegex{
+	{"^/accounts$", "Get Accounts"},
+	{"^/accounts/" + subPathx + "$", "Get Accounts Resource"},
+	{"^/accounts/" + subPathx + "/balances$", "Get Balances Resource"},
+	{"^/accounts/" + subPathx + "/beneficiaries$", "Get Beneficiaries Resource"},
+	{"^/accounts/" + subPathx + "/direct-debits$", "Get Direct Debits Resource"},
+	{"^/accounts/" + subPathx + "/offers$", "Get Offers Resource"},
+	{"^/accounts/" + subPathx + "/party$", "Get Party Rsource"},
+	{"^/accounts/" + subPathx + "/product$", "Get Product Resource"},
+	{"^/accounts/" + subPathx + "/scheduled-payments$", "Get Schedulated Payment resource"},
+	{"^/accounts/" + subPathx + "/standing-orders$", "Get Standing Orders resource"},
+	{"^/accounts/" + subPathx + "/statements$", "Get Statements Resource"},
+	{"^/accounts/" + subPathx + "/statements/" + subPathx + "/file$", "Get statement files resource"},
+	{"^/accounts/" + subPathx + "/statements/" + subPathx + "/transactions$", "Get statement transactions resource"},
+	{"^/accounts/" + subPathx + "/transactions$", "Get transactions resource"},
+	{"^/balances$", "Get Balances"},
+	{"^/beneficiaries$", "Get Beneficiaries"},
+	{"^/direct-debits$", "Get directory debits"},
+	{"^/offers$", "Get Offers"},
+	{"^/party$", "Get party"},
+	{"^/products$", "Get Products"},
+	{"^/scheduled-payments$", "Get Payments"},
+	{"^/standing-orders$", "Get Orders"},
+	{"^/statements$", "Get Statements"},
+	{"^/transactions$", "Get Transactions"},
+}
+
+func timeNowMillis() string {
+	tm := time.Now().UnixNano() / int64(time.Millisecond)
+	return fmt.Sprintf("%d", tm)
 }

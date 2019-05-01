@@ -22,7 +22,6 @@
                   type="text"
                 />
               </b-form-group>
-
               <b-form-group
                 id="authorised_by_group"
                 label-for="authorised_by"
@@ -36,7 +35,6 @@
                   type="text"
                 />
               </b-form-group>
-
               <b-form-group
                 id="job_title_group"
                 label-for="job_title"
@@ -49,7 +47,6 @@
                   type="text"
                 />
               </b-form-group>
-
               <b-form-group
                 id="has_agreed_group"
                 :label="has_agreed_terms"
@@ -59,7 +56,6 @@
                   v-model="has_agreed"
                   required>I agree</b-form-checkbox>
               </b-form-group>
-
               <b-form-group
                 id="add_digital_signature_group"
                 label-for="add_digital_signature"
@@ -73,10 +69,20 @@
             </b-form>
           </b-card>
           <br>
-          <b-card bg-variant="light">
-            <h5>Exported Results</h5>
-            {{ export_results }}
-          </b-card>
+          <a
+            v-if="export_results_blob"
+            :href="export_results_download"
+            :download="export_results_filename"
+            :filename="export_results_filename"
+            class="download-report-link"
+            target="_blank">
+            <b-button
+              block
+              variant="primary">
+              Download {{ export_results_filename }}
+            </b-button>
+          </a>
+          <br>
           <b-card
             v-if="hasErrors"
             bg-variant="light">
@@ -116,7 +122,6 @@ export default {
     ...mapGetters('status', [
       'hasErrors',
     ]),
-
     implementer: {
       get() {
         return this.$store.state.exporter.implementer;
@@ -141,7 +146,6 @@ export default {
         this.$store.commit('exporter/SET_JOB_TITLE', value);
       },
     },
-
     has_agreed: {
       get() {
         return this.$store.state.exporter.has_agreed;
@@ -158,13 +162,23 @@ export default {
         this.$store.commit('exporter/SET_ADD_DIGITAL_SIGNATURE', value);
       },
     },
-
-    export_results: {
+    export_results_blob: {
       get() {
-        return this.$store.state.exporter.export_results;
+        return this.$store.state.exporter.export_results_blob;
       },
     },
-
+    export_results_filename: {
+      get() {
+        return this.$store.state.exporter.export_results_filename;
+      },
+    },
+    export_results_download() {
+      if (this.export_results_blob) {
+        // TODO(mbana): Remember to call `window.URL.revokeObjectURL()`. No big deal.
+        return window.URL.createObjectURL(this.export_results_blob);
+      }
+      return '';
+    },
     canExport() {
       const conditions = [
         this.isNotEmpty(this.implementer),

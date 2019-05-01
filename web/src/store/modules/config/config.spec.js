@@ -6,16 +6,15 @@
  * https://vue-test-utils.vuejs.org/guides/using-with-vuex.html#testing-a-running-store
  */
 import { createLocalVue } from '@vue/test-utils';
-import Vuex from 'vuex';
 import { cloneDeep } from 'lodash';
-
-import actions from './actions';
-import mutations from './mutations';
-import getters from './getters';
-import state from './state';
-import * as types from './mutation-types';
-
+import Vuex from 'vuex';
 import api from '../../../api';
+import actions from './actions';
+import {
+  getters, mutations, mutationTypes as types, state,
+} from './index';
+
+
 // https://jestjs.io/docs/en/mock-functions#mocking-modules
 jest.mock('../../../api');
 
@@ -48,10 +47,14 @@ describe('web/src/store/modules/config', () => {
         signing_public: '',
         transport_private: '',
         transport_public: '',
+        transaction_from_date: '',
+        transaction_to_date: '',
         client_id: '',
         client_secret: '',
         token_endpoint: '',
+        response_type: '',
         token_endpoint_auth_method: 'client_secret_basic',
+        request_object_signing_alg: '',
         authorization_endpoint: '',
         resource_base_url: '',
         x_fapi_financial_id: '',
@@ -60,6 +63,11 @@ describe('web/src/store/modules/config', () => {
         resource_ids: {
           account_ids: [{ account_id: '' }],
           statement_ids: [{ statement_id: '' }],
+        },
+        creditor_account: {
+          scheme_name: '',
+          identification: '',
+          name: '',
         },
       });
     });
@@ -100,7 +108,7 @@ describe('web/src/store/modules/config', () => {
       expect(store.getters.configuration.transport_public).toEqual(transportPublic);
     });
 
-    it('commits client_id, client_secret, token_endpoint, authorization_endpoint, resource_base_url, x_fapi_financial_id, issuer, redirect_url and resource_ids', async () => {
+    it('commits client_id, client_secret, token_endpoint, request_object_signing_alg, authorization_endpoint, resource_base_url, x_fapi_financial_id, issuer, redirect_url and resource_ids', async () => {
       const store = createRealStore();
 
       expect(store.state.configuration).toEqual({
@@ -108,10 +116,14 @@ describe('web/src/store/modules/config', () => {
         signing_public: '',
         transport_private: '',
         transport_public: '',
+        transaction_from_date: '',
+        transaction_to_date: '',
         client_id: '',
         client_secret: '',
         token_endpoint: '',
+        response_type: '',
         token_endpoint_auth_method: 'client_secret_basic',
+        request_object_signing_alg: '',
         authorization_endpoint: '',
         resource_base_url: '',
         x_fapi_financial_id: '',
@@ -120,6 +132,11 @@ describe('web/src/store/modules/config', () => {
         resource_ids: {
           account_ids: [{ account_id: '' }],
           statement_ids: [{ statement_id: '' }],
+        },
+        creditor_account: {
+          scheme_name: '',
+          identification: '',
+          name: '',
         },
       });
 
@@ -130,10 +147,14 @@ describe('web/src/store/modules/config', () => {
         signing_public: '',
         transport_private: '',
         transport_public: '',
+        transaction_from_date: '',
+        transaction_to_date: '',
         client_id: '8672384e-9a33-439f-8924-67bb14340d71',
         client_secret: '',
         token_endpoint: '',
+        response_type: '',
         token_endpoint_auth_method: 'client_secret_basic',
+        request_object_signing_alg: '',
         authorization_endpoint: '',
         resource_base_url: '',
         x_fapi_financial_id: '',
@@ -142,6 +163,11 @@ describe('web/src/store/modules/config', () => {
         resource_ids: {
           account_ids: [{ account_id: '' }],
           statement_ids: [{ statement_id: '' }],
+        },
+        creditor_account: {
+          scheme_name: '',
+          identification: '',
+          name: '',
         },
       });
 
@@ -151,10 +177,14 @@ describe('web/src/store/modules/config', () => {
         signing_public: '',
         transport_private: '',
         transport_public: '',
+        transaction_from_date: '',
+        transaction_to_date: '',
         client_id: '8672384e-9a33-439f-8924-67bb14340d71',
         client_secret: '2cfb31a3-5443-4e65-b2bc-ef8e00266a77',
         token_endpoint: '',
+        response_type: '',
         token_endpoint_auth_method: 'client_secret_basic',
+        request_object_signing_alg: '',
         authorization_endpoint: '',
         resource_base_url: '',
         x_fapi_financial_id: '',
@@ -164,6 +194,11 @@ describe('web/src/store/modules/config', () => {
           account_ids: [{ account_id: '' }],
           statement_ids: [{ statement_id: '' }],
         },
+        creditor_account: {
+          scheme_name: '',
+          identification: '',
+          name: '',
+        },
       });
 
       store.commit(types.SET_TOKEN_ENDPOINT, 'https://modelobank2018.o3bank.co.uk:4201/token');
@@ -172,10 +207,14 @@ describe('web/src/store/modules/config', () => {
         signing_public: '',
         transport_private: '',
         transport_public: '',
+        transaction_from_date: '',
+        transaction_to_date: '',
         client_id: '8672384e-9a33-439f-8924-67bb14340d71',
         client_secret: '2cfb31a3-5443-4e65-b2bc-ef8e00266a77',
         token_endpoint: 'https://modelobank2018.o3bank.co.uk:4201/token',
+        response_type: '',
         token_endpoint_auth_method: 'client_secret_basic',
+        request_object_signing_alg: '',
         authorization_endpoint: '',
         resource_base_url: '',
         x_fapi_financial_id: '',
@@ -184,6 +223,11 @@ describe('web/src/store/modules/config', () => {
         resource_ids: {
           account_ids: [{ account_id: '' }],
           statement_ids: [{ statement_id: '' }],
+        },
+        creditor_account: {
+          scheme_name: '',
+          identification: '',
+          name: '',
         },
       });
 
@@ -196,10 +240,14 @@ describe('web/src/store/modules/config', () => {
         signing_public: '',
         transport_private: '',
         transport_public: '',
+        transaction_from_date: '',
+        transaction_to_date: '',
         client_id: '8672384e-9a33-439f-8924-67bb14340d71',
         client_secret: '2cfb31a3-5443-4e65-b2bc-ef8e00266a77',
         token_endpoint: 'https://modelobank2018.o3bank.co.uk:4201/token',
+        response_type: '',
         token_endpoint_auth_method: 'client_secret_basic',
+        request_object_signing_alg: '',
         authorization_endpoint: 'https://modelobankauth2018.o3bank.co.uk:4101/auth',
         resource_base_url: '',
         x_fapi_financial_id: '',
@@ -209,6 +257,11 @@ describe('web/src/store/modules/config', () => {
           account_ids: [{ account_id: '' }],
           statement_ids: [{ statement_id: '' }],
         },
+        creditor_account: {
+          scheme_name: '',
+          identification: '',
+          name: '',
+        },
       });
 
       store.commit(types.SET_RESOURCE_BASE_URL, 'https://modelobank2018.o3bank.co.uk:4501');
@@ -217,10 +270,14 @@ describe('web/src/store/modules/config', () => {
         signing_public: '',
         transport_private: '',
         transport_public: '',
+        transaction_from_date: '',
+        transaction_to_date: '',
         client_id: '8672384e-9a33-439f-8924-67bb14340d71',
         client_secret: '2cfb31a3-5443-4e65-b2bc-ef8e00266a77',
         token_endpoint: 'https://modelobank2018.o3bank.co.uk:4201/token',
+        response_type: '',
         token_endpoint_auth_method: 'client_secret_basic',
+        request_object_signing_alg: '',
         authorization_endpoint: 'https://modelobankauth2018.o3bank.co.uk:4101/auth',
         resource_base_url: 'https://modelobank2018.o3bank.co.uk:4501',
         x_fapi_financial_id: '',
@@ -230,6 +287,11 @@ describe('web/src/store/modules/config', () => {
           account_ids: [{ account_id: '' }],
           statement_ids: [{ statement_id: '' }],
         },
+        creditor_account: {
+          scheme_name: '',
+          identification: '',
+          name: '',
+        },
       });
 
       store.commit(types.SET_X_FAPI_FINANCIAL_ID, '0015800001041RHAAY');
@@ -238,10 +300,14 @@ describe('web/src/store/modules/config', () => {
         signing_public: '',
         transport_private: '',
         transport_public: '',
+        transaction_from_date: '',
+        transaction_to_date: '',
         client_id: '8672384e-9a33-439f-8924-67bb14340d71',
         client_secret: '2cfb31a3-5443-4e65-b2bc-ef8e00266a77',
         token_endpoint: 'https://modelobank2018.o3bank.co.uk:4201/token',
+        response_type: '',
         token_endpoint_auth_method: 'client_secret_basic',
+        request_object_signing_alg: '',
         authorization_endpoint: 'https://modelobankauth2018.o3bank.co.uk:4101/auth',
         resource_base_url: 'https://modelobank2018.o3bank.co.uk:4501',
         x_fapi_financial_id: '0015800001041RHAAY',
@@ -251,6 +317,11 @@ describe('web/src/store/modules/config', () => {
           account_ids: [{ account_id: '' }],
           statement_ids: [{ statement_id: '' }],
         },
+        creditor_account: {
+          scheme_name: '',
+          identification: '',
+          name: '',
+        },
       });
 
       store.commit(types.SET_ISSUER, 'https://modelobankauth2018.o3bank.co.uk:4101');
@@ -259,10 +330,14 @@ describe('web/src/store/modules/config', () => {
         signing_public: '',
         transport_private: '',
         transport_public: '',
+        transaction_from_date: '',
+        transaction_to_date: '',
         client_id: '8672384e-9a33-439f-8924-67bb14340d71',
         client_secret: '2cfb31a3-5443-4e65-b2bc-ef8e00266a77',
         token_endpoint: 'https://modelobank2018.o3bank.co.uk:4201/token',
+        response_type: '',
         token_endpoint_auth_method: 'client_secret_basic',
+        request_object_signing_alg: '',
         authorization_endpoint: 'https://modelobankauth2018.o3bank.co.uk:4101/auth',
         resource_base_url: 'https://modelobank2018.o3bank.co.uk:4501',
         x_fapi_financial_id: '0015800001041RHAAY',
@@ -272,6 +347,11 @@ describe('web/src/store/modules/config', () => {
           account_ids: [{ account_id: '' }],
           statement_ids: [{ statement_id: '' }],
         },
+        creditor_account: {
+          scheme_name: '',
+          identification: '',
+          name: '',
+        },
       });
 
       store.commit(types.ADD_RESOURCE_ACCOUNT_ID, { account_id: 'account-id' });
@@ -280,10 +360,14 @@ describe('web/src/store/modules/config', () => {
         signing_public: '',
         transport_private: '',
         transport_public: '',
+        transaction_from_date: '',
+        transaction_to_date: '',
         client_id: '8672384e-9a33-439f-8924-67bb14340d71',
         client_secret: '2cfb31a3-5443-4e65-b2bc-ef8e00266a77',
         token_endpoint: 'https://modelobank2018.o3bank.co.uk:4201/token',
+        response_type: '',
         token_endpoint_auth_method: 'client_secret_basic',
+        request_object_signing_alg: '',
         authorization_endpoint: 'https://modelobankauth2018.o3bank.co.uk:4101/auth',
         resource_base_url: 'https://modelobank2018.o3bank.co.uk:4501',
         x_fapi_financial_id: '0015800001041RHAAY',
@@ -293,6 +377,11 @@ describe('web/src/store/modules/config', () => {
           account_ids: [{ account_id: '' }, { account_id: 'account-id' }],
           statement_ids: [{ statement_id: '' }],
         },
+        creditor_account: {
+          scheme_name: '',
+          identification: '',
+          name: '',
+        },
       });
 
       store.commit(types.ADD_RESOURCE_STATEMENT_ID, { statement_id: 'statement-id' });
@@ -301,10 +390,14 @@ describe('web/src/store/modules/config', () => {
         signing_public: '',
         transport_private: '',
         transport_public: '',
+        transaction_from_date: '',
+        transaction_to_date: '',
         client_id: '8672384e-9a33-439f-8924-67bb14340d71',
         client_secret: '2cfb31a3-5443-4e65-b2bc-ef8e00266a77',
         token_endpoint: 'https://modelobank2018.o3bank.co.uk:4201/token',
+        response_type: '',
         token_endpoint_auth_method: 'client_secret_basic',
+        request_object_signing_alg: '',
         authorization_endpoint: 'https://modelobankauth2018.o3bank.co.uk:4101/auth',
         resource_base_url: 'https://modelobank2018.o3bank.co.uk:4501',
         x_fapi_financial_id: '0015800001041RHAAY',
@@ -314,7 +407,15 @@ describe('web/src/store/modules/config', () => {
           account_ids: [{ account_id: '' }, { account_id: 'account-id' }],
           statement_ids: [{ statement_id: '' }, { statement_id: 'statement-id' }],
         },
+        creditor_account: {
+          scheme_name: '',
+          identification: '',
+          name: '',
+        },
       });
+
+      store.commit(types.SET_REQUEST_OBJECT_SIGNING_ALG, 'PS256');
+      expect(store.state.configuration.request_object_signing_alg).toEqual('PS256');
     });
 
     it('sets resource_ids', async () => {
@@ -325,10 +426,14 @@ describe('web/src/store/modules/config', () => {
         signing_public: '',
         transport_private: '',
         transport_public: '',
+        transaction_from_date: '',
+        transaction_to_date: '',
         client_id: '',
         client_secret: '',
         token_endpoint: '',
+        response_type: '',
         token_endpoint_auth_method: 'client_secret_basic',
+        request_object_signing_alg: '',
         authorization_endpoint: '',
         resource_base_url: '',
         x_fapi_financial_id: '',
@@ -337,6 +442,11 @@ describe('web/src/store/modules/config', () => {
         resource_ids: {
           account_ids: [{ account_id: '' }],
           statement_ids: [{ statement_id: '' }],
+        },
+        creditor_account: {
+          scheme_name: '',
+          identification: '',
+          name: '',
         },
       });
 
@@ -348,10 +458,14 @@ describe('web/src/store/modules/config', () => {
         signing_public: '',
         transport_private: '',
         transport_public: '',
+        transaction_from_date: '',
+        transaction_to_date: '',
         client_id: '',
         client_secret: '',
         token_endpoint: '',
+        response_type: '',
         token_endpoint_auth_method: 'client_secret_basic',
+        request_object_signing_alg: '',
         authorization_endpoint: '',
         resource_base_url: '',
         x_fapi_financial_id: '',
@@ -360,6 +474,11 @@ describe('web/src/store/modules/config', () => {
         resource_ids: {
           account_ids: [{ account_id: '123' }, { account_id: '456' }],
           statement_ids: [{ statement_id: '' }],
+        },
+        creditor_account: {
+          scheme_name: '',
+          identification: '',
+          name: '',
         },
       });
 
@@ -371,10 +490,14 @@ describe('web/src/store/modules/config', () => {
         signing_public: '',
         transport_private: '',
         transport_public: '',
+        transaction_from_date: '',
+        transaction_to_date: '',
         client_id: '',
         client_secret: '',
         token_endpoint: '',
+        response_type: '',
         token_endpoint_auth_method: 'client_secret_basic',
+        request_object_signing_alg: '',
         authorization_endpoint: '',
         resource_base_url: '',
         x_fapi_financial_id: '',
@@ -383,6 +506,43 @@ describe('web/src/store/modules/config', () => {
         resource_ids: {
           account_ids: [{ account_id: '123' }, { account_id: '456' }],
           statement_ids: [{ statement_id: '123' }, { statement_id: '456' }],
+        },
+        creditor_account: {
+          scheme_name: '',
+          identification: '',
+          name: '',
+        },
+      });
+
+      store.commit(types.SET_TRANSACTION_FROM_DATE, '2016-01-01T10:40:00+02:00');
+      store.commit(types.SET_TRANSACTION_TO_DATE, '2016-01-01T10:40:00+02:00');
+
+      expect(store.state.configuration).toEqual({
+        signing_private: '',
+        signing_public: '',
+        transport_private: '',
+        transport_public: '',
+        transaction_from_date: '2016-01-01T10:40:00+02:00',
+        transaction_to_date: '2016-01-01T10:40:00+02:00',
+        client_id: '',
+        client_secret: '',
+        token_endpoint: '',
+        response_type: '',
+        token_endpoint_auth_method: 'client_secret_basic',
+        request_object_signing_alg: '',
+        authorization_endpoint: '',
+        resource_base_url: '',
+        x_fapi_financial_id: '',
+        issuer: '',
+        redirect_url: 'https://127.0.0.1:8443/conformancesuite/callback',
+        resource_ids: {
+          account_ids: [{ account_id: '123' }, { account_id: '456' }],
+          statement_ids: [{ statement_id: '123' }, { statement_id: '456' }],
+        },
+        creditor_account: {
+          scheme_name: '',
+          identification: '',
+          name: '',
         },
       });
     });
@@ -400,10 +560,14 @@ describe('web/src/store/modules/config', () => {
           signing_public: '',
           transport_private: '',
           transport_public: '',
+          transaction_from_date: '',
+          transaction_to_date: '',
           client_id: '',
           client_secret: '',
           token_endpoint: '',
+          response_type: '',
           token_endpoint_auth_method: 'client_secret_basic',
+          request_object_signing_alg: '',
           authorization_endpoint: '',
           resource_base_url: '',
           x_fapi_financial_id: '',
@@ -412,6 +576,11 @@ describe('web/src/store/modules/config', () => {
           resource_ids: {
             account_ids: [{ account_id: '' }],
             statement_ids: [{ statement_id: '' }],
+          },
+          creditor_account: {
+            scheme_name: '',
+            identification: '',
+            name: '',
           },
         });
 
@@ -438,21 +607,37 @@ describe('web/src/store/modules/config', () => {
               'schema_version=https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.0/dist/account-info-swagger.json': 'https://modelobankauth2018.o3bank.co.uk:4101_1',
               'schema_version=https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.0/dist/payment-initiation-swagger.json': 'https://modelobankauth2018.o3bank.co.uk:4101_2',
             },
+            request_object_signing_alg_values_supported: {
+              'schema_version=https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.0.0/dist/account-info-swagger.json':
+                ['PS256', 'RS256'],
+            },
+            default_transaction_from_date: '2016-01-01T10:40:00+02:00',
+            default_transaction_to_date: '2025-12-31T10:40:00+02:00',
+            response_types_supported: [
+              'code',
+              'code id_token',
+            ],
           },
         });
 
         await actions.validateDiscoveryConfig(store);
 
         expect(store.state.token_endpoint_auth_methods).toEqual(['tls_client_auth', 'client_secret_basic']);
+        expect(store.state.request_object_signing_alg_values_supported).toEqual(['PS256', 'RS256']);
+        expect(store.state.response_types_supported).toEqual(['code', 'code id_token']);
         expect(store.state.configuration).toEqual({
           signing_private: '',
           signing_public: '',
           transport_private: '',
           transport_public: '',
+          transaction_from_date: '2016-01-01T10:40:00+02:00',
+          transaction_to_date: '2025-12-31T10:40:00+02:00',
           client_id: '',
           client_secret: '',
           token_endpoint: '',
+          response_type: '',
           token_endpoint_auth_method: 'client_secret_basic',
+          request_object_signing_alg: '',
           authorization_endpoint: 'https://modelobankauth2018.o3bank.co.uk:4101/auth_1',
           resource_base_url: '',
           x_fapi_financial_id: '',
@@ -461,6 +646,11 @@ describe('web/src/store/modules/config', () => {
           resource_ids: {
             account_ids: [{ account_id: '' }],
             statement_ids: [{ statement_id: '' }],
+          },
+          creditor_account: {
+            scheme_name: '',
+            identification: '',
+            name: '',
           },
         });
       });
@@ -485,9 +675,13 @@ describe('web/src/store/modules/config', () => {
           'Signing Private Certificate (.key) empty',
           'Account IDs empty',
           'Statement IDs empty',
+          'Transaction From Date empty',
+          'Transaction To Date empty',
           'Client ID empty',
           'Client Secret empty',
           'Token Endpoint empty',
+          'response_type empty',
+          'Request object signing algorithm empty',
           'Authorization Endpoint empty',
           'Resource Base URL empty',
           'x-fapi-financial-id empty',
@@ -510,9 +704,13 @@ describe('web/src/store/modules/config', () => {
           'Signing Public Certificate (.pem) empty',
           'Account IDs empty',
           'Statement IDs empty',
+          'Transaction From Date empty',
+          'Transaction To Date empty',
           'Client ID empty',
           'Client Secret empty',
           'Token Endpoint empty',
+          'response_type empty',
+          'Request object signing algorithm empty',
           'Authorization Endpoint empty',
           'Resource Base URL empty',
           'x-fapi-financial-id empty',
@@ -535,9 +733,13 @@ describe('web/src/store/modules/config', () => {
           'Transport Private Certificate (.key) empty',
           'Account IDs empty',
           'Statement IDs empty',
+          'Transaction From Date empty',
+          'Transaction To Date empty',
           'Client ID empty',
           'Client Secret empty',
           'Token Endpoint empty',
+          'response_type empty',
+          'Request object signing algorithm empty',
           'Authorization Endpoint empty',
           'Resource Base URL empty',
           'x-fapi-financial-id empty',
@@ -560,9 +762,13 @@ describe('web/src/store/modules/config', () => {
           'Transport Public Certificate (.pem) empty',
           'Account IDs empty',
           'Statement IDs empty',
+          'Transaction From Date empty',
+          'Transaction To Date empty',
           'Client ID empty',
           'Client Secret empty',
           'Token Endpoint empty',
+          'response_type empty',
+          'Request object signing algorithm empty',
           'Authorization Endpoint empty',
           'Resource Base URL empty',
           'x-fapi-financial-id empty',
@@ -584,9 +790,13 @@ describe('web/src/store/modules/config', () => {
           'Transport Public Certificate (.pem) empty',
           'Account IDs empty',
           'Statement IDs empty',
+          'Transaction From Date empty',
+          'Transaction To Date empty',
           'Client ID empty',
           'Client Secret empty',
           'Token Endpoint empty',
+          'response_type empty',
+          'Request object signing algorithm empty',
           'Authorization Endpoint empty',
           'Resource Base URL empty',
           'x-fapi-financial-id empty',
@@ -604,13 +814,17 @@ describe('web/src/store/modules/config', () => {
         });
 
         const store = createRealStore();
+        store.commit(types.SET_TRANSACTION_FROM_DATE, '2016-01-01T10:40:00+02:00');
+        store.commit(types.SET_TRANSACTION_TO_DATE, '2016-01-01T10:40:00+02:00');
         store.commit(types.SET_CLIENT_ID, '8672384e-9a33-439f-8924-67bb14340d71');
         store.commit(types.SET_CLIENT_SECRET, '2cfb31a3-5443-4e65-b2bc-ef8e00266a77');
         store.commit(types.SET_TOKEN_ENDPOINT, 'https://modelobank2018.o3bank.co.uk:4201/token');
+        store.commit(types.SET_RESPONSE_TYPE, 'code id_token');
         store.commit(types.SET_AUTHORIZATION_ENDPOINT, 'https://modelobankauth2018.o3bank.co.uk:4101/auth');
         store.commit(types.SET_RESOURCE_BASE_URL, 'https://modelobank2018.o3bank.co.uk:4501');
         store.commit(types.SET_X_FAPI_FINANCIAL_ID, '0015800001041RHAAY');
         store.commit(types.SET_ISSUER, 'https://modelobankauth2018.o3bank.co.uk:4101');
+        store.commit(types.SET_REQUEST_OBJECT_SIGNING_ALG, 'PS256');
 
         await actions.setConfigurationSigningPublic(store, 'setConfigurationSigningPublic');
         await actions.setConfigurationSigningPrivate(store, 'setConfigurationSigningPrivate');
@@ -621,6 +835,8 @@ describe('web/src/store/modules/config', () => {
         await actions.removeResourceStatementID(store, 0);
         await store.commit(types.ADD_RESOURCE_ACCOUNT_ID, { account_id: 'account-id' });
         await store.commit(types.ADD_RESOURCE_STATEMENT_ID, { statement_id: 'statement-id' });
+        await store.commit(types.SET_TRANSACTION_FROM_DATE, '2016-01-01T10:40:00+02:00');
+        await store.commit(types.SET_TRANSACTION_TO_DATE, '2025-12-31T10:40:00+02:00');
 
         const valid = await actions.validateConfiguration(store);
         expect(valid).toEqual(true);
@@ -633,13 +849,17 @@ describe('web/src/store/modules/config', () => {
         api.validateConfiguration.mockRejectedValueOnce(errorResponse);
 
         const store = createRealStore();
+        store.commit(types.SET_TRANSACTION_FROM_DATE, '2016-01-01T10:40:00+02:00');
+        store.commit(types.SET_TRANSACTION_TO_DATE, '2016-01-01T10:40:00+02:00');
         store.commit(types.SET_CLIENT_ID, '8672384e-9a33-439f-8924-67bb14340d71');
         store.commit(types.SET_CLIENT_SECRET, '2cfb31a3-5443-4e65-b2bc-ef8e00266a77');
         store.commit(types.SET_TOKEN_ENDPOINT, 'https://modelobank2018.o3bank.co.uk:4201/token');
+        store.commit(types.SET_RESPONSE_TYPE, 'code id_token');
         store.commit(types.SET_AUTHORIZATION_ENDPOINT, 'https://modelobankauth2018.o3bank.co.uk:4101/auth');
         store.commit(types.SET_RESOURCE_BASE_URL, 'https://modelobank2018.o3bank.co.uk:4501');
         store.commit(types.SET_X_FAPI_FINANCIAL_ID, '0015800001041RHAAY');
         store.commit(types.SET_ISSUER, 'https://modelobankauth2018.o3bank.co.uk:4101');
+        store.commit(types.SET_REQUEST_OBJECT_SIGNING_ALG, 'PS256');
 
         await actions.setConfigurationSigningPublic(store, 'not_a_certificate');
         await actions.setConfigurationSigningPrivate(store, 'not_a_certificate');
@@ -650,6 +870,8 @@ describe('web/src/store/modules/config', () => {
         await actions.removeResourceStatementID(store, 0);
         await store.commit(types.ADD_RESOURCE_ACCOUNT_ID, { account_id: 'account-id' });
         await store.commit(types.ADD_RESOURCE_STATEMENT_ID, { statement_id: 'statement-id' });
+        await store.commit(types.SET_TRANSACTION_FROM_DATE, '2016-01-01T10:40:00+02:00');
+        await store.commit(types.SET_TRANSACTION_TO_DATE, '2025-12-31T10:40:00+02:00');
 
         const valid = await actions.validateConfiguration(store);
         expect(valid).toEqual(false);
@@ -671,9 +893,13 @@ describe('web/src/store/modules/config', () => {
           'Transport Public Certificate (.pem) empty',
           'Account IDs empty',
           'Statement IDs empty',
+          'Transaction From Date empty',
+          'Transaction To Date empty',
           'Client ID empty',
           'Client Secret empty',
           'Token Endpoint empty',
+          'response_type empty',
+          'Request object signing algorithm empty',
           'Authorization Endpoint empty',
           'Resource Base URL empty',
           'x-fapi-financial-id empty',
@@ -698,6 +924,41 @@ describe('web/src/store/modules/config', () => {
         await store.commit(types.ADD_RESOURCE_ACCOUNT_ID, { account_id: 'account-id' });
         await store.commit(types.ADD_RESOURCE_STATEMENT_ID, { statement_id: 'statement-id' });
 
+        store.commit(types.SET_TRANSACTION_FROM_DATE, '2016-01-01T10:40:00+02:00');
+        store.commit(types.SET_TRANSACTION_TO_DATE, '2016-01-01T10:40:00+02:00');
+        store.commit(types.SET_CLIENT_ID, '8672384e-9a33-439f-8924-67bb14340d71');
+        store.commit(types.SET_CLIENT_SECRET, '2cfb31a3-5443-4e65-b2bc-ef8e00266a77');
+        store.commit(types.SET_TOKEN_ENDPOINT, 'https://modelobank2018.o3bank.co.uk:4201/token');
+        store.commit(types.SET_RESPONSE_TYPE, 'code id_token');
+        store.commit(types.SET_AUTHORIZATION_ENDPOINT, 'https://modelobankauth2018.o3bank.co.uk:4101/auth');
+        store.commit(types.SET_RESOURCE_BASE_URL, 'https://modelobank2018.o3bank.co.uk:4501');
+        store.commit(types.SET_X_FAPI_FINANCIAL_ID, '0015800001041RHAAY');
+        store.commit(types.SET_ISSUER, 'https://modelobankauth2018.o3bank.co.uk:4101');
+        store.commit(types.SET_REQUEST_OBJECT_SIGNING_ALG, 'PS256');
+        await store.commit(types.SET_TRANSACTION_FROM_DATE, '2016-01-01T10:40:00+02:00');
+        await store.commit(types.SET_TRANSACTION_TO_DATE, '2025-12-31T10:40:00+02:00');
+
+        // This will clear out the previous errors, and will result in configurationErrors
+        // being empty since they are not any errors.
+        expect(await actions.validateConfiguration(store)).toEqual(true);
+        expect(dispatch).toHaveBeenCalledWith('status/clearErrors', null, { root: true });
+      });
+
+      it('validateConfiguration returns invalid transaction from/start date errors', async () => {
+        const store = createRealStore();
+
+        await actions.setConfigurationSigningPublic(store, 'setConfigurationSigningPublic');
+        await actions.setConfigurationSigningPrivate(store, 'setConfigurationSigningPrivate');
+        await actions.setConfigurationTransportPrivate(store, 'setConfigurationTransportPrivate');
+        await actions.setConfigurationTransportPublic(store, 'setConfigurationTransportPublic');
+
+        await actions.removeResourceAccountID(store, 0);
+        await actions.removeResourceStatementID(store, 0);
+        await store.commit(types.ADD_RESOURCE_ACCOUNT_ID, { account_id: 'account-id' });
+        await store.commit(types.ADD_RESOURCE_STATEMENT_ID, { statement_id: 'statement-id' });
+
+        store.commit(types.SET_TRANSACTION_FROM_DATE, 'xxx-invalid-date-xxx');
+        store.commit(types.SET_TRANSACTION_TO_DATE, '');
         store.commit(types.SET_CLIENT_ID, '8672384e-9a33-439f-8924-67bb14340d71');
         store.commit(types.SET_CLIENT_SECRET, '2cfb31a3-5443-4e65-b2bc-ef8e00266a77');
         store.commit(types.SET_TOKEN_ENDPOINT, 'https://modelobank2018.o3bank.co.uk:4201/token');
@@ -705,11 +966,17 @@ describe('web/src/store/modules/config', () => {
         store.commit(types.SET_RESOURCE_BASE_URL, 'https://modelobank2018.o3bank.co.uk:4501');
         store.commit(types.SET_X_FAPI_FINANCIAL_ID, '0015800001041RHAAY');
         store.commit(types.SET_ISSUER, 'https://modelobankauth2018.o3bank.co.uk:4101');
+        store.commit(types.SET_REQUEST_OBJECT_SIGNING_ALG, 'PS256');
 
         // This will clear out the previous errors, and will result in configurationErrors
         // being empty since they are not any errors.
-        expect(await actions.validateConfiguration(store)).toEqual(true);
-        expect(dispatch).toHaveBeenCalledWith('status/clearErrors', null, { root: true });
+        expect(await actions.validateConfiguration(store)).toEqual(false);
+        const errors1 = [
+          'Transaction From Date not ISO 8601 format',
+          'Transaction To Date empty',
+          'response_type empty',
+        ];
+        expect(dispatch).toHaveBeenCalledWith('status/setErrors', errors1, { root: true });
       });
     });
   });

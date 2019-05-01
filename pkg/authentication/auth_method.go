@@ -16,7 +16,7 @@ const (
 // We have made our own determination of security offered by each auth method.
 // It is not from a formal definition.
 var SuiteSupportedAuthMethodsMostSecureFirst = []string{
-	ClientSecretBasic,
+	TlsClientAuth, ClientSecretBasic,
 }
 
 func DefaultAuthMethod(openIDConfigAuthMethods []string, logger *logrus.Entry) string {
@@ -31,7 +31,9 @@ func defaultAuthMethod(suiteSupportedAuthMethods []string, openIDConfigAuthMetho
 
 	for _, method := range remaining {
 		if method != "" {
-			logger.Infof("Conformance suite doesn't support `%s` token endpoint auth method in OpenID config", method)
+			logger.WithFields(logrus.Fields{
+				"method": method,
+			}).Info("Invalid 'token_endpoint_auth_methods_supported' in OpenIDConfiguration")
 		}
 	}
 	for _, methodMatch := range intersection {

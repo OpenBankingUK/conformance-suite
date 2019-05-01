@@ -9,7 +9,7 @@ import (
 
 func TestReportCertifiedBy_Validate(t *testing.T) {
 	type fields struct {
-		Environment  ReportCertifiedByEnvironment
+		Environment  CertifiedByEnvironment
 		Brand        string
 		AuthorisedBy string
 		JobTitle     string
@@ -27,7 +27,7 @@ func TestReportCertifiedBy_Validate(t *testing.T) {
 		{
 			name: "blank_brand",
 			fields: fields{
-				Environment:  ReportCertifiedByEnvironmentTesting,
+				Environment:  CertifiedByEnvironmentTesting,
 				JobTitle:     "JobTitle",
 				AuthorisedBy: "AuthorisedBy",
 			},
@@ -36,7 +36,7 @@ func TestReportCertifiedBy_Validate(t *testing.T) {
 		{
 			name: "blank_authorisedBy",
 			fields: fields{
-				Environment: ReportCertifiedByEnvironmentTesting,
+				Environment: CertifiedByEnvironmentTesting,
 				Brand:       "Brand",
 				JobTitle:    "JobTitle",
 			},
@@ -45,7 +45,7 @@ func TestReportCertifiedBy_Validate(t *testing.T) {
 		{
 			name: "blank_jobTitle",
 			fields: fields{
-				Environment:  ReportCertifiedByEnvironmentTesting,
+				Environment:  CertifiedByEnvironmentTesting,
 				Brand:        "Brand",
 				AuthorisedBy: "AuthorisedBy",
 			},
@@ -55,7 +55,7 @@ func TestReportCertifiedBy_Validate(t *testing.T) {
 		{
 			name: "invalid_environment",
 			fields: fields{
-				Environment:  ReportCertifiedByEnvironment(-1),
+				Environment:  CertifiedByEnvironment(-1),
 				Brand:        "Brand",
 				AuthorisedBy: "AuthorisedBy",
 				JobTitle:     "JobTitle",
@@ -66,7 +66,7 @@ func TestReportCertifiedBy_Validate(t *testing.T) {
 		{
 			name: "length_brand",
 			fields: fields{
-				Environment:  ReportCertifiedByEnvironmentTesting,
+				Environment:  CertifiedByEnvironmentTesting,
 				Brand:        strings.Repeat("b", 61),
 				AuthorisedBy: "AuthorisedBy",
 				JobTitle:     "JobTitle",
@@ -76,7 +76,7 @@ func TestReportCertifiedBy_Validate(t *testing.T) {
 		{
 			name: "length_authorisedBy",
 			fields: fields{
-				Environment:  ReportCertifiedByEnvironmentTesting,
+				Environment:  CertifiedByEnvironmentTesting,
 				Brand:        "Brand",
 				AuthorisedBy: strings.Repeat("a", 61),
 				JobTitle:     "JobTitle",
@@ -86,7 +86,7 @@ func TestReportCertifiedBy_Validate(t *testing.T) {
 		{
 			name: "length_jobTitle",
 			fields: fields{
-				Environment:  ReportCertifiedByEnvironmentTesting,
+				Environment:  CertifiedByEnvironmentTesting,
 				Brand:        "Brand",
 				AuthorisedBy: "AuthorisedBy",
 				JobTitle:     strings.Repeat("j", 61),
@@ -97,7 +97,7 @@ func TestReportCertifiedBy_Validate(t *testing.T) {
 		{
 			name: "valid_testing",
 			fields: fields{
-				Environment:  ReportCertifiedByEnvironmentTesting,
+				Environment:  CertifiedByEnvironmentTesting,
 				Brand:        "Brand",
 				AuthorisedBy: "AuthorisedBy",
 				JobTitle:     "JobTitle",
@@ -107,7 +107,7 @@ func TestReportCertifiedBy_Validate(t *testing.T) {
 		{
 			name: "valid_production",
 			fields: fields{
-				Environment:  ReportCertifiedByEnvironmentProduction,
+				Environment:  CertifiedByEnvironmentTesting,
 				Brand:        "Brand",
 				AuthorisedBy: "AuthorisedBy",
 				JobTitle:     "JobTitle",
@@ -120,7 +120,7 @@ func TestReportCertifiedBy_Validate(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			require := test.NewRequire(t)
 
-			r := ReportCertifiedBy{
+			r := CertifiedBy{
 				Environment:  tt.fields.Environment,
 				Brand:        tt.fields.Brand,
 				AuthorisedBy: tt.fields.AuthorisedBy,

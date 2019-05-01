@@ -1,5 +1,5 @@
 import actions from './actions';
-import * as types from './mutation-types';
+import { mutationTypes as types } from './index';
 
 import api from '../../../api';
 

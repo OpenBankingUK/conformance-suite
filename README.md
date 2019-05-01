@@ -6,7 +6,7 @@
 [![develop](https://img.shields.io/bitbucket/pipelines/openbankingteam/conformance-suite/develop.svg)](https://bitbucket.org/openbankingteam/conformance-suite/addon/pipelines/home#!/results/branch/develop/page/1)
 [![Go Reportcard](https://goreportcard.com/badge/bitbucket.org/openbankingteam/conformance-suite)](https://goreportcard.com/report/bitbucket.org/openbankingteam/conformance-suite)
 
-The **Functional Conformance Suite** is an Open Source test tool provided by [Open Banking](https://www.openbanking.org.uk/). The goal of the suite is to provide an easy and comprehensive tool that enables implementers to test interfaces and data endpoints against the Functional API standard.
+The **Functional Conformance Tool** is an Open Source test tool provided by [Open Banking](https://www.openbanking.org.uk/). The goal of the suite is to provide an easy and comprehensive tool that enables implementers to test interfaces and data endpoints against the Functional API standard.
 
 The supporting documentation assumes technical understanding of the Open Banking ecosystem. An introduction to the concepts is available via the [Open Banking Website](https://www.openbanking.org.uk/).
 
@@ -15,52 +15,46 @@ To provide feedback, please use the public [issue tracker](https://bitbucket.org
 ## Release Notes 
 * * *
 
+### v1.1.5 (26th April 2019)
+
+Release v1.1.5 and addresses known issues with the signing of payments requests, payment headers and also, adds several reporting enhancements. **(recommended)**
+
+[Full Release Notes](docs/releases/v1.1.5.md) (v1.1.5.md)
+
+### v1.1.4 (17th April 2019)
+
+Release v1.1.4 addresses known issues with PIS payment message signing.
+
+[Full Release Notes](docs/releases/v1.1.4.md) (v1.1.4.md)
+
+### v1.1.1 (8th April 2019)
+
+Release v1.1.1 addresses permission mapping issues and other bugs following feedback from users at the OBIE Functional Workshop.
+
+[Full Release Notes](docs/releases/v1.1.1.md) (v1.1.1.md)
+
+### v1.1.0 (4th April 2019)
+
+Release v1.1.0 addresses known issues following feedback from users at the OBIE Functional Workshop.
+
+[Full Release Notes](docs/releases/v1.1.0.md) (v1.1.0.md)
+
 ### v1.0.0-rc1 (29th March 2019)
 
 This **v1.0.0-rc1** release introduces manual PSU consent (hybrid flow) for for v3.1 of the OBIE Accounts and Transactions specifications and Payments.
 
-Read the full [release notes](docs/releases/v1.0.0.md) (v1.0.0-rc1.md)
-
-### v1.0.0-beta (19th February 2019)
-
-This **v1.0.0-beta** release introduces manual PSU consent (hybrid flow) and a example Discovery Template to demonstrate the hybrid flow for Ozone Model Bank for v3.1 of the OBIE Accounts and Transactions specifications.
-
-N.B. This release is not intended to be run in production.
-
-Read the full [release notes](docs/releases/v1.0.0-beta.md) (v1.0.0-beta.md)
-
-### v0.2.0-alpha (11th January 2019)
-
-This **v0.2.0-alpha** release introduces an example Discovery Template to demonstrate the headless flow for Ozone Model Bank for v3.0 of the OBIE  Accounts and Transactions specifications.
-
-N.B. This release is not intended to be run in sandbox or production so bug reports about this version should **NOT** be posted.
-
-Read the full [release notes](docs/releases/v0.2.0-alpha.md) (v0.2.0-alpha.md)
+[Full Release Notes](docs/releases/v1.0.0.md) (v1.0.0-rc1.md)
 
 ## Quickstart
 * * *
 
-Clone:
+Pull and run the latest (stable) tagged Docker image:
 
-    
-    > git clone git@bitbucket.org:openbankingteam/conformance-suite.git && cd conformance-suite
-
-
-Run the Makefile:
-
-
-    > make run_image
-
-
-You can also pull & run the latest Docker image:
-
-
-    > docker run openbanking/conformance-suite
-
+    > docker run --rm -it -p 8443:8443 "openbanking/conformance-suite:[tag]"
 
 ### Prerequisites
 
-In order to run this container you'll need docker installed.
+In order to run a container you'll need docker installed.
 
 * [Windows](https://docs.docker.com/windows/started)
 * [OS X](https://docs.docker.com/mac/started/)
@@ -83,5 +77,6 @@ Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on our code of conduc
 ## Useful links
 * * *
 
-* Docker Hub [Conformance Suite](https://hub.docker.com/r/openbanking/conformance-suite/)
-* For more information see the [Open Banking Developer Zone](https://openbanking.atlassian.net/wiki/spaces/DZ/overview).
+* [Docker Conformance Tool](https://hub.docker.com/r/openbanking/conformance-suite/)
+* [Open Banking Developer Zone](https://openbanking.atlassian.net/wiki/spaces/DZ/overview)
+* [All Release Notes](docs/releases/)

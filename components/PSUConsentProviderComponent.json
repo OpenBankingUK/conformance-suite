@@ -22,12 +22,11 @@
         "endpoint": "$token_endpoint",
         "headers": {
           "content-type": "application/x-www-form-urlencoded",
-          "accept": "*/*",
-          "authorization": "Basic $basic_authentication"
+          "accept": "application/json"
         },
         "formData": {
           "grant_type": "client_credentials",
-          "scope": "accounts openid"
+          "scope": "accounts"
         }
       },
       "context": {
@@ -45,19 +44,19 @@
       }
     },
     {
-      "@id": "#compPsuConsent01",
+      "@id": "#compPsuConsent02",
       "name": "PostAccount Request",
       "input": {
         "method": "POST",
-        "endpoint": "/open-banking/v3.1/aisp/account-access-consents",
+        "endpoint": "/open-banking/$api-version/aisp/account-access-consents",
         "headers": {
           "content-type": "application/json",
-          "accept": "*/*",
-          "x-fapi-interaction-id": "b4405450-febe-11e8-80a5-0fcebb1574e5",
+          "accept": "application/json",
+          "x-fapi-interaction-id": "c4405450-febe-11e8-80a5-0fcebb157400",
           "x-fapi-financial-id": "$x-fapi-financial-id",
-          "authorization": "bearer $client_access_token"
+          "authorization": "Bearer $client_access_token"
         },
-        "bodyData": "{\"Data\": { \"Permissions\": [ $permission_list ],  \"TransactionFromDateTime\": \"2016-01-01T10:40:00+02:00\", \"TransactionToDateTime\": \"2025-12-31T10:40:00+02:00\" },  \"Risk\": {} }"
+        "bodyData": "{\"Data\": { \"Permissions\": [ $permission_list ],  \"TransactionFromDateTime\": \"$transactionFromDate\", \"TransactionToDateTime\": \"$transactionToDate\" },  \"Risk\": {} }"
       },
       "context": {
         "baseurl": "$resource_server"
@@ -71,7 +70,7 @@
         }],
         "contextPut": {
           "matches": [{
-            "name": "my_id",
+            "name": "post-account-consent-id",
             "description": "gets the consentid from PostAccountRequest ",
             "json": "Data.ConsentId"
           }]
@@ -92,8 +91,8 @@
           "iss": "$client_id",
           "scope": "openid accounts",
           "redirect_url": "$redirect_url",
-          "consentId": "$my_id",
-          "responseType": "code",
+          "consentId": "$post-account-consent-id",
+          "responseType": "$responseType",
           "state":"$token_name"
         }
       },
@@ -101,7 +100,7 @@
         "baseurl": "$authorisation_endpoint"
       },
       "expect": {
-        "status-code": 404        
+        "status-code": -1
       }
     }
   ]

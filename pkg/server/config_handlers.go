@@ -1,18 +1,33 @@
 package server
 
 import (
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/server/models"
 	"fmt"
+	"gopkg.in/resty.v1"
 	"net/http"
 	"net/url"
 	"reflect"
 
-	"github.com/sirupsen/logrus"
-
+	validation "github.com/go-ozzo/ozzo-validation"
 	"github.com/labstack/echo"
 	"github.com/pkg/errors"
+	"github.com/sirupsen/logrus"
 
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/authentication"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
+)
+
+// Needs to be a interface{} slice, see the official test for an example
+// https://github.com/go-ozzo/ozzo-validation/blob/master/in_test.go
+type ResponseType = interface{}
+
+var (
+	// responseTypesSupported REQUIRED. JSON array containing a list of the OAuth 2.0 response_type values that this OP supports. Dynamic OpenID Providers MUST support the code, id_token, and the token id_token Response Type values
+	responseTypesSupported = [3]ResponseType{
+		"code",
+		"code id_token",
+		"id_token",
+	}
 )
 
 type configHandlers struct {
@@ -20,21 +35,40 @@ type configHandlers struct {
 	journey Journey
 }
 
+// Needs to be a interface{} slice, see the official test for an example
+// https://github.com/go-ozzo/ozzo-validation/blob/master/in_test.go
+type SupportedRequestSignAlg interface{}
+
+var SupportedRequestSignAlgValues = []interface{}{"PS256", "RS256", "NONE"}
+
 type GlobalConfiguration struct {
-	SigningPrivate          string            `json:"signing_private" validate:"not_empty"`
-	SigningPublic           string            `json:"signing_public" validate:"not_empty"`
-	TransportPrivate        string            `json:"transport_private" validate:"not_empty"`
-	TransportPublic         string            `json:"transport_public" validate:"not_empty"`
-	ClientID                string            `json:"client_id" validate:"not_empty"`
-	ClientSecret            string            `json:"client_secret" validate:"not_empty"`
-	TokenEndpoint           string            `json:"token_endpoint" validate:"valid_url"`
-	TokenEndpointAuthMethod string            `json:"token_endpoint_auth_method" validate:"not_empty"`
-	AuthorizationEndpoint   string            `json:"authorization_endpoint" validate:"valid_url"`
-	ResourceBaseURL         string            `json:"resource_base_url" validate:"valid_url"`
-	XFAPIFinancialID        string            `json:"x_fapi_financial_id" validate:"not_empty"`
-	Issuer                  string            `json:"issuer" validate:"valid_url"`
-	RedirectURL             string            `json:"redirect_url" validate:"valid_url"`
-	ResourceIDs             model.ResourceIDs `json:"resource_ids" validate:"not_empty"`
+	SigningPrivate                string            `json:"signing_private" validate:"not_empty"`
+	SigningPublic                 string            `json:"signing_public" validate:"not_empty"`
+	TransportPrivate              string            `json:"transport_private" validate:"not_empty"`
+	TransportPublic               string            `json:"transport_public" validate:"not_empty"`
+	ClientID                      string            `json:"client_id" validate:"not_empty"`
+	ClientSecret                  string            `json:"client_secret" validate:"not_empty"`
+	TokenEndpoint                 string            `json:"token_endpoint" validate:"valid_url"`
+	ResponseType                  string            `json:"response_type" validate:"not_empty"`
+	TokenEndpointAuthMethod       string            `json:"token_endpoint_auth_method" validate:"not_empty"`
+	AuthorizationEndpoint         string            `json:"authorization_endpoint" validate:"valid_url"`
+	ResourceBaseURL               string            `json:"resource_base_url" validate:"valid_url"`
+	XFAPIFinancialID              string            `json:"x_fapi_financial_id" validate:"not_empty"`
+	Issuer                        string            `json:"issuer" validate:"valid_url"`
+	RedirectURL                   string            `json:"redirect_url" validate:"valid_url"`
+	ResourceIDs                   model.ResourceIDs `json:"resource_ids" validate:"not_empty"`
+	CreditorAccount               models.Payment    `json:"creditor_account"`
+	TransactionFromDate           string            `json:"transaction_from_date" validate:"not_empty"`
+	TransactionToDate             string            `json:"transaction_to_date" validate:"not_empty"`
+	RequestObjectSigningAlgorithm string            `json:"request_object_signing_alg"`
+}
+
+// Validate - used by https://github.com/go-ozzo/ozzo-validation to validate struct.
+func (c GlobalConfiguration) Validate() error {
+	return validation.ValidateStruct(&c,
+		validation.Field(&c.CreditorAccount, validation.Required),
+		validation.Field(&c.ResponseType, validation.Required, validation.In(responseTypesSupported[:]...)),
+	)
 }
 
 func newConfigHandlers(journey Journey, logger *logrus.Entry) configHandlers {
@@ -51,10 +85,17 @@ func (h configHandlers) configGlobalPostHandler(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, NewErrorResponse(errors.Wrap(err, "error with Bind")))
 	}
 
+	if err := config.Validate(); err != nil {
+		return c.JSON(http.StatusBadRequest, NewErrorResponse(err))
+	}
+
 	journeyConfig, err := MakeJourneyConfig(config)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, NewErrorResponse(err))
 	}
+
+	// Use the transport keys for MATLS as some endpoints require this
+	resty.SetCertificates(journeyConfig.certificateTransport.TLSCert())
 
 	err = h.journey.SetConfig(journeyConfig)
 	if err != nil {
@@ -81,18 +122,25 @@ func MakeJourneyConfig(config *GlobalConfiguration) (JourneyConfig, error) {
 	}
 
 	return JourneyConfig{
-		certificateSigning:      certificateSigning,
-		certificateTransport:    certificateTransport,
-		clientID:                config.ClientID,
-		clientSecret:            config.ClientSecret,
-		tokenEndpoint:           config.TokenEndpoint,
-		tokenEndpointAuthMethod: config.TokenEndpointAuthMethod,
-		authorizationEndpoint:   config.AuthorizationEndpoint,
-		resourceBaseURL:         config.ResourceBaseURL,
-		xXFAPIFinancialID:       config.XFAPIFinancialID,
-		issuer:                  config.Issuer,
-		redirectURL:             config.RedirectURL,
-		resourceIDs:             config.ResourceIDs,
+		certificateSigning:            certificateSigning,
+		certificateTransport:          certificateTransport,
+		clientID:                      config.ClientID,
+		clientSecret:                  config.ClientSecret,
+		tokenEndpoint:                 config.TokenEndpoint,
+		ResponseType:                  config.ResponseType,
+		tokenEndpointAuthMethod:       config.TokenEndpointAuthMethod,
+		authorizationEndpoint:         config.AuthorizationEndpoint,
+		resourceBaseURL:               config.ResourceBaseURL,
+		xXFAPIFinancialID:             config.XFAPIFinancialID,
+		issuer:                        config.Issuer,
+		redirectURL:                   config.RedirectURL,
+		resourceIDs:                   config.ResourceIDs,
+		creditorAccount:               config.CreditorAccount,
+		transactionFromDate:           config.TransactionFromDate,
+		transactionToDate:             config.TransactionToDate,
+		requestObjectSigningAlgorithm: config.RequestObjectSigningAlgorithm,
+		signingPublic:                 config.SigningPublic,
+		signingPrivate:                config.SigningPrivate,
 	}, nil
 }
 

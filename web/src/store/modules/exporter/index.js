@@ -1,5 +1,18 @@
+import moment from 'moment';
 import pick from 'lodash/pick';
 import api from '../../../api';
+
+/**
+ * Example return value: `report_2019-03-25T11_41_05+00_00.zip`.
+ * @param {*} prefix
+ */
+const generateFilename = (prefix = 'report') => {
+  const RFC3339 = 'YYYY-MM-DDTHH:mm:ssZ'; // "2006-01-02T15:04:05Z07:00"
+  const datetime = moment(new Date()).format(RFC3339);
+  const filename = `${prefix}_${datetime}.zip`;
+
+  return filename;
+};
 
 const mutationTypes = {
   SET_IMPLEMENTER: 'SET_IMPLEMENTER',
@@ -8,7 +21,8 @@ const mutationTypes = {
   SET_HAS_AGREED: 'SET_HAS_AGREED',
   SET_ADD_DIGITAL_SIGNATURE: 'SET_ADD_DIGITAL_SIGNATURE',
   SET_EXPORT_CONFORMANCE_REPORT: 'SET_EXPORT_CONFORMANCE_REPORT',
-  SET_EXPORT_RESULTS: 'SET_EXPORT_RESULTS',
+  SET_EXPORT_RESULTS_BLOB: 'SET_EXPORT_RESULTS_BLOB',
+  SET_EXPORT_RESULTS_FILENAME: 'SET_EXPORT_RESULTS_FILENAME',
 };
 
 export default {
@@ -19,7 +33,8 @@ export default {
     job_title: '',
     has_agreed: false,
     add_digital_signature: false,
-    export_results: null,
+    export_results_blob: null,
+    export_results_filename: '',
   },
   mutationTypes,
   mutations: {
@@ -38,8 +53,11 @@ export default {
     [mutationTypes.SET_ADD_DIGITAL_SIGNATURE](state, value) {
       state.add_digital_signature = value;
     },
-    [mutationTypes.SET_EXPORT_RESULTS](state, value) {
-      state.export_results = value;
+    [mutationTypes.SET_EXPORT_RESULTS_BLOB](state, value) {
+      state.export_results_blob = value;
+    },
+    [mutationTypes.SET_EXPORT_RESULTS_FILENAME](state, value) {
+      state.export_results_filename = value;
     },
   },
   actions: {
@@ -52,8 +70,14 @@ export default {
         'add_digital_signature',
       ]);
       try {
+        commit(mutationTypes.SET_EXPORT_RESULTS_BLOB, null);
+        commit(mutationTypes.SET_EXPORT_RESULTS_FILENAME, '');
+
         const results = await api.exportResults(payload);
-        commit(mutationTypes.SET_EXPORT_RESULTS, results);
+        const filename = generateFilename();
+
+        commit(mutationTypes.SET_EXPORT_RESULTS_BLOB, results);
+        commit(mutationTypes.SET_EXPORT_RESULTS_FILENAME, filename);
       } catch (err) {
         dispatch('status/setErrors', [err], { root: true });
       }
