@@ -151,7 +151,7 @@ func (v BitBucket) VersionFormatter(version string) (string, error) {
 // returns a message and bool value that can be used to inform a user
 // a newer version is available for download.
 func (v BitBucket) UpdateWarningVersion(version string) (string, bool, error) {
-	// VerA default message that can be presented to an end user.
+	// A default message that can be presented to an end user.
 	errorMessageUI := "Version check is unavailable at this time."
 
 	// Some basic validation, check we have a version,
