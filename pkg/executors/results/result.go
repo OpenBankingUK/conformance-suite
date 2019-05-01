@@ -37,4 +37,3 @@ type ResultKey struct {
 	APIName    string
 	APIVersion string
 }
-
