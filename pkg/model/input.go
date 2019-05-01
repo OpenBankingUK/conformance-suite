@@ -43,6 +43,8 @@ type Input struct {
 	IdempotencyKey bool              `json:"idempotency,omitempty"` // specifices the inclusion of x-idempotency-key in the request
 }
 
+var disableJws bool // Allows disabling of jws for ozone - effectively a development flag
+
 // CreateRequest is the main Input work horse which examines the various Input parameters and generates an
 // http.Request object which represents the request
 func (i *Input) CreateRequest(tc *TestCase, ctx *Context) (*resty.Request, error) {
@@ -252,7 +254,7 @@ func (i *Input) setHeaders(req *resty.Request, ctx *Context) error {
 
 func (i *Input) createJWSDetachedSignature(ctx *Context) error {
 
-	if len(i.RequestBody) > 0 {
+	if len(i.RequestBody) > 0 && !disableJws {
 
 		token, err := i.generateJWSSignature(ctx, jwt.SigningMethodRS256)
 
@@ -264,6 +266,10 @@ func (i *Input) createJWSDetachedSignature(ctx *Context) error {
 		return nil
 	}
 
+	if disableJws {
+		i.AppMsg("x-jws-signature disabled")
+		return nil
+	}
 	return i.AppErr("cannot create x-jws-signature, as request body is empty")
 
 }
@@ -578,4 +584,9 @@ func makeMiliSecondStringTimestamp() string {
 	a := time.Now().UnixNano() / int64(time.Millisecond)
 	milliString := fmt.Sprintf("%d", a)
 	return milliString
+}
+
+// DisableJWS - disable jws-signature for ozone
+func DisableJWS() {
+	disableJws = true
 }

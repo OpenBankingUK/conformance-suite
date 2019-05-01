@@ -82,6 +82,7 @@ func init() {
 	rootCmd.PersistentFlags().Bool("log_tracer", false, "Enable tracer logging")
 	rootCmd.PersistentFlags().Bool("log_http_trace", false, "Enable HTTP logging")
 	rootCmd.PersistentFlags().Int("port", 8443, "Server port")
+	rootCmd.PersistentFlags().Bool("disable_jws_sig", false, "Disable JWS Signature")
 
 	if err := viper.BindPFlags(rootCmd.PersistentFlags()); err != nil {
 		fmt.Fprint(os.Stderr, err)
@@ -143,6 +144,10 @@ func initConfig() {
 		}
 	}
 
+	if viper.GetBool("disable_jws") {
+		model.DisableJWS()
+	}
+
 	resty.SetDebug(viper.GetBool("log_http_trace"))
 
 	printConfigurationFlags()
@@ -157,5 +162,6 @@ func printConfigurationFlags() {
 		"log_to_file":    viper.GetBool("log_to_file"),
 		"port":           viper.GetInt("port"),
 		"tracer.Silent":  tracer.Silent,
+		"disable_jws":    viper.GetBool("disable_jws"),
 	}).Info("configuration flags")
 }
