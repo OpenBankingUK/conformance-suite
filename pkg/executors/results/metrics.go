@@ -1,6 +1,7 @@
 package results
 
 import (
+	"encoding/json"
 	"time"
 
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
@@ -8,9 +9,22 @@ import (
 )
 
 type Metrics struct {
-	TestCase     *model.TestCase `json:"-"`
-	ResponseTime int64           `json:"response_time"` // Http Response Time
-	ResponseSize int             `json:"response_size"` // Size of the HTTP Response body
+	TestCase     *model.TestCase
+	ResponseTime time.Duration // Http Response Time
+	ResponseSize int           // Size in bytes of the HTTP Response body
+}
+
+// MarshalJSON is a custom marshaler which formats a Metrics struct
+// with a response time represented as milliseconds
+// response time precision is up to 6 decimal places of precision (nanosecond)
+func (m Metrics) MarshalJSON() ([]byte, error) {
+	return json.Marshal(struct {
+		ResponseTime float64 `json:"response_time"`
+		ResponseSize int     `json:"response_size"`
+	}{
+		ResponseTime: float64(m.ResponseTime) / float64(time.Millisecond),
+		ResponseSize: m.ResponseSize,
+	})
 }
 
 var NoMetrics = Metrics{}
@@ -22,7 +36,7 @@ func NewMetricsFromRestyResponse(testCase *model.TestCase, response *resty.Respo
 func NewMetrics(testCase *model.TestCase, responseTime time.Duration, responseSize int) Metrics {
 	return Metrics{
 		TestCase:     testCase,
-		ResponseTime: int64(responseTime / time.Millisecond),
+		ResponseTime: responseTime,
 		ResponseSize: responseSize,
 	}
 }
