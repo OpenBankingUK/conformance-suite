@@ -120,8 +120,7 @@ func TestHaveVersionUpdateWarningVersion(t *testing.T) {
 }
 
 func TestTagLessThanComparator(t *testing.T) {
-
-	tcs := []struct{
+	tcs := []struct {
 		VerA     string
 		VerB     string
 		Expected bool
@@ -169,7 +168,7 @@ func TestTagLessThanComparator(t *testing.T) {
 	}
 
 	for i, tc := range tcs {
-		t.Run(fmt.Sprintf("Test case item: %d", i), func(t *testing.T){
+		t.Run(fmt.Sprintf("Test case item: %d", i), func(t *testing.T) {
 			tag := Tag{
 				Name: tc.VerA,
 			}
