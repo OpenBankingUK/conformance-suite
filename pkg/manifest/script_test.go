@@ -218,12 +218,16 @@ func TestPaymentTestCaseCreation(t *testing.T) {
 		"creditorScheme":                      "default",
 	}
 
-	tests, err := GenerateTestCases(paymentsSwaggerLocation31, "http://mybaseurl", ctx, readDiscovery())
+	apiSpec := discovery.ModelAPISpecification{
+		SchemaVersion: accountSwaggerLocation31,
+	}
+
+	tests, err := GenerateTestCases(apiSpec, "http://mybaseurl", ctx, readDiscovery())
 	assert.Nil(t, err)
 	fmt.Printf("we have %d tests\n", len(tests))
 	for _, v := range tests {
 		//if v.ID == "OB-301-DOP-101000" {
-			dumpJSON(v)
+		dumpJSON(v)
 		//}
 	}
 
