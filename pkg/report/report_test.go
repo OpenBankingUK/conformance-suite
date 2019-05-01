@@ -1,6 +1,10 @@
 package report
 
 import (
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/executors/events"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/executors/results"
+	"github.com/stretchr/testify/assert"
 	"reflect"
 	"testing"
 	"time"
@@ -173,6 +177,58 @@ func TestReport_Validate(t *testing.T) {
 	}
 }
 
+func stubExportResults() models.ExportResults {
+	return models.ExportResults{
+		Tokens: []events.AcquiredAccessToken{
+			{
+				TokenName: "token-name",
+			},
+		},
+		DiscoveryModel: discovery.Model{
+			DiscoveryModel: discovery.ModelDiscovery{
+				Name:             "Name",
+				Description:      "Description",
+				DiscoveryVersion: "Discovery version",
+				TokenAcquisition: "Token Acquisition",
+				DiscoveryItems: []discovery.ModelDiscoveryItem{
+					{
+						APISpecification: discovery.ModelAPISpecification{
+							Name:          "Name",
+							SchemaVersion: "schema-version",
+							Version:       "version",
+							Manifest:      "manifest",
+							URL:           "url",
+							SpecType:      "specType",
+						},
+						ResourceBaseURI:        "resource-base-uri",
+						OpenidConfigurationURI: "open-id-configuration-id",
+						ResourceIds: discovery.ResourceIds{
+							"foo": "bar",
+						},
+						Endpoints: []discovery.ModelEndpoint{
+							{
+								Method:                "GET",
+								Path:                  "/",
+								ConditionalProperties: nil,
+							},
+						},
+					},
+				},
+				CustomTests: []discovery.CustomTest{},
+			},
+		},
+		ExportRequest: models.ExportRequest{
+			Implementer:         "Implemented",
+			AuthorisedBy:        "Authorised by",
+			JobTitle:            "Job title",
+			HasAgreed:           false,
+			AddDigitalSignature: false,
+		},
+		HasPassed: false,
+		Results:   map[results.ResultKey][]results.TestCase{},
+	}
+}
+
 func TestNewReport(t *testing.T) {
 	t.Parallel()
 	// TODO: add test cases once functionality is read. Intentionally skipping test for now.
@@ -182,19 +238,25 @@ func TestNewReport(t *testing.T) {
 		exportResults models.ExportResults
 	}
 	tests := []struct {
-		name    string
-		args    args
-		want    Report
-		wantErr bool
+		name string
+		args args
+		want Report
+		err  error // wantErr can be inferred by this being nil or not
 	}{
-		// TODO: Add test cases.
+		{
+			name: "Valid report",
+			args: args{
+				exportResults: stubExportResults(),
+			},
+			want: Report{},
+			err:  nil,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			got, err := NewReport(tt.args.exportResults)
-			if (err != nil) != tt.wantErr {
-				t.Errorf("NewReport() error = %v, wantErr %v", err, tt.wantErr)
-				return
+			if tt.err != nil {
+				assert.New(t).Equal(tt.err, err)
 			}
 			if !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("NewReport() = %v, want %v", got, tt.want)

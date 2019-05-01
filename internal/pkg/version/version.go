@@ -21,7 +21,7 @@ const (
 	// Checker must conform to the format expected, major, minor and patch.
 	major = "1"
 	minor = "1"
-	patch = "1"
+	patch = "5"
 	// Checker is the full string version of Conformance Suite.
 	FullVersion = major + "." + minor + "." + patch
 	// VersionPrerelease is pre-release marker for the version. If this is "" (empty string)

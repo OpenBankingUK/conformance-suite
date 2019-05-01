@@ -43,8 +43,9 @@ func TestServerRunHandlersnewTestCaseResultWebSocketEvent(t *testing.T) {
 	require := test.NewRequire(t)
 
 	testCaseResult := results.TestCase{
-		Id:   "#t1025",
-		Pass: true,
+		Id:       "#t1025",
+		Pass:     true,
+		Endpoint: "/foobar",
 	}
 	wsEvent := newTestCaseResultWebSocketEvent(testCaseResult)
 
@@ -61,7 +62,8 @@ func TestServerRunHandlersnewTestCaseResultWebSocketEvent(t *testing.T) {
         "metrics": {
             "response_time": 0,
             "response_size": 0
-        }
+        },
+		"endpoint": "/foobar"
     }
 }
 	`

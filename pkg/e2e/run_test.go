@@ -33,6 +33,7 @@ const (
 var update = flag.Bool("update", false, "update .golden files")
 
 func TestRun(t *testing.T) {
+	t.Skip()
 	logger := test.NullLogger()
 
 	ver := version.NewBitBucket(version.BitBucketAPIRepository)

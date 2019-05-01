@@ -185,7 +185,6 @@ func MapTokensToTestCases(rt []RequiredTokens, tcs []model.TestCase) map[string]
 		"rt":       fmt.Sprintf("%#v", rt),
 	})
 
-	ctxLogger.Debug("MapTokensToTestCases ...")
 	tokenMap := map[string]string{}
 	for k, test := range tcs {
 		tokenName, isEmptyToken, err := getRequiredTokenForTestcase(rt, test.ID)
@@ -224,6 +223,15 @@ func MapTokensToTestCases(rt []RequiredTokens, tcs []model.TestCase) map[string]
 // MapTokensToPaymentTestCases -
 func MapTokensToPaymentTestCases(rt []RequiredTokens, tcs []model.TestCase, ctx *model.Context) {
 	for k, test := range tcs {
+		if test.Input.Method == "GET" {
+			test.InjectBearerToken("$payment_ccg_token")
+			continue
+		}
+		useCCGToken, _ := test.Context.Get("useCCGToken")
+		if useCCGToken == "yes" { // payment POSTs
+			test.InjectBearerToken("$payment_ccg_token")
+			continue
+		}
 		tokenName, isEmptyToken, err := getRequiredTokenForTestcase(rt, test.ID)
 		if err != nil {
 			logrus.Warnf("no token for testcase %s", test.ID)
