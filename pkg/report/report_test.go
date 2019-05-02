@@ -186,49 +186,46 @@ func stubExportResults() models.ExportResults {
 		},
 		DiscoveryModel: discovery.Model{
 			DiscoveryModel: discovery.ModelDiscovery{
-				Name: "Name",
-				Description: "Description",
+				Name:             "Name",
+				Description:      "Description",
 				DiscoveryVersion: "Discovery version",
 				TokenAcquisition: "Token Acquisition",
 				DiscoveryItems: []discovery.ModelDiscoveryItem{
 					{
 						APISpecification: discovery.ModelAPISpecification{
-							Name: "Name",
+							Name:          "Name",
 							SchemaVersion: "schema-version",
-							Version: "version",
-							Manifest: "manifest",
-							URL: "url",
-							SpecType: "specType",
+							Version:       "version",
+							Manifest:      "manifest",
+							URL:           "url",
+							SpecType:      "specType",
 						},
-						ResourceBaseURI: "resource-base-uri",
+						ResourceBaseURI:        "resource-base-uri",
 						OpenidConfigurationURI: "open-id-configuration-id",
 						ResourceIds: discovery.ResourceIds{
-							"foo":"bar",
+							"foo": "bar",
 						},
 						Endpoints: []discovery.ModelEndpoint{
 							{
-								Method: "GET",
-								Path: "/",
+								Method:                "GET",
+								Path:                  "/",
 								ConditionalProperties: nil,
 							},
 						},
 					},
-
 				},
 				CustomTests: []discovery.CustomTest{},
 			},
 		},
 		ExportRequest: models.ExportRequest{
-			Implementer: "Implemented",
-			AuthorisedBy: "Authorised by",
-			JobTitle: "Job title",
-			HasAgreed: false,
+			Implementer:         "Implemented",
+			AuthorisedBy:        "Authorised by",
+			JobTitle:            "Job title",
+			HasAgreed:           false,
 			AddDigitalSignature: false,
 		},
 		HasPassed: false,
-		Results: map[results.ResultKey][]results.TestCase{
-
-		},
+		Results:   map[results.ResultKey][]results.TestCase{},
 	}
 }
 
@@ -241,10 +238,10 @@ func TestNewReport(t *testing.T) {
 		exportResults models.ExportResults
 	}
 	tests := []struct {
-		name    string
-		args    args
-		want    Report
-		err 	error // wantErr can be inferred by this being nil or not
+		name string
+		args args
+		want Report
+		err  error // wantErr can be inferred by this being nil or not
 	}{
 		{
 			name: "Valid report",
@@ -252,7 +249,7 @@ func TestNewReport(t *testing.T) {
 				exportResults: stubExportResults(),
 			},
 			want: Report{},
-			err: nil,
+			err:  nil,
 		},
 	}
 	for _, tt := range tests {
