@@ -372,7 +372,7 @@ func loadScripts(filename string) (Scripts, error) {
 		scrBytes = sb
 
 	} else {
-		return Scripts{}, errors.New("unable to load scripts")
+		return Scripts{}, errors.New("unable to load scripts please specify scheme (file:// or https://)")
 	}
 
 	var m Scripts
