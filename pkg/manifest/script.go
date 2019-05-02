@@ -353,11 +353,12 @@ func jsonString(i interface{}) string {
 
 func loadScripts(filename string) (Scripts, error) {
 	const schemeHttps = "https://"
+	const schemeHttp = "http://"
 	const schemeFile = "file://"
 
 	var scrBytes []byte
-	if strings.HasPrefix(strings.ToLower(filename), schemeHttps) {
-		return Scripts{}, errors.New("https:// download of scripts not yet supported")
+	if strings.HasPrefix(strings.ToLower(filename), schemeHttps) || strings.HasPrefix(strings.ToLower(filename), schemeHttp) {
+		return Scripts{}, errors.New("https:// and http:// download of scripts not yet supported")
 	} else if strings.HasPrefix(strings.ToLower(filename), schemeFile) {
 		fp := strings.TrimPrefix(filename, schemeFile)
 		sb, err := ioutil.ReadFile(fp)
