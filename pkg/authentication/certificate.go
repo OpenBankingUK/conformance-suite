@@ -100,17 +100,23 @@ func validateKeys(publicKey *rsa.PublicKey, privateKey *rsa.PrivateKey) error {
 }
 
 func (c certificate) DN() (string, error) {
-
 	cpb, _ := pem.Decode(c.publicCertPem)
 	crt, err := x509.ParseCertificate(cpb.Bytes)
 	if err != nil {
 		logrus.Errorf("cannot parse cert %s", err.Error())
 		return "", err
 	}
+	var co, o, ou string
 	subject := crt.Subject
-	co := subject.Country[0]
-	o := subject.Organization[0]
-	ou := subject.OrganizationalUnit[0]
+	if len(subject.Country) > 0 {
+		co = subject.Country[0]
+	}
+	if len(subject.Organization) > 0 {
+		o = subject.Organization[0]
+	}
+	if len(subject.OrganizationalUnit) > 0 {
+		ou = subject.OrganizationalUnit[0]
+	}
 	cn := subject.CommonName
 	dn := fmt.Sprintf("C=%s, O=%s, OU=%s, CN=%s", co, o, ou, cn)
 

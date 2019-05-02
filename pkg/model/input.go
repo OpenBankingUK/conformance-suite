@@ -290,16 +290,24 @@ func (i *Input) getBody(req *resty.Request, ctx *Context) (string, error) {
 		value = val2
 	}
 
-	m := minify.New()
-	m.AddFuncRegexp(regexp.MustCompile("[/+]json$"), minjson.Minify)
-	minifiedbody, err := m.String("application/json", value)
-	if err != nil {
-		return "", err
+	body := value
+	contentType := i.Headers["Content-Type"]
+	if len(contentType) == 0 {
+		contentType = i.Headers["content-type"]
 	}
-	logrus.Tracef("minified body: %s", minifiedbody)
-	i.RequestBody = minifiedbody
-	req.SetBody(minifiedbody)
-	return minifiedbody, nil
+	if strings.Contains(contentType, "application/json") {
+		m := minify.New()
+		m.AddFuncRegexp(regexp.MustCompile("[/+]json$"), minjson.Minify)
+		var err error
+		body, err = m.String("application/json", value)
+		if err != nil {
+			return "", err
+		}
+	}
+	i.RequestBody = body
+	req.SetBody(body)
+
+	return body, nil
 }
 
 // AppMsg - application level trace
