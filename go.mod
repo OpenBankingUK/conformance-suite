@@ -18,6 +18,7 @@ require (
 	github.com/google/go-cmp v0.2.0
 	github.com/google/uuid v1.0.0
 	github.com/gorilla/websocket v1.4.0
+	github.com/hashicorp/go-version v1.2.0
 	github.com/inconshreveable/mousetrap v1.0.0 // indirect
 	github.com/labstack/echo v3.2.1+incompatible
 	github.com/labstack/gommon v0.2.7 // indirect
