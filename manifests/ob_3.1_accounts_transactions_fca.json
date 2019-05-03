@@ -1934,7 +1934,7 @@
                 "OB3GLOAssertOn200",
                 "OB3GLOAssertFAPIPlayBack"
             ],
-            "schemaCheck": false
+            "schemaCheck": true
         },
         {
             "description": "Succeeds when fromStatementDateTime is a valid ISO8601 formatted date variant 2.",
@@ -1962,7 +1962,7 @@
                 "OB3GLOAssertOn200",
                 "OB3GLOAssertFAPIPlayBack"
             ],
-            "schemaCheck": false
+            "schemaCheck": true
         },
         {
             "description": "Succeeds when fromStatementDateTime is a valid ISO8601 formatted date variant 3.",
@@ -1990,7 +1990,7 @@
                 "OB3GLOAssertOn200",
                 "OB3GLOAssertFAPIPlayBack"
             ],
-            "schemaCheck": false
+            "schemaCheck": true
         },
         {
             "description": "Succeeds when fromStatementDateTime is a valid ISO8601 formatted date variant 4.",
@@ -2018,7 +2018,7 @@
                 "OB3GLOAssertOn200",
                 "OB3GLOAssertFAPIPlayBack"
             ],
-            "schemaCheck": false
+            "schemaCheck": true
         },
         {
             "description": "Succeeds when fromStatementDateTime is a valid ISO8601 formatted date variant 5.",
@@ -2046,7 +2046,7 @@
                 "OB3GLOAssertOn200",
                 "OB3GLOAssertFAPIPlayBack"
             ],
-            "schemaCheck": false
+            "schemaCheck": true
         }
     ]
 }
