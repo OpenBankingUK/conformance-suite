@@ -52,25 +52,6 @@ func TestGenerateSpecificationTestCases(t *testing.T) {
 			assert.Equal(expectedSpec, specificationCases.Specification)
 		}
 	})
-
-	//t.Run("Check that the test cases that were run are based on the filtered tests", func(t *testing.T) {
-	//	assert := test.NewAssert(t)
-	//
-	//	require.Equal(t, len(discovery.DiscoveryItems), len(cases))
-	//
-	//	for _, casee := range cases {
-	//		for _, ca := range casee.TestCases {
-	//			var found bool
-	//			for _, cc := range filteredScripts.Scripts {
-	//				if ca.ID == cc.ID {
-	//					found = true
-	//					break
-	//				}
-	//			}
-	//			assert.True(found)
-	//		}
-	//	}
-	//})
 }
 
 func TestPermissionsSetsEmpty(t *testing.T) {
