@@ -2,6 +2,7 @@
 package generation
 
 import (
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/schema"
 	"github.com/sirupsen/logrus"
 
 	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/names"
@@ -73,7 +74,7 @@ func (g generator) GenerateManifestTests(log *logrus.Entry, config GeneratorConf
 	for k, item := range discovery.DiscoveryItems {
 		spectype, err := manifest.GetSpecType(item.APISpecification.SchemaVersion)
 		if err != nil {
-			logrus.Warnf("Cannot get spec type from scheam version: " + item.APISpecification.SchemaVersion)
+			logrus.Warnf("Cannot get spec type from schema version: " + item.APISpecification.SchemaVersion)
 			log.Warnf("specification %s not found\n", item.APISpecification.SchemaVersion)
 			continue
 		}
@@ -87,11 +88,20 @@ func (g generator) GenerateManifestTests(log *logrus.Entry, config GeneratorConf
 	tokens := map[string][]manifest.RequiredTokens{}
 
 	for _, item := range discovery.DiscoveryItems {
-		tcs, err := manifest.GenerateTestCases(item.APISpecification, item.ResourceBaseURI, ctx, item.Endpoints)
+		validator, err := schema.NewSwaggerOBSpecValidator(item.APISpecification.Name, item.APISpecification.Version)
+		if err != nil {
+			log.WithError(err).Warnf("manifest testcase generation failed for %s", item.APISpecification.SchemaVersion)
+			validator = schema.NewNullValidator()
+		}
+		log.WithFields(logrus.Fields{"name": item.APISpecification.Name, "version": item.APISpecification.Version}).
+			Info("swagger spec validator created")
+
+		tcs, err := manifest.GenerateTestCases(item.APISpecification, item.ResourceBaseURI, ctx, item.Endpoints, validator)
 		if err != nil {
 			log.Warnf("manifest testcase generation failed for %s", item.APISpecification.SchemaVersion)
 			continue
 		}
+
 		spectype := item.APISpecification.SpecType
 		requiredSpecTokens, err := manifest.GetRequiredTokensFromTests(tcs, spectype)
 		specreq, err := getSpecConsentsFromRequiredTokens(requiredSpecTokens, item.APISpecification.Name)

@@ -1,6 +1,7 @@
 package executors
 
 import (
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/schema"
 	"encoding/json"
 	"fmt"
 	"sync"
@@ -168,6 +169,7 @@ func (r *TestCaseRunner) runConsentAcquisitionAsync(item TokenConsentIDItem, ctx
 
 	for k, v := range comp.GetTests() {
 		v.ProcessReplacementFields(ruleCtx, true)
+		v.Validator = schema.NewNullValidator()
 		comp.Tests[k] = v
 	}
 

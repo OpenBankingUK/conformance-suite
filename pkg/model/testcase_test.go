@@ -1,6 +1,7 @@
 package model
 
 import (
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/schema"
 	"encoding/json"
 	"fmt"
 	"testing"
@@ -202,6 +203,7 @@ func TestResponseStatusCodeMismatch(t *testing.T) {
 func TestJsonExpectMatch(t *testing.T) {
 	var testcase TestCase // get the testcase
 	err := json.Unmarshal(jsonTestCase, &testcase)
+	testcase.Validator = schema.NewNullValidator()
 	assert.NoError(t, err)
 
 	res := test.CreateHTTPResponse(200, "OK", string(getAccountResponse))
