@@ -1,8 +1,14 @@
 <template>
   <div class="d-flex flex-column flex-fill">
     <div class="d-flex flex-fill">
-      <div class="flex">
-        <TheNavBar/>
+      <div
+        :class="collapsed === true? 'collapsed' : ''"
+        class="collapse-icon"
+        @click="collapsed = !collapsed"><i class="arrow left"/></div>
+      <div
+        :class="collapsed === true ? 'collapsed-sidebar' : ''"
+        class="flex">
+        <TheNavBar v-if="!collapsed"/>
       </div>
       <div class="flex-fill">
         <router-view class="d-flex flex-column flex-fill p-3 router-section"/>
@@ -20,7 +26,9 @@ export default {
     TheNavBar,
   },
   data() {
-    return {};
+    return {
+      collapsed: false,
+    };
   },
   computed: {},
   methods: {},

@@ -99,7 +99,47 @@ html, body, #app {
   padding: 3px;
 }
 
+.sidebar-arrow {
+  border: solid #000;
+  border-width: 0 2px 2px 0;
+  display: inline-block;
+  padding: 3px;
+}
+
 .arrow.down {
   transform: translate(0, -2px) rotate(45deg);
   -webkit-transform: translate(0, -2px) rotate(45deg);
+}
+
+.sidebar-arrow.left {
+  transform: translate(0, -2px) rotate(135deg);
+  -webkit-transform: translate(0, -2px) rotate(135deg);
+}
+
+.sidebar-arrow.right {
+  transform: translate(0, -2px) rotate(-45deg);
+  -webkit-transform: translate(0, -2px) rotate(-45deg);
+}
+
+.collapse-icon {
+  width: 30px;
+  z-index: 1000;
+  height: 30px;
+  background-color: white;
+  border-radius: 20px;
+  position: absolute;
+  top: 60px;
+  left: 240px;
+}
+
+.collapse-icon:hover {
+  cursor: pointer;
+}
+
+.collapse-icon.collapsed {
+  left: 15px;
+}
+
+.collapsed-sidebar {
+  width: 50px;
 }
