@@ -2,13 +2,13 @@
   <div class="d-flex flex-column flex-fill">
     <div class="d-flex flex-fill">
       <div
-        :class="collapsed === true? 'collapsed' : ''"
+        :class="collapsed ? 'collapsed' : ''"
         class="collapse-icon"
         @click="collapsed = !collapsed"><i
-          :class="collapsed == true? 'right' : 'left'"
+          :class="collapsed ? 'right' : 'left'"
           class="sidebar-arrow"/></div>
       <div
-        :class="collapsed === true ? 'collapsed-sidebar' : ''"
+        :class="collapsed ? 'collapsed-sidebar' : ''"
         class="flex">
         <TheNavBar v-if="!collapsed"/>
       </div>
