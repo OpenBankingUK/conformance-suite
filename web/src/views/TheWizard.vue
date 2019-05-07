@@ -4,7 +4,9 @@
       <div
         :class="collapsed === true? 'collapsed' : ''"
         class="collapse-icon"
-        @click="collapsed = !collapsed"><i class="arrow left"/></div>
+        @click="collapsed = !collapsed"><i
+          :class="collapsed == true? 'right' : 'left'"
+          class="sidebar-arrow"/></div>
       <div
         :class="collapsed === true ? 'collapsed-sidebar' : ''"
         class="flex">
