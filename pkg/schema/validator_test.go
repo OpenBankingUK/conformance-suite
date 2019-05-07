@@ -29,7 +29,7 @@ func TestValidators_Validate_AggregatesMultipleFailures(t *testing.T) {
 	require.NoError(t, err)
 	assert.Len(t, failures, 3)
 	expected := []Failure{
-		{Message: "Content-Type Error: Should produce 'application/json; charset=utf-8', but got: 'application/klingon'"},
+		{Message: "Content-Type Error: Should produce 'application/json', but got: 'application/klingon'"},
 		{Message: "server Status 418 not defined by the spec"},
 		{Message: "could't find a schema to validate for status code 418"},
 	}
