@@ -62,7 +62,7 @@ func discoveryStub(field string, value string) string {
 	tokenAcquisition := "psu"
 	specName := "Account and Transaction API Specification"
 	specURL := "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937820271/Account+and+Transaction+API+Specification+-+v3.1"
-	specVersion := "v3.1"
+	specVersion := "v3.1.0"
 	schemaVersion := "https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.0/dist/account-info-swagger.json"
 	manifest := "https://www.example.com"
 	endpoints := `, "endpoints": [
@@ -309,7 +309,7 @@ func TestValidate(t *testing.T) {
 			failures: []ValidationFailure{
 				{
 					Key:   "DiscoveryModel.DiscoveryItems[0].APISpecification.Version",
-					Error: "'Version' should be 'v3.1' when schemaVersion is 'https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.0/dist/account-info-swagger.json'",
+					Error: "'Version' should be 'v3.1.0' when schemaVersion is 'https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.0/dist/account-info-swagger.json'",
 				},
 			}})
 	})

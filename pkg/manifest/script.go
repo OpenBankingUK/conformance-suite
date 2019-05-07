@@ -1,6 +1,7 @@
 package manifest
 
 import (
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/schema"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -88,7 +89,7 @@ func (cj *ConsentJobs) Get(testid string) (model.TestCase, bool) {
 }
 
 // GenerateTestCases examines a manifest file, asserts file and resources definition, then builds the associated test cases
-func GenerateTestCases(scripts Scripts, spec discovery.ModelAPISpecification, baseurl string, ctx *model.Context, endpoints []discovery.ModelEndpoint) ([]model.TestCase, Scripts, error) {
+func GenerateTestCases(scripts Scripts, spec discovery.ModelAPISpecification, baseurl string, ctx *model.Context, endpoints []discovery.ModelEndpoint, validator schema.Validator) ([]model.TestCase, Scripts, error) {
 	logger := logrus.WithFields(logrus.Fields{
 		"function": "GenerateTestCases",
 	})
@@ -128,7 +129,7 @@ func GenerateTestCases(scripts Scripts, spec discovery.ModelAPISpecification, ba
 		}
 
 		consents := []string{}
-		tc, err := testCaseBuilder(script, refs.References, localCtx, consents, baseurl, specType, spec)
+		tc, err := testCaseBuilder(script, refs.References, localCtx, consents, baseurl, specType, validator, spec)
 		if err != nil {
 			logger.WithError(err).Error("Error on testCaseBuilder")
 		}
@@ -207,12 +208,13 @@ func updateTestAuthenticationFromToken(tcs []model.TestCase, rts []RequiredToken
 	return tcs
 }
 
-func testCaseBuilder(s Script, refs map[string]Reference, ctx *model.Context, consents []string, baseurl string, specType string, apiSpec discovery.ModelAPISpecification) (model.TestCase, error) {
+func testCaseBuilder(s Script, refs map[string]Reference, ctx *model.Context, consents []string, baseurl string, specType string, validator schema.Validator, apiSpec discovery.ModelAPISpecification) (model.TestCase, error) {
 	tc := model.MakeTestCase()
 	tc.ID = s.ID
 	tc.Name = s.Description
 	tc.APIName = apiSpec.Name
 	tc.APIVersion = apiSpec.Version
+	tc.Validator = validator
 
 	//TODO: make these more configurable - header also get set in buildInput Section
 	tc.Input.Headers["x-fapi-financial-id"] = "$x-fapi-financial-id"
@@ -438,7 +440,7 @@ func FilterTestsBasedOnDiscoveryEndpoints(scripts Scripts, endpoints []discovery
 	for k := range lookupMap {
 		for i, scr := range scripts.Scripts {
 			stripped := strings.Replace(scr.URI, "$", "", -1) // only works with a single character
-			if strings.Contains(stripped, "foobar") {         //exceptions
+			if strings.Contains(stripped, "foobar") { //exceptions
 				nofoobar := strings.Replace(stripped, "/foobar", "", -1) // only works with a single character
 				matched, err := regexp.MatchString(k, nofoobar)
 				if err != nil {

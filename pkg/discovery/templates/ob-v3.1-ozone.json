@@ -8,9 +8,10 @@
       "apiSpecification": {
         "name": "Account and Transaction API Specification",
         "url": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937820271/Account+and+Transaction+API+Specification+-+v3.1",
-        "version": "v3.1",
+        "version": "v3.1.0",
         "schemaVersion": "https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.0/dist/account-info-swagger.json",
-        "manifest": "file://manifests/ob_3.1_accounts_transactions_fca.json"
+        "manifest": "file://manifests/ob_3.1_accounts_transactions_fca.json",
+        "schemaVersion": "https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.0/dist/account-info-swagger.json"
       },
       "openidConfigurationUri": "https://modelobankauth2018.o3bank.co.uk:4101/.well-known/openid-configuration",
       "resourceBaseUri": "https://modelobank2018.o3bank.co.uk:4501/open-banking/v3.1/aisp",
@@ -132,7 +133,7 @@
       "apiSpecification": {
         "name": "Payment Initiation API",
         "url": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937754701/Payment+Initiation+API+Specification+-+v3.1",
-        "version": "v3.1",
+        "version": "v3.1.0",
         "schemaVersion": "https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.0/dist/payment-initiation-swagger.json",
         "manifest": "file://manifests/ob_3.1_payment_fca.json"
       },

@@ -1,6 +1,7 @@
 package model
 
 import (
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/schema"
 	"bytes"
 	"encoding/json"
 	"github.com/stretchr/testify/require"
@@ -39,7 +40,7 @@ func TestContextPutFromMatch(t *testing.T) {
 // json matcher
 func TestJSONBodyValue(t *testing.T) {
 	match := Match{JSON: "name.last", Description: "simple match test", ContextName: "NameInContext", Value: "Prichard"}
-	tc := TestCase{Expect: Expect{Matches: []Match{match}, StatusCode: 200}}
+	tc := TestCase{Expect: Expect{Matches: []Match{match}, StatusCode: 200}, Validator: schema.NewNullValidator()}
 	resp := test.CreateHTTPResponse(200, "OK", simplejson)
 	success, err := tc.Validate(resp, emptyContext)
 	assert.Nil(t, err)
@@ -49,7 +50,7 @@ func TestJSONBodyValue(t *testing.T) {
 // check
 func TestJSONBodyValueMismatch(t *testing.T) {
 	match := Match{JSON: "name.first", Description: "simple match test", ContextName: "NameInContext", Value: "Prichard"}
-	tc := TestCase{Expect: Expect{Matches: []Match{match}, StatusCode: 200}}
+	tc := TestCase{Expect: Expect{Matches: []Match{match}, StatusCode: 200}, Validator: schema.NewNullValidator()}
 	resp := test.CreateHTTPResponse(200, "OK", simplejson)
 	success, err := tc.Validate(resp, emptyContext)
 	assert.NotNil(t, err)
@@ -85,7 +86,7 @@ const statusok = `{"status":"isReplacement"}`
 // check header value match is detected
 func TestMatchResponseHeaderValue(t *testing.T) {
 	m := Match{Description: "header test", Header: "Content-Type", Value: "application/borg"}
-	tc := TestCase{Expect: Expect{Matches: []Match{m}, StatusCode: 200}}
+	tc := TestCase{Expect: Expect{Matches: []Match{m}, StatusCode: 200}, Validator: schema.NewNullValidator()}
 	resp := test.CreateHTTPResponse(200, "OK", statusok, "Content-Type", "application/borg")
 	result, err := tc.Validate(resp, emptyContext)
 	assert.Nil(t, err)
@@ -95,7 +96,7 @@ func TestMatchResponseHeaderValue(t *testing.T) {
 // check header value match is detected
 func TestMatchResponseHeaderValueCaseInsensitive(t *testing.T) {
 	m := Match{Description: "header test", Header: "Content-Type", Value: "application/borg"}
-	tc := TestCase{Expect: Expect{Matches: []Match{m}, StatusCode: 200}}
+	tc := TestCase{Expect: Expect{Matches: []Match{m}, StatusCode: 200}, Validator: schema.NewNullValidator()}
 	resp := test.CreateHTTPResponse(200, "OK", statusok, "content-type", "application/borg")
 	result, err := tc.Validate(resp, emptyContext)
 	assert.Nil(t, err)
@@ -105,7 +106,7 @@ func TestMatchResponseHeaderValueCaseInsensitive(t *testing.T) {
 // check header value mismatch is detected
 func TestNoMatchResponseHeaderValue(t *testing.T) {
 	m := Match{Description: "header test", Header: "Content-Type", Value: "application/klingon"}
-	tc := TestCase{Expect: Expect{Matches: []Match{m}, StatusCode: 200}}
+	tc := TestCase{Expect: Expect{Matches: []Match{m}, StatusCode: 200}, Validator: schema.NewNullValidator()}
 	resp := test.CreateHTTPResponse(200, "OK", statusok, "Content-Type", "application/borg")
 	result, errs := tc.Validate(resp, emptyContext)
 	assert.Contains(t, errs[0].Error(), "expected (application/klingon) got (application/borg)")
@@ -115,7 +116,7 @@ func TestNoMatchResponseHeaderValue(t *testing.T) {
 // detect invalid match type
 func TestInvalidMatchType(t *testing.T) {
 	m := Match{Description: "type test"}
-	tc := TestCase{Expect: Expect{Matches: []Match{m}, StatusCode: 200}}
+	tc := TestCase{Expect: Expect{Matches: []Match{m}, StatusCode: 200}, Validator: schema.NewNullValidator()}
 	resp := test.CreateHTTPResponse(200, "OK", statusok, "Content-Type", "application/json")
 	result, err := tc.Validate(resp, emptyContext)
 	assert.NotNil(t, err)
@@ -132,7 +133,7 @@ func TestGetMatchType(t *testing.T) {
 // check Header Regex match is detected
 func TestCheckHeaderRegexMatch(t *testing.T) {
 	m := Match{Description: "test", Header: "Authorization", Regex: "^Basic\\s.*"}
-	tc := TestCase{Expect: Expect{Matches: []Match{m}, StatusCode: 200}}
+	tc := TestCase{Expect: Expect{Matches: []Match{m}, StatusCode: 200}, Validator: schema.NewNullValidator()}
 	resp := test.CreateHTTPResponse(200, "OK", statusok, "Authorization", "Basic YjMzODg4ZGMtYzg==")
 	result, err := tc.Validate(resp, emptyContext)
 	assert.Nil(t, err)
@@ -141,7 +142,7 @@ func TestCheckHeaderRegexMatch(t *testing.T) {
 
 func TestCheckHeaderRegexMatchCaseInsensitive(t *testing.T) {
 	m := Match{Description: "test", Header: "authorization", Regex: "^Basic\\s.*"}
-	tc := TestCase{Expect: Expect{Matches: []Match{m}, StatusCode: 200}}
+	tc := TestCase{Expect: Expect{Matches: []Match{m}, StatusCode: 200}, Validator: schema.NewNullValidator()}
 	resp := test.CreateHTTPResponse(200, "OK", statusok, "Authorization", "Basic YjMzODg4ZGMtYzg==")
 	result, err := tc.Validate(resp, emptyContext)
 	assert.Nil(t, err)
@@ -151,7 +152,7 @@ func TestCheckHeaderRegexMatchCaseInsensitive(t *testing.T) {
 // check header regex mismatch is detected
 func TestCheckHeaderRegexMismatch(t *testing.T) {
 	m := Match{Description: "test", Header: "authorization", Regex: "^Basic\\s.*"}
-	tc := TestCase{Expect: Expect{Matches: []Match{m}, StatusCode: 200}}
+	tc := TestCase{Expect: Expect{Matches: []Match{m}, StatusCode: 200}, Validator: schema.NewNullValidator()}
 	resp := test.CreateHTTPResponse(200, "OK", statusok, "Authorization", "Basics YjMzODg4ZGMtYzg==")
 	result, err := tc.Validate(resp, emptyContext)
 	assert.NotNil(t, err)
@@ -160,7 +161,7 @@ func TestCheckHeaderRegexMismatch(t *testing.T) {
 
 func TestCheckHeaderRegexCompileFail(t *testing.T) {
 	m := Match{Description: "test", Header: "Authorization", Regex: `[ ]\K(?<!\d`}
-	tc := TestCase{Expect: Expect{Matches: []Match{m}, StatusCode: 200}}
+	tc := TestCase{Expect: Expect{Matches: []Match{m}, StatusCode: 200}, Validator: schema.NewNullValidator()}
 	resp := test.CreateHTTPResponse(200, "OK", statusok, "Authorization", "Basic YjMzODg4ZGMtYzg==")
 	result, err := tc.Validate(resp, emptyContext)
 	assert.NotNil(t, err)
@@ -170,7 +171,7 @@ func TestCheckHeaderRegexCompileFail(t *testing.T) {
 // check header present is detected
 func TestCheckHeaderPresentMatch(t *testing.T) {
 	m := Match{Description: "test", HeaderPresent: "authorization"}
-	tc := TestCase{Expect: Expect{Matches: []Match{m}, StatusCode: 200}}
+	tc := TestCase{Expect: Expect{Matches: []Match{m}, StatusCode: 200}, Validator: schema.NewNullValidator()}
 	resp := test.CreateHTTPResponse(200, "OK", statusok, "authorization", "Basic YjMzODg4ZGMtYzg==")
 	result, err := tc.Validate(resp, emptyContext)
 	assert.Nil(t, err)
@@ -179,7 +180,7 @@ func TestCheckHeaderPresentMatch(t *testing.T) {
 
 func TestCheckHeaderPresentMatchCaseInsensitive(t *testing.T) {
 	m := Match{Description: "test", HeaderPresent: "authorization"}
-	tc := TestCase{Expect: Expect{Matches: []Match{m}, StatusCode: 200}}
+	tc := TestCase{Expect: Expect{Matches: []Match{m}, StatusCode: 200}, Validator: schema.NewNullValidator()}
 	resp := test.CreateHTTPResponse(200, "OK", statusok, "AuthoriZation", "Basic YjMzODg4ZGMtYzg==")
 	result, err := tc.Validate(resp, emptyContext)
 	assert.Nil(t, err)
@@ -189,7 +190,7 @@ func TestCheckHeaderPresentMatchCaseInsensitive(t *testing.T) {
 // check header present fail is detected
 func TestCheckHeaderPresentMismatch(t *testing.T) {
 	m := Match{Description: "test", HeaderPresent: "authorization"}
-	tc := TestCase{Expect: Expect{Matches: []Match{m}, StatusCode: 200}}
+	tc := TestCase{Expect: Expect{Matches: []Match{m}, StatusCode: 200}, Validator: schema.NewNullValidator()}
 	resp := test.CreateHTTPResponse(200, "OK", statusok, "Security_token", "Basic YjMzODg4ZGMtYzg==")
 	result, err := tc.Validate(resp, emptyContext)
 	assert.NotNil(t, err)
@@ -199,7 +200,7 @@ func TestCheckHeaderPresentMismatch(t *testing.T) {
 // check body regex match is detected
 func TestCheckBodyRegexMatch(t *testing.T) {
 	m := Match{Description: "test", Regex: ".*London Bridge.*"}
-	tc := TestCase{Expect: Expect{Matches: []Match{m}, StatusCode: 200}}
+	tc := TestCase{Expect: Expect{Matches: []Match{m}, StatusCode: 200}, Validator: schema.NewNullValidator()}
 	resp := test.CreateHTTPResponse(200, "OK", "{\"status\":\"London Bridge\"}")
 	result, err := tc.Validate(resp, emptyContext)
 	assert.Nil(t, err)
@@ -209,7 +210,7 @@ func TestCheckBodyRegexMatch(t *testing.T) {
 // check body regex mismatch is detect
 func TestCheckBodyRegexMismatch(t *testing.T) {
 	m := Match{Description: "test", Regex: ".*London Bridge.*"}
-	tc := TestCase{Expect: Expect{Matches: []Match{m}, StatusCode: 200}}
+	tc := TestCase{Expect: Expect{Matches: []Match{m}, StatusCode: 200}, Validator: schema.NewNullValidator()}
 	resp := test.CreateHTTPResponse(200, "OK", "{\"status\":\"London !! Bridge\"}")
 	result, err := tc.Validate(resp, emptyContext)
 	assert.NotNil(t, err)
@@ -220,7 +221,7 @@ func TestCheckBodyRegexWithContextPut(t *testing.T) {
 	m := Match{Description: "test", Regex: ".*", ContextName: "mybody"}
 	ctx := Context{}
 	ca := ContextAccessor{Context: &Context{}, Matches: []Match{m}}
-	tc := TestCase{Expect: Expect{StatusCode: 200, ContextPut: ca}, Context: Context{}}
+	tc := TestCase{Expect: Expect{StatusCode: 200, ContextPut: ca}, Context: Context{}, Validator: schema.NewNullValidator()}
 	resp := test.CreateHTTPResponse(200, "OK", "{\"status\":\"London !! Bridge\"}")
 	result, err := tc.Validate(resp, &ctx)
 	assert.Nil(t, err)
@@ -234,7 +235,7 @@ func TestCheckBodyRegexWithContextPutBadRegex(t *testing.T) {
 	m := Match{Description: "test", Regex: "x.*", ContextName: "mybody"}
 	ctx := Context{}
 	ca := ContextAccessor{Context: &Context{}, Matches: []Match{m}}
-	tc := TestCase{Expect: Expect{StatusCode: 200, ContextPut: ca}}
+	tc := TestCase{Expect: Expect{StatusCode: 200, ContextPut: ca}, Validator: schema.NewNullValidator()}
 	resp := test.CreateHTTPResponse(200, "OK", "{\"status\":\"London !! Bridge\"}")
 	result, err := tc.Validate(resp, &ctx)
 	assert.NotNil(t, err)
@@ -243,7 +244,7 @@ func TestCheckBodyRegexWithContextPutBadRegex(t *testing.T) {
 
 func TestCheckBodyRegexCompileError(t *testing.T) {
 	m := Match{Description: "test", Regex: ".*\\KLondon Bridge.*"}
-	tc := TestCase{Expect: Expect{Matches: []Match{m}, StatusCode: 200}}
+	tc := TestCase{Expect: Expect{Matches: []Match{m}, StatusCode: 200}, Validator: schema.NewNullValidator()}
 	resp := test.CreateHTTPResponse(200, "OK", "{\"status\":\"London Bridge\"}")
 	result, err := tc.Validate(resp, emptyContext)
 	assert.NotNil(t, err)
@@ -253,7 +254,7 @@ func TestCheckBodyRegexCompileError(t *testing.T) {
 // check BodyJSONPresent match is detected
 func TestCheckBodyJsonMatch(t *testing.T) {
 	m := Match{Description: "test", JSON: "tourist-attractions.bridge"}
-	tc := TestCase{Expect: Expect{Matches: []Match{m}, StatusCode: 200}}
+	tc := TestCase{Expect: Expect{Matches: []Match{m}, StatusCode: 200}, Validator: schema.NewNullValidator()}
 	resp := test.CreateHTTPResponse(200, "OK", "{\"status\":\"OK\",\"tourist-attractions\":{\"bridge\":\"Tower Bridge\"}}")
 	result, err := tc.Validate(resp, emptyContext)
 	assert.Nil(t, err)
@@ -263,7 +264,7 @@ func TestCheckBodyJsonMatch(t *testing.T) {
 // check BodyJSONPresent mismatch is detected
 func TestCheckBodyJsonMisMatch(t *testing.T) {
 	m := Match{Description: "test", JSON: "tourist-attractions.bridge"}
-	tc := TestCase{Expect: Expect{Matches: []Match{m}, StatusCode: 200}}
+	tc := TestCase{Expect: Expect{Matches: []Match{m}, StatusCode: 200}, Validator: schema.NewNullValidator()}
 	resp := test.CreateHTTPResponse(200, "OK", "{\"status\":\"OK\",\"tourist-attractions\":{\"bridges\":\"Tower Bridge\"}}")
 	result, err := tc.Validate(resp, emptyContext)
 	assert.NotNil(t, err)
@@ -274,7 +275,7 @@ const testbankjson = `{"banks": [{"name": "Barclays" },{"name": "HSBC"},{"name":
 
 func TestCheckJsonBodyCount(t *testing.T) {
 	m := Match{Description: "test", JSON: "banks.#", Count: 3}
-	tc := TestCase{Expect: Expect{Matches: []Match{m}, StatusCode: 200}}
+	tc := TestCase{Expect: Expect{Matches: []Match{m}, StatusCode: 200}, Validator: schema.NewNullValidator()}
 	resp := test.CreateHTTPResponse(200, "OK", testbankjson)
 	result, err := tc.Validate(resp, emptyContext)
 	assert.Nil(t, err)
@@ -283,7 +284,7 @@ func TestCheckJsonBodyCount(t *testing.T) {
 
 func TestCheckJsonBodyCountMismatch(t *testing.T) {
 	m := Match{Description: "test", JSON: "banks.#", Count: 2}
-	tc := TestCase{Expect: Expect{Matches: []Match{m}, StatusCode: 200}}
+	tc := TestCase{Expect: Expect{Matches: []Match{m}, StatusCode: 200}, Validator: schema.NewNullValidator()}
 	resp := test.CreateHTTPResponse(200, "OK", testbankjson)
 	result, err := tc.Validate(resp, emptyContext)
 	assert.NotNil(t, err)
@@ -292,7 +293,7 @@ func TestCheckJsonBodyCountMismatch(t *testing.T) {
 
 func TestCheckBodyJSONRegex(t *testing.T) {
 	m := Match{Description: "test", JSON: "banks.2.name", Regex: "^L.*s$"}
-	tc := TestCase{Expect: Expect{Matches: []Match{m}, StatusCode: 200}}
+	tc := TestCase{Expect: Expect{Matches: []Match{m}, StatusCode: 200}, Validator: schema.NewNullValidator()}
 	resp := test.CreateHTTPResponse(200, "OK", testbankjson)
 	result, err := tc.Validate(resp, emptyContext)
 	assert.Nil(t, err)
@@ -301,7 +302,7 @@ func TestCheckBodyJSONRegex(t *testing.T) {
 
 func TestCheckBodyJSONRegexMismatch(t *testing.T) {
 	m := Match{Description: "test", JSON: "banks.2.name", Regex: "^B.*s$"}
-	tc := TestCase{Expect: Expect{Matches: []Match{m}, StatusCode: 200}}
+	tc := TestCase{Expect: Expect{Matches: []Match{m}, StatusCode: 200}, Validator: schema.NewNullValidator()}
 	resp := test.CreateHTTPResponse(200, "OK", testbankjson)
 	result, err := tc.Validate(resp, emptyContext)
 	assert.NotNil(t, err)
@@ -310,7 +311,7 @@ func TestCheckBodyJSONRegexMismatch(t *testing.T) {
 
 func TestCheckBodyJSONRegexMismatchJSONPattern(t *testing.T) {
 	m := Match{Description: "test", JSON: "banks.2.names", Regex: "^B.*s$"}
-	tc := TestCase{Expect: Expect{Matches: []Match{m}, StatusCode: 200}}
+	tc := TestCase{Expect: Expect{Matches: []Match{m}, StatusCode: 200}, Validator: schema.NewNullValidator()}
 	resp := test.CreateHTTPResponse(200, "OK", testbankjson)
 	result, err := tc.Validate(resp, emptyContext)
 	assert.NotNil(t, err)
@@ -319,7 +320,7 @@ func TestCheckBodyJSONRegexMismatchJSONPattern(t *testing.T) {
 
 func TestCheckBodyJSONRegexCompileFail(t *testing.T) {
 	m := Match{Description: "test", JSON: "banks.2.name", Regex: "^L.\\K*s$"}
-	tc := TestCase{Expect: Expect{Matches: []Match{m}, StatusCode: 200}}
+	tc := TestCase{Expect: Expect{Matches: []Match{m}, StatusCode: 200}, Validator: schema.NewNullValidator()}
 	resp := test.CreateHTTPResponse(200, "OK", testbankjson)
 	result, err := tc.Validate(resp, emptyContext)
 	assert.NotNil(t, err)
@@ -329,7 +330,7 @@ func TestCheckBodyJSONRegexCompileFail(t *testing.T) {
 func TestCheckBodyLength(t *testing.T) {
 	var len int64 = 35
 	m := Match{Description: "test", BodyLength: &len}
-	tc := TestCase{Expect: Expect{Matches: []Match{m}, StatusCode: 200}}
+	tc := TestCase{Expect: Expect{Matches: []Match{m}, StatusCode: 200}, Validator: schema.NewNullValidator()}
 	resp := test.CreateHTTPResponse(200, "OK", "TheRainInSpainFallsMainlyOnThePlain")
 	result, err := tc.Validate(resp, emptyContext)
 	assert.Nil(t, err)
@@ -339,7 +340,7 @@ func TestCheckBodyLength(t *testing.T) {
 func TestCheckBodyLengthMismatch(t *testing.T) {
 	var len int64 = 11
 	m := Match{Description: "test", BodyLength: &len}
-	tc := TestCase{Expect: Expect{Matches: []Match{m}, StatusCode: 200}}
+	tc := TestCase{Expect: Expect{Matches: []Match{m}, StatusCode: 200}, Validator: schema.NewNullValidator()}
 	resp := test.CreateHTTPResponse(200, "OK", "TheRainInSpainFallsMainlyOnThePlain")
 	result, err := tc.Validate(resp, emptyContext)
 	assert.NotNil(t, err)
@@ -349,7 +350,7 @@ func TestCheckBodyLengthMismatch(t *testing.T) {
 func TestCheckBodyLengthMismatch2(t *testing.T) {
 	var len int64 = 35
 	m := Match{Description: "test", BodyLength: &len}
-	tc := TestCase{Expect: Expect{Matches: []Match{m}, StatusCode: 200}}
+	tc := TestCase{Expect: Expect{Matches: []Match{m}, StatusCode: 200}, Validator: schema.NewNullValidator()}
 	resp := test.CreateHTTPResponse(200, "OK", "")
 	result, err := tc.Validate(resp, emptyContext)
 	assert.NotNil(t, err)
@@ -371,7 +372,7 @@ func TestMatchStringOutput(t *testing.T) {
 
 func TestCheckAuthorisation(t *testing.T) {
 	m := Match{Description: "AuthTest", Authorisation: "Bearer"}
-	tc := TestCase{Expect: Expect{Matches: []Match{m}, StatusCode: 200}}
+	tc := TestCase{Expect: Expect{Matches: []Match{m}, StatusCode: 200}, Validator: schema.NewNullValidator()}
 	resp := test.CreateHTTPResponse(200, "OK", "TheRainInSpain", "Authorization", "Bearer 1010110101010101")
 	result, err := tc.Validate(resp, emptyContext)
 	assert.Equal(t, "1010110101010101", tc.Expect.Matches[0].Result)
@@ -380,7 +381,7 @@ func TestCheckAuthorisation(t *testing.T) {
 }
 func TestCheckAuthorisationNotPresent(t *testing.T) {
 	m := Match{Description: "AuthTest", Authorisation: "Bearer"}
-	tc := TestCase{Expect: Expect{Matches: []Match{m}, StatusCode: 200}}
+	tc := TestCase{Expect: Expect{Matches: []Match{m}, StatusCode: 200}, Validator: schema.NewNullValidator()}
 	resp := test.CreateHTTPResponse(200, "OK", "TheRainInSpain")
 	result, err := tc.Validate(resp, emptyContext)
 	assert.Equal(t, "", tc.Expect.Matches[0].Result)
@@ -390,7 +391,7 @@ func TestCheckAuthorisationNotPresent(t *testing.T) {
 
 func TestCheckAuthorisationIncorrectValue(t *testing.T) {
 	m := Match{Description: "AuthTest", Authorisation: "Bearer"}
-	tc := TestCase{Expect: Expect{Matches: []Match{m}, StatusCode: 200}}
+	tc := TestCase{Expect: Expect{Matches: []Match{m}, StatusCode: 200}, Validator: schema.NewNullValidator()}
 	resp := test.CreateHTTPResponse(200, "OK", "TheRainInSpain", "Authorisation", "Beardy 12312312")
 	result, err := tc.Validate(resp, emptyContext)
 	assert.Equal(t, "", tc.Expect.Matches[0].Result)
@@ -402,7 +403,7 @@ func TestContextPutHeaderRegexContextSubFieldCapture(t *testing.T) {
 	m := Match{Description: "AuthCode xChange", Header: "Location", Regex: "code=(.*)&+.*", ContextName: "mycode"}
 	ctx := Context{}
 	ctxPut := ContextAccessor{Context: &ctx, Matches: []Match{m}}
-	tc := TestCase{Context: Context{}, Expect: Expect{ContextPut: ctxPut, StatusCode: 200}}
+	tc := TestCase{Context: Context{}, Expect: Expect{ContextPut: ctxPut, StatusCode: 200}, Validator: schema.NewNullValidator()}
 
 	resp := test.CreateHTTPResponse(200, "OK", "TheRainInSpain", "Location", "https://mysite/auth?code=1234&redir=here")
 	result, err := tc.Validate(resp, &ctx)
@@ -418,7 +419,7 @@ func TestContextPutHeaderRegexContextSubFieldCaptureFail(t *testing.T) {
 	m := Match{Description: "AuthCode xChange", Header: "Location", Regex: "xcode=(.*)&+.*", ContextName: "mycode"}
 	c := Context{}
 	ctxPut := ContextAccessor{Context: &c, Matches: []Match{m}}
-	tc := TestCase{Expect: Expect{ContextPut: ctxPut, StatusCode: 200}} // note: the "Match" lives in the contextPut obj
+	tc := TestCase{Expect: Expect{ContextPut: ctxPut, StatusCode: 200}, Validator: schema.NewNullValidator()} // note: the "Match" lives in the contextPut obj
 	resp := test.CreateHTTPResponse(200, "OK", "TheRainInSpain", "Location", "https://mysite/auth?code=1234&redir=here")
 	result, err := tc.Validate(resp, &c)
 	assert.False(t, result)
@@ -429,7 +430,7 @@ func TestContextPutHeaderRegexContextSubFieldCompileFaile(t *testing.T) {
 	m := Match{Description: "AuthCode xChange", Header: "Location", Regex: "code=\\K(.*)&+.*", ContextName: "mycode"}
 	c := Context{}
 	ctxPut := ContextAccessor{Context: &c, Matches: []Match{m}}
-	tc := TestCase{Expect: Expect{ContextPut: ctxPut, StatusCode: 200}}
+	tc := TestCase{Expect: Expect{ContextPut: ctxPut, StatusCode: 200}, Validator: schema.NewNullValidator()}
 	resp := test.CreateHTTPResponse(200, "OK", "TheRainInSpain", "Location", "https://mysite/auth?code=1234&redir=here")
 	result, err := tc.Validate(resp, &c)
 	assert.False(t, result)
@@ -441,7 +442,7 @@ func TestContextPutCheckBodyJsonMatch(t *testing.T) {
 	m := Match{Description: "test", JSON: "tourist-attractions.bridge", ContextName: "attractions"}
 	c := Context{}
 	ctxPut := ContextAccessor{Context: &c, Matches: []Match{m}}
-	tc := TestCase{Expect: Expect{ContextPut: ctxPut, StatusCode: 200}} // note: the "Match" lives in the contextPut obj
+	tc := TestCase{Expect: Expect{ContextPut: ctxPut, StatusCode: 200}, Validator: schema.NewNullValidator()} // note: the "Match" lives in the contextPut obj
 
 	resp := test.CreateHTTPResponse(200, "OK", "{\"status\":\"OK\",\"tourist-attractions\":{\"bridge\":\"Tower Bridge\"}}")
 	result, err := tc.Validate(resp, &c)
@@ -456,7 +457,7 @@ func TestContextPutCheckBodyJsonMatchMismatch(t *testing.T) {
 	m := Match{Description: "test", JSON: "tourist-attractions.bridge1", ContextName: "attractions"}
 	c := Context{}
 	ctxPut := ContextAccessor{Context: &c, Matches: []Match{m}}
-	tc := TestCase{Expect: Expect{ContextPut: ctxPut, StatusCode: 200}} // note: the "Match" lives in the contextPut obj
+	tc := TestCase{Expect: Expect{ContextPut: ctxPut, StatusCode: 200}, Validator: schema.NewNullValidator()} // note: the "Match" lives in the contextPut obj
 	resp := test.CreateHTTPResponse(200, "OK", "{\"status\":\"OK\",\"tourist-attractions\":{\"bridge\":\"Tower Bridge\"}}")
 	result, err := tc.Validate(resp, &c)
 	assert.NotNil(t, err)
@@ -469,7 +470,7 @@ func TestContextPutJSONBodyValue(t *testing.T) {
 	m := Match{JSON: "name.last", Description: "simple match test", ContextName: "NameInContext", Value: "Prichard"}
 	c := Context{}
 	ctxPut := ContextAccessor{Context: &c, Matches: []Match{m}}
-	tc := TestCase{Expect: Expect{ContextPut: ctxPut, StatusCode: 200}} // note: the "Match" lives in the contextPut obj
+	tc := TestCase{Expect: Expect{ContextPut: ctxPut, StatusCode: 200}, Validator: schema.NewNullValidator()} // note: the "Match" lives in the contextPut obj
 	resp := test.CreateHTTPResponse(200, "OK", simplejson)
 	success, err := tc.Validate(resp, &c)
 	assert.Nil(t, err)
@@ -480,7 +481,7 @@ func TestContextPutJSONBodyValueFail(t *testing.T) {
 	m := Match{JSON: "name.last", Description: "simple match test", ContextName: "NameInContext", Value: "Prichard1"}
 	c := Context{}
 	ctxPut := ContextAccessor{Context: &c, Matches: []Match{m}}
-	tc := TestCase{Expect: Expect{ContextPut: ctxPut, StatusCode: 200}} // note: the "Match" lives in the contextPut obj
+	tc := TestCase{Expect: Expect{ContextPut: ctxPut, StatusCode: 200}, Validator: schema.NewNullValidator()} // note: the "Match" lives in the contextPut obj
 	resp := test.CreateHTTPResponse(200, "OK", simplejson)
 	success, err := tc.Validate(resp, &c)
 	assert.NotNil(t, err)
@@ -502,7 +503,7 @@ func TestContextPutAuthorisation(t *testing.T) {
 	m := Match{Description: "test", ContextName: "token", Authorisation: "bearer"}
 	c := Context{}
 	ctxPut := ContextAccessor{Context: &c, Matches: []Match{m}}
-	tc := TestCase{Expect: Expect{ContextPut: ctxPut, StatusCode: 200}} // note: the "Match" lives in the contextPut obj
+	tc := TestCase{Expect: Expect{ContextPut: ctxPut, StatusCode: 200}, Validator: schema.NewNullValidator()} // note: the "Match" lives in the contextPut obj
 	resp := test.CreateHTTPResponse(200, "OK", simplejson, "Authorisation", "Bearer 10101011010")
 	success, err := tc.Validate(resp, &c)
 	assert.Nil(t, err)
@@ -516,7 +517,7 @@ func TestContextPutAuthorisationFail(t *testing.T) {
 	m := Match{Description: "test", ContextName: "token", Authorisation: "bearer"}
 	c := Context{}
 	ctxPut := ContextAccessor{Context: &c, Matches: []Match{m}}
-	tc := TestCase{Expect: Expect{ContextPut: ctxPut, StatusCode: 200}} // note: the "Match" lives in the contextPut obj
+	tc := TestCase{Expect: Expect{ContextPut: ctxPut, StatusCode: 200}, Validator: schema.NewNullValidator()} // note: the "Match" lives in the contextPut obj
 	resp := test.CreateHTTPResponse(200, "OK", simplejson, "Authorisation", "Barat 10101011010")
 	success, err := tc.Validate(resp, &c)
 	assert.NotNil(t, err)

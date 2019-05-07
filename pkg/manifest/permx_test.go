@@ -2,6 +2,7 @@ package manifest
 
 import (
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/schema"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -19,7 +20,7 @@ func TestPermx(t *testing.T) {
 	scripts, _, err := LoadGenerationResources(specType)
 	assert.Nil(t, err)
 
-	tests, _, err := GenerateTestCases(scripts, apiSpec, "http://mybaseurl", &model.Context{}, readDiscovery())
+	tests, _, err := GenerateTestCases(scripts, apiSpec, "http://mybaseurl", &model.Context{}, readDiscovery(), schema.NewNullValidator())
 	assert.Nil(t, err)
 
 	testcasePermissions, err := getTestCasePermissions(tests)
@@ -34,13 +35,14 @@ func TestGetScriptConsentTokens(t *testing.T) {
 	apiSpec := discovery.ModelAPISpecification{
 		SchemaVersion: accountSwaggerLocation31,
 	}
+
 	specType, err := GetSpecType(apiSpec.SchemaVersion)
 	assert.Nil(t, err)
 
 	scripts, _, err := LoadGenerationResources(specType)
 	assert.Nil(t, err)
 
-	tests, scripts, err := GenerateTestCases(scripts, apiSpec, "http://mybaseurl", &model.Context{}, readDiscovery())
+	tests, scripts, err := GenerateTestCases(scripts, apiSpec, "http://mybaseurl", &model.Context{}, readDiscovery(), schema.NewNullValidator())
 	assert.Nil(t, err)
 
 	testcasePermissions, err := getTestCasePermissions(tests)

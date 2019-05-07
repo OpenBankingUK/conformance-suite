@@ -1,6 +1,7 @@
 package manifest
 
 import (
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/schema"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -21,7 +22,7 @@ func TestGenerateTestCases(t *testing.T) {
 	specType, err := GetSpecType(apiSpec.SchemaVersion)
 	assert.Nil(t, err)
 	scripts, _, err := LoadGenerationResources(specType)
-	tests, _, err := GenerateTestCases(scripts, apiSpec, "http://mybaseurl", &model.Context{}, readDiscovery())
+	tests, _, err := GenerateTestCases(scripts, apiSpec, "http://mybaseurl", &model.Context{}, readDiscovery(), schema.NewNullValidator())
 	assert.Nil(t, err)
 
 	perms, err := getAccountPermissions(tests)
@@ -44,7 +45,7 @@ func TestPaymentPermissions(t *testing.T) {
 	specType, err := GetSpecType(apiSpec.SchemaVersion)
 	assert.Nil(t, err)
 	scripts, _, err := LoadGenerationResources(specType)
-	tests, _, err := GenerateTestCases(scripts, apiSpec,"http://mybaseurl", &model.Context{}, readDiscovery())
+	tests, _, err := GenerateTestCases(scripts, apiSpec, "http://mybaseurl", &model.Context{}, readDiscovery(), schema.NewNullValidator())
 	fmt.Printf("we have %d tests\n", len(tests))
 	for _, v := range tests {
 		dumpJSON(v)
@@ -116,9 +117,10 @@ func TestPermissionFiteringAccounts(t *testing.T) {
 		fmt.Println("Error on loadGenerationResources")
 		return
 	}
-	tests, _, err := GenerateTestCases(scripts, apiSpec, "http://mybaseurl", &ctx, endpoints)
+	tests, _, err := GenerateTestCases(scripts, apiSpec, "http://mybaseurl", &ctx, endpoints, schema.NewNullValidator())
 	assert.Nil(t, err)
 	fmt.Printf("%d tests loaded", len(tests))
+
 
 	filteredScripts, err := FilterTestsBasedOnDiscoveryEndpointsPlayground(scripts, endpoints)
 	if err != nil {
@@ -232,7 +234,7 @@ func TestPaymentTestCaseCreation(t *testing.T) {
 	scripts, _, err := LoadGenerationResources(specType)
 	assert.Nil(t, err)
 
-	tests, _, err := GenerateTestCases(scripts, apiSpec, "http://mybaseurl", ctx, readDiscovery())
+	tests, _, err := GenerateTestCases(scripts, apiSpec, "http://mybaseurl", ctx, readDiscovery(), schema.NewNullValidator())
 	assert.Nil(t, err)
 	fmt.Printf("we have %d tests\n", len(tests))
 	for _, v := range tests {
