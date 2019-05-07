@@ -1,6 +1,7 @@
 package model
 
 import (
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/schema"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -95,11 +96,8 @@ func (c *Component) checkOutputParamsInContext(ctx *Context) error {
 
 // GetTests - returns the tests that need to be run for this component
 func (c *Component) GetTests() []TestCase {
+	for key := range c.Tests {
+		c.Tests[key].Validator = schema.NewNullValidator()
+	}
 	return c.Tests
-	// cloned := []TestCase{}
-	// for _, test := range c.Tests {
-	// 	newtc := test.Clone()
-	// 	cloned = append(cloned, newtc)
-	// }
-	//	return cloned
 }
