@@ -2,6 +2,9 @@ package schema
 
 import (
 	"fmt"
+	"github.com/pkg/errors"
+	"mime"
+	"strings"
 )
 
 // contentTypeValidator implements a validator for content type check on header
@@ -25,11 +28,27 @@ func (v contentTypeValidator) Validate(r Response) ([]Failure, error) {
 		return nil, err
 	}
 
-	contentType := r.Header.Get("Content-type")
-	if contentType != expectedContentType {
-		message := fmt.Sprintf("Content-Type Error: Should produce '%s', but got: '%s'", expectedContentType, contentType)
+	mediaExpected, paramsExpected, err := mime.ParseMediaType(expectedContentType)
+	if err != nil {
+		return nil, errors.Wrap(err, "parse expected content type validator")
+	}
+
+	contentTypeRequest := r.Header.Get("Content-type")
+	mediaRequest, paramsRequest, err := mime.ParseMediaType(contentTypeRequest)
+	if err != nil {
+		return nil, errors.Wrap(err, "parse request content type validator")
+	}
+
+	if mediaRequest != mediaExpected {
+		message := fmt.Sprintf("Content-Type Error: Should produce '%s', but got: '%s'", mediaExpected, contentTypeRequest)
 		return []Failure{newFailure(message)}, nil
 	}
+
+	if !sameParams(paramsExpected, paramsRequest) {
+		message := fmt.Sprintf("Content-Type Error: Should produce params '%s', but got: '%s'", mapToString(paramsExpected), mapToString(paramsRequest))
+		return []Failure{newFailure(message)}, nil
+	}
+
 	return nil, nil
 }
 
@@ -56,4 +75,29 @@ func (v contentTypeValidator) expectedContentType(r Response) (string, error) {
 	}
 
 	return expectedContentType, nil
+}
+
+func sameParams(params1, params2 map[string]string) bool {
+	if len(params1) != len(params2) {
+		return false
+	}
+
+	for key, value := range params1 {
+		otherValue, ok := params2[key]
+		if !ok {
+			return false
+		}
+		if strings.ToUpper(value) != strings.ToUpper(otherValue) {
+			return false
+		}
+	}
+	return true
+}
+
+func mapToString(params map[string]string) string {
+	var result []string
+	for key, value := range params {
+		result = append(result, key+"="+value)
+	}
+	return strings.Join(result, ";")
 }
