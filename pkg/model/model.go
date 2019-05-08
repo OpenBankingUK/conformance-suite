@@ -1,6 +1,7 @@
 package model
 
 import (
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/schema"
 	"bytes"
 	"encoding/json"
 	"errors"
@@ -58,20 +59,21 @@ type Rule struct {
 //     and therefore the testcase has passed
 //
 type TestCase struct {
-	ID         string         `json:"@id,omitempty"`     // JSONLD ID Reference
-	Type       []string       `json:"@type,omitempty"`   // JSONLD type array
-	Name       string         `json:"name,omitempty"`    // Name
-	Purpose    string         `json:"purpose,omitempty"` // Purpose of the testcase in simple words
-	Input      Input          `json:"input,omitempty"`   // Input Object
-	Context    Context        `json:"context,omitempty"` // Local Context Object
-	Expect     Expect         `json:"expect,omitempty"`  // Expected object
-	ParentRule *Rule          `json:"-"`                 // Allows accessing parent Rule
-	Request    *resty.Request `json:"-"`                 // The request that's been generated in order to call the endpoint
-	Header     http.Header    `json:"-"`                 // ResponseHeader
-	Body       string         `json:"-"`                 // ResponseBody
-	Bearer     string         `json:"bearer,omitempty"`  // Bear token if presented
-	APIName    string         `json:"apiName"`
-	APIVersion string         `json:"apiVersion"`
+	ID         string           `json:"@id,omitempty"`     // JSONLD ID Reference
+	Type       []string         `json:"@type,omitempty"`   // JSONLD type array
+	Name       string           `json:"name,omitempty"`    // Name
+	Purpose    string           `json:"purpose,omitempty"` // Purpose of the testcase in simple words
+	Input      Input            `json:"input,omitempty"`   // Input Object
+	Context    Context          `json:"context,omitempty"` // Local Context Object
+	Expect     Expect           `json:"expect,omitempty"`  // Expected object
+	ParentRule *Rule            `json:"-"`                 // Allows accessing parent Rule
+	Request    *resty.Request   `json:"-"`                 // The request that's been generated in order to call the endpoint
+	Header     http.Header      `json:"-"`                 // ResponseHeader
+	Body       string           `json:"-"`                 // ResponseBody
+	Bearer     string           `json:"bearer,omitempty"`  // Bear token if presented
+	APIName    string           `json:"apiName"`
+	APIVersion string           `json:"apiVersion"`
+	Validator  schema.Validator `json:"-"` // Swagger schema validator
 }
 
 // MakeTestCase builds an empty testcase
@@ -82,7 +84,7 @@ func MakeTestCase() TestCase {
 	i.Headers = make(map[string]string)
 	i.Claims = make(map[string]string)
 
-	tc := TestCase{Input: i}
+	tc := TestCase{Input: i, Validator: schema.NewNullValidator()}
 	return tc
 }
 
@@ -115,7 +117,7 @@ func (t *TestCase) Validate(resp *resty.Response, rulectx *Context) (bool, []err
 		// Check that there is a value body in the raw response of the resty response object
 		// Also - if the response is a redirect (302/StatusFound) then we continue as we'll have no body.
 		if resp != nil && resp.StatusCode() != http.StatusFound {
-			if resp != nil && (resp.RawResponse != nil) && (resp.RawResponse.Body != nil) {
+			if resp.RawResponse != nil && resp.RawResponse.Body != nil {
 				buf := new(bytes.Buffer)
 				_, err := buf.ReadFrom(resp.RawResponse.Body)
 				if err != nil {
@@ -126,7 +128,33 @@ func (t *TestCase) Validate(resp *resty.Response, rulectx *Context) (bool, []err
 		}
 	}
 	t.Header = resp.Header()
-	return t.ApplyExpects(resp, rulectx)
+	pass, errs := t.ApplyExpects(resp, rulectx)
+
+	var failures []schema.Failure
+	if t.Expect.SchemaValidation {
+		if t.Validator == nil {
+			return false, []error{t.AppErr("Validate: schema validator is nil")}
+		}
+
+		var err error
+		failures, err = t.Validator.Validate(schema.Response{
+			Method:     t.Input.Method,
+			Path:       t.Input.Endpoint,
+			Header:     resp.Header(),
+			Body:       strings.NewReader(t.Body),
+			StatusCode: resp.StatusCode(),
+		})
+		if err != nil {
+			return false, []error{t.AppErr("Validate: " + err.Error())}
+		}
+		for _, failure := range failures {
+			errs = append(errs, errors.New(failure.Message))
+		}
+	} else {
+		logrus.WithField("testcase", t.String()).Debug("no schema validator found")
+	}
+
+	return pass, errs
 }
 
 // Expect defines a structure for expressing testcase result expectations.

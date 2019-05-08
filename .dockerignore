@@ -32,6 +32,10 @@
 !**/components/**/*.json
 !**/manifests
 !**/manifests/**/*
+!**/spec/v3.1.0
+!**/spec/v3.1.0/**/*
+!**/spec/v3.0.0
+!**/spec/v3.0.0/**/*
 
 !**/cmd
 !**/cmd/**

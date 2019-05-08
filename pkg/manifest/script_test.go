@@ -1,6 +1,7 @@
 package manifest
 
 import (
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/schema"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -18,7 +19,7 @@ func TestGenerateTestCases(t *testing.T) {
 	apiSpec := discovery.ModelAPISpecification{
 		SchemaVersion: accountSwaggerLocation31,
 	}
-	tests, err := GenerateTestCases(apiSpec, "http://mybaseurl", &model.Context{}, readDiscovery())
+	tests, err := GenerateTestCases(apiSpec, "http://mybaseurl", &model.Context{}, readDiscovery(), schema.NewNullValidator())
 	assert.Nil(t, err)
 
 	perms, err := getAccountPermissions(tests)
@@ -38,7 +39,7 @@ func TestPaymentPermissions(t *testing.T) {
 	apiSpec := discovery.ModelAPISpecification{
 		SchemaVersion: accountSwaggerLocation30,
 	}
-	tests, err := GenerateTestCases(apiSpec, "http://mybaseurl", &model.Context{}, readDiscovery())
+	tests, err := GenerateTestCases(apiSpec, "http://mybaseurl", &model.Context{}, readDiscovery(), schema.NewNullValidator())
 	fmt.Printf("we have %d tests\n", len(tests))
 	for _, v := range tests {
 		dumpJSON(v)
@@ -105,7 +106,7 @@ func TestPermissionFiteringAccounts(t *testing.T) {
 	apiSpec := discovery.ModelAPISpecification{
 		SchemaVersion: accountSwaggerLocation31,
 	}
-	tests, err := GenerateTestCases(apiSpec, "http://mybaseurl", &ctx, endpoints)
+	tests, err := GenerateTestCases(apiSpec, "http://mybaseurl", &ctx, endpoints, schema.NewNullValidator())
 	assert.Nil(t, err)
 	fmt.Printf("%d tests loaded", len(tests))
 
@@ -218,12 +219,16 @@ func TestPaymentTestCaseCreation(t *testing.T) {
 		"creditorScheme":                      "default",
 	}
 
-	tests, err := GenerateTestCases(paymentsSwaggerLocation31, "http://mybaseurl", ctx, readDiscovery())
+	apiSpec := discovery.ModelAPISpecification{
+		SchemaVersion: accountSwaggerLocation31,
+	}
+
+	tests, err := GenerateTestCases(apiSpec, "http://mybaseurl", ctx, readDiscovery(), schema.NewNullValidator())
 	assert.Nil(t, err)
 	fmt.Printf("we have %d tests\n", len(tests))
 	for _, v := range tests {
 		//if v.ID == "OB-301-DOP-101000" {
-			dumpJSON(v)
+		dumpJSON(v)
 		//}
 	}
 

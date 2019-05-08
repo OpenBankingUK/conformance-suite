@@ -39,6 +39,8 @@ WORKDIR /app
 # '../../../pkg/model/testdata/spec-config.golden.json'
 ADD pkg/discovery/templates/*.json /pkg/discovery/templates/
 ADD pkg/model/testdata/*.json /pkg/model/testdata/
+ADD pkg/schema/spec/v3.0.0/*.json /pkg/schema/spec/v3.0.0/
+ADD pkg/schema/spec/v3.1.0/*.json /pkg/schema/spec/v3.1.0/
 ADD web .
 
 ENV FORCE_COLOR=1

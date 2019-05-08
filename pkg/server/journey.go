@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"sync"
 
+	"github.com/blang/semver"
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 
@@ -152,8 +153,14 @@ func (wj *journey) TestCases() (generation.TestCasesRun, error) {
 		discovery := wj.validDiscoveryModel.DiscoveryModel
 		if len(discovery.DiscoveryItems) > 0 { // default currently "v3.1" ... allow "v3.0"
 			// version string gets replaced in URLS like  "endpoint": "/open-banking/$api-version/aisp/account-access-consents",
-			wj.config.apiVersion = discovery.DiscoveryItems[0].APISpecification.Version
-			wj.context.PutString(ctxAPIVersion, wj.config.apiVersion)
+			version, err := semver.ParseTolerant(discovery.DiscoveryItems[0].APISpecification.Version)
+			if err != nil {
+				logger.WithError(err).Error("parsing spec version")
+			} else {
+				wj.config.apiVersion = fmt.Sprintf("v%d.%d", version.Major, version.Minor)
+				wj.context.PutString(ctxAPIVersion, wj.config.apiVersion)
+			}
+			logger.WithField("version", wj.config.apiVersion).Info("API url version")
 		}
 
 		logger.Debug("generator.GenerateManifestTests ...")
@@ -431,6 +438,7 @@ const (
 )
 
 func (wj *journey) configParametersToJourneyContext() error {
+	wj.config.apiVersion = "v3.1"
 	wj.context.PutString(ctxConstClientID, wj.config.clientID)
 	wj.context.PutString(ctxConstClientSecret, wj.config.clientSecret)
 	wj.context.PutString(ctxConstTokenEndpoint, wj.config.tokenEndpoint)
@@ -440,7 +448,6 @@ func (wj *journey) configParametersToJourneyContext() error {
 	wj.context.PutString(ctxConstRedirectURL, wj.config.redirectURL)
 	wj.context.PutString(ctxConstAuthorisationEndpoint, wj.config.authorizationEndpoint)
 	wj.context.PutString(ctxConstResourceBaseURL, wj.config.resourceBaseURL)
-	wj.config.apiVersion = "v3.1"
 	wj.context.PutString(ctxAPIVersion, wj.config.apiVersion)
 	wj.context.PutString(ctxConsentedAccountID, wj.config.resourceIDs.AccountIDs[0].AccountID)
 	wj.context.PutString(ctxStatementID, wj.config.resourceIDs.StatementIDs[0].StatementID)
