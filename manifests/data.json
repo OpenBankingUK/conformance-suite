@@ -63,6 +63,48 @@
         "Risk": {}
       }
     },
+    "minimalDomesticStandingOrderConsent": {
+      "body": {
+        "Data": {
+          "Permission": "Create",
+          "Initiation": {
+            "Frequency": "EvryDay",
+            "FirstPaymentDateTime": "2020-10-01T13:14:25+00:00",
+            "FirstPaymentAmount": {
+              "Amount": "10.00",
+              "Currency": "GBP"
+            },
+            "CreditorAccount": {
+              "SchemeName": "$creditorScheme",
+              "Identification": "$creditorIdentification",
+              "Name": "$creditorName"
+            }
+          }
+        },
+        "Risk": {}
+      }
+    },
+    "minimalDomesticStandingOrder": {
+      "body": {
+        "Data": {
+          "ConsentId": "$OB-301-DOP-101200-ConsentId",
+          "Initiation": {
+            "Frequency": "EvryDay",
+            "FirstPaymentDateTime": "2020-10-01T13:14:25+00:00",
+            "FirstPaymentAmount": {
+              "Amount": "10.00",
+              "Currency": "GBP"
+            },
+            "CreditorAccount": {
+              "SchemeName": "$creditorScheme",
+              "Identification": "$creditorIdentification",
+              "Name": "$creditorName"
+            }
+          }
+        },
+        "Risk": {}
+      }
+    },
     "minimalInternationalPaymentConsent": {
       "body": {
         "Data": {
@@ -84,6 +126,29 @@
         "Risk": {}
       }
     },
+    "minimalInternationalPayment": {
+      "body": {
+        "Data": {
+          "ConsentId": "$OB-301-DOP-101600-ConsentId",
+          "Initiation": {
+            "InstructionIdentification": "Excaliber International",
+            "EndToEndIdentification": "Excaliber International",
+            "CurrencyOfTransfer": "USD",
+            "InstructedAmount": {
+              "Amount": "1.00",
+              "Currency": "USD"
+            },
+            "CreditorAccount": {
+              "SchemeName": "SortCodeAccountNumber",
+              "Identification": "20202010981789",
+              "Name": "Dr Foo"
+            }
+          }
+        },
+        "Risk": {}
+      }
+    },
+
     "minimalInternationalStandingOrderConsent": {
       "body": {
         "Data": {
@@ -141,9 +206,9 @@
               "Currency": "USD"
             },
             "CreditorAccount": {
-              "SchemeName": "SortCodeAccountNumber",
-              "Identification": "20202010981789",
-              "Name": "Dr Foo"
+              "SchemeName": "$creditorScheme",
+              "Identification": "$creditorIdentification",
+              "Name": "$creditorName"
             }
           }
         },
@@ -153,6 +218,7 @@
     "minimalInternationalScheduledPayment": {
       "body": {
         "Data": {
+          "ConsentId": "$OB-301-DOP-102000-ConsentId",
           "Initiation": {
             "RequestedExecutionDateTime": "2020-10-01T13:14:25+00:00",
             "InstructionIdentification": "Excaliber International",
@@ -163,9 +229,9 @@
               "Currency": "USD"
             },
             "CreditorAccount": {
-              "SchemeName": "UK.OBIE.IBAN",
-              "Identification": "GB29PAPA20000390210002",
-              "Name": "Charitable Funds"
+              "SchemeName": "$creditorScheme",
+              "Identification": "$creditorIdentification",
+              "Name": "$creditorName"
             }
           }
         },

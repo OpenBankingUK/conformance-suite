@@ -308,11 +308,11 @@
       "detail": "Checks that the resource succeeds for a PISP posting a Domestic Standing Order consent with a minimal data set and checks additional schema.",
       "parameters": {
         "tokenRequestScope": "payments",
-        "postData": "$minimalScheduledDomesticPaymentConsent",
+        "postData": "$minimalDomesticStandingOrderConsent",
         "requestConsent": "true"
       },
       "body": "$postData",
-      "uri": "/domestic-scheduled-payment-consents",
+      "uri": "/domestic-standing-order-consents",
       "uriImplementation": "conditional",
       "resource": "DomesticStandingOrder",
       "asserts": [
@@ -345,7 +345,233 @@
       ],
       "method": "get",
       "schemaCheck": false
-    }        
-
+    },
+    {
+      "description": "Domestic Standing Order succeeds with minimal data set with additional schema checks.",
+      "id": "OB-301-DOP-101400",
+      "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1000670131/Domestic+Standing+Orders+v3.1.1#DomesticStandingOrdersv3.1.1-POST/domestic-standing-orders",
+      "detail": "Checks that the resource succeeds posting a Domestic Standing Order with a minimal data set and checks additional schema.",
+      "parameters": {
+        "tokenRequestScope": "payments",
+        "postData": "$minimalDomesticStandingOrder",
+        "consentId": "$OB-301-DOP-101200-ConsentId"
+      },
+      "headers": {
+        "Content-Type": "application/json; charset=utf-8"
+      },
+      "body": "$postData",
+      "uri": "/domestic-standing-orders",
+      "uriImplementation": "conditional",
+      "resource": "DomesticStandingOrder",
+      "asserts": [
+        "OB3GLOAssertOn201"
+      ],
+      "keepContextOnSuccess": {
+        "name": "OB-301-DOP-101400-DomesticStandingOrderID",
+        "value": "Data.DomesticStandingOrderId"
+      },
+      "method": "post",
+      "schemaCheck": true
+    },
+    {
+      "description": "PISP can retrieve the Domestic Standing Order, status checks and response.",
+      "id": "OB-301-DOP-101500",
+      "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1000670131/Domestic+Standing+Orders+v3.1.1#DomesticStandingOrdersv3.1.1-GET/domestic-standing-orders/{DomesticStandingOrderId}",
+      "detail": "Check PISP can retrieve the Domestic Standing Order with additional schema checks.",
+      "parameters": {
+        "tokenRequestScope": "payments",
+        "paymentID": "$OB-301-DOP-101400-DomesticStandingOrderID"
+      },
+      "uri": "/domestic-standing-orders/$paymentID",
+      "uriImplementation": "conditional",
+      "resource": "DomesticScheduledPayment",
+      "asserts": [
+        "OB3GLOAssertOn200"
+      ],
+      "method": "get",
+      "schemaCheck": false
+    },    
+    {
+      "description": "International Payment consent succeeds with minimal data set with additional schema checks.",
+      "id": "OB-301-DOP-101600",
+      "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1000015587/International+Payments+v3.1.1#InternationalPaymentsv3.1.1-POST/international-payment-consents",
+      "detail": "Checks that the resource succeeds for a PISP asking for a International Payment consent with a minimal data set and checks additional schema.",
+      "parameters": {
+        "tokenRequestScope": "payments",
+        "postData": "$minimalInternationalPaymentConsent",
+        "requestConsent": "true"
+      },
+      "body": "$postData",
+      "uri": "/international-payment-consents",
+      "uriImplementation": "conditional",
+      "resource": "InternationalPayment",
+      "asserts": [
+        "OB3GLOAssertOn201",
+        "OB3GLOFAPIHeader",
+        "OB3GLOAAssertConsentId"
+      ],
+      "keepContextOnSuccess": {
+        "name": "OB-301-DOP-101600-ConsentId",
+        "value": "Data.ConsentId"
+      },
+      "method": "post",
+      "schemaCheck": true
+    },
+    {
+      "description": "PISP can retrieve International Payment consent resource status.",
+      "id": "OB-301-DOP-101700",
+      "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1000015587/International+Payments+v3.1.1#InternationalPaymentsv3.1.1-GET/international-payment-consents/{ConsentId}",
+      "detail": "Check PISP can retrieve International Payment consent resource and status is Authorised.",
+      "parameters": {
+        "tokenRequestScope": "payments",
+        "consentId": "$OB-301-DOP-101600-ConsentId"
+      },
+      "uri": "/international-payment-consents/$consentId",
+      "uriImplementation": "conditional",
+      "resource": "InternationalPayment",
+      "asserts": [
+        "OB3GLOAssertOn200",
+        "OB3DOPAssertAuthorised"
+      ],
+      "method": "get",
+      "schemaCheck": false
+    },
+    {
+      "description": "International Payment succeeds with minimal data set with additional schema checks.",
+      "id": "OB-301-DOP-101800",
+      "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1000015587/International+Payments+v3.1.1#InternationalPaymentsv3.1.1-POST/international-payments",
+      "detail": "Checks that the resource succeeds posting a  International Payment with a minimal data set and checks additional schema.",
+      "parameters": {
+        "tokenRequestScope": "payments",
+        "postData": "$minimalInternationalPayment",
+        "consentId": "$OB-301-DOP-101600-ConsentId"
+      },
+      "headers": {
+        "Content-Type": "application/json; charset=utf-8"
+      },
+      "body": "$postData",
+      "uri": "/international-payments",
+      "uriImplementation": "conditional",
+      "resource": "InternationalPayment",
+      "asserts": [
+        "OB3GLOAssertOn201",
+        "OB3IPAssertInternationalPaymentId"
+      ],
+      "keepContextOnSuccess": {
+        "name": "OB-301-DOP-101800-InternationalPaymentId",
+        "value": "Data.InternationalPaymentId"
+      },
+      "method": "post",
+      "schemaCheck": true
+    },
+    {
+      "description": "PISP can retrieve the International Payment, status checks and response.",
+      "id": "OB-301-DOP-101900",
+      "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1000015587/International+Payments+v3.1.1#InternationalPaymentsv3.1.1-Status.2",
+      "detail": "Check PISP can retrieve the International Payment.",
+      "parameters": {
+        "tokenRequestScope": "payments",
+        "paymentID": "$OB-301-DOP-101800-InternationalPaymentId"
+      },
+      "uri": "/international-payments/$paymentID",
+      "uriImplementation": "conditional",
+      "resource": "InternationalPayment",
+      "asserts": [
+        "OB3GLOAssertOn200"
+      ],
+      "method": "get",
+      "schemaCheck": false
+    },
+    {
+      "description": "International Scheduled Payment consent succeeds with minimal data set with additional schema checks.",
+      "id": "OB-301-DOP-102000",
+      "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1000670152/International+Scheduled+Payments+v3.1.1#InternationalScheduledPaymentsv3.1.1-POST/international-scheduled-payment-consents",
+      "detail": "Checks that the resource succeeds for a PISP asking for a International Scheduled Payment consent with a minimal data set and checks additional schema.",
+      "parameters": {
+        "tokenRequestScope": "payments",
+        "postData": "$minimalInternationalScheduledPaymentConsent",
+        "requestConsent": "true"
+      },
+      "body": "$postData",
+      "uri": "/international-scheduled-payment-consents",
+      "uriImplementation": "conditional",
+      "resource": "InternationalScheduledPayment",
+      "asserts": [
+        "OB3GLOAssertOn201",
+        "OB3GLOFAPIHeader",
+        "OB3GLOAAssertConsentId"
+      ],
+      "keepContextOnSuccess": {
+        "name": "OB-301-DOP-102000-ConsentId",
+        "value": "Data.ConsentId"
+      },
+      "method": "post",
+      "schemaCheck": true
+    },
+    {
+      "description": "PISP can retrieve International Scheduled Payment consent resource status.",
+      "id": "OB-301-DOP-102100",
+      "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1000670152/International+Scheduled+Payments+v3.1.1#InternationalScheduledPaymentsv3.1.1-GET/international-scheduled-payment-consents/{ConsentId}",
+      "detail": "Check PISP can retrieve International Scheduled Payment consent resource and status is Authorised.",
+      "parameters": {
+        "tokenRequestScope": "payments",
+        "consentId": "$OB-301-DOP-102000-ConsentId"
+      },
+      "uri": "/international-scheduled-payment-consents/$consentId",
+      "uriImplementation": "conditional",
+      "resource": "InternationalScheduledPayment",
+      "asserts": [
+        "OB3GLOAssertOn200",
+        "OB3DOPAssertAuthorised"
+      ],
+      "method": "get",
+      "schemaCheck": false
+    },
+    {
+      "description": "International Scheduled Payment succeeds with minimal data set with additional schema checks.",
+      "id": "OB-301-DOP-102200",
+      "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1000670152/International+Scheduled+Payments+v3.1.1#InternationalScheduledPaymentsv3.1.1-POST/international-scheduled-payments",
+      "detail": "Checks that the resource succeeds posting an International Scheduled Payment with a minimal data set and checks additional schema.",
+      "parameters": {
+        "tokenRequestScope": "payments",
+        "postData": "$minimalInternationalScheduledPayment",
+        "consentId": "$OB-301-DOP-102000-ConsentId"
+      },
+      "headers": {
+        "Content-Type": "application/json; charset=utf-8"
+      },
+      "body": "$postData",
+      "uri": "/international-scheduled-payments",
+      "uriImplementation": "conditional",
+      "resource": "InternationalScheduledPayment",
+      "asserts": [
+        "OB3GLOAssertOn201",
+        "OB3IPAssertInternationalScheduledPaymentId"
+      ],
+      "keepContextOnSuccess": {
+        "name": "OB-301-DOP-102200-InternationalScheduledPaymentId",
+        "value": "Data.InternationalScheduledPaymentId"
+      },
+      "method": "post",
+      "schemaCheck": true
+    },
+    {
+      "description": "PISP can retrieve the International Scheduled Payment, status checks and response.",
+      "id": "OB-301-DOP-102300",
+      "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1000015587/International+Payments+v3.1.1#InternationalPaymentsv3.1.1-Status.2",
+      "detail": "Check PISP can retrieve the International Scheduled Payment.",
+      "parameters": {
+        "tokenRequestScope": "payments",
+        "paymentID": "$OB-301-DOP-102200-InternationalScheduledPaymentId"
+      },
+      "uri": "/international-scheduled-payments/$paymentID",
+      "uriImplementation": "conditional",
+      "resource": "InternationalScheduledPayment",
+      "asserts": [
+        "OB3GLOAssertOn200"
+      ],
+      "method": "get",
+      "schemaCheck": false
+    }
   ]
 }
