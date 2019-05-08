@@ -289,25 +289,6 @@ func (i *Input) getBody(req *resty.Request, ctx *Context) (string, error) {
 	}
 
 	body := value
-<<<<<<< HEAD
-	contentType := i.Headers["Content-Type"]
-	if len(contentType) == 0 {
-		contentType = i.Headers["content-type"]
-	}
-	if strings.Contains(contentType, "application/json") {
-		m := minify.New()
-		m.AddFuncRegexp(regexp.MustCompile("[/+]json$"), minjson.Minify)
-		var err error
-		body, err = m.String("application/json", value)
-		if err != nil {
-			return "", err
-		}
-	}
-	i.RequestBody = body
-	req.SetBody(body)
-
-	return body, nil
-=======
 	contentType := i.contentTypeHeader()
 	if strings.Contains(contentType, "application/json") {
 		m := minify.New()
@@ -331,7 +312,6 @@ func (i *Input) contentTypeHeader() string {
 		}
 	}
 	return ""
->>>>>>> develop
 }
 
 // AppMsg - application level trace

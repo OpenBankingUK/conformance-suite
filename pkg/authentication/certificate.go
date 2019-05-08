@@ -106,19 +106,8 @@ func (c certificate) DN() (string, error) {
 		logrus.Errorf("cannot parse cert %s", err.Error())
 		return "", err
 	}
-	var co, o, ou string
+
 	subject := crt.Subject
-<<<<<<< HEAD
-	if len(subject.Country) > 0 {
-		co = subject.Country[0]
-	}
-	if len(subject.Organization) > 0 {
-		o = subject.Organization[0]
-	}
-	if len(subject.OrganizationalUnit) > 0 {
-		ou = subject.OrganizationalUnit[0]
-	}
-=======
 
 	var co string
 	if len(subject.Country) > 0 {
@@ -135,7 +124,6 @@ func (c certificate) DN() (string, error) {
 		ou = subject.OrganizationalUnit[0]
 	}
 
->>>>>>> develop
 	cn := subject.CommonName
 	dn := fmt.Sprintf("C=%s, O=%s, OU=%s, CN=%s", co, o, ou, cn)
 

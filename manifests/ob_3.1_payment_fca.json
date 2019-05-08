@@ -345,7 +345,6 @@
       ],
       "method": "get",
       "schemaCheck": false
-<<<<<<< HEAD
     },
     {
       "description": "Domestic Standing Order succeeds with minimal data set with additional schema checks.",
@@ -573,8 +572,6 @@
       ],
       "method": "get",
       "schemaCheck": false
-=======
->>>>>>> develop
     }
   ]
 }

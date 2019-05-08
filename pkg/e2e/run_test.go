@@ -33,11 +33,7 @@ const (
 var update = flag.Bool("update", false, "update .golden files")
 
 func TestRun(t *testing.T) {
-<<<<<<< HEAD
-	t.Skip("Skipped until headless works correctly again")
-=======
 	t.Skip()
->>>>>>> develop
 	logger := test.NullLogger()
 
 	ver := version.NewBitBucket(version.BitBucketAPIRepository)
