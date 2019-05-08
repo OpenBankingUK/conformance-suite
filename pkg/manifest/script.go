@@ -211,6 +211,7 @@ func testCaseBuilder(s Script, refs map[string]Reference, ctx *model.Context, co
 	tc := model.MakeTestCase()
 	tc.ID = s.ID
 	tc.Name = s.Description
+	tc.Detail = s.Detail
 	tc.APIName = apiSpec.Name
 	tc.APIVersion = apiSpec.Version
 	tc.Validator = validator

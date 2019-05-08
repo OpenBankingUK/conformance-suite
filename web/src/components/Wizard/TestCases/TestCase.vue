@@ -54,6 +54,7 @@
         slot-scope="row">
         <b-card>
           <b-card-text><strong>Test ID:</strong> {{ row.item.id }}</b-card-text>
+          <b-card-text><strong>Detail:</strong> {{ row.item.detail }}</b-card-text>
           <b-card-text><strong>Errors:</strong> {{ row.item.error }}</b-card-text>
         </b-card>
       </template>
