@@ -2,11 +2,9 @@ package model
 
 import (
 	"crypto/rsa"
-	"crypto/sha1"
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
-	"io"
 	"net/url"
 	"regexp"
 	"strings"
@@ -131,7 +129,7 @@ func (i *Input) setClaims(tc *TestCase, ctx *Context) error {
 			fallthrough
 		case "consenturl":
 			i.AppMsg("==> executing consenturl strategy")
-			token, err := i.generateRequestToken(ctx)
+			token, err := i.GenerateRequestToken(ctx)
 			if err != nil {
 				return i.AppErr(fmt.Sprintf("error creating request token %s", err.Error()))
 			}
@@ -149,7 +147,7 @@ func (i *Input) setClaims(tc *TestCase, ctx *Context) error {
 			}
 		case "jwt-bearer":
 			i.AppMsg("==> executing jwt-bearer strategy")
-			token, err := i.generateSignedJWT(ctx, jwt.SigningMethodRS256)
+			token, err := i.GenerateSignedJWT(ctx, jwt.SigningMethodRS256)
 			if err != nil {
 				return i.AppErr(fmt.Sprintf("error creating AlgRS256JWT %s", err.Error()))
 			}
@@ -166,7 +164,7 @@ func (i *Input) setClaims(tc *TestCase, ctx *Context) error {
 	return nil
 }
 
-func (i *Input) generateRequestToken(ctx *Context) (string, error) {
+func (i *Input) GenerateRequestToken(ctx *Context) (string, error) {
 	alg, err := ctx.GetString("requestObjectSigningAlg")
 	if err != nil && err != ErrNotFound {
 		return "", err
@@ -183,9 +181,9 @@ func (i *Input) generateRequestToken(ctx *Context) (string, error) {
 				SaltLength: rsa.PSSSaltLengthEqualsHash,
 			},
 		}
-		token, err = i.generateSignedJWT(ctx, fixedSigningMethodPS256)
+		token, err = i.GenerateSignedJWT(ctx, fixedSigningMethodPS256)
 	case "RS256":
-		token, err = i.generateSignedJWT(ctx, jwt.SigningMethodRS256)
+		token, err = i.GenerateSignedJWT(ctx, jwt.SigningMethodRS256)
 	case "NONE":
 		fallthrough
 	default:
@@ -362,25 +360,44 @@ func signingCertFromContext(ctx *Context) (authentication.Certificate, error) {
 	return cert, nil
 }
 
-func (i *Input) generateSignedJWT(ctx *Context, alg jwt.SigningMethod) (string, error) {
+func (i *Input) GenerateSignedJWT(ctx *Context, alg jwt.SigningMethod) (string, error) {
 	uuid := uuid.New()
 	claims := jwt.MapClaims{}
-	claims["iss"] = i.Claims["iss"]
-	claims["sub"] = i.Claims["iss"]
-	claims["scope"] = i.Claims["scope"]
-	claims["aud"] = i.Claims["aud"]
+	if iss, ok := i.Claims["iss"]; ok {
+		claims["iss"] = iss
+	}
+	if iss, ok := i.Claims["iss"]; ok {
+		claims["sub"] = iss
+	}
+	if scope, ok := i.Claims["scope"]; ok {
+		claims["scope"] = scope
+	}
+	if aud, ok := i.Claims["aud"]; ok {
+		claims["aud"] = aud
+	}
+
 	claims["iat"] = time.Now().Unix()
-	claims["exp"] = time.Now().Add(time.Minute * time.Duration(60)).Unix()
+	claims["exp"] = time.Now().Add(time.Minute * time.Duration(30)).Unix()
 	claims["jti"] = uuid
-	claims["redirect_uri"] = i.Claims["redirect_url"]
 	claims["nonce"] = uuid
-	claims["client_id"] = i.Claims["iss"]
-	claims["state"] = i.Claims["state"]
+
+	if redirectURI, ok := i.Claims["redirect_url"]; ok {
+		claims["redirect_uri"] = redirectURI
+	}
+	if iss, ok := i.Claims["iss"]; ok {
+		claims["client_id"] = iss
+	}
+	if state, ok := i.Claims["state"]; ok {
+		claims["state"] = state
+	}
+
 	consentClaim := consentClaims{Essential: true, Value: i.Claims["consentId"]}
 	myIdent := obintentID{IntentID: consentClaim}
 	var consentIDToken = consentIDTok{Token: myIdent}
 	claims["claims"] = consentIDToken
-	claims["response_type"] = i.Claims["responseType"]
+	if responseType, ok := i.Claims["responseType"]; ok {
+		claims["response_type"] = responseType
+	}
 
 	logrus.WithFields(logrus.Fields{
 		"claims":   claims,
@@ -397,10 +414,14 @@ func (i *Input) generateSignedJWT(ctx *Context, alg jwt.SigningMethod) (string, 
 
 	modulus := cert.PublicKey().N.Bytes()
 	modulusBase64 := base64.RawURLEncoding.EncodeToString(modulus)
-	token.Header["kid"], err = calcKid(modulusBase64)
+	kid, err := authentication.CalcKid(modulusBase64)
 	if err != nil {
 		return "", i.AppErr(fmt.Sprintf("error calculating kid: %s", err.Error()))
 	}
+	logrus.WithFields(logrus.Fields{
+		"kid": kid,
+	}).Debug("GenerateSignedJWT")
+	token.Header["kid"] = kid
 
 	tokenString, err := token.SignedString(cert.PrivateKey()) // sign the token - get as encoded string
 	if err != nil {
@@ -416,7 +437,6 @@ func (p payload) Valid() error {
 }
 
 func (i *Input) generateJWSSignature(ctx *Context, alg jwt.SigningMethod) (string, error) {
-
 	m := minify.New()
 	m.AddFuncRegexp(regexp.MustCompile("[/+]json$"), minjson.Minify)
 	minifiedBody, err := m.String("application/json", i.RequestBody)
@@ -429,7 +449,7 @@ func (i *Input) generateJWSSignature(ctx *Context, alg jwt.SigningMethod) (strin
 	}
 	modulus := cert.PublicKey().N.Bytes()
 	modulusBase64 := base64.RawURLEncoding.EncodeToString(modulus)
-	kid, _ := calcKid(modulusBase64)
+	kid, _ := authentication.CalcKid(modulusBase64)
 	issuer, err := cert.DN()
 	if err != nil {
 		logrus.Warn("cannot get certificate DN: ", err.Error())
@@ -506,22 +526,6 @@ func SigningString(t *jwt.Token, body string) (string, error) {
 		}
 	}
 	return strings.Join(parts, "."), nil
-}
-
-func calcKid(modulus string) (string, error) {
-	canonicalInput := fmt.Sprintf(`{"e":"AQAB","kty":"RSA","n":"%s"}`, modulus)
-
-	sumer := sha1.New()
-	_, err := io.WriteString(sumer, canonicalInput)
-	if err != nil {
-		return "", nil
-	}
-	sum := sumer.Sum(nil)
-
-	sumBase64 := base64.RawURLEncoding.EncodeToString(sum)
-	sumBase64NoTrailingEquals := strings.TrimSuffix(sumBase64, "=")
-
-	return sumBase64NoTrailingEquals, nil
 }
 
 type obintentID struct {

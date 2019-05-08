@@ -139,7 +139,7 @@ func (r *TestCaseRunner) runConsentAcquisitionAsync(item TokenConsentIDItem, ctx
 	// Check for MTLS vs client basic authentication
 	authMethod, err := ctx.GetString("token_endpoint_auth_method")
 	if err != nil {
-		authMethod = "client_secret_basic"
+		authMethod = authentication.ClientSecretBasic
 	}
 
 	if consentType == "psu" {
@@ -199,17 +199,71 @@ func (r *TestCaseRunner) executeComponentTests(comp *model.Component, ruleCtx *m
 		}
 
 		if testcase.ID == "#compPsuConsent01" {
-			if authMethod == "client_secret_basic" {
+			switch authMethod {
+			case authentication.ClientSecretBasic:
 				testcase.Input.SetHeader("authorization", "Basic $basic_authentication")
-			}
-			if authMethod == "tls_client_auth" {
+			case authentication.TlsClientAuth:
 				clientid, err := ruleCtx.GetString("client_id")
 				if err != nil {
-					ctxLogger.Warn("cannot locate client_id for tls_client_auth form field")
+					ctxLogger.WithFields(logrus.Fields{
+						"authMethod": authMethod,
+						"err":        err,
+					}).Error("cannot locate client_id to populate form field")
+					continue
 				}
+
 				testcase.Input.SetFormField("client_id", clientid)
+			case authentication.PrivateKeyJwt:
+				clientID, err := ruleCtx.GetString("client_id")
+				if err != nil {
+					ctxLogger.WithFields(logrus.Fields{
+						"authMethod": authMethod,
+						"err":        err,
+					}).Error("cannot locate client_id to populate form field")
+					continue
+				}
+
+				tokenEndpoint, err := ruleCtx.GetString("token_endpoint")
+				if err != nil {
+					ctxLogger.WithFields(logrus.Fields{
+						"authMethod": authMethod,
+						"err":        err,
+					}).Error("cannot locate token_endpoint to populate form field")
+				}
+
+				if testcase.Input.Claims == nil {
+					testcase.Input.Claims = map[string]string{}
+				}
+
+				// https://openid.net/specs/openid-connect-core-1_0.html#ClientAuthentication
+				// iss
+				// REQUIRED. Issuer. This MUST contain the client_id of the OAuth Client.
+				// sub
+				// REQUIRED. Subject. This MUST contain the client_id of the OAuth Client.
+				// aud
+				// REQUIRED. Audience. The aud (audience) Claim. Value that identifies the Authorization Server as an intended audience. The Authorization Server MUST verify that it is an intended audience for the token. The Audience SHOULD be the URL of the Authorization Server's Token Endpoint.
+				testcase.Input.Claims["iss"] = clientID
+				testcase.Input.Claims["sub"] = clientID
+				testcase.Input.Claims["aud"] = tokenEndpoint
+				clientAssertion, err := testcase.Input.GenerateRequestToken(ruleCtx)
+				if err != nil {
+					ctxLogger.WithFields(logrus.Fields{
+						"testcase": testcase,
+						"err":      err,
+					}).Error("failed on testcase.Input.GenerateRequestToken")
+					continue
+				}
+
+				testcase.Input.SetFormField(authentication.ClientAssertionType, authentication.ClientAssertionTypeValue)
+				testcase.Input.SetFormField(authentication.ClientAssertion, clientAssertion)
+			default:
+				ctxLogger.WithFields(logrus.Fields{
+					"authMethod": authMethod,
+				}).Error("Unsupported token_endpoint_auth_method")
+				continue
 			}
 		}
+
 		testResult := r.executeTest(testcase, ruleCtx, logger)
 		r.daemonController.AddResult(testResult)
 
