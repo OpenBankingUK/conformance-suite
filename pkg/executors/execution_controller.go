@@ -339,20 +339,20 @@ func (r *TestCaseRunner) executeTest(tc model.TestCase, ruleCtx *model.Context, 
 	req, err := tc.Prepare(ruleCtx)
 	if err != nil {
 		ctxLogger.WithError(err).Error("preparing executing test")
-		return results.NewTestCaseFail(tc.ID, results.NoMetrics, []error{err}, tc.Input.Endpoint, tc.APIName, tc.APIVersion)
+		return results.NewTestCaseFail(tc.ID, results.NoMetrics, []error{err}, tc.Input.Endpoint, tc.APIName, tc.APIVersion, tc.Detail)
 	}
 	resp, metrics, err := r.executor.ExecuteTestCase(req, &tc, ruleCtx)
 	ctxLogger = logWithMetrics(ctxLogger, metrics)
 	if err != nil {
 		ctxLogger.WithError(err).WithFields(logrus.Fields{"result": "FAIL", "ID": tc.ID}).Error("test result")
-		return results.NewTestCaseFail(tc.ID, metrics, []error{err}, tc.Input.Endpoint, tc.APIName, tc.APIVersion)
+		return results.NewTestCaseFail(tc.ID, metrics, []error{err}, tc.Input.Endpoint, tc.APIName, tc.APIVersion, tc.Detail)
 	}
 
 	result, errs := tc.Validate(resp, ruleCtx)
 	if errs != nil {
 		detailedErrors := detailedErrors(errs, resp)
 		ctxLogger.WithField("errs", detailedErrors).WithFields(logrus.Fields{"result": passText[result], "ID": tc.ID}).Error("test result validate")
-		return results.NewTestCaseFail(tc.ID, metrics, detailedErrors, tc.Input.Endpoint, tc.APIName, tc.APIVersion)
+		return results.NewTestCaseFail(tc.ID, metrics, detailedErrors, tc.Input.Endpoint, tc.APIName, tc.APIVersion, tc.Detail)
 	}
 
 	if !result {
@@ -361,7 +361,7 @@ func (r *TestCaseRunner) executeTest(tc model.TestCase, ruleCtx *model.Context, 
 		ctxLogger.WithError(err).WithFields(logrus.Fields{"result": passText[result], "ID": tc.ID}).Info("test result")
 	}
 
-	return results.NewTestCaseResult(tc.ID, result, metrics, []error{}, tc.Input.Endpoint, tc.APIName, tc.APIVersion)
+	return results.NewTestCaseResult(tc.ID, result, metrics, []error{}, tc.Input.Endpoint, tc.APIName, tc.APIVersion, tc.Detail)
 }
 
 func detailedErrors(errs []error, resp *resty.Response) []error {

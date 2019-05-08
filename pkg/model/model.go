@@ -1,7 +1,6 @@
 package model
 
 import (
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/schema"
 	"bytes"
 	"encoding/json"
 	"errors"
@@ -10,6 +9,8 @@ import (
 	"net/http"
 	"regexp"
 	"strings"
+
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/schema"
 
 	"github.com/sirupsen/logrus"
 
@@ -62,6 +63,7 @@ type TestCase struct {
 	ID         string           `json:"@id,omitempty"`     // JSONLD ID Reference
 	Type       []string         `json:"@type,omitempty"`   // JSONLD type array
 	Name       string           `json:"name,omitempty"`    // Name
+	Detail     string           `json:"detail,omitempty"`  // Detailed description of the test case
 	Purpose    string           `json:"purpose,omitempty"` // Purpose of the testcase in simple words
 	Input      Input            `json:"input,omitempty"`   // Input Object
 	Context    Context          `json:"context,omitempty"` // Local Context Object
