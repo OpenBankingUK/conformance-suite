@@ -34,7 +34,7 @@ export default {
     }
 
     const {
-      id, pass, metrics, fail, detail
+      id, pass, metrics, fail, detail,
     } = update.test;
 
     testCase.id = id;
