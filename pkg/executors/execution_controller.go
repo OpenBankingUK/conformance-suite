@@ -310,10 +310,24 @@ func (r *TestCaseRunner) executeTest(tc model.TestCase, ruleCtx *model.Context, 
 	return results.NewTestCaseResult(tc.ID, result, metrics, []error{}, tc.Input.Endpoint, tc.APIName, tc.APIVersion)
 }
 
+type DetailError struct {
+	EndpointResponse string `json:"endpointResponse"`
+	TestCaseMessage string `json:"testCaseMessage"`
+}
+
+func (de DetailError) Error() string {
+	j, _ := json.Marshal(de)
+
+	return string(j)
+}
+
 func detailedErrors(errs []error, resp *resty.Response) []error {
 	var detailedErrors []error
 	for _, err := range errs {
-		detailedError := errors.WithMessagef(err, "Response: (%.250s)", resp.String())
+		detailedError := DetailError{
+			EndpointResponse: string(resp.Body()),
+			TestCaseMessage: err.Error(),
+		}
 		detailedErrors = append(detailedErrors, detailedError)
 	}
 	return detailedErrors
