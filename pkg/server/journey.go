@@ -43,7 +43,7 @@ type Journey interface {
 	DiscoveryModel() (discovery.Model, error)
 	SetManifests([]manifest.Scripts)
 	Manifests() ([]manifest.Scripts, error)
-	SetFilteredManifests(manifest.Scripts) error
+	SetFilteredManifests(manifest.Scripts)
 	FilteredManifests() (manifest.Scripts, error)
 	TestCases() (generation.TestCasesRun, error)
 	CollectToken(code, state, scope string) error
@@ -148,9 +148,8 @@ func (wj *journey) Manifests() ([]manifest.Scripts, error) {
 	return wj.manifests, nil
 }
 
-func (wj *journey) SetFilteredManifests(fmfs manifest.Scripts) error {
+func (wj *journey) SetFilteredManifests(fmfs manifest.Scripts) {
 	wj.filteredManifests = fmfs
-	return nil
 }
 
 func (wj *journey) FilteredManifests() (manifest.Scripts, error) {

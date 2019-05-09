@@ -196,17 +196,8 @@ func (_m *MockJourney) SetDiscoveryModel(discoveryModel *discovery.Model) (disco
 }
 
 // SetFilteredManifests provides a mock function with given fields: _a0
-func (_m *MockJourney) SetFilteredManifests(_a0 manifest.Scripts) error {
-	ret := _m.Called(_a0)
-
-	var r0 error
-	if rf, ok := ret.Get(0).(func(manifest.Scripts) error); ok {
-		r0 = rf(_a0)
-	} else {
-		r0 = ret.Error(0)
-	}
-
-	return r0
+func (_m *MockJourney) SetFilteredManifests(_a0 manifest.Scripts) {
+	_m.Called(_a0)
 }
 
 // SetManifests provides a mock function with given fields: _a0
