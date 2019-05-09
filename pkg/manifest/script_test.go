@@ -21,8 +21,8 @@ func TestGenerateTestCases(t *testing.T) {
 	}
 	specType, err := GetSpecType(apiSpec.SchemaVersion)
 	assert.Nil(t, err)
-	scripts, _, err := LoadGenerationResources(specType)
-	tests, _, err := GenerateTestCases(scripts, apiSpec, "http://mybaseurl", &model.Context{}, readDiscovery(), schema.NewNullValidator())
+	scripts, _, err := LoadGenerationResources(specType, manifestPath)
+	tests, _, err := GenerateTestCases(scripts, apiSpec, "http://mybaseurl", &model.Context{}, readDiscovery(), manifestPath, schema.NewNullValidator())
 	assert.Nil(t, err)
 
 	perms, err := getAccountPermissions(tests)
@@ -44,8 +44,12 @@ func TestPaymentPermissions(t *testing.T) {
 	}
 	specType, err := GetSpecType(apiSpec.SchemaVersion)
 	assert.Nil(t, err)
-	scripts, _, err := LoadGenerationResources(specType)
-	tests, _, err := GenerateTestCases(scripts, apiSpec, "http://mybaseurl", &model.Context{}, readDiscovery(), schema.NewNullValidator())
+	scripts, _, err := LoadGenerationResources(specType, manifestPath)
+	if err != nil {
+		fmt.Println("Error on loadGenerationResources")
+		return
+	}
+	tests, _, err := GenerateTestCases(scripts, apiSpec, "http://mybaseurl", &model.Context{}, readDiscovery(), manifestPath, schema.NewNullValidator())
 	fmt.Printf("we have %d tests\n", len(tests))
 	for _, v := range tests {
 		dumpJSON(v)
@@ -112,12 +116,12 @@ func TestPermissionFiteringAccounts(t *testing.T) {
 	apiSpec := discovery.ModelAPISpecification{
 		SchemaVersion: accountSwaggerLocation31,
 	}
-	scripts, _, err := LoadGenerationResources("accounts")
+	scripts, _, err := LoadGenerationResources("accounts", manifestPath)
 	if err != nil {
 		fmt.Println("Error on loadGenerationResources")
 		return
 	}
-	tests, _, err := GenerateTestCases(scripts, apiSpec, "http://mybaseurl", &ctx, endpoints, schema.NewNullValidator())
+	tests, _, err := GenerateTestCases(scripts, apiSpec, "http://mybaseurl", &ctx, endpoints, manifestPath, schema.NewNullValidator())
 	assert.Nil(t, err)
 	fmt.Printf("%d tests loaded", len(tests))
 
@@ -224,17 +228,17 @@ func TestPaymentTestCaseCreation(t *testing.T) {
 		"thisCurrency":                        "GBP",
 		"creditorScheme":                      "default",
 	}
-
 	apiSpec := discovery.ModelAPISpecification{
 		SchemaVersion: accountSwaggerLocation31,
 	}
 
 	specType, err := GetSpecType(apiSpec.SchemaVersion)
 	assert.Nil(t, err)
-	scripts, _, err := LoadGenerationResources(specType)
+	scripts, _, err := LoadGenerationResources(specType, manifestPath)
 	assert.Nil(t, err)
 
-	tests, _, err := GenerateTestCases(scripts, apiSpec, "http://mybaseurl", ctx, readDiscovery(), schema.NewNullValidator())
+	tests, _, err := GenerateTestCases(scripts, apiSpec, "http://mybaseurl", ctx, readDiscovery(), manifestPath, schema.NewNullValidator())
+
 	assert.Nil(t, err)
 	fmt.Printf("we have %d tests\n", len(tests))
 	for _, v := range tests {

@@ -1,20 +1,33 @@
 package executors
 
 import (
+	"crypto/rsa"
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"strings"
 	"time"
 
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/authentication"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/generation"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/manifest"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
 
+	"github.com/dgrijalva/jwt-go"
+	"github.com/google/uuid"
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 	resty "gopkg.in/resty.v1"
 )
 
-var consentChannelTimeout = 30
+// errors
+var (
+	errTokenEndpointMethodUnsupported = errors.New("token_endpoint_auth_method unsupported")
+)
+
+var (
+	consentChannelTimeout = 30
+)
 
 // GetPsuConsent -
 func GetPsuConsent(definition RunDefinition, ctx *model.Context, runTests *generation.TestCasesRun, permissions map[string][]manifest.RequiredTokens) (TokenConsentIDs, map[string]string, error) {
@@ -70,14 +83,12 @@ func getSpecForSpecType(stype string, runTests *generation.TestCasesRun) ([]mode
 }
 
 // getAccountConsents - get required tokens
-func getAccountConsents(consentRequirements []model.SpecConsentRequirements, definition RunDefinition, permissions []manifest.RequiredTokens, ctx *model.Context,
-) (TokenConsentIDs, map[string]string, error) {
-
+func getAccountConsents(consentRequirements []model.SpecConsentRequirements, definition RunDefinition, permissions []manifest.RequiredTokens, ctx *model.Context) (TokenConsentIDs, map[string]string, error) {
 	consentIDChannel := make(chan TokenConsentIDItem, 100)
 	logger := logrus.StandardLogger().WithField("module", "getAccountConsents")
 	logger.Tracef("getAccountConsents")
 
-	tokenParameters := make(map[string]string, 0)
+	tokenParameters := map[string]string{}
 
 	//requiredTokens, err := manifest.GetRequiredTokensFromTests(spec.TestCases, "accounts")
 	requiredTokens := permissions
@@ -213,19 +224,20 @@ type ExchangeParameters struct {
 
 // ExchangeCodeForAccessToken - runs a testcase to perform this operation
 func ExchangeCodeForAccessToken(tokenName, code, scope string, definition RunDefinition, ctx *model.Context) (accesstoken string, err error) {
-	logger := logrus.StandardLogger().WithField("module", "ExchangeCodeForAccessToken")
-	logger.WithFields(logrus.Fields{
-		"code":      code,
+	logger := logrus.StandardLogger().WithFields(logrus.Fields{
+		"module":    "ExchangeCodeForAccessToken",
 		"tokenName": tokenName,
-	}).Debug("Exchanging code for token")
+		"code":      code,
+		"scope":     scope,
+	})
+
 	grantToken, err := exchangeCodeForToken(code, scope, ctx, logger)
 	if err != nil {
 		logger.WithFields(logrus.Fields{
-			"code":      code,
-			"tokenName": tokenName,
-			"err":       err,
-		}).Error("Exchanging code for token failed")
+			"err": err,
+		}).Error("exchangeCodeForToken failed")
 	}
+
 	return grantToken.AccessToken, err
 }
 
@@ -237,7 +249,7 @@ type grantToken struct {
 	IDToken     string `json:"id_token,omitempty"`
 }
 
-func exchangeCodeForToken(code string, scope string, ctx *model.Context, logger *logrus.Entry) (grantToken, error) {
+func exchangeCodeForToken(code string, scope string, ctx *model.Context, logger *logrus.Entry) (*grantToken, error) {
 	logger = logger.WithFields(logrus.Fields{
 		"function": "exchangeCodeForToken",
 		"code":     code,
@@ -245,80 +257,171 @@ func exchangeCodeForToken(code string, scope string, ctx *model.Context, logger 
 	})
 	ctx.DumpContext()
 
-	basicAuth, err := ctx.GetString("basic_authentication")
-	if err != nil {
-		return grantToken{}, errors.New("cannot get basic authentication for code")
-	}
-	tokenEndpoint, err := ctx.GetString("token_endpoint")
-	if err != nil {
-		return grantToken{}, errors.New("cannot get token_endpoint for code exchange")
-	}
-	redirectURL, err := ctx.GetString("redirect_url")
-	if err != nil {
-		return grantToken{}, errors.New("Cannot get redirectURL for code exchange")
-	}
 	if scope == "" {
 		scope = "accounts" // lets default to a scope of accounts
 	}
 
+	basicAuth, err := ctx.GetString("basic_authentication")
+	if err != nil {
+		return nil, errors.New("cannot get basic authentication for code")
+	}
+	tokenEndpoint, err := ctx.GetString("token_endpoint")
+	if err != nil {
+		return nil, errors.New("cannot get token_endpoint for code exchange")
+	}
+	redirectURI, err := ctx.GetString("redirect_url")
+	if err != nil {
+		return nil, errors.New("Cannot get redirect_url for code exchange")
+	}
 	clientID, err := ctx.GetString("client_id")
 	if err != nil {
-		return grantToken{}, errors.New("cannot get clientid for exchange code")
+		return nil, errors.New("cannot get client_id for exchange code")
+	}
+	alg, err := ctx.GetString("requestObjectSigningAlg")
+	if err != nil {
+		return nil, errors.New("cannot get requestObjectSigningAlg for exchange code")
+	}
+	privKey, err := ctx.GetString("signingPrivate")
+	if err != nil {
+		return nil, errors.New("input, couldn't find `signingPrivate` in context")
+	}
+	pubKey, err := ctx.GetString("signingPublic")
+	if err != nil {
+		return nil, errors.New("input, couldn't find `signingPublic` in context")
+	}
+	cert, err := authentication.NewCertificate(pubKey, privKey)
+	if err != nil {
+		return nil, errors.Wrap(err, "input, couldn't create `certificate` from pub/priv keys")
 	}
 
 	// Check for MTLS vs client basic authentication
 	authMethod, err := ctx.GetString("token_endpoint_auth_method")
 	if err != nil {
-		authMethod = "client_secret_basic"
+		authMethod = authentication.ClientSecretBasic
 	}
+
 	var resp *resty.Response
-	if authMethod == "client_secret_basic" {
+	var errResponse error
+	switch authMethod {
+	case authentication.ClientSecretBasic:
 		resp, err = resty.R().
 			SetHeader("content-type", "application/x-www-form-urlencoded").
 			SetHeader("accept", "*/*").
 			SetHeader("authorization", "Basic "+basicAuth).
 			SetFormData(map[string]string{
-				"grant_type":   "authorization_code",
-				"scope":        scope, // accounts or payments currently
-				"code":         code,
-				"redirect_uri": redirectURL,
+				authentication.GrantType: authentication.GrantTypeAuthorizationCode,
+				"scope":                  scope, // accounts or payments currently
+				"code":                   code,
+				"redirect_uri":           redirectURI,
 			}).
 			Post(tokenEndpoint)
-
-	}
-	if authMethod == "tls_client_auth" {
+	case authentication.TlsClientAuth:
 		resp, err = resty.R().
 			SetHeader("content-type", "application/x-www-form-urlencoded").
 			SetHeader("accept", "*/*").
 			SetFormData(map[string]string{
-				"grant_type":   "authorization_code",
-				"scope":        scope, // accounts or payments currently
-				"code":         code,
-				"redirect_uri": redirectURL,
-				"client_id":    clientID,
+				authentication.GrantType: authentication.GrantTypeAuthorizationCode,
+				"scope":                  scope, // accounts or payments currently
+				"code":                   code,
+				"redirect_uri":           redirectURI,
+				"client_id":              clientID,
 			}).
 			Post(tokenEndpoint)
+	case authentication.PrivateKeyJwt:
+		now := time.Now()
+		iat := now.Unix()
+		exp := now.Add(30 * time.Minute).Unix()
+		jti := uuid.New().String()
+		// https://openid.net/specs/openid-connect-core-1_0.html#ClientAuthentication
+		// iss
+		// REQUIRED. Issuer. This MUST contain the client_id of the OAuth Client.
+		// sub
+		// REQUIRED. Subject. This MUST contain the client_id of the OAuth Client.
+		// aud
+		// REQUIRED. Audience. The aud (audience) Claim. Value that identifies the Authorization Server as an intended audience. The Authorization Server MUST verify that it is an intended audience for the token. The Audience SHOULD be the URL of the Authorization Server's Token Endpoint.
+		claims := jwt.MapClaims{
+			"iss": clientID,
+			"sub": clientID,
+			"aud": tokenEndpoint,
+			"iat": iat,
+			"exp": exp,
+			"jti": jti,
+		}
+
+		var signingMethod jwt.SigningMethod
+		switch strings.ToUpper(alg) {
+		case "PS256":
+			// Workaround
+			// https://github.com/dgrijalva/jwt-go/issues/285
+			fixedSigningMethodPS256 := &jwt.SigningMethodRSAPSS{
+				SigningMethodRSA: jwt.SigningMethodPS256.SigningMethodRSA,
+				Options: &rsa.PSSOptions{
+					SaltLength: rsa.PSSSaltLengthEqualsHash,
+				},
+			}
+			signingMethod = fixedSigningMethodPS256
+		case "RS256":
+			signingMethod = jwt.SigningMethodRS256
+		case "NONE":
+			fallthrough
+		default:
+			return nil, errors.Errorf("unsupported algorithm: %q", alg)
+		}
+
+		token := jwt.NewWithClaims(signingMethod, claims) // create new token
+
+		modulus := cert.PublicKey().N.Bytes()
+		modulusBase64 := base64.RawURLEncoding.EncodeToString(modulus)
+		kid, err := authentication.CalcKid(modulusBase64)
+		if err != nil {
+			return nil, errors.Wrap(err, "could not calculate kid")
+		}
+		token.Header["kid"] = kid
+
+		clientAssertion, err := token.SignedString(cert.PrivateKey()) // sign the token - get as encoded string
+		if err != nil {
+			return nil, errors.Wrap(err, "could not generate client_assertion")
+		}
+
+		resp, errResponse = resty.R().
+			SetHeader("content-type", "application/x-www-form-urlencoded").
+			SetHeader("accept", "*/*").
+			SetFormData(map[string]string{
+				authentication.GrantType:           authentication.GrantTypeAuthorizationCode,
+				"scope":                            scope,
+				"code":                             code,
+				"redirect_uri":                     redirectURI,
+				authentication.ClientAssertionType: authentication.ClientAssertionTypeValue,
+				authentication.ClientAssertion:     clientAssertion,
+			}).
+			Post(tokenEndpoint)
+	default:
+		logger.WithFields(logrus.Fields{
+			"authMethod": authMethod,
+		}).Error(errTokenEndpointMethodUnsupported)
+		return nil, errTokenEndpointMethodUnsupported
 	}
 
 	logger.WithFields(logrus.Fields{
 		"tokenEndpoint": tokenEndpoint,
 	}).Debug("Attempting POST")
 
-	if err != nil {
+	if errResponse != nil {
 		logger.WithFields(logrus.Fields{
 			"tokenEndpoint": tokenEndpoint,
 			"err":           err,
 		}).Debug("Error accessing exchange code")
-		return grantToken{}, err
-	}
-	if resp.StatusCode() != 200 {
-		return grantToken{}, fmt.Errorf("bad status code %d from exchange token %s/token", resp.StatusCode(), tokenEndpoint)
+		return nil, err
 	}
 
-	var t grantToken
-	err = json.Unmarshal(resp.Body(), &t)
+	if resp.StatusCode() != 200 {
+		return nil, fmt.Errorf("bad status code %d from exchange token %q", resp.StatusCode(), tokenEndpoint)
+	}
+
+	grantToken := &grantToken{}
+	err = json.Unmarshal(resp.Body(), grantToken)
 	logger.WithFields(logrus.Fields{
-		"t": fmt.Sprintf("%#v", t),
+		"grantToken": grantToken,
 	}).Debugf("OK")
-	return t, err
+	return grantToken, err
 }

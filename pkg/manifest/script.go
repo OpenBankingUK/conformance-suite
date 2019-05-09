@@ -3,9 +3,10 @@ package manifest
 import (
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/schema"
 	"encoding/json"
-	"errors"
 	"fmt"
+	"github.com/pkg/errors"
 	"io/ioutil"
+	"os"
 	"regexp"
 	"sort"
 	"strings"
@@ -89,7 +90,7 @@ func (cj *ConsentJobs) Get(testid string) (model.TestCase, bool) {
 }
 
 // GenerateTestCases examines a manifest file, asserts file and resources definition, then builds the associated test cases
-func GenerateTestCases(scripts Scripts, spec discovery.ModelAPISpecification, baseurl string, ctx *model.Context, endpoints []discovery.ModelEndpoint, validator schema.Validator) ([]model.TestCase, Scripts, error) {
+func GenerateTestCases(scripts Scripts, spec discovery.ModelAPISpecification, baseurl string, ctx *model.Context, endpoints []discovery.ModelEndpoint, manifestPath string, validator schema.Validator) ([]model.TestCase, Scripts, error) {
 	logger := logrus.WithFields(logrus.Fields{
 		"function": "GenerateTestCases",
 	})
@@ -100,7 +101,7 @@ func GenerateTestCases(scripts Scripts, spec discovery.ModelAPISpecification, ba
 
 	}
 	logrus.Debug("GenerateManifestTestCases for spec type:" + specType)
-	_, refs, err := LoadGenerationResources(specType)
+	scripts, refs, err := LoadGenerationResources(specType, manifestPath)
 	if err != nil {
 		logger.WithFields(logrus.Fields{
 			"err": err,
@@ -212,6 +213,7 @@ func testCaseBuilder(s Script, refs map[string]Reference, ctx *model.Context, co
 	tc := model.MakeTestCase()
 	tc.ID = s.ID
 	tc.Name = s.Description
+	tc.Detail = s.Detail
 	tc.APIName = apiSpec.Name
 	tc.APIVersion = apiSpec.Version
 	tc.Validator = validator
@@ -299,38 +301,22 @@ func buildInputSection(s Script, i *model.Input) {
 	i.RequestBody = s.Body
 }
 
-func LoadGenerationResources(specType string) (Scripts, References, error) {
+func LoadGenerationResources(specType, manifestPath string) (Scripts, References, error) {
 	assertions, err := loadAssertions()
 	if err != nil {
 		return Scripts{}, References{}, err
 	}
 	switch specType {
 	case "accounts":
-		sc, err := loadTransactions31()
+		sc, err := loadScripts(manifestPath)
 		return sc, assertions, err
 	case "payments":
-		pay, err := loadPayments31()
+		pay, err := loadScripts(manifestPath)
 		return pay, assertions, err
 	case "cbpii":
 	case "notifications":
 	}
 	return Scripts{}, References{}, errors.New("loadGenerationResources: invalid spec type")
-}
-
-func loadPayments31() (Scripts, error) {
-	sc, err := loadScripts("manifests/ob_3.1_payment_fca.json")
-	if err != nil {
-		sc, err = loadScripts("../../manifests/ob_3.1_payment_fca.json")
-	}
-	return sc, err
-}
-
-func loadTransactions31() (Scripts, error) {
-	sc, err := loadScripts("manifests/ob_3.1_accounts_transactions_fca.json")
-	if err != nil {
-		sc, err = loadScripts("../../manifests/ob_3.1_accounts_transactions_fca.json")
-	}
-	return sc, err
 }
 
 func loadAssertions() (References, error) {
@@ -370,12 +356,32 @@ func jsonString(i interface{}) string {
 }
 
 func loadScripts(filename string) (Scripts, error) {
-	plan, err := ioutil.ReadFile(filename)
-	if err != nil {
-		return Scripts{}, err
+	const schemeHttps = "https://"
+	const schemeHttp = "http://"
+	const schemeFile = "file://"
+
+	var scrBytes []byte
+	if strings.HasPrefix(strings.ToLower(filename), schemeHttps) || strings.HasPrefix(strings.ToLower(filename), schemeHttp) {
+		return Scripts{}, errors.New("https:// and http:// download of scripts not yet supported")
+	} else if strings.HasPrefix(strings.ToLower(filename), schemeFile) {
+		fp := strings.TrimPrefix(filename, schemeFile)
+		sb, err := ioutil.ReadFile(fp)
+		if err != nil && os.IsNotExist(err) {
+			sb, err = ioutil.ReadFile(fmt.Sprintf("../../%s", fp))
+			if err != nil {
+				return Scripts{}, errors.Wrap(err, "ioutil.ReadFile()")
+			}
+		} else if err != nil {
+			return Scripts{}, errors.Wrap(err, "ioutil.ReadFile()")
+		}
+		scrBytes = sb
+
+	} else {
+		return Scripts{}, errors.New("unable to load scripts please specify scheme (file:// or https://)")
 	}
+
 	var m Scripts
-	err = json.Unmarshal(plan, &m)
+	err := json.Unmarshal(scrBytes, &m)
 	if err != nil {
 		return Scripts{}, err
 	}

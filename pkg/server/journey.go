@@ -482,6 +482,7 @@ const (
 )
 
 func (wj *journey) configParametersToJourneyContext() error {
+	wj.config.apiVersion = "v3.1"
 	wj.context.PutString(ctxConstClientID, wj.config.clientID)
 	wj.context.PutString(ctxConstClientSecret, wj.config.clientSecret)
 	wj.context.PutString(ctxConstTokenEndpoint, wj.config.tokenEndpoint)
@@ -491,7 +492,6 @@ func (wj *journey) configParametersToJourneyContext() error {
 	wj.context.PutString(ctxConstRedirectURL, wj.config.redirectURL)
 	wj.context.PutString(ctxConstAuthorisationEndpoint, wj.config.authorizationEndpoint)
 	wj.context.PutString(ctxConstResourceBaseURL, wj.config.resourceBaseURL)
-	wj.config.apiVersion = "v3.1"
 	wj.context.PutString(ctxAPIVersion, wj.config.apiVersion)
 	wj.context.PutString(ctxConsentedAccountID, wj.config.resourceIDs.AccountIDs[0].AccountID)
 	wj.context.PutString(ctxStatementID, wj.config.resourceIDs.StatementIDs[0].StatementID)
