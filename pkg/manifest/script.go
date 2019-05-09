@@ -3,9 +3,10 @@ package manifest
 import (
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/schema"
 	"encoding/json"
-	"errors"
 	"fmt"
+	"github.com/pkg/errors"
 	"io/ioutil"
+	"os"
 	"regexp"
 	"sort"
 	"strings"
@@ -89,7 +90,7 @@ func (cj *ConsentJobs) Get(testid string) (model.TestCase, bool) {
 }
 
 // GenerateTestCases examines a manifest file, asserts file and resources definition, then builds the associated test cases
-func GenerateTestCases(spec discovery.ModelAPISpecification, baseurl string, ctx *model.Context, endpoints []discovery.ModelEndpoint, validator schema.Validator) ([]model.TestCase, error) {
+func GenerateTestCases(spec discovery.ModelAPISpecification, baseurl string, ctx *model.Context, endpoints []discovery.ModelEndpoint, manifestPath string, validator schema.Validator) ([]model.TestCase, error) {
 	logger := logrus.WithFields(logrus.Fields{
 		"function": "GenerateTestCases",
 	})
@@ -99,7 +100,7 @@ func GenerateTestCases(spec discovery.ModelAPISpecification, baseurl string, ctx
 		return nil, errors.New("unknown specification " + spec.SchemaVersion)
 	}
 	logrus.Debug("GenerateManifestTestCases for spec type:" + specType)
-	scripts, refs, err := loadGenerationResources(specType)
+	scripts, refs, err := loadGenerationResources(specType, manifestPath)
 	if err != nil {
 		logger.WithFields(logrus.Fields{
 			"err": err,
@@ -299,38 +300,22 @@ func buildInputSection(s Script, i *model.Input) {
 	i.RequestBody = s.Body
 }
 
-func loadGenerationResources(specType string) (Scripts, References, error) {
+func loadGenerationResources(specType, manifestPath string) (Scripts, References, error) {
 	assertions, err := loadAssertions()
 	if err != nil {
 		return Scripts{}, References{}, err
 	}
 	switch specType {
 	case "accounts":
-		sc, err := loadTransactions31()
+		sc, err := loadScripts(manifestPath)
 		return sc, assertions, err
 	case "payments":
-		pay, err := loadPayments31()
+		pay, err := loadScripts(manifestPath)
 		return pay, assertions, err
 	case "cbpii":
 	case "notifications":
 	}
 	return Scripts{}, References{}, errors.New("loadGenerationResources: invalid spec type")
-}
-
-func loadPayments31() (Scripts, error) {
-	sc, err := loadScripts("manifests/ob_3.1_payment_fca.json")
-	if err != nil {
-		sc, err = loadScripts("../../manifests/ob_3.1_payment_fca.json")
-	}
-	return sc, err
-}
-
-func loadTransactions31() (Scripts, error) {
-	sc, err := loadScripts("manifests/ob_3.1_accounts_transactions_fca.json")
-	if err != nil {
-		sc, err = loadScripts("../../manifests/ob_3.1_accounts_transactions_fca.json")
-	}
-	return sc, err
 }
 
 func loadAssertions() (References, error) {
@@ -370,12 +355,32 @@ func jsonString(i interface{}) string {
 }
 
 func loadScripts(filename string) (Scripts, error) {
-	plan, err := ioutil.ReadFile(filename)
-	if err != nil {
-		return Scripts{}, err
+	const schemeHttps = "https://"
+	const schemeHttp = "http://"
+	const schemeFile = "file://"
+
+	var scrBytes []byte
+	if strings.HasPrefix(strings.ToLower(filename), schemeHttps) || strings.HasPrefix(strings.ToLower(filename), schemeHttp) {
+		return Scripts{}, errors.New("https:// and http:// download of scripts not yet supported")
+	} else if strings.HasPrefix(strings.ToLower(filename), schemeFile) {
+		fp := strings.TrimPrefix(filename, schemeFile)
+		sb, err := ioutil.ReadFile(fp)
+		if err != nil && os.IsNotExist(err) {
+			sb, err = ioutil.ReadFile(fmt.Sprintf("../../%s", fp))
+			if err != nil {
+				return Scripts{}, errors.Wrap(err, "ioutil.ReadFile()")
+			}
+		} else if err != nil {
+			return Scripts{}, errors.Wrap(err, "ioutil.ReadFile()")
+		}
+		scrBytes = sb
+
+	} else {
+		return Scripts{}, errors.New("unable to load scripts please specify scheme (file:// or https://)")
 	}
+
 	var m Scripts
-	err = json.Unmarshal(plan, &m)
+	err := json.Unmarshal(scrBytes, &m)
 	if err != nil {
 		return Scripts{}, err
 	}
