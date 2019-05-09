@@ -4,7 +4,7 @@ const fetchWithTimeout = (url, timeout, options) => Promise.race([
   new Promise((_, reject) => setTimeout(() => reject(new Error(`Request timed out: ${url} ${JSON.stringify(options)}`)), timeout)),
 ]);
 
-const FETCH_TIMEOUT = 30000; // 30 seconds
+const FETCH_TIMEOUT = 90000; // 90 seconds
 
 const doRequest = async (path, setShowLoading, method) => {
   if (setShowLoading) {
