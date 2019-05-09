@@ -78,6 +78,7 @@ func (e *Executor) setupTLSCertificate(tlsCert tls.Certificate) error {
 		RootCAs:            caCertPool,
 		InsecureSkipVerify: true,
 		MinVersion:         tls.VersionSSL30,
+		Renegotiation:      tls.RenegotiateFreelyAsClient,
 		CipherSuites: []uint16{
 			tls.TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256, // not available by default however used by OB
 			tls.TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305,
