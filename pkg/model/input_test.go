@@ -459,26 +459,6 @@ func TestCertDNRetrieval(t *testing.T) {
 
 }
 
-func TestGenSig(t *testing.T) {
-	transportCert, err := tls.LoadX509KeyPair("../../../certs/sig-xRWcKt4rSGqsIhqJ3xKC6DOjblY.pem", "../../../certs/4XQsc1dvWnggAqjZLV3sH2-sign.key")
-	if err != nil {
-		t.Logf("cannot get certs %s", err.Error())
-		return
-	}
-	fmt.Println("Good to go!")
-	x509 := transportCert.Leaf
-
-	subject := x509.Subject
-	fmt.Printf("subject %#v\n", subject)
-	c := subject.Country
-	o := subject.Organization
-	ou := subject.OrganizationalUnit
-	cn := subject.CommonName
-	dn := fmt.Sprintf("C=%s, O=%s, OU=%s, CN=%s", c, o, ou, cn)
-	fmt.Printf("DN is :%s\n" + dn)
-
-}
-
 func TestReadCerts(t *testing.T) {
 	certPEMBlock, err := ioutil.ReadFile("../../../certs/sig-xRWcKt4rSGqsIhqJ3xKC6DOjblY.pem")
 	if err != nil {
