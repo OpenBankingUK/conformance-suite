@@ -91,7 +91,7 @@ func (g generator) GenerateManifestTests(log *logrus.Entry, config GeneratorConf
 	for _, item := range discovery.DiscoveryItems {
 		specType, err := manifest.GetSpecType(item.APISpecification.SchemaVersion)
 		if err != nil {
-			log.Warnf("failed to determine spec type for: `%s`	", item.APISpecification.SchemaVersion)
+			log.Warnf("failed to determine spec type for: `%s`", item.APISpecification.SchemaVersion)
 			continue
 		}
 		validator, err := schema.NewSwaggerOBSpecValidator(item.APISpecification.Name, item.APISpecification.Version)
