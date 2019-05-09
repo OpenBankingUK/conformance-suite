@@ -41,7 +41,7 @@ var (
 type Journey interface {
 	SetDiscoveryModel(discoveryModel *discovery.Model) (discovery.ValidationFailures, error)
 	DiscoveryModel() (discovery.Model, error)
-	SetManifests([]manifest.Scripts) error
+	SetManifests([]manifest.Scripts)
 	Manifests() ([]manifest.Scripts, error)
 	SetFilteredManifests(manifest.Scripts) error
 	FilteredManifests() (manifest.Scripts, error)
@@ -135,14 +135,13 @@ func (wj *journey) DiscoveryModel() (discovery.Model, error) {
 	return *discoveryModel, nil
 }
 
-func (wj *journey) SetManifests(mfs []manifest.Scripts) error {
+func (wj *journey) SetManifests(mfs []manifest.Scripts) {
 	if mfs == nil {
 		wj.manifests = make([]manifest.Scripts, 0)
-		return nil
+		return
 	}
 
 	wj.manifests = mfs
-	return nil
 }
 
 func (wj *journey) Manifests() ([]manifest.Scripts, error) {
