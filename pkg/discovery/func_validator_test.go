@@ -278,6 +278,10 @@ func TestValidate(t *testing.T) {
 					Key:   "DiscoveryModel.DiscoveryItems[0].APISpecification.SchemaVersion",
 					Error: "Field 'DiscoveryModel.DiscoveryItems[0].APISpecification.SchemaVersion' is required",
 				},
+				{
+					Key:   "DiscoveryModel.DiscoveryItems[0].APISpecification.Manifest",
+					Error: "Field 'DiscoveryModel.DiscoveryItems[0].APISpecification.Manifest' is required",
+				},
 			}})
 	})
 
@@ -428,17 +432,13 @@ func TestValidate(t *testing.T) {
 		})
 	})
 
-	t.Run("Validation should pass when `manifest` is empty", func(t *testing.T) {
+	t.Run("Validation should fail when `manifest` is empty", func(t *testing.T) {
 		testValidateFailures(t, conditionalityCheckerMock{}, &invalidTest{
 			discoveryJSON: discoveryStub("manifest", ""),
 			failures: []ValidationFailure{
 				{
-					Key:   "DiscoveryModel.DiscoveryItems[0].Endpoints[0]",
-					Error: "Invalid endpoint Method='POST', Path='/account-access-consents'",
-				},
-				{
-					Key:   "DiscoveryModel.DiscoveryItems[0].Endpoints[1]",
-					Error: "Invalid endpoint Method='GET', Path='/accounts/{AccountId}/balances'",
+					Key:   "DiscoveryModel.DiscoveryItems[0].APISpecification.Manifest",
+					Error: "Field 'DiscoveryModel.DiscoveryItems[0].APISpecification.Manifest' is required",
 				},
 			},
 		})
