@@ -125,7 +125,6 @@ func TestPermissionFiteringAccounts(t *testing.T) {
 	assert.Nil(t, err)
 	fmt.Printf("%d tests loaded", len(tests))
 
-
 	filteredScripts, err := FilterTestsBasedOnDiscoveryEndpointsPlayground(scripts, endpoints)
 	if err != nil {
 

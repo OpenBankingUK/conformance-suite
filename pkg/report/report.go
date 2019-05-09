@@ -28,7 +28,7 @@ type Report struct {
 	CertifiedBy      CertifiedBy        `json:"certifiedBy"`              // The certifier of the report.
 	SignatureChain   *[]SignatureChain  `json:"signatureChain,omitempty"` // When Add digital signature is set this contains the signature chain.
 	Discovery        discovery.Model    `json:"-"`                        // Original used discovery model
-	Manifests      []manifest.Scripts `json:"-"`                        // Manifests used during the tests
+	Manifests        []manifest.Scripts `json:"-"`                        // Manifests used during the tests
 	APISpecification []APISpecification `json:"apiSpecification"`         // API and version tested, along with test cases
 }
 
@@ -92,7 +92,7 @@ func NewReport(exportResults models.ExportResults) (Report, error) {
 		CertifiedBy:      certifiedBy,
 		SignatureChain:   &signatureChain,
 		Discovery:        exportResults.DiscoveryModel,
-		Manifests:      exportResults.Manifests,
+		Manifests:        exportResults.Manifests,
 		APISpecification: apiSpecs,
 	}, nil
 }

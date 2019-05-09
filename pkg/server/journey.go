@@ -44,7 +44,7 @@ type Journey interface {
 	SetManifests([]manifest.Scripts) error
 	Manifests() ([]manifest.Scripts, error)
 	SetFilteredManifests(manifest.Scripts) error
-	FilteredManifests()(manifest.Scripts, error)
+	FilteredManifests() (manifest.Scripts, error)
 	TestCases() (generation.TestCasesRun, error)
 	CollectToken(code, state, scope string) error
 	AllTokenCollected() bool
@@ -72,7 +72,7 @@ type journey struct {
 	events                events.Events
 	permissions           map[string][]manifest.RequiredTokens
 	manifests             []manifest.Scripts
-	filteredManifests	manifest.Scripts
+	filteredManifests     manifest.Scripts
 }
 
 // NewJourney creates an instance for a user journey
@@ -154,7 +154,7 @@ func (wj *journey) SetFilteredManifests(fmfs manifest.Scripts) error {
 	return nil
 }
 
-func (wj *journey) FilteredManifests()(manifest.Scripts, error) {
+func (wj *journey) FilteredManifests() (manifest.Scripts, error) {
 	return wj.filteredManifests, nil
 }
 

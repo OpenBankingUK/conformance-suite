@@ -20,7 +20,7 @@ func LoadScripts(filename string) (Scripts, error) {
 	path := strings.TrimPrefix(filename, "file://")
 	plan, err := ioutil.ReadFile(path)
 	if err != nil && os.IsNotExist(err) {
-		plan, err = ioutil.ReadFile("../../"+path)
+		plan, err = ioutil.ReadFile("../../" + path)
 	}
 	if err != nil {
 		return Scripts{}, err
