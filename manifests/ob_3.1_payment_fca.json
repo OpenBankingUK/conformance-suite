@@ -345,7 +345,6 @@
       ],
       "method": "get",
       "schemaCheck": false
-    }        
-
+    }
   ]
 }

@@ -44,7 +44,9 @@
           :id="statusIdSelector(row)"
           tag="h6"
           @click.stop="toggleError(row)"
-        >{{ row.value }}</b-badge>
+        >{{ row.value }} <i
+          v-if="row.value === 'FAILED'"
+          class="arrow down"/></b-badge>
       </template>
 
       <template
@@ -52,6 +54,7 @@
         slot-scope="row">
         <b-card>
           <b-card-text><strong>Test ID:</strong> {{ row.item.id }}</b-card-text>
+          <b-card-text><strong>Detail:</strong> {{ row.item.detail }}</b-card-text>
           <b-card-text><strong>Errors:</strong>
             <ol>
               <li

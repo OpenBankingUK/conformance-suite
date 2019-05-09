@@ -14,8 +14,7 @@ func TestOpenIdConfigWhenGetSuccessful(t *testing.T) {
 	mockResponse, err := ioutil.ReadFile("../server/testdata/openid-configuration-mock.json")
 	require.NoError(err)
 
-	mockedServer, mockedServerURL := test.HTTPServer(http.StatusOK,
-		string(mockResponse), nil)
+	mockedServer, mockedServerURL := test.HTTPServer(http.StatusOK, string(mockResponse), nil)
 	defer mockedServer.Close()
 
 	config, err := OpenIdConfig(mockedServerURL)

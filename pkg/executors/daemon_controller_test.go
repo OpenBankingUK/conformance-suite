@@ -73,7 +73,7 @@ func TestNewBufferedDaemonControllerAllResults(t *testing.T) {
 	require.Empty(controller.AllResults())
 
 	err := errors.New("some error")
-	result := results.NewTestCaseResult("123", true, results.NoMetrics, []error{err}, "endpoint", "api-name", "api-version")
+	result := results.NewTestCaseResult("123", true, results.NoMetrics, []error{err}, "endpoint", "api-name", "api-version", "detailed description")
 	controller.AddResult(result)
 
 	// channel contains event
