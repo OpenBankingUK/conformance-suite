@@ -36,6 +36,8 @@ Pull and run the latest (stable) tagged Docker image:
 
     > docker run --rm -it -p 8443:8443 "openbanking/conformance-suite:v1.1.6"
 
+[See Setup Guide](docs/setup-guide.md) 
+
 ### Prerequisites
 
 In order to run a container you'll need docker installed.
@@ -63,4 +65,4 @@ Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on our code of conduc
 
 * [Docker Conformance Tool](https://hub.docker.com/r/openbanking/conformance-suite/)
 * [Open Banking Developer Zone](https://openbanking.atlassian.net/wiki/spaces/DZ/overview)
-* [All Release Notes](docs/releases/)
+* [All Release Notes](docs/releases/releases.md)
