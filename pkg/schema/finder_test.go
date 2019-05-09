@@ -27,7 +27,7 @@ func TestFinder_Operation(t *testing.T) {
 
 	require.NoError(t, err)
 	assert.Len(t, operation.Responses.StatusCodeResponses, 10)
-	assert.Equal(t, "Create Account Access Consents", operation.Summary, )
+	assert.Equal(t, "Create Account Access Consents", operation.Summary)
 }
 
 func TestFinder_Response(t *testing.T) {

@@ -439,7 +439,7 @@ func filterTestsBasedOnDiscoveryEndpoints(scripts Scripts, endpoints []discovery
 	for k := range lookupMap {
 		for i, scr := range scripts.Scripts {
 			stripped := strings.Replace(scr.URI, "$", "", -1) // only works with a single character
-			if strings.Contains(stripped, "foobar") { //exceptions
+			if strings.Contains(stripped, "foobar") {         //exceptions
 				nofoobar := strings.Replace(stripped, "/foobar", "", -1) // only works with a single character
 				matched, err := regexp.MatchString(k, nofoobar)
 				if err != nil {
