@@ -212,6 +212,7 @@ func testCaseBuilder(s Script, refs map[string]Reference, ctx *model.Context, co
 	tc.ID = s.ID
 	tc.Name = s.Description
 	tc.Detail = s.Detail
+	tc.RefURI = s.RefURI
 	tc.APIName = apiSpec.Name
 	tc.APIVersion = apiSpec.Version
 	tc.Validator = validator

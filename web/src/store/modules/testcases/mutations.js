@@ -34,7 +34,7 @@ export default {
     }
 
     const {
-      id, pass, metrics, fail, detail,
+      id, pass, metrics, fail, detail, refURI,
     } = update.test;
 
     testCase.id = id;
@@ -44,6 +44,7 @@ export default {
     testCase.meta.metrics.responseSize = `${metrics.response_size.toLocaleString()}`;
     testCase.error = fail;
     testCase.detail = detail;
+    testCase.refURI = refURI;
 
     if (fail) {
       // Set the row variant, for alternate styling.
