@@ -56,8 +56,8 @@
           <b-card-text><strong>Test ID:</strong> {{ row.item.id }}</b-card-text>
           <b-card-text><strong>Ref URI:</strong> <a
             ref="noreferrer"
-            href="{{ row.item.refURI }}"
-            target="_blank">{{ row.item.refURI }}</a></b-card-text>
+            :href="row.item.refURI"
+            target="_blank"> {{ row.item.refURI }}</a></b-card-text>
           <b-card-text><strong>Detail:</strong> {{ row.item.detail }}</b-card-text>
           <b-card-text><strong>Errors:</strong> {{ row.item.error }}</b-card-text>
         </b-card>
