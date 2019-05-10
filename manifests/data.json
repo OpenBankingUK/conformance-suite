@@ -71,7 +71,7 @@
             "Frequency": "EvryDay",
             "FirstPaymentDateTime": "2020-10-01T13:14:25+00:00",
             "FirstPaymentAmount": {
-              "Amount": "10.00",
+              "Amount": "1.00",
               "Currency": "GBP"
             },
             "CreditorAccount": {
@@ -92,7 +92,7 @@
             "Frequency": "EvryDay",
             "FirstPaymentDateTime": "2020-10-01T13:14:25+00:00",
             "FirstPaymentAmount": {
-              "Amount": "10.00",
+              "Amount": "1.00",
               "Currency": "GBP"
             },
             "CreditorAccount": {
