@@ -132,10 +132,10 @@ func TestChainedTestCases(t *testing.T) {
 	manifest, err := loadManifest("testdata/passAccountId.json")
 	require.NoError(t, err)
 
-	rule := manifest.Rules[0]          // get the first rule
-	executor := &executor{}            // Allows rule testcase execution strategies to be dynamically added to rules
-	rulectx := Context{}               // create a context to hold the passed parameters
-	tc01 := rule.Tests[0][0]           // get the first testcase of the first rule
+	rule := manifest.Rules[0] // get the first rule
+	executor := &executor{}   // Allows rule testcase execution strategies to be dynamically added to rules
+	rulectx := Context{}      // create a context to hold the passed parameters
+	tc01 := rule.Tests[0][0]  // get the first testcase of the first rule
 	tc01.Validator = schema.NewNullValidator()
 	req, err := tc01.Prepare(&rulectx) // Prepare calls ApplyInput and ApplyContext on testcase
 	require.NoError(t, err)
@@ -145,7 +145,7 @@ func TestChainedTestCases(t *testing.T) {
 	assert.Nil(t, errs)
 	assert.True(t, result)
 
-	tc02 := rule.Tests[0][1]          // get the second testcase of the first rule
+	tc02 := rule.Tests[0][1] // get the second testcase of the first rule
 	tc02.Validator = schema.NewNullValidator()
 	req, err = tc02.Prepare(&rulectx) // Prepare
 	assert.NoError(t, err)

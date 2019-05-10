@@ -152,6 +152,7 @@ func (h runHandlers) processTestCasesCompleted(ws *websocket.Conn, logger *logru
 	}
 
 	wsEvent := newTestCasesCompletedWebSocketEvent(isCompleted)
+
 	logger.WithFields(logrus.Fields{
 		"wsEvent.Type": wsEvent.Type,
 		"isCompleted":  isCompleted,

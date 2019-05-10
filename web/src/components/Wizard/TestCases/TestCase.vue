@@ -55,7 +55,18 @@
         <b-card>
           <b-card-text><strong>Test ID:</strong> {{ row.item.id }}</b-card-text>
           <b-card-text><strong>Detail:</strong> {{ row.item.detail }}</b-card-text>
-          <b-card-text><strong>Errors:</strong> {{ row.item.error }}</b-card-text>
+          <b-card-text><strong>Errors:</strong>
+            <ol>
+              <li
+                v-for="error in row.item.error"
+                :key="error">
+                <ul>
+                  <li><strong>Test Case message:</strong> {{ JSON.parse(error).testCaseMessage }}</li>
+                  <li><strong>Endpoint response:</strong> {{ JSON.parse(error).endpointResponse }}</li>
+                </ul>
+              </li>
+            </ol>
+          </b-card-text>
         </b-card>
       </template>
     </b-table>
