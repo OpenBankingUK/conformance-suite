@@ -14,7 +14,7 @@ type MockGenerator struct {
 }
 
 // GenerateManifestTests provides a mock function with given fields: log, config, _a2, ctx
-func (_m *MockGenerator) GenerateManifestTests(log *logrus.Entry, config GeneratorConfig, _a2 discovery.ModelDiscovery, ctx *model.Context) (TestCasesRun, map[string][]manifest.RequiredTokens) {
+func (_m *MockGenerator) GenerateManifestTests(log *logrus.Entry, config GeneratorConfig, _a2 discovery.ModelDiscovery, ctx *model.Context) (TestCasesRun, manifest.Scripts, map[string][]manifest.RequiredTokens) {
 	ret := _m.Called(log, config, _a2, ctx)
 
 	var r0 TestCasesRun
@@ -24,14 +24,21 @@ func (_m *MockGenerator) GenerateManifestTests(log *logrus.Entry, config Generat
 		r0 = ret.Get(0).(TestCasesRun)
 	}
 
-	var r1 map[string][]manifest.RequiredTokens
-	if rf, ok := ret.Get(1).(func(*logrus.Entry, GeneratorConfig, discovery.ModelDiscovery, *model.Context) map[string][]manifest.RequiredTokens); ok {
+	var r1 manifest.Scripts
+	if rf, ok := ret.Get(1).(func(*logrus.Entry, GeneratorConfig, discovery.ModelDiscovery, *model.Context) manifest.Scripts); ok {
 		r1 = rf(log, config, _a2, ctx)
 	} else {
-		if ret.Get(1) != nil {
-			r1 = ret.Get(1).(map[string][]manifest.RequiredTokens)
+		r1 = ret.Get(1).(manifest.Scripts)
+	}
+
+	var r2 map[string][]manifest.RequiredTokens
+	if rf, ok := ret.Get(2).(func(*logrus.Entry, GeneratorConfig, discovery.ModelDiscovery, *model.Context) map[string][]manifest.RequiredTokens); ok {
+		r2 = rf(log, config, _a2, ctx)
+	} else {
+		if ret.Get(2) != nil {
+			r2 = ret.Get(2).(map[string][]manifest.RequiredTokens)
 		}
 	}
 
-	return r0, r1
+	return r0, r1, r2
 }

@@ -16,10 +16,17 @@ func TestPermx(t *testing.T) {
 	apiSpec := discovery.ModelAPISpecification{
 		SchemaVersion: accountSwaggerLocation31,
 	}
-	tests, err := GenerateTestCases(apiSpec, "http://mybaseurl", &model.Context{}, readDiscovery(), manifestPath, schema.NewNullValidator())
+
+	specType, err := GetSpecType(apiSpec.SchemaVersion)
+	scripts, _, err := LoadGenerationResources(specType, manifestPath)
 	assert.Nil(t, err)
+
+	tests, _, err := GenerateTestCases(scripts, apiSpec, "http://mybaseurl", &model.Context{}, readDiscovery(), manifestPath, schema.NewNullValidator())
+	assert.Nil(t, err)
+
 	testcasePermissions, err := getTestCasePermissions(tests)
 	assert.Nil(t, err)
+
 	requiredTokens, err := getRequiredTokens(testcasePermissions)
 	assert.Nil(t, err)
 	dumpJSON(requiredTokens)
@@ -29,12 +36,21 @@ func TestGetScriptConsentTokens(t *testing.T) {
 	apiSpec := discovery.ModelAPISpecification{
 		SchemaVersion: accountSwaggerLocation31,
 	}
-	tests, err := GenerateTestCases(apiSpec, "http://mybaseurl", &model.Context{}, readDiscovery(), manifestPath, schema.NewNullValidator())
+	specType, err := GetSpecType(apiSpec.SchemaVersion)
+	scripts, _, err := LoadGenerationResources(specType, manifestPath)
 	assert.Nil(t, err)
+
+	tests, _, err := GenerateTestCases(scripts, apiSpec, "http://mybaseurl", &model.Context{}, readDiscovery(), manifestPath, schema.NewNullValidator())
+	assert.Nil(t, err)
+
+	assert.Nil(t, err)
+
 	testcasePermissions, err := getTestCasePermissions(tests)
 	assert.Nil(t, err)
+
 	requiredTokens, err := getRequiredTokens(testcasePermissions)
 	assert.Nil(t, err)
+
 	populateTokens(t, requiredTokens)
 	dumpJSON(requiredTokens)
 }
@@ -59,6 +75,6 @@ func populateTokens(t *testing.T, gatherer []RequiredTokens) error {
 }
 
 func getToken(perms []string) (string, error) {
-	// for headless - get the okens for the permissions here
+	// for headless - get the tokens for the permissions here
 	return "abigfattoken", nil
 }

@@ -19,7 +19,10 @@ func TestGenerateTestCases(t *testing.T) {
 	apiSpec := discovery.ModelAPISpecification{
 		SchemaVersion: accountSwaggerLocation31,
 	}
-	tests, err := GenerateTestCases(apiSpec, "http://mybaseurl", &model.Context{}, readDiscovery(), manifestPath, schema.NewNullValidator())
+	specType, err := GetSpecType(apiSpec.SchemaVersion)
+	assert.Nil(t, err)
+	scripts, _, err := LoadGenerationResources(specType, manifestPath)
+	tests, _, err := GenerateTestCases(scripts, apiSpec, "http://mybaseurl", &model.Context{}, readDiscovery(), manifestPath, schema.NewNullValidator())
 	assert.Nil(t, err)
 
 	perms, err := getAccountPermissions(tests)
@@ -37,9 +40,16 @@ func TestGenerateTestCases(t *testing.T) {
 
 func TestPaymentPermissions(t *testing.T) {
 	apiSpec := discovery.ModelAPISpecification{
-		SchemaVersion: accountSwaggerLocation30,
+		SchemaVersion: accountSwaggerLocation31,
 	}
-	tests, err := GenerateTestCases(apiSpec, "http://mybaseurl", &model.Context{}, readDiscovery(), manifestPath, schema.NewNullValidator())
+	specType, err := GetSpecType(apiSpec.SchemaVersion)
+	assert.Nil(t, err)
+	scripts, _, err := LoadGenerationResources(specType, manifestPath)
+	if err != nil {
+		fmt.Println("Error on loadGenerationResources")
+		return
+	}
+	tests, _, err := GenerateTestCases(scripts, apiSpec, "http://mybaseurl", &model.Context{}, readDiscovery(), manifestPath, schema.NewNullValidator())
 	fmt.Printf("we have %d tests\n", len(tests))
 	for _, v := range tests {
 		dumpJSON(v)
@@ -106,17 +116,16 @@ func TestPermissionFiteringAccounts(t *testing.T) {
 	apiSpec := discovery.ModelAPISpecification{
 		SchemaVersion: accountSwaggerLocation31,
 	}
-	tests, err := GenerateTestCases(apiSpec, "http://mybaseurl", &ctx, endpoints, manifestPath, schema.NewNullValidator())
-	assert.Nil(t, err)
-	fmt.Printf("%d tests loaded", len(tests))
-
-	scripts, _, err := loadGenerationResources("accounts", manifestPath)
+	scripts, _, err := LoadGenerationResources("accounts", manifestPath)
 	if err != nil {
 		fmt.Println("Error on loadGenerationResources")
 		return
 	}
+	tests, _, err := GenerateTestCases(scripts, apiSpec, "http://mybaseurl", &ctx, endpoints, manifestPath, schema.NewNullValidator())
+	assert.Nil(t, err)
+	fmt.Printf("%d tests loaded", len(tests))
 
-	filteredScripts, err := filterTestsBasedOnDiscoveryEndpointsPlayground(scripts, endpoints)
+	filteredScripts, err := FilterTestsBasedOnDiscoveryEndpointsPlayground(scripts, endpoints)
 	if err != nil {
 
 	}
@@ -140,7 +149,7 @@ func readDiscovery() []discovery.ModelEndpoint {
 
 }
 
-func filterTestsBasedOnDiscoveryEndpointsPlayground(scripts Scripts, endpoints []discovery.ModelEndpoint) (Scripts, error) {
+func FilterTestsBasedOnDiscoveryEndpointsPlayground(scripts Scripts, endpoints []discovery.ModelEndpoint) (Scripts, error) {
 
 	lookupMap := make(map[string]bool)
 	_ = lookupMap
@@ -222,7 +231,13 @@ func TestPaymentTestCaseCreation(t *testing.T) {
 		SchemaVersion: accountSwaggerLocation31,
 	}
 
-	tests, err := GenerateTestCases(apiSpec, "http://mybaseurl", ctx, readDiscovery(), manifestPath, schema.NewNullValidator())
+	specType, err := GetSpecType(apiSpec.SchemaVersion)
+	assert.Nil(t, err)
+	scripts, _, err := LoadGenerationResources(specType, manifestPath)
+	assert.Nil(t, err)
+
+	tests, _, err := GenerateTestCases(scripts, apiSpec, "http://mybaseurl", ctx, readDiscovery(), manifestPath, schema.NewNullValidator())
+
 	assert.Nil(t, err)
 	fmt.Printf("we have %d tests\n", len(tests))
 	for _, v := range tests {

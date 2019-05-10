@@ -47,8 +47,11 @@ func (h exportHandlers) postExport(c echo.Context) error {
 	tokens := h.journey.Events().AllAcquiredAccessToken()
 	discovery, err := h.journey.DiscoveryModel()
 	if err != nil {
-		return errors.Wrap(err, "exporting report")
-
+		return errors.Wrap(err, "exporting report-get journey discovery model")
+	}
+	manifestScripts, err := h.journey.Manifests()
+	if err != nil {
+		return errors.Wrap(err, "exporting report-get journey manifest scripts")
 	}
 	exportResults := models.ExportResults{
 		ExportRequest:  request,
@@ -56,6 +59,7 @@ func (h exportHandlers) postExport(c echo.Context) error {
 		Results:        results,
 		Tokens:         tokens,
 		DiscoveryModel: discovery,
+		Manifests:      manifestScripts,
 	}
 	logger.WithField("exportResults", exportResults).Info("Exported")
 

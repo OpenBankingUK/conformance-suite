@@ -3,6 +3,7 @@ package report
 import (
 	"archive/zip"
 	"encoding/json"
+	"fmt"
 	"io"
 
 	"github.com/pkg/errors"
@@ -13,6 +14,7 @@ const (
 	marshalIndent       = "  "
 	reportFilename      = "report.json"
 	discoveryFilename   = "discovery.json"
+	manifestPrefix      = "manifest_"
 )
 
 // Exporter - allows the exporting of a `Report`.
@@ -71,9 +73,28 @@ func (e *zipExporter) Export() error {
 	if err != nil {
 		return errors.Wrapf(err, "zipExporter.Export: zip.Writer.Create failed, could not create file %q", discoveryFilename)
 	}
-	// Create report contents to zip
+	// Create discovery contents to zip
 	if _, err := discoveryFile.Write(discoveryJSON); err != nil {
 		return errors.Wrapf(err, "zipExporter.Export: zip.Writer.Write failed, could write to %q, discoveryJSON=%+v", discoveryFilename, string(reportJSON))
+	}
+
+	for i, manifest := range e.report.Manifests {
+		manifestJSON, err := json.MarshalIndent(manifest, marshalIndentPrefix, marshalIndent)
+		if err != nil {
+			return errors.Wrapf(err, "zipExporter.Export: json.MarshalIndent failed, report=%+v", manifest)
+		}
+
+		mfFilename := fmt.Sprintf("%s%d.json", manifestPrefix, i)
+
+		// Create manifest file within ZIP archive
+		manifestFile, err := zipWriter.Create(mfFilename)
+		if err != nil {
+			return errors.Wrapf(err, "zipExporter.Export: zip.Writer.Create failed, could not create file %q", mfFilename)
+		}
+		// Create manifest contents to zip
+		if _, err := manifestFile.Write(manifestJSON); err != nil {
+			return errors.Wrapf(err, "zipExporter.Export: zip.Writer.Write failed, could write to %q, manifestJSON=%+v", mfFilename, string(manifestJSON))
+		}
 	}
 
 	return nil
