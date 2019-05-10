@@ -46,6 +46,7 @@ func TestServerRunHandlersnewTestCaseResultWebSocketEvent(t *testing.T) {
 		Id:       "#t1025",
 		Pass:     true,
 		Detail:   "Example Test Case",
+		RefURI:   "https://openbanking.org.uk/ref/uri",
 		Endpoint: "/foobar",
 	}
 	wsEvent := newTestCaseResultWebSocketEvent(testCaseResult)
@@ -65,6 +66,7 @@ func TestServerRunHandlersnewTestCaseResultWebSocketEvent(t *testing.T) {
             "response_size": 0
         },
 		"detail": "Example Test Case",
+		"refURI": "https://openbanking.org.uk/ref/uri",
 		"endpoint": "/foobar"
     }
 }
