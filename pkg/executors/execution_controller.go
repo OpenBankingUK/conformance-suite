@@ -328,6 +328,7 @@ func (r *TestCaseRunner) executeSpecTests(spec generation.SpecificationTestCases
 			ctxLogger.Info("stop test run received, aborting runner")
 			return
 		}
+		ctxLogger = ctxLogger.WithField("ID", testcase.ID)
 		ruleCtx.DumpContext("ruleCtx before: " + testcase.ID)
 		testResult := r.executeTest(testcase, ruleCtx, ctxLogger)
 		r.daemonController.AddResult(testResult)

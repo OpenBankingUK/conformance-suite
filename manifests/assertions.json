@@ -125,6 +125,15 @@
         }]
       }
     },
+    "OB3IPAssertInternationalScheduledPaymentId": {
+      "expect": {
+        "matches": [{
+          "JSON": "Data.InternationalScheduledPaymentId",
+          "detail": "Expected a unique identification as assigned by the ASPSP to uniquely identify the international scheduled payment resource."
+        }]
+      }
+    },
+
     "OB3IPAssertInternationalStandingOrderPaymentId": {
       "expect": {
         "matches": [{

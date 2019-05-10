@@ -100,13 +100,13 @@ func validateKeys(publicKey *rsa.PublicKey, privateKey *rsa.PrivateKey) error {
 }
 
 func (c certificate) DN() (string, error) {
-
 	cpb, _ := pem.Decode(c.publicCertPem)
 	crt, err := x509.ParseCertificate(cpb.Bytes)
 	if err != nil {
 		logrus.Errorf("cannot parse cert %s", err.Error())
 		return "", err
 	}
+
 	subject := crt.Subject
 
 	var co string
