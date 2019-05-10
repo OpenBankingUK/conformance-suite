@@ -1,6 +1,6 @@
-# Functional Conformance Suite Setup Guide using Ozone Model Bank
+# Functional Conformance Tool and Ozone Model Bank
 
-This guide will assist you with the technical steps required to setup the Functional Conformance Suite (FCS) and run your first test. In this guide we will be connecting to and running tests against the Ozone Model Bank.
+This guide will assist you with the technical steps required to setup the Functional Conformance Tool and run your first test. In this guide we will be connecting to and running tests against the Ozone Model Bank.
 
 Please note the following goals of this document:
 
@@ -99,7 +99,7 @@ at this point by running `docker login`.
 ### Production
 
 ```sh
-docker run --rm -it -p 8443:8443 -e LOG_LEVEL=debug -e LOG_TRACER=true -e LOG_HTTP_TRACE=true "openbanking/conformance-suite:v1.1.5"
+docker run --rm -it -p 8443:8443 -e LOG_LEVEL=debug -e LOG_TRACER=true -e LOG_HTTP_TRACE=true "openbanking/conformance-suite:v1.1.6"
 ```
 
 ### Non-production run
@@ -150,10 +150,6 @@ The rest of the values are taken from the well-known.
     **TBC**
 
 ### Review test results
-
-**TBC**
-
-# How to get help
 
 **TBC**
 
