@@ -1,7 +1,7 @@
 {
   "discoveryModel": {
     "name": "ob-v3.1-generic",
-    "description": "An Open Banking UK discovery template for v3.1 of Accounts and Payments with pre-populated model Bank (Ozone) data.",
+    "description": "An Open Banking UK discovery template for v3.1 of Accounts and Payments.",
     "discoveryVersion": "v0.3.0",
     "tokenAcquisition": "psu",
     "discoveryItems": [
@@ -30,14 +30,6 @@
           },
           {
             "method": "GET",
-            "path": "/accounts/{AccountId}/product"
-          },
-          {
-            "method": "GET",
-            "path": "/accounts/{AccountId}/transactions"
-          },
-          {
-            "method": "GET",
             "path": "/accounts"
           },
           {
@@ -47,6 +39,94 @@
           {
             "method": "GET",
             "path": "/accounts/{AccountId}/balances"
+          },
+          {
+            "method": "GET",
+            "path": "/accounts/{AccountId}/beneficiaries"
+          },
+          {
+            "method": "GET",
+            "path": "/accounts/{AccountId}/direct-debits"
+          },
+          {
+            "method": "GET",
+            "path": "/accounts/{AccountId}/offers"
+          },
+          {
+            "method": "GET",
+            "path": "/accounts/{AccountId}/party"
+          },
+          {
+            "method": "GET",
+            "path": "/accounts/{AccountId}/product"
+          },
+          {
+            "method": "GET",
+            "path": "/accounts/{AccountId}/scheduled-payments"
+          },
+          {
+            "method": "GET",
+            "path": "/accounts/{AccountId}/standing-orders"
+          },
+          {
+            "method": "GET",
+            "path": "/accounts/{AccountId}/statements"
+          },
+          {
+            "method": "GET",
+            "path": "/accounts/{AccountId}/statements/{StatementId}"
+          },
+          {
+            "method": "GET",
+            "path": "/accounts/{AccountId}/statements/{StatementId}/file"
+          },
+          {
+            "method": "GET",
+            "path": "/accounts/{AccountId}/statements/{StatementId}/transactions"
+          },
+          {
+            "method": "GET",
+            "path": "/accounts/{AccountId}/transactions"
+          },
+          {
+            "method": "GET",
+            "path": "/balances"
+          },
+          {
+            "method": "GET",
+            "path": "/beneficiaries"
+          },
+          {
+            "method": "GET",
+            "path": "/direct-debits"
+          },
+          {
+            "method": "GET",
+            "path": "/offers"
+          },
+          {
+            "method": "GET",
+            "path": "/party"
+          },
+          {
+            "method": "GET",
+            "path": "/products"
+          },
+          {
+            "method": "GET",
+            "path": "/scheduled-payments"
+          },
+          {
+            "method": "GET",
+            "path": "/standing-orders"
+          },
+          {
+            "method": "GET",
+            "path": "/statements"
+          },
+          {
+            "method": "GET",
+            "path": "/transactions"
           }
         ]
       },
@@ -60,28 +140,24 @@
         },
         "openidConfigurationUri": "https://modelobankauth2018.o3bank.co.uk:4101/.well-known/openid-configuration",
         "resourceBaseUri": "https://modelobank2018.o3bank.co.uk:4501/open-banking/v3.1/pisp",
-        "endpoints": [
-          {
-            "method": "POST",
-            "path": "/domestic-payment-consents",
-            "conditionalProperties": [
-              {
-                "schema": "OBWriteDataDomesticConsentResponse1",
-                "property": "Charges",
-                "path": "Data.Charges"
-              }
-            ]
-          },
+        "endpoints": [{
+          "method": "POST",
+          "path": "/domestic-payment-consents",
+          "conditionalProperties": [{
+            "schema": "OBWriteDataDomesticConsentResponse1",
+            "property": "Charges",
+
+            "path": "Data.Charges"
+          }]
+        },
           {
             "method": "GET",
             "path": "/domestic-payment-consents/{ConsentId}",
-            "conditionalProperties": [
-              {
-                "schema": "OBWriteDataDomesticConsentResponse1",
-                "property": "Charges",
-                "path": "Data.Charges"
-              }
-            ]
+            "conditionalProperties": [{
+              "schema": "OBWriteDataDomesticConsentResponse1",
+              "property": "Charges",
+              "path": "Data.Charges"
+            }]
           },
           {
             "method": "GET",
@@ -90,24 +166,20 @@
           {
             "method": "POST",
             "path": "/domestic-payments",
-            "conditionalProperties": [
-              {
-                "schema": "OBWriteDataDomesticResponse1",
-                "property": "Charges",
-                "path": "Data.Charges"
-              }
-            ]
+            "conditionalProperties": [{
+              "schema": "OBWriteDataDomesticResponse1",
+              "property": "Charges",
+              "path": "Data.Charges"
+            }]
           },
           {
             "method": "GET",
             "path": "/domestic-payments/{DomesticPaymentId}",
-            "conditionalProperties": [
-              {
-                "schema": "OBWriteDataDomesticResponse1",
-                "property": "Charges",
-                "path": "Data.Charges"
-              }
-            ]
+            "conditionalProperties": [{
+              "schema": "OBWriteDataDomesticResponse1",
+              "property": "Charges",
+              "path": "Data.Charges"
+            }]
           },
           {
             "method": "POST",
