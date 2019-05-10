@@ -19,7 +19,7 @@ func TestGenerateTestCases(t *testing.T) {
 	apiSpec := discovery.ModelAPISpecification{
 		SchemaVersion: accountSwaggerLocation31,
 	}
-	tests, err := GenerateTestCases(apiSpec, "http://mybaseurl", &model.Context{}, readDiscovery(), schema.NewNullValidator())
+	tests, err := GenerateTestCases(apiSpec, "http://mybaseurl", &model.Context{}, readDiscovery(), manifestPath, schema.NewNullValidator())
 	assert.Nil(t, err)
 
 	perms, err := getAccountPermissions(tests)
@@ -39,7 +39,7 @@ func TestPaymentPermissions(t *testing.T) {
 	apiSpec := discovery.ModelAPISpecification{
 		SchemaVersion: accountSwaggerLocation30,
 	}
-	tests, err := GenerateTestCases(apiSpec, "http://mybaseurl", &model.Context{}, readDiscovery(), schema.NewNullValidator())
+	tests, err := GenerateTestCases(apiSpec, "http://mybaseurl", &model.Context{}, readDiscovery(), manifestPath, schema.NewNullValidator())
 	fmt.Printf("we have %d tests\n", len(tests))
 	for _, v := range tests {
 		dumpJSON(v)
@@ -106,11 +106,11 @@ func TestPermissionFiteringAccounts(t *testing.T) {
 	apiSpec := discovery.ModelAPISpecification{
 		SchemaVersion: accountSwaggerLocation31,
 	}
-	tests, err := GenerateTestCases(apiSpec, "http://mybaseurl", &ctx, endpoints, schema.NewNullValidator())
+	tests, err := GenerateTestCases(apiSpec, "http://mybaseurl", &ctx, endpoints, manifestPath, schema.NewNullValidator())
 	assert.Nil(t, err)
 	fmt.Printf("%d tests loaded", len(tests))
 
-	scripts, _, err := loadGenerationResources("accounts")
+	scripts, _, err := loadGenerationResources("accounts", manifestPath)
 	if err != nil {
 		fmt.Println("Error on loadGenerationResources")
 		return
@@ -218,12 +218,11 @@ func TestPaymentTestCaseCreation(t *testing.T) {
 		"thisCurrency":                        "GBP",
 		"creditorScheme":                      "default",
 	}
-
 	apiSpec := discovery.ModelAPISpecification{
 		SchemaVersion: accountSwaggerLocation31,
 	}
 
-	tests, err := GenerateTestCases(apiSpec, "http://mybaseurl", ctx, readDiscovery(), schema.NewNullValidator())
+	tests, err := GenerateTestCases(apiSpec, "http://mybaseurl", ctx, readDiscovery(), manifestPath, schema.NewNullValidator())
 	assert.Nil(t, err)
 	fmt.Printf("we have %d tests\n", len(tests))
 	for _, v := range tests {

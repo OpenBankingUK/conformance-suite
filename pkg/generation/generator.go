@@ -96,7 +96,7 @@ func (g generator) GenerateManifestTests(log *logrus.Entry, config GeneratorConf
 		log.WithFields(logrus.Fields{"name": item.APISpecification.Name, "version": item.APISpecification.Version}).
 			Info("swagger spec validator created")
 
-		tcs, err := manifest.GenerateTestCases(item.APISpecification, item.ResourceBaseURI, ctx, item.Endpoints, validator)
+		tcs, err := manifest.GenerateTestCases(item.APISpecification, item.ResourceBaseURI, ctx, item.Endpoints, item.APISpecification.Manifest, validator)
 		if err != nil {
 			log.Warnf("manifest testcase generation failed for %s", item.APISpecification.SchemaVersion)
 			continue

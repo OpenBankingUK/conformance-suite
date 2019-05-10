@@ -46,7 +46,7 @@ name             | 1..1       | discoveryModel.discoveryItems.*.apiSpecification
 url              | 1..1       | discoveryModel.discoveryItems.*.apiSpecification.url | URI identifier of the specification, i.e. link to specification document
 version          | 1..1       | discoveryModel.discoveryItems.*.apiSpecification.version | API version number that appears in API paths, e.g. "v3.0"
 schemaVersion    | 1..1       | discoveryModel.discoveryItems.*.apiSpecification.schemaVersion | URI identifier of the Swagger/OpenAPI specification file patch version
-manifest         | 1..1       | discoveryModel.discoveryItems.*.apiSpecification.manifest | Path to manifest file for custom tests. Can be `https://` or `file://`.
+manifest         | 1..1       | discoveryModel.discoveryItems.*.apiSpecification.manifest | Path to manifest file for custom tests. Can be `http://` or `https://` or `file://`.
 openidConfigurationUri | 1..1 | discoveryModel.discoveryItems.*.openidConfigurationUri | URI of the openid configuration well-known endpoint
 resourceBaseUri  | 1..1       | discoveryModel.discoveryItems.*.resourceBaseUri | Base of resource URI, i.e. the part before "/open-banking/v3.0".
 endpoints        | 1..n       | discoveryModel.discoveryItems.*.endpoints | List of endpoint and methods that have been implemented.
