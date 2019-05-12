@@ -223,7 +223,7 @@ func TestPaymentTestCaseCreation(t *testing.T) {
 		SchemaVersion: paymentsSwaggerLocation31,
 	}
 
-	tests, err := GenerateTestCases(apiSpec, "http://mybaseurl", ctx, readDiscovery(), "file://manifests/ob_3.1_payment_fca.json", schema.NewNullValidator())
+	tests, err := GenerateTestCases(apiSpec, "http://mybaseurl", ctx, readDiscovery(), manifestPath, schema.NewNullValidator())
 	assert.Nil(t, err)
 	fmt.Printf("we have %d tests\n", len(tests))
 	for _, v := range tests {
