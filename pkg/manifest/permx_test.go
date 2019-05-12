@@ -1,9 +1,10 @@
 package manifest
 
 import (
+	"testing"
+
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/schema"
-	"testing"
 
 	"github.com/stretchr/testify/assert"
 

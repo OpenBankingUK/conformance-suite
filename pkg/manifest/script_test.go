@@ -1,13 +1,14 @@
 package manifest
 
 import (
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/schema"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"regexp"
 	"strings"
 	"testing"
+
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/schema"
 
 	"github.com/stretchr/testify/assert"
 
@@ -219,10 +220,10 @@ func TestPaymentTestCaseCreation(t *testing.T) {
 		"creditorScheme":                      "default",
 	}
 	apiSpec := discovery.ModelAPISpecification{
-		SchemaVersion: accountSwaggerLocation31,
+		SchemaVersion: paymentsSwaggerLocation31,
 	}
 
-	tests, err := GenerateTestCases(apiSpec, "http://mybaseurl", ctx, readDiscovery(), manifestPath, schema.NewNullValidator())
+	tests, err := GenerateTestCases(apiSpec, "http://mybaseurl", ctx, readDiscovery(), "file://manifests/ob_3.1_payment_fca.json", schema.NewNullValidator())
 	assert.Nil(t, err)
 	fmt.Printf("we have %d tests\n", len(tests))
 	for _, v := range tests {

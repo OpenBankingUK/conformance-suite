@@ -1,16 +1,17 @@
 package manifest
 
 import (
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/schema"
 	"encoding/json"
 	"fmt"
-	"github.com/pkg/errors"
 	"io/ioutil"
 	"os"
 	"regexp"
 	"sort"
 	"strings"
 	"time"
+
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/schema"
+	"github.com/pkg/errors"
 
 	"github.com/sirupsen/logrus"
 
@@ -356,32 +357,32 @@ func jsonString(i interface{}) string {
 }
 
 func loadScripts(filename string) (Scripts, error) {
-	const schemeHttps = "https://"
-	const schemeHttp = "http://"
+	const schemeHTTPS = "https://"
+	const schemeHTTP = "http://"
 	const schemeFile = "file://"
 
-	var scrBytes []byte
-	if strings.HasPrefix(strings.ToLower(filename), schemeHttps) || strings.HasPrefix(strings.ToLower(filename), schemeHttp) {
-		return Scripts{}, errors.New("https:// and http:// download of scripts not yet supported")
+	var scriptBytes []byte
+	var err error
+	if strings.HasPrefix(strings.ToLower(filename), schemeHTTPS) || strings.HasPrefix(strings.ToLower(filename), schemeHTTP) {
+		return Scripts{}, errors.New("loadscripts: https:// and http:// download of scripts not implemented")
 	} else if strings.HasPrefix(strings.ToLower(filename), schemeFile) {
 		fp := strings.TrimPrefix(filename, schemeFile)
-		sb, err := ioutil.ReadFile(fp)
+		scriptBytes, err = ioutil.ReadFile(fp)
 		if err != nil && os.IsNotExist(err) {
-			sb, err = ioutil.ReadFile(fmt.Sprintf("../../%s", fp))
+			scriptBytes, err = ioutil.ReadFile(fmt.Sprintf("../../%s", fp))
 			if err != nil {
-				return Scripts{}, errors.Wrap(err, "ioutil.ReadFile()")
+				return Scripts{}, errors.Wrap(err, "loadScripts ioutil.ReadFile()")
 			}
 		} else if err != nil {
-			return Scripts{}, errors.Wrap(err, "ioutil.ReadFile()")
+			return Scripts{}, errors.Wrap(err, "loadScripts ioutil.ReadFile()")
 		}
-		scrBytes = sb
 
 	} else {
-		return Scripts{}, errors.New("unable to load scripts please specify scheme (file:// or https://)")
+		return Scripts{}, errors.New("loadScripts - no scheme present: (file://)")
 	}
 
 	var m Scripts
-	err := json.Unmarshal(scrBytes, &m)
+	err = json.Unmarshal(scriptBytes, &m)
 	if err != nil {
 		return Scripts{}, err
 	}
