@@ -569,9 +569,15 @@ export default {
           get value() {
             return self.$store.state.config.configuration.instructed_amount.value;
           },
+          set value(value) {
+            self.$store.commit('config/SET_INSTRUCTED_AMOUNT_VALUE', value);
+          },
           get currency() {
             return self.$store.state.config.configuration.instructed_amount.currency;
-          }
+          },
+          set currency(currency) {
+            self.$store.commit('config/SET_INSTRUCTED_AMOUNT_CURRENCY', currency);
+          },
         }
       }
     }

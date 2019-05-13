@@ -41,6 +41,8 @@ export const mutationTypes = {
   SET_CREDITOR_ACCOUNT_NAME_SCHEME_NAME: 'SET_CREDITOR_ACCOUNT_NAME_SCHEME_NAME',
   SET_CREDITOR_ACCOUNT_IDENTIFICATION: 'SET_CREDITOR_ACCOUNT_IDENTIFICATION',
   SET_CREDITOR_ACCOUNT_NAME: 'SET_CREDITOR_ACCOUNT_NAME',
+  SET_INSTRUCTED_AMOUNT_VALUE: 'SET_INSTRUCTED_AMOUNT_VALUE',
+  SET_INSTRUCTED_AMOUNT_CURRENCY: 'SET_INSTRUCTED_AMOUNT_CURRENCY',
 };
 
 export const mutations = {
@@ -157,6 +159,12 @@ export const mutations = {
   },
   [mutationTypes.SET_CREDITOR_ACCOUNT_NAME](state, value) {
     state.configuration.creditor_account.name = value;
+  },
+  [mutationTypes.SET_INSTRUCTED_AMOUNT_VALUE](state, value) {
+    state.configuration.instructed_amount.value = value;
+  },
+  [mutationTypes.SET_INSTRUCTED_AMOUNT_CURRENCY](state, value) {
+    state.configuration.instructed_amount.currency = value;
   },
 };
 

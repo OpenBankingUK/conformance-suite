@@ -120,6 +120,8 @@ export default {
         'redirect_url',
         'resource_ids',
         'creditor_account',
+        'instructed_amount',
+        'currency_of_transfer',
       ];
       const newConfig = _.pick(merged, validKeys);
       commit(types.SET_CONFIGURATION, newConfig);
@@ -266,6 +268,7 @@ export default {
       // NB: We do not care what value this method call returns as long
       // as it does not throw, we know the configuration is valid.
       const { configuration } = state;
+      console.log(configuration);
       const setShowLoading = flag => dispatch('status/setShowLoading', flag, { root: true });
 
       await api.validateConfiguration(configuration, setShowLoading);

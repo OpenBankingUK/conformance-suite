@@ -62,7 +62,7 @@ type GlobalConfiguration struct {
 	TransactionFromDate           string                  `json:"transaction_from_date" validate:"not_empty"`
 	TransactionToDate             string                  `json:"transaction_to_date" validate:"not_empty"`
 	RequestObjectSigningAlgorithm string                  `json:"request_object_signing_alg"`
-	InstructedAmount              models.InstructedAmount `json:"instructed_amount" validate:"not_empty"`
+	InstructedAmount              models.InstructedAmount `json:"instructed_amount"`
 	CurrencyOfTransfer            string                  `json:"currency_of_transfer"`
 }
 
