@@ -260,7 +260,7 @@ export const state = {
       value: '1.00',
       currency: 'GBP',
     },
-    currency_of_transfer: 'GBP'
+    currency_of_transfer: 'GBP',
   },
 
   wizard: {

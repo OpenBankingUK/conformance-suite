@@ -578,9 +578,9 @@ export default {
           set currency(currency) {
             self.$store.commit('config/SET_INSTRUCTED_AMOUNT_CURRENCY', currency);
           },
-        }
-      }
-    }
+        };
+      },
+    },
   },
   methods: {
     ...mapActions('config', [
