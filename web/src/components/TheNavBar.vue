@@ -104,7 +104,7 @@ export default {
   },
   data() {
     const specifications = Specifications
-      .filter(specification => specification.Version === 'v3.1')
+      .filter(specification => specification.Version === 'v3.1.0')
       .map(specification => ({
         label: `${specification.Name} (${specification.Version})`,
         swaggerUIURL: `/swagger/${specification.Identifier}/${specification.Version}/docs`,
