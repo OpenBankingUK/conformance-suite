@@ -330,6 +330,30 @@
               required
             />
           </b-form-group>
+          <b-form-group
+            id="instructed_amount_value"
+            label-for="instructed_amount_value"
+            label="Instructed Amount Value"
+            description="Value of the instructed amount.">
+            <b-form-input
+              id="instructed_amount_value"
+              v-model="instructed_amount.value"
+              :state="isNotEmpty(instructed_amount.value)"
+              required
+            />
+          </b-form-group>
+          <b-form-group
+            id="instructed_amount_currency"
+            label-for="instructed_amount_currency"
+            label="Instructed Amount Currency"
+            description="Instructed amount currency.">
+            <b-form-input
+              id="instructed_amount_currency"
+              v-model="instructed_amount.currency"
+              :state="isNotEmpty(instructed_amount.currency)"
+              required
+            />
+          </b-form-group>
         </b-form-group>
       </b-card>
     </b-form>
@@ -537,6 +561,20 @@ export default {
         };
       },
     },
+
+    instructed_amount: {
+      get() {
+        const self = this;
+        return {
+          get value() {
+            return self.$store.state.config.configuration.instructed_amount.value;
+          },
+          get currency() {
+            return self.$store.state.config.configuration.instructed_amount.currency;
+          }
+        }
+      }
+    }
   },
   methods: {
     ...mapActions('config', [

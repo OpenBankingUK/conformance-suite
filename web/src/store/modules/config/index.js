@@ -248,6 +248,11 @@ export const state = {
       identification: '',
       name: '',
     },
+    instructed_amount: {
+      value: '1.00',
+      currency: 'GBP',
+    },
+    currency_of_transfer: 'GBP'
   },
 
   wizard: {
