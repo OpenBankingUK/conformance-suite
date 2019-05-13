@@ -41,6 +41,11 @@ type Payment struct {
 	Name string `json:"name" form:"name"`
 }
 
+type InstructedAmount struct {
+	Currency string `json:"currency"`
+	Amount   string `json:"amount"`
+}
+
 // Just an an alternate spelling to match the Account and Transaction API Specification.
 type OBCashAccount5 = Payment
 

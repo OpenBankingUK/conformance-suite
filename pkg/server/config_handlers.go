@@ -1,12 +1,13 @@
 package server
 
 import (
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/server/models"
 	"fmt"
-	"gopkg.in/resty.v1"
 	"net/http"
 	"net/url"
 	"reflect"
+
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/server/models"
+	"gopkg.in/resty.v1"
 
 	validation "github.com/go-ozzo/ozzo-validation"
 	"github.com/labstack/echo"
@@ -61,6 +62,10 @@ type GlobalConfiguration struct {
 	TransactionFromDate           string            `json:"transaction_from_date" validate:"not_empty"`
 	TransactionToDate             string            `json:"transaction_to_date" validate:"not_empty"`
 	RequestObjectSigningAlgorithm string            `json:"request_object_signing_alg"`
+	LocalCurrency                 string            `json:"local_currency"`
+	LocalAmount                   string            `json:"local_amount"`
+	ForeignCurrency               string            `json:"foreign_currency"`
+	ForeignAmount                 string            `json:"foreign_amount"`
 }
 
 // Validate - used by https://github.com/go-ozzo/ozzo-validation to validate struct.
