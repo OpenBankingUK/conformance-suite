@@ -172,7 +172,6 @@
         "thisInstructionIdentification": "OB-301-DOP-100300",
         "instructedAmountCurrency": "$instructedAmountCurrency",
         "instructedAmountValue": "$instructedAmountValue",
-        "currencyOfTransfer": "$currencyOfTransfer",
         "postData": "$minimalDomesticPaymentPost"
       },
       "headers": {

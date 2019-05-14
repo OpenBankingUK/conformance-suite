@@ -333,7 +333,7 @@
           <b-form-group
             id="instructed_amount_value"
             label-for="instructed_amount_value"
-            label="Instructed Amount Value"
+            label="Instructed Amount Value (Capped at 1.00)"
             description="Value of the instructed amount.">
             <b-form-input
               id="instructed_amount_value"
@@ -376,7 +376,7 @@
           <b-form-group
             id="currency_of_transfer"
             label-for="currency_of_transfer"
-            label="Currency Of Transfer"
+            label="Currency Of Transfer For International Payments"
             description="Currency Of Transfer.">
             <b-form-select
               id="currency_of_transfer"

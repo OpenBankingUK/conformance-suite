@@ -27,7 +27,6 @@
           "Initiation": {
             "InstructionIdentification": "$creditorIdentification",
             "EndToEndIdentification": "$creditorIdentification",
-            "CurrencyOfTransfer": "$currencyOfTransfer",
             "InstructedAmount": {
               "Amount": "$instructedAmountValue",
               "Currency": "$instructedAmountCurrency"
