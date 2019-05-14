@@ -72,8 +72,8 @@ describe('web/src/store/modules/config', () => {
         currency_of_transfer: 'GBP',
         instructed_amount: {
           currency: 'GBP',
-          value: '1.00'
-        }
+          value: '1.00',
+        },
       });
     });
 
@@ -146,8 +146,8 @@ describe('web/src/store/modules/config', () => {
         currency_of_transfer: 'GBP',
         instructed_amount: {
           currency: 'GBP',
-          value: '1.00'
-        }
+          value: '1.00',
+        },
       });
 
       store.commit(types.SET_TOKEN_ENDPOINT_AUTH_METHODS, ['tls_client_auth', 'client_secret_basic']);
@@ -182,8 +182,8 @@ describe('web/src/store/modules/config', () => {
         currency_of_transfer: 'GBP',
         instructed_amount: {
           currency: 'GBP',
-          value: '1.00'
-        }
+          value: '1.00',
+        },
       });
 
       store.commit(types.SET_CLIENT_SECRET, '2cfb31a3-5443-4e65-b2bc-ef8e00266a77');
@@ -217,8 +217,8 @@ describe('web/src/store/modules/config', () => {
         currency_of_transfer: 'GBP',
         instructed_amount: {
           currency: 'GBP',
-          value: '1.00'
-        }
+          value: '1.00',
+        },
       });
 
       store.commit(types.SET_TOKEN_ENDPOINT, 'https://modelobank2018.o3bank.co.uk:4201/token');
@@ -252,8 +252,8 @@ describe('web/src/store/modules/config', () => {
         currency_of_transfer: 'GBP',
         instructed_amount: {
           currency: 'GBP',
-          value: '1.00'
-        }
+          value: '1.00',
+        },
       });
 
       store.commit(types.SET_TOKEN_ENDPOINT_AUTH_METHOD, 'client_secret_basic');
@@ -290,8 +290,8 @@ describe('web/src/store/modules/config', () => {
         currency_of_transfer: 'GBP',
         instructed_amount: {
           currency: 'GBP',
-          value: '1.00'
-        }
+          value: '1.00',
+        },
       });
 
       store.commit(types.SET_RESOURCE_BASE_URL, 'https://modelobank2018.o3bank.co.uk:4501');
@@ -325,8 +325,8 @@ describe('web/src/store/modules/config', () => {
         currency_of_transfer: 'GBP',
         instructed_amount: {
           currency: 'GBP',
-          value: '1.00'
-        }
+          value: '1.00',
+        },
       });
 
       store.commit(types.SET_X_FAPI_FINANCIAL_ID, '0015800001041RHAAY');
@@ -360,8 +360,8 @@ describe('web/src/store/modules/config', () => {
         currency_of_transfer: 'GBP',
         instructed_amount: {
           currency: 'GBP',
-          value: '1.00'
-        }
+          value: '1.00',
+        },
       });
 
       store.commit(types.SET_ISSUER, 'https://modelobankauth2018.o3bank.co.uk:4101');
@@ -395,8 +395,8 @@ describe('web/src/store/modules/config', () => {
         currency_of_transfer: 'GBP',
         instructed_amount: {
           currency: 'GBP',
-          value: '1.00'
-        }
+          value: '1.00',
+        },
       });
 
       store.commit(types.ADD_RESOURCE_ACCOUNT_ID, { account_id: 'account-id' });
@@ -430,8 +430,8 @@ describe('web/src/store/modules/config', () => {
         currency_of_transfer: 'GBP',
         instructed_amount: {
           currency: 'GBP',
-          value: '1.00'
-        }
+          value: '1.00',
+        },
       });
 
       store.commit(types.ADD_RESOURCE_STATEMENT_ID, { statement_id: 'statement-id' });
@@ -465,8 +465,8 @@ describe('web/src/store/modules/config', () => {
         currency_of_transfer: 'GBP',
         instructed_amount: {
           currency: 'GBP',
-          value: '1.00'
-        }
+          value: '1.00',
+        },
       });
 
       store.commit(types.SET_REQUEST_OBJECT_SIGNING_ALG, 'PS256');
@@ -506,8 +506,8 @@ describe('web/src/store/modules/config', () => {
         currency_of_transfer: 'GBP',
         instructed_amount: {
           currency: 'GBP',
-          value: '1.00'
-        }
+          value: '1.00',
+        },
       });
 
       const acctIDs = [{ account_id: '123' }, { account_id: '456' }];
@@ -543,8 +543,8 @@ describe('web/src/store/modules/config', () => {
         currency_of_transfer: 'GBP',
         instructed_amount: {
           currency: 'GBP',
-          value: '1.00'
-        }
+          value: '1.00',
+        },
       });
 
       const stmtIDs = [{ statement_id: '123' }, { statement_id: '456' }];
@@ -580,8 +580,8 @@ describe('web/src/store/modules/config', () => {
         currency_of_transfer: 'GBP',
         instructed_amount: {
           currency: 'GBP',
-          value: '1.00'
-        }
+          value: '1.00',
+        },
       });
 
       store.commit(types.SET_TRANSACTION_FROM_DATE, '2016-01-01T10:40:00+02:00');
@@ -617,8 +617,8 @@ describe('web/src/store/modules/config', () => {
         currency_of_transfer: 'GBP',
         instructed_amount: {
           currency: 'GBP',
-          value: '1.00'
-        }
+          value: '1.00',
+        },
       });
     });
 
@@ -660,8 +660,8 @@ describe('web/src/store/modules/config', () => {
           currency_of_transfer: 'GBP',
           instructed_amount: {
             currency: 'GBP',
-            value: '1.00'
-          }
+            value: '1.00',
+          },
         });
 
         api.validateDiscoveryConfig.mockReturnValueOnce({
@@ -735,8 +735,8 @@ describe('web/src/store/modules/config', () => {
           currency_of_transfer: 'GBP',
           instructed_amount: {
             currency: 'GBP',
-            value: '1.00'
-          }
+            value: '1.00',
+          },
         });
       });
     });
