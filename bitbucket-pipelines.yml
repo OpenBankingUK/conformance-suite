@@ -22,7 +22,7 @@ pipelines:
                 export GOOS=linux
                 export GOARCH=amd64
               - apk update && apk add git make bash curl
-              - echo ${OZONE_CONFIG} | base64 -d  > config/config-ozone.json
+              - echo ${OZONE_CONFIG} | base64 -d  > config/config-ozone-run_test.json
               - make init
               - make devtools
               - make build
