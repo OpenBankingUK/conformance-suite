@@ -43,7 +43,7 @@ type Payment struct {
 
 type InstructedAmount struct {
 	Currency string `json:"currency"`
-	Amount   string `json:"amount"`
+	Amount   string `json:"value"`
 }
 
 // Just an an alternate spelling to match the Account and Transaction API Specification.
