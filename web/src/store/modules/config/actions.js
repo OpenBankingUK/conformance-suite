@@ -120,6 +120,8 @@ export default {
         'redirect_url',
         'resource_ids',
         'creditor_account',
+        'instructed_amount',
+        'currency_of_transfer',
       ];
       const newConfig = _.pick(merged, validKeys);
       commit(types.SET_CONFIGURATION, newConfig);

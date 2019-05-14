@@ -7,8 +7,8 @@
             "InstructionIdentification": "$creditorIdentification",
             "EndToEndIdentification": "$creditorIdentification",
             "InstructedAmount": {
-              "Amount": "1.00",
-              "Currency": "$thisCurrency"
+              "Amount": "$instructedAmountValue",
+              "Currency": "$instructedAmountCurrency"
             },
             "CreditorAccount": {
               "SchemeName": "$creditorScheme",
@@ -28,8 +28,8 @@
             "InstructionIdentification": "$creditorIdentification",
             "EndToEndIdentification": "$creditorIdentification",
             "InstructedAmount": {
-              "Amount": "1.00",
-              "Currency": "$thisCurrency"
+              "Amount": "$instructedAmountValue",
+              "Currency": "$instructedAmountCurrency"
             },
             "CreditorAccount": {
               "SchemeName": "$creditorScheme",
@@ -50,8 +50,8 @@
             "InstructionIdentification": "ACME412",
             "EndToEndIdentification": "FRESCO.21302.GFX.20",
             "InstructedAmount": {
-              "Amount": "15.00",
-              "Currency": "GBP"
+              "Amount": "$instructedAmountValue",
+              "Currency": "$instructedAmountCurrency"
             },
             "CreditorAccount": {
               "SchemeName": "SortCodeAccountNumber",
@@ -71,8 +71,8 @@
             "Frequency": "EvryDay",
             "FirstPaymentDateTime": "2020-10-01T13:14:25+00:00",
             "FirstPaymentAmount": {
-              "Amount": "1.00",
-              "Currency": "GBP"
+              "Amount": "$instructedAmountValue",
+              "Currency": "$instructedAmountCurrency"
             },
             "CreditorAccount": {
               "SchemeName": "$creditorScheme",
@@ -92,8 +92,8 @@
             "Frequency": "EvryDay",
             "FirstPaymentDateTime": "2020-10-01T13:14:25+00:00",
             "FirstPaymentAmount": {
-              "Amount": "1.00",
-              "Currency": "GBP"
+              "Amount": "$instructedAmountValue",
+              "Currency": "$instructedAmountCurrency"
             },
             "CreditorAccount": {
               "SchemeName": "$creditorScheme",
@@ -111,10 +111,10 @@
           "Initiation": {
             "InstructionIdentification": "Excaliber International",
             "EndToEndIdentification": "Excaliber International",
-            "CurrencyOfTransfer": "USD",
+            "CurrencyOfTransfer": "$currencyOfTransfer",
             "InstructedAmount": {
-              "Amount": "1.00",
-              "Currency": "USD"
+              "Amount": "$instructedAmountValue",
+              "Currency": "$instructedAmountCurrency"
             },
             "CreditorAccount": {
               "SchemeName": "SortCodeAccountNumber",
@@ -133,10 +133,10 @@
           "Initiation": {
             "InstructionIdentification": "Excaliber International",
             "EndToEndIdentification": "Excaliber International",
-            "CurrencyOfTransfer": "USD",
+            "CurrencyOfTransfer": "$currencyOfTransfer",
             "InstructedAmount": {
-              "Amount": "1.00",
-              "Currency": "USD"
+              "Amount": "$instructedAmountValue",
+              "Currency": "$instructedAmountCurrency"
             },
             "CreditorAccount": {
               "SchemeName": "SortCodeAccountNumber",
@@ -148,7 +148,6 @@
         "Risk": {}
       }
     },
-
     "minimalInternationalStandingOrderConsent": {
       "body": {
         "Data": {
@@ -156,10 +155,10 @@
           "Initiation": {
             "Frequency": "EvryDay",
             "FirstPaymentDateTime": "2020-10-01T13:14:25+00:00",
-            "CurrencyOfTransfer": "USD",
+            "CurrencyOfTransfer": "$currencyOfTransfer",
             "InstructedAmount": {
-              "Amount": "1.00",
-              "Currency": "USD"
+              "Amount": "$instructedAmountValue",
+              "Currency": "$instructedAmountCurrency"
             },
             "CreditorAccount": {
               "SchemeName": "SortCodeAccountNumber",
@@ -177,10 +176,10 @@
           "Initiation": {
             "Frequency": "EvryDay",
             "FirstPaymentDateTime": "2020-10-01T13:14:25+00:00",
-            "CurrencyOfTransfer": "USD",
+            "CurrencyOfTransfer": "$currencyOfTransfer",
             "InstructedAmount": {
-              "Amount": "1.00",
-              "Currency": "USD"
+              "Amount": "$instructedAmountValue",
+              "Currency": "$instructedAmountCurrency"
             },
             "CreditorAccount": {
               "SchemeName": "SortCodeAccountNumber",
@@ -200,10 +199,10 @@
             "RequestedExecutionDateTime": "2020-10-01T13:14:25+00:00",
             "InstructionIdentification": "Excaliber International",
             "EndToEndIdentification": "Excaliber International",
-            "CurrencyOfTransfer": "USD",
+            "CurrencyOfTransfer": "$currencyOfTransfer",
             "InstructedAmount": {
-              "Amount": "1.00",
-              "Currency": "USD"
+              "Amount": "$instructedAmountValue",
+              "Currency": "$instructedAmountCurrency"
             },
             "CreditorAccount": {
               "SchemeName": "$creditorScheme",
@@ -223,10 +222,10 @@
             "RequestedExecutionDateTime": "2020-10-01T13:14:25+00:00",
             "InstructionIdentification": "Excaliber International",
             "EndToEndIdentification": "Excaliber International",
-            "CurrencyOfTransfer": "USD",
+            "CurrencyOfTransfer": "$currencyOfTransfer",
             "InstructedAmount": {
-              "Amount": "1.00",
-              "Currency": "USD"
+              "Amount": "$instructedAmountValue",
+              "Currency": "$instructedAmountCurrency"
             },
             "CreditorAccount": {
               "SchemeName": "$creditorScheme",

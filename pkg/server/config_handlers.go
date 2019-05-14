@@ -1,12 +1,14 @@
 package server
 
 import (
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/server/models"
 	"fmt"
-	"gopkg.in/resty.v1"
 	"net/http"
 	"net/url"
 	"reflect"
+	"regexp"
+
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/server/models"
+	"gopkg.in/resty.v1"
 
 	validation "github.com/go-ozzo/ozzo-validation"
 	"github.com/labstack/echo"
@@ -42,25 +44,27 @@ type SupportedRequestSignAlg interface{}
 var SupportedRequestSignAlgValues = []interface{}{"PS256", "RS256", "NONE"}
 
 type GlobalConfiguration struct {
-	SigningPrivate                string            `json:"signing_private" validate:"not_empty"`
-	SigningPublic                 string            `json:"signing_public" validate:"not_empty"`
-	TransportPrivate              string            `json:"transport_private" validate:"not_empty"`
-	TransportPublic               string            `json:"transport_public" validate:"not_empty"`
-	ClientID                      string            `json:"client_id" validate:"not_empty"`
-	ClientSecret                  string            `json:"client_secret" validate:"not_empty"`
-	TokenEndpoint                 string            `json:"token_endpoint" validate:"valid_url"`
-	ResponseType                  string            `json:"response_type" validate:"not_empty"`
-	TokenEndpointAuthMethod       string            `json:"token_endpoint_auth_method" validate:"not_empty"`
-	AuthorizationEndpoint         string            `json:"authorization_endpoint" validate:"valid_url"`
-	ResourceBaseURL               string            `json:"resource_base_url" validate:"valid_url"`
-	XFAPIFinancialID              string            `json:"x_fapi_financial_id" validate:"not_empty"`
-	Issuer                        string            `json:"issuer" validate:"valid_url"`
-	RedirectURL                   string            `json:"redirect_url" validate:"valid_url"`
-	ResourceIDs                   model.ResourceIDs `json:"resource_ids" validate:"not_empty"`
-	CreditorAccount               models.Payment    `json:"creditor_account"`
-	TransactionFromDate           string            `json:"transaction_from_date" validate:"not_empty"`
-	TransactionToDate             string            `json:"transaction_to_date" validate:"not_empty"`
-	RequestObjectSigningAlgorithm string            `json:"request_object_signing_alg"`
+	SigningPrivate                string                  `json:"signing_private" validate:"not_empty"`
+	SigningPublic                 string                  `json:"signing_public" validate:"not_empty"`
+	TransportPrivate              string                  `json:"transport_private" validate:"not_empty"`
+	TransportPublic               string                  `json:"transport_public" validate:"not_empty"`
+	ClientID                      string                  `json:"client_id" validate:"not_empty"`
+	ClientSecret                  string                  `json:"client_secret" validate:"not_empty"`
+	TokenEndpoint                 string                  `json:"token_endpoint" validate:"valid_url"`
+	ResponseType                  string                  `json:"response_type" validate:"not_empty"`
+	TokenEndpointAuthMethod       string                  `json:"token_endpoint_auth_method" validate:"not_empty"`
+	AuthorizationEndpoint         string                  `json:"authorization_endpoint" validate:"valid_url"`
+	ResourceBaseURL               string                  `json:"resource_base_url" validate:"valid_url"`
+	XFAPIFinancialID              string                  `json:"x_fapi_financial_id" validate:"not_empty"`
+	Issuer                        string                  `json:"issuer" validate:"valid_url"`
+	RedirectURL                   string                  `json:"redirect_url" validate:"valid_url"`
+	ResourceIDs                   model.ResourceIDs       `json:"resource_ids" validate:"not_empty"`
+	CreditorAccount               models.Payment          `json:"creditor_account"`
+	TransactionFromDate           string                  `json:"transaction_from_date" validate:"not_empty"`
+	TransactionToDate             string                  `json:"transaction_to_date" validate:"not_empty"`
+	RequestObjectSigningAlgorithm string                  `json:"request_object_signing_alg"`
+	InstructedAmount              models.InstructedAmount `json:"instructed_amount"`
+	CurrencyOfTransfer            string                  `json:"currency_of_transfer"`
 }
 
 // Validate - used by https://github.com/go-ozzo/ozzo-validation to validate struct.
@@ -68,6 +72,8 @@ func (c GlobalConfiguration) Validate() error {
 	return validation.ValidateStruct(&c,
 		validation.Field(&c.CreditorAccount, validation.Required),
 		validation.Field(&c.ResponseType, validation.Required, validation.In(responseTypesSupported[:]...)),
+		validation.Field(&c.InstructedAmount),
+		validation.Field(&c.CurrencyOfTransfer, validation.Match(regexp.MustCompile("^[A-Z]{3,3}$"))),
 	)
 }
 
@@ -136,6 +142,8 @@ func MakeJourneyConfig(config *GlobalConfiguration) (JourneyConfig, error) {
 		redirectURL:                   config.RedirectURL,
 		resourceIDs:                   config.ResourceIDs,
 		creditorAccount:               config.CreditorAccount,
+		instructedAmount:              config.InstructedAmount,
+		currencyOfTransfer:            config.CurrencyOfTransfer,
 		transactionFromDate:           config.TransactionFromDate,
 		transactionToDate:             config.TransactionToDate,
 		requestObjectSigningAlgorithm: config.RequestObjectSigningAlgorithm,

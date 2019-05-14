@@ -7,6 +7,8 @@
       "parameters": {
         "tokenRequestScope": "payments",
         "consentId": "foobar",
+        "instructedAmountCurrency": "$instructedAmountCurrency",
+        "instructedAmountValue": "$instructedAmountValue",
         "postData": "$minimalDomesticPaymentConsent"
       },
       "headers": {
@@ -29,6 +31,8 @@
       "detail": "Check Domestic Payment consents returns in AwaitingAuthorisation.",
       "parameters": {
         "tokenRequestScope": "payments",
+        "instructedAmountCurrency": "$instructedAmountCurrency",
+        "instructedAmountValue": "$instructedAmountValue",
         "postData": "$minimalDomesticPaymentConsent",
         "requestConsent": "false"
       },
@@ -80,6 +84,8 @@
       "detail": "Check that the resource succeeds posting a domestic payment consents with a minimal data set and checks additional schema.",
       "parameters": {
         "tokenRequestScope": "payments",
+        "instructedAmountValue": "$instructedAmountValue",
+        "instructedAmountCurrency": "$instructedAmountCurrency",
         "postData": "$minimalDomesticPaymentConsent",
         "requestConsent": "true"
       },
@@ -203,6 +209,8 @@
       "detail": "Checks that the resource succeeds for a PISP posting a Domestic Scheduled Payment consent with a minimal data set and checks additional schema.",
       "parameters": {
         "tokenRequestScope": "payments",
+        "instructedAmountValue": "$instructedAmountValue",
+        "instructedAmountCurrency": "$instructedAmountCurrency",
         "postData": "$minimalScheduledDomesticPaymentConsent",
         "requestConsent": "true"
       },
@@ -250,6 +258,8 @@
       "parameters": {
         "tokenRequestScope": "payments",
         "consentId": "$OB-301-DOP-100800-ConsentId",
+        "instructedAmountCurrency": "$instructedAmountCurrency",
+        "instructedAmountValue": "$instructedAmountValue",
         "postData": "$minimalDomesticPaymentConsent"
       },
       "body": "$postData",
@@ -291,6 +301,8 @@
       "detail": "Checks that the resource succeeds for a PISP posting a Domestic Standing Order consent with a minimal data set and checks additional schema.",
       "parameters": {
         "tokenRequestScope": "payments",
+        "instructedAmountValue": "$instructedAmountValue",
+        "instructedAmountCurrency": "$instructedAmountCurrency",
         "postData": "$minimalScheduledDomesticPaymentConsent",
         "requestConsent": "true"
       },
@@ -336,6 +348,8 @@
       "detail": "Checks that the resource succeeds posting a Domestic Standing Order with a minimal data set and checks additional schema.",
       "parameters": {
         "tokenRequestScope": "payments",
+        "instructedAmountCurrency": "$instructedAmountCurrency",
+        "instructedAmountValue": "$instructedAmountValue",
         "postData": "$minimalDomesticPaymentConsent",
         "consentId": "$OB-301-DOP-101200-ConsentId"
       },
@@ -378,6 +392,9 @@
       "detail": "Checks that the resource succeeds for a PISP asking for a International Payment consent with a minimal data set and checks additional schema.",
       "parameters": {
         "tokenRequestScope": "payments",
+        "instructedAmountValue": "$instructedAmountValue",
+        "instructedAmountCurrency": "$instructedAmountCurrency",
+        "currencyOfTransfer": "$currencyOfTransfer",
         "postData": "$minimalInternationalPaymentConsent",
         "requestConsent": "true"
       },
@@ -423,6 +440,9 @@
       "detail": "Checks that the resource succeeds posting a  International Payment with a minimal data set and checks additional schema.",
       "parameters": {
         "tokenRequestScope": "payments",
+        "instructedAmountValue": "$instructedAmountValue",
+        "instructedAmountCurrency": "$instructedAmountCurrency",
+        "currencyOfTransfer": "$currencyOfTransfer",
         "postData": "$minimalInternationalPaymentConsent",
         "consentId": "$OB-301-DOP-101600-ConsentId"
       },
@@ -466,6 +486,9 @@
       "detail": "Checks that the resource succeeds for a PISP asking for a International Scheduled Payment consent with a minimal data set and checks additional schema.",
       "parameters": {
         "tokenRequestScope": "payments",
+        "instructedAmountValue": "$instructedAmountValue",
+        "instructedAmountCurrency": "$instructedAmountCurrency",
+        "currencyOfTransfer": "$currencyOfTransfer",
         "postData": "$minimalInternationalScheduledPaymentConsent",
         "requestConsent": "true"
       },
@@ -511,6 +534,9 @@
       "detail": "Checks that the resource succeeds posting an International Scheduled Payment with a minimal data set and checks additional schema.",
       "parameters": {
         "tokenRequestScope": "payments",
+        "instructedAmountValue": "$instructedAmountValue",
+        "instructedAmountCurrency": "$instructedAmountCurrency",
+        "currencyOfTransfer": "$currencyOfTransfer",
         "postData": "$minimalInternationalScheduledPayment",
         "consentId": "$OB-301-DOP-102000-ConsentId"
       },
@@ -554,6 +580,9 @@
       "detail": "Checks that the resource succeeds for a PISP asking for a International Standing Orders consent with a minimal data set and checks additional schema.",
       "parameters": {
         "tokenRequestScope": "payments",
+        "instructedAmountValue": "$instructedAmountValue",
+        "instructedAmountCurrency": "$instructedAmountCurrency",
+        "currencyOfTransfer": "$currencyOfTransfer",
         "postData": "$minimalInternationalStandingOrderConsent",
         "requestConsent": "true"
       },
@@ -599,6 +628,9 @@
       "detail": "Checks that the resource succeeds posting an International Scheduled Payment with a minimal data set and checks additional schema.",
       "parameters": {
         "tokenRequestScope": "payments",
+        "instructedAmountValue": "$instructedAmountValue",
+        "instructedAmountCurrency": "$instructedAmountCurrency",
+        "currencyOfTransfer": "$currencyOfTransfer",
         "postData": "$minimalInternationalStandingOrder",
         "consentId": "$OB-301-DOP-102400-ConsentId"
       },

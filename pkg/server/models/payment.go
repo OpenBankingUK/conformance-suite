@@ -1,6 +1,8 @@
 package models
 
 import (
+	"regexp"
+
 	validation "github.com/go-ozzo/ozzo-validation"
 )
 
@@ -39,6 +41,23 @@ type Payment struct {
 	// Name of the account, as assigned by the account servicing institution.
 	// Usage: The account name is the name or names of the account owner(s) represented at an account level. The account name is not the product name or the nickname of the account.
 	Name string `json:"name" form:"name"`
+}
+
+// InstructedAmount represents global details for the payment test cases
+// As in the Payment struct, structure was deduced from this specification:
+// https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.0/dist/account-info-swagger.json
+type InstructedAmount struct {
+	Currency string  `json:"currency"`
+	Value    float64 `json:"value,string"`
+}
+
+// Validate validates value and currency of the instructed amount
+// provided in input
+func (a InstructedAmount) Validate() error {
+	return validation.ValidateStruct(&a,
+		validation.Field(&a.Value, validation.Max(float64(1))),
+		validation.Field(&a.Currency, validation.Match(regexp.MustCompile("^[A-Z]{3,3}$"))),
+	)
 }
 
 // Just an an alternate spelling to match the Account and Transaction API Specification.
