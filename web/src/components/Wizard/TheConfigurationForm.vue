@@ -350,27 +350,7 @@
             <b-form-select
               id="instructed_amount_currency"
               v-model="instructed_amount.currency"
-              :options="[
-                'USD',
-                'EUR',
-                'JPY',
-                'GBP',
-                'AUD',
-                'CAD',
-                'CHF',
-                'CNY',
-                'SEK',
-                'NZD',
-                'MXN',
-                'SGD',
-                'HKD',
-                'NOK',
-                'KRW',
-                'TRY',
-                'RUB',
-                'INR',
-                'BRL'
-              ]"
+              :options="top_20_currencies"
               required/>
           </b-form-group>
           <b-form-group
@@ -381,27 +361,7 @@
             <b-form-select
               id="currency_of_transfer"
               v-model="currency_of_transfer"
-              :options="[
-                'USD',
-                'EUR',
-                'JPY',
-                'GBP',
-                'AUD',
-                'CAD',
-                'CHF',
-                'CNY',
-                'SEK',
-                'NZD',
-                'MXN',
-                'SGD',
-                'HKD',
-                'NOK',
-                'KRW',
-                'TRY',
-                'RUB',
-                'INR',
-                'BRL'
-              ]"
+              :options="top_20_currencies"
               required/>
           </b-form-group>
         </b-form-group>
@@ -462,7 +422,6 @@ export default {
         this.$store.commit('config/SET_CLIENT_ID', value);
       },
     },
-
     client_secret: {
       get() {
         return this.$store.state.config.configuration.client_secret;
@@ -471,7 +430,6 @@ export default {
         this.$store.commit('config/SET_CLIENT_SECRET', value);
       },
     },
-
     token_endpoint: {
       get() {
         return this.$store.state.config.configuration.token_endpoint;
@@ -480,7 +438,6 @@ export default {
         this.$store.commit('config/SET_TOKEN_ENDPOINT', value);
       },
     },
-
     response_types_supported: {
       get() {
         return this.$store.state.config.response_types_supported;
@@ -549,7 +506,6 @@ export default {
         this.$store.commit('config/SET_AUTHORIZATION_ENDPOINT', value);
       },
     },
-
     resource_base_url: {
       get() {
         return this.$store.state.config.configuration.resource_base_url;
@@ -558,7 +514,6 @@ export default {
         this.$store.commit('config/SET_RESOURCE_BASE_URL', value);
       },
     },
-
     x_fapi_financial_id: {
       get() {
         return this.$store.state.config.configuration.x_fapi_financial_id;
@@ -567,7 +522,6 @@ export default {
         this.$store.commit('config/SET_X_FAPI_FINANCIAL_ID', value);
       },
     },
-
     issuer: {
       get() {
         return this.$store.state.config.configuration.issuer;
@@ -576,7 +530,6 @@ export default {
         this.$store.commit('config/SET_ISSUER', value);
       },
     },
-
     redirect_url: {
       get() {
         return this.$store.state.config.configuration.redirect_url;
@@ -585,7 +538,6 @@ export default {
         this.$store.commit('config/SET_REDIRECT_URL', value);
       },
     },
-
     creditor_account: {
       get() {
         const self = this;
@@ -611,7 +563,6 @@ export default {
         };
       },
     },
-
     instructed_amount: {
       get() {
         const self = this;
@@ -631,7 +582,6 @@ export default {
         };
       },
     },
-
     currency_of_transfer: {
       get() {
         return this.$store.state.config.configuration.currency_of_transfer;
@@ -640,6 +590,27 @@ export default {
         this.$store.commit('config/SET_CURRENCY_OF_TRANSFER', value);
       },
     },
+    top_20_currencies: [
+      'USD',
+      'EUR',
+      'JPY',
+      'GBP',
+      'AUD',
+      'CAD',
+      'CHF',
+      'CNY',
+      'SEK',
+      'NZD',
+      'MXN',
+      'SGD',
+      'HKD',
+      'NOK',
+      'KRW',
+      'TRY',
+      'RUB',
+      'INR',
+      'BRL'
+    ]
   },
   methods: {
     ...mapActions('config', [
@@ -675,7 +646,7 @@ export default {
     },
     removeResourceStatementIDField(index) {
       this.removeResourceStatementID(index);
-    },
+    }
   },
 };
 </script>
