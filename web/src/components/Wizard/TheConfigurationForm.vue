@@ -609,8 +609,8 @@ export default {
       'TRY',
       'RUB',
       'INR',
-      'BRL'
-    ]
+      'BRL',
+    ],
   },
   methods: {
     ...mapActions('config', [
@@ -646,7 +646,7 @@ export default {
     },
     removeResourceStatementIDField(index) {
       this.removeResourceStatementID(index);
-    }
+    },
   },
 };
 </script>
