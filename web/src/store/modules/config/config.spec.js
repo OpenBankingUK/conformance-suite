@@ -69,7 +69,7 @@ describe('web/src/store/modules/config', () => {
           identification: '',
           name: '',
         },
-        currency_of_transfer: 'GBP',
+        currency_of_transfer: 'USD',
         instructed_amount: {
           currency: 'GBP',
           value: '1.00',
@@ -143,7 +143,7 @@ describe('web/src/store/modules/config', () => {
           identification: '',
           name: '',
         },
-        currency_of_transfer: 'GBP',
+        currency_of_transfer: 'USD',
         instructed_amount: {
           currency: 'GBP',
           value: '1.00',
@@ -179,7 +179,7 @@ describe('web/src/store/modules/config', () => {
           identification: '',
           name: '',
         },
-        currency_of_transfer: 'GBP',
+        currency_of_transfer: 'USD',
         instructed_amount: {
           currency: 'GBP',
           value: '1.00',
@@ -214,7 +214,7 @@ describe('web/src/store/modules/config', () => {
           identification: '',
           name: '',
         },
-        currency_of_transfer: 'GBP',
+        currency_of_transfer: 'USD',
         instructed_amount: {
           currency: 'GBP',
           value: '1.00',
@@ -249,7 +249,7 @@ describe('web/src/store/modules/config', () => {
           identification: '',
           name: '',
         },
-        currency_of_transfer: 'GBP',
+        currency_of_transfer: 'USD',
         instructed_amount: {
           currency: 'GBP',
           value: '1.00',
@@ -287,7 +287,7 @@ describe('web/src/store/modules/config', () => {
           identification: '',
           name: '',
         },
-        currency_of_transfer: 'GBP',
+        currency_of_transfer: 'USD',
         instructed_amount: {
           currency: 'GBP',
           value: '1.00',
@@ -322,7 +322,7 @@ describe('web/src/store/modules/config', () => {
           identification: '',
           name: '',
         },
-        currency_of_transfer: 'GBP',
+        currency_of_transfer: 'USD',
         instructed_amount: {
           currency: 'GBP',
           value: '1.00',
@@ -357,7 +357,7 @@ describe('web/src/store/modules/config', () => {
           identification: '',
           name: '',
         },
-        currency_of_transfer: 'GBP',
+        currency_of_transfer: 'USD',
         instructed_amount: {
           currency: 'GBP',
           value: '1.00',
@@ -392,7 +392,7 @@ describe('web/src/store/modules/config', () => {
           identification: '',
           name: '',
         },
-        currency_of_transfer: 'GBP',
+        currency_of_transfer: 'USD',
         instructed_amount: {
           currency: 'GBP',
           value: '1.00',
@@ -427,7 +427,7 @@ describe('web/src/store/modules/config', () => {
           identification: '',
           name: '',
         },
-        currency_of_transfer: 'GBP',
+        currency_of_transfer: 'USD',
         instructed_amount: {
           currency: 'GBP',
           value: '1.00',
@@ -462,7 +462,7 @@ describe('web/src/store/modules/config', () => {
           identification: '',
           name: '',
         },
-        currency_of_transfer: 'GBP',
+        currency_of_transfer: 'USD',
         instructed_amount: {
           currency: 'GBP',
           value: '1.00',
@@ -503,7 +503,7 @@ describe('web/src/store/modules/config', () => {
           identification: '',
           name: '',
         },
-        currency_of_transfer: 'GBP',
+        currency_of_transfer: 'USD',
         instructed_amount: {
           currency: 'GBP',
           value: '1.00',
@@ -540,7 +540,7 @@ describe('web/src/store/modules/config', () => {
           identification: '',
           name: '',
         },
-        currency_of_transfer: 'GBP',
+        currency_of_transfer: 'USD',
         instructed_amount: {
           currency: 'GBP',
           value: '1.00',
@@ -577,7 +577,7 @@ describe('web/src/store/modules/config', () => {
           identification: '',
           name: '',
         },
-        currency_of_transfer: 'GBP',
+        currency_of_transfer: 'USD',
         instructed_amount: {
           currency: 'GBP',
           value: '1.00',
@@ -614,7 +614,7 @@ describe('web/src/store/modules/config', () => {
           identification: '',
           name: '',
         },
-        currency_of_transfer: 'GBP',
+        currency_of_transfer: 'USD',
         instructed_amount: {
           currency: 'GBP',
           value: '1.00',
@@ -657,7 +657,7 @@ describe('web/src/store/modules/config', () => {
             identification: '',
             name: '',
           },
-          currency_of_transfer: 'GBP',
+          currency_of_transfer: 'USD',
           instructed_amount: {
             currency: 'GBP',
             value: '1.00',
@@ -732,7 +732,7 @@ describe('web/src/store/modules/config', () => {
             identification: '',
             name: '',
           },
-          currency_of_transfer: 'GBP',
+          currency_of_transfer: 'USD',
           instructed_amount: {
             currency: 'GBP',
             value: '1.00',
