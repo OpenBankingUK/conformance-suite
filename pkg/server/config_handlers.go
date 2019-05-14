@@ -71,6 +71,7 @@ func (c GlobalConfiguration) Validate() error {
 	return validation.ValidateStruct(&c,
 		validation.Field(&c.CreditorAccount, validation.Required),
 		validation.Field(&c.ResponseType, validation.Required, validation.In(responseTypesSupported[:]...)),
+		validation.Field(&c.InstructedAmount),
 	)
 }
 
