@@ -1869,8 +1869,8 @@
                 "accountId": "foobar"
             },
             "permissions": [
-                "ReadAccountsBasic",
-                "ReadScheduledPaymentsDetail"
+                "ReadTransactionsBasic",
+                "ReadTransactionsDetail"
             ],
             "uri": "/accounts/$accountId/transactions",
             "uriImplementation": "mandatory",
