@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"net/url"
 	"reflect"
+	"regexp"
 
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/server/models"
 	"gopkg.in/resty.v1"
@@ -72,6 +73,7 @@ func (c GlobalConfiguration) Validate() error {
 		validation.Field(&c.CreditorAccount, validation.Required),
 		validation.Field(&c.ResponseType, validation.Required, validation.In(responseTypesSupported[:]...)),
 		validation.Field(&c.InstructedAmount),
+		validation.Field(&c.CurrencyOfTransfer, validation.Match(regexp.MustCompile("/^[A-Z]{3,3}$/"))),
 	)
 }
 
