@@ -268,7 +268,6 @@ export default {
       // NB: We do not care what value this method call returns as long
       // as it does not throw, we know the configuration is valid.
       const { configuration } = state;
-
       const setShowLoading = flag => dispatch('status/setShowLoading', flag, { root: true });
 
       await api.validateConfiguration(configuration, setShowLoading);

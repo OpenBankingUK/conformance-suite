@@ -347,24 +347,62 @@
             label-for="instructed_amount_currency"
             label="Instructed Amount Currency"
             description="Instructed amount currency.">
-            <b-form-input
+            <b-form-select
               id="instructed_amount_currency"
               v-model="instructed_amount.currency"
-              :state="isNotEmpty(instructed_amount.currency)"
-              required
-            />
+              :options="[
+                'USD',
+                'EUR',
+                'JPY',
+                'GBP',
+                'AUD',
+                'CAD',
+                'CHF',
+                'CNY',
+                'SEK',
+                'NZD',
+                'MXN',
+                'SGD',
+                'HKD',
+                'NOK',
+                'KRW',
+                'TRY',
+                'RUB',
+                'INR',
+                'BRL'
+              ]"
+              required/>
           </b-form-group>
           <b-form-group
             id="currency_of_transfer"
             label-for="currency_of_transfer"
             label="Currency Of Transfer"
             description="Currency Of Transfer.">
-            <b-form-input
+            <b-form-select
               id="currency_of_transfer"
               v-model="currency_of_transfer"
-              :state="isNotEmpty(currency_of_transfer)"
-              required
-            />
+              :options="[
+                'USD',
+                'EUR',
+                'JPY',
+                'GBP',
+                'AUD',
+                'CAD',
+                'CHF',
+                'CNY',
+                'SEK',
+                'NZD',
+                'MXN',
+                'SGD',
+                'HKD',
+                'NOK',
+                'KRW',
+                'TRY',
+                'RUB',
+                'INR',
+                'BRL'
+              ]"
+              required/>
           </b-form-group>
         </b-form-group>
       </b-card>
