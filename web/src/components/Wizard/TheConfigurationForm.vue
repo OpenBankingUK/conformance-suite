@@ -354,6 +354,18 @@
               required
             />
           </b-form-group>
+          <b-form-group
+            id="currency_of_transfer"
+            label-for="currency_of_transfer"
+            label="Currency Of Transfer"
+            description="Currency Of Transfer.">
+            <b-form-input
+              id="currency_of_transfer"
+              v-model="currency_of_transfer"
+              :state="isNotEmpty(currency_of_transfer)"
+              required
+            />
+          </b-form-group>
         </b-form-group>
       </b-card>
     </b-form>
@@ -579,6 +591,15 @@ export default {
             self.$store.commit('config/SET_INSTRUCTED_AMOUNT_CURRENCY', currency);
           },
         };
+      },
+    },
+
+    currency_of_transfer: {
+      get() {
+        return this.$store.state.config.configuration.currency_of_transfer;
+      },
+      set(value) {
+        this.$store.commit('config/SET_CURRENCY_OF_TRANSFER', value);
       },
     },
   },

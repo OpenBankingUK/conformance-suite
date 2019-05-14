@@ -43,6 +43,7 @@ export const mutationTypes = {
   SET_CREDITOR_ACCOUNT_NAME: 'SET_CREDITOR_ACCOUNT_NAME',
   SET_INSTRUCTED_AMOUNT_VALUE: 'SET_INSTRUCTED_AMOUNT_VALUE',
   SET_INSTRUCTED_AMOUNT_CURRENCY: 'SET_INSTRUCTED_AMOUNT_CURRENCY',
+  SET_CURRENCY_OF_TRANSFER: 'SET_CURRENCY_OF_TRANSFER',
 };
 
 export const mutations = {
@@ -165,6 +166,9 @@ export const mutations = {
   },
   [mutationTypes.SET_INSTRUCTED_AMOUNT_CURRENCY](state, value) {
     state.configuration.instructed_amount.currency = value;
+  },
+  [mutationTypes.SET_CURRENCY_OF_TRANSFER](state, value) {
+    state.configuration.currency_of_transfer = value;
   },
 };
 
