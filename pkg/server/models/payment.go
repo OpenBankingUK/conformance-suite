@@ -56,7 +56,7 @@ type InstructedAmount struct {
 func (a InstructedAmount) Validate() error {
 	return validation.ValidateStruct(&a,
 		validation.Field(&a.Value, validation.Max(float64(1))),
-		validation.Field(&a.Currency, validation.Match(regexp.MustCompile("/^[A-Z]{3,3}$/"))),
+		validation.Field(&a.Currency, validation.Match(regexp.MustCompile("^[A-Z]{3,3}$"))),
 	)
 }
 

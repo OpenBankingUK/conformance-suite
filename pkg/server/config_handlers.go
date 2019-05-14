@@ -73,7 +73,7 @@ func (c GlobalConfiguration) Validate() error {
 		validation.Field(&c.CreditorAccount, validation.Required),
 		validation.Field(&c.ResponseType, validation.Required, validation.In(responseTypesSupported[:]...)),
 		validation.Field(&c.InstructedAmount),
-		validation.Field(&c.CurrencyOfTransfer, validation.Match(regexp.MustCompile("/^[A-Z]{3,3}$/"))),
+		validation.Field(&c.CurrencyOfTransfer, validation.Match(regexp.MustCompile("^[A-Z]{3,3}$"))),
 	)
 }
 
