@@ -41,9 +41,12 @@ type Payment struct {
 	Name string `json:"name" form:"name"`
 }
 
+// InstructedAmount represents global details for the payment test cases
+// As in the Payment struct, structure was deduced from this specification:
+// https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.0/dist/account-info-swagger.json
 type InstructedAmount struct {
 	Currency string `json:"currency"`
-	Amount   string `json:"value"`
+	Value    string `json:"value"`
 }
 
 // Just an an alternate spelling to match the Account and Transaction API Specification.

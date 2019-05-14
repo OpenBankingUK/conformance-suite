@@ -502,7 +502,7 @@ func (wj *journey) configParametersToJourneyContext() error {
 	wj.context.PutString(ctxCreditorIdentification, wj.config.creditorAccount.Identification)
 	wj.context.PutString(ctxCreditorName, wj.config.creditorAccount.Name)
 	wj.context.PutString(ctxInstructedAmountCurrency, wj.config.instructedAmount.Currency)
-	wj.context.PutString(ctxInstructedAmountValue, wj.config.instructedAmount.Amount)
+	wj.context.PutString(ctxInstructedAmountValue, wj.config.instructedAmount.Value)
 	wj.context.PutString(ctxCurrencyOfTransfer, wj.config.currencyOfTransfer)
 	wj.context.PutString(ctxRequestObjectSigningAlg, wj.config.requestObjectSigningAlgorithm)
 	wj.context.PutString(ctxSigningPrivate, wj.config.signingPrivate)
