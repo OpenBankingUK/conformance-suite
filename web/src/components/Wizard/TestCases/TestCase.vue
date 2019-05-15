@@ -39,6 +39,7 @@
         slot="meta.status"
         slot-scope="row">
         <b-badge
+          v-if="row.value !== ''"
           :variant="row.value === 'PASSED' ? 'success' : (row.value === 'FAILED' ? 'danger' : (row.value === 'PENDING' ? 'info' : 'secondary'))"
           :class="row.value === 'FAILED' ? 'clickable' : ''"
           :id="statusIdSelector(row)"
