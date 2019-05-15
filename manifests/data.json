@@ -89,7 +89,7 @@
         "Data": {
           "ConsentId": "$OB-301-DOP-101200-ConsentId",
           "Initiation": {
-            "Frequency": "EvryDay",
+            "Frequency": "$frequency",
             "FirstPaymentDateTime": "2020-10-01T13:14:25+00:00",
             "FirstPaymentAmount": {
               "Amount": "$instructedAmountValue",
