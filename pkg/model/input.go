@@ -458,6 +458,10 @@ func (i *Input) generateJWSSignature(ctx *Context, alg jwt.SigningMethod) (strin
 	kid, _ := authentication.CalcKid(modulusBase64)
 
 	issuer, err := i.getJWSIssuerString(ctx, cert)
+	if err != nil {
+		return "", err
+	}
+	logrus.Tracef("jws issuer=%s", issuer)
 
 	logrus.WithFields(logrus.Fields{
 		"kid":    kid,
@@ -497,13 +501,13 @@ func (i *Input) getJWSIssuerString(ctx *Context, cert authentication.Certificate
 		return "", errors.New("generate JWS Signature - cannot find api-version: " + err.Error())
 	}
 	var issuer string
-	if apiVersion == "3.1.0" {
+	if apiVersion == "v3.1" {
 		issuer, err = cert.SignatureIssuer(true)
 		if err != nil {
 			logrus.Warn("cannot Issuer for Signature: ", err.Error())
 			return "", errors.New("cannot Issuer for Signature: " + err.Error())
 		}
-	} else if apiVersion == "3.0.0" {
+	} else if apiVersion == "v3.0" {
 		issuer, err = cert.DN()
 		if err != nil {
 			logrus.Warn("cannot get certificate DN: ", err.Error())
