@@ -15,7 +15,7 @@
     "OB3GLOAssertOn400": {
       "expect": {
         "status-code": 400,
-        "detail": "Expected status code 400 (Not Found)."
+        "detail": "Expected status code 400 (Bad Request)."
       }
     },
     "OB3GLOAssertOn401": {
