@@ -135,6 +135,7 @@ Select the Ozone PSU template.
 * Provide the keys, as created earlier signing and transport.
 * Enter a cleint ID and secret from Ozone Bank
 * x-fapi-financial-id = `0015800001041RHAAY`
+* account ID: 500000000000000000000001
 * Resource Base URL = <https://modelobank2018.o3bank.co.uk:4501/open-banking/v3.1/aisp>
 
 The rest of the values are taken from the well-known.
