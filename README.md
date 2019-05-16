@@ -17,17 +17,17 @@ To provide feedback, please use the public [issue tracker](https://bitbucket.org
 ## Release Notes 
 * * *
 
+### v1.1.7 (16th May 2019)
+
+Release **v1.1.7**, fixes UI bugs and makes currency and payment amount configurable in the UI.
+
+[Full Release Notes](docs/releases/v1.1.7.md) (v1.1.7.md)
+
 ### v1.1.6 (9th May 2019)
 
 Release **v1.1.6** adds `private_key_jwt` as a client authentication method, addresses issues with Azure and TLS renegotiation and increases test coverage by fixing a known issue with the swagger validation. **(recommended)**
 
 [Full Release Notes](docs/releases/v1.1.6.md) (v1.1.6.md)
-
-### v1.1.5 (26th April 2019)
-
-Release v1.1.5 addresses known issues with the signing of payments requests, payment headers and also, adds several reporting enhancements.
-
-[Full Release Notes](docs/releases/v1.1.5.md) (v1.1.5.md)
 
 ## Quickstart
 * * *
