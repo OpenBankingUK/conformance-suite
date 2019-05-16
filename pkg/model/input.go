@@ -456,10 +456,12 @@ func (i *Input) generateJWSSignature(ctx *Context, alg jwt.SigningMethod) (strin
 	modulus := cert.PublicKey().N.Bytes()
 	modulusBase64 := base64.RawURLEncoding.EncodeToString(modulus)
 	kid, _ := authentication.CalcKid(modulusBase64)
-	issuer, err := cert.DN()
+
+	issuer, err := i.getJWSIssuerString(ctx, cert)
 	if err != nil {
-		logrus.Warn("cannot get certificate DN: ", err.Error())
+		return "", err
 	}
+	logrus.Tracef("jws issuer=%s", issuer)
 
 	logrus.WithFields(logrus.Fields{
 		"kid":    kid,
@@ -490,6 +492,31 @@ func (i *Input) generateJWSSignature(ctx *Context, alg jwt.SigningMethod) (strin
 	logrus.Tracef("detached jws: %v", detachedJWS)
 
 	return detachedJWS, nil
+}
+
+func (i *Input) getJWSIssuerString(ctx *Context, cert authentication.Certificate) (string, error) {
+
+	apiVersion, err := ctx.GetString("api-version")
+	if err != nil {
+		return "", errors.New("generate JWS Signature - cannot find api-version: " + err.Error())
+	}
+	var issuer string
+	if apiVersion == "v3.1" {
+		issuer, err = cert.SignatureIssuer(true)
+		if err != nil {
+			logrus.Warn("cannot Issuer for Signature: ", err.Error())
+			return "", errors.New("cannot Issuer for Signature: " + err.Error())
+		}
+	} else if apiVersion == "v3.0" {
+		issuer, err = cert.DN()
+		if err != nil {
+			logrus.Warn("cannot get certificate DN: ", err.Error())
+		}
+	} else {
+		return "", errors.New("cannot get issuer for jws signature but api-version doesn't match 3.0.0 or 3.1.0")
+	}
+
+	return issuer, nil
 }
 
 func splitJwsWithBody(token string) string {
