@@ -99,13 +99,13 @@ at this point by running `docker login`.
 ### Production
 
 ```sh
-docker run --rm -it -p 8443:8443 -e LOG_LEVEL=debug -e LOG_TRACER=true -e LOG_HTTP_TRACE=true "openbanking/conformance-suite:v1.1.7"
+docker run --rm -it -p 8443:8443 -e LOG_LEVEL=debug -e LOG_TRACER=true -e LOG_HTTP_TRACE=true -e DISABLE_JWS=TRUE "openbanking/conformance-suite:v1.1.7"
 ```
 
 ### Non-production run
 
 ```sh
-docker run --rm -it -p 8443:8443 -e LOG_LEVEL=debug -e LOG_TRACER=true -e LOG_HTTP_TRACE=true "openbanking/conformance-suite:latest"
+docker run --rm -it -p 8443:8443 -e LOG_LEVEL=debug -e LOG_TRACER=true -e LOG_HTTP_TRACE=true -e DISABLE_JWS=TRUE "openbanking/conformance-suite:latest"
 ```
 
 If all goes well you should be able to launch the FCS UI from you browser via `https://0.0.0.0:8443`
