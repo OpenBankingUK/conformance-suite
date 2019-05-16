@@ -138,6 +138,7 @@ Select the Ozone PSU template.
 * account ID: `500000000000000000000001`
 * Resource Base URL = <https://modelobank2018.o3bank.co.uk:4501/open-banking/v3.1/aisp>
 * Resource Base URL: https://modelobank2018.o3bank.co.uk:4501
+* Identification: GB29PAPA20000390210002
 
 The rest of the values are taken from the well-known.
 
