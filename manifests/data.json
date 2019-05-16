@@ -68,6 +68,27 @@
         "Data": {
           "Permission": "Create",
           "Initiation": {
+            "Frequency": "$frequency",
+            "FirstPaymentDateTime": "2020-10-01T13:14:25+00:00",
+            "FirstPaymentAmount": {
+              "Amount": "$instructedAmountValue",
+              "Currency": "$instructedAmountCurrency"
+            },
+            "CreditorAccount": {
+              "SchemeName": "$creditorScheme",
+              "Identification": "$creditorIdentification",
+              "Name": "$creditorName"
+            }
+          }
+        },
+        "Risk": {}
+      }
+    },
+    "minimalDomesticStandingOrderEveryDay": {
+      "body": {
+        "Data": {
+          "ConsentId": "$OB-301-DOP-101200-ConsentId",
+          "Initiation": {
             "Frequency": "EvryDay",
             "FirstPaymentDateTime": "2020-10-01T13:14:25+00:00",
             "FirstPaymentAmount": {
@@ -84,12 +105,54 @@
         "Risk": {}
       }
     },
-    "minimalDomesticStandingOrder": {
+    "minimalDomesticStandingOrderInvalid": {
       "body": {
         "Data": {
           "ConsentId": "$OB-301-DOP-101200-ConsentId",
           "Initiation": {
-            "Frequency": "EvryDay",
+            "Frequency": "foobar",
+            "FirstPaymentDateTime": "2020-10-01T13:14:25+00:00",
+            "FirstPaymentAmount": {
+              "Amount": "$instructedAmountValue",
+              "Currency": "$instructedAmountCurrency"
+            },
+            "CreditorAccount": {
+              "SchemeName": "$creditorScheme",
+              "Identification": "$creditorIdentification",
+              "Name": "$creditorName"
+            }
+          }
+        },
+        "Risk": {}
+      }
+    },
+    "minimalDomesticStandingOrderQuarterly": {
+      "body": {
+        "Data": {
+          "ConsentId": "$OB-301-DOP-101201-ConsentId",
+          "Initiation": {
+            "Frequency": "QtrDay:ENGLISH",
+            "FirstPaymentDateTime": "2020-10-01T13:14:25+00:00",
+            "FirstPaymentAmount": {
+              "Amount": "$instructedAmountValue",
+              "Currency": "$instructedAmountCurrency"
+            },
+            "CreditorAccount": {
+              "SchemeName": "$creditorScheme",
+              "Identification": "$creditorIdentification",
+              "Name": "$creditorName"
+            }
+          }
+        },
+        "Risk": {}
+      }
+    },
+    "minimalDomesticStandingOrderWeekInMonth": {
+      "body": {
+        "Data": {
+          "ConsentId": "$OB-301-DOP-101202-ConsentId",
+          "Initiation": {
+            "Frequency": "WkInMnthDay:01:01",
             "FirstPaymentDateTime": "2020-10-01T13:14:25+00:00",
             "FirstPaymentAmount": {
               "Amount": "$instructedAmountValue",
