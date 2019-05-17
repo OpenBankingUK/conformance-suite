@@ -1,13 +1,14 @@
 package manifest
 
 import (
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/schema"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"regexp"
 	"strings"
 	"testing"
+
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/schema"
 
 	"github.com/stretchr/testify/assert"
 
@@ -228,7 +229,7 @@ func TestPaymentTestCaseCreation(t *testing.T) {
 		"creditorScheme":                      "default",
 	}
 	apiSpec := discovery.ModelAPISpecification{
-		SchemaVersion: accountSwaggerLocation31,
+		SchemaVersion: paymentsSwaggerLocation31,
 	}
 
 	specType, err := GetSpecType(apiSpec.SchemaVersion)

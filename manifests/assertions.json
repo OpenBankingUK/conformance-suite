@@ -141,6 +141,15 @@
           "detail": "Expected a unique identification as assigned by the ASPSP to uniquely identify the international payment resource."
         }]
       }
+    },
+
+    "OB3IPAssertInternationalStandingOrderId": {
+      "expect": {
+        "matches": [{
+          "JSON": "Data.InternationalStandingOrderId",
+          "detail": "Expected a unique identification as assigned by the ASPSP to uniquely identify the international standing order resource."
+        }]
+      }
     }
   }
 }
