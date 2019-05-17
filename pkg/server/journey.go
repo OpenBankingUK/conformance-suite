@@ -41,6 +41,10 @@ var (
 type Journey interface {
 	SetDiscoveryModel(discoveryModel *discovery.Model) (discovery.ValidationFailures, error)
 	DiscoveryModel() (discovery.Model, error)
+	SetManifests([]manifest.Scripts)
+	Manifests() ([]manifest.Scripts, error)
+	SetFilteredManifests(manifest.Scripts)
+	FilteredManifests() (manifest.Scripts, error)
 	TestCases() (generation.TestCasesRun, error)
 	CollectToken(code, state, scope string) error
 	AllTokenCollected() bool
@@ -67,6 +71,8 @@ type journey struct {
 	config                JourneyConfig
 	events                events.Events
 	permissions           map[string][]manifest.RequiredTokens
+	manifests             []manifest.Scripts
+	filteredManifests     manifest.Scripts
 }
 
 // NewJourney creates an instance for a user journey
@@ -82,6 +88,7 @@ func NewJourney(logger *logrus.Entry, generator generation.Generator, validator 
 		log:                   logger.WithField("module", "Journey"),
 		events:                events.NewEvents(),
 		permissions:           make(map[string][]manifest.RequiredTokens, 0),
+		manifests:             make([]manifest.Scripts, 0),
 	}
 }
 
@@ -128,6 +135,27 @@ func (wj *journey) DiscoveryModel() (discovery.Model, error) {
 	return *discoveryModel, nil
 }
 
+func (wj *journey) SetManifests(mfs []manifest.Scripts) {
+	if mfs == nil {
+		wj.manifests = make([]manifest.Scripts, 0)
+		return
+	}
+
+	wj.manifests = mfs
+}
+
+func (wj *journey) Manifests() ([]manifest.Scripts, error) {
+	return wj.manifests, nil
+}
+
+func (wj *journey) SetFilteredManifests(fmfs manifest.Scripts) {
+	wj.filteredManifests = fmfs
+}
+
+func (wj *journey) FilteredManifests() (manifest.Scripts, error) {
+	return wj.filteredManifests, nil
+}
+
 func (wj *journey) TestCases() (generation.TestCasesRun, error) {
 	wj.journeyLock.Lock()
 	defer wj.journeyLock.Unlock()
@@ -164,7 +192,21 @@ func (wj *journey) TestCases() (generation.TestCasesRun, error) {
 		}
 
 		logger.Debug("generator.GenerateManifestTests ...")
-		wj.testCasesRun, wj.permissions = wj.generator.GenerateManifestTests(wj.log, config, discovery, &wj.context)
+
+		wj.testCasesRun, wj.filteredManifests, wj.permissions = wj.generator.GenerateManifestTests(wj.log, config, discovery, &wj.context)
+
+		// Now specifically load the manifests of each test case into the journey
+		// so we can reference later.
+		var journeyManifests []manifest.Scripts
+		for _, tc := range wj.testCasesRun.TestCases {
+			s, err := manifest.LoadScripts(tc.Specification.Manifest)
+			if err != nil {
+				return generation.TestCasesRun{}, errors.Wrap(err, "loadScripts()")
+			}
+			journeyManifests = append(journeyManifests, s)
+		}
+		wj.SetManifests(journeyManifests)
+
 		logger.WithFields(logrus.Fields{
 			"len(wj.permissions)": len(wj.permissions),
 		}).Debug("manifest.RequiredTokens")
@@ -386,6 +428,8 @@ type JourneyConfig struct {
 	redirectURL                   string
 	resourceIDs                   model.ResourceIDs
 	creditorAccount               models.Payment
+	instructedAmount              models.InstructedAmount
+	currencyOfTransfer            string
 	apiVersion                    string
 	transactionFromDate           string
 	transactionToDate             string
@@ -430,6 +474,9 @@ const (
 	ctxCreditorSchema               = "creditorScheme"
 	ctxCreditorIdentification       = "creditorIdentification"
 	ctxCreditorName                 = "creditorName"
+	ctxInstructedAmountCurrency     = "instructedAmountCurrency"
+	ctxInstructedAmountValue        = "instructedAmountValue"
+	ctxCurrencyOfTransfer           = "currencyOfTransfer"
 	ctxTransactionFromDate          = "transactionFromDate"
 	ctxTransactionToDate            = "transactionToDate"
 	ctxRequestObjectSigningAlg      = "requestObjectSigningAlg"
@@ -454,6 +501,9 @@ func (wj *journey) configParametersToJourneyContext() error {
 	wj.context.PutString(ctxCreditorSchema, wj.config.creditorAccount.SchemeName)
 	wj.context.PutString(ctxCreditorIdentification, wj.config.creditorAccount.Identification)
 	wj.context.PutString(ctxCreditorName, wj.config.creditorAccount.Name)
+	wj.context.PutString(ctxInstructedAmountCurrency, wj.config.instructedAmount.Currency)
+	wj.context.PutString(ctxInstructedAmountValue, fmt.Sprintf("%.5f", wj.config.instructedAmount.Value))
+	wj.context.PutString(ctxCurrencyOfTransfer, wj.config.currencyOfTransfer)
 	wj.context.PutString(ctxRequestObjectSigningAlg, wj.config.requestObjectSigningAlgorithm)
 	wj.context.PutString(ctxSigningPrivate, wj.config.signingPrivate)
 	wj.context.PutString(ctxSigningPublic, wj.config.signingPublic)

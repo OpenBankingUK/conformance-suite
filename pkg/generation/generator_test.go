@@ -29,7 +29,7 @@ func TestGenerateSpecificationTestCases(t *testing.T) {
 	discovery := *testLoadDiscoveryModel(t)
 	generator := NewGenerator()
 	config := GeneratorConfig{}
-	testCasesRun, _ := generator.GenerateManifestTests(logger, config, discovery, &model.Context{})
+	testCasesRun, _, _ := generator.GenerateManifestTests(logger, config, discovery, &model.Context{})
 	cases := testCasesRun.TestCases
 
 	t.Run("returns slice of SpecificationTestCases, one per discovery item", func(t *testing.T) {

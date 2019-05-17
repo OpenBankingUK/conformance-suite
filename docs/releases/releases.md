@@ -1,4 +1,10 @@
 
+### v1.1.7 (16th May 2019)
+
+Release **v1.1.7**, fixes UI bugs and makes currency and payment amount configurable in the UI.
+
+[Full Release Notes](docs/releases/v1.1.7.md) (v1.1.7.md)
+
 ### v1.1.6 (9th May 2019)
 
 Release **v1.1.6** adds `private_key_jwt` as a client authentication method, addresses issues with Azure and TLS renegotiation and increases test coverage by fixing a known issue with the swagger validation.

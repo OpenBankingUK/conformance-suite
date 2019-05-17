@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/test"
+	validation "github.com/go-ozzo/ozzo-validation"
 )
 
 func TestPaymentValidateSchemeName(t *testing.T) {
@@ -142,4 +143,18 @@ func TestPaymentValidateName(t *testing.T) {
 
 		require.EqualError(payment.Validate(), "name: the length must be between 1 and 70.")
 	}
+}
+
+func TestPaymentValidateInstructedAmount(t *testing.T) {
+	require := test.NewRequire(t)
+	a := InstructedAmount{Currency: "USD", Value: 1.0}
+	err := validation.Validate(&a)
+	require.Nil(err)
+}
+
+func TestPaymentValidateInstructedAmountFails(t *testing.T) {
+	require := test.NewRequire(t)
+	a := InstructedAmount{Currency: "not a valid currency", Value: 1.0}
+	err := validation.Validate(&a)
+	require.NotNil(err)
 }

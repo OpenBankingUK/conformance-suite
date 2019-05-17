@@ -39,8 +39,8 @@ WORKDIR /app
 # '../../../pkg/model/testdata/spec-config.golden.json'
 ADD pkg/discovery/templates/*.json /pkg/discovery/templates/
 ADD pkg/model/testdata/*.json /pkg/model/testdata/
-ADD pkg/schema/spec/v3.0.0/*.json /pkg/schema/spec/v3.0.0/
-ADD pkg/schema/spec/v3.1.0/*.json /pkg/schema/spec/v3.1.0/
+COPY pkg/schema/spec/v3.0.0/*.json /pkg/schema/spec/v3.0.0/
+COPY pkg/schema/spec/v3.1.0/*.json /pkg/schema/spec/v3.1.0/
 ADD web .
 
 ENV FORCE_COLOR=1
@@ -66,6 +66,9 @@ COPY --from=gobuilder /app/certs /app/certs
 COPY --from=gobuilder /app/components /app/components
 COPY --from=gobuilder /app/manifests /app/manifests
 COPY --from=nodebuilder /app/dist /app/web/dist
+
+COPY pkg/schema/spec/v3.0.0/*.json /app/pkg/schema/spec/v3.0.0/
+COPY pkg/schema/spec/v3.1.0/*.json /app/pkg/schema/spec/v3.1.0/
 
 EXPOSE 8443
 

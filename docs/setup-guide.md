@@ -99,13 +99,13 @@ at this point by running `docker login`.
 ### Production
 
 ```sh
-docker run --rm -it -p 8443:8443 -e LOG_LEVEL=debug -e LOG_TRACER=true -e LOG_HTTP_TRACE=true "openbanking/conformance-suite:v1.1.6"
+docker run --rm -it -p 8443:8443 -e LOG_LEVEL=debug -e LOG_TRACER=true -e LOG_HTTP_TRACE=true -e DISABLE_JWS=TRUE "openbanking/conformance-suite:v1.1.7"
 ```
 
 ### Non-production run
 
 ```sh
-docker run --rm -it -p 8443:8443 -e LOG_LEVEL=debug -e LOG_TRACER=true -e LOG_HTTP_TRACE=true "openbanking/conformance-suite:latest"
+docker run --rm -it -p 8443:8443 -e LOG_LEVEL=debug -e LOG_TRACER=true -e LOG_HTTP_TRACE=true -e DISABLE_JWS=TRUE "openbanking/conformance-suite:latest"
 ```
 
 If all goes well you should be able to launch the FCS UI from you browser via `https://0.0.0.0:8443`
@@ -135,7 +135,10 @@ Select the Ozone PSU template.
 * Provide the keys, as created earlier signing and transport.
 * Enter a cleint ID and secret from Ozone Bank
 * x-fapi-financial-id = `0015800001041RHAAY`
+* account ID: `500000000000000000000001`
 * Resource Base URL = <https://modelobank2018.o3bank.co.uk:4501/open-banking/v3.1/aisp>
+* Resource Base URL: https://modelobank2018.o3bank.co.uk:4501
+* Identification: GB29PAPA20000390210002
 
 The rest of the values are taken from the well-known.
 

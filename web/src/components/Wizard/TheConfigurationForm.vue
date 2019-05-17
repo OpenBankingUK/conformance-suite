@@ -330,6 +330,40 @@
               required
             />
           </b-form-group>
+          <b-form-group
+            id="instructed_amount_value"
+            label-for="instructed_amount_value"
+            label="Instructed Amount Value (Capped at 1.00)"
+            description="Value of the instructed amount.">
+            <b-form-input
+              id="instructed_amount_value"
+              v-model="instructed_amount.value"
+              :state="isNotEmpty(instructed_amount.value)"
+              required
+            />
+          </b-form-group>
+          <b-form-group
+            id="instructed_amount_currency"
+            label-for="instructed_amount_currency"
+            label="Instructed Amount Currency"
+            description="Instructed amount currency.">
+            <b-form-select
+              id="instructed_amount_currency"
+              v-model="instructed_amount.currency"
+              :options="top_20_currencies"
+              required/>
+          </b-form-group>
+          <b-form-group
+            id="currency_of_transfer"
+            label-for="currency_of_transfer"
+            label="Currency Of Transfer For International Payments"
+            description="Currency Of Transfer.">
+            <b-form-select
+              id="currency_of_transfer"
+              v-model="currency_of_transfer"
+              :options="top_20_currencies"
+              required/>
+          </b-form-group>
         </b-form-group>
       </b-card>
     </b-form>
@@ -388,7 +422,6 @@ export default {
         this.$store.commit('config/SET_CLIENT_ID', value);
       },
     },
-
     client_secret: {
       get() {
         return this.$store.state.config.configuration.client_secret;
@@ -397,7 +430,6 @@ export default {
         this.$store.commit('config/SET_CLIENT_SECRET', value);
       },
     },
-
     token_endpoint: {
       get() {
         return this.$store.state.config.configuration.token_endpoint;
@@ -406,7 +438,6 @@ export default {
         this.$store.commit('config/SET_TOKEN_ENDPOINT', value);
       },
     },
-
     response_types_supported: {
       get() {
         return this.$store.state.config.response_types_supported;
@@ -475,7 +506,6 @@ export default {
         this.$store.commit('config/SET_AUTHORIZATION_ENDPOINT', value);
       },
     },
-
     resource_base_url: {
       get() {
         return this.$store.state.config.configuration.resource_base_url;
@@ -484,7 +514,6 @@ export default {
         this.$store.commit('config/SET_RESOURCE_BASE_URL', value);
       },
     },
-
     x_fapi_financial_id: {
       get() {
         return this.$store.state.config.configuration.x_fapi_financial_id;
@@ -493,7 +522,6 @@ export default {
         this.$store.commit('config/SET_X_FAPI_FINANCIAL_ID', value);
       },
     },
-
     issuer: {
       get() {
         return this.$store.state.config.configuration.issuer;
@@ -502,7 +530,6 @@ export default {
         this.$store.commit('config/SET_ISSUER', value);
       },
     },
-
     redirect_url: {
       get() {
         return this.$store.state.config.configuration.redirect_url;
@@ -511,7 +538,6 @@ export default {
         this.$store.commit('config/SET_REDIRECT_URL', value);
       },
     },
-
     creditor_account: {
       get() {
         const self = this;
@@ -535,6 +561,58 @@ export default {
             self.$store.commit('config/SET_CREDITOR_ACCOUNT_NAME', value);
           },
         };
+      },
+    },
+    instructed_amount: {
+      get() {
+        const self = this;
+        return {
+          get value() {
+            return self.$store.state.config.configuration.instructed_amount.value;
+          },
+          set value(value) {
+            self.$store.commit('config/SET_INSTRUCTED_AMOUNT_VALUE', value);
+          },
+          get currency() {
+            return self.$store.state.config.configuration.instructed_amount.currency;
+          },
+          set currency(currency) {
+            self.$store.commit('config/SET_INSTRUCTED_AMOUNT_CURRENCY', currency);
+          },
+        };
+      },
+    },
+    currency_of_transfer: {
+      get() {
+        return this.$store.state.config.configuration.currency_of_transfer;
+      },
+      set(value) {
+        this.$store.commit('config/SET_CURRENCY_OF_TRANSFER', value);
+      },
+    },
+    top_20_currencies: {
+      get() {
+        return [
+          'USD',
+          'EUR',
+          'JPY',
+          'GBP',
+          'AUD',
+          'CAD',
+          'CHF',
+          'CNY',
+          'SEK',
+          'NZD',
+          'MXN',
+          'SGD',
+          'HKD',
+          'NOK',
+          'KRW',
+          'TRY',
+          'RUB',
+          'INR',
+          'BRL',
+        ];
       },
     },
   },

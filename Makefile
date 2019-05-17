@@ -65,7 +65,7 @@ devtools: ## install dev tools.
 	@echo -e "\033[92m  ---> Installing mockery (github.com/vektra/mockery) ... \033[0m"
 	go get github.com/vektra/mockery
 	@echo -e "\033[92m  ---> Installing golangci-lint (https://github.com/golangci/golangci-lint) ... \033[0m"
-	curl -sfL "https://install.goreleaser.com/github.com/golangci/golangci-lint.sh" | sh -s -- -b $(shell go env GOPATH)/bin v1.12.5
+	curl -sfL "https://install.goreleaser.com/github.com/golangci/golangci-lint.sh" | sh -s -- -b $(shell go env GOPATH)/bin v1.16.0
 
 ##@ Cleanup:
 

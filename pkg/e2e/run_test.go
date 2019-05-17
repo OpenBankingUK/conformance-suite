@@ -33,7 +33,6 @@ const (
 var update = flag.Bool("update", false, "update .golden files")
 
 func TestRun(t *testing.T) {
-	t.Skip()
 	logger := test.NullLogger()
 
 	ver := version.NewBitBucket(version.BitBucketAPIRepository)
@@ -70,7 +69,7 @@ func TestRun(t *testing.T) {
 
 	results, err := service.Run(
 		"../discovery/templates/ob-v3.1-ozone-headless.json",
-		"../../config/config-ozone.json",
+		"../../config/config-ozone-run_test.json",
 		"../../config/report.json")
 	require.NoError(t, err)
 

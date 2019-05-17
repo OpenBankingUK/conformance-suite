@@ -3,15 +3,18 @@ package executors
 import (
 	"crypto/tls"
 	"crypto/x509"
-	"errors"
 	"fmt"
 	"net/http"
 
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/authentication"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/authentication/certificates"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/executors/results"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/tracer"
+
+	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
+
 	"gopkg.in/resty.v1"
 )
 
@@ -72,11 +75,23 @@ func (e *Executor) setupTLSCertificate(tlsCert tls.Certificate) error {
 	if err != nil {
 		return errors.New("setupTLSCertificate SystemCertPool:" + err.Error())
 	}
+	if ok := caCertPool.AppendCertsFromPEM(certificates.OpenBankingSandBoxIssuingCA()); !ok {
+		return errors.New("setupTLSCertificate failed to append OpenBankingSandBoxIssuingCA")
+	}
+	if ok := caCertPool.AppendCertsFromPEM(certificates.OpenBankingSandBoxRootCA()); !ok {
+		return errors.New("setupTLSCertificate failed to append OpenBankingSandBoxRootCA")
+	}
+	if ok := caCertPool.AppendCertsFromPEM(certificates.OpenBankingIssuingCA()); !ok {
+		return errors.New("setupTLSCertificate failed to append OpenBankingIssuingCA")
+	}
+	if ok := caCertPool.AppendCertsFromPEM(certificates.OpenBankingRootCA()); !ok {
+		return errors.New("setupTLSCertificate failed to append OpenBankingRootCA")
+	}
 
 	tlsConfig := &tls.Config{
 		Certificates:       []tls.Certificate{tlsCert},
 		RootCAs:            caCertPool,
-		InsecureSkipVerify: true,
+		InsecureSkipVerify: false,
 		MinVersion:         tls.VersionSSL30,
 		Renegotiation:      tls.RenegotiateFreelyAsClient,
 		CipherSuites: []uint16{

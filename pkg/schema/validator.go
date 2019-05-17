@@ -2,11 +2,13 @@ package schema
 
 import (
 	"fmt"
-	"github.com/go-openapi/loads"
-	"github.com/pkg/errors"
 	"io"
 	"io/ioutil"
 	"net/http"
+	"os"
+
+	"github.com/go-openapi/loads"
+	"github.com/pkg/errors"
 )
 
 // Response represents a response object from a HTTP Call
@@ -38,21 +40,26 @@ func NewSwaggerOBSpecValidator(specName, version string) (Validator, error) {
 	const dirname = "pkg/schema/spec/v3.1.0"
 	files, err := ioutil.ReadDir(dirname)
 	if err != nil {
-		return nil, errors.Wrap(err, "opening spec folder")
+		wd, errGetwd := os.Getwd()
+		if errGetwd != nil {
+			return nil, errors.Wrapf(errGetwd, "schema: opening spec folder failed in os.Getwd, dirname=%q", dirname)
+		}
+
+		return nil, errors.Wrapf(err, "schema: opening spec folder failed, dirname=%q, wd=%q", dirname, wd)
 	}
 
 	for _, f := range files {
 		filename := dirname + "/" + f.Name()
 		doc, err := loads.Spec(filename)
 		if err != nil {
-			return nil, errors.Wrap(err, "opening spec file")
+			return nil, errors.Wrapf(err, "schema: opening spec file, filename=%q", filename)
 		}
 		if doc.Spec().Info.Version == version && doc.Spec().Info.Title == specName {
 			return NewSwaggerValidator(filename)
 		}
 	}
 
-	return nil, fmt.Errorf("could not find spec file for spec %s version %s", specName, version)
+	return nil, fmt.Errorf("schema: could not find spec file for spec %s version %s", specName, version)
 }
 
 // NewSwaggerValidator returns a swagger validator implementation

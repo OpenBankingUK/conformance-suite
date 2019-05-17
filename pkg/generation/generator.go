@@ -30,7 +30,7 @@ type GeneratorConfig struct {
 
 // Generator - generates test cases from discovery model
 type Generator interface {
-	GenerateManifestTests(log *logrus.Entry, config GeneratorConfig, discovery discovery.ModelDiscovery, ctx *model.Context) (TestCasesRun, map[string][]manifest.RequiredTokens)
+	GenerateManifestTests(log *logrus.Entry, config GeneratorConfig, discovery discovery.ModelDiscovery, ctx *model.Context) (TestCasesRun, manifest.Scripts, map[string][]manifest.RequiredTokens)
 }
 
 // NewGenerator - returns implementation of Generator interface
@@ -69,7 +69,7 @@ func shouldIgnoreDiscoveryItem(apiSpecification discovery.ModelAPISpecification)
 }
 
 // Work in progress to integrate Manifest Test
-func (g generator) GenerateManifestTests(log *logrus.Entry, config GeneratorConfig, discovery discovery.ModelDiscovery, ctx *model.Context) (TestCasesRun, map[string][]manifest.RequiredTokens) {
+func (g generator) GenerateManifestTests(log *logrus.Entry, config GeneratorConfig, discovery discovery.ModelDiscovery, ctx *model.Context) (TestCasesRun, manifest.Scripts, map[string][]manifest.RequiredTokens) {
 	log = log.WithField("module", "GenerateManifestTests")
 	for k, item := range discovery.DiscoveryItems {
 		spectype, err := manifest.GetSpecType(item.APISpecification.SchemaVersion)
@@ -85,9 +85,15 @@ func (g generator) GenerateManifestTests(log *logrus.Entry, config GeneratorConf
 
 	specTestCases := []SpecificationTestCases{}
 	var scrSlice []model.SpecConsentRequirements
+	var filteredScripts manifest.Scripts
 	tokens := map[string][]manifest.RequiredTokens{}
 
 	for _, item := range discovery.DiscoveryItems {
+		specType, err := manifest.GetSpecType(item.APISpecification.SchemaVersion)
+		if err != nil {
+			log.Warnf("failed to determine spec type for: `%s`", item.APISpecification.SchemaVersion)
+			continue
+		}
 		validator, err := schema.NewSwaggerOBSpecValidator(item.APISpecification.Name, item.APISpecification.Version)
 		if err != nil {
 			log.WithError(err).Warnf("manifest testcase generation failed for %s", item.APISpecification.SchemaVersion)
@@ -96,7 +102,9 @@ func (g generator) GenerateManifestTests(log *logrus.Entry, config GeneratorConf
 		log.WithFields(logrus.Fields{"name": item.APISpecification.Name, "version": item.APISpecification.Version}).
 			Info("swagger spec validator created")
 
-		tcs, err := manifest.GenerateTestCases(item.APISpecification, item.ResourceBaseURI, ctx, item.Endpoints, item.APISpecification.Manifest, validator)
+		scripts, _, err := manifest.LoadGenerationResources(specType, item.APISpecification.Manifest)
+		tcs, fsc, err := manifest.GenerateTestCases(scripts, item.APISpecification, item.ResourceBaseURI, ctx, item.Endpoints, item.APISpecification.Manifest, validator)
+		filteredScripts = fsc
 		if err != nil {
 			log.Warnf("manifest testcase generation failed for %s", item.APISpecification.SchemaVersion)
 			continue
@@ -142,7 +150,7 @@ func (g generator) GenerateManifestTests(log *logrus.Entry, config GeneratorConf
 		logrus.Tracef("%#v", v)
 	}
 	logrus.Trace("---------------------------------------")
-	return TestCasesRun{specTestCases, scrSlice}, tokens
+	return TestCasesRun{specTestCases, scrSlice}, filteredScripts, tokens
 }
 
 // taks all the payment testscases
