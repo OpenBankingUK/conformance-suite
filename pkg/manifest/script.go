@@ -110,10 +110,15 @@ func GenerateTestCases(scripts Scripts, spec discovery.ModelAPISpecification, ba
 		return nil, Scripts{}, err
 	}
 	var filteredScripts Scripts
-	if specType == "accounts" { //TODO: Complete so it makes sense for payments
-		filteredScripts, err = FilterTestsBasedOnDiscoveryEndpoints(scripts, endpoints)
+	if specType == "accounts" {
+		filteredScripts, err = FilterTestsBasedOnDiscoveryEndpoints(scripts, endpoints, accountsRegex)
 		if err != nil {
-			logger.WithFields(logrus.Fields{"err": err}).Error("error filter scripts based on discovery")
+			logger.WithFields(logrus.Fields{"err": err}).Error("error filter scripts based on accounts discovery")
+		}
+	} else if specType == "payments" {
+		filteredScripts, err = FilterTestsBasedOnDiscoveryEndpoints(scripts, endpoints, paymentsRegex)
+		if err != nil {
+			logger.WithFields(logrus.Fields{"err": err}).Error("error filter scripts based on payments discovery")
 		}
 	} else {
 		filteredScripts = scripts // normal processing
@@ -428,42 +433,46 @@ func getAccountPermissions(tests []model.TestCase) ([]ScriptPermission, error) {
 	return permCollector, nil
 }
 
-func FilterTestsBasedOnDiscoveryEndpoints(scripts Scripts, endpoints []discovery.ModelEndpoint) (Scripts, error) {
+// FilterTestsBasedOnDiscoveryEndpoints returns a subset of the first `scripts` parameter, thus filtering `scripts`.
+// Filtering is performed by matching (via `regPaths` regex's) the provided `endpoints` against the provided `scripts`.
+// The result is: For each path in the collection of scripts returned, there is at least one matching path in the `endpoint`
+// list.
+func FilterTestsBasedOnDiscoveryEndpoints(scripts Scripts, endpoints []discovery.ModelEndpoint, regPaths []PathRegex) (Scripts, error) {
 	lookupMap := make(map[string]bool)
-	filteredScripts := []Script{}
+	var filteredScripts []Script
 
 	for _, ep := range endpoints {
-		for _, regpath := range accountsRegex {
-			matched, err := regexp.MatchString(regpath.Regex, ep.Path)
+		for _, regPath := range regPaths {
+			matched, err := regexp.MatchString(regPath.Regex, ep.Path)
 			if err != nil {
 				continue
 			}
 			if matched {
-				lookupMap[regpath.Regex] = true
-				logrus.Tracef("endpoint %40.40s matched by regex %42.42s: %s", ep.Path, regpath.Regex, regpath.Name)
+				lookupMap[regPath.Regex] = true
+				logrus.Tracef("endpoint %40.40s matched by regex %42.42s: %s", ep.Path, regPath.Regex, regPath.Name)
 			}
 		}
 	}
 
 	for k := range lookupMap {
-		for i, scr := range scripts.Scripts {
+		for _, scr := range scripts.Scripts {
 			stripped := strings.Replace(scr.URI, "$", "", -1) // only works with a single character
 			if strings.Contains(stripped, "foobar") {         //exceptions
-				nofoobar := strings.Replace(stripped, "/foobar", "", -1) // only works with a single character
-				matched, err := regexp.MatchString(k, nofoobar)
+				noFoobar := strings.Replace(stripped, "/foobar", "", -1) // only works with a single character
+				matched, err := regexp.MatchString(k, noFoobar)
 				if err != nil {
 					continue
 				}
 				if matched {
-					if !contains(filteredScripts, scripts.Scripts[i]) {
+					if !contains(filteredScripts, scr) {
 						logrus.Tracef("endpoint %40.40s matched by regex %42.42s", scr.URI, k)
-						filteredScripts = append(filteredScripts, scripts.Scripts[i])
+						filteredScripts = append(filteredScripts, scr)
 					}
 				}
 
 				if scr.URI == "/foobar" {
-					if !contains(filteredScripts, scripts.Scripts[i]) {
-						filteredScripts = append(filteredScripts, scripts.Scripts[i])
+					if !contains(filteredScripts, scr) {
+						filteredScripts = append(filteredScripts, scr)
 					}
 					continue
 				}
@@ -474,17 +483,17 @@ func FilterTestsBasedOnDiscoveryEndpoints(scripts Scripts, endpoints []discovery
 				continue
 			}
 			if matched {
-				if !contains(filteredScripts, scripts.Scripts[i]) {
+				if !contains(filteredScripts, scr) {
 					logrus.Tracef("endpoint %40.40s matched by regex %42.42s", scr.URI, k)
-					filteredScripts = append(filteredScripts, scripts.Scripts[i])
+					filteredScripts = append(filteredScripts, scr)
 				}
 			}
 		}
 	}
-	resultscripts := Scripts{Scripts: filteredScripts}
-	sort.Slice(resultscripts.Scripts, func(i, j int) bool { return resultscripts.Scripts[i].ID < resultscripts.Scripts[j].ID })
+	result := Scripts{Scripts: filteredScripts}
+	sort.Slice(result.Scripts, func(i, j int) bool { return result.Scripts[i].ID < result.Scripts[j].ID })
 
-	return resultscripts, nil
+	return result, nil
 }
 
 func contains(s []Script, e Script) bool {
@@ -503,23 +512,23 @@ func dumpJSON(i interface{}) {
 	fmt.Println(string(model))
 }
 
-var subPathx = "[a-zA-Z0-9_{}-]+" // url sub path regex
+var subPathx = "[a-zA-Z0-9_{}-]+" // url s	ub path regex
 
-type pathRegex struct {
+type PathRegex struct {
 	Regex string
 	Name  string
 }
 
-var accountsRegex = []pathRegex{
+var accountsRegex = []PathRegex{
 	{"^/accounts$", "Get Accounts"},
 	{"^/accounts/" + subPathx + "$", "Get Accounts Resource"},
 	{"^/accounts/" + subPathx + "/balances$", "Get Balances Resource"},
 	{"^/accounts/" + subPathx + "/beneficiaries$", "Get Beneficiaries Resource"},
 	{"^/accounts/" + subPathx + "/direct-debits$", "Get Direct Debits Resource"},
 	{"^/accounts/" + subPathx + "/offers$", "Get Offers Resource"},
-	{"^/accounts/" + subPathx + "/party$", "Get Party Rsource"},
+	{"^/accounts/" + subPathx + "/party$", "Get Party Resource"},
 	{"^/accounts/" + subPathx + "/product$", "Get Product Resource"},
-	{"^/accounts/" + subPathx + "/scheduled-payments$", "Get Schedulated Payment resource"},
+	{"^/accounts/" + subPathx + "/scheduled-payments$", "Get Scheduled Payment resource"},
 	{"^/accounts/" + subPathx + "/standing-orders$", "Get Standing Orders resource"},
 	{"^/accounts/" + subPathx + "/statements$", "Get Statements Resource"},
 	{"^/accounts/" + subPathx + "/statements/" + subPathx + "/file$", "Get statement files resource"},
@@ -535,6 +544,97 @@ var accountsRegex = []pathRegex{
 	{"^/standing-orders$", "Get Orders"},
 	{"^/statements$", "Get Statements"},
 	{"^/transactions$", "Get Transactions"},
+}
+
+var paymentsRegex = []PathRegex{
+	{
+		Regex:"^/domestic-payment-consents/" + subPathx + "$",
+		Name:"",
+	},
+	{
+		Regex:"^/domestic-payment-consents$",
+		Name:"",
+	},
+	{
+		Regex:"^/domestic-payment-consents/" + subPathx + "/funds-confirmation$",
+		Name:"",
+	},
+	{
+		Regex:"^/domestic-payment-consents/" + subPathx + "/funds-confirmation$",
+		Name:"",
+	},
+	{
+		Regex:"^/domestic-payments$",
+		Name:"",
+	},
+	{
+		Regex:"^/domestic-payments/" + subPathx + "$",
+		Name:"",
+	},
+	{
+		Regex:"^/domestic-scheduled-payment-consents$",
+		Name:"",
+	},
+	{
+		Regex:"^/domestic-scheduled-payment-consents/" + subPathx + "$",
+		Name:"",
+	},
+	{
+		Regex:"^/domestic-scheduled-payment-consents$",
+		Name:"",
+	},
+	{
+		Regex:"^/domestic-scheduled-payment-consents/" + subPathx + "$",
+		Name:"",
+	},
+	{
+		Regex:"^/domestic-standing-order-consents$",
+		Name:"",
+	},
+	{
+		Regex:"^/domestic-standing-order-consents/" + subPathx + "$",
+		Name:"",
+	},
+	{
+		Regex:"^/domestic-standing-orders$",
+		Name:"",
+	},
+	{
+		Regex:"^/domestic-standing-orders/" + subPathx + "$",
+		Name:"",
+	},
+	{
+		Regex:"^/international-payment-consents$",
+		Name:"",
+	},
+	{
+		Regex:"^/international-payment-consents/" + subPathx + "$",
+		Name:"",
+	},
+	{
+		Regex:"^/international-payments$",
+		Name:"",
+	},
+	{
+		Regex:"^/international-payments/" + subPathx + "$",
+		Name:"",
+	},
+	{
+		Regex:"^/international-scheduled-payment-consents$",
+		Name:"",
+	},
+	{
+		Regex:"^/international-scheduled-payment-consents/" + subPathx + "$",
+		Name:"",
+	},
+	{
+		Regex:"^/international-scheduled-payments$",
+		Name:"",
+	},
+	{
+		Regex:"^/international-scheduled-payments/" + subPathx + "$",
+		Name:"",
+	},
 }
 
 func timeNowMillis() string {

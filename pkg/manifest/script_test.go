@@ -248,3 +248,125 @@ func TestPaymentTestCaseCreation(t *testing.T) {
 	}
 
 }
+
+func TestFilterTestsBasedOnDiscoveryEndpoints(t *testing.T) {
+	scripts := Scripts{
+		Scripts: []Script{
+			{
+				ID: "0000",
+				URI: "/domestic-payment-consents/ConsentID-Here1234",
+			},
+			{
+				ID: "1000",
+				URI: "/domestic-payment-consents",
+			},
+			{
+				ID: "2000",
+				URI: "/domestic-payment-consents/ConsentID-Here1234/funds-confirmation",
+			},
+			{
+				ID: "3000",
+				URI: "/domestic-payments",
+			},
+			{
+				ID: "4000",
+				URI: "/domestic-payments/ConsentID-Here1234",
+			},
+			{
+				ID: "5000",
+				URI: "/domestic-scheduled-payment-consents",
+			},
+			{
+				ID: "6000",
+				URI: "/domestic-scheduled-payment-consents/ConsentID-Here1234",
+			},
+			{
+				ID: "7000",
+				URI: "/domestic-scheduled-payment-consents/ConsentID-Here1234",
+			},
+			{
+				ID: "8000",
+				URI: "/domestic-scheduled-payments/DomesticSceduledPaymentID-Here1234",
+			},
+			{
+				ID: "90000",
+				URI: "/domestic-standing-order-consents",
+			},
+			{
+				ID: "10000",
+				URI: "/domestic-standing-order-consents/ConsentID-Here1234",
+			},
+			{
+				ID: "11000",
+				URI: "/domestic-standing-orders/DomesticStandingOrderID-Here1234",
+			},
+			{
+				ID: "12000",
+				URI: "/international-payment-consents",
+			},
+			{
+				ID: "13000",
+				URI: "/international-payment-consents/ConsentID-Here1234",
+			},
+			{
+				ID: "14000",
+				URI: "/international-payments",
+			},
+			{
+				ID: "15000",
+				URI: "/international-payments/ConsentID-Here1234",
+			},
+			{
+				ID: "16000",
+				URI: "/international-scheduled-payment-consents",
+			},
+			{
+				ID: "17000",
+				URI: "/international-scheduled-payment-consents/ConsentID-Here1234",
+			},
+			{
+				ID: "18000",
+				URI: "/international-scheduled-payments",
+			},
+			{
+				ID: "19000",
+				URI: "/international-scheduled-payments/InternationalScheduledPaymentID-Here1234",
+			},
+		},
+	}
+	endpoints := []discovery.ModelEndpoint{
+		{
+			Path: "/domestic-payment-consents/1234",
+		},
+		{
+			Path: "/domestic-payment-consents",
+		},
+		{
+			Path: "/international-payments/INT-PAY-1234-ID",
+		},
+		{
+			Path: "/domestic-payment-consents/2345678987DFGHJGH/funds-confirmation",
+		},
+		{
+			Path: "/international-scheduled-payments/InternationalScheduledPaymentID-Here1234",
+		},
+		{
+			Path: "/international-payment-consents",
+		},
+
+	}
+	filtered, err := FilterTestsBasedOnDiscoveryEndpoints(scripts, endpoints, paymentsRegex)
+	assert.NoError(t, err)
+
+	// As a simple check validate the lengths match
+	assert.Equal(t, len(endpoints), len(filtered.Scripts))
+
+	// Now, we need to check that the scripts we expect are actually in the result set
+	// We know what to check for by manually matching the paths in `endpoints` to paths in `scripts`
+	assert.True(t, contains(filtered.Scripts, scripts.Scripts[0]))
+	assert.True(t, contains(filtered.Scripts, scripts.Scripts[1]))
+	assert.True(t, contains(filtered.Scripts, scripts.Scripts[15]))
+	assert.True(t, contains(filtered.Scripts, scripts.Scripts[2]))
+	assert.True(t, contains(filtered.Scripts, scripts.Scripts[19]))
+	assert.True(t, contains(filtered.Scripts, scripts.Scripts[12]))
+}
