@@ -1,7 +1,7 @@
 package server
 
 import (
-	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/sets"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/sets"
 	"fmt"
 	"github.com/labstack/echo"
 	"github.com/pkg/errors"

@@ -1,7 +1,7 @@
 package report
 
 import (
-	internal_time "bitbucket.org/openbankingteam/conformance-suite/internal/pkg/time"
+	internal_time "bitbucket.org/openbankingteam/conformance-suite/pkg/time"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/executors/results"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/manifest"

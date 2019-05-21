@@ -10,9 +10,9 @@ import (
 	"io/ioutil"
 	"strings"
 
-	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/version"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/version"
 
-	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/names"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/names"
 
 	"github.com/sirupsen/logrus"
 

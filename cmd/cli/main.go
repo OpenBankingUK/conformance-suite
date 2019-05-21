@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"os"
 
-	os2 "bitbucket.org/openbankingteam/conformance-suite/internal/pkg/os"
+	os2 "bitbucket.org/openbankingteam/conformance-suite/pkg/os"
 	"github.com/spf13/cobra"
 )
 

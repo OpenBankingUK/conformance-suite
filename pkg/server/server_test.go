@@ -15,8 +15,8 @@ import (
 
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/client"
 
-	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/test"
-	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/version/mocks"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/test"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/version/mocks"
 	"github.com/labstack/echo"
 	"github.com/stretchr/testify/require"
 )

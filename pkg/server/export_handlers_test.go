@@ -8,9 +8,9 @@ import (
 	"testing"
 	"time"
 
-	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/test"
-	internal_time "bitbucket.org/openbankingteam/conformance-suite/internal/pkg/time"
-	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/version/mocks"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/test"
+	internal_time "bitbucket.org/openbankingteam/conformance-suite/pkg/time"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/version/mocks"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/report"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/server/models"
 
@@ -40,7 +40,7 @@ func TestServerPostExport(t *testing.T) {
 
 	// make the request and record time the export operation was started
 	exportTime := time.Now()
-	// we can remove this sleep if we change `bitbucket.org/openbankingteam/conformance-suite/internal/pkg/time`.Layout to `time.RFC3339Nano`.
+	// we can remove this sleep if we change `bitbucket.org/openbankingteam/conformance-suite/pkg/time`.Layout to `time.RFC3339Nano`.
 	time.Sleep(1 * time.Second)
 	code, body, headers := request(http.MethodPost, "/api/export", bytes.NewReader(requestJSON), server)
 
