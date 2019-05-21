@@ -120,7 +120,7 @@ To verify the content has not been tampered with you can you the `DOCKER_CONTENT
     DOCKER_CONTENT_TRUST=1 docker pull openbanking/conformance-suite:TAG
     DOCKER_CONTENT_TRUST=1 docker RUN openbanking/conformance-suite:TAG
 
-## Step 4: Congig & Run the Functional Conformance Suite
+## Step 4: Configure  & Run the Functional Conformance Suite
 
 Running a test plan on the FCS involves five steps, as follows:
 
