@@ -216,7 +216,6 @@ func (wj *journey) TestCases() (generation.TestCasesRun, error) {
 				"permission": permission,
 			}).Debug("We have a permission ([]manifest.RequiredTokens)")
 		}
-		wj.context.PutString(ctxPhase, "token_aquisition")
 		if discovery.TokenAcquisition == "psu" {
 			logger.WithFields(logrus.Fields{
 				"discovery.TokenAcquisition": discovery.TokenAcquisition,
