@@ -371,5 +371,27 @@ func TestFilterTestsBasedOnDiscoveryEndpoints(t *testing.T) {
 	assert.True(t, contains(filtered.Scripts, scripts.Scripts[12]))
 	assert.True(t, contains(filtered.Scripts, scripts.Scripts[15]))
 	assert.True(t, contains(filtered.Scripts, scripts.Scripts[19]))
+}
+
+func TestContains(t *testing.T) {
+	collection := []Script{
+		{
+			ID: "123",
+		},
+		{
+			ID: "456",
+		},
+	}
+
+	subjectExists := Script{
+		ID: "123",
+	}
+	subjectNotExists := Script{
+		ID: "789",
+	}
+
+	assert.True(t, contains(collection, subjectExists))
+	assert.False(t, contains(collection, subjectNotExists))
+
 
 }
