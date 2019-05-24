@@ -9,7 +9,7 @@ import (
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/generation"
 
-	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/version"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/version"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/server"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/tracer"

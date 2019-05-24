@@ -7,7 +7,7 @@ import (
 	"encoding/pem"
 	"testing"
 
-	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/test"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/test"
 )
 
 const (

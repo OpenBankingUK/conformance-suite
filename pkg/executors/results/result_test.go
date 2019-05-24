@@ -3,7 +3,7 @@ package results
 import (
 	"encoding/json"
 
-	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/test"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/test"
 
 	"errors"
 	"testing"
