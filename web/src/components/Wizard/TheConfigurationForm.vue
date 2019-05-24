@@ -331,7 +331,7 @@
             />
           </b-form-group>
           <b-form-group
-            id="instructed_amount_value"
+            id="instructed_amount_value_group"
             label-for="instructed_amount_value"
             label="Instructed Amount Value (Capped at 1.00)"
             description="Value of the instructed amount.">
@@ -343,7 +343,7 @@
             />
           </b-form-group>
           <b-form-group
-            id="instructed_amount_currency"
+            id="instructed_amount_currency_group"
             label-for="instructed_amount_currency"
             label="Instructed Amount Currency"
             description="Instructed amount currency.">
@@ -354,7 +354,7 @@
               required/>
           </b-form-group>
           <b-form-group
-            id="currency_of_transfer"
+            id="currency_of_transfer_group"
             label-for="currency_of_transfer"
             label="Currency Of Transfer For International Payments"
             description="Currency Of Transfer.">
