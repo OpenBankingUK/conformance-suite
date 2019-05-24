@@ -248,6 +248,7 @@ func TestPaymentTestCaseCreation(t *testing.T) {
 	}
 
 }
+
 // TestFilterTestsBasedOnDiscoveryEndpoints with this test we want to test filtering of Scripts.
 // Given a collection of `Scripts` and a collection of `endpoints`, we want the tested function return
 // a subset of `Scripts`, where the URI of each returned script matches an endpoint (via regex) of at least one of
@@ -392,6 +393,5 @@ func TestContains(t *testing.T) {
 
 	assert.True(t, contains(collection, subjectExists))
 	assert.False(t, contains(collection, subjectNotExists))
-
 
 }

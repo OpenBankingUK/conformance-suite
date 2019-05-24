@@ -522,109 +522,109 @@ type PathRegex struct {
 
 var accountsRegex = []PathRegex{
 	{
-		Regex:  "^/accounts$",
-		Name:   "Get Accounts",
+		Regex: "^/accounts$",
+		Name:  "Get Accounts",
 	},
 	{
-		Regex:  "^/accounts/" + subPathx + "$",
-		Name:   "Get Accounts Resource",
+		Regex: "^/accounts/" + subPathx + "$",
+		Name:  "Get Accounts Resource",
 	},
 	{
-		Regex:  "^/accounts/" + subPathx + "/balances$",
-		Name:   "Get Balances Resource",
+		Regex: "^/accounts/" + subPathx + "/balances$",
+		Name:  "Get Balances Resource",
 	},
 	{
-		Regex:  "^/accounts/" + subPathx + "/beneficiaries$",
-		Name:   "Get Beneficiaries Resource",
+		Regex: "^/accounts/" + subPathx + "/beneficiaries$",
+		Name:  "Get Beneficiaries Resource",
 	},
 	{
-		Regex:  "^/accounts/" + subPathx + "/direct-debits$",
-		Name:   "Get Direct Debits Resource",
+		Regex: "^/accounts/" + subPathx + "/direct-debits$",
+		Name:  "Get Direct Debits Resource",
 	},
 	{
-		Regex:  "^/accounts/" + subPathx + "/offers$",
-		Name:   "Get Offers Resource",
+		Regex: "^/accounts/" + subPathx + "/offers$",
+		Name:  "Get Offers Resource",
 	},
 	{
-		Regex:  "^/accounts/" + subPathx + "/party$",
-		Name:   "Get Party Resource",
+		Regex: "^/accounts/" + subPathx + "/party$",
+		Name:  "Get Party Resource",
 	},
 	{
-		Regex:  "^/accounts/" + subPathx + "/product$",
-		Name:   "Get Product Resource",
+		Regex: "^/accounts/" + subPathx + "/product$",
+		Name:  "Get Product Resource",
 	},
 	{
-		Regex:  "^/accounts/" + subPathx + "/scheduled-payments$",
-		Name:   "Get Scheduled Payment resource",
+		Regex: "^/accounts/" + subPathx + "/scheduled-payments$",
+		Name:  "Get Scheduled Payment resource",
 	},
 	{
-		Regex:  "^/accounts/" + subPathx + "/standing-orders$",
-		Name:   "Get Standing Orders resource",
+		Regex: "^/accounts/" + subPathx + "/standing-orders$",
+		Name:  "Get Standing Orders resource",
 	},
 	{
-		Regex:  "^/accounts/" + subPathx + "/statements$",
-		Name:   "Get Statements Resource",
+		Regex: "^/accounts/" + subPathx + "/statements$",
+		Name:  "Get Statements Resource",
 	},
 	{
-		Regex:  "^/accounts/" + subPathx + "/statements/" + subPathx + "/file$",
-		Name:   "Get statement files resource",
+		Regex: "^/accounts/" + subPathx + "/statements/" + subPathx + "/file$",
+		Name:  "Get statement files resource",
 	},
 	{
-		Regex:  "^/accounts/" + subPathx + "/statements/" + subPathx + "/transactions$",
-		Name:   "Get statement transactions resource",
+		Regex: "^/accounts/" + subPathx + "/statements/" + subPathx + "/transactions$",
+		Name:  "Get statement transactions resource",
 	},
 	{
-		Regex:  "^/accounts/" + subPathx + "/transactions$",
-		Name:   "Get transactions resource",
+		Regex: "^/accounts/" + subPathx + "/transactions$",
+		Name:  "Get transactions resource",
 	},
 	{
-		Regex:  "^/balances$",
-		Name:   "Get Balances",
+		Regex: "^/balances$",
+		Name:  "Get Balances",
 	},
 	{
-		Regex:  "^/beneficiaries$",
-		Name:   "Get Beneficiaries",
+		Regex: "^/beneficiaries$",
+		Name:  "Get Beneficiaries",
 	},
 	{
-		Regex:  "^/direct-debits$",
-		Name:   "Get directory debits",
+		Regex: "^/direct-debits$",
+		Name:  "Get directory debits",
 	},
 	{
-		Regex:  "^/offers$",
-		Name:   "Get Offers",
+		Regex: "^/offers$",
+		Name:  "Get Offers",
 	},
 	{
-		Regex:  "^/party$",
-		Name:   "Get party",
+		Regex: "^/party$",
+		Name:  "Get party",
 	},
 	{
-		Regex:  "^/products$",
-		Name:   "Get Products",
+		Regex: "^/products$",
+		Name:  "Get Products",
 	},
 
 	{
-		Regex:  "^/scheduled-payments$",
-		Name:   "Get Payments",
+		Regex: "^/scheduled-payments$",
+		Name:  "Get Payments",
 	},
 	{
-		Regex:  "^/standing-orders$",
-		Name:   "Get Orders",
+		Regex: "^/standing-orders$",
+		Name:  "Get Orders",
 	},
 	{
-		Regex:  "^/statements$",
-		Name:   "Get Statements",
+		Regex: "^/statements$",
+		Name:  "Get Statements",
 	},
 	{
-		Regex:  "^/transactions$",
-		Name:   "Get Transactions",
+		Regex: "^/transactions$",
+		Name:  "Get Transactions",
 	},
 }
 
 var paymentsRegex = []PathRegex{
 	{
-		Regex: "^/domestic-payment-consents$",
+		Regex:  "^/domestic-payment-consents$",
 		Method: "POST",
-		Name: "Create a domestic payment consent",
+		Name:   "Create a domestic payment consent",
 	},
 	{
 		Regex:  "^/domestic-payment-consents/" + subPathx + "$",
@@ -657,9 +657,9 @@ var paymentsRegex = []PathRegex{
 		Name:   "Get domestic scheduled payment consent by consentID",
 	},
 	{
-		Regex: "^/domestic-scheduled-payments$",
+		Regex:  "^/domestic-scheduled-payments$",
 		Method: "POST",
-		Name: "Create a domestic scheduled payment",
+		Name:   "Create a domestic scheduled payment",
 	},
 	{
 		Regex:  "^/domestic-scheduled-payment/" + subPathx + "$",
@@ -697,9 +697,9 @@ var paymentsRegex = []PathRegex{
 		Name:   "Get international payment consent by consentID",
 	},
 	{
-		Regex: "^/international-payment-consents/"+ subPathx +"/funds-confirmation$",
+		Regex:  "^/international-payment-consents/" + subPathx + "/funds-confirmation$",
 		Method: "GET",
-		Name: "Get international payment consent funds confirmation by consentID",
+		Name:   "Get international payment consent funds confirmation by consentID",
 	},
 	{
 		Regex:  "^/international-payments$",
@@ -732,64 +732,64 @@ var paymentsRegex = []PathRegex{
 		Name:   "Create an international scheduled payment",
 	},
 	{
-		Regex:  "^/international-scheduled-payments/"+ subPathx +"$",
+		Regex:  "^/international-scheduled-payments/" + subPathx + "$",
 		Method: "GET",
 		Name:   "Create an international scheduled payment by internationalScheduledPaymentID",
 	},
 	{
-		Regex: "^/international-standing-order-consents$",
+		Regex:  "^/international-standing-order-consents$",
 		Method: "POST",
-		Name: "Create international standing order consent",
+		Name:   "Create international standing order consent",
 	},
 	{
-		Regex: "^/international-standing-order-consents/"+ subPathx +"$",
+		Regex:  "^/international-standing-order-consents/" + subPathx + "$",
 		Method: "GET",
-		Name: "Get international standing order consent by consentID",
+		Name:   "Get international standing order consent by consentID",
 	},
 	{
-		Regex: "^/international-standing-orders$",
+		Regex:  "^/international-standing-orders$",
 		Method: "POST",
-		Name: "Create international standing order",
+		Name:   "Create international standing order",
 	},
 	{
-		Regex: "^/international-standing-orders/"+ subPathx +"$",
+		Regex:  "^/international-standing-orders/" + subPathx + "$",
 		Method: "GET",
-		Name: "Get an international standing order by internationalStandingOrderID",
+		Name:   "Get an international standing order by internationalStandingOrderID",
 	},
 	{
-		Regex: "^/file-payment-consents$",
+		Regex:  "^/file-payment-consents$",
 		Method: "POST",
-		Name: "Create a file payment consent",
+		Name:   "Create a file payment consent",
 	},
 	{
-		Regex: "^/file-payment-consents/"+ subPathx +"$",
+		Regex:  "^/file-payment-consents/" + subPathx + "$",
 		Method: "GET",
-		Name: "Get a file payment consent by consentID",
+		Name:   "Get a file payment consent by consentID",
 	},
 	{
-		Regex: "^/file-payment-consents/"+ subPathx +"/file$",
+		Regex:  "^/file-payment-consents/" + subPathx + "/file$",
 		Method: "POST",
-		Name: "Create a file payment consent file by consentID",
+		Name:   "Create a file payment consent file by consentID",
 	},
 	{
-		Regex: "^/file-payment-consents/"+ subPathx +"/file$",
+		Regex:  "^/file-payment-consents/" + subPathx + "/file$",
 		Method: "GET",
-		Name: "Get a file payment consents file by consentID",
+		Name:   "Get a file payment consents file by consentID",
 	},
 	{
-		Regex: "^/file-payments$",
+		Regex:  "^/file-payments$",
 		Method: "POST",
-		Name: "Create a file payment",
+		Name:   "Create a file payment",
 	},
 	{
-		Regex: "^/file-payments/"+ subPathx +"$",
+		Regex:  "^/file-payments/" + subPathx + "$",
 		Method: "GET",
-		Name: "Get a file payment by filePaymentID",
+		Name:   "Get a file payment by filePaymentID",
 	},
 	{
-		Regex: "^/file-payments/"+ subPathx +"/report-file$",
+		Regex:  "^/file-payments/" + subPathx + "/report-file$",
 		Method: "GET",
-		Name: "Get a file payment report file by filePaymentID",
+		Name:   "Get a file payment report file by filePaymentID",
 	},
 }
 
