@@ -115,6 +115,7 @@ func TestSetBearerAuthTokenFromContext(t *testing.T) {
 
 func TestCreateHeaderContextMissingForReplacement(t *testing.T) {
 	ctx := Context{
+		"phase":                  "run",
 		"nomatch":                "myNewValue",
 		"authorisation_endpoint": "https://example.com/authorisation",
 	}
@@ -157,12 +158,13 @@ func TestFormData(t *testing.T) {
 }
 
 func TestFormDataMissingContextVariable(t *testing.T) {
+	ctx1 := Context{"phase": "run"}
 	i := Input{Endpoint: "/accounts", Method: "POST", FormData: map[string]string{
 		"grant_type": "$client_credentials",
 		"scope":      "accounts openid"}}
 	ctx := Context{"baseurl": "http://mybaseurl", "authorisation_endpoint": "https://example.com/authorisation"}
 	tc := TestCase{Input: i, Context: ctx}
-	req, err := tc.Prepare(emptyContext)
+	req, err := tc.Prepare(&ctx1)
 	assert.NotNil(t, err)
 	assert.Nil(t, req)
 }
@@ -394,7 +396,7 @@ func TestJWSDetachedSignature(t *testing.T) {
 		"consent_id":                "sdp-1-b5bbdb18-eeb1-4c11-919d-9a237c8f1c7d",
 		"domestic_payment_template": "{\"Data\": {\"ConsentId\": \"$consent_id\",\"Initiation\":$initiation },\"Risk\":{}}",
 		"authorisation_endpoint":    "https://example.com/authorisation",
-		"api-version":"v3.0",
+		"api-version":               "v3.0",
 	}
 
 	i := Input{JwsSig: true, Method: "POST", Endpoint: "https://google.com", RequestBody: "$domestic_payment_template"}

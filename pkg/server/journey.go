@@ -177,6 +177,7 @@ func (wj *journey) TestCases() (generation.TestCasesRun, error) {
 	}
 
 	if !wj.testCasesRunGenerated {
+		wj.context.PutString(ctxPhase, "generation")
 		config := wj.makeGeneratorConfig()
 		discovery := wj.validDiscoveryModel.DiscoveryModel
 		if len(discovery.DiscoveryItems) > 0 { // default currently "v3.1" ... allow "v3.0"
@@ -215,7 +216,6 @@ func (wj *journey) TestCases() (generation.TestCasesRun, error) {
 				"permission": permission,
 			}).Debug("We have a permission ([]manifest.RequiredTokens)")
 		}
-
 		if discovery.TokenAcquisition == "psu" {
 			logger.WithFields(logrus.Fields{
 				"discovery.TokenAcquisition": discovery.TokenAcquisition,
@@ -363,7 +363,7 @@ func (wj *journey) RunTests() error {
 
 	runDefinition := wj.makeRunDefinition()
 	runner := executors.NewTestCaseRunner(wj.log, runDefinition, wj.daemonController)
-	wj.context.DumpContext("runTestCases with context")
+	wj.context.PutString(ctxPhase, "run")
 	return runner.RunTestCases(&wj.context)
 }
 
@@ -482,6 +482,7 @@ const (
 	ctxRequestObjectSigningAlg      = "requestObjectSigningAlg"
 	ctxSigningPrivate               = "signingPrivate"
 	ctxSigningPublic                = "signingPublic"
+	ctxPhase                        = "phase"
 )
 
 func (wj *journey) configParametersToJourneyContext() error {
@@ -516,6 +517,7 @@ func (wj *journey) configParametersToJourneyContext() error {
 	}
 	wj.context.PutString(ctxConstBasicAuthentication, basicauth)
 	wj.context.PutString(ctxConstIssuer, wj.config.issuer)
+	wj.context.PutString(ctxPhase, "unknown")
 
 	return nil
 }

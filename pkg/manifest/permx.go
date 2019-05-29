@@ -190,7 +190,7 @@ func MapTokensToTestCases(rt []RequiredTokens, tcs []model.TestCase) map[string]
 		tokenName, isEmptyToken, err := getRequiredTokenForTestcase(rt, test.ID)
 		if err != nil {
 			ctxLogger.WithFields(logrus.Fields{
-				"test":         fmt.Sprintf("%#v", test),
+				"id":           fmt.Sprintf("%s", test.ID),
 				"tokenName":    tokenName,
 				"isEmptyToken": isEmptyToken,
 				"err":          err,
@@ -200,10 +200,10 @@ func MapTokensToTestCases(rt []RequiredTokens, tcs []model.TestCase) map[string]
 
 		if !isEmptyToken {
 			ctxLogger.WithFields(logrus.Fields{
-				"test":         fmt.Sprintf("%#v", test),
+				"id":           fmt.Sprintf("%s", test.ID),
 				"tokenName":    tokenName,
 				"isEmptyToken": isEmptyToken,
-			}).Info("InjectBearerToken ...")
+			}).Trace("InjectBearerToken ...")
 			test.InjectBearerToken("$" + tokenName)
 		}
 
