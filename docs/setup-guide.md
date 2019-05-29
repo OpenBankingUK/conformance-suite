@@ -99,7 +99,7 @@ at this point by running `docker login`.
 ### Production
 
 ```sh
-docker run --rm -it -p 8443:8443 -e LOG_LEVEL=debug -e LOG_TRACER=true -e LOG_HTTP_TRACE=true -e DISABLE_JWS=TRUE "openbanking/conformance-suite:v1.1.7"
+docker run --rm -it -p 8443:8443 -e LOG_LEVEL=debug -e LOG_TRACER=true -e LOG_HTTP_TRACE=true -e DISABLE_JWS=TRUE "openbanking/conformance-suite:v1.1.8"
 ```
 
 ### Non-production run
