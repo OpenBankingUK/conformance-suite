@@ -13,7 +13,7 @@
             "CreditorAccount": {
               "SchemeName": "$creditorScheme",
               "Identification": "$creditorIdentification",
-              "Name": "CF Tool"
+              "Name": "$creditorName"
             }
           }
         },
@@ -34,7 +34,7 @@
             "CreditorAccount": {
               "SchemeName": "$creditorScheme",
               "Identification": "$creditorIdentification",
-              "Name": "CF Tool"
+              "Name": "$creditorName"
             }
           }
         },
@@ -54,9 +54,9 @@
               "Currency": "$instructedAmountCurrency"
             },
             "CreditorAccount": {
-              "SchemeName": "SortCodeAccountNumber",
-              "Identification": "20000319470104",
-              "Name": "Messers Simplex & Co"
+              "SchemeName": "$creditorScheme",
+              "Identification": "$creditorIdentification",
+              "Name": "$creditorName"
             }
           }
         },
@@ -180,9 +180,9 @@
               "Currency": "$instructedAmountCurrency"
             },
             "CreditorAccount": {
-              "SchemeName": "SortCodeAccountNumber",
-              "Identification": "20202010981789",
-              "Name": "Dr Foo"
+              "SchemeName": "$creditorScheme",
+              "Identification": "$creditorIdentification",
+              "Name": "$creditorName"
             }
           }
         },
@@ -202,9 +202,9 @@
               "Currency": "$instructedAmountCurrency"
             },
             "CreditorAccount": {
-              "SchemeName": "SortCodeAccountNumber",
-              "Identification": "20202010981789",
-              "Name": "Dr Foo"
+              "SchemeName": "$creditorScheme",
+              "Identification": "$creditorIdentification",
+              "Name": "$creditorName"
             }
           }
         },
@@ -224,9 +224,9 @@
               "Currency": "$instructedAmountCurrency"
             },
             "CreditorAccount": {
-              "SchemeName": "SortCodeAccountNumber",
-              "Identification": "20202010981789",
-              "Name": "Dr Foo"
+              "SchemeName": "$creditorScheme",
+              "Identification": "$creditorIdentification",
+              "Name": "$creditorName"
             }
           }
         },
@@ -246,9 +246,9 @@
               "Currency": "$instructedAmountCurrency"
             },
             "CreditorAccount": {
-              "SchemeName": "SortCodeAccountNumber",
-              "Identification": "20202010981789",
-              "Name": "Dr Foo"
+              "SchemeName": "$creditorScheme",
+              "Identification": "$creditorIdentification",
+              "Name": "$creditorName"
             }
           }
         },
