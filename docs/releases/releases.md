@@ -1,7 +1,7 @@
 
 ### v1.1.8 (29th May 2019)
 
-Release **v1.1.8**, fixes UI Payment template bugs, adds payments tests, reduces log noise
+Release **v1.1.8**, fixes Payment template bugs, adds payments tests, reduces log noise
 
 [Full Release Notes](docs/releases/v1.1.8.md) (v1.1.8.md)
 

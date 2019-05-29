@@ -17,6 +17,13 @@ To provide feedback, please use the public [issue tracker](https://bitbucket.org
 ## Release Notes 
 * * *
 
+### v1.1.8 (29th May 2019)
+
+Release **v1.1.8**, fixes Payment template bugs, adds payments tests, reduces log noise
+
+[Full Release Notes](docs/releases/v1.1.8.md) (v1.1.8.md)
+
+
 ### v1.1.7 (16th May 2019)
 
 Release **v1.1.7**, fixes UI bugs and makes currency and payment amount configurable in the UI.
