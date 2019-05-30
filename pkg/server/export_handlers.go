@@ -49,17 +49,12 @@ func (h exportHandlers) postExport(c echo.Context) error {
 	if err != nil {
 		return errors.Wrap(err, "exporting report-get journey discovery model")
 	}
-	manifestScripts, err := h.journey.Manifests()
-	if err != nil {
-		return errors.Wrap(err, "exporting report-get journey manifest scripts")
-	}
 	exportResults := models.ExportResults{
 		ExportRequest:  request,
 		HasPassed:      false,
 		Results:        results,
 		Tokens:         tokens,
 		DiscoveryModel: discovery,
-		Manifests:      manifestScripts,
 	}
 	logger.WithField("exportResults", exportResults).Info("Exported")
 

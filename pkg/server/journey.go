@@ -41,8 +41,6 @@ var (
 type Journey interface {
 	SetDiscoveryModel(discoveryModel *discovery.Model) (discovery.ValidationFailures, error)
 	DiscoveryModel() (discovery.Model, error)
-	SetManifests([]manifest.Scripts)
-	Manifests() ([]manifest.Scripts, error)
 	SetFilteredManifests(manifest.Scripts)
 	FilteredManifests() (manifest.Scripts, error)
 	TestCases() (generation.TestCasesRun, error)
@@ -135,19 +133,6 @@ func (wj *journey) DiscoveryModel() (discovery.Model, error) {
 	return *discoveryModel, nil
 }
 
-func (wj *journey) SetManifests(mfs []manifest.Scripts) {
-	if mfs == nil {
-		wj.manifests = make([]manifest.Scripts, 0)
-		return
-	}
-
-	wj.manifests = mfs
-}
-
-func (wj *journey) Manifests() ([]manifest.Scripts, error) {
-	return wj.manifests, nil
-}
-
 func (wj *journey) SetFilteredManifests(fmfs manifest.Scripts) {
 	wj.filteredManifests = fmfs
 }
@@ -195,18 +180,6 @@ func (wj *journey) TestCases() (generation.TestCasesRun, error) {
 		logger.Debug("generator.GenerateManifestTests ...")
 
 		wj.testCasesRun, wj.filteredManifests, wj.permissions = wj.generator.GenerateManifestTests(wj.log, config, discovery, &wj.context)
-
-		// Now specifically load the manifests of each test case into the journey
-		// so we can reference later.
-		var journeyManifests []manifest.Scripts
-		for _, tc := range wj.testCasesRun.TestCases {
-			s, err := manifest.LoadScripts(tc.Specification.Manifest)
-			if err != nil {
-				return generation.TestCasesRun{}, errors.Wrap(err, "loadScripts()")
-			}
-			journeyManifests = append(journeyManifests, s)
-		}
-		wj.SetManifests(journeyManifests)
 
 		logger.WithFields(logrus.Fields{
 			"len(wj.permissions)": len(wj.permissions),
