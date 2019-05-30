@@ -92,6 +92,9 @@ func (e *zipExporter) Export() error {
 		fileContents, err := ioutil.ReadFile(path)
 		if err != nil && os.IsNotExist(err) {
 			fileContents, err = ioutil.ReadFile("../../" + path)
+			if err != nil {
+				return errors.Wrapf(err, "zipExporter.Export: zip.Writer.Write failed, could open manifest file %s", filename)
+			}
 		} else if err != nil {
 			return errors.Wrapf(err, "zipExporter.Export: zip.Writer.Write failed, could open manifest file %s", filename)
 		}
