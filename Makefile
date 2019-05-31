@@ -1,5 +1,7 @@
 .DEFAULT_GOAL:=help
 SHELL:=/bin/bash
+IMAGE_TAG=latest
+ENABLE_IMAGE_SIGNING=0
 
 .PHONY: all
 
@@ -46,7 +48,8 @@ build_image: ## build the docker image.
 	@# We could enable parallel builds for multi-staged builds with `DOCKER_BUILDKIT=1`
 	@# See: https://github.com/moby/moby/pull/37151
 	@#DOCKER_BUILDKIT=1
-	docker build ${DOCKER_BUILD_ARGS} -t "openbanking/conformance-suite:latest" .
+	@export DOCKER_CONTENT_TRUST=${ENABLE_IMAGE_SIGNING}
+	docker build ${DOCKER_BUILD_ARGS} -t "openbanking/conformance-suite:${IMAGE_TAG}" .
 
 ##@ Dependencies:
 
