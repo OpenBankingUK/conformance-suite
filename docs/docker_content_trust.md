@@ -42,7 +42,7 @@ Successfully generated and loaded private key. Corresponding public key availabl
 Next we will need to add the delegation public key to the Notary server; this is specific to a particular image repository in Notary.
 
 ```sh
-$ docker trust signer add --key cert.pem jeff docker.io/openbanking/conformance-suite
+$ docker trust signer add --key jeff.pub jeff docker.io/openbanking/conformance-suite
 Adding signer "jeff" to docker.io/openbanking/conformance-suite...
 Enter passphrase for new repository key with ID 10b5e94: 
 ```
