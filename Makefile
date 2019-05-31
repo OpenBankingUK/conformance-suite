@@ -43,7 +43,7 @@ build_cli: ## build the cli binary directly.
 	go build -o fcs cmd/cli/*.go
 
 .PHONY: build_image
-build_image: ## build the docker image.
+build_image: ## build the docker image. Use available args IMAGE_TAG=v1.x.y, ENABLE_IMAGE_SIGNING=1
 	@echo -e "\033[92m  ---> Building image ... \033[0m"
 	@# We could enable parallel builds for multi-staged builds with `DOCKER_BUILDKIT=1`
 	@# See: https://github.com/moby/moby/pull/37151
