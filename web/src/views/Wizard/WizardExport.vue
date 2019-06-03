@@ -10,6 +10,19 @@
             <h5>Export Configuration</h5>
             <b-form>
               <b-form-group
+                id="environment_group"
+                label-for="environment"
+                label="Environment"
+              >
+                <b-form-select
+                  id="environment"
+                  v-model="environment"
+                  :options="available_environments"
+                  :state="isNotEmpty(environment)"
+                  required
+                />
+              </b-form-group>
+              <b-form-group
                 id="implementer_group"
                 label-for="implementer"
                 label="Implementer/Brand Name"
@@ -122,6 +135,14 @@ export default {
     ...mapGetters('status', [
       'hasErrors',
     ]),
+    environment: {
+      get() {
+        return this.$store.state.exporter.environment;
+      },
+      set(value) {
+        this.$store.commit('exporter/SET_ENVIRONMENT', value);
+      },
+    },
     implementer: {
       get() {
         return this.$store.state.exporter.implementer;
@@ -170,6 +191,15 @@ export default {
     export_results_filename: {
       get() {
         return this.$store.state.exporter.export_results_filename;
+      },
+    },
+    available_environments: {
+      get() {
+        return [
+          'testing',
+          'sandbox',
+          'production',
+        ];
       },
     },
     export_results_download() {

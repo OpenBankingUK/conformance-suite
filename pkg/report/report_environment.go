@@ -16,16 +16,19 @@ const (
 	CertifiedByEnvironmentTesting CertifiedByEnvironment = iota + 1
 	// ReportCertifiedByEnvironmentProduction - production environment.
 	CertifiedByEnvironmentProduction
+	CertifiedByEnvironmentSandbox
 )
 
 var certifiedByEnvironmentToString = map[CertifiedByEnvironment]string{
 	CertifiedByEnvironmentTesting:    "testing",
 	CertifiedByEnvironmentProduction: "production",
+	CertifiedByEnvironmentSandbox:    "sandbox",
 }
 
 var certifiedByEnvironmentToID = map[string]CertifiedByEnvironment{
 	"testing":    CertifiedByEnvironmentTesting,
 	"production": CertifiedByEnvironmentProduction,
+	"sandbox":    CertifiedByEnvironmentSandbox,
 }
 
 func (r CertifiedByEnvironment) String() string {

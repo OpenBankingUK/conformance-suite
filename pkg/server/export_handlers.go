@@ -58,7 +58,7 @@ func (h exportHandlers) postExport(c echo.Context) error {
 	}
 	logger.WithField("exportResults", exportResults).Info("Exported")
 
-	r, err := report.NewReport(exportResults)
+	r, err := report.NewReport(exportResults, request.Environment)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, NewErrorResponse(err))
 	}
