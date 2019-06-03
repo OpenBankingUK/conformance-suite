@@ -11,7 +11,7 @@
             <b-form>
               <b-form-group
                 id="environment_group"
-                label-for="environment"
+                label-for="environment_group"
                 label="Environment"
               >
                 <b-form-select
