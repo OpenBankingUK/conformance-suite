@@ -4,11 +4,12 @@ import (
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/executors/events"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/executors/results"
-	"github.com/go-ozzo/ozzo-validation"
+	validation "github.com/go-ozzo/ozzo-validation"
 )
 
 // ExportRequest - Request to `/api/export`.
 type ExportRequest struct {
+	Environment         string `json:"environment"`           // Environment used for testing
 	Implementer         string `json:"implementer"`           // Implementer/Brand Name
 	AuthorisedBy        string `json:"authorised_by"`         // Authorised by
 	JobTitle            string `json:"job_title"`             // Job Title
@@ -18,6 +19,7 @@ type ExportRequest struct {
 
 func (e ExportRequest) Validate() error {
 	return validation.ValidateStruct(&e,
+		validation.Field(&e.Environment, validation.Required),
 		validation.Field(&e.Implementer, validation.Required),
 		validation.Field(&e.AuthorisedBy, validation.Required),
 		validation.Field(&e.JobTitle, validation.Required),

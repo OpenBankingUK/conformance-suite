@@ -254,7 +254,7 @@ func TestNewReport(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := NewReport(tt.args.exportResults)
+			got, err := NewReport(tt.args.exportResults, "Testing")
 			if tt.err != nil {
 				assert.New(t).Equal(tt.err, err)
 			}

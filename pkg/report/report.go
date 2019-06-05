@@ -1,6 +1,8 @@
 package report
 
 import (
+	"time"
+
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/executors/results"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/server/models"
@@ -8,7 +10,6 @@ import (
 	validation "github.com/go-ozzo/ozzo-validation"
 	"github.com/go-ozzo/ozzo-validation/is"
 	"github.com/google/uuid"
-	"time"
 )
 
 const (
@@ -53,7 +54,7 @@ func (r Report) Validate() error {
 }
 
 // NewReport - create `Report` from `ExportResults`.
-func NewReport(exportResults models.ExportResults) (Report, error) {
+func NewReport(exportResults models.ExportResults, environment string) (Report, error) {
 	// Random (Version 4) UUID. NB: `uuid.New()` might panic hence we using this function instead.
 	uuid, err := uuid.NewRandom()
 	if err != nil {
@@ -63,7 +64,7 @@ func NewReport(exportResults models.ExportResults) (Report, error) {
 	created := time.Now().Format(internal_time.Layout)
 	expiration := time.Now().AddDate(0, 3, 0).Format(internal_time.Layout) // Expires three (3) months from now
 	certifiedBy := CertifiedBy{
-		Environment:  CertifiedByEnvironmentTesting, // Hardcode to "testing" for now
+		Environment:  certifiedByEnvironmentToID[environment],
 		Brand:        exportResults.ExportRequest.Implementer,
 		AuthorisedBy: exportResults.ExportRequest.AuthorisedBy,
 		JobTitle:     exportResults.ExportRequest.JobTitle,

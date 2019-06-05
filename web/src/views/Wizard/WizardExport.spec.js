@@ -83,6 +83,7 @@ describe('WizardExport', () => {
     /* eslint-disable camelcase */
     const { wrapper, options: { store } } = createComponent();
     const state = {
+      environment: '',
       implementer: '',
       authorised_by: '',
       job_title: '',
