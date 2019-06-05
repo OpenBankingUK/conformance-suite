@@ -1,33 +1,14 @@
 ## Docker Content Trust - Signing Docker Images
 
-Docker Content Trust (DCT) allows us to sign docker images before they get published to the docker hub registry. These signatures allow client-side or runtime verification of the integrity and publisher of specific image tags
+Docker Content Trust *(DCT)* allows Open Banking to sign docker images before they get published to the Docker Hub registry. These signatures allow client-side or runtime verification of the integrity and publisher of specific image tags
 
-## Signing Images With Docker Content Trust
+## How Open Banking Sign Images With Docker Content Trust
 
-Docker images can be signed with `$ docker trust` command. Which is built on top of the [Notary cli](https://docs.docker.com/notary/getting_started/).
-
-### Install Notary
-
-The first step is to install Notary on your local machine which you are going to use to sign the docker image. 
-You can download precompiled notary binary for 64 bit Linux or macOS from the Notary repository’s [Releases page on Github](https://github.com/theupdateframework/notary/releases).
-
-### Configure Notary
-
-Once Notary has been installed, you might need to configure notary. Since Notary is a standalone tool it does not which image repository to use or where the trust metadata is being stored. Please setup Notary config after installation as follows in the `~/.notary/config.json`
-
-```json
-{
-  "trust_dir" : "~/.docker/trust",
-  "remote_server": {
-    "url": "https://notary.docker.io",
-        "root_ca": "~/.docker/ca.pem"
-  }
-}
-```
+Open Banking sign images with the `$ docker trust` command. Which is built on top of the [Notary cli](https://docs.docker.com/notary/getting_started/). Notary is a tool for publishing and managing trusted collections of content. Publishers can digitally sign collections and consumers can verify integrity and origin of content.
 
 ### Generate Docker Signing Keys
 
-To sign a Docker Image you will need a delegation key pair. These keys can be generated locally using `$ docker trust key generate`
+To sign a Docker image we delegation a key pair. These keys can be generated locally using `$ docker trust key generate`
 
 ```sh
 $ docker trust key generate jeff
@@ -36,9 +17,6 @@ Enter passphrase for new jeff key with ID 9deed25:
 Repeat passphrase for new jeff key with ID 9deed25: 
 Successfully generated and loaded private key. Corresponding public key available: /home/ubuntu/workspace/conformance-suite/jeff.pub
 ```
-
-### Add Generated Keys To Notary Server
-
 Next we will need to add the delegation public key to the Notary server; this is specific to a particular image repository in Notary.
 
 ```sh
@@ -63,7 +41,7 @@ Enter passphrase for signer key with ID 8ae710e:
 Successfully signed docker.io/openbanking/conformance-suite:v1.0.0
 ```
 
-### Verify Image
+### How to Verify Image
 
 Remote trust data for a tag or a repository can be viewed by the `$ docker trust inspect` command
 
