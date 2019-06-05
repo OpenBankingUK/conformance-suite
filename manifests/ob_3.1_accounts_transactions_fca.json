@@ -149,7 +149,8 @@
             "method": "get",
             "asserts": [
                 "OB3GLOAssertOn401",
-                "OB3GLOAssertContentType"
+                "OB3GLOAssertContentType",
+                "OB3IPAssertHeaderMissingOBErrorCode"
             ],
             "schemaCheck": false
         },
@@ -218,7 +219,8 @@
             "method": "get",
             "asserts": [
                 "OB3GLOAssertOn401",
-                "OB3GLOAssertContentType"
+                "OB3GLOAssertContentType",
+                "OB3IPAssertHeaderMissingOBErrorCode"
             ],
             "schemaCheck": false
         },
@@ -236,7 +238,8 @@
             "method": "get",
             "asserts": [
                 "OB3GLOAssertOn401",
-                "OB3GLOAssertContentType"
+                "OB3GLOAssertContentType",
+                "OB3IPAssertHeaderMissingOBErrorCode"
             ],
             "schemaCheck": false
         },
@@ -327,7 +330,8 @@
             "method": "get",
             "asserts": [
                 "OB3GLOAssertOn401",
-                "OB3GLOAssertContentType"
+                "OB3GLOAssertContentType",
+                "OB3IPAssertHeaderMissingOBErrorCode"
             ],
             "schemaCheck": false
         },
@@ -532,7 +536,8 @@
             "method": "get",
             "asserts": [
                 "OB3GLOAssertOn401",
-                "OB3GLOAssertContentType"
+                "OB3GLOAssertContentType",
+                "OB3IPAssertHeaderMissingOBErrorCode"
             ],
             "schemaCheck": false
         },
@@ -555,7 +560,8 @@
             "method": "get",
             "asserts": [
                 "OB3GLOAssertOn401",
-                "OB3GLOAssertContentType"
+                "OB3GLOAssertContentType",
+                "OB3IPAssertHeaderMissingOBErrorCode"
             ],
             "schemaCheck": false
         },
@@ -577,7 +583,8 @@
             "resource": "Beneficiary",
             "method": "get",
             "asserts": [
-                "OB3GLOAssertOn400"
+                "OB3GLOAssertOn400",
+                "OB3IPAssertUnexpectedErrorOBErrorCode"
             ],
             "schemaCheck": false
         },
@@ -619,7 +626,8 @@
             "resource": "Beneficiary",
             "method": "get",
             "asserts": [
-                "OB3GLOAssertOn401"
+                "OB3GLOAssertOn401",
+                "OB3IPAssertHeaderInvalidOBErrorCode"
             ],
             "schemaCheck": false
         },
@@ -780,7 +788,8 @@
             "resource": "DirectDebit",
             "method": "get",
             "asserts": [
-                "OB3GLOAssertOn401"
+                "OB3GLOAssertOn401",
+                "OB3IPAssertHeaderInvalidOBErrorCode"
             ],
             "schemaCheck": false
         },
@@ -899,7 +908,8 @@
             "resource": "Offer",
             "method": "get",
             "asserts": [
-                "OB3GLOAssertOn400"
+                "OB3GLOAssertOn400",
+                "OB3IPAssertUnexpectedErrorOBErrorCode"
             ],
             "schemaCheck": false
         },
@@ -941,7 +951,8 @@
             "resource": "Offer",
             "method": "get",
             "asserts": [
-                "OB3GLOAssertOn401"
+                "OB3GLOAssertOn401",
+                "OB3IPAssertHeaderInvalidOBErrorCode"
             ],
             "schemaCheck": false
         },
@@ -1124,7 +1135,8 @@
             "resource": "Party",
             "method": "get",
             "asserts": [
-                "OB3GLOAssertOn401"
+                "OB3GLOAssertOn401",
+                "OB3IPAssertHeaderInvalidOBErrorCode"
             ],
             "schemaCheck": false
         },
@@ -1146,7 +1158,8 @@
             "method": "get",
             "asserts": [
                 "OB3GLOAssertOn401",
-                "OB3GLOAssertContentType"
+                "OB3GLOAssertContentType",
+                "OB3IPAssertHeaderMissingOBErrorCode"
             ],
             "schemaCheck": false
         },
