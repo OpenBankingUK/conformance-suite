@@ -175,6 +175,15 @@
           "detail": "Expected a sepcific error code for invalid header"
         }]
       }
+    },
+    "OB3IPAssertResourceInvalidConsentStatusOBErrorCode": {
+      "expect": {
+        "matches": [{
+          "JSON": "Errors.#[ErrorCode=\"UK.OBIE.Resource.InvalidConsentStatus\"].ErrorCode",
+          "Value": "UK.OBIE.Resource.InvalidConsentStatus",
+          "detail": "Expected a sepcific error code for invalid header"
+        }]
+      }
     }
   }
 }
