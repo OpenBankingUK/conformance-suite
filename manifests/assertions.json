@@ -172,7 +172,7 @@
         "matches": [{
           "JSON": "Errors.#[ErrorCode=\"UK.OBIE.Header.Invalid\"].ErrorCode",
           "Value": "UK.OBIE.Header.Invalid",
-          "detail": "Expected a sepcific error code for invalid header"
+          "detail": "Expected a specific error code for invalid header."
         }]
       }
     },
@@ -181,7 +181,7 @@
         "matches": [{
           "JSON": "Errors.#[ErrorCode=\"UK.OBIE.Resource.InvalidConsentStatus\"].ErrorCode",
           "Value": "UK.OBIE.Resource.InvalidConsentStatus",
-          "detail": "Expected a sepcific error code for invalid header"
+          "detail": "Expected a specific error code for consent status."
         }]
       }
     }
