@@ -409,7 +409,7 @@ type JourneyConfig struct {
 	requestObjectSigningAlgorithm string
 	signingPrivate                string
 	signingPublic                 string
-	useNonOBDirectory             string
+	useNonOBDirectory             bool
 	signingKid                    string
 	signatureTrustAnchor          string
 }
@@ -489,7 +489,7 @@ func (wj *journey) configParametersToJourneyContext() error {
 	wj.context.PutString(ctxSigningPublic, wj.config.signingPublic)
 	wj.context.PutString(ctxTransactionFromDate, wj.config.transactionFromDate)
 	wj.context.PutString(ctxTransactionToDate, wj.config.transactionToDate)
-	wj.context.PutString(ctxNonOBDirectory, wj.config.useNonOBDirectory)
+	wj.context.Put(ctxNonOBDirectory, wj.config.useNonOBDirectory)
 	wj.context.PutString(ctxSigningKid, wj.config.signingKid)
 	wj.context.PutString(ctxSignatureTrustAnchor, wj.config.signatureTrustAnchor)
 

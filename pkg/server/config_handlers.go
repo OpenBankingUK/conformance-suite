@@ -65,7 +65,7 @@ type GlobalConfiguration struct {
 	RequestObjectSigningAlgorithm string                  `json:"request_object_signing_alg"`
 	InstructedAmount              models.InstructedAmount `json:"instructed_amount"`
 	CurrencyOfTransfer            string                  `json:"currency_of_transfer"`
-	UseNonOBDirectory             string                  `json:"use_non_ob_directory,omitempty"`
+	UseNonOBDirectory             bool                    `json:"use_non_ob_directory"`
 	SigningKid                    string                  `json:"signing_kid,omitempty"`
 	SignatureTrustAnchor          string                  `json:"signature_trust_anchor,omitempty"`
 }
