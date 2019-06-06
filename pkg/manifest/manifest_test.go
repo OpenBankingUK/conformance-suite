@@ -1,8 +1,8 @@
 package manifest
 
 import (
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/test"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/test"
 	"encoding/json"
 	"testing"
 )

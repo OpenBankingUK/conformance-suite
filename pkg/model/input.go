@@ -461,6 +461,25 @@ func (i *Input) generateJWSSignature(ctx *Context, alg jwt.SigningMethod) (strin
 	if err != nil {
 		return "", err
 	}
+	trustAnchor := "openbanking.org.uk"
+	useNonOBDirectory, err := ctx.GetString("useNonOBDirectory")
+	if err != nil {
+		return "", err
+	}
+	if useNonOBDirectory == "1" {
+		kid, err = ctx.GetString("signingKid")
+		if err != nil {
+			return "", err
+		}
+		issuer, err = ctx.GetString("issuer")
+		if err != nil {
+			return "", err
+		}
+		trustAnchor, err = ctx.GetString("signingTrustAnchor")
+		if err != nil {
+			return "", err
+		}
+	}
 	logrus.Tracef("jws issuer=%s", issuer)
 
 	logrus.WithFields(logrus.Fields{
@@ -478,7 +497,7 @@ func (i *Input) generateJWSSignature(ctx *Context, alg jwt.SigningMethod) (strin
 			"cty":                           "application/json",
 			"http://openbanking.org.uk/iat": time.Now().Unix(),
 			"http://openbanking.org.uk/iss": issuer,               //ASPSP ORGID or TTP ORGID/SSAID
-			"http://openbanking.org.uk/tan": "openbanking.org.uk", //Trust anchor
+			"http://openbanking.org.uk/tan": trustAnchor, //Trust anchor
 			"alg":                           alg.Alg(),
 			"crit":                          []string{"b64", "http://openbanking.org.uk/iat", "http://openbanking.org.uk/iss", "http://openbanking.org.uk/tan"},
 		},

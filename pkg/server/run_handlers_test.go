@@ -6,9 +6,9 @@ import (
 	"net/http"
 	"testing"
 
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/executors/results"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/test"
 	versionmock "bitbucket.org/openbankingteam/conformance-suite/pkg/version/mocks"
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/executors/results"
 )
 
 const (

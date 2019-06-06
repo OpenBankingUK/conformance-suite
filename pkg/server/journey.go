@@ -409,6 +409,9 @@ type JourneyConfig struct {
 	requestObjectSigningAlgorithm string
 	signingPrivate                string
 	signingPublic                 string
+	useNonOBDirectory             string
+	signingKid                    string
+	signatureTrustAnchor          string
 }
 
 func (wj *journey) SetConfig(config JourneyConfig) error {
@@ -456,6 +459,9 @@ const (
 	ctxSigningPrivate               = "signingPrivate"
 	ctxSigningPublic                = "signingPublic"
 	ctxPhase                        = "phase"
+	ctxNonOBDirectory               = "nonOBdirectory"
+	ctxSigningKid                   = "signingKid"
+	ctxSignatureTrustAnchor         = "signatureTrustAnchor"
 )
 
 func (wj *journey) configParametersToJourneyContext() error {
@@ -483,6 +489,9 @@ func (wj *journey) configParametersToJourneyContext() error {
 	wj.context.PutString(ctxSigningPublic, wj.config.signingPublic)
 	wj.context.PutString(ctxTransactionFromDate, wj.config.transactionFromDate)
 	wj.context.PutString(ctxTransactionToDate, wj.config.transactionToDate)
+	wj.context.PutString(ctxNonOBDirectory, wj.config.useNonOBDirectory)
+	wj.context.PutString(ctxSigningKid, wj.config.signingKid)
+	wj.context.PutString(ctxSignatureTrustAnchor, wj.config.signatureTrustAnchor)
 
 	basicauth, err := authentication.CalculateClientSecretBasicToken(wj.config.clientID, wj.config.clientSecret)
 	if err != nil {

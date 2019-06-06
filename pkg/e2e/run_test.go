@@ -14,13 +14,13 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/test"
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/version"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/client"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/generation"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/server"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/test"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/version"
 
 	"github.com/google/go-cmp/cmp"
 )

@@ -9,8 +9,8 @@ import (
 	"testing"
 	"time"
 
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/test"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/server/models"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/test"
 )
 
 func TestReport_Validate(t *testing.T) {

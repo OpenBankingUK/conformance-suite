@@ -8,11 +8,11 @@ import (
 	"testing"
 	"time"
 
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/report"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/server/models"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/test"
 	internal_time "bitbucket.org/openbankingteam/conformance-suite/pkg/time"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/version/mocks"
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/report"
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/server/models"
 
 	"github.com/google/uuid"
 	"github.com/labstack/echo"
