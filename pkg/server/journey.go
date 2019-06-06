@@ -459,7 +459,7 @@ const (
 	ctxSigningPrivate               = "signingPrivate"
 	ctxSigningPublic                = "signingPublic"
 	ctxPhase                        = "phase"
-	ctxNonOBDirectory               = "nonOBdirectory"
+	ctxNonOBDirectory               = "nonOBDirectory"
 	ctxSigningKid                   = "signingKid"
 	ctxSignatureTrustAnchor         = "signatureTrustAnchor"
 )

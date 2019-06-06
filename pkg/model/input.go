@@ -424,6 +424,20 @@ func (i *Input) GenerateSignedJWT(ctx *Context, alg jwt.SigningMethod) (string, 
 	if err != nil {
 		return "", i.AppErr(fmt.Sprintf("error calculating kid: %s", err.Error()))
 	}
+	useNonOBDirectory, exists := ctx.Get("nonOBDirectory")
+	if !exists {
+		return "", errors.New("unable to retrieve nonOBDirectory value from context")
+	}
+	useNonOBDirectoryAsBool, ok := useNonOBDirectory.(bool)
+	if !ok {
+		return "", errors.New("unable to cast nonOBDirectory value to bool")
+	}
+	if useNonOBDirectoryAsBool {
+		kid, err = ctx.GetString("signingKid")
+		if err != nil {
+			return "", errors.New("unable to retrieve signingKid from context")
+		}
+	}
 	logrus.WithFields(logrus.Fields{
 		"kid": kid,
 	}).Debug("GenerateSignedJWT")
@@ -479,7 +493,7 @@ func (i *Input) generateJWSSignature(ctx *Context, alg jwt.SigningMethod) (strin
 		if err != nil {
 			return "", err
 		}
-		trustAnchor, err = ctx.GetString("signingTrustAnchor")
+		trustAnchor, err = ctx.GetString("signatureTrustAnchor")
 		if err != nil {
 			return "", err
 		}

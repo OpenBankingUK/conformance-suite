@@ -376,6 +376,23 @@ func exchangeCodeForToken(code string, scope string, ctx *model.Context, logger 
 		if err != nil {
 			return nil, errors.Wrap(err, "could not calculate kid")
 		}
+		nonOBDirectory, exists := ctx.Get("nonOBDirectory")
+		if !exists {
+			return nil, errors.Errorf("unable get nonOBDirectory value from context")
+		}
+		nonOBDirectoryAsBool, ok := nonOBDirectory.(bool)
+		if !ok {
+			return nil, errors.New("unable to cast nonOBDirectory value to bool")
+		}
+		logger.WithFields(logrus.Fields{
+			"consentAcuisitionUseNonOBDirectory": nonOBDirectory,
+		}).Debug("Attempting POST")
+		if nonOBDirectoryAsBool {
+			kid, err = ctx.GetString("signingKid")
+			if err != nil {
+				return nil, errors.New("unable to retrieve signingKid from context")
+			}
+		}
 		token.Header["kid"] = kid
 
 		clientAssertion, err := token.SignedString(cert.PrivateKey()) // sign the token - get as encoded string
