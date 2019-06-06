@@ -476,7 +476,7 @@ func (i *Input) generateJWSSignature(ctx *Context, alg jwt.SigningMethod) (strin
 		return "", err
 	}
 	trustAnchor := "openbanking.org.uk"
-	useNonOBDirectory, exists := ctx.Get("useNonOBDirectory")
+	useNonOBDirectory, exists := ctx.Get("nonOBDirectory")
 	if !exists {
 		return "", err
 	}

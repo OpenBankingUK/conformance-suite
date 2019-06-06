@@ -397,7 +397,7 @@ func TestJWSDetachedSignature(t *testing.T) {
 		"domestic_payment_template": "{\"Data\": {\"ConsentId\": \"$consent_id\",\"Initiation\":$initiation },\"Risk\":{}}",
 		"authorisation_endpoint":    "https://example.com/authorisation",
 		"api-version":               "v3.0",
-		"useNonOBDirectory":         false,
+		"nonOBDirectory":            false,
 	}
 
 	i := Input{JwsSig: true, Method: "POST", Endpoint: "https://google.com", RequestBody: "$domestic_payment_template"}
