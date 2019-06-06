@@ -465,7 +465,7 @@ func (i *Input) generateJWSSignature(ctx *Context, alg jwt.SigningMethod) (strin
 	}
 	cert, err := signingCertFromContext(ctx)
 	if err != nil {
-		return "", err
+		return "", errors.Wrap(err, "unable to sign certificate from context")
 	}
 	modulus := cert.PublicKey().N.Bytes()
 	modulusBase64 := base64.RawURLEncoding.EncodeToString(modulus)
@@ -473,16 +473,16 @@ func (i *Input) generateJWSSignature(ctx *Context, alg jwt.SigningMethod) (strin
 
 	issuer, err := i.getJWSIssuerString(ctx, cert)
 	if err != nil {
-		return "", err
+		return "", errors.Wrap(err, "unable to retrieve issuer from context")
 	}
 	trustAnchor := "openbanking.org.uk"
 	useNonOBDirectory, exists := ctx.Get("nonOBDirectory")
 	if !exists {
-		return "", err
+		return "", errors.New("unable to retrieve nonOBDirectory from context")
 	}
 	useNonOBDirectoryAsBool, ok := useNonOBDirectory.(bool)
 	if !ok {
-		return "", err
+		return "", errors.New("unable to cast nonOBDirectory to bool")
 	}
 	if useNonOBDirectoryAsBool {
 		kid, err = ctx.GetString("signingKid")
