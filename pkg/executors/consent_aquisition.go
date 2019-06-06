@@ -376,9 +376,6 @@ func exchangeCodeForToken(code string, ctx *model.Context, logger *logrus.Entry)
 		if !ok {
 			return nil, errors.New("unable to cast nonOBDirectory value to bool")
 		}
-		logger.WithFields(logrus.Fields{
-			"consentAcuisitionUseNonOBDirectory": nonOBDirectory,
-		}).Debug("Attempting POST")
 		if nonOBDirectoryAsBool {
 			kid, err = ctx.GetString("signingKid")
 			if err != nil {
