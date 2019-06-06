@@ -23,6 +23,7 @@ type Report struct {
 	ID               string             `json:"id"`                       // A unique and immutable identifier used to identify the report. The v4 UUIDs generated conform to RFC 4122.
 	Created          string             `json:"created"`                  // Date and time when the report was created, formatted accorrding to RFC3339 (https://tools.ietf.org/html/rfc3339). Note RFC3339 is derived from ISO 8601 (https://en.wikipedia.org/wiki/ISO_8601).
 	Expiration       *string            `json:"expiration,omitempty"`     // Date and time when the report should not longer be accepted, formatted accorrding to RFC3339 (https://tools.ietf.org/html/rfc3339). Note RFC3339 is derived from ISO 8601 (https://en.wikipedia.org/wiki/ISO_8601).
+	Fails            int                `json:"fails"`                    // Calculates *total* failures across the whole report, accumulated for each specification.
 	Version          string             `json:"version"`                  // The current version of the report model used.
 	Status           Status             `json:"status"`                   // A status describing overall condition of the report.
 	CertifiedBy      CertifiedBy        `json:"certifiedBy"`              // The certifier of the report.
@@ -71,13 +72,13 @@ func NewReport(exportResults models.ExportResults, environment string) (Report, 
 	}
 	signatureChain := []SignatureChain{}
 
-	var apiSpecs []APISpecification
-
-	for k, v := range exportResults.Results {
+	fails := GetFails(exportResults.Results)
+	apiSpecs := []APISpecification{}
+	for k, results := range exportResults.Results {
 		apiSpec := APISpecification{
 			Name:    k.APIName,
 			Version: k.APIVersion,
-			Results: v,
+			Results: results,
 		}
 		apiSpecs = append(apiSpecs, apiSpec)
 	}
@@ -86,6 +87,7 @@ func NewReport(exportResults models.ExportResults, environment string) (Report, 
 		ID:               uuid.String(),
 		Created:          created,
 		Expiration:       &expiration,
+		Fails:            fails,
 		Version:          Version,
 		Status:           StatusComplete,
 		CertifiedBy:      certifiedBy,
@@ -93,4 +95,24 @@ func NewReport(exportResults models.ExportResults, environment string) (Report, 
 		Discovery:        exportResults.DiscoveryModel,
 		APISpecification: apiSpecs,
 	}, nil
+}
+
+// GetFails - fails is the number of specification tests that failed, it is not the number of failed tests.
+func GetFails(specs map[results.ResultKey][]results.TestCase) int {
+	fails := 0
+	for _, results := range specs {
+		// Determine if a single test case failed.
+		failed := false
+		for _, result := range results {
+			if !result.Pass {
+				failed = true
+				break
+			}
+		}
+
+		if failed {
+			fails++
+		}
+	}
+	return fails
 }
