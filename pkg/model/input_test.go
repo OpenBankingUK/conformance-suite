@@ -260,6 +260,7 @@ func TestClaimsJWTBearer(t *testing.T) {
 		"signingPrivate":         selfsignedDummykey,
 		"signingPublic":          selfsignedDummypub,
 		"authorisation_endpoint": "https://example.com/authorisation",
+		"nonOBDirectory":         false,
 	}
 
 	i := Input{Endpoint: "/as/token.oauth2", Method: "POST",
