@@ -496,7 +496,7 @@ func (i *Input) generateJWSSignature(ctx *Context, alg jwt.SigningMethod) (strin
 			"b64":                           false,
 			"cty":                           "application/json",
 			"http://openbanking.org.uk/iat": time.Now().Unix(),
-			"http://openbanking.org.uk/iss": issuer,               //ASPSP ORGID or TTP ORGID/SSAID
+			"http://openbanking.org.uk/iss": issuer,      //ASPSP ORGID or TTP ORGID/SSAID
 			"http://openbanking.org.uk/tan": trustAnchor, //Trust anchor
 			"alg":                           alg.Alg(),
 			"crit":                          []string{"b64", "http://openbanking.org.uk/iat", "http://openbanking.org.uk/iss", "http://openbanking.org.uk/tan"},
