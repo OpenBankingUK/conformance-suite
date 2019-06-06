@@ -119,7 +119,7 @@ To verify the content has not been tampered with you can you the `DOCKER_CONTENT
     DOCKER_CONTENT_TRUST=1 docker pull openbanking/conformance-suite:TAG
     DOCKER_CONTENT_TRUST=1 docker RUN openbanking/conformance-suite:TAG
 
-Alternatively, you can set DCT with an environmental variable. `export DOCKER_CONTENT_TRUST=1`
+Alternatively, you can set DCT with an environmental variable. `export DOCKER_CONTENT_TRUST=1` 
 
 Once DCT is enabled remote trust is checked on every pull request. If no trust data for a tag is found you will be presented with an error.
 
