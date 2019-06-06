@@ -161,7 +161,7 @@
             "parameters": {
                 "tokenRequestScope": "accounts",
                 "accountId": "$consentedAccountId",
-                "x-fapi-interaction-id": "aac-f5a10e5e-0c46-41c5-a7b7-c8f56020520c"
+                "x-fapi-interaction-id": "f5a10e5e-0c46-41c5-a7b7-c8f56020520c"
             },
             "headers": {
                 "x-fapi-interaction-id": "$x-fapi-interaction-id"
@@ -186,7 +186,7 @@
             "parameters": {
                 "tokenRequestScope": "accounts",
                 "accountId": "$consentedAccountId",
-                "x-fapi-interaction-id": "aac-f5a10e5e-0c46-41c5-a7b7-c8f56020520x"
+                "x-fapi-interaction-id": "f5a10e5e-0c46-41c5-a7b7-c8f560205200"
             },
             "headers": {
                 "x-fapi-interaction-id": "$x-fapi-interaction-id"
@@ -451,7 +451,7 @@
             "parameters": {
                 "tokenRequestScope": "accounts",
                 "accountId": "$consentedAccountId",
-                "x-fapi-interaction-id": "aac-f5a10e5e-0c46-41c5-a7b7-c8f56020520x"
+                "x-fapi-interaction-id": "f5a10e5e-0c46-41c5-a7b7-c8f560205200"
             },
             "headers": {
                 "x-fapi-interaction-id": "$x-fapi-interaction-id"
@@ -657,7 +657,7 @@
             "parameters": {
                 "tokenRequestScope": "accounts",
                 "accountId": "$consentedAccountId",
-                "x-fapi-interaction-id": "aac-f5a10e5e-0c46-41c5-a7b7-c8f56020520x"
+                "x-fapi-interaction-id": "f5a10e5e-0c46-41c5-a7b7-c8f560205200"
             },
             "headers": {
                 "x-fapi-interaction-id": "$x-fapi-interaction-id"
@@ -817,7 +817,7 @@
             "detail": "Checks that the value in the x-fapi-interaction-id response header is played-back for Direct Debit.",
             "parameters": {
                 "tokenRequestScope": "accounts",
-                "x-fapi-interaction-id": "aac-f5a10e5e-0c46-41c5-a7b7-c8f56020520x"
+                "x-fapi-interaction-id": "f5a10e5e-0c46-41c5-a7b7-c8f560205200"
             },
             "headers": {
                 "x-fapi-interaction-id": "$x-fapi-interaction-id"
@@ -978,7 +978,7 @@
             "detail": "Checks that the value in the x-fapi-interaction-id response header is played-back for Offer.",
             "parameters": {
                 "tokenRequestScope": "accounts",
-                "x-fapi-interaction-id": "aac-f5a10e5e-0c46-41c5-a7b7-c8f56020520x"
+                "x-fapi-interaction-id": "f5a10e5e-0c46-41c5-a7b7-c8f560205200"
             },
             "headers": {
                 "x-fapi-interaction-id": "$x-fapi-interaction-id"
@@ -1183,7 +1183,7 @@
             "detail": "Checks that the value in the x-fapi-interaction-id response header is played-back for Party.",
             "parameters": {
                 "tokenRequestScope": "accounts",
-                "x-fapi-interaction-id": "aac-f5a10e5e-0c46-41c5-a7b7-c8f56020520x"
+                "x-fapi-interaction-id": "f5a10e5e-0c46-41c5-a7b7-c8f560205200"
             },
             "headers": {
                 "x-fapi-interaction-id": "$x-fapi-interaction-id"
@@ -1342,7 +1342,7 @@
             "detail": "Checks that the value in the x-fapi-interaction-id response header is played-back for Product.",
             "parameters": {
                 "tokenRequestScope": "accounts",
-                "x-fapi-interaction-id": "aac-f5a10e5e-0c46-41c5-a7b7-c8f56020520x"
+                "x-fapi-interaction-id": "f5a10e5e-0c46-41c5-a7b7-c8f560205200"
             },
             "headers": {
                 "x-fapi-interaction-id": "$x-fapi-interaction-id"
@@ -1501,7 +1501,7 @@
             "detail": "Checks that the value in the x-fapi-interaction-id response header is played-back for Product.",
             "parameters": {
                 "tokenRequestScope": "accounts",
-                "x-fapi-interaction-id": "aac-f5a10e5e-0c46-41c5-a7b7-c8f56020520x"
+                "x-fapi-interaction-id": "f5a10e5e-0c46-41c5-a7b7-c8f560205200"
             },
             "headers": {
                 "x-fapi-interaction-id": "$x-fapi-interaction-id"
@@ -1660,7 +1660,7 @@
             "detail": "Checks that the value in the x-fapi-interaction-id response header is played-back for Product.",
             "parameters": {
                 "tokenRequestScope": "accounts",
-                "x-fapi-interaction-id": "aac-f5a10e5e-0c46-41c5-a7b7-c8f56020520x"
+                "x-fapi-interaction-id": "f5a10e5e-0c46-41c5-a7b7-c8f560205200"
             },
             "headers": {
                 "x-fapi-interaction-id": "$x-fapi-interaction-id"
@@ -1812,7 +1812,7 @@
             "parameters": {
                 "tokenRequestScope": "accounts",
                 "accountId": "$consentedAccountId",
-                "x-fapi-interaction-id": "aac-f5a10e5e-0c46-41c5-a7b7-c8f56020520c"
+                "x-fapi-interaction-id": "f5a10e5e-0c46-41c5-a7b7-c8f56020520c"
             },
             "headers": {
                 "x-fapi-interaction-id": "$x-fapi-interaction-id"
@@ -1839,7 +1839,7 @@
             "detail": "Checks that the x-fapi-interaction-id value is played-back for bulk Transaction.",
             "parameters": {
                 "tokenRequestScope": "accounts",
-                "x-fapi-interaction-id": "aac-f5a10e5e-0c46-41c5-a7b7-c8f56020520x"
+                "x-fapi-interaction-id": "f5a10e5e-0c46-41c5-a7b7-c8f560205200"
             },
             "headers": {
                 "x-fapi-interaction-id": "$x-fapi-interaction-id"
