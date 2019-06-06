@@ -21,9 +21,7 @@ func TestPaymentValidateSchemeName(t *testing.T) {
 }
 		`, validSchemeName)
 		payment := Payment{}
-		err := json.Unmarshal([]byte(data), &payment)
-		require.NoError(err)
-
+		require.NoError(json.Unmarshal([]byte(data), &payment))
 		require.NoError(payment.Validate())
 	}
 
@@ -36,9 +34,7 @@ func TestPaymentValidateSchemeName(t *testing.T) {
 }
 		`, invalidSchemeName)
 		payment := Payment{}
-		err := json.Unmarshal([]byte(data), &payment)
-		require.NoError(err)
-
+		require.NoError(json.Unmarshal([]byte(data), &payment))
 		require.EqualError(payment.Validate(), "scheme_name: must be a valid value.")
 	}
 
@@ -52,9 +48,7 @@ func TestPaymentValidateSchemeName(t *testing.T) {
 }
 		`, invalidSchemeName)
 		payment := Payment{}
-		err := json.Unmarshal([]byte(data), &payment)
-		require.NoError(err)
-
+		require.NoError(json.Unmarshal([]byte(data), &payment))
 		require.EqualError(payment.Validate(), "scheme_name: the length must be between 1 and 40.")
 	}
 }
@@ -73,9 +67,7 @@ func TestPaymentValidateIdentification(t *testing.T) {
 }
 	`, schemaName)
 		payment := Payment{}
-		err := json.Unmarshal([]byte(data), &payment)
-		require.NoError(err)
-
+		require.NoError(json.Unmarshal([]byte(data), &payment))
 		require.NoError(payment.Validate())
 	}
 	// `Identification` not specified
@@ -86,9 +78,7 @@ func TestPaymentValidateIdentification(t *testing.T) {
 }
 	`, schemaName)
 		payment := Payment{}
-		err := json.Unmarshal([]byte(data), &payment)
-		require.NoError(err)
-
+		require.NoError(json.Unmarshal([]byte(data), &payment))
 		require.EqualError(payment.Validate(), "identification: cannot be blank.")
 	}
 	// `Identification` should be between 1-256 characters
@@ -101,9 +91,7 @@ func TestPaymentValidateIdentification(t *testing.T) {
 }
 	`, schemaName, identification)
 		payment := Payment{}
-		err := json.Unmarshal([]byte(data), &payment)
-		require.NoError(err)
-
+		require.NoError(json.Unmarshal([]byte(data), &payment))
 		require.EqualError(payment.Validate(), "identification: the length must be between 1 and 256.")
 	}
 }
@@ -122,9 +110,7 @@ func TestPaymentValidateName(t *testing.T) {
 }
 		`, schemaName)
 		payment := Payment{}
-		err := json.Unmarshal([]byte(data), &payment)
-		require.NoError(err)
-
+		require.NoError(json.Unmarshal([]byte(data), &payment))
 		require.NoError(payment.Validate())
 	}
 	// If `Name` is present, it should be between 1-70 characters
@@ -138,8 +124,7 @@ func TestPaymentValidateName(t *testing.T) {
 }
 		`, schemaName, name)
 		payment := Payment{}
-		err := json.Unmarshal([]byte(data), &payment)
-		require.NoError(err)
+		require.NoError(json.Unmarshal([]byte(data), &payment))
 
 		require.EqualError(payment.Validate(), "name: the length must be between 1 and 70.")
 	}
@@ -147,14 +132,80 @@ func TestPaymentValidateName(t *testing.T) {
 
 func TestPaymentValidateInstructedAmount(t *testing.T) {
 	require := test.NewRequire(t)
-	a := InstructedAmount{Currency: "USD", Value: 1.0}
-	err := validation.Validate(&a)
-	require.Nil(err)
+	a := InstructedAmount{Currency: "USD", Value: "1.0"}
+	require.NoError(validation.Validate(&a))
 }
 
 func TestPaymentValidateInstructedAmountFails(t *testing.T) {
 	require := test.NewRequire(t)
-	a := InstructedAmount{Currency: "not a valid currency", Value: 1.0}
-	err := validation.Validate(&a)
-	require.NotNil(err)
+	a := InstructedAmount{Currency: "not a valid currency", Value: "1.0"}
+	require.EqualError(validation.Validate(&a), fmt.Sprintf("currency: %+v.", regexInstructedAmountCurrencyErr))
+}
+
+func TestServer_Payment_InstructedAmountValue_String(t *testing.T) {
+	assert := test.NewAssert(t)
+
+	tests := []struct {
+		Value         string
+		ExpectedError bool
+	}{
+		{
+			Value:         "1.0",
+			ExpectedError: false,
+		},
+		{
+			Value:         "0.1",
+			ExpectedError: false,
+		},
+		{
+			Value:         "0.0001",
+			ExpectedError: false,
+		},
+		{
+			Value:         "0.00001",
+			ExpectedError: false,
+		},
+		{
+			Value:         "1111111111111.0",
+			ExpectedError: false,
+		},
+		{
+			Value:         "0.000001",
+			ExpectedError: true,
+		},
+		{
+			Value:         "0.0000001",
+			ExpectedError: true,
+		},
+		{
+			Value:         "0.00000001",
+			ExpectedError: true,
+		},
+		{
+			Value:         "0.000000001",
+			ExpectedError: true,
+		},
+		{
+			Value:         "0.0000000001",
+			ExpectedError: true,
+		},
+		{
+			Value:         "11111111111111.0",
+			ExpectedError: true,
+		},
+		{
+			Value:         "1111111111111.000001",
+			ExpectedError: true,
+		},
+	}
+
+	for _, test := range tests {
+		i := InstructedAmount{Currency: "GBP", Value: test.Value}
+		err := validation.Validate(&i)
+		if test.ExpectedError {
+			assert.EqualError(err, fmt.Sprintf("value: %+v.", regexInstructedAmountValueErr), fmt.Sprintf("Value=%+v", test.Value))
+		} else {
+			assert.NoError(err, fmt.Sprintf("Value=%+v", test.Value))
+		}
+	}
 }
