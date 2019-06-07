@@ -372,7 +372,7 @@
             id="instructed_amount_value"
             label-for="instructed_amount_value"
             label="Instructed Amount Value (Capped at 1.00)"
-            description="Value of the instructed amount.">
+            description="Value of the instructed amount (^\d{1,13}\.\d{1,5}$).">
             <b-form-input
               id="instructed_amount_value"
               v-model="instructed_amount.value"
@@ -384,7 +384,7 @@
             id="instructed_amount_currency"
             label-for="instructed_amount_currency"
             label="Instructed Amount Currency"
-            description="Instructed amount currency.">
+            description="Instructed amount currency (^[A-Z]{3,3}$).">
             <b-form-select
               id="instructed_amount_currency"
               v-model="instructed_amount.currency"

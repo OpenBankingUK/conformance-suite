@@ -9,6 +9,7 @@ import (
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery/mocks"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/generation"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/server/models"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/test"
 
 	gmocks "bitbucket.org/openbankingteam/conformance-suite/pkg/generation"
@@ -70,7 +71,7 @@ func TestJourneySetDiscoveryModelHandlesErrorFromValidator(t *testing.T) {
 	failures, err := journey.SetDiscoveryModel(discoveryModel)
 
 	require.Error(t, err)
-	assert.Equal("error setting discovery model: validator error", err.Error())
+	assert.Equal("journey.SetDiscoveryModel: error setting discovery model: validator error", err.Error())
 	assert.Nil(failures)
 }
 
@@ -152,9 +153,11 @@ func TestJourneySetConfig(t *testing.T) {
 		redirectURL:           fmt.Sprintf("https://%s:8443/conformancesuite/callback", ListenHost),
 		resourceIDs:           resourceIDs,
 		apiVersion:            "v3.1",
+		instructedAmount: models.InstructedAmount{
+			Currency: "USD",
+			Value:    "0.1",
+		},
 	}
-	err = journey.SetConfig(config)
-	require.NoError(err)
-
+	require.NoError(journey.SetConfig(config))
 	require.Equal(config, journey.config)
 }

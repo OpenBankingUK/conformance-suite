@@ -26,7 +26,6 @@ var (
 	errTestCasesGenerated          = errors.New("error test cases already generated")
 	errNotFinishedCollectingTokens = errors.New("error not finished collecting tokens")
 	errConsentIDAcquisitionFailed  = errors.New("ConsentId acquistion failed")
-	errTokenMappingFailed          = errors.New("token mapping to testcases ailed")
 )
 
 // Journey represents all possible steps for a user test conformance journey
@@ -83,9 +82,9 @@ func NewJourney(logger *logrus.Entry, generator generation.Generator, validator 
 		allCollected:          false,
 		testCasesRunGenerated: false,
 		context:               model.Context{},
-		log:                   logger.WithField("module", "Journey"),
+		log:                   logger.WithField("module", "journey"),
 		events:                events.NewEvents(),
-		permissions:           make(map[string][]manifest.RequiredTokens, 0),
+		permissions:           make(map[string][]manifest.RequiredTokens),
 		manifests:             make([]manifest.Scripts, 0),
 	}
 }
@@ -106,7 +105,7 @@ func (wj *journey) NewDaemonController() {
 func (wj *journey) SetDiscoveryModel(discoveryModel *discovery.Model) (discovery.ValidationFailures, error) {
 	failures, err := wj.validator.Validate(discoveryModel)
 	if err != nil {
-		return nil, errors.Wrap(err, "error setting discovery model")
+		return nil, errors.Wrap(err, "journey.SetDiscoveryModel: error setting discovery model")
 	}
 
 	if !failures.Empty() {
@@ -128,7 +127,7 @@ func (wj *journey) DiscoveryModel() (discovery.Model, error) {
 	wj.journeyLock.Unlock()
 
 	if discoveryModel == nil {
-		return discovery.Model{}, errors.New("discovery model not set yet")
+		return discovery.Model{}, errors.New("journey.DiscoveryModel: discovery model not set yet")
 	}
 	return *discoveryModel, nil
 }
@@ -146,6 +145,7 @@ func (wj *journey) TestCases() (generation.TestCasesRun, error) {
 	defer wj.journeyLock.Unlock()
 	logger := wj.log.WithFields(logrus.Fields{
 		"package":  "server",
+		"module":   "journey",
 		"function": "TestCases",
 	})
 
@@ -162,7 +162,7 @@ func (wj *journey) TestCases() (generation.TestCasesRun, error) {
 	}
 
 	if !wj.testCasesRunGenerated {
-		wj.context.PutString(ctxPhase, "generation")
+		wj.context.PutString(CtxPhase, "generation")
 		config := wj.makeGeneratorConfig()
 		discovery := wj.validDiscoveryModel.DiscoveryModel
 		if len(discovery.DiscoveryItems) > 0 { // default currently "v3.1" ... allow "v3.0"
@@ -172,7 +172,7 @@ func (wj *journey) TestCases() (generation.TestCasesRun, error) {
 				logger.WithError(err).Error("parsing spec version")
 			} else {
 				wj.config.apiVersion = fmt.Sprintf("v%d.%d", version.Major, version.Minor)
-				wj.context.PutString(ctxAPIVersion, wj.config.apiVersion)
+				wj.context.PutString(CtxAPIVersion, wj.config.apiVersion)
 			}
 			logger.WithField("version", wj.config.apiVersion).Info("API url version")
 		}
@@ -260,7 +260,11 @@ func (wj *journey) TestCases() (generation.TestCasesRun, error) {
 func (wj *journey) CollectToken(code, state, scope string) error {
 	wj.journeyLock.Lock()
 	defer wj.journeyLock.Unlock()
-	logger := wj.log.WithField("function", "CollectToken")
+	logger := wj.log.WithFields(logrus.Fields{
+		"package":  "server",
+		"module":   "journey",
+		"function": "CollectToken",
+	})
 
 	if !wj.testCasesRunGenerated {
 		logger.WithFields(logrus.Fields{
@@ -335,7 +339,7 @@ func (wj *journey) RunTests() error {
 
 	runDefinition := wj.makeRunDefinition()
 	runner := executors.NewTestCaseRunner(wj.log, runDefinition, wj.daemonController)
-	wj.context.PutString(ctxPhase, "run")
+	wj.context.PutString(CtxPhase, "run")
 	return runner.RunTestCases(&wj.context)
 }
 
@@ -358,6 +362,8 @@ func (wj *journey) createTokenCollector(consentIds executors.TokenConsentIDs) {
 	}
 
 	wj.log.WithFields(logrus.Fields{
+		"package":      "server",
+		"module":       "journey",
 		"function":     "createTokenCollector",
 		"consentIds":   fmt.Sprintf("%#v", consentIds),
 		"allCollected": wj.allCollected,
@@ -418,7 +424,7 @@ func (wj *journey) SetConfig(config JourneyConfig) error {
 	defer wj.journeyLock.Unlock()
 
 	wj.config = config
-	err := wj.configParametersToJourneyContext()
+	err := PutParametersToJourneyContext(wj.config, wj.context)
 	if err != nil {
 		return err
 	}
@@ -429,78 +435,6 @@ func (wj *journey) SetConfig(config JourneyConfig) error {
 
 func (wj *journey) Events() events.Events {
 	return wj.events
-}
-
-const (
-	ctxConstClientID                = "client_id"
-	ctxConstClientSecret            = "client_secret"
-	ctxConstTokenEndpoint           = "token_endpoint"
-	ctxResponseType                 = "responseType"
-	ctxConstTokenEndpointAuthMethod = "token_endpoint_auth_method"
-	ctxConstFapiFinancialID         = "x-fapi-financial-id"
-	ctxConstRedirectURL             = "redirect_url"
-	ctxConstAuthorisationEndpoint   = "authorisation_endpoint"
-	ctxConstBasicAuthentication     = "basic_authentication"
-	ctxConstResourceBaseURL         = "resource_server"
-	ctxConstIssuer                  = "issuer"
-	ctxAPIVersion                   = "api-version"
-	ctxConsentedAccountID           = "consentedAccountId"
-	ctxStatementID                  = "statementId"
-	ctxCreditorSchema               = "creditorScheme"
-	ctxCreditorIdentification       = "creditorIdentification"
-	ctxCreditorName                 = "creditorName"
-	ctxInstructedAmountCurrency     = "instructedAmountCurrency"
-	ctxInstructedAmountValue        = "instructedAmountValue"
-	ctxCurrencyOfTransfer           = "currencyOfTransfer"
-	ctxTransactionFromDate          = "transactionFromDate"
-	ctxTransactionToDate            = "transactionToDate"
-	ctxRequestObjectSigningAlg      = "requestObjectSigningAlg"
-	ctxSigningPrivate               = "signingPrivate"
-	ctxSigningPublic                = "signingPublic"
-	ctxPhase                        = "phase"
-	ctxNonOBDirectory               = "nonOBDirectory"
-	ctxSigningKid                   = "signingKid"
-	ctxSignatureTrustAnchor         = "signatureTrustAnchor"
-)
-
-func (wj *journey) configParametersToJourneyContext() error {
-	wj.config.apiVersion = "v3.1"
-	wj.context.PutString(ctxConstClientID, wj.config.clientID)
-	wj.context.PutString(ctxConstClientSecret, wj.config.clientSecret)
-	wj.context.PutString(ctxConstTokenEndpoint, wj.config.tokenEndpoint)
-	wj.context.PutString(ctxResponseType, wj.config.ResponseType)
-	wj.context.PutString(ctxConstTokenEndpointAuthMethod, wj.config.tokenEndpointAuthMethod)
-	wj.context.PutString(ctxConstFapiFinancialID, wj.config.xXFAPIFinancialID)
-	wj.context.PutString(ctxConstRedirectURL, wj.config.redirectURL)
-	wj.context.PutString(ctxConstAuthorisationEndpoint, wj.config.authorizationEndpoint)
-	wj.context.PutString(ctxConstResourceBaseURL, wj.config.resourceBaseURL)
-	wj.context.PutString(ctxAPIVersion, wj.config.apiVersion)
-	wj.context.PutString(ctxConsentedAccountID, wj.config.resourceIDs.AccountIDs[0].AccountID)
-	wj.context.PutString(ctxStatementID, wj.config.resourceIDs.StatementIDs[0].StatementID)
-	wj.context.PutString(ctxCreditorSchema, wj.config.creditorAccount.SchemeName)
-	wj.context.PutString(ctxCreditorIdentification, wj.config.creditorAccount.Identification)
-	wj.context.PutString(ctxCreditorName, wj.config.creditorAccount.Name)
-	wj.context.PutString(ctxInstructedAmountCurrency, wj.config.instructedAmount.Currency)
-	wj.context.PutString(ctxInstructedAmountValue, fmt.Sprintf("%.5f", wj.config.instructedAmount.Value))
-	wj.context.PutString(ctxCurrencyOfTransfer, wj.config.currencyOfTransfer)
-	wj.context.PutString(ctxRequestObjectSigningAlg, wj.config.requestObjectSigningAlgorithm)
-	wj.context.PutString(ctxSigningPrivate, wj.config.signingPrivate)
-	wj.context.PutString(ctxSigningPublic, wj.config.signingPublic)
-	wj.context.PutString(ctxTransactionFromDate, wj.config.transactionFromDate)
-	wj.context.PutString(ctxTransactionToDate, wj.config.transactionToDate)
-	wj.context.Put(ctxNonOBDirectory, wj.config.useNonOBDirectory)
-	wj.context.PutString(ctxSigningKid, wj.config.signingKid)
-	wj.context.PutString(ctxSignatureTrustAnchor, wj.config.signatureTrustAnchor)
-
-	basicauth, err := authentication.CalculateClientSecretBasicToken(wj.config.clientID, wj.config.clientSecret)
-	if err != nil {
-		return err
-	}
-	wj.context.PutString(ctxConstBasicAuthentication, basicauth)
-	wj.context.PutString(ctxConstIssuer, wj.config.issuer)
-	wj.context.PutString(ctxPhase, "unknown")
-
-	return nil
 }
 
 func (wj *journey) customTestParametersToJourneyContext() {
@@ -518,8 +452,10 @@ func (wj *journey) customTestParametersToJourneyContext() {
 
 func consentIdsToTestCaseRun(log *logrus.Entry, consentIds []executors.TokenConsentIDItem, testCasesRun *generation.TestCasesRun) {
 	log.WithFields(logrus.Fields{
+		"package":    "server",
+		"function":   "consentIdsToTestCaseRun",
 		"consentIds": consentIds,
-	}).Debug("consentIdsToTestCaseRun ...")
+	}).Debug("...")
 	for _, v := range testCasesRun.SpecConsentRequirements {
 		for x, permission := range v.NamedPermissions {
 			for _, consentID := range consentIds {
