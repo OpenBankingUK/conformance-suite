@@ -272,7 +272,6 @@ func (wj *journey) CollectToken(code, state, scope string) error {
 		return errTestCasesNotGenerated
 	}
 
-	runDefinition := wj.makeRunDefinition()
 	accessToken, err := executors.ExchangeCodeForAccessToken(state, code, &wj.context)
 	if err != nil {
 		logger.WithFields(logrus.Fields{
