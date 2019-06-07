@@ -272,8 +272,7 @@ func (wj *journey) CollectToken(code, state, scope string) error {
 		return errTestCasesNotGenerated
 	}
 
-	runDefinition := wj.makeRunDefinition()
-	accessToken, err := executors.ExchangeCodeForAccessToken(state, code, scope, runDefinition, &wj.context)
+	accessToken, err := executors.ExchangeCodeForAccessToken(state, code, &wj.context)
 	if err != nil {
 		logger.WithFields(logrus.Fields{
 			"err":         err,
@@ -409,6 +408,9 @@ type JourneyConfig struct {
 	requestObjectSigningAlgorithm string
 	signingPrivate                string
 	signingPublic                 string
+	useNonOBDirectory             bool
+	signingKid                    string
+	signatureTrustAnchor          string
 }
 
 func (wj *journey) SetConfig(config JourneyConfig) error {
@@ -456,6 +458,9 @@ const (
 	ctxSigningPrivate               = "signingPrivate"
 	ctxSigningPublic                = "signingPublic"
 	ctxPhase                        = "phase"
+	ctxNonOBDirectory               = "nonOBDirectory"
+	ctxSigningKid                   = "signingKid"
+	ctxSignatureTrustAnchor         = "signatureTrustAnchor"
 )
 
 func (wj *journey) configParametersToJourneyContext() error {
@@ -483,6 +488,9 @@ func (wj *journey) configParametersToJourneyContext() error {
 	wj.context.PutString(ctxSigningPublic, wj.config.signingPublic)
 	wj.context.PutString(ctxTransactionFromDate, wj.config.transactionFromDate)
 	wj.context.PutString(ctxTransactionToDate, wj.config.transactionToDate)
+	wj.context.Put(ctxNonOBDirectory, wj.config.useNonOBDirectory)
+	wj.context.PutString(ctxSigningKid, wj.config.signingKid)
+	wj.context.PutString(ctxSignatureTrustAnchor, wj.config.signatureTrustAnchor)
 
 	basicauth, err := authentication.CalculateClientSecretBasicToken(wj.config.clientID, wj.config.clientSecret)
 	if err != nil {

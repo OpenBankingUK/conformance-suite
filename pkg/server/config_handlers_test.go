@@ -16,9 +16,9 @@ import (
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
 	"github.com/stretchr/testify/assert"
 
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/server/models"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/test"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/version/mocks"
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/server/models"
 )
 
 var (

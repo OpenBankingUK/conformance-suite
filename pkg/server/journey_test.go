@@ -4,12 +4,12 @@ import (
 	"fmt"
 	"testing"
 
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/test"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/authentication"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery/mocks"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/generation"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/test"
 
 	gmocks "bitbucket.org/openbankingteam/conformance-suite/pkg/generation"
 	"github.com/pkg/errors"

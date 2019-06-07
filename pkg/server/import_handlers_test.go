@@ -8,9 +8,9 @@ import (
 	"net/http"
 	"testing"
 
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/server/models"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/test"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/version/mocks"
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/server/models"
 )
 
 func TestServerImportHandlersPostImportReview(t *testing.T) {
