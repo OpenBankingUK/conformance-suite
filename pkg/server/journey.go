@@ -273,7 +273,7 @@ func (wj *journey) CollectToken(code, state, scope string) error {
 	}
 
 	runDefinition := wj.makeRunDefinition()
-	accessToken, err := executors.ExchangeCodeForAccessToken(state, code, runDefinition, &wj.context)
+	accessToken, err := executors.ExchangeCodeForAccessToken(state, code, &wj.context)
 	if err != nil {
 		logger.WithFields(logrus.Fields{
 			"err":         err,

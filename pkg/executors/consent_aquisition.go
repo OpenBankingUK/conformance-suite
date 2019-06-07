@@ -223,7 +223,7 @@ type ExchangeParameters struct {
 }
 
 // ExchangeCodeForAccessToken - runs a testcase to perform this operation
-func ExchangeCodeForAccessToken(tokenName, code string, definition RunDefinition, ctx *model.Context) (accesstoken string, err error) {
+func ExchangeCodeForAccessToken(tokenName, code string, ctx *model.Context) (accesstoken string, err error) {
 	logger := logrus.StandardLogger().WithFields(logrus.Fields{
 		"module":    "ExchangeCodeForAccessToken",
 		"tokenName": tokenName,
@@ -366,20 +366,20 @@ func exchangeCodeForToken(code string, ctx *model.Context, logger *logrus.Entry)
 		modulusBase64 := base64.RawURLEncoding.EncodeToString(modulus)
 		kid, err := authentication.CalcKid(modulusBase64)
 		if err != nil {
-			return nil, errors.Wrap(err, "could not calculate kid")
+			return nil, errors.Wrap(err, "executors.exchangeCodeForToken failed: could not calculate kid")
 		}
 		nonOBDirectory, exists := ctx.Get("nonOBDirectory")
 		if !exists {
-			return nil, errors.Errorf("unable get nonOBDirectory value from context")
+			return nil, errors.New("executors.exchangeCodeForToken failed: unable get nonOBDirectory value from context")
 		}
 		nonOBDirectoryAsBool, ok := nonOBDirectory.(bool)
 		if !ok {
-			return nil, errors.New("unable to cast nonOBDirectory value to bool")
+			return nil, errors.New("executors.exchangeCodeForToken failed: unable to cast nonOBDirectory value to bool")
 		}
 		if nonOBDirectoryAsBool {
 			kid, err = ctx.GetString("signingKid")
 			if err != nil {
-				return nil, errors.New("unable to retrieve signingKid from context")
+				return nil, errors.New("executors.exchangeCodeForToken failed: unable to retrieve signingKid from context")
 			}
 		}
 		token.Header["kid"] = kid
