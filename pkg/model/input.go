@@ -426,16 +426,16 @@ func (i *Input) GenerateSignedJWT(ctx *Context, alg jwt.SigningMethod) (string, 
 	}
 	useNonOBDirectory, exists := ctx.Get("nonOBDirectory")
 	if !exists {
-		return "", errors.New("unable to retrieve nonOBDirectory value from context")
+		return "", errors.New("model.Input.generateJWSSignature failure: unable to retrieve nonOBDirectory value from context")
 	}
 	useNonOBDirectoryAsBool, ok := useNonOBDirectory.(bool)
 	if !ok {
-		return "", errors.New("unable to cast nonOBDirectory value to bool")
+		return "", errors.New("model.Input.generateJWSSignature failure: unable to cast nonOBDirectory value to bool")
 	}
 	if useNonOBDirectoryAsBool {
 		kid, err = ctx.GetString("signingKid")
 		if err != nil {
-			return "", errors.New("unable to retrieve signingKid from context")
+			return "", errors.New("model.Input.generateJWSSignature failure: unable to retrieve signingKid from context")
 		}
 	}
 	logrus.WithFields(logrus.Fields{
@@ -465,7 +465,7 @@ func (i *Input) generateJWSSignature(ctx *Context, alg jwt.SigningMethod) (strin
 	}
 	cert, err := signingCertFromContext(ctx)
 	if err != nil {
-		return "", errors.Wrap(err, "unable to sign certificate from context")
+		return "", errors.Wrap(err, "model.Input.generateJWSSignature failure: unable to sign certificate from context")
 	}
 	modulus := cert.PublicKey().N.Bytes()
 	modulusBase64 := base64.RawURLEncoding.EncodeToString(modulus)
@@ -473,16 +473,16 @@ func (i *Input) generateJWSSignature(ctx *Context, alg jwt.SigningMethod) (strin
 
 	issuer, err := i.getJWSIssuerString(ctx, cert)
 	if err != nil {
-		return "", errors.Wrap(err, "unable to retrieve issuer from context")
+		return "", errors.Wrap(err, "model.Input.generateJWSSignature failure: unable to retrieve issuer from context")
 	}
 	trustAnchor := "openbanking.org.uk"
 	useNonOBDirectory, exists := ctx.Get("nonOBDirectory")
 	if !exists {
-		return "", errors.New("unable to retrieve nonOBDirectory from context")
+		return "", errors.New("model.Input.generateJWSSignature failure: unable to retrieve nonOBDirectory from context")
 	}
 	useNonOBDirectoryAsBool, ok := useNonOBDirectory.(bool)
 	if !ok {
-		return "", errors.New("unable to cast nonOBDirectory to bool")
+		return "", errors.New("model.Input.generateJWSSignature failure: unable to cast nonOBDirectory to bool")
 	}
 	if useNonOBDirectoryAsBool {
 		kid, err = ctx.GetString("signingKid")
