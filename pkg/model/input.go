@@ -487,15 +487,15 @@ func (i *Input) generateJWSSignature(ctx *Context, alg jwt.SigningMethod) (strin
 	if useNonOBDirectoryAsBool {
 		kid, err = ctx.GetString("signingKid")
 		if err != nil {
-			return "", err
+			return "", errors.Wrap(err, "model.Input.generateJWSSignature failure: unable to retrieve singingKid from context")
 		}
 		issuer, err = ctx.GetString("issuer")
 		if err != nil {
-			return "", err
+			return "", errors.Wrap(err, "model.Input.generateJWSSignature failure: unable to retrieve issue from context")
 		}
 		trustAnchor, err = ctx.GetString("signatureTrustAnchor")
 		if err != nil {
-			return "", err
+			return "", errors.Wrap(err, "model.Input.generateJWSSignature failure: unable to retrieve signatureTrustAnchor from context")
 		}
 	}
 	logrus.Tracef("jws issuer=%s", issuer)
