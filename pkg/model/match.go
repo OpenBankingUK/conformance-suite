@@ -58,7 +58,7 @@ type Match struct {
 	Regex           string    `json:"regex,omitempty"`             // Regular expression to be used
 	JSON            string    `json:"json,omitempty"`              // Json expression to be used
 	Value           string    `json:"value,omitempty"`             // Value to match against (string)
-	Numeric         int64     `json:"numeric,omitempty"`           //Value to match against - numeric
+	Numeric         int64     `json:"numeric,omitempty"`           // Value to match against - numeric
 	Count           int64     `json:"count,omitempty"`             // Cont for JSON array match purposes
 	BodyLength      *int64    `json:"body-length,omitempty"`       // Body payload length for matching
 	ReplaceEndpoint string    `json:"replaceInEndpoint,omitempty"` // allows substitution of resourceIds

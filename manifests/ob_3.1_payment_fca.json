@@ -73,7 +73,8 @@
       "resource": "DomesticPayment",
       "asserts": [
         "OB3GLOAssertOn400",
-        "OB3DOPAssertInvalidConsentStatus"
+        "OB3DOPAssertInvalidConsentStatus",
+        "OB3IPAssertResourceInvalidConsentStatusOBErrorCode"
       ],
       "method": "get",
       "schemaCheck": false
