@@ -674,7 +674,7 @@ func GetKID(ctx *Context, modulus []byte) (string, error) {
 	if nonOBDirectoryAsBool {
 		kid, err = ctx.GetString("signingKid")
 		if err != nil {
-			return "", errors.New("unable to retrieve signingKid from context")
+			return "", errors.Wrap(err, "unable to retrieve signingKid from context")
 		}
 	}
 
