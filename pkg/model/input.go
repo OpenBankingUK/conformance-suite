@@ -417,26 +417,9 @@ func (i *Input) GenerateSignedJWT(ctx *Context, alg jwt.SigningMethod) (string, 
 	if err != nil {
 		return "", i.AppErr(errors.Wrap(err, "Create certificate from context").Error())
 	}
-
-	modulus := cert.PublicKey().N.Bytes()
-	modulusBase64 := base64.RawURLEncoding.EncodeToString(modulus)
-	kid, err := authentication.CalcKid(modulusBase64)
+	kid, err := GetKID(ctx, cert.PublicKey().N.Bytes())
 	if err != nil {
-		return "", i.AppErr(fmt.Sprintf("error calculating kid: %s", err.Error()))
-	}
-	useNonOBDirectory, exists := ctx.Get("nonOBDirectory")
-	if !exists {
-		return "", errors.New("model.Input.generateJWSSignature failure: unable to retrieve nonOBDirectory value from context")
-	}
-	useNonOBDirectoryAsBool, ok := useNonOBDirectory.(bool)
-	if !ok {
-		return "", errors.New("model.Input.generateJWSSignature failure: unable to cast nonOBDirectory value to bool")
-	}
-	if useNonOBDirectoryAsBool {
-		kid, err = ctx.GetString("signingKid")
-		if err != nil {
-			return "", errors.New("model.Input.generateJWSSignature failure: unable to retrieve signingKid from context")
-		}
+		return "", errors.Wrap(err, "model.Input.generateJWSSignature failure: unable to get KID")
 	}
 	logrus.WithFields(logrus.Fields{
 		"kid": kid,
@@ -671,4 +654,29 @@ func makeMiliSecondStringTimestamp() string {
 // DisableJWS - disable jws-signature for ozone
 func DisableJWS() {
 	disableJws = true
+}
+
+// GetKID determines the value of the JWS Key ID
+func GetKID(ctx *Context, modulus []byte) (string, error) {
+	modulusBase64 := base64.RawURLEncoding.EncodeToString(modulus)
+	kid, err := authentication.CalcKid(modulusBase64)
+	if err != nil {
+		return "", errors.Wrap(err, "could not calculate kid")
+	}
+	nonOBDirectory, exists := ctx.Get("nonOBDirectory")
+	if !exists {
+		return "", errors.New("unable get nonOBDirectory value from context")
+	}
+	nonOBDirectoryAsBool, ok := nonOBDirectory.(bool)
+	if !ok {
+		return "", errors.New("unable to cast nonOBDirectory value to bool")
+	}
+	if nonOBDirectoryAsBool {
+		kid, err = ctx.GetString("signingKid")
+		if err != nil {
+			return "", errors.New("unable to retrieve signingKid from context")
+		}
+	}
+
+	return kid, nil
 }

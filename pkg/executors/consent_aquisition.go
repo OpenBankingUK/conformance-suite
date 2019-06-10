@@ -2,7 +2,6 @@ package executors
 
 import (
 	"crypto/rsa"
-	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"strings"
@@ -362,25 +361,9 @@ func exchangeCodeForToken(code string, ctx *model.Context, logger *logrus.Entry)
 
 		token := jwt.NewWithClaims(signingMethod, claims) // create new token
 
-		modulus := cert.PublicKey().N.Bytes()
-		modulusBase64 := base64.RawURLEncoding.EncodeToString(modulus)
-		kid, err := authentication.CalcKid(modulusBase64)
+		kid, err := model.GetKID(ctx, cert.PublicKey().N.Bytes())
 		if err != nil {
-			return nil, errors.Wrap(err, "executors.exchangeCodeForToken failed: could not calculate kid")
-		}
-		nonOBDirectory, exists := ctx.Get("nonOBDirectory")
-		if !exists {
-			return nil, errors.New("executors.exchangeCodeForToken failed: unable get nonOBDirectory value from context")
-		}
-		nonOBDirectoryAsBool, ok := nonOBDirectory.(bool)
-		if !ok {
-			return nil, errors.New("executors.exchangeCodeForToken failed: unable to cast nonOBDirectory value to bool")
-		}
-		if nonOBDirectoryAsBool {
-			kid, err = ctx.GetString("signingKid")
-			if err != nil {
-				return nil, errors.New("executors.exchangeCodeForToken failed: unable to retrieve signingKid from context")
-			}
+			return nil, errors.Wrap(err, "executors.exchangeCodeForToken failed: unable to get KID")
 		}
 		token.Header["kid"] = kid
 
