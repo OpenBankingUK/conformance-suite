@@ -253,8 +253,15 @@ func (i *Input) setHeaders(req *resty.Request, ctx *Context) error {
 func (i *Input) createJWSDetachedSignature(ctx *Context) error {
 
 	if len(i.RequestBody) > 0 && !disableJws {
-
-		token, err := i.generateJWSSignature(ctx, jwt.SigningMethodRS256)
+		requestObjSigningAlg, err := ctx.GetString("requestObjectSigningAlg")
+		if err != nil {
+			return errors.Wrap(err, "input.createJWSDetachedSignature failure: unable to retrieve requestObjectSigningAlg")
+		}
+		alg := jwt.GetSigningMethod(requestObjSigningAlg)
+		if alg == nil {
+			return fmt.Errorf("input.createJWSDetachedSignature failure: unable to parse signing alg %s", requestObjSigningAlg)
+		}
+		token, err := i.generateJWSSignature(ctx, alg)
 
 		if err != nil {
 			return i.AppErr(fmt.Sprintf("error generating jws signature %s", err.Error()))
