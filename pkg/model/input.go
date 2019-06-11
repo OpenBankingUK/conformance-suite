@@ -279,7 +279,7 @@ func (i *Input) createJWSDetachedSignature(ctx *Context) error {
 
 }
 
-func getSigningMethod(alg string) (jwt.SigningAlgorithm, error) {
+func getSigningMethod(alg string) (jwt.SigningMethod, error) {
 	switch strings.ToUpper(alg) {
 	case "PS256":
 		// Workaround
