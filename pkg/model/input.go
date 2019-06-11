@@ -257,9 +257,9 @@ func (i *Input) createJWSDetachedSignature(ctx *Context) error {
 		if err != nil {
 			return errors.Wrap(err, "input.createJWSDetachedSignature failure: unable to retrieve requestObjectSigningAlg")
 		}
-		alg := jwt.GetSigningMethod(requestObjSigningAlg)
-		if alg == nil {
-			return fmt.Errorf("input.createJWSDetachedSignature failure: unable to parse signing alg %s", requestObjSigningAlg)
+		alg, err := getSigningMethod(requestObjSigningAlg)
+		if err != nil {
+			return errors.Wrapf(err, "input.createJWSDetachedSignature failure: unable to parse signing alg")
 		}
 		token, err := i.generateJWSSignature(ctx, alg)
 
@@ -277,6 +277,26 @@ func (i *Input) createJWSDetachedSignature(ctx *Context) error {
 	}
 	return i.AppErr("cannot create x-jws-signature, as request body is empty")
 
+}
+
+func getSigningMethod(alg string) (jwt.SigningAlgorithm, error) {
+	switch strings.ToUpper(alg) {
+    case "PS256":
+        // Workaround
+        // https://github.com/dgrijalva/jwt-go/issues/285
+        return &jwt.SigningMethodRSAPSS{
+            SigningMethodRSA: jwt.SigningMethodPS256.SigningMethodRSA,
+            Options: &rsa.PSSOptions{
+                SaltLength: rsa.PSSSaltLengthEqualsHash,
+            },
+        }, nil
+	default:
+		if signingAlg := jwt.GetSigningMethod(alg); signingAlg != nil{
+			return signingAlg, nil
+		}
+	}
+
+	return nil, fmt.Errorf("unable to find signing algorithm %s", alg)
 }
 
 func (i *Input) getBody(req *resty.Request, ctx *Context) (string, error) {
