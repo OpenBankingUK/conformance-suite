@@ -281,17 +281,17 @@ func (i *Input) createJWSDetachedSignature(ctx *Context) error {
 
 func getSigningMethod(alg string) (jwt.SigningAlgorithm, error) {
 	switch strings.ToUpper(alg) {
-    case "PS256":
-        // Workaround
-        // https://github.com/dgrijalva/jwt-go/issues/285
-        return &jwt.SigningMethodRSAPSS{
-            SigningMethodRSA: jwt.SigningMethodPS256.SigningMethodRSA,
-            Options: &rsa.PSSOptions{
-                SaltLength: rsa.PSSSaltLengthEqualsHash,
-            },
-        }, nil
+	case "PS256":
+		// Workaround
+		// https://github.com/dgrijalva/jwt-go/issues/285
+		return &jwt.SigningMethodRSAPSS{
+			SigningMethodRSA: jwt.SigningMethodPS256.SigningMethodRSA,
+			Options: &rsa.PSSOptions{
+				SaltLength: rsa.PSSSaltLengthEqualsHash,
+			},
+		}, nil
 	default:
-		if signingAlg := jwt.GetSigningMethod(alg); signingAlg != nil{
+		if signingAlg := jwt.GetSigningMethod(alg); signingAlg != nil {
 			return signingAlg, nil
 		}
 	}
