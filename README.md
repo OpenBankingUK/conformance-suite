@@ -17,18 +17,17 @@ To provide feedback, please use the public [issue tracker](https://bitbucket.org
 ## Release Notes 
 * * *
 
+### v1.1.10 (10th June 2019)
+
+The release is called **v1.1.10**, it adds PS256 JWS .
+
+[Full Release Notes](docs/releases/v1.1.10.md) (v1.1.10.md)
+
 ### v1.1.9 (7th June 2019)
 
 The release is called **v1.1.9**, it adds support kid/trust anchor using EIDAS certificates and enables the Docker Content Trust Framework.
 
 [Full Release Notes](docs/releases/v1.1.9.md) (v1.1.9.md)
-
-### v1.1.8 (29th May 2019)
-
-Release **v1.1.8**, fixes Payment template bugs, adds payments tests, reduces log noise
-
-[Full Release Notes](docs/releases/v1.1.8.md) (v1.1.8.md)
-
 
 ## Quickstart
 * * *
