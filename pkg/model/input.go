@@ -1,6 +1,7 @@
 package model
 
 import (
+	"crypto"
 	"crypto/rsa"
 	"encoding/base64"
 	"encoding/json"
@@ -171,27 +172,11 @@ func (i *Input) GenerateRequestToken(ctx *Context) (string, error) {
 	if err != nil && err != ErrNotFound {
 		return "", err
 	}
-
-	var token string
-	switch strings.ToUpper(alg) {
-	case "PS256":
-		// Workaround
-		// https://github.com/dgrijalva/jwt-go/issues/285
-		fixedSigningMethodPS256 := &jwt.SigningMethodRSAPSS{
-			SigningMethodRSA: jwt.SigningMethodPS256.SigningMethodRSA,
-			Options: &rsa.PSSOptions{
-				SaltLength: rsa.PSSSaltLengthEqualsHash,
-			},
-		}
-		token, err = i.GenerateSignedJWT(ctx, fixedSigningMethodPS256)
-	case "RS256":
-		token, err = i.GenerateSignedJWT(ctx, jwt.SigningMethodRS256)
-	case "NONE":
-		fallthrough
-	default:
-		token, err = i.generateUnsignedJWT()
+	signingMethod, err := getSigningMethod(alg)
+	if err != nil {
+		return i.generateUnsignedJWT()
 	}
-	return token, err
+	return i.GenerateSignedJWT(ctx, signingMethod)
 }
 
 func consentURL(authEndpoint string, claims map[string]string, token string) string {
@@ -288,8 +273,11 @@ func getSigningMethod(alg string) (jwt.SigningMethod, error) {
 			SigningMethodRSA: jwt.SigningMethodPS256.SigningMethodRSA,
 			Options: &rsa.PSSOptions{
 				SaltLength: rsa.PSSSaltLengthEqualsHash,
+				Hash:       crypto.SHA256,
 			},
 		}, nil
+	case "NONE":
+		fallthrough
 	default:
 		if signingAlg := jwt.GetSigningMethod(alg); signingAlg != nil {
 			return signingAlg, nil
