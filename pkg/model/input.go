@@ -276,15 +276,13 @@ func getSigningMethod(alg string) (jwt.SigningMethod, error) {
 				Hash:       crypto.SHA256,
 			},
 		}, nil
+	case "RS256":
+		return jwt.SigningMethodRS256, nil
 	case "NONE":
 		fallthrough
 	default:
-		if signingAlg := jwt.GetSigningMethod(alg); signingAlg != nil {
-			return signingAlg, nil
-		}
+		return nil, fmt.Errorf("unable to find signing algorithm %s", alg)
 	}
-
-	return nil, fmt.Errorf("unable to find signing algorithm %s", alg)
 }
 
 func (i *Input) getBody(req *resty.Request, ctx *Context) (string, error) {
