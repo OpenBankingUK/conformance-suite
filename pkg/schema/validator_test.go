@@ -1,16 +1,18 @@
 package schema
 
 import (
-	"github.com/go-openapi/loads"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 	"net/http"
 	"strings"
 	"testing"
+
+	"github.com/go-openapi/loads"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestValidators_Validate_AggregatesMultipleFailures(t *testing.T) {
 	doc, err := loads.Spec("spec/v3.1.0/confirmation-funds-swagger.flattened.json")
+	require.NoError(t, err)
 	validator, err := newValidator(doc)
 	require.NoError(t, err)
 	body := strings.NewReader(getAccountsResponse)
@@ -38,6 +40,7 @@ func TestValidators_Validate_AggregatesMultipleFailures(t *testing.T) {
 
 func TestValidators_Validate_Transactions(t *testing.T) {
 	doc, err := loads.Spec("spec/v3.1.0/account-info-swagger.flattened.json")
+	require.NoError(t, err)
 	validator, err := newValidator(doc)
 	require.NoError(t, err)
 	body := strings.NewReader(getTransactionsResponse)
@@ -57,7 +60,7 @@ func TestValidators_Validate_Transactions(t *testing.T) {
 	assert.Len(t, failures, 0)
 }
 
-var getTransactionsResponse = `
+const getTransactionsResponse = `
 		{
 			"Data": {
 				"Transaction": [
@@ -84,6 +87,7 @@ var getTransactionsResponse = `
 
 func TestValidators_Validate_FailureEmptyOptionalProperty(t *testing.T) {
 	doc, err := loads.Spec("spec/v3.1.0/account-info-swagger.flattened.json")
+	require.NoError(t, err)
 	validator, err := newValidator(doc)
 	require.NoError(t, err)
 	body := strings.NewReader(getTransactionsResponseEmptyTransactionReference)
@@ -104,7 +108,7 @@ func TestValidators_Validate_FailureEmptyOptionalProperty(t *testing.T) {
 	assert.Equal(t, []Failure{{"Data.Transaction.TransactionReference in body should be at least 1 chars long"}}, failures)
 }
 
-var getTransactionsResponseEmptyTransactionReference = `
+const getTransactionsResponseEmptyTransactionReference = `
 		{
 			"Data": {
 				"Transaction": [

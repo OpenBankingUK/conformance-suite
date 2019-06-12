@@ -11,6 +11,7 @@ import (
 )
 
 var (
+	// nolint:gochecknoglobals
 	isParallel = computeIsParallel()
 )
 

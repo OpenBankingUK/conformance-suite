@@ -13,7 +13,7 @@ import (
 func TestPaymentValidateSchemeName(t *testing.T) {
 	require := test.NewRequire(t)
 
-	for _, validSchemeName := range OBExternalAccountIdentification4Codes {
+	for _, validSchemeName := range OBExternalAccountIdentification4Codes() {
 		data := fmt.Sprintf(`
 {
     "scheme_name": "%s",
@@ -25,7 +25,7 @@ func TestPaymentValidateSchemeName(t *testing.T) {
 		require.NoError(payment.Validate())
 	}
 
-	for _, validSchemeName := range OBExternalAccountIdentification4Codes {
+	for _, validSchemeName := range OBExternalAccountIdentification4Codes() {
 		invalidSchemeName := fmt.Sprintf("FAKE_%s", validSchemeName)
 		data := fmt.Sprintf(`
 {
@@ -55,7 +55,7 @@ func TestPaymentValidateSchemeName(t *testing.T) {
 
 func TestPaymentValidateIdentification(t *testing.T) {
 	require := test.NewRequire(t)
-	schemaName, ok := OBExternalAccountIdentification4Codes[0].(string)
+	schemaName, ok := OBExternalAccountIdentification4Codes()[0].(string)
 	require.True(ok)
 
 	// `Identification` specified
@@ -98,7 +98,7 @@ func TestPaymentValidateIdentification(t *testing.T) {
 
 func TestPaymentValidateName(t *testing.T) {
 	require := test.NewRequire(t)
-	schemaName, ok := OBExternalAccountIdentification4Codes[0].(string)
+	schemaName, ok := OBExternalAccountIdentification4Codes()[0].(string)
 	require.True(ok)
 
 	// `Name` does not need to be present according to specification

@@ -118,7 +118,7 @@ func (wj *journey) SetDiscoveryModel(discoveryModel *discovery.Model) (discovery
 	wj.testCasesRunGenerated = false
 	wj.allCollected = false
 
-	return discovery.NoValidationFailures, nil
+	return discovery.NoValidationFailures(), nil
 }
 
 func (wj *journey) DiscoveryModel() (discovery.Model, error) {
@@ -474,12 +474,12 @@ func consentIdsToTestCaseRun(log *logrus.Entry, consentIds []executors.TokenCons
 	}
 }
 
-func dumpPermissions(p map[string][]manifest.RequiredTokens, title string) {
-	logrus.Tracef("Dump Permissions at %s \n", title)
-	for _, v := range p {
-		logrus.Tracef("%#v\n", v)
-	}
-}
+// func dumpPermissions(p map[string][]manifest.RequiredTokens, title string) {
+// 	logrus.Tracef("Dump Permissions at %s \n", title)
+// 	for _, v := range p {
+// 		logrus.Tracef("%#v\n", v)
+// 	}
+// }
 
 // Utility to Dump Json
 func (wj *journey) dumpJSON(i interface{}) {

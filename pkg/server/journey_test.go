@@ -46,14 +46,14 @@ func TestJourneySetDiscoveryModelValidatesModel(t *testing.T) {
 
 	discoveryModel := &discovery.Model{}
 	validator := &mocks.Validator{}
-	validator.On("Validate", discoveryModel).Return(discovery.NoValidationFailures, nil)
+	validator.On("Validate", discoveryModel).Return(discovery.NoValidationFailures(), nil)
 	generator := &gmocks.MockGenerator{}
 	journey := NewJourney(nullLogger(), generator, validator)
 
 	failures, err := journey.SetDiscoveryModel(discoveryModel)
 
 	require.NoError(t, err)
-	assert.Equal(discovery.NoValidationFailures, failures)
+	assert.Equal(discovery.NoValidationFailures(), failures)
 	validator.AssertExpectations(t)
 	generator.AssertExpectations(t)
 }

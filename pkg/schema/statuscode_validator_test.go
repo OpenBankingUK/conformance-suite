@@ -1,19 +1,20 @@
 package schema
 
 import (
-	"github.com/go-openapi/loads"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 	"net/http"
 	"strings"
 	"testing"
+
+	"github.com/go-openapi/loads"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestStatusCodeValidator_Validate(t *testing.T) {
 	doc, err := loads.Spec("spec/v3.1.0/event-notifications-swagger.flattened.json")
 	require.NoError(t, err)
-	finder := newFinder(doc)
-	validator := newStatusCodeValidator(finder)
+	f := newFinder(doc)
+	validator := newStatusCodeValidator(f)
 	body := strings.NewReader(getAccountsResponse)
 	r := Response{
 		Method:     "POST",
@@ -31,8 +32,8 @@ func TestStatusCodeValidator_Validate(t *testing.T) {
 func TestStatusCodeValidator_Validate_UnexpectedStatusCode(t *testing.T) {
 	doc, err := loads.Spec("spec/v3.1.0/event-notifications-swagger.flattened.json")
 	require.NoError(t, err)
-	finder := newFinder(doc)
-	validator := newStatusCodeValidator(finder)
+	f := newFinder(doc)
+	validator := newStatusCodeValidator(f)
 	body := strings.NewReader(getAccountsResponse)
 	r := Response{
 		Method:     "POST",

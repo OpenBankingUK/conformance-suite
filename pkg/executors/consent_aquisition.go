@@ -24,7 +24,7 @@ var (
 	errTokenEndpointMethodUnsupported = errors.New("token_endpoint_auth_method unsupported")
 )
 
-var (
+const (
 	consentChannelTimeout = 30
 )
 

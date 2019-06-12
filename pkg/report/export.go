@@ -3,12 +3,13 @@ package report
 import (
 	"archive/zip"
 	"encoding/json"
-	"github.com/pkg/errors"
 	"io"
 	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
+
+	"github.com/pkg/errors"
 )
 
 const (
@@ -59,21 +60,29 @@ func (e *zipExporter) Export() error {
 	if err != nil {
 		return errors.Wrapf(err, "zipExporter.Export: zip.Writer.Create failed, could not create file %q", reportFilename)
 	}
+
 	// Create report contents to zip
-	if _, err := reportFile.Write(reportJSON); err != nil {
+	n, err := reportFile.Write(reportJSON)
+	if err != nil {
 		return errors.Wrapf(err, "zipExporter.Export: zip.Writer.Write failed, could write to %q, reportJSON=%+v", reportFilename, string(reportJSON))
 	}
+	_ = n // silence linter
 
 	discoveryJSON, err := json.MarshalIndent(e.report.Discovery, marshalIndentPrefix, marshalIndent)
 	if err != nil {
 		return errors.Wrapf(err, "zipExporter.Export: json.MarshalIndent failed, report=%+v", e.report)
 	}
 
+	return e.create(zipWriter, reportJSON, discoveryJSON)
+}
+
+func (e *zipExporter) create(zipWriter *zip.Writer, reportJSON, discoveryJSON []byte) error {
 	// Create file within ZIP archive
 	discoveryFile, err := zipWriter.Create(discoveryFilename)
 	if err != nil {
 		return errors.Wrapf(err, "zipExporter.Export: zip.Writer.Create failed, could not create file %q", discoveryFilename)
 	}
+
 	// Create discovery contents to zip
 	if _, err := discoveryFile.Write(discoveryJSON); err != nil {
 		return errors.Wrapf(err, "zipExporter.Export: zip.Writer.Write failed, could write to %q, discoveryJSON=%+v", discoveryFilename, string(reportJSON))

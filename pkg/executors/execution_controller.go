@@ -341,7 +341,7 @@ func (r *TestCaseRunner) executeTest(tc model.TestCase, ruleCtx *model.Context, 
 	req, err := tc.Prepare(ruleCtx)
 	if err != nil {
 		ctxLogger.WithError(err).Error("preparing executing test")
-		return results.NewTestCaseFail(tc.ID, results.NoMetrics, []error{err}, tc.Input.Endpoint, tc.APIName, tc.APIVersion, tc.Detail, tc.RefURI)
+		return results.NewTestCaseFail(tc.ID, results.NoMetrics(), []error{err}, tc.Input.Endpoint, tc.APIName, tc.APIVersion, tc.Detail, tc.RefURI)
 	}
 	resp, metrics, err := r.executor.ExecuteTestCase(req, &tc, ruleCtx)
 	ctxLogger = logWithMetrics(ctxLogger, metrics)
@@ -353,14 +353,14 @@ func (r *TestCaseRunner) executeTest(tc model.TestCase, ruleCtx *model.Context, 
 	result, errs := tc.Validate(resp, ruleCtx)
 	if errs != nil {
 		detailedErrors := detailedErrors(errs, resp)
-		ctxLogger.WithField("errs", detailedErrors).WithFields(logrus.Fields{"result": passText[result], "ID": tc.ID}).Error("test result validate")
+		ctxLogger.WithField("errs", detailedErrors).WithFields(logrus.Fields{"result": passText()[result], "ID": tc.ID}).Error("test result validate")
 		return results.NewTestCaseFail(tc.ID, metrics, detailedErrors, tc.Input.Endpoint, tc.APIName, tc.APIVersion, tc.Detail, tc.RefURI)
 	}
 
 	if !result {
-		ctxLogger.WithError(err).WithFields(logrus.Fields{"result": passText[result], "ID": tc.ID}).Error("test result blank")
+		ctxLogger.WithError(err).WithFields(logrus.Fields{"result": passText()[result], "ID": tc.ID}).Error("test result blank")
 	} else {
-		ctxLogger.WithError(err).WithFields(logrus.Fields{"result": passText[result], "ID": tc.ID}).Info("test result")
+		ctxLogger.WithError(err).WithFields(logrus.Fields{"result": passText()[result], "ID": tc.ID}).Info("test result")
 	}
 
 	return results.NewTestCaseResult(tc.ID, result, metrics, []error{}, tc.Input.Endpoint, tc.APIName, tc.APIVersion, tc.Detail, tc.RefURI)
@@ -378,7 +378,7 @@ func (de DetailError) Error() string {
 }
 
 func detailedErrors(errs []error, resp *resty.Response) []error {
-	var detailedErrors []error
+	detailedErrors := []error{}
 	for _, err := range errs {
 		detailedError := DetailError{
 			EndpointResponse: string(resp.Body()),
@@ -389,9 +389,11 @@ func detailedErrors(errs []error, resp *resty.Response) []error {
 	return detailedErrors
 }
 
-var passText = map[bool]string{
-	true:  "PASS",
-	false: "FAIL",
+func passText() map[bool]string {
+	return map[bool]string{
+		true:  "PASS",
+		false: "FAIL",
+	}
 }
 
 func logWithTestCase(logger *logrus.Entry, tc model.TestCase) *logrus.Entry {

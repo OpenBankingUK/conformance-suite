@@ -37,10 +37,10 @@ type TokenStore struct {
 	store     []RequiredTokens
 }
 
-var accountSwaggerLocation31 = "https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.0/dist/account-info-swagger.json"
-var accountSwaggerLocation30 = "https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.0.0/dist/account-info-swagger.json"
-var paymentsSwaggerLocation31 = "https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.0/dist/payment-initiation-swagger.json"
-var paymentsSwaggerLocation30 = "https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.0.0/dist/payment-initiation-swagger.json"
+const accountSwaggerLocation31 = "https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.0/dist/account-info-swagger.json"
+const accountSwaggerLocation30 = "https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.0.0/dist/account-info-swagger.json"
+const paymentsSwaggerLocation31 = "https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.0/dist/payment-initiation-swagger.json"
+const paymentsSwaggerLocation30 = "https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.0.0/dist/payment-initiation-swagger.json"
 
 var confirmSwaggerLocation = ""
 var notificationSwaggerLocation = ""

@@ -56,9 +56,7 @@ func Validate(checker model.ConditionalityChecker, discovery *Model) (bool, []Va
 		return err == nil && (u.Scheme == "file" || u.Scheme == "https")
 	}
 	if err := v.RegisterValidation("fileorhttps", httpsValidate); err != nil {
-		if err != nil {
-			return false, nil, errors.Wrap(err, "register `fileorhttps` validation")
-		}
+		return false, nil, errors.Wrap(err, "register `fileorhttps` validation")
 	}
 
 	if err := v.Struct(discovery); err != nil {

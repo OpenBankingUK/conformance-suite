@@ -20,26 +20,30 @@ const (
 	StatusError
 )
 
-var reportStatusPendingToString = map[Status]string{
-	StatusPending:  "Pending",
-	StatusComplete: "Complete",
-	StatusError:    "Error",
+func reportStatusPendingToString() map[Status]string {
+	return map[Status]string{
+		StatusPending:  "Pending",
+		StatusComplete: "Complete",
+		StatusError:    "Error",
+	}
 }
 
-var reportStatusPendingToID = map[string]Status{
-	"Pending":  StatusPending,
-	"Complete": StatusComplete,
-	"Error":    StatusError,
+func reportStatusPendingToID() map[string]Status {
+	return map[string]Status{
+		"Pending":  StatusPending,
+		"Complete": StatusComplete,
+		"Error":    StatusError,
+	}
 }
 
 func (r Status) String() string {
-	return reportStatusPendingToString[r]
+	return reportStatusPendingToString()[r]
 }
 
 // MarshalJSON - marshals the enum as a quoted json string
 func (r Status) MarshalJSON() ([]byte, error) {
 	buffer := bytes.NewBufferString(`"`)
-	value, ok := reportStatusPendingToString[r]
+	value, ok := reportStatusPendingToString()[r]
 	if !ok {
 		return nil, fmt.Errorf("%d is an invalid enum for Status", r)
 	}
@@ -56,7 +60,7 @@ func (r *Status) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	// Note that if the string cannot be found then it will be set to the zero value, 'Created' in this case.
-	value, ok := reportStatusPendingToID[status]
+	value, ok := reportStatusPendingToID()[status]
 	if !ok {
 		return fmt.Errorf("%q is an invalid enum for Status", status)
 	}

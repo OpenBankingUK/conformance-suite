@@ -19,26 +19,30 @@ const (
 	CertifiedByEnvironmentSandbox
 )
 
-var certifiedByEnvironmentToString = map[CertifiedByEnvironment]string{
-	CertifiedByEnvironmentTesting:    "testing",
-	CertifiedByEnvironmentProduction: "production",
-	CertifiedByEnvironmentSandbox:    "sandbox",
+func certifiedByEnvironmentToString() map[CertifiedByEnvironment]string {
+	return map[CertifiedByEnvironment]string{
+		CertifiedByEnvironmentTesting:    "testing",
+		CertifiedByEnvironmentProduction: "production",
+		CertifiedByEnvironmentSandbox:    "sandbox",
+	}
 }
 
-var certifiedByEnvironmentToID = map[string]CertifiedByEnvironment{
-	"testing":    CertifiedByEnvironmentTesting,
-	"production": CertifiedByEnvironmentProduction,
-	"sandbox":    CertifiedByEnvironmentSandbox,
+func certifiedByEnvironmentToID() map[string]CertifiedByEnvironment {
+	return map[string]CertifiedByEnvironment{
+		"testing":    CertifiedByEnvironmentTesting,
+		"production": CertifiedByEnvironmentProduction,
+		"sandbox":    CertifiedByEnvironmentSandbox,
+	}
 }
 
 func (r CertifiedByEnvironment) String() string {
-	return certifiedByEnvironmentToString[r]
+	return certifiedByEnvironmentToString()[r]
 }
 
 // MarshalJSON marshals the enum as a quoted json string
 func (r CertifiedByEnvironment) MarshalJSON() ([]byte, error) {
 	buffer := bytes.NewBufferString(`"`)
-	value, ok := certifiedByEnvironmentToString[r]
+	value, ok := certifiedByEnvironmentToString()[r]
 	if !ok {
 		return nil, fmt.Errorf("%d is an invalid enum for CertifiedByEnvironment", r)
 	}
@@ -55,7 +59,7 @@ func (r *CertifiedByEnvironment) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	// Note that if the string cannot be found then it will be set to the zero value, 'Created' in this case.
-	value, ok := certifiedByEnvironmentToID[environment]
+	value, ok := certifiedByEnvironmentToID()[environment]
 	if !ok {
 		return fmt.Errorf("%q is an invalid enum for CertifiedByEnvironment", environment)
 	}

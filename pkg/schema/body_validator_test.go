@@ -1,19 +1,20 @@
 package schema
 
 import (
-	"github.com/go-openapi/loads"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 	"net/http"
 	"strings"
 	"testing"
+
+	"github.com/go-openapi/loads"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestBodyValidator_Validate(t *testing.T) {
 	doc, err := loads.Spec("spec/v3.1.0/account-info-swagger.flattened.json")
 	require.NoError(t, err)
-	finder := newFinder(doc)
-	validator := newBodyValidator(finder)
+	f := newFinder(doc)
+	validator := newBodyValidator(f)
 	body := strings.NewReader(getAccountsResponse)
 	r := Response{
 		Method:     "GET",
@@ -28,7 +29,7 @@ func TestBodyValidator_Validate(t *testing.T) {
 	assert.Len(t, failures, 0)
 }
 
-var getAccountsResponse = `
+const getAccountsResponse = `
 		{
 			"Data": {
 				"Account": [
@@ -60,8 +61,8 @@ var getAccountsResponse = `
 func TestBodyValidator_Validate_ReturnsFailures(t *testing.T) {
 	doc, err := loads.Spec("spec/v3.1.0/account-info-swagger.flattened.json")
 	require.NoError(t, err)
-	finder := newFinder(doc)
-	validator := newBodyValidator(finder)
+	f := newFinder(doc)
+	validator := newBodyValidator(f)
 	body := strings.NewReader(`{}`)
 	r := Response{
 		Method:     "GET",

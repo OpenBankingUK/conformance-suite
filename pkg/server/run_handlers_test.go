@@ -36,7 +36,7 @@ func TestServerRunStartPost(t *testing.T) {
 	require.JSONEq(expected, actual)
 
 	require.Equal(http.StatusBadRequest, code)
-	require.Equal(expectedJsonHeaders, headers)
+	require.Equal(expectedJsonHeaders(), headers)
 }
 
 func TestServerRunHandlersnewTestCaseResultWebSocketEvent(t *testing.T) {

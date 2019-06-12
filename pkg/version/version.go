@@ -186,10 +186,10 @@ func (v BitBucket) UpdateWarningVersion(version string) (string, bool, error) {
 		}
 
 		// Convert the list of tags to tagList and sort
-		tagList := convertSortTags(s)
+		tags := convertSortTags(s)
 
 		// Get latest tag
-		latestTag := tagList[len(tagList)-1].Name
+		latestTag := tags[len(tags)-1].Name
 
 		// Format version string to compare.
 		versionLocal, err := v.VersionFormatter(version)
@@ -220,10 +220,10 @@ func (v BitBucket) UpdateWarningVersion(version string) (string, bool, error) {
 }
 
 func convertSortTags(tar *TagsAPIResponse) tagList {
-	var tagList tagList
+	tags := tagList{}
 	for _, v := range tar.TagList {
-		tagList = append(tagList, v)
+		tags = append(tags, v)
 	}
-	sort.Sort(tagList)
-	return tagList
+	sort.Sort(tags)
+	return tags
 }
