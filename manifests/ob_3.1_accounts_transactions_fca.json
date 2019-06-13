@@ -1277,7 +1277,7 @@
             "resource": "Product",
             "method": "get",
             "asserts": [
-                "OB3GLOAssertOn404"
+                "OB3GLOAssertOn400"
             ],
             "schemaCheck": false
         },
