@@ -2,8 +2,9 @@ package schema
 
 import (
 	"fmt"
-	"github.com/stretchr/testify/assert"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestMatcher(t *testing.T) {
@@ -18,14 +19,16 @@ func TestMatcher(t *testing.T) {
 	m := NewMatcher()
 
 	for _, tc := range tcs {
-		testName := fmt.Sprintf("`%s`%s`%s`", tc.pathWithParam, equalStr[tc.isMatch], tc.path)
+		testName := fmt.Sprintf("`%s`%s`%s`", tc.pathWithParam, equalStr()[tc.isMatch], tc.path)
 		t.Run(testName, func(t *testing.T) {
 			assert.Equal(t, tc.isMatch, m.Match(tc.pathWithParam, tc.path))
 		})
 	}
 }
 
-var equalStr = map[bool]string{
-	true:  "=",
-	false: "!=",
+func equalStr() map[bool]string {
+	return map[bool]string{
+		true:  "=",
+		false: "!=",
+	}
 }

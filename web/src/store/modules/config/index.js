@@ -30,6 +30,9 @@ export const mutationTypes = {
   SET_X_FAPI_FINANCIAL_ID: 'SET_X_FAPI_FINANCIAL_ID',
   SET_ISSUER: 'SET_ISSUER',
   SET_REDIRECT_URL: 'SET_REDIRECT_URL',
+  SET_USE_NON_OB_DIRECTORY: 'SET_USE_NON_OB_DIRECTORY',
+  SET_SIGNING_KID: 'SET_SIGNING_KID',
+  SET_SIGNATURE_TRUST_ANCHOR: 'SET_SIGNATURE_TRUST_ANCHOR',
   SET_RESOURCE_ACCOUNT_ID: 'SET_RESOURCE_ACCOUNT_ID',
   SET_RESOURCE_STATEMENT_ID: 'SET_RESOURCE_STATEMENT_ID',
   SET_RESOURCE_ACCOUNT_IDS: 'SET_RESOURCE_ACCOUNT_IDS',
@@ -120,6 +123,15 @@ export const mutations = {
   },
   [mutationTypes.SET_ISSUER](state, value) {
     state.configuration.issuer = value;
+  },
+  [mutationTypes.SET_USE_NON_OB_DIRECTORY](state, value) {
+    state.configuration.use_non_ob_directory = value;
+  },
+  [mutationTypes.SET_SIGNING_KID](state, value) {
+    state.configuration.signing_kid = value;
+  },
+  [mutationTypes.SET_SIGNATURE_TRUST_ANCHOR](state, value) {
+    state.configuration.signature_trust_anchor = value;
   },
   [mutationTypes.SET_RESOURCE_ACCOUNT_ID](state, { index, value }) {
     // Without the use of Vue.set the JSON editor tab view does not update on form input change.
@@ -251,6 +263,9 @@ export const state = {
     x_fapi_financial_id: '',
     issuer: '',
     redirect_url: 'https://127.0.0.1:8443/conformancesuite/callback',
+    use_non_ob_directory: false,
+    signing_kid: '',
+    signature_trust_anchor: '',
     resource_ids: {
       account_ids: [{ account_id: '' }],
       statement_ids: [{ statement_id: '' }],

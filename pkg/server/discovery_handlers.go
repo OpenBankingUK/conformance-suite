@@ -1,12 +1,13 @@
 package server
 
 import (
-	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/sets"
 	"fmt"
+	"net/http"
+
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/sets"
 	"github.com/labstack/echo"
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
-	"net/http"
 
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/authentication"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
@@ -97,7 +98,7 @@ func (d discoveryHandlers) setDiscoveryModelHandler(c echo.Context) error {
 			response.TokenEndpoints[key] = config.TokenEndpoint
 			response.AuthorizationEndpoints[key] = config.AuthorizationEndpoint
 			response.Issuers[key] = config.Issuer
-			response.TokenEndpointAuthMethods[key] = authentication.SuiteSupportedAuthMethodsMostSecureFirst
+			response.TokenEndpointAuthMethods[key] = authentication.SuiteSupportedAuthMethodsMostSecureFirst()
 			response.DefaultTokenEndpointAuthMethod[key] = authentication.DefaultAuthMethod(config.TokenEndpointAuthMethodsSupported, d.logger)
 			response.RequestObjectSigningAlgValuesSupported[key] = requestObjectSigningAlgValuesSupported
 			response.DefaultRequestObjectSigningAlgValuesSupported[key] = config.RequestObjectSigningAlgValuesSupported[0]

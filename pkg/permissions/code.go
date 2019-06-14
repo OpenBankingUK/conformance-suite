@@ -7,7 +7,9 @@ type Code string
 type CodeSet []Code
 
 // NoCodeSet represents empty or no permissions set
-var NoCodeSet CodeSet
+func NoCodeSet() CodeSet {
+	return CodeSet{}
+}
 
 // Has check if a set Has a code
 func (c CodeSet) Has(searchCode Code) bool {

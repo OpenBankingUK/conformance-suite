@@ -133,7 +133,6 @@
         }]
       }
     },
-
     "OB3IPAssertInternationalStandingOrderPaymentId": {
       "expect": {
         "matches": [{
@@ -142,12 +141,47 @@
         }]
       }
     },
-
     "OB3IPAssertInternationalStandingOrderId": {
       "expect": {
         "matches": [{
           "JSON": "Data.InternationalStandingOrderId",
           "detail": "Expected a unique identification as assigned by the ASPSP to uniquely identify the international standing order resource."
+        }]
+      }
+    },
+    "OB3IPAssertUnexpectedErrorOBErrorCode": {
+      "expect": {
+        "matches": [{
+          "JSON": "Errors.#[ErrorCode=\"UK.OBIE.UnexpectedError\"].ErrorCode",
+          "Value": "UK.OBIE.UnexpectedError",
+          "detail": "Expected a specific error code for unexpected error."
+        }]
+      }
+    },
+    "OB3IPAssertHeaderMissingOBErrorCode": {
+      "expect": {
+        "matches": [{
+          "JSON": "Errors.#[ErrorCode=\"UK.OBIE.Header.Missing\"].ErrorCode",
+          "Value": "UK.OBIE.Header.Missing",
+          "detail": "Expected a specific error code for missing header."
+        }]
+      }
+    },
+    "OB3IPAssertHeaderInvalidOBErrorCode": {
+      "expect": {
+        "matches": [{
+          "JSON": "Errors.#[ErrorCode=\"UK.OBIE.Header.Invalid\"].ErrorCode",
+          "Value": "UK.OBIE.Header.Invalid",
+          "detail": "Expected a specific error code for invalid header."
+        }]
+      }
+    },
+    "OB3IPAssertResourceInvalidConsentStatusOBErrorCode": {
+      "expect": {
+        "matches": [{
+          "JSON": "Errors.#[ErrorCode=\"UK.OBIE.Resource.InvalidConsentStatus\"].ErrorCode",
+          "Value": "UK.OBIE.Resource.InvalidConsentStatus",
+          "detail": "Expected a specific error code for consent status."
         }]
       }
     }

@@ -15,6 +15,7 @@ const generateFilename = (prefix = 'report') => {
 };
 
 const mutationTypes = {
+  SET_ENVIRONMENT: 'SET_ENVIRONMENT',
   SET_IMPLEMENTER: 'SET_IMPLEMENTER',
   SET_AUTHORISED_BY: 'SET_AUTHORISED_BY',
   SET_JOB_TITLE: 'SET_JOB_TITLE',
@@ -28,6 +29,7 @@ const mutationTypes = {
 export default {
   namespaced: true,
   state: {
+    environment: '',
     implementer: '',
     authorised_by: '',
     job_title: '',
@@ -38,6 +40,9 @@ export default {
   },
   mutationTypes,
   mutations: {
+    [mutationTypes.SET_ENVIRONMENT](state, value) {
+      state.environment = value;
+    },
     [mutationTypes.SET_IMPLEMENTER](state, value) {
       state.implementer = value;
     },
@@ -63,6 +68,7 @@ export default {
   actions: {
     async exportResults({ commit, state, dispatch }) {
       const payload = pick(state, [
+        'environment',
         'implementer',
         'authorised_by',
         'job_title',

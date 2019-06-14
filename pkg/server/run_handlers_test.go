@@ -6,9 +6,9 @@ import (
 	"net/http"
 	"testing"
 
-	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/test"
-	versionmock "bitbucket.org/openbankingteam/conformance-suite/internal/pkg/version/mocks"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/executors/results"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/test"
+	versionmock "bitbucket.org/openbankingteam/conformance-suite/pkg/version/mocks"
 )
 
 const (
@@ -36,7 +36,7 @@ func TestServerRunStartPost(t *testing.T) {
 	require.JSONEq(expected, actual)
 
 	require.Equal(http.StatusBadRequest, code)
-	require.Equal(expectedJsonHeaders, headers)
+	require.Equal(expectedJsonHeaders(), headers)
 }
 
 func TestServerRunHandlersnewTestCaseResultWebSocketEvent(t *testing.T) {

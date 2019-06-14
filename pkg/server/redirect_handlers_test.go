@@ -10,8 +10,8 @@ import (
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 
-	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/test"
-	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/version/mocks"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/test"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/version/mocks"
 )
 
 type testTableItem struct {
@@ -109,7 +109,7 @@ func TestRedirectHandlersFragmentOK(t *testing.T) {
 		require.JSONEq(ttItem.responseBodyExpected, bodyActual, ttItem.label)
 
 		require.Equal(ttItem.httpStatusExpected, code, ttItem.label)
-		require.Equal(expectedJsonHeaders, headers, ttItem.label)
+		require.Equal(expectedJsonHeaders(), headers, ttItem.label)
 	}
 }
 
@@ -201,7 +201,7 @@ func TestRedirectHandlersQueryOK(t *testing.T) {
 			require.JSONEq(ttItem.responseBodyExpected, bodyActual)
 
 			require.Equal(ttItem.httpStatusExpected, code)
-			require.Equal(expectedJsonHeaders, headers)
+			require.Equal(expectedJsonHeaders(), headers)
 		})
 	}
 }
@@ -236,7 +236,7 @@ func TestRedirectHandlersError(t *testing.T) {
 	require.JSONEq(bodyExpected, bodyActual)
 
 	require.Equal(http.StatusOK, code)
-	require.Equal(expectedJsonHeaders, headers)
+	require.Equal(expectedJsonHeaders(), headers)
 }
 
 func TestCalculateCHash(t *testing.T) {

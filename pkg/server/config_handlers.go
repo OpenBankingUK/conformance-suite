@@ -23,14 +23,14 @@ import (
 // https://github.com/go-ozzo/ozzo-validation/blob/master/in_test.go
 type ResponseType = interface{}
 
-var (
-	// responseTypesSupported REQUIRED. JSON array containing a list of the OAuth 2.0 response_type values that this OP supports. Dynamic OpenID Providers MUST support the code, id_token, and the token id_token Response Type values
-	responseTypesSupported = [3]ResponseType{
+// responseTypesSupported REQUIRED. JSON array containing a list of the OAuth 2.0 response_type values that this OP supports. Dynamic OpenID Providers MUST support the code, id_token, and the token id_token Response Type values
+func responseTypesSupported() [3]ResponseType {
+	return [3]ResponseType{
 		"code",
 		"code id_token",
 		"id_token",
 	}
-)
+}
 
 type configHandlers struct {
 	logger  *logrus.Entry
@@ -41,7 +41,9 @@ type configHandlers struct {
 // https://github.com/go-ozzo/ozzo-validation/blob/master/in_test.go
 type SupportedRequestSignAlg interface{}
 
-var SupportedRequestSignAlgValues = []interface{}{"PS256", "RS256", "NONE"}
+func SupportedRequestSignAlgValues() []interface{} {
+	return []interface{}{"PS256", "RS256", "NONE"}
+}
 
 type GlobalConfiguration struct {
 	SigningPrivate                string                  `json:"signing_private" validate:"not_empty"`
@@ -65,13 +67,17 @@ type GlobalConfiguration struct {
 	RequestObjectSigningAlgorithm string                  `json:"request_object_signing_alg"`
 	InstructedAmount              models.InstructedAmount `json:"instructed_amount"`
 	CurrencyOfTransfer            string                  `json:"currency_of_transfer"`
+	UseNonOBDirectory             bool                    `json:"use_non_ob_directory"`
+	SigningKid                    string                  `json:"signing_kid,omitempty"`
+	SignatureTrustAnchor          string                  `json:"signature_trust_anchor,omitempty"`
 }
 
 // Validate - used by https://github.com/go-ozzo/ozzo-validation to validate struct.
 func (c GlobalConfiguration) Validate() error {
+	values := responseTypesSupported()
 	return validation.ValidateStruct(&c,
 		validation.Field(&c.CreditorAccount, validation.Required),
-		validation.Field(&c.ResponseType, validation.Required, validation.In(responseTypesSupported[:]...)),
+		validation.Field(&c.ResponseType, validation.Required, validation.In(values[:]...)),
 		validation.Field(&c.InstructedAmount),
 		validation.Field(&c.CurrencyOfTransfer, validation.Match(regexp.MustCompile("^[A-Z]{3,3}$"))),
 	)
@@ -149,6 +155,9 @@ func MakeJourneyConfig(config *GlobalConfiguration) (JourneyConfig, error) {
 		requestObjectSigningAlgorithm: config.RequestObjectSigningAlgorithm,
 		signingPublic:                 config.SigningPublic,
 		signingPrivate:                config.SigningPrivate,
+		useNonOBDirectory:             config.UseNonOBDirectory,
+		signingKid:                    config.SigningKid,
+		signatureTrustAnchor:          config.SignatureTrustAnchor,
 	}, nil
 }
 
@@ -234,9 +243,11 @@ func and(left, right validateFunc) validateFunc {
 	}
 }
 
-var rulesFunc = map[string]validateFunc{
-	"not_empty": notEmpty,
-	"valid_url": and(notEmpty, validURL),
+func rulesFunc() map[string]validateFunc {
+	return map[string]validateFunc{
+		"not_empty": notEmpty,
+		"valid_url": and(notEmpty, validURL),
+	}
 }
 
 func parseRules(config *GlobalConfiguration) []validationRule {
@@ -252,7 +263,7 @@ func parseRules(config *GlobalConfiguration) []validationRule {
 			continue
 		}
 
-		validate, ok := rulesFunc[tag.Get("validate")]
+		validate, ok := rulesFunc()[tag.Get("validate")]
 		if !ok {
 			// no rule func found
 			continue

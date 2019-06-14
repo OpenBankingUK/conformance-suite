@@ -3,7 +3,7 @@ package server
 import (
 	"strings"
 
-	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/version"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/version"
 
 	"github.com/gorilla/websocket"
 	"github.com/labstack/echo"

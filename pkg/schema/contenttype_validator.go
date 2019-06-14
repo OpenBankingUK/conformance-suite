@@ -2,9 +2,10 @@ package schema
 
 import (
 	"fmt"
-	"github.com/pkg/errors"
 	"mime"
 	"strings"
+
+	"github.com/pkg/errors"
 )
 
 // contentTypeValidator implements a validator for content type check on header
@@ -95,7 +96,7 @@ func sameParams(params1, params2 map[string]string) bool {
 }
 
 func mapToString(params map[string]string) string {
-	var result []string
+	result := []string{}
 	for key, value := range params {
 		result = append(result, key+"="+value)
 	}

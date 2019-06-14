@@ -37,10 +37,10 @@ type TokenStore struct {
 	store     []RequiredTokens
 }
 
-var accountSwaggerLocation31 = "https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.0/dist/account-info-swagger.json"
-var accountSwaggerLocation30 = "https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.0.0/dist/account-info-swagger.json"
-var paymentsSwaggerLocation31 = "https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.0/dist/payment-initiation-swagger.json"
-var paymentsSwaggerLocation30 = "https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.0.0/dist/payment-initiation-swagger.json"
+const accountSwaggerLocation31 = "https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.0/dist/account-info-swagger.json"
+const accountSwaggerLocation30 = "https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.0.0/dist/account-info-swagger.json"
+const paymentsSwaggerLocation31 = "https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.0/dist/payment-initiation-swagger.json"
+const paymentsSwaggerLocation30 = "https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.0.0/dist/payment-initiation-swagger.json"
 
 var confirmSwaggerLocation = ""
 var notificationSwaggerLocation = ""
@@ -190,7 +190,7 @@ func MapTokensToTestCases(rt []RequiredTokens, tcs []model.TestCase) map[string]
 		tokenName, isEmptyToken, err := getRequiredTokenForTestcase(rt, test.ID)
 		if err != nil {
 			ctxLogger.WithFields(logrus.Fields{
-				"test":         fmt.Sprintf("%#v", test),
+				"id":           fmt.Sprintf("%s", test.ID),
 				"tokenName":    tokenName,
 				"isEmptyToken": isEmptyToken,
 				"err":          err,
@@ -200,10 +200,10 @@ func MapTokensToTestCases(rt []RequiredTokens, tcs []model.TestCase) map[string]
 
 		if !isEmptyToken {
 			ctxLogger.WithFields(logrus.Fields{
-				"test":         fmt.Sprintf("%#v", test),
+				"id":           fmt.Sprintf("%s", test.ID),
 				"tokenName":    tokenName,
 				"isEmptyToken": isEmptyToken,
-			}).Info("InjectBearerToken ...")
+			}).Trace("InjectBearerToken ...")
 			test.InjectBearerToken("$" + tokenName)
 		}
 

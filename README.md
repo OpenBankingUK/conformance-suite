@@ -17,17 +17,17 @@ To provide feedback, please use the public [issue tracker](https://bitbucket.org
 ## Release Notes 
 * * *
 
-### v1.1.7 (16th May 2019)
+### v1.1.10 (10th June 2019)
 
-Release **v1.1.7**, fixes UI bugs and makes currency and payment amount configurable in the UI.
+The release is called **v1.1.10**, it adds PS256 JWS .
 
-[Full Release Notes](docs/releases/v1.1.7.md) (v1.1.7.md)
+[Full Release Notes](docs/releases/v1.1.10.md) (v1.1.10.md)
 
-### v1.1.6 (9th May 2019)
+### v1.1.9 (7th June 2019)
 
-Release **v1.1.6** adds `private_key_jwt` as a client authentication method, addresses issues with Azure and TLS renegotiation and increases test coverage by fixing a known issue with the swagger validation. **(recommended)**
+The release is called **v1.1.9**, it adds support kid/trust anchor using EIDAS certificates and enables the Docker Content Trust Framework.
 
-[Full Release Notes](docs/releases/v1.1.6.md) (v1.1.6.md)
+[Full Release Notes](docs/releases/v1.1.9.md) (v1.1.9.md)
 
 ## Quickstart
 * * *

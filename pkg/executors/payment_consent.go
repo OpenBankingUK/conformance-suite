@@ -161,7 +161,7 @@ func executePaymentTest(tc *model.TestCase, ctx *model.Context, executor *Execut
 	if errs != nil {
 		return err
 	}
-	if result == false {
+	if !result {
 		return errors.New("testcase validation failed:" + err.Error())
 	}
 	return nil
