@@ -149,8 +149,7 @@
             "method": "get",
             "asserts": [
                 "OB3GLOAssertOn401",
-                "OB3GLOAssertContentType",
-                "OB3IPAssertHeaderMissingOBErrorCode"
+                "OB3GLOAssertContentType"
             ],
             "schemaCheck": false
         },
@@ -219,8 +218,7 @@
             "method": "get",
             "asserts": [
                 "OB3GLOAssertOn401",
-                "OB3GLOAssertContentType",
-                "OB3IPAssertHeaderMissingOBErrorCode"
+                "OB3GLOAssertContentType"
             ],
             "schemaCheck": false
         },
@@ -238,8 +236,7 @@
             "method": "get",
             "asserts": [
                 "OB3GLOAssertOn401",
-                "OB3GLOAssertContentType",
-                "OB3IPAssertHeaderMissingOBErrorCode"
+                "OB3GLOAssertContentType"
             ],
             "schemaCheck": false
         },
@@ -560,8 +557,7 @@
             "method": "get",
             "asserts": [
                 "OB3GLOAssertOn401",
-                "OB3GLOAssertContentType",
-                "OB3IPAssertHeaderMissingOBErrorCode"
+                "OB3GLOAssertContentType"
             ],
             "schemaCheck": false
         },
@@ -584,7 +580,7 @@
             "method": "get",
             "asserts": [
                 "OB3GLOAssertOn400",
-                "OB3IPAssertUnexpectedErrorOBErrorCode"
+                "OB3IPAssertResourceFieldInvalidOBErrorCode"
             ],
             "schemaCheck": false
         },
@@ -1438,7 +1434,7 @@
             "method": "get",
             "asserts": [
                 "OB3GLOAssertOn400",
-                "OB3IPAssertUnexpectedErrorOBErrorCode"
+                "OB3IPAssertResourceFieldInvalidOBErrorCode"
             ],
             "schemaCheck": false
         },
@@ -1599,7 +1595,7 @@
             "method": "get",
             "asserts": [
                 "OB3GLOAssertOn400",
-                "OB3IPAssertUnexpectedErrorOBErrorCode"
+                "OB3IPAssertResourceFieldInvalidOBErrorCode"
             ],
             "schemaCheck": false
         },
@@ -1798,8 +1794,7 @@
             "method": "get",
             "asserts": [
                 "OB3GLOAssertOn401",
-                "OB3GLOAssertContentType",
-                "OB3IPAssertHeaderMissingOBErrorCode"
+                "OB3GLOAssertContentType"
             ],
             "schemaCheck": false
         },
