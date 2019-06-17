@@ -129,7 +129,7 @@ Once DCT is enabled remote trust is checked on every pull request. If no trust d
 
 [More on Docker Content Trust](docs/docker_content_trust.md)
 
-## Step 4: Congig & Run the Functional Conformance Suite
+## Step 4: Config & Run the Functional Conformance Suite
 
 Running a test plan on the FCS involves five steps, as follows:
 
