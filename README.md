@@ -17,24 +17,19 @@ To provide feedback, please use the public [issue tracker](https://bitbucket.org
 ## Release Notes 
 * * *
 
-### v1.1.10 (10th June 2019)
+### v1.1.11 (18th June 2019)
 
-The release is called **v1.1.10**, it adds PS256 JWS .
+The release is called **v1.1.11**, it introduce fixes for incorrect test cases assertions.
 
-[Full Release Notes](docs/releases/v1.1.10.md) (v1.1.10.md)
+[Full Release Notes](docs/releases/v1.1.11.md) (v1.1.11.md)
 
-### v1.1.9 (7th June 2019)
-
-The release is called **v1.1.9**, it adds support kid/trust anchor using EIDAS certificates and enables the Docker Content Trust Framework.
-
-[Full Release Notes](docs/releases/v1.1.9.md) (v1.1.9.md)
 
 ## Quickstart
 * * *
 
 Pull and run the latest (stable) tagged Docker image:
 
-    > docker run --rm -it -p 8443:8443 "openbanking/conformance-suite:v1.1.6"
+    > docker run --rm -it -p 8443:8443 "openbanking/conformance-suite:v1.1.11"
 
 [See Setup Guide](docs/setup-guide.md) 
 
