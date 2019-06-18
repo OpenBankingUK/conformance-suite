@@ -19,7 +19,7 @@ To provide feedback, please use the public [issue tracker](https://bitbucket.org
 
 ### v1.1.11 (18th June 2019)
 
-The release is called **v1.1.11**, it introduces bugfixes in regards to test case assertions.
+The release is called **v1.1.11**, it introduce fixes incorrect test cases assertions.
 
 [Full Release Notes](docs/releases/v1.1.11.md) (v1.1.11.md)
 
