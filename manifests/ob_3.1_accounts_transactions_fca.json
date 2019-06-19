@@ -733,7 +733,7 @@
                 "tokenRequestScope": "accounts",
                 "accountId": "foobar"
             },
-            "permissions-excluded": [
+            "permissions": [
                 "ReadAccountsBasic",
                 "ReadDirectDebits"
             ],
