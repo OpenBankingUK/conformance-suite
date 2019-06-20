@@ -1892,8 +1892,7 @@
             "resource": "Transaction",
             "method": "get",
             "asserts": [
-                "OB3GLOAssertOn400",
-                "OB3IPAssertResourceFieldInvalidOBErrorCode"
+                "OB3GLOAssertOn400"
             ],
             "schemaCheck": false
         },
