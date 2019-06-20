@@ -328,7 +328,7 @@
             "resource": "Balance",
             "method": "get",
             "asserts": [
-                "OB3GLOAssertOn403",
+                "OB3GLOAssertOn400",
                 "OB3GLOAssertContentType"
             ],
             "schemaCheck": false
