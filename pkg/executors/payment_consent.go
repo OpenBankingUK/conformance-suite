@@ -75,7 +75,6 @@ func runPaymentConsents(rt []manifest.RequiredTokens, ctx *model.Context, execut
 		if err != nil {
 			return nil, errors.Wrap(err, "cannot generate request token for private_key_jwt form field")
 		}
-		tc.Input.SetFormField("client_id", clientID)
 		tc.Input.SetFormField(authentication.ClientAssertionType, authentication.ClientAssertionTypeValue)
 		tc.Input.SetFormField(authentication.ClientAssertion, clientAssertion)
 	case authentication.TlsClientAuth:
