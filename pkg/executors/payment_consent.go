@@ -1,7 +1,8 @@
 package executors
 
 import (
-	"errors"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/authentication"
+	"github.com/pkg/errors"
 
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/manifest"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
@@ -21,7 +22,7 @@ func getPaymentConsents(tests []model.TestCase, definition RunDefinition, requir
 		logrus.Tracef("%#v\n", rt)
 	}
 
-	requiredTokens, err = runPaymentConsents(tests, requiredTokens, ctx, executor)
+	requiredTokens, err = runPaymentConsents(requiredTokens, ctx, executor)
 	if err != nil {
 		logrus.Errorf("getPaymentConsents error: " + err.Error())
 	}
@@ -36,7 +37,7 @@ func getPaymentConsents(tests []model.TestCase, definition RunDefinition, requir
 	return consentItems, err
 }
 
-func runPaymentConsents(tcs []model.TestCase, rt []manifest.RequiredTokens, ctx *model.Context, executor *Executor) ([]manifest.RequiredTokens, error) {
+func runPaymentConsents(rt []manifest.RequiredTokens, ctx *model.Context, executor *Executor) ([]manifest.RequiredTokens, error) {
 	localCtx := model.Context{}
 	localCtx.PutContext(ctx)
 	localCtx.PutString("scope", "payments")
@@ -44,7 +45,7 @@ func runPaymentConsents(tcs []model.TestCase, rt []manifest.RequiredTokens, ctx 
 
 	tc, err := readClientCredentialGrant()
 	if err != nil {
-		return nil, errors.New("Payment PSU consent load clientCredentials testcase failed")
+		return nil, errors.New("payment PSU consent load clientCredentials testcase failed")
 	}
 
 	// Check for MTLS vs client basic authentication
@@ -52,10 +53,31 @@ func runPaymentConsents(tcs []model.TestCase, rt []manifest.RequiredTokens, ctx 
 	if err != nil {
 		authMethod = "client_secret_basic"
 	}
-	if authMethod == "client_secret_basic" {
+	switch authMethod {
+	case authentication.ClientSecretBasic:
 		tc.Input.SetHeader("authorization", "Basic $basic_authentication")
-	}
-	if authMethod == "tls_client_auth" {
+	case authentication.PrivateKeyJwt:
+		clientID, err := ctx.GetString("client_id")
+		if err != nil {
+			return nil, errors.Wrap(err, "cannot find client_id for private_key_jwt form field")
+		}
+		tokenEndpoint, err := ctx.GetString("token_endpoint")
+		if err != nil {
+			return nil, errors.Wrap(err, "cannot find token_endpoint for private_key_jwt form field")
+		}
+		if tc.Input.Claims == nil {
+			tc.Input.Claims = map[string]string{}
+		}
+		tc.Input.Claims["iss"] = clientID
+		tc.Input.Claims["sub"] = clientID
+		tc.Input.Claims["aud"] = tokenEndpoint
+		clientAssertion, err := tc.Input.GenerateRequestToken(ctx)
+		if err != nil {
+			return nil, errors.Wrap(err, "cannot generate request token for private_key_jwt form field")
+		}
+		tc.Input.SetFormField(authentication.ClientAssertionType, authentication.ClientAssertionTypeValue)
+		tc.Input.SetFormField(authentication.ClientAssertion, clientAssertion)
+	case authentication.TlsClientAuth:
 		clientid, err := ctx.GetString("client_id")
 		if err != nil {
 			logrus.Warn("cannot locate client_id for tls_client_auth form field")
