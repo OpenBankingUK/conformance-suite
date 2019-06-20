@@ -53,17 +53,10 @@ func runPaymentConsents(rt []manifest.RequiredTokens, ctx *model.Context, execut
 	if err != nil {
 		authMethod = "client_secret_basic"
 	}
-	if authMethod == "client_secret_basic" {
+	switch authMethod {
+	case authentication.ClientSecretBasic:
 		tc.Input.SetHeader("authorization", "Basic $basic_authentication")
-	}
-	if authMethod == "tls_client_auth" {
-		clientid, err := ctx.GetString("client_id")
-		if err != nil {
-			logrus.Warn("cannot locate client_id for tls_client_auth form field")
-		}
-		tc.Input.SetFormField("client_id", clientid)
-	}
-	if authMethod == "private_key_jwt" {
+	case authentication.PrivateKeyJwt:
 		clientID, err := ctx.GetString("client_id")
 		if err != nil {
 			return nil, errors.Wrap(err, "cannot find client_id for private_key_jwt form field")
@@ -86,6 +79,12 @@ func runPaymentConsents(rt []manifest.RequiredTokens, ctx *model.Context, execut
 		tc.Input.SetFormField("client_id", clientID)
 		tc.Input.SetFormField(authentication.ClientAssertionType, authentication.ClientAssertionTypeValue)
 		tc.Input.SetFormField(authentication.ClientAssertion, clientAssertion)
+	case authentication.TlsClientAuth:
+		clientid, err := ctx.GetString("client_id")
+		if err != nil {
+			logrus.Warn("cannot locate client_id for tls_client_auth form field")
+		}
+		tc.Input.SetFormField("client_id", clientid)
 	}
 
 	tc.ProcessReplacementFields(&localCtx, true)
