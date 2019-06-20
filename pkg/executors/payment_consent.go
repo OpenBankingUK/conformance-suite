@@ -69,7 +69,6 @@ func runPaymentConsents(rt []manifest.RequiredTokens, ctx *model.Context, execut
 			tc.Input.Claims = map[string]string{}
 		}
 		tc.Input.Claims["iss"] = clientID
-		tc.Input.Claims["scope"] = "payments"
 		tc.Input.Claims["sub"] = clientID
 		tc.Input.Claims["aud"] = tokenEndpoint
 		clientAssertion, err := tc.Input.GenerateRequestToken(ctx)
