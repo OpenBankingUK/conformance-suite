@@ -317,8 +317,10 @@
                 "tokenRequestScope": "accounts",
                 "accountId": "$consentedAccountId"
             },
+            "permissions": [
+                "ReadAccountsBasic"
+            ],
             "permissions-excluded": [
-                "ReadAccountsBasic",
                 "ReadBalances"
             ],
             "uri": "/accounts/$accountId/balances",
@@ -326,9 +328,8 @@
             "resource": "Balance",
             "method": "get",
             "asserts": [
-                "OB3GLOAssertOn401",
-                "OB3GLOAssertContentType",
-                "OB3IPAssertHeaderMissingOBErrorCode"
+                "OB3GLOAssertOn403",
+                "OB3GLOAssertContentType"
             ],
             "schemaCheck": false
         },
