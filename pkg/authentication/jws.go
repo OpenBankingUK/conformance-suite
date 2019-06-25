@@ -176,19 +176,57 @@ func NewJWSSignature(requestBody string, ctx ContextInterface, alg jwt.SigningMe
 		"claims": minifiedBody,
 	}).Trace("jws signature creation")
 
-	tok := jwt.Token{
-		Header: map[string]interface{}{
-			"typ":                           "JOSE",
-			"kid":                           kid,
-			"b64":                           false,
-			"cty":                           "application/json",
-			"http://openbanking.org.uk/iat": time.Now().Unix(),
-			"http://openbanking.org.uk/iss": issuer,      //ASPSP ORGID or TTP ORGID/SSAID
-			"http://openbanking.org.uk/tan": trustAnchor, //Trust anchor
-			"alg":                           alg.Alg(),
-			"crit":                          []string{"b64", "http://openbanking.org.uk/iat", "http://openbanking.org.uk/iss", "http://openbanking.org.uk/tan"},
-		},
-		Method: alg,
+	apiVersion, err := ctx.GetString("api-version")
+	if err != nil {
+		return "", errors.New("authentication.NewJWSSignature: cannot find api-version: " + err.Error())
+	}
+
+	var tok jwt.Token
+	switch apiVersion {
+	case "v3.1":
+		// Contains `http://openbanking.org.uk/tan`.
+		tok = jwt.Token{
+			Header: map[string]interface{}{
+				"typ":                           "JOSE",
+				"kid":                           kid,
+				"b64":                           false,
+				"cty":                           "application/json",
+				"http://openbanking.org.uk/iat": time.Now().Unix(),
+				"http://openbanking.org.uk/iss": issuer,      //ASPSP ORGID or TTP ORGID/SSAID
+				"http://openbanking.org.uk/tan": trustAnchor, //Trust anchor
+				"alg":                           alg.Alg(),
+				"crit": []string{
+					"b64",
+					"http://openbanking.org.uk/iat",
+					"http://openbanking.org.uk/iss",
+					"http://openbanking.org.uk/tan",
+				},
+			},
+			Method: alg,
+		}
+	case "v3.0":
+		// Does not contain `http://openbanking.org.uk/tan`.
+		// Read/Write Data API Specification - v3.0 Specification: https://openbanking.atlassian.net/wiki/spaces/DZ/pages/641992418/Read+Write+Data+API+Specification+-+v3.0.
+		// According to the spec this field `http://openbanking.org.uk/tan` should not be sent in the `x-jws-signature` header.
+		tok = jwt.Token{
+			Header: map[string]interface{}{
+				"typ":                           "JOSE",
+				"kid":                           kid,
+				"b64":                           false,
+				"cty":                           "application/json",
+				"http://openbanking.org.uk/iat": time.Now().Unix(),
+				"http://openbanking.org.uk/iss": issuer, //ASPSP ORGID or TTP ORGID/SSAID
+				"alg":                           alg.Alg(),
+				"crit": []string{
+					"b64",
+					"http://openbanking.org.uk/iat",
+					"http://openbanking.org.uk/iss",
+				},
+			},
+			Method: alg,
+		}
+	default:
+		return "", errors.New("authentication.GetJWSIssuerString: cannot get issuer for jws signature but api-version doesn't match 3.0.0 or 3.1.0")
 	}
 
 	tokenString, err := SignedString(&tok, cert.PrivateKey(), minifiedBody) // sign the token - get as encoded string
