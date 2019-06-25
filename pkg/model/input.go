@@ -1,8 +1,6 @@
 package model
 
 import (
-	"crypto"
-	"crypto/rsa"
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
@@ -172,7 +170,7 @@ func (i *Input) GenerateRequestToken(ctx *Context) (string, error) {
 	if err != nil && err != ErrNotFound {
 		return "", err
 	}
-	signingMethod, err := getSigningMethod(alg)
+	signingMethod, err := authentication.GetSigningAlg(alg)
 	if err != nil {
 		return i.generateUnsignedJWT()
 	}
@@ -236,18 +234,16 @@ func (i *Input) setHeaders(req *resty.Request, ctx *Context) error {
 }
 
 func (i *Input) createJWSDetachedSignature(ctx *Context) error {
-
 	if len(i.RequestBody) > 0 && !disableJws {
 		requestObjSigningAlg, err := ctx.GetString("requestObjectSigningAlg")
 		if err != nil {
-			return errors.Wrap(err, "input.createJWSDetachedSignature failure: unable to retrieve requestObjectSigningAlg")
+			return errors.Wrap(err, "input.createJWSDetachedSignature: unable to retrieve requestObjectSigningAlg")
 		}
-		alg, err := getSigningMethod(requestObjSigningAlg)
+		alg, err := authentication.GetSigningAlg(requestObjSigningAlg)
 		if err != nil {
-			return errors.Wrapf(err, "input.createJWSDetachedSignature failure: unable to parse signing alg")
+			return errors.Wrapf(err, "input.createJWSDetachedSignature: unable to parse signing alg")
 		}
-		token, err := i.generateJWSSignature(ctx, alg)
-
+		token, err := authentication.NewJWSSignature(i.RequestBody, ctx, alg)
 		if err != nil {
 			return i.AppErr(fmt.Sprintf("error generating jws signature %s", err.Error()))
 		}
@@ -262,27 +258,6 @@ func (i *Input) createJWSDetachedSignature(ctx *Context) error {
 	}
 	return i.AppErr("cannot create x-jws-signature, as request body is empty")
 
-}
-
-func getSigningMethod(alg string) (jwt.SigningMethod, error) {
-	switch strings.ToUpper(alg) {
-	case "PS256":
-		// Workaround
-		// https://github.com/dgrijalva/jwt-go/issues/285
-		return &jwt.SigningMethodRSAPSS{
-			SigningMethodRSA: jwt.SigningMethodPS256.SigningMethodRSA,
-			Options: &rsa.PSSOptions{
-				SaltLength: rsa.PSSSaltLengthEqualsHash,
-				Hash:       crypto.SHA256,
-			},
-		}, nil
-	case "RS256":
-		return jwt.SigningMethodRS256, nil
-	case "NONE":
-		fallthrough
-	default:
-		return nil, fmt.Errorf("unable to find signing algorithm %s", alg)
-	}
 }
 
 func (i *Input) getBody(req *resty.Request, ctx *Context) (string, error) {
@@ -452,81 +427,6 @@ func (p payload) Valid() error {
 	return nil
 }
 
-func (i *Input) generateJWSSignature(ctx *Context, alg jwt.SigningMethod) (string, error) {
-	m := minify.New()
-	m.AddFuncRegexp(regexp.MustCompile("[/+]json$"), minjson.Minify)
-	minifiedBody, err := m.String("application/json", i.RequestBody)
-	if err != nil {
-		return "", err
-	}
-	cert, err := signingCertFromContext(ctx)
-	if err != nil {
-		return "", errors.Wrap(err, "model.Input.generateJWSSignature failure: unable to sign certificate from context")
-	}
-	modulus := cert.PublicKey().N.Bytes()
-	modulusBase64 := base64.RawURLEncoding.EncodeToString(modulus)
-	kid, _ := authentication.CalcKid(modulusBase64)
-
-	issuer, err := i.getJWSIssuerString(ctx, cert)
-	if err != nil {
-		return "", errors.Wrap(err, "model.Input.generateJWSSignature failure: unable to retrieve issuer from context")
-	}
-	trustAnchor := "openbanking.org.uk"
-	useNonOBDirectory, exists := ctx.Get("nonOBDirectory")
-	if !exists {
-		return "", errors.New("model.Input.generateJWSSignature failure: unable to retrieve nonOBDirectory from context")
-	}
-	useNonOBDirectoryAsBool, ok := useNonOBDirectory.(bool)
-	if !ok {
-		return "", errors.New("model.Input.generateJWSSignature failure: unable to cast nonOBDirectory to bool")
-	}
-	if useNonOBDirectoryAsBool {
-		kid, err = ctx.GetString("signingKid")
-		if err != nil {
-			return "", errors.Wrap(err, "model.Input.generateJWSSignature failure: unable to retrieve singingKid from context")
-		}
-		issuer, err = ctx.GetString("issuer")
-		if err != nil {
-			return "", errors.Wrap(err, "model.Input.generateJWSSignature failure: unable to retrieve issue from context")
-		}
-		trustAnchor, err = ctx.GetString("signatureTrustAnchor")
-		if err != nil {
-			return "", errors.Wrap(err, "model.Input.generateJWSSignature failure: unable to retrieve signatureTrustAnchor from context")
-		}
-	}
-	logrus.Tracef("jws issuer=%s", issuer)
-
-	logrus.WithFields(logrus.Fields{
-		"kid":    kid,
-		"issuer": issuer,
-		"alg":    alg.Alg(),
-		"claims": minifiedBody,
-	}).Trace("jws signature creation")
-
-	tok := jwt.Token{
-		Header: map[string]interface{}{
-			"typ":                           "JOSE",
-			"kid":                           kid,
-			"b64":                           false,
-			"cty":                           "application/json",
-			"http://openbanking.org.uk/iat": time.Now().Unix(),
-			"http://openbanking.org.uk/iss": issuer,      //ASPSP ORGID or TTP ORGID/SSAID
-			"http://openbanking.org.uk/tan": trustAnchor, //Trust anchor
-			"alg":                           alg.Alg(),
-			"crit":                          []string{"b64", "http://openbanking.org.uk/iat", "http://openbanking.org.uk/iss", "http://openbanking.org.uk/tan"},
-		},
-		Method: alg,
-	}
-
-	tokenString, err := SignedString(&tok, cert.PrivateKey(), minifiedBody) // sign the token - get as encoded string
-
-	logrus.Tracef("jws:  %v", tokenString)
-	detachedJWS := splitJwsWithBody(tokenString)
-	logrus.Tracef("detached jws: %v", detachedJWS)
-
-	return detachedJWS, nil
-}
-
 func (i *Input) getJWSIssuerString(ctx *Context, cert authentication.Certificate) (string, error) {
 
 	apiVersion, err := ctx.GetString("api-version")
@@ -550,48 +450,6 @@ func (i *Input) getJWSIssuerString(ctx *Context, cert authentication.Certificate
 	}
 
 	return issuer, nil
-}
-
-func splitJwsWithBody(token string) string {
-	firstPart := token[:strings.IndexByte(token, '.')]
-	idx := strings.LastIndex(token, ".")
-	lastPart := token[idx:]
-	return firstPart + "." + lastPart
-}
-
-// SignedString Get the complete, signed token for jws usage
-func SignedString(t *jwt.Token, key interface{}, body string) (string, error) {
-	var sig, sstr string
-	var err error
-	if sstr, err = SigningString(t, body); err != nil {
-		return "", err
-	}
-	if sig, err = t.Method.Sign(sstr, key); err != nil {
-		return "", err
-	}
-	return strings.Join([]string{sstr, sig}, "."), nil
-}
-
-// SigningString -
-func SigningString(t *jwt.Token, body string) (string, error) {
-	var err error
-	parts := make([]string, 2)
-	for i := range parts {
-		var jsonValue []byte
-		if i == 0 {
-			if jsonValue, err = json.Marshal(t.Header); err != nil {
-				return "", err
-			}
-		} else {
-			jsonValue = []byte(body)
-		}
-		if i == 0 {
-			parts[i] = jwt.EncodeSegment(jsonValue)
-		} else {
-			parts[i] = string(jsonValue)
-		}
-	}
-	return strings.Join(parts, "."), nil
 }
 
 type obintentID struct {
