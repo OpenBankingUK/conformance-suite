@@ -17,13 +17,6 @@ import (
 	minjson "github.com/tdewolff/minify/v2/json"
 )
 
-type ContextInterface interface {
-	// GetString get the string value associated with key
-	GetString(key string) (string, error)
-	// Get the key form the Context map - currently assumes value converts easily to a string!
-	Get(key string) (interface{}, bool)
-}
-
 func GetSigningAlg(alg string) (jwt.SigningMethod, error) {
 	switch strings.ToUpper(alg) {
 	case "PS256":
@@ -66,22 +59,24 @@ func GetJWSIssuerString(ctx ContextInterface, cert Certificate) (string, error) 
 	if err != nil {
 		return "", errors.New("authentication.GetJWSIssuerString: cannot find api-version: " + err.Error())
 	}
+
 	var issuer string
-	if apiVersion == "v3.1" {
+	switch apiVersion {
+	case "v3.1":
 		issuer, err = cert.SignatureIssuer(true)
 		if err != nil {
 			logrus.Warn("cannot Issuer for Signature: ", err.Error())
 			return "", errors.New("authentication.GetJWSIssuerString: cannot Issuer for Signature: " + err.Error())
 		}
-	} else if apiVersion == "v3.0" {
+	case "v3.0":
 		issuer, err = cert.DN()
 		if err != nil {
 			logrus.Warn("cannot get certificate DN: ", err.Error())
+			return "", errors.New("authentication.GetJWSIssuerString: cert.DN() failed" + err.Error())
 		}
-	} else {
+	default:
 		return "", errors.New("authentication.GetJWSIssuerString: cannot get issuer for jws signature but api-version doesn't match 3.0.0 or 3.1.0")
 	}
-
 	return issuer, nil
 }
 
@@ -132,7 +127,7 @@ func NewJWSSignature(requestBody string, ctx ContextInterface, alg jwt.SigningMe
 	m.AddFuncRegexp(regexp.MustCompile("[/+]json$"), minjson.Minify)
 	minifiedBody, err := m.String("application/json", requestBody)
 	if err != nil {
-		return "", err
+		return "", errors.Wrap(err, `authentication.NewJWSSignature: m.String("application/json", requestBody) failed`)
 	}
 	cert, err := SigningCertFromContext(ctx)
 	if err != nil {
@@ -140,7 +135,10 @@ func NewJWSSignature(requestBody string, ctx ContextInterface, alg jwt.SigningMe
 	}
 	modulus := cert.PublicKey().N.Bytes()
 	modulusBase64 := base64.RawURLEncoding.EncodeToString(modulus)
-	kid, _ := CalcKid(modulusBase64)
+	kid, err := CalcKid(modulusBase64)
+	if err != nil {
+		return "", errors.Wrap(err, "authentication.NewJWSSignature: CalcKid(modulusBase64) failed")
+	}
 
 	issuer, err := GetJWSIssuerString(ctx, cert)
 	if err != nil {
@@ -194,6 +192,9 @@ func NewJWSSignature(requestBody string, ctx ContextInterface, alg jwt.SigningMe
 	}
 
 	tokenString, err := SignedString(&tok, cert.PrivateKey(), minifiedBody) // sign the token - get as encoded string
+	if err != nil {
+		return "", errors.Wrap(err, "authentication.NewJWSSignature: SignedString(&tok, cert.PrivateKey(), minifiedBody) failed")
+	}
 
 	logrus.Tracef("jws:  %v", tokenString)
 	detachedJWS := SplitJWSWithBody(tokenString)

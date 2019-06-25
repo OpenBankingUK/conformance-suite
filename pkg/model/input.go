@@ -1,7 +1,6 @@
 package model
 
 import (
-	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"net/url"
@@ -233,7 +232,7 @@ func (i *Input) setHeaders(req *resty.Request, ctx *Context) error {
 	return nil
 }
 
-func (i *Input) createJWSDetachedSignature(ctx *Context) error {
+func (i *Input) createJWSDetachedSignature(ctx authentication.ContextInterface) error {
 	if len(i.RequestBody) > 0 && !disableJws {
 		requestObjSigningAlg, err := ctx.GetString("requestObjectSigningAlg")
 		if err != nil {
@@ -257,7 +256,6 @@ func (i *Input) createJWSDetachedSignature(ctx *Context) error {
 		return nil
 	}
 	return i.AppErr("cannot create x-jws-signature, as request body is empty")
-
 }
 
 func (i *Input) getBody(req *resty.Request, ctx *Context) (string, error) {
@@ -405,7 +403,7 @@ func (i *Input) GenerateSignedJWT(ctx *Context, alg jwt.SigningMethod) (string, 
 	if err != nil {
 		return "", i.AppErr(errors.Wrap(err, "Create certificate from context").Error())
 	}
-	kid, err := GetKID(ctx, cert.PublicKey().N.Bytes())
+	kid, err := authentication.GetKID(ctx, cert.PublicKey().N.Bytes())
 	if err != nil {
 		return "", errors.Wrap(err, "model.Input.generateJWSSignature failure: unable to get KID")
 	}
@@ -419,37 +417,6 @@ func (i *Input) GenerateSignedJWT(ctx *Context, alg jwt.SigningMethod) (string, 
 		return "", i.AppErr(fmt.Sprintf("error siging jwt: %s", err.Error()))
 	}
 	return tokenString, nil
-}
-
-type payload []byte
-
-func (p payload) Valid() error {
-	return nil
-}
-
-func (i *Input) getJWSIssuerString(ctx *Context, cert authentication.Certificate) (string, error) {
-
-	apiVersion, err := ctx.GetString("api-version")
-	if err != nil {
-		return "", errors.New("generate JWS Signature - cannot find api-version: " + err.Error())
-	}
-	var issuer string
-	if apiVersion == "v3.1" {
-		issuer, err = cert.SignatureIssuer(true)
-		if err != nil {
-			logrus.Warn("cannot Issuer for Signature: ", err.Error())
-			return "", errors.New("cannot Issuer for Signature: " + err.Error())
-		}
-	} else if apiVersion == "v3.0" {
-		issuer, err = cert.DN()
-		if err != nil {
-			logrus.Warn("cannot get certificate DN: ", err.Error())
-		}
-	} else {
-		return "", errors.New("cannot get issuer for jws signature but api-version doesn't match 3.0.0 or 3.1.0")
-	}
-
-	return issuer, nil
 }
 
 type obintentID struct {
@@ -525,29 +492,4 @@ func makeMiliSecondStringTimestamp() string {
 // DisableJWS - disable jws-signature for ozone
 func DisableJWS() {
 	disableJws = true
-}
-
-// GetKID determines the value of the JWS Key ID
-func GetKID(ctx *Context, modulus []byte) (string, error) {
-	modulusBase64 := base64.RawURLEncoding.EncodeToString(modulus)
-	kid, err := authentication.CalcKid(modulusBase64)
-	if err != nil {
-		return "", errors.Wrap(err, "could not calculate kid")
-	}
-	nonOBDirectory, exists := ctx.Get("nonOBDirectory")
-	if !exists {
-		return "", errors.New("unable get nonOBDirectory value from context")
-	}
-	nonOBDirectoryAsBool, ok := nonOBDirectory.(bool)
-	if !ok {
-		return "", errors.New("unable to cast nonOBDirectory value to bool")
-	}
-	if nonOBDirectoryAsBool {
-		kid, err = ctx.GetString("signingKid")
-		if err != nil {
-			return "", errors.Wrap(err, "unable to retrieve signingKid from context")
-		}
-	}
-
-	return kid, nil
 }
