@@ -17,11 +17,11 @@ To provide feedback, please use the public [issue tracker](https://bitbucket.org
 ## Release Notes 
 * * *
 
-### v1.1.11 (18th June 2019)
+### v1.1.13 (21st June 2019)
 
-The release is called **v1.1.11**, it introduce fixes for incorrect test cases assertions.
+The release is called **v1.1.13**, it introduce fixes for incorrect test cases assertions.
 
-[Full Release Notes](docs/releases/v1.1.11.md) (v1.1.11.md)
+[Full Release Notes](docs/releases/v1.1.13.md) (v1.1.11.md)
 
 
 ## Quickstart
@@ -29,7 +29,7 @@ The release is called **v1.1.11**, it introduce fixes for incorrect test cases a
 
 Pull and run the latest (stable) tagged Docker image:
 
-    > docker run --rm -it -p 8443:8443 "openbanking/conformance-suite:v1.1.11"
+    > docker run --rm -it -p 8443:8443 "openbanking/conformance-suite:v1.1.13"
 
 [See Setup Guide](docs/setup-guide.md) 
 
