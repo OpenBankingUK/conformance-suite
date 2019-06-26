@@ -25,7 +25,8 @@ TABLE A:
 | detail            | 0..1       | Long description describing the and expected result     | String (max 256) |             |
 | parameters        | 1..1       | Maps context                                            | json             | see example |
 | uri               | 1..1       | A resource to test.                                     | String           |             |
-| asserts           | 1..1       | List of linked asserts.                                 | List             |             |
+| asserts_all       | 1..1       | List of linked asserts all of which must be true.       | List             |             |
+| asserts_one_of    | 0..1       | List of linked asserts one of which must be true.       | List             |             |
 | uriImplementation | 1..1       |                                                         |                  |             |
 | resource          | 1..1       |                                                         |                  |             |
 | keepContext       | 1..1       |                                                         |                  |             |
@@ -76,8 +77,8 @@ TABLE B - Structure of an assertion:
 |-----------------------|------------|---------------------------------------------------------|------------------|-------------|
 | expect                | 1..1       | Container for test expectations                         | JSON             |             |
 | expect.status-code    | 0..1       | Expected HTTP status code                               | Integer          |             |
-| expect.all_matches    | 0..N       | Array of "MatchType" checks all of which must be met    | Array of JSON    | see example |
-| expect.any_of_matches | 0..N       | Array of "MatchType" checks one of which must be met    | Array of JSON    | see example |
+| expect.matches_all    | 0..N       | Array of "MatchType" checks all of which must be met    | Array of JSON    | see example |
+| expect.matches_one_of | 0..N       | Array of "MatchType" checks one of which must be met    | Array of JSON    | see example |
 | expect.custom         | 0..N       | Reference to an implementation of a custom expectation. Can be defined multiple times.                          | String           |             |
 
 

@@ -249,7 +249,7 @@ func testCaseBuilder(s Script, refs map[string]Reference, ctx *model.Context, co
 		if ref.Expect.StatusCode != 0 {
 			tc.Expect.StatusCode = clone.StatusCode
 		}
-		tc.Expect.AllMatches = append(tc.Expect.AllMatches, clone.AllMatches...)
+		tc.Expect.MatchesAll = append(tc.Expect.MatchesAll, clone.MatchesAll...)
 	}
 
 	for _, a := range s.AssertsAnyOf {
@@ -263,7 +263,7 @@ func testCaseBuilder(s Script, refs map[string]Reference, ctx *model.Context, co
 		if ref.Expect.StatusCode != 0 {
 			tc.Expect.StatusCode = clone.StatusCode
 		}
-		tc.Expect.AnyOfMatches = append(tc.Expect.AnyOfMatches, clone.AnyOfMatches...)
+		tc.Expect.MatchesOneOf = append(tc.Expect.MatchesOneOf, clone.MatchesOneOf...)
 	}
 
 	// test case schema validation
