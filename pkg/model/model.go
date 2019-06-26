@@ -165,8 +165,9 @@ type Expect struct {
 	StatusCode       int  `json:"status-code,omitempty"`       // Http response code
 	SchemaValidation bool `json:"schema-validation,omitempty"` // Flag to indicate if we need schema validation -
 	// provides the ability to switch off schema validation
-	Matches    []Match         `json:"matches,omitempty"`    // An array of zero or more match items which must be 'passed' for the testcase to succeed
-	ContextPut ContextAccessor `json:"contextPut,omitempty"` // allows storing of test response fragments in context variables
+	AllMatches   []Match         `json:"all_matches,omitempty"`    // An array of zero or more match items all of which must be 'passed' for the testcase to succeed
+	AnyOfMatches []Match         `json:"any_of_matches,omitempty"` // An array of zero or more match items any of which must be 'passed' for the testcase to succeed
+	ContextPut   ContextAccessor `json:"contextPut,omitempty"`     // allows storing of test response fragments in context variables
 }
 
 // ApplyInput - creates an HTTP request for this test case
@@ -239,14 +240,34 @@ func (t *TestCase) ApplyExpects(res *resty.Response, rulectx *Context) (bool, []
 	}
 
 	t.AppMsg(fmt.Sprintf("Status check isReplacement: expected [%d] got [%d]", t.Expect.StatusCode, res.StatusCode()))
-	for k, match := range t.Expect.Matches {
+	for k, match := range t.Expect.AllMatches {
 		checkResult, got := match.Check(t)
 		if !checkResult {
 			return false, []error{t.AppErr(fmt.Sprintf("ApplyExpects Returns False on match %s : %s", match.String(), got.Error()))}
 		}
 
-		t.Expect.Matches[k].Result = match.Result
-		t.AppMsg(fmt.Sprintf("Checked Match: %s: result: %s", match.Description, t.Expect.Matches[k].Result))
+		t.Expect.AllMatches[k].Result = match.Result
+		t.AppMsg(fmt.Sprintf("Checked Match: %s: result: %s", match.Description, t.Expect.AllMatches[k].Result))
+	}
+
+	type MatchResult struct {
+		match Match
+		err   error
+	}
+	var failedMatches []MatchResult
+	for k, match := range t.Expect.AnyOfMatches {
+		checkResult, got := match.Check(t)
+		if !checkResult {
+			failedMatches = append(failedMatches, MatchResult{match, got})
+			continue
+		}
+
+		t.Expect.AllMatches[k].Result = match.Result
+		t.AppMsg(fmt.Sprintf("Checked Match: %s: result: %s", match.Description, t.Expect.AllMatches[k].Result))
+	}
+
+	if len(failedMatches) > 0 && len(failedMatches) == len(t.Expect.AnyOfMatches) {
+		return false, []error{t.AppErr(fmt.Sprintf("ApplyExpects Returns False on any matches %s : %s", failedMatches[0].match.String(), failedMatches[0].err.Error()))}
 	}
 
 	if err := t.Expect.ContextPut.PutValues(t, rulectx); err != nil {
@@ -421,9 +442,9 @@ func (t *TestCase) ProcessReplacementFields(ctx *Context, showReplacementErrors 
 		}
 	}
 
-	for idx, match := range t.Expect.Matches {
+	for idx, match := range t.Expect.AllMatches {
 		match.ProcessReplacementFields(ctx)
-		t.Expect.Matches[idx] = match
+		t.Expect.AllMatches[idx] = match
 	}
 
 }
@@ -472,9 +493,13 @@ func (e *Expect) Clone() Expect {
 	ex := Expect{}
 	ex.StatusCode = e.StatusCode
 	ex.SchemaValidation = e.SchemaValidation
-	for _, match := range e.Matches {
+	for _, match := range e.AllMatches {
 		m := match.Clone()
-		ex.Matches = append(ex.Matches, m)
+		ex.AllMatches = append(ex.AllMatches, m)
+	}
+	for _, match := range e.AnyOfMatches {
+		m := match.Clone()
+		ex.AnyOfMatches = append(ex.AnyOfMatches, m)
 	}
 	return ex
 }

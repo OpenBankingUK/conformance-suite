@@ -39,6 +39,7 @@ type Script struct {
 	PermissionsExcluded []string          `json:"permissions-excluded,omitemtpy"`
 	Resource            string            `json:"resource,omitempty"`
 	Asserts             []string          `json:"asserts,omitempty"`
+	AssertsAnyOf        []string          `json:"asserts_any_of,omitempty"`
 	Method              string            `json:"method,omitempty"`
 	URI                 string            `json:"uri,omitempty"`
 	URIImplemenation    string            `json:"uri_implemenation,omitempty"`
@@ -248,10 +249,25 @@ func testCaseBuilder(s Script, refs map[string]Reference, ctx *model.Context, co
 		if ref.Expect.StatusCode != 0 {
 			tc.Expect.StatusCode = clone.StatusCode
 		}
-		tc.Expect.Matches = append(tc.Expect.Matches, clone.Matches...)
-		tc.Expect.SchemaValidation = s.SchemaCheck
-
+		tc.Expect.AllMatches = append(tc.Expect.AllMatches, clone.AllMatches...)
 	}
+
+	for _, a := range s.AssertsAnyOf {
+		ref, exists := refs[a]
+		if !exists {
+			msg := fmt.Sprintf("assertion %s do not exist in reference data", a)
+			logrus.Error(msg)
+			return tc, errors.New(msg)
+		}
+		clone := ref.Expect.Clone()
+		if ref.Expect.StatusCode != 0 {
+			tc.Expect.StatusCode = clone.StatusCode
+		}
+		tc.Expect.AnyOfMatches = append(tc.Expect.AnyOfMatches, clone.AnyOfMatches...)
+	}
+
+	// test case schema validation
+	tc.Expect.SchemaValidation = s.SchemaCheck
 
 	// Handled PutContext parameters
 	putMatches := processPutContext(&s)

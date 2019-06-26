@@ -328,9 +328,12 @@
             "resource": "Balance",
             "method": "get",
             "asserts": [
-                "OB3GLOAssertOn403",
                 "OB3GLOAssertContentType"
             ],
+	    "asserts_any_of": [
+	    	"OB3GLOAssertOn401",
+		"OB3GLOAssertOn403"
+	    ],
             "schemaCheck": false
         },
         {
