@@ -127,10 +127,10 @@ func TestCreateHeaderContextMissingForReplacement(t *testing.T) {
 
 // func TestCheckAuthorizationTokenProcessed(t *testing.T) {
 // 	m := Match{Description: "TokenProcessing", Authorisation: "Bearer"}
-// 	tc := TestCase{Expect: Expect{MatchesAll: []Match{m}, StatusCode: 200}}
+// 	tc := TestCase{Expect: Expect{Matches: []Match{m}, StatusCode: 200}}
 // 	resp := test.CreateHTTPResponse(200, "OK", "TheRainInSpain", "Authorization", "Bearer 1010110101010101")
 // 	result, err := tc.Validate(resp, emptyContext)
-// 	assert.Equal(t, "1010110101010101", tc.Expect.MatchesAll[0].Result)
+// 	assert.Equal(t, "1010110101010101", tc.Expect.Matches[0].Result)
 // 	assert.Nil(t, err)
 // 	assert.True(t, result)
 

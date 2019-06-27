@@ -60,23 +60,24 @@ type Rule struct {
 //     and therefore the testcase has passed
 //
 type TestCase struct {
-	ID         string           `json:"@id,omitempty"`     // JSONLD ID Reference
-	Type       []string         `json:"@type,omitempty"`   // JSONLD type array
-	Name       string           `json:"name,omitempty"`    // Name
-	Detail     string           `json:"detail,omitempty"`  // Detailed description of the test case
-	RefURI     string           `json:"refURI,omitempty"`  // Reference URI for the test case
-	Purpose    string           `json:"purpose,omitempty"` // Purpose of the testcase in simple words
-	Input      Input            `json:"input,omitempty"`   // Input Object
-	Context    Context          `json:"context,omitempty"` // Local Context Object
-	Expect     Expect           `json:"expect,omitempty"`  // Expected object
-	ParentRule *Rule            `json:"-"`                 // Allows accessing parent Rule
-	Request    *resty.Request   `json:"-"`                 // The request that's been generated in order to call the endpoint
-	Header     http.Header      `json:"-"`                 // ResponseHeader
-	Body       string           `json:"-"`                 // ResponseBody
-	Bearer     string           `json:"bearer,omitempty"`  // Bear token if presented
-	APIName    string           `json:"apiName"`
-	APIVersion string           `json:"apiVersion"`
-	Validator  schema.Validator `json:"-"` // Swagger schema validator
+	ID          string           `json:"@id,omitempty"`          // JSONLD ID Reference
+	Type        []string         `json:"@type,omitempty"`        // JSONLD type array
+	Name        string           `json:"name,omitempty"`         // Name
+	Detail      string           `json:"detail,omitempty"`       // Detailed description of the test case
+	RefURI      string           `json:"refURI,omitempty"`       // Reference URI for the test case
+	Purpose     string           `json:"purpose,omitempty"`      // Purpose of the testcase in simple words
+	Input       Input            `json:"input,omitempty"`        // Input Object
+	Context     Context          `json:"context,omitempty"`      // Local Context Object
+	Expect      Expect           `json:"expect,omitempty"`       // Expected object
+	ExpectOneOf []Expect         `json:"expect_one_of,omitempty` // Slice of possible expected objects
+	ParentRule  *Rule            `json:"-"`                      // Allows accessing parent Rule
+	Request     *resty.Request   `json:"-"`                      // The request that's been generated in order to call the endpoint
+	Header      http.Header      `json:"-"`                      // ResponseHeader
+	Body        string           `json:"-"`                      // ResponseBody
+	Bearer      string           `json:"bearer,omitempty"`       // Bear token if presented
+	APIName     string           `json:"apiName"`
+	APIVersion  string           `json:"apiVersion"`
+	Validator   schema.Validator `json:"-"` // Swagger schema validator
 }
 
 // MakeTestCase builds an empty testcase
@@ -165,15 +166,8 @@ type Expect struct {
 	StatusCode       int  `json:"status-code,omitempty"`       // Http response code
 	SchemaValidation bool `json:"schema-validation,omitempty"` // Flag to indicate if we need schema validation -
 	// provides the ability to switch off schema validation
-	MatchesAll   []Match         `json:"matches,omitempty"`        // An array of zero or more match items all of which must be 'passed' for the testcase to succeed
-	MatchesOneOf []Match         `json:"matches_one_of,omitempty"` // An array of zero or more match items any of which must be 'passed' for the testcase to succeed
-	ContextPut   ContextAccessor `json:"contextPut,omitempty"`     // allows storing of test response fragments in context variables
-}
-
-// matchResult is used to temporarily store match results
-type matchResult struct {
-	match Match
-	err   error
+	Matches    []Match         `json:"matches,omitempty"`    // An array of zero or more match items all of which must be 'passed' for the testcase to succeed
+	ContextPut ContextAccessor `json:"contextPut,omitempty"` // allows storing of test response fragments in context variables
 }
 
 // ApplyInput - creates an HTTP request for this test case
@@ -241,49 +235,50 @@ func (t *TestCase) ApplyExpects(res *resty.Response, rulectx *Context) (bool, []
 	}
 
 	// Status code `-1` is specified in test cases if we want to ignore the HTTP status code.
-	if t.Expect.StatusCode != ignoreHTTPStatus && t.Expect.StatusCode != res.StatusCode() { // Status codes don't match
+	if t.Expect.StatusCode != ignoreHTTPStatus && t.Expect.StatusCode > 0 && t.Expect.StatusCode != res.StatusCode() { // Status codes don't match
 		return false, []error{t.AppErr(fmt.Sprintf("(%s):%s: HTTP Status code does not match: expected %d got %d", t.ID, t.Name, t.Expect.StatusCode, res.StatusCode()))}
 	}
 
 	t.AppMsg(fmt.Sprintf("Status check isReplacement: expected [%d] got [%d]", t.Expect.StatusCode, res.StatusCode()))
-	for k, match := range t.Expect.MatchesAll {
+	for k, match := range t.Expect.Matches {
 		checkResult, got := match.Check(t)
 		if !checkResult {
 			return false, []error{t.AppErr(fmt.Sprintf("ApplyExpects Returns False on match %s : %s", match.String(), got.Error()))}
 		}
 
-		t.Expect.MatchesAll[k].Result = match.Result
-		t.AppMsg(fmt.Sprintf("Checked Match: %s: result: %s", match.Description, t.Expect.MatchesAll[k].Result))
+		t.Expect.Matches[k].Result = match.Result
+		t.AppMsg(fmt.Sprintf("Checked Match: %s: result: %s", match.Description, t.Expect.Matches[k].Result))
 	}
 
-	var failedMatches []matchResult
-	for k, match := range t.Expect.MatchesOneOf {
-		checkResult, got := match.Check(t)
-		if !checkResult {
-			failedMatches = append(failedMatches, matchResult{match, got})
+	var failedMatches []error
+	for _, expect := range t.ExpectOneOf {
+
+		if expect.StatusCode != ignoreHTTPStatus && expect.StatusCode != res.StatusCode() {
+			failedMatches = append(failedMatches, t.AppErr(fmt.Sprintf("(%s):%s: HTTP Status code does not match: expected %d got %d", t.ID, t.Name, expect.StatusCode, res.StatusCode())))
 			continue
 		}
 
-		t.Expect.MatchesAll[k].Result = match.Result
-		t.AppMsg(fmt.Sprintf("Checked Match: %s: result: %s", match.Description, t.Expect.MatchesAll[k].Result))
+		t.AppMsg(fmt.Sprintf("Status check isReplacement: expected [%d] got [%d]", expect.StatusCode, res.StatusCode()))
+		for k, match := range expect.Matches {
+			checkResult, got := match.Check(t)
+			if !checkResult {
+				failedMatches = append(failedMatches, t.AppErr(fmt.Sprintf("ApplyExpects Returns False on match %s : %s", match.String(), got.Error())))
+				continue
+			}
+
+			expect.Matches[k].Result = match.Result
+			t.AppMsg(fmt.Sprintf("Checked Match: %s: result: %s", match.Description, expect.Matches[k].Result))
+		}
 	}
 
-	if len(failedMatches) > 0 && len(failedMatches) == len(t.Expect.MatchesOneOf) {
-		return false, t.matchResultToErrSlice(failedMatches)
+	if len(failedMatches) > 0 && len(failedMatches) == len(t.ExpectOneOf) {
+		return false, failedMatches
 	}
 
 	if err := t.Expect.ContextPut.PutValues(t, rulectx); err != nil {
 		return false, []error{t.AppErr("ApplyExpects Returns FALSE " + err.Error())}
 	}
 	return true, nil
-}
-
-func (t *TestCase) matchResultToErrSlice(matchResults []matchResult) []error {
-	errs := make([]error, 0, len(matchResults))
-	for _, m := range matchResults {
-		errs = append(errs, t.AppErr(fmt.Sprintf("ApplyExpects Returns False on matches_one_of %s: %s", m.match.String(), m.err.Error())))
-	}
-	return errs
 }
 
 // InjectBearerToken injects a bear token header into the testcase, token can either be the actual bearer token or a parameter starting with '$'
@@ -452,9 +447,9 @@ func (t *TestCase) ProcessReplacementFields(ctx *Context, showReplacementErrors 
 		}
 	}
 
-	for idx, match := range t.Expect.MatchesAll {
+	for idx, match := range t.Expect.Matches {
 		match.ProcessReplacementFields(ctx)
-		t.Expect.MatchesAll[idx] = match
+		t.Expect.Matches[idx] = match
 	}
 
 }
@@ -503,13 +498,9 @@ func (e *Expect) Clone() Expect {
 	ex := Expect{}
 	ex.StatusCode = e.StatusCode
 	ex.SchemaValidation = e.SchemaValidation
-	for _, match := range e.MatchesAll {
+	for _, match := range e.Matches {
 		m := match.Clone()
-		ex.MatchesAll = append(ex.MatchesAll, m)
-	}
-	for _, match := range e.MatchesOneOf {
-		m := match.Clone()
-		ex.MatchesOneOf = append(ex.MatchesOneOf, m)
+		ex.Matches = append(ex.Matches, m)
 	}
 	return ex
 }

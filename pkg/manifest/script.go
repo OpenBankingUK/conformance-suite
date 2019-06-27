@@ -249,7 +249,7 @@ func testCaseBuilder(s Script, refs map[string]Reference, ctx *model.Context, co
 		if ref.Expect.StatusCode != 0 {
 			tc.Expect.StatusCode = clone.StatusCode
 		}
-		tc.Expect.MatchesAll = append(tc.Expect.MatchesAll, clone.MatchesAll...)
+		tc.Expect.Matches = append(tc.Expect.Matches, clone.Matches...)
 	}
 
 	for _, a := range s.AssertsOneOf {
@@ -259,11 +259,7 @@ func testCaseBuilder(s Script, refs map[string]Reference, ctx *model.Context, co
 			logrus.Error(msg)
 			return tc, errors.New(msg)
 		}
-		clone := ref.Expect.Clone()
-		if ref.Expect.StatusCode != 0 {
-			tc.Expect.StatusCode = clone.StatusCode
-		}
-		tc.Expect.MatchesOneOf = append(tc.Expect.MatchesOneOf, clone.MatchesOneOf...)
+		tc.ExpectOneOf = append(tc.ExpectOneOf, ref.Expect.Clone())
 	}
 
 	// test case schema validation
