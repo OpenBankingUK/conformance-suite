@@ -6,8 +6,8 @@ import (
 	"strings"
 	"testing"
 
-	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/test"
-	versionmock "bitbucket.org/openbankingteam/conformance-suite/internal/pkg/version/mocks"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/test"
+	versionmock "bitbucket.org/openbankingteam/conformance-suite/pkg/version/mocks"
 )
 
 // /api/discovery-model/validate - POST - When invalid JSON returns error message
@@ -28,7 +28,7 @@ func TestServerDiscoveryModelPOSTValidateReturnsErrorsWhenInvalidJSON(t *testing
 	assert.NotNil(body)
 	assert.JSONEq(expected, body.String())
 	assert.Equal(http.StatusBadRequest, code)
-	assert.Equal(expectedJsonHeaders, headers)
+	assert.Equal(expectedJsonHeaders(), headers)
 }
 
 // /api/discovery-model/validate - POST - When incomplete model returns validation failures messages
@@ -56,5 +56,5 @@ func TestServerDiscoveryModelPOSTValidateReturnsErrorsWhenIncomplete(t *testing.
 	assert.NotNil(body)
 	assert.JSONEq(expected, body.String())
 	assert.Equal(http.StatusBadRequest, code)
-	assert.Equal(expectedJsonHeaders, headers)
+	assert.Equal(expectedJsonHeaders(), headers)
 }

@@ -10,6 +10,7 @@
         "consentId": "foobar",
         "instructedAmountCurrency": "$instructedAmountCurrency",
         "instructedAmountValue": "$instructedAmountValue",
+        "instructionIdentification": "OB-301-DOP-100000",
         "postData": "$minimalDomesticPaymentConsent"
       },
       "headers": {
@@ -34,6 +35,7 @@
         "tokenRequestScope": "payments",
         "instructedAmountCurrency": "$instructedAmountCurrency",
         "instructedAmountValue": "$instructedAmountValue",
+        "instructionIdentification": "OB-301-DOP-100100",
         "postData": "$minimalDomesticPaymentConsent",
         "requestConsent": "false"
       },
@@ -73,7 +75,8 @@
       "resource": "DomesticPayment",
       "asserts": [
         "OB3GLOAssertOn400",
-        "OB3DOPAssertInvalidConsentStatus"
+        "OB3DOPAssertInvalidConsentStatus",
+        "OB3IPAssertResourceInvalidConsentStatusOBErrorCode"
       ],
       "method": "get",
       "schemaCheck": false
@@ -90,7 +93,7 @@
         "postData": "$minimalDomesticPaymentConsent",
         "thisSchemeName": "$creditorScheme",
         "thisIdentification": "$creditorIdentification",
-        "thisInstructionIdentification": "OB-301-DOP-100300",
+        "instructionIdentification": "OB-301-DOP-100300",
         "requestConsent": "true"
       },
       "headers": {
@@ -169,7 +172,7 @@
         "consentId": "$OB-301-DOP-100300-ConsentId",
         "thisSchemeName": "$creditorScheme",
         "thisIdentification": "$creditorIdentification",
-        "thisInstructionIdentification": "OB-301-DOP-100300",
+        "instructionIdentification": "OB-301-DOP-100300",
         "instructedAmountCurrency": "$instructedAmountCurrency",
         "instructedAmountValue": "$instructedAmountValue",
         "postData": "$minimalDomesticPaymentPost"

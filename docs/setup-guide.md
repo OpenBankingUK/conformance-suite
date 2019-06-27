@@ -99,7 +99,7 @@ at this point by running `docker login`.
 ### Production
 
 ```sh
-docker run --rm -it -p 8443:8443 -e LOG_LEVEL=debug -e LOG_TRACER=true -e LOG_HTTP_TRACE=true -e DISABLE_JWS=TRUE "openbanking/conformance-suite:v1.1.7"
+docker run --rm -it -p 8443:8443 -e LOG_LEVEL=debug -e LOG_TRACER=true -e LOG_HTTP_TRACE=true -e DISABLE_JWS=TRUE "openbanking/conformance-suite:v1.1.8"
 ```
 
 ### Non-production run
@@ -110,17 +110,26 @@ docker run --rm -it -p 8443:8443 -e LOG_LEVEL=debug -e LOG_TRACER=true -e LOG_HT
 
 If all goes well you should be able to launch the FCS UI from you browser via `https://0.0.0.0:8443`
 
-### Optional - Docker Content Trust
+### Optional - Docker Content Trust (recommended)
 
-Docker ensures that all content is securely received and verified by Open Banking. Docker cryptographically signs the images upon completion of a satisfactory image check, so
-that implementers can verify and trust certified content.
+Docker Content Trust *(DCT)* ensures that all content is securely received and verified. Open Banking cryptographically signs the images upon completion of a satisfactory image check, so that implementers can verify and trust certified content.
 
-To verify the content has not been tampered with you can you the `DOCKER_CONTENT_TRUST` flag, for example:
+To verify the content has not been tampered with you can you the `DOCKER_CONTENT_TRUST` flaG. For example:
 
     DOCKER_CONTENT_TRUST=1 docker pull openbanking/conformance-suite:TAG
     DOCKER_CONTENT_TRUST=1 docker RUN openbanking/conformance-suite:TAG
 
-## Step 4: Congig & Run the Functional Conformance Suite
+Alternatively, you can set DCT with an environmental variable. `export DOCKER_CONTENT_TRUST=1` 
+
+Once DCT is enabled remote trust is checked on every pull request. If no trust data for a tag is found you will be presented with an error.
+
+    export DOCKER_CONTENT_TRUST=1 
+    docker pull openbanking/conformance-suite:TAG
+    Error: remote trust data does not exist for docker.io/openbanking/conformance-suite: notary.docker.io does not have trust data for docker.io/openbanking/conformance-suite
+
+[More on Docker Content Trust](docs/docker_content_trust.md)
+
+## Step 4: Config & Run the Functional Conformance Suite
 
 Running a test plan on the FCS involves five steps, as follows:
 

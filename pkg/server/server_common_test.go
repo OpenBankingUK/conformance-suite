@@ -11,11 +11,14 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-var (
-	expectedJsonHeaders = http.Header{
+func expectedJsonHeaders() http.Header {
+	return http.Header{
 		"Vary":         []string{"Accept-Encoding"},
 		"Content-Type": []string{"application/json; charset=UTF-8"},
 	}
+}
+
+const (
 	marshalIndentPrefix = ``
 	marshalIndentindent = `  `
 )

@@ -6,8 +6,8 @@ import (
 	"net/http"
 	"testing"
 
-	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/test"
-	versionmock "bitbucket.org/openbankingteam/conformance-suite/internal/pkg/version/mocks"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/test"
+	versionmock "bitbucket.org/openbankingteam/conformance-suite/pkg/version/mocks"
 	"github.com/pkg/errors"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
@@ -46,7 +46,7 @@ func TestVersionCheckUpdateAvailable(t *testing.T) {
 	assert.JSONEq(body.String(), expected)
 
 	assert.Equal(http.StatusOK, code)
-	assert.Equal(expectedJsonHeaders, headers)
+	assert.Equal(expectedJsonHeaders(), headers)
 }
 
 // TestVersionCheckNoUpdateAvailable provided a version that is greater than or equal to the available
@@ -69,7 +69,7 @@ func TestVersionCheckNoUpdateAvailable(t *testing.T) {
 	assert.JSONEq(body.String(), expected)
 
 	assert.Equal(http.StatusOK, code)
-	assert.Equal(expectedJsonHeaders, headers)
+	assert.Equal(expectedJsonHeaders(), headers)
 }
 
 func TestVersionUpstreamUnavailableReturnsServerError(t *testing.T) {
@@ -92,5 +92,5 @@ func TestVersionUpstreamUnavailableReturnsServerError(t *testing.T) {
 
 	assert.NotNil(body)
 	assert.Equal(http.StatusInternalServerError, code)
-	assert.Equal(expectedJsonHeaders, headers)
+	assert.Equal(expectedJsonHeaders(), headers)
 }

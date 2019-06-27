@@ -6,8 +6,8 @@ import (
 	"sort"
 	"testing"
 
-	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/test"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/test"
 	"github.com/go-openapi/spec"
 	"github.com/pkg/errors"
 )

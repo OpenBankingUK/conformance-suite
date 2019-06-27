@@ -3,9 +3,10 @@ package schema
 import (
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
+
 	"github.com/go-openapi/strfmt"
 	"github.com/go-openapi/validate"
-	"io/ioutil"
 )
 
 // bodyValidator implements a schema body validator
@@ -26,6 +27,10 @@ func (v bodyValidator) Validate(r Response) ([]Failure, error) {
 		return nil, err
 	}
 
+	return v.validate(r, body)
+}
+
+func (v bodyValidator) validate(r Response, body []byte) ([]Failure, error) {
 	var data interface{}
 	if err := json.Unmarshal(body, &data); err != nil {
 		message := fmt.Sprintf("could not unmarshal request body %s", err.Error())
@@ -52,7 +57,7 @@ func (v bodyValidator) Validate(r Response) ([]Failure, error) {
 
 // mapToFailures maps between swagger error and this package Failure object
 func mapToFailures(result *validate.Result) []Failure {
-	var failures []Failure
+	failures := []Failure{}
 	for _, err := range result.Errors {
 		failures = append(failures, newFailure(err.Error()))
 	}

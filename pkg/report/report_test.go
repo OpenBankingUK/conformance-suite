@@ -1,16 +1,17 @@
 package report
 
 import (
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/executors/events"
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/executors/results"
-	"github.com/stretchr/testify/assert"
 	"reflect"
 	"testing"
 	"time"
 
-	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/test"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/executors/events"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/executors/results"
+	"github.com/stretchr/testify/assert"
+
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/server/models"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/test"
 )
 
 func TestReport_Validate(t *testing.T) {
@@ -229,6 +230,26 @@ func stubExportResults() models.ExportResults {
 	}
 }
 
+func TestReport_GetFails_Fails_Zero(t *testing.T) {
+	require := test.NewRequire(t)
+
+	specs := stubResults(true, true, true)
+	expected := 0
+	actual := GetFails(specs)
+
+	require.Equal(expected, actual)
+}
+
+func TestReport_GetFails_Fails_Three(t *testing.T) {
+	require := test.NewRequire(t)
+
+	specs := stubResults(false, false, false)
+	expected := 3
+	actual := GetFails(specs)
+
+	require.Equal(expected, actual)
+}
+
 func TestNewReport(t *testing.T) {
 	t.Parallel()
 	// TODO: add test cases once functionality is read. Intentionally skipping test for now.
@@ -254,7 +275,7 @@ func TestNewReport(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := NewReport(tt.args.exportResults)
+			got, err := NewReport(tt.args.exportResults, "Testing")
 			if tt.err != nil {
 				assert.New(t).Equal(tt.err, err)
 			}
@@ -263,6 +284,52 @@ func TestNewReport(t *testing.T) {
 			}
 		})
 	}
+}
+
+func stubResults(pass1, pass2, pass3 bool) map[results.ResultKey][]results.TestCase {
+	specs := map[results.ResultKey][]results.TestCase{}
+
+	spec1 := results.ResultKey{
+		APIVersion: "APIVersion1",
+		APIName:    "APIName1",
+	}
+	specs[spec1] = []results.TestCase{
+		results.NewTestCaseResult("1.1", pass1, results.NoMetrics(), nil, "endpoint", "api-name", "api-version", "detailed description", "https://openbanking.org.uk/ref/uri"),
+		results.NewTestCaseResult("1.2", true, results.NoMetrics(), nil, "endpoint", "api-name", "api-version", "detailed description", "https://openbanking.org.uk/ref/uri"),
+		results.NewTestCaseResult("1.3", true, results.NoMetrics(), nil, "endpoint", "api-name", "api-version", "detailed description", "https://openbanking.org.uk/ref/uri"),
+	}
+
+	spec2 := results.ResultKey{
+		APIVersion: "APIVersion2",
+		APIName:    "APIName2",
+	}
+	specs[spec2] = []results.TestCase{
+		results.NewTestCaseResult("2.1", true, results.NoMetrics(), nil, "endpoint", "api-name", "api-version", "detailed description", "https://openbanking.org.uk/ref/uri"),
+		results.NewTestCaseResult("2.2", pass2, results.NoMetrics(), nil, "endpoint", "api-name", "api-version", "detailed description", "https://openbanking.org.uk/ref/uri"),
+		results.NewTestCaseResult("2.3", true, results.NoMetrics(), nil, "endpoint", "api-name", "api-version", "detailed description", "https://openbanking.org.uk/ref/uri"),
+	}
+
+	spec3 := results.ResultKey{
+		APIVersion: "APIVersion3",
+		APIName:    "APIName3",
+	}
+	specs[spec3] = []results.TestCase{
+		results.NewTestCaseResult("3.1", true, results.NoMetrics(), nil, "endpoint", "api-name", "api-version", "detailed description", "https://openbanking.org.uk/ref/uri"),
+		results.NewTestCaseResult("3.2", true, results.NoMetrics(), nil, "endpoint", "api-name", "api-version", "detailed description", "https://openbanking.org.uk/ref/uri"),
+		results.NewTestCaseResult("3.3", pass3, results.NoMetrics(), nil, "endpoint", "api-name", "api-version", "detailed description", "https://openbanking.org.uk/ref/uri"),
+	}
+
+	spec4 := results.ResultKey{
+		APIVersion: "APIVersion4",
+		APIName:    "APIName4",
+	}
+	specs[spec4] = []results.TestCase{
+		results.NewTestCaseResult("4.1", true, results.NoMetrics(), nil, "endpoint", "api-name", "api-version", "detailed description", "https://openbanking.org.uk/ref/uri"),
+		results.NewTestCaseResult("4.2", true, results.NoMetrics(), nil, "endpoint", "api-name", "api-version", "detailed description", "https://openbanking.org.uk/ref/uri"),
+		results.NewTestCaseResult("4.3", true, results.NoMetrics(), nil, "endpoint", "api-name", "api-version", "detailed description", "https://openbanking.org.uk/ref/uri"),
+	}
+
+	return specs
 }
 
 func stringToPointer(str string) *string {

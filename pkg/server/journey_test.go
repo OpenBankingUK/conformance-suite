@@ -4,12 +4,13 @@ import (
 	"fmt"
 	"testing"
 
-	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/test"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/authentication"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery/mocks"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/generation"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/server/models"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/test"
 
 	gmocks "bitbucket.org/openbankingteam/conformance-suite/pkg/generation"
 	"github.com/pkg/errors"
@@ -45,14 +46,14 @@ func TestJourneySetDiscoveryModelValidatesModel(t *testing.T) {
 
 	discoveryModel := &discovery.Model{}
 	validator := &mocks.Validator{}
-	validator.On("Validate", discoveryModel).Return(discovery.NoValidationFailures, nil)
+	validator.On("Validate", discoveryModel).Return(discovery.NoValidationFailures(), nil)
 	generator := &gmocks.MockGenerator{}
 	journey := NewJourney(nullLogger(), generator, validator)
 
 	failures, err := journey.SetDiscoveryModel(discoveryModel)
 
 	require.NoError(t, err)
-	assert.Equal(discovery.NoValidationFailures, failures)
+	assert.Equal(discovery.NoValidationFailures(), failures)
 	validator.AssertExpectations(t)
 	generator.AssertExpectations(t)
 }
@@ -70,7 +71,7 @@ func TestJourneySetDiscoveryModelHandlesErrorFromValidator(t *testing.T) {
 	failures, err := journey.SetDiscoveryModel(discoveryModel)
 
 	require.Error(t, err)
-	assert.Equal("error setting discovery model: validator error", err.Error())
+	assert.Equal("journey.SetDiscoveryModel: error setting discovery model: validator error", err.Error())
 	assert.Nil(failures)
 }
 
@@ -152,9 +153,11 @@ func TestJourneySetConfig(t *testing.T) {
 		redirectURL:           fmt.Sprintf("https://%s:8443/conformancesuite/callback", ListenHost),
 		resourceIDs:           resourceIDs,
 		apiVersion:            "v3.1",
+		instructedAmount: models.InstructedAmount{
+			Currency: "USD",
+			Value:    "0.1",
+		},
 	}
-	err = journey.SetConfig(config)
-	require.NoError(err)
-
+	require.NoError(journey.SetConfig(config))
 	require.Equal(config, journey.config)
 }

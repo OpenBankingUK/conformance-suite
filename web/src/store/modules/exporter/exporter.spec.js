@@ -40,6 +40,7 @@ describe('store/modules/exporter', () => {
     const store = createRealStore();
 
     expect(store.state).toStrictEqual({
+      environment: '',
       implementer: '',
       authorised_by: '',
       job_title: '',

@@ -1,15 +1,15 @@
 package report
 
 import (
-	internal_time "bitbucket.org/openbankingteam/conformance-suite/internal/pkg/time"
+	"time"
+
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/executors/results"
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/manifest"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/server/models"
+	internal_time "bitbucket.org/openbankingteam/conformance-suite/pkg/time"
 	validation "github.com/go-ozzo/ozzo-validation"
 	"github.com/go-ozzo/ozzo-validation/is"
 	"github.com/google/uuid"
-	"time"
 )
 
 const (
@@ -23,12 +23,12 @@ type Report struct {
 	ID               string             `json:"id"`                       // A unique and immutable identifier used to identify the report. The v4 UUIDs generated conform to RFC 4122.
 	Created          string             `json:"created"`                  // Date and time when the report was created, formatted accorrding to RFC3339 (https://tools.ietf.org/html/rfc3339). Note RFC3339 is derived from ISO 8601 (https://en.wikipedia.org/wiki/ISO_8601).
 	Expiration       *string            `json:"expiration,omitempty"`     // Date and time when the report should not longer be accepted, formatted accorrding to RFC3339 (https://tools.ietf.org/html/rfc3339). Note RFC3339 is derived from ISO 8601 (https://en.wikipedia.org/wiki/ISO_8601).
+	Fails            int                `json:"fails"`                    // Calculates *total* failures across the whole report, accumulated for each specification.
 	Version          string             `json:"version"`                  // The current version of the report model used.
 	Status           Status             `json:"status"`                   // A status describing overall condition of the report.
 	CertifiedBy      CertifiedBy        `json:"certifiedBy"`              // The certifier of the report.
 	SignatureChain   *[]SignatureChain  `json:"signatureChain,omitempty"` // When Add digital signature is set this contains the signature chain.
 	Discovery        discovery.Model    `json:"-"`                        // Original used discovery model
-	Manifests        []manifest.Scripts `json:"-"`                        // Manifests used during the tests
 	APISpecification []APISpecification `json:"apiSpecification"`         // API and version tested, along with test cases
 }
 
@@ -55,7 +55,7 @@ func (r Report) Validate() error {
 }
 
 // NewReport - create `Report` from `ExportResults`.
-func NewReport(exportResults models.ExportResults) (Report, error) {
+func NewReport(exportResults models.ExportResults, environment string) (Report, error) {
 	// Random (Version 4) UUID. NB: `uuid.New()` might panic hence we using this function instead.
 	uuid, err := uuid.NewRandom()
 	if err != nil {
@@ -65,20 +65,20 @@ func NewReport(exportResults models.ExportResults) (Report, error) {
 	created := time.Now().Format(internal_time.Layout)
 	expiration := time.Now().AddDate(0, 3, 0).Format(internal_time.Layout) // Expires three (3) months from now
 	certifiedBy := CertifiedBy{
-		Environment:  CertifiedByEnvironmentTesting, // Hardcode to "testing" for now
+		Environment:  certifiedByEnvironmentToID()[environment],
 		Brand:        exportResults.ExportRequest.Implementer,
 		AuthorisedBy: exportResults.ExportRequest.AuthorisedBy,
 		JobTitle:     exportResults.ExportRequest.JobTitle,
 	}
 	signatureChain := []SignatureChain{}
 
-	var apiSpecs []APISpecification
-
-	for k, v := range exportResults.Results {
+	fails := GetFails(exportResults.Results)
+	apiSpecs := []APISpecification{}
+	for k, results := range exportResults.Results {
 		apiSpec := APISpecification{
 			Name:    k.APIName,
 			Version: k.APIVersion,
-			Results: v,
+			Results: results,
 		}
 		apiSpecs = append(apiSpecs, apiSpec)
 	}
@@ -87,12 +87,32 @@ func NewReport(exportResults models.ExportResults) (Report, error) {
 		ID:               uuid.String(),
 		Created:          created,
 		Expiration:       &expiration,
+		Fails:            fails,
 		Version:          Version,
 		Status:           StatusComplete,
 		CertifiedBy:      certifiedBy,
 		SignatureChain:   &signatureChain,
 		Discovery:        exportResults.DiscoveryModel,
-		Manifests:        exportResults.Manifests,
 		APISpecification: apiSpecs,
 	}, nil
+}
+
+// GetFails - fails is the number of specification tests that failed, it is not the number of failed tests.
+func GetFails(specs map[results.ResultKey][]results.TestCase) int {
+	fails := 0
+	for _, results := range specs {
+		// Determine if a single test case failed.
+		failed := false
+		for _, result := range results {
+			if !result.Pass {
+				failed = true
+				break
+			}
+		}
+
+		if failed {
+			fails++
+		}
+	}
+	return fails
 }

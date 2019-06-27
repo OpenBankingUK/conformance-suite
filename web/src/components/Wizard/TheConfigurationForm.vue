@@ -281,6 +281,44 @@
             type="url"
           />
         </b-form-group>
+
+        <b-form-group
+          id="use_non_ob_directory_group"
+          label-for="use_non_ob_directory"
+          label="Use Non OB Directory">
+          <b-form-checkbox
+            id="use_non_ob_directory"
+            v-model="use_non_ob_directory"
+          />
+        </b-form-group>
+
+        <b-form-group
+          v-if="use_non_ob_directory"
+          id="signing_kid_group"
+          label-for="signing_kid"
+          label="Signing KID">
+          <b-form-input
+            id="signing_kid"
+            v-model="signing_kid"
+            :state="isNotEmpty(signing_kid)"
+            required
+            type="text"
+          />
+        </b-form-group>
+
+        <b-form-group
+          v-if="use_non_ob_directory"
+          id="signature_trust_anchor_group"
+          label-for="signature_trust_anchor"
+          label="Signature Trust Anchor">
+          <b-form-input
+            id="signature_trust_anchor"
+            v-model="signature_trust_anchor"
+            :state="isNotEmpty(signature_trust_anchor)"
+            required
+            type="text"
+          />
+        </b-form-group>
       </b-card>
       <br>
       <b-card bg-variant="light">
@@ -334,7 +372,7 @@
             id="instructed_amount_value_group"
             label-for="instructed_amount_value"
             label="Instructed Amount Value (Capped at 1.00)"
-            description="Value of the instructed amount.">
+            description="Value of the instructed amount (^\d{1,13}\.\d{1,5}$).">
             <b-form-input
               id="instructed_amount_value"
               v-model="instructed_amount.value"
@@ -346,7 +384,7 @@
             id="instructed_amount_currency_group"
             label-for="instructed_amount_currency"
             label="Instructed Amount Currency"
-            description="Instructed amount currency.">
+            description="Instructed amount currency (^[A-Z]{3,3}$).">
             <b-form-select
               id="instructed_amount_currency"
               v-model="instructed_amount.currency"
@@ -536,6 +574,30 @@ export default {
       },
       set(value) {
         this.$store.commit('config/SET_REDIRECT_URL', value);
+      },
+    },
+    use_non_ob_directory: {
+      get() {
+        return this.$store.state.config.configuration.use_non_ob_directory;
+      },
+      set(value) {
+        this.$store.commit('config/SET_USE_NON_OB_DIRECTORY', value);
+      },
+    },
+    signing_kid: {
+      get() {
+        return this.$store.state.config.configuration.signing_kid;
+      },
+      set(value) {
+        this.$store.commit('config/SET_SIGNING_KID', value);
+      },
+    },
+    signature_trust_anchor: {
+      get() {
+        return this.$store.state.config.configuration.signature_trust_anchor;
+      },
+      set(value) {
+        this.$store.commit('config/SET_SIGNATURE_TRUST_ANCHOR', value);
       },
     },
     creditor_account: {

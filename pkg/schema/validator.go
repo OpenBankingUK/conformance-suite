@@ -77,7 +77,7 @@ type validators struct {
 }
 
 func newValidator(doc *loads.Document) (Validator, error) {
-	finder := newFinder(doc)
+	f := newFinder(doc)
 
 	if doc.Version() != "2.0" {
 		return nil, errors.New("unsupported swagger version")
@@ -90,9 +90,9 @@ func newValidator(doc *loads.Document) (Validator, error) {
 	case "v3.1.0":
 		return validators{
 			validators: []Validator{
-				newContentTypeValidator(finder),
-				newStatusCodeValidator(finder),
-				newBodyValidator(finder),
+				newContentTypeValidator(f),
+				newStatusCodeValidator(f),
+				newBodyValidator(f),
 			},
 		}, nil
 	}
@@ -101,7 +101,7 @@ func newValidator(doc *loads.Document) (Validator, error) {
 }
 
 func (v validators) Validate(r Response) ([]Failure, error) {
-	var allFailures []Failure
+	allFailures := []Failure{}
 	for _, validator := range v.validators {
 		failures, err := validator.Validate(r)
 		if err != nil {

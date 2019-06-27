@@ -136,12 +136,6 @@ HJ2zHQe3vcccMRFHglcf1eo=
 )
 
 func TestExecutor_SetCertificates(t *testing.T) {
-	t.Run("NoTransportCertificate", func(t *testing.T) {
-		require := require.New(t)
-
-		_, err := resty.R().Get("https://modelobank2018.o3bank.co.uk:4501/open-banking/v3.1/aisp")
-		require.EqualError(err, `Get https://modelobank2018.o3bank.co.uk:4501/open-banking/v3.1/aisp: x509: certificate signed by unknown authority`)
-	})
 
 	t.Run("InvalidTransportCertificate", func(t *testing.T) {
 		require := require.New(t)

@@ -200,7 +200,7 @@ func findCondition(method, endpoint string, specification string) (Conditionalit
 // loadConditions - get Mandatory/Conditional/Optional data from json file
 func loadConditions() error {
 	var loader map[string][]conditionLoader
-	if err := json.Unmarshal(conditionalityStaticData, &loader); err != nil {
+	if err := json.Unmarshal(conditionalityStaticData(), &loader); err != nil {
 		return err
 	}
 

@@ -7,7 +7,7 @@ import (
 	"github.com/stretchr/testify/require"
 	"testing"
 
-	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/test"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/test"
 
 	"github.com/stretchr/testify/assert"
 )

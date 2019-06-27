@@ -51,7 +51,7 @@ func TestWrapperValidateReturnsNoValidationFailures(t *testing.T) {
 	failures, err := validator.Validate(&Model{})
 
 	require.NoError(t, err)
-	assert.Equal(t, NoValidationFailures, failures)
+	assert.Equal(t, NoValidationFailures(), failures)
 }
 
 func TestWrapperValidateHandlesErrors(t *testing.T) {
@@ -80,5 +80,5 @@ func TestValidationFailuresReturnsNotEmpty(t *testing.T) {
 }
 
 func TestValidationNoValidationFailuresReturnsEmpty(t *testing.T) {
-	assert.True(t, NoValidationFailures.Empty())
+	assert.True(t, NoValidationFailures().Empty())
 }

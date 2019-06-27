@@ -326,19 +326,34 @@ func (r *Rule) String() string {
 
 // replaceContextField
 func replaceContextField(source string, ctx *Context) (string, error) {
+	var ignoreErrors bool
+	phase, exist := ctx.Get("phase")
+	if !exist || phase == "generation" {
+		ignoreErrors = true
+	}
+
 	field, isReplacement := getReplacementField(source)
 	if !isReplacement {
 		return source, nil
 	}
 	if len(field) == 0 {
+		if ignoreErrors {
+			return source, nil
+		}
 		return source, errors.New("field not found in context " + field)
 	}
 	replacement, exist := ctx.Get(field)
 	if !exist {
+		if ignoreErrors {
+			return source, nil
+		}
 		return source, errors.New("replacement not found in context: " + source)
 	}
 	contextField, ok := replacement.(string)
 	if !ok {
+		if ignoreErrors {
+			return source, nil
+		}
 		return source, errors.New("replacement is not of type string: " + source)
 	}
 	result := strings.Replace(source, "$"+field, contextField, 1)

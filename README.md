@@ -17,24 +17,19 @@ To provide feedback, please use the public [issue tracker](https://bitbucket.org
 ## Release Notes 
 * * *
 
-### v1.1.7 (16th May 2019)
+### v1.1.13 (21st June 2019)
 
-Release **v1.1.7**, fixes UI bugs and makes currency and payment amount configurable in the UI.
+The release is called **v1.1.13**, it introduce fixes for incorrect test cases assertions.
 
-[Full Release Notes](docs/releases/v1.1.7.md) (v1.1.7.md)
+[Full Release Notes](docs/releases/v1.1.13.md) (v1.1.11.md)
 
-### v1.1.6 (9th May 2019)
-
-Release **v1.1.6** adds `private_key_jwt` as a client authentication method, addresses issues with Azure and TLS renegotiation and increases test coverage by fixing a known issue with the swagger validation. **(recommended)**
-
-[Full Release Notes](docs/releases/v1.1.6.md) (v1.1.6.md)
 
 ## Quickstart
 * * *
 
 Pull and run the latest (stable) tagged Docker image:
 
-    > docker run --rm -it -p 8443:8443 "openbanking/conformance-suite:v1.1.6"
+    > docker run --rm -it -p 8443:8443 "openbanking/conformance-suite:v1.1.13"
 
 [See Setup Guide](docs/setup-guide.md) 
 

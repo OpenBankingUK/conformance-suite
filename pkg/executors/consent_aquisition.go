@@ -2,7 +2,6 @@ package executors
 
 import (
 	"crypto/rsa"
-	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"strings"
@@ -25,7 +24,7 @@ var (
 	errTokenEndpointMethodUnsupported = errors.New("token_endpoint_auth_method unsupported")
 )
 
-var (
+const (
 	consentChannelTimeout = 30
 )
 
@@ -223,15 +222,14 @@ type ExchangeParameters struct {
 }
 
 // ExchangeCodeForAccessToken - runs a testcase to perform this operation
-func ExchangeCodeForAccessToken(tokenName, code, scope string, definition RunDefinition, ctx *model.Context) (accesstoken string, err error) {
+func ExchangeCodeForAccessToken(tokenName, code string, ctx *model.Context) (accesstoken string, err error) {
 	logger := logrus.StandardLogger().WithFields(logrus.Fields{
 		"module":    "ExchangeCodeForAccessToken",
 		"tokenName": tokenName,
 		"code":      code,
-		"scope":     scope,
 	})
 
-	grantToken, err := exchangeCodeForToken(code, scope, ctx, logger)
+	grantToken, err := exchangeCodeForToken(code, ctx, logger)
 	if err != nil {
 		logger.WithFields(logrus.Fields{
 			"err": err,
@@ -249,17 +247,12 @@ type grantToken struct {
 	IDToken     string `json:"id_token,omitempty"`
 }
 
-func exchangeCodeForToken(code string, scope string, ctx *model.Context, logger *logrus.Entry) (*grantToken, error) {
+func exchangeCodeForToken(code string, ctx *model.Context, logger *logrus.Entry) (*grantToken, error) {
 	logger = logger.WithFields(logrus.Fields{
 		"function": "exchangeCodeForToken",
 		"code":     code,
-		"scope":    scope,
 	})
 	ctx.DumpContext()
-
-	if scope == "" {
-		scope = "accounts" // lets default to a scope of accounts
-	}
 
 	basicAuth, err := ctx.GetString("basic_authentication")
 	if err != nil {
@@ -310,7 +303,6 @@ func exchangeCodeForToken(code string, scope string, ctx *model.Context, logger 
 			SetHeader("authorization", "Basic "+basicAuth).
 			SetFormData(map[string]string{
 				authentication.GrantType: authentication.GrantTypeAuthorizationCode,
-				"scope":                  scope, // accounts or payments currently
 				"code":                   code,
 				"redirect_uri":           redirectURI,
 			}).
@@ -321,7 +313,6 @@ func exchangeCodeForToken(code string, scope string, ctx *model.Context, logger 
 			SetHeader("accept", "*/*").
 			SetFormData(map[string]string{
 				authentication.GrantType: authentication.GrantTypeAuthorizationCode,
-				"scope":                  scope, // accounts or payments currently
 				"code":                   code,
 				"redirect_uri":           redirectURI,
 				"client_id":              clientID,
@@ -370,11 +361,9 @@ func exchangeCodeForToken(code string, scope string, ctx *model.Context, logger 
 
 		token := jwt.NewWithClaims(signingMethod, claims) // create new token
 
-		modulus := cert.PublicKey().N.Bytes()
-		modulusBase64 := base64.RawURLEncoding.EncodeToString(modulus)
-		kid, err := authentication.CalcKid(modulusBase64)
+		kid, err := model.GetKID(ctx, cert.PublicKey().N.Bytes())
 		if err != nil {
-			return nil, errors.Wrap(err, "could not calculate kid")
+			return nil, errors.Wrap(err, "executors.exchangeCodeForToken failed: unable to get KID")
 		}
 		token.Header["kid"] = kid
 
@@ -388,7 +377,6 @@ func exchangeCodeForToken(code string, scope string, ctx *model.Context, logger 
 			SetHeader("accept", "*/*").
 			SetFormData(map[string]string{
 				authentication.GrantType:           authentication.GrantTypeAuthorizationCode,
-				"scope":                            scope,
 				"code":                             code,
 				"redirect_uri":                     redirectURI,
 				authentication.ClientAssertionType: authentication.ClientAssertionTypeValue,

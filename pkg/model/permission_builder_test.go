@@ -20,7 +20,7 @@ func TestIncludedPermissionsFromEmptyContext(t *testing.T) {
 
 	codeSet := b.includedPermission(ctx, "/endpoint")
 
-	assert.Equal(t, permissions.NoCodeSet, codeSet)
+	assert.Equal(t, permissions.NoCodeSet(), codeSet)
 }
 
 func TestIncludedPermissionsFromContext(t *testing.T) {
@@ -39,7 +39,7 @@ func TestExcludePermissionsFromEmptyContext(t *testing.T) {
 
 	codeSet := b.excludedPermissions(ctx)
 
-	assert.Equal(t, permissions.NoCodeSet, codeSet)
+	assert.Equal(t, permissions.NoCodeSet(), codeSet)
 }
 
 func TestExcludePermissions(t *testing.T) {
@@ -60,7 +60,7 @@ func TestExcludePermissionsHandlesCastPanic(t *testing.T) {
 
 	codeSet := b.excludedPermissions(ctx)
 
-	assert.Equal(t, permissions.NoCodeSet, codeSet)
+	assert.Equal(t, permissions.NoCodeSet(), codeSet)
 }
 
 func TestIncludePermissionsFromDefault(t *testing.T) {

@@ -1,8 +1,8 @@
 package model
 
-var (
-	// Get /accounts example json response from ozone
-	conditionalityStaticData = []byte(
+// conditionalityStaticData - Get /accounts example json response from ozone
+func conditionalityStaticData() []byte {
+	return []byte(
 		`{
       "account-transaction-v3.1": [
         {
@@ -663,4 +663,4 @@ var (
 	  ]
     }
     `)
-)
+}

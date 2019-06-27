@@ -58,7 +58,7 @@ func (b permissionBuilder) includedPermission(ctx Context, endpoint string) perm
 
 	defaultPerms, err := b.standardPermissions.defaultForEndpoint(endpoint)
 	if err != nil {
-		return permissions.NoCodeSet
+		return permissions.NoCodeSet()
 	}
 	codes := []string{}
 	for _, code := range defaultPerms {
@@ -71,7 +71,7 @@ func (b permissionBuilder) includedPermission(ctx Context, endpoint string) perm
 func (b permissionBuilder) excludedPermissions(ctx Context) permissions.CodeSet {
 	values, err := ctx.GetStringSlice(permissionExcludedKey)
 	if err != nil {
-		return permissions.NoCodeSet
+		return permissions.NoCodeSet()
 	}
 	return mapStringToCodeSet(values)
 }

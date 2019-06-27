@@ -5,10 +5,10 @@ import (
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/schema"
 	"github.com/sirupsen/logrus"
 
-	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/names"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/manifest"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/names"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/permissions"
 )
 
@@ -84,7 +84,7 @@ func (g generator) GenerateManifestTests(log *logrus.Entry, config GeneratorConf
 	}
 
 	specTestCases := []SpecificationTestCases{}
-	var scrSlice []model.SpecConsentRequirements
+	scrSlice := []model.SpecConsentRequirements{}
 	var filteredScripts manifest.Scripts
 	tokens := map[string][]manifest.RequiredTokens{}
 

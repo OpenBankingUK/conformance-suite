@@ -3,8 +3,11 @@ package report
 import (
 	"archive/zip"
 	"encoding/json"
-	"fmt"
 	"io"
+	"io/ioutil"
+	"os"
+	"path/filepath"
+	"strings"
 
 	"github.com/pkg/errors"
 )
@@ -14,7 +17,6 @@ const (
 	marshalIndent       = "  "
 	reportFilename      = "report.json"
 	discoveryFilename   = "discovery.json"
-	manifestPrefix      = "manifest_"
 )
 
 // Exporter - allows the exporting of a `Report`.
@@ -58,42 +60,57 @@ func (e *zipExporter) Export() error {
 	if err != nil {
 		return errors.Wrapf(err, "zipExporter.Export: zip.Writer.Create failed, could not create file %q", reportFilename)
 	}
+
 	// Create report contents to zip
-	if _, err := reportFile.Write(reportJSON); err != nil {
+	n, err := reportFile.Write(reportJSON)
+	if err != nil {
 		return errors.Wrapf(err, "zipExporter.Export: zip.Writer.Write failed, could write to %q, reportJSON=%+v", reportFilename, string(reportJSON))
 	}
+	_ = n // silence linter
 
 	discoveryJSON, err := json.MarshalIndent(e.report.Discovery, marshalIndentPrefix, marshalIndent)
 	if err != nil {
 		return errors.Wrapf(err, "zipExporter.Export: json.MarshalIndent failed, report=%+v", e.report)
 	}
 
+	return e.create(zipWriter, reportJSON, discoveryJSON)
+}
+
+func (e *zipExporter) create(zipWriter *zip.Writer, reportJSON, discoveryJSON []byte) error {
 	// Create file within ZIP archive
 	discoveryFile, err := zipWriter.Create(discoveryFilename)
 	if err != nil {
 		return errors.Wrapf(err, "zipExporter.Export: zip.Writer.Create failed, could not create file %q", discoveryFilename)
 	}
+
 	// Create discovery contents to zip
 	if _, err := discoveryFile.Write(discoveryJSON); err != nil {
 		return errors.Wrapf(err, "zipExporter.Export: zip.Writer.Write failed, could write to %q, discoveryJSON=%+v", discoveryFilename, string(reportJSON))
 	}
 
-	for i, manifest := range e.report.Manifests {
-		manifestJSON, err := json.MarshalIndent(manifest, marshalIndentPrefix, marshalIndent)
-		if err != nil {
-			return errors.Wrapf(err, "zipExporter.Export: json.MarshalIndent failed, report=%+v", manifest)
-		}
-
-		mfFilename := fmt.Sprintf("%s%d.json", manifestPrefix, i)
+	for _, manifest := range e.report.Discovery.DiscoveryModel.DiscoveryItems {
+		_, filename := filepath.Split(manifest.APISpecification.Manifest)
 
 		// Create manifest file within ZIP archive
-		manifestFile, err := zipWriter.Create(mfFilename)
+		manifestFile, err := zipWriter.Create(filename)
 		if err != nil {
-			return errors.Wrapf(err, "zipExporter.Export: zip.Writer.Create failed, could not create file %q", mfFilename)
+			return errors.Wrapf(err, "zipExporter.Export: zip.Writer.Create failed, could not create file %q", filename)
 		}
+
+		path := strings.TrimPrefix(manifest.APISpecification.Manifest, "file://")
+		fileContents, err := ioutil.ReadFile(path)
+		if err != nil && os.IsNotExist(err) {
+			fileContents, err = ioutil.ReadFile("../../" + path)
+			if err != nil {
+				return errors.Wrapf(err, "zipExporter.Export: zip.Writer.Write failed, could open manifest file %s", filename)
+			}
+		} else if err != nil {
+			return errors.Wrapf(err, "zipExporter.Export: zip.Writer.Write failed, could open manifest file %s", filename)
+		}
+
 		// Create manifest contents to zip
-		if _, err := manifestFile.Write(manifestJSON); err != nil {
-			return errors.Wrapf(err, "zipExporter.Export: zip.Writer.Write failed, could write to %q, manifestJSON=%+v", mfFilename, string(manifestJSON))
+		if _, err := manifestFile.Write(fileContents); err != nil {
+			return errors.Wrapf(err, "zipExporter.Export: zip.Writer.Write failed, could write manifest file %s", filename)
 		}
 	}
 
