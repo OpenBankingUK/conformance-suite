@@ -330,10 +330,10 @@
             "asserts": [
                 "OB3GLOAssertContentType"
             ],
-	        "asserts_one_of": [
-	    	    "OB3GLOAssertOn400",
-		        "OB3GLOAssertOn403"
-	        ],
+            "asserts_one_of": [
+                "OB3GLOAssertOn400",
+                "OB3GLOAssertOn403"
+            ],
             "schemaCheck": false
         },
         {
