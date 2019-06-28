@@ -166,7 +166,7 @@ type Expect struct {
 	StatusCode       int  `json:"status-code,omitempty"`       // Http response code
 	SchemaValidation bool `json:"schema-validation,omitempty"` // Flag to indicate if we need schema validation -
 	// provides the ability to switch off schema validation
-	Matches    []Match         `json:"matches,omitempty"`    // An array of zero or more match items all of which must be 'passed' for the testcase to succeed
+	Matches    []Match         `json:"matches,omitempty"`    // An array of zero or more match items which must be 'passed' for the testcase to succeed
 	ContextPut ContextAccessor `json:"contextPut,omitempty"` // allows storing of test response fragments in context variables
 }
 
