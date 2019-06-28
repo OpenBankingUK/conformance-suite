@@ -235,7 +235,7 @@ func (t *TestCase) ApplyExpects(res *resty.Response, rulectx *Context) (bool, []
 	}
 
 	// Status code `-1` is specified in test cases if we want to ignore the HTTP status code.
-	if t.Expect.StatusCode != ignoreHTTPStatus && t.Expect.StatusCode > 0 && t.Expect.StatusCode != res.StatusCode() { // Status codes don't match
+	if t.Expect.StatusCode > 0 && t.Expect.StatusCode != res.StatusCode() {
 		return false, []error{t.AppErr(fmt.Sprintf("(%s):%s: HTTP Status code does not match: expected %d got %d", t.ID, t.Name, t.Expect.StatusCode, res.StatusCode()))}
 	}
 
@@ -253,7 +253,8 @@ func (t *TestCase) ApplyExpects(res *resty.Response, rulectx *Context) (bool, []
 	var failedMatches []error
 	for _, expect := range t.ExpectOneOf {
 
-		if expect.StatusCode != ignoreHTTPStatus && expect.StatusCode != res.StatusCode() {
+		// TODO: wip dedup logic
+		if expect.StatusCode > 0 && expect.StatusCode != res.StatusCode() {
 			failedMatches = append(failedMatches, t.AppErr(fmt.Sprintf("(%s):%s: HTTP Status code does not match: expected %d got %d", t.ID, t.Name, expect.StatusCode, res.StatusCode())))
 			continue
 		}
