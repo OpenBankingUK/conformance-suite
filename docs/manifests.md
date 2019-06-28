@@ -78,7 +78,6 @@ TABLE B - Structure of an assertion:
 | expect                | 1..1       | Container for test expectations                         | JSON             |             |
 | expect.status-code    | 0..1       | Expected HTTP status code                               | Integer          |             |
 | expect.matches        | 0..N       | Array of "MatchType" checks all of which must be met    | Array of JSON    | see example |
-| expect.matches_one_of | 0..N       | Array of "MatchType" checks one of which must be met    | Array of JSON    | see example |
 | expect.custom         | 0..N       | Reference to an implementation of a custom expectation. Can be defined multiple times.                          | String           |             |
 
 
