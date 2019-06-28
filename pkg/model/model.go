@@ -237,17 +237,17 @@ func (t *TestCase) ApplyExpects(res *resty.Response, rulectx *Context) (bool, []
 	if !ok {
 		return ok, []error{err}
 	}
-	var failedMatches []error
+	failedExpects := make([]error, 0, len(t.ExpectOneOf))
 	for _, expect := range t.ExpectOneOf {
 		ok, err := t.validateExpect(expect, res)
 		if !ok {
-			failedMatches = append(failedMatches, err)
+			failedExpects = append(failedExpects, err)
 			continue
 		}
 	}
 	// t.ExpectOneOf can be zero
-	if len(t.ExpectOneOf) > 0 && len(failedMatches) == len(t.ExpectOneOf) {
-		return false, failedMatches
+	if len(t.ExpectOneOf) > 0 && len(failedExpects) == len(t.ExpectOneOf) {
+		return false, failedExpects
 	}
 	if err := t.Expect.ContextPut.PutValues(t, rulectx); err != nil {
 		return false, []error{t.AppErr("ApplyExpects Returns FALSE " + err.Error())}
