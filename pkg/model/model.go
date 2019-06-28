@@ -233,52 +233,45 @@ func (t *TestCase) ApplyExpects(res *resty.Response, rulectx *Context) (bool, []
 	if res == nil { // if we've not got a response object to check, always return false
 		return false, []error{t.AppErr("nil http.Response - cannot process ApplyExpects")}
 	}
-
-	// Status code `-1` is specified in test cases if we want to ignore the HTTP status code.
-	if t.Expect.StatusCode > 0 && t.Expect.StatusCode != res.StatusCode() {
-		return false, []error{t.AppErr(fmt.Sprintf("(%s):%s: HTTP Status code does not match: expected %d got %d", t.ID, t.Name, t.Expect.StatusCode, res.StatusCode()))}
+	ok, err := t.validateExpect(t.Expect, res)
+	if !ok {
+		return ok, []error{err}
 	}
-
-	t.AppMsg(fmt.Sprintf("Status check isReplacement: expected [%d] got [%d]", t.Expect.StatusCode, res.StatusCode()))
-	for k, match := range t.Expect.Matches {
-		checkResult, got := match.Check(t)
-		if !checkResult {
-			return false, []error{t.AppErr(fmt.Sprintf("ApplyExpects Returns False on match %s : %s", match.String(), got.Error()))}
-		}
-
-		t.Expect.Matches[k].Result = match.Result
-		t.AppMsg(fmt.Sprintf("Checked Match: %s: result: %s", match.Description, t.Expect.Matches[k].Result))
-	}
-
 	var failedMatches []error
 	for _, expect := range t.ExpectOneOf {
-
-		// TODO: wip dedup logic
-		if expect.StatusCode > 0 && expect.StatusCode != res.StatusCode() {
-			failedMatches = append(failedMatches, t.AppErr(fmt.Sprintf("(%s):%s: HTTP Status code does not match: expected %d got %d", t.ID, t.Name, expect.StatusCode, res.StatusCode())))
+		ok, err := t.validateExpect(expect, res)
+		if !ok {
+			failedMatches = append(failedMatches, err)
 			continue
 		}
-
-		t.AppMsg(fmt.Sprintf("Status check isReplacement: expected [%d] got [%d]", expect.StatusCode, res.StatusCode()))
-		for k, match := range expect.Matches {
-			checkResult, got := match.Check(t)
-			if !checkResult {
-				failedMatches = append(failedMatches, t.AppErr(fmt.Sprintf("ApplyExpects Returns False on match %s : %s", match.String(), got.Error())))
-				continue
-			}
-
-			expect.Matches[k].Result = match.Result
-			t.AppMsg(fmt.Sprintf("Checked Match: %s: result: %s", match.Description, expect.Matches[k].Result))
-		}
 	}
-
-	if len(failedMatches) > 0 && len(failedMatches) == len(t.ExpectOneOf) {
+	// t.ExpectOneOf can be zero
+	if len(t.ExpectOneOf) > 0 && len(failedMatches) == len(t.ExpectOneOf) {
 		return false, failedMatches
 	}
-
 	if err := t.Expect.ContextPut.PutValues(t, rulectx); err != nil {
 		return false, []error{t.AppErr("ApplyExpects Returns FALSE " + err.Error())}
 	}
+	return true, nil
+}
+
+func (t *TestCase) validateExpect(expect Expect, res *resty.Response) (bool, error) {
+	// Status code `-1` is specified in test cases if we want to ignore the HTTP status code.
+	if expect.StatusCode > 0 && expect.StatusCode != res.StatusCode() {
+		return false, t.AppErr(fmt.Sprintf("(%s):%s: HTTP Status code does not match: expected %d got %d", t.ID, t.Name, expect.StatusCode, res.StatusCode()))
+	}
+
+	t.AppMsg(fmt.Sprintf("Status check isReplacement: expected [%d] got [%d]", expect.StatusCode, res.StatusCode()))
+	for k, match := range expect.Matches {
+		checkResult, got := match.Check(t)
+		if !checkResult {
+			return false, t.AppErr(fmt.Sprintf("ApplyExpects Returns False on match %s : %s", match.String(), got.Error()))
+		}
+
+		expect.Matches[k].Result = match.Result
+		t.AppMsg(fmt.Sprintf("Checked Match: %s: result: %s", match.Description, expect.Matches[k].Result))
+	}
+
 	return true, nil
 }
 
