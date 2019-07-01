@@ -93,12 +93,12 @@ var (
         },
         "context": {
 			"baseurl":"http://myaspsp"
-		},
+	},
         "expect": {
             "status-code": 200,
             "schema-validation": true
         }
-    }
+        }
 	`)
 
 	expectOneOfTestCase = []byte(`
@@ -115,18 +115,18 @@ var (
         "expect": {
             "status-code": 0,
             "schema-validation": true
-		},
-		"expect_one_of": [
-			{
-				"status-code": 400,
-				"schema-validation": true
-			},
-			{
-				"status-code": 200,
-				"schema-validation": true
-			}	
-		]
-    }
+	},
+	"expect_one_of": [
+	    {
+	        "status-code": 400,
+	        "schema-validation": true
+	    },
+	    {
+		"status-code": 200,
+		"schema-validation": true
+	    }	
+	]
+        }
 	`)
 
 	jsonTestCase = []byte(`
