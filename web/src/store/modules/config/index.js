@@ -28,6 +28,7 @@ export const mutationTypes = {
   SET_AUTHORIZATION_ENDPOINT: 'SET_AUTHORIZATION_ENDPOINT',
   SET_RESOURCE_BASE_URL: 'SET_RESOURCE_BASE_URL',
   SET_X_FAPI_FINANCIAL_ID: 'SET_X_FAPI_FINANCIAL_ID',
+  SET_X_FAPI_CUSTOMER_IP_ADDRESS: 'SET_X_FAPI_CUSTOMER_IP_ADDRESS',
   SET_ISSUER: 'SET_ISSUER',
   SET_REDIRECT_URL: 'SET_REDIRECT_URL',
   SET_USE_NON_OB_DIRECTORY: 'SET_USE_NON_OB_DIRECTORY',
@@ -120,6 +121,9 @@ export const mutations = {
   },
   [mutationTypes.SET_X_FAPI_FINANCIAL_ID](state, value) {
     state.configuration.x_fapi_financial_id = value;
+  },
+  [mutationTypes.SET_X_FAPI_CUSTOMER_IP_ADDRESS](state, value) {
+    state.configuration.x_fapi_customer_ip_address = value;
   },
   [mutationTypes.SET_ISSUER](state, value) {
     state.configuration.issuer = value;
@@ -261,6 +265,7 @@ export const state = {
     authorization_endpoint: '',
     resource_base_url: '',
     x_fapi_financial_id: '',
+    x_fapi_customer_ip_address: '',
     issuer: '',
     redirect_url: 'https://127.0.0.1:8443/conformancesuite/callback',
     use_non_ob_directory: false,
