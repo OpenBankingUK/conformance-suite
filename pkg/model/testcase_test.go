@@ -215,7 +215,7 @@ func TestMockedTestCase(t *testing.T) {
 
 func TestMockedTestCaseExpectOneOfSucceeds(t *testing.T) {
 	var testcase TestCase // get the testcase
-	err := json.Unmarshal(basicTestCase, &testcase)
+	err := json.Unmarshal(expectOneOfTestCase, &testcase)
 	assert.NoError(t, err)
 
 	req, err := testcase.Prepare(&Context{})
@@ -232,17 +232,17 @@ func TestMockedTestCaseExpectOneOfSucceeds(t *testing.T) {
 
 func TestMockedTestCaseExpectOneOfFails(t *testing.T) {
 	var testcase TestCase // get the testcase
-	err := json.Unmarshal(basicTestCase, &testcase)
+	err := json.Unmarshal(expectOneOfTestCase, &testcase)
 	assert.NoError(t, err)
 
 	req, err := testcase.Prepare(&Context{})
 	assert.Nil(t, err)
 	assert.NotNil(t, req)
 
-	res := test.CreateHTTPResponse(201, "OK", string(getAccountResponse))
+	res := test.CreateHTTPResponse(404, "OK", string(getAccountResponse))
 	result, errs := testcase.ApplyExpects(res, nil)
 	assert.NotNil(t, errs)
-	assert.Equal(t, res.StatusCode(), 201)
+	assert.Equal(t, res.StatusCode(), 404)
 	assert.Nil(t, err)
 	assert.Equal(t, result, false)
 }
