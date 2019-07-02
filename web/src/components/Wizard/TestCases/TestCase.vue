@@ -144,7 +144,6 @@ export default {
           label: 'Endpoint',
         },
         'expect.status-code': {
-          tdClass: 'table-data-breakable',
           sortable: true,
           label: 'Expect',
           formatter(value, key, item) {
