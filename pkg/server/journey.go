@@ -402,6 +402,7 @@ type JourneyConfig struct {
 	authorizationEndpoint         string
 	resourceBaseURL               string
 	xXFAPIFinancialID             string
+	xXFAPICustomerIPAddress		  string
 	issuer                        string
 	redirectURL                   string
 	resourceIDs                   model.ResourceIDs

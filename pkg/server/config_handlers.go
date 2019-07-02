@@ -58,6 +58,7 @@ type GlobalConfiguration struct {
 	AuthorizationEndpoint         string                  `json:"authorization_endpoint" validate:"valid_url"`
 	ResourceBaseURL               string                  `json:"resource_base_url" validate:"valid_url"`
 	XFAPIFinancialID              string                  `json:"x_fapi_financial_id" validate:"not_empty"`
+	XFAPICustomerIPAddress		  string				  `json:"x_fapi_customer_ip_address,omitempty"`
 	Issuer                        string                  `json:"issuer" validate:"valid_url"`
 	RedirectURL                   string                  `json:"redirect_url" validate:"valid_url"`
 	ResourceIDs                   model.ResourceIDs       `json:"resource_ids" validate:"not_empty"`
@@ -144,6 +145,7 @@ func MakeJourneyConfig(config *GlobalConfiguration) (JourneyConfig, error) {
 		authorizationEndpoint:         config.AuthorizationEndpoint,
 		resourceBaseURL:               config.ResourceBaseURL,
 		xXFAPIFinancialID:             config.XFAPIFinancialID,
+		xXFAPICustomerIPAddress:	   config.XFAPICustomerIPAddress,
 		issuer:                        config.Issuer,
 		redirectURL:                   config.RedirectURL,
 		resourceIDs:                   config.ResourceIDs,
