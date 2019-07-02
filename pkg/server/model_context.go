@@ -12,7 +12,7 @@ const (
 	CtxResponseType                 = "responseType"
 	CtxConstTokenEndpointAuthMethod = "token_endpoint_auth_method"
 	CtxConstFapiFinancialID         = "x-fapi-financial-id"
-	CtxConstFapiCustomerIPAddress	= "x-fapi-customer-ip-address"
+	CtxConstFapiCustomerIPAddress   = "x-fapi-customer-ip-address"
 	CtxConstRedirectURL             = "redirect_url"
 	CtxConstAuthorisationEndpoint   = "authorisation_endpoint"
 	CtxConstBasicAuthentication     = "basic_authentication"
