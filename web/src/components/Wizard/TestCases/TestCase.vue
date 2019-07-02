@@ -147,6 +147,17 @@ export default {
           tdClass: 'table-data-breakable',
           sortable: true,
           label: 'Expect',
+          formatter(value, key, item) {
+            if (item.expect['status-code'] > 0) {
+              return item.expect['status-code'];
+            }
+
+            return item
+              .expect_one_of
+              .map(expect => expect['status-code'])
+              .filter(statusCode => statusCode > 0)
+              .join(' or ');
+          },
         },
         'meta.status': {
           label: 'Status',
