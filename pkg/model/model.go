@@ -245,7 +245,10 @@ func (t *TestCase) ApplyExpects(res *resty.Response, rulectx *Context) (bool, []
 			continue
 		}
 	}
-	// t.ExpectOneOf can be zero
+	// t.ExpectOneOf represents an optional list of []Expect one of which must be met
+	// since the usage of t.ExpectOneOf is optional, t.ExpectOneOf can be empty
+	// in this case the validation is skipped.
+	// When t.ExpectOneOf is not empty, at least one of the Expect must be successful
 	if len(t.ExpectOneOf) > 0 && len(failedExpects) == len(t.ExpectOneOf) {
 		return false, failedExpects
 	}
