@@ -225,6 +225,7 @@ func testCaseBuilder(s Script, refs map[string]Reference, ctx *model.Context, co
 	// TODO: use automated interaction-id generation - one id per run - injected into context at journey
 	tc.Input.Headers["x-fapi-interaction-id"] = "c4405450-febe-11e8-80a5-0fcebb157400"
 	tc.Input.Headers["x-fcs-testcase-id"] = tc.ID
+	tc.Input.Headers["x-fapi-customer-ip-address"] = "$x-fapi-customer-ip-address"
 	buildInputSection(s, &tc.Input)
 
 	tc.Purpose = s.Detail

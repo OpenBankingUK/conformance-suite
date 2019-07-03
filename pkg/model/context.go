@@ -36,6 +36,21 @@ func (c Context) GetString(key string) (string, error) {
 	return valueStr, nil
 }
 
+// GetBool get the bool value associated with key
+func (c Context) GetBool(key string) (bool, error) {
+	value, exist := c[key]
+	if !exist {
+		return false, ErrNotFound
+	}
+
+	valueBool, ok := value.(bool)
+	if !ok {
+		return false, errors.New("error casting key to bool")
+	}
+
+	return valueBool, nil
+}
+
 // PutContext - puts another context into this one
 func (c Context) PutContext(ctx *Context) {
 	for k, v := range *ctx {

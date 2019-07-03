@@ -403,6 +403,12 @@ func (t *TestCase) ProcessReplacementFields(ctx *Context, showReplacementErrors 
 	t.processReplacementHeaders(ctx, logger, showReplacementErrors)
 	t.processReplacementClaims(ctx)
 
+	// If customer ip not to be sent, remove it from headers
+	sendIP, err := ctx.GetBool("send-x-fapi-customer-ip-address")
+	if err == nil && !sendIP {
+		delete(t.Input.Headers, "x-fapi-customer-ip-address")
+	}
+
 	for k := range t.Context {
 		param, ok := t.Context[k].(string)
 		if !ok {
