@@ -25,7 +25,8 @@ TABLE A:
 | detail            | 0..1       | Long description describing the and expected result     | String (max 256) |             |
 | parameters        | 1..1       | Maps context                                            | json             | see example |
 | uri               | 1..1       | A resource to test.                                     | String           |             |
-| asserts           | 1..1       | List of linked asserts.                                 | List             |             |
+| asserts           | 1..1       | List of linked asserts all of which must be true.       | List             |             |
+| asserts_one_of    | 0..1       | List of linked asserts one of which must be true.       | List             |             |
 | uriImplementation | 1..1       |                                                         |                  |             |
 | resource          | 1..1       |                                                         |                  |             |
 | keepContext       | 1..1       |                                                         |                  |             |
