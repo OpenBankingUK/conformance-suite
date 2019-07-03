@@ -125,9 +125,10 @@ func (t *TestCase) Validate(resp *resty.Response, rulectx *Context) (bool, []err
 				buf := new(bytes.Buffer)
 				_, err := buf.ReadFrom(resp.RawResponse.Body)
 				if err != nil {
-					return false, []error{t.AppErr("Validate: " + err.Error())}
+					logrus.WithField("testcase", t.String()).Debug("Validate: " + err.Error())
+				} else {
+					t.Body = buf.String()
 				}
-				t.Body = buf.String()
 			}
 		}
 	}
