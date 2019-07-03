@@ -115,3 +115,17 @@ func (c *Context) DumpContext(text ...string) {
 		}
 	}
 }
+
+// IsSet returns true if the key exists and is not set to zero value (nil or empty string)
+func (c *Context) IsSet(key string) bool {
+	val, exists := c.Get(key)
+	if !exists {
+		return false
+	} else if val, ok := val.(string); ok && val == "" {
+		return false
+	}
+	if val == nil {
+		return false
+	}
+	return true
+}
