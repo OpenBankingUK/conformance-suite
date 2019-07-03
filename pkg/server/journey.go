@@ -462,7 +462,7 @@ func (wj *journey) SetConfig(config JourneyConfig) error {
 	defer wj.journeyLock.Unlock()
 
 	wj.config = config
-	wj.config.useDynamicResourceID = true //TODO: Remove - development purposes only
+	//wj.config.useDynamicResourceID = true //TODO: Remove - development purposes only
 	err := PutParametersToJourneyContext(wj.config, wj.context)
 	if err != nil {
 		return err
