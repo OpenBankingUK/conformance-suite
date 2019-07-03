@@ -15,7 +15,7 @@
     "OB3GLOAssertOn400": {
       "expect": {
         "status-code": 400,
-        "detail": "Expected status code 400 (Bad Request)."
+        "detail": "Expected status code 400 (Bad Request). When a TPP tries to request a resource URL with a resource Id that does not exist, the ASPSP must respond with a 400 (Bad Request) rather than a 404 (Not Found)."
       }
     },
     "OB3GLOAssertOn401": {
@@ -33,7 +33,7 @@
     "OB3GLOAssertOn404": {
       "expect": {
         "status-code": 404,
-        "detail": "Expected status code 404 (Not Found)."
+        "detail": "Expected status code 404 (Not Found). If an ASPSP has not implemented an API endpoint, it must respond with a 404 (Not Found) for requests to that URL."
       }
     },
     "OB3GLOFAPIHeader": {
