@@ -402,7 +402,7 @@ type JourneyConfig struct {
 	authorizationEndpoint         string
 	resourceBaseURL               string
 	xXFAPIFinancialID             string
-	sendXFAPICustomerIPAddress	  bool
+	sendXFAPICustomerIPAddress    bool
 	xXFAPICustomerIPAddress       string
 	issuer                        string
 	redirectURL                   string
