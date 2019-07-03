@@ -426,9 +426,9 @@ func (t *TestCase) ProcessReplacementFields(ctx *Context, showReplacementErrors 
 	t.processReplacementHeaders(ctx, logger, showReplacementErrors)
 	t.processReplacementClaims(ctx)
 
-	// If customer ip not to be sent, remove it from headers
-	sendIP, err := ctx.GetBool("send-x-fapi-customer-ip-address")
-	if err == nil && !sendIP {
+	// If customer ip value is not set, remove it from headers
+	customerIP, err := ctx.GetString("x-fapi-customer-ip-address")
+	if err == nil && customerIP == "" {
 		delete(t.Input.Headers, "x-fapi-customer-ip-address")
 	}
 
