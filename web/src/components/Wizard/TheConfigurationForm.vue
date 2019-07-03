@@ -573,13 +573,13 @@ export default {
         this.$store.commit('config/SET_X_FAPI_FINANCIAL_ID', value);
       },
     },
-    x_fapi_customer_ip_address:{
+    x_fapi_customer_ip_address: {
       get() {
         return this.$store.state.config.configuration.x_fapi_customer_ip_address;
       },
       set(value) {
         this.$store.commit('config/SET_X_FAPI_CUSTOMER_IP_ADDRESS', value);
-      }
+      },
     },
     issuer: {
       get() {
