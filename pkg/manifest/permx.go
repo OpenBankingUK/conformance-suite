@@ -29,6 +29,8 @@ type RequiredTokens struct {
 	ConsentID       string
 	ConsentParam    string
 	ConsentProvider string
+	AccountID       string
+	StatementID     string
 }
 
 // TokenStore eats tokens
@@ -182,7 +184,7 @@ func getRequiredTokens(tcps []TestCasePermission) ([]RequiredTokens, error) {
 func MapTokensToTestCases(rt []RequiredTokens, tcs []model.TestCase) map[string]string {
 	ctxLogger := logrus.StandardLogger().WithFields(logrus.Fields{
 		"function": "MapTokensToTestCases",
-		"rt":       fmt.Sprintf("%#v", rt),
+		//"rt":       fmt.Sprintf("%#v", rt),
 	})
 
 	tokenMap := map[string]string{}

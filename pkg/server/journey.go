@@ -300,6 +300,16 @@ func (wj *journey) CollectToken(code, state, scope string) error {
 		wj.context.PutString("access_token", accessToken) // tmp measure to get testcases running
 	}
 
+	accountPermissions := wj.permissions["accounts"]
+
+	if wj.config.useDynamicResourceID {
+		executors.GetDynamicResourceIds(state, accessToken, &wj.context, accountPermissions)
+	}
+
+	for _, v := range wj.permissions["accounts"] {
+		logger.Tracef("journey perms: %#v", v)
+	}
+
 	return wj.collector.Collect(state, accessToken)
 }
 
@@ -331,6 +341,33 @@ func (wj *journey) RunTests() error {
 	}
 
 	requiredTokens := wj.permissions
+
+	if wj.config.useDynamicResourceID {
+		for _, accountPermissions := range wj.permissions["accounts"] {
+			// cycle over all test case ids for this account permission/token set
+			for _, tcID := range accountPermissions.IDs {
+				for i := range wj.testCasesRun.TestCases {
+					specType := wj.testCasesRun.TestCases[i].Specification.SpecType
+					// isolate all testcases to be run that are from and 'account' spec type
+					if specType == "accounts" {
+						tc := wj.testCasesRun.TestCases[i].TestCases
+						// look for test cases matching the permission set test case list
+						for j, test := range tc {
+							if test.ID == tcID {
+								resourceCtx := model.Context{}
+								resourceCtx.PutString(CtxConsentedAccountID, accountPermissions.AccountID)
+								resourceCtx.PutString(CtxStatementID, accountPermissions.StatementID)
+								// perform the dynamic resource id replacement
+								test.ProcessReplacementFields(&resourceCtx, false)
+								wj.testCasesRun.TestCases[i].TestCases[j] = test
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
 	for k := range wj.testCasesRun.TestCases {
 		specType := wj.testCasesRun.TestCases[k].Specification.SpecType
 		manifest.MapTokensToTestCases(requiredTokens[specType], wj.testCasesRun.TestCases[k].TestCases)
@@ -417,6 +454,7 @@ type JourneyConfig struct {
 	useNonOBDirectory             bool
 	signingKid                    string
 	signatureTrustAnchor          string
+	useDynamicResourceID          bool
 }
 
 func (wj *journey) SetConfig(config JourneyConfig) error {
@@ -424,6 +462,7 @@ func (wj *journey) SetConfig(config JourneyConfig) error {
 	defer wj.journeyLock.Unlock()
 
 	wj.config = config
+	wj.config.useDynamicResourceID = true //TODO: Remove - development purposes only
 	err := PutParametersToJourneyContext(wj.config, wj.context)
 	if err != nil {
 		return err
