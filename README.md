@@ -17,12 +17,11 @@ To provide feedback, please use the public [issue tracker](https://bitbucket.org
 ## Release Notes 
 * * *
 
-### v1.1.13 (21st June 2019)
+# Release v1.1.14 (3rd July 2019)
 
-The release is called **v1.1.13**, it introduce fixes for incorrect test cases assertions.
+The release is called **v1.1.14**, adds logic for assert 'OR' on foobar allowing 400 'OR' 403 status codes in assertions.
 
-[Full Release Notes](docs/releases/v1.1.13.md) (v1.1.11.md)
-
+[Full Release Notes](docs/releases/v1.1.14.md) (v1.1.14.md)
 
 ## Quickstart
 * * *
