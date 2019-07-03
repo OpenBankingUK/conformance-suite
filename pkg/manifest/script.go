@@ -512,7 +512,7 @@ func dumpJSON(i interface{}) {
 	fmt.Println(string(model))
 }
 
-var subPathx = "[a-zA-Z0-9_{}-]+" // url s	ub path regex
+var subPathx = "[a-zA-Z0-9_{}-]+" // url sub path regex
 
 type PathRegex struct {
 	Regex  string
