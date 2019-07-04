@@ -26,6 +26,8 @@ var (
 	errTestCasesGenerated          = errors.New("error test cases already generated")
 	errNotFinishedCollectingTokens = errors.New("error not finished collecting tokens")
 	errConsentIDAcquisitionFailed  = errors.New("ConsentId acquistion failed")
+
+	dynamicResourceIDs = false
 )
 
 // Journey represents all possible steps for a user test conformance journey
@@ -366,6 +368,9 @@ func (wj *journey) RunTests() error {
 				}
 			}
 		}
+		// put a default accountid and statement id in the journey context for those tests that haven't got a token that can call /accounts
+		wj.context.PutString(CtxConsentedAccountID, wj.config.resourceIDs.AccountIDs[0].AccountID)
+		wj.context.PutString(CtxStatementID, wj.config.resourceIDs.StatementIDs[0].StatementID)
 	}
 
 	for k := range wj.testCasesRun.TestCases {
@@ -462,7 +467,7 @@ func (wj *journey) SetConfig(config JourneyConfig) error {
 	defer wj.journeyLock.Unlock()
 
 	wj.config = config
-	//wj.config.useDynamicResourceID = true //TODO: Remove - development purposes only
+	wj.config.useDynamicResourceID = dynamicResourceIDs // fed from environment variable 'dynres'=true/false
 	err := PutParametersToJourneyContext(wj.config, wj.context)
 	if err != nil {
 		return err
@@ -525,4 +530,9 @@ func (wj *journey) dumpJSON(i interface{}) {
 	var model []byte
 	model, _ = json.MarshalIndent(i, "", "    ")
 	wj.log.Traceln(string(model))
+}
+
+// EnableDynamicResourceIDs is triggered by and environment variable dynids=true
+func EnableDynamicResourceIDs() {
+	dynamicResourceIDs = true
 }
