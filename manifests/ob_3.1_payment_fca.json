@@ -226,7 +226,9 @@
         "tokenRequestScope": "payments",
         "instructedAmountValue": "$instructedAmountValue",
         "instructedAmountCurrency": "$instructedAmountCurrency",
+        "instructionIdentification": "OB-301-DOP-100800",
         "postData": "$minimalScheduledDomesticPaymentConsent",
+        "e2eIdentification": "OB-301-DOP-100800-FRESCO.21302.GFX.20",
         "requestConsent": "true"
       },
       "body": "$postData",
@@ -275,6 +277,8 @@
         "consentId": "$OB-301-DOP-100800-ConsentId",
         "instructedAmountValue": "$instructedAmountValue",
         "instructedAmountCurrency": "$instructedAmountCurrency",
+        "instructionIdentification": "OB-301-DOP-101000",
+        "e2eIdentification": "OB-301-DOP-101000-FRESCO.21302.GFX.20",
         "postData": "$minimalScheduledDomesticPaymentConsent"
       },
       "headers": {

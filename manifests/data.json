@@ -47,8 +47,8 @@
           "Permission": "Create",
           "Initiation": {
             "RequestedExecutionDateTime": "2020-10-01T00:00:00+00:00",
-            "InstructionIdentification": "ACME412",
-            "EndToEndIdentification": "FRESCO.21302.GFX.20",
+            "InstructionIdentification": "$instructionIdentification",
+            "EndToEndIdentification": "$e2eIdentification",
             "InstructedAmount": {
               "Amount": "$instructedAmountValue",
               "Currency": "$instructedAmountCurrency"
