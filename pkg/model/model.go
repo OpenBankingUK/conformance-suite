@@ -1,7 +1,6 @@
 package model
 
 import (
-	"bytes"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -116,20 +115,8 @@ func (t *TestCase) Validate(resp *resty.Response, rulectx *Context) (bool, []err
 		return false, []error{t.AppErr("error Valdate:rulectx == nil")}
 	}
 	t.Body = resp.String()
-	if len(t.Body) == 0 { // The response body can only be read once from the raw response
-		// so we cache it in the testcase
-		// Check that there is a value body in the raw response of the resty response object
-		// Also - if the response is a redirect (302/StatusFound) then we continue as we'll have no body.
-		if resp != nil && resp.StatusCode() != http.StatusFound {
-			if resp.RawResponse != nil && resp.RawResponse.Body != nil {
-				buf := new(bytes.Buffer)
-				_, err := buf.ReadFrom(resp.RawResponse.Body)
-				if err != nil {
-					return false, []error{t.AppErr("Validate: " + err.Error())}
-				}
-				t.Body = buf.String()
-			}
-		}
+	if len(t.Body) == 0 {
+		logrus.WithField("testcase", t.String()).Debug("Validate: resty.body is empty")
 	}
 	t.Header = resp.Header()
 	pass, errs := t.ApplyExpects(resp, rulectx)
