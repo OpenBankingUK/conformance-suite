@@ -84,13 +84,3 @@ func getAccountIDFromJSONResponse(body string, logger *logrus.Entry) (string, er
 	logger.Infof("DynamicResource account number: %s", accountString)
 	return accountString, nil
 }
-
-func getStatementIDFromJSONResponse(body string, logger *logrus.Entry) (string, error) {
-	statementid := gjson.Get(body, "Data.Statement.0.StatementId")
-	statementString := statementid.String()
-	if len(statementString) == 0 {
-		return "", errors.New("DynamicResourceId, zero length statement id")
-	}
-	logger.Infof("DynamicResource statement id: %s", statementString)
-	return statementString, nil
-}
