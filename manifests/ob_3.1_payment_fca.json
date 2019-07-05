@@ -228,7 +228,7 @@
         "instructedAmountCurrency": "$instructedAmountCurrency",
         "instructionIdentification": "OB-301-DOP-100800",
         "postData": "$minimalScheduledDomesticPaymentConsent",
-        "e2eIdentification": "OB-301-DOP-100800-FRESCO.21302.GFX.20",
+        "e2eIdentification": "OB-301-DOP-100800-E2E",
         "requestConsent": "true"
       },
       "body": "$postData",
@@ -278,7 +278,7 @@
         "instructedAmountValue": "$instructedAmountValue",
         "instructedAmountCurrency": "$instructedAmountCurrency",
         "instructionIdentification": "OB-301-DOP-101000",
-        "e2eIdentification": "OB-301-DOP-101000-FRESCO.21302.GFX.20",
+        "e2eIdentification": "OB-301-DOP-101000-E2E",
         "postData": "$minimalScheduledDomesticPaymentConsent"
       },
       "headers": {
