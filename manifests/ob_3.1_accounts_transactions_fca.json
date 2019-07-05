@@ -745,8 +745,9 @@
             "uriImplementation": "conditional",
             "resource": "DirectDebit",
             "method": "get",
-            "asserts": [
-                "OB3GLOAssertOn400"
+            "asserts_one_of": [
+                "OB3GLOAssertOn400",
+                "OB3GLOAssertOn403"
             ],
             "schemaCheck": false
         },
