@@ -166,6 +166,30 @@
             type="text"
           />
         </b-form-group>
+        <b-form-group
+          id="send_x_fapi_customer_ip_address_group"
+          label-for="send_x_fapi_customer_ip_address"
+          label="Send x-fapi-customer-ip-address header">
+          <b-form-checkbox
+            id="send_x_fapi_customer_ip_address"
+            v-model="send_x_fapi_customer_ip_address"
+          />
+        </b-form-group>
+
+        <b-form-group
+          v-if="send_x_fapi_customer_ip_address"
+          id="x_fapi_customer_ip_address_group"
+          label-for="x_fapi_customer_ip_address"
+          label="x-fapi-customer-ip-address"
+          description="The IP address of the logged in PSU. Providing this HTTP header infers that the PSU is present during the interaction."
+        >
+          <b-form-input
+            id="x_fapi_customer_ip_address"
+            v-model="x_fapi_customer_ip_address"
+            placeholder="x-fapi-customer-ip-address"
+            type="text"
+          />
+        </b-form-group>
       </b-card>
       <br>
       <b-card bg-variant="light">
@@ -558,6 +582,22 @@ export default {
       },
       set(value) {
         this.$store.commit('config/SET_X_FAPI_FINANCIAL_ID', value);
+      },
+    },
+    send_x_fapi_customer_ip_address: {
+      get() {
+        return this.$store.state.config.configuration.send_x_fapi_customer_ip_address;
+      },
+      set(value) {
+        this.$store.commit('config/SET_SEND_X_FAPI_CUSTOMER_IP_ADDRESS', value);
+      },
+    },
+    x_fapi_customer_ip_address: {
+      get() {
+        return this.$store.state.config.configuration.x_fapi_customer_ip_address;
+      },
+      set(value) {
+        this.$store.commit('config/SET_X_FAPI_CUSTOMER_IP_ADDRESS', value);
       },
     },
     issuer: {

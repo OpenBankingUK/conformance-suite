@@ -12,6 +12,7 @@ const (
 	CtxResponseType                 = "responseType"
 	CtxConstTokenEndpointAuthMethod = "token_endpoint_auth_method"
 	CtxConstFapiFinancialID         = "x-fapi-financial-id"
+	CtxConstFapiCustomerIPAddress   = "x-fapi-customer-ip-address"
 	CtxConstRedirectURL             = "redirect_url"
 	CtxConstAuthorisationEndpoint   = "authorisation_endpoint"
 	CtxConstBasicAuthentication     = "basic_authentication"
@@ -48,6 +49,7 @@ func PutParametersToJourneyContext(config JourneyConfig, context model.Context) 
 	context.PutString(CtxResponseType, config.ResponseType)
 	context.PutString(CtxConstTokenEndpointAuthMethod, config.tokenEndpointAuthMethod)
 	context.PutString(CtxConstFapiFinancialID, config.xXFAPIFinancialID)
+	context.PutString(CtxConstFapiCustomerIPAddress, config.xXFAPICustomerIPAddress)
 	context.PutString(CtxConstRedirectURL, config.redirectURL)
 	context.PutString(CtxConstAuthorisationEndpoint, config.authorizationEndpoint)
 	context.PutString(CtxConstResourceBaseURL, config.resourceBaseURL)

@@ -116,6 +116,8 @@ export default {
         'authorization_endpoint',
         'resource_base_url',
         'x_fapi_financial_id',
+        'send_x_fapi_customer_ip_address',
+        'x_fapi_customer_ip_address',
         'issuer',
         'redirect_url',
         'use_non_ob_directory',

@@ -58,6 +58,8 @@ describe('web/src/store/modules/config', () => {
         authorization_endpoint: '',
         resource_base_url: '',
         x_fapi_financial_id: '',
+        send_x_fapi_customer_ip_address: false,
+        x_fapi_customer_ip_address: '',
         issuer: '',
         redirect_url: 'https://127.0.0.1:8443/conformancesuite/callback',
         use_non_ob_directory: false,
@@ -138,6 +140,8 @@ describe('web/src/store/modules/config', () => {
         authorization_endpoint: '',
         resource_base_url: '',
         x_fapi_financial_id: '',
+        send_x_fapi_customer_ip_address: false,
+        x_fapi_customer_ip_address: '',
         issuer: '',
         redirect_url: 'https://127.0.0.1:8443/conformancesuite/callback',
         resource_ids: {
@@ -177,6 +181,8 @@ describe('web/src/store/modules/config', () => {
         authorization_endpoint: '',
         resource_base_url: '',
         x_fapi_financial_id: '',
+        send_x_fapi_customer_ip_address: false,
+        x_fapi_customer_ip_address: '',
         issuer: '',
         redirect_url: 'https://127.0.0.1:8443/conformancesuite/callback',
         resource_ids: {
@@ -215,6 +221,8 @@ describe('web/src/store/modules/config', () => {
         authorization_endpoint: '',
         resource_base_url: '',
         x_fapi_financial_id: '',
+        send_x_fapi_customer_ip_address: false,
+        x_fapi_customer_ip_address: '',
         issuer: '',
         redirect_url: 'https://127.0.0.1:8443/conformancesuite/callback',
         resource_ids: {
@@ -253,6 +261,8 @@ describe('web/src/store/modules/config', () => {
         authorization_endpoint: '',
         resource_base_url: '',
         x_fapi_financial_id: '',
+        send_x_fapi_customer_ip_address: false,
+        x_fapi_customer_ip_address: '',
         issuer: '',
         redirect_url: 'https://127.0.0.1:8443/conformancesuite/callback',
         resource_ids: {
@@ -294,6 +304,8 @@ describe('web/src/store/modules/config', () => {
         authorization_endpoint: 'https://modelobankauth2018.o3bank.co.uk:4101/auth',
         resource_base_url: '',
         x_fapi_financial_id: '',
+        send_x_fapi_customer_ip_address: false,
+        x_fapi_customer_ip_address: '',
         issuer: '',
         redirect_url: 'https://127.0.0.1:8443/conformancesuite/callback',
         resource_ids: {
@@ -332,6 +344,8 @@ describe('web/src/store/modules/config', () => {
         authorization_endpoint: 'https://modelobankauth2018.o3bank.co.uk:4101/auth',
         resource_base_url: 'https://modelobank2018.o3bank.co.uk:4501',
         x_fapi_financial_id: '',
+        send_x_fapi_customer_ip_address: false,
+        x_fapi_customer_ip_address: '',
         issuer: '',
         redirect_url: 'https://127.0.0.1:8443/conformancesuite/callback',
         resource_ids: {
@@ -370,6 +384,8 @@ describe('web/src/store/modules/config', () => {
         authorization_endpoint: 'https://modelobankauth2018.o3bank.co.uk:4101/auth',
         resource_base_url: 'https://modelobank2018.o3bank.co.uk:4501',
         x_fapi_financial_id: '0015800001041RHAAY',
+        send_x_fapi_customer_ip_address: false,
+        x_fapi_customer_ip_address: '',
         issuer: '',
         redirect_url: 'https://127.0.0.1:8443/conformancesuite/callback',
         resource_ids: {
@@ -408,6 +424,8 @@ describe('web/src/store/modules/config', () => {
         authorization_endpoint: 'https://modelobankauth2018.o3bank.co.uk:4101/auth',
         resource_base_url: 'https://modelobank2018.o3bank.co.uk:4501',
         x_fapi_financial_id: '0015800001041RHAAY',
+        send_x_fapi_customer_ip_address: false,
+        x_fapi_customer_ip_address: '',
         issuer: 'https://modelobankauth2018.o3bank.co.uk:4101',
         redirect_url: 'https://127.0.0.1:8443/conformancesuite/callback',
         resource_ids: {
@@ -446,6 +464,8 @@ describe('web/src/store/modules/config', () => {
         authorization_endpoint: 'https://modelobankauth2018.o3bank.co.uk:4101/auth',
         resource_base_url: 'https://modelobank2018.o3bank.co.uk:4501',
         x_fapi_financial_id: '0015800001041RHAAY',
+        send_x_fapi_customer_ip_address: false,
+        x_fapi_customer_ip_address: '',
         issuer: 'https://modelobankauth2018.o3bank.co.uk:4101',
         redirect_url: 'https://127.0.0.1:8443/conformancesuite/callback',
         resource_ids: {
@@ -484,6 +504,8 @@ describe('web/src/store/modules/config', () => {
         authorization_endpoint: 'https://modelobankauth2018.o3bank.co.uk:4101/auth',
         resource_base_url: 'https://modelobank2018.o3bank.co.uk:4501',
         x_fapi_financial_id: '0015800001041RHAAY',
+        send_x_fapi_customer_ip_address: false,
+        x_fapi_customer_ip_address: '',
         issuer: 'https://modelobankauth2018.o3bank.co.uk:4101',
         redirect_url: 'https://127.0.0.1:8443/conformancesuite/callback',
         resource_ids: {
@@ -528,6 +550,8 @@ describe('web/src/store/modules/config', () => {
         authorization_endpoint: '',
         resource_base_url: '',
         x_fapi_financial_id: '',
+        send_x_fapi_customer_ip_address: false,
+        x_fapi_customer_ip_address: '',
         issuer: '',
         redirect_url: 'https://127.0.0.1:8443/conformancesuite/callback',
         resource_ids: {
@@ -568,6 +592,8 @@ describe('web/src/store/modules/config', () => {
         authorization_endpoint: '',
         resource_base_url: '',
         x_fapi_financial_id: '',
+        send_x_fapi_customer_ip_address: false,
+        x_fapi_customer_ip_address: '',
         issuer: '',
         redirect_url: 'https://127.0.0.1:8443/conformancesuite/callback',
         resource_ids: {
@@ -608,6 +634,8 @@ describe('web/src/store/modules/config', () => {
         authorization_endpoint: '',
         resource_base_url: '',
         x_fapi_financial_id: '',
+        send_x_fapi_customer_ip_address: false,
+        x_fapi_customer_ip_address: '',
         issuer: '',
         redirect_url: 'https://127.0.0.1:8443/conformancesuite/callback',
         resource_ids: {
@@ -648,6 +676,8 @@ describe('web/src/store/modules/config', () => {
         authorization_endpoint: '',
         resource_base_url: '',
         x_fapi_financial_id: '',
+        send_x_fapi_customer_ip_address: false,
+        x_fapi_customer_ip_address: '',
         issuer: '',
         redirect_url: 'https://127.0.0.1:8443/conformancesuite/callback',
         resource_ids: {
@@ -694,6 +724,8 @@ describe('web/src/store/modules/config', () => {
           authorization_endpoint: '',
           resource_base_url: '',
           x_fapi_financial_id: '',
+          send_x_fapi_customer_ip_address: false,
+          x_fapi_customer_ip_address: '',
           issuer: '',
           redirect_url: 'https://127.0.0.1:8443/conformancesuite/callback',
           resource_ids: {
@@ -772,6 +804,8 @@ describe('web/src/store/modules/config', () => {
           authorization_endpoint: 'https://modelobankauth2018.o3bank.co.uk:4101/auth_1',
           resource_base_url: '',
           x_fapi_financial_id: '',
+          send_x_fapi_customer_ip_address: false,
+          x_fapi_customer_ip_address: '',
           issuer: 'https://modelobankauth2018.o3bank.co.uk:4101_1',
           redirect_url: 'https://127.0.0.1:8443/conformancesuite/callback',
           resource_ids: {

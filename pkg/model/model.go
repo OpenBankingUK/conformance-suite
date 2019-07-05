@@ -413,6 +413,12 @@ func (t *TestCase) ProcessReplacementFields(ctx *Context, showReplacementErrors 
 	t.processReplacementHeaders(ctx, logger, showReplacementErrors)
 	t.processReplacementClaims(ctx)
 
+	// If customer ip value is not set, remove it from headers
+	customerIP, err := ctx.GetString("x-fapi-customer-ip-address")
+	if err == nil && customerIP == "" {
+		delete(t.Input.Headers, "x-fapi-customer-ip-address")
+	}
+
 	for k := range t.Context {
 		param, ok := t.Context[k].(string)
 		if !ok {
