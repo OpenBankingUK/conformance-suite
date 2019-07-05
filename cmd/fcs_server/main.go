@@ -83,6 +83,7 @@ func init() {
 	rootCmd.PersistentFlags().Bool("log_http_trace", false, "Enable HTTP logging")
 	rootCmd.PersistentFlags().Int("port", 8443, "Server port")
 	rootCmd.PersistentFlags().Bool("disable_jws", false, "Disable JWS Signature")
+	rootCmd.PersistentFlags().Bool("dynres", false, "Use Dynamic Resource IDs - accounts")
 
 	if err := viper.BindPFlags(rootCmd.PersistentFlags()); err != nil {
 		fmt.Fprint(os.Stderr, err)
@@ -148,6 +149,10 @@ func initConfig() {
 		model.DisableJWS()
 	}
 
+	if viper.GetBool("dynres") {
+		server.EnableDynamicResourceIDs()
+	}
+
 	resty.SetDebug(viper.GetBool("log_http_trace"))
 
 	printConfigurationFlags()
@@ -163,5 +168,6 @@ func printConfigurationFlags() {
 		"port":           viper.GetInt("port"),
 		"tracer.Silent":  tracer.Silent,
 		"disable_jws":    viper.GetBool("disable_jws"),
+		"dynres":         viper.GetBool("dynres"),
 	}).Info("configuration flags")
 }

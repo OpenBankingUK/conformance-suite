@@ -35,8 +35,10 @@ const (
 	CtxNonOBDirectory               = "nonOBDirectory"
 	CtxSigningKid                   = "signingKid"
 	CtxSignatureTrustAnchor         = "signatureTrustAnchor"
+	CtxDynamicResourceIDs           = "dynamicResourceIDs"
 )
 
+// PutParametersToJourneyContext populates a JourneyContext with values from the config screen
 func PutParametersToJourneyContext(config JourneyConfig, context model.Context) error {
 	config.apiVersion = "v3.1"
 
@@ -66,6 +68,7 @@ func PutParametersToJourneyContext(config JourneyConfig, context model.Context) 
 	context.Put(CtxNonOBDirectory, config.useNonOBDirectory)
 	context.PutString(CtxSigningKid, config.signingKid)
 	context.PutString(CtxSignatureTrustAnchor, config.signatureTrustAnchor)
+	context.Put(CtxDynamicResourceIDs, config.useDynamicResourceID)
 
 	basicauth, err := authentication.CalculateClientSecretBasicToken(config.clientID, config.clientSecret)
 	if err != nil {
@@ -74,6 +77,11 @@ func PutParametersToJourneyContext(config JourneyConfig, context model.Context) 
 	context.PutString(CtxConstBasicAuthentication, basicauth)
 	context.PutString(CtxConstIssuer, config.issuer)
 	context.PutString(CtxPhase, "unknown")
+
+	if config.useDynamicResourceID {
+		context.Delete(CtxConsentedAccountID)
+		context.Delete(CtxStatementID)
+	}
 
 	return nil
 }
