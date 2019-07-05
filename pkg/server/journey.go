@@ -361,7 +361,6 @@ func (wj *journey) RunTests() error {
 							if test.ID == tcID {
 								resourceCtx := model.Context{}
 								resourceCtx.PutString(CtxConsentedAccountID, accountPermissions.AccountID)
-								resourceCtx.PutString(CtxStatementID, accountPermissions.StatementID)
 								// perform the dynamic resource id replacement
 								test.ProcessReplacementFields(&resourceCtx, false)
 								wj.testCasesRun.TestCases[i].TestCases[j] = test
