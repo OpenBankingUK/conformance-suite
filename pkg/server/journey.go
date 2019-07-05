@@ -21,11 +21,12 @@ import (
 )
 
 var (
-	errDiscoveryModelNotSet        = errors.New("error discovery model not set")
-	errTestCasesNotGenerated       = errors.New("error test cases not generated")
-	errTestCasesGenerated          = errors.New("error test cases already generated")
-	errNotFinishedCollectingTokens = errors.New("error not finished collecting tokens")
-	errConsentIDAcquisitionFailed  = errors.New("ConsentId acquistion failed")
+	errDiscoveryModelNotSet            = errors.New("error discovery model not set")
+	errTestCasesNotGenerated           = errors.New("error test cases not generated")
+	errTestCasesGenerated              = errors.New("error test cases already generated")
+	errNotFinishedCollectingTokens     = errors.New("error not finished collecting tokens")
+	errConsentIDAcquisitionFailed      = errors.New("ConsentId acquistion failed")
+	errDynamicResourceAllocationFailed = errors.New("Dynamic Resource allocation failed")
 
 	dynamicResourceIDs = false
 )
@@ -305,7 +306,13 @@ func (wj *journey) CollectToken(code, state, scope string) error {
 	accountPermissions := wj.permissions["accounts"]
 
 	if wj.config.useDynamicResourceID {
-		executors.GetDynamicResourceIds(state, accessToken, &wj.context, accountPermissions)
+		err := executors.GetDynamicResourceIds(state, accessToken, &wj.context, accountPermissions)
+		if err != nil {
+			logger.WithFields(logrus.Fields{
+				"err": err,
+			}).Error("Dynamic resource allocation failure")
+			return errDynamicResourceAllocationFailed
+		}
 	}
 
 	for _, v := range wj.permissions["accounts"] {

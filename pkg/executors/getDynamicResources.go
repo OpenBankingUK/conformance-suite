@@ -12,7 +12,7 @@ import (
 )
 
 // GetDynamicResourceIds retrieves the accounts and statements resource ids for the current token
-func GetDynamicResourceIds(tokenName, token string, ctx *model.Context, requiredTokens []manifest.RequiredTokens) {
+func GetDynamicResourceIds(tokenName, token string, ctx *model.Context, requiredTokens []manifest.RequiredTokens) error {
 	logger := logrus.WithFields(logrus.Fields{
 		"module":    "GetDynamicResourceIds",
 		"tokenName": tokenName,
@@ -24,7 +24,9 @@ func GetDynamicResourceIds(tokenName, token string, ctx *model.Context, required
 		logger.WithFields(logrus.Fields{
 			"err": err,
 		}).Error("exchangeCodeForToken failed")
+		return err
 	}
+	return nil
 }
 
 func getDynamicResourceIds(tokenName, token string, ctx *model.Context, logger *logrus.Entry, requiredTokens []manifest.RequiredTokens) error {
@@ -67,29 +69,6 @@ func getDynamicResourceIds(tokenName, token string, ctx *model.Context, logger *
 	for k, v := range requiredTokens {
 		if v.Name == tokenName {
 			requiredTokens[k].AccountID = accountID // put dynamic account number into permissions struct
-		}
-	}
-
-	statementsEndpoint := resourceBaseURL + "/open-banking/" + apiVersion + "/aisp/accounts/" + accountID + "/statements"
-	resp, err = resty.R().
-		SetHeader("Authorization", "Bearer "+token).
-		SetHeader("X-Fapi-Financial-Id", xFapiFinancialID).
-		SetHeader("X-Fapi-Interaction-Id", "c4405450-febe-11e8-80a5-0fcebb157400").
-		SetHeader("X-Fcs-Testcase-Id", "GetDynamicResourceIdsStatements").
-		Get(statementsEndpoint)
-
-	if err != nil {
-		logger.Errorln("error calling retrieving statements for dynamic resources ", err)
-		return err
-	}
-
-	logger.Tracef("response code: %d ", resp.StatusCode())
-	body = string(resp.Body())
-	statementID, err := getStatementIDFromJSONResponse(body, logger)
-
-	for k, v := range requiredTokens {
-		if v.Name == tokenName {
-			requiredTokens[k].StatementID = statementID // put dynamic statement id into permissions struct
 		}
 	}
 
