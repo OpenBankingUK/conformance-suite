@@ -303,10 +303,8 @@ func (wj *journey) CollectToken(code, state, scope string) error {
 		wj.context.PutString("access_token", accessToken) // tmp measure to get testcases running
 	}
 
-	accountPermissions := wj.permissions["accounts"]
-
 	if wj.config.useDynamicResourceID {
-		err := executors.GetDynamicResourceIds(state, accessToken, &wj.context, accountPermissions)
+		err := executors.GetDynamicResourceIds(state, accessToken, &wj.context, wj.permissions["accounts"])
 		if err != nil {
 			logger.WithFields(logrus.Fields{
 				"err": err,
