@@ -140,10 +140,10 @@
       "schemaCheck": false
     },
     {
-      "description": "PISP Domestic Payment funds-confirmation for none authorised status and consent status",
+      "description": "PISP Domestic Payment funds-confirmation for authorised status and consent status",
       "id": "OB-301-DOP-100500",
       "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937984109/Domestic+Payments+v3.1#DomesticPaymentsv3.1-GET/domestic-payment-consents/{ConsentId}/funds-confirmation",
-      "detail": "Check PISP Domestic Payment funds-confirmation is not Authorised, responds with a 400 (Bad Request) and a UK.OBIE.Resource.InvalidConsentStatus error code.",
+      "detail": "Check PISP Domestic Payment funds-confirmation is Authorised, responds with a 200 (Status OK) and funds available.",
       "parameters": {
         "tokenRequestScope": "payments",
         "paymentType": "domestic-payment-consents",
