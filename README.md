@@ -17,11 +17,11 @@ To provide feedback, please use the public [issue tracker](https://bitbucket.org
 ## Release Notes 
 * * *
 
-# Release v1.1.14 (3rd July 2019)
+# Release v1.1.15 (5th July 2019)
 
-The release is called **v1.1.14**, it adds support for manifest tests to allow 400 **OR** 403 status codes in assertions.
+The release is called **v1.1.15**, adds support for dynamically allocated resource ids in the accounts and transactions API.
 
-[Full Release Notes](docs/releases/v1.1.14.md) (v1.1.14.md)
+[Full Release Notes](docs/releases/v1.1.15.md) (v1.1.15.md)
 
 ## Quickstart
 * * *
