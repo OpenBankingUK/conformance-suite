@@ -117,7 +117,7 @@ Setting the environment variable:
 `DYNRES=true`
 
 enables Dynamic Resource Allocation for the Account and Transaction Apis for Account Numbers.
-When this flag is active, for each token obtained, an additional call to the /accounts endpoint. This call retrieves a list of account numbers associated with the consent.
+When this flag is active, for each token obtained, an additional call is made to the /accounts endpoint. This call retrieves a list of account numbers associated with the consent.
 The first account number in this list is used to as the account resource id for the tests associated with the specific token.
 
 This is a new feature, and as such will rely on feedback from ASPSPs to align with variations in Dynamic Resource Allocation implementations.
