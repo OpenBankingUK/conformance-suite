@@ -30,7 +30,6 @@ type RequiredTokens struct {
 	ConsentParam    string
 	ConsentProvider string
 	AccountID       string
-	StatementID     string
 }
 
 // TokenStore eats tokens
