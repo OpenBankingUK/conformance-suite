@@ -349,8 +349,6 @@ func (wj *journey) RunTests() error {
 		return errNotFinishedCollectingTokens
 	}
 
-	requiredTokens := wj.permissions
-
 	if wj.config.useDynamicResourceID {
 		for _, accountPermissions := range wj.permissions["accounts"] {
 			// cycle over all test case ids for this account permission/token set
@@ -379,6 +377,8 @@ func (wj *journey) RunTests() error {
 		wj.context.PutString(CtxConsentedAccountID, wj.config.resourceIDs.AccountIDs[0].AccountID)
 		wj.context.PutString(CtxStatementID, wj.config.resourceIDs.StatementIDs[0].StatementID)
 	}
+
+	requiredTokens := wj.permissions
 
 	for k := range wj.testCasesRun.TestCases {
 		specType := wj.testCasesRun.TestCases[k].Specification.SpecType
