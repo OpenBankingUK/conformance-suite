@@ -66,8 +66,8 @@ func GetPsuConsent(definition RunDefinition, ctx *model.Context, runTests *gener
 	return consentIdsToReturn, nil, nil
 }
 
-func getSpecForSpecType(stype string, runTests *generation.SpecRun) ([]model.TestCase, error) {
-	for _, spec := range runTests.TestCases {
+func getSpecForSpecType(stype string, specRun *generation.SpecRun) ([]model.TestCase, error) {
+	for _, spec := range specRun.SpecTestCases {
 		specType, err := manifest.GetSpecType(spec.Specification.SchemaVersion)
 		if err != nil {
 			logrus.Warnf("cannot get spec type from SchemaVersion %s\n", spec.Specification.SchemaVersion)

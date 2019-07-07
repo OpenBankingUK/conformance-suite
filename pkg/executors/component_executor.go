@@ -6,18 +6,37 @@ import (
 
 	"github.com/pkg/errors"
 
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/generation"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/manifest"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
 	"github.com/sirupsen/logrus"
 )
 
+// GetHeadlessConsent -
+func GetHeadlessConsent(definition RunDefinition, ctx *model.Context, specRun *generation.SpecRun, permissions map[string][]manifest.RequiredTokens) (TokenConsentIDs, map[string]string, error) {
+
+	return nil, nil, nil
+}
+
 // AcquireHeadlessTokensAccountsAndPayments acquaires headless tokens for accounts and payments
-func AcquireHeadlessTokensAccountsAndPayments(tests []model.TestCase, ctx *model.Context, definition RunDefinition) ([]manifest.RequiredTokens, error) {
+func AcquireHeadlessTokensAccountsAndPayments(specTests []generation.SpecificationTestCases, ctx *model.Context, definition RunDefinition) ([]manifest.RequiredTokens, error) {
 	logger := logrus.WithFields(logrus.Fields{
 		"module": "AcquireHeadlessTokensAccountsAndPayments",
 	})
 
 	_ = logger
+	tests := specTests[0].TestCases
+	requiredAccountTokens, err := acquireAccountHeadlessTokens(tests, ctx, definition)
+	if err != nil {
+		return nil, err
+	}
+	paymentTests := specTests[1].TestCases
+	acquirePaymentHeadlessTokens(paymentTests, ctx, definition)
+
+	return requiredAccountTokens, nil
+
+}
+func acquirePaymentHeadlessTokens(paymentTests []model.TestCase, ctx *model.Context, definition RunDefinition) ([]manifest.RequiredTokens, error) {
 	return nil, nil
 }
 

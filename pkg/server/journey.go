@@ -210,7 +210,7 @@ func (wj *journey) TestCases() (generation.SpecRun, error) {
 				if k == "payments" {
 					paymentpermissions := wj.permissions["payments"]
 					if len(paymentpermissions) > 0 {
-						for _, spec := range wj.specRun.TestCases {
+						for _, spec := range wj.specRun.SpecTestCases {
 							manifest.MapTokensToPaymentTestCases(paymentpermissions, spec.TestCases, &wj.context)
 						}
 					}
@@ -222,13 +222,16 @@ func (wj *journey) TestCases() (generation.SpecRun, error) {
 			}
 
 			wj.createTokenCollector(consentIds)
-		} else {
+
+		} else { // Handle headless token acquistion
+
 			logger.WithFields(logrus.Fields{
 				"discovery.TokenAcquisition": discovery.TokenAcquisition,
 			}).Debug("AcquireHeadlessTokens ...")
-			runDefinition := wj.makeRunDefinition()
-			// TODO:Process multiple specs ... don't restrict to element [0]!!
-			tokenPermissionsMap, err := executors.AcquireHeadlessTokens(wj.specRun.TestCases[0].TestCases, &wj.context, runDefinition)
+			definition := wj.makeRunDefinition()
+
+			executors.GetHeadlessConsent(definition, &wj.context, &wj.specRun, wj.permissions)
+			tokenPermissionsMap, err := executors.AcquireHeadlessTokensAccountsAndPayments(wj.specRun.SpecTestCases, &wj.context, definition)
 			if err != nil {
 				logger.WithFields(logrus.Fields{
 					"err": err,
@@ -236,7 +239,7 @@ func (wj *journey) TestCases() (generation.SpecRun, error) {
 				return generation.SpecRun{}, errConsentIDAcquisitionFailed
 			}
 			// TODO:Process multipe specs
-			tokenMap := manifest.MapTokensToTestCases(tokenPermissionsMap, wj.specRun.TestCases[0].TestCases)
+			tokenMap := manifest.MapTokensToTestCases(tokenPermissionsMap, wj.specRun.SpecTestCases[0].TestCases)
 			for k, v := range tokenMap {
 				wj.context.PutString(k, v)
 			}
@@ -247,8 +250,8 @@ func (wj *journey) TestCases() (generation.SpecRun, error) {
 	}
 
 	logger.Tracef("TestCaseRun.SpecConsentRequirements: %#v\n", wj.specRun.SpecConsentRequirements)
-	for k := range wj.specRun.TestCases {
-		logger.Tracef("TestCaseRun-Specificatino: %#v\n", wj.specRun.TestCases[k].Specification)
+	for k := range wj.specRun.SpecTestCases {
+		logger.Tracef("TestCaseRun-Specificatino: %#v\n", wj.specRun.SpecTestCases[k].Specification)
 	}
 	logger.Tracef("Dumping Consents:---------------------------\n")
 	for _, v := range wj.specRun.SpecConsentRequirements {
@@ -351,11 +354,11 @@ func (wj *journey) RunTests() error {
 		for _, accountPermissions := range wj.permissions["accounts"] {
 			// cycle over all test case ids for this account permission/token set
 			for _, tcID := range accountPermissions.IDs {
-				for i := range wj.specRun.TestCases {
-					specType := wj.specRun.TestCases[i].Specification.SpecType
+				for i := range wj.specRun.SpecTestCases {
+					specType := wj.specRun.SpecTestCases[i].Specification.SpecType
 					// isolate all testcases to be run that are from and 'account' spec type
 					if specType == "accounts" {
-						tc := wj.specRun.TestCases[i].TestCases
+						tc := wj.specRun.SpecTestCases[i].TestCases
 						// look for test cases matching the permission set test case list
 						for j, test := range tc {
 							if test.ID == tcID {
@@ -363,7 +366,7 @@ func (wj *journey) RunTests() error {
 								resourceCtx.PutString(CtxConsentedAccountID, accountPermissions.AccountID)
 								// perform the dynamic resource id replacement
 								test.ProcessReplacementFields(&resourceCtx, false)
-								wj.specRun.TestCases[i].TestCases[j] = test
+								wj.specRun.SpecTestCases[i].TestCases[j] = test
 							}
 						}
 					}
@@ -377,10 +380,10 @@ func (wj *journey) RunTests() error {
 
 	requiredTokens := wj.permissions
 
-	for k := range wj.specRun.TestCases {
-		specType := wj.specRun.TestCases[k].Specification.SpecType
-		manifest.MapTokensToTestCases(requiredTokens[specType], wj.specRun.TestCases[k].TestCases)
-		wj.dumpJSON(wj.specRun.TestCases[k].TestCases)
+	for k := range wj.specRun.SpecTestCases {
+		specType := wj.specRun.SpecTestCases[k].Specification.SpecType
+		manifest.MapTokensToTestCases(requiredTokens[specType], wj.specRun.SpecTestCases[k].TestCases)
+		wj.dumpJSON(wj.specRun.SpecTestCases[k].TestCases)
 	}
 
 	runDefinition := wj.makeRunDefinition()

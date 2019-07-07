@@ -209,6 +209,6 @@ func (g generator) consentRequirements(specTestCases []SpecificationTestCases) [
 // SpecRun represents all specs and their test and a list of tokens
 // required to run those tests
 type SpecRun struct {
-	TestCases               []SpecificationTestCases        `json:"specCases"`
+	SpecTestCases           []SpecificationTestCases        `json:"specCases"`
 	SpecConsentRequirements []model.SpecConsentRequirements `json:"specTokens"`
 }

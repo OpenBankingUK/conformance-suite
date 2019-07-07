@@ -115,7 +115,7 @@ func (r *TestCaseRunner) runTestCasesAsync(ctx *model.Context) {
 	ruleCtx := r.makeRuleCtx(ctx)
 
 	ctxLogger := r.logger.WithField("id", uuid.New())
-	for _, spec := range r.definition.SpecRun.TestCases {
+	for _, spec := range r.definition.SpecRun.SpecTestCases {
 		r.executeSpecTests(spec, ruleCtx, ctxLogger)
 	}
 	r.daemonController.SetCompleted()
