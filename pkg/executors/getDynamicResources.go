@@ -65,6 +65,9 @@ func getDynamicResourceIds(tokenName, token string, ctx *model.Context, logger *
 	logger.Tracef("response code: %d ", resp.StatusCode())
 	body := string(resp.Body())
 	accountID, err := getAccountIDFromJSONResponse(body, logger)
+	if err != nil { // out of band fix
+		return err
+	}
 
 	for k, v := range requiredTokens {
 		if v.Name == tokenName {

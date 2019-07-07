@@ -11,8 +11,22 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
+// AcquireHeadlessTokensAccountsAndPayments acquaires headless tokens for accounts and payments
+func AcquireHeadlessTokensAccountsAndPayments(tests []model.TestCase, ctx *model.Context, definition RunDefinition) ([]manifest.RequiredTokens, error) {
+	logger := logrus.WithFields(logrus.Fields{
+		"module": "AcquireHeadlessTokensAccountsAndPayments",
+	})
+
+	_ = logger
+	return nil, nil
+}
+
 // AcquireHeadlessTokens from manifest generated test cases
 func AcquireHeadlessTokens(tests []model.TestCase, ctx *model.Context, definition RunDefinition) ([]manifest.RequiredTokens, error) {
+	return acquireAccountHeadlessTokens(tests, ctx, definition)
+}
+
+func acquireAccountHeadlessTokens(tests []model.TestCase, ctx *model.Context, definition RunDefinition) ([]manifest.RequiredTokens, error) {
 	logrus.Debug("AcquireHeadlessTokens")
 	bodyDataStart := "{\"Data\": { \"Permissions\": ["
 	//TODO: sort out consent transaction timestamps

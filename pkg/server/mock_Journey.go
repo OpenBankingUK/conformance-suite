@@ -211,14 +211,14 @@ func (_m *MockJourney) StopTestRun() {
 }
 
 // TestCases provides a mock function with given fields:
-func (_m *MockJourney) TestCases() (generation.TestCasesRun, error) {
+func (_m *MockJourney) TestCases() (generation.SpecRun, error) {
 	ret := _m.Called()
 
-	var r0 generation.TestCasesRun
-	if rf, ok := ret.Get(0).(func() generation.TestCasesRun); ok {
+	var r0 generation.SpecRun
+	if rf, ok := ret.Get(0).(func() generation.SpecRun); ok {
 		r0 = rf()
 	} else {
-		r0 = ret.Get(0).(generation.TestCasesRun)
+		r0 = ret.Get(0).(generation.SpecRun)
 	}
 
 	var r1 error

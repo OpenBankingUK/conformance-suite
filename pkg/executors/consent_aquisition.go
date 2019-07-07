@@ -29,7 +29,7 @@ const (
 )
 
 // GetPsuConsent -
-func GetPsuConsent(definition RunDefinition, ctx *model.Context, runTests *generation.TestCasesRun, permissions map[string][]manifest.RequiredTokens) (TokenConsentIDs, map[string]string, error) {
+func GetPsuConsent(definition RunDefinition, ctx *model.Context, runTests *generation.SpecRun, permissions map[string][]manifest.RequiredTokens) (TokenConsentIDs, map[string]string, error) {
 	consentRequirements := runTests.SpecConsentRequirements
 	var consentIdsToReturn TokenConsentIDs
 	logrus.Debugf("running with %#v\n", permissions)
@@ -66,7 +66,7 @@ func GetPsuConsent(definition RunDefinition, ctx *model.Context, runTests *gener
 	return consentIdsToReturn, nil, nil
 }
 
-func getSpecForSpecType(stype string, runTests *generation.TestCasesRun) ([]model.TestCase, error) {
+func getSpecForSpecType(stype string, runTests *generation.SpecRun) ([]model.TestCase, error) {
 	for _, spec := range runTests.TestCases {
 		specType, err := manifest.GetSpecType(spec.Specification.SchemaVersion)
 		if err != nil {
