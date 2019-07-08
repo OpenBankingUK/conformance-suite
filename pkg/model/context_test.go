@@ -89,3 +89,16 @@ func TestContextPutStringSlice(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, []string{"a", "b"}, get)
 }
+
+func TestIsSet(t *testing.T) {
+	context := Context{}
+	context.Put("a", "foobar")
+	context.Put("b", struct{}{})
+	context.Put("c", "")
+	context.Put("d", nil)
+
+	assert.True(t, context.IsSet("a"))
+	assert.True(t, context.IsSet("b"))
+	assert.False(t, context.IsSet("c"))
+	assert.False(t, context.IsSet("d"))
+}

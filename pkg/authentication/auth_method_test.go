@@ -8,7 +8,7 @@ import (
 
 func TestDefaultAuthMethodReturnsFirstSuiteSupportedMethodWhenOneMatch(t *testing.T) {
 	require := test.NewRequire(t)
-	expected := SuiteSupportedAuthMethodsMostSecureFirst[0]
+	expected := SuiteSupportedAuthMethodsMostSecureFirst()[0]
 
 	openIDConfigAuthMethods := []string{
 		"client_secret_post",
@@ -30,7 +30,7 @@ func TestDefaultAuthMethodReturnsFirstSuiteSupportedMethodWhenNoMatch(t *testing
 	}
 	actual := DefaultAuthMethod(openIDConfigAuthMethods, test.NullLogger())
 
-	expected := SuiteSupportedAuthMethodsMostSecureFirst[0]
+	expected := SuiteSupportedAuthMethodsMostSecureFirst()[0]
 	require.Equal(expected, actual)
 	require.Equal("tls_client_auth", actual)
 }

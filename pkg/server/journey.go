@@ -21,11 +21,14 @@ import (
 )
 
 var (
-	errDiscoveryModelNotSet        = errors.New("error discovery model not set")
-	errTestCasesNotGenerated       = errors.New("error test cases not generated")
-	errTestCasesGenerated          = errors.New("error test cases already generated")
-	errNotFinishedCollectingTokens = errors.New("error not finished collecting tokens")
-	errConsentIDAcquisitionFailed  = errors.New("ConsentId acquistion failed")
+	errDiscoveryModelNotSet            = errors.New("error discovery model not set")
+	errTestCasesNotGenerated           = errors.New("error test cases not generated")
+	errTestCasesGenerated              = errors.New("error test cases already generated")
+	errNotFinishedCollectingTokens     = errors.New("error not finished collecting tokens")
+	errConsentIDAcquisitionFailed      = errors.New("ConsentId acquistion failed")
+	errDynamicResourceAllocationFailed = errors.New("Dynamic Resource allocation failed")
+
+	dynamicResourceIDs = false
 )
 
 // Journey represents all possible steps for a user test conformance journey
@@ -118,7 +121,7 @@ func (wj *journey) SetDiscoveryModel(discoveryModel *discovery.Model) (discovery
 	wj.testCasesRunGenerated = false
 	wj.allCollected = false
 
-	return discovery.NoValidationFailures, nil
+	return discovery.NoValidationFailures(), nil
 }
 
 func (wj *journey) DiscoveryModel() (discovery.Model, error) {
@@ -300,6 +303,20 @@ func (wj *journey) CollectToken(code, state, scope string) error {
 		wj.context.PutString("access_token", accessToken) // tmp measure to get testcases running
 	}
 
+	if wj.config.useDynamicResourceID {
+		err := executors.GetDynamicResourceIds(state, accessToken, &wj.context, wj.permissions["accounts"])
+		if err != nil {
+			logger.WithFields(logrus.Fields{
+				"err": err,
+			}).Error("Dynamic resource allocation failure")
+			return errDynamicResourceAllocationFailed
+		}
+	}
+
+	for _, v := range wj.permissions["accounts"] {
+		logger.Tracef("journey perms: %#v", v)
+	}
+
 	return wj.collector.Collect(state, accessToken)
 }
 
@@ -330,7 +347,36 @@ func (wj *journey) RunTests() error {
 		return errNotFinishedCollectingTokens
 	}
 
+	if wj.config.useDynamicResourceID {
+		for _, accountPermissions := range wj.permissions["accounts"] {
+			// cycle over all test case ids for this account permission/token set
+			for _, tcID := range accountPermissions.IDs {
+				for i := range wj.testCasesRun.TestCases {
+					specType := wj.testCasesRun.TestCases[i].Specification.SpecType
+					// isolate all testcases to be run that are from and 'account' spec type
+					if specType == "accounts" {
+						tc := wj.testCasesRun.TestCases[i].TestCases
+						// look for test cases matching the permission set test case list
+						for j, test := range tc {
+							if test.ID == tcID {
+								resourceCtx := model.Context{}
+								resourceCtx.PutString(CtxConsentedAccountID, accountPermissions.AccountID)
+								// perform the dynamic resource id replacement
+								test.ProcessReplacementFields(&resourceCtx, false)
+								wj.testCasesRun.TestCases[i].TestCases[j] = test
+							}
+						}
+					}
+				}
+			}
+		}
+		// put a default accountid and statement id in the journey context for those tests that haven't got a token that can call /accounts
+		wj.context.PutString(CtxConsentedAccountID, wj.config.resourceIDs.AccountIDs[0].AccountID)
+		wj.context.PutString(CtxStatementID, wj.config.resourceIDs.StatementIDs[0].StatementID)
+	}
+
 	requiredTokens := wj.permissions
+
 	for k := range wj.testCasesRun.TestCases {
 		specType := wj.testCasesRun.TestCases[k].Specification.SpecType
 		manifest.MapTokensToTestCases(requiredTokens[specType], wj.testCasesRun.TestCases[k].TestCases)
@@ -402,6 +448,7 @@ type JourneyConfig struct {
 	authorizationEndpoint         string
 	resourceBaseURL               string
 	xXFAPIFinancialID             string
+	xXFAPICustomerIPAddress       string
 	issuer                        string
 	redirectURL                   string
 	resourceIDs                   model.ResourceIDs
@@ -417,6 +464,7 @@ type JourneyConfig struct {
 	useNonOBDirectory             bool
 	signingKid                    string
 	signatureTrustAnchor          string
+	useDynamicResourceID          bool
 }
 
 func (wj *journey) SetConfig(config JourneyConfig) error {
@@ -424,6 +472,7 @@ func (wj *journey) SetConfig(config JourneyConfig) error {
 	defer wj.journeyLock.Unlock()
 
 	wj.config = config
+	wj.config.useDynamicResourceID = dynamicResourceIDs // fed from environment variable 'dynres'=true/false
 	err := PutParametersToJourneyContext(wj.config, wj.context)
 	if err != nil {
 		return err
@@ -474,16 +523,21 @@ func consentIdsToTestCaseRun(log *logrus.Entry, consentIds []executors.TokenCons
 	}
 }
 
-func dumpPermissions(p map[string][]manifest.RequiredTokens, title string) {
-	logrus.Tracef("Dump Permissions at %s \n", title)
-	for _, v := range p {
-		logrus.Tracef("%#v\n", v)
-	}
-}
+// func dumpPermissions(p map[string][]manifest.RequiredTokens, title string) {
+// 	logrus.Tracef("Dump Permissions at %s \n", title)
+// 	for _, v := range p {
+// 		logrus.Tracef("%#v\n", v)
+// 	}
+// }
 
 // Utility to Dump Json
 func (wj *journey) dumpJSON(i interface{}) {
 	var model []byte
 	model, _ = json.MarshalIndent(i, "", "    ")
 	wj.log.Traceln(string(model))
+}
+
+// EnableDynamicResourceIDs is triggered by and environment variable dynids=true
+func EnableDynamicResourceIDs() {
+	dynamicResourceIDs = true
 }

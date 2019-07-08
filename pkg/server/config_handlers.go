@@ -23,14 +23,14 @@ import (
 // https://github.com/go-ozzo/ozzo-validation/blob/master/in_test.go
 type ResponseType = interface{}
 
-var (
-	// responseTypesSupported REQUIRED. JSON array containing a list of the OAuth 2.0 response_type values that this OP supports. Dynamic OpenID Providers MUST support the code, id_token, and the token id_token Response Type values
-	responseTypesSupported = [3]ResponseType{
+// responseTypesSupported REQUIRED. JSON array containing a list of the OAuth 2.0 response_type values that this OP supports. Dynamic OpenID Providers MUST support the code, id_token, and the token id_token Response Type values
+func responseTypesSupported() [3]ResponseType {
+	return [3]ResponseType{
 		"code",
 		"code id_token",
 		"id_token",
 	}
-)
+}
 
 type configHandlers struct {
 	logger  *logrus.Entry
@@ -41,7 +41,9 @@ type configHandlers struct {
 // https://github.com/go-ozzo/ozzo-validation/blob/master/in_test.go
 type SupportedRequestSignAlg interface{}
 
-var SupportedRequestSignAlgValues = []interface{}{"PS256", "RS256", "NONE"}
+func SupportedRequestSignAlgValues() []interface{} {
+	return []interface{}{"PS256", "RS256", "NONE"}
+}
 
 type GlobalConfiguration struct {
 	SigningPrivate                string                  `json:"signing_private" validate:"not_empty"`
@@ -56,6 +58,7 @@ type GlobalConfiguration struct {
 	AuthorizationEndpoint         string                  `json:"authorization_endpoint" validate:"valid_url"`
 	ResourceBaseURL               string                  `json:"resource_base_url" validate:"valid_url"`
 	XFAPIFinancialID              string                  `json:"x_fapi_financial_id" validate:"not_empty"`
+	XFAPICustomerIPAddress        string                  `json:"x_fapi_customer_ip_address,omitempty"`
 	Issuer                        string                  `json:"issuer" validate:"valid_url"`
 	RedirectURL                   string                  `json:"redirect_url" validate:"valid_url"`
 	ResourceIDs                   model.ResourceIDs       `json:"resource_ids" validate:"not_empty"`
@@ -73,9 +76,10 @@ type GlobalConfiguration struct {
 
 // Validate - used by https://github.com/go-ozzo/ozzo-validation to validate struct.
 func (c GlobalConfiguration) Validate() error {
+	values := responseTypesSupported()
 	return validation.ValidateStruct(&c,
 		validation.Field(&c.CreditorAccount, validation.Required),
-		validation.Field(&c.ResponseType, validation.Required, validation.In(responseTypesSupported[:]...)),
+		validation.Field(&c.ResponseType, validation.Required, validation.In(values[:]...)),
 		validation.Field(&c.InstructedAmount),
 		validation.Field(&c.CurrencyOfTransfer, validation.Match(regexp.MustCompile("^[A-Z]{3,3}$"))),
 	)
@@ -142,6 +146,7 @@ func MakeJourneyConfig(config *GlobalConfiguration) (JourneyConfig, error) {
 		authorizationEndpoint:         config.AuthorizationEndpoint,
 		resourceBaseURL:               config.ResourceBaseURL,
 		xXFAPIFinancialID:             config.XFAPIFinancialID,
+		xXFAPICustomerIPAddress:       config.XFAPICustomerIPAddress,
 		issuer:                        config.Issuer,
 		redirectURL:                   config.RedirectURL,
 		resourceIDs:                   config.ResourceIDs,
@@ -241,9 +246,11 @@ func and(left, right validateFunc) validateFunc {
 	}
 }
 
-var rulesFunc = map[string]validateFunc{
-	"not_empty": notEmpty,
-	"valid_url": and(notEmpty, validURL),
+func rulesFunc() map[string]validateFunc {
+	return map[string]validateFunc{
+		"not_empty": notEmpty,
+		"valid_url": and(notEmpty, validURL),
+	}
 }
 
 func parseRules(config *GlobalConfiguration) []validationRule {
@@ -259,7 +266,7 @@ func parseRules(config *GlobalConfiguration) []validationRule {
 			continue
 		}
 
-		validate, ok := rulesFunc[tag.Get("validate")]
+		validate, ok := rulesFunc()[tag.Get("validate")]
 		if !ok {
 			// no rule func found
 			continue

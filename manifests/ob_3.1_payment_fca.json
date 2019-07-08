@@ -10,6 +10,7 @@
         "consentId": "foobar",
         "instructedAmountCurrency": "$instructedAmountCurrency",
         "instructedAmountValue": "$instructedAmountValue",
+        "instructionIdentification": "OB-301-DOP-100000",
         "postData": "$minimalDomesticPaymentConsent"
       },
       "headers": {
@@ -34,6 +35,7 @@
         "tokenRequestScope": "payments",
         "instructedAmountCurrency": "$instructedAmountCurrency",
         "instructedAmountValue": "$instructedAmountValue",
+        "instructionIdentification": "OB-301-DOP-100100",
         "postData": "$minimalDomesticPaymentConsent",
         "requestConsent": "false"
       },
@@ -91,7 +93,7 @@
         "postData": "$minimalDomesticPaymentConsent",
         "thisSchemeName": "$creditorScheme",
         "thisIdentification": "$creditorIdentification",
-        "thisInstructionIdentification": "OB-301-DOP-100300",
+        "instructionIdentification": "OB-301-DOP-100300",
         "requestConsent": "true"
       },
       "headers": {
@@ -138,10 +140,10 @@
       "schemaCheck": false
     },
     {
-      "description": "PISP Domestic Payment funds-confirmation for none authorised status and consent status",
+      "description": "PISP Domestic Payment funds-confirmation for authorised status and consent status",
       "id": "OB-301-DOP-100500",
       "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937984109/Domestic+Payments+v3.1#DomesticPaymentsv3.1-GET/domestic-payment-consents/{ConsentId}/funds-confirmation",
-      "detail": "Check PISP Domestic Payment funds-confirmation is not Authorised, responds with a 400 (Bad Request) and a UK.OBIE.Resource.InvalidConsentStatus error code.",
+      "detail": "Check PISP Domestic Payment funds-confirmation is Authorised, responds with a 200 (Status OK) and funds available.",
       "parameters": {
         "tokenRequestScope": "payments",
         "paymentType": "domestic-payment-consents",
@@ -167,10 +169,10 @@
       "detail": "Check that once the domestic-payment-consent has been authorised by the PSU, the PISP can proceed to submitting the domestic-payment for processing.",
       "parameters": {
         "tokenRequestScope": "payments",
-        "consentId": "$OB-301-DOP-100300-ConsentId",
+        "consentId": "$OB-301-DOP-100600-ConsentId",
         "thisSchemeName": "$creditorScheme",
         "thisIdentification": "$creditorIdentification",
-        "thisInstructionIdentification": "OB-301-DOP-100300",
+        "instructionIdentification": "OB-301-DOP-100600",
         "instructedAmountCurrency": "$instructedAmountCurrency",
         "instructedAmountValue": "$instructedAmountValue",
         "postData": "$minimalDomesticPaymentPost"
@@ -201,7 +203,7 @@
       "detail": "Check PISP can retrieve the domestic-payment to check its status.",
       "parameters": {
         "tokenRequestScope": "payments",
-        "paymentId": "$OB-301-DOP-100600-DomesticPaymentId"
+        "paymentId": "$OB-301-DOP-100700-DomesticPaymentId"
       },
       "headers": {
         "Content-Type": "application/json; charset=utf-8"
@@ -224,7 +226,9 @@
         "tokenRequestScope": "payments",
         "instructedAmountValue": "$instructedAmountValue",
         "instructedAmountCurrency": "$instructedAmountCurrency",
+        "instructionIdentification": "OB-301-DOP-100800",
         "postData": "$minimalScheduledDomesticPaymentConsent",
+        "e2eIdentification": "OB-301-DOP-100800-E2E",
         "requestConsent": "true"
       },
       "body": "$postData",
@@ -273,6 +277,8 @@
         "consentId": "$OB-301-DOP-100800-ConsentId",
         "instructedAmountValue": "$instructedAmountValue",
         "instructedAmountCurrency": "$instructedAmountCurrency",
+        "instructionIdentification": "OB-301-DOP-101000",
+        "e2eIdentification": "OB-301-DOP-101000-E2E",
         "postData": "$minimalScheduledDomesticPaymentConsent"
       },
       "headers": {

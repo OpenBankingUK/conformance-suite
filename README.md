@@ -17,25 +17,18 @@ To provide feedback, please use the public [issue tracker](https://bitbucket.org
 ## Release Notes 
 * * *
 
-### v1.1.9 (7th June 2019)
+# Release v1.1.15 (5th July 2019)
 
-The release is called **v1.1.9**, it adds support kid/trust anchor using EIDAS certificates and enables the Docker Content Trust Framework.
+The release is called **v1.1.15**, adds support for dynamically allocated resource ids in the accounts and transactions API.
 
-[Full Release Notes](docs/releases/v1.1.9.md) (v1.1.9.md)
-
-### v1.1.8 (29th May 2019)
-
-Release **v1.1.8**, fixes Payment template bugs, adds payments tests, reduces log noise
-
-[Full Release Notes](docs/releases/v1.1.8.md) (v1.1.8.md)
-
+[Full Release Notes](docs/releases/v1.1.15.md) (v1.1.15.md)
 
 ## Quickstart
 * * *
 
 Pull and run the latest (stable) tagged Docker image:
 
-    > docker run --rm -it -p 8443:8443 "openbanking/conformance-suite:v1.1.6"
+    > docker run --rm -it -p 8443:8443 "openbanking/conformance-suite:v1.1.13"
 
 [See Setup Guide](docs/setup-guide.md) 
 

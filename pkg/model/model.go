@@ -1,7 +1,6 @@
 package model
 
 import (
-	"bytes"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -60,23 +59,24 @@ type Rule struct {
 //     and therefore the testcase has passed
 //
 type TestCase struct {
-	ID         string           `json:"@id,omitempty"`     // JSONLD ID Reference
-	Type       []string         `json:"@type,omitempty"`   // JSONLD type array
-	Name       string           `json:"name,omitempty"`    // Name
-	Detail     string           `json:"detail,omitempty"`  // Detailed description of the test case
-	RefURI     string           `json:"refURI,omitempty"`  // Reference URI for the test case
-	Purpose    string           `json:"purpose,omitempty"` // Purpose of the testcase in simple words
-	Input      Input            `json:"input,omitempty"`   // Input Object
-	Context    Context          `json:"context,omitempty"` // Local Context Object
-	Expect     Expect           `json:"expect,omitempty"`  // Expected object
-	ParentRule *Rule            `json:"-"`                 // Allows accessing parent Rule
-	Request    *resty.Request   `json:"-"`                 // The request that's been generated in order to call the endpoint
-	Header     http.Header      `json:"-"`                 // ResponseHeader
-	Body       string           `json:"-"`                 // ResponseBody
-	Bearer     string           `json:"bearer,omitempty"`  // Bear token if presented
-	APIName    string           `json:"apiName"`
-	APIVersion string           `json:"apiVersion"`
-	Validator  schema.Validator `json:"-"` // Swagger schema validator
+	ID          string           `json:"@id,omitempty"`           // JSONLD ID Reference
+	Type        []string         `json:"@type,omitempty"`         // JSONLD type array
+	Name        string           `json:"name,omitempty"`          // Name
+	Detail      string           `json:"detail,omitempty"`        // Detailed description of the test case
+	RefURI      string           `json:"refURI,omitempty"`        // Reference URI for the test case
+	Purpose     string           `json:"purpose,omitempty"`       // Purpose of the testcase in simple words
+	Input       Input            `json:"input,omitempty"`         // Input Object
+	Context     Context          `json:"context,omitempty"`       // Local Context Object
+	Expect      Expect           `json:"expect,omitempty"`        // Expected object
+	ExpectOneOf []Expect         `json:"expect_one_of,omitempty"` // Slice of possible expected objects
+	ParentRule  *Rule            `json:"-"`                       // Allows accessing parent Rule
+	Request     *resty.Request   `json:"-"`                       // The request that's been generated in order to call the endpoint
+	Header      http.Header      `json:"-"`                       // ResponseHeader
+	Body        string           `json:"-"`                       // ResponseBody
+	Bearer      string           `json:"bearer,omitempty"`        // Bear token if presented
+	APIName     string           `json:"apiName"`
+	APIVersion  string           `json:"apiVersion"`
+	Validator   schema.Validator `json:"-"` // Swagger schema validator
 }
 
 // MakeTestCase builds an empty testcase
@@ -115,20 +115,8 @@ func (t *TestCase) Validate(resp *resty.Response, rulectx *Context) (bool, []err
 		return false, []error{t.AppErr("error Valdate:rulectx == nil")}
 	}
 	t.Body = resp.String()
-	if len(t.Body) == 0 { // The response body can only be read once from the raw response
-		// so we cache it in the testcase
-		// Check that there is a value body in the raw response of the resty response object
-		// Also - if the response is a redirect (302/StatusFound) then we continue as we'll have no body.
-		if resp != nil && resp.StatusCode() != http.StatusFound {
-			if resp.RawResponse != nil && resp.RawResponse.Body != nil {
-				buf := new(bytes.Buffer)
-				_, err := buf.ReadFrom(resp.RawResponse.Body)
-				if err != nil {
-					return false, []error{t.AppErr("Validate: " + err.Error())}
-				}
-				t.Body = buf.String()
-			}
-		}
+	if len(t.Body) == 0 {
+		logrus.WithField("testcase", t.String()).Debug("Validate: resty.body is empty")
 	}
 	t.Header = resp.Header()
 	pass, errs := t.ApplyExpects(resp, rulectx)
@@ -232,26 +220,48 @@ func (t *TestCase) ApplyExpects(res *resty.Response, rulectx *Context) (bool, []
 	if res == nil { // if we've not got a response object to check, always return false
 		return false, []error{t.AppErr("nil http.Response - cannot process ApplyExpects")}
 	}
-
-	// Status code `-1` is specified in test cases if we want to ignore the HTTP status code.
-	if t.Expect.StatusCode != ignoreHTTPStatus && t.Expect.StatusCode != res.StatusCode() { // Status codes don't match
-		return false, []error{t.AppErr(fmt.Sprintf("(%s):%s: HTTP Status code does not match: expected %d got %d", t.ID, t.Name, t.Expect.StatusCode, res.StatusCode()))}
+	ok, err := t.validateExpect(t.Expect, res)
+	if !ok {
+		return ok, []error{err}
 	}
-
-	t.AppMsg(fmt.Sprintf("Status check isReplacement: expected [%d] got [%d]", t.Expect.StatusCode, res.StatusCode()))
-	for k, match := range t.Expect.Matches {
-		checkResult, got := match.Check(t)
-		if !checkResult {
-			return false, []error{t.AppErr(fmt.Sprintf("ApplyExpects Returns False on match %s : %s", match.String(), got.Error()))}
+	failedExpects := make([]error, 0, len(t.ExpectOneOf))
+	for _, expect := range t.ExpectOneOf {
+		ok, err := t.validateExpect(expect, res)
+		if !ok {
+			failedExpects = append(failedExpects, err)
+			continue
 		}
-
-		t.Expect.Matches[k].Result = match.Result
-		t.AppMsg(fmt.Sprintf("Checked Match: %s: result: %s", match.Description, t.Expect.Matches[k].Result))
 	}
-
+	// t.ExpectOneOf represents an optional list of []Expect one of which must be met
+	// since the usage of t.ExpectOneOf is optional, t.ExpectOneOf can be empty
+	// in this case the validation is skipped.
+	// When t.ExpectOneOf is not empty, at least one of the Expect must be successful
+	if len(t.ExpectOneOf) > 0 && len(failedExpects) == len(t.ExpectOneOf) {
+		return false, failedExpects
+	}
 	if err := t.Expect.ContextPut.PutValues(t, rulectx); err != nil {
 		return false, []error{t.AppErr("ApplyExpects Returns FALSE " + err.Error())}
 	}
+	return true, nil
+}
+
+func (t *TestCase) validateExpect(expect Expect, res *resty.Response) (bool, error) {
+	// Status code `-1` is specified in test cases if we want to ignore the HTTP status code.
+	if expect.StatusCode > 0 && expect.StatusCode != res.StatusCode() {
+		return false, t.AppErr(fmt.Sprintf("(%s):%s: HTTP Status code does not match: expected %d got %d", t.ID, t.Name, expect.StatusCode, res.StatusCode()))
+	}
+
+	t.AppMsg(fmt.Sprintf("Status check isReplacement: expected [%d] got [%d]", expect.StatusCode, res.StatusCode()))
+	for k, match := range expect.Matches {
+		checkResult, got := match.Check(t)
+		if !checkResult {
+			return false, t.AppErr(fmt.Sprintf("ApplyExpects Returns False on match %s : %s", match.String(), got.Error()))
+		}
+
+		expect.Matches[k].Result = match.Result
+		t.AppMsg(fmt.Sprintf("Checked Match: %s: result: %s", match.Description, expect.Matches[k].Result))
+	}
+
 	return true, nil
 }
 
@@ -402,6 +412,12 @@ func (t *TestCase) ProcessReplacementFields(ctx *Context, showReplacementErrors 
 	t.processReplacementFormData(ctx)
 	t.processReplacementHeaders(ctx, logger, showReplacementErrors)
 	t.processReplacementClaims(ctx)
+
+	// If customer ip value is not set, remove it from headers
+	customerIP, err := ctx.GetString("x-fapi-customer-ip-address")
+	if err == nil && customerIP == "" {
+		delete(t.Input.Headers, "x-fapi-customer-ip-address")
+	}
 
 	for k := range t.Context {
 		param, ok := t.Context[k].(string)

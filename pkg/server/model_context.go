@@ -12,6 +12,7 @@ const (
 	CtxResponseType                 = "responseType"
 	CtxConstTokenEndpointAuthMethod = "token_endpoint_auth_method"
 	CtxConstFapiFinancialID         = "x-fapi-financial-id"
+	CtxConstFapiCustomerIPAddress   = "x-fapi-customer-ip-address"
 	CtxConstRedirectURL             = "redirect_url"
 	CtxConstAuthorisationEndpoint   = "authorisation_endpoint"
 	CtxConstBasicAuthentication     = "basic_authentication"
@@ -35,8 +36,10 @@ const (
 	CtxNonOBDirectory               = "nonOBDirectory"
 	CtxSigningKid                   = "signingKid"
 	CtxSignatureTrustAnchor         = "signatureTrustAnchor"
+	CtxDynamicResourceIDs           = "dynamicResourceIDs"
 )
 
+// PutParametersToJourneyContext populates a JourneyContext with values from the config screen
 func PutParametersToJourneyContext(config JourneyConfig, context model.Context) error {
 	config.apiVersion = "v3.1"
 
@@ -46,6 +49,7 @@ func PutParametersToJourneyContext(config JourneyConfig, context model.Context) 
 	context.PutString(CtxResponseType, config.ResponseType)
 	context.PutString(CtxConstTokenEndpointAuthMethod, config.tokenEndpointAuthMethod)
 	context.PutString(CtxConstFapiFinancialID, config.xXFAPIFinancialID)
+	context.PutString(CtxConstFapiCustomerIPAddress, config.xXFAPICustomerIPAddress)
 	context.PutString(CtxConstRedirectURL, config.redirectURL)
 	context.PutString(CtxConstAuthorisationEndpoint, config.authorizationEndpoint)
 	context.PutString(CtxConstResourceBaseURL, config.resourceBaseURL)
@@ -66,6 +70,7 @@ func PutParametersToJourneyContext(config JourneyConfig, context model.Context) 
 	context.Put(CtxNonOBDirectory, config.useNonOBDirectory)
 	context.PutString(CtxSigningKid, config.signingKid)
 	context.PutString(CtxSignatureTrustAnchor, config.signatureTrustAnchor)
+	context.Put(CtxDynamicResourceIDs, config.useDynamicResourceID)
 
 	basicauth, err := authentication.CalculateClientSecretBasicToken(config.clientID, config.clientSecret)
 	if err != nil {
@@ -74,6 +79,11 @@ func PutParametersToJourneyContext(config JourneyConfig, context model.Context) 
 	context.PutString(CtxConstBasicAuthentication, basicauth)
 	context.PutString(CtxConstIssuer, config.issuer)
 	context.PutString(CtxPhase, "unknown")
+
+	if config.useDynamicResourceID {
+		context.Delete(CtxConsentedAccountID)
+		context.Delete(CtxStatementID)
+	}
 
 	return nil
 }

@@ -1,10 +1,6 @@
 package test
 
 import (
-	"bytes"
-	"io/ioutil"
-	"net/http"
-
 	resty "gopkg.in/resty.v1"
 )
 
@@ -17,34 +13,27 @@ import (
 //   data[x*2 - 1] = http header where x > 1
 //   data[x*2] = http header value
 func CreateHTTPResponse(respcode int, data ...string) *resty.Response {
-	resp := http.Response{}
-
-	resp.Header = make(http.Header)
-	resp.StatusCode = respcode
+	var resBody string
+	headers := make(map[string]string)
 
 	if len(data) < 2 { // if no body is provided, create one
-		resp.Body = ioutil.NopCloser(bytes.NewReader([]byte("")))
+		resBody = ""
 	}
 
 	for k, v := range data {
-		if k == 0 {
-			resp.Status = v
-			continue
-		}
 		if k == 1 {
-			resp.Body = ioutil.NopCloser(bytes.NewReader([]byte(v)))
-			resp.ContentLength = int64(len(v))
+			resBody = v
 
 			continue
 		}
 		if k%2 == 0 {
 			continue
 		}
-		resp.Header.Add(data[k-1], v)
+		headers[data[k-1]] = v
 	}
-	response := &resty.Response{
-		RawResponse: &resp,
-	}
+	mockedServer, mockedServerURL := HTTPServer(respcode, resBody, headers)
+	defer mockedServer.Close()
+	res, _ := resty.R().Get(mockedServerURL)
 
-	return response
+	return res
 }

@@ -39,6 +39,7 @@ type Script struct {
 	PermissionsExcluded []string          `json:"permissions-excluded,omitemtpy"`
 	Resource            string            `json:"resource,omitempty"`
 	Asserts             []string          `json:"asserts,omitempty"`
+	AssertsOneOf        []string          `json:"asserts_one_of,omitempty"`
 	Method              string            `json:"method,omitempty"`
 	URI                 string            `json:"uri,omitempty"`
 	URIImplemenation    string            `json:"uri_implemenation,omitempty"`
@@ -110,10 +111,15 @@ func GenerateTestCases(scripts Scripts, spec discovery.ModelAPISpecification, ba
 		return nil, Scripts{}, err
 	}
 	var filteredScripts Scripts
-	if specType == "accounts" { //TODO: Complete so it makes sense for payments
-		filteredScripts, err = FilterTestsBasedOnDiscoveryEndpoints(scripts, endpoints)
+	if specType == "accounts" {
+		filteredScripts, err = FilterTestsBasedOnDiscoveryEndpoints(scripts, endpoints, accountsRegex)
 		if err != nil {
-			logger.WithFields(logrus.Fields{"err": err}).Error("error filter scripts based on discovery")
+			logger.WithFields(logrus.Fields{"err": err}).Error("error filter scripts based on accounts discovery")
+		}
+	} else if specType == "payments" {
+		filteredScripts, err = FilterTestsBasedOnDiscoveryEndpoints(scripts, endpoints, paymentsRegex)
+		if err != nil {
+			logger.WithFields(logrus.Fields{"err": err}).Error("error filter scripts based on payments discovery")
 		}
 	} else {
 		filteredScripts = scripts // normal processing
@@ -225,6 +231,7 @@ func testCaseBuilder(s Script, refs map[string]Reference, ctx *model.Context, co
 	// TODO: use automated interaction-id generation - one id per run - injected into context at journey
 	tc.Input.Headers["x-fapi-interaction-id"] = "c4405450-febe-11e8-80a5-0fcebb157400"
 	tc.Input.Headers["x-fcs-testcase-id"] = tc.ID
+	tc.Input.Headers["x-fapi-customer-ip-address"] = "$x-fapi-customer-ip-address"
 	buildInputSection(s, &tc.Input)
 
 	tc.Purpose = s.Detail
@@ -249,9 +256,20 @@ func testCaseBuilder(s Script, refs map[string]Reference, ctx *model.Context, co
 			tc.Expect.StatusCode = clone.StatusCode
 		}
 		tc.Expect.Matches = append(tc.Expect.Matches, clone.Matches...)
-		tc.Expect.SchemaValidation = s.SchemaCheck
-
 	}
+
+	for _, a := range s.AssertsOneOf {
+		ref, exists := refs[a]
+		if !exists {
+			msg := fmt.Sprintf("assertion %s do not exist in reference data", a)
+			logrus.Error(msg)
+			return tc, errors.New(msg)
+		}
+		tc.ExpectOneOf = append(tc.ExpectOneOf, ref.Expect.Clone())
+	}
+
+	// test case schema validation
+	tc.Expect.SchemaValidation = s.SchemaCheck
 
 	// Handled PutContext parameters
 	putMatches := processPutContext(&s)
@@ -428,42 +446,46 @@ func getAccountPermissions(tests []model.TestCase) ([]ScriptPermission, error) {
 	return permCollector, nil
 }
 
-func FilterTestsBasedOnDiscoveryEndpoints(scripts Scripts, endpoints []discovery.ModelEndpoint) (Scripts, error) {
+// FilterTestsBasedOnDiscoveryEndpoints returns a subset of the first `scripts` parameter, thus filtering `scripts`.
+// Filtering is performed by matching (via `regPaths` regex's) the provided `endpoints` against the provided `scripts`.
+// The result is: For each path in the collection of scripts returned, there is at least one matching path in the `endpoint`
+// list.
+func FilterTestsBasedOnDiscoveryEndpoints(scripts Scripts, endpoints []discovery.ModelEndpoint, regPaths []PathRegex) (Scripts, error) {
 	lookupMap := make(map[string]bool)
-	filteredScripts := []Script{}
+	var filteredScripts []Script
 
 	for _, ep := range endpoints {
-		for _, regpath := range accountsRegex {
-			matched, err := regexp.MatchString(regpath.Regex, ep.Path)
+		for _, regPath := range regPaths {
+			matched, err := regexp.MatchString(regPath.Regex, ep.Path)
 			if err != nil {
 				continue
 			}
 			if matched {
-				lookupMap[regpath.Regex] = true
-				logrus.Tracef("endpoint %40.40s matched by regex %42.42s: %s", ep.Path, regpath.Regex, regpath.Name)
+				lookupMap[regPath.Regex] = true
+				logrus.Tracef("endpoint %40.40s matched by regex %42.42s: %s", ep.Path, regPath.Regex, regPath.Name)
 			}
 		}
 	}
 
 	for k := range lookupMap {
-		for i, scr := range scripts.Scripts {
+		for _, scr := range scripts.Scripts {
 			stripped := strings.Replace(scr.URI, "$", "", -1) // only works with a single character
 			if strings.Contains(stripped, "foobar") {         //exceptions
-				nofoobar := strings.Replace(stripped, "/foobar", "", -1) // only works with a single character
-				matched, err := regexp.MatchString(k, nofoobar)
+				noFoobar := strings.Replace(stripped, "/foobar", "", -1) // only works with a single character
+				matched, err := regexp.MatchString(k, noFoobar)
 				if err != nil {
 					continue
 				}
 				if matched {
-					if !contains(filteredScripts, scripts.Scripts[i]) {
+					if !contains(filteredScripts, scr) {
 						logrus.Tracef("endpoint %40.40s matched by regex %42.42s", scr.URI, k)
-						filteredScripts = append(filteredScripts, scripts.Scripts[i])
+						filteredScripts = append(filteredScripts, scr)
 					}
 				}
 
 				if scr.URI == "/foobar" {
-					if !contains(filteredScripts, scripts.Scripts[i]) {
-						filteredScripts = append(filteredScripts, scripts.Scripts[i])
+					if !contains(filteredScripts, scr) {
+						filteredScripts = append(filteredScripts, scr)
 					}
 					continue
 				}
@@ -474,17 +496,17 @@ func FilterTestsBasedOnDiscoveryEndpoints(scripts Scripts, endpoints []discovery
 				continue
 			}
 			if matched {
-				if !contains(filteredScripts, scripts.Scripts[i]) {
+				if !contains(filteredScripts, scr) {
 					logrus.Tracef("endpoint %40.40s matched by regex %42.42s", scr.URI, k)
-					filteredScripts = append(filteredScripts, scripts.Scripts[i])
+					filteredScripts = append(filteredScripts, scr)
 				}
 			}
 		}
 	}
-	resultscripts := Scripts{Scripts: filteredScripts}
-	sort.Slice(resultscripts.Scripts, func(i, j int) bool { return resultscripts.Scripts[i].ID < resultscripts.Scripts[j].ID })
+	result := Scripts{Scripts: filteredScripts}
+	sort.Slice(result.Scripts, func(i, j int) bool { return result.Scripts[i].ID < result.Scripts[j].ID })
 
-	return resultscripts, nil
+	return result, nil
 }
 
 func contains(s []Script, e Script) bool {
@@ -505,36 +527,283 @@ func dumpJSON(i interface{}) {
 
 var subPathx = "[a-zA-Z0-9_{}-]+" // url sub path regex
 
-type pathRegex struct {
-	Regex string
-	Name  string
+type PathRegex struct {
+	Regex  string
+	Method string
+	Name   string
 }
 
-var accountsRegex = []pathRegex{
-	{"^/accounts$", "Get Accounts"},
-	{"^/accounts/" + subPathx + "$", "Get Accounts Resource"},
-	{"^/accounts/" + subPathx + "/balances$", "Get Balances Resource"},
-	{"^/accounts/" + subPathx + "/beneficiaries$", "Get Beneficiaries Resource"},
-	{"^/accounts/" + subPathx + "/direct-debits$", "Get Direct Debits Resource"},
-	{"^/accounts/" + subPathx + "/offers$", "Get Offers Resource"},
-	{"^/accounts/" + subPathx + "/party$", "Get Party Rsource"},
-	{"^/accounts/" + subPathx + "/product$", "Get Product Resource"},
-	{"^/accounts/" + subPathx + "/scheduled-payments$", "Get Schedulated Payment resource"},
-	{"^/accounts/" + subPathx + "/standing-orders$", "Get Standing Orders resource"},
-	{"^/accounts/" + subPathx + "/statements$", "Get Statements Resource"},
-	{"^/accounts/" + subPathx + "/statements/" + subPathx + "/file$", "Get statement files resource"},
-	{"^/accounts/" + subPathx + "/statements/" + subPathx + "/transactions$", "Get statement transactions resource"},
-	{"^/accounts/" + subPathx + "/transactions$", "Get transactions resource"},
-	{"^/balances$", "Get Balances"},
-	{"^/beneficiaries$", "Get Beneficiaries"},
-	{"^/direct-debits$", "Get directory debits"},
-	{"^/offers$", "Get Offers"},
-	{"^/party$", "Get party"},
-	{"^/products$", "Get Products"},
-	{"^/scheduled-payments$", "Get Payments"},
-	{"^/standing-orders$", "Get Orders"},
-	{"^/statements$", "Get Statements"},
-	{"^/transactions$", "Get Transactions"},
+var accountsRegex = []PathRegex{
+	{
+		Regex: "^/accounts$",
+		Name:  "Get Accounts",
+	},
+	{
+		Regex: "^/accounts/" + subPathx + "$",
+		Name:  "Get Accounts Resource",
+	},
+	{
+		Regex: "^/accounts/" + subPathx + "/balances$",
+		Name:  "Get Balances Resource",
+	},
+	{
+		Regex: "^/accounts/" + subPathx + "/beneficiaries$",
+		Name:  "Get Beneficiaries Resource",
+	},
+	{
+		Regex: "^/accounts/" + subPathx + "/direct-debits$",
+		Name:  "Get Direct Debits Resource",
+	},
+	{
+		Regex: "^/accounts/" + subPathx + "/offers$",
+		Name:  "Get Offers Resource",
+	},
+	{
+		Regex: "^/accounts/" + subPathx + "/party$",
+		Name:  "Get Party Resource",
+	},
+	{
+		Regex: "^/accounts/" + subPathx + "/product$",
+		Name:  "Get Product Resource",
+	},
+	{
+		Regex: "^/accounts/" + subPathx + "/scheduled-payments$",
+		Name:  "Get Scheduled Payment resource",
+	},
+	{
+		Regex: "^/accounts/" + subPathx + "/standing-orders$",
+		Name:  "Get Standing Orders resource",
+	},
+	{
+		Regex: "^/accounts/" + subPathx + "/statements$",
+		Name:  "Get Statements Resource",
+	},
+	{
+		Regex: "^/accounts/" + subPathx + "/statements/" + subPathx + "/file$",
+		Name:  "Get statement files resource",
+	},
+	{
+		Regex: "^/accounts/" + subPathx + "/statements/" + subPathx + "/transactions$",
+		Name:  "Get statement transactions resource",
+	},
+	{
+		Regex: "^/accounts/" + subPathx + "/transactions$",
+		Name:  "Get transactions resource",
+	},
+	{
+		Regex: "^/balances$",
+		Name:  "Get Balances",
+	},
+	{
+		Regex: "^/beneficiaries$",
+		Name:  "Get Beneficiaries",
+	},
+	{
+		Regex: "^/direct-debits$",
+		Name:  "Get directory debits",
+	},
+	{
+		Regex: "^/offers$",
+		Name:  "Get Offers",
+	},
+	{
+		Regex: "^/party$",
+		Name:  "Get party",
+	},
+	{
+		Regex: "^/products$",
+		Name:  "Get Products",
+	},
+
+	{
+		Regex: "^/scheduled-payments$",
+		Name:  "Get Payments",
+	},
+	{
+		Regex: "^/standing-orders$",
+		Name:  "Get Orders",
+	},
+	{
+		Regex: "^/statements$",
+		Name:  "Get Statements",
+	},
+	{
+		Regex: "^/transactions$",
+		Name:  "Get Transactions",
+	},
+}
+
+var paymentsRegex = []PathRegex{
+	{
+		Regex:  "^/domestic-payment-consents$",
+		Method: "POST",
+		Name:   "Create a domestic payment consent",
+	},
+	{
+		Regex:  "^/domestic-payment-consents/" + subPathx + "$",
+		Method: "GET",
+		Name:   "Get domestic payment consent by by consent ID",
+	},
+	{
+		Regex:  "^/domestic-payment-consents/" + subPathx + "/funds-confirmation$",
+		Method: "GET",
+		Name:   "Get domestic payment consents funds confirmation, by consentID",
+	},
+	{
+		Regex:  "^/domestic-payments$",
+		Method: "POST",
+		Name:   "Create a domestic payment",
+	},
+	{
+		Regex:  "^/domestic-payments/" + subPathx + "$",
+		Method: "GET",
+		Name:   "Get domestic payment by domesticPaymentID",
+	},
+	{
+		Regex:  "^/domestic-scheduled-payment-consents$",
+		Method: "POST",
+		Name:   "Create a domestic scheduled payment consent",
+	},
+	{
+		Regex:  "^/domestic-scheduled-payment-consents/" + subPathx + "$",
+		Method: "GET",
+		Name:   "Get domestic scheduled payment consent by consentID",
+	},
+	{
+		Regex:  "^/domestic-scheduled-payments$",
+		Method: "POST",
+		Name:   "Create a domestic scheduled payment",
+	},
+	{
+		Regex:  "^/domestic-scheduled-payment/" + subPathx + "$",
+		Method: "GET",
+		Name:   "Get domestic scheduled payments by consentID",
+	},
+	{
+		Regex:  "^/domestic-standing-order-consents$",
+		Method: "POST",
+		Name:   "Create a domestic standing order consent",
+	},
+	{
+		Regex:  "^/domestic-standing-order-consents/" + subPathx + "$",
+		Method: "GET",
+		Name:   "Get domestic standing order consent by consentID",
+	},
+	{
+		Regex:  "^/domestic-standing-orders$",
+		Method: "POST",
+		Name:   "Create a domestic standing order",
+	},
+	{
+		Regex:  "^/domestic-standing-orders/" + subPathx + "$",
+		Method: "GET",
+		Name:   "Get domestic standing order by domesticStandingOrderID",
+	},
+	{
+		Regex:  "^/international-payment-consents$",
+		Method: "POST",
+		Name:   "Create an international payment consent",
+	},
+	{
+		Regex:  "^/international-payment-consents/" + subPathx + "$",
+		Method: "GET",
+		Name:   "Get international payment consent by consentID",
+	},
+	{
+		Regex:  "^/international-payment-consents/" + subPathx + "/funds-confirmation$",
+		Method: "GET",
+		Name:   "Get international payment consent funds confirmation by consentID",
+	},
+	{
+		Regex:  "^/international-payments$",
+		Method: "POST",
+		Name:   "Create an international payment",
+	},
+	{
+		Regex:  "^/international-payments/" + subPathx + "$",
+		Method: "GET",
+		Name:   "Get international payment by internationalPaymentID",
+	},
+	{
+		Regex:  "^/international-scheduled-payment-consents$",
+		Method: "POST",
+		Name:   "Create an international scheduled payment consent",
+	},
+	{
+		Regex:  "^/international-scheduled-payment-consents/" + subPathx + "$",
+		Method: "GET",
+		Name:   "Get international scheduled payment consents by consentID",
+	},
+	{
+		Regex:  "^/international-scheduled-payments/" + subPathx + "/funds-confirmation$",
+		Method: "GET",
+		Name:   "Get international scheduled payment funds confirmation by consentID",
+	},
+	{
+		Regex:  "^/international-scheduled-payments$",
+		Method: "POST",
+		Name:   "Create an international scheduled payment",
+	},
+	{
+		Regex:  "^/international-scheduled-payments/" + subPathx + "$",
+		Method: "GET",
+		Name:   "Create an international scheduled payment by internationalScheduledPaymentID",
+	},
+	{
+		Regex:  "^/international-standing-order-consents$",
+		Method: "POST",
+		Name:   "Create international standing order consent",
+	},
+	{
+		Regex:  "^/international-standing-order-consents/" + subPathx + "$",
+		Method: "GET",
+		Name:   "Get international standing order consent by consentID",
+	},
+	{
+		Regex:  "^/international-standing-orders$",
+		Method: "POST",
+		Name:   "Create international standing order",
+	},
+	{
+		Regex:  "^/international-standing-orders/" + subPathx + "$",
+		Method: "GET",
+		Name:   "Get an international standing order by internationalStandingOrderID",
+	},
+	{
+		Regex:  "^/file-payment-consents$",
+		Method: "POST",
+		Name:   "Create a file payment consent",
+	},
+	{
+		Regex:  "^/file-payment-consents/" + subPathx + "$",
+		Method: "GET",
+		Name:   "Get a file payment consent by consentID",
+	},
+	{
+		Regex:  "^/file-payment-consents/" + subPathx + "/file$",
+		Method: "POST",
+		Name:   "Create a file payment consent file by consentID",
+	},
+	{
+		Regex:  "^/file-payment-consents/" + subPathx + "/file$",
+		Method: "GET",
+		Name:   "Get a file payment consents file by consentID",
+	},
+	{
+		Regex:  "^/file-payments$",
+		Method: "POST",
+		Name:   "Create a file payment",
+	},
+	{
+		Regex:  "^/file-payments/" + subPathx + "$",
+		Method: "GET",
+		Name:   "Get a file payment by filePaymentID",
+	},
+	{
+		Regex:  "^/file-payments/" + subPathx + "/report-file$",
+		Method: "GET",
+		Name:   "Get a file payment report file by filePaymentID",
+	},
 }
 
 func timeNowMillis() string {

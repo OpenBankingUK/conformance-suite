@@ -28,7 +28,7 @@ func TestServerDiscoveryModelPOSTValidateReturnsErrorsWhenInvalidJSON(t *testing
 	assert.NotNil(body)
 	assert.JSONEq(expected, body.String())
 	assert.Equal(http.StatusBadRequest, code)
-	assert.Equal(expectedJsonHeaders, headers)
+	assert.Equal(expectedJsonHeaders(), headers)
 }
 
 // /api/discovery-model/validate - POST - When incomplete model returns validation failures messages
@@ -56,5 +56,5 @@ func TestServerDiscoveryModelPOSTValidateReturnsErrorsWhenIncomplete(t *testing.
 	assert.NotNil(body)
 	assert.JSONEq(expected, body.String())
 	assert.Equal(http.StatusBadRequest, code)
-	assert.Equal(expectedJsonHeaders, headers)
+	assert.Equal(expectedJsonHeaders(), headers)
 }

@@ -24,7 +24,7 @@ var (
 	errTokenEndpointMethodUnsupported = errors.New("token_endpoint_auth_method unsupported")
 )
 
-var (
+const (
 	consentChannelTimeout = 30
 )
 
@@ -361,7 +361,7 @@ func exchangeCodeForToken(code string, ctx *model.Context, logger *logrus.Entry)
 
 		token := jwt.NewWithClaims(signingMethod, claims) // create new token
 
-		kid, err := model.GetKID(ctx, cert.PublicKey().N.Bytes())
+		kid, err := authentication.GetKID(ctx, cert.PublicKey().N.Bytes())
 		if err != nil {
 			return nil, errors.Wrap(err, "executors.exchangeCodeForToken failed: unable to get KID")
 		}

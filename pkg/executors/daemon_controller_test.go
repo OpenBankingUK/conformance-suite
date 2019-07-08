@@ -73,7 +73,7 @@ func TestNewBufferedDaemonControllerAllResults(t *testing.T) {
 	require.Empty(controller.AllResults())
 
 	err := errors.New("some error")
-	result := results.NewTestCaseResult("123", true, results.NoMetrics, []error{err}, "endpoint", "api-name", "api-version", "detailed description", "https://openbanking.org.uk/ref/uri")
+	result := results.NewTestCaseResult("123", true, results.NoMetrics(), []error{err}, "endpoint", "api-name", "api-version", "detailed description", "https://openbanking.org.uk/ref/uri")
 	controller.AddResult(result)
 
 	// channel contains event

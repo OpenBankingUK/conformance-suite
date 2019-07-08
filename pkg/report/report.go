@@ -65,7 +65,7 @@ func NewReport(exportResults models.ExportResults, environment string) (Report, 
 	created := time.Now().Format(internal_time.Layout)
 	expiration := time.Now().AddDate(0, 3, 0).Format(internal_time.Layout) // Expires three (3) months from now
 	certifiedBy := CertifiedBy{
-		Environment:  certifiedByEnvironmentToID[environment],
+		Environment:  certifiedByEnvironmentToID()[environment],
 		Brand:        exportResults.ExportRequest.Implementer,
 		AuthorisedBy: exportResults.ExportRequest.AuthorisedBy,
 		JobTitle:     exportResults.ExportRequest.JobTitle,

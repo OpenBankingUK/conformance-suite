@@ -399,6 +399,7 @@ func TestJWSDetachedSignature(t *testing.T) {
 		"authorisation_endpoint":    "https://example.com/authorisation",
 		"api-version":               "v3.0",
 		"nonOBDirectory":            false,
+		"requestObjectSigningAlg":   "PS256",
 	}
 
 	i := Input{JwsSig: true, Method: "POST", Endpoint: "https://google.com", RequestBody: "$domestic_payment_template"}
@@ -530,7 +531,7 @@ func loadSigningCert() (tls.Certificate, error) {
 		return tls.Certificate{}, err
 	}
 
-	cert, err := tls.X509KeyPair([]byte(certSigning), []byte(keySigning))
+	cert, err := tls.X509KeyPair(certSigning, keySigning)
 
 	return cert, nil
 }
@@ -614,7 +615,7 @@ var paymentPayload = `{
 	"Risk": {}
 }`
 
-var selfsignedDummykey = `-----BEGIN RSA PRIVATE KEY----- 
+var selfsignedDummykey = `-----BEGIN RSA PRIVATE KEY-----
 MIIEpAIBAAKCAQEA8Gl2x9KsmqwdmZd+BdZYtDWHNRXtPd/kwiR6luU+4w76T+9m
 lmePXqALi7aSyvYQDLeffR8+2dSGcdwvkf6bDWZNeMRXl7Z1jsk+xFN91mSYNk1n
 R6N1EsDTK2KXlZZyaTmpu/5p8SxwDO34uE5AaeESeM3RVqqOgRcXskmp/atwUMC+

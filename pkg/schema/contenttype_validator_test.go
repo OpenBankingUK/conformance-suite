@@ -1,19 +1,20 @@
 package schema
 
 import (
-	"github.com/go-openapi/loads"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 	"net/http"
 	"strings"
 	"testing"
+
+	"github.com/go-openapi/loads"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestContentTypeValidator_Validate(t *testing.T) {
 	doc, err := loads.Spec("spec/v3.1.0/confirmation-funds-swagger.flattened.json")
 	require.NoError(t, err)
-	finder := newFinder(doc)
-	validator := newContentTypeValidator(finder)
+	f := newFinder(doc)
+	validator := newContentTypeValidator(f)
 	body := strings.NewReader(getAccountsResponse)
 
 	var testCases = []struct {

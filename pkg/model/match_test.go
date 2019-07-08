@@ -1,11 +1,11 @@
 package model
 
 import (
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/schema"
-	"bytes"
 	"encoding/json"
-	"github.com/stretchr/testify/require"
 	"testing"
+
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/schema"
+	"github.com/stretchr/testify/require"
 
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/test"
 
@@ -26,10 +26,7 @@ func TestContextPutFromMatch(t *testing.T) {
 	ctx := Context{}
 	m := Match{JSON: "name.last", Description: "simple match test", ContextName: "LastName"}
 	resp := test.CreateHTTPResponse(200, "OK", simplejson)
-	buf := new(bytes.Buffer)
-	_, err := buf.ReadFrom(resp.RawResponse.Body)
-	require.NoError(t, err)
-	tc := TestCase{Body: buf.String()}
+	tc := TestCase{Body: resp.String()}
 	assert.True(t, m.PutValue(&tc, &ctx))
 	ctxvalue, exists := ctx.Get(m.ContextName)
 	assert.True(t, exists)

@@ -84,7 +84,7 @@ func (g generator) GenerateManifestTests(log *logrus.Entry, config GeneratorConf
 	}
 
 	specTestCases := []SpecificationTestCases{}
-	var scrSlice []model.SpecConsentRequirements
+	scrSlice := []model.SpecConsentRequirements{}
 	var filteredScripts manifest.Scripts
 	tokens := map[string][]manifest.RequiredTokens{}
 
