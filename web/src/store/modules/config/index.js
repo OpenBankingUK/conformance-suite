@@ -104,7 +104,7 @@ export const mutations = {
     state.response_types_supported = value;
   },
   [mutationTypes.SET_ACR_VALUES_SUPPORTED](state, value) {
-    state.acr_values_supported = value;
+    state.configuration.acr_values_supported = value;
   },
   [mutationTypes.SET_TOKEN_ENDPOINT_AUTH_METHOD](state, value) {
     state.configuration.token_endpoint_auth_method = value;

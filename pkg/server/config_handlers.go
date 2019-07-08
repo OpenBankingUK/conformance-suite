@@ -161,6 +161,7 @@ func MakeJourneyConfig(config *GlobalConfiguration) (JourneyConfig, error) {
 		useNonOBDirectory:             config.UseNonOBDirectory,
 		signingKid:                    config.SigningKid,
 		signatureTrustAnchor:          config.SignatureTrustAnchor,
+		AcrValuesSupported:            config.AcrValuesSupported,
 	}, nil
 }
 

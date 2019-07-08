@@ -384,8 +384,11 @@ func (i *Input) GenerateSignedJWT(ctx *Context, alg jwt.SigningMethod) (string, 
 	}
 
 	consentClaim := consentClaims{Essential: true, Value: i.Claims["consentId"]}
-	// TODO: if acr := ctx.GetAcrValues(); obIDToken{IntentID: consentClaim, Acr: acr}
 	myIdent := obIDToken{IntentID: consentClaim}
+	acrValuesSupported, err := ctx.GetStringSlice("acrValuesSupported")
+	if err == nil && len(acrValuesSupported) > 0 {
+		myIdent = obIDToken{IntentID: consentClaim, Acr: acr{Essential: true, Values: acrValuesSupported}}
+	}
 	var consentIDToken = consentIDTok{Token: myIdent}
 	claims["claims"] = consentIDToken
 	if responseType, ok := i.Claims["responseType"]; ok {
@@ -447,9 +450,12 @@ func (i *Input) generateUnsignedJWT(ctx *Context) (string, error) {
 	claims["redirect_uri"] = i.Claims["redirect_url"]
 
 	consentClaim := consentClaims{Essential: true, Value: i.Claims["consentId"]}
-	// TODO: if acr := ctx.GetAcrValues(); obIDToken{IntentID: consentClaim, Acr: acr}
-	myident := obIDToken{IntentID: consentClaim}
-	var consentIDToken = consentIDTok{Token: myident}
+	myIdent := obIDToken{IntentID: consentClaim}
+	acrValuesSupported, err := ctx.GetStringSlice("acrValuesSupported")
+	if err == nil && len(acrValuesSupported) > 0 {
+		myIdent = obIDToken{IntentID: consentClaim, Acr: acr{Essential: true, Values: acrValuesSupported}}
+	}
+	var consentIDToken = consentIDTok{Token: myIdent}
 
 	claims["claims"] = consentIDToken
 
