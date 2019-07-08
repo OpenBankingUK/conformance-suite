@@ -6,6 +6,7 @@ import (
 	"net/url"
 	"reflect"
 	"regexp"
+	"strings"
 
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/server/models"
 	"gopkg.in/resty.v1"
@@ -45,6 +46,13 @@ func SupportedRequestSignAlgValues() []interface{} {
 	return []interface{}{"PS256", "RS256", "NONE"}
 }
 
+// SupportedAcrValues returns a slice of supported acr values to be used in the request object
+// those are values that the Authorization Server is being requested to use for processing this Authentication Request
+// https://openbanking.atlassian.net/wiki/spaces/DZ/pages/7046134/Open+Banking+Security+Profile+-+Implementer+s+Draft+v1.1.0
+func SupportedAcrValues() []string {
+	return []string{"urn:openbanking:psd2:sca", "urn:openbanking:psd2:ca"}
+}
+
 type GlobalConfiguration struct {
 	SigningPrivate                string                  `json:"signing_private" validate:"not_empty"`
 	SigningPublic                 string                  `json:"signing_public" validate:"not_empty"`
@@ -82,7 +90,27 @@ func (c GlobalConfiguration) Validate() error {
 		validation.Field(&c.ResponseType, validation.Required, validation.In(values[:]...)),
 		validation.Field(&c.InstructedAmount),
 		validation.Field(&c.CurrencyOfTransfer, validation.Match(regexp.MustCompile("^[A-Z]{3,3}$"))),
+		validation.Field(&c.AcrValuesSupported, validation.By(acrValuesValidator)),
 	)
+}
+
+func acrValuesValidator(value interface{}) error {
+	values, ok := value.([]string)
+	if !ok {
+		return nil
+	}
+	supportedAcrValues := SupportedAcrValues()
+	if len(values) > len(supportedAcrValues) {
+		return errors.New("`acr_values_supported` cannot be more than two")
+	}
+	supportedAcrValuesFlat := strings.Join(supportedAcrValues, ",")
+	for _, v := range values {
+		if strings.Contains(supportedAcrValuesFlat, v) {
+			return fmt.Errorf("`acr_values_supported` invalid value provided: %s", v)
+		}
+	}
+	
+	return nil
 }
 
 func newConfigHandlers(journey Journey, logger *logrus.Entry) configHandlers {

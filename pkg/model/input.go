@@ -423,6 +423,13 @@ func (i *Input) GenerateSignedJWT(ctx *Context, alg jwt.SigningMethod) (string, 
 	return tokenString, nil
 }
 
+// acr
+// TPPs MAY provide a space-separated string that specifies the acr values that the Authorization Server is being requested to use for processing this Authentication Request, with the values appearing in order of preference.
+// The values MUST be one or both of:
+// urn:openbanking:psd2:sca: To indiciate that secure customer authentication must be carried out as mandated by the PSD2 RTS
+// urn:openbanking:psd2:ca: To request that the customer is authenticated without using SCA (if permitted)
+//
+// https://openbanking.atlassian.net/wiki/spaces/DZ/pages/7046134/Open+Banking+Security+Profile+-+Implementer+s+Draft+v1.1.0
 type acr struct {
 	Essential bool     `json:"essential,omitempty"`
 	Values    []string `json:"values,omitempty"`
