@@ -387,7 +387,7 @@ func (i *Input) GenerateSignedJWT(ctx *Context, alg jwt.SigningMethod) (string, 
 	myIdent := obIDToken{IntentID: consentClaim}
 	acrValuesSupported, err := ctx.GetStringSlice("acrValuesSupported")
 	if err == nil && len(acrValuesSupported) > 0 {
-		myIdent = obIDToken{IntentID: consentClaim, Acr: acr{Essential: true, Values: acrValuesSupported}}
+		myIdent = obIDToken{IntentID: consentClaim, Acr: &acr{Essential: true, Values: acrValuesSupported}}
 	}
 	var consentIDToken = consentIDTok{Token: myIdent}
 	claims["claims"] = consentIDToken
@@ -437,7 +437,7 @@ type acr struct {
 
 type obIDToken struct {
 	IntentID consentClaims `json:"openbanking_intent_id,omitempty"`
-	Acr      acr           `json:"acr,omitempty"`
+	Acr      *acr          `json:"acr,omitempty"`
 }
 
 type consentClaims struct {
@@ -460,7 +460,7 @@ func (i *Input) generateUnsignedJWT(ctx *Context) (string, error) {
 	myIdent := obIDToken{IntentID: consentClaim}
 	acrValuesSupported, err := ctx.GetStringSlice("acrValuesSupported")
 	if err == nil && len(acrValuesSupported) > 0 {
-		myIdent = obIDToken{IntentID: consentClaim, Acr: acr{Essential: true, Values: acrValuesSupported}}
+		myIdent = obIDToken{IntentID: consentClaim, Acr: &acr{Essential: true, Values: acrValuesSupported}}
 	}
 	var consentIDToken = consentIDTok{Token: myIdent}
 
