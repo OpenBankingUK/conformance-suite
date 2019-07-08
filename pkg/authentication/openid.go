@@ -49,7 +49,5 @@ func OpenIdConfig(url string) (OpenIDConfiguration, error) {
 	if err := json.NewDecoder(resp.Body).Decode(&config); err != nil {
 		return config, errors.Wrap(err, fmt.Sprintf("Invalid OpenIDConfiguration: url=%+v", url))
 	}
-	// TODO(diego): remove
-	config.AcrValuesSupported = []string{"urn:openbanking:psd2:sca", "urn:openbanking:psd2:ca"}
 	return config, nil
 }

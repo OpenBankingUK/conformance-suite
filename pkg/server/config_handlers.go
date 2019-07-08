@@ -6,7 +6,6 @@ import (
 	"net/url"
 	"reflect"
 	"regexp"
-	"strings"
 
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/server/models"
 	"gopkg.in/resty.v1"
@@ -101,16 +100,25 @@ func acrValuesValidator(value interface{}) error {
 	}
 	supportedAcrValues := SupportedAcrValues()
 	if len(values) > len(supportedAcrValues) {
-		return errors.New("`acr_values_supported` cannot be more than two")
+		return fmt.Errorf("acrValuesValidator: `acr_values_supported` cannot be more than %d", len(supportedAcrValues))
 	}
-	supportedAcrValuesFlat := strings.Join(supportedAcrValues, ",")
 	for _, v := range values {
-		if strings.Contains(supportedAcrValuesFlat, v) {
-			return fmt.Errorf("`acr_values_supported` invalid value provided: %s", v)
+		if !strSliceContains(supportedAcrValues, v) {
+			return fmt.Errorf("acrValuesValidator: `acr_values_supported` invalid value provided: %s", v)
 		}
 	}
-	
+
 	return nil
+}
+
+func strSliceContains(slice []string, str string) bool {
+	for _, s := range slice {
+		if s == str {
+			return true
+		}
+	}
+
+	return false
 }
 
 func newConfigHandlers(journey Journey, logger *logrus.Entry) configHandlers {
