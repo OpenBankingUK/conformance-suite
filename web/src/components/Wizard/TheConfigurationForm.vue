@@ -481,6 +481,11 @@ export default {
         return this.$store.state.config.response_types_supported;
       },
     },
+    acr_values_supported: {
+      get() {
+        return this.$store.state.config.acr_values_supported;
+      }
+    },
     response_type: {
       get() {
         return this.$store.state.config.configuration.response_type;

@@ -20,6 +20,7 @@ type OpenIDConfiguration struct {
 	Issuer                                 string   `json:"issuer"`
 	ResponseTypesSupported                 []string `json:"response_types_supported"`
 	SupportedClaims                        []string `json:"claims_supported"`
+	AcrValuesSupported                     []string `json:"acr_values_supported"`
 }
 
 func OpenIdConfig(url string) (OpenIDConfiguration, error) {
@@ -48,5 +49,7 @@ func OpenIdConfig(url string) (OpenIDConfiguration, error) {
 	if err := json.NewDecoder(resp.Body).Decode(&config); err != nil {
 		return config, errors.Wrap(err, fmt.Sprintf("Invalid OpenIDConfiguration: url=%+v", url))
 	}
+	// remove
+	config.AcrValuesSupported = []string{"urn:openbanking:psd2:sca", "urn:openbanking:psd2:ca"}
 	return config, nil
 }

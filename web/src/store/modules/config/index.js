@@ -21,6 +21,7 @@ export const mutationTypes = {
   SET_TOKEN_ENDPOINT: 'SET_TOKEN_ENDPOINT',
   SET_RESPONSE_TYPE: 'SET_RESPONSE_TYPE',
   SET_RESPONSE_TYPES_SUPPORTED: 'SET_RESPONSE_TYPES_SUPPORTED',
+  SET_ACR_VALUES_SUPPORTED: 'SET_ACR_VALUES_SUPPORTED',
   SET_TOKEN_ENDPOINT_AUTH_METHOD: 'SET_TOKEN_ENDPOINT_AUTH_METHOD',
   SET_TOKEN_ENDPOINT_AUTH_METHODS: 'SET_TOKEN_ENDPOINT_AUTH_METHODS',
   SET_REQUEST_OBJECT_SIGNING_ALG_VALUES_SUPPORTED: 'SET_REQUEST_OBJECT_SIGNING_ALG_VALUES_SUPPORTED',
@@ -99,6 +100,9 @@ export const mutations = {
   },
   [mutationTypes.SET_RESPONSE_TYPES_SUPPORTED](state, value) {
     state.response_types_supported = value;
+  },
+  [mutationTypes.SET_ACR_VALUES_SUPPORTED](state, value) {
+    state.acr_values_supported = value;
   },
   [mutationTypes.SET_TOKEN_ENDPOINT_AUTH_METHOD](state, value) {
     state.configuration.token_endpoint_auth_method = value;
@@ -244,7 +248,7 @@ export const state = {
   token_endpoint_auth_methods: [],
   request_object_signing_alg_values_supported: [],
   response_types_supported: [],
-
+  acr_values_supported: [],
   configuration: {
     signing_private: '',
     signing_public: '',

@@ -189,7 +189,7 @@ func (i *Input) GenerateRequestToken(ctx *Context) (string, error) {
 	case "NONE":
 		fallthrough
 	default:
-		token, err = i.generateUnsignedJWT()
+		token, err = i.generateUnsignedJWT(ctx)
 	}
 	return token, err
 }
@@ -398,7 +398,8 @@ func (i *Input) GenerateSignedJWT(ctx *Context, alg jwt.SigningMethod) (string, 
 	}
 
 	consentClaim := consentClaims{Essential: true, Value: i.Claims["consentId"]}
-	myIdent := obintentID{IntentID: consentClaim}
+	// TODO: if acr := ctx.GetAcrValues(); obIDToken{IntentID: consentClaim, Acr: acr}
+	myIdent := obIDToken{IntentID: consentClaim}
 	var consentIDToken = consentIDTok{Token: myIdent}
 	claims["claims"] = consentIDToken
 	if responseType, ok := i.Claims["responseType"]; ok {
@@ -581,8 +582,13 @@ func SigningString(t *jwt.Token, body string) (string, error) {
 	return strings.Join(parts, "."), nil
 }
 
-type obintentID struct {
+type acr struct {
+	Essential bool     `json:"essential,omitempty"`
+	Values    []string `json:"values,omitempty"`
+}
+type obIDToken struct {
 	IntentID consentClaims `json:"openbanking_intent_id,omitempty"`
+	Acr      acr           `json:"acr,omitempty"`
 }
 
 type consentClaims struct {
@@ -591,10 +597,10 @@ type consentClaims struct {
 }
 
 type consentIDTok struct {
-	Token obintentID `json:"id_token,omitempty"`
+	Token obIDToken `json:"id_token,omitempty"`
 }
 
-func (i *Input) generateUnsignedJWT() (string, error) {
+func (i *Input) generateUnsignedJWT(ctx *Context) (string, error) {
 	claims := jwt.MapClaims{}
 	claims["iss"] = i.Claims["iss"]
 	claims["scope"] = i.Claims["scope"]
@@ -602,7 +608,8 @@ func (i *Input) generateUnsignedJWT() (string, error) {
 	claims["redirect_uri"] = i.Claims["redirect_url"]
 
 	consentClaim := consentClaims{Essential: true, Value: i.Claims["consentId"]}
-	myident := obintentID{IntentID: consentClaim}
+	// TODO: if acr := ctx.GetAcrValues(); obIDToken{IntentID: consentClaim, Acr: acr}
+	myident := obIDToken{IntentID: consentClaim}
 	var consentIDToken = consentIDTok{Token: myident}
 
 	claims["claims"] = consentIDToken

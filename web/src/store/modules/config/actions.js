@@ -57,6 +57,7 @@ export default {
         commit(types.SET_TOKEN_ENDPOINT_AUTH_METHOD, defaultAuthMethod);
 
         commit(types.SET_RESPONSE_TYPES_SUPPORTED, response.response_types_supported);
+        commit(types.SET_ACR_VALUES_SUPPORTED, response.acr_values_supported);
 
         const authMethods = _.first(_.values(response.token_endpoint_auth_methods));
         commit(types.SET_TOKEN_ENDPOINT_AUTH_METHODS, authMethods);
@@ -125,6 +126,7 @@ export default {
         'creditor_account',
         'instructed_amount',
         'currency_of_transfer',
+        'acr_values_supported',
       ];
       const newConfig = _.pick(merged, validKeys);
       commit(types.SET_CONFIGURATION, newConfig);

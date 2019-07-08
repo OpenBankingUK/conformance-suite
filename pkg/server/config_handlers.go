@@ -68,6 +68,7 @@ type GlobalConfiguration struct {
 	UseNonOBDirectory             bool                    `json:"use_non_ob_directory"`
 	SigningKid                    string                  `json:"signing_kid,omitempty"`
 	SignatureTrustAnchor          string                  `json:"signature_trust_anchor,omitempty"`
+	AcrValuesSupported            []string                `json:"acr_values_supported,omitempty"`
 }
 
 // Validate - used by https://github.com/go-ozzo/ozzo-validation to validate struct.
