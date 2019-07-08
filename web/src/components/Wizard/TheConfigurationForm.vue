@@ -508,7 +508,7 @@ export default {
     acr_values_supported: {
       get() {
         return this.$store.state.config.acr_values_supported;
-      }
+      },
     },
     response_type: {
       get() {

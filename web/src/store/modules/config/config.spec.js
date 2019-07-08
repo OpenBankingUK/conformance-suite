@@ -777,7 +777,7 @@ describe('web/src/store/modules/config', () => {
               'code',
               'code id_token',
             ],
-            acr_values_supported: []
+            acr_values_supported: [],
           },
         });
 
