@@ -20,7 +20,7 @@ type OpenIDConfiguration struct {
 	Issuer                                 string   `json:"issuer"`
 	ResponseTypesSupported                 []string `json:"response_types_supported"`
 	SupportedClaims                        []string `json:"claims_supported"`
-	AcrValuesSupported                     []string `json:"acr_values_supported"`
+	AcrValuesSupported                     []string `json:"acr_values_supported,omitempty"`
 }
 
 func OpenIdConfig(url string) (OpenIDConfiguration, error) {

@@ -37,6 +37,7 @@ func TestOpenIdConfigWhenGetSuccessful(t *testing.T) {
 		Issuer:                            "https://modelobankauth2018.o3bank.co.uk:4101",
 		TokenEndpointAuthMethodsSupported: authMethods,
 		ResponseTypesSupported:            responseTypesSupported,
+		AcrValuesSupported:                []string{},
 	}
 
 	require.Equal(expected, config)
