@@ -19,7 +19,6 @@ type OpenIDConfiguration struct {
 	AuthorizationEndpoint                  string   `json:"authorization_endpoint"`
 	Issuer                                 string   `json:"issuer"`
 	ResponseTypesSupported                 []string `json:"response_types_supported"`
-	SupportedClaims                        []string `json:"claims_supported"`
 	AcrValuesSupported                     []string `json:"acr_values_supported,omitempty"`
 }
 
