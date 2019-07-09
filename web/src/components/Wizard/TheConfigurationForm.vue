@@ -344,8 +344,28 @@
           />
         </b-form-group>
       </b-card>
+
       <br>
+
       <b-card bg-variant="light">
+        <b-form-group
+          label="Payments"
+          label-size="lg"/>
+
+        <b-form-group
+          id="payment_frequency_group"
+          label-for="payment_frequency"
+          label="Frequency"
+          description="^(EvryDay)$|^(EvryWorkgDay)$|^(IntrvlWkDay:0[1-9]:0[1-7])$|^(WkInMnthDay:0[1-5]:0[1-7])$|^(IntrvlMnthDay:(0[1-6]|12|24):(-0[1-5]|0[1-9]|[12][0-9]|3[01]))$|^(QtrDay:(ENGLISH|SCOTTISH|RECEIVED))$">
+          <b-form-input
+            id="payment_frequency"
+            v-model="payment_frequency"
+            :state="isNotEmpty(payment_frequency.match(/^(EvryDay)$|^(EvryWorkgDay)$|^(IntrvlWkDay:0[1-9]:0[1-7])$|^(WkInMnthDay:0[1-5]:0[1-7])$|^(IntrvlMnthDay:(0[1-6]|12|24):(-0[1-5]|0[1-9]|[12][0-9]|3[01]))$|^(QtrDay:(ENGLISH|SCOTTISH|RECEIVED))$/))"
+            required
+            type="text"
+          />
+        </b-form-group>
+
         <b-form-group
           id="creditor_account_group"
           label-for="creditor_account"
@@ -720,6 +740,14 @@ export default {
           'INR',
           'BRL',
         ];
+      },
+    },
+    payment_frequency: {
+      get() {
+        return this.$store.state.config.configuration.payment_frequency;
+      },
+      set(value) {
+        this.$store.commit('config/SET_PAYMENT_FREQUENCY', value);
       },
     },
   },

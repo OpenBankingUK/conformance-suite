@@ -74,6 +74,7 @@ type GlobalConfiguration struct {
 	TransactionToDate             string                  `json:"transaction_to_date" validate:"not_empty"`
 	RequestObjectSigningAlgorithm string                  `json:"request_object_signing_alg"`
 	InstructedAmount              models.InstructedAmount `json:"instructed_amount"`
+	PaymentFrequency              models.PaymentFrequency `json:"payment_frequency"`
 	CurrencyOfTransfer            string                  `json:"currency_of_transfer"`
 	UseNonOBDirectory             bool                    `json:"use_non_ob_directory"`
 	SigningKid                    string                  `json:"signing_kid,omitempty"`
@@ -90,6 +91,7 @@ func (c GlobalConfiguration) Validate() error {
 		validation.Field(&c.InstructedAmount),
 		validation.Field(&c.CurrencyOfTransfer, validation.Match(regexp.MustCompile("^[A-Z]{3,3}$"))),
 		validation.Field(&c.AcrValuesSupported, validation.By(acrValuesValidator)),
+		validation.Field(&c.PaymentFrequency),
 	)
 }
 
@@ -188,6 +190,7 @@ func MakeJourneyConfig(config *GlobalConfiguration) (JourneyConfig, error) {
 		resourceIDs:                   config.ResourceIDs,
 		creditorAccount:               config.CreditorAccount,
 		instructedAmount:              config.InstructedAmount,
+		paymentFrequency:              config.PaymentFrequency,
 		currencyOfTransfer:            config.CurrencyOfTransfer,
 		transactionFromDate:           config.TransactionFromDate,
 		transactionToDate:             config.TransactionToDate,

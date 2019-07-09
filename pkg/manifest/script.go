@@ -269,6 +269,15 @@ func testCaseBuilder(s Script, refs map[string]Reference, ctx *model.Context, co
 	}
 
 	// test case schema validation
+	if !s.SchemaCheck {
+		logrus.WithFields(logrus.Fields{
+			"function":      "testCaseBuilder",
+			"package":       "manifest",
+			"s.ID":          s.ID,
+			"s.Description": s.Description,
+			"s.Detail":      s.Detail,
+		}).Warn(`s.SchemaCheck is false - "schemaCheck": false`)
+	}
 	tc.Expect.SchemaValidation = s.SchemaCheck
 
 	// Handled PutContext parameters

@@ -109,9 +109,6 @@ func (i *Input) CreateRequest(tc *TestCase, ctx *Context) (*resty.Request, error
 }
 
 func (i *Input) setClaims(tc *TestCase, ctx *Context) error {
-	logrus.WithFields(logrus.Fields{
-		"i.Claims": i.Claims,
-	}).Debug("Input.setClaims before ...")
 	ctx.DumpContext()
 
 	for k, v := range i.Claims {
@@ -155,11 +152,6 @@ func (i *Input) setClaims(tc *TestCase, ctx *Context) error {
 			ctx.Put("jwtbearer", token) // Result - set jwt-bearer token in context
 		}
 	}
-
-	logrus.WithFields(logrus.Fields{
-		"i.Claims": i.Claims,
-	}).Debug("Input.setClaims after ...")
-	ctx.DumpContext()
 
 	return nil
 }

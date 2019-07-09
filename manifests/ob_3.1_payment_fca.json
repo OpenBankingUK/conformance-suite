@@ -80,7 +80,7 @@
       ],
       "method": "get",
       "schemaCheck": false
-    },    
+    },
     {
       "description": "Domestic Payment consents succeeds with minimal data set with additional schema checks.",
       "id": "OB-301-DOP-100300",
@@ -195,7 +195,7 @@
       "schemaCheck": false
     },
 
-    
+
     {
       "description": "PISP can retrieve the Domestic Payment status.",
       "id": "OB-301-DOP-100700",
@@ -327,7 +327,7 @@
         "tokenRequestScope": "payments",
         "instructedAmountValue": "$instructedAmountValue",
         "instructedAmountCurrency": "$instructedAmountCurrency",
-        "frequency": "EvryDay",
+        "frequency": "$payment_frequency",
         "postData": "$minimalDomesticStandingOrderConsent",
         "requestConsent": "true"
       },
@@ -433,7 +433,8 @@
         "tokenRequestScope": "payments",
         "instructedAmountValue": "$instructedAmountValue",
         "instructedAmountCurrency": "$instructedAmountCurrency",
-        "postData": "$minimalDomesticStandingOrderEveryDay",
+        "frequency": "$payment_frequency",
+        "postData": "$minimalDomesticStandingOrder",
         "consentId": "$OB-301-DOP-101200-ConsentId"
       },
       "headers": {
@@ -553,7 +554,7 @@
       ],
       "method": "get",
       "schemaCheck": false
-    },    
+    },
     {
       "description": "International Payment consent succeeds with minimal data set with additional schema checks.",
       "id": "OB-301-DOP-101600",

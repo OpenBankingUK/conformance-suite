@@ -454,6 +454,7 @@ type JourneyConfig struct {
 	resourceIDs                   model.ResourceIDs
 	creditorAccount               models.Payment
 	instructedAmount              models.InstructedAmount
+	paymentFrequency              models.PaymentFrequency
 	currencyOfTransfer            string
 	apiVersion                    string
 	transactionFromDate           string

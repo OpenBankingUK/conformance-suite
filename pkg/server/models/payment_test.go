@@ -209,3 +209,65 @@ func TestServer_Payment_InstructedAmountValue_String(t *testing.T) {
 		}
 	}
 }
+
+func TestPaymentFrequency(t *testing.T) {
+	require := test.NewRequire(t)
+
+	// Taken from
+	// https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937623689/Domestic+Standing+Orders+v3.1#DomesticStandingOrdersv3.1-FrequencyExamples
+	tests := []struct {
+		Value         string
+		ExpectedError bool
+	}{
+		{
+			Value:         "EvryDay",
+			ExpectedError: false,
+		},
+		{
+			Value:         "EvryWorkgDay",
+			ExpectedError: false,
+		},
+		{
+			Value:         "IntrvlWkDay:01:03",
+			ExpectedError: false,
+		},
+		{
+			Value:         "IntrvlWkDay:02:03",
+			ExpectedError: false,
+		},
+		{
+			Value:         "WkInMnthDay:02:03",
+			ExpectedError: false,
+		},
+		{
+			Value:         "IntrvlMnthDay:01:-01",
+			ExpectedError: false,
+		},
+		{
+			Value:         "IntrvlMnthDay:06:15",
+			ExpectedError: false,
+		},
+		{
+			Value:         "QtrDay:ENGLISH",
+			ExpectedError: false,
+		},
+		{
+			Value:         "WkInMnthDay:01:01",
+			ExpectedError: false,
+		},
+		{
+			Value:         "BadValue",
+			ExpectedError: true,
+		},
+	}
+
+	for _, test := range tests {
+		p := PaymentFrequency(test.Value)
+		err := validation.Validate(&p)
+		if test.ExpectedError {
+			require.EqualError(err, regexPaymentFrequencyErr)
+		} else {
+			require.NoError(err, fmt.Sprintf("Value=%+v", test.Value))
+		}
+	}
+}
