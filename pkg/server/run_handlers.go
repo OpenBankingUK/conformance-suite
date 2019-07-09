@@ -18,9 +18,9 @@ import (
 
 const (
 	// How often to send the ping event
-	pingFrequency = time.Minute * 5
+	pingFrequency = time.Hour * 24
 	// Deadline for write to timeout
-	writeTimeout = time.Minute * 1
+	writeTimeout = time.Hour * 24
 )
 
 type runHandlers struct {

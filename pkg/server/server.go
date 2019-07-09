@@ -3,6 +3,8 @@ package server
 import (
 	"strings"
 
+	"math"
+
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/version"
 
 	"github.com/gorilla/websocket"
@@ -148,8 +150,9 @@ func skipperGzip(c echo.Context) bool {
 
 // NewWebSocketUpgrader creates a new websocket.Ugprader.
 func NewWebSocketUpgrader() *websocket.Upgrader {
+	maxMessageSize := math.MaxInt32
 	return &websocket.Upgrader{
-		ReadBufferSize:  1024,
-		WriteBufferSize: 1024,
+		ReadBufferSize:  maxMessageSize,
+		WriteBufferSize: maxMessageSize,
 	}
 }

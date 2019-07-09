@@ -670,6 +670,40 @@ func TestServerConfigGlobalPostInvalid(t *testing.T) {
 				},
 			},
 		},
+		{
+			name:               `payment_frequency_invalid`,
+			expectedBody:       `{"error":"payment_frequency: must be in a valid format (^(EvryDay)$|^(EvryWorkgDay)$|^(IntrvlWkDay:0[1-9]:0[1-7])$|^(WkInMnthDay:0[1-5]:0[1-7])$|^(IntrvlMnthDay:(0[1-6]|12|24):(-0[1-5]|0[1-9]|[12][0-9]|3[01]))$|^(QtrDay:(ENGLISH|SCOTTISH|RECEIVED))$)."}`,
+			expectedStatusCode: http.StatusBadRequest,
+			config: GlobalConfiguration{
+				SigningPrivate:          privateKey,
+				SigningPublic:           publicKey,
+				TransportPrivate:        "--------------",
+				TransportPublic:         "--------------",
+				ClientID:                "client_id",
+				ClientSecret:            "client_secret",
+				TokenEndpoint:           "token_endpoint",
+				ResponseType:            "code id_token",
+				TokenEndpointAuthMethod: "client_secret_basic",
+				AuthorizationEndpoint:   "http://server",
+				ResourceBaseURL:         "https://server",
+				RedirectURL:             "http://server",
+				XFAPIFinancialID:        "123",
+				Issuer:                  "https://modelobankauth2018.o3bank.co.uk:4101",
+				ResourceIDs: model.ResourceIDs{
+					AccountIDs: []model.ResourceAccountID{
+						{AccountID: "account-id"},
+					},
+					StatementIDs: []model.ResourceStatementID{
+						{StatementID: "statement-id"},
+					},
+				},
+				CreditorAccount: models.Payment{
+					SchemeName:     "UK.OBIE.SortCodeAccountNumber",
+					Identification: "20202010981789",
+				},
+				PaymentFrequency: models.PaymentFrequency("INVALID"),
+			},
+		},
 	}
 	for _, testCase := range testCases {
 		testCase := testCase

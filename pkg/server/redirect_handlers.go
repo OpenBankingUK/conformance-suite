@@ -1,16 +1,11 @@
 package server
 
 import (
-	"crypto/sha256"
-	"encoding/base64"
-	"fmt"
 	"net/http"
 
-	"github.com/pkg/errors"
-
 	"github.com/dgrijalva/jwt-go"
-
 	"github.com/labstack/echo"
+	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 )
 
@@ -71,6 +66,11 @@ func (h redirectHandlers) postFragmentOKHandler(c echo.Context) error {
 		return err
 	}
 
+	h.logger.WithFields(logrus.Fields{
+		"function":         "postFragmentOKHandler",
+		"RedirectFragment": fragment,
+	}).Warn("Received fragment in redirect")
+
 	// If ID Token has not been set in the fragment, then there is no need to validate
 	// (Nothing to validate)
 	if fragment.IDToken == "" {
@@ -126,6 +126,11 @@ func (h redirectHandlers) postQueryOKHandler(c echo.Context) error {
 		return err
 	}
 
+	h.logger.WithFields(logrus.Fields{
+		"function":      "postQueryOKHandler",
+		"RedirectQuery": query,
+	}).Warn("Received query in redirect")
+
 	// If ID Token has not been set in the query, then there is no need to validate
 	// (Nothing to validate)
 	if query.IDToken == "" {
@@ -175,13 +180,12 @@ func (h redirectHandlers) postQueryOKHandler(c echo.Context) error {
 }
 
 func (h redirectHandlers) handleCodeExchange(code string, state string, scope string) error {
-	logrus.StandardLogger().WithFields(logrus.Fields{
+	h.logger.WithFields(logrus.Fields{
 		"function": "handleCodeExchange",
-		"module":   "redirectHandlers",
 		"code":     code,
 		"state":    state,
 		"scope":    scope,
-	}).Warn("received query")
+	}).Info("h.journey.CollectToken ...")
 	return h.journey.CollectToken(code, state, scope)
 }
 
@@ -192,27 +196,10 @@ func (h redirectHandlers) postErrorHandler(c echo.Context) error {
 		return err
 	}
 
+	h.logger.WithFields(logrus.Fields{
+		"function":      "postErrorHandler",
+		"RedirectError": redirectError,
+	}).Warn("Received error in redirect")
+
 	return c.JSON(http.StatusOK, redirectError)
-}
-
-// calculateCHash calculates the code hash (c_hash) value
-// as described in section 3.3.2.11 (ID Token) https://openid.net/specs/openid-connect-core-1_0.html#HybridIDToken
-// List of valid algorithms https://openid.net/specs/openid-financial-api-part-2.html#jws-algorithm-considerations
-// At the time of writing, the list shows "PS256", "ES256"
-// https://openbanking.atlassian.net/wiki/spaces/DZ/pages/83919096/Open+Banking+Security+Profile+-+Implementer+s+Draft+v1.1.2#OpenBankingSecurityProfile-Implementer'sDraftv1.1.2-Step2:FormtheJOSEHeader
-func calculateCHash(alg string, code string) (string, error) {
-	var digest []byte
-
-	switch alg {
-	case "ES256", "PS256":
-		d := sha256.Sum256([]byte(code))
-		//left most 256 bits.. 256/8 = 32bytes
-		// no need to validate length as sha256.Sum256 returns fixed length
-		digest = d[0:32]
-	default:
-		return "", fmt.Errorf("calculateCHash: %q algorithm not supported", alg)
-	}
-
-	left := digest[0 : len(digest)/2]
-	return base64.RawURLEncoding.EncodeToString(left), nil
 }
