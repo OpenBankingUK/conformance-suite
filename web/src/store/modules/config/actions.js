@@ -57,7 +57,6 @@ export default {
         commit(types.SET_TOKEN_ENDPOINT_AUTH_METHOD, defaultAuthMethod);
 
         commit(types.SET_RESPONSE_TYPES_SUPPORTED, response.response_types_supported);
-        commit(types.SET_ACR_VALUES_SUPPORTED, response.acr_values_supported);
 
         const authMethods = _.first(_.values(response.token_endpoint_auth_methods));
         commit(types.SET_TOKEN_ENDPOINT_AUTH_METHODS, authMethods);
