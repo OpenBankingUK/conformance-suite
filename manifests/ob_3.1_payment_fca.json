@@ -11,6 +11,7 @@
         "instructedAmountCurrency": "$instructedAmountCurrency",
         "instructedAmountValue": "$instructedAmountValue",
         "instructionIdentification": "OB-301-DOP-100000",
+        "endToEndIdentification": "e2e-domestic-pay",
         "postData": "$minimalDomesticPaymentConsent"
       },
       "headers": {
@@ -36,6 +37,7 @@
         "instructedAmountCurrency": "$instructedAmountCurrency",
         "instructedAmountValue": "$instructedAmountValue",
         "instructionIdentification": "OB-301-DOP-100100",
+        "endToEndIdentification": "e2e-domestic-pay",
         "postData": "$minimalDomesticPaymentConsent",
         "requestConsent": "false"
       },
@@ -94,6 +96,7 @@
         "thisSchemeName": "$creditorScheme",
         "thisIdentification": "$creditorIdentification",
         "instructionIdentification": "OB-301-DOP-100300",
+        "endToEndIdentification": "e2e-domestic-pay",
         "requestConsent": "true"
       },
       "headers": {
@@ -173,6 +176,7 @@
         "thisSchemeName": "$creditorScheme",
         "thisIdentification": "$creditorIdentification",
         "instructionIdentification": "OB-301-DOP-100300",
+        "endToEndIdentification": "e2e-domestic-pay",
         "instructedAmountCurrency": "$instructedAmountCurrency",
         "instructedAmountValue": "$instructedAmountValue",
         "postData": "$minimalDomesticPaymentPost"
@@ -228,7 +232,7 @@
         "instructedAmountCurrency": "$instructedAmountCurrency",
         "instructionIdentification": "OB-301-DOP-100800",
         "postData": "$minimalScheduledDomesticPaymentConsent",
-        "e2eIdentification": "OB-301-DOP-100800-E2E",
+        "endToEndIdentification": "e2e-domestic-sched-pay",
         "requestConsent": "true"
       },
       "body": "$postData",
@@ -278,7 +282,7 @@
         "instructedAmountValue": "$instructedAmountValue",
         "instructedAmountCurrency": "$instructedAmountCurrency",
         "instructionIdentification": "OB-301-DOP-101000",
-        "e2eIdentification": "OB-301-DOP-101000-E2E",
+        "endToEndIdentification": "e2e-domestic-sched-pay",
         "postData": "$minimalScheduledDomesticPaymentConsent"
       },
       "headers": {
@@ -561,6 +565,8 @@
       "detail": "Checks that the resource succeeds for a PISP asking for a International Payment consent with a minimal data set and checks additional schema.",
       "parameters": {
         "tokenRequestScope": "payments",
+        "instructionIdentification": "instruct-internat-pay",
+        "endToEndIdentification": "e2e-internat-pay",
         "postData": "$minimalInternationalPaymentConsent",
         "requestConsent": "true"
       },
@@ -609,6 +615,8 @@
         "instructedAmountValue": "$instructedAmountValue",
         "instructedAmountCurrency": "$instructedAmountCurrency",
         "currencyOfTransfer": "$currencyOfTransfer",
+        "instructionIdentification": "instruct-internat-pay",
+        "endToEndIdentification": "e2e-internat-pay",
         "postData": "$minimalInternationalPayment",
         "consentId": "$OB-301-DOP-101600-ConsentId"
       },
@@ -658,6 +666,8 @@
         "instructedAmountValue": "$instructedAmountValue",
         "instructedAmountCurrency": "$instructedAmountCurrency",
         "currencyOfTransfer": "$currencyOfTransfer",
+        "instructionIdentification": "instruct-internat-sched-pay",
+        "endToEndIdentification": "e2e-internat-sched-pay",
         "postData": "$minimalInternationalScheduledPaymentConsent",
         "requestConsent": "true"
       },
@@ -706,6 +716,8 @@
         "instructedAmountValue": "$instructedAmountValue",
         "instructedAmountCurrency": "$instructedAmountCurrency",
         "currencyOfTransfer": "$currencyOfTransfer",
+        "instructionIdentification": "instruct-internat-sched-pay",
+        "endToEndIdentification": "e2e-internat-sched-pay",
         "postData": "$minimalInternationalScheduledPayment",
         "consentId": "$OB-301-DOP-102000-ConsentId"
       },

@@ -5,7 +5,7 @@
         "Data": {
           "Initiation": {
             "InstructionIdentification": "$instructionIdentification",
-            "EndToEndIdentification": "$creditorIdentification",
+            "EndToEndIdentification": "$endToEndIdentification",
             "InstructedAmount": {
               "Amount": "$instructedAmountValue",
               "Currency": "$instructedAmountCurrency"
@@ -26,7 +26,7 @@
           "ConsentId": "$consentId",
           "Initiation": {
             "InstructionIdentification": "$instructionIdentification",
-            "EndToEndIdentification": "$creditorIdentification",
+            "EndToEndIdentification": "$endToEndIdentification",
             "InstructedAmount": {
               "Amount": "$instructedAmountValue",
               "Currency": "$instructedAmountCurrency"
@@ -48,7 +48,7 @@
           "Initiation": {
             "RequestedExecutionDateTime": "2020-10-01T00:00:00+00:00",
             "InstructionIdentification": "$instructionIdentification",
-            "EndToEndIdentification": "$e2eIdentification",
+            "EndToEndIdentification": "$endToEndIdentification",
             "InstructedAmount": {
               "Amount": "$instructedAmountValue",
               "Currency": "$instructedAmountCurrency"
@@ -172,8 +172,8 @@
       "body": {
         "Data": {
           "Initiation": {
-            "InstructionIdentification": "Excaliber International",
-            "EndToEndIdentification": "Excaliber International",
+            "InstructionIdentification": "$instructionIdentification",
+            "EndToEndIdentification": "$endToEndIdentification",
             "CurrencyOfTransfer": "$currencyOfTransfer",
             "InstructedAmount": {
               "Amount": "$instructedAmountValue",
@@ -194,8 +194,8 @@
         "Data": {
           "ConsentId": "$OB-301-DOP-101600-ConsentId",
           "Initiation": {
-            "InstructionIdentification": "Excaliber International",
-            "EndToEndIdentification": "Excaliber International",
+            "InstructionIdentification": "$instructionIdentification",
+            "EndToEndIdentification": "$endToEndIdentification",
             "CurrencyOfTransfer": "$currencyOfTransfer",
             "InstructedAmount": {
               "Amount": "$instructedAmountValue",
@@ -261,8 +261,8 @@
           "Permission": "Create",
           "Initiation": {
             "RequestedExecutionDateTime": "2020-10-01T00:00:00+00:00",
-            "InstructionIdentification": "Excaliber International",
-            "EndToEndIdentification": "Excaliber International",
+            "InstructionIdentification": "$instructionIdentification",
+            "EndToEndIdentification": "$endToEndIdentification",
             "CurrencyOfTransfer": "$currencyOfTransfer",
             "InstructedAmount": {
               "Amount": "$instructedAmountValue",
@@ -284,8 +284,8 @@
           "ConsentId": "$OB-301-DOP-102000-ConsentId",
           "Initiation": {
             "RequestedExecutionDateTime": "2020-10-01T00:00:00+00:00",
-            "InstructionIdentification": "Excaliber International",
-            "EndToEndIdentification": "Excaliber International",
+            "InstructionIdentification": "$instructionIdentification",
+            "EndToEndIdentification": "$endToEndIdentification",
             "CurrencyOfTransfer": "$currencyOfTransfer",
             "InstructedAmount": {
               "Amount": "$instructedAmountValue",
