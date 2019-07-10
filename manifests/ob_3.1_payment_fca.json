@@ -10,7 +10,7 @@
         "consentId": "foobar",
         "instructedAmountCurrency": "$instructedAmountCurrency",
         "instructedAmountValue": "$instructedAmountValue",
-        "instructionIdentification": "OB-301-DOP-100000",
+        "instructionIdentification": "$fn:instructionIdentificationID()",
         "postData": "$minimalDomesticPaymentConsent"
       },
       "headers": {
