@@ -13,6 +13,10 @@ var macroMap = map[string]interface{}{
 }
 
 func ExecuteMacro(name string, params []string) (string, error) {
+	if _, fnFound := macroMap[name]; !fnFound {
+		return "", errors.New("macro not found")
+	}
+
 	f := reflect.ValueOf(macroMap[name])
 	if len(params) != f.Type().NumIn() {
 		return "", errors.New("The number of params is not adapted.")
