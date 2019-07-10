@@ -407,27 +407,27 @@ func replaceContextField(source string, ctx *Context) (string, error) {
 	return result, nil
 }
 
-var singleDollarRegex = regexp.MustCompile(`[^\$]?\$([\w|\-|_]*)`)
+var varReplacementRegex = regexp.MustCompile(`[^\$]?\$([\w|\-|_]*)`)
+var fnReplacementRegex = regexp.MustCompile(`[^\$fn:]?\$fn:([\w|\-|_]*)\(\)`)
 
 // GetReplacementField examines the input string and returns the first character
 // sequence beginning with '$' and ending with whitespace. '$$' sequence acts as an escape value
 // A zero length string is return if now Replacement Fields are found
 // returns a boolean to indicate if the field contains a field beginning with a $
 func getReplacementField(value string) (string, bool) {
-	isReplacement := isReplacementField(value)
-	if !isReplacement {
-		return value, false
+	fnName := fnReplacementRegex.FindStringSubmatch(value)
+	if fnName == nil {
+		varResult := varReplacementRegex.FindStringSubmatch(value)
+		if varResult == nil {
+			return value, false
+		}
+		return varResult[len(varResult)-1], true
 	}
-	result := singleDollarRegex.FindStringSubmatch(value)
-	if result == nil {
+	fnResult, err := ExecuteMacro(fnName[len(fnName)-1])
+	if err != nil {
 		return "", false
 	}
-	return result[len(result)-1], true
-}
-
-func isReplacementField(value string) bool {
-	index := strings.Index(value, "$")
-	return index != -1
+	return fnResult, true
 }
 
 // ProcessReplacementFields prefixed by '$' in the testcase Input and Context sections
