@@ -256,7 +256,6 @@ export const state = {
   token_endpoint_auth_methods: [],
   request_object_signing_alg_values_supported: [],
   response_types_supported: [],
-
   configuration: {
     signing_private: '',
     signing_public: '',
@@ -295,6 +294,7 @@ export const state = {
     },
     currency_of_transfer: 'USD',
     payment_frequency: 'EvryDay',
+    acr_values_supported: [],
   },
 
   wizard: {

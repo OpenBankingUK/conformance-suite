@@ -38,6 +38,7 @@ const (
 	CtxSigningKid                   = "signingKid"
 	CtxSignatureTrustAnchor         = "signatureTrustAnchor"
 	CtxDynamicResourceIDs           = "dynamicResourceIDs"
+	CtxAcrValuesSupported           = "acrValuesSupported"
 )
 
 // PutParametersToJourneyContext populates a JourneyContext with values from the config screen
@@ -73,6 +74,7 @@ func PutParametersToJourneyContext(config JourneyConfig, context model.Context) 
 	context.PutString(CtxSigningKid, config.signingKid)
 	context.PutString(CtxSignatureTrustAnchor, config.signatureTrustAnchor)
 	context.Put(CtxDynamicResourceIDs, config.useDynamicResourceID)
+	context.PutStringSlice(CtxAcrValuesSupported, config.AcrValuesSupported)
 
 	basicauth, err := authentication.CalculateClientSecretBasicToken(config.clientID, config.clientSecret)
 	if err != nil {

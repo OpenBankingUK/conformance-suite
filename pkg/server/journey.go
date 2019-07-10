@@ -466,6 +466,7 @@ type JourneyConfig struct {
 	signingKid                    string
 	signatureTrustAnchor          string
 	useDynamicResourceID          bool
+	AcrValuesSupported            []string
 }
 
 func (wj *journey) SetConfig(config JourneyConfig) error {
