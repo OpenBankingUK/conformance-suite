@@ -127,6 +127,7 @@ export default {
         'creditor_account',
         'instructed_amount',
         'currency_of_transfer',
+        'payment_frequency',
       ];
       const newConfig = _.pick(merged, validKeys);
       commit(types.SET_CONFIGURATION, newConfig);

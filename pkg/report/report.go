@@ -1,6 +1,7 @@
 package report
 
 import (
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/version"
 	"time"
 
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
@@ -30,6 +31,7 @@ type Report struct {
 	SignatureChain   *[]SignatureChain  `json:"signatureChain,omitempty"` // When Add digital signature is set this contains the signature chain.
 	Discovery        discovery.Model    `json:"-"`                        // Original used discovery model
 	APISpecification []APISpecification `json:"apiSpecification"`         // API and version tested, along with test cases
+	FCSVersion       string             `json:"fcsVersion"`               // Version of FCS running the tests
 }
 
 type APISpecification struct {
@@ -94,6 +96,7 @@ func NewReport(exportResults models.ExportResults, environment string) (Report, 
 		SignatureChain:   &signatureChain,
 		Discovery:        exportResults.DiscoveryModel,
 		APISpecification: apiSpecs,
+		FCSVersion:       version.FullVersion,
 	}, nil
 }
 

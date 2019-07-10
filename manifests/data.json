@@ -84,12 +84,12 @@
         "Risk": {}
       }
     },
-    "minimalDomesticStandingOrderEveryDay": {
+    "minimalDomesticStandingOrder": {
       "body": {
         "Data": {
           "ConsentId": "$OB-301-DOP-101200-ConsentId",
           "Initiation": {
-            "Frequency": "EvryDay",
+            "Frequency": "$frequency",
             "FirstPaymentDateTime": "2020-10-01T00:00:00+00:00",
             "FirstPaymentAmount": {
               "Amount": "$instructedAmountValue",
@@ -211,7 +211,7 @@
         "Risk": {}
       }
     },
-    "minimalInternationalStandingOrderConsent": {
+    "minimalInternationalStandingOrderConsent_not_used": {
       "body": {
         "Data": {
           "Permission": "Create",
@@ -233,7 +233,7 @@
         "Risk": {}
       }
     },
-    "minimalInternationalStandingOrder": {
+    "minimalInternationalStandingOrder_not_used": {
       "body": {
         "Data": {
           "ConsentId":"$OB-301-DOP-102400-ConsentId",
