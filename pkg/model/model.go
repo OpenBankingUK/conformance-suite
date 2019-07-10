@@ -408,22 +408,27 @@ func replaceContextField(source string, ctx *Context) (string, error) {
 }
 
 var varReplacementRegex = regexp.MustCompile(`[^\$]?\$([\w|\-|_]*)`)
-var fnReplacementRegex = regexp.MustCompile(`[^\$fn:]?\$fn:([\w|\-|_]*)\(\)`)
+var fnReplacementRegex = regexp.MustCompile(`[^\$fn:]?\$fn:([\w|_]*)\(([\w,\s-]*)\)`)
 
 // GetReplacementField examines the input string and returns the first character
 // sequence beginning with '$' and ending with whitespace. '$$' sequence acts as an escape value
 // A zero length string is return if now Replacement Fields are found
 // returns a boolean to indicate if the field contains a field beginning with a $
 func getReplacementField(value string) (string, bool) {
-	fnName := fnReplacementRegex.FindStringSubmatch(value)
-	if fnName == nil {
+	fnNameAndArgs := fnReplacementRegex.FindStringSubmatch(value)
+	if fnNameAndArgs == nil {
 		varResult := varReplacementRegex.FindStringSubmatch(value)
 		if varResult == nil {
 			return value, false
 		}
 		return varResult[len(varResult)-1], true
 	}
-	fnResult, err := ExecuteMacro(fnName[len(fnName)-1])
+	fnArgs := []string{}
+	// fn has some parameters
+	if len(fnNameAndArgs) > 2 && fnNameAndArgs[2] != "" {
+		fnArgs = strings.Split(fnNameAndArgs[2], ",")
+	}
+	fnResult, err := ExecuteMacro(fnNameAndArgs[1], fnArgs)
 	if err != nil {
 		return "", false
 	}

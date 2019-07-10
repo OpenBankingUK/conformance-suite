@@ -1,11 +1,12 @@
 package model
 
 import (
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/schema"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"testing"
+
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/schema"
 
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/test"
 
