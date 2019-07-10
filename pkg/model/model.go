@@ -379,7 +379,7 @@ func replaceContextField(source string, ctx *Context) (string, error) {
 		ignoreErrors = true
 	}
 
-	field, isReplacement := getReplacementField(source)
+	field, isReplacement, isFnResult := getReplacementField(source)
 	if !isReplacement {
 		return source, nil
 	}
@@ -389,19 +389,23 @@ func replaceContextField(source string, ctx *Context) (string, error) {
 		}
 		return source, errors.New("field not found in context " + field)
 	}
-	replacement, exist := ctx.Get(field)
-	if !exist {
-		if ignoreErrors {
-			return source, nil
+	contextField := field
+	if !isFnResult {
+		replacement, exist := ctx.Get(field)
+		if !exist {
+			if ignoreErrors {
+				return source, nil
+			}
+			return source, errors.New("replacement not found in context: " + source)
 		}
-		return source, errors.New("replacement not found in context: " + source)
-	}
-	contextField, ok := replacement.(string)
-	if !ok {
-		if ignoreErrors {
-			return source, nil
+		var ok bool
+		contextField, ok = replacement.(string)
+		if !ok {
+			if ignoreErrors {
+				return source, nil
+			}
+			return source, errors.New("replacement is not of type string: " + source)
 		}
-		return source, errors.New("replacement is not of type string: " + source)
 	}
 	result := strings.Replace(source, "$"+field, contextField, 1)
 	return result, nil
@@ -414,14 +418,14 @@ var fnReplacementRegex = regexp.MustCompile(`[^\$fn:]?\$fn:([\w|_]*)\(([\w,\s-]*
 // sequence beginning with '$' and ending with whitespace. '$$' sequence acts as an escape value
 // A zero length string is return if now Replacement Fields are found
 // returns a boolean to indicate if the field contains a field beginning with a $
-func getReplacementField(value string) (string, bool) {
+func getReplacementField(value string) (string, bool, bool) {
 	fnNameAndArgs := fnReplacementRegex.FindStringSubmatch(value)
 	if fnNameAndArgs == nil {
 		varResult := varReplacementRegex.FindStringSubmatch(value)
 		if varResult == nil {
-			return value, false
+			return value, false, false
 		}
-		return varResult[len(varResult)-1], true
+		return varResult[len(varResult)-1], true, false
 	}
 	fnArgs := []string{}
 	// fn has some parameters
@@ -430,9 +434,9 @@ func getReplacementField(value string) (string, bool) {
 	}
 	fnResult, err := ExecuteMacro(fnNameAndArgs[1], fnArgs)
 	if err != nil {
-		return "", false
+		return "", false, true
 	}
-	return fnResult, true
+	return fnResult, true, true
 }
 
 // ProcessReplacementFields prefixed by '$' in the testcase Input and Context sections
