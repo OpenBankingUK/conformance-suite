@@ -303,7 +303,11 @@ func testCaseBuilder(s Script, refs map[string]Reference, ctx *model.Context, co
 func processPutContext(s *Script) []model.Match {
 	m := []model.Match{}
 	for k, v := range s.ContextPut {
-		m = append(m, model.Match{ContextName: k, JSON: v})
+		if strings.HasPrefix(v, "$") {
+			m = append(m, model.Match{ContextName: k, Value: v})
+		} else {
+			m = append(m, model.Match{ContextName: k, JSON: v})
+		}
 	}
 	return m
 }

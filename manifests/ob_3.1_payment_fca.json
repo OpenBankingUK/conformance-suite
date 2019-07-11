@@ -229,7 +229,7 @@
         "tokenRequestScope": "payments",
         "instructedAmountValue": "$instructedAmountValue",
         "instructedAmountCurrency": "$instructedAmountCurrency",
-        "instructionIdentification": "OB-301-DOP-100800",
+        "instructionIdentification": "$fn:instructionIdentificationID()",
         "postData": "$minimalScheduledDomesticPaymentConsent",
         "endToEndIdentification": "e2e-domestic-sched-pay",
         "requestConsent": "true"
@@ -245,6 +245,7 @@
         "OB3GLOAAssertConsentId"
       ],
       "keepContextOnSuccess": {
+        "OB-301-DOP-100800-instructionIdentification": "$instructionIdentification",
         "OB-301-DOP-100800-ConsentId": "Data.ConsentId"
       },
       "method": "post",
@@ -279,7 +280,7 @@
         "consentId": "$OB-301-DOP-100800-ConsentId",
         "instructedAmountValue": "$instructedAmountValue",
         "instructedAmountCurrency": "$instructedAmountCurrency",
-        "instructionIdentification": "OB-301-DOP-101000",
+        "instructionIdentification": "$OB-301-DOP-100800-instructionIdentification",
         "endToEndIdentification": "e2e-domestic-sched-pay",
         "postData": "$minimalScheduledDomesticPaymentConsent"
       },
