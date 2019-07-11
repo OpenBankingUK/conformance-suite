@@ -389,8 +389,11 @@ func replaceContextField(source string, ctx *Context) (string, error) {
 		}
 		return source, errors.New("field not found in context " + field)
 	}
+	var result string
 	contextField := field
-	if !isFnResult {
+	if isFnResult {
+		result = field
+	} else {
 		replacement, exist := ctx.Get(field)
 		if !exist {
 			if ignoreErrors {
@@ -406,8 +409,9 @@ func replaceContextField(source string, ctx *Context) (string, error) {
 			}
 			return source, errors.New("replacement is not of type string: " + source)
 		}
+		result = strings.Replace(source, "$"+field, contextField, 1)
 	}
-	result := strings.Replace(source, "$"+field, contextField, 1)
+
 	return result, nil
 }
 
