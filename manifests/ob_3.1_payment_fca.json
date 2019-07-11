@@ -113,7 +113,7 @@
       ],
       "keepContextOnSuccess": {
         "OB-301-DOP-100300-ConsentId": "Data.ConsentId",
-        "OB-301-DOP-100300-instructionIdentification": "instructionIdentification"
+        "OB-301-DOP-100300-instructionIdentification": "$instructionIdentification"
       },
       "method": "post",
       "schemaCheck": true
