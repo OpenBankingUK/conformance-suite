@@ -42,7 +42,7 @@ func TestExecuteMacro(t *testing.T) {
 			fnName:    "helloWorld",
 			params:    []string{"p1", "p2"},
 			expResult: "",
-			expError:  "The number of params is not adapted.",
+			expError:  "the number of params is not adapted",
 		},
 		{
 			name:      "Call function that returns no values",
