@@ -125,7 +125,7 @@ Manifests have the ability to call a "Macro" which is mapped to a Go function in
 Macros also supports any number of parameters, which are passed and parsed as strings. It is worth noting that all macro parameters will passed to the implementation as strings. If other types
 are required, the specific macro implementation is required to perform type assertions and casting of types.
 
-Macro implementations must return on one value, of type `string`
+Macro implementations must return one value, of type `string`
 
 Register and implement macro in `pkg/model/macro.go`
 ```
