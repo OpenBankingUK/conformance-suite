@@ -192,7 +192,8 @@ func (wj *journey) TestCases() (generation.SpecRun, error) {
 				"permission": permission,
 			}).Debug("We have a permission ([]manifest.RequiredTokens)")
 		}
-		if discovery.TokenAcquisition == "psu" {
+
+		if discovery.TokenAcquisition == "psu" { // Handle  PSU Consent
 			logger.WithFields(logrus.Fields{
 				"discovery.TokenAcquisition": discovery.TokenAcquisition,
 			}).Debug("AcquirePSUTokens ...")
@@ -219,6 +220,7 @@ func (wj *journey) TestCases() (generation.SpecRun, error) {
 
 			for k, v := range tokenMap {
 				wj.context.PutString(k, v)
+				logger.Tracef("processtokenMap %s:%s into context", k, v)
 			}
 
 			wj.createTokenCollector(consentIds)
@@ -230,18 +232,39 @@ func (wj *journey) TestCases() (generation.SpecRun, error) {
 			}).Debug("AcquireHeadlessTokens ...")
 			definition := wj.makeRunDefinition()
 
-			executors.GetHeadlessConsent(definition, &wj.context, &wj.specRun, wj.permissions)
-			tokenPermissionsMap, err := executors.AcquireHeadlessTokensAccountsAndPayments(wj.specRun.SpecTestCases, &wj.context, definition)
+			tokenPermissionsMap, err := executors.GetHeadlessConsent(definition, &wj.context, &wj.specRun, wj.permissions)
+			//tokenPermissionsMap, err := executors.AcquireHeadlessTokensAccountsAndPayments(wj.specRun.SpecTestCases, &wj.context, definition)
 			if err != nil {
 				logger.WithFields(logrus.Fields{
 					"err": err,
 				}).Error("Error on executors.AcquireHeadlessTokens ...")
 				return generation.SpecRun{}, errConsentIDAcquisitionFailed
 			}
+
 			// TODO:Process multipe specs
-			tokenMap := manifest.MapTokensToTestCases(tokenPermissionsMap, wj.specRun.SpecTestCases[0].TestCases)
+			//tokenMap := manifest.MapTokensToTestCases(tokenPermissionsMap, wj.specRun.SpecTestCases[0].TestCases)
+			tokenMap := map[string]string{}
+			for _, v := range wj.specRun.SpecTestCases {
+				aMap := manifest.MapTokensToTestCases(tokenPermissionsMap, v.TestCases)
+				for x, y := range aMap {
+					tokenMap[x] = y
+				}
+			}
+
+			for k := range wj.permissions {
+				if k == "payments" {
+					paymentpermissions := wj.permissions["payments"]
+					if len(paymentpermissions) > 0 {
+						for _, spec := range wj.specRun.SpecTestCases {
+							manifest.MapTokensToPaymentTestCases(paymentpermissions, spec.TestCases, &wj.context)
+						}
+					}
+				}
+			}
+
 			for k, v := range tokenMap {
 				wj.context.PutString(k, v)
+				logger.Tracef("processtokenMap %s:%s into context", k, v)
 			}
 
 			wj.allCollected = true
@@ -249,13 +272,13 @@ func (wj *journey) TestCases() (generation.SpecRun, error) {
 		wj.testCasesRunGenerated = true
 	}
 
-	logger.Tracef("TestCaseRun.SpecConsentRequirements: %#v\n", wj.specRun.SpecConsentRequirements)
+	logger.Tracef("SpecRun.SpecConsentRequirements: %#v\n", wj.specRun.SpecConsentRequirements)
 	for k := range wj.specRun.SpecTestCases {
-		logger.Tracef("TestCaseRun-Specificatino: %#v\n", wj.specRun.SpecTestCases[k].Specification)
+		logger.Tracef("SpecRun-Specification: %#v\n", wj.specRun.SpecTestCases[k].Specification)
 	}
 	logger.Tracef("Dumping Consents:---------------------------\n")
 	for _, v := range wj.specRun.SpecConsentRequirements {
-		logger.Tracef("%s", v.Identifier)
+		logger.Tracef("-------\nSpec: %s", v.Identifier)
 		for _, x := range v.NamedPermissions {
 			logger.Tracef("\tname: %s codeset: %#v\n\tconsent Url: %s", x.Name, x.CodeSet.CodeSet, x.ConsentUrl)
 		}

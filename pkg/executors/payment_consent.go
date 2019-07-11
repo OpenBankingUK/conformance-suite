@@ -97,7 +97,7 @@ func runPaymentConsents(rt []manifest.RequiredTokens, ctx *model.Context, execut
 		return nil, errors.New("Cannot get Token for consent client credentials grant: " + err.Error())
 	}
 
-	logrus.Tracef("runPaymentConsents:requiredTokens: %#v", rt)
+	logrus.Tracef("runPaymentConsents %d requiredTokens %#v", len(rt), rt)
 
 	for k, v := range rt {
 		localCtx.PutString("token_name", v.Name)

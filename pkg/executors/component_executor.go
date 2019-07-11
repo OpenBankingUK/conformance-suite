@@ -3,8 +3,12 @@ package executors
 import (
 	"encoding/json"
 	"fmt"
+	"net/http"
+	"regexp"
 
 	"github.com/pkg/errors"
+	"github.com/tidwall/gjson"
+	resty "gopkg.in/resty.v1"
 
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/generation"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/manifest"
@@ -13,40 +17,187 @@ import (
 )
 
 // GetHeadlessConsent -
-func GetHeadlessConsent(definition RunDefinition, ctx *model.Context, specRun *generation.SpecRun, permissions map[string][]manifest.RequiredTokens) (TokenConsentIDs, map[string]string, error) {
-
-	return nil, nil, nil
-}
-
-// AcquireHeadlessTokensAccountsAndPayments acquaires headless tokens for accounts and payments
-func AcquireHeadlessTokensAccountsAndPayments(specTests []generation.SpecificationTestCases, ctx *model.Context, definition RunDefinition) ([]manifest.RequiredTokens, error) {
+func GetHeadlessConsent(definition RunDefinition, ctx *model.Context, specRun *generation.SpecRun, permissions map[string][]manifest.RequiredTokens) ([]manifest.RequiredTokens, error) {
 	logger := logrus.WithFields(logrus.Fields{
-		"module": "AcquireHeadlessTokensAccountsAndPayments",
+		"module": "GetHeadlessConsent",
 	})
 
-	_ = logger
-	tests := specTests[0].TestCases
-	requiredAccountTokens, err := acquireAccountHeadlessTokens(tests, ctx, definition)
+	allRequiredTokens := []manifest.RequiredTokens{}
+
+	logger.Debugf("running with %#v\n", permissions)
+
+	for specType := range permissions {
+		logger.Tracef("Getting Headless Consent for api type: %s\n", specType)
+		tests, err := getSpecForSpecType(specType, specRun)
+		if err != nil {
+			return nil, err
+		}
+
+		switch specType {
+		case "accounts":
+			requiredTokens, err := getAccountsHeadlessTokens(tests, ctx, definition, logger)
+			if err != nil {
+				return nil, err
+			}
+			allRequiredTokens = append(allRequiredTokens, requiredTokens...)
+		case "payments":
+			requiredTokens, err := getPaymentHeadlessTokens(tests, ctx, definition, permissions["payments"], logger)
+			if err != nil {
+				return nil, err
+			}
+			allRequiredTokens = append(allRequiredTokens, requiredTokens...)
+		default:
+			logger.Fatalf("Support for spec type (%s) not implemented yet", specType)
+		}
+	}
+
+	logger.Tracef("Dump all required headless tokens\n%#v\n---------------", allRequiredTokens)
+
+	return allRequiredTokens, nil
+}
+
+func getPaymentHeadlessTokens(paymentTests []model.TestCase, ctx *model.Context, definition RunDefinition, requiredTokens []manifest.RequiredTokens, logger *logrus.Entry) ([]manifest.RequiredTokens, error) {
+	logger.Debug("getPaymentHeadlessTokens")
+
+	executor := Executor{}
+	err := executor.SetCertificates(definition.SigningCert, definition.TransportCert)
 	if err != nil {
 		return nil, err
 	}
-	paymentTests := specTests[1].TestCases
-	acquirePaymentHeadlessTokens(paymentTests, ctx, definition)
 
-	return requiredAccountTokens, nil
+	//	requiredTokens, err := manifest.GetRequiredTokensFromTests(paymentTests, "payments")
+	logger.Debugf("payment required tokens %#v\n", requiredTokens)
+
+	logger.Debugf("we have %d required tokens\n", len(requiredTokens))
+	for _, rt := range requiredTokens {
+		logger.Tracef("%#v\n", rt)
+	}
+
+	requiredTokens, err = runPaymentConsents(requiredTokens, ctx, &executor)
+	if err != nil {
+		logger.Errorf("getPaymentConsents error: " + err.Error())
+	}
+
+	tokendata, err := CallPaymentHeadlessConsentUrls(&requiredTokens, ctx, logger)
+	if err != nil {
+		return nil, err
+	}
+
+	for k, v := range requiredTokens {
+		for x, y := range tokendata {
+			if v.Name == x {
+				v.Token = y
+				requiredTokens[k] = v
+			}
+		}
+	}
+
+	logger.Tracef("required Tokens looks like:\n%#v\n", requiredTokens)
+	return requiredTokens, err
 
 }
-func acquirePaymentHeadlessTokens(paymentTests []model.TestCase, ctx *model.Context, definition RunDefinition) ([]manifest.RequiredTokens, error) {
-	return nil, nil
+
+// CallPaymentHeadlessConsentUrls -
+func CallPaymentHeadlessConsentUrls(rt *[]manifest.RequiredTokens, ctx *model.Context, logger *logrus.Entry) (map[string]string, error) {
+	matchingGroup := []string{}
+	exchangeCode := ""
+	exhangeCodeRegex := "code=([^&]*)&"
+	consentedTokens := map[string]string{}
+
+	ctx.DumpContext("Before Exchange call")
+	for _, tokendata := range *rt {
+		endpoint := tokendata.ConsentURL
+		var resp *resty.Response
+
+		resp, err := resty.R().
+			SetHeader("accept", "*/*").
+			Get(endpoint)
+
+		if err != nil {
+			if resp != nil && resp.StatusCode() == http.StatusFound { // catch status code 302 redirects and pass back as good response
+				header := resp.Header()
+				logrus.StandardLogger().Printf("redirection headers: %#v\n", header)
+				location := header.Get("Location")
+				if location != "" {
+					r, err := regexp.Compile(exhangeCodeRegex)
+					if err != nil {
+						return nil, err
+					}
+
+					matchingGroup = r.FindStringSubmatch(location)
+
+					if len(matchingGroup[0]) < 2 {
+						return nil, fmt.Errorf("Header Regex Context Match Failed - regex (%s) failed to find anything on Header (%s) value (%s)", exhangeCodeRegex, "Location", location)
+					}
+					exchangeCode = matchingGroup[1]
+					logger.Tracef("retrieved Exchange code: %s", exchangeCode)
+				}
+
+			} else {
+				logger.WithFields(logrus.Fields{
+					"endpoint": endpoint,
+					"err":      err,
+				}).Debug("Error Calling Payment ConsentURL to get code")
+				return nil, err
+			}
+		}
+
+		if len(exchangeCode) < 1 {
+			return nil, fmt.Errorf("Exchange code is empty - cannot complete exchange")
+		}
+
+		params, err := ctx.GetStrings("basic_authentication", "token_endpoint", "redirect_url")
+		if err != nil {
+			logger.Errorf("Consent Failed to get %s from context", err.Error())
+			return nil, err
+		}
+
+		resp, err = resty.R().
+			SetHeader("content-type", "application/x-www-form-urlencoded").
+			SetHeader("accept", "*/*").
+			SetHeader("authorization", "Basic "+params["basic_authentication"]).
+			SetFormData(map[string]string{
+				"code":         exchangeCode,
+				"redirect_uri": params["redirect_url"],
+				"grant_type":   "authorization_code",
+				"scope":        "payments",
+			}).
+			Post(params["token_endpoint"])
+
+		if err != nil {
+			logger.WithFields(logrus.Fields{
+				"tokenEndpoint": params["token_endpoint"],
+				"err":           err,
+			}).Debug("Payment headless code exchange failed")
+			return nil, err
+
+		}
+
+		token, err := getAccessTokenFromJSONResponse(string(resp.Body()), logger)
+		if err != nil {
+			return nil, err
+		}
+		// Store the token against the token name for returning
+		consentedTokens[tokendata.Name] = token
+	}
+
+	return consentedTokens, nil
 }
 
-// AcquireHeadlessTokens from manifest generated test cases
-func AcquireHeadlessTokens(tests []model.TestCase, ctx *model.Context, definition RunDefinition) ([]manifest.RequiredTokens, error) {
-	return acquireAccountHeadlessTokens(tests, ctx, definition)
+func getAccessTokenFromJSONResponse(body string, logger *logrus.Entry) (string, error) {
+	token := gjson.Get(body, "access_token")
+	accessToken := token.String()
+	if len(accessToken) == 0 {
+		logger.WithFields(logrus.Fields{
+			"body": body,
+		}).Error("Access Token not found in JSON response body")
+		return "", errors.New("Access Token not found in JSON response body")
+	}
+	return accessToken, nil
 }
 
-func acquireAccountHeadlessTokens(tests []model.TestCase, ctx *model.Context, definition RunDefinition) ([]manifest.RequiredTokens, error) {
-	logrus.Debug("AcquireHeadlessTokens")
+func getAccountsHeadlessTokens(tests []model.TestCase, ctx *model.Context, definition RunDefinition, logger *logrus.Entry) ([]manifest.RequiredTokens, error) {
+	logger.Debug("getAccountsHeadlessTokens")
 	bodyDataStart := "{\"Data\": { \"Permissions\": ["
 	//TODO: sort out consent transaction timestamps
 	txnFrom, err := ctx.GetString("transactionFromDate")
@@ -71,7 +222,7 @@ func acquireAccountHeadlessTokens(tests []model.TestCase, ctx *model.Context, de
 	}
 
 	requiredTokens, err := manifest.GetRequiredTokensFromTests(tests, specType)
-	logrus.Debugf("required tokens %#v\n", requiredTokens)
+	logger.Debugf("required tokens %#v\n", requiredTokens)
 
 	for k, tokenGatherer := range requiredTokens {
 
