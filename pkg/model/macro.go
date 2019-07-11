@@ -12,6 +12,8 @@ var macroMap = map[string]interface{}{
 	"instructionIdentificationID": instructionIdentificationID,
 }
 
+// ExecuteMacro calls a macro by `name`, with parameters to be passed using `params`. `params` is a collection of strings
+// that get passed as is. Type assertions will need be performed in the macro implementation.
 func ExecuteMacro(name string, params []string) (string, error) {
 	if _, fnFound := macroMap[name]; !fnFound {
 		return "", errors.New("macro not found")
@@ -19,7 +21,7 @@ func ExecuteMacro(name string, params []string) (string, error) {
 
 	f := reflect.ValueOf(macroMap[name])
 	if len(params) != f.Type().NumIn() {
-		return "", errors.New("The number of params is not adapted.")
+		return "", errors.New("the number of params is not adapted")
 	}
 	in := make([]reflect.Value, len(params))
 	for k, param := range params {
