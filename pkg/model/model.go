@@ -389,11 +389,8 @@ func replaceContextField(source string, ctx *Context) (string, error) {
 		}
 		return source, errors.New("field not found in context " + field)
 	}
-	var result string
-	contextField := field
-	if isFnResult {
-		result = field
-	} else {
+	result := field
+	if !isFnResult {
 		replacement, exist := ctx.Get(field)
 		if !exist {
 			if ignoreErrors {
@@ -401,8 +398,7 @@ func replaceContextField(source string, ctx *Context) (string, error) {
 			}
 			return source, errors.New("replacement not found in context: " + source)
 		}
-		var ok bool
-		contextField, ok = replacement.(string)
+		contextField, ok := replacement.(string)
 		if !ok {
 			if ignoreErrors {
 				return source, nil
@@ -411,7 +407,6 @@ func replaceContextField(source string, ctx *Context) (string, error) {
 		}
 		result = strings.Replace(source, "$"+field, contextField, 1)
 	}
-
 	return result, nil
 }
 
@@ -438,6 +433,7 @@ func getReplacementField(value string) (string, bool, bool) {
 	}
 	fnResult, err := ExecuteMacro(fnNameAndArgs[1], fnArgs)
 	if err != nil {
+		logrus.Debugf("found error while executing macro for context var %s. err %v", fnNameAndArgs[1], err)
 		return "", false, true
 	}
 	return fnResult, true, true

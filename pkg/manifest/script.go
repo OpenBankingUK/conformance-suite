@@ -302,18 +302,10 @@ func testCaseBuilder(s Script, refs map[string]Reference, ctx *model.Context, co
 
 func processPutContext(s *Script) []model.Match {
 	m := []model.Match{}
-	name, exists := s.ContextPut["name"]
-	if !exists {
-		return m
+	for k, v := range s.ContextPut {
+		m = append(m, model.Match{ContextName: k, JSON: v})
 	}
-	value, exists := s.ContextPut["value"]
-	if !exists {
-		return m
-	}
-	mx := model.Match{ContextName: name, JSON: value}
-	m = append(m, mx)
 	return m
-
 }
 
 func getAccountConsent(refs *References, vx string) []string {
