@@ -287,7 +287,6 @@ func executeComponent(ctx *model.Context, executor TestCaseExecutor) (*model.Con
 	for k, test := range tests {
 		test.ProcessReplacementFields(executeCtx, false)
 		_, _ = k, test
-		dumpJSON(test)
 		logrus.Debug("Executing ------->>")
 
 		req, err := test.Prepare(executeCtx)
