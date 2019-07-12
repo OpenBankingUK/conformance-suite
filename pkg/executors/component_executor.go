@@ -65,13 +65,7 @@ func getPaymentHeadlessTokens(paymentTests []model.TestCase, ctx *model.Context,
 		return nil, err
 	}
 
-	//	requiredTokens, err := manifest.GetRequiredTokensFromTests(paymentTests, "payments")
-	logger.Debugf("payment required tokens %#v\n", requiredTokens)
-
 	logger.Debugf("we have %d required tokens\n", len(requiredTokens))
-	for _, rt := range requiredTokens {
-		logger.Tracef("%#v\n", rt)
-	}
 
 	requiredTokens, err = runPaymentConsents(requiredTokens, ctx, &executor)
 	if err != nil {
@@ -92,7 +86,7 @@ func getPaymentHeadlessTokens(paymentTests []model.TestCase, ctx *model.Context,
 		}
 	}
 
-	logger.Tracef("required Tokens looks like:\n%#v\n", requiredTokens)
+	logger.Tracef("updated requiredTokens:\n%#v\n", requiredTokens)
 	return requiredTokens, err
 
 }
@@ -104,7 +98,6 @@ func CallPaymentHeadlessConsentUrls(rt *[]manifest.RequiredTokens, ctx *model.Co
 	exhangeCodeRegex := "code=([^&]*)&"
 	consentedTokens := map[string]string{}
 
-	ctx.DumpContext("Before Exchange call")
 	for _, tokendata := range *rt {
 		endpoint := tokendata.ConsentURL
 		var resp *resty.Response
@@ -116,16 +109,14 @@ func CallPaymentHeadlessConsentUrls(rt *[]manifest.RequiredTokens, ctx *model.Co
 		if err != nil {
 			if resp != nil && resp.StatusCode() == http.StatusFound { // catch status code 302 redirects and pass back as good response
 				header := resp.Header()
-				logrus.StandardLogger().Printf("redirection headers: %#v\n", header)
+				logger.Debugf("redirection headers: %#v\n", header)
 				location := header.Get("Location")
 				if location != "" {
 					r, err := regexp.Compile(exhangeCodeRegex)
 					if err != nil {
 						return nil, err
 					}
-
 					matchingGroup = r.FindStringSubmatch(location)
-
 					if len(matchingGroup[0]) < 2 {
 						return nil, fmt.Errorf("Header Regex Context Match Failed - regex (%s) failed to find anything on Header (%s) value (%s)", exhangeCodeRegex, "Location", location)
 					}
@@ -170,7 +161,6 @@ func CallPaymentHeadlessConsentUrls(rt *[]manifest.RequiredTokens, ctx *model.Co
 				"err":           err,
 			}).Debug("Payment headless code exchange failed")
 			return nil, err
-
 		}
 
 		token, err := getAccessTokenFromJSONResponse(string(resp.Body()), logger)
