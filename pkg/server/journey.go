@@ -233,7 +233,6 @@ func (wj *journey) TestCases() (generation.SpecRun, error) {
 			definition := wj.makeRunDefinition()
 
 			tokenPermissionsMap, err := executors.GetHeadlessConsent(definition, &wj.context, &wj.specRun, wj.permissions)
-			//tokenPermissionsMap, err := executors.AcquireHeadlessTokensAccountsAndPayments(wj.specRun.SpecTestCases, &wj.context, definition)
 			if err != nil {
 				logger.WithFields(logrus.Fields{
 					"err": err,
@@ -241,8 +240,6 @@ func (wj *journey) TestCases() (generation.SpecRun, error) {
 				return generation.SpecRun{}, errConsentIDAcquisitionFailed
 			}
 
-			// TODO:Process multipe specs
-			//tokenMap := manifest.MapTokensToTestCases(tokenPermissionsMap, wj.specRun.SpecTestCases[0].TestCases)
 			tokenMap := map[string]string{}
 			for _, v := range wj.specRun.SpecTestCases {
 				aMap := manifest.MapTokensToTestCases(tokenPermissionsMap, v.TestCases)
