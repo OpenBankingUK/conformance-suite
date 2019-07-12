@@ -93,3 +93,19 @@ func (a InstructedAmount) Validate() error {
 		validation.Field(&a.Value, validation.Match(regexInstructedAmountValue).Error(regexInstructedAmountValueErr)),
 	)
 }
+
+const (
+	regexPaymentFrequencyErr = `must be in a valid format (^(EvryDay)$|^(EvryWorkgDay)$|^(IntrvlWkDay:0[1-9]:0[1-7])$|^(WkInMnthDay:0[1-5]:0[1-7])$|^(IntrvlMnthDay:(0[1-6]|12|24):(-0[1-5]|0[1-9]|[12][0-9]|3[01]))$|^(QtrDay:(ENGLISH|SCOTTISH|RECEIVED))$)`
+)
+
+var (
+	// nolint:gochecknoglobals
+	regexPaymentFrequency = regexp.MustCompile(`^(EvryDay)$|^(EvryWorkgDay)$|^(IntrvlWkDay:0[1-9]:0[1-7])$|^(WkInMnthDay:0[1-5]:0[1-7])$|^(IntrvlMnthDay:(0[1-6]|12|24):(-0[1-5]|0[1-9]|[12][0-9]|3[01]))$|^(QtrDay:(ENGLISH|SCOTTISH|RECEIVED))$`)
+)
+
+type PaymentFrequency string
+
+// Validate - ensures
+func (p PaymentFrequency) Validate() error {
+	return validation.Match(regexPaymentFrequency).Error(regexPaymentFrequencyErr).Validate(p)
+}

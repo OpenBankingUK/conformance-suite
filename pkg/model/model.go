@@ -142,10 +142,47 @@ func (t *TestCase) Validate(resp *resty.Response, rulectx *Context) (bool, []err
 			errs = append(errs, errors.New(failure.Message))
 		}
 	} else {
-		logrus.WithField("testcase", t.String()).Debug("no schema validator found")
+		logSchemaValidationOffWarning(t)
 	}
 
 	return pass, errs
+}
+
+func logSchemaValidationOffWarning(testCase *TestCase) {
+	// Don't log warning if it is one of the TestCases in the ignore list.
+	type IgnoreTestCase struct {
+		ID   string
+		Name string
+	}
+	ignoredTestCases := []IgnoreTestCase{
+		{
+			ID:   "#compPsuConsent01",
+			Name: "ClientCredential Grant",
+		},
+		{
+			ID:   "#compPsuConsent03",
+			Name: "Ozone Headless Consent Flow",
+		},
+	}
+
+	// Check if TestCase is in the ignored list.
+	found := false
+	for _, ignoredTestCase := range ignoredTestCases {
+		if ignoredTestCase.ID == testCase.ID && ignoredTestCase.Name == testCase.Name {
+			found = true
+			break
+		}
+	}
+
+	// Only log warning if it is not in the ignore list.
+	if !found {
+		logrus.WithFields(logrus.Fields{
+			"module":   "TestCase",
+			"function": "Validate",
+			"package":  "model",
+			"TestCase": testCase.String(),
+		}).Warn(`TestCase.Expect.SchemaValidation is false`)
+	}
 }
 
 // Expect defines a structure for expressing testcase result expectations.

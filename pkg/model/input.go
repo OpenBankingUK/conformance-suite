@@ -109,9 +109,6 @@ func (i *Input) CreateRequest(tc *TestCase, ctx *Context) (*resty.Request, error
 }
 
 func (i *Input) setClaims(tc *TestCase, ctx *Context) error {
-	logrus.WithFields(logrus.Fields{
-		"i.Claims": i.Claims,
-	}).Debug("Input.setClaims before ...")
 	ctx.DumpContext()
 
 	for k, v := range i.Claims {
@@ -156,11 +153,6 @@ func (i *Input) setClaims(tc *TestCase, ctx *Context) error {
 		}
 	}
 
-	logrus.WithFields(logrus.Fields{
-		"i.Claims": i.Claims,
-	}).Debug("Input.setClaims after ...")
-	ctx.DumpContext()
-
 	return nil
 }
 
@@ -171,7 +163,7 @@ func (i *Input) GenerateRequestToken(ctx *Context) (string, error) {
 	}
 	signingMethod, err := authentication.GetSigningAlg(alg)
 	if err != nil {
-		return i.generateUnsignedJWT()
+		return i.generateUnsignedJWT(ctx)
 	}
 	return i.GenerateSignedJWT(ctx, signingMethod)
 }
@@ -384,7 +376,11 @@ func (i *Input) GenerateSignedJWT(ctx *Context, alg jwt.SigningMethod) (string, 
 	}
 
 	consentClaim := consentClaims{Essential: true, Value: i.Claims["consentId"]}
-	myIdent := obintentID{IntentID: consentClaim}
+	myIdent := obIDToken{IntentID: consentClaim}
+	acrValuesSupported, err := ctx.GetStringSlice("acrValuesSupported")
+	if err == nil && len(acrValuesSupported) > 0 {
+		myIdent = obIDToken{IntentID: consentClaim, Acr: &acr{Essential: true, Values: acrValuesSupported}}
+	}
 	var consentIDToken = consentIDTok{Token: myIdent}
 	claims["claims"] = consentIDToken
 	if responseType, ok := i.Claims["responseType"]; ok {
@@ -419,8 +415,21 @@ func (i *Input) GenerateSignedJWT(ctx *Context, alg jwt.SigningMethod) (string, 
 	return tokenString, nil
 }
 
-type obintentID struct {
+// acr
+// TPPs MAY provide a space-separated string that specifies the acr values that the Authorization Server is being requested to use for processing this Authentication Request, with the values appearing in order of preference.
+// The values MUST be one or both of:
+// urn:openbanking:psd2:sca: To indiciate that secure customer authentication must be carried out as mandated by the PSD2 RTS
+// urn:openbanking:psd2:ca: To request that the customer is authenticated without using SCA (if permitted)
+//
+// https://openbanking.atlassian.net/wiki/spaces/DZ/pages/7046134/Open+Banking+Security+Profile+-+Implementer+s+Draft+v1.1.0
+type acr struct {
+	Essential bool     `json:"essential,omitempty"`
+	Values    []string `json:"values,omitempty"`
+}
+
+type obIDToken struct {
 	IntentID consentClaims `json:"openbanking_intent_id,omitempty"`
+	Acr      *acr          `json:"acr,omitempty"`
 }
 
 type consentClaims struct {
@@ -429,10 +438,10 @@ type consentClaims struct {
 }
 
 type consentIDTok struct {
-	Token obintentID `json:"id_token,omitempty"`
+	Token obIDToken `json:"id_token,omitempty"`
 }
 
-func (i *Input) generateUnsignedJWT() (string, error) {
+func (i *Input) generateUnsignedJWT(ctx *Context) (string, error) {
 	claims := jwt.MapClaims{}
 	claims["iss"] = i.Claims["iss"]
 	claims["scope"] = i.Claims["scope"]
@@ -440,8 +449,12 @@ func (i *Input) generateUnsignedJWT() (string, error) {
 	claims["redirect_uri"] = i.Claims["redirect_url"]
 
 	consentClaim := consentClaims{Essential: true, Value: i.Claims["consentId"]}
-	myident := obintentID{IntentID: consentClaim}
-	var consentIDToken = consentIDTok{Token: myident}
+	myIdent := obIDToken{IntentID: consentClaim}
+	acrValuesSupported, err := ctx.GetStringSlice("acrValuesSupported")
+	if err == nil && len(acrValuesSupported) > 0 {
+		myIdent = obIDToken{IntentID: consentClaim, Acr: &acr{Essential: true, Values: acrValuesSupported}}
+	}
+	var consentIDToken = consentIDTok{Token: myIdent}
 
 	claims["claims"] = consentIDToken
 

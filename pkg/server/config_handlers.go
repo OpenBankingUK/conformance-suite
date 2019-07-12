@@ -45,6 +45,13 @@ func SupportedRequestSignAlgValues() []interface{} {
 	return []interface{}{"PS256", "RS256", "NONE"}
 }
 
+// SupportedAcrValues returns a slice of supported acr values to be used in the request object
+// those are values that the Authorization Server is being requested to use for processing this Authentication Request
+// https://openbanking.atlassian.net/wiki/spaces/DZ/pages/7046134/Open+Banking+Security+Profile+-+Implementer+s+Draft+v1.1.0
+func SupportedAcrValues() []string {
+	return []string{"urn:openbanking:psd2:sca", "urn:openbanking:psd2:ca"}
+}
+
 type GlobalConfiguration struct {
 	SigningPrivate                string                  `json:"signing_private" validate:"not_empty"`
 	SigningPublic                 string                  `json:"signing_public" validate:"not_empty"`
@@ -67,10 +74,12 @@ type GlobalConfiguration struct {
 	TransactionToDate             string                  `json:"transaction_to_date" validate:"not_empty"`
 	RequestObjectSigningAlgorithm string                  `json:"request_object_signing_alg"`
 	InstructedAmount              models.InstructedAmount `json:"instructed_amount"`
+	PaymentFrequency              models.PaymentFrequency `json:"payment_frequency"`
 	CurrencyOfTransfer            string                  `json:"currency_of_transfer"`
 	UseNonOBDirectory             bool                    `json:"use_non_ob_directory"`
 	SigningKid                    string                  `json:"signing_kid,omitempty"`
 	SignatureTrustAnchor          string                  `json:"signature_trust_anchor,omitempty"`
+	AcrValuesSupported            []string                `json:"acr_values_supported,omitempty"`
 }
 
 // Validate - used by https://github.com/go-ozzo/ozzo-validation to validate struct.
@@ -81,7 +90,37 @@ func (c GlobalConfiguration) Validate() error {
 		validation.Field(&c.ResponseType, validation.Required, validation.In(values[:]...)),
 		validation.Field(&c.InstructedAmount),
 		validation.Field(&c.CurrencyOfTransfer, validation.Match(regexp.MustCompile("^[A-Z]{3,3}$"))),
+		validation.Field(&c.AcrValuesSupported, validation.By(acrValuesValidator)),
+		validation.Field(&c.PaymentFrequency),
 	)
+}
+
+func acrValuesValidator(value interface{}) error {
+	values, ok := value.([]string)
+	if !ok {
+		return nil
+	}
+	supportedAcrValues := SupportedAcrValues()
+	if len(values) > len(supportedAcrValues) {
+		return fmt.Errorf("acrValuesValidator: `acr_values_supported` cannot be more than %d", len(supportedAcrValues))
+	}
+	for _, v := range values {
+		if !strSliceContains(supportedAcrValues, v) {
+			return fmt.Errorf("acrValuesValidator: `acr_values_supported` invalid value provided: %s", v)
+		}
+	}
+
+	return nil
+}
+
+func strSliceContains(slice []string, str string) bool {
+	for _, s := range slice {
+		if s == str {
+			return true
+		}
+	}
+
+	return false
 }
 
 func newConfigHandlers(journey Journey, logger *logrus.Entry) configHandlers {
@@ -151,6 +190,7 @@ func MakeJourneyConfig(config *GlobalConfiguration) (JourneyConfig, error) {
 		resourceIDs:                   config.ResourceIDs,
 		creditorAccount:               config.CreditorAccount,
 		instructedAmount:              config.InstructedAmount,
+		paymentFrequency:              config.PaymentFrequency,
 		currencyOfTransfer:            config.CurrencyOfTransfer,
 		transactionFromDate:           config.TransactionFromDate,
 		transactionToDate:             config.TransactionToDate,
@@ -160,6 +200,7 @@ func MakeJourneyConfig(config *GlobalConfiguration) (JourneyConfig, error) {
 		useNonOBDirectory:             config.UseNonOBDirectory,
 		signingKid:                    config.SigningKid,
 		signatureTrustAnchor:          config.SignatureTrustAnchor,
+		AcrValuesSupported:            config.AcrValuesSupported,
 	}, nil
 }
 

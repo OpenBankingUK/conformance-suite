@@ -478,6 +478,7 @@ type JourneyConfig struct {
 	resourceIDs                   model.ResourceIDs
 	creditorAccount               models.Payment
 	instructedAmount              models.InstructedAmount
+	paymentFrequency              models.PaymentFrequency
 	currencyOfTransfer            string
 	apiVersion                    string
 	transactionFromDate           string
@@ -489,6 +490,7 @@ type JourneyConfig struct {
 	signingKid                    string
 	signatureTrustAnchor          string
 	useDynamicResourceID          bool
+	AcrValuesSupported            []string
 }
 
 func (wj *journey) SetConfig(config JourneyConfig) error {

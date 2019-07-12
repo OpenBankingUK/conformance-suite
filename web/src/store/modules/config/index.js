@@ -49,6 +49,7 @@ export const mutationTypes = {
   SET_INSTRUCTED_AMOUNT_VALUE: 'SET_INSTRUCTED_AMOUNT_VALUE',
   SET_INSTRUCTED_AMOUNT_CURRENCY: 'SET_INSTRUCTED_AMOUNT_CURRENCY',
   SET_CURRENCY_OF_TRANSFER: 'SET_CURRENCY_OF_TRANSFER',
+  SET_PAYMENT_FREQUENCY: 'SET_PAYMENT_FREQUENCY',
 };
 
 export const mutations = {
@@ -190,6 +191,9 @@ export const mutations = {
   [mutationTypes.SET_CURRENCY_OF_TRANSFER](state, value) {
     state.configuration.currency_of_transfer = value;
   },
+  [mutationTypes.SET_PAYMENT_FREQUENCY](state, value) {
+    state.configuration.payment_frequency = value;
+  },
 };
 
 // Converts problem key to discovery model JSON path.
@@ -252,7 +256,6 @@ export const state = {
   token_endpoint_auth_methods: [],
   request_object_signing_alg_values_supported: [],
   response_types_supported: [],
-
   configuration: {
     signing_private: '',
     signing_public: '',
@@ -290,6 +293,8 @@ export const state = {
       currency: 'GBP',
     },
     currency_of_transfer: 'USD',
+    payment_frequency: 'EvryDay',
+    acr_values_supported: [],
   },
 
   wizard: {

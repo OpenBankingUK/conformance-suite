@@ -80,7 +80,7 @@
       ],
       "method": "get",
       "schemaCheck": false
-    },    
+    },
     {
       "description": "Domestic Payment consents succeeds with minimal data set with additional schema checks.",
       "id": "OB-301-DOP-100300",
@@ -169,10 +169,10 @@
       "detail": "Check that once the domestic-payment-consent has been authorised by the PSU, the PISP can proceed to submitting the domestic-payment for processing.",
       "parameters": {
         "tokenRequestScope": "payments",
-        "consentId": "$OB-301-DOP-100300-ConsentId",
+        "consentId": "$OB-301-DOP-100600-ConsentId",
         "thisSchemeName": "$creditorScheme",
         "thisIdentification": "$creditorIdentification",
-        "instructionIdentification": "OB-301-DOP-100300",
+        "instructionIdentification": "OB-301-DOP-100600",
         "instructedAmountCurrency": "$instructedAmountCurrency",
         "instructedAmountValue": "$instructedAmountValue",
         "postData": "$minimalDomesticPaymentPost"
@@ -195,7 +195,7 @@
       "schemaCheck": false
     },
 
-    
+
     {
       "description": "PISP can retrieve the Domestic Payment status.",
       "id": "OB-301-DOP-100700",
@@ -203,7 +203,7 @@
       "detail": "Check PISP can retrieve the domestic-payment to check its status.",
       "parameters": {
         "tokenRequestScope": "payments",
-        "paymentId": "$OB-301-DOP-100600-DomesticPaymentId"
+        "paymentId": "$OB-301-DOP-100700-DomesticPaymentId"
       },
       "headers": {
         "Content-Type": "application/json; charset=utf-8"
@@ -327,7 +327,7 @@
         "tokenRequestScope": "payments",
         "instructedAmountValue": "$instructedAmountValue",
         "instructedAmountCurrency": "$instructedAmountCurrency",
-        "frequency": "EvryDay",
+        "frequency": "$payment_frequency",
         "postData": "$minimalDomesticStandingOrderConsent",
         "requestConsent": "true"
       },
@@ -433,7 +433,8 @@
         "tokenRequestScope": "payments",
         "instructedAmountValue": "$instructedAmountValue",
         "instructedAmountCurrency": "$instructedAmountCurrency",
-        "postData": "$minimalDomesticStandingOrderEveryDay",
+        "frequency": "$payment_frequency",
+        "postData": "$minimalDomesticStandingOrder",
         "consentId": "$OB-301-DOP-101200-ConsentId"
       },
       "headers": {
@@ -553,7 +554,7 @@
       ],
       "method": "get",
       "schemaCheck": false
-    },    
+    },
     {
       "description": "International Payment consent succeeds with minimal data set with additional schema checks.",
       "id": "OB-301-DOP-101600",

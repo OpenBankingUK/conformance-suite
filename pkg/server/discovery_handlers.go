@@ -29,6 +29,7 @@ type PostDiscoveryModelResponse struct {
 	DefaultTxnFromDateTime                        string              `json:"default_transaction_from_date"`
 	DefaultTxnToDateTime                          string              `json:"default_transaction_to_date"`
 	ResponseTypesSupported                        []string            `json:"response_types_supported"`
+	AcrValuesSupported                            []string            `json:"acr_values_supported"`
 }
 
 type validationFailuresResponse struct {
@@ -73,6 +74,7 @@ func (d discoveryHandlers) setDiscoveryModelHandler(c echo.Context) error {
 		AuthorizationEndpoints:                        map[string]string{},
 		Issuers:                                       map[string]string{},
 		ResponseTypesSupported:                        []string{},
+		AcrValuesSupported:                            []string{},
 	}
 	for discoveryItemIndex, discoveryItem := range discoveryModel.DiscoveryModel.DiscoveryItems {
 		key := fmt.Sprintf("schema_version=%s", discoveryItem.APISpecification.SchemaVersion)
@@ -105,6 +107,7 @@ func (d discoveryHandlers) setDiscoveryModelHandler(c echo.Context) error {
 			response.DefaultTxnFromDateTime = defaultTxnFrom
 			response.DefaultTxnToDateTime = defaultTxnTo
 			response.ResponseTypesSupported = config.ResponseTypesSupported
+			response.AcrValuesSupported = config.AcrValuesSupported
 		}
 	}
 

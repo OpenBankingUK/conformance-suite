@@ -63,6 +63,7 @@
       },
       "expect": {
         "status-code": 201,
+        "schema-validation": true,
         "matches": [{
           "description": "Check we get Status:AwaitingAuthorisation",
           "json": "Data.Status",

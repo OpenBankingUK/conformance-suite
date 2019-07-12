@@ -25,7 +25,8 @@ var (
 )
 
 const (
-	consentChannelTimeout = 30
+	// consentChannelTimeout - seconds in 5 minutes.
+	consentChannelTimeout = 300
 )
 
 // GetPsuConsent -

@@ -26,6 +26,7 @@ const (
 	CtxCreditorName                 = "creditorName"
 	CtxInstructedAmountCurrency     = "instructedAmountCurrency"
 	CtxInstructedAmountValue        = "instructedAmountValue"
+	CtxPaymentFrequency             = "payment_frequency" // CtxPaymentFrequency - for example `EvryDay`.
 	CtxCurrencyOfTransfer           = "currencyOfTransfer"
 	CtxTransactionFromDate          = "transactionFromDate"
 	CtxTransactionToDate            = "transactionToDate"
@@ -37,6 +38,7 @@ const (
 	CtxSigningKid                   = "signingKid"
 	CtxSignatureTrustAnchor         = "signatureTrustAnchor"
 	CtxDynamicResourceIDs           = "dynamicResourceIDs"
+	CtxAcrValuesSupported           = "acrValuesSupported"
 )
 
 // PutParametersToJourneyContext populates a JourneyContext with values from the config screen
@@ -61,6 +63,7 @@ func PutParametersToJourneyContext(config JourneyConfig, context model.Context) 
 	context.PutString(CtxCreditorName, config.creditorAccount.Name)
 	context.PutString(CtxInstructedAmountCurrency, config.instructedAmount.Currency)
 	context.PutString(CtxInstructedAmountValue, config.instructedAmount.Value)
+	context.PutString(CtxPaymentFrequency, string(config.paymentFrequency))
 	context.PutString(CtxCurrencyOfTransfer, config.currencyOfTransfer)
 	context.PutString(CtxRequestObjectSigningAlg, config.requestObjectSigningAlgorithm)
 	context.PutString(CtxSigningPrivate, config.signingPrivate)
@@ -71,6 +74,7 @@ func PutParametersToJourneyContext(config JourneyConfig, context model.Context) 
 	context.PutString(CtxSigningKid, config.signingKid)
 	context.PutString(CtxSignatureTrustAnchor, config.signatureTrustAnchor)
 	context.Put(CtxDynamicResourceIDs, config.useDynamicResourceID)
+	context.PutStringSlice(CtxAcrValuesSupported, config.AcrValuesSupported)
 
 	basicauth, err := authentication.CalculateClientSecretBasicToken(config.clientID, config.clientSecret)
 	if err != nil {
