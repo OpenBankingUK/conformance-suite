@@ -411,7 +411,7 @@ func replaceContextField(source string, ctx *Context) (string, error) {
 }
 
 var varReplacementRegex = regexp.MustCompile(`[^\$]?\$([\w|\-|_]*)`)
-var fnReplacementRegex = regexp.MustCompile(`[^\$fn:]?\$fn:([\w|_]*)\(([\w,\s-]*)\)`)
+var fnReplacementRegex = regexp.MustCompile(`[^\$]?\$([\w|_]*)\(([\w,\s-]*)\)`)
 
 // GetReplacementField examines the input string and returns the first character
 // sequence beginning with '$' and ending with whitespace. '$$' sequence acts as an escape value

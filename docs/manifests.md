@@ -140,7 +140,7 @@ func instructionIdentificationID() string {
 }
 ```
 
-In manifest file, call the macro. Note the pattern required here. `$fn:` should prefix the function call and the function should be followed by parentheses (`()`).
+In manifest file, call the macro. Note the pattern required here. The function should be followed by parentheses (`()`).
 
 ```
 "parameters": {
@@ -148,7 +148,7 @@ In manifest file, call the macro. Note the pattern required here. `$fn:` should 
         "instructedAmountValue": "$instructedAmountValue",
         "instructedAmountCurrency": "$instructedAmountCurrency",
         "currencyOfTransfer": "$currencyOfTransfer",
-        "instructionIdentification": "$fn:instructionIdentificationID()",
+        "instructionIdentification": "instructionIdentificationID()",
         "endToEndIdentification": "e2e-internat-sched-pay",
         "postData": "$minimalInternationalScheduledPayment",
         "consentId": "$OB-301-DOP-102000-ConsentId"
