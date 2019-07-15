@@ -1,11 +1,12 @@
 package model
 
 import (
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/schema"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"testing"
+
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/schema"
 
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/test"
 
@@ -196,6 +197,7 @@ func TestGetReplacementField(t *testing.T) {
 	testCases := []struct {
 		stringToCheck string
 		value         string
+		isFn          bool
 		isReplacement bool
 		err           error
 	}{
@@ -203,20 +205,23 @@ func TestGetReplacementField(t *testing.T) {
 			stringToCheck: "$hello",
 			value:         "hello",
 			isReplacement: true,
+			isFn:          false,
 			err:           nil,
 		},
 		{
 			stringToCheck: "hello",
 			value:         "hello",
 			isReplacement: false,
+			isFn:          false,
 			err:           nil,
 		},
 	}
 
 	for _, tc := range testCases {
 		t.Run("", func(t *testing.T) {
-			value, isReplacement := getReplacementField(tc.stringToCheck)
+			value, isReplacement, isFn := getReplacementField(tc.stringToCheck)
 			assert.Equal(t, tc.value, value)
+			assert.Equal(t, tc.isFn, isFn)
 			assert.Equal(t, tc.isReplacement, isReplacement)
 		})
 	}
