@@ -148,7 +148,7 @@ In manifest file, call the macro. Note the pattern required here. The function s
         "instructedAmountValue": "$instructedAmountValue",
         "instructedAmountCurrency": "$instructedAmountCurrency",
         "currencyOfTransfer": "$currencyOfTransfer",
-        "instructionIdentification": "instructionIdentificationID()",
+        "instructionIdentification": "$instructionIdentificationID()",
         "endToEndIdentification": "e2e-internat-sched-pay",
         "postData": "$minimalInternationalScheduledPayment",
         "consentId": "$OB-301-DOP-102000-ConsentId"
