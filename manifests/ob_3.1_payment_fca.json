@@ -54,8 +54,7 @@
         "OB3GLOAAssertConsentId"
       ],
       "keepContextOnSuccess": {
-        "OB-301-DOP-100100-ConsentId": "Data.ConsentId",
-        "OB-301-DOP-100100-instructionIdentification": "$instructionIdentification"
+        "OB-301-DOP-100100-ConsentId": "Data.ConsentId"
       },
       "method": "post",
       "schemaCheck": false
