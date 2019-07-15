@@ -129,7 +129,7 @@ export default {
       return null;
     },
     startPsuConsent(url, targetElement) {
-      this.openPopup(url, 'PSU Consent', 1074, 800);
+      this.openPopup(url, 'PSU Consent', 1074 * 0.75, 800 * 0.75);
       targetElement.innerHTML = 'PSU Consent (Started)'; // eslint-disable-line
     },
     openPopup(url, title, w, h) {

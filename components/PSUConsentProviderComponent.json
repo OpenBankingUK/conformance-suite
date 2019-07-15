@@ -14,7 +14,8 @@
   "outputParameters": {
     "consent_id": ""
   },
-  "testcases": [{
+  "testcases": [
+    {
       "@id": "#compPsuConsent01",
       "name": "ClientCredential Grant",
       "input": {
@@ -35,11 +36,13 @@
       "expect": {
         "status-code": 200,
         "contextPut": {
-          "matches": [{
-            "name": "client_access_token",
-            "description": "Access Token",
-            "json": "access_token"
-          }]
+          "matches": [
+            {
+              "name": "client_access_token",
+              "description": "Access Token",
+              "json": "access_token"
+            }
+          ]
         }
       }
     },
@@ -64,17 +67,21 @@
       "expect": {
         "status-code": 201,
         "schema-validation": true,
-        "matches": [{
-          "description": "Check we get Status:AwaitingAuthorisation",
-          "json": "Data.Status",
-          "value": "AwaitingAuthorisation"
-        }],
+        "matches": [
+          {
+            "description": "Check we get Status:AwaitingAuthorisation",
+            "json": "Data.Status",
+            "value": "AwaitingAuthorisation"
+          }
+        ],
         "contextPut": {
-          "matches": [{
-            "name": "post-account-consent-id",
-            "description": "gets the consentid from PostAccountRequest ",
-            "json": "Data.ConsentId"
-          }]
+          "matches": [
+            {
+              "name": "post-account-consent-id",
+              "description": "gets the consentid from PostAccountRequest ",
+              "json": "Data.ConsentId"
+            }
+          ]
         }
       }
     },
@@ -94,12 +101,13 @@
           "redirect_url": "$redirect_url",
           "consentId": "$post-account-consent-id",
           "responseType": "$responseType",
-          "state":"$token_name"
+          "state": "$token_name"
         }
       },
       "context": {
         "baseurl": "$authorisation_endpoint"
       },
+      "do_not_call_endpoint": true,
       "expect": {
         "status-code": -1
       }

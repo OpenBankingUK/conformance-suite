@@ -1,9 +1,11 @@
 package executors
 
 import (
+	"bytes"
 	"crypto/tls"
 	"crypto/x509"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/authentication"
@@ -44,6 +46,11 @@ func (e *Executor) SetCertificates(certificateSigning, certificationTransport au
 
 // ExecuteTestCase - makes this a generic executor
 func (e *Executor) ExecuteTestCase(r *resty.Request, t *model.TestCase, ctx *model.Context) (*resty.Response, results.Metrics, error) {
+	if t.DoNotCallEndpoint {
+		e.appMsg(fmt.Sprintf("Not executing Testcase: %s: %s", t.ID, t.Name))
+		return emptyResponse(), results.NoMetrics(), nil
+	}
+
 	e.appMsg(fmt.Sprintf("Execute Testcase: %s: %s", t.ID, t.Name))
 	e.appMsg(fmt.Sprintf("attempting %s %s", r.Method, r.URL))
 	if r.Method == "POST" {
@@ -127,4 +134,15 @@ func (e *Executor) setupTLSCertificate(tlsCert tls.Certificate) error {
 
 func (e *Executor) appMsg(msg string) {
 	tracer.AppMsg("Executor", msg, "")
+}
+
+func emptyResponse() *resty.Response {
+	return &resty.Response{
+		Request: resty.NewRequest(),
+		RawResponse: &http.Response{
+			Body:       ioutil.NopCloser(bytes.NewReader([]byte(`{}`))),
+			Status:     "-1 Ignore",
+			StatusCode: -1,
+		},
+	}
 }
