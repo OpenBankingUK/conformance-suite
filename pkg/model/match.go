@@ -28,7 +28,7 @@ const (
 	BodyJSONRegex
 	BodyLength
 	Authorisation
-	Contxt
+	ContextValue
 	CustomCheck
 )
 
@@ -156,7 +156,7 @@ func (m *Match) PutValue(tc *TestCase, ctx *Context) bool {
 		}
 	case BodyRegex:
 		return handleBodyRegex(tc, m, ctx)
-	case Contxt:
+	case ContextValue:
 		value, err := ctx.GetString(m.Value[1:])
 		if err != nil {
 			return false
@@ -268,8 +268,8 @@ func (m *Match) GetType() MatchType {
 	}
 
 	if strings.HasPrefix(m.Value, "$") {
-		m.MatchType = Contxt
-		return Contxt
+		m.MatchType = ContextValue
+		return ContextValue
 	}
 
 	return UnknownMatchType
