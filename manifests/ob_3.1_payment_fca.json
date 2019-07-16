@@ -1,6 +1,5 @@
 {
-  "scripts": [
-    {
+  "scripts": [{
       "description": "Domestic Payment consents fails when given an invalid ConsentId",
       "id": "OB-301-DOP-100000",
       "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937984109/Domestic+Payments+v3.1#DomesticPaymentsv3.1-POST/domestic-payment-consents",
@@ -54,8 +53,10 @@
         "OB3GLOAAssertConsentId"
       ],
       "keepContextOnSuccess": {
-        "OB-301-DOP-100100-ConsentId": "Data.ConsentId"
+        "name":"OB-301-DOP-100100-ConsentId",
+        "value": "Data.ConsentId"
       },
+
       "method": "post",
       "schemaCheck": false
     },
@@ -113,7 +114,8 @@
         "OB3GLOAAssertConsentId"
       ],
       "keepContextOnSuccess": {
-        "OB-301-DOP-100300-ConsentId": "Data.ConsentId"
+       "name":"OB-301-DOP-100300-ConsentId",
+       "value": "Data.ConsentId"
       },
       "method": "post",
       "schemaCheck": true
@@ -191,12 +193,12 @@
         "OB3GLOAssertOn201"
       ],
       "keepContextOnSuccess": {
-        "OB-301-DOP-100600-DomesticPaymentId": "Data.DomesticPaymentId"
+        "name":"OB-301-DOP-100600-DomesticPaymentId",
+        "value": "Data.DomesticPaymentId"
       },
       "method": "post",
       "schemaCheck": false
     },
-
 
     {
       "description": "PISP can retrieve the Domestic Payment status.",
@@ -245,8 +247,8 @@
         "OB3GLOAAssertConsentId"
       ],
       "keepContextOnSuccess": {
-
-        "OB-301-DOP-100800-ConsentId": "Data.ConsentId"
+        "name":"OB-301-DOP-100800-ConsentId",
+        "value": "Data.ConsentId"
       },
       "method": "post",
       "schemaCheck": true
@@ -290,13 +292,14 @@
       "body": "$postData",
       "uri": "/domestic-scheduled-payment-consents",
       "uriImplementation": "conditional",
-      "useCCGToken":true,
+      "useCCGToken": true,
       "resource": "DomesticScheduledPayment",
       "asserts": [
         "OB3GLOAssertOn201"
       ],
       "keepContextOnSuccess": {
-        "OB-301-DOP-101000-DomesticScheduledPaymentConsentId": "Data.ConsentId"
+        "name":"OB-301-DOP-101000-DomesticScheduledPaymentConsentId",
+        "value": "Data.ConsentId"
       },
       "method": "post",
       "schemaCheck": true
@@ -313,7 +316,7 @@
       "uri": "/domestic-scheduled-payment-consents/$OB-301-DOP-101000-DomesticScheduledPaymentConsentId",
       "uriImplementation": "conditional",
       "resource": "DomesticScheduledPayment",
-      "useCCGToken":true,
+      "useCCGToken": true,
       "asserts": [
         "OB3GLOAssertOn200"
       ],
@@ -343,7 +346,8 @@
         "OB3GLOAAssertConsentId"
       ],
       "keepContextOnSuccess": {
-        "OB-301-DOP-101200-ConsentId": "Data.ConsentId"
+        "name": "OB-301-DOP-101200-ConsentId",
+        "value": "Data.ConsentId"
       },
       "method": "post",
       "schemaCheck": true
@@ -371,7 +375,8 @@
         "OB3GLOAAssertConsentId"
       ],
       "keepContextOnSuccess": {
-        "OB-301-DOP-101201-ConsentId": "Data.ConsentId"
+        "name": "OB-301-DOP-101201-ConsentId",
+        "value": "Data.ConsentId"
       },
       "method": "post",
       "schemaCheck": true
@@ -399,7 +404,8 @@
         "OB3GLOAAssertConsentId"
       ],
       "keepContextOnSuccess": {
-        "OB-301-DOP-101202-ConsentId": "Data.ConsentId"
+        "name": "OB-301-DOP-101202-ConsentId",
+        "value": "Data.ConsentId"
       },
       "method": "post",
       "schemaCheck": true
@@ -447,7 +453,8 @@
         "OB3GLOAssertOn201"
       ],
       "keepContextOnSuccess": {
-        "OB-301-DOP-101400-DomesticStandingOrderID": "Data.DomesticStandingOrderId"
+        "name": "OB-301-DOP-101400-DomesticStandingOrderID",
+        "value": "Data.DomesticStandingOrderId"
       },
       "method": "post",
       "schemaCheck": true
@@ -500,7 +507,8 @@
         "OB3GLOAssertOn201"
       ],
       "keepContextOnSuccess": {
-        "OB-301-DOP-101402-DomesticStandingOrderID": "Data.DomesticStandingOrderId"
+        "name": "OB-301-DOP-101402-DomesticStandingOrderID",
+        "value": "Data.DomesticStandingOrderId"
       },
       "method": "post",
       "schemaCheck": true
@@ -528,7 +536,8 @@
         "OB3GLOAssertOn201"
       ],
       "keepContextOnSuccess": {
-        "OB-301-DOP-101403-DomesticStandingOrderID": "Data.DomesticStandingOrderId"
+        "name": "OB-301-DOP-101403-DomesticStandingOrderID",
+        "value": "Data.DomesticStandingOrderId"
       },
       "method": "post",
       "schemaCheck": true
@@ -574,8 +583,8 @@
         "OB3GLOAAssertConsentId"
       ],
       "keepContextOnSuccess": {
-        "OB-301-DOP-101600-ConsentId": "Data.ConsentId"
-
+        "name": "OB-301-DOP-101600-ConsentId",
+        "value": "Data.ConsentId"
       },
       "method": "post",
       "schemaCheck": true
@@ -626,7 +635,8 @@
         "OB3IPAssertInternationalPaymentId"
       ],
       "keepContextOnSuccess": {
-        "OB-301-DOP-101800-InternationalPaymentId": "Data.InternationalPaymentId"
+        "name": "OB-301-DOP-101800-InternationalPaymentId",
+        "value": "Data.InternationalPaymentId"
       },
       "method": "post",
       "schemaCheck": true
@@ -659,7 +669,7 @@
         "instructedAmountValue": "$instructedAmountValue",
         "instructedAmountCurrency": "$instructedAmountCurrency",
         "currencyOfTransfer": "$currencyOfTransfer",
-        "OB-301-DOP-102000-instructionIdentification": "$instructionIdentification",        
+        "OB-301-DOP-102000-instructionIdentification": "$instructionIdentification",
         "instructionIdentification": "$fn:instructionIdentificationID()",
         "endToEndIdentification": "e2e-internat-sched-pay",
         "postData": "$minimalInternationalScheduledPaymentConsent",
@@ -675,8 +685,8 @@
         "OB3GLOAAssertConsentId"
       ],
       "keepContextOnSuccess": {
-        "OB-301-DOP-102000-ConsentId": "Data.ConsentId"
-
+        "name": "OB-301-DOP-102000-ConsentId",
+        "value": "Data.ConsentId"
       },
       "method": "post",
       "schemaCheck": true
@@ -727,7 +737,8 @@
         "OB3IPAssertInternationalScheduledPaymentId"
       ],
       "keepContextOnSuccess": {
-        "OB-301-DOP-102200-InternationalScheduledPaymentId": "Data.InternationalScheduledPaymentId"
+        "name": "OB-301-DOP-102200-InternationalScheduledPaymentId",
+        "value": "Data.InternationalScheduledPaymentId"
       },
       "method": "post",
       "schemaCheck": true
@@ -749,6 +760,6 @@
       ],
       "method": "get",
       "schemaCheck": false
-    }
+    }        
   ]
 }
