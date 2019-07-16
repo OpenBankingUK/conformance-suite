@@ -163,6 +163,26 @@ func (s *Script) processParameters(refs *References, resources *model.Context) (
 			localCtx.PutString("consentId", value)
 			continue
 		}
+
+		if strings.HasPrefix(value, "$fn:") {
+			fnNameAndArgs := fnReplacementRegex.FindStringSubmatch(value)
+			if fnNameAndArgs == nil {
+				return nil, errors.New("function name format error processing " + value)
+			}
+			fnArgs := []string{}
+			// fn has some parameters
+			if len(fnNameAndArgs) > 2 && fnNameAndArgs[2] != "" {
+				fnArgs = strings.Split(fnNameAndArgs[2], ",")
+			}
+			result, err := model.ExecuteMacro(fnNameAndArgs[1], fnArgs)
+			if err != nil {
+				logrus.Debugf("found error while executing function for context var %s. err %v", fnNameAndArgs[1], err)
+				return nil, err
+			}
+			localCtx.PutString(k, result)
+			continue
+		}
+
 		if strings.Contains(value, "$") {
 			str := value[1:]
 			//lookup parameter in resources - accountids

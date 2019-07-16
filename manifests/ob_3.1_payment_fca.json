@@ -10,7 +10,7 @@
         "consentId": "foobar",
         "instructedAmountCurrency": "$instructedAmountCurrency",
         "instructedAmountValue": "$instructedAmountValue",
-        "instructionIdentification": "$instructionIdentificationID()",
+        "instructionIdentification": "$fn:instructionIdentificationID()",
         "endToEndIdentification": "e2e-domestic-pay",
         "postData": "$minimalDomesticPaymentConsent"
       },
@@ -36,7 +36,7 @@
         "tokenRequestScope": "payments",
         "instructedAmountCurrency": "$instructedAmountCurrency",
         "instructedAmountValue": "$instructedAmountValue",
-        "instructionIdentification": "$instructionIdentificationID()",
+        "instructionIdentification": "$fn:instructionIdentificationID()",
         "endToEndIdentification": "e2e-domestic-pay",
         "postData": "$minimalDomesticPaymentConsent",
         "requestConsent": "false"
@@ -94,7 +94,7 @@
         "postData": "$minimalDomesticPaymentConsent",
         "thisSchemeName": "$creditorScheme",
         "thisIdentification": "$creditorIdentification",
-        "instructionIdentification": "$instructionIdentificationID()",
+        "instructionIdentification": "$fn:instructionIdentificationID()",
         "endToEndIdentification": "e2e-domestic-pay",
         "requestConsent": "true"
       },
@@ -228,7 +228,7 @@
         "tokenRequestScope": "payments",
         "instructedAmountValue": "$instructedAmountValue",
         "instructedAmountCurrency": "$instructedAmountCurrency",
-        "instructionIdentification": "$instructionIdentificationID()",
+        "instructionIdentification": "$fn:instructionIdentificationID()",
         "postData": "$minimalScheduledDomesticPaymentConsent",
         "endToEndIdentification": "e2e-domestic-sched-pay",
         "requestConsent": "true"
@@ -557,7 +557,7 @@
       "detail": "Checks that the resource succeeds for a PISP asking for a International Payment consent with a minimal data set and checks additional schema.",
       "parameters": {
         "tokenRequestScope": "payments",
-        "instructionIdentification": "$instructionIdentificationID()",
+        "instructionIdentification": "$fn:instructionIdentificationID()",
         "endToEndIdentification": "e2e-internat-pay",
         "postData": "$minimalInternationalPaymentConsent",
         "requestConsent": "true"
@@ -657,7 +657,7 @@
         "instructedAmountValue": "$instructedAmountValue",
         "instructedAmountCurrency": "$instructedAmountCurrency",
         "currencyOfTransfer": "$currencyOfTransfer",
-        "instructionIdentification": "$instructionIdentificationID()",
+        "instructionIdentification": "$fn:instructionIdentificationID()",
         "endToEndIdentification": "e2e-internat-sched-pay",
         "postData": "$minimalInternationalScheduledPaymentConsent",
         "requestConsent": "true"

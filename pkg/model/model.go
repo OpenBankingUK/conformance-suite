@@ -380,7 +380,7 @@ func replaceContextField(source string, ctx *Context) (string, error) {
 		ignoreErrors = true
 	}
 
-	field, isReplacement, isFnResult := getReplacementField(source)
+	field, isReplacement := getReplacementField(source)
 	if !isReplacement {
 		return source, nil
 	}
@@ -390,54 +390,45 @@ func replaceContextField(source string, ctx *Context) (string, error) {
 		}
 		return source, errors.New("field not found in context " + field)
 	}
-	result := field
-	if !isFnResult {
-		replacement, exist := ctx.Get(field)
-		if !exist {
-			if ignoreErrors {
-				return source, nil
-			}
-			return source, errors.New("replacement not found in context: " + source)
+	replacement, exist := ctx.Get(field)
+	if !exist {
+		if ignoreErrors {
+			return source, nil
 		}
-		contextField, ok := replacement.(string)
-		if !ok {
-			if ignoreErrors {
-				return source, nil
-			}
-			return source, errors.New("replacement is not of type string: " + source)
-		}
-		result = strings.Replace(source, "$"+field, contextField, 1)
+		return source, errors.New("replacement not found in context: " + source)
 	}
+	contextField, ok := replacement.(string)
+	if !ok {
+		if ignoreErrors {
+			return source, nil
+		}
+		return source, errors.New("replacement is not of type string: " + source)
+	}
+	result := strings.Replace(source, "$"+field, contextField, 1)
 	return result, nil
 }
 
-var varReplacementRegex = regexp.MustCompile(`[^\$]?\$([\w|\-|_]*)`)
-var fnReplacementRegex = regexp.MustCompile(`[^\$]?\$([\w|_]*)\(([\w,\s-]*)\)`)
+var singleDollarRegex = regexp.MustCompile(`[^\$]?\$([\w|\-|_]*)`)
 
 // GetReplacementField examines the input string and returns the first character
 // sequence beginning with '$' and ending with whitespace. '$$' sequence acts as an escape value
 // A zero length string is return if now Replacement Fields are found
 // returns a boolean to indicate if the field contains a field beginning with a $
-func getReplacementField(value string) (string, bool, bool) {
-	fnNameAndArgs := fnReplacementRegex.FindStringSubmatch(value)
-	if fnNameAndArgs == nil {
-		varResult := varReplacementRegex.FindStringSubmatch(value)
-		if varResult == nil {
-			return value, false, false
-		}
-		return varResult[len(varResult)-1], true, false
+func getReplacementField(value string) (string, bool) {
+	isReplacement := isReplacementField(value)
+	if !isReplacement {
+		return value, false
 	}
-	fnArgs := []string{}
-	// fn has some parameters
-	if len(fnNameAndArgs) > 2 && fnNameAndArgs[2] != "" {
-		fnArgs = strings.Split(fnNameAndArgs[2], ",")
+	result := singleDollarRegex.FindStringSubmatch(value)
+	if result == nil {
+		return "", false
 	}
-	fnResult, err := ExecuteMacro(fnNameAndArgs[1], fnArgs)
-	if err != nil {
-		logrus.Debugf("found error while executing macro for context var %s. err %v", fnNameAndArgs[1], err)
-		return "", false, true
-	}
-	return fnResult, true, true
+	return result[len(result)-1], true
+}
+
+func isReplacementField(value string) bool {
+	index := strings.Index(value, "$")
+	return index != -1
 }
 
 // ProcessReplacementFields prefixed by '$' in the testcase Input and Context sections
@@ -488,7 +479,6 @@ func (t *TestCase) ProcessReplacementFields(ctx *Context, showReplacementErrors 
 		match.ProcessReplacementFields(ctx)
 		t.Expect.Matches[idx] = match
 	}
-
 }
 
 func (t *TestCase) logReplaceError(field string, err error, logger *logrus.Logger, showReplacementErrors bool) {
