@@ -1,4 +1,37 @@
 
+
+### v1.1.16 (16th July 2019)
+
+Release **v1.1.16**, it adds support for unique transaction IDs for each payment and fixes the headless mode for model banks.
+
+[Full Release Notes](docs/releases/v1.1.16.md) (v1.1.16.md)
+
+### v1.1.15 (5th July 2019)
+
+Release **v1.1.15**, adds support for dynamically allocated resource ids in the accounts and transactions api.
+
+[Full Release Notes](docs/releases/v1.1.15.md) (v1.1.15.md)
+
+### v1.1.14 (3rd July 2019)
+
+[Full Release Notes](docs/releases/v1.1.14.md) (v1.1.14.md)
+
+### v1.1.13 (21st June 2019)
+
+[Full Release Notes](docs/releases/v1.1.13.md) (v1.1.13.md)
+
+### v1.1.12  (19th June 2019)
+
+[Full Release Notes](docs/releases/v1.1.12.md) (v1.1.12.md)
+
+### v1.1.11  (18th June 2019)
+
+[Full Release Notes](docs/releases/v1.1.11.md) (v1.1.11.md)
+
+### v1.1.10 v1.1.10 (12th June 2019)
+
+[Full Release Notes](docs/releases/v1.1.10.md) (v1.1.10.md)
+
 ### v1.1.9 (7th June 2019)
 
 The release is called **v1.1.9**, it adds support kid/trust anchor using EIDAS certificates and enables the Docker Content Trust Framework.
