@@ -167,7 +167,13 @@ func (wj *journey) TestCases() (generation.TestCasesRun, error) {
 	}
 
 	for _, discoveryItem := range wj.validDiscoveryModel.DiscoveryModel.DiscoveryItems {
-		tlsValidationResult := wj.tlsValidator.ValidateTLSVersion(discoveryItem.ResourceBaseURI)
+		tlsValidationResult, err := wj.tlsValidator.ValidateTLSVersion(discoveryItem.ResourceBaseURI)
+		if err != nil {
+			logger.WithFields(logrus.Fields{
+				"err":                      errors.Wrapf(err, "unable to validate TLS version for uri %s", discoveryItem.ResourceBaseURI),
+				"wj.testCasesRunGenerated": wj.testCasesRunGenerated,
+			}).Error("Error getting generation.TestCasesRun ...")
+		}
 		wj.context.PutString(fmt.Sprintf("tlsVersionForDiscoveryItem-%s", discoveryItem.APISpecification.Version), tlsValidationResult.TLSVersion)
 		wj.context.Put(fmt.Sprintf("tlsIsValidForDiscoveryItem-%s", discoveryItem.APISpecification.Version), tlsValidationResult.Valid)
 	}
