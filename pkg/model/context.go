@@ -144,3 +144,20 @@ func (c *Context) IsSet(key string) bool {
 	}
 	return true
 }
+
+// GetStrings - given a list of strings, returns a map of the strings values from context
+func (c *Context) GetStrings(text ...string) (map[string]string, error) {
+	stringsMap := map[string]string{}
+	for i := 0; i < len(text); i++ {
+		key := text[i]
+		value, err := c.GetString(key)
+		if err != nil {
+			return nil, errors.New("cannot get value of " + key + " from context")
+		}
+		if len(value) < 1 {
+			return nil, errors.New("cannot get value of " + key + " from context is empty")
+		}
+		stringsMap[key] = value
+	}
+	return stringsMap, nil
+}

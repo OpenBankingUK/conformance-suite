@@ -105,7 +105,7 @@ func TestJourneyTestCasesCantGenerateIfDiscoveryNotSet(t *testing.T) {
 	testCases, err := journey.TestCases()
 
 	assert.Error(err)
-	assert.Equal(generation.TestCasesRun{}, testCases)
+	assert.Equal(generation.SpecRun{}, testCases)
 }
 
 func TestJourneyRunTestCasesCantRunIfNoTestCases(t *testing.T) {

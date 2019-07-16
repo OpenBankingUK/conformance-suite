@@ -14,14 +14,14 @@ type Generator struct {
 }
 
 // GenerateSpecificationTestCases provides a mock function with given fields: _a0, _a1, _a2, _a3
-func (_m *Generator) GenerateSpecificationTestCases(_a0 *logrus.Entry, _a1 generation.GeneratorConfig, _a2 discovery.ModelDiscovery, _a3 *model.Context) generation.TestCasesRun {
+func (_m *Generator) GenerateSpecificationTestCases(_a0 *logrus.Entry, _a1 generation.GeneratorConfig, _a2 discovery.ModelDiscovery, _a3 *model.Context) generation.SpecRun {
 	ret := _m.Called(_a0, _a1, _a2, _a3)
 
-	var r0 generation.TestCasesRun
-	if rf, ok := ret.Get(0).(func(*logrus.Entry, generation.GeneratorConfig, discovery.ModelDiscovery, *model.Context) generation.TestCasesRun); ok {
+	var r0 generation.SpecRun
+	if rf, ok := ret.Get(0).(func(*logrus.Entry, generation.GeneratorConfig, discovery.ModelDiscovery, *model.Context) generation.SpecRun); ok {
 		r0 = rf(_a0, _a1, _a2, _a3)
 	} else {
-		r0 = ret.Get(0).(generation.TestCasesRun)
+		r0 = ret.Get(0).(generation.SpecRun)
 	}
 
 	return r0
