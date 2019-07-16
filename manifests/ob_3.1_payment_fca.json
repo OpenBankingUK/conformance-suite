@@ -228,6 +228,7 @@
         "tokenRequestScope": "payments",
         "instructedAmountValue": "$instructedAmountValue",
         "instructedAmountCurrency": "$instructedAmountCurrency",
+        "OB-301-DOP-100800-instructionIdentification": "$instructionIdentification",
         "instructionIdentification": "$fn:instructionIdentificationID()",
         "postData": "$minimalScheduledDomesticPaymentConsent",
         "endToEndIdentification": "e2e-domestic-sched-pay",
@@ -244,7 +245,7 @@
         "OB3GLOAAssertConsentId"
       ],
       "keepContextOnSuccess": {
-        "OB-301-DOP-100800-instructionIdentification": "$instructionIdentification",
+
         "OB-301-DOP-100800-ConsentId": "Data.ConsentId"
       },
       "method": "post",
@@ -557,6 +558,7 @@
       "detail": "Checks that the resource succeeds for a PISP asking for a International Payment consent with a minimal data set and checks additional schema.",
       "parameters": {
         "tokenRequestScope": "payments",
+        "OB-301-DOP-101600-instructionIdentification": "$instructionIdentification",
         "instructionIdentification": "$fn:instructionIdentificationID()",
         "endToEndIdentification": "e2e-internat-pay",
         "postData": "$minimalInternationalPaymentConsent",
@@ -572,8 +574,8 @@
         "OB3GLOAAssertConsentId"
       ],
       "keepContextOnSuccess": {
-        "OB-301-DOP-101600-ConsentId": "Data.ConsentId",
-        "OB-301-DOP-101600-instructionIdentification": "$instructionIdentification"
+        "OB-301-DOP-101600-ConsentId": "Data.ConsentId"
+
       },
       "method": "post",
       "schemaCheck": true
@@ -657,6 +659,7 @@
         "instructedAmountValue": "$instructedAmountValue",
         "instructedAmountCurrency": "$instructedAmountCurrency",
         "currencyOfTransfer": "$currencyOfTransfer",
+        "OB-301-DOP-102000-instructionIdentification": "$instructionIdentification",        
         "instructionIdentification": "$fn:instructionIdentificationID()",
         "endToEndIdentification": "e2e-internat-sched-pay",
         "postData": "$minimalInternationalScheduledPaymentConsent",
@@ -672,8 +675,8 @@
         "OB3GLOAAssertConsentId"
       ],
       "keepContextOnSuccess": {
-        "OB-301-DOP-102000-ConsentId": "Data.ConsentId",
-        "OB-301-DOP-102000-instructionIdentification": "$instructionIdentification"
+        "OB-301-DOP-102000-ConsentId": "Data.ConsentId"
+
       },
       "method": "post",
       "schemaCheck": true
