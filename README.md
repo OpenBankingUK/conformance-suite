@@ -21,7 +21,7 @@ To provide feedback, please use the public [issue tracker](https://bitbucket.org
 
 The release is called **v1.1.16**, it adds support for unique transaction IDs for each payment and fixes the headless mode for model banks.
 
-[Full Release Notes](docs/releases/v1.1.16.md) (v1.1.16.md)
+[Full Release Notes](https://bitbucket.org/openbankingteam/conformance-suite/src/develop/docs/releases/v1.1.16.md) (v1.1.16.md)
 
 ## Quickstart
 * * *
