@@ -33,10 +33,11 @@ func TestValidateTLSVersionFailsOnInvalidHost(t *testing.T) {
 
 func TestValidateTLSVersionFailsOnLowerVersion(t *testing.T) {
 	validator := NewStdTLSValidator(tls.VersionTLS12)
-	srv, uri := test.HTTPSServer(&tls.Config{MinVersion: tls.VersionTLS10}, http.StatusServiceUnavailable, "", nil)
+	srv, uri := test.HTTPSServer(&tls.Config{MinVersion: tls.VersionTLS10, MaxVersion: tls.VersionTLS10}, http.StatusServiceUnavailable, "", nil)
 	defer srv.Close()
 	r, err := validator.ValidateTLSVersion(uri)
-	assert.True(t, r.Valid)
+	assert.False(t, r.Valid)
+	assert.Equal(t, "TLS10", r.TLSVersion)
 	assert.Nil(t, err)
 }
 
@@ -46,5 +47,6 @@ func TestValidateTLSVersionSucceeds(t *testing.T) {
 	defer srv.Close()
 	r, err := validator.ValidateTLSVersion(uri)
 	assert.True(t, r.Valid)
+	assert.Equal(t, r.TLSVersion, "TLS12")
 	assert.Nil(t, err)
 }
