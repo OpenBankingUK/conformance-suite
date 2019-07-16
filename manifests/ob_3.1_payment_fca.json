@@ -94,6 +94,7 @@
         "postData": "$minimalDomesticPaymentConsent",
         "thisSchemeName": "$creditorScheme",
         "thisIdentification": "$creditorIdentification",
+        "OB-301-DOP-100300-instructionIdentification": "$instructionIdentification",
         "instructionIdentification": "$fn:instructionIdentificationID()",
         "endToEndIdentification": "e2e-domestic-pay",
         "requestConsent": "true"
@@ -112,8 +113,7 @@
         "OB3GLOAAssertConsentId"
       ],
       "keepContextOnSuccess": {
-        "OB-301-DOP-100300-ConsentId": "Data.ConsentId",
-        "OB-301-DOP-100300-instructionIdentification": "$instructionIdentification"
+        "OB-301-DOP-100300-ConsentId": "Data.ConsentId"
       },
       "method": "post",
       "schemaCheck": true

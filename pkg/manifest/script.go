@@ -194,8 +194,11 @@ func (s *Script) processParameters(refs *References, resources *model.Context) (
 				contextValue = val
 			}
 			if len(value) == 0 {
-				localCtx.PutString(k, contextValue)
-				continue
+				value, _ = localCtx.GetString(str)
+				if len(value) == 0 {
+					localCtx.PutString(k, contextValue)
+					continue
+				}
 			}
 		}
 		switch k {
