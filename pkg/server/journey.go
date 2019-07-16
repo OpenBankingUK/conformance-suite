@@ -4,6 +4,7 @@ package server
 import (
 	"encoding/json"
 	"fmt"
+	"strings"
 	"sync"
 
 	"github.com/blang/semver"
@@ -166,16 +167,17 @@ func (wj *journey) TestCases() (generation.TestCasesRun, error) {
 		return generation.TestCasesRun{}, errTestCasesGenerated
 	}
 
-	for _, discoveryItem := range wj.validDiscoveryModel.DiscoveryModel.DiscoveryItems {
+	for k, discoveryItem := range wj.validDiscoveryModel.DiscoveryModel.DiscoveryItems {
 		tlsValidationResult, err := wj.tlsValidator.ValidateTLSVersion(discoveryItem.ResourceBaseURI)
 		if err != nil {
 			logger.WithFields(logrus.Fields{
-				"err":                      errors.Wrapf(err, "unable to validate TLS version for uri %s", discoveryItem.ResourceBaseURI),
-				"wj.testCasesRunGenerated": wj.testCasesRunGenerated,
-			}).Error("Error getting generation.TestCasesRun ...")
+				"err":                           errors.Wrapf(err, "unable to validate TLS version for uri %s", discoveryItem.ResourceBaseURI),
+				"discoveryItem[key]":            k,
+				"discoveryItem.ResourceBaseURI": discoveryItem.ResourceBaseURI,
+			}).Error("Error validating TLS version for discovery item ResourceBaseURI")
 		}
-		wj.context.PutString(fmt.Sprintf("tlsVersionForDiscoveryItem-%s", discoveryItem.APISpecification.Version), tlsValidationResult.TLSVersion)
-		wj.context.Put(fmt.Sprintf("tlsIsValidForDiscoveryItem-%s", discoveryItem.APISpecification.Version), tlsValidationResult.Valid)
+		wj.context.PutString(fmt.Sprintf("tlsVersionForDiscoveryItem-%s", strings.ReplaceAll(discoveryItem.APISpecification.Name, " ", "-")), tlsValidationResult.TLSVersion)
+		wj.context.Put(fmt.Sprintf("tlsIsValidForDiscoveryItem-%s", strings.ReplaceAll(discoveryItem.APISpecification.Name, " ", "-")), tlsValidationResult.Valid)
 	}
 
 	if !wj.testCasesRunGenerated {
