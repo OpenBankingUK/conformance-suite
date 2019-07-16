@@ -30,3 +30,21 @@ func TestValidateTLSVersionFailsOnInvalidHost(t *testing.T) {
 	assert.NotNil(t, err)
 	assert.Contains(t, err.Error(), "unable to detect tls version for hostname")
 }
+
+func TestValidateTLSVersionFailsOnLowerVersion(t *testing.T) {
+	validator := NewStdTLSValidator(tls.VersionTLS12)
+	srv, uri := test.HTTPSServer(&tls.Config{MinVersion: tls.VersionTLS10}, http.StatusServiceUnavailable, "", nil)
+	defer srv.Close()
+	r, err := validator.ValidateTLSVersion(uri)
+	assert.True(t, r.Valid)
+	assert.Nil(t, err)
+}
+
+func TestValidateTLSVersionSucceeds(t *testing.T) {
+	validator := NewStdTLSValidator(tls.VersionTLS12)
+	srv, uri := test.HTTPSServer(&tls.Config{MinVersion: tls.VersionTLS12}, http.StatusServiceUnavailable, "", nil)
+	defer srv.Close()
+	r, err := validator.ValidateTLSVersion(uri)
+	assert.True(t, r.Valid)
+	assert.Nil(t, err)
+}
