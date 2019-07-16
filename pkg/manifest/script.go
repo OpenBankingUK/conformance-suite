@@ -152,6 +152,8 @@ func GenerateTestCases(scripts Scripts, spec discovery.ModelAPISpecification, ba
 	return tests, filteredScripts, nil
 }
 
+var fnReplacementRegex = regexp.MustCompile(`[^\$fn:]?\$fn:([\w|_]*)\(([\w,\s-]*)\)`)
+
 func (s *Script) processParameters(refs *References, resources *model.Context) (*model.Context, error) {
 	localCtx := model.Context{}
 
