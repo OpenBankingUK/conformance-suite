@@ -2,6 +2,11 @@ package discovery
 
 import (
 	"crypto/tls"
+	"fmt"
+	"net/url"
+	"strings"
+
+	"github.com/pkg/errors"
 )
 
 type TLSValidator interface {
@@ -18,7 +23,7 @@ type StdTLSValidator struct {
 	minSupportedTLSVersion uint16
 }
 
-type NullTLSValidator struct {}
+type NullTLSValidator struct{}
 
 func NewNullTLSValidator() NullTLSValidator {
 	return NullTLSValidator{}
@@ -33,9 +38,18 @@ func NewStdTLSValidator(minSupportedTLSVersion uint16) StdTLSValidator {
 }
 
 func (v StdTLSValidator) ValidateTLSVersion(uri string) (TLSValidationResult, error) {
-	conn, err := tls.Dial("tcp", uri, v.tlsConfig)
+	parsedURI, err := url.Parse(uri)
 	if err != nil {
-		return TLSValidationResult{}, err
+		return TLSValidationResult{}, errors.Wrapf(err, "unable to parse the provided uri %s", uri)
+	}
+	// url.Parse only returns error for uri containing ASCII CTL bytes
+	// in this case checking for blank URI will suffice
+	if strings.TrimSpace(parsedURI.Host) == "" {
+		return TLSValidationResult{}, fmt.Errorf("unable to parse the provided uri %s", uri)
+	}
+	conn, err := tls.Dial("tcp", parsedURI.Host, v.tlsConfig)
+	if err != nil {
+		return TLSValidationResult{}, errors.Wrapf(err, "unable to detect tls version for hostname %s", parsedURI.Host)
 	}
 	state := conn.ConnectionState()
 
