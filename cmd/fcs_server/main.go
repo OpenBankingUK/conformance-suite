@@ -1,6 +1,7 @@
 package main
 
 import (
+	"crypto/tls"
 	"fmt"
 	"os"
 	"strings"
@@ -44,7 +45,8 @@ Complete documentation is available at https://bitbucket.org/openbankingteam/con
 
 			validatorEngine := discovery.NewFuncValidator(model.NewConditionalityChecker())
 			testGenerator := generation.NewGenerator()
-			journey := server.NewJourney(logger, testGenerator, validatorEngine)
+			tlsValidator := discovery.NewStdTLSValidator(tls.VersionTLS12)
+			journey := server.NewJourney(logger, testGenerator, validatorEngine, tlsValidator)
 
 			echoServer := server.NewServer(journey, logger, ver)
 			address := fmt.Sprintf("%s:%d", server.ListenHost, viper.GetInt("port"))

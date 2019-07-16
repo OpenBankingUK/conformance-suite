@@ -73,10 +73,11 @@ type journey struct {
 	permissions           map[string][]manifest.RequiredTokens
 	manifests             []manifest.Scripts
 	filteredManifests     manifest.Scripts
+	tlsValidator          discovery.TLSValidator
 }
 
 // NewJourney creates an instance for a user journey
-func NewJourney(logger *logrus.Entry, generator generation.Generator, validator discovery.Validator) *journey {
+func NewJourney(logger *logrus.Entry, generator generation.Generator, validator discovery.Validator, tlsValidator discovery.TLSValidator) *journey {
 	return &journey{
 		generator:             generator,
 		validator:             validator,
@@ -89,6 +90,7 @@ func NewJourney(logger *logrus.Entry, generator generation.Generator, validator 
 		events:                events.NewEvents(),
 		permissions:           make(map[string][]manifest.RequiredTokens),
 		manifests:             make([]manifest.Scripts, 0),
+		tlsValidator:          tlsValidator,
 	}
 }
 
@@ -162,6 +164,12 @@ func (wj *journey) TestCases() (generation.TestCasesRun, error) {
 			"wj.testCasesRunGenerated": wj.testCasesRunGenerated,
 		}).Error("Error getting generation.TestCasesRun ...")
 		return generation.TestCasesRun{}, errTestCasesGenerated
+	}
+
+	for _, discoveryItem := range wj.validDiscoveryModel.DiscoveryModel.DiscoveryItems {
+		tlsValidationResult := wj.tlsValidator.ValidateTLSVersion(discoveryItem.ResourceBaseURI)
+		wj.context.PutString(fmt.Sprintf("tlsVersionForDiscoveryItem-%s", discoveryItem.APISpecification.Version), tlsValidationResult.TLSVersion)
+		wj.context.Put(fmt.Sprintf("tlsIsValidForDiscoveryItem-%s", discoveryItem.APISpecification.Version), tlsValidationResult.Valid)
 	}
 
 	if !wj.testCasesRunGenerated {

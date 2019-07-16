@@ -737,5 +737,6 @@ func testJourney() Journey {
 	logger := nullLogger()
 	validatorEngine := discovery.NewFuncValidator(model.NewConditionalityChecker())
 	testGenerator := generation.NewGenerator()
-	return NewJourney(logger, testGenerator, validatorEngine)
+	tlsValidator := discovery.NewStdTLSValidator(tls.VersionTLS12)
+	return NewJourney(logger, testGenerator, validatorEngine, tlsValidator)
 }

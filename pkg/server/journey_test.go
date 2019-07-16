@@ -48,7 +48,8 @@ func TestJourneySetDiscoveryModelValidatesModel(t *testing.T) {
 	validator := &mocks.Validator{}
 	validator.On("Validate", discoveryModel).Return(discovery.NoValidationFailures(), nil)
 	generator := &gmocks.MockGenerator{}
-	journey := NewJourney(nullLogger(), generator, validator)
+	tlsValidator := discovery.NewStdTLSValidator(tls.VersionTLS12)
+	journey := NewJourney(nullLogger(), generator, validator, tlsValidator)
 
 	failures, err := journey.SetDiscoveryModel(discoveryModel)
 
@@ -66,7 +67,8 @@ func TestJourneySetDiscoveryModelHandlesErrorFromValidator(t *testing.T) {
 	expectedFailures := discovery.ValidationFailures{}
 	validator.On("Validate", discoveryModel).Return(expectedFailures, errors.New("validator error"))
 	generator := &gmocks.MockGenerator{}
-	journey := NewJourney(nullLogger(), generator, validator)
+	tlsValidator := discovery.NewStdTLSValidator(tls.VersionTLS12)
+	journey := NewJourney(nullLogger(), generator, validator, tlsValidator)
 
 	failures, err := journey.SetDiscoveryModel(discoveryModel)
 
@@ -87,7 +89,8 @@ func TestJourneySetDiscoveryModelReturnsFailuresFromValidator(t *testing.T) {
 	expectedFailures := discovery.ValidationFailures{failure}
 	validator.On("Validate", discoveryModel).Return(expectedFailures, nil)
 	generator := &gmocks.MockGenerator{}
-	journey := NewJourney(nullLogger(), generator, validator)
+	tlsValidator := discovery.NewStdTLSValidator(tls.VersionTLS12)
+	journey := NewJourney(nullLogger(), generator, validator, tlsValidator)
 
 	failures, err := journey.SetDiscoveryModel(discoveryModel)
 
@@ -113,7 +116,8 @@ func TestJourneyRunTestCasesCantRunIfNoTestCases(t *testing.T) {
 
 	validator := &mocks.Validator{}
 	generator := &gmocks.MockGenerator{}
-	journey := NewJourney(nullLogger(), generator, validator)
+	tlsValidator := discovery.NewStdTLSValidator(tls.VersionTLS12)
+	journey := NewJourney(nullLogger(), generator, validator, tlsValidator)
 
 	err := journey.RunTests()
 
@@ -125,7 +129,8 @@ func TestJourneySetConfig(t *testing.T) {
 
 	validator := &mocks.Validator{}
 	generator := &gmocks.MockGenerator{}
-	journey := NewJourney(nullLogger(), generator, validator)
+	tlsValidator := discovery.NewStdTLSValidator(tls.VersionTLS12)
+	journey := NewJourney(nullLogger(), generator, validator, tlsValidator)
 
 	require.Equal(JourneyConfig{}, journey.config)
 
