@@ -83,8 +83,7 @@ func NewReport(exportResults models.ExportResults, environment string) (Report, 
 	for k, results := range exportResults.Results {
 		tlsVersionResult := exportResults.TLSVersionResult[strings.ReplaceAll(k.APIName, " ", "-")]
 		if tlsVersionResult == nil {
-			tlsVersionResult.Valid = false
-			tlsVersionResult.TLSVersion = "unknown"
+			tlsVersionResult = &discovery.TLSValidationResult{Valid: false, TLSVersion: "unknown"}
 		}
 		apiSpec := APISpecification{
 			Name:            k.APIName,
