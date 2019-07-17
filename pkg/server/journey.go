@@ -140,22 +140,37 @@ func (wj *journey) DiscoveryModel() (discovery.Model, error) {
 }
 
 func (wj *journey) TLSVersionResult() map[string]*discovery.TLSValidationResult {
+	logger := wj.log.WithFields(logrus.Fields{
+		"package":  "server",
+		"module":   "journey",
+		"function": "TLSVersionResult",
+	})
 	tlsValidationResult := make(map[string]*discovery.TLSValidationResult, len(wj.validDiscoveryModel.DiscoveryModel.DiscoveryItems))
 	for _, discoveryItem := range wj.validDiscoveryModel.DiscoveryModel.DiscoveryItems {
-		tlsVersionKey := fmt.Sprintf("tlsVersionForDiscoveryItem-%s", strings.ReplaceAll(discoveryItem.APISpecification.Name, " ", "-"))
+		discoveryItemKey := strings.ReplaceAll(discoveryItem.APISpecification.Name, " ", "-")
+		tlsVersionKey := fmt.Sprintf("tlsVersionForDiscoveryItem-%s", discoveryItemKey)
 		tlsVersion, err := wj.context.GetString(tlsVersionKey)
 		if err != nil {
-			// TODO(diego): log error
+			logger.WithFields(logrus.Fields{
+				"err":                errTestCasesGenerated,
+				"discoveryItem[key]": tlsVersionKey,
+				"discoveryItem.discoveryItem.APISpecification.Name": discoveryItem.APISpecification.Name,
+			}).Errorf("Error getting %s from context ...", tlsVersionKey)
 			continue
 		}
-		tlsValid, ok := wj.context.Get(fmt.Sprintf("tlsIsValidForDiscoveryItem-%s", strings.ReplaceAll(discoveryItem.APISpecification.Name, " ", "-")))
+		tlsValidKey := fmt.Sprintf("tlsIsValidForDiscoveryItem-%s", discoveryItemKey)
+		tlsValid, ok := wj.context.Get(tlsValidKey)
 		if !ok {
-			// TODO(diego): log
+			logger.WithFields(logrus.Fields{
+				"err":                errTestCasesGenerated,
+				"discoveryItem[key]": tlsValidKey,
+				"discoveryItem.discoveryItem.APISpecification.Name": discoveryItem.APISpecification.Name,
+			}).Errorf("Error getting %s from context ...", tlsValidKey)
 			continue
 		}
-		tlsValidationResult[tlsVersionKey] = &discovery.TLSValidationResult{TLSVersion: tlsVersion, Valid: tlsValid.(bool)}
+		tlsValidationResult[discoveryItemKey] = &discovery.TLSValidationResult{TLSVersion: tlsVersion, Valid: tlsValid.(bool)}
 	}
-	
+
 	return tlsValidationResult
 }
 
