@@ -152,7 +152,7 @@ func (wj *journey) TLSVersionResult() map[string]*discovery.TLSValidationResult 
 		tlsVersion, err := wj.context.GetString(tlsVersionKey)
 		if err != nil {
 			logger.WithFields(logrus.Fields{
-				"err":                errTestCasesGenerated,
+				"err":                err,
 				"discoveryItem[key]": tlsVersionKey,
 				"discoveryItem.discoveryItem.APISpecification.Name": discoveryItem.APISpecification.Name,
 			}).Errorf("Error getting %s from context ...", tlsVersionKey)
@@ -162,7 +162,6 @@ func (wj *journey) TLSVersionResult() map[string]*discovery.TLSValidationResult 
 		tlsValid, ok := wj.context.Get(tlsValidKey)
 		if !ok {
 			logger.WithFields(logrus.Fields{
-				"err":                errTestCasesGenerated,
 				"discoveryItem[key]": tlsValidKey,
 				"discoveryItem.discoveryItem.APISpecification.Name": discoveryItem.APISpecification.Name,
 			}).Errorf("Error getting %s from context ...", tlsValidKey)
