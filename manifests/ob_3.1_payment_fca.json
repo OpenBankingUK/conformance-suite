@@ -21,9 +21,10 @@
       "uri": "/domestic-payment-consents/$consentId",
       "uriImplementation": "mandatory",
       "resource": "DomesticPayment",
-      "asserts": [
-        "OB3GLOAssertOn404"
-      ],
+      "asserts_one_of": [
+        "OB3GLOAssertOn404",
+        "OB3GLOAssertOn401"
+    ],      
       "method": "post",
       "schemaCheck": false
     },
