@@ -117,17 +117,17 @@ as assertions, seen previously.
 The schema for data items is currently "free form" and specific to each test. With this in mind,
 it would be useful to examine any associated notes for the each test.
 
-## Manifest Macros
+## Manifest Functions
 
-Manifests have the ability to call a "Macro" which is mapped to a Go function in `pkg/model/macro.go`. An example macro is shown below, which generates a unique identifier, to be used in the
+Manifests have the ability to call a function which is mapped to a Go function in `pkg/model/macro.go`. An example function is shown below, which generates a unique identifier, to be used in the
 `instructionIdentication` parameter in some payment tests.
 
-Macros also supports any number of parameters, which are passed and parsed as strings. It is worth noting that all macro parameters will passed to the implementation as strings. If other types
-are required, the specific macro implementation is required to perform type assertions and casting of types.
+Manifest Functions also supports any number of parameters, which are passed and parsed as strings. It is worth noting that all function parameters will passed to the implementation as strings. If other types
+are required, the specific function implementation is required to perform type assertions and casting of types.
 
-Macro implementations must return one value, of type `string`
+Function implementations must return one value, of type `string`
 
-Register and implement macro in `pkg/model/macro.go`
+Register and implement function in `pkg/model/macro.go`
 ```
 var macroMap = map[string]interface{}{
 	"instructionIdentificationID": instructionIdentificationID,
@@ -140,7 +140,7 @@ func instructionIdentificationID() string {
 }
 ```
 
-In manifest file, call the macro. Note the pattern required here. The function should be followed by parentheses (`()`).
+In manifest file, call the fuction. Note the pattern required here. The function should be followed by parentheses (`()`).
 
 ```
 "parameters": {
@@ -148,7 +148,7 @@ In manifest file, call the macro. Note the pattern required here. The function s
         "instructedAmountValue": "$instructedAmountValue",
         "instructedAmountCurrency": "$instructedAmountCurrency",
         "currencyOfTransfer": "$currencyOfTransfer",
-        "instructionIdentification": "$instructionIdentificationID()",
+        "instructionIdentification": "$fn:instructionIdentificationID()",
         "endToEndIdentification": "e2e-internat-sched-pay",
         "postData": "$minimalInternationalScheduledPayment",
         "consentId": "$OB-301-DOP-102000-ConsentId"
