@@ -152,6 +152,8 @@ func GenerateTestCases(scripts Scripts, spec discovery.ModelAPISpecification, ba
 	return tests, filteredScripts, nil
 }
 
+var fnReplacementRegex = regexp.MustCompile(`[^\$fn:]?\$fn:([\w|_]*)\(([\w,\s-]*)\)`)
+
 func (s *Script) processParameters(refs *References, resources *model.Context) (*model.Context, error) {
 	localCtx := model.Context{}
 
@@ -161,6 +163,26 @@ func (s *Script) processParameters(refs *References, resources *model.Context) (
 			localCtx.PutString("consentId", value)
 			continue
 		}
+
+		if strings.HasPrefix(value, "$fn:") {
+			fnNameAndArgs := fnReplacementRegex.FindStringSubmatch(value)
+			if fnNameAndArgs == nil {
+				return nil, errors.New("function name format error processing " + value)
+			}
+			fnArgs := []string{}
+			// fn has some parameters
+			if len(fnNameAndArgs) > 2 && fnNameAndArgs[2] != "" {
+				fnArgs = strings.Split(fnNameAndArgs[2], ",")
+			}
+			result, err := model.ExecuteMacro(fnNameAndArgs[1], fnArgs)
+			if err != nil {
+				logrus.Debugf("found error while executing function for context var %s. err %v", fnNameAndArgs[1], err)
+				return nil, err
+			}
+			localCtx.PutString(k, result)
+			continue
+		}
+
 		if strings.Contains(value, "$") {
 			str := value[1:]
 			//lookup parameter in resources - accountids
@@ -172,8 +194,11 @@ func (s *Script) processParameters(refs *References, resources *model.Context) (
 				contextValue = val
 			}
 			if len(value) == 0 {
-				localCtx.PutString(k, contextValue)
-				continue
+				value, _ = localCtx.GetString(str)
+				if len(value) == 0 {
+					localCtx.PutString(k, contextValue)
+					continue
+				}
 			}
 		}
 		switch k {
@@ -302,14 +327,26 @@ func testCaseBuilder(s Script, refs map[string]Reference, ctx *model.Context, co
 
 func processPutContext(s *Script) []model.Match {
 	m := []model.Match{}
+	name, exists := s.ContextPut["name"]
+	if !exists {
+		return m
+	}
+	value, exists := s.ContextPut["value"]
+	if !exists {
+		return m
+	}
+	mx := model.Match{ContextName: name, JSON: value}
+	m = append(m, mx)
+	return m
+}
+
+func processPutContextx(s *Script) []model.Match {
+	m := []model.Match{}
 	for k, v := range s.ContextPut {
-		if strings.HasPrefix(v, "$") {
-			m = append(m, model.Match{ContextName: k, Value: v})
-		} else {
-			m = append(m, model.Match{ContextName: k, JSON: v})
-		}
+		m = append(m, model.Match{ContextName: k, JSON: v})
 	}
 	return m
+
 }
 
 func getAccountConsent(refs *References, vx string) []string {

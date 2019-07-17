@@ -219,9 +219,8 @@ func TestGetReplacementField(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run("", func(t *testing.T) {
-			value, isReplacement, isFn := getReplacementField(tc.stringToCheck)
+			value, isReplacement := getReplacementField(tc.stringToCheck)
 			assert.Equal(t, tc.value, value)
-			assert.Equal(t, tc.isFn, isFn)
 			assert.Equal(t, tc.isReplacement, isReplacement)
 		})
 	}
