@@ -55,6 +55,7 @@ type Journey interface {
 	Results() executors.DaemonController
 	SetConfig(config JourneyConfig) error
 	Events() events.Events
+	TLSVersionResult() map[string]*discovery.TLSValidationResult
 }
 
 type journey struct {
@@ -136,6 +137,26 @@ func (wj *journey) DiscoveryModel() (discovery.Model, error) {
 		return discovery.Model{}, errors.New("journey.DiscoveryModel: discovery model not set yet")
 	}
 	return *discoveryModel, nil
+}
+
+func (wj *journey) TLSVersionResult() map[string]*discovery.TLSValidationResult {
+	tlsValidationResult := make(map[string]*discovery.TLSValidationResult, len(wj.validDiscoveryModel.DiscoveryModel.DiscoveryItems))
+	for _, discoveryItem := range wj.validDiscoveryModel.DiscoveryModel.DiscoveryItems {
+		tlsVersionKey := fmt.Sprintf("tlsVersionForDiscoveryItem-%s", strings.ReplaceAll(discoveryItem.APISpecification.Name, " ", "-"))
+		tlsVersion, err := wj.context.GetString(tlsVersionKey)
+		if err != nil {
+			// TODO(diego): log error
+			continue
+		}
+		tlsValid, ok := wj.context.Get(fmt.Sprintf("tlsIsValidForDiscoveryItem-%s", strings.ReplaceAll(discoveryItem.APISpecification.Name, " ", "-")))
+		if !ok {
+			// TODO(diego): log
+			continue
+		}
+		tlsValidationResult[tlsVersionKey] = &discovery.TLSValidationResult{TLSVersion: tlsVersion, Valid: tlsValid.(bool)}
+	}
+	
+	return tlsValidationResult
 }
 
 func (wj *journey) SetFilteredManifests(fmfs manifest.Scripts) {
