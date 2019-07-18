@@ -354,64 +354,6 @@
       "schemaCheck": true
     },
     {
-      "description": "Domestic standing order consents succeeds with minimal data set with additional schema checks.",
-      "id": "OB-301-DOP-101201",
-      "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1000670131/Domestic+Standing+Orders+v3.1.1#DomesticStandingOrdersv3.1.1-POST/domestic-standing-order-consents",
-      "detail": "Checks that the resource succeeds for a PISP posting a Domestic Standing Order consent with a minimal data set and checks additional schema.",
-      "parameters": {
-        "tokenRequestScope": "payments",
-        "instructedAmountValue": "$instructedAmountValue",
-        "instructedAmountCurrency": "$instructedAmountCurrency",
-        "frequency": "$payment_frequency",
-        "postData": "$minimalDomesticStandingOrderConsent",
-        "requestConsent": "true"
-      },
-      "body": "$postData",
-      "uri": "/domestic-standing-order-consents",
-      "uriImplementation": "conditional",
-      "resource": "DomesticStandingOrder",
-      "asserts": [
-        "OB3GLOAssertOn201",
-        "OB3GLOFAPIHeader",
-        "OB3GLOAAssertConsentId"
-      ],
-      "keepContextOnSuccess": {
-        "name": "OB-301-DOP-101201-ConsentId",
-        "value": "Data.ConsentId"
-      },
-      "method": "post",
-      "schemaCheck": true
-    },
-    {
-      "description": "Domestic standing order consents succeeds with minimal data set with additional schema checks.",
-      "id": "OB-301-DOP-101202",
-      "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1000670131/Domestic+Standing+Orders+v3.1.1#DomesticStandingOrdersv3.1.1-POST/domestic-standing-order-consents",
-      "detail": "Checks that the resource succeeds for a PISP posting a Domestic Standing Order consent with a minimal data set and checks additional schema.",
-      "parameters": {
-        "tokenRequestScope": "payments",
-        "instructedAmountValue": "$instructedAmountValue",
-        "instructedAmountCurrency": "$instructedAmountCurrency",
-        "frequency": "$payment_frequency",
-        "postData": "$minimalDomesticStandingOrderConsent",
-        "requestConsent": "true"
-      },
-      "body": "$postData",
-      "uri": "/domestic-standing-order-consents",
-      "uriImplementation": "conditional",
-      "resource": "DomesticStandingOrder",
-      "asserts": [
-        "OB3GLOAssertOn201",
-        "OB3GLOFAPIHeader",
-        "OB3GLOAAssertConsentId"
-      ],
-      "keepContextOnSuccess": {
-        "name": "OB-301-DOP-101202-ConsentId",
-        "value": "Data.ConsentId"
-      },
-      "method": "post",
-      "schemaCheck": true
-    },
-    {
       "description": "PISP can retrieve Domestic Standing Order consent resource status.",
       "id": "OB-301-DOP-101300",
       "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/999786587/Domestic+Scheduled+Payment+v3.1.1#DomesticScheduledPaymentv3.1.1-GET/domestic-scheduled-payment-consents/{ConsentId}",
@@ -510,36 +452,6 @@
       ],
       "keepContextOnSuccess": {
         "name": "OB-301-DOP-101402-DomesticStandingOrderID",
-        "value": "Data.DomesticStandingOrderId"
-      },
-      "method": "post",
-      "schemaCheck": true
-    },
-    {
-      "description": "Domestic Standing Order succeeds with minimal data set with additional schema checks.",
-      "id": "OB-301-DOP-101403",
-      "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1000670131/Domestic+Standing+Orders+v3.1.1#DomesticStandingOrdersv3.1.1-POST/domestic-standing-orders",
-      "detail": "Checks that the resource succeeds posting a Domestic Standing Order with a minimal data set and checks additional schema.",
-      "parameters": {
-        "tokenRequestScope": "payments",
-        "instructedAmountValue": "$instructedAmountValue",
-        "instructedAmountCurrency": "$instructedAmountCurrency",
-        "frequency": "$payment_frequency",
-        "postData": "$minimalDomesticStandingOrder",
-        "consentId": "$OB-301-DOP-101202-ConsentId"
-      },
-      "headers": {
-        "Content-Type": "application/json; charset=utf-8"
-      },
-      "body": "$postData",
-      "uri": "/domestic-standing-orders",
-      "uriImplementation": "conditional",
-      "resource": "DomesticStandingOrder",
-      "asserts": [
-        "OB3GLOAssertOn201"
-      ],
-      "keepContextOnSuccess": {
-        "name": "OB-301-DOP-101403-DomesticStandingOrderID",
         "value": "Data.DomesticStandingOrderId"
       },
       "method": "post",
