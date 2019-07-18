@@ -35,7 +35,7 @@ BODY   :
 ----------------------------------------------------------
 ```
 
-After calling the PSU Consent url - the `Location` header of the `302` redirection response is captured and provied in the following call, as the code paramter.
+After calling the PSU Consent url - the `Location` header of the `302` redirection response is captured and provided in the following call, as the code parameter.
 
 ### Example Location header returned in HTTP 302 response
 
@@ -43,7 +43,7 @@ After calling the PSU Consent url - the `Location` header of the `302` redirecti
 Location Header: "https://127.0.0.1:8443/conformancesuite/callback#code=d037ebc3-121a-4df7-88f6-5a67322bf8eb&id_token=eyJhbGciOiJQUzI1NiIsImtpZCI6IjVVWXFjdGNOblZkSTl0VXRlYXA0dFNtV241NCJ9.eyJzdWIiOiJzZHAtMS0wYWZhOWE4Yi1kODI4LTQyOWEtOGUxNS01ZTlkMmRjNjUxNzAiLCJvcGVuYmFua2luZ19pbnRlbnRfaWQiOiJzZHAtMS0wYWZhOWE4Yi1kODI4LTQyOWEtOGUxNS01ZTlkMmRjNjUxNzAiLCJpc3MiOiJodHRwczovL21vZGVsb2JhbmthdXRoMjAxOC5vM2JhbmsuY28udWs6NDEwMSIsImF1ZCI6IjcyYjc5ZGRkLTQ2NzQtNDNiYi05NmMyLTk5MmY3OWNkNmU2MiIsImlhdCI6MTU2MzM3NDQwNiwiZXhwIjoxNTYzMzc4MDA2LCJjX2hhc2giOiJFREIyb3M3alVDSFVRai1OZzViaGF3Iiwic19oYXNoIjoiZVVuZzcxWU9fc0lFVnRDdXJyWTNYZyIsImFjciI6InVybjpvcGVuYmFua2luZzpwc2QyOnNjYSJ9.vJ31O1YvdJ5D8CIKmSWoAwhFO5f0_TD7LsngRjdsfcZpWWw4xdlEu4sVj3PZfgt1op3revo3HwOu6Xk9ICdsCD8QbSx5Jz5d59-xxVoIx_exgID2oe5-KiogXhgoklveeaLFt9dh-rn4ONyDluExeaHWOG0Rexxv7x-MYt439-xpR_nE0zs58QKenzGn1IWdJc0JV7z9BAbT6NFlOaIEaxRnva2-JyjL3Pdtm2ySGjB41f7gdfMlV1kLxWhBsMlaJiAlqgtbHSKJ-eLYQVERR4t1P5Z2twfrWytI97wvbtzAcVUN_duD2VtSZg-rk2XVsS283mj9y8NCK2rIOuGYCA&state=accountToken0001" 
 ```
 
-The `code` url query prameter is extracted from the location header above. It has the value  `d037ebc3-121a-4df7-88f6-5a67322bf8eb`
+The `code` url query parameter is extracted from the location header above. It has the value  `d037ebc3-121a-4df7-88f6-5a67322bf8eb`
 
 ### Example Authorization_code Exchange
 
