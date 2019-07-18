@@ -69,7 +69,7 @@
           "Permission": "Create",
           "Initiation": {
             "Frequency": "$frequency",
-            "FirstPaymentDateTime": "2020-10-01T00:00:00+00:00",
+            "FirstPaymentDateTime": "$firstPaymentDateTime",
             "FirstPaymentAmount": {
               "Amount": "$instructedAmountValue",
               "Currency": "$instructedAmountCurrency"
@@ -90,7 +90,7 @@
           "ConsentId": "$consentId",
           "Initiation": {
             "Frequency": "$frequency",
-            "FirstPaymentDateTime": "2020-10-01T00:00:00+00:00",
+            "FirstPaymentDateTime": "$firstPaymentDateTime",
             "FirstPaymentAmount": {
               "Amount": "$instructedAmountValue",
               "Currency": "$instructedAmountCurrency"
@@ -111,7 +111,7 @@
           "ConsentId": "$consentId",
           "Initiation": {
             "Frequency": "foobar",
-            "FirstPaymentDateTime": "2020-10-01T00:00:00+00:00",
+            "FirstPaymentDateTime": "$firstPaymentDateTime",
             "FirstPaymentAmount": {
               "Amount": "$instructedAmountValue",
               "Currency": "$instructedAmountCurrency"
