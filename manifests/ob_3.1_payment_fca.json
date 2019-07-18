@@ -362,7 +362,7 @@
         "tokenRequestScope": "payments",
         "instructedAmountValue": "$instructedAmountValue",
         "instructedAmountCurrency": "$instructedAmountCurrency",
-        "frequency": "QtrDay:ENGLISH",
+        "frequency": "$payment_frequency",
         "postData": "$minimalDomesticStandingOrderConsent",
         "requestConsent": "true"
       },
@@ -391,7 +391,7 @@
         "tokenRequestScope": "payments",
         "instructedAmountValue": "$instructedAmountValue",
         "instructedAmountCurrency": "$instructedAmountCurrency",
-        "frequency": "WkInMnthDay:01:01",
+        "frequency": "$payment_frequency",
         "postData": "$minimalDomesticStandingOrderConsent",
         "requestConsent": "true"
       },
