@@ -102,19 +102,12 @@ func NewReport(exportResults models.ExportResults, environment string) (Report, 
 
 // GetFails - fails is the number of specification tests that failed, it is not the number of failed tests.
 func GetFails(specs map[results.ResultKey][]results.TestCase) int {
-	fails := 0
+	var fails int
 	for _, results := range specs {
-		// Determine if a single test case failed.
-		failed := false
 		for _, result := range results {
 			if !result.Pass {
-				failed = true
-				break
+				fails++
 			}
-		}
-
-		if failed {
-			fails++
 		}
 	}
 	return fails
