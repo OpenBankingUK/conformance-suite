@@ -479,6 +479,7 @@ type JourneyConfig struct {
 	creditorAccount               models.Payment
 	instructedAmount              models.InstructedAmount
 	paymentFrequency              models.PaymentFrequency
+	firstPaymentDateTime          string
 	currencyOfTransfer            string
 	apiVersion                    string
 	transactionFromDate           string

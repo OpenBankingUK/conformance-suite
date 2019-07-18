@@ -367,6 +367,20 @@
         </b-form-group>
 
         <b-form-group
+          id="first_payment_date_time"
+          label-for="first_payment_date_time"
+          label="First Payment Date Time"
+          description="First Payment Date Time formatted as ISO 8601 date">
+          <b-form-input
+            id="first_payment_date_time"
+            v-model="first_payment_date_time"
+            :state="isNotEmpty(first_payment_date_time)"
+            required
+            type="date"
+          />
+        </b-form-group>
+
+        <b-form-group
           id="creditor_account_group"
           label-for="creditor_account"
           label="CreditorAccount"
@@ -748,6 +762,14 @@ export default {
       },
       set(value) {
         this.$store.commit('config/SET_PAYMENT_FREQUENCY', value);
+      },
+    },
+    first_payment_date_time: {
+      get() {
+        return this.$store.state.config.configuration.first_payment_date_time;
+      },
+      set(value) {
+        this.$store.commit('config/SET_FIRST_PAYMENT_DATE_TIME', value);
       },
     },
   },

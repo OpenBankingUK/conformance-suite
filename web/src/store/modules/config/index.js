@@ -50,6 +50,7 @@ export const mutationTypes = {
   SET_INSTRUCTED_AMOUNT_CURRENCY: 'SET_INSTRUCTED_AMOUNT_CURRENCY',
   SET_CURRENCY_OF_TRANSFER: 'SET_CURRENCY_OF_TRANSFER',
   SET_PAYMENT_FREQUENCY: 'SET_PAYMENT_FREQUENCY',
+  SET_FIRST_PAYMENT_DATE_TIME: 'SET_FIRST_PAYMENT_DATE_TIME',
 };
 
 export const mutations = {
@@ -194,6 +195,9 @@ export const mutations = {
   [mutationTypes.SET_PAYMENT_FREQUENCY](state, value) {
     state.configuration.payment_frequency = value;
   },
+  [mutationTypes.SET_FIRST_PAYMENT_DATE_TIME](state, value) {
+    state.configuration.first_payment_date_time = value;
+  },
 };
 
 // Converts problem key to discovery model JSON path.
@@ -294,6 +298,7 @@ export const state = {
     },
     currency_of_transfer: 'USD',
     payment_frequency: 'EvryDay',
+    first_payment_date_time: '2020-01-01T00:00:00+0100',
     acr_values_supported: [],
   },
 

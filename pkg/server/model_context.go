@@ -27,6 +27,7 @@ const (
 	CtxInstructedAmountCurrency     = "instructedAmountCurrency"
 	CtxInstructedAmountValue        = "instructedAmountValue"
 	CtxPaymentFrequency             = "payment_frequency" // CtxPaymentFrequency - for example `EvryDay`.
+	CtxFirstPaymentDateTime         = "firstPaymentDateTime"
 	CtxCurrencyOfTransfer           = "currencyOfTransfer"
 	CtxTransactionFromDate          = "transactionFromDate"
 	CtxTransactionToDate            = "transactionToDate"
@@ -64,6 +65,7 @@ func PutParametersToJourneyContext(config JourneyConfig, context model.Context) 
 	context.PutString(CtxInstructedAmountCurrency, config.instructedAmount.Currency)
 	context.PutString(CtxInstructedAmountValue, config.instructedAmount.Value)
 	context.PutString(CtxPaymentFrequency, string(config.paymentFrequency))
+	context.PutString(CtxFirstPaymentDateTime, string(config.firstPaymentDateTime))
 	context.PutString(CtxCurrencyOfTransfer, config.currencyOfTransfer)
 	context.PutString(CtxRequestObjectSigningAlg, config.requestObjectSigningAlgorithm)
 	context.PutString(CtxSigningPrivate, config.signingPrivate)
