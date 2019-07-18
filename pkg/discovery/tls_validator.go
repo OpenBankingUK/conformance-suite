@@ -51,6 +51,7 @@ func (v StdTLSValidator) ValidateTLSVersion(uri string) (TLSValidationResult, er
 	if err != nil {
 		return TLSValidationResult{}, errors.Wrapf(err, "unable to detect tls version for hostname %s", parsedURI.Host)
 	}
+	defer conn.Close()
 	state := conn.ConnectionState()
 	strVersion, err := tlsVersionToString(state.Version)
 	if err != nil {
