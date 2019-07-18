@@ -45,7 +45,7 @@ Complete documentation is available at https://bitbucket.org/openbankingteam/con
 
 			validatorEngine := discovery.NewFuncValidator(model.NewConditionalityChecker())
 			testGenerator := generation.NewGenerator()
-			tlsValidator := discovery.NewStdTLSValidator(tls.VersionTLS12)
+			tlsValidator := discovery.NewStdTLSValidator(tls.VersionTLS11)
 			journey := server.NewJourney(logger, testGenerator, validatorEngine, tlsValidator)
 
 			echoServer := server.NewServer(journey, logger, ver)
