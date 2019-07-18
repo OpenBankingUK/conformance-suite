@@ -34,5 +34,5 @@ type ExportResults struct {
 	Results          map[results.ResultKey][]results.TestCase  `json:"results"`
 	Tokens           []events.AcquiredAccessToken              `json:"tokens"`
 	DiscoveryModel   discovery.Model                           `json:"discovery_model"`
-	TLSVersionResult map[string]*discovery.TLSValidationResult `json:"tls_version_result"`
+	TLSVersionResult map[string]*discovery.TLSValidationResult `json:"-"`
 }
