@@ -8,7 +8,7 @@
         <ConfigurationFormFile
           id="signing_private"
           setter-method-name-suffix="SigningPrivate"
-          label="Private Signing Certificate (.key):"
+          label="Private Signing Key (.key):"
           validExtension=".key"
         />
         <ConfigurationFormFile
@@ -20,7 +20,7 @@
         <ConfigurationFormFile
           id="transport_private"
           setter-method-name-suffix="TransportPrivate"
-          label="Private Transport Certificate (.key):"
+          label="Private Transport Key (.key):"
           validExtension=".key"
         />
         <ConfigurationFormFile
