@@ -494,7 +494,8 @@
         "tokenRequestScope": "payments",
         "instructedAmountValue": "$instructedAmountValue",
         "instructedAmountCurrency": "$instructedAmountCurrency",
-        "postData": "$minimalDomesticStandingOrderQuarterly",
+        "frequency": "$payment_frequency",
+        "postData": "$minimalDomesticStandingOrder",
         "consentId": "$OB-301-DOP-101201-ConsentId"
       },
       "headers": {
@@ -523,7 +524,8 @@
         "tokenRequestScope": "payments",
         "instructedAmountValue": "$instructedAmountValue",
         "instructedAmountCurrency": "$instructedAmountCurrency",
-        "postData": "$minimalDomesticStandingOrderWeekInMonth",
+        "frequency": "$payment_frequency",
+        "postData": "$minimalDomesticStandingOrder",
         "consentId": "$OB-301-DOP-101202-ConsentId"
       },
       "headers": {

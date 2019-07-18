@@ -126,48 +126,6 @@
         "Risk": {}
       }
     },
-    "minimalDomesticStandingOrderQuarterly": {
-      "body": {
-        "Data": {
-          "ConsentId": "$OB-301-DOP-101201-ConsentId",
-          "Initiation": {
-            "Frequency": "QtrDay:ENGLISH",
-            "FirstPaymentDateTime": "2020-10-01T00:00:00+00:00",
-            "FirstPaymentAmount": {
-              "Amount": "$instructedAmountValue",
-              "Currency": "$instructedAmountCurrency"
-            },
-            "CreditorAccount": {
-              "SchemeName": "$creditorScheme",
-              "Identification": "$creditorIdentification",
-              "Name": "$creditorName"
-            }
-          }
-        },
-        "Risk": {}
-      }
-    },
-    "minimalDomesticStandingOrderWeekInMonth": {
-      "body": {
-        "Data": {
-          "ConsentId": "$OB-301-DOP-101202-ConsentId",
-          "Initiation": {
-            "Frequency": "WkInMnthDay:01:01",
-            "FirstPaymentDateTime": "2020-10-01T00:00:00+00:00",
-            "FirstPaymentAmount": {
-              "Amount": "$instructedAmountValue",
-              "Currency": "$instructedAmountCurrency"
-            },
-            "CreditorAccount": {
-              "SchemeName": "$creditorScheme",
-              "Identification": "$creditorIdentification",
-              "Name": "$creditorName"
-            }
-          }
-        },
-        "Risk": {}
-      }
-    },
     "minimalInternationalPaymentConsent": {
       "body": {
         "Data": {
