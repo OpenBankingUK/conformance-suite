@@ -147,8 +147,7 @@ func (wj *journey) TLSVersionResult() map[string]*discovery.TLSValidationResult 
 	})
 	tlsValidationResult := make(map[string]*discovery.TLSValidationResult, len(wj.validDiscoveryModel.DiscoveryModel.DiscoveryItems))
 	for _, discoveryItem := range wj.validDiscoveryModel.DiscoveryModel.DiscoveryItems {
-		discoveryItemKey := strings.ReplaceAll(discoveryItem.APISpecification.Name, " ", "-")
-		tlsVersionKey := fmt.Sprintf("tlsVersionForDiscoveryItem-%s", discoveryItemKey)
+		tlsVersionKey := wj.tlsVersionCtxKey(discoveryItem.APISpecification.Name)
 		tlsVersion, err := wj.context.GetString(tlsVersionKey)
 		if err != nil {
 			logger.WithFields(logrus.Fields{
@@ -158,7 +157,7 @@ func (wj *journey) TLSVersionResult() map[string]*discovery.TLSValidationResult 
 			}).Errorf("Error getting %s from context ...", tlsVersionKey)
 			continue
 		}
-		tlsValidKey := fmt.Sprintf("tlsIsValidForDiscoveryItem-%s", discoveryItemKey)
+		tlsValidKey := wj.tlsValidCtxKey(discoveryItem.APISpecification.Name)
 		tlsValid, ok := wj.context.Get(tlsValidKey)
 		if !ok {
 			logger.WithFields(logrus.Fields{
@@ -167,7 +166,7 @@ func (wj *journey) TLSVersionResult() map[string]*discovery.TLSValidationResult 
 			}).Errorf("Error getting %s from context ...", tlsValidKey)
 			continue
 		}
-		tlsValidationResult[discoveryItemKey] = &discovery.TLSValidationResult{TLSVersion: tlsVersion, Valid: tlsValid.(bool)}
+		tlsValidationResult[strings.ReplaceAll(discoveryItem.APISpecification.Name, " ", "-")] = &discovery.TLSValidationResult{TLSVersion: tlsVersion, Valid: tlsValid.(bool)}
 	}
 
 	return tlsValidationResult
@@ -211,8 +210,8 @@ func (wj *journey) TestCases() (generation.TestCasesRun, error) {
 				"discoveryItem.ResourceBaseURI": discoveryItem.ResourceBaseURI,
 			}).Error("Error validating TLS version for discovery item ResourceBaseURI")
 		}
-		wj.context.PutString(fmt.Sprintf("tlsVersionForDiscoveryItem-%s", strings.ReplaceAll(discoveryItem.APISpecification.Name, " ", "-")), tlsValidationResult.TLSVersion)
-		wj.context.Put(fmt.Sprintf("tlsIsValidForDiscoveryItem-%s", strings.ReplaceAll(discoveryItem.APISpecification.Name, " ", "-")), tlsValidationResult.Valid)
+		wj.context.PutString(wj.tlsVersionCtxKey(discoveryItem.APISpecification.Name), tlsValidationResult.TLSVersion)
+		wj.context.Put(wj.tlsValidCtxKey(discoveryItem.APISpecification.Name), tlsValidationResult.Valid)
 	}
 
 	if !wj.testCasesRunGenerated {
@@ -309,6 +308,14 @@ func (wj *journey) TestCases() (generation.TestCasesRun, error) {
 		}
 	}
 	return wj.testCasesRun, nil
+}
+
+func (wj *journey) tlsVersionCtxKey(discoveryItemName string) string {
+	return fmt.Sprintf("tlsVersionForDiscoveryItem-%s", strings.ReplaceAll(discoveryItemName, " ", "-"))
+}
+
+func (wj *journey) tlsValidCtxKey(discoveryItemName string) string {
+	return fmt.Sprintf("tlsIsValidForDiscoveryItem-%s", strings.ReplaceAll(discoveryItemName, " ", "-"))
 }
 
 func (wj *journey) CollectToken(code, state, scope string) error {
