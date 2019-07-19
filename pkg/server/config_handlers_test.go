@@ -126,6 +126,7 @@ func configStubMissing(missingField string) GlobalConfiguration {
 		RequestObjectSigningAlgorithm: "PS256",
 		Issuer:                        "https://modelobankauth2018.o3bank.co.uk:4101",
 		CreditorAccount:               creditorAccount,
+		InternationalCreditorAccount:  creditorAccount,
 		ResourceIDs: model.ResourceIDs{
 			AccountIDs:   []model.ResourceAccountID{{AccountID: "account-id"}},
 			StatementIDs: []model.ResourceStatementID{{StatementID: "statement-id"}},
@@ -267,6 +268,10 @@ func TestServerConfigGlobalPostValid(t *testing.T) {
 			SchemeName:     "UK.OBIE.SortCodeAccountNumber",
 			Identification: "20202010981789",
 		},
+		InternationalCreditorAccount: models.Payment{
+			SchemeName:     "UK.OBIE.SortCodeAccountNumber",
+			Identification: "20202010981789",
+		},
 	}
 	globalConfigurationJSON, err := json.MarshalIndent(globalConfiguration, ``, `  `)
 	require.NoError(err)
@@ -330,6 +335,10 @@ func TestServerConfigGlobalPostInvalid(t *testing.T) {
 					SchemeName:     "UK.OBIE.SortCodeAccountNumber",
 					Identification: "20202010981789",
 				},
+				InternationalCreditorAccount: models.Payment{
+					SchemeName:     "UK.OBIE.SortCodeAccountNumber",
+					Identification: "20202010981789",
+				},
 			},
 		},
 		{
@@ -366,6 +375,10 @@ func TestServerConfigGlobalPostInvalid(t *testing.T) {
 					SchemeName:     "UK.OBIE.SortCodeAccountNumber",
 					Identification: "20202010981789",
 				},
+				InternationalCreditorAccount: models.Payment{
+					SchemeName:     "UK.OBIE.SortCodeAccountNumber",
+					Identification: "20202010981789",
+				},
 			},
 		},
 		{
@@ -391,6 +404,10 @@ func TestServerConfigGlobalPostInvalid(t *testing.T) {
 				RequestObjectSigningAlgorithm: "PS256",
 				Issuer:                        "https://modelobankauth2018.o3bank.co.uk:4101",
 				CreditorAccount: models.Payment{
+					SchemeName:     "UK.OBIE.SortCodeAccountNumber",
+					Identification: "20202010981789",
+				},
+				InternationalCreditorAccount: models.Payment{
 					SchemeName:     "UK.OBIE.SortCodeAccountNumber",
 					Identification: "20202010981789",
 				},
@@ -424,6 +441,10 @@ func TestServerConfigGlobalPostInvalid(t *testing.T) {
 					},
 				},
 				CreditorAccount: models.Payment{
+					SchemeName:     "UK.OBIE.SortCodeAccountNumber",
+					Identification: "20202010981789",
+				},
+				InternationalCreditorAccount: models.Payment{
 					SchemeName:     "UK.OBIE.SortCodeAccountNumber",
 					Identification: "20202010981789",
 				},
@@ -464,6 +485,10 @@ func TestServerConfigGlobalPostInvalid(t *testing.T) {
 					SchemeName:     "UK.OBIE.SortCodeAccountNumber",
 					Identification: "20202010981789",
 				},
+				InternationalCreditorAccount: models.Payment{
+					SchemeName:     "UK.OBIE.SortCodeAccountNumber",
+					Identification: "20202010981789",
+				},
 			},
 		},
 		{
@@ -494,6 +519,10 @@ func TestServerConfigGlobalPostInvalid(t *testing.T) {
 					},
 				},
 				CreditorAccount: models.Payment{
+					SchemeName:     "UK.OBIE.SortCodeAccountNumber",
+					Identification: "20202010981789",
+				},
+				InternationalCreditorAccount: models.Payment{
 					SchemeName:     "UK.OBIE.SortCodeAccountNumber",
 					Identification: "20202010981789",
 				},
@@ -534,11 +563,15 @@ func TestServerConfigGlobalPostInvalid(t *testing.T) {
 					SchemeName:     "UK.OBIE.SortCodeAccountNumber",
 					Identification: "20202010981789",
 				},
+				InternationalCreditorAccount: models.Payment{
+					SchemeName:     "UK.OBIE.SortCodeAccountNumber",
+					Identification: "20202010981789",
+				},
 			},
 		},
 		{
 			name:               `invalid_credit_account_1`,
-			expectedBody:       `{"error":"creditor_account: (identification: cannot be blank; scheme_name: cannot be blank.)."}`,
+			expectedBody:       `{"error":"creditor_account: (identification: cannot be blank; scheme_name: cannot be blank.); international_creditor_account: (identification: cannot be blank; scheme_name: cannot be blank.)."}`,
 			expectedStatusCode: http.StatusBadRequest,
 			config: GlobalConfiguration{
 				SigningPrivate:                privateKey,
@@ -603,6 +636,10 @@ func TestServerConfigGlobalPostInvalid(t *testing.T) {
 				CreditorAccount: models.Payment{
 					SchemeName: "UK.OBIE.SortCodeAccountNumber",
 				},
+				InternationalCreditorAccount: models.Payment{
+					SchemeName:     "UK.OBIE.SortCodeAccountNumber",
+					Identification: "20202010981789",
+				},
 			},
 		},
 		{
@@ -632,6 +669,10 @@ func TestServerConfigGlobalPostInvalid(t *testing.T) {
 					},
 				},
 				CreditorAccount: models.Payment{
+					SchemeName:     "UK.OBIE.SortCodeAccountNumber",
+					Identification: "20202010981789",
+				},
+				InternationalCreditorAccount: models.Payment{
 					SchemeName:     "UK.OBIE.SortCodeAccountNumber",
 					Identification: "20202010981789",
 				},
@@ -668,6 +709,10 @@ func TestServerConfigGlobalPostInvalid(t *testing.T) {
 					SchemeName:     "UK.OBIE.SortCodeAccountNumber",
 					Identification: "20202010981789",
 				},
+				InternationalCreditorAccount: models.Payment{
+					SchemeName:     "UK.OBIE.SortCodeAccountNumber",
+					Identification: "20202010981789",
+				},
 			},
 		},
 		{
@@ -698,6 +743,10 @@ func TestServerConfigGlobalPostInvalid(t *testing.T) {
 					},
 				},
 				CreditorAccount: models.Payment{
+					SchemeName:     "UK.OBIE.SortCodeAccountNumber",
+					Identification: "20202010981789",
+				},
+				InternationalCreditorAccount: models.Payment{
 					SchemeName:     "UK.OBIE.SortCodeAccountNumber",
 					Identification: "20202010981789",
 				},
