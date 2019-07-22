@@ -6,6 +6,7 @@ import (
 	"net/url"
 	"reflect"
 	"regexp"
+	"time"
 
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/server/models"
 	"gopkg.in/resty.v1"
@@ -94,9 +95,25 @@ func (c GlobalConfiguration) Validate() error {
 		validation.Field(&c.InstructedAmount),
 		validation.Field(&c.CurrencyOfTransfer, validation.Match(regexp.MustCompile("^[A-Z]{3,3}$"))),
 		validation.Field(&c.AcrValuesSupported, validation.By(acrValuesValidator)),
-		validation.Field(&c.FirstPaymentDateTime, validation.Date("2006-01-02T15:04:05-0700")),
+		validation.Field(&c.FirstPaymentDateTime, validation.By(firstPaymentDateTimeValidator)),
 		validation.Field(&c.PaymentFrequency),
 	)
+}
+
+func firstPaymentDateTimeValidator(value interface{}) error {
+	firstPaymentDateTimeStr, ok := value.(string)
+	if !ok {
+		return fmt.Errorf("firstPaymentDateTimeValidator: `first_payment_date_time` must be a valid string")
+	}
+	parsedFirstPaymentDateTime, err := time.Parse("2006-01-02T15:04:05-07:00", firstPaymentDateTimeStr)
+	if err != nil {
+		return errors.Wrapf(err, "firstPaymentDateTimeValidator: `first_payment_date_time` the date provided is not in a supported format, please use `2006-01-02T15:04:05-07:00`")
+	}
+	if time.Now().Unix() >= parsedFirstPaymentDateTime.Unix() {
+		return fmt.Errorf("firstPaymentDateTimeValidator: `first_payment_date_time` must be a valid date in the future")
+	}
+	
+	return nil
 }
 
 func acrValuesValidator(value interface{}) error {
