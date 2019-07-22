@@ -863,7 +863,7 @@ export default {
       set(value) {
         this.$store.commit('config/SET_REQUESTED_EXECUTION_DATE_TIME', value);
       },
-    }
+    },
   },
   methods: {
     ...mapActions('config', [

@@ -272,6 +272,8 @@ func TestServerConfigGlobalPostValid(t *testing.T) {
 			SchemeName:     "UK.OBIE.SortCodeAccountNumber",
 			Identification: "20202010981789",
 		},
+		RequestedExecutionDateTime: "2020-01-01T00:00:00+01:00",
+		FirstPaymentDateTime: "2020-01-01T00:00:00+01:00",
 	}
 	globalConfigurationJSON, err := json.MarshalIndent(globalConfiguration, ``, `  `)
 	require.NoError(err)
@@ -339,6 +341,8 @@ func TestServerConfigGlobalPostInvalid(t *testing.T) {
 					SchemeName:     "UK.OBIE.SortCodeAccountNumber",
 					Identification: "20202010981789",
 				},
+				RequestedExecutionDateTime: "2020-01-01T00:00:00+01:00",
+				FirstPaymentDateTime: "2020-01-01T00:00:00+01:00",
 			},
 		},
 		{
@@ -379,6 +383,8 @@ func TestServerConfigGlobalPostInvalid(t *testing.T) {
 					SchemeName:     "UK.OBIE.SortCodeAccountNumber",
 					Identification: "20202010981789",
 				},
+				RequestedExecutionDateTime: "2020-01-01T00:00:00+01:00",
+				FirstPaymentDateTime: "2020-01-01T00:00:00+01:00",
 			},
 		},
 		{
@@ -411,6 +417,8 @@ func TestServerConfigGlobalPostInvalid(t *testing.T) {
 					SchemeName:     "UK.OBIE.SortCodeAccountNumber",
 					Identification: "20202010981789",
 				},
+				RequestedExecutionDateTime: "2020-01-01T00:00:00+01:00",
+				FirstPaymentDateTime: "2020-01-01T00:00:00+01:00",
 			},
 		},
 		{
@@ -448,6 +456,8 @@ func TestServerConfigGlobalPostInvalid(t *testing.T) {
 					SchemeName:     "UK.OBIE.SortCodeAccountNumber",
 					Identification: "20202010981789",
 				},
+				RequestedExecutionDateTime: "2020-01-01T00:00:00+01:00",
+				FirstPaymentDateTime: "2020-01-01T00:00:00+01:00",
 			},
 		},
 		{
@@ -489,6 +499,8 @@ func TestServerConfigGlobalPostInvalid(t *testing.T) {
 					SchemeName:     "UK.OBIE.SortCodeAccountNumber",
 					Identification: "20202010981789",
 				},
+				RequestedExecutionDateTime: "2020-01-01T00:00:00+01:00",
+				FirstPaymentDateTime: "2020-01-01T00:00:00+01:00",
 			},
 		},
 		{
@@ -526,6 +538,8 @@ func TestServerConfigGlobalPostInvalid(t *testing.T) {
 					SchemeName:     "UK.OBIE.SortCodeAccountNumber",
 					Identification: "20202010981789",
 				},
+				RequestedExecutionDateTime: "2020-01-01T00:00:00+01:00",
+				FirstPaymentDateTime: "2020-01-01T00:00:00+01:00",
 			},
 		},
 		{
@@ -567,6 +581,8 @@ func TestServerConfigGlobalPostInvalid(t *testing.T) {
 					SchemeName:     "UK.OBIE.SortCodeAccountNumber",
 					Identification: "20202010981789",
 				},
+				RequestedExecutionDateTime: "2020-01-01T00:00:00+01:00",
+				FirstPaymentDateTime: "2020-01-01T00:00:00+01:00",
 			},
 		},
 		{
@@ -600,6 +616,8 @@ func TestServerConfigGlobalPostInvalid(t *testing.T) {
 						{StatementID: "statement-id"},
 					},
 				},
+				RequestedExecutionDateTime: "2020-01-01T00:00:00+01:00",
+				FirstPaymentDateTime: "2020-01-01T00:00:00+01:00",
 			},
 		},
 		{
@@ -640,6 +658,8 @@ func TestServerConfigGlobalPostInvalid(t *testing.T) {
 					SchemeName:     "UK.OBIE.SortCodeAccountNumber",
 					Identification: "20202010981789",
 				},
+				RequestedExecutionDateTime: "2020-01-01T00:00:00+01:00",
+				FirstPaymentDateTime: "2020-01-01T00:00:00+01:00",
 			},
 		},
 		{
@@ -676,6 +696,8 @@ func TestServerConfigGlobalPostInvalid(t *testing.T) {
 					SchemeName:     "UK.OBIE.SortCodeAccountNumber",
 					Identification: "20202010981789",
 				},
+				RequestedExecutionDateTime: "2020-01-01T00:00:00+01:00",
+				FirstPaymentDateTime: "2020-01-01T00:00:00+01:00",
 			},
 		},
 		{
@@ -713,6 +735,8 @@ func TestServerConfigGlobalPostInvalid(t *testing.T) {
 					SchemeName:     "UK.OBIE.SortCodeAccountNumber",
 					Identification: "20202010981789",
 				},
+				RequestedExecutionDateTime: "2020-01-01T00:00:00+01:00",
+				FirstPaymentDateTime: "2020-01-01T00:00:00+01:00",
 			},
 		},
 		{
@@ -751,6 +775,8 @@ func TestServerConfigGlobalPostInvalid(t *testing.T) {
 					Identification: "20202010981789",
 				},
 				PaymentFrequency: models.PaymentFrequency("INVALID"),
+				RequestedExecutionDateTime: "2020-01-01T00:00:00+01:00",
+				FirstPaymentDateTime: "2020-01-01T00:00:00+01:00",
 			},
 		},
 	}
