@@ -70,6 +70,7 @@ type GlobalConfiguration struct {
 	RedirectURL                   string                  `json:"redirect_url" validate:"valid_url"`
 	ResourceIDs                   model.ResourceIDs       `json:"resource_ids" validate:"not_empty"`
 	CreditorAccount               models.Payment          `json:"creditor_account"`
+	InternationalCreditorAccount  models.Payment          `json:"international_creditor_account"`
 	TransactionFromDate           string                  `json:"transaction_from_date" validate:"not_empty"`
 	TransactionToDate             string                  `json:"transaction_to_date" validate:"not_empty"`
 	RequestObjectSigningAlgorithm string                  `json:"request_object_signing_alg"`
@@ -88,6 +89,7 @@ func (c GlobalConfiguration) Validate() error {
 	values := responseTypesSupported()
 	return validation.ValidateStruct(&c,
 		validation.Field(&c.CreditorAccount, validation.Required),
+		validation.Field(&c.InternationalCreditorAccount, validation.Required),
 		validation.Field(&c.ResponseType, validation.Required, validation.In(values[:]...)),
 		validation.Field(&c.InstructedAmount),
 		validation.Field(&c.CurrencyOfTransfer, validation.Match(regexp.MustCompile("^[A-Z]{3,3}$"))),
@@ -191,6 +193,7 @@ func MakeJourneyConfig(config *GlobalConfiguration) (JourneyConfig, error) {
 		redirectURL:                   config.RedirectURL,
 		resourceIDs:                   config.ResourceIDs,
 		creditorAccount:               config.CreditorAccount,
+		internationalCreditorAccount:  config.InternationalCreditorAccount,
 		instructedAmount:              config.InstructedAmount,
 		paymentFrequency:              config.PaymentFrequency,
 		firstPaymentDateTime:          config.FirstPaymentDateTime,

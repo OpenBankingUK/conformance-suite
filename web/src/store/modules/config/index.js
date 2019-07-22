@@ -46,6 +46,9 @@ export const mutationTypes = {
   SET_CREDITOR_ACCOUNT_NAME_SCHEME_NAME: 'SET_CREDITOR_ACCOUNT_NAME_SCHEME_NAME',
   SET_CREDITOR_ACCOUNT_IDENTIFICATION: 'SET_CREDITOR_ACCOUNT_IDENTIFICATION',
   SET_CREDITOR_ACCOUNT_NAME: 'SET_CREDITOR_ACCOUNT_NAME',
+  SET_INTERNATIONAL_CREDITOR_ACCOUNT_NAME_SCHEME_NAME: 'SET_INTERNATIONAL_CREDITOR_ACCOUNT_NAME_SCHEME_NAME',
+  SET_INTERNATIONAL_CREDITOR_ACCOUNT_IDENTIFICATION: 'SET_INTERNATIONAL_CREDITOR_ACCOUNT_IDENTIFICATION',
+  SET_INTERNATIONAL_CREDITOR_ACCOUNT_NAME: 'SET_INTERNATIONAL_CREDITOR_ACCOUNT_NAME',
   SET_INSTRUCTED_AMOUNT_VALUE: 'SET_INSTRUCTED_AMOUNT_VALUE',
   SET_INSTRUCTED_AMOUNT_CURRENCY: 'SET_INSTRUCTED_AMOUNT_CURRENCY',
   SET_CURRENCY_OF_TRANSFER: 'SET_CURRENCY_OF_TRANSFER',
@@ -183,6 +186,15 @@ export const mutations = {
   [mutationTypes.SET_CREDITOR_ACCOUNT_NAME](state, value) {
     state.configuration.creditor_account.name = value;
   },
+  [mutationTypes.SET_INTERNATIONAL_CREDITOR_ACCOUNT_NAME_SCHEME_NAME](state, value) {
+    state.configuration.international_creditor_account.scheme_name = value;
+  },
+  [mutationTypes.SET_INTERNATIONAL_CREDITOR_ACCOUNT_IDENTIFICATION](state, value) {
+    state.configuration.international_creditor_account.identification = value;
+  },
+  [mutationTypes.SET_INTERNATIONAL_CREDITOR_ACCOUNT_NAME](state, value) {
+    state.configuration.international_creditor_account.name = value;
+  },
   [mutationTypes.SET_INSTRUCTED_AMOUNT_VALUE](state, value) {
     state.configuration.instructed_amount.value = value;
   },
@@ -288,6 +300,11 @@ export const state = {
       statement_ids: [{ statement_id: '' }],
     },
     creditor_account: {
+      scheme_name: '',
+      identification: '',
+      name: '',
+    },
+    international_creditor_account: {
       scheme_name: '',
       identification: '',
       name: '',

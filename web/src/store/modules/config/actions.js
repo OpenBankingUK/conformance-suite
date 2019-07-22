@@ -125,6 +125,7 @@ export default {
         'signature_trust_anchor',
         'resource_ids',
         'creditor_account',
+        'international_creditor_account',
         'instructed_amount',
         'currency_of_transfer',
         'acr_values_supported',

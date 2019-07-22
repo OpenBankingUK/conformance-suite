@@ -153,6 +153,7 @@ func initConfig() {
 	}
 
 	resty.SetDebug(viper.GetBool("log_http_trace"))
+	resty.SetHeader("User-Agent", "OpenBankingFCS/"+version.NewBitBucket("").GetHumanVersion())
 
 	printConfigurationFlags()
 }

@@ -6,40 +6,43 @@ import (
 )
 
 const (
-	CtxConstClientID                = "client_id"
-	CtxConstClientSecret            = "client_secret"
-	CtxConstTokenEndpoint           = "token_endpoint"
-	CtxResponseType                 = "responseType"
-	CtxConstTokenEndpointAuthMethod = "token_endpoint_auth_method"
-	CtxConstFapiFinancialID         = "x-fapi-financial-id"
-	CtxConstFapiCustomerIPAddress   = "x-fapi-customer-ip-address"
-	CtxConstRedirectURL             = "redirect_url"
-	CtxConstAuthorisationEndpoint   = "authorisation_endpoint"
-	CtxConstBasicAuthentication     = "basic_authentication"
-	CtxConstResourceBaseURL         = "resource_server"
-	CtxConstIssuer                  = "issuer"
-	CtxAPIVersion                   = "api-version"
-	CtxConsentedAccountID           = "consentedAccountId"
-	CtxStatementID                  = "statementId"
-	CtxCreditorSchema               = "creditorScheme"
-	CtxCreditorIdentification       = "creditorIdentification"
-	CtxCreditorName                 = "creditorName"
-	CtxInstructedAmountCurrency     = "instructedAmountCurrency"
-	CtxInstructedAmountValue        = "instructedAmountValue"
-	CtxPaymentFrequency             = "payment_frequency" // CtxPaymentFrequency - for example `EvryDay`.
-	CtxFirstPaymentDateTime         = "firstPaymentDateTime"
-	CtxCurrencyOfTransfer           = "currencyOfTransfer"
-	CtxTransactionFromDate          = "transactionFromDate"
-	CtxTransactionToDate            = "transactionToDate"
-	CtxRequestObjectSigningAlg      = "requestObjectSigningAlg"
-	CtxSigningPrivate               = "signingPrivate"
-	CtxSigningPublic                = "signingPublic"
-	CtxPhase                        = "phase"
-	CtxNonOBDirectory               = "nonOBDirectory"
-	CtxSigningKid                   = "signingKid"
-	CtxSignatureTrustAnchor         = "signatureTrustAnchor"
-	CtxDynamicResourceIDs           = "dynamicResourceIDs"
-	CtxAcrValuesSupported           = "acrValuesSupported"
+	CtxConstClientID                       = "client_id"
+	CtxConstClientSecret                   = "client_secret"
+	CtxConstTokenEndpoint                  = "token_endpoint"
+	CtxResponseType                        = "responseType"
+	CtxConstTokenEndpointAuthMethod        = "token_endpoint_auth_method"
+	CtxConstFapiFinancialID                = "x-fapi-financial-id"
+	CtxConstFapiCustomerIPAddress          = "x-fapi-customer-ip-address"
+	CtxConstRedirectURL                    = "redirect_url"
+	CtxConstAuthorisationEndpoint          = "authorisation_endpoint"
+	CtxConstBasicAuthentication            = "basic_authentication"
+	CtxConstResourceBaseURL                = "resource_server"
+	CtxConstIssuer                         = "issuer"
+	CtxAPIVersion                          = "api-version"
+	CtxConsentedAccountID                  = "consentedAccountId"
+	CtxStatementID                         = "statementId"
+	CtxInternationalCreditorSchema         = "internationalCreditorScheme"
+	CtxInternationalCreditorIdentification = "internationalCreditorIdentification"
+	CtxInternationalCreditorName           = "internationalCreditorName"
+	CtxCreditorSchema                      = "creditorScheme"
+	CtxCreditorIdentification              = "creditorIdentification"
+	CtxCreditorName                        = "creditorName"
+	CtxInstructedAmountCurrency            = "instructedAmountCurrency"
+	CtxInstructedAmountValue               = "instructedAmountValue"
+	CtxPaymentFrequency                    = "payment_frequency" // CtxPaymentFrequency - for example `EvryDay`.
+	CtxFirstPaymentDateTime                = "firstPaymentDateTime"
+	CtxCurrencyOfTransfer                  = "currencyOfTransfer"
+	CtxTransactionFromDate                 = "transactionFromDate"
+	CtxTransactionToDate                   = "transactionToDate"
+	CtxRequestObjectSigningAlg             = "requestObjectSigningAlg"
+	CtxSigningPrivate                      = "signingPrivate"
+	CtxSigningPublic                       = "signingPublic"
+	CtxPhase                               = "phase"
+	CtxNonOBDirectory                      = "nonOBDirectory"
+	CtxSigningKid                          = "signingKid"
+	CtxSignatureTrustAnchor                = "signatureTrustAnchor"
+	CtxDynamicResourceIDs                  = "dynamicResourceIDs"
+	CtxAcrValuesSupported                  = "acrValuesSupported"
 )
 
 // PutParametersToJourneyContext populates a JourneyContext with values from the config screen
@@ -59,6 +62,9 @@ func PutParametersToJourneyContext(config JourneyConfig, context model.Context) 
 	context.PutString(CtxAPIVersion, config.apiVersion)
 	context.PutString(CtxConsentedAccountID, config.resourceIDs.AccountIDs[0].AccountID)
 	context.PutString(CtxStatementID, config.resourceIDs.StatementIDs[0].StatementID)
+	context.PutString(CtxInternationalCreditorSchema, config.internationalCreditorAccount.SchemeName)
+	context.PutString(CtxInternationalCreditorIdentification, config.internationalCreditorAccount.Identification)
+	context.PutString(CtxInternationalCreditorName, config.internationalCreditorAccount.Name)
 	context.PutString(CtxCreditorSchema, config.creditorAccount.SchemeName)
 	context.PutString(CtxCreditorIdentification, config.creditorAccount.Identification)
 	context.PutString(CtxCreditorName, config.creditorAccount.Name)

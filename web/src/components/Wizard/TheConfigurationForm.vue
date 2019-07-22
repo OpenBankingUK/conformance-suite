@@ -385,6 +385,7 @@
           label-for="creditor_account"
           label="CreditorAccount"
           description="OBCashAccount5">
+
           <b-form-group
             id="creditor_account_scheme_name_group"
             label-for="creditor_account_scheme_name"
@@ -426,6 +427,49 @@
               required
             />
           </b-form-group>
+
+          <b-form-group
+            id="international_creditor_account_scheme_name_group"
+            label-for="international_creditor_account_scheme_name"
+            label="International SchemeName"
+            description="International OBExternalAccountIdentification4Code">
+            <b-form-select
+              id="international_creditor_account_scheme_name"
+              v-model="international_creditor_account.scheme_name"
+              :options="[
+                'UK.OBIE.BBAN',
+                'UK.OBIE.IBAN',
+                'UK.OBIE.PAN' ,
+                'UK.OBIE.Paym',
+                'UK.OBIE.SortCodeAccountNumber'
+              ]"
+              required/>
+          </b-form-group>
+          <b-form-group
+            id="international_creditor_account_identification_group"
+            label-for="international_creditor_account_identification"
+            label="International Identification"
+            description="International beneficiary account identification">
+            <b-form-input
+              id="international_creditor_account_identification"
+              v-model="international_creditor_account.identification"
+              :state="isNotEmpty(international_creditor_account.identification)"
+              required
+            />
+          </b-form-group>
+          <b-form-group
+            id="international_creditor_account_name_group"
+            label-for="international_creditor_account_name"
+            label="International Name"
+            description="International name of the account, as assigned by the account servicing institution.\nUsage: The account name is the name or names of the account owner(s) represented at an account level. The account name is not the product name or the nickname of the account.">
+            <b-form-input
+              id="international_creditor_account_name"
+              v-model="international_creditor_account.name"
+              :state="isNotEmpty(international_creditor_account.name)"
+              required
+            />
+          </b-form-group>
+
           <b-form-group
             id="instructed_amount_value_group"
             label-for="instructed_amount_value"
@@ -461,6 +505,7 @@
               required/>
           </b-form-group>
         </b-form-group>
+
       </b-card>
     </b-form>
   </div>
@@ -700,6 +745,31 @@ export default {
           },
           set name(value) {
             self.$store.commit('config/SET_CREDITOR_ACCOUNT_NAME', value);
+          },
+        };
+      },
+    },
+    international_creditor_account: {
+      get() {
+        const self = this;
+        return {
+          get scheme_name() {
+            return self.$store.state.config.configuration.international_creditor_account.scheme_name;
+          },
+          set scheme_name(value) {
+            self.$store.commit('config/SET_INTERNATIONAL_CREDITOR_ACCOUNT_NAME_SCHEME_NAME', value);
+          },
+          get identification() {
+            return self.$store.state.config.configuration.international_creditor_account.identification;
+          },
+          set identification(value) {
+            self.$store.commit('config/SET_INTERNATIONAL_CREDITOR_ACCOUNT_IDENTIFICATION', value);
+          },
+          get name() {
+            return self.$store.state.config.configuration.international_creditor_account.name;
+          },
+          set name(value) {
+            self.$store.commit('config/SET_INTERNATIONAL_CREDITOR_ACCOUNT_NAME', value);
           },
         };
       },
