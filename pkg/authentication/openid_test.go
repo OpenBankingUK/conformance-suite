@@ -11,7 +11,9 @@ import (
 
 func TestOpenIdConfigWhenGetSuccessful(t *testing.T) {
 	require := test.NewRequire(t)
-	mockResponse, err := ioutil.ReadFile("../server/testdata/openid-configuration-mock.json")
+
+	// https://ob19-auth1-ui.o3bank.co.uk/.well-known/openid-configuration
+	mockResponse, err := ioutil.ReadFile("../server/testdata/openid-configuration_ozone.json")
 	require.NoError(err)
 
 	mockedServer, mockedServerURL := test.HTTPServer(http.StatusOK, string(mockResponse), nil)
@@ -20,24 +22,27 @@ func TestOpenIdConfigWhenGetSuccessful(t *testing.T) {
 	config, err := OpenIdConfig(mockedServerURL)
 	require.NoError(err)
 	require.NotNil(config)
-	authMethods := []string{
-		"tls_client_auth",
-		"client_secret_jwt",
-		"client_secret_basic",
-		"client_secret_post",
-		"private_key_jwt",
-	}
-	responseTypesSupported := []string{
-		"code",
-		"code id_token",
-	}
+
 	expected := OpenIDConfiguration{
-		TokenEndpoint:                     "https://modelobank2018.o3bank.co.uk:4201/<token_mock>",
-		AuthorizationEndpoint:             "https://modelobankauth2018.o3bank.co.uk:4101/<auth_mock>",
-		Issuer:                            "https://modelobankauth2018.o3bank.co.uk:4101",
-		TokenEndpointAuthMethodsSupported: authMethods,
-		ResponseTypesSupported:            responseTypesSupported,
-		AcrValuesSupported:                []string{},
+		TokenEndpoint: "https://ob19-auth1.o3bank.co.uk:4201/token",
+		TokenEndpointAuthMethodsSupported: []string{
+			"client_secret_basic",
+			"client_secret_jwt",
+			"private_key_jwt",
+			"tls_client_auth",
+		},
+		RequestObjectSigningAlgValuesSupported: []string{
+			"none",
+			"HS256",
+			"RS256",
+			"PS256",
+		},
+		AuthorizationEndpoint: "https://ob19-auth1-ui.o3bank.co.uk/auth",
+		Issuer:                "https://ob19-auth1-ui.o3bank.co.uk",
+		ResponseTypesSupported: []string{
+			"code",
+			"code id_token",
+		},
 	}
 
 	require.Equal(expected, config)

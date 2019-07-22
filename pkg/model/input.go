@@ -441,12 +441,92 @@ type consentIDTok struct {
 	Token obIDToken `json:"id_token,omitempty"`
 }
 
+// SetAdditonalClaims - read the comments in the function body, please.
+func SetAdditonalClaims(jwtClaims jwt.MapClaims, inputClaims map[string]string) {
+	// https://openid.net/specs/openid-financial-api-part-2.html#authorization-server Pt 13
+	// Ozone recently (the time I write this is 22/07/2019) went through FAPI certification so it is now more strict.
+	//
+	// We get an error when doing headless if the `exp` is not set. Here is the actual log:
+	//
+	// ---------------------- REQUEST LOG -----------------------
+	// GET  /auth?client_id=081756dd-17f5-4543-a221-012e7ec8694e&redirect_uri=https%3A%2F%2F127.0.0.1%3A8443%2Fconformancesuite%2Fcallback&request=eyJhbGciOiJub25lIn0.eyJhdWQiOiJodHRwczovL29iMTktYXV0aDEtdWkubzNiYW5rLmNvLnVrIiwiY2xhaW1zIjp7ImlkX3Rva2VuIjp7Im9wZW5iYW5raW5nX2ludGVudF9pZCI6eyJlc3NlbnRpYWwiOnRydWUsInZhbHVlIjoiYWFjLTdlNDE5ZTY3LWNiYTMtNGNlOS1iMzRkLTM3YjdmYjY4MDYzNyJ9fX0sImlzcyI6IjA4MTc1NmRkLTE3ZjUtNDU0My1hMjIxLTAxMmU3ZWM4Njk0ZSIsInJlZGlyZWN0X3VyaSI6Imh0dHBzOi8vMTI3LjAuMC4xOjg0NDMvY29uZm9ybWFuY2VzdWl0ZS9jYWxsYmFjayIsInNjb3BlIjoib3BlbmlkIGFjY291bnRzIn0.&response_type=code&scope=openid+accounts&state=  HTTP/1.1
+	// HOST   : ob19-auth1-ui.o3bank.co.uk
+	// HEADERS:
+	// 				User-Agent: go-resty/1.10.3 (https://github.com/go-resty/resty)
+	// BODY   :
+	// ***** NO CONTENT *****
+	// ----------------------------------------------------------
+	// RESTY 2019/07/19 10:29:01
+	// ---------------------- RESPONSE LOG -----------------------
+	// STATUS 		: 400 Bad Request
+	// RECEIVED AT	: 2019-07-19T10:29:01.086224+01:00
+	// RESPONSE TIME	: 134.991846ms
+	// HEADERS:
+	// 				Connection: keep-alive
+	// 			Content-Length: 194
+	// 				Content-Type: application/json; charset=utf-8
+	// 						Date: Fri, 19 Jul 2019 09:29:01 GMT
+	// 						Etag: W/"c2-g632OX8LPgukAE/rB/n5eQtwF3w"
+	// 				X-Powered-By: Express
+	// BODY   :
+	// {
+	// 	"noRedirect": true,
+	// 	"error": "invalid_request",
+	// 	"error_description": "request_object_exp_undefined: The request object must have an exp claim",
+	// 	"interactionId": "bd9fe4d9-9014-4c04-ae42-db053024f265"
+	// }
+	// ----------------------------------------------------------
+	//
+	// To fix this, if `claims` has the `exp` set to `true`, we set the `exp` claim to 30 minutes from now.
+	// "claims": {
+	// 	...
+	// 	"exp": "true",
+	// 	...
+	// }
+	//
+	// We do the same thing for `nonce`
+	logger := logrus.WithFields(logrus.Fields{
+		"package":     "model",
+		"function":    "authEndpoint",
+		"inputClaims": inputClaims,
+	})
+
+	if exp, ok := inputClaims["exp"]; ok {
+		if strings.ToLower(exp) == "true" {
+			jwtClaims["exp"] = time.Now().Add(time.Minute * time.Duration(30)).Unix()
+			logger.WithFields(logrus.Fields{
+				`jwtClaims["exp"]`: jwtClaims["exp"],
+			}).Debug(`setting "exp" claim because "exp" == "true"`)
+		}
+	}
+
+	if nonce, ok := inputClaims["nonce"]; ok {
+		if strings.ToLower(nonce) == "true" {
+			uuid := uuid.New()
+			jwtClaims["nonce"] = uuid
+			logger.WithFields(logrus.Fields{
+				`jwtClaims["nonce"]`: jwtClaims["nonce"],
+			}).Debug(`setting "nonce" claim because "nonce" == "true"`)
+		}
+	}
+
+	if state, ok := inputClaims["state"]; ok {
+		if len(state) > 0 {
+			jwtClaims["state"] = state
+			logger.WithFields(logrus.Fields{
+				`jwtClaims["state"]`: jwtClaims["state"],
+			}).Debug(`setting "state" claim because len("state") > 0`)
+		}
+	}
+}
+
 func (i *Input) generateUnsignedJWT(ctx *Context) (string, error) {
 	claims := jwt.MapClaims{}
 	claims["iss"] = i.Claims["iss"]
 	claims["scope"] = i.Claims["scope"]
 	claims["aud"] = i.Claims["aud"]
 	claims["redirect_uri"] = i.Claims["redirect_url"]
+	SetAdditonalClaims(claims, i.Claims)
 
 	consentClaim := consentClaims{Essential: true, Value: i.Claims["consentId"]}
 	myIdent := obIDToken{IntentID: consentClaim}

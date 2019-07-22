@@ -379,7 +379,7 @@ describe('web/src/store/modules/config', () => {
         acr_values_supported: [],
       });
 
-      store.commit(types.SET_RESOURCE_BASE_URL, 'https://modelobank2018.o3bank.co.uk:4501');
+      store.commit(types.SET_RESOURCE_BASE_URL, 'https://ob19-rs1.o3bank.co.uk:4501');
       expect(store.state.configuration).toEqual({
         signing_private: '',
         signing_public: '',
@@ -397,7 +397,7 @@ describe('web/src/store/modules/config', () => {
         token_endpoint_auth_method: 'client_secret_basic',
         request_object_signing_alg: '',
         authorization_endpoint: 'https://modelobankauth2018.o3bank.co.uk:4101/auth',
-        resource_base_url: 'https://modelobank2018.o3bank.co.uk:4501',
+        resource_base_url: 'https://ob19-rs1.o3bank.co.uk:4501',
         x_fapi_financial_id: '',
         send_x_fapi_customer_ip_address: false,
         x_fapi_customer_ip_address: '',
@@ -446,7 +446,7 @@ describe('web/src/store/modules/config', () => {
         token_endpoint_auth_method: 'client_secret_basic',
         request_object_signing_alg: '',
         authorization_endpoint: 'https://modelobankauth2018.o3bank.co.uk:4101/auth',
-        resource_base_url: 'https://modelobank2018.o3bank.co.uk:4501',
+        resource_base_url: 'https://ob19-rs1.o3bank.co.uk:4501',
         x_fapi_financial_id: '0015800001041RHAAY',
         send_x_fapi_customer_ip_address: false,
         x_fapi_customer_ip_address: '',
@@ -495,7 +495,7 @@ describe('web/src/store/modules/config', () => {
         token_endpoint_auth_method: 'client_secret_basic',
         request_object_signing_alg: '',
         authorization_endpoint: 'https://modelobankauth2018.o3bank.co.uk:4101/auth',
-        resource_base_url: 'https://modelobank2018.o3bank.co.uk:4501',
+        resource_base_url: 'https://ob19-rs1.o3bank.co.uk:4501',
         x_fapi_financial_id: '0015800001041RHAAY',
         send_x_fapi_customer_ip_address: false,
         x_fapi_customer_ip_address: '',
@@ -544,7 +544,7 @@ describe('web/src/store/modules/config', () => {
         token_endpoint_auth_method: 'client_secret_basic',
         request_object_signing_alg: '',
         authorization_endpoint: 'https://modelobankauth2018.o3bank.co.uk:4101/auth',
-        resource_base_url: 'https://modelobank2018.o3bank.co.uk:4501',
+        resource_base_url: 'https://ob19-rs1.o3bank.co.uk:4501',
         x_fapi_financial_id: '0015800001041RHAAY',
         send_x_fapi_customer_ip_address: false,
         x_fapi_customer_ip_address: '',
@@ -593,7 +593,7 @@ describe('web/src/store/modules/config', () => {
         token_endpoint_auth_method: 'client_secret_basic',
         request_object_signing_alg: '',
         authorization_endpoint: 'https://modelobankauth2018.o3bank.co.uk:4101/auth',
-        resource_base_url: 'https://modelobank2018.o3bank.co.uk:4501',
+        resource_base_url: 'https://ob19-rs1.o3bank.co.uk:4501',
         x_fapi_financial_id: '0015800001041RHAAY',
         send_x_fapi_customer_ip_address: false,
         x_fapi_customer_ip_address: '',
@@ -1146,7 +1146,7 @@ describe('web/src/store/modules/config', () => {
         store.commit(types.SET_TOKEN_ENDPOINT, 'https://modelobank2018.o3bank.co.uk:4201/token');
         store.commit(types.SET_RESPONSE_TYPE, 'code id_token');
         store.commit(types.SET_AUTHORIZATION_ENDPOINT, 'https://modelobankauth2018.o3bank.co.uk:4101/auth');
-        store.commit(types.SET_RESOURCE_BASE_URL, 'https://modelobank2018.o3bank.co.uk:4501');
+        store.commit(types.SET_RESOURCE_BASE_URL, 'https://ob19-rs1.o3bank.co.uk:4501');
         store.commit(types.SET_X_FAPI_FINANCIAL_ID, '0015800001041RHAAY');
         store.commit(types.SET_ISSUER, 'https://modelobankauth2018.o3bank.co.uk:4101');
         store.commit(types.SET_REQUEST_OBJECT_SIGNING_ALG, 'PS256');
@@ -1181,7 +1181,7 @@ describe('web/src/store/modules/config', () => {
         store.commit(types.SET_TOKEN_ENDPOINT, 'https://modelobank2018.o3bank.co.uk:4201/token');
         store.commit(types.SET_RESPONSE_TYPE, 'code id_token');
         store.commit(types.SET_AUTHORIZATION_ENDPOINT, 'https://modelobankauth2018.o3bank.co.uk:4101/auth');
-        store.commit(types.SET_RESOURCE_BASE_URL, 'https://modelobank2018.o3bank.co.uk:4501');
+        store.commit(types.SET_RESOURCE_BASE_URL, 'https://ob19-rs1.o3bank.co.uk:4501');
         store.commit(types.SET_X_FAPI_FINANCIAL_ID, '0015800001041RHAAY');
         store.commit(types.SET_ISSUER, 'https://modelobankauth2018.o3bank.co.uk:4101');
         store.commit(types.SET_REQUEST_OBJECT_SIGNING_ALG, 'PS256');
@@ -1256,7 +1256,7 @@ describe('web/src/store/modules/config', () => {
         store.commit(types.SET_TOKEN_ENDPOINT, 'https://modelobank2018.o3bank.co.uk:4201/token');
         store.commit(types.SET_RESPONSE_TYPE, 'code id_token');
         store.commit(types.SET_AUTHORIZATION_ENDPOINT, 'https://modelobankauth2018.o3bank.co.uk:4101/auth');
-        store.commit(types.SET_RESOURCE_BASE_URL, 'https://modelobank2018.o3bank.co.uk:4501');
+        store.commit(types.SET_RESOURCE_BASE_URL, 'https://ob19-rs1.o3bank.co.uk:4501');
         store.commit(types.SET_X_FAPI_FINANCIAL_ID, '0015800001041RHAAY');
         store.commit(types.SET_ISSUER, 'https://modelobankauth2018.o3bank.co.uk:4101');
         store.commit(types.SET_REQUEST_OBJECT_SIGNING_ALG, 'PS256');
@@ -1288,7 +1288,7 @@ describe('web/src/store/modules/config', () => {
         store.commit(types.SET_CLIENT_SECRET, '2cfb31a3-5443-4e65-b2bc-ef8e00266a77');
         store.commit(types.SET_TOKEN_ENDPOINT, 'https://modelobank2018.o3bank.co.uk:4201/token');
         store.commit(types.SET_AUTHORIZATION_ENDPOINT, 'https://modelobankauth2018.o3bank.co.uk:4101/auth');
-        store.commit(types.SET_RESOURCE_BASE_URL, 'https://modelobank2018.o3bank.co.uk:4501');
+        store.commit(types.SET_RESOURCE_BASE_URL, 'https://ob19-rs1.o3bank.co.uk:4501');
         store.commit(types.SET_X_FAPI_FINANCIAL_ID, '0015800001041RHAAY');
         store.commit(types.SET_ISSUER, 'https://modelobankauth2018.o3bank.co.uk:4101');
         store.commit(types.SET_REQUEST_OBJECT_SIGNING_ALG, 'PS256');

@@ -9,10 +9,13 @@ import (
 	"net"
 	"net/http"
 	"path/filepath"
+	"strings"
 	"testing"
 	"time"
 
+	"github.com/spf13/viper"
 	"github.com/stretchr/testify/require"
+	"gopkg.in/resty.v1"
 
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/client"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
@@ -32,7 +35,19 @@ const (
 
 var update = flag.Bool("update", false, "update .golden files")
 
+// init - this allows running the tests in debug mode, e.g.,:
+//
+// `LOG_HTTP_TRACE=true go test -v -count=1 -run='TestRun' ./...`
+func init() {
+	viper.SetEnvPrefix("")
+	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
+	viper.AutomaticEnv()
+}
+
 func TestRun(t *testing.T) {
+	debug := viper.GetBool("LOG_HTTP_TRACE")
+	resty.SetDebug(debug)
+
 	logger := test.NullLogger()
 
 	ver := version.NewBitBucket(version.BitBucketAPIRepository)
@@ -85,8 +100,8 @@ func TestRun(t *testing.T) {
 	require.NoError(t, err, "failed reading .golden")
 
 	if string(expected) != w.String() {
-		t.Log(string(expected))
-		t.Log(w.String())
+		t.Logf("expected=%q", string(expected))
+		t.Logf("actual=%q", w.String())
 
 		t.Log(cmp.Diff(string(expected), w.String()))
 		t.Fail()
