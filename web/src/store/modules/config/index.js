@@ -320,6 +320,7 @@ export const state = {
     currency_of_transfer: 'USD',
     payment_frequency: 'EvryDay',
     first_payment_date_time: '2020-01-01T00:00:00+01:00',
+    requested_execution_date_time: '2020-01-01T00:00:00+01:00',
     acr_values_supported: [],
   },
 
