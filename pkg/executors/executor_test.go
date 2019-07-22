@@ -153,8 +153,8 @@ func TestExecutor_SetCertificates(t *testing.T) {
 
 		require.NoError(executor.SetCertificates(certificateSigning, certificateTransport))
 
-		// https://modelobank2018.o3bank.co.uk:4501/open-banking/v3.1/aisp
-		res, err := resty.R().Get("https://modelobank2018.o3bank.co.uk:4501/open-banking/v3.1/aisp")
+		// https://ob19-rs1.o3bank.co.uk:4501/open-banking/v3.1/aisp
+		res, err := resty.R().Get("https://ob19-rs1.o3bank.co.uk:4501/open-banking/v3.1/aisp")
 		require.NotNil(res)
 		require.NoError(err)
 
@@ -180,8 +180,8 @@ func TestExecutor_SetCertificates(t *testing.T) {
 
 		require.NoError(executor.SetCertificates(certificateSigning, certificateTransport))
 
-		// https://modelobank2018.o3bank.co.uk:4501/open-banking/v3.1/aisp
-		res, err := resty.R().Get("https://modelobank2018.o3bank.co.uk:4501/open-banking/v3.1/aisp")
+		// https://ob19-rs1.o3bank.co.uk:4501/open-banking/v3.1/aisp
+		res, err := resty.R().Get("https://ob19-rs1.o3bank.co.uk:4501/open-banking/v3.1/aisp")
 		require.NotNil(res)
 		require.NoError(err)
 

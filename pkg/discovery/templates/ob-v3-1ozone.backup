@@ -13,7 +13,7 @@
           "manifest": "file://manifests/ob_3.1_accounts_transactions_fca.json"
         },
         "openidConfigurationUri": "https://modelobankauth2018.o3bank.co.uk:4101/.well-known/openid-configuration",
-        "resourceBaseUri": "https://modelobank2018.o3bank.co.uk:4501/open-banking/v3.1/",
+        "resourceBaseUri": "https://ob19-rs1.o3bank.co.uk:4501/open-banking/v3.1/",
         "resourceIds": {
           "AccountId": "500000000000000000000001",
           "ConsentId": "$consent_id"
@@ -162,7 +162,7 @@
           "manifest": "file://manifests/ob_3.1_payment_fca.json"
         },
         "openidConfigurationUri": "https://modelobankauth2018.o3bank.co.uk:4101/.well-known/openid-configuration",
-        "resourceBaseUri": "https://modelobank2018.o3bank.co.uk:4501/open-banking/v3.1/",
+        "resourceBaseUri": "https://ob19-rs1.o3bank.co.uk:4501/open-banking/v3.1/",
         "endpoints": [{
             "method": "POST",
             "path": "/domestic-payment-consents",
@@ -327,7 +327,7 @@
       "description": "testcase sequence to retrieve an ozone token",
       "order": "beforeRun",
       "replacementParameters": {
-        "resource_server": "https://modelobank2018.o3bank.co.uk:4501"
+        "resource_server": "https://ob19-rs1.o3bank.co.uk:4501"
       },
       "testSequence": [{
         "@id": "#ct0005",

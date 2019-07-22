@@ -8,7 +8,7 @@
   "token_endpoint": "https://modelobank2018.o3bank.co.uk:4201/token",
   "token_endpoint_auth_method": "client_secret_basic",
   "authorization_endpoint": "https://modelobankauth2018.o3bank.co.uk:4101/auth",
-  "resource_base_url": "https://modelobank2018.o3bank.co.uk:4501",
+  "resource_base_url": "https://ob19-rs1.o3bank.co.uk:4501",
   "x_fapi_financial_id": "0015800001041RHAAY",
   "issuer": "https://modelobankauth2018.o3bank.co.uk:4101",
   "redirect_url": "https://0.0.0.0:8443/conformancesuite/callback"

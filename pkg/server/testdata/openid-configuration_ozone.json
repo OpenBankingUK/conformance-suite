@@ -1,0 +1,78 @@
+{
+  "issuer": "https://ob19-auth1-ui.o3bank.co.uk",
+  "claims_parameter_supported": true,
+  "claims_supported": [
+    "openbanking_intent_id",
+    "acr"
+  ],
+  "grant_types_supported": [
+    "authorization_code",
+    "client_credentials",
+    "urn:openid:params:grant-type:ciba"
+  ],
+  "response_types_supported": [
+    "code",
+    "code id_token"
+  ],
+  "request_parameter_supported": true,
+  "request_uri_parameter_supported": false,
+  "require_request_uri_registration": false,
+  "scopes_supported": [
+    "openid",
+    "accounts",
+    "payments",
+    "fundsconfirmations"
+  ],
+  "id_token_signing_alg_values_supported": [
+    "none",
+    "HS256",
+    "RS256",
+    "PS256"
+  ],
+  "request_object_signing_alg_values_supported": [
+    "none",
+    "HS256",
+    "RS256",
+    "PS256"
+  ],
+  "token_endpoint_auth_methods_supported": [
+    "client_secret_basic",
+    "client_secret_jwt",
+    "private_key_jwt",
+    "tls_client_auth"
+  ],
+  "token_endpoint_auth_signing_alg_values_supported": [
+    "none",
+    "HS256",
+    "RS256",
+    "PS256"
+  ],
+  "claim_types_supported": [
+    "normal"
+  ],
+  "subject_types_supported": [
+    "public"
+  ],
+  "response_modes_supported": [
+    "form_post",
+    "fragment",
+    "query"
+  ],
+  "backchannel_token_delivery_modes_supported": [
+    "poll",
+    "ping",
+    "push"
+  ],
+  "backchannel_authentication_request_signing_alg_values_supported": [
+    "none",
+    "HS256",
+    "RS256",
+    "PS256"
+  ],
+  "backchannel_user_code_parameter_supported": false,
+  "token_endpoint": "https://ob19-auth1.o3bank.co.uk:4201/token",
+  "authorization_endpoint": "https://ob19-auth1-ui.o3bank.co.uk/auth",
+  "registration_endpoint": "https://ob19-rs1.o3bank.co.uk:4501/dynamic-client-registration/v3.1/register",
+  "jwks_uri": "https://keystore.openbankingtest.org.uk/0015800001041RHAAY/0015800001041RHAAY.jwks",
+  "backchannel_authentication_endpoint": "https://ob19-auth1.o3bank.co.uk:4201/bc-authorize"
+}

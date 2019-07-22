@@ -257,7 +257,7 @@ func TestServerConfigGlobalPostValid(t *testing.T) {
 		XFAPIFinancialID:              `0015800001041RHAAY`,
 		RedirectURL:                   fmt.Sprintf(`https://%s:8443/conformancesuite/callback`, ListenHost),
 		AuthorizationEndpoint:         `https://modelobank2018.o3bank.co.uk:4201/token`,
-		ResourceBaseURL:               `https://modelobank2018.o3bank.co.uk:4501`,
+		ResourceBaseURL:               `https://ob19-rs1.o3bank.co.uk:4501`,
 		Issuer:                        "https://modelobankauth2018.o3bank.co.uk:4101",
 		RequestObjectSigningAlgorithm: "PS256",
 		ResourceIDs: model.ResourceIDs{
