@@ -86,7 +86,8 @@ describe('web/src/store/modules/config', () => {
           value: '1.00',
         },
         payment_frequency: 'EvryDay',
-        first_payment_date_time: '2020-01-01T00:00:00+0100',
+        first_payment_date_time: '2020-01-01T00:00:00+01:00',
+        requested_execution_date_time: '2020-01-01T00:00:00+01:00',
         acr_values_supported: [],
       });
     });
@@ -173,7 +174,8 @@ describe('web/src/store/modules/config', () => {
           value: '1.00',
         },
         payment_frequency: 'EvryDay',
-        first_payment_date_time: '2020-01-01T00:00:00+0100',
+        first_payment_date_time: '2020-01-01T00:00:00+01:00',
+        requested_execution_date_time: '2020-01-01T00:00:00+01:00',
         acr_values_supported: [],
       });
 
@@ -222,7 +224,8 @@ describe('web/src/store/modules/config', () => {
           value: '1.00',
         },
         payment_frequency: 'EvryDay',
-        first_payment_date_time: '2020-01-01T00:00:00+0100',
+        first_payment_date_time: '2020-01-01T00:00:00+01:00',
+        requested_execution_date_time: '2020-01-01T00:00:00+01:00',
         acr_values_supported: [],
       });
 
@@ -270,7 +273,8 @@ describe('web/src/store/modules/config', () => {
           value: '1.00',
         },
         payment_frequency: 'EvryDay',
-        first_payment_date_time: '2020-01-01T00:00:00+0100',
+        first_payment_date_time: '2020-01-01T00:00:00+01:00',
+        requested_execution_date_time: '2020-01-01T00:00:00+01:00',
         acr_values_supported: [],
       });
 
@@ -318,7 +322,8 @@ describe('web/src/store/modules/config', () => {
           value: '1.00',
         },
         payment_frequency: 'EvryDay',
-        first_payment_date_time: '2020-01-01T00:00:00+0100',
+        first_payment_date_time: '2020-01-01T00:00:00+01:00',
+        requested_execution_date_time: '2020-01-01T00:00:00+01:00',
         acr_values_supported: [],
       });
 
@@ -369,7 +374,8 @@ describe('web/src/store/modules/config', () => {
           value: '1.00',
         },
         payment_frequency: 'EvryDay',
-        first_payment_date_time: '2020-01-01T00:00:00+0100',
+        first_payment_date_time: '2020-01-01T00:00:00+01:00',
+        requested_execution_date_time: '2020-01-01T00:00:00+01:00',
         acr_values_supported: [],
       });
 
@@ -417,7 +423,8 @@ describe('web/src/store/modules/config', () => {
           value: '1.00',
         },
         payment_frequency: 'EvryDay',
-        first_payment_date_time: '2020-01-01T00:00:00+0100',
+        first_payment_date_time: '2020-01-01T00:00:00+01:00',
+        requested_execution_date_time: '2020-01-01T00:00:00+01:00',
         acr_values_supported: [],
       });
 
@@ -465,7 +472,8 @@ describe('web/src/store/modules/config', () => {
           value: '1.00',
         },
         payment_frequency: 'EvryDay',
-        first_payment_date_time: '2020-01-01T00:00:00+0100',
+        first_payment_date_time: '2020-01-01T00:00:00+01:00',
+        requested_execution_date_time: '2020-01-01T00:00:00+01:00',
         acr_values_supported: [],
       });
 
@@ -513,7 +521,8 @@ describe('web/src/store/modules/config', () => {
           value: '1.00',
         },
         payment_frequency: 'EvryDay',
-        first_payment_date_time: '2020-01-01T00:00:00+0100',
+        first_payment_date_time: '2020-01-01T00:00:00+01:00',
+        requested_execution_date_time: '2020-01-01T00:00:00+01:00',
         acr_values_supported: [],
       });
 
@@ -561,7 +570,8 @@ describe('web/src/store/modules/config', () => {
           value: '1.00',
         },
         payment_frequency: 'EvryDay',
-        first_payment_date_time: '2020-01-01T00:00:00+0100',
+        first_payment_date_time: '2020-01-01T00:00:00+01:00',
+        requested_execution_date_time: '2020-01-01T00:00:00+01:00',
         acr_values_supported: [],
       });
 
@@ -609,7 +619,8 @@ describe('web/src/store/modules/config', () => {
           value: '1.00',
         },
         payment_frequency: 'EvryDay',
-        first_payment_date_time: '2020-01-01T00:00:00+0100',
+        first_payment_date_time: '2020-01-01T00:00:00+01:00',
+        requested_execution_date_time: '2020-01-01T00:00:00+01:00',
         acr_values_supported: [],
       });
 
@@ -663,7 +674,8 @@ describe('web/src/store/modules/config', () => {
           value: '1.00',
         },
         payment_frequency: 'EvryDay',
-        first_payment_date_time: '2020-01-01T00:00:00+0100',
+        first_payment_date_time: '2020-01-01T00:00:00+01:00',
+        requested_execution_date_time: '2020-01-01T00:00:00+01:00',
         acr_values_supported: [],
       });
 
@@ -713,7 +725,8 @@ describe('web/src/store/modules/config', () => {
           value: '1.00',
         },
         payment_frequency: 'EvryDay',
-        first_payment_date_time: '2020-01-01T00:00:00+0100',
+        first_payment_date_time: '2020-01-01T00:00:00+01:00',
+        requested_execution_date_time: '2020-01-01T00:00:00+01:00',
         acr_values_supported: [],
       });
 
@@ -763,7 +776,8 @@ describe('web/src/store/modules/config', () => {
           value: '1.00',
         },
         payment_frequency: 'EvryDay',
-        first_payment_date_time: '2020-01-01T00:00:00+0100',
+        first_payment_date_time: '2020-01-01T00:00:00+01:00',
+        requested_execution_date_time: '2020-01-01T00:00:00+01:00',
         acr_values_supported: [],
       });
 
@@ -813,7 +827,8 @@ describe('web/src/store/modules/config', () => {
           value: '1.00',
         },
         payment_frequency: 'EvryDay',
-        first_payment_date_time: '2020-01-01T00:00:00+0100',
+        first_payment_date_time: '2020-01-01T00:00:00+01:00',
+        requested_execution_date_time: '2020-01-01T00:00:00+01:00',
         acr_values_supported: [],
       });
     });
@@ -869,7 +884,8 @@ describe('web/src/store/modules/config', () => {
             value: '1.00',
           },
           payment_frequency: 'EvryDay',
-          first_payment_date_time: '2020-01-01T00:00:00+0100',
+          first_payment_date_time: '2020-01-01T00:00:00+01:00',
+          requested_execution_date_time: '2020-01-01T00:00:00+01:00',
           acr_values_supported: [],
         });
 
@@ -958,7 +974,8 @@ describe('web/src/store/modules/config', () => {
             value: '1.00',
           },
           payment_frequency: 'EvryDay',
-          first_payment_date_time: '2020-01-01T00:00:00+0100',
+          first_payment_date_time: '2020-01-01T00:00:00+01:00',
+          requested_execution_date_time: '2020-01-01T00:00:00+01:00',
           acr_values_supported: [],
         });
       });

@@ -46,7 +46,7 @@
         "Data": {
           "Permission": "Create",
           "Initiation": {
-            "RequestedExecutionDateTime": "2020-01-01T00:00:00+00:00",
+            "RequestedExecutionDateTime": "$requestedExecutionDateTime",
             "InstructionIdentification": "$instructionIdentification",
             "EndToEndIdentification": "$endToEndIdentification",
             "InstructedAmount": {
@@ -174,7 +174,7 @@
         "Data": {
           "Permission": "Create",
           "Initiation": {
-            "RequestedExecutionDateTime": "2020-01-01T00:00:00+00:00",
+            "RequestedExecutionDateTime": "$requestedExecutionDateTime",
             "InstructionIdentification": "$instructionIdentification",
             "EndToEndIdentification": "$endToEndIdentification",
             "CurrencyOfTransfer": "$currencyOfTransfer",
@@ -197,7 +197,7 @@
         "Data": {
           "ConsentId": "$OB-301-DOP-102000-ConsentId",
           "Initiation": {
-            "RequestedExecutionDateTime": "2020-01-01T00:00:00+00:00",
+            "RequestedExecutionDateTime": "$requestedExecutionDateTime",
             "InstructionIdentification": "$instructionIdentification",
             "EndToEndIdentification": "$endToEndIdentification",
             "CurrencyOfTransfer": "$currencyOfTransfer",

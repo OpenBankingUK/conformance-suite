@@ -131,6 +131,7 @@ export default {
         'acr_values_supported',
         'payment_frequency',
         'first_payment_date_time',
+        'requested_execution_date_time',
       ];
       const newConfig = _.pick(merged, validKeys);
       commit(types.SET_CONFIGURATION, newConfig);

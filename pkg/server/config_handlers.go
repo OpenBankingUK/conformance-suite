@@ -78,6 +78,7 @@ type GlobalConfiguration struct {
 	InstructedAmount              models.InstructedAmount `json:"instructed_amount"`
 	PaymentFrequency              models.PaymentFrequency `json:"payment_frequency"`
 	FirstPaymentDateTime          string                  `json:"first_payment_date_time"`
+	RequestedExecutionDateTime    string                  `json:"requested_execution_date_time"`
 	CurrencyOfTransfer            string                  `json:"currency_of_transfer"`
 	UseNonOBDirectory             bool                    `json:"use_non_ob_directory"`
 	SigningKid                    string                  `json:"signing_kid,omitempty"`
@@ -95,24 +96,25 @@ func (c GlobalConfiguration) Validate() error {
 		validation.Field(&c.InstructedAmount),
 		validation.Field(&c.CurrencyOfTransfer, validation.Match(regexp.MustCompile("^[A-Z]{3,3}$"))),
 		validation.Field(&c.AcrValuesSupported, validation.By(acrValuesValidator)),
-		validation.Field(&c.FirstPaymentDateTime, validation.By(firstPaymentDateTimeValidator)),
+		validation.Field(&c.FirstPaymentDateTime, validation.By(futureDateTimeValidator)),
+		validation.Field(&c.RequestedExecutionDateTime, validation.By(futureDateTimeValidator)),
 		validation.Field(&c.PaymentFrequency),
 	)
 }
 
-func firstPaymentDateTimeValidator(value interface{}) error {
-	firstPaymentDateTimeStr, ok := value.(string)
+func futureDateTimeValidator(value interface{}) error {
+	dateTimeStr, ok := value.(string)
 	if !ok {
-		return fmt.Errorf("firstPaymentDateTimeValidator: `first_payment_date_time` must be a valid string")
+		return fmt.Errorf("futureDateTimeValidator: value must be a valid string")
 	}
-	parsedFirstPaymentDateTime, err := time.Parse("2006-01-02T15:04:05-07:00", firstPaymentDateTimeStr)
+	parsedDateTime, err := time.Parse("2006-01-02T15:04:05-07:00", dateTimeStr)
 	if err != nil {
-		return errors.Wrapf(err, "firstPaymentDateTimeValidator: `first_payment_date_time` the date provided is not in a supported format, please use `2006-01-02T15:04:05-07:00`")
+		return errors.Wrapf(err, "futureDateTimeValidator: the date provided is not in a supported format, please use `2006-01-02T15:04:05-07:00`")
 	}
-	if time.Now().Unix() >= parsedFirstPaymentDateTime.Unix() {
-		return fmt.Errorf("firstPaymentDateTimeValidator: `first_payment_date_time` must be a valid date in the future")
+	if time.Now().Unix() >= parsedDateTime.Unix() {
+		return fmt.Errorf("futureDateTimeValidator: value must be a valid date in the future")
 	}
-	
+
 	return nil
 }
 
@@ -214,6 +216,7 @@ func MakeJourneyConfig(config *GlobalConfiguration) (JourneyConfig, error) {
 		instructedAmount:              config.InstructedAmount,
 		paymentFrequency:              config.PaymentFrequency,
 		firstPaymentDateTime:          config.FirstPaymentDateTime,
+		requestedExecutionDateTime:    config.RequestedExecutionDateTime,
 		currencyOfTransfer:            config.CurrencyOfTransfer,
 		transactionFromDate:           config.TransactionFromDate,
 		transactionToDate:             config.TransactionToDate,
