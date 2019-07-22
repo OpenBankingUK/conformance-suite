@@ -75,6 +75,11 @@ describe('web/src/store/modules/config', () => {
           identification: '',
           name: '',
         },
+        international_creditor_account: {
+          scheme_name: '',
+          identification: '',
+          name: '',
+        },
         currency_of_transfer: 'USD',
         instructed_amount: {
           currency: 'GBP',
@@ -156,6 +161,11 @@ describe('web/src/store/modules/config', () => {
           identification: '',
           name: '',
         },
+        international_creditor_account: {
+          scheme_name: '',
+          identification: '',
+          name: '',
+        },
         currency_of_transfer: 'USD',
         instructed_amount: {
           currency: 'GBP',
@@ -195,6 +205,11 @@ describe('web/src/store/modules/config', () => {
           statement_ids: [{ statement_id: '' }],
         },
         creditor_account: {
+          scheme_name: '',
+          identification: '',
+          name: '',
+        },
+        international_creditor_account: {
           scheme_name: '',
           identification: '',
           name: '',
@@ -241,6 +256,11 @@ describe('web/src/store/modules/config', () => {
           identification: '',
           name: '',
         },
+        international_creditor_account: {
+          scheme_name: '',
+          identification: '',
+          name: '',
+        },
         currency_of_transfer: 'USD',
         instructed_amount: {
           currency: 'GBP',
@@ -279,6 +299,11 @@ describe('web/src/store/modules/config', () => {
           statement_ids: [{ statement_id: '' }],
         },
         creditor_account: {
+          scheme_name: '',
+          identification: '',
+          name: '',
+        },
+        international_creditor_account: {
           scheme_name: '',
           identification: '',
           name: '',
@@ -328,6 +353,11 @@ describe('web/src/store/modules/config', () => {
           identification: '',
           name: '',
         },
+        international_creditor_account: {
+          scheme_name: '',
+          identification: '',
+          name: '',
+        },
         currency_of_transfer: 'USD',
         instructed_amount: {
           currency: 'GBP',
@@ -366,6 +396,11 @@ describe('web/src/store/modules/config', () => {
           statement_ids: [{ statement_id: '' }],
         },
         creditor_account: {
+          scheme_name: '',
+          identification: '',
+          name: '',
+        },
+        international_creditor_account: {
           scheme_name: '',
           identification: '',
           name: '',
@@ -412,6 +447,11 @@ describe('web/src/store/modules/config', () => {
           identification: '',
           name: '',
         },
+        international_creditor_account: {
+          scheme_name: '',
+          identification: '',
+          name: '',
+        },
         currency_of_transfer: 'USD',
         instructed_amount: {
           currency: 'GBP',
@@ -450,6 +490,11 @@ describe('web/src/store/modules/config', () => {
           statement_ids: [{ statement_id: '' }],
         },
         creditor_account: {
+          scheme_name: '',
+          identification: '',
+          name: '',
+        },
+        international_creditor_account: {
           scheme_name: '',
           identification: '',
           name: '',
@@ -496,6 +541,11 @@ describe('web/src/store/modules/config', () => {
           identification: '',
           name: '',
         },
+        international_creditor_account: {
+          scheme_name: '',
+          identification: '',
+          name: '',
+        },
         currency_of_transfer: 'USD',
         instructed_amount: {
           currency: 'GBP',
@@ -534,6 +584,11 @@ describe('web/src/store/modules/config', () => {
           statement_ids: [{ statement_id: '' }, { statement_id: 'statement-id' }],
         },
         creditor_account: {
+          scheme_name: '',
+          identification: '',
+          name: '',
+        },
+        international_creditor_account: {
           scheme_name: '',
           identification: '',
           name: '',
@@ -586,6 +641,11 @@ describe('web/src/store/modules/config', () => {
           identification: '',
           name: '',
         },
+        international_creditor_account: {
+          scheme_name: '',
+          identification: '',
+          name: '',
+        },
         currency_of_transfer: 'USD',
         instructed_amount: {
           currency: 'GBP',
@@ -626,6 +686,11 @@ describe('web/src/store/modules/config', () => {
           statement_ids: [{ statement_id: '' }],
         },
         creditor_account: {
+          scheme_name: '',
+          identification: '',
+          name: '',
+        },
+        international_creditor_account: {
           scheme_name: '',
           identification: '',
           name: '',
@@ -674,6 +739,11 @@ describe('web/src/store/modules/config', () => {
           identification: '',
           name: '',
         },
+        international_creditor_account: {
+          scheme_name: '',
+          identification: '',
+          name: '',
+        },
         currency_of_transfer: 'USD',
         instructed_amount: {
           currency: 'GBP',
@@ -714,6 +784,11 @@ describe('web/src/store/modules/config', () => {
           statement_ids: [{ statement_id: '123' }, { statement_id: '456' }],
         },
         creditor_account: {
+          scheme_name: '',
+          identification: '',
+          name: '',
+        },
+        international_creditor_account: {
           scheme_name: '',
           identification: '',
           name: '',
@@ -764,6 +839,11 @@ describe('web/src/store/modules/config', () => {
             statement_ids: [{ statement_id: '' }],
           },
           creditor_account: {
+            scheme_name: '',
+            identification: '',
+            name: '',
+          },
+          international_creditor_account: {
             scheme_name: '',
             identification: '',
             name: '',
@@ -847,6 +927,11 @@ describe('web/src/store/modules/config', () => {
             statement_ids: [{ statement_id: '' }],
           },
           creditor_account: {
+            scheme_name: '',
+            identification: '',
+            name: '',
+          },
+          international_creditor_account: {
             scheme_name: '',
             identification: '',
             name: '',

@@ -160,9 +160,9 @@
               "Currency": "$instructedAmountCurrency"
             },
             "CreditorAccount": {
-              "SchemeName": "$creditorScheme",
-              "Identification": "$creditorIdentification",
-              "Name": "$creditorName"
+              "SchemeName": "$internationalCreditorScheme",
+              "Identification": "$internationalCreditorIdentification",
+              "Name": "$internationalCreditorName"
             }
           }
         },
@@ -183,9 +183,9 @@
               "Currency": "$instructedAmountCurrency"
             },
             "CreditorAccount": {
-              "SchemeName": "$creditorScheme",
-              "Identification": "$creditorIdentification",
-              "Name": "$creditorName"
+              "SchemeName": "$internationalCreditorScheme",
+              "Identification": "$internationalCreditorIdentification",
+              "Name": "$internationalCreditorName"
             }
           }
         },
@@ -206,9 +206,9 @@
               "Currency": "$instructedAmountCurrency"
             },
             "CreditorAccount": {
-              "SchemeName": "$creditorScheme",
-              "Identification": "$creditorIdentification",
-              "Name": "$creditorName"
+              "SchemeName": "$internationalCreditorScheme",
+              "Identification": "$internationalCreditorIdentification",
+              "Name": "$internationalCreditorName"
             }
           }
         },
