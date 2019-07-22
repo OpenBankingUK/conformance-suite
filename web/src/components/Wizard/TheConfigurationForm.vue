@@ -370,7 +370,7 @@
           id="first_payment_date_time"
           label-for="first_payment_date_time"
           label="First Payment Date Time"
-          description="First Payment Date Time formatted as ISO 8601 date (eg. 2006-01-02T15:04:05-0700)">
+          description="First Payment Date Time formatted as ISO 8601 date (eg. 2006-01-02T15:04:05-07:00)">
           <b-form-input
             id="first_payment_date_time"
             v-model="first_payment_date_time"
