@@ -155,7 +155,6 @@ func (m *Match) PutValue(tc *TestCase, ctx *Context) bool {
 		}
 	case BodyRegex:
 		return handleBodyRegex(tc, m, ctx)
-
 	}
 	return false
 }

@@ -14,14 +14,14 @@ type MockGenerator struct {
 }
 
 // GenerateManifestTests provides a mock function with given fields: log, config, _a2, ctx
-func (_m *MockGenerator) GenerateManifestTests(log *logrus.Entry, config GeneratorConfig, _a2 discovery.ModelDiscovery, ctx *model.Context) (TestCasesRun, manifest.Scripts, map[string][]manifest.RequiredTokens) {
+func (_m *MockGenerator) GenerateManifestTests(log *logrus.Entry, config GeneratorConfig, _a2 discovery.ModelDiscovery, ctx *model.Context) (SpecRun, manifest.Scripts, map[string][]manifest.RequiredTokens) {
 	ret := _m.Called(log, config, _a2, ctx)
 
-	var r0 TestCasesRun
-	if rf, ok := ret.Get(0).(func(*logrus.Entry, GeneratorConfig, discovery.ModelDiscovery, *model.Context) TestCasesRun); ok {
+	var r0 SpecRun
+	if rf, ok := ret.Get(0).(func(*logrus.Entry, GeneratorConfig, discovery.ModelDiscovery, *model.Context) SpecRun); ok {
 		r0 = rf(log, config, _a2, ctx)
 	} else {
-		r0 = ret.Get(0).(TestCasesRun)
+		r0 = ret.Get(0).(SpecRun)
 	}
 
 	var r1 manifest.Scripts

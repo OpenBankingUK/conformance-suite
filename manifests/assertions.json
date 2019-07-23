@@ -111,7 +111,7 @@
     "OB3DOPFundsAvailable": {
       "expect": {
         "matches": [{
-          "JSON": "Data.FundsAvailable",
+          "JSON": "Data.FundsAvailableResult.FundsAvailable",
           "Value": "true",
           "detail": "Expected FundsAvailable to be set to 'true'"
         }]

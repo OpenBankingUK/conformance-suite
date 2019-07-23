@@ -105,7 +105,7 @@ func TestJourneyTestCasesCantGenerateIfDiscoveryNotSet(t *testing.T) {
 	testCases, err := journey.TestCases()
 
 	assert.Error(err)
-	assert.Equal(generation.TestCasesRun{}, testCases)
+	assert.Equal(generation.SpecRun{}, testCases)
 }
 
 func TestJourneyRunTestCasesCantRunIfNoTestCases(t *testing.T) {
@@ -147,7 +147,7 @@ func TestJourneySetConfig(t *testing.T) {
 		clientSecret:          "2cfb31a3-5443-4e65-b2bc-ef8e00266a77",
 		tokenEndpoint:         "https://modelobank2018.o3bank.co.uk:4201/token",
 		authorizationEndpoint: "https://modelobankauth2018.o3bank.co.uk:4101/auth",
-		resourceBaseURL:       "https://modelobank2018.o3bank.co.uk:4501",
+		resourceBaseURL:       "https://ob19-rs1.o3bank.co.uk:4501",
 		xXFAPIFinancialID:     "0015800001041RHAAY",
 		issuer:                "https://modelobankauth2018.o3bank.co.uk:4101",
 		redirectURL:           fmt.Sprintf("https://%s:8443/conformancesuite/callback", ListenHost),

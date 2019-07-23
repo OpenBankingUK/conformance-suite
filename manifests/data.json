@@ -5,7 +5,7 @@
         "Data": {
           "Initiation": {
             "InstructionIdentification": "$instructionIdentification",
-            "EndToEndIdentification": "$creditorIdentification",
+            "EndToEndIdentification": "$endToEndIdentification",
             "InstructedAmount": {
               "Amount": "$instructedAmountValue",
               "Currency": "$instructedAmountCurrency"
@@ -26,7 +26,7 @@
           "ConsentId": "$consentId",
           "Initiation": {
             "InstructionIdentification": "$instructionIdentification",
-            "EndToEndIdentification": "$creditorIdentification",
+            "EndToEndIdentification": "$endToEndIdentification",
             "InstructedAmount": {
               "Amount": "$instructedAmountValue",
               "Currency": "$instructedAmountCurrency"
@@ -46,9 +46,9 @@
         "Data": {
           "Permission": "Create",
           "Initiation": {
-            "RequestedExecutionDateTime": "2020-10-01T00:00:00+00:00",
+            "RequestedExecutionDateTime": "2020-01-01T00:00:00+00:00",
             "InstructionIdentification": "$instructionIdentification",
-            "EndToEndIdentification": "$e2eIdentification",
+            "EndToEndIdentification": "$endToEndIdentification",
             "InstructedAmount": {
               "Amount": "$instructedAmountValue",
               "Currency": "$instructedAmountCurrency"
@@ -87,7 +87,7 @@
     "minimalDomesticStandingOrder": {
       "body": {
         "Data": {
-          "ConsentId": "$OB-301-DOP-101200-ConsentId",
+          "ConsentId": "$consentId",
           "Initiation": {
             "Frequency": "$frequency",
             "FirstPaymentDateTime": "2020-10-01T00:00:00+00:00",
@@ -108,51 +108,9 @@
     "minimalDomesticStandingOrderInvalid": {
       "body": {
         "Data": {
-          "ConsentId": "$OB-301-DOP-101200-ConsentId",
+          "ConsentId": "$consentId",
           "Initiation": {
             "Frequency": "foobar",
-            "FirstPaymentDateTime": "2020-10-01T00:00:00+00:00",
-            "FirstPaymentAmount": {
-              "Amount": "$instructedAmountValue",
-              "Currency": "$instructedAmountCurrency"
-            },
-            "CreditorAccount": {
-              "SchemeName": "$creditorScheme",
-              "Identification": "$creditorIdentification",
-              "Name": "$creditorName"
-            }
-          }
-        },
-        "Risk": {}
-      }
-    },
-    "minimalDomesticStandingOrderQuarterly": {
-      "body": {
-        "Data": {
-          "ConsentId": "$OB-301-DOP-101201-ConsentId",
-          "Initiation": {
-            "Frequency": "QtrDay:ENGLISH",
-            "FirstPaymentDateTime": "2020-10-01T00:00:00+00:00",
-            "FirstPaymentAmount": {
-              "Amount": "$instructedAmountValue",
-              "Currency": "$instructedAmountCurrency"
-            },
-            "CreditorAccount": {
-              "SchemeName": "$creditorScheme",
-              "Identification": "$creditorIdentification",
-              "Name": "$creditorName"
-            }
-          }
-        },
-        "Risk": {}
-      }
-    },
-    "minimalDomesticStandingOrderWeekInMonth": {
-      "body": {
-        "Data": {
-          "ConsentId": "$OB-301-DOP-101202-ConsentId",
-          "Initiation": {
-            "Frequency": "WkInMnthDay:01:01",
             "FirstPaymentDateTime": "2020-10-01T00:00:00+00:00",
             "FirstPaymentAmount": {
               "Amount": "$instructedAmountValue",
@@ -172,8 +130,8 @@
       "body": {
         "Data": {
           "Initiation": {
-            "InstructionIdentification": "Excaliber International",
-            "EndToEndIdentification": "Excaliber International",
+            "InstructionIdentification": "$instructionIdentification",
+            "EndToEndIdentification": "$endToEndIdentification",
             "CurrencyOfTransfer": "$currencyOfTransfer",
             "InstructedAmount": {
               "Amount": "$instructedAmountValue",
@@ -194,61 +152,17 @@
         "Data": {
           "ConsentId": "$OB-301-DOP-101600-ConsentId",
           "Initiation": {
-            "InstructionIdentification": "Excaliber International",
-            "EndToEndIdentification": "Excaliber International",
+            "InstructionIdentification": "$instructionIdentification",
+            "EndToEndIdentification": "$endToEndIdentification",
             "CurrencyOfTransfer": "$currencyOfTransfer",
             "InstructedAmount": {
               "Amount": "$instructedAmountValue",
               "Currency": "$instructedAmountCurrency"
             },
             "CreditorAccount": {
-              "SchemeName": "$creditorScheme",
-              "Identification": "$creditorIdentification",
-              "Name": "$creditorName"
-            }
-          }
-        },
-        "Risk": {}
-      }
-    },
-    "minimalInternationalStandingOrderConsent_not_used": {
-      "body": {
-        "Data": {
-          "Permission": "Create",
-          "Initiation": {
-            "Frequency": "EvryDay",
-            "FirstPaymentDateTime": "2020-10-01T00:00:00+00:00",
-            "CurrencyOfTransfer": "$currencyOfTransfer",
-            "InstructedAmount": {
-              "Amount": "$instructedAmountValue",
-              "Currency": "$instructedAmountCurrency"
-            },
-            "CreditorAccount": {
-              "SchemeName": "$creditorScheme",
-              "Identification": "$creditorIdentification",
-              "Name": "$creditorName"
-            }
-          }
-        },
-        "Risk": {}
-      }
-    },
-    "minimalInternationalStandingOrder_not_used": {
-      "body": {
-        "Data": {
-          "ConsentId":"$OB-301-DOP-102400-ConsentId",
-          "Initiation": {
-            "Frequency": "EvryDay",
-            "FirstPaymentDateTime": "2020-10-01T00:00:00+00:00",
-            "CurrencyOfTransfer": "$currencyOfTransfer",
-            "InstructedAmount": {
-              "Amount": "$instructedAmountValue",
-              "Currency": "$instructedAmountCurrency"
-            },
-            "CreditorAccount": {
-              "SchemeName": "$creditorScheme",
-              "Identification": "$creditorIdentification",
-              "Name": "$creditorName"
+              "SchemeName": "$internationalCreditorScheme",
+              "Identification": "$internationalCreditorIdentification",
+              "Name": "$internationalCreditorName"
             }
           }
         },
@@ -260,18 +174,18 @@
         "Data": {
           "Permission": "Create",
           "Initiation": {
-            "RequestedExecutionDateTime": "2020-10-01T00:00:00+00:00",
-            "InstructionIdentification": "Excaliber International",
-            "EndToEndIdentification": "Excaliber International",
+            "RequestedExecutionDateTime": "2020-01-01T00:00:00+00:00",
+            "InstructionIdentification": "$instructionIdentification",
+            "EndToEndIdentification": "$endToEndIdentification",
             "CurrencyOfTransfer": "$currencyOfTransfer",
             "InstructedAmount": {
               "Amount": "$instructedAmountValue",
               "Currency": "$instructedAmountCurrency"
             },
             "CreditorAccount": {
-              "SchemeName": "$creditorScheme",
-              "Identification": "$creditorIdentification",
-              "Name": "$creditorName"
+              "SchemeName": "$internationalCreditorScheme",
+              "Identification": "$internationalCreditorIdentification",
+              "Name": "$internationalCreditorName"
             }
           }
         },
@@ -283,18 +197,18 @@
         "Data": {
           "ConsentId": "$OB-301-DOP-102000-ConsentId",
           "Initiation": {
-            "RequestedExecutionDateTime": "2020-10-01T00:00:00+00:00",
-            "InstructionIdentification": "Excaliber International",
-            "EndToEndIdentification": "Excaliber International",
+            "RequestedExecutionDateTime": "2020-01-01T00:00:00+00:00",
+            "InstructionIdentification": "$instructionIdentification",
+            "EndToEndIdentification": "$endToEndIdentification",
             "CurrencyOfTransfer": "$currencyOfTransfer",
             "InstructedAmount": {
               "Amount": "$instructedAmountValue",
               "Currency": "$instructedAmountCurrency"
             },
             "CreditorAccount": {
-              "SchemeName": "$creditorScheme",
-              "Identification": "$creditorIdentification",
-              "Name": "$creditorName"
+              "SchemeName": "$internationalCreditorScheme",
+              "Identification": "$internationalCreditorIdentification",
+              "Name": "$internationalCreditorName"
             }
           }
         },

@@ -95,7 +95,10 @@
             "scope": "openid accounts",
             "redirect_url": "$redirect_url",
             "consentId": "$consent_id",
-            "responseType": "code"
+            "responseType": "code",
+            "state": "<state_should_not_empty>",
+            "nonce": "true",
+            "exp": "true"
           }
         },
         "context": {

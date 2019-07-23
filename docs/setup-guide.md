@@ -131,11 +131,11 @@ To verify the content has not been tampered with you can you the `DOCKER_CONTENT
     DOCKER_CONTENT_TRUST=1 docker pull openbanking/conformance-suite:TAG
     DOCKER_CONTENT_TRUST=1 docker RUN openbanking/conformance-suite:TAG
 
-Alternatively, you can set DCT with an environmental variable. `export DOCKER_CONTENT_TRUST=1` 
+Alternatively, you can set DCT with an environmental variable. `export DOCKER_CONTENT_TRUST=1`
 
 Once DCT is enabled remote trust is checked on every pull request. If no trust data for a tag is found you will be presented with an error.
 
-    export DOCKER_CONTENT_TRUST=1 
+    export DOCKER_CONTENT_TRUST=1
     docker pull openbanking/conformance-suite:TAG
     Error: remote trust data does not exist for docker.io/openbanking/conformance-suite: notary.docker.io does not have trust data for docker.io/openbanking/conformance-suite
 
@@ -166,7 +166,7 @@ Select the Ozone PSU template.
 	* Token Endpoint Auth Method: `client_secret_basic`
 	* Request object signing algorithm: `PS256`
 	* Authorization Endpoint: _pre-populated value ok_
-	* Resource Base URL: `https://modelobank2018.o3bank.co.uk:4501`
+	* Resource Base URL: `https://ob19-rs1.o3bank.co.uk:4501`
 	* Issuer: _pre-populated value ok_
 	* Redirect URL: `https://0.0.0.0:8443/conformancesuite/callback`
 	* Use NON OB Directory: false (not checked)

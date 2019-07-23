@@ -17,20 +17,20 @@ To provide feedback, please use the public [issue tracker](https://bitbucket.org
 ## Release Notes 
 * * *
 
-# Release v1.1.15 (5th July 2019)
+# Release v1.1.16 (16th July 2019)
 
-The release is called **v1.1.15**, adds support for dynamically allocated resource ids in the accounts and transactions API.
+The release is called **v1.1.16**, it adds support for unique transaction IDs for each payment and fixes the headless mode for model banks.
 
-[Full Release Notes](docs/releases/v1.1.15.md) (v1.1.15.md)
+[Full Release Notes](https://bitbucket.org/openbankingteam/conformance-suite/src/develop/docs/releases/v1.1.16.md) (v1.1.16.md)
 
 ## Quickstart
 * * *
 
 Pull and run the latest (stable) tagged Docker image:
 
-    > docker run --rm -it -p 8443:8443 "openbanking/conformance-suite:v1.1.13"
+    > docker run --rm -it -p 8443:8443 "openbanking/conformance-suite:v1.1.16"
 
-[See Setup Guide](docs/setup-guide.md) 
+[See Setup Guide](https://bitbucket.org/openbankingteam/conformance-suite/src/develop/docs/setup-guide.md)
 
 ### Prerequisites
 
@@ -48,15 +48,15 @@ For support on using the suite use the [Open Banking Help Centre](https://openba
 ## Licensing
 * * *
 
-This repository is subject to this MIT Open Licence. Please read our [LICENSE.md](LICENSE.md) for more information
+This repository is subject to this MIT Open Licence. Please read our [LICENSE.md](https://bitbucket.org/openbankingteam/conformance-suite/src/develop/LICENSE.md) for more information
 
 ## Contributing
 * * *
-Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on our code of conduct, and the process for submitting pull requests.
+Please read [CONTRIBUTING.md](https://bitbucket.org/openbankingteam/conformance-suite/src/develop/CONTRIBUTING.md) for details on our code of conduct, and the process for submitting pull requests.
 
 ## Useful links
 * * *
 
 * [Docker Conformance Tool](https://hub.docker.com/r/openbanking/conformance-suite/)
 * [Open Banking Developer Zone](https://openbanking.atlassian.net/wiki/spaces/DZ/overview)
-* [All Release Notes](docs/releases/releases.md)
+* [All Release Notes](https://bitbucket.org/openbankingteam/conformance-suite/src/develop/docs/releases/releases.md)

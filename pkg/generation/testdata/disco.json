@@ -11,7 +11,7 @@
             "version": "account-transaction-v3.0",
             "schemaVersion": "https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.0.0/dist/account-info-swagger.json"
           },
-          "openidConfigurationUri": "https://modelobankauth2018.o3bank.co.uk:4101/.well-known/openid-configuration",
+          "openidConfigurationUri": "https://ob19-auth1-ui.o3bank.co.uk/.well-known/openid-configuration",
           "resourceBaseUri": "https://modelobankauth2018.o3bank.co.uk:4101/open-banking/3.0/aisp",
           "resourceIds":  {
             "ConsentId": "507c2dc9-a2fd-4980-b33c-777459b77cb",
@@ -81,7 +81,7 @@
             "version": "payment-initiation-v3.0",
             "schemaVersion": "https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.0.0/dist/payment-initiation-swagger.json"
           },
-          "openidConfigurationUri": "https://modelobankauth2018.o3bank.co.uk:4101/.well-known/openid-configuration",
+          "openidConfigurationUri": "https://ob19-auth1-ui.o3bank.co.uk/.well-known/openid-configuration",
           "resourceBaseUri": "https://modelobankauth2018.o3bank.co.uk:4101/open-banking/3.0/pisp",
           "resourceIds":  {
             "ConsentId": "507c2dc9-a2fd-4980-b33c-777459b77cb",

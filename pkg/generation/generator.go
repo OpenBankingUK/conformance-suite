@@ -30,7 +30,7 @@ type GeneratorConfig struct {
 
 // Generator - generates test cases from discovery model
 type Generator interface {
-	GenerateManifestTests(log *logrus.Entry, config GeneratorConfig, discovery discovery.ModelDiscovery, ctx *model.Context) (TestCasesRun, manifest.Scripts, map[string][]manifest.RequiredTokens)
+	GenerateManifestTests(log *logrus.Entry, config GeneratorConfig, discovery discovery.ModelDiscovery, ctx *model.Context) (SpecRun, manifest.Scripts, map[string][]manifest.RequiredTokens)
 }
 
 // NewGenerator - returns implementation of Generator interface
@@ -69,7 +69,7 @@ func shouldIgnoreDiscoveryItem(apiSpecification discovery.ModelAPISpecification)
 }
 
 // Work in progress to integrate Manifest Test
-func (g generator) GenerateManifestTests(log *logrus.Entry, config GeneratorConfig, discovery discovery.ModelDiscovery, ctx *model.Context) (TestCasesRun, manifest.Scripts, map[string][]manifest.RequiredTokens) {
+func (g generator) GenerateManifestTests(log *logrus.Entry, config GeneratorConfig, discovery discovery.ModelDiscovery, ctx *model.Context) (SpecRun, manifest.Scripts, map[string][]manifest.RequiredTokens) {
 	log = log.WithField("module", "GenerateManifestTests")
 	for k, item := range discovery.DiscoveryItems {
 		spectype, err := manifest.GetSpecType(item.APISpecification.SchemaVersion)
@@ -150,7 +150,7 @@ func (g generator) GenerateManifestTests(log *logrus.Entry, config GeneratorConf
 		logrus.Tracef("%#v", v)
 	}
 	logrus.Trace("---------------------------------------")
-	return TestCasesRun{specTestCases, scrSlice}, filteredScripts, tokens
+	return SpecRun{specTestCases, scrSlice}, filteredScripts, tokens
 }
 
 // taks all the payment testscases
@@ -206,9 +206,9 @@ func (g generator) consentRequirements(specTestCases []SpecificationTestCases) [
 	return specConsentRequirements
 }
 
-// TestCasesRun represents all specs and their test and a list of tokens
+// SpecRun represents all specs and their test and a list of tokens
 // required to run those tests
-type TestCasesRun struct {
-	TestCases               []SpecificationTestCases        `json:"specCases"`
+type SpecRun struct {
+	SpecTestCases           []SpecificationTestCases        `json:"specCases"`
 	SpecConsentRequirements []model.SpecConsentRequirements `json:"specTokens"`
 }

@@ -59,7 +59,7 @@
             }
           },
           "context": {
-            "baseurl": "https://modelobank2018.o3bank.co.uk:4501"
+            "baseurl": "https://ob19-rs1.o3bank.co.uk:4501"
           },
           "expect": {
             "status-code": 201,
@@ -169,7 +169,7 @@
             }
           },
           "context": {
-            "baseurl": "https://modelobank2018.o3bank.co.uk:4501"
+            "baseurl": "https://ob19-rs1.o3bank.co.uk:4501"
           },
           "expect": {
             "status-code": 200,
