@@ -20,7 +20,7 @@ type Certificate interface {
 	PublicKey() *rsa.PublicKey
 	PrivateKey() *rsa.PrivateKey
 	TLSCert() tls.Certificate
-	DN() (string, error)
+	DN() (string, string, string, error)
 	SignatureIssuer(bool) (string, error)
 }
 
@@ -100,13 +100,13 @@ func validateKeys(publicKey *rsa.PublicKey, privateKey *rsa.PrivateKey) error {
 	return nil
 }
 
-func (c certificate) DN() (string, error) {
+func (c certificate) DN() (string, string, string, error) {
 	co, o, ou, cn, err := c.nameComponents()
 	if err != nil {
-		return "", errors.New("error getting certificate DN " + err.Error())
+		return "", "", "", errors.New("error getting certificate DN " + err.Error())
 	}
 	dn := fmt.Sprintf("C=%s, O=%s, OU=%s, CN=%s", co, o, ou, cn)
-	return dn, err
+	return dn, ou, cn, err
 }
 
 // SignatureIssuer - produces a string for use as the "http://openbanking.org.uk/iss" header field for

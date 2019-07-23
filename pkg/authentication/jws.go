@@ -69,7 +69,7 @@ func GetJWSIssuerString(ctx ContextInterface, cert Certificate) (string, error) 
 			return "", errors.New("authentication.GetJWSIssuerString: cannot Issuer for Signature: " + err.Error())
 		}
 	case "v3.0":
-		issuer, err = cert.DN()
+		issuer, _, _, err = cert.DN()
 		if err != nil {
 			logrus.Warn("cannot get certificate DN: ", err.Error())
 			return "", errors.New("authentication.GetJWSIssuerString: cert.DN() failed" + err.Error())
