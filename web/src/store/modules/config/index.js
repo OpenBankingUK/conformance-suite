@@ -133,6 +133,9 @@ export const mutations = {
   [mutationTypes.SET_ISSUER](state, value) {
     state.configuration.issuer = value;
   },
+  [mutationTypes.SET_REDIRECT_URL](state, value) {
+    state.configuration.redirect_url = value;
+  },
   [mutationTypes.SET_USE_NON_OB_DIRECTORY](state, value) {
     state.configuration.use_non_ob_directory = value;
   },
