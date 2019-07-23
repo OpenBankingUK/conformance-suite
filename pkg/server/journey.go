@@ -477,6 +477,7 @@ type JourneyConfig struct {
 	redirectURL                   string
 	resourceIDs                   model.ResourceIDs
 	creditorAccount               models.Payment
+	internationalCreditorAccount  models.Payment
 	instructedAmount              models.InstructedAmount
 	paymentFrequency              models.PaymentFrequency
 	currencyOfTransfer            string

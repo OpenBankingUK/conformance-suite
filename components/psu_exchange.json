@@ -14,7 +14,9 @@
         "redirect_url": "$redirect_url",
         "consentId": "$consent_id",
         "responseType": "$responseType",
-        "state":"$token_name"
+        "state":"$token_name",
+        "exp": "true",
+        "nonce": "true"
       }
     },
     "context": {

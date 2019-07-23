@@ -250,6 +250,21 @@ func TestReport_GetFails_Fails_Three(t *testing.T) {
 	require.Equal(expected, actual)
 }
 
+func TestReport_GetFails_Fails_Four(t *testing.T) {
+	require := test.NewRequire(t)
+
+	specs := stubResults(false, false, false)
+	spec1 := results.ResultKey{
+		APIVersion: "APIVersion1",
+		APIName:    "APIName1",
+	}
+	specs[spec1][1].Pass = false
+	expected := 4
+	actual := GetFails(specs)
+
+	require.Equal(expected, actual)
+}
+
 func TestNewReport(t *testing.T) {
 	t.Parallel()
 	// TODO: add test cases once functionality is read. Intentionally skipping test for now.
