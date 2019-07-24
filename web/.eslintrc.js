@@ -30,6 +30,9 @@ module.exports = {
         ],
       },
     ],
+
+    // Turn off this rather annoying warning.
+    camelcase: 'off',
   },
   parserOptions: {
     parser: 'babel-eslint',

@@ -134,7 +134,12 @@ export default {
         'requested_execution_date_time',
       ];
       const newConfig = _.pick(merged, validKeys);
+      // TODO: Fix this as I think it is working by accident. There needs to be an individual commit to the
+      // store for each thing in the config that has changed, not just a global commit to set the new config.
+      // For now, just do a commit for `SET_PAYMENT_FREQUENCY`.
       commit(types.SET_CONFIGURATION, newConfig);
+      commit(types.SET_PAYMENT_FREQUENCY, newConfig.payment_frequency);
+
       dispatch('status/clearErrors', null, { root: true });
       commit(types.SET_WIZARD_STEP, constants.WIZARD.STEP_THREE);
     } catch (e) {
@@ -268,6 +273,10 @@ export default {
     if (_.isEmpty(state.configuration.redirect_url)) {
       errors.push('Redirect URL empty');
     }
+    // TODO: Enable this validation rule.
+    // if (_.isEmpty(state.configuration.payment_frequency)) {
+    //   errors.push('Payment frequency empty');
+    // }
 
     if (!_.isEmpty(errors)) {
       dispatch('status/setErrors', errors, { root: true });

@@ -1,12 +1,12 @@
-import Vuex from 'vuex';
-import VueRouter from 'vue-router';
-import { mount, createLocalVue } from '@vue/test-utils';
+import { createLocalVue, mount } from '@vue/test-utils';
 import BootstrapVue from 'bootstrap-vue';
 import merge from 'lodash/merge';
-
-import WizardExport from './WizardExport.vue';
+import VueRouter from 'vue-router';
+import Vuex from 'vuex';
 import TheWizardFooter from '../../components/Wizard/TheWizardFooter.vue';
 import TheStore from '../../store';
+import WizardExport from './WizardExport.vue';
+
 
 describe('WizardExport', () => {
   const mountOptions = () => {
@@ -80,7 +80,6 @@ describe('WizardExport', () => {
   });
 
   test('form elements are bound to store.exporter.state', () => {
-    /* eslint-disable camelcase */
     const { wrapper, options: { store } } = createComponent();
     const state = {
       environment: '',
@@ -127,7 +126,6 @@ describe('WizardExport', () => {
 
     resetStore(store);
     wrapper.destroy();
-    /* eslint-enable camelcase */
   });
 
   test('"Export Conformance Report" is enabled when form is valid', () => {

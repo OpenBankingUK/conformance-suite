@@ -4,7 +4,7 @@
       <b-card bg-variant="light">
         <b-form-group
           label="Client"
-          label-size="lg"/>
+          label-size="lg" />
         <ConfigurationFormFile
           id="signing_private"
           setter-method-name-suffix="SigningPrivate"
@@ -33,13 +33,13 @@
         <b-form-group
           id="resource_account_id_group"
           label-for="resource_account_ids"
-          label="Account IDs">
+          label="Account IDs"
+        >
           <b-input-group
             v-for="(item, index) in resourceAccountIds"
             :key="index"
             class="mt-3">
-            <b-input-group-prepend
-              v-if="resourceAccountIds.length > 1">
+            <b-input-group-prepend v-if="resourceAccountIds.length > 1">
               <b-button
                 variant="danger"
                 @click="removeResourceAccountIDField(index)">-</b-button>
@@ -54,8 +54,7 @@
               type="text"
               @input="(value) => { updateAccountId(index, value) }"
             />
-            <b-input-group-append
-              v-if="index == resourceAccountIds.length -1">
+            <b-input-group-append v-if="index == resourceAccountIds.length -1">
               <b-button
                 variant="success"
                 @click="addResourceAccountIDField('')">+</b-button>
@@ -66,13 +65,13 @@
         <b-form-group
           id="resource_statement_id_group"
           label-for="resource_statement_ids"
-          label="Statement IDs">
+          label="Statement IDs"
+        >
           <b-input-group
             v-for="(item, index) in resourceStatementIds"
             :key="index"
             class="mt-3">
-            <b-input-group-prepend
-              v-if="resourceStatementIds.length > 1">
+            <b-input-group-prepend v-if="resourceStatementIds.length > 1">
               <b-button
                 variant="danger"
                 @click="removeResourceStatementIDField(index)">-</b-button>
@@ -87,8 +86,7 @@
               type="text"
               @input="(value) => { updateStatementId(index, value) }"
             />
-            <b-input-group-append
-              v-if="index == resourceStatementIds.length -1">
+            <b-input-group-append v-if="index == resourceStatementIds.length -1">
               <b-button
                 variant="success"
                 @click="addResourceStatementIDField('')">+</b-button>
@@ -99,7 +97,8 @@
         <b-form-group
           id="transaction_from_date_group"
           label-for="transaction_from_date"
-          label="Transaction From Date">
+          label="Transaction From Date"
+        >
           <b-form-input
             id="transaction_from_date"
             v-model="transaction_from_date"
@@ -113,7 +112,8 @@
         <b-form-group
           id="transaction_to_date_group"
           label-for="transaction_to_date"
-          label="Transaction To Date">
+          label="Transaction To Date"
+        >
           <b-form-input
             id="transaction_to_date"
             v-model="transaction_to_date"
@@ -169,7 +169,8 @@
         <b-form-group
           id="send_x_fapi_customer_ip_address_group"
           label-for="send_x_fapi_customer_ip_address"
-          label="Send x-fapi-customer-ip-address header">
+          label="Send x-fapi-customer-ip-address header"
+        >
           <b-form-checkbox
             id="send_x_fapi_customer_ip_address"
             v-model="send_x_fapi_customer_ip_address"
@@ -191,11 +192,11 @@
           />
         </b-form-group>
       </b-card>
-      <br>
+      <br >
       <b-card bg-variant="light">
         <b-form-group
           label="Well-Known"
-          label-size="lg"/>
+          label-size="lg" />
         <b-form-group
           id="token_endpoint_group"
           label-for="token_endpoint"
@@ -257,7 +258,8 @@
         <b-form-group
           id="authorization_endpoint_group"
           label-for="authorization_endpoint"
-          label="Authorization Endpoint">
+          label="Authorization Endpoint"
+        >
           <b-form-input
             id="authorization_endpoint"
             v-model="authorization_endpoint"
@@ -270,7 +272,8 @@
         <b-form-group
           id="resource_base_url_group"
           label-for="resource_base_url"
-          label="Resource Base URL">
+          label="Resource Base URL"
+        >
           <b-form-input
             id="resource_base_url"
             v-model="resource_base_url"
@@ -309,18 +312,19 @@
         <b-form-group
           id="use_non_ob_directory_group"
           label-for="use_non_ob_directory"
-          label="Use Non OB Directory">
+          label="Use Non OB Directory"
+        >
           <b-form-checkbox
             id="use_non_ob_directory"
-            v-model="use_non_ob_directory"
-          />
+            v-model="use_non_ob_directory" />
         </b-form-group>
 
         <b-form-group
           v-if="use_non_ob_directory"
           id="signing_kid_group"
           label-for="signing_kid"
-          label="Signing KID">
+          label="Signing KID"
+        >
           <b-form-input
             id="signing_kid"
             v-model="signing_kid"
@@ -334,7 +338,8 @@
           v-if="use_non_ob_directory"
           id="signature_trust_anchor_group"
           label-for="signature_trust_anchor"
-          label="Signature Trust Anchor">
+          label="Signature Trust Anchor"
+        >
           <b-form-input
             id="signature_trust_anchor"
             v-model="signature_trust_anchor"
@@ -345,26 +350,12 @@
         </b-form-group>
       </b-card>
 
-      <br>
+      <br >
 
       <b-card bg-variant="light">
         <b-form-group
           label="Payments"
-          label-size="lg"/>
-
-        <b-form-group
-          id="payment_frequency_group"
-          label-for="payment_frequency"
-          label="Frequency"
-          description="^(EvryDay)$|^(EvryWorkgDay)$|^(IntrvlWkDay:0[1-9]:0[1-7])$|^(WkInMnthDay:0[1-5]:0[1-7])$|^(IntrvlMnthDay:(0[1-6]|12|24):(-0[1-5]|0[1-9]|[12][0-9]|3[01]))$|^(QtrDay:(ENGLISH|SCOTTISH|RECEIVED))$">
-          <b-form-input
-            id="payment_frequency"
-            v-model="payment_frequency"
-            :state="isNotEmpty(payment_frequency.match(/^(EvryDay)$|^(EvryWorkgDay)$|^(IntrvlWkDay:0[1-9]:0[1-7])$|^(WkInMnthDay:0[1-5]:0[1-7])$|^(IntrvlMnthDay:(0[1-6]|12|24):(-0[1-5]|0[1-9]|[12][0-9]|3[01]))$|^(QtrDay:(ENGLISH|SCOTTISH|RECEIVED))$/))"
-            required
-            type="text"
-          />
-        </b-form-group>
+          label-size="lg" />
 
         <b-form-group
           id="first_payment_date_time"
@@ -398,13 +389,14 @@
           id="creditor_account_group"
           label-for="creditor_account"
           label="CreditorAccount"
-          description="OBCashAccount5">
-
+          description="OBCashAccount5"
+        >
           <b-form-group
             id="creditor_account_scheme_name_group"
             label-for="creditor_account_scheme_name"
             label="SchemeName"
-            description="OBExternalAccountIdentification4Code">
+            description="OBExternalAccountIdentification4Code"
+          >
             <b-form-select
               id="creditor_account_scheme_name"
               v-model="creditor_account.scheme_name"
@@ -415,13 +407,15 @@
                 'UK.OBIE.Paym',
                 'UK.OBIE.SortCodeAccountNumber'
               ]"
-              required/>
+              required
+            />
           </b-form-group>
           <b-form-group
             id="creditor_account_identification_group"
             label-for="creditor_account_identification"
             label="Identification"
-            description="Beneficiary account identification">
+            description="Beneficiary account identification"
+          >
             <b-form-input
               id="creditor_account_identification"
               v-model="creditor_account.identification"
@@ -433,7 +427,8 @@
             id="creditor_account_name_group"
             label-for="creditor_account_name"
             label="Name"
-            description="Name of the account, as assigned by the account servicing institution.\nUsage: The account name is the name or names of the account owner(s) represented at an account level. The account name is not the product name or the nickname of the account.">
+            description="Name of the account, as assigned by the account servicing institution.\nUsage: The account name is the name or names of the account owner(s) represented at an account level. The account name is not the product name or the nickname of the account."
+          >
             <b-form-input
               id="creditor_account_name"
               v-model="creditor_account.name"
@@ -446,7 +441,8 @@
             id="international_creditor_account_scheme_name_group"
             label-for="international_creditor_account_scheme_name"
             label="International SchemeName"
-            description="International OBExternalAccountIdentification4Code">
+            description="International OBExternalAccountIdentification4Code"
+          >
             <b-form-select
               id="international_creditor_account_scheme_name"
               v-model="international_creditor_account.scheme_name"
@@ -457,13 +453,15 @@
                 'UK.OBIE.Paym',
                 'UK.OBIE.SortCodeAccountNumber'
               ]"
-              required/>
+              required
+            />
           </b-form-group>
           <b-form-group
             id="international_creditor_account_identification_group"
             label-for="international_creditor_account_identification"
             label="International Identification"
-            description="International beneficiary account identification">
+            description="International beneficiary account identification"
+          >
             <b-form-input
               id="international_creditor_account_identification"
               v-model="international_creditor_account.identification"
@@ -475,7 +473,8 @@
             id="international_creditor_account_name_group"
             label-for="international_creditor_account_name"
             label="International Name"
-            description="International name of the account, as assigned by the account servicing institution.\nUsage: The account name is the name or names of the account owner(s) represented at an account level. The account name is not the product name or the nickname of the account.">
+            description="International name of the account, as assigned by the account servicing institution.\nUsage: The account name is the name or names of the account owner(s) represented at an account level. The account name is not the product name or the nickname of the account."
+          >
             <b-form-input
               id="international_creditor_account_name"
               v-model="international_creditor_account.name"
@@ -488,7 +487,8 @@
             id="instructed_amount_value_group"
             label-for="instructed_amount_value"
             label="Instructed Amount Value (Capped at 1.00)"
-            description="Value of the instructed amount (^\d{1,13}\.\d{1,5}$).">
+            description="Value of the instructed amount (^\d{1,13}\.\d{1,5}$)."
+          >
             <b-form-input
               id="instructed_amount_value"
               v-model="instructed_amount.value"
@@ -500,26 +500,31 @@
             id="instructed_amount_currency_group"
             label-for="instructed_amount_currency"
             label="Instructed Amount Currency"
-            description="Instructed amount currency (^[A-Z]{3,3}$).">
+            description="Instructed amount currency (^[A-Z]{3,3}$)."
+          >
             <b-form-select
               id="instructed_amount_currency"
               v-model="instructed_amount.currency"
               :options="top_20_currencies"
-              required/>
+              required
+            />
           </b-form-group>
           <b-form-group
             id="currency_of_transfer_group"
             label-for="currency_of_transfer"
             label="Currency Of Transfer For International Payments"
-            description="Currency Of Transfer.">
+            description="Currency Of Transfer."
+          >
             <b-form-select
               id="currency_of_transfer"
               v-model="currency_of_transfer"
               :options="top_20_currencies"
-              required/>
+              required
+            />
           </b-form-group>
         </b-form-group>
 
+        <PaymentFrequency />
       </b-card>
     </b-form>
   </div>
@@ -528,8 +533,8 @@
 <script>
 import { createNamespacedHelpers, mapActions } from 'vuex';
 import isEmpty from 'lodash/isEmpty';
-
 import ConfigurationFormFile from './ConfigurationFormFile.vue';
+import PaymentFrequency from '../config/PaymentFrequency.vue';
 
 const { mapGetters } = createNamespacedHelpers('config');
 
@@ -537,6 +542,7 @@ export default {
   name: 'TheConfigurationForm',
   components: {
     ConfigurationFormFile,
+    PaymentFrequency,
   },
   computed: {
     ...mapGetters([
