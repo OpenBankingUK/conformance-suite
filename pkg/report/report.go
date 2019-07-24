@@ -1,8 +1,10 @@
 package report
 
 import (
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/version"
+	"strings"
 	"time"
+
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/version"
 
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/executors/results"
@@ -35,9 +37,11 @@ type Report struct {
 }
 
 type APISpecification struct {
-	Name    string             `json:"name"`
-	Version string             `json:"version"`
-	Results []results.TestCase `json:"results"`
+	Name            string             `json:"name"`
+	TLSVersion      string             `json:"tls_version"`
+	TLSVersionValid bool               `json:"tls_version_valid"`
+	Version         string             `json:"version"`
+	Results         []results.TestCase `json:"results"`
 }
 
 // Validate - called by `github.com/go-ozzo/ozzo-validation` to validate struct.
@@ -77,10 +81,16 @@ func NewReport(exportResults models.ExportResults, environment string) (Report, 
 	fails := GetFails(exportResults.Results)
 	apiSpecs := []APISpecification{}
 	for k, results := range exportResults.Results {
+		tlsVersionResult := exportResults.TLSVersionResult[strings.ReplaceAll(k.APIName, " ", "-")]
+		if tlsVersionResult == nil {
+			tlsVersionResult = &discovery.TLSValidationResult{Valid: false, TLSVersion: "unknown"}
+		}
 		apiSpec := APISpecification{
-			Name:    k.APIName,
-			Version: k.APIVersion,
-			Results: results,
+			Name:            k.APIName,
+			Version:         k.APIVersion,
+			Results:         results,
+			TLSVersion:      tlsVersionResult.TLSVersion,
+			TLSVersionValid: tlsVersionResult.Valid,
 		}
 		apiSpecs = append(apiSpecs, apiSpec)
 	}

@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"context"
+	"crypto/tls"
 	"flag"
 	"fmt"
 	"io/ioutil"
@@ -53,7 +54,8 @@ func TestRun(t *testing.T) {
 	ver := version.NewBitBucket(version.BitBucketAPIRepository)
 	validatorEngine := discovery.NewFuncValidator(model.NewConditionalityChecker())
 	testGenerator := generation.NewGenerator()
-	journey := server.NewJourney(logger, testGenerator, validatorEngine)
+	tlsValidator := discovery.NewStdTLSValidator(tls.VersionTLS11)
+	journey := server.NewJourney(logger, testGenerator, validatorEngine, tlsValidator)
 
 	echoServer := server.NewServer(journey, logger, ver)
 

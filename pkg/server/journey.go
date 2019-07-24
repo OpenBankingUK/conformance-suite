@@ -4,6 +4,7 @@ package server
 import (
 	"encoding/json"
 	"fmt"
+	"strings"
 	"sync"
 
 	"github.com/blang/semver"
@@ -54,6 +55,7 @@ type Journey interface {
 	Results() executors.DaemonController
 	SetConfig(config JourneyConfig) error
 	Events() events.Events
+	TLSVersionResult() map[string]*discovery.TLSValidationResult
 }
 
 type journey struct {
@@ -73,10 +75,11 @@ type journey struct {
 	permissions           map[string][]manifest.RequiredTokens
 	manifests             []manifest.Scripts
 	filteredManifests     manifest.Scripts
+	tlsValidator          discovery.TLSValidator
 }
 
 // NewJourney creates an instance for a user journey
-func NewJourney(logger *logrus.Entry, generator generation.Generator, validator discovery.Validator) *journey {
+func NewJourney(logger *logrus.Entry, generator generation.Generator, validator discovery.Validator, tlsValidator discovery.TLSValidator) *journey {
 	return &journey{
 		generator:             generator,
 		validator:             validator,
@@ -89,6 +92,7 @@ func NewJourney(logger *logrus.Entry, generator generation.Generator, validator 
 		events:                events.NewEvents(),
 		permissions:           make(map[string][]manifest.RequiredTokens),
 		manifests:             make([]manifest.Scripts, 0),
+		tlsValidator:          tlsValidator,
 	}
 }
 
@@ -135,6 +139,39 @@ func (wj *journey) DiscoveryModel() (discovery.Model, error) {
 	return *discoveryModel, nil
 }
 
+func (wj *journey) TLSVersionResult() map[string]*discovery.TLSValidationResult {
+	logger := wj.log.WithFields(logrus.Fields{
+		"package":  "server",
+		"module":   "journey",
+		"function": "TLSVersionResult",
+	})
+	tlsValidationResult := make(map[string]*discovery.TLSValidationResult, len(wj.validDiscoveryModel.DiscoveryModel.DiscoveryItems))
+	for _, discoveryItem := range wj.validDiscoveryModel.DiscoveryModel.DiscoveryItems {
+		tlsVersionKey := wj.tlsVersionCtxKey(discoveryItem.APISpecification.Name)
+		tlsVersion, err := wj.context.GetString(tlsVersionKey)
+		if err != nil {
+			logger.WithFields(logrus.Fields{
+				"err":                err,
+				"discoveryItem[key]": tlsVersionKey,
+				"discoveryItem.discoveryItem.APISpecification.Name": discoveryItem.APISpecification.Name,
+			}).Errorf("Error getting %s from context ...", tlsVersionKey)
+			continue
+		}
+		tlsValidKey := wj.tlsValidCtxKey(discoveryItem.APISpecification.Name)
+		tlsValid, ok := wj.context.Get(tlsValidKey)
+		if !ok {
+			logger.WithFields(logrus.Fields{
+				"discoveryItem[key]": tlsValidKey,
+				"discoveryItem.discoveryItem.APISpecification.Name": discoveryItem.APISpecification.Name,
+			}).Errorf("Error getting %s from context ...", tlsValidKey)
+			continue
+		}
+		tlsValidationResult[strings.ReplaceAll(discoveryItem.APISpecification.Name, " ", "-")] = &discovery.TLSValidationResult{TLSVersion: tlsVersion, Valid: tlsValid.(bool)}
+	}
+
+	return tlsValidationResult
+}
+
 func (wj *journey) SetFilteredManifests(fmfs manifest.Scripts) {
 	wj.filteredManifests = fmfs
 }
@@ -162,6 +199,19 @@ func (wj *journey) TestCases() (generation.SpecRun, error) {
 			"wj.testCasesRunGenerated": wj.testCasesRunGenerated,
 		}).Error("Error getting generation.TestCasesRun ...")
 		return generation.SpecRun{}, errTestCasesGenerated
+	}
+
+	for k, discoveryItem := range wj.validDiscoveryModel.DiscoveryModel.DiscoveryItems {
+		tlsValidationResult, err := wj.tlsValidator.ValidateTLSVersion(discoveryItem.ResourceBaseURI)
+		if err != nil {
+			logger.WithFields(logrus.Fields{
+				"err":                           errors.Wrapf(err, "unable to validate TLS version for uri %s", discoveryItem.ResourceBaseURI),
+				"discoveryItem[key]":            k,
+				"discoveryItem.ResourceBaseURI": discoveryItem.ResourceBaseURI,
+			}).Error("Error validating TLS version for discovery item ResourceBaseURI")
+		}
+		wj.context.PutString(wj.tlsVersionCtxKey(discoveryItem.APISpecification.Name), tlsValidationResult.TLSVersion)
+		wj.context.Put(wj.tlsValidCtxKey(discoveryItem.APISpecification.Name), tlsValidationResult.Valid)
 	}
 
 	if !wj.testCasesRunGenerated {
@@ -281,6 +331,14 @@ func (wj *journey) TestCases() (generation.SpecRun, error) {
 		}
 	}
 	return wj.specRun, nil
+}
+
+func (wj *journey) tlsVersionCtxKey(discoveryItemName string) string {
+	return fmt.Sprintf("tlsVersionForDiscoveryItem-%s", strings.ReplaceAll(discoveryItemName, " ", "-"))
+}
+
+func (wj *journey) tlsValidCtxKey(discoveryItemName string) string {
+	return fmt.Sprintf("tlsIsValidForDiscoveryItem-%s", strings.ReplaceAll(discoveryItemName, " ", "-"))
 }
 
 func (wj *journey) CollectToken(code, state, scope string) error {
