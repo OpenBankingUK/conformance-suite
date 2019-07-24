@@ -3,6 +3,8 @@ package server
 import (
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/authentication"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/version"
+	"gopkg.in/resty.v1"
 )
 
 const (
@@ -95,5 +97,11 @@ func PutParametersToJourneyContext(config JourneyConfig, context model.Context) 
 		context.Delete(CtxStatementID)
 	}
 
+	_, ou, cn, err := config.certificateTransport.DN()
+	if err == nil && cn != "" && ou != "" {
+		resty.SetHeader("User-Agent", "OpenBankingFCS/"+version.NewBitBucket("").GetHumanVersion()+"/"+ou+"/"+cn)
+	} else {
+		resty.SetHeader("User-Agent", "OpenBankingFCS/"+version.NewBitBucket("").GetHumanVersion())
+	}
 	return nil
 }
