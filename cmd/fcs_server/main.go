@@ -81,7 +81,7 @@ func init() {
 	rootCmd.PersistentFlags().Bool("log_tracer", false, "Enable tracer logging")
 	rootCmd.PersistentFlags().Bool("log_http_trace", false, "Enable HTTP logging")
 	rootCmd.PersistentFlags().Int("port", 8443, "Server port")
-	rootCmd.PersistentFlags().Bool("enable_jws", false, "Disable JWS Signature")
+	rootCmd.PersistentFlags().Bool("enable_jws", false, "Enable JWS Signature")
 	rootCmd.PersistentFlags().Bool("dynres", false, "Use Dynamic Resource IDs - accounts")
 
 	if err := viper.BindPFlags(rootCmd.PersistentFlags()); err != nil {
