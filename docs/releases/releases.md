@@ -1,16 +1,22 @@
 
+# Release v1.1.17 (24th July 2019)
+
+The release is called **v1.1.17**, it disables JWS by default in line with [Waiver 007](https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1112670669/W007), adds a new user agent string and other general updates/fixes.
+
+[Full Release Notes](https://bitbucket.org/openbankingteam/conformance-suite/src/develop/docs/releases/v1.1.17.md) (v1.1.17.md)
+
 
 ### v1.1.16 (16th July 2019)
 
 Release **v1.1.16**, it adds support for unique transaction IDs for each payment and fixes the headless mode for model banks.
 
-[Full Release Notes](docs/releases/v1.1.16.md) (v1.1.16.md)
+[Full Release Notes](https://bitbucket.org/openbankingteam/conformance-suite/src/develop/docs/releases/v1.1.16.md) (v1.1.16.md)
 
 ### v1.1.15 (5th July 2019)
 
 Release **v1.1.15**, adds support for dynamically allocated resource ids in the accounts and transactions api.
 
-[Full Release Notes](docs/releases/v1.1.15.md) (v1.1.15.md)
+[Full Release Notes](https://bitbucket.org/openbankingteam/conformance-suite/src/develop/docs/releases/v1.1.15.md) (v1.1.15.md)
 
 ### v1.1.14 (3rd July 2019)
 
