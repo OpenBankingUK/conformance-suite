@@ -1,7 +1,7 @@
 
 # Release v1.1.17 (24th July 2019)
 
-The release is called **v1.1.17**, it disables JWS by default in line with [Waiver 007](https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1112670669/W007), adds a new user agent string and other general updates/fixes.
+The release is called **v1.1.17**, it disables JSON Web Signatures (JWS) by default in line with [Waiver 007](https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1112670669/W007), adds a new user agent string and other general updates/fixes.
 
 [Full Release Notes](https://bitbucket.org/openbankingteam/conformance-suite/src/develop/docs/releases/v1.1.17.md) (v1.1.17.md)
 
