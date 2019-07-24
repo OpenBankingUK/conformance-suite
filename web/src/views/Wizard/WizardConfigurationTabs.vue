@@ -11,7 +11,7 @@
               <b-tab
                 id="form-view"
                 title="Form view">
-                <TheConfigurationForm/>
+                <TheConfigurationForm v-if="tabIndex == 0"/>
               </b-tab>
               <b-tab
                 id="json-view"
@@ -34,10 +34,10 @@
 import * as _ from 'lodash';
 import { mapGetters, mapActions } from 'vuex';
 
-import TheConfigurationForm from '@/components/Wizard/TheConfigurationForm.vue';
-import TheConfigurationJsonEditor from '@/components/Wizard/TheConfigurationJsonEditor.vue';
-import TheErrorStatus from '@/components/TheErrorStatus.vue';
-import TheWizardFooter from '@/components/Wizard/TheWizardFooter.vue';
+import TheConfigurationForm from '../../components/Wizard/TheConfigurationForm.vue';
+import TheConfigurationJsonEditor from '../../components/Wizard/TheConfigurationJsonEditor.vue';
+import TheErrorStatus from '../../components/TheErrorStatus.vue';
+import TheWizardFooter from '../../components/Wizard/TheWizardFooter.vue';
 
 export default {
   name: 'WizardConfigurationTabs',
