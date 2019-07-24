@@ -100,29 +100,6 @@ func (_m *MockJourney) FilteredManifests() (manifest.Scripts, error) {
 	return r0, r1
 }
 
-// Manifests provides a mock function with given fields:
-func (_m *MockJourney) Manifests() ([]manifest.Scripts, error) {
-	ret := _m.Called()
-
-	var r0 []manifest.Scripts
-	if rf, ok := ret.Get(0).(func() []manifest.Scripts); ok {
-		r0 = rf()
-	} else {
-		if ret.Get(0) != nil {
-			r0 = ret.Get(0).([]manifest.Scripts)
-		}
-	}
-
-	var r1 error
-	if rf, ok := ret.Get(1).(func() error); ok {
-		r1 = rf()
-	} else {
-		r1 = ret.Error(1)
-	}
-
-	return r0, r1
-}
-
 // NewDaemonController provides a mock function with given fields:
 func (_m *MockJourney) NewDaemonController() {
 	_m.Called()
@@ -200,14 +177,25 @@ func (_m *MockJourney) SetFilteredManifests(_a0 manifest.Scripts) {
 	_m.Called(_a0)
 }
 
-// SetManifests provides a mock function with given fields: _a0
-func (_m *MockJourney) SetManifests(_a0 []manifest.Scripts) {
-	_m.Called(_a0)
-}
-
 // StopTestRun provides a mock function with given fields:
 func (_m *MockJourney) StopTestRun() {
 	_m.Called()
+}
+
+// TLSVersionResult provides a mock function with given fields:
+func (_m *MockJourney) TLSVersionResult() map[string]*discovery.TLSValidationResult {
+	ret := _m.Called()
+
+	var r0 map[string]*discovery.TLSValidationResult
+	if rf, ok := ret.Get(0).(func() map[string]*discovery.TLSValidationResult); ok {
+		r0 = rf()
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(map[string]*discovery.TLSValidationResult)
+		}
+	}
+
+	return r0
 }
 
 // TestCases provides a mock function with given fields:

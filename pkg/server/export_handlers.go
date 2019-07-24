@@ -2,8 +2,9 @@ package server
 
 import (
 	"bytes"
-	"github.com/pkg/errors"
 	"net/http"
+
+	"github.com/pkg/errors"
 
 	"github.com/labstack/echo"
 	"github.com/sirupsen/logrus"
@@ -50,11 +51,12 @@ func (h exportHandlers) postExport(c echo.Context) error {
 		return errors.Wrap(err, "exporting report-get journey discovery model")
 	}
 	exportResults := models.ExportResults{
-		ExportRequest:  request,
-		HasPassed:      false,
-		Results:        results,
-		Tokens:         tokens,
-		DiscoveryModel: discovery,
+		ExportRequest:    request,
+		HasPassed:        false,
+		Results:          results,
+		Tokens:           tokens,
+		DiscoveryModel:   discovery,
+		TLSVersionResult: h.journey.TLSVersionResult(),
 	}
 	logger.WithField("exportResults", exportResults).Info("Exported")
 

@@ -152,16 +152,36 @@ Running a test plan on the FCS involves five steps, as follows:
 Select the Ozone PSU template.
 
 ### Configuration
+* Client
+	* Provide the keys, as created earlier signing and transport (first 4 boxes) 
+	* Account ID: `500000000000000000000001`
+	* Statement ID: `140000000000000000000001`
+	* Transaction _from_/_to_ dates: _pre-populated value ok_
+	* Enter the _client ID_ and _secret_ from Ozone Bank, generated during on-boarding in Step 1
+	* _x-fapi-financial-id_ = `0015800001041RHAAY` (Ozone Bank)
+	* Send _x-fapi-customer-ip-address_ is an optional value. Is used to indicate presence of PSU during interaction.
+* Well-Known
+	* Token Endpoint: _pre-populated value ok_
+	* OAuth 2.0 response_type: `code id_token`
+	* Token Endpoint Auth Method: `client_secret_basic`
+	* Request object signing algorithm: `PS256`
+	* Authorization Endpoint: _pre-populated value ok_
+	* Resource Base URL: `https://ob19-rs1.o3bank.co.uk:4501`
+	* Issuer: _pre-populated value ok_
+	* Redirect URL: `https://0.0.0.0:8443/conformancesuite/callback`
+	* Use NON OB Directory: false (not checked)
+* Payments
+	* Frequency: `EvryDay`
+	* Creditor Account
+		* SchemeName: `UK.OBIE.IBAN`
+		* Identification: `GB29PAPA20000390210002`
+		* Name: `Mr Jackson`
+		* Instructed Amount Value: `1.00`
+		* Instructed Amount Currency: `GBP`
+		* Currency of transfer for international payments: `USD`
 
-* Provide the keys, as created earlier signing and transport.
-* Enter a cleint ID and secret from Ozone Bank
-* x-fapi-financial-id = `0015800001041RHAAY`
-* account ID: `500000000000000000000001`
-* Resource Base URL = <https://ob19-rs1.o3bank.co.uk:4501/open-banking/v3.1/aisp>
-* Resource Base URL: https://ob19-rs1.o3bank.co.uk:4501
-* Identification: GB29PAPA20000390210002
-
-The rest of the values are taken from the well-known.
+_Please note: If an item has been pre-populated, that is a generally acceptable default, unless specified above or specific tests
+are being defined._
 
 4. Run / Overview
 
