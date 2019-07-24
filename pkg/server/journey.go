@@ -538,6 +538,8 @@ type JourneyConfig struct {
 	internationalCreditorAccount  models.Payment
 	instructedAmount              models.InstructedAmount
 	paymentFrequency              models.PaymentFrequency
+	firstPaymentDateTime          string
+	requestedExecutionDateTime    string
 	currencyOfTransfer            string
 	apiVersion                    string
 	transactionFromDate           string

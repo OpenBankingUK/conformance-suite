@@ -130,6 +130,8 @@ export default {
         'currency_of_transfer',
         'acr_values_supported',
         'payment_frequency',
+        'first_payment_date_time',
+        'requested_execution_date_time',
       ];
       const newConfig = _.pick(merged, validKeys);
       // TODO: Fix this as I think it is working by accident. There needs to be an individual commit to the

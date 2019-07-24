@@ -336,6 +336,7 @@
         "instructedAmountValue": "$instructedAmountValue",
         "instructedAmountCurrency": "$instructedAmountCurrency",
         "frequency": "$payment_frequency",
+        "firstPaymentDateTime": "$firstPaymentDateTime",
         "postData": "$minimalDomesticStandingOrderConsent",
         "requestConsent": "true"
       },
@@ -384,6 +385,7 @@
         "instructedAmountValue": "$instructedAmountValue",
         "instructedAmountCurrency": "$instructedAmountCurrency",
         "frequency": "$payment_frequency",
+        "firstPaymentDateTime": "$firstPaymentDateTime",
         "postData": "$minimalDomesticStandingOrder",
         "consentId": "$OB-301-DOP-101200-ConsentId"
       },
@@ -413,6 +415,7 @@
         "tokenRequestScope": "payments",
         "instructedAmountValue": "$instructedAmountValue",
         "instructedAmountCurrency": "$instructedAmountCurrency",
+        "firstPaymentDateTime": "$firstPaymentDateTime",
         "postData": "$minimalDomesticStandingOrderInvalid",
         "consentId": "$OB-301-DOP-101200-ConsentId"
       },
