@@ -55,6 +55,7 @@ func TestContentTypeValidator_Validate(t *testing.T) {
 	}
 
 	for _, tc := range testCases {
+		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			header := &http.Header{}
 			header.Add("Content-type", tc.responseContentType)
@@ -68,8 +69,8 @@ func TestContentTypeValidator_Validate(t *testing.T) {
 
 			failures, err := validator.Validate(r)
 
-			assert.NoError(t, err)
-			assert.Equal(t, tc.failures, failures)
+			assert.NoError(t, err, tc.name)
+			assert.Equal(t, tc.failures, failures, tc.name)
 		})
 	}
 }

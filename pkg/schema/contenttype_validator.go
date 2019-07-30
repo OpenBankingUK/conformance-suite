@@ -67,11 +67,11 @@ func (v contentTypeValidator) expectedContentType(r Response) (string, error) {
 
 	var expectedContentType string
 
-	if len(spec.Produces) > 0 {
+	if spec != nil && len(spec.Produces) > 0 {
 		expectedContentType = spec.Produces[0]
 	}
 
-	if len(operation.Produces) > 0 {
+	if operation != nil && len(operation.Produces) > 0 {
 		expectedContentType = operation.Produces[0]
 	}
 
