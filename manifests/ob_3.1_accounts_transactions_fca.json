@@ -910,7 +910,7 @@
             "method": "get",
             "asserts": [
                 "OB3GLOAssertOn400",
-                "OB3IPAssertUnexpectedErrorOBErrorCode"
+                "OB3IPAssertResourceFieldInvalidOBErrorCode"
             ],
             "schemaCheck": false
         },
