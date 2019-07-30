@@ -30,7 +30,6 @@
         "name":"OB-301-DOP-100100-ConsentId",
         "value": "Data.ConsentId"
       },
-
       "method": "post",
       "schemaCheck": true
     },
