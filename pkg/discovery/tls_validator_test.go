@@ -50,3 +50,10 @@ func TestValidateTLSVersionSucceeds(t *testing.T) {
 	assert.Equal(t, r, TLSValidationResult{Valid: true, TLSVersion: "TLS12"})
 	assert.Nil(t, err)
 }
+
+func TestValidateTLSVersionSucceedsWithImplicitPort(t *testing.T) {
+	validator := NewStdTLSValidator(tls.VersionTLS11)
+	r, err := validator.ValidateTLSVersion("https://google.com")
+	assert.Equal(t, r, TLSValidationResult{Valid: true, TLSVersion: "TLS11"})
+	assert.Nil(t, err)
+}
