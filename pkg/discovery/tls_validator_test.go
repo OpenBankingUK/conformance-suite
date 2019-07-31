@@ -50,4 +50,3 @@ func TestValidateTLSVersionSucceeds(t *testing.T) {
 	assert.Equal(t, r, TLSValidationResult{Valid: true, TLSVersion: "TLS12"})
 	assert.Nil(t, err)
 }
-
