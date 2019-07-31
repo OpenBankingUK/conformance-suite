@@ -171,6 +171,7 @@ func CallPaymentHeadlessConsentUrls(rt *[]manifest.RequiredTokens, ctx *model.Co
 		consentedTokens[tokendata.Name] = token
 	}
 
+	logger.Tracef("ConsentedTokens: %#v", consentedTokens)
 	return consentedTokens, nil
 }
 

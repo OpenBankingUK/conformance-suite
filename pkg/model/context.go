@@ -111,6 +111,11 @@ func (c *Context) Delete(delKey string) {
 
 // DumpContext - send the contents of a context to a logger
 func (c *Context) DumpContext(text ...string) {
+	var skip = true
+	if skip {
+		return
+	}
+
 	if len(text) > 0 {
 		logrus.StandardLogger().Trace("[Context] |=== " + text[0] + "===|")
 	}

@@ -116,7 +116,7 @@ func getPaymentPermissions(tcs []model.TestCase) ([]RequiredTokens, error) {
 			consentID := GetConsentIDFromMatches(tc)
 			rx := RequiredTokens{Name: ts.GetNextTokenName("payment"), ConsentParam: consentID, ConsentProvider: tc.ID}
 			rt = append(rt, rx)
-			logrus.Tracef("adding %s to consentJobs\n", tc.ID)
+			logrus.Tracef("adding %s to consentJobs : %s %s", tc.ID, tc.Input.Method, tc.Input.Endpoint)
 			consentJobs.Add(tc)
 		} else {
 			tcs[k].InjectBearerToken("$client_access_token")

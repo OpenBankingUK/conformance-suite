@@ -122,7 +122,6 @@ func (g generator) GenerateManifestTests(log *logrus.Entry, config GeneratorConf
 				continue
 			}
 			tcs = uiTestCases
-			_ = uiTestCases
 		}
 		stc := SpecificationTestCases{Specification: item.APISpecification, TestCases: tcs}
 		logrus.Debugf("%d test cases generated for %s", len(tcs), item.APISpecification.Name)
@@ -140,16 +139,12 @@ func (g generator) GenerateManifestTests(log *logrus.Entry, config GeneratorConf
 	// 	tokens[v.Specification.SpecType] = requiredSpecTokens
 	// }
 
-	logrus.Trace("---------------------------------------")
-	logrus.Tracef("we have %d specConsentRequirement items", len(scrSlice))
 	for _, item := range scrSlice {
 		logrus.Tracef("%#v", item)
 	}
-	logrus.Tracef("Dumping required %d tokens from GenerateManifestTests", len(tokens))
 	for _, v := range tokens {
 		logrus.Tracef("%#v", v)
 	}
-	logrus.Trace("---------------------------------------")
 	return SpecRun{specTestCases, scrSlice}, filteredScripts, tokens
 }
 
