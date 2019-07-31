@@ -24,10 +24,8 @@ func GetHeadlessConsent(definition RunDefinition, ctx *model.Context, specRun *g
 
 	allRequiredTokens := []manifest.RequiredTokens{}
 
-	logger.Debugf("running with %#v\n", permissions)
-
 	for specType := range permissions {
-		logger.Tracef("Getting Headless Consent for api type: %s\n", specType)
+		logger.Tracef("Getting Headless Consent for api type: %s", specType)
 		tests, err := getSpecForSpecType(specType, specRun)
 		if err != nil {
 			return nil, err
@@ -51,8 +49,6 @@ func GetHeadlessConsent(definition RunDefinition, ctx *model.Context, specRun *g
 		}
 	}
 
-	logger.Tracef("Dump all required headless tokens\n%#v\n---------------", allRequiredTokens)
-
 	return allRequiredTokens, nil
 }
 
@@ -65,7 +61,7 @@ func getPaymentHeadlessTokens(paymentTests []model.TestCase, ctx *model.Context,
 		return nil, err
 	}
 
-	logger.Debugf("we have %d required tokens\n", len(requiredTokens))
+	logger.Debugf("we have %d required tokens", len(requiredTokens))
 
 	requiredTokens, err = runPaymentConsents(requiredTokens, ctx, &executor)
 	if err != nil {
@@ -86,7 +82,7 @@ func getPaymentHeadlessTokens(paymentTests []model.TestCase, ctx *model.Context,
 		}
 	}
 
-	logger.Tracef("updated requiredTokens:\n%#v\n", requiredTokens)
+	logger.Tracef("updated requiredTokens: %#v", requiredTokens)
 	return requiredTokens, err
 
 }
@@ -109,7 +105,7 @@ func CallPaymentHeadlessConsentUrls(rt *[]manifest.RequiredTokens, ctx *model.Co
 		if err != nil {
 			if resp != nil && resp.StatusCode() == http.StatusFound { // catch status code 302 redirects and pass back as good response
 				header := resp.Header()
-				logger.Debugf("redirection headers: %#v\n", header)
+				logger.Debugf("redirection headers: %#v", header)
 				location := header.Get("Location")
 				if location != "" {
 					r, err := regexp.Compile(exhangeCodeRegex)
@@ -213,7 +209,6 @@ func getAccountsHeadlessTokens(tests []model.TestCase, ctx *model.Context, defin
 	}
 
 	requiredTokens, err := manifest.GetRequiredTokensFromTests(tests, specType)
-	logger.Debugf("required tokens %#v\n", requiredTokens)
 
 	for k, tokenGatherer := range requiredTokens {
 

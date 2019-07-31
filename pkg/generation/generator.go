@@ -75,11 +75,11 @@ func (g generator) GenerateManifestTests(log *logrus.Entry, config GeneratorConf
 		spectype, err := manifest.GetSpecType(item.APISpecification.SchemaVersion)
 		if err != nil {
 			logrus.Warnf("Cannot get spec type from schema version: " + item.APISpecification.SchemaVersion)
-			log.Warnf("specification %s not found\n", item.APISpecification.SchemaVersion)
+			log.Warnf("specification %s not found", item.APISpecification.SchemaVersion)
 			continue
 		}
 		item.APISpecification.SpecType = spectype
-		log.Debugf("Generating testcases for %s API\n", spectype)
+		log.Debugf("Generating testcases for %s API", spectype)
 		discovery.DiscoveryItems[k].APISpecification.SpecType = spectype
 	}
 

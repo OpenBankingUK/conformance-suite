@@ -101,8 +101,7 @@ func runPaymentConsents(rt []manifest.RequiredTokens, ctx *model.Context, execut
 
 	for k, v := range rt {
 		localCtx.PutString("token_name", v.Name)
-		logrus.Warnln("Loop through requesting consent authorisation")
-		//test, err := findTest(tcs, v.ConsentProvider)
+
 		test, exists := consentJobs.Get(v.ConsentProvider)
 		if !exists {
 			return nil, errors.New("Testcase " + v.ConsentProvider + " does not existing in consentJob list")

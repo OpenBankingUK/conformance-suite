@@ -181,7 +181,7 @@ func logSchemaValidationOffWarning(testCase *TestCase) {
 			"module":   "TestCase",
 			"function": "Validate",
 			"package":  "model",
-			"TestCase": testCase.String(),
+			"TestCase": testCase.ID,
 		}).Warn(`TestCase.Expect.SchemaValidation is false`)
 	}
 }

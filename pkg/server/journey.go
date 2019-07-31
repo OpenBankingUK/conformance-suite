@@ -234,13 +234,13 @@ func (wj *journey) TestCases() (generation.SpecRun, error) {
 
 		wj.specRun, wj.filteredManifests, wj.permissions = wj.generator.GenerateManifestTests(wj.log, config, discovery, &wj.context)
 
-		logger.WithFields(logrus.Fields{
-			"len(wj.permissions)": len(wj.permissions),
-		}).Debug("manifest.RequiredTokens")
-		for _, permission := range wj.permissions {
-			logger.WithFields(logrus.Fields{
-				"permission": permission,
-			}).Debug("We have a permission ([]manifest.RequiredTokens)")
+		for _, spec := range wj.permissions {
+			for _, required := range spec {
+				logger.WithFields(logrus.Fields{
+					"permission": required.Name,
+					"idlist":     required.IDs,
+				}).Debug("We have a permission ([]manifest.RequiredTokens)")
+			}
 		}
 
 		if discovery.TokenAcquisition == "psu" { // Handle  PSU Consent
@@ -323,9 +323,8 @@ func (wj *journey) TestCases() (generation.SpecRun, error) {
 	for k := range wj.specRun.SpecTestCases {
 		logger.Tracef("SpecRun-Specification: %#v\n", wj.specRun.SpecTestCases[k].Specification)
 	}
-	logger.Tracef("Dumping Consents:---------------------------\n")
 	for _, v := range wj.specRun.SpecConsentRequirements {
-		logger.Tracef("-------\nSpec: %s", v.Identifier)
+		logger.Tracef("Spec: %s", v.Identifier)
 		for _, x := range v.NamedPermissions {
 			logger.Tracef("\tname: %s codeset: %#v\n\tconsent Url: %s", x.Name, x.CodeSet.CodeSet, x.ConsentUrl)
 		}
