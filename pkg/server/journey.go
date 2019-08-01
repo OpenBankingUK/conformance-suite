@@ -290,22 +290,11 @@ func (wj *journey) TestCases() (generation.SpecRun, error) {
 				return generation.SpecRun{}, errConsentIDAcquisitionFailed
 			}
 
-			tokenMap := map[string]string{}
+			tokenMap := map[string]string{} // Put access tokens into context
 			for _, v := range wj.specRun.SpecTestCases {
 				aMap := manifest.MapTokensToTestCases(tokenPermissionsMap, v.TestCases)
 				for x, y := range aMap {
 					tokenMap[x] = y
-				}
-			}
-
-			for k := range wj.permissions {
-				if k == "payments" {
-					paymentpermissions := wj.permissions["payments"]
-					if len(paymentpermissions) > 0 {
-						for _, spec := range wj.specRun.SpecTestCases {
-							manifest.MapTokensToPaymentTestCases(paymentpermissions, spec.TestCases, &wj.context)
-						}
-					}
 				}
 			}
 
@@ -314,20 +303,27 @@ func (wj *journey) TestCases() (generation.SpecRun, error) {
 				logger.Tracef("processtokenMap %s:%s into context", k, v)
 			}
 
+			for k := range wj.permissions {
+				if k == "payments" {
+					paymentpermissions := wj.permissions["payments"]
+					logger.Tracef("We have %d Payment Permissions", len(paymentpermissions))
+					if len(paymentpermissions) > 0 {
+						for _, spec := range wj.specRun.SpecTestCases {
+							logger.Tracef("Analysing %d test cases for token mapping", len(spec.TestCases))
+							manifest.MapTokensToPaymentTestCases(paymentpermissions, spec.TestCases, &wj.context)
+						}
+					}
+				}
+			}
+
 			wj.allCollected = true
 		}
 		wj.testCasesRunGenerated = true
 	}
 
-	logger.Tracef("SpecRun.SpecConsentRequirements: %#v\n", wj.specRun.SpecConsentRequirements)
+	logger.Tracef("SpecRun.SpecConsentRequirements: %#v", wj.specRun.SpecConsentRequirements)
 	for k := range wj.specRun.SpecTestCases {
-		logger.Tracef("SpecRun-Specification: %#v\n", wj.specRun.SpecTestCases[k].Specification)
-	}
-	for _, v := range wj.specRun.SpecConsentRequirements {
-		logger.Tracef("Spec: %s", v.Identifier)
-		for _, x := range v.NamedPermissions {
-			logger.Tracef("\tname: %s codeset: %#v\n\tconsent Url: %s", x.Name, x.CodeSet.CodeSet, x.ConsentUrl)
-		}
+		logger.Tracef("SpecRun-Specification: %#v", wj.specRun.SpecTestCases[k].Specification)
 	}
 	return wj.specRun, nil
 }
