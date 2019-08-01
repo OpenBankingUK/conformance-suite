@@ -1,7 +1,7 @@
 {
   "discoveryModel": {
     "name": "ob-v3.1-ozone-headless",
-    "description": "An Ozone discovery template for v3.1 of Accounts and Payments with pre-populated model Bank (Ozone) data.",
+    "description": "An Ozone discovery template for v3.1 of Accounts and Payments with pre-populated model Bank (Ozone) data. Headless consent flow.",
     "discoveryVersion": "v0.3.0",
     "tokenAcquisition": "headless",
     "discoveryItems": [{
