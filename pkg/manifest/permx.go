@@ -223,41 +223,32 @@ func MapTokensToTestCases(rt []RequiredTokens, tcs []model.TestCase) map[string]
 
 // MapTokensToPaymentTestCases -
 func MapTokensToPaymentTestCases(rt []RequiredTokens, tcs []model.TestCase, ctx *model.Context) {
-	logrus.Trace("MapTokensToPaymentTestCase")
-	defer logrus.Trace("Exit MapTokensToPaymentTestCase")
-
 	for k, test := range tcs {
-		logrus.Tracef("Processing %s %s %s", test.ID, test.Input.Method, test.Input.Endpoint)
 		authCodeTokenRequired := requiresAuthCodeToken(test.ID, test.Input.Method, test.Input.Endpoint)
 		if authCodeTokenRequired {
 			tokenName, isEmptyToken, err := getRequiredTokenForPaymentTestcase(rt, test.ID)
 			if err != nil {
-				//logrus.Warnf("no token for testcase %s", test.ID)
-				logrus.Tracef(">>> no token for Payment testcase %s %s %s", test.ID, test.Input.Method, test.Input.Endpoint)
+				logrus.Warnf("no token for Payment testcase %s %s %s", test.ID, test.Input.Method, test.Input.Endpoint)
 				continue
 			}
 			if !isEmptyToken {
 				token, err := ctx.GetString(tokenName)
 				if err == nil {
 					test.InjectBearerToken(token)
-					logrus.Tracef(">>> %s into %s %s %s", token, test.ID, test.Input.Method, test.Input.Endpoint)
 				} else {
 					test.InjectBearerToken("$" + tokenName)
-					logrus.Tracef(">>> $%s into %s %s %s", tokenName, test.ID, test.Input.Method, test.Input.Endpoint)
 				}
 			}
-		}
-
-		if test.Input.Method == "GET" {
-			test.InjectBearerToken("$payment_ccg_token")
-			logrus.Tracef(">>> $payment_ccg_token into %s %s %s", test.ID, test.Input.Method, test.Input.Endpoint)
-			continue
-		}
-		useCCGToken, _ := test.Context.Get("useCCGToken")
-		if useCCGToken == "yes" { // payment POSTs
-			test.InjectBearerToken("$payment_ccg_token")
-			logrus.Tracef(">>> $payment_ccg_token into %s %s %s", test.ID, test.Input.Method, test.Input.Endpoint)
-			continue
+		} else {
+			if test.Input.Method == "GET" {
+				test.InjectBearerToken("$payment_ccg_token")
+				continue
+			}
+			useCCGToken, _ := test.Context.Get("useCCGToken")
+			if useCCGToken == "yes" { // payment POSTs
+				test.InjectBearerToken("$payment_ccg_token")
+				continue
+			}
 		}
 		tcs[k] = test
 	}
