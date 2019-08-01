@@ -85,6 +85,7 @@ func init() {
 	rootCmd.PersistentFlags().Int("port", 8443, "Server port")
 	rootCmd.PersistentFlags().Bool("enable_jws", false, "Enable JWS Signature")
 	rootCmd.PersistentFlags().Bool("dynres", false, "Use Dynamic Resource IDs - accounts")
+	rootCmd.PersistentFlags().Bool("dumpcontexts", false, "Dump contexts when trace enabled")
 
 	if err := viper.BindPFlags(rootCmd.PersistentFlags()); err != nil {
 		fmt.Fprint(os.Stderr, err)
@@ -154,6 +155,10 @@ func initConfig() {
 		server.EnableDynamicResourceIDs()
 	}
 
+	if viper.GetBool("dumpcontexts") {
+		model.EnableContextDumps()
+	}
+
 	resty.SetDebug(viper.GetBool("log_http_trace"))
 
 	printConfigurationFlags()
@@ -170,5 +175,6 @@ func printConfigurationFlags() {
 		"tracer.Silent":  tracer.Silent,
 		"enable_jws":     viper.GetBool("enable_jws"),
 		"dynres":         viper.GetBool("dynres"),
+		"dumpcontexts":   viper.GetBool("dumpcontexts"),
 	}).Info("configuration flags")
 }

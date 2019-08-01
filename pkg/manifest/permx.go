@@ -116,7 +116,7 @@ func getPaymentPermissions(tcs []model.TestCase) ([]RequiredTokens, error) {
 			consentID := GetConsentIDFromMatches(tc)
 			rx := RequiredTokens{Name: ts.GetNextTokenName("payment"), ConsentParam: consentID, ConsentProvider: tc.ID}
 			rt = append(rt, rx)
-			logrus.Tracef("adding %s to consentJobs\n", tc.ID)
+			logrus.Tracef("adding %s to consentJobs : %s %s", tc.ID, tc.Input.Method, tc.Input.Endpoint)
 			consentJobs.Add(tc)
 		} else {
 			tcs[k].InjectBearerToken("$client_access_token")
@@ -224,30 +224,60 @@ func MapTokensToTestCases(rt []RequiredTokens, tcs []model.TestCase) map[string]
 // MapTokensToPaymentTestCases -
 func MapTokensToPaymentTestCases(rt []RequiredTokens, tcs []model.TestCase, ctx *model.Context) {
 	for k, test := range tcs {
-		if test.Input.Method == "GET" {
-			test.InjectBearerToken("$payment_ccg_token")
-			continue
-		}
-		useCCGToken, _ := test.Context.Get("useCCGToken")
-		if useCCGToken == "yes" { // payment POSTs
-			test.InjectBearerToken("$payment_ccg_token")
-			continue
-		}
-		tokenName, isEmptyToken, err := getRequiredTokenForTestcase(rt, test.ID)
-		if err != nil {
-			logrus.Warnf("no token for testcase %s", test.ID)
-			continue
-		}
-		if !isEmptyToken {
-			token, exists := ctx.GetString(tokenName)
-			if exists == nil {
-				test.InjectBearerToken(token)
-			} else {
-				test.InjectBearerToken("$" + tokenName)
+		authCodeTokenRequired := requiresAuthCodeToken(test.ID, test.Input.Method, test.Input.Endpoint)
+		if authCodeTokenRequired {
+			tokenName, isEmptyToken, err := getRequiredTokenForPaymentTestcase(rt, test.ID)
+			if err != nil {
+				logrus.Warnf("no token for Payment testcase %s %s %s", test.ID, test.Input.Method, test.Input.Endpoint)
+				continue
+			}
+			if !isEmptyToken {
+				token, err := ctx.GetString(tokenName)
+				if err == nil {
+					test.InjectBearerToken(token)
+				} else {
+					test.InjectBearerToken("$" + tokenName)
+				}
+			}
+		} else {
+			if test.Input.Method == "GET" {
+				test.InjectBearerToken("$payment_ccg_token")
+				continue
+			}
+			useCCGToken, _ := test.Context.Get("useCCGToken")
+			if useCCGToken == "yes" { // payment POSTs
+				test.InjectBearerToken("$payment_ccg_token")
+				continue
 			}
 		}
 		tcs[k] = test
 	}
+}
+
+func requiresAuthCodeToken(id, method, endpoint string) bool {
+	// "get" with "funds confirmation"
+	if strings.ToUpper(method) == "GET" && strings.Contains(endpoint, "funds-confirmation") {
+		logrus.Tracef("%s %s %s requires auth code token", id, method, endpoint)
+		return true
+	}
+	if strings.ToUpper(method) == "POST" && !strings.Contains(endpoint, "consents") {
+		logrus.Tracef("%s %s %s requires auth code token", id, method, endpoint)
+		return true
+	}
+	return false
+}
+
+// gets token name from a testcase id
+func getRequiredTokenForPaymentTestcase(rt []RequiredTokens, testcaseID string) (tokenName string, isEmptyToken bool, err error) {
+	for _, v := range rt {
+		for _, id := range v.IDs {
+			if testcaseID == id {
+				logrus.Tracef("%s requires token %s", testcaseID, v.Name)
+				return v.Name, false, nil
+			}
+		}
+	}
+	return "", false, errors.New("token not found for " + testcaseID)
 }
 
 // gets token name from a testcase id

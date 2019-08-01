@@ -294,15 +294,15 @@ func testCaseBuilder(s Script, refs map[string]Reference, ctx *model.Context, co
 	}
 
 	// test case schema validation
-	if !s.SchemaCheck {
-		logrus.WithFields(logrus.Fields{
-			"function":      "testCaseBuilder",
-			"package":       "manifest",
-			"s.ID":          s.ID,
-			"s.Description": s.Description,
-			"s.Detail":      s.Detail,
-		}).Warn(`s.SchemaCheck is false - "schemaCheck": false`)
-	}
+	// if !s.SchemaCheck {
+	// 	logrus.WithFields(logrus.Fields{
+	// 		"function":      "testCaseBuilder",
+	// 		"package":       "manifest",
+	// 		"s.ID":          s.ID,
+	// 		"s.Description": s.Description,
+	// 		"s.Detail":      s.Detail,
+	// 	}).Warn(`s.SchemaCheck is false - "schemaCheck": false`)
+	// }
 	tc.Expect.SchemaValidation = s.SchemaCheck
 
 	// Handled PutContext parameters
@@ -504,7 +504,6 @@ func FilterTestsBasedOnDiscoveryEndpoints(scripts Scripts, endpoints []discovery
 			}
 			if matched {
 				lookupMap[regPath.Regex] = true
-				logrus.Tracef("endpoint %40.40s matched by regex %42.42s: %s", ep.Path, regPath.Regex, regPath.Name)
 			}
 		}
 	}
@@ -520,7 +519,6 @@ func FilterTestsBasedOnDiscoveryEndpoints(scripts Scripts, endpoints []discovery
 				}
 				if matched {
 					if !contains(filteredScripts, scr) {
-						logrus.Tracef("endpoint %40.40s matched by regex %42.42s", scr.URI, k)
 						filteredScripts = append(filteredScripts, scr)
 					}
 				}
@@ -539,7 +537,6 @@ func FilterTestsBasedOnDiscoveryEndpoints(scripts Scripts, endpoints []discovery
 			}
 			if matched {
 				if !contains(filteredScripts, scr) {
-					logrus.Tracef("endpoint %40.40s matched by regex %42.42s", scr.URI, k)
 					filteredScripts = append(filteredScripts, scr)
 				}
 			}
