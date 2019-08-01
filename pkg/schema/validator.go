@@ -55,6 +55,7 @@ func NewSwaggerOBSpecValidator(specName, version string) (Validator, error) {
 			err = nil
 			dirnameIndex = index
 			files = filesReadDir
+			break
 		}
 	}
 
