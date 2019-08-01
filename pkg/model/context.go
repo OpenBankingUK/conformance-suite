@@ -109,10 +109,16 @@ func (c *Context) Delete(delKey string) {
 	delete(*c, delKey)
 }
 
+var dumpContexts bool
+
+func EnableContextDumps() {
+	dumpContexts = true
+}
+
 // DumpContext - send the contents of a context to a logger
 func (c *Context) DumpContext(text ...string) {
-	var skip = true
-	if skip {
+
+	if !dumpContexts {
 		return
 	}
 
