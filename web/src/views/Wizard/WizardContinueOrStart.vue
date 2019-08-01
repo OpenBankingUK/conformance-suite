@@ -55,8 +55,8 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex';
-import DiscoveryTemplateCard from '@/components/Wizard/DiscoveryTemplateCard.vue';
-import TheErrorStatus from '@/components/TheErrorStatus.vue';
+import DiscoveryTemplateCard from '../../components/Wizard/DiscoveryTemplateCard.vue';
+import TheErrorStatus from '../../components/TheErrorStatus.vue';
 
 import api from '../../api';
 
