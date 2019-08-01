@@ -14,8 +14,10 @@ import (
 	"testing"
 	"time"
 
+	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/require"
+	prefixed "github.com/x-cray/logrus-prefixed-formatter"
 	"gopkg.in/resty.v1"
 
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/client"
@@ -23,10 +25,14 @@ import (
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/generation"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/server"
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/test"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/version"
 
 	"github.com/google/go-cmp/cmp"
+)
+
+var (
+	logger = logrus.StandardLogger()
+	update = flag.Bool("update", false, "update .golden files")
 )
 
 const (
@@ -34,23 +40,43 @@ const (
 	keyFile  = "../../certs/conformancesuite_key.pem"
 )
 
-var update = flag.Bool("update", false, "update .golden files")
-
 // init - this allows running the tests in debug mode, e.g.,:
 //
-// `LOG_HTTP_TRACE=true go test -v -count=1 -run='TestRun' ./...`
+// `LOG_HTTP_TRACE=true LOG_LEVEL=trace go test -v -count=1 -run='TestRun' ./...`
 func init() {
+	logger.SetNoLock()
+	logger.SetFormatter(&prefixed.TextFormatter{
+		DisableColors:    false,
+		ForceColors:      true,
+		TimestampFormat:  time.RFC3339,
+		FullTimestamp:    true,
+		DisableTimestamp: false,
+		ForceFormatting:  true,
+	})
+
+	viper.SetDefault("LOG_LEVEL", "warn")
+	viper.SetDefault("LOG_HTTP_TRACE", false)
+
 	viper.SetEnvPrefix("")
 	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
 	viper.AutomaticEnv()
+
 }
 
 func TestRun(t *testing.T) {
 	debug := viper.GetBool("LOG_HTTP_TRACE")
+	logLevel, err := logrus.ParseLevel(viper.GetString("LOG_LEVEL"))
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	t.Logf("logLevel=%+v", logLevel)
+	t.Logf("debug=%+v", debug)
+
+	logger.SetLevel(logLevel)
 	resty.SetDebug(debug)
 
-	logger := test.NullLogger()
-
+	logger := logger.WithFields(logrus.Fields{"test": "TestRun"})
 	ver := version.NewBitBucket(version.BitBucketAPIRepository)
 	validatorEngine := discovery.NewFuncValidator(model.NewConditionalityChecker())
 	testGenerator := generation.NewGenerator()

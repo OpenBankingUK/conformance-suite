@@ -37,17 +37,32 @@ type Validator interface {
 }
 
 func NewSwaggerOBSpecValidator(specName, version string) (Validator, error) {
-	const dirname = "pkg/schema/spec/v3.1.0"
-	files, err := ioutil.ReadDir(dirname)
-	if err != nil {
-		wd, errGetwd := os.Getwd()
-		if errGetwd != nil {
-			return nil, errors.Wrapf(errGetwd, "schema: opening spec folder failed in os.Getwd, dirname=%q", dirname)
-		}
+	var err error
 
-		return nil, errors.Wrapf(err, "schema: opening spec folder failed, dirname=%q, wd=%q", dirname, wd)
+	dirnameIndex := 0
+	dirnames := []string{"pkg/schema/spec/v3.1.0", "../../pkg/schema/spec/v3.1.0"}
+	files := []os.FileInfo{}
+	for index, dirname := range dirnames {
+		filesReadDir, errReadDir := ioutil.ReadDir(dirname)
+		if errReadDir != nil {
+			wd, errGetwd := os.Getwd()
+			if errGetwd != nil {
+				err = errors.Wrapf(errGetwd, "schema: opening spec folder failed in os.Getwd, dirname=%q", dirname)
+			} else {
+				err = errors.Wrapf(errReadDir, "schema: opening spec folder failed, dirname=%q, wd=%q", dirname, wd)
+			}
+		} else {
+			err = nil
+			dirnameIndex = index
+			files = filesReadDir
+		}
 	}
 
+	if err != nil {
+		return nil, err
+	}
+
+	dirname := dirnames[dirnameIndex]
 	for _, f := range files {
 		filename := dirname + "/" + f.Name()
 		doc, err := loads.Spec(filename)
