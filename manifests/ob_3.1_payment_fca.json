@@ -1,35 +1,5 @@
 {
   "scripts": [{
-      "description": "Domestic Payment consents fails when given an invalid ConsentId",
-      "id": "OB-301-DOP-100000",
-      "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937984109/Domestic+Payments+v3.1#DomesticPaymentsv3.1-POST/domestic-payment-consents",
-      "detail": "Checks that the resource correctly fails posting an invalid domestic payment consent.",
-      "parameters": {
-        "tokenRequestScope": "payments",
-        "consentId": "foobar",
-        "instructedAmountCurrency": "$instructedAmountCurrency",
-        "instructedAmountValue": "$instructedAmountValue",
-        "instructionIdentification": "$fn:instructionIdentificationID()",
-        "endToEndIdentification": "e2e-domestic-pay",
-        "postData": "$minimalDomesticPaymentConsent"
-      },
-      "headers": {
-        "Content-Type": "application/json; charset=utf-8",
-        "Authorization": "Bearer $payment_ccg_token"
-        
-      },
-      "body": "$postData",
-      "uri": "/domestic-payment-consents/$consentId",
-      "uriImplementation": "mandatory",
-      "resource": "DomesticPayment",
-      "asserts_one_of": [
-        "OB3GLOAssertOn404",
-        "OB3GLOAssertOn401"
-    ],      
-      "method": "post",
-      "schemaCheck": false
-    },
-    {
       "description": "Domestic Payment consents is AwaitingAuthorisation",
       "id": "OB-301-DOP-100100",
       "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937984109/Domestic+Payments+v3.1#DomesticPaymentsv3.1-POST/domestic-payment-consents",
@@ -44,7 +14,7 @@
         "requestConsent": "false"
       },
       "headers": {
-        "Content-Type": "application/json; charset=utf-8"
+        "Content-Type": "application/json"
       },
       "body": "$postData",
       "uri": "/domestic-payment-consents",
@@ -53,15 +23,15 @@
       "asserts": [
         "OB3GLOAssertOn201",
         "OB3GLOFAPIHeader",
+        "OB3DOPAssertAwaitingAuthorisation",
         "OB3GLOAAssertConsentId"
       ],
       "keepContextOnSuccess": {
         "name":"OB-301-DOP-100100-ConsentId",
         "value": "Data.ConsentId"
       },
-
       "method": "post",
-      "schemaCheck": false
+      "schemaCheck": true
     },
     {
       "description": "PISP Domestic Payment funds-confirmation for none authorised status consent status",
@@ -73,7 +43,7 @@
         "consentId": "$OB-301-DOP-100100-ConsentId"
       },
       "headers": {
-        "Content-Type": "application/json; charset=utf-8"
+        "Content-Type": "application/json"
       },
       "uri": "/domestic-payment-consents/$consentId/funds-confirmation",
       "uriImplementation": "mandatory",
@@ -84,13 +54,13 @@
         "OB3IPAssertResourceInvalidConsentStatusOBErrorCode"
       ],
       "method": "get",
-      "schemaCheck": false
+      "schemaCheck": true
     },
     {
-      "description": "Domestic Payment consents succeeds with minimal data set with additional schema checks.",
+      "description": "Domestic Payment consents succeeds with minimal data set with additional schema checks and default status is AwaitingAuthorisation.",
       "id": "OB-301-DOP-100300",
       "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937984109/Domestic+Payments+v3.1#DomesticPaymentsv3.1-POST/domestic-payment-consents",
-      "detail": "Check that the resource succeeds posting a domestic payment consents with a minimal data set and checks additional schema.",
+      "detail": "Check that the resource succeeds posting a domestic payment consents with a minimal data set and checks additional schema, and default status is AwaitingAuthorisation immediately after the domestic-payment-consent has been created.",
       "parameters": {
         "tokenRequestScope": "payments",
         "instructedAmountCurrency": "$instructedAmountCurrency",
@@ -104,7 +74,7 @@
         "requestConsent": "true"
       },
       "headers": {
-        "Content-Type": "application/json; charset=utf-8"
+        "Content-Type": "application/json"
       },
       "body": "$postData",
       "uri": "/domestic-payment-consents",
@@ -124,16 +94,16 @@
       "schemaCheck": true
     },
     {
-      "description": "Domestic Payment default status is AwaitingAuthorisation.",
+      "description": "Domestic Payment status is Authorised.",
       "id": "OB-301-DOP-100400",
       "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937984109/Domestic+Payments+v3.1#DomesticPaymentsv3.1-POST/domestic-payments",
-      "detail": "Check Domestic Payment default status is AwaitingAuthorisation immediately after the domestic-payment-consent has been created.",
+      "detail": "Check Domestic Payment status is Authorised after calling /domestic-payment-consents.",
       "parameters": {
         "tokenRequestScope": "payments",
         "consentId": "$OB-301-DOP-100300-ConsentId"
       },
       "headers": {
-        "Content-Type": "application/json; charset=utf-8"
+        "Content-Type": "application/json"
       },
       "uri": "/domestic-payment-consents/$consentId",
       "uriImplementation": "mandatory",
@@ -144,7 +114,7 @@
         "OB3DOPAssertAuthorised"
       ],
       "method": "get",
-      "schemaCheck": false
+      "schemaCheck": true
     },
     {
       "description": "PISP Domestic Payment funds-confirmation for authorised status and consent status",
@@ -157,7 +127,7 @@
         "consentId": "$OB-301-DOP-100300-ConsentId"
       },
       "headers": {
-        "Content-Type": "application/json; charset=utf-8"
+        "Content-Type": "application/json"
       },
       "uri": "/domestic-payment-consents/$consentId/funds-confirmation",
       "uriImplementation": "mandatory",
@@ -167,7 +137,7 @@
         "OB3DOPFundsAvailable"
       ],
       "method": "get",
-      "schemaCheck": false
+      "schemaCheck": true
     },
     {
       "description": "Domestic Payment for processing succeeds with minimal data.",
@@ -186,7 +156,7 @@
         "postData": "$minimalDomesticPaymentPost"
       },
       "headers": {
-        "Content-Type": "application/json; charset=utf-8"
+        "Content-Type": "application/json"
       },
       "body": "$postData",
       "uri": "/domestic-payments",
@@ -200,8 +170,11 @@
         "value": "Data.DomesticPaymentId"
       },
       "method": "post",
-      "schemaCheck": false
+      "schemaCheck": true
     },
+
+
+
 
     {
       "description": "PISP can retrieve the Domestic Payment status.",
@@ -213,7 +186,7 @@
         "paymentId": "$OB-301-DOP-100600-DomesticPaymentId"
       },
       "headers": {
-        "Content-Type": "application/json; charset=utf-8"
+        "Content-Type": "application/json"
       },
       "uri": "/domestic-payments/$paymentId",
       "uriImplementation": "mandatory",
@@ -222,8 +195,12 @@
         "OB3GLOAssertOn200"
       ],
       "method": "get",
-      "schemaCheck": false
+      "schemaCheck": true
     },
+
+
+
+
     {
       "description": "Domestic Scheduled Payment consents succeeds with minimal data set with additional schema checks.",
       "id": "OB-301-DOP-100800",
@@ -273,7 +250,7 @@
         "OB3DOPAssertAuthorised"
       ],
       "method": "get",
-      "schemaCheck": false
+      "schemaCheck": true
     },
     {
       "description": "Domestic Scheduled Payment succeeds with minimal data set with additional schema checks.",
@@ -290,7 +267,7 @@
         "postData": "$minimalScheduledDomesticPaymentConsent"
       },
       "headers": {
-        "Content-Type": "application/json; charset=utf-8"
+        "Content-Type": "application/json"
       },
       "body": "$postData",
       "uri": "/domestic-scheduled-payment-consents",
@@ -324,8 +301,12 @@
         "OB3GLOAssertOn200"
       ],
       "method": "get",
-      "schemaCheck": false
+      "schemaCheck": true
     },
+
+
+
+
     {
       "description": "Domestic standing order consents succeeds with minimal data set with additional schema checks.",
       "id": "OB-301-DOP-101200",
@@ -347,6 +328,7 @@
       "asserts": [
         "OB3GLOAssertOn201",
         "OB3GLOFAPIHeader",
+        "OB3DOPAssertAwaitingAuthorisation",
         "OB3GLOAAssertConsentId"
       ],
       "keepContextOnSuccess": {
@@ -373,7 +355,7 @@
         "OB3DOPAssertAuthorised"
       ],
       "method": "get",
-      "schemaCheck": false
+      "schemaCheck": true
     },
     {
       "description": "Domestic Standing Order succeeds with minimal data set with additional schema checks.",
@@ -390,7 +372,7 @@
         "consentId": "$OB-301-DOP-101200-ConsentId"
       },
       "headers": {
-        "Content-Type": "application/json; charset=utf-8"
+        "Content-Type": "application/json"
       },
       "body": "$postData",
       "uri": "/domestic-standing-orders",
@@ -420,7 +402,7 @@
         "consentId": "$OB-301-DOP-101200-ConsentId"
       },
       "headers": {
-        "Content-Type": "application/json; charset=utf-8"
+        "Content-Type": "application/json"
       },
       "body": "$postData",
       "uri": "/domestic-standing-orders",
@@ -448,8 +430,12 @@
         "OB3GLOAssertOn200"
       ],
       "method": "get",
-      "schemaCheck": false
+      "schemaCheck": true
     },
+
+
+
+
     {
       "description": "International Payment consent succeeds with minimal data set with additional schema checks.",
       "id": "OB-301-DOP-101600",
@@ -470,6 +456,7 @@
       "asserts": [
         "OB3GLOAssertOn201",
         "OB3GLOFAPIHeader",
+        "OB3DOPAssertAwaitingAuthorisation",
         "OB3GLOAAssertConsentId"
       ],
       "keepContextOnSuccess": {
@@ -496,7 +483,7 @@
         "OB3DOPAssertAuthorised"
       ],
       "method": "get",
-      "schemaCheck": false
+      "schemaCheck": true
     },
     {
       "description": "International Payment succeeds with minimal data set with additional schema checks.",
@@ -514,7 +501,7 @@
         "consentId": "$OB-301-DOP-101600-ConsentId"
       },
       "headers": {
-        "Content-Type": "application/json; charset=utf-8"
+        "Content-Type": "application/json"
       },
       "body": "$postData",
       "uri": "/international-payments",
@@ -547,8 +534,12 @@
         "OB3GLOAssertOn200"
       ],
       "method": "get",
-      "schemaCheck": false
+      "schemaCheck": true
     },
+
+
+
+
     {
       "description": "International Scheduled Payment consent succeeds with minimal data set with additional schema checks.",
       "id": "OB-301-DOP-102000",
@@ -572,6 +563,7 @@
       "asserts": [
         "OB3GLOAssertOn201",
         "OB3GLOFAPIHeader",
+        "OB3DOPAssertAwaitingAuthorisation",
         "OB3GLOAAssertConsentId"
       ],
       "keepContextOnSuccess": {
@@ -598,7 +590,7 @@
         "OB3DOPAssertAuthorised"
       ],
       "method": "get",
-      "schemaCheck": false
+      "schemaCheck": true
     },
     {
       "description": "International Scheduled Payment succeeds with minimal data set with additional schema checks.",
@@ -616,7 +608,7 @@
         "consentId": "$OB-301-DOP-102000-ConsentId"
       },
       "headers": {
-        "Content-Type": "application/json; charset=utf-8"
+        "Content-Type": "application/json"
       },
       "body": "$postData",
       "uri": "/international-scheduled-payments",
@@ -649,7 +641,7 @@
         "OB3GLOAssertOn200"
       ],
       "method": "get",
-      "schemaCheck": false
-    }        
+      "schemaCheck": true
+    }
   ]
 }

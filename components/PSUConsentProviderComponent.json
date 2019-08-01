@@ -101,7 +101,9 @@
           "redirect_url": "$redirect_url",
           "consentId": "$post-account-consent-id",
           "responseType": "$responseType",
-          "state": "$token_name"
+          "state": "$token_name",
+          "nonce": "true",
+          "exp": "true"
         }
       },
       "context": {

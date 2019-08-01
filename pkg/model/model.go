@@ -161,8 +161,28 @@ func logSchemaValidationOffWarning(testCase *TestCase) {
 			Name: "ClientCredential Grant",
 		},
 		{
+			ID:   "#ct0001",
+			Name: "ClientCredential Grant",
+		},
+		{
+			ID:   "#ccg0001",
+			Name: "ClientCredential Grant",
+		},
+		{
 			ID:   "#compPsuConsent03",
 			Name: "Ozone Headless Consent Flow",
+		},
+		{
+			ID:   "#compPsuConsent03",
+			Name: "PSU Consent Token Exchange",
+		},
+		{
+			ID:   "#ct0003",
+			Name: "Ozone Headless Consent Flow",
+		},
+		{
+			ID:   "#ct0004",
+			Name: "Code Exchange",
 		},
 	}
 
@@ -181,7 +201,15 @@ func logSchemaValidationOffWarning(testCase *TestCase) {
 			"module":   "TestCase",
 			"function": "Validate",
 			"package":  "model",
+<<<<<<< HEAD
 			"TestCase": testCase.ID,
+=======
+			"TestCase": testCase.String(),
+			// "TestCase.ID":      testCase.ID,
+			// "TestCase.Name":    testCase.Name,
+			// "TestCase.Detail":  testCase.Detail,
+			// "TestCase.Purpose": testCase.Purpose,
+>>>>>>> develop
 		}).Warn(`TestCase.Expect.SchemaValidation is false`)
 	}
 }

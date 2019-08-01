@@ -47,7 +47,11 @@ func (v StdTLSValidator) ValidateTLSVersion(uri string) (TLSValidationResult, er
 	if strings.TrimSpace(parsedURI.Host) == "" {
 		return TLSValidationResult{}, fmt.Errorf("unable to parse the provided uri %s", uri)
 	}
-	conn, err := tls.Dial("tcp", parsedURI.Host, v.tlsConfig)
+	addr := parsedURI.Host
+	if !strings.Contains(parsedURI.Host, ":") {
+		addr = fmt.Sprintf("%s:%d", parsedURI.Host, 443)
+	}
+	conn, err := tls.Dial("tcp", addr, v.tlsConfig)
 	if err != nil {
 		return TLSValidationResult{}, errors.Wrapf(err, "unable to detect tls version for hostname %s", parsedURI.Host)
 	}

@@ -2,9 +2,10 @@ package schema
 
 import (
 	"errors"
+	"strings"
+
 	"github.com/go-openapi/loads"
 	"github.com/go-openapi/spec"
-	"strings"
 )
 
 var ErrNotFound = errors.New("operation for method/path not found")
@@ -31,21 +32,27 @@ func (f finder) Spec() *spec.Swagger {
 func (f finder) Operation(method, path string) (*spec.Operation, error) {
 	for specPath, props := range f.doc.Spec().Paths.Paths {
 		if f.matcher.Match(specPath, path) {
+			var operation *spec.Operation
+
 			switch strings.ToUpper(method) {
 			case "DELETE":
-				return props.Delete, nil
+				operation = props.Delete
 			case "GET":
-				return props.Get, nil
+				operation = props.Get
 			case "HEAD":
-				return props.Head, nil
+				operation = props.Head
 			case "OPTIONS":
-				return props.Options, nil
+				operation = props.Options
 			case "PATCH":
-				return props.Patch, nil
+				operation = props.Patch
 			case "POST":
-				return props.Post, nil
+				operation = props.Post
 			case "PUT":
-				return props.Put, nil
+				operation = props.Put
+			}
+
+			if operation != nil {
+				return operation, nil
 			}
 		}
 	}
