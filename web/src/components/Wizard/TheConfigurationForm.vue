@@ -139,7 +139,7 @@
         </b-form-group>
 
         <b-form-group
-          v-if="client_secret_visible"
+          v-if="client_secret_visible()"
           id="client_secret_group"
           label-for="client_secret"
           label="Client Secret">
