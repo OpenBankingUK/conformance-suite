@@ -274,6 +274,7 @@ func TestServerConfigGlobalPostValid(t *testing.T) {
 		},
 		RequestedExecutionDateTime: "2020-01-01T00:00:00+01:00",
 		FirstPaymentDateTime: "2020-01-01T00:00:00+01:00",
+		PaymentFrequency: models.PaymentFrequency("EvryDay"),
 	}
 	globalConfigurationJSON, err := json.MarshalIndent(globalConfiguration, ``, `  `)
 	require.NoError(err)
@@ -343,6 +344,7 @@ func TestServerConfigGlobalPostInvalid(t *testing.T) {
 				},
 				RequestedExecutionDateTime: "2020-01-01T00:00:00+01:00",
 				FirstPaymentDateTime: "2020-01-01T00:00:00+01:00",
+				PaymentFrequency: models.PaymentFrequency("EvryDay"),
 			},
 		},
 		{
@@ -385,6 +387,7 @@ func TestServerConfigGlobalPostInvalid(t *testing.T) {
 				},
 				RequestedExecutionDateTime: "2020-01-01T00:00:00+01:00",
 				FirstPaymentDateTime: "2020-01-01T00:00:00+01:00",
+				PaymentFrequency: models.PaymentFrequency("EvryDay"),
 			},
 		},
 		{
@@ -419,6 +422,7 @@ func TestServerConfigGlobalPostInvalid(t *testing.T) {
 				},
 				RequestedExecutionDateTime: "2020-01-01T00:00:00+01:00",
 				FirstPaymentDateTime: "2020-01-01T00:00:00+01:00",
+				PaymentFrequency: models.PaymentFrequency("EvryDay"),
 			},
 		},
 		{
@@ -458,6 +462,7 @@ func TestServerConfigGlobalPostInvalid(t *testing.T) {
 				},
 				RequestedExecutionDateTime: "2020-01-01T00:00:00+01:00",
 				FirstPaymentDateTime: "2020-01-01T00:00:00+01:00",
+				PaymentFrequency: models.PaymentFrequency("EvryDay"),
 			},
 		},
 		{
@@ -501,6 +506,7 @@ func TestServerConfigGlobalPostInvalid(t *testing.T) {
 				},
 				RequestedExecutionDateTime: "2020-01-01T00:00:00+01:00",
 				FirstPaymentDateTime: "2020-01-01T00:00:00+01:00",
+				PaymentFrequency: models.PaymentFrequency("EvryDay"),
 			},
 		},
 		{
@@ -540,6 +546,7 @@ func TestServerConfigGlobalPostInvalid(t *testing.T) {
 				},
 				RequestedExecutionDateTime: "2020-01-01T00:00:00+01:00",
 				FirstPaymentDateTime: "2020-01-01T00:00:00+01:00",
+				PaymentFrequency: models.PaymentFrequency("EvryDay"),
 			},
 		},
 		{
@@ -583,6 +590,7 @@ func TestServerConfigGlobalPostInvalid(t *testing.T) {
 				},
 				RequestedExecutionDateTime: "2020-01-01T00:00:00+01:00",
 				FirstPaymentDateTime: "2020-01-01T00:00:00+01:00",
+				PaymentFrequency: models.PaymentFrequency("EvryDay"),
 			},
 		},
 		{
@@ -618,6 +626,7 @@ func TestServerConfigGlobalPostInvalid(t *testing.T) {
 				},
 				RequestedExecutionDateTime: "2020-01-01T00:00:00+01:00",
 				FirstPaymentDateTime: "2020-01-01T00:00:00+01:00",
+				PaymentFrequency: models.PaymentFrequency("EvryDay"),
 			},
 		},
 		{
@@ -660,6 +669,7 @@ func TestServerConfigGlobalPostInvalid(t *testing.T) {
 				},
 				RequestedExecutionDateTime: "2020-01-01T00:00:00+01:00",
 				FirstPaymentDateTime: "2020-01-01T00:00:00+01:00",
+				PaymentFrequency: models.PaymentFrequency("EvryDay"),
 			},
 		},
 		{
@@ -698,6 +708,7 @@ func TestServerConfigGlobalPostInvalid(t *testing.T) {
 				},
 				RequestedExecutionDateTime: "2020-01-01T00:00:00+01:00",
 				FirstPaymentDateTime: "2020-01-01T00:00:00+01:00",
+				PaymentFrequency: models.PaymentFrequency("EvryDay"),
 			},
 		},
 		{
@@ -737,6 +748,7 @@ func TestServerConfigGlobalPostInvalid(t *testing.T) {
 				},
 				RequestedExecutionDateTime: "2020-01-01T00:00:00+01:00",
 				FirstPaymentDateTime: "2020-01-01T00:00:00+01:00",
+				PaymentFrequency: models.PaymentFrequency("EvryDay"),
 			},
 		},
 		{

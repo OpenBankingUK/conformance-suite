@@ -98,7 +98,7 @@ func (c GlobalConfiguration) Validate() error {
 		validation.Field(&c.AcrValuesSupported, validation.By(acrValuesValidator)),
 		validation.Field(&c.FirstPaymentDateTime, validation.By(futureDateTimeValidator)),
 		validation.Field(&c.RequestedExecutionDateTime, validation.By(futureDateTimeValidator)),
-		validation.Field(&c.PaymentFrequency),
+		validation.Field(&c.PaymentFrequency, validation.Required),
 	)
 }
 
