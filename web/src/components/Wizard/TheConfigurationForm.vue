@@ -139,7 +139,7 @@
         </b-form-group>
 
         <b-form-group
-          v-if="client_secret_visible()"
+          v-if="client_secret_visible"
           id="client_secret_group"
           label-for="client_secret"
           label="Client Secret">
@@ -896,7 +896,7 @@ export default {
       }
     },
     client_secret_visible() {
-      return this.$store.state.config.configuration.token_endpoint_auth_method !== 'private_key_jwt';
+      return this.$store.state.config.configuration.token_endpoint_auth_method === 'client_secret_basic';
     },
     addResourceAccountIDField(value) {
       this.$store.commit('config/ADD_RESOURCE_ACCOUNT_ID', { account_id: value });
