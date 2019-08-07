@@ -408,6 +408,8 @@
                 'UK.OBIE.SortCodeAccountNumber',
                 'Other'
               ]"
+              :state="isNotEmpty(creditor_account.scheme_name)"
+              @change="creditor_account_scheme_name_selector_change"
               required
             />
           </b-form-group>
@@ -471,6 +473,8 @@
                 'UK.OBIE.SortCodeAccountNumber',
                 'Other'
               ]"
+              @change="international_creditor_account_scheme_name_selector_change"
+              :state="isNotEmpty(international_creditor_account.scheme_name)"
               required
             />
           </b-form-group>
@@ -998,6 +1002,16 @@ export default {
         this.$store.commit('config/SET_INTERNATIONAL_CREDITOR_ACCOUNT_NAME_SCHEME_NAME', this.international_creditor_account_scheme_name_other);
       }
     },
+    international_creditor_account_scheme_name_selector_change() {
+      if ('Other' !== this.international_creditor_account_scheme_name_selector) {
+        this.$store.commit('config/SET_INTERNATIONAL_CREDITOR_ACCOUNT_NAME_SCHEME_NAME', this.international_creditor_account_scheme_name_selector);
+      }
+    },
+    creditor_account_scheme_name_selector_change() {
+      if ('Other' !== this.creditor_account_scheme_name_selector) {
+        this.$store.commit('config/SET_CREDITOR_ACCOUNT_NAME_SCHEME_NAME', this.creditor_account_scheme_name_selector);
+      }
+    }
   },
 };
 </script>
