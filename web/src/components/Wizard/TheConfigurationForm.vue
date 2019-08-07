@@ -583,11 +583,30 @@ export default {
     PaymentFrequency,
   },
   data() {
+    let international_creditor_account_scheme_name_selector = null;
+    let international_creditor_account_scheme_name_other = null;
+    let creditor_account_scheme_name_other = null;
+    let creditor_account_scheme_name_selector = null;
+
+    if (!this.isKnownSchemeName(this.$store.state.config.configuration.international_creditor_account.scheme_name) && this.isNotEmpty(this.$store.state.config.configuration.international_creditor_account.scheme_name)) {
+      international_creditor_account_scheme_name_other = this.$store.state.config.configuration.international_creditor_account.scheme_name;
+      international_creditor_account_scheme_name_selector = 'Other';
+    } else {
+      international_creditor_account_scheme_name_selector = this.$store.state.config.configuration.international_creditor_account.scheme_name;
+    }
+
+    if (!this.isKnownSchemeName(this.$store.state.config.configuration.creditor_account.scheme_name) && this.isNotEmpty(this.$store.state.config.configuration.creditor_account.scheme_name)) {
+      creditor_account_scheme_name_other = this.$store.state.config.configuration.creditor_account.scheme_name;
+      creditor_account_scheme_name_selector = 'Other';
+    } else {
+      creditor_account_scheme_name_selector = this.$store.state.config.configuration.creditor_account.scheme_name;
+    }
+
     return {
-      international_creditor_account_scheme_name_other: null,
-      creditor_account_scheme_name_other: null,
-      international_creditor_account_scheme_name_selector: null,
-      creditor_account_scheme_name_selector: null,
+      international_creditor_account_scheme_name_other,
+      creditor_account_scheme_name_other,
+      international_creditor_account_scheme_name_selector,
+      creditor_account_scheme_name_selector,
     };
   },
   computed: {
@@ -801,15 +820,6 @@ export default {
 
             return self.creditor_account_scheme_name_selector;
           },
-          set scheme_name(value) {
-            if (self.isKnownSchemeName(value)) {
-              self.creditor_account_scheme_name_selector = value;
-            } else {
-              self.creditor_account_scheme_name_selector = 'Other';
-              self.creditor_account_scheme_name_other = value;
-            }
-            self.$store.commit('config/CREDITOR_ACCOUNT_NAME_SCHEME_NAME', value);
-          },
           get identification() {
             return self.$store.state.config.configuration.creditor_account.identification;
           },
@@ -835,15 +845,6 @@ export default {
             }
 
             return self.$store.state.config.configuration.international_creditor_account.scheme_name;
-          },
-          set scheme_name(value) {
-            if (self.isKnownSchemeName(value)) {
-              self.international_creditor_account_scheme_name_selector = value;
-            } else {
-              self.international_creditor_account_scheme_name_selector = 'Other';
-              self.international_creditor_account_scheme_name_other = value;
-            }
-            self.$store.commit('config/SET_INTERNATIONAL_CREDITOR_ACCOUNT_NAME_SCHEME_NAME', value);
           },
           get identification() {
             return self.$store.state.config.configuration.international_creditor_account.identification;
