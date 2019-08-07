@@ -802,18 +802,13 @@ export default {
             return self.creditor_account_scheme_name_selector;
           },
           set scheme_name(value) {
-            if (['UK.OBIE.BBAN',
-                'UK.OBIE.IBAN',
-                'UK.OBIE.PAN' ,
-                'UK.OBIE.Paym',
-                'UK.OBIE.SortCodeAccountNumber',
-                'Other'].indexOf(value) < 0) {
-              self.creditor_account_scheme_name_selector = 'Other';
-              self.$store.commit('config/CREDITOR_ACCOUNT_NAME_SCHEME_NAME', self.creditor_account_scheme_name_other);
-            } else {
+            if (self.isKnownSchemeName(value)) {
               self.creditor_account_scheme_name_selector = value;
-              self.$store.commit('config/CREDITOR_ACCOUNT_NAME_SCHEME_NAME', value);
+            } else {
+              self.creditor_account_scheme_name_selector = 'Other';
+              self.creditor_account_scheme_name_other = value;
             }
+            self.$store.commit('config/CREDITOR_ACCOUNT_NAME_SCHEME_NAME', value);
           },
           get identification() {
             return self.$store.state.config.configuration.creditor_account.identification;
@@ -842,18 +837,13 @@ export default {
             return self.$store.state.config.configuration.international_creditor_account.scheme_name;
           },
           set scheme_name(value) {
-            if (['UK.OBIE.BBAN',
-                'UK.OBIE.IBAN',
-                'UK.OBIE.PAN' ,
-                'UK.OBIE.Paym',
-                'UK.OBIE.SortCodeAccountNumber',
-                'Other'].indexOf(value) < 0) {
-              self.international_creditor_account_scheme_name_selector = 'Other';
-              self.$store.commit('config/SET_INTERNATIONAL_CREDITOR_ACCOUNT_NAME_SCHEME_NAME', self.international_creditor_account_scheme_name_other);
-            } else {
+            if (self.isKnownSchemeName(value)) {
               self.international_creditor_account_scheme_name_selector = value;
-              self.$store.commit('config/SET_INTERNATIONAL_CREDITOR_ACCOUNT_NAME_SCHEME_NAME', value);
+            } else {
+              self.international_creditor_account_scheme_name_selector = 'Other';
+              self.international_creditor_account_scheme_name_other = value;
             }
+            self.$store.commit('config/SET_INTERNATIONAL_CREDITOR_ACCOUNT_NAME_SCHEME_NAME', value);
           },
           get identification() {
             return self.$store.state.config.configuration.international_creditor_account.identification;
@@ -1011,6 +1001,15 @@ export default {
       if ('Other' !== this.creditor_account_scheme_name_selector) {
         this.$store.commit('config/SET_CREDITOR_ACCOUNT_NAME_SCHEME_NAME', this.creditor_account_scheme_name_selector);
       }
+    },
+    isKnownSchemeName(schemeName) {
+      return [
+        'UK.OBIE.BBAN',
+        'UK.OBIE.IBAN',
+        'UK.OBIE.PAN' ,
+        'UK.OBIE.Paym',
+        'UK.OBIE.SortCodeAccountNumber'
+      ].indexOf(schemeName) > -1;
     }
   },
 };
