@@ -399,15 +399,32 @@
           >
             <b-form-select
               id="creditor_account_scheme_name"
-              v-model="creditor_account.scheme_name"
+              v-model="creditor_account_scheme_name_selector"
               :options="[
                 'UK.OBIE.BBAN',
                 'UK.OBIE.IBAN',
                 'UK.OBIE.PAN' ,
                 'UK.OBIE.Paym',
-                'UK.OBIE.SortCodeAccountNumber'
+                'UK.OBIE.SortCodeAccountNumber',
+                'Other'
               ]"
               required
+            />
+          </b-form-group>
+
+          <b-form-group
+            v-if="creditor_account_custom_scheme_visible"
+            id="creditor_account_scheme_name_other_group"
+            label-for="creditor_account_scheme_name_other"
+            label="Custom SchemeName"
+            description="OBExternalAccountIdentification4Code"
+          >
+            <b-form-input
+              id="creditor_account_scheme_name_other"
+              v-model="creditor_account_scheme_name_other"
+              :state="isNotEmpty(creditor_account_scheme_name_other)"
+              required
+              @update="creditor_account_scheme_name_other_update"
             />
           </b-form-group>
           <b-form-group
@@ -445,15 +462,32 @@
           >
             <b-form-select
               id="international_creditor_account_scheme_name"
-              v-model="international_creditor_account.scheme_name"
+              v-model="international_creditor_account_scheme_name_selector"
               :options="[
                 'UK.OBIE.BBAN',
                 'UK.OBIE.IBAN',
                 'UK.OBIE.PAN' ,
                 'UK.OBIE.Paym',
-                'UK.OBIE.SortCodeAccountNumber'
+                'UK.OBIE.SortCodeAccountNumber',
+                'Other'
               ]"
               required
+            />
+          </b-form-group>
+
+          <b-form-group
+            v-if="international_creditor_account_custom_scheme_visible"
+            id="international_creditor_account_scheme_name_other_group"
+            label-for="international_creditor_account_scheme_name_other"
+            label="Custom SchemeName"
+            description="OBExternalAccountIdentification4Code"
+          >
+            <b-form-input
+              id="international_creditor_account_scheme_name_other"
+              v-model="international_creditor_account_scheme_name_other"
+              :state="isNotEmpty(international_creditor_account_scheme_name_other)"
+              required
+              @update="international_creditor_account_scheme_name_other_update"
             />
           </b-form-group>
           <b-form-group
@@ -543,6 +577,14 @@ export default {
   components: {
     ConfigurationFormFile,
     PaymentFrequency,
+  },
+  data() {
+    return {
+      international_creditor_account_scheme_name_other: null,
+      creditor_account_scheme_name_other: null,
+      international_creditor_account_scheme_name_selector: null,
+      creditor_account_scheme_name_selector: null,
+    };
   },
   computed: {
     ...mapGetters([
@@ -749,10 +791,25 @@ export default {
         const self = this;
         return {
           get scheme_name() {
-            return self.$store.state.config.configuration.creditor_account.scheme_name;
+            if (self.creditor_account_scheme_name_selector === 'Other' && !_.isEmpty(self.creditor_account_scheme_name_other)) {
+              return self.creditor_account_scheme_name_other;
+            }
+
+            return self.creditor_account_scheme_name_selector;
           },
           set scheme_name(value) {
-            self.$store.commit('config/SET_CREDITOR_ACCOUNT_NAME_SCHEME_NAME', value);
+            if (['UK.OBIE.BBAN',
+                'UK.OBIE.IBAN',
+                'UK.OBIE.PAN' ,
+                'UK.OBIE.Paym',
+                'UK.OBIE.SortCodeAccountNumber',
+                'Other'].indexOf(value) < 0) {
+              self.creditor_account_scheme_name_selector = 'Other';
+              self.$store.commit('config/CREDITOR_ACCOUNT_NAME_SCHEME_NAME', self.creditor_account_scheme_name_other);
+            } else {
+              self.creditor_account_scheme_name_selector = value;
+              self.$store.commit('config/CREDITOR_ACCOUNT_NAME_SCHEME_NAME', value);
+            }
           },
           get identification() {
             return self.$store.state.config.configuration.creditor_account.identification;
@@ -774,10 +831,25 @@ export default {
         const self = this;
         return {
           get scheme_name() {
+            if (self.$store.state.config.configuration.international_creditor_account.scheme_name === 'Other' && !_.isEmpty(self.international_creditor_account_scheme_name_other)) {
+              return self.international_creditor_account_scheme_name_other;
+            }
+
             return self.$store.state.config.configuration.international_creditor_account.scheme_name;
           },
           set scheme_name(value) {
-            self.$store.commit('config/SET_INTERNATIONAL_CREDITOR_ACCOUNT_NAME_SCHEME_NAME', value);
+            if (['UK.OBIE.BBAN',
+                'UK.OBIE.IBAN',
+                'UK.OBIE.PAN' ,
+                'UK.OBIE.Paym',
+                'UK.OBIE.SortCodeAccountNumber',
+                'Other'].indexOf(value) < 0) {
+              self.international_creditor_account_scheme_name_selector = 'Other';
+              self.$store.commit('config/SET_INTERNATIONAL_CREDITOR_ACCOUNT_NAME_SCHEME_NAME', self.international_creditor_account_scheme_name_other);
+            } else {
+              self.international_creditor_account_scheme_name_selector = value;
+              self.$store.commit('config/SET_INTERNATIONAL_CREDITOR_ACCOUNT_NAME_SCHEME_NAME', value);
+            }
           },
           get identification() {
             return self.$store.state.config.configuration.international_creditor_account.identification;
@@ -793,6 +865,16 @@ export default {
           },
         };
       },
+    },
+    international_creditor_account_custom_scheme_visible: {
+      get() {
+        return this.international_creditor_account_scheme_name_selector == 'Other';
+      },
+    },
+    creditor_account_custom_scheme_visible: {
+      get() {
+        return this.creditor_account_scheme_name_selector == 'Other';
+      }
     },
     instructed_amount: {
       get() {
@@ -905,6 +987,16 @@ export default {
     },
     removeResourceStatementIDField(index) {
       this.removeResourceStatementID(index);
+    },
+    creditor_account_scheme_name_other_update() {
+      if (!_.isEmpty(this.creditor_account_scheme_name_other)) {
+        this.$store.commit('config/SET_CREDITOR_ACCOUNT_NAME_SCHEME_NAME', this.creditor_account_scheme_name_other);
+      }
+    },
+    international_creditor_account_scheme_name_other_update() {
+      if (!_.isEmpty(this.international_creditor_account_scheme_name_other)) {
+        this.$store.commit('config/SET_INTERNATIONAL_CREDITOR_ACCOUNT_NAME_SCHEME_NAME', this.international_creditor_account_scheme_name_other);
+      }
     },
   },
 };
