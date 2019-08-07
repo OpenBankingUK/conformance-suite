@@ -795,7 +795,7 @@ export default {
         const self = this;
         return {
           get scheme_name() {
-            if (self.creditor_account_scheme_name_selector === 'Other' && isEmpty(self.creditor_account_scheme_name_other)) {
+            if (self.creditor_account_scheme_name_selector === 'Other' && !isEmpty(self.creditor_account_scheme_name_other)) {
               return self.creditor_account_scheme_name_other;
             }
 
@@ -830,7 +830,7 @@ export default {
         const self = this;
         return {
           get scheme_name() {
-            if (self.$store.state.config.configuration.international_creditor_account.scheme_name === 'Other' && isEmpty(self.international_creditor_account_scheme_name_other)) {
+            if (self.$store.state.config.configuration.international_creditor_account.scheme_name === 'Other' && !isEmpty(self.international_creditor_account_scheme_name_other)) {
               return self.international_creditor_account_scheme_name_other;
             }
 
@@ -983,12 +983,12 @@ export default {
       this.removeResourceStatementID(index);
     },
     creditor_account_scheme_name_other_update() {
-      if (isEmpty(this.creditor_account_scheme_name_other)) {
+      if (!isEmpty(this.creditor_account_scheme_name_other)) {
         this.$store.commit('config/SET_CREDITOR_ACCOUNT_NAME_SCHEME_NAME', this.creditor_account_scheme_name_other);
       }
     },
     international_creditor_account_scheme_name_other_update() {
-      if (isEmpty(this.international_creditor_account_scheme_name_other)) {
+      if (!isEmpty(this.international_creditor_account_scheme_name_other)) {
         this.$store.commit('config/SET_INTERNATIONAL_CREDITOR_ACCOUNT_NAME_SCHEME_NAME', this.international_creditor_account_scheme_name_other);
       }
     },
