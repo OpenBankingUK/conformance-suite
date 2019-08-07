@@ -6,21 +6,6 @@ import (
 	validation "github.com/go-ozzo/ozzo-validation"
 )
 
-// Needs to be a interface{} slice, see the official test for an example
-// https://github.com/go-ozzo/ozzo-validation/blob/master/in_test.go
-type OBExternalAccountIdentification4Code = interface{}
-
-// OBExternalAccountIdentification4Codes - valid SchemeName as per the specification.
-func OBExternalAccountIdentification4Codes() [5]OBExternalAccountIdentification4Code {
-	return [5]OBExternalAccountIdentification4Code{
-		"UK.OBIE.BBAN",
-		"UK.OBIE.IBAN",
-		"UK.OBIE.PAN",
-		"UK.OBIE.Paym",
-		"UK.OBIE.SortCodeAccountNumber",
-	}
-}
-
 // Payment - Provides the details to identify the beneficiary account.
 // This is referred to `OBCashAccount5` (line 9488) in the specification linked to below.
 //
@@ -48,9 +33,8 @@ type OBCashAccount5 = Payment
 
 // Validate - used by https://github.com/go-ozzo/ozzo-validation to validate struct.
 func (p Payment) Validate() error {
-	values := OBExternalAccountIdentification4Codes()
 	return validation.ValidateStruct(&p,
-		validation.Field(&p.SchemeName, validation.Required, validation.Length(1, 40), validation.In(values[:]...)),
+		validation.Field(&p.SchemeName, validation.Required, validation.Length(1, 40)),
 		validation.Field(&p.Identification, validation.Required, validation.Length(1, 256)),
 		validation.Field(&p.Name, validation.Length(1, 70)),
 	)
