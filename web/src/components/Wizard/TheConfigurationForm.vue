@@ -409,8 +409,8 @@
                 'Other'
               ]"
               :state="isNotEmpty(creditor_account.scheme_name)"
-              @change="creditor_account_scheme_name_selector_change"
               required
+              @change="creditor_account_scheme_name_selector_change"
             />
           </b-form-group>
 
@@ -473,9 +473,9 @@
                 'UK.OBIE.SortCodeAccountNumber',
                 'Other'
               ]"
-              @change="international_creditor_account_scheme_name_selector_change"
               :state="isNotEmpty(international_creditor_account.scheme_name)"
               required
+              @change="international_creditor_account_scheme_name_selector_change"
             />
           </b-form-group>
 
@@ -795,7 +795,7 @@ export default {
         const self = this;
         return {
           get scheme_name() {
-            if (self.creditor_account_scheme_name_selector === 'Other' && !_.isEmpty(self.creditor_account_scheme_name_other)) {
+            if (self.creditor_account_scheme_name_selector === 'Other' && isEmpty(self.creditor_account_scheme_name_other)) {
               return self.creditor_account_scheme_name_other;
             }
 
@@ -830,7 +830,7 @@ export default {
         const self = this;
         return {
           get scheme_name() {
-            if (self.$store.state.config.configuration.international_creditor_account.scheme_name === 'Other' && !_.isEmpty(self.international_creditor_account_scheme_name_other)) {
+            if (self.$store.state.config.configuration.international_creditor_account.scheme_name === 'Other' && isEmpty(self.international_creditor_account_scheme_name_other)) {
               return self.international_creditor_account_scheme_name_other;
             }
 
@@ -862,13 +862,13 @@ export default {
     },
     international_creditor_account_custom_scheme_visible: {
       get() {
-        return this.international_creditor_account_scheme_name_selector == 'Other';
+        return this.international_creditor_account_scheme_name_selector === 'Other';
       },
     },
     creditor_account_custom_scheme_visible: {
       get() {
-        return this.creditor_account_scheme_name_selector == 'Other';
-      }
+        return this.creditor_account_scheme_name_selector === 'Other';
+      },
     },
     instructed_amount: {
       get() {
@@ -983,22 +983,22 @@ export default {
       this.removeResourceStatementID(index);
     },
     creditor_account_scheme_name_other_update() {
-      if (!_.isEmpty(this.creditor_account_scheme_name_other)) {
+      if (isEmpty(this.creditor_account_scheme_name_other)) {
         this.$store.commit('config/SET_CREDITOR_ACCOUNT_NAME_SCHEME_NAME', this.creditor_account_scheme_name_other);
       }
     },
     international_creditor_account_scheme_name_other_update() {
-      if (!_.isEmpty(this.international_creditor_account_scheme_name_other)) {
+      if (isEmpty(this.international_creditor_account_scheme_name_other)) {
         this.$store.commit('config/SET_INTERNATIONAL_CREDITOR_ACCOUNT_NAME_SCHEME_NAME', this.international_creditor_account_scheme_name_other);
       }
     },
     international_creditor_account_scheme_name_selector_change() {
-      if ('Other' !== this.international_creditor_account_scheme_name_selector) {
+      if (this.international_creditor_account_scheme_name_selector !== 'Other') {
         this.$store.commit('config/SET_INTERNATIONAL_CREDITOR_ACCOUNT_NAME_SCHEME_NAME', this.international_creditor_account_scheme_name_selector);
       }
     },
     creditor_account_scheme_name_selector_change() {
-      if ('Other' !== this.creditor_account_scheme_name_selector) {
+      if (this.creditor_account_scheme_name_selector !== 'Other') {
         this.$store.commit('config/SET_CREDITOR_ACCOUNT_NAME_SCHEME_NAME', this.creditor_account_scheme_name_selector);
       }
     },
@@ -1006,11 +1006,11 @@ export default {
       return [
         'UK.OBIE.BBAN',
         'UK.OBIE.IBAN',
-        'UK.OBIE.PAN' ,
+        'UK.OBIE.PAN',
         'UK.OBIE.Paym',
-        'UK.OBIE.SortCodeAccountNumber'
+        'UK.OBIE.SortCodeAccountNumber',
       ].indexOf(schemeName) > -1;
-    }
+    },
   },
 };
 </script>
