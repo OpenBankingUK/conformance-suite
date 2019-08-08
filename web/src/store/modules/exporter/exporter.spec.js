@@ -6,12 +6,12 @@
  * https://vue-test-utils.vuejs.org/guides/using-with-vuex.html#testing-a-running-store
  */
 import { createLocalVue } from '@vue/test-utils';
-import Vuex from 'vuex';
 import cloneDeep from 'lodash/cloneDeep';
 import moment from 'moment';
-
-import exporter from './index';
+import Vuex from 'vuex';
 import api from '../../../api';
+import exporter from './index';
+
 // https://jestjs.io/docs/en/mock-functions#mocking-modules
 jest.mock('../../../api');
 
@@ -44,6 +44,7 @@ describe('store/modules/exporter', () => {
       implementer: '',
       authorised_by: '',
       job_title: '',
+      products: [],
       has_agreed: false,
       add_digital_signature: false,
       export_results_blob: null,

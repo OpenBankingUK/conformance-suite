@@ -34,6 +34,7 @@ type Report struct {
 	Discovery        discovery.Model    `json:"-"`                        // Original used discovery model
 	APISpecification []APISpecification `json:"apiSpecification"`         // API and version tested, along with test cases
 	FCSVersion       string             `json:"fcsVersion"`               // Version of FCS running the tests
+	Products         []string           `json:"products"`                 // Products tested, e.g., "Business, Personal, Cards"
 }
 
 type APISpecification struct {
@@ -107,6 +108,7 @@ func NewReport(exportResults models.ExportResults, environment string) (Report, 
 		Discovery:        exportResults.DiscoveryModel,
 		APISpecification: apiSpecs,
 		FCSVersion:       version.FullVersion,
+		Products:         exportResults.ExportRequest.Products,
 	}, nil
 }
 

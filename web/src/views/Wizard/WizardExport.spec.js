@@ -86,6 +86,7 @@ describe('WizardExport', () => {
       implementer: '',
       authorised_by: '',
       job_title: '',
+      products: [],
       has_agreed: false,
       add_digital_signature: false,
       export_results_blob: null,
@@ -134,6 +135,7 @@ describe('WizardExport', () => {
     wrapper.find('#implementer').setValue('implementer');
     wrapper.find('#authorised_by').setValue('authorised_by');
     wrapper.find('#job_title').setValue('job_title');
+    wrapper.find('#products').setValue('Business');
     wrapper.find('#has_agreed').setChecked(true);
     wrapper.find('#add_digital_signature').setChecked(true);
 

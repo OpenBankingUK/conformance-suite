@@ -273,8 +273,8 @@ func TestServerConfigGlobalPostValid(t *testing.T) {
 			Identification: "20202010981789",
 		},
 		RequestedExecutionDateTime: "2020-01-01T00:00:00+01:00",
-		FirstPaymentDateTime: "2020-01-01T00:00:00+01:00",
-		PaymentFrequency: models.PaymentFrequency("EvryDay"),
+		FirstPaymentDateTime:       "2020-01-01T00:00:00+01:00",
+		PaymentFrequency:           models.PaymentFrequency("EvryDay"),
 	}
 	globalConfigurationJSON, err := json.MarshalIndent(globalConfiguration, ``, `  `)
 	require.NoError(err)
@@ -343,8 +343,8 @@ func TestServerConfigGlobalPostInvalid(t *testing.T) {
 					Identification: "20202010981789",
 				},
 				RequestedExecutionDateTime: "2020-01-01T00:00:00+01:00",
-				FirstPaymentDateTime: "2020-01-01T00:00:00+01:00",
-				PaymentFrequency: models.PaymentFrequency("EvryDay"),
+				FirstPaymentDateTime:       "2020-01-01T00:00:00+01:00",
+				PaymentFrequency:           models.PaymentFrequency("EvryDay"),
 			},
 		},
 		{
@@ -386,8 +386,8 @@ func TestServerConfigGlobalPostInvalid(t *testing.T) {
 					Identification: "20202010981789",
 				},
 				RequestedExecutionDateTime: "2020-01-01T00:00:00+01:00",
-				FirstPaymentDateTime: "2020-01-01T00:00:00+01:00",
-				PaymentFrequency: models.PaymentFrequency("EvryDay"),
+				FirstPaymentDateTime:       "2020-01-01T00:00:00+01:00",
+				PaymentFrequency:           models.PaymentFrequency("EvryDay"),
 			},
 		},
 		{
@@ -421,8 +421,8 @@ func TestServerConfigGlobalPostInvalid(t *testing.T) {
 					Identification: "20202010981789",
 				},
 				RequestedExecutionDateTime: "2020-01-01T00:00:00+01:00",
-				FirstPaymentDateTime: "2020-01-01T00:00:00+01:00",
-				PaymentFrequency: models.PaymentFrequency("EvryDay"),
+				FirstPaymentDateTime:       "2020-01-01T00:00:00+01:00",
+				PaymentFrequency:           models.PaymentFrequency("EvryDay"),
 			},
 		},
 		{
@@ -461,8 +461,8 @@ func TestServerConfigGlobalPostInvalid(t *testing.T) {
 					Identification: "20202010981789",
 				},
 				RequestedExecutionDateTime: "2020-01-01T00:00:00+01:00",
-				FirstPaymentDateTime: "2020-01-01T00:00:00+01:00",
-				PaymentFrequency: models.PaymentFrequency("EvryDay"),
+				FirstPaymentDateTime:       "2020-01-01T00:00:00+01:00",
+				PaymentFrequency:           models.PaymentFrequency("EvryDay"),
 			},
 		},
 		{
@@ -505,8 +505,8 @@ func TestServerConfigGlobalPostInvalid(t *testing.T) {
 					Identification: "20202010981789",
 				},
 				RequestedExecutionDateTime: "2020-01-01T00:00:00+01:00",
-				FirstPaymentDateTime: "2020-01-01T00:00:00+01:00",
-				PaymentFrequency: models.PaymentFrequency("EvryDay"),
+				FirstPaymentDateTime:       "2020-01-01T00:00:00+01:00",
+				PaymentFrequency:           models.PaymentFrequency("EvryDay"),
 			},
 		},
 		{
@@ -545,8 +545,8 @@ func TestServerConfigGlobalPostInvalid(t *testing.T) {
 					Identification: "20202010981789",
 				},
 				RequestedExecutionDateTime: "2020-01-01T00:00:00+01:00",
-				FirstPaymentDateTime: "2020-01-01T00:00:00+01:00",
-				PaymentFrequency: models.PaymentFrequency("EvryDay"),
+				FirstPaymentDateTime:       "2020-01-01T00:00:00+01:00",
+				PaymentFrequency:           models.PaymentFrequency("EvryDay"),
 			},
 		},
 		{
@@ -589,8 +589,8 @@ func TestServerConfigGlobalPostInvalid(t *testing.T) {
 					Identification: "20202010981789",
 				},
 				RequestedExecutionDateTime: "2020-01-01T00:00:00+01:00",
-				FirstPaymentDateTime: "2020-01-01T00:00:00+01:00",
-				PaymentFrequency: models.PaymentFrequency("EvryDay"),
+				FirstPaymentDateTime:       "2020-01-01T00:00:00+01:00",
+				PaymentFrequency:           models.PaymentFrequency("EvryDay"),
 			},
 		},
 		{
@@ -625,8 +625,8 @@ func TestServerConfigGlobalPostInvalid(t *testing.T) {
 					},
 				},
 				RequestedExecutionDateTime: "2020-01-01T00:00:00+01:00",
-				FirstPaymentDateTime: "2020-01-01T00:00:00+01:00",
-				PaymentFrequency: models.PaymentFrequency("EvryDay"),
+				FirstPaymentDateTime:       "2020-01-01T00:00:00+01:00",
+				PaymentFrequency:           models.PaymentFrequency("EvryDay"),
 			},
 		},
 		{
@@ -668,8 +668,8 @@ func TestServerConfigGlobalPostInvalid(t *testing.T) {
 					Identification: "20202010981789",
 				},
 				RequestedExecutionDateTime: "2020-01-01T00:00:00+01:00",
-				FirstPaymentDateTime: "2020-01-01T00:00:00+01:00",
-				PaymentFrequency: models.PaymentFrequency("EvryDay"),
+				FirstPaymentDateTime:       "2020-01-01T00:00:00+01:00",
+				PaymentFrequency:           models.PaymentFrequency("EvryDay"),
 			},
 		},
 		{
@@ -707,8 +707,8 @@ func TestServerConfigGlobalPostInvalid(t *testing.T) {
 					Identification: "20202010981789",
 				},
 				RequestedExecutionDateTime: "2020-01-01T00:00:00+01:00",
-				FirstPaymentDateTime: "2020-01-01T00:00:00+01:00",
-				PaymentFrequency: models.PaymentFrequency("EvryDay"),
+				FirstPaymentDateTime:       "2020-01-01T00:00:00+01:00",
+				PaymentFrequency:           models.PaymentFrequency("EvryDay"),
 			},
 		},
 		{
@@ -747,8 +747,8 @@ func TestServerConfigGlobalPostInvalid(t *testing.T) {
 					Identification: "20202010981789",
 				},
 				RequestedExecutionDateTime: "2020-01-01T00:00:00+01:00",
-				FirstPaymentDateTime: "2020-01-01T00:00:00+01:00",
-				PaymentFrequency: models.PaymentFrequency("EvryDay"),
+				FirstPaymentDateTime:       "2020-01-01T00:00:00+01:00",
+				PaymentFrequency:           models.PaymentFrequency("EvryDay"),
 			},
 		},
 		{
@@ -786,9 +786,9 @@ func TestServerConfigGlobalPostInvalid(t *testing.T) {
 					SchemeName:     "UK.OBIE.SortCodeAccountNumber",
 					Identification: "20202010981789",
 				},
-				PaymentFrequency: models.PaymentFrequency("INVALID"),
+				PaymentFrequency:           models.PaymentFrequency("INVALID"),
 				RequestedExecutionDateTime: "2020-01-01T00:00:00+01:00",
-				FirstPaymentDateTime: "2020-01-01T00:00:00+01:00",
+				FirstPaymentDateTime:       "2020-01-01T00:00:00+01:00",
 			},
 		},
 	}

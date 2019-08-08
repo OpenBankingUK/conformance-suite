@@ -60,7 +60,6 @@ func init() {
 	viper.SetEnvPrefix("")
 	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
 	viper.AutomaticEnv()
-
 }
 
 func TestRun(t *testing.T) {

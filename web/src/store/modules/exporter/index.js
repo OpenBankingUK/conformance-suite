@@ -1,5 +1,5 @@
-import moment from 'moment';
 import pick from 'lodash/pick';
+import moment from 'moment';
 import api from '../../../api';
 
 /**
@@ -19,6 +19,7 @@ const mutationTypes = {
   SET_IMPLEMENTER: 'SET_IMPLEMENTER',
   SET_AUTHORISED_BY: 'SET_AUTHORISED_BY',
   SET_JOB_TITLE: 'SET_JOB_TITLE',
+  SET_PRODUCTS: 'SET_PRODUCTS',
   SET_HAS_AGREED: 'SET_HAS_AGREED',
   SET_ADD_DIGITAL_SIGNATURE: 'SET_ADD_DIGITAL_SIGNATURE',
   SET_EXPORT_CONFORMANCE_REPORT: 'SET_EXPORT_CONFORMANCE_REPORT',
@@ -33,6 +34,7 @@ export default {
     implementer: '',
     authorised_by: '',
     job_title: '',
+    products: [],
     has_agreed: false,
     add_digital_signature: false,
     export_results_blob: null,
@@ -51,6 +53,9 @@ export default {
     },
     [mutationTypes.SET_JOB_TITLE](state, value) {
       state.job_title = value;
+    },
+    [mutationTypes.SET_PRODUCTS](state, value) {
+      state.products = value;
     },
     [mutationTypes.SET_HAS_AGREED](state, value) {
       state.has_agreed = value;
@@ -72,6 +77,7 @@ export default {
         'implementer',
         'authorised_by',
         'job_title',
+        'products',
         'has_agreed',
         'add_digital_signature',
       ]);

@@ -48,8 +48,9 @@ func (h exportHandlers) postExport(c echo.Context) error {
 	tokens := h.journey.Events().AllAcquiredAccessToken()
 	discovery, err := h.journey.DiscoveryModel()
 	if err != nil {
-		return errors.Wrap(err, "exporting report-get journey discovery model")
+		return c.JSON(http.StatusBadRequest, NewErrorResponse(errors.Wrap(err, "exporting report-get journey discovery model")))
 	}
+
 	exportResults := models.ExportResults{
 		ExportRequest:    request,
 		HasPassed:        false,

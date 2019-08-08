@@ -3,6 +3,11 @@
   "implementer": "Implementer/Brand Name",
   "authorised_by": "Authorised by",
   "job_title": "Job Title",
+  "products": [
+    "Business",
+    "Personal",
+    "Cards"
+  ],
   "has_agreed": true,
   "add_digital_signature": false
 }
