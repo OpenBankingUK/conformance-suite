@@ -376,7 +376,8 @@
             "resource": "Balance",
             "method": "get",
             "asserts": [
-                "OB3GLOAssertOn400"
+              "OB3GLOAssertOn400",
+              "OB3GLOAssertOn403"
             ],
             "schemaCheck": false
         },
@@ -584,7 +585,8 @@
             "method": "get",
             "asserts": [
                 "OB3GLOAssertOn400",
-                "OB3IPAssertResourceFieldInvalidOBErrorCode"
+                "OB3IPAssertResourceFieldInvalidOBErrorCode",
+                "OB3GLOAssertOn403"
             ],
             "schemaCheck": false
         },
@@ -1278,7 +1280,8 @@
             "resource": "Product",
             "method": "get",
             "asserts": [
-                "OB3GLOAssertOn400"
+                "OB3GLOAssertOn400",
+                "OB3GLOAssertOn403"
             ],
             "schemaCheck": false
         },
@@ -1439,7 +1442,8 @@
             "method": "get",
             "asserts": [
                 "OB3GLOAssertOn400",
-                "OB3IPAssertResourceFieldInvalidOBErrorCode"
+                "OB3IPAssertResourceFieldInvalidOBErrorCode",
+                "OB3GLOAssertOn403"
             ],
             "schemaCheck": false
         },
@@ -1600,7 +1604,8 @@
             "method": "get",
             "asserts": [
                 "OB3GLOAssertOn400",
-                "OB3IPAssertResourceFieldInvalidOBErrorCode"
+                "OB3IPAssertResourceFieldInvalidOBErrorCode",
+                "OB3GLOAssertOn403"
             ],
             "schemaCheck": false
         },
@@ -1896,7 +1901,8 @@
             "resource": "Transaction",
             "method": "get",
             "asserts": [
-                "OB3GLOAssertOn400"
+                "OB3GLOAssertOn400",
+                "OB3GLOAssertOn403"
             ],
             "schemaCheck": false
         },
