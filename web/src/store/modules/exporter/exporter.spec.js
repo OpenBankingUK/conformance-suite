@@ -74,13 +74,13 @@ describe('store/modules/exporter', () => {
 
     it('implementer prefix exists', async () => {
       // example: implementer_name_report_2019-03-25T11_41_05+00_00.zip
-      let filename = exporter.generateFilename("implementer_name_");
+      const filename = exporter.generateFilename('implementer_name_');
       expect(filename).toMatch(/implementer_name_report_[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\+[0-9]{2}:[0-9]{2}.zip/);
     });
 
     it('implementer prefix does not exist', async () => {
       // example: report_2019-03-25T11_41_05+00_00.zip
-      let filename = exporter.generateFilename("");
+      const filename = exporter.generateFilename('');
       expect(filename).toMatch(/report_[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\+[0-9]{2}:[0-9]{2}.zip/);
     });
   });

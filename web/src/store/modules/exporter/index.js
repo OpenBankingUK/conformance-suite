@@ -6,7 +6,7 @@ import api from '../../../api';
  * Example return value: `report_2019-03-25T11_41_05+00_00.zip`.
  * @param {*} prefix
  */
-const generateFilename = function (prefix) {
+const generateFilename = function generateFilename(prefix) {
   const RFC3339 = 'YYYY-MM-DDTHH:mm:ssZ'; // "2006-01-02T15:04:05Z07:00"
   const datetime = moment(new Date()).format(RFC3339);
   const filename = `${prefix}report_${datetime}.zip`;
@@ -89,5 +89,5 @@ export default {
       }
     },
   },
-  generateFilename
+  generateFilename,
 };
