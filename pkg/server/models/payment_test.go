@@ -10,53 +10,9 @@ import (
 	validation "github.com/go-ozzo/ozzo-validation"
 )
 
-func TestPaymentValidateSchemeName(t *testing.T) {
-	require := test.NewRequire(t)
-
-	for _, validSchemeName := range OBExternalAccountIdentification4Codes() {
-		data := fmt.Sprintf(`
-{
-    "scheme_name": "%s",
-    "identification": "20202010981789"
-}
-		`, validSchemeName)
-		payment := Payment{}
-		require.NoError(json.Unmarshal([]byte(data), &payment))
-		require.NoError(payment.Validate())
-	}
-
-	for _, validSchemeName := range OBExternalAccountIdentification4Codes() {
-		invalidSchemeName := fmt.Sprintf("FAKE_%s", validSchemeName)
-		data := fmt.Sprintf(`
-{
-    "scheme_name": "%s",
-    "identification": "20202010981789"
-}
-		`, invalidSchemeName)
-		payment := Payment{}
-		require.NoError(json.Unmarshal([]byte(data), &payment))
-		require.EqualError(payment.Validate(), "scheme_name: must be a valid value.")
-	}
-
-	// `SchemaName` should be between 1-40 characters
-	{
-		invalidSchemeName := strings.Repeat("s", 41)
-		data := fmt.Sprintf(`
-{
-    "scheme_name": "%s",
-    "identification": "20202010981789"
-}
-		`, invalidSchemeName)
-		payment := Payment{}
-		require.NoError(json.Unmarshal([]byte(data), &payment))
-		require.EqualError(payment.Validate(), "scheme_name: the length must be between 1 and 40.")
-	}
-}
-
 func TestPaymentValidateIdentification(t *testing.T) {
 	require := test.NewRequire(t)
-	schemaName, ok := OBExternalAccountIdentification4Codes()[0].(string)
-	require.True(ok)
+	schemaName := "UK.OBIE.IBAN"
 
 	// `Identification` specified
 	{
@@ -98,8 +54,7 @@ func TestPaymentValidateIdentification(t *testing.T) {
 
 func TestPaymentValidateName(t *testing.T) {
 	require := test.NewRequire(t)
-	schemaName, ok := OBExternalAccountIdentification4Codes()[0].(string)
-	require.True(ok)
+	schemaName := "UK.OBIE.IBAN"
 
 	// `Name` does not need to be present according to specification
 	{

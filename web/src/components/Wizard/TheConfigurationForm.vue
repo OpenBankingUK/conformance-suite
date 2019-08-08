@@ -391,25 +391,7 @@
           label="CreditorAccount"
           description="OBCashAccount5"
         >
-          <b-form-group
-            id="creditor_account_scheme_name_group"
-            label-for="creditor_account_scheme_name"
-            label="SchemeName"
-            description="OBExternalAccountIdentification4Code"
-          >
-            <b-form-select
-              id="creditor_account_scheme_name"
-              v-model="creditor_account.scheme_name"
-              :options="[
-                'UK.OBIE.BBAN',
-                'UK.OBIE.IBAN',
-                'UK.OBIE.PAN' ,
-                'UK.OBIE.Paym',
-                'UK.OBIE.SortCodeAccountNumber'
-              ]"
-              required
-            />
-          </b-form-group>
+          <SchemeName creditorAccountType="Local" />
           <b-form-group
             id="creditor_account_identification_group"
             label-for="creditor_account_identification"
@@ -437,25 +419,7 @@
             />
           </b-form-group>
 
-          <b-form-group
-            id="international_creditor_account_scheme_name_group"
-            label-for="international_creditor_account_scheme_name"
-            label="International SchemeName"
-            description="International OBExternalAccountIdentification4Code"
-          >
-            <b-form-select
-              id="international_creditor_account_scheme_name"
-              v-model="international_creditor_account.scheme_name"
-              :options="[
-                'UK.OBIE.BBAN',
-                'UK.OBIE.IBAN',
-                'UK.OBIE.PAN' ,
-                'UK.OBIE.Paym',
-                'UK.OBIE.SortCodeAccountNumber'
-              ]"
-              required
-            />
-          </b-form-group>
+          <SchemeName creditorAccountType="International" />
           <b-form-group
             id="international_creditor_account_identification_group"
             label-for="international_creditor_account_identification"
@@ -535,6 +499,7 @@ import { createNamespacedHelpers, mapActions } from 'vuex';
 import isEmpty from 'lodash/isEmpty';
 import ConfigurationFormFile from './ConfigurationFormFile.vue';
 import PaymentFrequency from '../config/PaymentFrequency.vue';
+import SchemeName from '../config/SchemeName.vue';
 
 const { mapGetters } = createNamespacedHelpers('config');
 
@@ -543,6 +508,7 @@ export default {
   components: {
     ConfigurationFormFile,
     PaymentFrequency,
+    SchemeName,
   },
   computed: {
     ...mapGetters([
@@ -748,12 +714,6 @@ export default {
       get() {
         const self = this;
         return {
-          get scheme_name() {
-            return self.$store.state.config.configuration.creditor_account.scheme_name;
-          },
-          set scheme_name(value) {
-            self.$store.commit('config/SET_CREDITOR_ACCOUNT_NAME_SCHEME_NAME', value);
-          },
           get identification() {
             return self.$store.state.config.configuration.creditor_account.identification;
           },
@@ -773,12 +733,6 @@ export default {
       get() {
         const self = this;
         return {
-          get scheme_name() {
-            return self.$store.state.config.configuration.international_creditor_account.scheme_name;
-          },
-          set scheme_name(value) {
-            self.$store.commit('config/SET_INTERNATIONAL_CREDITOR_ACCOUNT_NAME_SCHEME_NAME', value);
-          },
           get identification() {
             return self.$store.state.config.configuration.international_creditor_account.identification;
           },
