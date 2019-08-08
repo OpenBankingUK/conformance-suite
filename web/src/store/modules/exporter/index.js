@@ -6,10 +6,10 @@ import api from '../../../api';
  * Example return value: `report_2019-03-25T11_41_05+00_00.zip`.
  * @param {*} prefix
  */
-const generateFilename = (prefix = 'report') => {
+const generateFilename = function (prefix) {
   const RFC3339 = 'YYYY-MM-DDTHH:mm:ssZ'; // "2006-01-02T15:04:05Z07:00"
   const datetime = moment(new Date()).format(RFC3339);
-  const filename = `${prefix}_${datetime}.zip`;
+  const filename = `${prefix}report_${datetime}.zip`;
 
   return filename;
 };
@@ -80,7 +80,7 @@ export default {
         commit(mutationTypes.SET_EXPORT_RESULTS_FILENAME, '');
 
         const results = await api.exportResults(payload);
-        const filename = generateFilename();
+        const filename = generateFilename(`${payload.implementer}_`);
 
         commit(mutationTypes.SET_EXPORT_RESULTS_BLOB, results);
         commit(mutationTypes.SET_EXPORT_RESULTS_FILENAME, filename);
@@ -89,4 +89,5 @@ export default {
       }
     },
   },
+  generateFilename
 };
