@@ -72,7 +72,7 @@
               <b-form-group
                 id="add_digital_signature_group"
                 label-for="add_digital_signature"
-                label="Sign this report with your public keys"
+                label="Sign this report with your private key"
               >
                 <b-form-checkbox
                   id="add_digital_signature"
