@@ -375,7 +375,7 @@
             "uriImplementation": "mandatory",
             "resource": "Balance",
             "method": "get",
-            "asserts": [
+            "asserts_one_of": [
               "OB3GLOAssertOn400",
               "OB3GLOAssertOn403"
             ],
@@ -584,9 +584,11 @@
             "resource": "Beneficiary",
             "method": "get",
             "asserts": [
-                "OB3GLOAssertOn400",
-                "OB3IPAssertResourceFieldInvalidOBErrorCode",
-                "OB3GLOAssertOn403"
+                "OB3IPAssertResourceFieldInvalidOBErrorCode"
+            ],
+            "asserts_one_of": [
+              "OB3GLOAssertOn400",
+              "OB3GLOAssertOn403"
             ],
             "schemaCheck": false
         },
@@ -1279,7 +1281,7 @@
             "uriImplementation": "conditional",
             "resource": "Product",
             "method": "get",
-            "asserts": [
+            "asserts_one_of": [
                 "OB3GLOAssertOn400",
                 "OB3GLOAssertOn403"
             ],
@@ -1441,9 +1443,11 @@
             "resource": "ScheduledPayment",
             "method": "get",
             "asserts": [
-                "OB3GLOAssertOn400",
-                "OB3IPAssertResourceFieldInvalidOBErrorCode",
-                "OB3GLOAssertOn403"
+                "OB3IPAssertResourceFieldInvalidOBErrorCode"
+            ],
+            "asserts_one_of": [
+              "OB3GLOAssertOn400",
+              "OB3GLOAssertOn403"
             ],
             "schemaCheck": false
         },
@@ -1603,9 +1607,11 @@
             "resource": "StandingOrder",
             "method": "get",
             "asserts": [
-                "OB3GLOAssertOn400",
-                "OB3IPAssertResourceFieldInvalidOBErrorCode",
-                "OB3GLOAssertOn403"
+                "OB3IPAssertResourceFieldInvalidOBErrorCode"
+            ],
+            "asserts_one_of": [
+              "OB3GLOAssertOn400",
+              "OB3GLOAssertOn403"
             ],
             "schemaCheck": false
         },
@@ -1900,7 +1906,7 @@
             "uriImplementation": "mandatory",
             "resource": "Transaction",
             "method": "get",
-            "asserts": [
+            "asserts_one_of": [
                 "OB3GLOAssertOn400",
                 "OB3GLOAssertOn403"
             ],
