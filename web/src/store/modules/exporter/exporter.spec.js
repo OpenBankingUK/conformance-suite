@@ -64,13 +64,25 @@ describe('store/modules/exporter', () => {
       await store.dispatch('exportResults');
 
       expect(store.state.export_results_blob).toBe(EXPORT_RESULTS);
-      expect(store.state.export_results_filename).toMatch(/^report_/);
+      expect(store.state.export_results_filename).toMatch(/^_report_/);
       expect(store.state.export_results_filename).toMatch(/\.zip$/);
 
       // remove prefix and post and check it is valid date
-      const filename = store.state.export_results_filename.replace(/^report_/, '').replace(/\.zip$/, '');
+      const filename = store.state.export_results_filename.replace(/^_report_/, '').replace(/\.zip$/, '');
       const date = moment(filename, 'report_YYYY-MM-DDTHH:mm:ssZ.zip');
       expect(date.isValid()).toBe(true);
+    });
+
+    it('implementer prefix exists', async () => {
+      // example: implementer_name_report_2019-03-25T11_41_05+00_00.zip
+      const filename = exporter.generateFilename('implementer_name_');
+      expect(filename).toMatch(/implementer_name_report_[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\+[0-9]{2}:[0-9]{2}.zip/);
+    });
+
+    it('implementer prefix does not exist', async () => {
+      // example: report_2019-03-25T11_41_05+00_00.zip
+      const filename = exporter.generateFilename('');
+      expect(filename).toMatch(/report_[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\+[0-9]{2}:[0-9]{2}.zip/);
     });
   });
 
