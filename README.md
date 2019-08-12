@@ -18,11 +18,11 @@ To provide feedback, please use the public [issue tracker](https://bitbucket.org
 * * *
 
 
-# Release v1.1.17 (24th July 2019)
+# Release v1.1.18 (9th Aug 2019)
 
-The release is called **v1.1.17**, it disables JSON Web Signatures (JWS) by default in line with [Waiver 007](https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1112670669/W007), adds a new user agent string and other general updates/fixes.
+The release is called **v1.1.18**, it extends scheme names for creditorScheme and internationalCreditorScheme to allow custom names, updates the UI and other general fixes.
 
-[Full Release Notes](https://bitbucket.org/openbankingteam/conformance-suite/src/develop/docs/releases/v1.1.17.md) (v1.1.17.md)
+[Full Release Notes](https://bitbucket.org/openbankingteam/conformance-suite/src/develop/docs/releases/v1.1.18.md) (v1.1.18.md)
 
 ## Quickstart
 * * *
