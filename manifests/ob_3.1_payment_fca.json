@@ -258,7 +258,6 @@
       "detail": "Checks that the resource succeeds posting a domestic scheduled payment with a minimal data set and checks additional schema.",
       "parameters": {
         "tokenRequestScope": "payments",
-        "consentId": "$OB-301-DOP-100800-ConsentId",
         "instructedAmountValue": "$instructedAmountValue",
         "instructedAmountCurrency": "$instructedAmountCurrency",
         "instructionIdentification": "fn:instructionIdentificationID()",
