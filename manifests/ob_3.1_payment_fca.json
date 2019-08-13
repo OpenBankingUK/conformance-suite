@@ -210,7 +210,6 @@
         "tokenRequestScope": "payments",
         "instructedAmountValue": "$instructedAmountValue",
         "instructedAmountCurrency": "$instructedAmountCurrency",
-        "OB-301-DOP-100800-instructionIdentification": "$instructionIdentification",
         "instructionIdentification": "$fn:instructionIdentificationID()",
         "postData": "$minimalScheduledDomesticPaymentConsent",
         "endToEndIdentification": "e2e-domestic-sched-pay",
@@ -262,7 +261,7 @@
         "consentId": "$OB-301-DOP-100800-ConsentId",
         "instructedAmountValue": "$instructedAmountValue",
         "instructedAmountCurrency": "$instructedAmountCurrency",
-        "instructionIdentification": "$OB-301-DOP-100800-instructionIdentification",
+        "instructionIdentification": "fn:instructionIdentificationID()",
         "endToEndIdentification": "e2e-domestic-sched-pay",
         "postData": "$minimalScheduledDomesticPaymentConsent"
       },
