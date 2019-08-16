@@ -59,23 +59,25 @@ type Journey interface {
 }
 
 type journey struct {
-	generator             generation.Generator
-	validator             discovery.Validator
-	daemonController      executors.DaemonController
-	journeyLock           *sync.Mutex
-	specRun               generation.SpecRun
-	testCasesRunGenerated bool
-	collector             executors.TokenCollector
-	allCollected          bool
-	validDiscoveryModel   *discovery.Model
-	context               model.Context
-	log                   *logrus.Entry
-	config                JourneyConfig
-	events                events.Events
-	permissions           map[string][]manifest.RequiredTokens
-	manifests             []manifest.Scripts
-	filteredManifests     manifest.Scripts
-	tlsValidator          discovery.TLSValidator
+	generator                generation.Generator
+	validator                discovery.Validator
+	daemonController         executors.DaemonController
+	journeyLock              *sync.Mutex
+	specRun                  generation.SpecRun
+	testCasesRunGenerated    bool
+	collector                executors.TokenCollector
+	allCollected             bool
+	validDiscoveryModel      *discovery.Model
+	context                  model.Context
+	log                      *logrus.Entry
+	config                   JourneyConfig
+	events                   events.Events
+	permissions              map[string][]manifest.RequiredTokens
+	manifests                []manifest.Scripts
+	filteredManifests        manifest.Scripts
+	tlsValidator             discovery.TLSValidator
+	hasConditionalProperties bool
+	conditionalProperties    []discovery.ConditionalAPIProperties
 }
 
 // NewJourney creates an instance for a user journey
@@ -124,6 +126,15 @@ func (wj *journey) SetDiscoveryModel(discoveryModel *discovery.Model) (discovery
 	wj.validDiscoveryModel = discoveryModel
 	wj.testCasesRunGenerated = false
 	wj.allCollected = false
+
+	conditionalApiProperties := discovery.GetConditionalProperties(discoveryModel)
+	if conditionalApiProperties != nil {
+		wj.hasConditionalProperties = true
+		wj.conditionalProperties = conditionalApiProperties
+		logrus.Tracef("conditionalProperties: %#v", wj.conditionalProperties)
+	} else {
+		logrus.Trace("No Conditional Properties found")
+	}
 
 	return discovery.NoValidationFailures(), nil
 }
@@ -547,7 +558,7 @@ type JourneyConfig struct {
 	signatureTrustAnchor          string
 	useDynamicResourceID          bool
 	AcrValuesSupported            []string
-	conditionalProperties         models.ConditionalAPIProperties
+	conditionalProperties         discovery.ConditionalAPIProperties
 }
 
 func (wj *journey) SetConfig(config JourneyConfig) error {

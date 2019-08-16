@@ -44,17 +44,22 @@ type ModelAPISpecification struct {
 
 // ModelEndpoint - Endpoint and methods that have been implemented by implementer.
 type ModelEndpoint struct {
-	Method                string                  `json:"method" validate:"required"`
-	Path                  string                  `json:"path" validate:"required,uri"`
-	ConditionalProperties []ConditionalProperties `json:"conditionalProperties,omitempty" validate:"dive"`
+	Method                string                `json:"method" validate:"required"`
+	Path                  string                `json:"path" validate:"required,uri"`
+	ConditionalProperties []ConditionalProperty `json:"conditionalProperties,omitempty" validate:"dive"`
 }
 
 // ModelConditionalProperties - Conditional schema properties implemented by implementer.
-type ConditionalProperties struct {
+type ConditionalProperty struct {
 	Schema   string `json:"schema" validate:"required"`
 	Property string `json:"property" validate:"required"`
 	Path     string `json:"path" validate:"required"`
 	Required string `json:"required,omitempty"`
+}
+
+type ConditionalAPIProperties struct {
+	Name       string                `json:"name,omitempty"`
+	Properties []ConditionalProperty `json:"properties,omitempty"`
 }
 
 // UnmarshalDiscoveryJSON - Used for testing in multiple packages to get discovery
@@ -65,4 +70,9 @@ func UnmarshalDiscoveryJSON(discoveryJSON string) (*Model, error) {
 	discovery := &Model{}
 	err := json.Unmarshal([]byte(discoveryJSON), &discovery)
 	return discovery, err
+}
+
+func GetConditionalProperties(disco *Model) []ConditionalAPIProperties {
+
+	return nil
 }
