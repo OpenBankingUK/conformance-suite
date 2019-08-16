@@ -84,6 +84,7 @@ type GlobalConfiguration struct {
 	SigningKid                    string                  `json:"signing_kid,omitempty"`
 	SignatureTrustAnchor          string                  `json:"signature_trust_anchor,omitempty"`
 	AcrValuesSupported            []string                `json:"acr_values_supported,omitempty"`
+	ConditionalProperties         models.ConditionalAPIProperties
 }
 
 // Validate - used by https://github.com/go-ozzo/ozzo-validation to validate struct.
@@ -227,6 +228,7 @@ func MakeJourneyConfig(config *GlobalConfiguration) (JourneyConfig, error) {
 		signingKid:                    config.SigningKid,
 		signatureTrustAnchor:          config.SignatureTrustAnchor,
 		AcrValuesSupported:            config.AcrValuesSupported,
+		//conditionalProperties:         config.ConditionalProperties,
 	}, nil
 }
 

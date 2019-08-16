@@ -44,16 +44,17 @@ type ModelAPISpecification struct {
 
 // ModelEndpoint - Endpoint and methods that have been implemented by implementer.
 type ModelEndpoint struct {
-	Method                string                       `json:"method" validate:"required"`
-	Path                  string                       `json:"path" validate:"required,uri"`
-	ConditionalProperties []ModelConditionalProperties `json:"conditionalProperties,omitempty" validate:"dive"`
+	Method                string                  `json:"method" validate:"required"`
+	Path                  string                  `json:"path" validate:"required,uri"`
+	ConditionalProperties []ConditionalProperties `json:"conditionalProperties,omitempty" validate:"dive"`
 }
 
 // ModelConditionalProperties - Conditional schema properties implemented by implementer.
-type ModelConditionalProperties struct {
+type ConditionalProperties struct {
 	Schema   string `json:"schema" validate:"required"`
 	Property string `json:"property" validate:"required"`
 	Path     string `json:"path" validate:"required"`
+	Required string `json:"required,omitempty"`
 }
 
 // UnmarshalDiscoveryJSON - Used for testing in multiple packages to get discovery
