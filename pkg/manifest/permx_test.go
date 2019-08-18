@@ -22,7 +22,17 @@ func TestPermx(t *testing.T) {
 	scripts, _, err := LoadGenerationResources(specType, manifestPath)
 	assert.Nil(t, err)
 
-	tests, _, err := GenerateTestCases(scripts, apiSpec, "http://mybaseurl", &model.Context{}, readDiscovery(), manifestPath, schema.NewNullValidator())
+	params := GenerationParameters{
+		Scripts:      scripts,
+		Spec:         apiSpec,
+		Baseurl:      "http://mybaseurl",
+		Ctx:          &model.Context{},
+		Endpoints:    readDiscovery(),
+		ManifestPath: manifestPath,
+		Validator:    schema.NewNullValidator(),
+	}
+	tests, _, err := GenerateTestCases(&params)
+
 	assert.Nil(t, err)
 
 	testcasePermissions, err := getTestCasePermissions(tests)
@@ -41,7 +51,17 @@ func TestGetScriptConsentTokens(t *testing.T) {
 	scripts, _, err := LoadGenerationResources(specType, manifestPath)
 	assert.Nil(t, err)
 
-	tests, _, err := GenerateTestCases(scripts, apiSpec, "http://mybaseurl", &model.Context{}, readDiscovery(), manifestPath, schema.NewNullValidator())
+	params := GenerationParameters{
+		Scripts:      scripts,
+		Spec:         apiSpec,
+		Baseurl:      "http://mybaseurl",
+		Ctx:          &model.Context{},
+		Endpoints:    readDiscovery(),
+		ManifestPath: manifestPath,
+		Validator:    schema.NewNullValidator(),
+	}
+	tests, _, err := GenerateTestCases(&params)
+
 	assert.Nil(t, err)
 
 	assert.Nil(t, err)

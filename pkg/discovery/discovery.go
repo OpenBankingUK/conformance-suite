@@ -49,17 +49,20 @@ type ModelEndpoint struct {
 	ConditionalProperties []ConditionalProperty `json:"conditionalProperties,omitempty" validate:"dive"`
 }
 
-// ModelConditionalProperties - Conditional schema properties implemented by implementer.
+// ConditionalProperty - Conditional schema property that has been implemented
 type ConditionalProperty struct {
-	Schema   string `json:"schema" validate:"required"`
-	Property string `json:"property" validate:"required"`
-	Path     string `json:"path" validate:"required"`
-	Required string `json:"required,omitempty"`
+	Schema   string `json:"schema,omitempty" validate:"required"`
+	Name     string `json:"name,omitempty" validate:"required"`
+	Path     string `json:"path,omitempty" validate:"required"`
+	Required bool   `json:"required,omitempty"`
+	Request  bool   `json:"request,omitempty"`
+	Response bool   `json:"response,omitempty"`
+	Value    string `json:"value,omitempty"`
 }
 
 type ConditionalAPIProperties struct {
-	Name       string                `json:"name,omitempty"`
-	Properties []ConditionalProperty `json:"properties,omitempty"`
+	Name      string          `json:"name,omitempty"`
+	Endpoints []ModelEndpoint `json:"endpoints,omitempty"`
 }
 
 // UnmarshalDiscoveryJSON - Used for testing in multiple packages to get discovery
@@ -72,7 +75,32 @@ func UnmarshalDiscoveryJSON(discoveryJSON string) (*Model, error) {
 	return discovery, err
 }
 
-func GetConditionalProperties(disco *Model) []ConditionalAPIProperties {
+func GetConditionalProperties(disco *Model) ([]ConditionalAPIProperties, bool) {
+	var haveProperties bool
+	conditionalProps := make([]ConditionalAPIProperties, len(disco.DiscoveryModel.DiscoveryItems))
+	for k, discoitem := range disco.DiscoveryModel.DiscoveryItems {
+		conditionalProps[k].Name = discoitem.APISpecification.Name
+		for _, endpoint := range discoitem.Endpoints {
+			if len(endpoint.ConditionalProperties) > 0 {
+				for k := range endpoint.ConditionalProperties {
+					// TODO: DEBUG ONLY ... REMOVE ME
+					endpoint.ConditionalProperties[k].Value = "DUMMY_VALUE"
+				}
+				conditionalProps[k].Endpoints = append(conditionalProps[k].Endpoints, endpoint)
+				haveProperties = true
+			}
+		}
+	}
 
-	return nil
+	return conditionalProps, haveProperties
+}
+
+func GetDiscoveryItemConditionalProperties(item ModelDiscoveryItem) []ModelEndpoint {
+	endpoints := make([]ModelEndpoint, 0)
+	for _, endpoint := range item.Endpoints {
+		if len(endpoint.ConditionalProperties) > 0 {
+			endpoints = append(endpoints, endpoint)
+		}
+	}
+	return endpoints
 }

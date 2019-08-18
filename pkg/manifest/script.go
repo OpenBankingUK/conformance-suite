@@ -12,6 +12,7 @@ import (
 
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/schema"
 	"github.com/pkg/errors"
+	"github.com/tidwall/sjson"
 
 	"github.com/sirupsen/logrus"
 
@@ -91,19 +92,30 @@ func (cj *ConsentJobs) Get(testid string) (model.TestCase, bool) {
 
 }
 
+type GenerationParameters struct {
+	Scripts      Scripts
+	Spec         discovery.ModelAPISpecification
+	Baseurl      string
+	Ctx          *model.Context
+	Endpoints    []discovery.ModelEndpoint
+	ManifestPath string
+	Validator    schema.Validator
+	Conditional  []discovery.ConditionalAPIProperties
+}
+
 // GenerateTestCases examines a manifest file, asserts file and resources definition, then builds the associated test cases
-func GenerateTestCases(scripts Scripts, spec discovery.ModelAPISpecification, baseurl string, ctx *model.Context, endpoints []discovery.ModelEndpoint, manifestPath string, validator schema.Validator) ([]model.TestCase, Scripts, error) {
+func GenerateTestCases(params *GenerationParameters) ([]model.TestCase, Scripts, error) {
 	logger := logrus.WithFields(logrus.Fields{
 		"function": "GenerateTestCases",
 	})
 
-	specType, err := GetSpecType(spec.SchemaVersion)
+	specType, err := GetSpecType(params.Spec.SchemaVersion)
 	if err != nil {
-		return nil, Scripts{}, errors.New("unknown specification " + spec.SchemaVersion)
+		return nil, Scripts{}, errors.New("unknown specification " + params.Spec.SchemaVersion)
 
 	}
 	logrus.Debug("GenerateManifestTestCases for spec type:" + specType)
-	scripts, refs, err := LoadGenerationResources(specType, manifestPath)
+	scripts, refs, err := LoadGenerationResources(specType, params.ManifestPath)
 	if err != nil {
 		logger.WithFields(logrus.Fields{
 			"err": err,
@@ -112,12 +124,12 @@ func GenerateTestCases(scripts Scripts, spec discovery.ModelAPISpecification, ba
 	}
 	var filteredScripts Scripts
 	if specType == "accounts" {
-		filteredScripts, err = FilterTestsBasedOnDiscoveryEndpoints(scripts, endpoints, accountsRegex)
+		filteredScripts, err = FilterTestsBasedOnDiscoveryEndpoints(scripts, params.Endpoints, accountsRegex)
 		if err != nil {
 			logger.WithFields(logrus.Fields{"err": err}).Error("error filter scripts based on accounts discovery")
 		}
 	} else if specType == "payments" {
-		filteredScripts, err = FilterTestsBasedOnDiscoveryEndpoints(scripts, endpoints, paymentsRegex)
+		filteredScripts, err = FilterTestsBasedOnDiscoveryEndpoints(scripts, params.Endpoints, paymentsRegex)
 		if err != nil {
 			logger.WithFields(logrus.Fields{"err": err}).Error("error filter scripts based on payments discovery")
 		}
@@ -125,31 +137,57 @@ func GenerateTestCases(scripts Scripts, spec discovery.ModelAPISpecification, ba
 		filteredScripts = scripts // normal processing
 	}
 
-	ctx.DumpContext("Incoming Ctx")
+	params.Ctx.DumpContext("Incoming Ctx")
 
 	tests := []model.TestCase{}
 
 	for _, script := range filteredScripts.Scripts {
-		localCtx, err := script.processParameters(&refs, ctx)
+		localCtx, err := script.processParameters(&refs, params.Ctx)
 		if err != nil {
 			logger.WithError(err).Error("Error on processParameters")
 			return nil, Scripts{}, err
 		}
 
 		consents := []string{}
-		tc, err := testCaseBuilder(script, refs.References, localCtx, consents, baseurl, specType, validator, spec)
+		tc, err := testCaseBuilder(script, refs.References, localCtx, consents, params.Baseurl, specType, params.Validator, params.Spec)
 		if err != nil {
 			logger.WithError(err).Error("Error on testCaseBuilder")
 		}
 
-		localCtx.PutContext(ctx)
+		localCtx.PutContext(params.Ctx)
 		showReplacementErrors := true
 		tc.ProcessReplacementFields(localCtx, showReplacementErrors)
+
+		addConditionalPropertiesToRequest(&tc, params.Conditional, logger)
 
 		tests = append(tests, tc)
 	}
 
 	return tests, filteredScripts, nil
+}
+
+func addConditionalPropertiesToRequest(tc *model.TestCase, conditional []discovery.ConditionalAPIProperties, log *logrus.Entry) error {
+
+	for _, cond := range conditional {
+		for _, ep := range cond.Endpoints {
+			if tc.Input.Method == ep.Method && tc.Input.Endpoint == ep.Path {
+				// try to add property to body request
+				for _, prop := range ep.ConditionalProperties {
+					if len(prop.Value) > 0 {
+						var err error
+						tc.Body, err = sjson.Set(tc.Body, prop.Path, prop.Value)
+						if err != nil {
+							log.Error(err)
+							return err
+						}
+						log.Tracef("Conditional body set to : %s", tc.Body)
+					}
+				}
+			}
+		}
+	}
+
+	return nil
 }
 
 var fnReplacementRegex = regexp.MustCompile(`[^\$fn:]?\$fn:([\w|_]*)\(([\w,\s-]*)\)`)

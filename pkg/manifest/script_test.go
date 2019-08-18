@@ -23,7 +23,16 @@ func TestGenerateTestCases(t *testing.T) {
 	specType, err := GetSpecType(apiSpec.SchemaVersion)
 	assert.Nil(t, err)
 	scripts, _, err := LoadGenerationResources(specType, manifestPath)
-	tests, _, err := GenerateTestCases(scripts, apiSpec, "http://mybaseurl", &model.Context{}, readDiscovery(), manifestPath, schema.NewNullValidator())
+
+	params := GenerationParameters{Scripts: scripts,
+		Spec:         apiSpec,
+		Baseurl:      "http://mybaseurl",
+		Ctx:          &model.Context{},
+		Endpoints:    readDiscovery(),
+		ManifestPath: manifestPath,
+		Validator:    schema.NewNullValidator(),
+	}
+	tests, _, err := GenerateTestCases(&params)
 	assert.Nil(t, err)
 
 	perms, err := getAccountPermissions(tests)
@@ -50,7 +59,18 @@ func TestPaymentPermissions(t *testing.T) {
 		fmt.Println("Error on loadGenerationResources")
 		return
 	}
-	tests, _, err := GenerateTestCases(scripts, apiSpec, "http://mybaseurl", &model.Context{}, readDiscovery(), manifestPath, schema.NewNullValidator())
+
+	params := GenerationParameters{
+		Scripts:      scripts,
+		Spec:         apiSpec,
+		Baseurl:      "http://mybaseurl",
+		Ctx:          &model.Context{},
+		Endpoints:    readDiscovery(),
+		ManifestPath: manifestPath,
+		Validator:    schema.NewNullValidator(),
+	}
+	tests, _, err := GenerateTestCases(&params)
+
 	fmt.Printf("we have %d tests\n", len(tests))
 	for _, v := range tests {
 		dumpJSON(v)
@@ -122,7 +142,17 @@ func TestPermissionFiteringAccounts(t *testing.T) {
 		fmt.Println("Error on loadGenerationResources")
 		return
 	}
-	tests, _, err := GenerateTestCases(scripts, apiSpec, "http://mybaseurl", &ctx, endpoints, manifestPath, schema.NewNullValidator())
+	params := GenerationParameters{
+		Scripts:      scripts,
+		Spec:         apiSpec,
+		Baseurl:      "http://mybaseurl",
+		Ctx:          &ctx,
+		Endpoints:    readDiscovery(),
+		ManifestPath: manifestPath,
+		Validator:    schema.NewNullValidator(),
+	}
+	tests, _, err := GenerateTestCases(&params)
+
 	assert.Nil(t, err)
 	fmt.Printf("%d tests loaded", len(tests))
 
@@ -237,7 +267,16 @@ func TestPaymentTestCaseCreation(t *testing.T) {
 	scripts, _, err := LoadGenerationResources(specType, manifestPath)
 	assert.Nil(t, err)
 
-	tests, _, err := GenerateTestCases(scripts, apiSpec, "http://mybaseurl", ctx, readDiscovery(), manifestPath, schema.NewNullValidator())
+	params := GenerationParameters{
+		Scripts:      scripts,
+		Spec:         apiSpec,
+		Baseurl:      "http://mybaseurl",
+		Ctx:          ctx,
+		Endpoints:    readDiscovery(),
+		ManifestPath: manifestPath,
+		Validator:    schema.NewNullValidator(),
+	}
+	tests, _, err := GenerateTestCases(&params)
 
 	assert.Nil(t, err)
 	fmt.Printf("we have %d tests\n", len(tests))
