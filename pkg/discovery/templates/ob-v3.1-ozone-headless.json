@@ -178,11 +178,12 @@
           "path": "/domestic-standing-order-consents",
           "conditionalProperties": [{
             "schema": "OBWriteDataDomesticStandingOrder2",
-            "property": "Reference",
-            "path": "Data.Initiation.Reference"
+            "name": "Reference",
+            "path": "Data.Initiation.Reference",
+            "required": true
           }, {
             "schema": "OBWriteDataDomesticStandingOrder2",
-            "property": "SecondaryIdentification",
+            "name": "SecondaryIdentification",
             "path": "Data.Initiation.CreditorAccount.SecondaryIdentification"
           }]
         },

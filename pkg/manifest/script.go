@@ -175,7 +175,7 @@ func addConditionalPropertiesToRequest(tc *model.TestCase, conditional []discove
 				for _, prop := range ep.ConditionalProperties {
 					if len(prop.Value) > 0 {
 						var err error
-						tc.Body, err = sjson.Set(tc.Body, prop.Path, prop.Value)
+						tc.Input.RequestBody, err = sjson.Set(tc.Input.RequestBody, prop.Path, prop.Value)
 						if err != nil {
 							log.Error(err)
 							return err

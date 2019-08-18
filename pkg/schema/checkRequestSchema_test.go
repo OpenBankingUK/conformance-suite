@@ -1,10 +1,12 @@
 package schema
 
 import (
+	"fmt"
+	"strings"
 	"testing"
 
-	"github.com/davecgh/go-spew/spew"
 	"github.com/go-openapi/loads"
+	"github.com/go-openapi/spec"
 	"github.com/stretchr/testify/require"
 )
 
@@ -14,32 +16,48 @@ func TestCheckRequestSchema(t *testing.T) {
 
 	spec := doc.Spec()
 
-	//spew.Config.Indent = "\t"
-	spew.Config.MaxDepth = 2
-	// spew.Config.DisablePointerAddresses = true
-	// spew.Config.SortKeys = true
-	// spew.Config.DisablePointerMethods = true
-	// spew.Config.DisableMethods = true
-
-	// t.Logf("--> %#v\n", spec.Info)
-	// paths = spec.Paths
-	// for k, pathitem := range spec.Paths.Paths {
-	// 	_, _ = k, pathitem
-	// 	if pathitem.Post != nil {
-	// 		for i, parameter := range pathitem.Post.Parameters {
-	// 			_ = i
-	// 			if parameter.In == "header" {
-	// 				continue
-	// 			}
-	// 			fmt.Printf("%s in %s\n", parameter.Name, parameter.In)
-	// 		}
-	// 	}
-	// }
-
-	//x := spec.SwaggerProps["OBDomesticStandingOrder2"].
-
-	x := spec.Parameters["OBDomesticStandingOrder2"]
-	spew.Dump(x)
+	for path, props := range spec.Paths.Paths {
+		for meth, op := range getOperations(&props) {
+			_, _, _ = path, meth, op
+			if path == "/domestic-standing-order-consents" {
+				for _, param := range op.Parameters {
+					if param.ParamProps.In == "body" {
+						schema := param.ParamProps.Schema
+						recurseProps(schema, 0)
+					}
+				}
+			}
+		}
+	}
 
 	t.Fail()
+}
+
+func recurseProps(schema *spec.Schema, level int) {
+	level++
+	for k, j := range schema.SchemaProps.Properties {
+		fmt.Printf("%s%s\n", strings.Repeat("   ", level), k)
+		recurseProps(&j, level)
+	}
+}
+
+// getOperations returns a mapping of HTTP Verb name to "spec operation name"
+func getOperations(props *spec.PathItem) map[string]*spec.Operation {
+	ops := map[string]*spec.Operation{
+		"DELETE":  props.Delete,
+		"GET":     props.Get,
+		"HEAD":    props.Head,
+		"OPTIONS": props.Options,
+		"PATCH":   props.Patch,
+		"POST":    props.Post,
+		"PUT":     props.Put,
+	}
+
+	// Keep those != nil
+	for key, op := range ops {
+		if op == nil {
+			delete(ops, key)
+		}
+	}
+	return ops
 }
