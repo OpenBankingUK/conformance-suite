@@ -153,7 +153,7 @@
           "path": "/domestic-payment-consents/{ConsentId}",
           "conditionalProperties": [{
             "schema": "OBWriteDataDomesticConsentResponse1",
-            "property": "Charges",
+            "name": "Charges",
             "path": "Data.Charges"
           }]
         },
@@ -166,7 +166,7 @@
           "path": "/domestic-payments",
           "conditionalProperties": [{
             "schema": "OBWriteDataDomesticResponse1",
-            "property": "Charges",
+            "name": "Charges",
             "path": "Data.Charges"
           }]
         },
@@ -175,7 +175,7 @@
           "path": "/domestic-payments/{DomesticPaymentId}",
           "conditionalProperties": [{
             "schema": "OBWriteDataDomesticResponse1",
-            "property": "Charges",
+            "name": "Charges",
             "path": "Data.Charges"
           }]
         },
