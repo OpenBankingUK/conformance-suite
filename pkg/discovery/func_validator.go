@@ -14,7 +14,7 @@ import (
 
 // Version returns the current version of the Discovery Model parser
 func Version() string {
-	version := "v0.3.0"
+	version := "v0.4.0"
 	return version
 }
 

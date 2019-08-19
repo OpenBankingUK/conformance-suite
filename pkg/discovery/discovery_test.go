@@ -28,7 +28,7 @@ var testdisco = []byte(`
 	"discoveryModel": {
 	  "name": "ob-v3.1-ozone",
 	  "description": "An Open Banking UK discovery template for v3.1 of Accounts and Payments with pre-populated model Bank (Ozone) data. PSU consent flow.",
-	  "discoveryVersion": "v0.3.0",
+	  "discoveryVersion": "v0.4.0",
 	  "tokenAcquisition": "psu",
 	  "discoveryItems": [{
 		"apiSpecification": {
