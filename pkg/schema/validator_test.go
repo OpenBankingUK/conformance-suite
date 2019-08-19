@@ -133,3 +133,30 @@ const getTransactionsResponseEmptyTransactionReference = `
 			}
 		}
 	`
+
+func TestCheckRequestSchema(t *testing.T) {
+	doc, err := loads.Spec("spec/v3.1.0/payment-initiation-swagger.flattened.json")
+	require.NoError(t, err)
+
+	spec := doc.Spec()
+
+	for path, props := range spec.Paths.Paths {
+		for meth, op := range getOperations(&props) {
+			_ = meth
+			if path == "/domestic-standing-order-consents" && meth == "POST" {
+				for _, param := range op.Parameters {
+					if param.ParamProps.In == "body" {
+						schema := param.ParamProps.Schema
+						found := findPropertyInSchema(schema, "Data.Initiation.CreditorAccount.SecondaryIdentification", "")
+						if found {
+							t.Log("*** FOUND IT ******")
+						} else {
+							t.Fail()
+						}
+					}
+				}
+			}
+		}
+	}
+
+}

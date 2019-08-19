@@ -158,7 +158,10 @@ func GenerateTestCases(params *GenerationParameters) ([]model.TestCase, Scripts,
 		showReplacementErrors := true
 		tc.ProcessReplacementFields(localCtx, showReplacementErrors)
 
-		addConditionalPropertiesToRequest(&tc, params.Conditional, logger)
+		err = addConditionalPropertiesToRequest(&tc, params.Conditional, logger)
+		if err != nil {
+			return nil, Scripts{}, err
+		}
 
 		tests = append(tests, tc)
 	}
@@ -173,7 +176,12 @@ func addConditionalPropertiesToRequest(tc *model.TestCase, conditional []discove
 			if tc.Input.Method == ep.Method && tc.Input.Endpoint == ep.Path {
 				// try to add property to body request
 				for _, prop := range ep.ConditionalProperties {
-					if len(prop.Value) > 0 {
+					isRequestProperty, err := tc.Validator.IsRequestProperty(tc.Input.Method, tc.Input.Endpoint, prop.Path)
+					if err != nil {
+						log.Error(err)
+						return err
+					}
+					if isRequestProperty && len(prop.Value) > 0 {
 						var err error
 						tc.Input.RequestBody, err = sjson.Set(tc.Input.RequestBody, prop.Path, prop.Value)
 						if err != nil {

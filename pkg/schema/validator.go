@@ -8,6 +8,7 @@ import (
 	"os"
 
 	"github.com/go-openapi/loads"
+	"github.com/go-openapi/spec"
 	"github.com/pkg/errors"
 )
 
@@ -34,6 +35,7 @@ func newFailure(message string) Failure {
 // Validator validates a HTTP response object against a schema
 type Validator interface {
 	Validate(Response) ([]Failure, error)
+	IsRequestProperty(method, path, propertpath string) (bool, error)
 }
 
 func NewSwaggerOBSpecValidator(specName, version string) (Validator, error) {
@@ -90,6 +92,7 @@ func NewSwaggerValidator(schemaPath string) (Validator, error) {
 
 type validators struct {
 	validators []Validator
+	doc        *loads.Document
 }
 
 func newValidator(doc *loads.Document) (Validator, error) {
@@ -126,4 +129,68 @@ func (v validators) Validate(r Response) ([]Failure, error) {
 		allFailures = append(allFailures, failures...)
 	}
 	return allFailures, nil
+}
+
+func (v validators) IsRequestProperty(checkmethod, checkpath, propertyPath string) (bool, error) {
+	spec := v.doc.Spec()
+
+	for path, props := range spec.Paths.Paths {
+		for method, op := range getOperations(&props) {
+			_ = op
+			if path == checkpath && method == checkmethod {
+				for _, param := range op.Parameters {
+					if param.ParamProps.In == "body" {
+						schema := param.ParamProps.Schema
+						found := findPropertyInSchema(schema, propertyPath, "")
+						if found {
+							return true, nil
+						}
+					}
+				}
+			}
+		}
+	}
+
+	return false, nil
+}
+
+func findPropertyInSchema(sc *spec.Schema, propertyPath, previousPath string) bool {
+	for k, j := range sc.SchemaProps.Properties {
+		var element string
+		if len(previousPath) == 0 {
+			element = k
+		} else {
+			element = previousPath + "." + k
+		}
+		fmt.Printf("%s\n", element)
+		if element == propertyPath {
+			return true
+		}
+
+		if findPropertyInSchema(&j, propertyPath, element) {
+			return true
+		}
+	}
+	return false
+}
+
+// getOperations returns a mapping of HTTP Verb name to "spec operation name"
+func getOperations(props *spec.PathItem) map[string]*spec.Operation {
+	ops := map[string]*spec.Operation{
+		"DELETE":  props.Delete,
+		"GET":     props.Get,
+		"HEAD":    props.Head,
+		"OPTIONS": props.Options,
+		"PATCH":   props.Patch,
+		"POST":    props.Post,
+		"PUT":     props.Put,
+	}
+
+	// Keep those != nil
+	for key, op := range ops {
+		if op == nil {
+			delete(ops, key)
+		}
+	}
+	return ops
 }

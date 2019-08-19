@@ -55,8 +55,6 @@ type ConditionalProperty struct {
 	Name     string `json:"name,omitempty" validate:"required"`
 	Path     string `json:"path,omitempty" validate:"required"`
 	Required bool   `json:"required,omitempty"`
-	Request  bool   `json:"request,omitempty"`
-	Response bool   `json:"response,omitempty"`
 	Value    string `json:"value,omitempty"`
 }
 
@@ -103,4 +101,10 @@ func GetDiscoveryItemConditionalProperties(item ModelDiscoveryItem) []ModelEndpo
 		}
 	}
 	return endpoints
+}
+
+func IsRequestProperty(path string) (bool, error) {
+	var isRequestProperty bool
+
+	return isRequestProperty, nil
 }
