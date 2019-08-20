@@ -157,15 +157,7 @@ func newConfigHandlers(journey Journey, logger *logrus.Entry) configHandlers {
 
 // GET /api/config/conditional-property
 func (d discoveryHandlers) configConditionalPropertyHandler(c echo.Context) error {
-	ctxLogger := d.logger.WithFields(logrus.Fields{
-		"function": "getDiscoveryModelHandler",
-	})
-	conditionalProperties, err := d.webJourney.ConditionalProperties()
-	if err != nil {
-		ctxLogger.WithFields(logrus.Fields{
-			"err": err,
-		}).Error("unable to retrieve config from Journey")
-	}
+	conditionalProperties := d.webJourney.ConditionalProperties()
 	return c.JSON(http.StatusOK, conditionalProperties)
 }
 

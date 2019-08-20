@@ -54,7 +54,7 @@ type Journey interface {
 	NewDaemonController()
 	Results() executors.DaemonController
 	SetConfig(config JourneyConfig) error
-	ConditionalProperties() (discovery.ConditionalAPIProperties, error)
+	ConditionalProperties() discovery.ConditionalAPIProperties
 	Events() events.Events
 	TLSVersionResult() map[string]*discovery.TLSValidationResult
 }
@@ -580,8 +580,8 @@ func (wj *journey) SetConfig(config JourneyConfig) error {
 	return nil
 }
 
-func (wj *journey) Config() (JourneyConfig, error) {
-	return wj.config, nil
+func (wj *journey) ConditionalProperties() discovery.ConditionalAPIProperties {
+	return wj.config.conditionalProperties
 }
 
 func (wj *journey) Events() events.Events {
