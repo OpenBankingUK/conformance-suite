@@ -162,7 +162,6 @@ func findPropertyInSchema(sc *spec.Schema, propertyPath, previousPath string) bo
 		} else {
 			element = previousPath + "." + k
 		}
-		fmt.Printf("%s\n", element)
 		if element == propertyPath {
 			return true
 		}
