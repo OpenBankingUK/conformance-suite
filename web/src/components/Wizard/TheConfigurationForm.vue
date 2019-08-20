@@ -506,6 +506,7 @@ import isEmpty from "lodash/isEmpty";
 import ConfigurationFormFile from "./ConfigurationFormFile.vue";
 import PaymentFrequency from "../config/PaymentFrequency.vue";
 import SchemeName from "../config/SchemeName.vue";
+import api from '../../api/apiUtil';
 
 const { mapGetters } = createNamespacedHelpers("config");
 
@@ -516,7 +517,7 @@ export default {
     PaymentFrequency,
     SchemeName
   },
-  data() {
+  async data() {
     let conditionalProperties = await api.get('/api/config/conditional-property')
 
     return {

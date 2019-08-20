@@ -156,8 +156,8 @@ func newConfigHandlers(journey Journey, logger *logrus.Entry) configHandlers {
 }
 
 // GET /api/config/conditional-property
-func (d discoveryHandlers) configConditionalPropertyHandler(c echo.Context) error {
-	conditionalProperties := d.webJourney.ConditionalProperties()
+func (h configHandlers) configConditionalPropertyHandler(c echo.Context) error {
+	conditionalProperties := h.journey.ConditionalProperties()
 	return c.JSON(http.StatusOK, conditionalProperties)
 }
 
