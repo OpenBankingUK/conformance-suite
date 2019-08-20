@@ -517,21 +517,10 @@ export default {
     SchemeName
   },
   data() {
+    let conditionalProperties = await api.get('/api/config/conditional-property')
+
     return {
-      properties: [
-        {
-          schema: "OBWriteDataDomesticStandingOrder2",
-          property: "References",
-          path: "Data.Initiation.Reference",
-          value: ""
-        },
-        {
-          schema: "OBWriteDataDomesticStandingOrder2",
-          property: "SecondaryIdentification",
-          path: "Data.Initiation.CreditorAccount.SecondaryIdentification",
-          value: ""
-        }
-      ]
+      properties: conditionalProperties
     };
   },
   computed: {
