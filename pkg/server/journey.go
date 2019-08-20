@@ -54,6 +54,7 @@ type Journey interface {
 	NewDaemonController()
 	Results() executors.DaemonController
 	SetConfig(config JourneyConfig) error
+	Config() (JourneyConfig, error)
 	Events() events.Events
 	TLSVersionResult() map[string]*discovery.TLSValidationResult
 }
@@ -577,6 +578,10 @@ func (wj *journey) SetConfig(config JourneyConfig) error {
 
 	wj.customTestParametersToJourneyContext()
 	return nil
+}
+
+func (wj *journey) Config() (JourneyConfig, error) {
+	return wj.config, nil
 }
 
 func (wj *journey) Events() events.Events {

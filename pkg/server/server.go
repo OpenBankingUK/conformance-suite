@@ -86,6 +86,7 @@ func registerRoutes(journey Journey, server *Server, logger *logrus.Entry, versi
 	// endpoints for discovery model
 	discoveryHandlers := newDiscoveryHandlers(journey, logger)
 	api.POST("/discovery-model", discoveryHandlers.setDiscoveryModelHandler)
+	api.GET("/discovery-model", discoveryHandlers.setDiscoveryModelHandler)
 
 	// endpoints for test cases
 	testCaseHandlers := newTestCaseHandlers(journey, NewWebSocketUpgrader(), logger)

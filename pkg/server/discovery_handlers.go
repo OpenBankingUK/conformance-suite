@@ -45,6 +45,19 @@ func newDiscoveryHandlers(webJourney Journey, logger *logrus.Entry) discoveryHan
 	return discoveryHandlers{webJourney, logger.WithField("handler", "discoveryHandlers")}
 }
 
+func (d discoveryHandlers) getDiscoveryModelHandler(c echo.Context) error {
+	ctxLogger := d.logger.WithFields(logrus.Fields{
+		"function": "getDiscoveryModelHandler",
+	})
+	cfg, err := d.webJourney.Config()
+	if err != nil {
+		ctxLogger.WithFields(logrus.Fields{
+			"err": err,
+		}).Error("unable to retrieve config from Journey")
+	}
+	return c.JSON(http.StatusOK, nil)
+}
+
 func (d discoveryHandlers) setDiscoveryModelHandler(c echo.Context) error {
 	ctxLogger := d.logger.WithFields(logrus.Fields{
 		"function": "setDiscoveryModelHandler",
