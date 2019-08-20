@@ -127,8 +127,11 @@ func (wj *journey) SetDiscoveryModel(discoveryModel *discovery.Model) (discovery
 	wj.testCasesRunGenerated = false
 	wj.allCollected = false
 
-	conditionalApiProperties, haveProperties := discovery.GetConditionalProperties(discoveryModel)
-	if haveProperties {
+	conditionalApiProperties, hasProperties, err := discovery.GetConditionalProperties(discoveryModel)
+	if err != nil {
+		return nil, errors.Wrap(err, "journey.SetDiscoveryModel: error processing conditional properties")
+	}
+	if hasProperties {
 		wj.hasConditionalProperties = true
 		wj.conditionalProperties = conditionalApiProperties
 		logrus.Tracef("conditionalProperties: %#v", wj.conditionalProperties)

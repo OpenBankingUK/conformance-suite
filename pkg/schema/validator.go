@@ -92,7 +92,7 @@ func NewSwaggerValidator(schemaPath string) (Validator, error) {
 
 type validators struct {
 	validators []Validator
-	doc        *loads.Document
+	document   *loads.Document
 }
 
 func newValidator(doc *loads.Document) (Validator, error) {
@@ -113,6 +113,7 @@ func newValidator(doc *loads.Document) (Validator, error) {
 				newStatusCodeValidator(f),
 				newBodyValidator(f),
 			},
+			document: doc,
 		}, nil
 	}
 
@@ -132,11 +133,10 @@ func (v validators) Validate(r Response) ([]Failure, error) {
 }
 
 func (v validators) IsRequestProperty(checkmethod, checkpath, propertyPath string) (bool, error) {
-	spec := v.doc.Spec()
+	spec := v.document.Spec()
 
 	for path, props := range spec.Paths.Paths {
 		for method, op := range getOperations(&props) {
-			_ = op
 			if path == checkpath && method == checkmethod {
 				for _, param := range op.Parameters {
 					if param.ParamProps.In == "body" {

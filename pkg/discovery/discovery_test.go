@@ -10,7 +10,7 @@ import (
 func TestGetConditionalProperties(t *testing.T) {
 	disco, err := UnmarshalDiscoveryJSONBytes(testdisco)
 	assert.Nil(t, err)
-	apiprops, _ := GetConditionalProperties(disco)
+	apiprops, _, _ := GetConditionalProperties(disco)
 	for _, api := range apiprops {
 		log.Printf("API: %s", api.Name)
 		for _, endpoint := range api.Endpoints {

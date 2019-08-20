@@ -2,6 +2,9 @@ package discovery
 
 import (
 	"encoding/json"
+
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/schema"
+	"github.com/sirupsen/logrus"
 )
 
 // Model - Top level struct holding discovery model.
@@ -56,6 +59,7 @@ type ConditionalProperty struct {
 	PropertyDeprecated string `json:"property,omitempty" validate:"-"` // property to be deprecated in favour of 'name'
 	Path               string `json:"path,omitempty" validate:"required"`
 	Required           bool   `json:"required,omitempty" validate:"-"`
+	Request            bool   `json:"request,omitempty" validate:"-"` // indicates a request property that can be entered by the use
 	Value              string `json:"value,omitempty" validate:"-"`
 }
 
@@ -74,16 +78,30 @@ func UnmarshalDiscoveryJSON(discoveryJSON string) (*Model, error) {
 	return discovery, err
 }
 
-func GetConditionalProperties(disco *Model) ([]ConditionalAPIProperties, bool) {
+// validator, err := schema.NewSwaggerOBSpecValidator(item.APISpecification.Name, item.APISpecification.Version)
+func GetConditionalProperties(disco *Model) ([]ConditionalAPIProperties, bool, error) {
 	var haveProperties bool
 	conditionalProps := make([]ConditionalAPIProperties, len(disco.DiscoveryModel.DiscoveryItems))
 	for k, discoitem := range disco.DiscoveryModel.DiscoveryItems {
 		conditionalProps[k].Name = discoitem.APISpecification.Name
+		validator, err := schema.NewSwaggerOBSpecValidator(discoitem.APISpecification.Name, discoitem.APISpecification.Version)
+		if err != nil {
+			logrus.Error(err)
+			return nil, false, err
+		}
 		for _, endpoint := range discoitem.Endpoints {
 			if len(endpoint.ConditionalProperties) > 0 {
-				for k := range endpoint.ConditionalProperties {
-					// TODO: DEBUG ONLY ... REMOVE ME
-					endpoint.ConditionalProperties[k].Value = "DUMMY_VALUE"
+
+				for k, prop := range endpoint.ConditionalProperties {
+					isRequest, err := validator.IsRequestProperty(endpoint.Method, endpoint.Path, prop.Path)
+					if err != nil {
+						logrus.Error(err)
+						return nil, false, err
+					}
+					if isRequest {
+						endpoint.ConditionalProperties[k].Request = true
+					}
+
 				}
 				conditionalProps[k].Endpoints = append(conditionalProps[k].Endpoints, endpoint)
 				haveProperties = true
@@ -91,7 +109,7 @@ func GetConditionalProperties(disco *Model) ([]ConditionalAPIProperties, bool) {
 		}
 	}
 
-	return conditionalProps, haveProperties
+	return conditionalProps, haveProperties, nil
 }
 
 func GetDiscoveryItemConditionalProperties(item ModelDiscoveryItem) []ModelEndpoint {
@@ -102,10 +120,4 @@ func GetDiscoveryItemConditionalProperties(item ModelDiscoveryItem) []ModelEndpo
 		}
 	}
 	return endpoints
-}
-
-func IsRequestProperty(path string) (bool, error) {
-	var isRequestProperty bool
-
-	return isRequestProperty, nil
 }
