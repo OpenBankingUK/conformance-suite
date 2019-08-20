@@ -463,12 +463,12 @@
 
       <br />
 
-      <b-card bg-variant="light">
+      <b-card v-if="properties.length > 0" bg-variant="light">
         <b-form-group label="Conditional Properties" label-size="lg" />
         <b-card bg-variant="default">
-          <b-form-group class="font-weight-bold" label="Payments API" label-size="lg" />
+          <b-form-group v-for="property in properties" :key="property.name" class="font-weight-bold" :label="property.name" label-size="lg" />
           <b-card bg-variant="light">
-            <b-form-group label="POST /domestic-standing-order-consents" label-size="lg" />
+            <b-form-group v-for="endpoint in property.endpoints" :key="endpoint.name" :label="`${endpoint.method} ${endpoint.path}`" label-size="lg" />
             <b-form-group>
               <div>
                 <b-row class="font-weight-bold">
@@ -477,18 +477,18 @@
                   <b-col sm="4">Path</b-col>
                   <b-col sm="3">Value</b-col>
                 </b-row>
-                <b-row striped hover class="my-1" v-for="item in properties" :key="item.property">
+                <b-row striped hover class="my-1" v-for="conditionalProperty in endpoint.conditionalProperties" :key="conditionalProperty.name">
                   <b-col sm="3">
-                    <label :for="`type-${item}`">{{ item.schema }}</label>
+                    <label :for="`type-${item}`">{{ conditionalProperty.schema }}</label>
                   </b-col>
                   <b-col sm="2">
-                    <label :for="`type-${item}`">{{ item.property }}</label>
+                    <label :for="`type-${item}`">{{ conditionalProperty.property }}</label>
                   </b-col>
                   <b-col sm="4">
-                    <label :for="`type-${item}`">{{ item.path }}</label>
+                    <label :for="`type-${item}`">{{ conditionalProperty.path }}</label>
                   </b-col>
                   <b-col sm="3">
-                    <b-form-input :id="`type-${item}`" :item="item"></b-form-input>
+                    <b-form-input :id="`type-${conditionalProperty}`" :item="item"></b-form-input>
                   </b-col>
                 </b-row>
               </div>
@@ -518,7 +518,24 @@ export default {
     SchemeName
   },
   async data() {
-    let conditionalProperties = await api.get('/api/config/conditional-property')
+    // let conditionalProperties = await api.get('/api/config/conditional-property');
+    let conditionalProperties = [{
+      name: 'Payments API',
+      endpoints: [{
+        name: 'Domestic Standing Order',
+        method: 'POST',
+        path: '/domestic-standing-order-consents',
+        conditionalProperties: [{
+          name: 'OBWriteDataDomesticConsentResponse1',
+          schema: 'OBWriteDataDomesticConsentResponse1',
+          property: 'Charges',
+          path: 'Data.Charges',
+          required: true,
+          request: true,
+          value: '',
+        }],
+      }],
+    }];
 
     return {
       properties: conditionalProperties

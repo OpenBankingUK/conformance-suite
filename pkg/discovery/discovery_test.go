@@ -82,7 +82,6 @@ var testdisco = []byte(`
 			"conditionalProperties": [{
 			  "schema": "OBWriteDataDomesticConsentResponse1",
 			  "property": "Charges",
-  
 			  "path": "Data.Charges"
 			}]
 		  },
