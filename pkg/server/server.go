@@ -82,11 +82,11 @@ func registerRoutes(journey Journey, server *Server, logger *logrus.Entry, versi
 	configHandlers := newConfigHandlers(journey, logger)
 	// endpoint to post global configuration
 	api.POST("/config/global", configHandlers.configGlobalPostHandler)
+	api.GET("/config/conditional-property", configHandlers.configConditionalPropertyHandler)
 
 	// endpoints for discovery model
 	discoveryHandlers := newDiscoveryHandlers(journey, logger)
 	api.POST("/discovery-model", discoveryHandlers.setDiscoveryModelHandler)
-	api.GET("/discovery-model", discoveryHandlers.setDiscoveryModelHandler)
 
 	// endpoints for test cases
 	testCaseHandlers := newTestCaseHandlers(journey, NewWebSocketUpgrader(), logger)

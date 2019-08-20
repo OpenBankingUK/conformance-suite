@@ -54,7 +54,7 @@ type Journey interface {
 	NewDaemonController()
 	Results() executors.DaemonController
 	SetConfig(config JourneyConfig) error
-	Config() (JourneyConfig, error)
+	ConditionalProperties() (discovery.ConditionalAPIProperties, error)
 	Events() events.Events
 	TLSVersionResult() map[string]*discovery.TLSValidationResult
 }
