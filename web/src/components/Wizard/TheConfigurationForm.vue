@@ -532,19 +532,20 @@ export default {
           schema: 'OBWriteDataDomesticConsentResponse1',
           property: 'Charges',
           path: 'Data.Charges',
-          required: true,
-          value: '',
-        }],
-      },{
-        name: 'Domestic Payment Consent',
-        method: 'GET',
+			  required: true,
+			    value: '',
+			  }],
+			},{
+			  name: 'Domestic Payment Consent',
+			  method: 'GET',
 			  path: '/domestic-payment-consents/{ConsentId}',
 			  conditionalProperties: [{
 			    schema: 'OBWriteDataDomesticConsentResponse1',
-  			  name: 'Charges',
-          path: 'Data.Charges',
-          required: true,
-          value: ''
+			    name: 'OBWriteDataDomesticConsentResponse1',
+			    property: 'Charges',
+			    path: 'Data.Charges',
+			    required: true,
+			    value: ''
 		  	}]
       }],
     }];
