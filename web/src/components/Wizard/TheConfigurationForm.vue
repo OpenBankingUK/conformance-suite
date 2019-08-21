@@ -463,12 +463,12 @@
 
       <br />
 
-      <b-card v-if="properties.length > 0" bg-variant="light">
+      <b-card v-if="conditional_properties.length > 0" bg-variant="light">
         <b-form-group label="Conditional Properties" label-size="lg" />
         <b-card bg-variant="default">
-          <b-form-group v-for="property of properties" :key="property.name" :label="property.name" label-size="lg" >
+          <b-form-group v-for="(property, propertyKey) in conditional_properties" :key="property.name" :label="property.name" label-size="lg" >
           <b-card bg-variant="light">
-            <b-form-group v-for="endpoint of property.endpoints" :key="endpoint.name" :label="`${endpoint.method} ${endpoint.path}`" label-size="lg" >
+            <b-form-group v-for="(endpoint, endpointKey) in property.endpoints" :key="endpoint.name" :label="`${endpoint.method} ${endpoint.path}`" label-size="lg" >
             <b-form-group>
               <div>
                 <b-row class="font-weight-bold">
@@ -477,7 +477,7 @@
                   <b-col sm="2">Path</b-col>
                   <b-col sm="2">Value</b-col>
                 </b-row>
-                <b-row striped hover class="my-1" v-for="conditionalProperty in endpoint.conditionalProperties" :key="conditionalProperty.name">
+                <b-row striped hover class="my-1" v-for="(conditionalProperty, conditionalPropertyKey) in endpoint.conditionalProperties" :key="conditionalProperty.name">
                   <b-col sm="6">
                     <label>{{ conditionalProperty.schema }}</label>
                   </b-col>
@@ -488,7 +488,7 @@
                     <label>{{ conditionalProperty.path }}</label>
                   </b-col>
                   <b-col sm="2">
-                    <b-form-input v-model="conditionalProperty.value"></b-form-input>
+                    <b-form-input v-model="conditional_properties[propertyKey].endpoints[endpointKey].conditionalProperties[conditionalPropertyKey].value"></b-form-input>
                   </b-col>
                 </b-row>
               </div>
@@ -532,7 +532,7 @@ export default {
           schema: 'OBWriteDataDomesticConsentResponse1',
           property: 'Charges',
           path: 'Data.Charges',
-			  required: true,
+			    required: true,
 			    value: '',
 			  }],
 			},{
@@ -549,9 +549,10 @@ export default {
 		  	}]
       }],
     }];
+    this.$store.commit("config/SET_CONDITIONAL_PROPERTIES", conditionalProperties);
 
     return {
-      properties: conditionalProperties
+      conditional_properties: conditionalProperties
     };
   },
   computed: {
@@ -667,6 +668,14 @@ export default {
       get() {
         return this.$store.state.config.configuration
           .id_token_signing_alg_values_supported;
+      }
+    },
+    conditional_properties: {
+      get() {
+        return this.$store.state.config.configuration.conditional_properties;
+      },
+      set(value) {
+        this.$store.commit("config/SET_CONDITIONAL_PROPERTIES", value);
       }
     },
     id_token_signing_alg: {

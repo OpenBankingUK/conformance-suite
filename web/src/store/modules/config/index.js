@@ -55,6 +55,7 @@ export const mutationTypes = {
   SET_PAYMENT_FREQUENCY: 'SET_PAYMENT_FREQUENCY',
   SET_FIRST_PAYMENT_DATE_TIME: 'SET_FIRST_PAYMENT_DATE_TIME',
   SET_REQUESTED_EXECUTION_DATE_TIME: 'SET_REQUESTED_EXECUTION_DATE_TIME',
+  SET_CONDITIONAL_PROPERTIES: 'SET_CONDITIONAL_PROPERTIES',
 };
 
 export const mutations = {
@@ -89,6 +90,9 @@ export const mutations = {
   },
   [mutationTypes.SET_TRANSACTION_FROM_DATE](state, value) {
     state.configuration.transaction_from_date = value;
+  },
+  [mutationTypes.SET_CONDITIONAL_PROPERTIES](state, value) {
+    state.configuration.conditional_properties = value;
   },
   [mutationTypes.SET_TRANSACTION_TO_DATE](state, value) {
     state.configuration.transaction_to_date = value;
