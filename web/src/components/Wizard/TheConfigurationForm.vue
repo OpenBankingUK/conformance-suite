@@ -466,34 +466,36 @@
       <b-card v-if="properties.length > 0" bg-variant="light">
         <b-form-group label="Conditional Properties" label-size="lg" />
         <b-card bg-variant="default">
-          <b-form-group v-for="property in properties" :key="property.name" class="font-weight-bold" :label="property.name" label-size="lg" />
+          <b-form-group v-for="property of properties" :key="property.name" :label="property.name" label-size="lg" >
           <b-card bg-variant="light">
-            <b-form-group v-for="endpoint in property.endpoints" :key="endpoint.name" :label="`${endpoint.method} ${endpoint.path}`" label-size="lg" />
+            <b-form-group v-for="endpoint of property.endpoints" :key="endpoint.name" :label="`${endpoint.method} ${endpoint.path}`" label-size="lg" >
             <b-form-group>
               <div>
                 <b-row class="font-weight-bold">
-                  <b-col sm="3">Schema</b-col>
+                  <b-col sm="6">Schema</b-col>
                   <b-col sm="2">Property</b-col>
-                  <b-col sm="4">Path</b-col>
-                  <b-col sm="3">Value</b-col>
+                  <b-col sm="2">Path</b-col>
+                  <b-col sm="2">Value</b-col>
                 </b-row>
                 <b-row striped hover class="my-1" v-for="conditionalProperty in endpoint.conditionalProperties" :key="conditionalProperty.name">
-                  <b-col sm="3">
-                    <label :for="`type-${item}`">{{ conditionalProperty.schema }}</label>
+                  <b-col sm="6">
+                    <label>{{ conditionalProperty.schema }}</label>
                   </b-col>
                   <b-col sm="2">
-                    <label :for="`type-${item}`">{{ conditionalProperty.property }}</label>
+                    <label>{{ conditionalProperty.property }}</label>
                   </b-col>
-                  <b-col sm="4">
-                    <label :for="`type-${item}`">{{ conditionalProperty.path }}</label>
+                  <b-col sm="2">
+                    <label>{{ conditionalProperty.path }}</label>
                   </b-col>
-                  <b-col sm="3">
-                    <b-form-input :id="`type-${conditionalProperty}`" :item="item"></b-form-input>
+                  <b-col sm="2">
+                    <b-form-input v-model="conditionalProperty.value"></b-form-input>
                   </b-col>
                 </b-row>
               </div>
             </b-form-group>
+            </b-form-group>
           </b-card>
+          </b-form-group>
         </b-card>
       </b-card>
     </b-form>
@@ -517,7 +519,7 @@ export default {
     PaymentFrequency,
     SchemeName
   },
-  async data() {
+  data() {
     // let conditionalProperties = await api.get('/api/config/conditional-property');
     let conditionalProperties = [{
       name: 'Payments API',
@@ -531,9 +533,19 @@ export default {
           property: 'Charges',
           path: 'Data.Charges',
           required: true,
-          request: true,
           value: '',
         }],
+      },{
+        name: 'Domestic Payment Consent',
+        method: 'GET',
+			  path: '/domestic-payment-consents/{ConsentId}',
+			  conditionalProperties: [{
+			    schema: 'OBWriteDataDomesticConsentResponse1',
+  			  name: 'Charges',
+          path: 'Data.Charges',
+          required: true,
+          value: ''
+		  	}]
       }],
     }];
 
