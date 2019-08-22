@@ -551,9 +551,7 @@ export default {
     }];
     this.$store.commit("config/SET_CONDITIONAL_PROPERTIES", conditionalProperties);
 
-    return {
-      conditional_properties: conditionalProperties
-    };
+    return {};
   },
   computed: {
     ...mapGetters(["resourceAccountIds", "resourceStatementIds"]),
