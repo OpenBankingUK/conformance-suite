@@ -520,38 +520,13 @@ export default {
     SchemeName
   },
   data() {
-    // let conditionalProperties = await api.get('/api/config/conditional-property');
-    let conditionalProperties = [{
-      name: 'Payments API',
-      endpoints: [{
-        name: 'Domestic Standing Order',
-        method: 'POST',
-        path: '/domestic-standing-order-consents',
-        conditionalProperties: [{
-          name: 'OBWriteDataDomesticConsentResponse1',
-          schema: 'OBWriteDataDomesticConsentResponse1',
-          property: 'Charges',
-          path: 'Data.Charges',
-			    required: true,
-			    value: '',
-			  }],
-			},{
-			  name: 'Domestic Payment Consent',
-			  method: 'GET',
-			  path: '/domestic-payment-consents/{ConsentId}',
-			  conditionalProperties: [{
-			    schema: 'OBWriteDataDomesticConsentResponse1',
-			    name: 'OBWriteDataDomesticConsentResponse1',
-			    property: 'Charges',
-			    path: 'Data.Charges',
-			    required: true,
-			    value: ''
-		  	}]
-      }],
-    }];
-    if (this.$store.state.config.configuration.conditional_properties.length == 0) {
-      this.$store.commit("config/SET_CONDITIONAL_PROPERTIES", conditionalProperties);
-    }
+    api.get('/api/config/conditional-property').then(res => {
+      res.json().then(body => {
+        if (this.$store.state.config.configuration.conditional_properties.length == 0) {
+          this.$store.commit("config/SET_CONDITIONAL_PROPERTIES", body);
+        }
+      })
+    });
 
     return {};
   },

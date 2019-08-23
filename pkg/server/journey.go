@@ -580,8 +580,10 @@ func (wj *journey) SetConfig(config JourneyConfig) error {
 	return nil
 }
 
+// ConditionalProperties retrieve conditional properties right after
+// they have been set from the discovery model to the webJourney.ConditionalProperties
 func (wj *journey) ConditionalProperties() []discovery.ConditionalAPIProperties {
-	return wj.config.conditionalProperties
+	return wj.conditionalProperties
 }
 
 func (wj *journey) Events() events.Events {
