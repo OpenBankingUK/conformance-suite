@@ -549,7 +549,9 @@ export default {
 		  	}]
       }],
     }];
-    this.$store.commit("config/SET_CONDITIONAL_PROPERTIES", conditionalProperties);
+    if (this.$store.state.config.configuration.conditional_properties.length == 0) {
+      this.$store.commit("config/SET_CONDITIONAL_PROPERTIES", conditionalProperties);
+    }
 
     return {};
   },
@@ -671,9 +673,6 @@ export default {
     conditional_properties: {
       get() {
         return this.$store.state.config.configuration.conditional_properties;
-      },
-      set(value) {
-        this.$store.commit("config/SET_CONDITIONAL_PROPERTIES", value);
       }
     },
     id_token_signing_alg: {

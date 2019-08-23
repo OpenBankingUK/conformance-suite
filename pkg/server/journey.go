@@ -54,7 +54,7 @@ type Journey interface {
 	NewDaemonController()
 	Results() executors.DaemonController
 	SetConfig(config JourneyConfig) error
-	ConditionalProperties() discovery.ConditionalAPIProperties
+	ConditionalProperties() []discovery.ConditionalAPIProperties
 	Events() events.Events
 	TLSVersionResult() map[string]*discovery.TLSValidationResult
 }
@@ -562,7 +562,7 @@ type JourneyConfig struct {
 	signatureTrustAnchor          string
 	useDynamicResourceID          bool
 	AcrValuesSupported            []string
-	conditionalProperties         discovery.ConditionalAPIProperties
+	conditionalProperties         []discovery.ConditionalAPIProperties
 }
 
 func (wj *journey) SetConfig(config JourneyConfig) error {
@@ -580,7 +580,7 @@ func (wj *journey) SetConfig(config JourneyConfig) error {
 	return nil
 }
 
-func (wj *journey) ConditionalProperties() discovery.ConditionalAPIProperties {
+func (wj *journey) ConditionalProperties() []discovery.ConditionalAPIProperties {
 	return wj.config.conditionalProperties
 }
 
