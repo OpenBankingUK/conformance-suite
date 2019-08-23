@@ -132,7 +132,7 @@ export default {
         'payment_frequency',
         'first_payment_date_time',
         'requested_execution_date_time',
-        'conditional_properties'
+        'conditional_properties',
       ];
       const newConfig = _.pick(merged, validKeys);
       // TODO: Fix this as I think it is working by accident. There needs to be an individual commit to the

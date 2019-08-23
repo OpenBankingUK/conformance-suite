@@ -2,7 +2,9 @@
   <div class="p-3">
     <b-form>
       <b-card bg-variant="light">
-        <b-form-group label="Client" label-size="lg" />
+        <b-form-group
+          label="Client"
+          label-size="lg" />
         <ConfigurationFormFile
           id="signing_private"
           setter-method-name-suffix="SigningPrivate"
@@ -33,9 +35,14 @@
           label-for="resource_account_ids"
           label="Account IDs"
         >
-          <b-input-group v-for="(item, index) in resourceAccountIds" :key="index" class="mt-3">
+          <b-input-group
+            v-for="(item, index) in resourceAccountIds"
+            :key="index"
+            class="mt-3">
             <b-input-group-prepend v-if="resourceAccountIds.length > 1">
-              <b-button variant="danger" @click="removeResourceAccountIDField(index)">-</b-button>
+              <b-button
+                variant="danger"
+                @click="removeResourceAccountIDField(index)">-</b-button>
             </b-input-group-prepend>
             <b-form-input
               :id="`resource_account_ids-${index}`"
@@ -48,7 +55,9 @@
               @input="(value) => { updateAccountId(index, value) }"
             />
             <b-input-group-append v-if="index == resourceAccountIds.length -1">
-              <b-button variant="success" @click="addResourceAccountIDField('')">+</b-button>
+              <b-button
+                variant="success"
+                @click="addResourceAccountIDField('')">+</b-button>
             </b-input-group-append>
           </b-input-group>
         </b-form-group>
@@ -58,9 +67,14 @@
           label-for="resource_statement_ids"
           label="Statement IDs"
         >
-          <b-input-group v-for="(item, index) in resourceStatementIds" :key="index" class="mt-3">
+          <b-input-group
+            v-for="(item, index) in resourceStatementIds"
+            :key="index"
+            class="mt-3">
             <b-input-group-prepend v-if="resourceStatementIds.length > 1">
-              <b-button variant="danger" @click="removeResourceStatementIDField(index)">-</b-button>
+              <b-button
+                variant="danger"
+                @click="removeResourceStatementIDField(index)">-</b-button>
             </b-input-group-prepend>
             <b-form-input
               :id="`resource_statement_ids-${index}`"
@@ -73,7 +87,9 @@
               @input="(value) => { updateStatementId(index, value) }"
             />
             <b-input-group-append v-if="index == resourceStatementIds.length -1">
-              <b-button variant="success" @click="addResourceStatementIDField('')">+</b-button>
+              <b-button
+                variant="success"
+                @click="addResourceStatementIDField('')">+</b-button>
             </b-input-group-append>
           </b-input-group>
         </b-form-group>
@@ -108,7 +124,10 @@
           />
         </b-form-group>
 
-        <b-form-group id="client_id_group" label-for="client_id" label="Client ID">
+        <b-form-group
+          id="client_id_group"
+          label-for="client_id"
+          label="Client ID">
           <b-form-input
             id="client_id"
             v-model="client_id"
@@ -175,10 +194,15 @@
           />
         </b-form-group>
       </b-card>
-      <br />
+      <br >
       <b-card bg-variant="light">
-        <b-form-group label="Well-Known" label-size="lg" />
-        <b-form-group id="token_endpoint_group" label-for="token_endpoint" label="Token Endpoint">
+        <b-form-group
+          label="Well-Known"
+          label-size="lg" />
+        <b-form-group
+          id="token_endpoint_group"
+          label-for="token_endpoint"
+          label="Token Endpoint">
           <b-form-input
             id="token_endpoint"
             v-model="token_endpoint"
@@ -261,7 +285,10 @@
           />
         </b-form-group>
 
-        <b-form-group id="issuer_group" label-for="issuer" label="Issuer">
+        <b-form-group
+          id="issuer_group"
+          label-for="issuer"
+          label="Issuer">
           <b-form-input
             id="issuer"
             v-model="issuer"
@@ -271,7 +298,10 @@
           />
         </b-form-group>
 
-        <b-form-group id="redirect_url_group" label-for="redirect_url" label="Redirect URL">
+        <b-form-group
+          id="redirect_url_group"
+          label-for="redirect_url"
+          label="Redirect URL">
           <b-form-input
             id="redirect_url"
             v-model="redirect_url"
@@ -286,7 +316,9 @@
           label-for="use_non_ob_directory"
           label="Use Non OB Directory"
         >
-          <b-form-checkbox id="use_non_ob_directory" v-model="use_non_ob_directory" />
+          <b-form-checkbox
+            id="use_non_ob_directory"
+            v-model="use_non_ob_directory" />
         </b-form-group>
 
         <b-form-group
@@ -320,10 +352,12 @@
         </b-form-group>
       </b-card>
 
-      <br />
+      <br >
 
       <b-card bg-variant="light">
-        <b-form-group label="Payments" label-size="lg" />
+        <b-form-group
+          label="Payments"
+          label-size="lg" />
 
         <b-form-group
           id="first_payment_date_time"
@@ -461,40 +495,57 @@
         <PaymentFrequency />
       </b-card>
 
-      <br />
+      <br >
 
-      <b-card v-if="conditional_properties.length > 0" bg-variant="light">
-        <b-form-group label="Conditional Properties" label-size="lg" />
+      <b-card
+        v-if="conditional_properties.length > 0"
+        bg-variant="light">
+        <b-form-group
+          label="Conditional Properties"
+          label-size="lg" />
         <b-card bg-variant="default">
-          <b-form-group v-for="(property, propertyKey) in conditional_properties" :key="property.name" :label="property.name" label-size="lg" >
-          <b-card bg-variant="light">
-            <b-form-group v-for="(endpoint, endpointKey) in property.endpoints" :key="endpoint.name" :label="`${endpoint.method} ${endpoint.path}`" label-size="lg" >
-            <b-form-group>
-              <div>
-                <b-row class="font-weight-bold">
-                  <b-col sm="6">Schema</b-col>
-                  <b-col sm="2">Property</b-col>
-                  <b-col sm="2">Path</b-col>
-                  <b-col sm="2">Value</b-col>
-                </b-row>
-                <b-row striped hover class="my-1" v-for="(conditionalProperty, conditionalPropertyKey) in endpoint.conditionalProperties" :key="conditionalProperty.name">
-                  <b-col sm="6">
-                    <label>{{ conditionalProperty.schema }}</label>
-                  </b-col>
-                  <b-col sm="2">
-                    <label>{{ conditionalProperty.property }}</label>
-                  </b-col>
-                  <b-col sm="2">
-                    <label>{{ conditionalProperty.path }}</label>
-                  </b-col>
-                  <b-col sm="2">
-                    <b-form-input v-model="conditional_properties[propertyKey].endpoints[endpointKey].conditionalProperties[conditionalPropertyKey].value"></b-form-input>
-                  </b-col>
-                </b-row>
-              </div>
-            </b-form-group>
-            </b-form-group>
-          </b-card>
+          <b-form-group
+            v-for="(property, propertyKey) in conditional_properties"
+            :key="property.name"
+            :label="property.name"
+            label-size="lg" >
+            <b-card bg-variant="light">
+              <b-form-group
+                v-for="(endpoint, endpointKey) in property.endpoints"
+                :key="endpoint.name"
+                :label="`${endpoint.method} ${endpoint.path}`"
+                label-size="lg" >
+                <b-form-group>
+                  <div>
+                    <b-row class="font-weight-bold">
+                      <b-col sm="6">Schema</b-col>
+                      <b-col sm="2">Property</b-col>
+                      <b-col sm="2">Path</b-col>
+                      <b-col sm="2">Value</b-col>
+                    </b-row>
+                    <b-row
+                      v-for="(conditionalProperty, conditionalPropertyKey) in endpoint.conditionalProperties"
+                      :key="conditionalProperty.name"
+                      striped
+                      hover
+                      class="my-1">
+                      <b-col sm="6">
+                        <label>{{ conditionalProperty.schema }}</label>
+                      </b-col>
+                      <b-col sm="2">
+                        <label>{{ conditionalProperty.property }}</label>
+                      </b-col>
+                      <b-col sm="2">
+                        <label>{{ conditionalProperty.path }}</label>
+                      </b-col>
+                      <b-col sm="2">
+                        <b-form-input v-model="conditional_properties[propertyKey].endpoints[endpointKey].conditionalProperties[conditionalPropertyKey].value"/>
+                      </b-col>
+                    </b-row>
+                  </div>
+                </b-form-group>
+              </b-form-group>
+            </b-card>
           </b-form-group>
         </b-card>
       </b-card>
@@ -503,40 +554,40 @@
 </template>
 
 <script>
-import { createNamespacedHelpers, mapActions } from "vuex";
-import isEmpty from "lodash/isEmpty";
-import ConfigurationFormFile from "./ConfigurationFormFile.vue";
-import PaymentFrequency from "../config/PaymentFrequency.vue";
-import SchemeName from "../config/SchemeName.vue";
+import { createNamespacedHelpers, mapActions } from 'vuex';
+import isEmpty from 'lodash/isEmpty';
+import ConfigurationFormFile from './ConfigurationFormFile.vue';
+import PaymentFrequency from '../config/PaymentFrequency.vue';
+import SchemeName from '../config/SchemeName.vue';
 import api from '../../api/apiUtil';
 
-const { mapGetters } = createNamespacedHelpers("config");
+const { mapGetters } = createNamespacedHelpers('config');
 
 export default {
-  name: "TheConfigurationForm",
+  name: 'TheConfigurationForm',
   components: {
     ConfigurationFormFile,
     PaymentFrequency,
-    SchemeName
+    SchemeName,
   },
   data() {
-    api.get('/api/config/conditional-property').then(res => {
-      res.json().then(body => {
-        if (this.$store.state.config.configuration.conditional_properties.length == 0) {
-          this.$store.commit("config/SET_CONDITIONAL_PROPERTIES", body);
+    api.get('/api/config/conditional-property').then((res) => {
+      res.json().then((body) => {
+        if (this.$store.state.config.configuration.conditional_properties.length === 0) {
+          this.$store.commit('config/SET_CONDITIONAL_PROPERTIES', body);
         }
-      })
+      });
     });
 
     return {};
   },
   computed: {
-    ...mapGetters(["resourceAccountIds", "resourceStatementIds"]),
+    ...mapGetters(['resourceAccountIds', 'resourceStatementIds']),
     token_endpoint_auth_methods() {
       const authMethods = this.$store.state.config.token_endpoint_auth_methods;
       return authMethods.map(m => ({
         value: m,
-        text: m
+        text: m,
       }));
     },
     transaction_from_date: {
@@ -544,16 +595,16 @@ export default {
         return this.$store.state.config.configuration.transaction_from_date;
       },
       set(value) {
-        this.$store.commit("config/SET_TRANSACTION_FROM_DATE", value);
-      }
+        this.$store.commit('config/SET_TRANSACTION_FROM_DATE', value);
+      },
     },
     transaction_to_date: {
       get() {
         return this.$store.state.config.configuration.transaction_to_date;
       },
       set(value) {
-        this.$store.commit("config/SET_TRANSACTION_TO_DATE", value);
-      }
+        this.$store.commit('config/SET_TRANSACTION_TO_DATE', value);
+      },
     },
     // For an explanation on how these work. See:
     // * https://stackoverflow.com/a/45841419/241993
@@ -563,42 +614,42 @@ export default {
         return this.$store.state.config.configuration.client_id;
       },
       set(value) {
-        this.$store.commit("config/SET_CLIENT_ID", value);
-      }
+        this.$store.commit('config/SET_CLIENT_ID', value);
+      },
     },
     client_secret: {
       get() {
         return this.$store.state.config.configuration.client_secret;
       },
       set(value) {
-        this.$store.commit("config/SET_CLIENT_SECRET", value);
-      }
+        this.$store.commit('config/SET_CLIENT_SECRET', value);
+      },
     },
     token_endpoint: {
       get() {
         return this.$store.state.config.configuration.token_endpoint;
       },
       set(value) {
-        this.$store.commit("config/SET_TOKEN_ENDPOINT", value);
-      }
+        this.$store.commit('config/SET_TOKEN_ENDPOINT', value);
+      },
     },
     response_types_supported: {
       get() {
         return this.$store.state.config.response_types_supported;
-      }
+      },
     },
     acr_values_supported: {
       get() {
         return this.$store.state.config.acr_values_supported;
-      }
+      },
     },
     response_type: {
       get() {
         return this.$store.state.config.configuration.response_type;
       },
       set(value) {
-        this.$store.commit("config/SET_RESPONSE_TYPE", value);
-      }
+        this.$store.commit('config/SET_RESPONSE_TYPE', value);
+      },
     },
     token_endpoint_auth_method: {
       get() {
@@ -606,14 +657,14 @@ export default {
           .token_endpoint_auth_method;
       },
       set(value) {
-        this.$store.commit("config/SET_TOKEN_ENDPOINT_AUTH_METHOD", value);
-      }
+        this.$store.commit('config/SET_TOKEN_ENDPOINT_AUTH_METHOD', value);
+      },
     },
     request_object_signing_alg_values_supported: {
       get() {
         return this.$store.state.config
           .request_object_signing_alg_values_supported;
-      }
+      },
     },
     request_object_signing_alg: {
       get() {
@@ -621,14 +672,14 @@ export default {
           .request_object_signing_alg;
       },
       set(value) {
-        this.$store.commit("config/SET_REQUEST_OBJECT_SIGNING_ALG", value);
-      }
+        this.$store.commit('config/SET_REQUEST_OBJECT_SIGNING_ALG', value);
+      },
     },
     token_endpoint_auth_signing_alg_values_supported: {
       get() {
         return this.$store.state.config.configuration
           .token_endpoint_auth_signing_alg_values_supported;
-      }
+      },
     },
     token_endpoint_auth_signing_alg: {
       get() {
@@ -636,51 +687,51 @@ export default {
           .token_endpoint_auth_signing_alg;
       },
       set(value) {
-        this.$store.commit("config/SET_TOKEN_ENDPOINT_AUTH_SIGNING_ALG", value);
-      }
+        this.$store.commit('config/SET_TOKEN_ENDPOINT_AUTH_SIGNING_ALG', value);
+      },
     },
     id_token_signing_alg_values_supported: {
       get() {
         return this.$store.state.config.configuration
           .id_token_signing_alg_values_supported;
-      }
+      },
     },
     conditional_properties: {
       get() {
         return this.$store.state.config.configuration.conditional_properties;
-      }
+      },
     },
     id_token_signing_alg: {
       get() {
         return this.$store.state.config.configuration.id_token_signing_alg;
       },
       set(value) {
-        this.$store.commit("config/SET_ID_TOKEN_SIGNING_ALG", value);
-      }
+        this.$store.commit('config/SET_ID_TOKEN_SIGNING_ALG', value);
+      },
     },
     authorization_endpoint: {
       get() {
         return this.$store.state.config.configuration.authorization_endpoint;
       },
       set(value) {
-        this.$store.commit("config/SET_AUTHORIZATION_ENDPOINT", value);
-      }
+        this.$store.commit('config/SET_AUTHORIZATION_ENDPOINT', value);
+      },
     },
     resource_base_url: {
       get() {
         return this.$store.state.config.configuration.resource_base_url;
       },
       set(value) {
-        this.$store.commit("config/SET_RESOURCE_BASE_URL", value);
-      }
+        this.$store.commit('config/SET_RESOURCE_BASE_URL', value);
+      },
     },
     x_fapi_financial_id: {
       get() {
         return this.$store.state.config.configuration.x_fapi_financial_id;
       },
       set(value) {
-        this.$store.commit("config/SET_X_FAPI_FINANCIAL_ID", value);
-      }
+        this.$store.commit('config/SET_X_FAPI_FINANCIAL_ID', value);
+      },
     },
     send_x_fapi_customer_ip_address: {
       get() {
@@ -688,8 +739,8 @@ export default {
           .send_x_fapi_customer_ip_address;
       },
       set(value) {
-        this.$store.commit("config/SET_SEND_X_FAPI_CUSTOMER_IP_ADDRESS", value);
-      }
+        this.$store.commit('config/SET_SEND_X_FAPI_CUSTOMER_IP_ADDRESS', value);
+      },
     },
     x_fapi_customer_ip_address: {
       get() {
@@ -697,48 +748,48 @@ export default {
           .x_fapi_customer_ip_address;
       },
       set(value) {
-        this.$store.commit("config/SET_X_FAPI_CUSTOMER_IP_ADDRESS", value);
-      }
+        this.$store.commit('config/SET_X_FAPI_CUSTOMER_IP_ADDRESS', value);
+      },
     },
     issuer: {
       get() {
         return this.$store.state.config.configuration.issuer;
       },
       set(value) {
-        this.$store.commit("config/SET_ISSUER", value);
-      }
+        this.$store.commit('config/SET_ISSUER', value);
+      },
     },
     redirect_url: {
       get() {
         return this.$store.state.config.configuration.redirect_url;
       },
       set(value) {
-        this.$store.commit("config/SET_REDIRECT_URL", value);
-      }
+        this.$store.commit('config/SET_REDIRECT_URL', value);
+      },
     },
     use_non_ob_directory: {
       get() {
         return this.$store.state.config.configuration.use_non_ob_directory;
       },
       set(value) {
-        this.$store.commit("config/SET_USE_NON_OB_DIRECTORY", value);
-      }
+        this.$store.commit('config/SET_USE_NON_OB_DIRECTORY', value);
+      },
     },
     signing_kid: {
       get() {
         return this.$store.state.config.configuration.signing_kid;
       },
       set(value) {
-        this.$store.commit("config/SET_SIGNING_KID", value);
-      }
+        this.$store.commit('config/SET_SIGNING_KID', value);
+      },
     },
     signature_trust_anchor: {
       get() {
         return this.$store.state.config.configuration.signature_trust_anchor;
       },
       set(value) {
-        this.$store.commit("config/SET_SIGNATURE_TRUST_ANCHOR", value);
-      }
+        this.$store.commit('config/SET_SIGNATURE_TRUST_ANCHOR', value);
+      },
     },
     creditor_account: {
       get() {
@@ -750,18 +801,18 @@ export default {
           },
           set identification(value) {
             self.$store.commit(
-              "config/SET_CREDITOR_ACCOUNT_IDENTIFICATION",
-              value
+              'config/SET_CREDITOR_ACCOUNT_IDENTIFICATION',
+              value,
             );
           },
           get name() {
             return self.$store.state.config.configuration.creditor_account.name;
           },
           set name(value) {
-            self.$store.commit("config/SET_CREDITOR_ACCOUNT_NAME", value);
-          }
+            self.$store.commit('config/SET_CREDITOR_ACCOUNT_NAME', value);
+          },
         };
-      }
+      },
     },
     international_creditor_account: {
       get() {
@@ -773,8 +824,8 @@ export default {
           },
           set identification(value) {
             self.$store.commit(
-              "config/SET_INTERNATIONAL_CREDITOR_ACCOUNT_IDENTIFICATION",
-              value
+              'config/SET_INTERNATIONAL_CREDITOR_ACCOUNT_IDENTIFICATION',
+              value,
             );
           },
           get name() {
@@ -783,12 +834,12 @@ export default {
           },
           set name(value) {
             self.$store.commit(
-              "config/SET_INTERNATIONAL_CREDITOR_ACCOUNT_NAME",
-              value
+              'config/SET_INTERNATIONAL_CREDITOR_ACCOUNT_NAME',
+              value,
             );
-          }
+          },
         };
-      }
+      },
     },
     instructed_amount: {
       get() {
@@ -799,7 +850,7 @@ export default {
               .value;
           },
           set value(value) {
-            self.$store.commit("config/SET_INSTRUCTED_AMOUNT_VALUE", value);
+            self.$store.commit('config/SET_INSTRUCTED_AMOUNT_VALUE', value);
           },
           get currency() {
             return self.$store.state.config.configuration.instructed_amount
@@ -807,61 +858,61 @@ export default {
           },
           set currency(currency) {
             self.$store.commit(
-              "config/SET_INSTRUCTED_AMOUNT_CURRENCY",
-              currency
+              'config/SET_INSTRUCTED_AMOUNT_CURRENCY',
+              currency,
             );
-          }
+          },
         };
-      }
+      },
     },
     currency_of_transfer: {
       get() {
         return this.$store.state.config.configuration.currency_of_transfer;
       },
       set(value) {
-        this.$store.commit("config/SET_CURRENCY_OF_TRANSFER", value);
-      }
+        this.$store.commit('config/SET_CURRENCY_OF_TRANSFER', value);
+      },
     },
     top_20_currencies: {
       get() {
         return [
-          "USD",
-          "EUR",
-          "JPY",
-          "GBP",
-          "AUD",
-          "CAD",
-          "CHF",
-          "CNY",
-          "SEK",
-          "NZD",
-          "MXN",
-          "SGD",
-          "HKD",
-          "NOK",
-          "KRW",
-          "TRY",
-          "RUB",
-          "INR",
-          "BRL"
+          'USD',
+          'EUR',
+          'JPY',
+          'GBP',
+          'AUD',
+          'CAD',
+          'CHF',
+          'CNY',
+          'SEK',
+          'NZD',
+          'MXN',
+          'SGD',
+          'HKD',
+          'NOK',
+          'KRW',
+          'TRY',
+          'RUB',
+          'INR',
+          'BRL',
         ];
-      }
+      },
     },
     payment_frequency: {
       get() {
         return this.$store.state.config.configuration.payment_frequency;
       },
       set(value) {
-        this.$store.commit("config/SET_PAYMENT_FREQUENCY", value);
-      }
+        this.$store.commit('config/SET_PAYMENT_FREQUENCY', value);
+      },
     },
     first_payment_date_time: {
       get() {
         return this.$store.state.config.configuration.first_payment_date_time;
       },
       set(value) {
-        this.$store.commit("config/SET_FIRST_PAYMENT_DATE_TIME", value);
-      }
+        this.$store.commit('config/SET_FIRST_PAYMENT_DATE_TIME', value);
+      },
     },
     requested_execution_date_time: {
       get() {
@@ -869,16 +920,16 @@ export default {
           .requested_execution_date_time;
       },
       set(value) {
-        this.$store.commit("config/SET_REQUESTED_EXECUTION_DATE_TIME", value);
-      }
-    }
+        this.$store.commit('config/SET_REQUESTED_EXECUTION_DATE_TIME', value);
+      },
+    },
   },
   methods: {
-    ...mapActions("config", [
-      "removeResourceAccountID",
-      "removeResourceStatementID",
-      "setResourceAccountID",
-      "setResourceStatementID"
+    ...mapActions('config', [
+      'removeResourceAccountID',
+      'removeResourceStatementID',
+      'setResourceAccountID',
+      'setResourceStatementID',
     ]),
     updateAccountId(index, value) {
       this.setResourceAccountID({ index, value });
@@ -898,27 +949,27 @@ export default {
     },
     client_secret_visible() {
       return (
-        this.$store.state.config.configuration.token_endpoint_auth_method ===
-        "client_secret_basic"
+        this.$store.state.config.configuration.token_endpoint_auth_method
+        === 'client_secret_basic'
       );
     },
     addResourceAccountIDField(value) {
-      this.$store.commit("config/ADD_RESOURCE_ACCOUNT_ID", {
-        account_id: value
+      this.$store.commit('config/ADD_RESOURCE_ACCOUNT_ID', {
+        account_id: value,
       });
     },
     removeResourceAccountIDField(index) {
       this.removeResourceAccountID(index);
     },
     addResourceStatementIDField(value) {
-      this.$store.commit("config/ADD_RESOURCE_STATEMENT_ID", {
-        statement_id: value
+      this.$store.commit('config/ADD_RESOURCE_STATEMENT_ID', {
+        statement_id: value,
       });
     },
     removeResourceStatementIDField(index) {
       this.removeResourceStatementID(index);
-    }
-  }
+    },
+  },
 };
 </script>
 

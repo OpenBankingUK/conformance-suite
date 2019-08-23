@@ -89,6 +89,7 @@ describe('web/src/store/modules/config', () => {
         first_payment_date_time: '2020-01-01T00:00:00+01:00',
         requested_execution_date_time: '2020-01-01T00:00:00+01:00',
         acr_values_supported: [],
+        conditional_properties: [],
       });
     });
 
@@ -177,6 +178,7 @@ describe('web/src/store/modules/config', () => {
         first_payment_date_time: '2020-01-01T00:00:00+01:00',
         requested_execution_date_time: '2020-01-01T00:00:00+01:00',
         acr_values_supported: [],
+        conditional_properties: [],
       });
 
       store.commit(types.SET_TOKEN_ENDPOINT_AUTH_METHODS, ['tls_client_auth', 'client_secret_basic']);
@@ -227,6 +229,7 @@ describe('web/src/store/modules/config', () => {
         first_payment_date_time: '2020-01-01T00:00:00+01:00',
         requested_execution_date_time: '2020-01-01T00:00:00+01:00',
         acr_values_supported: [],
+        conditional_properties: [],
       });
 
       store.commit(types.SET_CLIENT_SECRET, '2cfb31a3-5443-4e65-b2bc-ef8e00266a77');
@@ -276,6 +279,7 @@ describe('web/src/store/modules/config', () => {
         first_payment_date_time: '2020-01-01T00:00:00+01:00',
         requested_execution_date_time: '2020-01-01T00:00:00+01:00',
         acr_values_supported: [],
+        conditional_properties: [],
       });
 
       store.commit(types.SET_TOKEN_ENDPOINT, 'https://modelobank2018.o3bank.co.uk:4201/token');
@@ -325,6 +329,7 @@ describe('web/src/store/modules/config', () => {
         first_payment_date_time: '2020-01-01T00:00:00+01:00',
         requested_execution_date_time: '2020-01-01T00:00:00+01:00',
         acr_values_supported: [],
+        conditional_properties: [],
       });
 
       store.commit(types.SET_TOKEN_ENDPOINT_AUTH_METHOD, 'client_secret_basic');
@@ -377,6 +382,7 @@ describe('web/src/store/modules/config', () => {
         first_payment_date_time: '2020-01-01T00:00:00+01:00',
         requested_execution_date_time: '2020-01-01T00:00:00+01:00',
         acr_values_supported: [],
+        conditional_properties: [],
       });
 
       store.commit(types.SET_RESOURCE_BASE_URL, 'https://ob19-rs1.o3bank.co.uk:4501');
@@ -426,6 +432,7 @@ describe('web/src/store/modules/config', () => {
         first_payment_date_time: '2020-01-01T00:00:00+01:00',
         requested_execution_date_time: '2020-01-01T00:00:00+01:00',
         acr_values_supported: [],
+        conditional_properties: [],
       });
 
       store.commit(types.SET_X_FAPI_FINANCIAL_ID, '0015800001041RHAAY');
@@ -475,6 +482,7 @@ describe('web/src/store/modules/config', () => {
         first_payment_date_time: '2020-01-01T00:00:00+01:00',
         requested_execution_date_time: '2020-01-01T00:00:00+01:00',
         acr_values_supported: [],
+        conditional_properties: [],
       });
 
       store.commit(types.SET_ISSUER, 'https://modelobankauth2018.o3bank.co.uk:4101');
@@ -524,6 +532,7 @@ describe('web/src/store/modules/config', () => {
         first_payment_date_time: '2020-01-01T00:00:00+01:00',
         requested_execution_date_time: '2020-01-01T00:00:00+01:00',
         acr_values_supported: [],
+        conditional_properties: [],
       });
 
       store.commit(types.ADD_RESOURCE_ACCOUNT_ID, { account_id: 'account-id' });
@@ -573,6 +582,7 @@ describe('web/src/store/modules/config', () => {
         first_payment_date_time: '2020-01-01T00:00:00+01:00',
         requested_execution_date_time: '2020-01-01T00:00:00+01:00',
         acr_values_supported: [],
+        conditional_properties: [],
       });
 
       store.commit(types.ADD_RESOURCE_STATEMENT_ID, { statement_id: 'statement-id' });
@@ -622,6 +632,7 @@ describe('web/src/store/modules/config', () => {
         first_payment_date_time: '2020-01-01T00:00:00+01:00',
         requested_execution_date_time: '2020-01-01T00:00:00+01:00',
         acr_values_supported: [],
+        conditional_properties: [],
       });
 
       store.commit(types.SET_REQUEST_OBJECT_SIGNING_ALG, 'PS256');
@@ -677,6 +688,7 @@ describe('web/src/store/modules/config', () => {
         first_payment_date_time: '2020-01-01T00:00:00+01:00',
         requested_execution_date_time: '2020-01-01T00:00:00+01:00',
         acr_values_supported: [],
+        conditional_properties: [],
       });
 
       const acctIDs = [{ account_id: '123' }, { account_id: '456' }];
@@ -728,6 +740,7 @@ describe('web/src/store/modules/config', () => {
         first_payment_date_time: '2020-01-01T00:00:00+01:00',
         requested_execution_date_time: '2020-01-01T00:00:00+01:00',
         acr_values_supported: [],
+        conditional_properties: [],
       });
 
       const stmtIDs = [{ statement_id: '123' }, { statement_id: '456' }];
@@ -779,6 +792,7 @@ describe('web/src/store/modules/config', () => {
         first_payment_date_time: '2020-01-01T00:00:00+01:00',
         requested_execution_date_time: '2020-01-01T00:00:00+01:00',
         acr_values_supported: [],
+        conditional_properties: [],
       });
 
       store.commit(types.SET_TRANSACTION_FROM_DATE, '2016-01-01T10:40:00+02:00');
@@ -830,6 +844,7 @@ describe('web/src/store/modules/config', () => {
         first_payment_date_time: '2020-01-01T00:00:00+01:00',
         requested_execution_date_time: '2020-01-01T00:00:00+01:00',
         acr_values_supported: [],
+        conditional_properties: [],
       });
     });
 
@@ -887,6 +902,7 @@ describe('web/src/store/modules/config', () => {
           first_payment_date_time: '2020-01-01T00:00:00+01:00',
           requested_execution_date_time: '2020-01-01T00:00:00+01:00',
           acr_values_supported: [],
+          conditional_properties: [],
         });
 
         api.validateDiscoveryConfig.mockReturnValueOnce({
@@ -923,6 +939,7 @@ describe('web/src/store/modules/config', () => {
               'code id_token',
             ],
             acr_values_supported: [],
+            conditional_properties: [],
           },
         });
 
@@ -977,6 +994,7 @@ describe('web/src/store/modules/config', () => {
           first_payment_date_time: '2020-01-01T00:00:00+01:00',
           requested_execution_date_time: '2020-01-01T00:00:00+01:00',
           acr_values_supported: [],
+          conditional_properties: [],
         });
       });
     });
