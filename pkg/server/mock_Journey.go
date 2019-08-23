@@ -42,6 +42,22 @@ func (_m *MockJourney) CollectToken(code string, state string, scope string) err
 	return r0
 }
 
+// ConditionalProperties provides a mock function with given fields:
+func (_m *MockJourney) ConditionalProperties() []discovery.ConditionalAPIProperties {
+	ret := _m.Called()
+
+	var r0 []discovery.ConditionalAPIProperties
+	if rf, ok := ret.Get(0).(func() []discovery.ConditionalAPIProperties); ok {
+		r0 = rf()
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).([]discovery.ConditionalAPIProperties)
+		}
+	}
+
+	return r0
+}
+
 // DiscoveryModel provides a mock function with given fields:
 func (_m *MockJourney) DiscoveryModel() (discovery.Model, error) {
 	ret := _m.Called()
