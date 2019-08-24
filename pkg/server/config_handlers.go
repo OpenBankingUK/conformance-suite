@@ -155,6 +155,13 @@ func newConfigHandlers(journey Journey, logger *logrus.Entry) configHandlers {
 	}
 }
 
+// GET /api/config/conditional-property
+func (h configHandlers) configConditionalPropertyHandler(c echo.Context) error {
+	conditionalProperties := h.journey.ConditionalProperties()
+	logrus.Tracef("conditionalProperties: %#v", conditionalProperties)
+	return c.JSON(http.StatusOK, conditionalProperties)
+}
+
 // POST /api/config/global
 func (h configHandlers) configGlobalPostHandler(c echo.Context) error {
 	config := new(GlobalConfiguration)

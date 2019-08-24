@@ -54,6 +54,7 @@ type Journey interface {
 	NewDaemonController()
 	Results() executors.DaemonController
 	SetConfig(config JourneyConfig) error
+	ConditionalProperties() []discovery.ConditionalAPIProperties	
 	Events() events.Events
 	TLSVersionResult() map[string]*discovery.TLSValidationResult
 }
@@ -580,6 +581,12 @@ func (wj *journey) SetConfig(config JourneyConfig) error {
 
 	wj.customTestParametersToJourneyContext()
 	return nil
+}
+
+// ConditionalProperties retrieve conditional properties right after
+// they have been set from the discovery model to the webJourney.ConditionalProperties
+func (wj *journey) ConditionalProperties() []discovery.ConditionalAPIProperties {
+	return wj.conditionalProperties
 }
 
 func (wj *journey) Events() events.Events {
