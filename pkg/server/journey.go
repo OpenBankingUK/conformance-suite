@@ -564,7 +564,7 @@ type JourneyConfig struct {
 	signatureTrustAnchor          string
 	useDynamicResourceID          bool
 	AcrValuesSupported            []string
-	conditionalProperties         discovery.ConditionalAPIProperties
+	conditionalProperties         []discovery.ConditionalAPIProperties
 }
 
 func (wj *journey) SetConfig(config JourneyConfig) error {
