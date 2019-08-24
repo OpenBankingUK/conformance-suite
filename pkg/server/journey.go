@@ -127,16 +127,19 @@ func (wj *journey) SetDiscoveryModel(discoveryModel *discovery.Model) (discovery
 	wj.testCasesRunGenerated = false
 	wj.allCollected = false
 
-	conditionalApiProperties, hasProperties, err := discovery.GetConditionalProperties(discoveryModel)
-	if err != nil {
-		return nil, errors.Wrap(err, "journey.SetDiscoveryModel: error processing conditional properties")
-	}
-	if hasProperties {
-		wj.hasConditionalProperties = true
-		wj.conditionalProperties = conditionalApiProperties
-		logrus.Tracef("conditionalProperties: %#v", wj.conditionalProperties)
-	} else {
-		logrus.Trace("No Conditional Properties found")
+	if discoveryModel.DiscoveryModel.DiscoveryVersion == "v0.4.0" { // Conditional properties requires 0.4.0
+		//TODO: remove this constraint once support for v0.3.0 discovery model is dropped
+		conditionalApiProperties, hasProperties, err := discovery.GetConditionalProperties(discoveryModel)
+		if err != nil {
+			return nil, errors.Wrap(err, "journey.SetDiscoveryModel: error processing conditional properties")
+		}
+		if hasProperties {
+			wj.hasConditionalProperties = true
+			wj.conditionalProperties = conditionalApiProperties
+			logrus.Tracef("conditionalProperties: %#v", wj.conditionalProperties)
+		} else {
+			logrus.Trace("No Conditional Properties found")
+		}
 	}
 
 	return discovery.NoValidationFailures(), nil
