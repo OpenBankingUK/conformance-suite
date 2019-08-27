@@ -517,30 +517,25 @@
                 label-size="lg" >
                 <b-form-group>
                   <div>
-                    <b-row class="font-weight-bold">
-                      <b-col sm="6">Schema</b-col>
-                      <b-col sm="2">Name</b-col>
-                      <b-col sm="2">Path</b-col>
-                      <b-col sm="2">Value</b-col>
-                    </b-row>
                     <b-row
                       v-for="(conditionalProperty, conditionalPropertyKey) in endpoint.conditionalProperties"
                       :key="conditionalProperty.name"
                       striped
                       hover
-                      class="my-1">
-                      <b-col sm="6">
-                        <label>{{ conditionalProperty.schema }}</label>
+                      class="my-1 p-3">
+                      <b-col sm="12">
+                        <label><b>Schema:</b> {{ conditionalProperty.schema }}</label>
                       </b-col>
-                      <b-col sm="2">
-                        <label>{{ conditionalProperty.name }}</label>
+                      <b-col sm="12">
+                        <label><b>Name:</b> {{ conditionalProperty.name }}</label>
                       </b-col>
-                      <b-col sm="2">
-                        <label>{{ conditionalProperty.path }}</label>
+                      <b-col sm="12">
+                        <label><b>Path:</b> {{ conditionalProperty.path }}</label>
                       </b-col>
-                      <b-col sm="2">
-                        <b-form-input v-model="conditional_properties[propertyKey].endpoints[endpointKey].conditionalProperties[conditionalPropertyKey].value"/>
+                      <b-col sm="12">
+                        <b-form-input :placeholder="getConditionalPropertyPlaceholderValue(conditional_properties[propertyKey].endpoints[endpointKey].conditionalProperties[conditionalPropertyKey].required)" v-model="conditional_properties[propertyKey].endpoints[endpointKey].conditionalProperties[conditionalPropertyKey].value"/>
                       </b-col>
+                      <br />
                     </b-row>
                   </div>
                 </b-form-group>
@@ -969,6 +964,9 @@ export default {
     removeResourceStatementIDField(index) {
       this.removeResourceStatementID(index);
     },
+    getConditionalPropertyPlaceholderValue(required) {
+        return `Value ${required?"(Required)":"(Optional)"}`;
+    }
   },
 };
 </script>
