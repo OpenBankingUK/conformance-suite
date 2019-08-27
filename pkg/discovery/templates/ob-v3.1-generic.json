@@ -145,8 +145,7 @@
           "path": "/domestic-payment-consents",
           "conditionalProperties": [{
             "schema": "OBWriteDataDomesticConsentResponse1",
-            "property": "Charges",
-
+            "name": "Charges",
             "path": "Data.Charges"
           }]
         },
