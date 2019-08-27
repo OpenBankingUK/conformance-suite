@@ -20,7 +20,7 @@ func TestGetConditionalProperties(t *testing.T) {
 			}
 		}
 	}
-	assert.Equal(t, "SecondaryIdentification", apiprops[1].Endpoints[4].ConditionalProperties[1].Name)
+	assert.Equal(t, "SecondaryIdentification", apiprops[0].Endpoints[4].ConditionalProperties[1].Name)
 }
 
 var testdisco = []byte(`

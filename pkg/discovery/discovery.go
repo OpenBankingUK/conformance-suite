@@ -81,18 +81,18 @@ func UnmarshalDiscoveryJSON(discoveryJSON string) (*Model, error) {
 // validator, err := schema.NewSwaggerOBSpecValidator(item.APISpecification.Name, item.APISpecification.Version)
 func GetConditionalProperties(disco *Model) ([]ConditionalAPIProperties, bool, error) {
 	var haveProperties bool
-	conditionalProps := make([]ConditionalAPIProperties, len(disco.DiscoveryModel.DiscoveryItems))
+	conditionalProps := make([]ConditionalAPIProperties, 0, len(disco.DiscoveryModel.DiscoveryItems))
 	for k, discoitem := range disco.DiscoveryModel.DiscoveryItems {
-		conditionalProps[k].Name = discoitem.APISpecification.Name
 		validator, err := schema.NewSwaggerOBSpecValidator(discoitem.APISpecification.Name, discoitem.APISpecification.Version)
 		if err != nil {
 			logrus.Error(err)
 			return nil, false, err
 		}
+		conditionalProp := ConditionalAPIProperties{Name: discoitem.APISpecification.Name}
 		for _, endpoint := range discoitem.Endpoints {
 			if len(endpoint.ConditionalProperties) > 0 {
 
-				for k, prop := range endpoint.ConditionalProperties {
+				for _, prop := range endpoint.ConditionalProperties {
 					isRequest, err := validator.IsRequestProperty(endpoint.Method, endpoint.Path, prop.Path)
 					if err != nil {
 						logrus.Error(err)
@@ -103,9 +103,12 @@ func GetConditionalProperties(disco *Model) ([]ConditionalAPIProperties, bool, e
 					}
 
 				}
-				conditionalProps[k].Endpoints = append(conditionalProps[k].Endpoints, endpoint)
+				conditionalProp.Endpoints = append(conditionalProp.Endpoints, endpoint)
 				haveProperties = true
 			}
+		}
+		if haveProperties {
+			conditionalProps = append(conditionalProps, conditionalProp)
 		}
 	}
 
