@@ -77,7 +77,6 @@ type journey struct {
 	manifests                []manifest.Scripts
 	filteredManifests        manifest.Scripts
 	tlsValidator             discovery.TLSValidator
-	hasConditionalProperties bool
 	conditionalProperties    []discovery.ConditionalAPIProperties
 }
 
@@ -135,7 +134,6 @@ func (wj *journey) SetDiscoveryModel(discoveryModel *discovery.Model) (discovery
 			return nil, errors.Wrap(err, "journey.SetDiscoveryModel: error processing conditional properties")
 		}
 		if hasProperties {
-			wj.hasConditionalProperties = true
 			wj.conditionalProperties = conditionalApiProperties
 			logrus.Tracef("conditionalProperties: %#v", wj.conditionalProperties)
 		} else {
