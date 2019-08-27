@@ -533,9 +533,11 @@
                         <label><b>Path:</b> {{ conditionalProperty.path }}</label>
                       </b-col>
                       <b-col sm="12">
-                        <b-form-input :placeholder="getConditionalPropertyPlaceholderValue(conditional_properties[propertyKey].endpoints[endpointKey].conditionalProperties[conditionalPropertyKey].required)" v-model="conditional_properties[propertyKey].endpoints[endpointKey].conditionalProperties[conditionalPropertyKey].value"/>
+                        <b-form-input
+                          :placeholder="getConditionalPropertyPlaceholderValue(conditional_properties[propertyKey].endpoints[endpointKey].conditionalProperties[conditionalPropertyKey].required)"
+                          v-model="conditional_properties[propertyKey].endpoints[endpointKey].conditionalProperties[conditionalPropertyKey].value"/>
                       </b-col>
-                      <br />
+                      <br >
                     </b-row>
                   </div>
                 </b-form-group>
@@ -965,8 +967,8 @@ export default {
       this.removeResourceStatementID(index);
     },
     getConditionalPropertyPlaceholderValue(required) {
-        return `Value ${required?"(Required)":"(Optional)"}`;
-    }
+      return `Value ${required ? '(Required)' : '(Optional)'}`;
+    },
   },
 };
 </script>
