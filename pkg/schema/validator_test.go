@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/go-openapi/loads"
+	"github.com/go-openapi/spec"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -158,5 +159,43 @@ func TestCheckRequestSchema(t *testing.T) {
 			}
 		}
 	}
+}
 
+func TestTraverseSchemaLookingforNonRequiredProperties(t *testing.T) { // Example traversal routine - no test fail
+	doc, err := loads.Spec("spec/v3.1.0/payment-initiation-swagger.flattened.json")
+	require.NoError(t, err)
+
+	spec := doc.Spec()
+
+	for path, props := range spec.Paths.Paths {
+		for meth, op := range getOperations(&props) {
+			t.Logf("%s %s %s\n", meth, path, op.ID)
+			for _, param := range op.Parameters {
+				if param.ParamProps.In == "body" {
+					t.Logf("%s %s %t %s\n", param.Name, param.In, param.Required, param.Type)
+					sc := param.ParamProps.Schema
+					if sc != nil {
+						dumpSchema(t, sc, "")
+					}
+				}
+			}
+		}
+	}
+}
+
+func dumpSchema(t *testing.T, sc *spec.Schema, previousPath string) {
+	for k, j := range sc.SchemaProps.Properties {
+		var element string
+		if len(previousPath) == 0 {
+			element = k
+		} else {
+			element = previousPath + "." + k
+		}
+		if len(j.Required) > 0 {
+			t.Logf("*** %s required:%s\n", element, j.Required)
+		} else {
+			t.Logf("%s\n", element)
+		}
+		dumpSchema(t, &j, element)
+	}
 }

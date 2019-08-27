@@ -18,10 +18,16 @@ func Version() string {
 	return version
 }
 
+func MinVersion() string {
+	minversion := "v0.3.0"
+	return minversion
+}
+
 // SupportedVersions - returns map of supported versions
 func SupportedVersions() map[string]bool {
 	return map[string]bool{
-		Version(): true,
+		Version():    true,
+		MinVersion(): true,
 	}
 }
 

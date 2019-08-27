@@ -55,36 +55,36 @@ func SupportedAcrValues() []string {
 }
 
 type GlobalConfiguration struct {
-	SigningPrivate                string                             `json:"signing_private" validate:"not_empty"`
-	SigningPublic                 string                             `json:"signing_public" validate:"not_empty"`
-	TransportPrivate              string                             `json:"transport_private" validate:"not_empty"`
-	TransportPublic               string                             `json:"transport_public" validate:"not_empty"`
-	ClientID                      string                             `json:"client_id" validate:"not_empty"`
-	ClientSecret                  string                             `json:"client_secret" validate:"not_empty"`
-	TokenEndpoint                 string                             `json:"token_endpoint" validate:"valid_url"`
-	ResponseType                  string                             `json:"response_type" validate:"not_empty"`
-	TokenEndpointAuthMethod       string                             `json:"token_endpoint_auth_method" validate:"not_empty"`
-	AuthorizationEndpoint         string                             `json:"authorization_endpoint" validate:"valid_url"`
-	ResourceBaseURL               string                             `json:"resource_base_url" validate:"valid_url"`
-	XFAPIFinancialID              string                             `json:"x_fapi_financial_id" validate:"not_empty"`
-	XFAPICustomerIPAddress        string                             `json:"x_fapi_customer_ip_address,omitempty"`
-	Issuer                        string                             `json:"issuer" validate:"valid_url"`
-	RedirectURL                   string                             `json:"redirect_url" validate:"valid_url"`
-	ResourceIDs                   model.ResourceIDs                  `json:"resource_ids" validate:"not_empty"`
-	CreditorAccount               models.Payment                     `json:"creditor_account"`
-	InternationalCreditorAccount  models.Payment                     `json:"international_creditor_account"`
-	TransactionFromDate           string                             `json:"transaction_from_date" validate:"not_empty"`
-	TransactionToDate             string                             `json:"transaction_to_date" validate:"not_empty"`
-	RequestObjectSigningAlgorithm string                             `json:"request_object_signing_alg"`
-	InstructedAmount              models.InstructedAmount            `json:"instructed_amount"`
-	PaymentFrequency              models.PaymentFrequency            `json:"payment_frequency"`
-	FirstPaymentDateTime          string                             `json:"first_payment_date_time"`
-	RequestedExecutionDateTime    string                             `json:"requested_execution_date_time"`
-	CurrencyOfTransfer            string                             `json:"currency_of_transfer"`
-	UseNonOBDirectory             bool                               `json:"use_non_ob_directory"`
-	SigningKid                    string                             `json:"signing_kid,omitempty"`
-	SignatureTrustAnchor          string                             `json:"signature_trust_anchor,omitempty"`
-	AcrValuesSupported            []string                           `json:"acr_values_supported,omitempty"`
+	SigningPrivate                string                               `json:"signing_private" validate:"not_empty"`
+	SigningPublic                 string                               `json:"signing_public" validate:"not_empty"`
+	TransportPrivate              string                               `json:"transport_private" validate:"not_empty"`
+	TransportPublic               string                               `json:"transport_public" validate:"not_empty"`
+	ClientID                      string                               `json:"client_id" validate:"not_empty"`
+	ClientSecret                  string                               `json:"client_secret" validate:"not_empty"`
+	TokenEndpoint                 string                               `json:"token_endpoint" validate:"valid_url"`
+	ResponseType                  string                               `json:"response_type" validate:"not_empty"`
+	TokenEndpointAuthMethod       string                               `json:"token_endpoint_auth_method" validate:"not_empty"`
+	AuthorizationEndpoint         string                               `json:"authorization_endpoint" validate:"valid_url"`
+	ResourceBaseURL               string                               `json:"resource_base_url" validate:"valid_url"`
+	XFAPIFinancialID              string                               `json:"x_fapi_financial_id" validate:"not_empty"`
+	XFAPICustomerIPAddress        string                               `json:"x_fapi_customer_ip_address,omitempty"`
+	Issuer                        string                               `json:"issuer" validate:"valid_url"`
+	RedirectURL                   string                               `json:"redirect_url" validate:"valid_url"`
+	ResourceIDs                   model.ResourceIDs                    `json:"resource_ids" validate:"not_empty"`
+	CreditorAccount               models.Payment                       `json:"creditor_account"`
+	InternationalCreditorAccount  models.Payment                       `json:"international_creditor_account"`
+	TransactionFromDate           string                               `json:"transaction_from_date" validate:"not_empty"`
+	TransactionToDate             string                               `json:"transaction_to_date" validate:"not_empty"`
+	RequestObjectSigningAlgorithm string                               `json:"request_object_signing_alg"`
+	InstructedAmount              models.InstructedAmount              `json:"instructed_amount"`
+	PaymentFrequency              models.PaymentFrequency              `json:"payment_frequency"`
+	FirstPaymentDateTime          string                               `json:"first_payment_date_time"`
+	RequestedExecutionDateTime    string                               `json:"requested_execution_date_time"`
+	CurrencyOfTransfer            string                               `json:"currency_of_transfer"`
+	UseNonOBDirectory             bool                                 `json:"use_non_ob_directory"`
+	SigningKid                    string                               `json:"signing_kid,omitempty"`
+	SignatureTrustAnchor          string                               `json:"signature_trust_anchor,omitempty"`
+	AcrValuesSupported            []string                             `json:"acr_values_supported,omitempty"`
 	ConditionalProperties         []discovery.ConditionalAPIProperties `json:"conditional_properties,omitempty"`
 }
 
