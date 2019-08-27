@@ -519,7 +519,7 @@
                   <div>
                     <b-row class="font-weight-bold">
                       <b-col sm="6">Schema</b-col>
-                      <b-col sm="2">Property</b-col>
+                      <b-col sm="2">Name</b-col>
                       <b-col sm="2">Path</b-col>
                       <b-col sm="2">Value</b-col>
                     </b-row>
@@ -533,7 +533,7 @@
                         <label>{{ conditionalProperty.schema }}</label>
                       </b-col>
                       <b-col sm="2">
-                        <label>{{ conditionalProperty.property }}</label>
+                        <label>{{ conditionalProperty.name }}</label>
                       </b-col>
                       <b-col sm="2">
                         <label>{{ conditionalProperty.path }}</label>
