@@ -2,7 +2,7 @@
   "discoveryModel": {
     "name": "ob-v3.1-generic",
     "description": "An Open Banking UK discovery template for v3.1 of Accounts and Payments.",
-    "discoveryVersion": "v0.3.0",
+    "discoveryVersion": "v0.4.0",
     "tokenAcquisition": "psu",
     "discoveryItems": [
       {
@@ -145,8 +145,7 @@
           "path": "/domestic-payment-consents",
           "conditionalProperties": [{
             "schema": "OBWriteDataDomesticConsentResponse1",
-            "property": "Charges",
-
+            "name": "Charges",
             "path": "Data.Charges"
           }]
         },
@@ -155,7 +154,7 @@
             "path": "/domestic-payment-consents/{ConsentId}",
             "conditionalProperties": [{
               "schema": "OBWriteDataDomesticConsentResponse1",
-              "property": "Charges",
+              "name": "Charges",
               "path": "Data.Charges"
             }]
           },
@@ -168,7 +167,7 @@
             "path": "/domestic-payments",
             "conditionalProperties": [{
               "schema": "OBWriteDataDomesticResponse1",
-              "property": "Charges",
+              "name": "Charges",
               "path": "Data.Charges"
             }]
           },
@@ -177,7 +176,7 @@
             "path": "/domestic-payments/{DomesticPaymentId}",
             "conditionalProperties": [{
               "schema": "OBWriteDataDomesticResponse1",
-              "property": "Charges",
+              "name": "Charges",
               "path": "Data.Charges"
             }]
           },

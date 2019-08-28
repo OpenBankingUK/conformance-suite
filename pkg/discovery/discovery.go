@@ -2,6 +2,9 @@ package discovery
 
 import (
 	"encoding/json"
+
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/schema"
+	"github.com/sirupsen/logrus"
 )
 
 // Model - Top level struct holding discovery model.
@@ -44,16 +47,25 @@ type ModelAPISpecification struct {
 
 // ModelEndpoint - Endpoint and methods that have been implemented by implementer.
 type ModelEndpoint struct {
-	Method                string                       `json:"method" validate:"required"`
-	Path                  string                       `json:"path" validate:"required,uri"`
-	ConditionalProperties []ModelConditionalProperties `json:"conditionalProperties,omitempty" validate:"dive"`
+	Method                string                `json:"method" validate:"required"`
+	Path                  string                `json:"path" validate:"required,uri"`
+	ConditionalProperties []ConditionalProperty `json:"conditionalProperties,omitempty" validate:"dive"`
 }
 
-// ModelConditionalProperties - Conditional schema properties implemented by implementer.
-type ModelConditionalProperties struct {
-	Schema   string `json:"schema" validate:"required"`
-	Property string `json:"property" validate:"required"`
-	Path     string `json:"path" validate:"required"`
+// ConditionalProperty - Conditional schema property that has been implemented
+type ConditionalProperty struct {
+	Schema             string `json:"schema,omitempty" validate:"required"`
+	Name               string `json:"name,omitempty" validate:"-"`     // transitional - will be required in a future version
+	PropertyDeprecated string `json:"property,omitempty" validate:"-"` // property to be deprecated in favour of 'name'
+	Path               string `json:"path,omitempty" validate:"required"`
+	Required           bool   `json:"required,omitempty" validate:"-"`
+	Request            bool   `json:"request,omitempty" validate:"-"` // indicates a request property that can be entered by the use
+	Value              string `json:"value,omitempty" validate:"-"`
+}
+
+type ConditionalAPIProperties struct {
+	Name      string          `json:"name,omitempty"`
+	Endpoints []ModelEndpoint `json:"endpoints,omitempty"`
 }
 
 // UnmarshalDiscoveryJSON - Used for testing in multiple packages to get discovery
@@ -64,4 +76,51 @@ func UnmarshalDiscoveryJSON(discoveryJSON string) (*Model, error) {
 	discovery := &Model{}
 	err := json.Unmarshal([]byte(discoveryJSON), &discovery)
 	return discovery, err
+}
+
+// validator, err := schema.NewSwaggerOBSpecValidator(item.APISpecification.Name, item.APISpecification.Version)
+func GetConditionalProperties(disco *Model) ([]ConditionalAPIProperties, bool, error) {
+	var haveProperties bool
+	conditionalProps := make([]ConditionalAPIProperties, 0, len(disco.DiscoveryModel.DiscoveryItems))
+	for k, discoitem := range disco.DiscoveryModel.DiscoveryItems {
+		validator, err := schema.NewSwaggerOBSpecValidator(discoitem.APISpecification.Name, discoitem.APISpecification.Version)
+		if err != nil {
+			logrus.Error(err)
+			return nil, false, err
+		}
+		conditionalProp := ConditionalAPIProperties{Name: discoitem.APISpecification.Name}
+		for _, endpoint := range discoitem.Endpoints {
+			if len(endpoint.ConditionalProperties) > 0 {
+
+				for _, prop := range endpoint.ConditionalProperties {
+					isRequest, err := validator.IsRequestProperty(endpoint.Method, endpoint.Path, prop.Path)
+					if err != nil {
+						logrus.Error(err)
+						return nil, false, err
+					}
+					if isRequest {
+						endpoint.ConditionalProperties[k].Request = true
+					}
+
+				}
+				conditionalProp.Endpoints = append(conditionalProp.Endpoints, endpoint)
+				haveProperties = true
+			}
+		}
+		if haveProperties {
+			conditionalProps = append(conditionalProps, conditionalProp)
+		}
+	}
+
+	return conditionalProps, haveProperties, nil
+}
+
+func GetDiscoveryItemConditionalProperties(item ModelDiscoveryItem) []ModelEndpoint {
+	endpoints := make([]ModelEndpoint, 0)
+	for _, endpoint := range item.Endpoints {
+		if len(endpoint.ConditionalProperties) > 0 {
+			endpoints = append(endpoints, endpoint)
+		}
+	}
+	return endpoints
 }

@@ -2,7 +2,7 @@
   "discoveryModel": {
     "name": "ob-v3.1-forgerock",
     "description": "An Open Banking UK discovery template for v3.1 of Accounts and Payments with pre-populated model Bank (ForgeRock) data.",
-    "discoveryVersion": "v0.3.0",
+    "discoveryVersion": "v0.4.0",
     "tokenAcquisition": "psu",
     "discoveryItems": [
       {
@@ -94,22 +94,22 @@
             "conditionalProperties": [
               {
                 "schema": "OBTransaction3Detail",
-                "property": "Balance",
+                "name": "Balance",
                 "path": "Data.Transaction.*.Balance"
               },
               {
                 "schema": "OBTransaction3Detail",
-                "property": "MerchantDetails",
+                "name": "MerchantDetails",
                 "path": "Data.Transaction.*.MerchantDetails"
               },
               {
                 "schema": "OBTransaction3Basic",
-                "property": "TransactionReference",
+                "name": "TransactionReference",
                 "path": "Data.Transaction.*.TransactionReference"
               },
               {
                 "schema": "OBTransaction3Detail",
-                "property": "TransactionReference",
+                "name": "TransactionReference",
                 "path": "Data.Transaction.*.TransactionReference"
               }
             ]
@@ -173,7 +173,7 @@
             "conditionalProperties": [
               {
                 "schema": "OBWriteDataDomesticConsentResponse1",
-                "property": "Charges",
+                "name": "Charges",
                 "path": "Data.Charges"
               }
             ]
@@ -184,7 +184,7 @@
             "conditionalProperties": [
               {
                 "schema": "OBWriteDataDomesticConsentResponse1",
-                "property": "Charges",
+                "name": "Charges",
                 "path": "Data.Charges"
               }
             ]
@@ -199,7 +199,7 @@
             "conditionalProperties": [
               {
                 "schema": "OBWriteDataDomesticResponse1",
-                "property": "Charges",
+                "name": "Charges",
                 "path": "Data.Charges"
               }
             ]
@@ -210,7 +210,7 @@
             "conditionalProperties": [
               {
                 "schema": "OBWriteDataDomesticResponse1",
-                "property": "Charges",
+                "name": "Charges",
                 "path": "Data.Charges"
               }
             ]

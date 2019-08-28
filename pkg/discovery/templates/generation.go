@@ -3,11 +3,12 @@ package templates
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/go-openapi/spec"
 	"io/ioutil"
 	"regexp"
 	"sort"
 	"strings"
+
+	"github.com/go-openapi/spec"
 
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
@@ -75,7 +76,7 @@ func newModel() discovery.ModelDiscovery {
 	template := discovery.ModelDiscovery{
 		Name:             "ob-[VERSION]-generic",
 		Description:      "An Open Banking UK generic discovery template for [VERSION] of Accounts and Payments.",
-		DiscoveryVersion: "v0.3.0",
+		DiscoveryVersion: "v0.4.0",
 		TokenAcquisition: "psu",
 		DiscoveryItems:   []discovery.ModelDiscoveryItem{},
 	}

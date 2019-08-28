@@ -30,7 +30,8 @@ type GeneratorConfig struct {
 
 // Generator - generates test cases from discovery model
 type Generator interface {
-	GenerateManifestTests(log *logrus.Entry, config GeneratorConfig, discovery discovery.ModelDiscovery, ctx *model.Context) (SpecRun, manifest.Scripts, map[string][]manifest.RequiredTokens)
+	GenerateManifestTests(log *logrus.Entry, config GeneratorConfig, discovery discovery.ModelDiscovery,
+		ctx *model.Context, conditional []discovery.ConditionalAPIProperties) (SpecRun, manifest.Scripts, map[string][]manifest.RequiredTokens)
 }
 
 // NewGenerator - returns implementation of Generator interface
@@ -69,7 +70,8 @@ func shouldIgnoreDiscoveryItem(apiSpecification discovery.ModelAPISpecification)
 }
 
 // Work in progress to integrate Manifest Test
-func (g generator) GenerateManifestTests(log *logrus.Entry, config GeneratorConfig, discovery discovery.ModelDiscovery, ctx *model.Context) (SpecRun, manifest.Scripts, map[string][]manifest.RequiredTokens) {
+func (g generator) GenerateManifestTests(log *logrus.Entry, config GeneratorConfig, discovery discovery.ModelDiscovery,
+	ctx *model.Context, conditionalProperties []discovery.ConditionalAPIProperties) (SpecRun, manifest.Scripts, map[string][]manifest.RequiredTokens) {
 	log = log.WithField("module", "GenerateManifestTests")
 	for k, item := range discovery.DiscoveryItems {
 		spectype, err := manifest.GetSpecType(item.APISpecification.SchemaVersion)
@@ -103,7 +105,19 @@ func (g generator) GenerateManifestTests(log *logrus.Entry, config GeneratorConf
 			Info("swagger spec validator created")
 
 		scripts, _, err := manifest.LoadGenerationResources(specType, item.APISpecification.Manifest)
-		tcs, fsc, err := manifest.GenerateTestCases(scripts, item.APISpecification, item.ResourceBaseURI, ctx, item.Endpoints, item.APISpecification.Manifest, validator)
+
+		params := manifest.GenerationParameters{
+			Scripts:      scripts,
+			Spec:         item.APISpecification,
+			Baseurl:      item.ResourceBaseURI,
+			Ctx:          ctx,
+			Endpoints:    item.Endpoints,
+			ManifestPath: item.APISpecification.Manifest,
+			Validator:    validator,
+			Conditional:  conditionalProperties,
+		}
+		tcs, fsc, err := manifest.GenerateTestCases(&params)
+
 		filteredScripts = fsc
 		if err != nil {
 			log.Warnf("manifest testcase generation failed for %s", item.APISpecification.SchemaVersion)

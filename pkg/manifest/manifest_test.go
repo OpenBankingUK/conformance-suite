@@ -14,7 +14,7 @@ func TestDiscoveryEndpointsMapToManifestCorrectly(t *testing.T) {
 	"discoveryModel": {
 		"name": "ob-v3.1-ozone",
 		"description": "An Open Banking UK discovery template for v3.1 of Accounts and Payments with pre-populated model Bank (Ozone) data.",
-		"discoveryVersion": "v0.3.0",
+		"discoveryVersion": "v0.4.0",
 		"tokenAcquisition": "psu",
 		"discoveryItems": [{
 			"apiSpecification": {
@@ -182,7 +182,7 @@ func TestUnMappedManifestItemsReportedCorrectly(t *testing.T) {
 	"discoveryModel": {
 		"name": "ob-v3.1-ozone",
 		"description": "An Open Banking UK discovery template for v3.1 of Accounts and Payments with pre-populated model Bank (Ozone) data.",
-		"discoveryVersion": "v0.3.0",
+		"discoveryVersion": "0.4.0",
 		"tokenAcquisition": "psu",
 		"discoveryItems": [{
 			"apiSpecification": {

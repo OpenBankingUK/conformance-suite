@@ -53,6 +53,10 @@ func (v contentTypeValidator) Validate(r Response) ([]Failure, error) {
 	return nil, nil
 }
 
+func (v contentTypeValidator) IsRequestProperty(method, path, propertpath string) (bool, error) {
+	return false, nil
+}
+
 func (v contentTypeValidator) expectedContentType(r Response) (string, error) {
 	spec := v.finder.Spec()
 

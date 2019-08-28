@@ -54,28 +54,30 @@ type Journey interface {
 	NewDaemonController()
 	Results() executors.DaemonController
 	SetConfig(config JourneyConfig) error
+	ConditionalProperties() []discovery.ConditionalAPIProperties	
 	Events() events.Events
 	TLSVersionResult() map[string]*discovery.TLSValidationResult
 }
 
 type journey struct {
-	generator             generation.Generator
-	validator             discovery.Validator
-	daemonController      executors.DaemonController
-	journeyLock           *sync.Mutex
-	specRun               generation.SpecRun
-	testCasesRunGenerated bool
-	collector             executors.TokenCollector
-	allCollected          bool
-	validDiscoveryModel   *discovery.Model
-	context               model.Context
-	log                   *logrus.Entry
-	config                JourneyConfig
-	events                events.Events
-	permissions           map[string][]manifest.RequiredTokens
-	manifests             []manifest.Scripts
-	filteredManifests     manifest.Scripts
-	tlsValidator          discovery.TLSValidator
+	generator                generation.Generator
+	validator                discovery.Validator
+	daemonController         executors.DaemonController
+	journeyLock              *sync.Mutex
+	specRun                  generation.SpecRun
+	testCasesRunGenerated    bool
+	collector                executors.TokenCollector
+	allCollected             bool
+	validDiscoveryModel      *discovery.Model
+	context                  model.Context
+	log                      *logrus.Entry
+	config                   JourneyConfig
+	events                   events.Events
+	permissions              map[string][]manifest.RequiredTokens
+	manifests                []manifest.Scripts
+	filteredManifests        manifest.Scripts
+	tlsValidator             discovery.TLSValidator
+	conditionalProperties    []discovery.ConditionalAPIProperties
 }
 
 // NewJourney creates an instance for a user journey
@@ -124,6 +126,20 @@ func (wj *journey) SetDiscoveryModel(discoveryModel *discovery.Model) (discovery
 	wj.validDiscoveryModel = discoveryModel
 	wj.testCasesRunGenerated = false
 	wj.allCollected = false
+
+	if discoveryModel.DiscoveryModel.DiscoveryVersion == "v0.4.0" { // Conditional properties requires 0.4.0
+		//TODO: remove this constraint once support for v0.3.0 discovery model is dropped
+		conditionalApiProperties, hasProperties, err := discovery.GetConditionalProperties(discoveryModel)
+		if err != nil {
+			return nil, errors.Wrap(err, "journey.SetDiscoveryModel: error processing conditional properties")
+		}
+		if hasProperties {
+			wj.conditionalProperties = conditionalApiProperties
+			logrus.Tracef("conditionalProperties from discovery model: %#v", wj.conditionalProperties)
+		} else {
+			logrus.Trace("No Conditional Properties found")
+		}
+	}
 
 	return discovery.NoValidationFailures(), nil
 }
@@ -231,8 +247,8 @@ func (wj *journey) TestCases() (generation.SpecRun, error) {
 		}
 
 		logger.Debug("generator.GenerateManifestTests ...")
-
-		wj.specRun, wj.filteredManifests, wj.permissions = wj.generator.GenerateManifestTests(wj.log, config, discovery, &wj.context)
+		logrus.Tracef("conditionalProperties from journey config: %#v", wj.config.conditionalProperties)
+		wj.specRun, wj.filteredManifests, wj.permissions = wj.generator.GenerateManifestTests(wj.log, config, discovery, &wj.context, wj.config.conditionalProperties)
 
 		for _, spec := range wj.permissions {
 			for _, required := range spec {
@@ -547,6 +563,7 @@ type JourneyConfig struct {
 	signatureTrustAnchor          string
 	useDynamicResourceID          bool
 	AcrValuesSupported            []string
+	conditionalProperties         []discovery.ConditionalAPIProperties
 }
 
 func (wj *journey) SetConfig(config JourneyConfig) error {
@@ -562,6 +579,12 @@ func (wj *journey) SetConfig(config JourneyConfig) error {
 
 	wj.customTestParametersToJourneyContext()
 	return nil
+}
+
+// ConditionalProperties retrieve conditional properties right after
+// they have been set from the discovery model to the webJourney.ConditionalProperties
+func (wj *journey) ConditionalProperties() []discovery.ConditionalAPIProperties {
+	return wj.conditionalProperties
 }
 
 func (wj *journey) Events() events.Events {

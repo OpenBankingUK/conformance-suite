@@ -40,22 +40,22 @@
               "conditionalProperties": [
                 {
                   "schema": "OBTransaction3Detail",
-                  "property": "Balance",
+                  "name": "Balance",
                   "path": "Data.Transaction.*.Balance"
                 },
                 {
                   "schema": "OBTransaction3Detail",
-                  "property": "MerchantDetails",
+                  "name": "MerchantDetails",
                   "path": "Data.Transaction.*.MerchantDetails"
                 },
                 {
                   "schema": "OBTransaction3Basic",
-                  "property": "TransactionReference",
+                  "name": "TransactionReference",
                   "path": "Data.Transaction.*.TransactionReference"
                 },
                 {
                   "schema": "OBTransaction3Detail",
-                  "property": "TransactionReference",
+                  "name": "TransactionReference",
                   "path": "Data.Transaction.*.TransactionReference"
                 }
               ]
@@ -99,7 +99,7 @@
               "conditionalProperties": [
                 {
                   "schema": "OBWriteDataDomesticConsentResponse1",
-                  "property": "Charges",
+                  "name": "Charges",
                   "path": "Data.Charges"
                 }
               ]
@@ -110,7 +110,7 @@
               "conditionalProperties": [
                 {
                   "schema": "OBWriteDataDomesticConsentResponse1",
-                  "property": "Charges",
+                  "name": "Charges",
                   "path": "Data.Charges"
                 }
               ]
@@ -121,7 +121,7 @@
               "conditionalProperties": [
                 {
                   "schema": "OBWriteDataDomesticResponse1",
-                  "property": "Charges",
+                  "name": "Charges",
                   "path": "Data.Charges"
                 }
               ]
@@ -132,7 +132,7 @@
               "conditionalProperties": [
                 {
                   "schema": "OBWriteDataDomesticResponse1",
-                  "property": "Charges",
+                  "name": "Charges",
                   "path": "Data.Charges"
                 }
               ]

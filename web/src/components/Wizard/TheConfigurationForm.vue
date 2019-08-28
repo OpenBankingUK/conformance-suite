@@ -142,7 +142,8 @@
           v-if="client_secret_visible()"
           id="client_secret_group"
           label-for="client_secret"
-          label="Client Secret">
+          label="Client Secret"
+        >
           <b-form-input
             id="client_secret"
             v-model="client_secret"
@@ -362,7 +363,8 @@
           id="first_payment_date_time"
           label-for="first_payment_date_time"
           label="First Payment Date Time"
-          description="First Payment Date Time formatted as ISO 8601 date (eg. 2006-01-02T15:04:05-07:00)">
+          description="First Payment Date Time formatted as ISO 8601 date (eg. 2006-01-02T15:04:05-07:00)"
+        >
           <b-form-input
             id="first_payment_date_time"
             v-model="first_payment_date_time"
@@ -376,7 +378,8 @@
           id="requested_execution_date_time"
           label-for="requested_execution_date_time"
           label="Requested Execution Date Time"
-          description="Requested Execution Date Time formatted as ISO 8601 date (eg. 2006-01-02T15:04:05-07:00)">
+          description="Requested Execution Date Time formatted as ISO 8601 date (eg. 2006-01-02T15:04:05-07:00)"
+        >
           <b-form-input
             id="requested_execution_date_time"
             v-model="requested_execution_date_time"
@@ -491,6 +494,58 @@
 
         <PaymentFrequency />
       </b-card>
+
+      <br >
+
+      <b-card
+        v-if="conditional_properties.length > 0"
+        bg-variant="light">
+        <b-form-group
+          label="Conditional Properties"
+          label-size="lg" />
+        <b-card bg-variant="default">
+          <b-form-group
+            v-for="(property, propertyKey) in conditional_properties"
+            :key="property.name"
+            :label="property.name"
+            label-size="lg" >
+            <b-card bg-variant="light">
+              <b-form-group
+                v-for="(endpoint, endpointKey) in property.endpoints"
+                :key="endpoint.name"
+                :label="`${endpoint.method} ${endpoint.path}`"
+                label-size="lg" >
+                <b-form-group>
+                  <div>
+                    <b-row
+                      v-for="(conditionalProperty, conditionalPropertyKey) in endpoint.conditionalProperties"
+                      :key="conditionalProperty.name"
+                      striped
+                      hover
+                      class="my-1 p-3">
+                      <b-col sm="12">
+                        <label><b>Schema:</b> {{ conditionalProperty.schema }}</label>
+                      </b-col>
+                      <b-col sm="12">
+                        <label><b>Name:</b> {{ conditionalProperty.name }}</label>
+                      </b-col>
+                      <b-col sm="12">
+                        <label><b>Path:</b> {{ conditionalProperty.path }}</label>
+                      </b-col>
+                      <b-col sm="12">
+                        <b-form-input
+                          :placeholder="getConditionalPropertyPlaceholderValue(conditional_properties[propertyKey].endpoints[endpointKey].conditionalProperties[conditionalPropertyKey].required)"
+                          v-model="conditional_properties[propertyKey].endpoints[endpointKey].conditionalProperties[conditionalPropertyKey].value"/>
+                      </b-col>
+                      <br >
+                    </b-row>
+                  </div>
+                </b-form-group>
+              </b-form-group>
+            </b-card>
+          </b-form-group>
+        </b-card>
+      </b-card>
     </b-form>
   </div>
 </template>
@@ -501,6 +556,7 @@ import isEmpty from 'lodash/isEmpty';
 import ConfigurationFormFile from './ConfigurationFormFile.vue';
 import PaymentFrequency from '../config/PaymentFrequency.vue';
 import SchemeName from '../config/SchemeName.vue';
+import api from '../../api/apiUtil';
 
 const { mapGetters } = createNamespacedHelpers('config');
 
@@ -511,11 +567,19 @@ export default {
     PaymentFrequency,
     SchemeName,
   },
+  data() {
+    api.get('/api/config/conditional-property').then((res) => {
+      res.json().then((body) => {
+        if (this.$store.state.config.configuration.conditional_properties.length === 0) {
+          this.$store.commit('config/SET_CONDITIONAL_PROPERTIES', body);
+        }
+      });
+    });
+
+    return {};
+  },
   computed: {
-    ...mapGetters([
-      'resourceAccountIds',
-      'resourceStatementIds',
-    ]),
+    ...mapGetters(['resourceAccountIds', 'resourceStatementIds']),
     token_endpoint_auth_methods() {
       const authMethods = this.$store.state.config.token_endpoint_auth_methods;
       return authMethods.map(m => ({
@@ -586,7 +650,8 @@ export default {
     },
     token_endpoint_auth_method: {
       get() {
-        return this.$store.state.config.configuration.token_endpoint_auth_method;
+        return this.$store.state.config.configuration
+          .token_endpoint_auth_method;
       },
       set(value) {
         this.$store.commit('config/SET_TOKEN_ENDPOINT_AUTH_METHOD', value);
@@ -594,12 +659,14 @@ export default {
     },
     request_object_signing_alg_values_supported: {
       get() {
-        return this.$store.state.config.request_object_signing_alg_values_supported;
+        return this.$store.state.config
+          .request_object_signing_alg_values_supported;
       },
     },
     request_object_signing_alg: {
       get() {
-        return this.$store.state.config.configuration.request_object_signing_alg;
+        return this.$store.state.config.configuration
+          .request_object_signing_alg;
       },
       set(value) {
         this.$store.commit('config/SET_REQUEST_OBJECT_SIGNING_ALG', value);
@@ -607,12 +674,14 @@ export default {
     },
     token_endpoint_auth_signing_alg_values_supported: {
       get() {
-        return this.$store.state.config.configuration.token_endpoint_auth_signing_alg_values_supported;
+        return this.$store.state.config.configuration
+          .token_endpoint_auth_signing_alg_values_supported;
       },
     },
     token_endpoint_auth_signing_alg: {
       get() {
-        return this.$store.state.config.configuration.token_endpoint_auth_signing_alg;
+        return this.$store.state.config.configuration
+          .token_endpoint_auth_signing_alg;
       },
       set(value) {
         this.$store.commit('config/SET_TOKEN_ENDPOINT_AUTH_SIGNING_ALG', value);
@@ -620,7 +689,13 @@ export default {
     },
     id_token_signing_alg_values_supported: {
       get() {
-        return this.$store.state.config.configuration.id_token_signing_alg_values_supported;
+        return this.$store.state.config.configuration
+          .id_token_signing_alg_values_supported;
+      },
+    },
+    conditional_properties: {
+      get() {
+        return this.$store.state.config.configuration.conditional_properties;
       },
     },
     id_token_signing_alg: {
@@ -657,7 +732,8 @@ export default {
     },
     send_x_fapi_customer_ip_address: {
       get() {
-        return this.$store.state.config.configuration.send_x_fapi_customer_ip_address;
+        return this.$store.state.config.configuration
+          .send_x_fapi_customer_ip_address;
       },
       set(value) {
         this.$store.commit('config/SET_SEND_X_FAPI_CUSTOMER_IP_ADDRESS', value);
@@ -665,7 +741,8 @@ export default {
     },
     x_fapi_customer_ip_address: {
       get() {
-        return this.$store.state.config.configuration.x_fapi_customer_ip_address;
+        return this.$store.state.config.configuration
+          .x_fapi_customer_ip_address;
       },
       set(value) {
         this.$store.commit('config/SET_X_FAPI_CUSTOMER_IP_ADDRESS', value);
@@ -716,10 +793,14 @@ export default {
         const self = this;
         return {
           get identification() {
-            return self.$store.state.config.configuration.creditor_account.identification;
+            return self.$store.state.config.configuration.creditor_account
+              .identification;
           },
           set identification(value) {
-            self.$store.commit('config/SET_CREDITOR_ACCOUNT_IDENTIFICATION', value);
+            self.$store.commit(
+              'config/SET_CREDITOR_ACCOUNT_IDENTIFICATION',
+              value,
+            );
           },
           get name() {
             return self.$store.state.config.configuration.creditor_account.name;
@@ -735,16 +816,24 @@ export default {
         const self = this;
         return {
           get identification() {
-            return self.$store.state.config.configuration.international_creditor_account.identification;
+            return self.$store.state.config.configuration
+              .international_creditor_account.identification;
           },
           set identification(value) {
-            self.$store.commit('config/SET_INTERNATIONAL_CREDITOR_ACCOUNT_IDENTIFICATION', value);
+            self.$store.commit(
+              'config/SET_INTERNATIONAL_CREDITOR_ACCOUNT_IDENTIFICATION',
+              value,
+            );
           },
           get name() {
-            return self.$store.state.config.configuration.international_creditor_account.name;
+            return self.$store.state.config.configuration
+              .international_creditor_account.name;
           },
           set name(value) {
-            self.$store.commit('config/SET_INTERNATIONAL_CREDITOR_ACCOUNT_NAME', value);
+            self.$store.commit(
+              'config/SET_INTERNATIONAL_CREDITOR_ACCOUNT_NAME',
+              value,
+            );
           },
         };
       },
@@ -754,16 +843,21 @@ export default {
         const self = this;
         return {
           get value() {
-            return self.$store.state.config.configuration.instructed_amount.value;
+            return self.$store.state.config.configuration.instructed_amount
+              .value;
           },
           set value(value) {
             self.$store.commit('config/SET_INSTRUCTED_AMOUNT_VALUE', value);
           },
           get currency() {
-            return self.$store.state.config.configuration.instructed_amount.currency;
+            return self.$store.state.config.configuration.instructed_amount
+              .currency;
           },
           set currency(currency) {
-            self.$store.commit('config/SET_INSTRUCTED_AMOUNT_CURRENCY', currency);
+            self.$store.commit(
+              'config/SET_INSTRUCTED_AMOUNT_CURRENCY',
+              currency,
+            );
           },
         };
       },
@@ -819,7 +913,8 @@ export default {
     },
     requested_execution_date_time: {
       get() {
-        return this.$store.state.config.configuration.requested_execution_date_time;
+        return this.$store.state.config.configuration
+          .requested_execution_date_time;
       },
       set(value) {
         this.$store.commit('config/SET_REQUESTED_EXECUTION_DATE_TIME', value);
@@ -850,19 +945,29 @@ export default {
       }
     },
     client_secret_visible() {
-      return this.$store.state.config.configuration.token_endpoint_auth_method === 'client_secret_basic';
+      return (
+        this.$store.state.config.configuration.token_endpoint_auth_method
+        === 'client_secret_basic'
+      );
     },
     addResourceAccountIDField(value) {
-      this.$store.commit('config/ADD_RESOURCE_ACCOUNT_ID', { account_id: value });
+      this.$store.commit('config/ADD_RESOURCE_ACCOUNT_ID', {
+        account_id: value,
+      });
     },
     removeResourceAccountIDField(index) {
       this.removeResourceAccountID(index);
     },
     addResourceStatementIDField(value) {
-      this.$store.commit('config/ADD_RESOURCE_STATEMENT_ID', { statement_id: value });
+      this.$store.commit('config/ADD_RESOURCE_STATEMENT_ID', {
+        statement_id: value,
+      });
     },
     removeResourceStatementIDField(index) {
       this.removeResourceStatementID(index);
+    },
+    getConditionalPropertyPlaceholderValue(required) {
+      return `Value ${required ? '(Required)' : '(Optional)'}`;
     },
   },
 };

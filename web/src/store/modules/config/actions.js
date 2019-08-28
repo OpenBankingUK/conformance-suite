@@ -132,6 +132,7 @@ export default {
         'payment_frequency',
         'first_payment_date_time',
         'requested_execution_date_time',
+        'conditional_properties',
       ];
       const newConfig = _.pick(merged, validKeys);
       // TODO: Fix this as I think it is working by accident. There needs to be an individual commit to the
@@ -139,6 +140,7 @@ export default {
       // For now, just do a commit for `SET_PAYMENT_FREQUENCY`.
       commit(types.SET_CONFIGURATION, newConfig);
       commit(types.SET_PAYMENT_FREQUENCY, newConfig.payment_frequency);
+      commit(types.SET_CONDITIONAL_PROPERTIES, newConfig.conditional_properties);
 
       dispatch('status/clearErrors', null, { root: true });
       commit(types.SET_WIZARD_STEP, constants.WIZARD.STEP_THREE);

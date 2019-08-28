@@ -1,4 +1,4 @@
-# Discovery Specification - v0.3.0
+# Discovery Specification - v0.4.0
 
 **Warning**: The Discovery Specification is in alpha and is subject to change without notice.
 
@@ -38,7 +38,7 @@ Name             | Occurrence | Path | Description
 discoveryModel   | 1..1       | discoveryModel |
 name             | 1..1       | discoveryModel.name | Name of the model, e.g. "ob-v3.0-ozone".
 description      | 1..1       | discoveryModel.description | Description of the model, e.g. "An Open Banking UK discovery template for v3.0 of Accounts and Payments with pre-populated model Bank (Ozone) data."
-discoveryVersion | 1..1       | discoveryModel.discoveryVersion | Version of the discovery model format, e.g. "v0.3.0"
+discoveryVersion | 1..1       | discoveryModel.discoveryVersion | Version of the discovery model format, e.g. "v0.4.0"
 tokenAcquisition | 1..1       | discoveryModel.tokenAcquisition | Define how access tokens will be acquired, e.g. "headless", "psu", "store"
 discoveryItems   | 1..n       | discoveryModel.discoveryItems.* | List of items. Each item contains information related to a particular specification version.
 apiSpecification | 1..1       | discoveryModel.discoveryItems.*.apiSpecification | Details of API specification
@@ -98,7 +98,7 @@ Non-normative example
 ```json
 {
   "discoveryModel": {
-    "discoveryVersion": "v0.3.0",
+    "discoveryVersion": "v0.4.0",
     "discoveryItems": [
       {
         "apiSpecification": {
