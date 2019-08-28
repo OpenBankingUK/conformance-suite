@@ -135,7 +135,7 @@ func (wj *journey) SetDiscoveryModel(discoveryModel *discovery.Model) (discovery
 		}
 		if hasProperties {
 			wj.conditionalProperties = conditionalApiProperties
-			logrus.Tracef("conditionalProperties: %#v", wj.conditionalProperties)
+			logrus.Tracef("conditionalProperties from discovery model: %#v", wj.conditionalProperties)
 		} else {
 			logrus.Trace("No Conditional Properties found")
 		}
@@ -247,8 +247,8 @@ func (wj *journey) TestCases() (generation.SpecRun, error) {
 		}
 
 		logger.Debug("generator.GenerateManifestTests ...")
-
-		wj.specRun, wj.filteredManifests, wj.permissions = wj.generator.GenerateManifestTests(wj.log, config, discovery, &wj.context, wj.conditionalProperties)
+		logrus.Tracef("conditionalProperties from journey config: %#v", wj.config.conditionalProperties)
+		wj.specRun, wj.filteredManifests, wj.permissions = wj.generator.GenerateManifestTests(wj.log, config, discovery, &wj.context, wj.config.conditionalProperties)
 
 		for _, spec := range wj.permissions {
 			for _, required := range spec {
