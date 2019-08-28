@@ -1154,8 +1154,7 @@
             "resource": "Party",
             "method": "get",
             "asserts": [
-                "OB3GLOAssertOn401",
-                "OB3IPAssertHeaderMissingOBErrorCode"
+                "OB3GLOAssertOn401"
             ],
             "schemaCheck": false
         },
