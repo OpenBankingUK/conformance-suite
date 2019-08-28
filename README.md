@@ -18,11 +18,11 @@ To provide feedback, please use the public [issue tracker](https://bitbucket.org
 * * *
 
 
-# Release v1.1.18 (9th Aug 2019)
+# Release v1.1.19 (28th Aug 2019)
 
-The release is called **v1.1.18**, it extends scheme names for creditorScheme and internationalCreditorScheme to allow custom names, updates the UI and other general fixes.
+The release is called **v1.1.19**, it allows the collection and use of conditional properties given a discovery file with the conditional properties definitions and config file.
 
-[Full Release Notes](https://bitbucket.org/openbankingteam/conformance-suite/src/develop/docs/releases/v1.1.18.md) (v1.1.18.md)
+[Full Release Notes](https://bitbucket.org/openbankingteam/conformance-suite/src/develop/docs/releases/v1.1.19.md) (v1.1.19.md)
 
 ## Quickstart
 * * *
