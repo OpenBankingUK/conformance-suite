@@ -130,8 +130,7 @@
             "resource": "Account",
             "method": "get",
             "asserts": [
-                "OB3GLOAssertOn401",
-                "OB3GLOAssertContentType"
+                "OB3GLOAssertOn401"
             ],
             "schemaCheck": false
         },
@@ -148,8 +147,7 @@
             "resource": "Account",
             "method": "get",
             "asserts": [
-                "OB3GLOAssertOn401",
-                "OB3GLOAssertContentType"
+                "OB3GLOAssertOn401"
             ],
             "schemaCheck": false
         },
@@ -217,8 +215,7 @@
             "resource": "Account",
             "method": "get",
             "asserts": [
-                "OB3GLOAssertOn401",
-                "OB3GLOAssertContentType"
+                "OB3GLOAssertOn401"
             ],
             "schemaCheck": false
         },
@@ -351,8 +348,7 @@
             "resource": "Balance",
             "method": "get",
             "asserts": [
-                "OB3GLOAssertOn401",
-                "OB3GLOAssertContentType"
+                "OB3GLOAssertOn401"
             ],
             "schemaCheck": false
         },
@@ -536,7 +532,6 @@
             "method": "get",
             "asserts": [
                 "OB3GLOAssertOn401",
-                "OB3GLOAssertContentType",
                 "OB3IPAssertHeaderMissingOBErrorCode"
             ],
             "schemaCheck": false
@@ -559,8 +554,7 @@
             "resource": "Beneficiary",
             "method": "get",
             "asserts": [
-                "OB3GLOAssertOn401",
-                "OB3GLOAssertContentType"
+                "OB3GLOAssertOn401"
             ],
             "schemaCheck": false
         },
@@ -1161,7 +1155,6 @@
             "method": "get",
             "asserts": [
                 "OB3GLOAssertOn401",
-                "OB3GLOAssertContentType",
                 "OB3IPAssertHeaderMissingOBErrorCode"
             ],
             "schemaCheck": false
@@ -1807,8 +1800,7 @@
             "resource": "Transaction",
             "method": "get",
             "asserts": [
-                "OB3GLOAssertOn401",
-                "OB3GLOAssertContentType"
+                "OB3GLOAssertOn401"
             ],
             "schemaCheck": false
         },
@@ -1825,8 +1817,7 @@
             "resource": "Transaction",
             "method": "get",
             "asserts": [
-                "OB3GLOAssertOn401",
-                "OB3GLOAssertContentType"
+                "OB3GLOAssertOn401"
             ],
             "schemaCheck": false
         },
