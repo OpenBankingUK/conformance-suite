@@ -27,7 +27,7 @@ on Pro or Enterprise versions. Please refer to [this guide](https://techcommunit
 
 Ozone Bank is an Mock Account Servicing Payment Service Provider (ASPSP), which the FCS will connect to as a TPP.
 
-In order to register a new client you need to use dynamic client registration protocol [https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1078034771/Dynamic+Client+Registration+-+v3.2](https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1078034771/Dynamic+Client+Registration+-+v3.2)
+In order to register a new client you need to use [Dynamic Client Registration Protocol](https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1078034771/Dynamic+Client+Registration+-+v3.2). Please follow the steps described in this page to register a new client with Ozone [https://openbanking.atlassian.net/wiki/spaces/DZ/pages/313918598/Integrating+a+TPP+with+Ozone+Model+Banks+Using+Postman+on+Directory+Sandbox](https://openbanking.atlassian.net/wiki/spaces/DZ/pages/313918598/Integrating+a+TPP+with+Ozone+Model+Banks+Using+Postman+on+Directory+Sandbox) 
 
 Once completed, make a note of the certificates and the `CLIENT ID` and `CLIENT SECRET` values.
 
