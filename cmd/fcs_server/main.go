@@ -160,6 +160,7 @@ func initConfig() {
 	}
 
 	resty.SetDebug(viper.GetBool("log_http_trace"))
+	resty.SetRedirectPolicy(resty.FlexibleRedirectPolicy(15))
 
 	printConfigurationFlags()
 }
