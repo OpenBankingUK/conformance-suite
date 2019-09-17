@@ -23,17 +23,11 @@ This guide assumes the following tools are installed and functioning correctly. 
 *Note for Windows 10 users - Docker on Windows 10 requires Hyper-V to be installed. Hyper-V is only available
 on Pro or Enterprise versions. Please refer to [this guide](https://techcommunity.microsoft.com/t5/ITOps-Talk-Blog/Step-By-Step-Enabling-Hyper-V-for-use-on-Windows-10/ba-p/267945) for more information.*
 
-## Step 1: Register with Ozone Bank (Model Bank)
+## Step 1: Register a client with Ozone Bank (Model Bank)
 
 Ozone Bank is an Mock Account Servicing Payment Service Provider (ASPSP), which the FCS will connect to as a TPP.
 
-* [Enrol with Ozone](https://ob2018.o3bank.co.uk:444/pub/home).
-
-Following the enrolment screens:
-
-* Use a Google or LinkedIn as identity provider to login.
-* Enter an organisation name
-* Enter the following redirect URI: `https://0.0.0.0:8443/conformancesuite/callback`
+In order to register a new client you need to use [Dynamic Client Registration Protocol](https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1078034771/Dynamic+Client+Registration+-+v3.2). Please follow the steps described in this page to register a new client with Ozone [https://openbanking.atlassian.net/wiki/spaces/DZ/pages/313918598/Integrating+a+TPP+with+Ozone+Model+Banks+Using+Postman+on+Directory+Sandbox](https://openbanking.atlassian.net/wiki/spaces/DZ/pages/313918598/Integrating+a+TPP+with+Ozone+Model+Banks+Using+Postman+on+Directory+Sandbox) 
 
 Once completed, make a note of the certificates and the `CLIENT ID` and `CLIENT SECRET` values.
 
