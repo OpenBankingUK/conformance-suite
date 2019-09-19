@@ -214,6 +214,19 @@
         },
         "Risk": {}
       }
+    },
+    "confirmationOfFundsConsent": {
+      "body": {
+        "Data": {
+          "ExpirationDateTime": "ISODateTime",
+          "DebtorAccount": {
+            "SchemeName": "Max40Text",
+            "Identification": "Max256Text",
+            "Name": "Max70Text",
+            "SecondaryIdentification": "Max34Text"
+          }
+        }
+      }
     }
   }
 }
