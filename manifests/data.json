@@ -215,7 +215,7 @@
         "Risk": {}
       }
     },
-    "confirmationOfFundsConsent": {
+    "OBFundsConfirmationConsent1": {
       "body": {
         "Data": {
           "ExpirationDateTime": "ISODateTime",
@@ -228,7 +228,7 @@
         }
       }
     },
-    "confirmationOfFunds": {
+    "OBFundsConfirmation1": {
       "body": {
         "Data": {
           "ConsentId": "Max128Text",
