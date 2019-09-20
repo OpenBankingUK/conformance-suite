@@ -214,6 +214,31 @@
         },
         "Risk": {}
       }
+    },
+    "OBFundsConfirmationConsent1": {
+      "body": {
+        "Data": {
+          "ExpirationDateTime": "ISODateTime",
+          "DebtorAccount": {
+            "SchemeName": "Max40Text",
+            "Identification": "Max256Text",
+            "Name": "Max70Text",
+            "SecondaryIdentification": "Max34Text"
+          }
+        }
+      }
+    },
+    "OBFundsConfirmation1": {
+      "body": {
+        "Data": {
+          "ConsentId": "Max128Text",
+          "Reference": "Max35Text",
+          "InstructedAmount": {
+            "Amount": "Currency ISO 4217",
+            "Currency": "GBP"
+          }
+        }
+      }
     }
   }
 }
