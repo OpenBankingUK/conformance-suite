@@ -227,6 +227,18 @@
           }
         }
       }
+    },
+    "confirmationOfFunds": {
+      "body": {
+        "Data": {
+          "ConsentId": "Max128Text",
+          "Reference": "Max35Text",
+          "InstructedAmount": {
+            "Amount": "Currency ISO 4217",
+            "Currency": "GBP"
+          }
+        }
+      }
     }
   }
 }
