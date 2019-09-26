@@ -422,6 +422,7 @@ func LoadGenerationResources(specType, manifestPath string) (Scripts, References
 		pay, err := loadScripts(manifestPath)
 		return pay, assertions, err
 	case "cbpii":
+		return Scripts{}, References{}, nil
 	case "notifications":
 	}
 	return Scripts{}, References{}, errors.New("loadGenerationResources: invalid spec type")

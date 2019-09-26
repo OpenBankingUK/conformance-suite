@@ -63,7 +63,7 @@ func GetSpecType(s string) (string, error) {
 	case confirmationOfFundsSwaggerLocation30:
 		fallthrough
 	case confirmationOfFundsSwaggerLocation31:
-		return "funds", nil
+		return "cbpii", nil
 	case notificationSwaggerLocation:
 		return "notifications", nil
 	}
