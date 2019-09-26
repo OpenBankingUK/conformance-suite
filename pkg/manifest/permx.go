@@ -42,8 +42,9 @@ const accountSwaggerLocation31 = "https://raw.githubusercontent.com/OpenBankingU
 const accountSwaggerLocation30 = "https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.0.0/dist/account-info-swagger.json"
 const paymentsSwaggerLocation31 = "https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.0/dist/payment-initiation-swagger.json"
 const paymentsSwaggerLocation30 = "https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.0.0/dist/payment-initiation-swagger.json"
+const confirmationOfFundsSwaggerLocation30 = "https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.0.0/dist/confirmation-funds-swagger.json"
+const confirmationOfFundsSwaggerLocation31 = "https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.0/dist/confirmation-funds-swagger.json"
 
-var confirmSwaggerLocation = ""
 var notificationSwaggerLocation = ""
 
 // GetSpecType -
@@ -59,7 +60,9 @@ func GetSpecType(s string) (string, error) {
 		fallthrough
 	case paymentsSwaggerLocation30:
 		return "payments", nil
-	case confirmSwaggerLocation:
+	case confirmationOfFundsSwaggerLocation30:
+		fallthrough
+	case confirmationOfFundsSwaggerLocation31:
 		return "funds", nil
 	case notificationSwaggerLocation:
 		return "notifications", nil
