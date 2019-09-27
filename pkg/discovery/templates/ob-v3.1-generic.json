@@ -320,6 +320,10 @@
           {
             "method": "DELETE",
             "path": "/funds-confirmation-consents/{ConsentId}"
+          },
+          {
+            "method": "POST",
+            "path": "/funds-confirmations"
           }
         ]
       }
