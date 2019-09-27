@@ -35,6 +35,7 @@ type Script struct {
 	RefURI              string            `json:"refURI,omitempty"`
 	Parameters          map[string]string `json:"parameters,omitempty"`
 	Headers             map[string]string `json:"headers,omitempty"`
+	RemoveHeaders       []string          `json:"removeHeaders,omitempty"`
 	Body                string            `json:"body,omitempty"`
 	Permissions         []string          `json:"permissions,omitemtpy"`
 	PermissionsExcluded []string          `json:"permissions-excluded,omitemtpy"`
@@ -406,6 +407,11 @@ func buildInputSection(s Script, i *model.Input) {
 	for k, v := range s.Headers {
 		i.Headers[k] = v
 	}
+	var removeHeaders []string
+	for _, v := range s.RemoveHeaders {
+		removeHeaders = append(removeHeaders, v)
+	}
+	i.RemoveHeaders = removeHeaders
 	i.RequestBody = s.Body
 }
 
