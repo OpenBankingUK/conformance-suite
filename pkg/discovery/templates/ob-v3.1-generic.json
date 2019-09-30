@@ -302,12 +302,12 @@
         "apiSpecification": {
           "name": "Confirmation of Funds API Specification",
           "url": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1000015607/Confirmation+of+Funds+API+Specification+-+v3.1.1",
-          "version": "v3.0.0",
-          "schemaVersion": "https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.0.0/dist/confirmation-funds-swagger.json",
+          "version": "v3.1.1",
+          "schemaVersion": "https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.1/dist/confirmation-funds-swagger.json",
           "manifest": "file://manifests/ob_3.1.1_confirmation_of_funds_fca.json"
         },
         "openidConfigurationUri": "https://ob19-auth1-ui.o3bank.co.uk/.well-known/openid-configuration",
-        "resourceBaseUri": "https://ob19-rs1.o3bank.co.uk:4501/open-banking/v3.1/aisp",
+        "resourceBaseUri": "https://ob19-rs1.o3bank.co.uk:4501/open-banking/v3.1/cbpii",
         "endpoints": [
           {
             "method": "POST",
