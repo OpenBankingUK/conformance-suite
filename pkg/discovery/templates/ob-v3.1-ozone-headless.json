@@ -291,35 +291,6 @@
             "path": "/file-payments/{FilePaymentId}/report-file"
           }
         ]
-      },
-      {
-        "apiSpecification": {
-          "name": "Confirmation of Funds API Specification",
-          "url": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937951380/Confirmation+of+Funds+API+Specification+-+v3.1",
-          "version": "v3.1.0",
-          "schemaVersion": "https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.0/dist/confirmation-funds-swagger.json",
-          "manifest": "file://manifests/ob_3.1.0_confirmation_of_funds_fca.json"
-        },
-        "openidConfigurationUri": "https://ob19-auth1-ui.o3bank.co.uk/.well-known/openid-configuration",
-        "resourceBaseUri": "https://ob19-rs1.o3bank.co.uk:4501/open-banking/v3.1/cbpii",
-        "endpoints": [
-          {
-            "method": "POST",
-            "path": "/funds-confirmation-consents"
-          },
-          {
-            "method": "GET",
-            "path": "/funds-confirmation-consents/{ConsentId}"
-          },
-          {
-            "method": "DELETE",
-            "path": "/funds-confirmation-consents/{ConsentId}"
-          },
-          {
-            "method": "POST",
-            "path": "/funds-confirmations"
-          }
-        ]
       }
     ]
   }
