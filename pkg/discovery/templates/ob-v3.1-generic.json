@@ -140,23 +140,28 @@
         },
         "openidConfigurationUri": "https://ob19-auth1-ui.o3bank.co.uk/.well-known/openid-configuration",
         "resourceBaseUri": "https://ob19-rs1.o3bank.co.uk:4501/open-banking/v3.1/pisp",
-        "endpoints": [{
-          "method": "POST",
-          "path": "/domestic-payment-consents",
-          "conditionalProperties": [{
-            "schema": "OBWriteDataDomesticConsentResponse1",
-            "name": "Charges",
-            "path": "Data.Charges"
-          }]
-        },
+        "endpoints": [
+          {
+            "method": "POST",
+            "path": "/domestic-payment-consents",
+            "conditionalProperties": [
+              {
+                "schema": "OBWriteDataDomesticConsentResponse1",
+                "name": "Charges",
+                "path": "Data.Charges"
+              }
+            ]
+          },
           {
             "method": "GET",
             "path": "/domestic-payment-consents/{ConsentId}",
-            "conditionalProperties": [{
-              "schema": "OBWriteDataDomesticConsentResponse1",
-              "name": "Charges",
-              "path": "Data.Charges"
-            }]
+            "conditionalProperties": [
+              {
+                "schema": "OBWriteDataDomesticConsentResponse1",
+                "name": "Charges",
+                "path": "Data.Charges"
+              }
+            ]
           },
           {
             "method": "GET",
@@ -165,20 +170,24 @@
           {
             "method": "POST",
             "path": "/domestic-payments",
-            "conditionalProperties": [{
-              "schema": "OBWriteDataDomesticResponse1",
-              "name": "Charges",
-              "path": "Data.Charges"
-            }]
+            "conditionalProperties": [
+              {
+                "schema": "OBWriteDataDomesticResponse1",
+                "name": "Charges",
+                "path": "Data.Charges"
+              }
+            ]
           },
           {
             "method": "GET",
             "path": "/domestic-payments/{DomesticPaymentId}",
-            "conditionalProperties": [{
-              "schema": "OBWriteDataDomesticResponse1",
-              "name": "Charges",
-              "path": "Data.Charges"
-            }]
+            "conditionalProperties": [
+              {
+                "schema": "OBWriteDataDomesticResponse1",
+                "name": "Charges",
+                "path": "Data.Charges"
+              }
+            ]
           },
           {
             "method": "POST",
