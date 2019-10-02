@@ -1,30 +1,36 @@
 package executors
 
 import (
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/authentication"
-	"github.com/pkg/errors"
+	"fmt"
 
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/authentication"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/manifest"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
+	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 )
 
-func getPaymentConsents(tests []model.TestCase, definition RunDefinition, requiredTokens []manifest.RequiredTokens, ctx *model.Context) (TokenConsentIDs, error) {
+func getCbpiiConsents(
+	tests []model.TestCase,
+	definition RunDefinition,
+	requiredTokens []manifest.RequiredTokens,
+	ctx *model.Context,
+) (TokenConsentIDs, error) {
 	executor := &Executor{}
 	err := executor.SetCertificates(definition.SigningCert, definition.TransportCert)
 	if err != nil {
-		logrus.Error("error running payment consent acquisition async: " + err.Error())
+		logrus.Error(fmt.Sprintf("error running cbpii consent acquisition: %s", err))
 		return nil, err
 	}
 
-	logrus.Debugf("we have %d required tokens\n", len(requiredTokens))
+	logrus.Debugf("we have %d cbpii consent required tokens\n", len(requiredTokens))
 	for _, rt := range requiredTokens {
 		logrus.Tracef("%#v\n", rt)
 	}
 
 	requiredTokens, err = runPaymentConsents(requiredTokens, ctx, executor)
 	if err != nil {
-		logrus.Errorf("getPaymentConsents error: " + err.Error())
+		logrus.Errorf("getCbpiiConsents error: %s", err)
 	}
 
 	consentItems := make([]TokenConsentIDItem, 0)
@@ -37,15 +43,15 @@ func getPaymentConsents(tests []model.TestCase, definition RunDefinition, requir
 	return consentItems, err
 }
 
-func runPaymentConsents(rt []manifest.RequiredTokens, ctx *model.Context, executor *Executor) ([]manifest.RequiredTokens, error) {
+func runCbpiiConsents(rt []manifest.RequiredTokens, ctx *model.Context, executor *Executor) ([]manifest.RequiredTokens, error) {
 	localCtx := model.Context{}
 	localCtx.PutContext(ctx)
-	localCtx.PutString("scope", "payments")
+	localCtx.PutString("scope", "fundsconfirmations")
 	consentJobs := manifest.GetConsentJobs()
 
 	tc, err := readClientCredentialGrant()
 	if err != nil {
-		return nil, errors.New("payment PSU consent load clientCredentials testcase failed")
+		return nil, errors.New("cbpii PSU consent load clientCredentials testcase failed")
 	}
 
 	// Check for MTLS vs client basic authentication
@@ -88,41 +94,41 @@ func runPaymentConsents(rt []manifest.RequiredTokens, ctx *model.Context, execut
 	tc.ProcessReplacementFields(&localCtx, true)
 	err = executePaymentTest(&tc, &localCtx, executor)
 	if err != nil {
-		return nil, errors.New("Payment PSU consent execute clientCredential grant testcase failed :" + err.Error())
+		return nil, errors.Wrap(err, "Cbpii PSU consent execute clientCredential grant testcase failed")
 	}
 
-	bearerToken, err := localCtx.GetString("client_access_token")
-	ctx.PutString("payment_ccg_token", bearerToken) // store payment ccg token for later
+	ccgBearerToken, err := localCtx.GetString("client_access_token")
+	ctx.PutString("cbpii_ccg_token", ccgBearerToken)
 	if err != nil {
-		return nil, errors.New("Cannot get Token for consent client credentials grant: " + err.Error())
+		return nil, errors.Wrap(err, "Cannot get Token for consent client credentials grant")
 	}
 
-	logrus.Tracef("runPaymentConsents %d requiredTokens %#v", len(rt), rt)
+	logrus.Tracef("runCbpiiConsents %d requiredTokens %#v", len(rt), rt)
 
 	for k, v := range rt {
 		localCtx.PutString("token_name", v.Name)
 
 		test, exists := consentJobs.Get(v.ConsentProvider)
 		if !exists {
-			return nil, errors.New("Testcase " + v.ConsentProvider + " does not exist in consentJob list")
+			return nil, fmt.Errorf("Testcase %s does not exist in consentJob list", v.ConsentProvider)
 		}
-		test.InjectBearerToken(bearerToken) //client credential grant token
+		test.InjectBearerToken(ccgBearerToken)
 		test.Input.Headers["Content-Type"] = "application/json"
 
 		err = executePaymentTest(&test, &localCtx, executor)
 		if err != nil {
-			return nil, errors.New("Payment PSU consent test case failed " + err.Error())
+			return nil, errors.Wrap(err, "Cbpii PSU consent test case failed")
 		}
 		v.ConsentID, err = localCtx.GetString(v.ConsentParam)
 		if err != nil {
-			return nil, errors.New("Payment PSU consent test case failed - cannot find consentID in context " + err.Error())
+			return nil, errors.Wrap(err, "Cbpii PSU consent test case failed - cannot find consentID in context")
 		}
 		localCtx.PutString("consent_id", v.ConsentID)
 		localCtx.PutString("token_name", v.Name)
 
 		exchange, err := readPsuExchange()
 		if err != nil {
-			return nil, errors.New("Payment PSU consent load psu_exchange testcase failed")
+			return nil, errors.New("Cbpii PSU consent load psu_exchange testcase failed")
 		}
 		if authMethod == "tls_client_auth" {
 			clientid, err := ctx.GetString("client_id")
@@ -138,11 +144,11 @@ func runPaymentConsents(rt []manifest.RequiredTokens, ctx *model.Context, execut
 		localCtx.DumpContext("before exchange", "token_name", "consent_id")
 		err = executePaymentTest(&exchange, &localCtx, executor)
 		if err != nil {
-			return nil, errors.New("Payment PSU consent exchange code failed " + err.Error())
+			return nil, errors.Wrap(err, "Cbpii PSU consent exchange code failed")
 		}
 		v.ConsentURL, err = localCtx.GetString("consent_url")
 		if err != nil {
-			return nil, errors.New("Payment PSU exchange test case failed - cannot find `consent_url` in context " + err.Error())
+			return nil, errors.Wrap(err, "Cbpii PSU exchange test case failed - cannot find `consent_url` in context")
 		}
 		localCtx.Delete("consent_url")
 		ctx.PutContext(&localCtx)
@@ -154,58 +160,7 @@ func runPaymentConsents(rt []manifest.RequiredTokens, ctx *model.Context, execut
 		logrus.Tracef("setting client credential grant token to %s", clientGrantToken)
 		ctx.PutString("client_access_token", clientGrantToken)
 	}
-	logrus.Debug("Exit runPayment Consents")
+	logrus.Debug("Exit runCbpiiConsents Consents")
 	logrus.Tracef("%#v\n", rt)
 	return rt, nil
-}
-
-func findTest(tcs []model.TestCase, testID string) (*model.TestCase, error) {
-	for k, test := range tcs {
-		if test.ID == testID {
-			return &tcs[k], nil
-		}
-	}
-	return nil, errors.New("Test " + testID + " not found in findTest")
-}
-
-func executePaymentTest(tc *model.TestCase, ctx *model.Context, executor *Executor) error {
-	req, err := tc.Prepare(ctx)
-	if err != nil {
-		logrus.Errorf("preparing to execute test %s: %s", tc.ID, err.Error())
-		return err
-	}
-	resp, _, err := executor.ExecuteTestCase(req, tc, ctx)
-	if err != nil {
-		return err
-	}
-	result, errs := tc.Validate(resp, ctx)
-	if errs != nil {
-		return err
-	}
-	if !result {
-		return errors.New("testcase validation failed:" + err.Error())
-	}
-	return nil
-}
-
-func readClientCredentialGrant() (model.TestCase, error) {
-	sc, err := model.LoadTestCaseFromJSONFile("components/clientcredentialgrant.json")
-	if err != nil {
-		sc, err = model.LoadTestCaseFromJSONFile("../../components/clientcredentialgrant.json")
-	}
-	return sc, err
-}
-
-func readPsuExchange() (model.TestCase, error) {
-	sc, err := model.LoadTestCaseFromJSONFile("components/psu_exchange.json")
-	if err != nil {
-		sc, err = model.LoadTestCaseFromJSONFile("../../components/psu_exchange.json")
-	}
-	return sc, err
-}
-
-func (r *TestCaseRunner) executePaymentConsent(tc model.TestCase, ruleCtx *model.Context, log *logrus.Entry) (bool, []string) {
-	testresult := r.executeTest(tc, ruleCtx, log)
-	return testresult.Pass, testresult.Fail
-
 }
