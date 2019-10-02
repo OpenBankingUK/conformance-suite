@@ -7,7 +7,7 @@
 ## Project setup
 
 ```sh
-yarn install
+yarn install --frozen-lockfile --non-interactive
 ```
 
 ### Compiles and hot-reloads for development

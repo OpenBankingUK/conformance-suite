@@ -61,7 +61,7 @@ init: ## initialise.
 init_web: ./web/node_modules ## install node_modules when not present.
 
 ./web/node_modules:
-	cd web && yarn install
+	cd web && yarn install --frozen-lockfile --non-interactive
 
 .PHONY: devtools
 devtools: ## install dev tools.
