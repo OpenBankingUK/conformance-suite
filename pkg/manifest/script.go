@@ -134,7 +134,7 @@ func GenerateTestCases(params *GenerationParameters) ([]model.TestCase, Scripts,
 			logger.WithFields(logrus.Fields{"err": err}).Error("error filter scripts based on payments discovery")
 		}
 	} else if specType == "cbpii" {
-		filteredScripts, err = FilterTestsBasedOnDiscoveryEndpoints(scripts, params.Endpoints, paymentsRegex)
+		filteredScripts, err = FilterTestsBasedOnDiscoveryEndpoints(scripts, params.Endpoints, cbpiiRegex)
 		if err != nil {
 			logger.WithFields(logrus.Fields{"err": err}).Error("error filter scripts based on cbpii discovery")
 		}
