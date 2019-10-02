@@ -83,8 +83,16 @@ func GetRequiredTokensFromTests(tcs []model.TestCase, spec string) (rt []Require
 		rt, err = getRequiredTokens(tcp)
 	case "payments":
 		rt, err = GetPaymentPermissions(tcs)
+	case "cbpii":
+		rt, err = GetCbpiiPermissions(tcs)
 	}
 	return rt, err
+}
+
+func GetCbpiiPermissions(tests []model.TestCase) ([]RequiredTokens, error) {
+	rt := make([]RequiredTokens, 0)
+	// TODO: REFAPP-929 figure out the tokens to be acquired for cbpii
+	return rt, nil
 }
 
 // GetPaymentPermissions - and annotate test cases with token ids

@@ -8,6 +8,9 @@
       "uri": "/funds-confirmation-consents",
       "uriImplementation": "mandatory",
       "resource": "OBFundsConfirmationConsent1",
+      "parameters": {
+        "requestConsent": "true"
+      },
       "method": "post",
       "keepContextOnSuccess": {
         "name": "OB-301-CBPII-000001-ConsentId",
