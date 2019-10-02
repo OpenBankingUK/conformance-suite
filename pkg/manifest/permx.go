@@ -60,9 +60,9 @@ func GetSpecType(s string) (string, error) {
 		fallthrough
 	case paymentsSwaggerLocation30:
 		return "payments", nil
-	case confirmationOfFundsSwaggerLocation30:
-		fallthrough
 	case confirmationOfFundsSwaggerLocation31:
+		fallthrough
+	case confirmationOfFundsSwaggerLocation30:
 		return "cbpii", nil
 	case notificationSwaggerLocation:
 		return "notifications", nil

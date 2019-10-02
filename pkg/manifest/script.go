@@ -133,6 +133,11 @@ func GenerateTestCases(params *GenerationParameters) ([]model.TestCase, Scripts,
 		if err != nil {
 			logger.WithFields(logrus.Fields{"err": err}).Error("error filter scripts based on payments discovery")
 		}
+	} else if specType == "cbpii" {
+		filteredScripts, err = FilterTestsBasedOnDiscoveryEndpoints(scripts, params.Endpoints, paymentsRegex)
+		if err != nil {
+			logger.WithFields(logrus.Fields{"err": err}).Error("error filter scripts based on cbpii discovery")
+		}
 	} else {
 		filteredScripts = scripts // normal processing
 	}
@@ -889,6 +894,29 @@ var paymentsRegex = []PathRegex{
 		Regex:  "^/file-payments/" + subPathx + "/report-file$",
 		Method: "GET",
 		Name:   "Get a file payment report file by filePaymentID",
+	},
+}
+
+var cbpiiRegex = []PathRegex{
+	{
+		Regex: "^/funds-confirmation-consents$",
+		Method: "POST",
+		Name:  "Create Funds Confirmation Consent",
+	},
+	{
+		Regex: "^/funds-confirmation-consents/" + subPathx + "$",
+		Method: "GET",
+		Name:  "Retrieve Funds Confirmation Consent",
+	},
+	{
+		Regex: "^/funds-confirmation-consents/" + subPathx + "$",
+		Method: "DELETE",
+		Name:  "Delete Funds Confirmation Consent",
+	},
+	{
+		Regex: "^/funds-confirmations$",
+		Method: "POST",
+		Name:  "Create Funds Confirmation",
 	},
 }
 
