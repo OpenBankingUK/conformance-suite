@@ -511,10 +511,6 @@
       "method": "get",
       "schemaCheck": true
     },
-
-
-
-
     {
       "description": "International Scheduled Payment consent succeeds with minimal data set with additional schema checks.",
       "id": "OB-301-DOP-102000",

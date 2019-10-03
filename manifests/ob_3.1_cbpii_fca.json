@@ -9,6 +9,9 @@
       "uriImplementation": "mandatory",
       "resource": "OBFundsConfirmationConsent1",
       "parameters": {
+        "creditorSecondaryIdentification": "OB-301-CBPII-000001-secondary-account-id",
+        "postData": "$OBFundsConfirmationConsent1",
+        "expirationDateTime": "2020-01-01T00:00:00+01:00",
         "requestConsent": "true"
       },
       "method": "post",
@@ -16,6 +19,9 @@
         "name": "OB-301-CBPII-000001-ConsentId",
         "value": "Data.ConsentId"
       },
+      "asserts": [
+        "OB3GLOAssertOn201"
+      ],
       "schemaCheck": false
     },
     {
@@ -26,10 +32,31 @@
       "uri": "/funds-confirmation-consents/$consentId",
       "uriImplementation": "mandatory",
       "resource": "OBFundsConfirmationConsent1",
-      "parameters": {
-        "consentId": "$OB-301-CBPII-000001-ConsentId"
-      },
       "method": "get",
+      "asserts": [
+        "OB3GLOAssertOn200"
+      ],
+      "schemaCheck": false
+    },
+    {
+      "description": "Creates Funds Confirmation",
+      "id": "OB-301-CBPII-000004",
+      "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937951380/Confirmation+of+Funds+API+Specification+-+v3.1",
+      "detail": "Creates Funds Confirmation Consents",
+      "uri": "/funds-confirmations",
+      "uriImplementation": "mandatory",
+      "resource": "OBFundsConfirmationConsent1",
+      "parameters": {
+        "instructedAmountValue": "$instructedAmountValue",
+        "instructedAmountCurrency": "$instructedAmountCurrency",
+        "consentId": "$OB-301-CBPII-000001-ConsentId",
+        "uniqueCbpiiReference": "$fn:instructionIdentificationID()",
+        "postData": "$OBFundsConfirmation1"
+      },
+      "method": "post",
+      "asserts": [
+        "OB3GLOAssertOn200"
+      ],
       "schemaCheck": false
     },
     {
@@ -44,20 +71,9 @@
         "consentId": "$OB-301-CBPII-000001-ConsentId"
       },
       "method": "delete",
-      "schemaCheck": false
-    },
-    {
-      "description": "Creates Funds Confirmation",
-      "id": "OB-301-CBPII-000004",
-      "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937951380/Confirmation+of+Funds+API+Specification+-+v3.1",
-      "detail": "Creates Funds Confirmation Consents",
-      "uri": "/funds-confirmations",
-      "uriImplementation": "mandatory",
-      "resource": "OBFundsConfirmationConsent1",
-      "parameters": {
-        "consentId": "$OB-301-CBPII-000001-ConsentId"
-      },
-      "method": "post",
+      "asserts": [
+        "OB3GLOAssertOn204"
+      ],
       "schemaCheck": false
     }
   ]
