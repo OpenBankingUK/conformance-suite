@@ -91,7 +91,27 @@ func GetRequiredTokensFromTests(tcs []model.TestCase, spec string) (rt []Require
 
 func GetCbpiiPermissions(tests []model.TestCase) ([]RequiredTokens, error) {
 	rt := make([]RequiredTokens, 0)
-	// TODO: REFAPP-929 figure out the tokens to be acquired for cbpii
+	ts := TokenStore{}
+	ts.store = rt
+	consentJobs := GetConsentJobs()
+	for k, tc := range tests {
+		ctx := tc.Context
+		consentRequired, found := ctx.GetString("requestConsent")
+		if found != nil {
+			continue
+		}
+		if consentRequired == "true" {
+			// get consentid
+			consentID := GetConsentIDFromMatches(tc)
+			rx := RequiredTokens{Name: ts.GetNextTokenName("cbpii"), ConsentParam: consentID, ConsentProvider: tc.ID}
+			rt = append(rt, rx)
+			logrus.Tracef("adding %s to consentJobs for cbpii: %s %s", tc.ID, tc.Input.Method, tc.Input.Endpoint)
+			consentJobs.Add(tc)
+		} else {
+			tests[k].InjectBearerToken("$client_access_token")
+		}
+	}
+
 	return rt, nil
 }
 

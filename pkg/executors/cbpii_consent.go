@@ -28,7 +28,7 @@ func getCbpiiConsents(
 		logrus.Tracef("%#v\n", rt)
 	}
 
-	requiredTokens, err = runPaymentConsents(requiredTokens, ctx, executor)
+	requiredTokens, err = runCbpiiConsents(requiredTokens, ctx, executor)
 	if err != nil {
 		logrus.Errorf("getCbpiiConsents error: %s", err)
 	}
