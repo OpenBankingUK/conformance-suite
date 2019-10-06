@@ -326,7 +326,7 @@ func MapTokensToCBPIITestCases(rt []RequiredTokens, tcs []model.TestCase, ctx *m
 
 func requiresAuthCodeToken(id, method, endpoint string) bool {
 	// "get" with "funds confirmation"
-	if strings.ToUpper(method) == "GET" && strings.Contains(endpoint, "funds-confirmation") {
+	if strings.ToUpper(method) == "GET" && strings.Contains(endpoint, "funds-confirmations") {
 		logrus.Tracef("%s %s %s requires auth code token", id, method, endpoint)
 		return true
 	}
