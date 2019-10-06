@@ -80,6 +80,11 @@ describe('web/src/store/modules/config', () => {
           identification: '',
           name: '',
         },
+        cbpii_debtor_account: {
+          scheme_name: '',
+          identification: '',
+          name: '',
+        },
         currency_of_transfer: 'USD',
         instructed_amount: {
           currency: 'GBP',
@@ -169,6 +174,11 @@ describe('web/src/store/modules/config', () => {
           identification: '',
           name: '',
         },
+        cbpii_debtor_account: {
+          scheme_name: '',
+          identification: '',
+          name: '',
+        },
         currency_of_transfer: 'USD',
         instructed_amount: {
           currency: 'GBP',
@@ -216,6 +226,11 @@ describe('web/src/store/modules/config', () => {
           name: '',
         },
         international_creditor_account: {
+          scheme_name: '',
+          identification: '',
+          name: '',
+        },
+        cbpii_debtor_account: {
           scheme_name: '',
           identification: '',
           name: '',
@@ -270,6 +285,11 @@ describe('web/src/store/modules/config', () => {
           identification: '',
           name: '',
         },
+        cbpii_debtor_account: {
+          scheme_name: '',
+          identification: '',
+          name: '',
+        },
         currency_of_transfer: 'USD',
         instructed_amount: {
           currency: 'GBP',
@@ -316,6 +336,11 @@ describe('web/src/store/modules/config', () => {
           name: '',
         },
         international_creditor_account: {
+          scheme_name: '',
+          identification: '',
+          name: '',
+        },
+        cbpii_debtor_account: {
           scheme_name: '',
           identification: '',
           name: '',
@@ -373,6 +398,11 @@ describe('web/src/store/modules/config', () => {
           identification: '',
           name: '',
         },
+        cbpii_debtor_account: {
+          scheme_name: '',
+          identification: '',
+          name: '',
+        },
         currency_of_transfer: 'USD',
         instructed_amount: {
           currency: 'GBP',
@@ -419,6 +449,11 @@ describe('web/src/store/modules/config', () => {
           name: '',
         },
         international_creditor_account: {
+          scheme_name: '',
+          identification: '',
+          name: '',
+        },
+        cbpii_debtor_account: {
           scheme_name: '',
           identification: '',
           name: '',
@@ -473,6 +508,11 @@ describe('web/src/store/modules/config', () => {
           identification: '',
           name: '',
         },
+        cbpii_debtor_account: {
+          scheme_name: '',
+          identification: '',
+          name: '',
+        },
         currency_of_transfer: 'USD',
         instructed_amount: {
           currency: 'GBP',
@@ -519,6 +559,11 @@ describe('web/src/store/modules/config', () => {
           name: '',
         },
         international_creditor_account: {
+          scheme_name: '',
+          identification: '',
+          name: '',
+        },
+        cbpii_debtor_account: {
           scheme_name: '',
           identification: '',
           name: '',
@@ -573,6 +618,11 @@ describe('web/src/store/modules/config', () => {
           identification: '',
           name: '',
         },
+        cbpii_debtor_account: {
+          scheme_name: '',
+          identification: '',
+          name: '',
+        },
         currency_of_transfer: 'USD',
         instructed_amount: {
           currency: 'GBP',
@@ -619,6 +669,11 @@ describe('web/src/store/modules/config', () => {
           name: '',
         },
         international_creditor_account: {
+          scheme_name: '',
+          identification: '',
+          name: '',
+        },
+        cbpii_debtor_account: {
           scheme_name: '',
           identification: '',
           name: '',
@@ -679,6 +734,11 @@ describe('web/src/store/modules/config', () => {
           identification: '',
           name: '',
         },
+        cbpii_debtor_account: {
+          scheme_name: '',
+          identification: '',
+          name: '',
+        },
         currency_of_transfer: 'USD',
         instructed_amount: {
           currency: 'GBP',
@@ -727,6 +787,11 @@ describe('web/src/store/modules/config', () => {
           name: '',
         },
         international_creditor_account: {
+          scheme_name: '',
+          identification: '',
+          name: '',
+        },
+        cbpii_debtor_account: {
           scheme_name: '',
           identification: '',
           name: '',
@@ -783,6 +848,11 @@ describe('web/src/store/modules/config', () => {
           identification: '',
           name: '',
         },
+        cbpii_debtor_account: {
+          scheme_name: '',
+          identification: '',
+          name: '',
+        },
         currency_of_transfer: 'USD',
         instructed_amount: {
           currency: 'GBP',
@@ -831,6 +901,11 @@ describe('web/src/store/modules/config', () => {
           name: '',
         },
         international_creditor_account: {
+          scheme_name: '',
+          identification: '',
+          name: '',
+        },
+        cbpii_debtor_account: {
           scheme_name: '',
           identification: '',
           name: '',
@@ -889,6 +964,11 @@ describe('web/src/store/modules/config', () => {
             name: '',
           },
           international_creditor_account: {
+            scheme_name: '',
+            identification: '',
+            name: '',
+          },
+          cbpii_debtor_account: {
             scheme_name: '',
             identification: '',
             name: '',
@@ -981,6 +1061,11 @@ describe('web/src/store/modules/config', () => {
             name: '',
           },
           international_creditor_account: {
+            scheme_name: '',
+            identification: '',
+            name: '',
+          },
+          cbpii_debtor_account: {
             scheme_name: '',
             identification: '',
             name: '',

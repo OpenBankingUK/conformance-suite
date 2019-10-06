@@ -126,6 +126,7 @@ func (g generator) GenerateManifestTests(log *logrus.Entry, config GeneratorConf
 
 		spectype := item.APISpecification.SpecType
 		requiredSpecTokens, err := manifest.GetRequiredTokensFromTests(tcs, spectype)
+		logrus.Debugf("%s required spec tokens: %+v", spectype, requiredSpecTokens)
 		specreq, err := getSpecConsentsFromRequiredTokens(requiredSpecTokens, item.APISpecification.Name)
 		scrSlice = append(scrSlice, specreq)
 		if spectype == "payments" { //
@@ -142,16 +143,6 @@ func (g generator) GenerateManifestTests(log *logrus.Entry, config GeneratorConf
 		specTestCases = append(specTestCases, stc)
 		tokens[spectype] = requiredSpecTokens
 	}
-
-	// for _, v := range specTestCases {
-	// 	requiredSpecTokens, err := manifest.GetRequiredTokensFromTests(v.TestCases, v.Specification.SpecType)
-	// 	if err != nil {
-	// 		log.Warnf("getRequiredTokensFromTests return error:%s", err.Error())
-	// 	}
-	// 	specreq, err := getSpecConsentsFromRequiredTokens(requiredSpecTokens, v.Specification.Name)
-	// 	scrSlice = append(scrSlice, specreq)
-	// 	tokens[v.Specification.SpecType] = requiredSpecTokens
-	// }
 
 	for _, item := range scrSlice {
 		logrus.Tracef("%#v", item)

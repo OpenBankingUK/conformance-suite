@@ -99,6 +99,7 @@ func runCbpiiConsents(rt []manifest.RequiredTokens, ctx *model.Context, executor
 
 	ccgBearerToken, err := localCtx.GetString("client_access_token")
 	ctx.PutString("cbpii_ccg_token", ccgBearerToken)
+	logrus.Debugf("runCbpiiConsents: just retrieved cbpii_ccg_token %v", ccgBearerToken)
 	if err != nil {
 		return nil, errors.Wrap(err, "Cannot get Token for consent client credentials grant")
 	}

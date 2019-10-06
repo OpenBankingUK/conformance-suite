@@ -26,6 +26,9 @@ const (
 	CtxInternationalCreditorSchema         = "internationalCreditorScheme"
 	CtxInternationalCreditorIdentification = "internationalCreditorIdentification"
 	CtxInternationalCreditorName           = "internationalCreditorName"
+	CtxCBPIIDebtorAccountName              = "cbpiiDebtorAccountName"
+	CtxCBPIIDebtorAccountSchemeName        = "cbpiiDebtorAccountSchemeName"
+	CtxCBPIIDebtorAccountIdentification    = "cbpiiDebtorAccountIdentification"
 	CtxCreditorSchema                      = "creditorScheme"
 	CtxCreditorIdentification              = "creditorIdentification"
 	CtxCreditorName                        = "creditorName"
@@ -71,6 +74,9 @@ func PutParametersToJourneyContext(config JourneyConfig, context model.Context) 
 	context.PutString(CtxCreditorSchema, config.creditorAccount.SchemeName)
 	context.PutString(CtxCreditorIdentification, config.creditorAccount.Identification)
 	context.PutString(CtxCreditorName, config.creditorAccount.Name)
+	context.PutString(CtxCBPIIDebtorAccountName, config.cbpiiDebtorAccount.Name)
+	context.PutString(CtxCBPIIDebtorAccountSchemeName, config.cbpiiDebtorAccount.SchemeName)
+	context.PutString(CtxCBPIIDebtorAccountIdentification, config.cbpiiDebtorAccount.Identification)
 	context.PutString(CtxInstructedAmountCurrency, config.instructedAmount.Currency)
 	context.PutString(CtxInstructedAmountValue, config.instructedAmount.Value)
 	context.PutString(CtxPaymentFrequency, string(config.paymentFrequency))

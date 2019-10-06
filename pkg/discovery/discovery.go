@@ -68,6 +68,12 @@ type ConditionalAPIProperties struct {
 	Endpoints []ModelEndpoint `json:"endpoints,omitempty"`
 }
 
+type CBPIIDebtorAccount struct {
+	Identification          string `json:"identification"`
+	SchemeName              string `json:"scheme_name"`
+	Name                    string `json:"name,omitempty"`
+}
+
 // UnmarshalDiscoveryJSON - Used for testing in multiple packages to get discovery
 // model from JSON. We tried moving this function to a _test file, but we get
 // `go vet` error as it is used from multiple packages.

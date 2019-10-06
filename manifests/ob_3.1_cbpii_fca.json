@@ -9,12 +9,18 @@
       "uriImplementation": "mandatory",
       "resource": "OBFundsConfirmationConsent1",
       "parameters": {
-        "creditorSecondaryIdentification": "OB-301-CBPII-000001-secondary-account-id",
+        "debtorAccountSchemeName": "$cbpiiDebtorAccountSchemeName",
+        "debtorAccountIdentification": "$cbpiiDebtorAccountIdentification",
+        "debtorAccountName": "$cbpiiDebtorAccountName",
         "postData": "$OBFundsConfirmationConsent1",
         "expirationDateTime": "2020-01-01T00:00:00+01:00",
         "requestConsent": "true"
       },
       "method": "post",
+      "body": "$postData",
+      "headers": {
+        "Content-Type": "application/json"
+      },
       "keepContextOnSuccess": {
         "name": "OB-301-CBPII-000001-ConsentId",
         "value": "Data.ConsentId"
@@ -36,6 +42,9 @@
       "uriImplementation": "mandatory",
       "resource": "OBFundsConfirmationConsent1",
       "method": "get",
+      "headers": {
+        "Content-Type": "application/json"
+      },
       "asserts": [
         "OB3GLOAssertOn200"
       ],
@@ -58,6 +67,10 @@
         "requestConsent": "false"
       },
       "method": "post",
+      "body": "$postData",
+      "headers": {
+        "Content-Type": "application/json"
+      },
       "asserts": [
         "OB3GLOAssertOn200"
       ],
@@ -76,6 +89,10 @@
         "requestConsent": "false"
       },
       "method": "delete",
+      "useCCGToken": true,
+      "headers": {
+        "Content-Type": "application/json"
+      },
       "asserts": [
         "OB3GLOAssertOn204"
       ],

@@ -482,6 +482,44 @@
 
       <br >
 
+      <b-card bg-variant="light">
+        <b-form-group
+          label="Confirmation Of Funds"
+          label-size="lg" />
+
+        <SchemeName creditorAccountType="CBPII" />
+
+        <b-form-group
+          id="cbpii_debtor_account_identification_group"
+          label-for="cbpii_debtor_account_identification"
+          label="Confirmation Of Funds Debtor Account Identification"
+          description="Confirmation Of Funds Debtor Account Identification"
+        >
+          <b-form-input
+            id="cbpii_debtor_account_identification"
+            v-model="cbpii_debtor_account.identification"
+            :state="isNotEmpty(cbpii_debtor_account.identification)"
+            required
+          />
+        </b-form-group>
+        <b-form-group
+          id="cbpii_debtor_account_name_group"
+          label-for="cbpii_debtor_account_name"
+          label="Confirmation Of Funds Debtor Account Name"
+          description="Name of the account, as assigned by the account servicing institution.\nUsage: The account name is the name or names of the account owner(s) represented at an account level. The account name is not the product name or the nickname of the account."
+        >
+          <b-form-input
+            id="cbpii_debtor_account_name"
+            v-model="cbpii_debtor_account.name"
+            :state="isNotEmpty(cbpii_debtor_account.name)"
+            required
+          />
+        </b-form-group>
+
+      </b-card>
+
+      <br >
+
       <b-card
         v-if="conditional_properties.length > 0"
         bg-variant="light">
@@ -819,6 +857,40 @@ export default {
           set name(value) {
             self.$store.commit(
               'config/SET_INTERNATIONAL_CREDITOR_ACCOUNT_NAME',
+              value,
+            );
+          },
+        };
+      },
+    },
+    cbpii_debtor_account: {
+      get() {
+        const self = this;
+        return {
+          get identification() {
+            return self.$store.state.config.configuration.cbpii_debtor_account.identification;
+          },
+          set identification(value) {
+            self.$store.commit(
+              'config/SET_CBPII_DEBTOR_ACCOUNT_IDENTIFICATION',
+              value,
+            );
+          },
+          get scheme_name() {
+            return self.$store.state.config.configuration.cbpii_debtor_account.scheme_name;
+          },
+          set scheme_name(value) {
+            self.$store.commit(
+              'config/SET_CBPII_DEBTOR_ACCOUNT_SCHEME_NAME',
+              value,
+            );
+          },
+          get name() {
+            return self.$store.state.config.configuration.cbpii_debtor_account.name;
+          },
+          set name(value) {
+            self.$store.commit(
+              'config/SET_CBPII_DEBTOR_ACCOUNT_NAME',
               value,
             );
           },

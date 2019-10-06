@@ -86,6 +86,7 @@ type GlobalConfiguration struct {
 	SignatureTrustAnchor          string                               `json:"signature_trust_anchor,omitempty"`
 	AcrValuesSupported            []string                             `json:"acr_values_supported,omitempty"`
 	ConditionalProperties         []discovery.ConditionalAPIProperties `json:"conditional_properties,omitempty"`
+	CBPIIDebtorAccount            discovery.CBPIIDebtorAccount         `json:"cbpii_debtor_account,omitempty"`
 }
 
 // Validate - used by https://github.com/go-ozzo/ozzo-validation to validate struct.
@@ -236,6 +237,7 @@ func MakeJourneyConfig(config *GlobalConfiguration) (JourneyConfig, error) {
 		signatureTrustAnchor:          config.SignatureTrustAnchor,
 		AcrValuesSupported:            config.AcrValuesSupported,
 		conditionalProperties:         config.ConditionalProperties,
+		cbpiiDebtorAccount:            config.CBPIIDebtorAccount,
 	}, nil
 }
 

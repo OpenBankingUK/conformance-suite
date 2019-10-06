@@ -220,10 +220,9 @@
         "Data": {
           "ExpirationDateTime": "$expirationDateTime",
           "DebtorAccount": {
-            "SchemeName": "$creditorScheme",
-            "Identification": "$creditorIdentification",
-            "Name": "$creditorName",
-            "SecondaryIdentification": "$creditorSecondaryIdentification"
+            "SchemeName": "$debtorAccountSchemeName",
+            "Identification": "$debtorAccountIdentification",
+            "Name": "$debtorAccountName"
           }
         }
       }

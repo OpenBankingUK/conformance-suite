@@ -111,8 +111,12 @@ func GetCbpiiPermissions(tests []model.TestCase) ([]RequiredTokens, error) {
 			tests[k].InjectBearerToken("$client_access_token")
 		}
 	}
+	requiredTokens, err := updateTokensFromConsent(rt, tests)
+	if err != nil {
+		return nil, err
+	}
 
-	return rt, nil
+	return requiredTokens, nil
 }
 
 // GetPaymentPermissions - and annotate test cases with token ids
@@ -214,7 +218,7 @@ func getRequiredTokens(tcps []TestCasePermission) ([]RequiredTokens, error) {
 func MapTokensToTestCases(rt []RequiredTokens, tcs []model.TestCase) map[string]string {
 	ctxLogger := logrus.StandardLogger().WithFields(logrus.Fields{
 		"function": "MapTokensToTestCases",
-		//"rt":       fmt.Sprintf("%#v", rt),
+		"rt":       fmt.Sprintf("%#v", rt),
 	})
 
 	tokenMap := map[string]string{}
@@ -278,6 +282,41 @@ func MapTokensToPaymentTestCases(rt []RequiredTokens, tcs []model.TestCase, ctx 
 			useCCGToken, _ := test.Context.Get("useCCGToken")
 			if useCCGToken == "yes" { // payment POSTs
 				test.InjectBearerToken("$payment_ccg_token")
+				continue
+			}
+		}
+		tcs[k] = test
+	}
+}
+
+// MapTokensToCBPIITestCases maps tokens retrieved after the consent acquisition flow
+// maps them into test cases that require access tokens (ccg tokens)
+func MapTokensToCBPIITestCases(rt []RequiredTokens, tcs []model.TestCase, ctx *model.Context) {
+	for k, test := range tcs {
+		authCodeTokenRequired := requiresAuthCodeToken(test.ID, test.Input.Method, test.Input.Endpoint)
+		logrus.Debugf("MapTokensToCBPIITestCases: auth token required for CBPII %v", authCodeTokenRequired)
+		if authCodeTokenRequired {
+			tokenName, isEmptyToken, err := getRequiredTokenForPaymentTestcase(rt, test.ID)
+			if err != nil {
+				logrus.Warnf("no token for CBPII testcase %s %s %s", test.ID, test.Input.Method, test.Input.Endpoint)
+				continue
+			}
+			if !isEmptyToken {
+				token, err := ctx.GetString(tokenName)
+				if err == nil {
+					test.InjectBearerToken(token)
+				} else {
+					test.InjectBearerToken("$" + tokenName)
+				}
+			}
+		} else {
+			if test.Input.Method == "GET" {
+				test.InjectBearerToken("$cbpii_ccg_token")
+				continue
+			}
+			useCCGToken, _ := test.Context.Get("useCCGToken")
+			if useCCGToken == "yes" { // cbpii POSTs
+				test.InjectBearerToken("$cbpii_ccg_token")
 				continue
 			}
 		}
