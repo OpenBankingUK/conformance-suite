@@ -118,6 +118,8 @@ func GetCbpiiPermissions(tests []model.TestCase) ([]RequiredTokens, error) {
 		return nil, err
 	}
 
+	updateTestAuthenticationFromToken(tests, requiredTokens)
+
 	return requiredTokens, nil
 }
 

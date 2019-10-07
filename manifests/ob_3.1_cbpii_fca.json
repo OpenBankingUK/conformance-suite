@@ -26,9 +26,11 @@
         "value": "Data.ConsentId"
       },
       "asserts": [
-        "OB3GLOAssertOn201"
+        "OB3GLOAssertOn201",
+        "OB3GLOFAPIHeader",
+        "OB3GLOAAssertConsentId"
       ],
-      "schemaCheck": false
+      "schemaCheck": true
     },
     {
       "description": "Retrieves Funds Confirmation Consents",
@@ -49,7 +51,7 @@
       "asserts": [
         "OB3GLOAssertOn200"
       ],
-      "schemaCheck": false
+      "schemaCheck": true
     },
     {
       "description": "Creates Funds Confirmation",
@@ -73,9 +75,9 @@
         "Content-Type": "application/json"
       },
       "asserts": [
-        "OB3GLOAssertOn200"
+        "OB3GLOAssertOn201"
       ],
-      "schemaCheck": false
+      "schemaCheck": true
     },
     {
       "description": "Deletes Funds Confirmation Consents",
@@ -90,9 +92,6 @@
         "requestConsent": "false"
       },
       "method": "delete",
-      "headers": {
-        "Content-Type": "application/json"
-      },
       "asserts": [
         "OB3GLOAssertOn204"
       ],
