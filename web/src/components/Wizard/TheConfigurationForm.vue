@@ -359,35 +359,20 @@
           label="Payments"
           label-size="lg" />
 
-        <b-form-group
+        <DateTimeISO8601
           id="first_payment_date_time"
-          label-for="first_payment_date_time"
+          field="first_payment_date_time"
           label="First Payment Date Time"
-          description="First Payment Date Time formatted as ISO 8601 date (eg. 2006-01-02T15:04:05-07:00)"
-        >
-          <b-form-input
-            id="first_payment_date_time"
-            v-model="first_payment_date_time"
-            :state="isNotEmpty(first_payment_date_time)"
-            required
-            type="text"
-          />
-        </b-form-group>
-
-        <b-form-group
+          description="First Payment Date Time"
+          mutation="SET_FIRST_PAYMENT_DATE_TIME"
+        />
+        <DateTimeISO8601
           id="requested_execution_date_time"
-          label-for="requested_execution_date_time"
+          field="requested_execution_date_time"
           label="Requested Execution Date Time"
-          description="Requested Execution Date Time formatted as ISO 8601 date (eg. 2006-01-02T15:04:05-07:00)"
-        >
-          <b-form-input
-            id="requested_execution_date_time"
-            v-model="requested_execution_date_time"
-            :state="isNotEmpty(requested_execution_date_time)"
-            required
-            type="text"
-          />
-        </b-form-group>
+          description="Requested Execution Date Time"
+          mutation="SET_REQUESTED_EXECUTION_DATE_TIME"
+        />
 
         <b-form-group
           id="creditor_account_group"
@@ -556,6 +541,7 @@ import isEmpty from 'lodash/isEmpty';
 import ConfigurationFormFile from './ConfigurationFormFile.vue';
 import PaymentFrequency from '../config/PaymentFrequency.vue';
 import SchemeName from '../config/SchemeName.vue';
+import DateTimeISO8601 from '../config/DateTimeISO8601.vue';
 import api from '../../api/apiUtil';
 
 const { mapGetters } = createNamespacedHelpers('config');
@@ -566,6 +552,7 @@ export default {
     ConfigurationFormFile,
     PaymentFrequency,
     SchemeName,
+    DateTimeISO8601,
   },
   data() {
     api.get('/api/config/conditional-property').then((res) => {
@@ -901,23 +888,6 @@ export default {
       },
       set(value) {
         this.$store.commit('config/SET_PAYMENT_FREQUENCY', value);
-      },
-    },
-    first_payment_date_time: {
-      get() {
-        return this.$store.state.config.configuration.first_payment_date_time;
-      },
-      set(value) {
-        this.$store.commit('config/SET_FIRST_PAYMENT_DATE_TIME', value);
-      },
-    },
-    requested_execution_date_time: {
-      get() {
-        return this.$store.state.config.configuration
-          .requested_execution_date_time;
-      },
-      set(value) {
-        this.$store.commit('config/SET_REQUESTED_EXECUTION_DATE_TIME', value);
       },
     },
   },
