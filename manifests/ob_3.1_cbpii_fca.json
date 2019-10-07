@@ -27,7 +27,8 @@
       "asserts": [
         "OB3GLOAssertOn201",
         "OB3GLOFAPIHeader",
-        "OB3GLOAAssertConsentId"
+        "OB3GLOAAssertConsentId",
+        "OB3GLOAssertContentType"
       ],
       "schemaCheck": true
     },
@@ -48,7 +49,8 @@
       },
       "asserts": [
         "OB3GLOAssertOn200",
-        "OB3GLOFAPIHeader"
+        "OB3GLOFAPIHeader",
+        "OB3GLOAssertContentType"
       ],
       "schemaCheck": true
     },
@@ -73,7 +75,9 @@
         "Content-Type": "application/json"
       },
       "asserts": [
-        "OB3GLOAssertOn201"
+        "OB3GLOAssertOn201",
+        "OB3GLOFAPIHeader",
+        "OB3GLOAssertContentType"
       ],
       "schemaCheck": true
     },
@@ -90,7 +94,8 @@
       },
       "method": "delete",
       "asserts": [
-        "OB3GLOAssertOn204"
+        "OB3GLOAssertOn204",
+        "OB3GLOFAPIHeader"
       ],
       "schemaCheck": false
     }
