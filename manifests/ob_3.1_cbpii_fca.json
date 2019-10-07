@@ -7,7 +7,6 @@
       "detail": "Creates Funds Confirmation Consents",
       "uri": "/funds-confirmation-consents",
       "uriImplementation": "mandatory",
-      "resource": "OBFundsConfirmationConsent1",
       "parameters": {
         "debtorAccountSchemeName": "$cbpiiDebtorAccountSchemeName",
         "debtorAccountIdentification": "$cbpiiDebtorAccountIdentification",
@@ -43,13 +42,13 @@
         "requestConsent": "false"
       },
       "uriImplementation": "mandatory",
-      "resource": "OBFundsConfirmationConsent1",
       "method": "get",
       "headers": {
         "Content-Type": "application/json"
       },
       "asserts": [
-        "OB3GLOAssertOn200"
+        "OB3GLOAssertOn200",
+        "OB3GLOFAPIHeader"
       ],
       "schemaCheck": true
     },
@@ -60,7 +59,6 @@
       "detail": "Creates Funds Confirmation Consents",
       "uri": "/funds-confirmations",
       "uriImplementation": "mandatory",
-      "resource": "OBFundsConfirmationConsent1",
       "parameters": {
         "instructedAmountValue": "$instructedAmountValue",
         "instructedAmountCurrency": "$instructedAmountCurrency",
@@ -86,7 +84,6 @@
       "detail": "Deletes Funds Confirmation Consents",
       "uri": "/funds-confirmation-consents/$consentId",
       "uriImplementation": "mandatory",
-      "resource": "OBFundsConfirmationConsent1",
       "parameters": {
         "consentId": "$OB-301-CBPII-000001-ConsentId",
         "requestConsent": "false"
