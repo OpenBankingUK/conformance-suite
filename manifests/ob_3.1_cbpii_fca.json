@@ -18,7 +18,6 @@
       },
       "method": "post",
       "body": "$postData",
-      "useCCGToken": true,
       "headers": {
         "Content-Type": "application/json"
       },
@@ -91,7 +90,6 @@
         "requestConsent": "false"
       },
       "method": "delete",
-      "useCCGToken": true,
       "headers": {
         "Content-Type": "application/json"
       },

@@ -3,10 +3,12 @@ package manifest
 import (
 	"errors"
 	"fmt"
+	"regexp"
 	"strings"
 
 	"github.com/sirupsen/logrus"
 
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
 )
 
@@ -294,7 +296,6 @@ func MapTokensToPaymentTestCases(rt []RequiredTokens, tcs []model.TestCase, ctx 
 func MapTokensToCBPIITestCases(rt []RequiredTokens, tcs []model.TestCase, ctx *model.Context) {
 	for k, test := range tcs {
 		authCodeTokenRequired := requiresAuthCodeToken(test.ID, test.Input.Method, test.Input.Endpoint)
-		logrus.Debugf("MapTokensToCBPIITestCases: auth token required for CBPII %v", authCodeTokenRequired)
 		if authCodeTokenRequired {
 			tokenName, isEmptyToken, err := getRequiredTokenForPaymentTestcase(rt, test.ID)
 			if err != nil {
@@ -314,11 +315,6 @@ func MapTokensToCBPIITestCases(rt []RequiredTokens, tcs []model.TestCase, ctx *m
 				test.InjectBearerToken("$cbpii_ccg_token")
 				continue
 			}
-			useCCGToken, _ := test.Context.Get("useCCGToken")
-			if useCCGToken == "yes" { // cbpii POSTs
-				test.InjectBearerToken("$cbpii_ccg_token")
-				continue
-			}
 		}
 		tcs[k] = test
 	}
@@ -326,14 +322,60 @@ func MapTokensToCBPIITestCases(rt []RequiredTokens, tcs []model.TestCase, ctx *m
 
 func requiresAuthCodeToken(id, method, endpoint string) bool {
 	// "get" with "funds confirmation"
-	if strings.ToUpper(method) == "GET" && strings.Contains(endpoint, "funds-confirmations") {
-		logrus.Tracef("%s %s %s requires auth code token", id, method, endpoint)
-		return true
+	authCodeEndpointsRegex := []discovery.ModelEndpoint{
+		discovery.ModelEndpoint{
+			Path:   "^/domestic-payments$",
+			Method: "POST",
+		},
+		discovery.ModelEndpoint{
+			Path:   "^/domestic-scheduled-payments$",
+			Method: "GET",
+		},
+		discovery.ModelEndpoint{
+			Path:   "^/domestic-standing-orders$",
+			Method: "POST",
+		},
+		discovery.ModelEndpoint{
+			Path:   "^/international-payment-consents/[a-zA-Z0-9_{}-]+/funds-confirmation$",
+			Method: "GET",
+		},
+		discovery.ModelEndpoint{
+			Path:   "^/international-payments$",
+			Method: "POST",
+		},
+		discovery.ModelEndpoint{
+			Path:   "^/international-scheduled-payment-consents/[a-zA-Z0-9_{}-]+/funds-confirmation$",
+			Method: "GET",
+		},
+		discovery.ModelEndpoint{
+			Path:   "^/international-scheduled-payments$",
+			Method: "POST",
+		},
+		discovery.ModelEndpoint{
+			Path:   "^/international-standing-orders$",
+			Method: "POST",
+		},
+		discovery.ModelEndpoint{
+			Path:   "^/file-payments$",
+			Method: "POST",
+		},
+		discovery.ModelEndpoint{
+			Path:   "^/funds-confirmations$",
+			Method: "POST",
+		},
 	}
-	if strings.ToUpper(method) == "POST" && !strings.Contains(endpoint, "consents") {
-		logrus.Tracef("%s %s %s requires auth code token", id, method, endpoint)
-		return true
+	for _, authCodeEndpoint := range authCodeEndpointsRegex {
+		matched, err := regexp.MatchString(authCodeEndpoint.Path, endpoint)
+		if err != nil {
+			logrus.Warnf("unable to match endpoint regex %s with %s err %v", authCodeEndpoint.Path, endpoint, err)
+			continue
+		}
+		if matched && strings.ToUpper(method) == authCodeEndpoint.Method {
+			logrus.Tracef("%s %s %s requires auth code token", id, method, endpoint)
+			return true
+		}
 	}
+
 	return false
 }
 
