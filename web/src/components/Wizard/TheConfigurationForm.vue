@@ -492,8 +492,8 @@
         <b-form-group
           id="cbpii_debtor_account_identification_group"
           label-for="cbpii_debtor_account_identification"
-          label="Confirmation Of Funds Debtor Account Identification"
-          description="Confirmation Of Funds Debtor Account Identification"
+          label="Debtor Account Identification"
+          description="Debtor Account Identification"
         >
           <b-form-input
             id="cbpii_debtor_account_identification"
@@ -505,8 +505,8 @@
         <b-form-group
           id="cbpii_debtor_account_name_group"
           label-for="cbpii_debtor_account_name"
-          label="Confirmation Of Funds Debtor Account Name"
-          description="Name of the account, as assigned by the account servicing institution.\nUsage: The account name is the name or names of the account owner(s) represented at an account level. The account name is not the product name or the nickname of the account."
+          label="Debtor Account Name"
+          description="Name of the account, as assigned by the account servicing institution"
         >
           <b-form-input
             id="cbpii_debtor_account_name"
@@ -521,7 +521,7 @@
       <br >
 
       <b-card
-        v-if="conditional_properties.length > 0"
+        v-if="conditional_properties && conditional_properties.length > 0"
         bg-variant="light">
         <b-form-group
           label="Conditional Properties"
@@ -595,7 +595,7 @@ export default {
   data() {
     api.get('/api/config/conditional-property').then((res) => {
       res.json().then((body) => {
-        if (this.$store.state.config.configuration.conditional_properties.length === 0) {
+        if (this.$store.state.config.configuration.conditional_properties && this.$store.state.config.configuration.conditional_properties.length === 0) {
           this.$store.commit('config/SET_CONDITIONAL_PROPERTIES', body);
         }
       });
