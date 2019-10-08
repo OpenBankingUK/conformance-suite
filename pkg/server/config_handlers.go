@@ -159,7 +159,13 @@ func newConfigHandlers(journey Journey, logger *logrus.Entry) configHandlers {
 // GET /api/config/conditional-property
 func (h configHandlers) configConditionalPropertyHandler(c echo.Context) error {
 	conditionalProperties := h.journey.ConditionalProperties()
-	return c.JSON(http.StatusOK, conditionalProperties)
+	filteredProps := make([]discovery.ConditionalAPIProperties, 0, len(conditionalProperties))
+	for _, v := range conditionalProperties {
+		if len(v.Endpoints) > 0 {
+			filteredProps = append(filteredProps, v)
+		}
+	}
+	return c.JSON(http.StatusOK, filteredProps)
 }
 
 // POST /api/config/global
