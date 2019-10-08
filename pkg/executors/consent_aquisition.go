@@ -56,6 +56,7 @@ func GetPsuConsent(definition RunDefinition, ctx *model.Context, runTests *gener
 			consentIdsToReturn = append(consentIdsToReturn, consentIds...)
 			if err != nil {
 				logrus.Error("GetPSUConsent - cbpii error: " + err.Error())
+				return nil, nil, err
 			}
 		default:
 			logrus.Fatalf("Support for spec type (%s) not implemented yet", specType)
