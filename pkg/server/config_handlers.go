@@ -86,7 +86,7 @@ type GlobalConfiguration struct {
 	SignatureTrustAnchor          string                               `json:"signature_trust_anchor,omitempty"`
 	AcrValuesSupported            []string                             `json:"acr_values_supported,omitempty"`
 	ConditionalProperties         []discovery.ConditionalAPIProperties `json:"conditional_properties,omitempty"`
-	CBPIIDebtorAccount            discovery.CBPIIDebtorAccount         `json:"cbpii_debtor_account,omitempty"`
+	CBPIIDebtorAccount            discovery.CBPIIDebtorAccount         `json:"cbpii_debtor_account"`
 }
 
 // Validate - used by https://github.com/go-ozzo/ozzo-validation to validate struct.
@@ -102,6 +102,7 @@ func (c GlobalConfiguration) Validate() error {
 		validation.Field(&c.FirstPaymentDateTime, validation.By(futureDateTimeValidator)),
 		validation.Field(&c.RequestedExecutionDateTime, validation.By(futureDateTimeValidator)),
 		validation.Field(&c.PaymentFrequency, validation.Required),
+		validation.Field(&c.CBPIIDebtorAccount, validation.Required),
 	)
 }
 

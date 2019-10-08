@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/schema"
+	validation "github.com/go-ozzo/ozzo-validation"
 	"github.com/sirupsen/logrus"
 )
 
@@ -69,9 +70,17 @@ type ConditionalAPIProperties struct {
 }
 
 type CBPIIDebtorAccount struct {
-	Identification          string `json:"identification"`
-	SchemeName              string `json:"scheme_name"`
-	Name                    string `json:"name,omitempty"`
+	Identification string `json:"identification"`
+	SchemeName     string `json:"scheme_name"`
+	Name           string `json:"name,omitempty"`
+}
+
+func (c CBPIIDebtorAccount) Validate() error {
+	return validation.ValidateStruct(&c,
+		validation.Field(&c.SchemeName, validation.Required, validation.Length(1, 40)),
+		validation.Field(&c.Identification, validation.Required, validation.Length(1, 256)),
+		validation.Field(&c.Name, validation.Length(1, 70)),
+	)
 }
 
 // UnmarshalDiscoveryJSON - Used for testing in multiple packages to get discovery
