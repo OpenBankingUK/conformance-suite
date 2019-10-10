@@ -151,7 +151,7 @@ func runPaymentConsents(rt []manifest.RequiredTokens, ctx *model.Context, execut
 
 	clientGrantToken, err := localCtx.GetString("client_access_token")
 	if err == nil {
-		logrus.Tracef("setting client credential grant token to %s", clientGrantToken)
+		logrus.Tracef("setting payments client credential grant token to %s", clientGrantToken)
 		ctx.PutString("client_access_token", clientGrantToken)
 	}
 	logrus.Debug("Exit runPayment Consents")

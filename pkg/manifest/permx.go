@@ -110,15 +110,13 @@ func GetCbpiiPermissions(tests []model.TestCase) ([]RequiredTokens, error) {
 			logrus.Tracef("adding %s to consentJobs for cbpii: %s %s", tc.ID, tc.Input.Method, tc.Input.Endpoint)
 			consentJobs.Add(tc)
 		} else {
-			tests[k].InjectBearerToken("$client_access_token")
+			tests[k].InjectBearerToken("$cbpii_ccg_token")
 		}
 	}
 	requiredTokens, err := updateTokensFromConsent(rt, tests)
 	if err != nil {
 		return nil, err
 	}
-
-	updateTestAuthenticationFromToken(tests, requiredTokens)
 
 	return requiredTokens, nil
 }
@@ -158,7 +156,7 @@ func getPaymentPermissions(tcs []model.TestCase) ([]RequiredTokens, error) {
 			logrus.Tracef("adding %s to consentJobs : %s %s", tc.ID, tc.Input.Method, tc.Input.Endpoint)
 			consentJobs.Add(tc)
 		} else {
-			tcs[k].InjectBearerToken("$client_access_token")
+			tcs[k].InjectBearerToken("$payment_ccg_token")
 		}
 	}
 
@@ -313,7 +311,7 @@ func MapTokensToCBPIITestCases(rt []RequiredTokens, tcs []model.TestCase, ctx *m
 				}
 			}
 		} else {
-			if test.Input.Method == "GET" {
+			if test.Input.Method == "GET" && strings.Contains(test.ID, "CBPII") {
 				test.InjectBearerToken("$cbpii_ccg_token")
 				continue
 			}
