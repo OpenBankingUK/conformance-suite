@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"mime"
 	"strings"
+	"net/http"
 
 	"github.com/pkg/errors"
 )
@@ -22,6 +23,10 @@ func newContentTypeValidator(finder finder) Validator {
 }
 
 func (v contentTypeValidator) Validate(r Response) ([]Failure, error) {
+	if r.StatusCode == http.StatusNoContent {
+		return nil, nil
+	}
+	
 	expectedContentType, err := v.expectedContentType(r)
 	if err == ErrNotFound {
 		return nil, nil
