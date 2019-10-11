@@ -128,7 +128,7 @@
         "OB3GLOAssertOn204",
         "OB3GLOFAPIHeader"
       ],
-      "schemaCheck": false
+      "schemaCheck": true
     }
   ]
 }
