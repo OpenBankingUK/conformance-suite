@@ -129,6 +129,98 @@
         "OB3GLOFAPIHeader"
       ],
       "schemaCheck": true
+    },
+    {
+      "description": "Creates Funds Confirmation Consents fails due to invalid account name",
+      "id": "OB-301-CBPII-000006",
+      "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937951380/Confirmation+of+Funds+API+Specification+-+v3.1",
+      "detail": "Creates Funds Confirmation Consents",
+      "uri": "/funds-confirmation-consents",
+      "uriImplementation": "mandatory",
+      "parameters": {
+        "debtorAccountSchemeName": "$cbpiiDebtorAccountSchemeName",
+        "debtorAccountIdentification": "$cbpiiDebtorAccountIdentification",
+        "debtorAccountName": "MoreThan70characters-MoreThan70characters-MoreThan70characters-MoreThan70Characters",
+        "postData": "$OBFundsConfirmationConsent1",
+        "expirationDateTime": "2020-01-01T00:00:00+01:00",
+        "requestConsent": "false"
+      },
+      "method": "post",
+      "body": "$postData",
+      "headers": {
+        "Content-Type": "application/json"
+      },
+      "asserts": [
+        "OB3GLOAssertOn400"
+      ],
+      "schemaCheck": true
+    },
+    {
+      "description": "Creates Funds Confirmation Consents fails due to invalid account Identification",
+      "id": "OB-301-CBPII-000007",
+      "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937951380/Confirmation+of+Funds+API+Specification+-+v3.1",
+      "detail": "Creates Funds Confirmation Consents",
+      "uri": "/funds-confirmation-consents",
+      "uriImplementation": "mandatory",
+      "parameters": {
+        "debtorAccountSchemeName": "$cbpiiDebtorAccountSchemeName",
+        "debtorAccountIdentification": "MoreThan256characters-MoreThan256characters-MoreThan256characters-MoreThan256Characters-MoreThan256characters-MoreThan256characters-MoreThan256characters-MoreThan256Characters-MoreThan256characters-MoreThan256characters-MoreThan256characters-MoreThan256Characters-MoreThan256characters-MoreThan256characters-MoreThan256characters-MoreThan256Characters",
+        "debtorAccountName": "$cbpiiDebtorAccountName",
+        "postData": "$OBFundsConfirmationConsent1",
+        "expirationDateTime": "2020-01-01T00:00:00+01:00",
+        "requestConsent": "false"
+      },
+      "method": "post",
+      "body": "$postData",
+      "headers": {
+        "Content-Type": "application/json"
+      },
+      "asserts": [
+        "OB3GLOAssertOn400"
+      ],
+      "schemaCheck": true
+    },
+    {
+      "description": "Creates Funds Confirmation Consents fails due to invalid scheme name",
+      "id": "OB-301-CBPII-000008",
+      "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937951380/Confirmation+of+Funds+API+Specification+-+v3.1",
+      "detail": "Creates Funds Confirmation Consents",
+      "uri": "/funds-confirmation-consents",
+      "uriImplementation": "mandatory",
+      "parameters": {
+        "debtorAccountSchemeName": "TestingAnInvalidSchemeName",
+        "debtorAccountIdentification": "$cbpiiDebtorAccountIdentification",
+        "debtorAccountName": "$cbpiiDebtorAccountName",
+        "postData": "$OBFundsConfirmationConsent1",
+        "expirationDateTime": "2020-01-01T00:00:00+01:00",
+        "requestConsent": "false"
+      },
+      "method": "post",
+      "body": "$postData",
+      "headers": {
+        "Content-Type": "application/json"
+      },
+      "asserts": [
+        "OB3GLOAssertOn400"
+      ],
+      "schemaCheck": true
+    },
+    {
+      "description": "Deletes Funds Confirmation Consents fails due to invalid consent ID",
+      "id": "OB-301-CBPII-000009",
+      "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937951380/Confirmation+of+Funds+API+Specification+-+v3.1",
+      "detail": "Deletes Funds Confirmation Consents",
+      "uri": "/funds-confirmation-consents/$consentId",
+      "uriImplementation": "mandatory",
+      "parameters": {
+        "consentId": "42",
+        "requestConsent": "false"
+      },
+      "method": "delete",
+      "asserts": [
+        "OB3GLOAssertOn400"
+      ],
+      "schemaCheck": true
     }
   ]
 }
