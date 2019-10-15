@@ -218,12 +218,11 @@
     "OBFundsConfirmationConsent1": {
       "body": {
         "Data": {
-          "ExpirationDateTime": "ISODateTime",
+          "ExpirationDateTime": "$expirationDateTime",
           "DebtorAccount": {
-            "SchemeName": "Max40Text",
-            "Identification": "Max256Text",
-            "Name": "Max70Text",
-            "SecondaryIdentification": "Max34Text"
+            "SchemeName": "$debtorAccountSchemeName",
+            "Identification": "$debtorAccountIdentification",
+            "Name": "$debtorAccountName"
           }
         }
       }
@@ -231,11 +230,11 @@
     "OBFundsConfirmation1": {
       "body": {
         "Data": {
-          "ConsentId": "Max128Text",
-          "Reference": "Max35Text",
+          "ConsentId": "$consentId",
+          "Reference": "$uniqueCbpiiReference",
           "InstructedAmount": {
-            "Amount": "Currency ISO 4217",
-            "Currency": "GBP"
+            "Amount": "$instructedAmountValue",
+            "Currency": "$instructedAmountCurrency"
           }
         }
       }

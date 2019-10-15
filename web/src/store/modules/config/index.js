@@ -56,6 +56,9 @@ export const mutationTypes = {
   SET_FIRST_PAYMENT_DATE_TIME: 'SET_FIRST_PAYMENT_DATE_TIME',
   SET_REQUESTED_EXECUTION_DATE_TIME: 'SET_REQUESTED_EXECUTION_DATE_TIME',
   SET_CONDITIONAL_PROPERTIES: 'SET_CONDITIONAL_PROPERTIES',
+  SET_CBPII_DEBTOR_ACCOUNT_IDENTIFICATION: 'SET_CBPII_DEBTOR_ACCOUNT_IDENTIFICATION',
+  SET_CBPII_DEBTOR_ACCOUNT_SCHEME_NAME: 'SET_CBPII_DEBTOR_ACCOUNT_SCHEME_NAME',
+  SET_CBPII_DEBTOR_ACCOUNT_NAME: 'SET_CBPII_DEBTOR_ACCOUNT_NAME',
 };
 
 export const mutations = {
@@ -221,6 +224,15 @@ export const mutations = {
   [mutationTypes.SET_REQUESTED_EXECUTION_DATE_TIME](state, value) {
     state.configuration.requested_execution_date_time = value;
   },
+  [mutationTypes.SET_CBPII_DEBTOR_ACCOUNT_IDENTIFICATION](state, value) {
+    state.configuration.cbpii_debtor_account.identification = value;
+  },
+  [mutationTypes.SET_CBPII_DEBTOR_ACCOUNT_SCHEME_NAME](state, value) {
+    state.configuration.cbpii_debtor_account.scheme_name = value;
+  },
+  [mutationTypes.SET_CBPII_DEBTOR_ACCOUNT_NAME](state, value) {
+    state.configuration.cbpii_debtor_account.name = value;
+  },
 };
 
 // Converts problem key to discovery model JSON path.
@@ -316,6 +328,11 @@ export const state = {
       name: '',
     },
     international_creditor_account: {
+      scheme_name: '',
+      identification: '',
+      name: '',
+    },
+    cbpii_debtor_account: {
       scheme_name: '',
       identification: '',
       name: '',

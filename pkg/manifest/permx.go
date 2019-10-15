@@ -3,10 +3,12 @@ package manifest
 import (
 	"errors"
 	"fmt"
+	"regexp"
 	"strings"
 
 	"github.com/sirupsen/logrus"
 
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
 )
 
@@ -42,8 +44,9 @@ const accountSwaggerLocation31 = "https://raw.githubusercontent.com/OpenBankingU
 const accountSwaggerLocation30 = "https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.0.0/dist/account-info-swagger.json"
 const paymentsSwaggerLocation31 = "https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.0/dist/payment-initiation-swagger.json"
 const paymentsSwaggerLocation30 = "https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.0.0/dist/payment-initiation-swagger.json"
+const confirmationOfFundsSwaggerLocation30 = "https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.0.0/dist/confirmation-funds-swagger.json"
+const confirmationOfFundsSwaggerLocation31 = "https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.0/dist/confirmation-funds-swagger.json"
 
-var confirmSwaggerLocation = ""
 var notificationSwaggerLocation = ""
 
 // GetSpecType -
@@ -59,8 +62,10 @@ func GetSpecType(s string) (string, error) {
 		fallthrough
 	case paymentsSwaggerLocation30:
 		return "payments", nil
-	case confirmSwaggerLocation:
-		return "funds", nil
+	case confirmationOfFundsSwaggerLocation31:
+		fallthrough
+	case confirmationOfFundsSwaggerLocation30:
+		return "cbpii", nil
 	case notificationSwaggerLocation:
 		return "notifications", nil
 	}
@@ -80,8 +85,40 @@ func GetRequiredTokensFromTests(tcs []model.TestCase, spec string) (rt []Require
 		rt, err = getRequiredTokens(tcp)
 	case "payments":
 		rt, err = GetPaymentPermissions(tcs)
+	case "cbpii":
+		rt, err = GetCbpiiPermissions(tcs)
 	}
 	return rt, err
+}
+
+func GetCbpiiPermissions(tests []model.TestCase) ([]RequiredTokens, error) {
+	rt := make([]RequiredTokens, 0)
+	ts := TokenStore{}
+	ts.store = rt
+	consentJobs := GetConsentJobs()
+	for k, tc := range tests {
+		ctx := tc.Context
+		consentRequired, found := ctx.GetString("requestConsent")
+		if found != nil {
+			continue
+		}
+		if consentRequired == "true" {
+			// get consentid
+			consentID := GetConsentIDFromMatches(tc)
+			rx := RequiredTokens{Name: ts.GetNextTokenName("cbpii"), ConsentParam: consentID, ConsentProvider: tc.ID}
+			rt = append(rt, rx)
+			logrus.Tracef("adding %s to consentJobs for cbpii: %s %s", tc.ID, tc.Input.Method, tc.Input.Endpoint)
+			consentJobs.Add(tc)
+		} else {
+			tests[k].InjectBearerToken("$cbpii_ccg_token")
+		}
+	}
+	requiredTokens, err := updateTokensFromConsent(rt, tests)
+	if err != nil {
+		return nil, err
+	}
+
+	return requiredTokens, nil
 }
 
 // GetPaymentPermissions - and annotate test cases with token ids
@@ -119,7 +156,7 @@ func getPaymentPermissions(tcs []model.TestCase) ([]RequiredTokens, error) {
 			logrus.Tracef("adding %s to consentJobs : %s %s", tc.ID, tc.Input.Method, tc.Input.Endpoint)
 			consentJobs.Add(tc)
 		} else {
-			tcs[k].InjectBearerToken("$client_access_token")
+			tcs[k].InjectBearerToken("$payment_ccg_token")
 		}
 	}
 
@@ -183,7 +220,7 @@ func getRequiredTokens(tcps []TestCasePermission) ([]RequiredTokens, error) {
 func MapTokensToTestCases(rt []RequiredTokens, tcs []model.TestCase) map[string]string {
 	ctxLogger := logrus.StandardLogger().WithFields(logrus.Fields{
 		"function": "MapTokensToTestCases",
-		//"rt":       fmt.Sprintf("%#v", rt),
+		"rt":       fmt.Sprintf("%#v", rt),
 	})
 
 	tokenMap := map[string]string{}
@@ -254,16 +291,91 @@ func MapTokensToPaymentTestCases(rt []RequiredTokens, tcs []model.TestCase, ctx 
 	}
 }
 
+// MapTokensToCBPIITestCases maps tokens retrieved after the consent acquisition flow
+// maps them into test cases that require access tokens (ccg tokens)
+func MapTokensToCBPIITestCases(rt []RequiredTokens, tcs []model.TestCase, ctx *model.Context) {
+	for k, test := range tcs {
+		authCodeTokenRequired := requiresAuthCodeToken(test.ID, test.Input.Method, test.Input.Endpoint)
+		if authCodeTokenRequired {
+			tokenName, isEmptyToken, err := getRequiredTokenForPaymentTestcase(rt, test.ID)
+			if err != nil {
+				logrus.Warnf("no token for CBPII testcase %s %s %s", test.ID, test.Input.Method, test.Input.Endpoint)
+				continue
+			}
+			if !isEmptyToken {
+				token, err := ctx.GetString(tokenName)
+				if err == nil {
+					test.InjectBearerToken(token)
+				} else {
+					test.InjectBearerToken("$" + tokenName)
+				}
+			}
+		} else {
+			if test.Input.Method == "GET" && strings.Contains(test.ID, "CBPII") {
+				test.InjectBearerToken("$cbpii_ccg_token")
+				continue
+			}
+		}
+		tcs[k] = test
+	}
+}
+
 func requiresAuthCodeToken(id, method, endpoint string) bool {
 	// "get" with "funds confirmation"
-	if strings.ToUpper(method) == "GET" && strings.Contains(endpoint, "funds-confirmation") {
-		logrus.Tracef("%s %s %s requires auth code token", id, method, endpoint)
-		return true
+	authCodeEndpointsRegex := []discovery.ModelEndpoint{
+		discovery.ModelEndpoint{
+			Path:   "^/domestic-payments$",
+			Method: "POST",
+		},
+		discovery.ModelEndpoint{
+			Path:   "^/domestic-scheduled-payments$",
+			Method: "GET",
+		},
+		discovery.ModelEndpoint{
+			Path:   "^/domestic-standing-orders$",
+			Method: "POST",
+		},
+		discovery.ModelEndpoint{
+			Path:   "^/international-payment-consents/[a-zA-Z0-9_{}-]+/funds-confirmation$",
+			Method: "GET",
+		},
+		discovery.ModelEndpoint{
+			Path:   "^/international-payments$",
+			Method: "POST",
+		},
+		discovery.ModelEndpoint{
+			Path:   "^/international-scheduled-payment-consents/[a-zA-Z0-9_{}-]+/funds-confirmation$",
+			Method: "GET",
+		},
+		discovery.ModelEndpoint{
+			Path:   "^/international-scheduled-payments$",
+			Method: "POST",
+		},
+		discovery.ModelEndpoint{
+			Path:   "^/international-standing-orders$",
+			Method: "POST",
+		},
+		discovery.ModelEndpoint{
+			Path:   "^/file-payments$",
+			Method: "POST",
+		},
+		discovery.ModelEndpoint{
+			Path:   "^/funds-confirmations$",
+			Method: "POST",
+		},
 	}
-	if strings.ToUpper(method) == "POST" && !strings.Contains(endpoint, "consents") {
-		logrus.Tracef("%s %s %s requires auth code token", id, method, endpoint)
-		return true
+	for _, authCodeEndpoint := range authCodeEndpointsRegex {
+		matched, err := regexp.MatchString(authCodeEndpoint.Path, endpoint)
+		if err != nil {
+			logrus.Warnf("unable to match endpoint regex %s with %s err %v", authCodeEndpoint.Path, endpoint, err)
+			continue
+		}
+		if matched && strings.ToUpper(method) == authCodeEndpoint.Method {
+			logrus.Tracef("%s %s %s requires auth code token", id, method, endpoint)
+			return true
+		}
 	}
+
 	return false
 }
 

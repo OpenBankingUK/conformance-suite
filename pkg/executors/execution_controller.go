@@ -77,9 +77,7 @@ func NewExchangeComponentRunner(definition RunDefinition, daemonController Daemo
 // RunTestCases runs the testCases
 func (r *TestCaseRunner) RunTestCases(ctx *model.Context) error {
 	r.runningLock.Lock()
-	defer func() {
-		r.runningLock.Unlock()
-	}()
+	defer r.runningLock.Unlock()
 	if r.running {
 		return errors.New("test cases runner already running")
 	}
@@ -93,9 +91,7 @@ func (r *TestCaseRunner) RunTestCases(ctx *model.Context) error {
 // RunConsentAcquisition -
 func (r *TestCaseRunner) RunConsentAcquisition(item TokenConsentIDItem, ctx *model.Context, consentType string, consentIDChannel chan<- TokenConsentIDItem) error {
 	r.runningLock.Lock()
-	defer func() {
-		r.runningLock.Unlock()
-	}()
+	defer r.runningLock.Unlock()
 	if r.running {
 		return errors.New("consent acquisition test cases runner already running")
 	}

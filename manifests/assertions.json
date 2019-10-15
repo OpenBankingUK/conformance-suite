@@ -12,6 +12,12 @@
         "detail": "Expected status code 201 (Created)"
       }
     },
+    "OB3GLOAssertOn204": {
+      "expect": {
+        "status-code": 204,
+        "detail": "Expected status code 204 (No Content)"
+      }
+    },
     "OB3GLOAssertOn400": {
       "expect": {
         "status-code": 400,
