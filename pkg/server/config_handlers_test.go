@@ -275,6 +275,11 @@ func TestServerConfigGlobalPostValid(t *testing.T) {
 		RequestedExecutionDateTime: "2020-01-01T00:00:00+01:00",
 		FirstPaymentDateTime:       "2020-01-01T00:00:00+01:00",
 		PaymentFrequency:           models.PaymentFrequency("EvryDay"),
+		CBPIIDebtorAccount: discovery.CBPIIDebtorAccount{
+			SchemeName:     "UK.OBIE.SortCodeAccountNumber",
+			Identification: "20202010981789",
+			Name: "Bob Stone",
+		},
 	}
 	globalConfigurationJSON, err := json.MarshalIndent(globalConfiguration, ``, `  `)
 	require.NoError(err)
@@ -345,6 +350,11 @@ func TestServerConfigGlobalPostInvalid(t *testing.T) {
 				RequestedExecutionDateTime: "2020-01-01T00:00:00+01:00",
 				FirstPaymentDateTime:       "2020-01-01T00:00:00+01:00",
 				PaymentFrequency:           models.PaymentFrequency("EvryDay"),
+				CBPIIDebtorAccount: discovery.CBPIIDebtorAccount{
+					SchemeName:     "UK.OBIE.SortCodeAccountNumber",
+					Identification: "20202010981789",
+					Name: "Bob Stone",
+				},
 			},
 		},
 		{
@@ -388,6 +398,11 @@ func TestServerConfigGlobalPostInvalid(t *testing.T) {
 				RequestedExecutionDateTime: "2020-01-01T00:00:00+01:00",
 				FirstPaymentDateTime:       "2020-01-01T00:00:00+01:00",
 				PaymentFrequency:           models.PaymentFrequency("EvryDay"),
+				CBPIIDebtorAccount: discovery.CBPIIDebtorAccount{
+					SchemeName:     "UK.OBIE.SortCodeAccountNumber",
+					Identification: "20202010981789",
+					Name: "Bob Stone",
+				},
 			},
 		},
 		{
@@ -423,6 +438,11 @@ func TestServerConfigGlobalPostInvalid(t *testing.T) {
 				RequestedExecutionDateTime: "2020-01-01T00:00:00+01:00",
 				FirstPaymentDateTime:       "2020-01-01T00:00:00+01:00",
 				PaymentFrequency:           models.PaymentFrequency("EvryDay"),
+				CBPIIDebtorAccount: discovery.CBPIIDebtorAccount{
+					SchemeName:     "UK.OBIE.SortCodeAccountNumber",
+					Identification: "20202010981789",
+					Name: "Bob Stone",
+				},
 			},
 		},
 		{
@@ -463,6 +483,11 @@ func TestServerConfigGlobalPostInvalid(t *testing.T) {
 				RequestedExecutionDateTime: "2020-01-01T00:00:00+01:00",
 				FirstPaymentDateTime:       "2020-01-01T00:00:00+01:00",
 				PaymentFrequency:           models.PaymentFrequency("EvryDay"),
+				CBPIIDebtorAccount: discovery.CBPIIDebtorAccount{
+					SchemeName:     "UK.OBIE.SortCodeAccountNumber",
+					Identification: "20202010981789",
+					Name: "Bob Stone",
+				},
 			},
 		},
 		{
@@ -507,6 +532,11 @@ func TestServerConfigGlobalPostInvalid(t *testing.T) {
 				RequestedExecutionDateTime: "2020-01-01T00:00:00+01:00",
 				FirstPaymentDateTime:       "2020-01-01T00:00:00+01:00",
 				PaymentFrequency:           models.PaymentFrequency("EvryDay"),
+				CBPIIDebtorAccount: discovery.CBPIIDebtorAccount{
+					SchemeName:     "UK.OBIE.SortCodeAccountNumber",
+					Identification: "20202010981789",
+					Name: "Bob Stone",
+				},
 			},
 		},
 		{
@@ -547,6 +577,11 @@ func TestServerConfigGlobalPostInvalid(t *testing.T) {
 				RequestedExecutionDateTime: "2020-01-01T00:00:00+01:00",
 				FirstPaymentDateTime:       "2020-01-01T00:00:00+01:00",
 				PaymentFrequency:           models.PaymentFrequency("EvryDay"),
+				CBPIIDebtorAccount: discovery.CBPIIDebtorAccount{
+					SchemeName:     "UK.OBIE.SortCodeAccountNumber",
+					Identification: "20202010981789",
+					Name: "Bob Stone",
+				},
 			},
 		},
 		{
@@ -591,6 +626,11 @@ func TestServerConfigGlobalPostInvalid(t *testing.T) {
 				RequestedExecutionDateTime: "2020-01-01T00:00:00+01:00",
 				FirstPaymentDateTime:       "2020-01-01T00:00:00+01:00",
 				PaymentFrequency:           models.PaymentFrequency("EvryDay"),
+				CBPIIDebtorAccount: discovery.CBPIIDebtorAccount{
+					SchemeName:     "UK.OBIE.SortCodeAccountNumber",
+					Identification: "20202010981789",
+					Name: "Bob Stone",
+				},
 			},
 		},
 		{
@@ -627,6 +667,11 @@ func TestServerConfigGlobalPostInvalid(t *testing.T) {
 				RequestedExecutionDateTime: "2020-01-01T00:00:00+01:00",
 				FirstPaymentDateTime:       "2020-01-01T00:00:00+01:00",
 				PaymentFrequency:           models.PaymentFrequency("EvryDay"),
+				CBPIIDebtorAccount: discovery.CBPIIDebtorAccount{
+					SchemeName:     "UK.OBIE.SortCodeAccountNumber",
+					Identification: "20202010981789",
+					Name: "Bob Stone",
+				},
 			},
 		},
 		{
@@ -670,6 +715,11 @@ func TestServerConfigGlobalPostInvalid(t *testing.T) {
 				RequestedExecutionDateTime: "2020-01-01T00:00:00+01:00",
 				FirstPaymentDateTime:       "2020-01-01T00:00:00+01:00",
 				PaymentFrequency:           models.PaymentFrequency("EvryDay"),
+				CBPIIDebtorAccount: discovery.CBPIIDebtorAccount{
+					SchemeName:     "UK.OBIE.SortCodeAccountNumber",
+					Identification: "20202010981789",
+					Name: "Bob Stone",
+				},
 			},
 		},
 		{
@@ -709,6 +759,11 @@ func TestServerConfigGlobalPostInvalid(t *testing.T) {
 				RequestedExecutionDateTime: "2020-01-01T00:00:00+01:00",
 				FirstPaymentDateTime:       "2020-01-01T00:00:00+01:00",
 				PaymentFrequency:           models.PaymentFrequency("EvryDay"),
+				CBPIIDebtorAccount: discovery.CBPIIDebtorAccount{
+					SchemeName:     "UK.OBIE.SortCodeAccountNumber",
+					Identification: "20202010981789",
+					Name: "Bob Stone",
+				},
 			},
 		},
 		{
@@ -749,6 +804,11 @@ func TestServerConfigGlobalPostInvalid(t *testing.T) {
 				RequestedExecutionDateTime: "2020-01-01T00:00:00+01:00",
 				FirstPaymentDateTime:       "2020-01-01T00:00:00+01:00",
 				PaymentFrequency:           models.PaymentFrequency("EvryDay"),
+				CBPIIDebtorAccount: discovery.CBPIIDebtorAccount{
+					SchemeName:     "UK.OBIE.SortCodeAccountNumber",
+					Identification: "20202010981789",
+					Name: "Bob Stone",
+				},
 			},
 		},
 		{
@@ -789,6 +849,11 @@ func TestServerConfigGlobalPostInvalid(t *testing.T) {
 				PaymentFrequency:           models.PaymentFrequency("INVALID"),
 				RequestedExecutionDateTime: "2020-01-01T00:00:00+01:00",
 				FirstPaymentDateTime:       "2020-01-01T00:00:00+01:00",
+				CBPIIDebtorAccount: discovery.CBPIIDebtorAccount{
+					SchemeName:     "UK.OBIE.SortCodeAccountNumber",
+					Identification: "20202010981789",
+					Name: "Bob Stone",
+				},
 			},
 		},
 	}

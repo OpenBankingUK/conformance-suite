@@ -126,13 +126,14 @@ func (g generator) GenerateManifestTests(log *logrus.Entry, config GeneratorConf
 
 		spectype := item.APISpecification.SpecType
 		requiredSpecTokens, err := manifest.GetRequiredTokensFromTests(tcs, spectype)
+		logrus.Debugf("%s required spec tokens: %+v", spectype, requiredSpecTokens)
 		specreq, err := getSpecConsentsFromRequiredTokens(requiredSpecTokens, item.APISpecification.Name)
 		scrSlice = append(scrSlice, specreq)
-		if spectype == "payments" { //
+		if spectype == "payments" || spectype == "cbpii" { //
 			// three sets of test case. all, UI, consent (Non-ui)
-			uiTestCases, err := getPaymentUITests(tcs)
+			uiTestCases, err := getUITests(tcs)
 			if err != nil {
-				log.Error("error processing getPaymentUITests")
+				log.Error("error processing getUITests")
 				continue
 			}
 			tcs = uiTestCases
@@ -142,16 +143,6 @@ func (g generator) GenerateManifestTests(log *logrus.Entry, config GeneratorConf
 		specTestCases = append(specTestCases, stc)
 		tokens[spectype] = requiredSpecTokens
 	}
-
-	// for _, v := range specTestCases {
-	// 	requiredSpecTokens, err := manifest.GetRequiredTokensFromTests(v.TestCases, v.Specification.SpecType)
-	// 	if err != nil {
-	// 		log.Warnf("getRequiredTokensFromTests return error:%s", err.Error())
-	// 	}
-	// 	specreq, err := getSpecConsentsFromRequiredTokens(requiredSpecTokens, v.Specification.Name)
-	// 	scrSlice = append(scrSlice, specreq)
-	// 	tokens[v.Specification.SpecType] = requiredSpecTokens
-	// }
 
 	for _, item := range scrSlice {
 		logrus.Tracef("%#v", item)
@@ -166,7 +157,7 @@ func (g generator) GenerateManifestTests(log *logrus.Entry, config GeneratorConf
 // returns two sets
 // set 1) - payment tests that show in the UI and execution when runtests is called
 // set 2) - payment consent tests that need to be authorised before runtests can happen
-func getPaymentUITests(tcs []model.TestCase) ([]model.TestCase, error) {
+func getUITests(tcs []model.TestCase) ([]model.TestCase, error) {
 
 	uiTests := []model.TestCase{}
 	consentJobs := manifest.GetConsentJobs()

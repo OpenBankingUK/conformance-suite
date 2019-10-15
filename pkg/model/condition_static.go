@@ -638,7 +638,7 @@ func conditionalityStaticData() []byte {
             "method": "POST",
             "endpoint": "/funds-confirmations"
         }
-	  ],
+    ],
 	  "event-notification-aspsp-v3.1": [
         {
             "condition": "mandatory",

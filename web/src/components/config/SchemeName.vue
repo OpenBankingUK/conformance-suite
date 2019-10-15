@@ -39,6 +39,10 @@
 <script>
 import * as _ from 'lodash';
 
+const ACCOUNT_TYPE_INTERNATIONAL = 'International';
+const ACCOUNT_TYPE_LOCAL = 'Local';
+const ACCOUNT_TYPE_CBPII = 'CBPII';
+
 export default {
   name: 'SchemeName',
   props: {
@@ -51,18 +55,33 @@ export default {
     let scheme_name_selector = null;
     let scheme_name_other = null;
 
-    if (this.creditorAccountType === 'International') {
-      if (!this.isKnownSchemeName(this.$store.state.config.configuration.international_creditor_account.scheme_name) && this.isNotEmpty(this.$store.state.config.configuration.international_creditor_account.scheme_name)) {
-        scheme_name_other = this.$store.state.config.configuration.international_creditor_account.scheme_name;
-        scheme_name_selector = 'Other';
-      } else {
-        scheme_name_selector = this.$store.state.config.configuration.international_creditor_account.scheme_name;
-      }
-    } else if (!this.isKnownSchemeName(this.$store.state.config.configuration.creditor_account.scheme_name) && this.isNotEmpty(this.$store.state.config.configuration.creditor_account.scheme_name)) {
-      scheme_name_other = this.$store.state.config.configuration.creditor_account.scheme_name;
-      scheme_name_selector = 'Other';
-    } else {
-      scheme_name_selector = this.$store.state.config.configuration.creditor_account.scheme_name;
+    switch (this.creditorAccountType) {
+      case ACCOUNT_TYPE_INTERNATIONAL:
+        if (!this.isKnownSchemeName(this.$store.state.config.configuration.international_creditor_account.scheme_name) && this.isNotEmpty(this.$store.state.config.configuration.international_creditor_account.scheme_name)) {
+          scheme_name_other = this.$store.state.config.configuration.international_creditor_account.scheme_name;
+          scheme_name_selector = 'Other';
+        } else {
+          scheme_name_selector = this.$store.state.config.configuration.international_creditor_account.scheme_name;
+        }
+        break;
+      case ACCOUNT_TYPE_LOCAL:
+        if (!this.isKnownSchemeName(this.$store.state.config.configuration.creditor_account.scheme_name) && this.isNotEmpty(this.$store.state.config.configuration.creditor_account.scheme_name)) {
+          scheme_name_other = this.$store.state.config.configuration.creditor_account.scheme_name;
+          scheme_name_selector = 'Other';
+        } else {
+          scheme_name_selector = this.$store.state.config.configuration.creditor_account.scheme_name;
+        }
+        break;
+      case ACCOUNT_TYPE_CBPII:
+        if (!this.isKnownSchemeName(this.$store.state.config.configuration.cbpii_debtor_account.scheme_name) && this.isNotEmpty(this.$store.state.config.configuration.cbpii_debtor_account.scheme_name)) {
+          scheme_name_other = this.$store.state.config.configuration.cbpii_debtor_account.scheme_name;
+          scheme_name_selector = 'Other';
+        } else {
+          scheme_name_selector = this.$store.state.config.configuration.cbpii_debtor_account.scheme_name;
+        }
+        break;
+      default:
+        throw new Error('Unsupported Scheme Account Type');
     }
 
     return {
@@ -98,19 +117,25 @@ export default {
       ].indexOf(schemeName) > -1;
     },
     scheme_name_other_update() {
-      if (this.isNotEmpty(this.scheme_name_other) && this.creditorAccountType === 'International') {
+      if (this.isNotEmpty(this.scheme_name_other) && this.creditorAccountType === ACCOUNT_TYPE_INTERNATIONAL) {
         this.$store.commit('config/SET_INTERNATIONAL_CREDITOR_ACCOUNT_NAME_SCHEME_NAME', this.scheme_name_other);
       }
-      if (this.isNotEmpty(this.scheme_name_other) && this.creditorAccountType === 'Local') {
+      if (this.isNotEmpty(this.scheme_name_other) && this.creditorAccountType === ACCOUNT_TYPE_LOCAL) {
         this.$store.commit('config/SET_CREDITOR_ACCOUNT_NAME_SCHEME_NAME', this.scheme_name_other);
+      }
+      if (this.isNotEmpty(this.scheme_name_other) && this.creditorAccountType === ACCOUNT_TYPE_CBPII) {
+        this.$store.commit('config/SET_CBPII_DEBTOR_ACCOUNT_SCHEME_NAME', this.scheme_name_other);
       }
     },
     scheme_name_selector_change() {
-      if (this.scheme_name_selector !== 'Other' && this.creditorAccountType === 'International') {
+      if (this.scheme_name_selector !== 'Other' && this.creditorAccountType === ACCOUNT_TYPE_INTERNATIONAL) {
         this.$store.commit('config/SET_INTERNATIONAL_CREDITOR_ACCOUNT_NAME_SCHEME_NAME', this.scheme_name_selector);
       }
-      if (this.scheme_name_selector !== 'Other' && this.creditorAccountType === 'Local') {
+      if (this.scheme_name_selector !== 'Other' && this.creditorAccountType === ACCOUNT_TYPE_LOCAL) {
         this.$store.commit('config/SET_CREDITOR_ACCOUNT_NAME_SCHEME_NAME', this.scheme_name_selector);
+      }
+      if (this.scheme_name_selector !== 'Other' && this.creditorAccountType === ACCOUNT_TYPE_CBPII) {
+        this.$store.commit('config/SET_CBPII_DEBTOR_ACCOUNT_SCHEME_NAME', this.scheme_name_selector);
       }
     },
     isNotEmpty(value) {
