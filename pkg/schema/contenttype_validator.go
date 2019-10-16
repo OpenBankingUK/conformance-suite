@@ -23,10 +23,6 @@ func newContentTypeValidator(finder finder) Validator {
 }
 
 func (v contentTypeValidator) Validate(r Response) ([]Failure, error) {
-	if r.StatusCode == http.StatusNoContent {
-		return nil, nil
-	}
-	
 	expectedContentType, err := v.expectedContentType(r)
 	if err == ErrNotFound {
 		return nil, nil
@@ -63,6 +59,9 @@ func (v contentTypeValidator) IsRequestProperty(method, path, propertpath string
 }
 
 func (v contentTypeValidator) expectedContentType(r Response) (string, error) {
+	if r.StatusCode == http.StatusNoContent {
+		return "", ErrNotFound
+	}
 	spec := v.finder.Spec()
 
 	operation, err := v.finder.Operation(r.Method, r.Path)

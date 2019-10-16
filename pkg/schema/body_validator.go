@@ -36,22 +36,22 @@ func (v bodyValidator) IsRequestProperty(method, path, propertpath string) (bool
 }
 
 func (v bodyValidator) validate(r Response, body []byte) ([]Failure, error) {
-	if r.StatusCode == http.StatusNoContent {
-		return nil, nil
-	}
-
-	var data interface{}
-	if err := json.Unmarshal(body, &data); err != nil {
-		message := fmt.Sprintf("could not unmarshal request body %s", err.Error())
-		return []Failure{newFailure(message)}, nil
-	}
-
 	response, err := v.finder.Response(r.Method, r.Path, r.StatusCode)
 	if err == ErrNotFound {
 		message := fmt.Sprintf("could't find a schema to validate for status code %d", r.StatusCode)
 		return []Failure{newFailure(message)}, nil
 	} else if err != nil {
 		return nil, err
+	}
+	
+	var data interface{}
+	if err := json.Unmarshal(body, &data); err != nil {
+		message := fmt.Sprintf("could not unmarshal request body %s", err.Error())
+		return []Failure{newFailure(message)}, nil
+	}
+
+	if r.StatusCode == http.StatusNoContent {
+		return nil, nil
 	}
 
 	// swagger API call
