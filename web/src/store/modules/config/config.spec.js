@@ -11,10 +11,11 @@ import Vuex from 'vuex';
 import api from '../../../api';
 import actions from './actions';
 import {
-  getters, mutations, mutationTypes as types,
+  getters, mutations,
   // import state - please don't remove comment.
   state,
 } from './index';
+import * as types from './mutation-types.js';
 
 // https://jestjs.io/docs/en/mock-functions#mocking-modules
 jest.mock('../../../api');
