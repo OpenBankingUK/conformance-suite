@@ -133,6 +133,11 @@ func GenerateTestCases(params *GenerationParameters) ([]model.TestCase, Scripts,
 		if err != nil {
 			logger.WithFields(logrus.Fields{"err": err}).Error("error filter scripts based on payments discovery")
 		}
+	} else if specType == "cbpii" {
+		filteredScripts, err = FilterTestsBasedOnDiscoveryEndpoints(scripts, params.Endpoints, cbpiiRegex)
+		if err != nil {
+			logger.WithFields(logrus.Fields{"err": err}).Error("error filter scripts based on cbpii discovery")
+		}
 	} else {
 		filteredScripts = scripts // normal processing
 	}
@@ -338,17 +343,7 @@ func testCaseBuilder(s Script, refs map[string]Reference, ctx *model.Context, co
 		}
 		tc.ExpectOneOf = append(tc.ExpectOneOf, ref.Expect.Clone())
 	}
-
-	// test case schema validation
-	// if !s.SchemaCheck {
-	// 	logrus.WithFields(logrus.Fields{
-	// 		"function":      "testCaseBuilder",
-	// 		"package":       "manifest",
-	// 		"s.ID":          s.ID,
-	// 		"s.Description": s.Description,
-	// 		"s.Detail":      s.Detail,
-	// 	}).Warn(`s.SchemaCheck is false - "schemaCheck": false`)
-	// }
+	
 	tc.Expect.SchemaValidation = s.SchemaCheck
 
 	// Handled PutContext parameters
@@ -422,6 +417,8 @@ func LoadGenerationResources(specType, manifestPath string) (Scripts, References
 		pay, err := loadScripts(manifestPath)
 		return pay, assertions, err
 	case "cbpii":
+		cbpii, err := loadScripts(manifestPath)
+		return cbpii, assertions, err
 	case "notifications":
 	}
 	return Scripts{}, References{}, errors.New("loadGenerationResources: invalid spec type")
@@ -888,6 +885,29 @@ var paymentsRegex = []PathRegex{
 		Regex:  "^/file-payments/" + subPathx + "/report-file$",
 		Method: "GET",
 		Name:   "Get a file payment report file by filePaymentID",
+	},
+}
+
+var cbpiiRegex = []PathRegex{
+	{
+		Regex: "^/funds-confirmation-consents$",
+		Method: "POST",
+		Name:  "Create Funds Confirmation Consent",
+	},
+	{
+		Regex: "^/funds-confirmation-consents/" + subPathx + "$",
+		Method: "GET",
+		Name:  "Retrieve Funds Confirmation Consent",
+	},
+	{
+		Regex: "^/funds-confirmation-consents/" + subPathx + "$",
+		Method: "DELETE",
+		Name:  "Delete Funds Confirmation Consent",
+	},
+	{
+		Regex: "^/funds-confirmations$",
+		Method: "POST",
+		Name:  "Create Funds Confirmation",
 	},
 }
 

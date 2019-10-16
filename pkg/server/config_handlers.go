@@ -86,6 +86,7 @@ type GlobalConfiguration struct {
 	SignatureTrustAnchor          string                               `json:"signature_trust_anchor,omitempty"`
 	AcrValuesSupported            []string                             `json:"acr_values_supported,omitempty"`
 	ConditionalProperties         []discovery.ConditionalAPIProperties `json:"conditional_properties,omitempty"`
+	CBPIIDebtorAccount            discovery.CBPIIDebtorAccount         `json:"cbpii_debtor_account"`
 }
 
 // Validate - used by https://github.com/go-ozzo/ozzo-validation to validate struct.
@@ -101,6 +102,7 @@ func (c GlobalConfiguration) Validate() error {
 		validation.Field(&c.FirstPaymentDateTime, validation.By(futureDateTimeValidator)),
 		validation.Field(&c.RequestedExecutionDateTime, validation.By(futureDateTimeValidator)),
 		validation.Field(&c.PaymentFrequency, validation.Required),
+		validation.Field(&c.CBPIIDebtorAccount, validation.Required),
 	)
 }
 
@@ -158,7 +160,13 @@ func newConfigHandlers(journey Journey, logger *logrus.Entry) configHandlers {
 // GET /api/config/conditional-property
 func (h configHandlers) configConditionalPropertyHandler(c echo.Context) error {
 	conditionalProperties := h.journey.ConditionalProperties()
-	return c.JSON(http.StatusOK, conditionalProperties)
+	filteredProps := make([]discovery.ConditionalAPIProperties, 0, len(conditionalProperties))
+	for _, v := range conditionalProperties {
+		if len(v.Endpoints) > 0 {
+			filteredProps = append(filteredProps, v)
+		}
+	}
+	return c.JSON(http.StatusOK, filteredProps)
 }
 
 // POST /api/config/global
@@ -236,6 +244,7 @@ func MakeJourneyConfig(config *GlobalConfiguration) (JourneyConfig, error) {
 		signatureTrustAnchor:          config.SignatureTrustAnchor,
 		AcrValuesSupported:            config.AcrValuesSupported,
 		conditionalProperties:         config.ConditionalProperties,
+		cbpiiDebtorAccount:            config.CBPIIDebtorAccount,
 	}, nil
 }
 

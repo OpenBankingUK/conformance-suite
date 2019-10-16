@@ -149,10 +149,6 @@
       "method": "post",
       "schemaCheck": true
     },
-
-
-
-
     {
       "description": "PISP can retrieve the Domestic Payment status.",
       "id": "OB-301-DOP-100700",
@@ -174,10 +170,6 @@
       "method": "get",
       "schemaCheck": true
     },
-
-
-
-
     {
       "description": "Domestic Scheduled Payment consents succeeds with minimal data set with additional schema checks.",
       "id": "OB-301-DOP-100800",
@@ -278,10 +270,6 @@
       "method": "get",
       "schemaCheck": true
     },
-
-
-
-
     {
       "description": "Domestic standing order consents succeeds with minimal data set with additional schema checks.",
       "id": "OB-301-DOP-101200",
@@ -407,10 +395,6 @@
       "method": "get",
       "schemaCheck": true
     },
-
-
-
-
     {
       "description": "International Payment consent succeeds with minimal data set with additional schema checks.",
       "id": "OB-301-DOP-101600",
@@ -511,10 +495,6 @@
       "method": "get",
       "schemaCheck": true
     },
-
-
-
-
     {
       "description": "International Scheduled Payment consent succeeds with minimal data set with additional schema checks.",
       "id": "OB-301-DOP-102000",

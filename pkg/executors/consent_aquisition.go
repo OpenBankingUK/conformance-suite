@@ -44,11 +44,18 @@ func GetPsuConsent(definition RunDefinition, ctx *model.Context, runTests *gener
 				return nil, nil, err
 			}
 
-		case "payments": //TODO: Handle multipe spec returns
+		case "payments":
 			consentIds, err := getPaymentConsents(tests, definition, permissions["payments"], ctx)
 			consentIdsToReturn = append(consentIdsToReturn, consentIds...)
 			if err != nil {
 				logrus.Error("GetPSUConsent - payments error: " + err.Error())
+				return nil, nil, err
+			}
+		case "cbpii":
+			consentIds, err := getCbpiiConsents(tests, definition, permissions["cbpii"], ctx)
+			consentIdsToReturn = append(consentIdsToReturn, consentIds...)
+			if err != nil {
+				logrus.Error("GetPSUConsent - cbpii error: " + err.Error())
 				return nil, nil, err
 			}
 		default:
@@ -82,8 +89,6 @@ func getAccountConsents(consentRequirements []model.SpecConsentRequirements, def
 	logger.Tracef("getAccountConsents")
 
 	tokenParameters := map[string]string{}
-
-	//requiredTokens, err := manifest.GetRequiredTokensFromTests(spec.TestCases, "accounts")
 	requiredTokens := permissions
 	logrus.Tracef("we require %d tokens for `accounts`", len(requiredTokens))
 	logrus.Tracef("required tokens %#v\n", requiredTokens)

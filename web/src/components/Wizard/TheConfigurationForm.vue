@@ -482,8 +482,46 @@
 
       <br >
 
+      <b-card bg-variant="light">
+        <b-form-group
+          label="Confirmation Of Funds"
+          label-size="lg" />
+
+        <SchemeName creditorAccountType="CBPII" />
+
+        <b-form-group
+          id="cbpii_debtor_account_identification_group"
+          label-for="cbpii_debtor_account_identification"
+          label="Debtor Account Identification"
+          description="Debtor Account Identification"
+        >
+          <b-form-input
+            id="cbpii_debtor_account_identification"
+            v-model="cbpii_debtor_account.identification"
+            :state="isNotEmpty(cbpii_debtor_account.identification)"
+            required
+          />
+        </b-form-group>
+        <b-form-group
+          id="cbpii_debtor_account_name_group"
+          label-for="cbpii_debtor_account_name"
+          label="Debtor Account Name"
+          description="Name of the account, as assigned by the account servicing institution"
+        >
+          <b-form-input
+            id="cbpii_debtor_account_name"
+            v-model="cbpii_debtor_account.name"
+            :state="isNotEmpty(cbpii_debtor_account.name)"
+            required
+          />
+        </b-form-group>
+
+      </b-card>
+
+      <br >
+
       <b-card
-        v-if="conditional_properties.length > 0"
+        v-if="conditional_properties && conditional_properties.length > 0"
         bg-variant="light">
         <b-form-group
           label="Conditional Properties"
@@ -557,7 +595,7 @@ export default {
   data() {
     api.get('/api/config/conditional-property').then((res) => {
       res.json().then((body) => {
-        if (this.$store.state.config.configuration.conditional_properties.length === 0) {
+        if (this.$store.state.config.configuration.conditional_properties && this.$store.state.config.configuration.conditional_properties.length === 0) {
           this.$store.commit('config/SET_CONDITIONAL_PROPERTIES', body);
         }
       });
@@ -819,6 +857,40 @@ export default {
           set name(value) {
             self.$store.commit(
               'config/SET_INTERNATIONAL_CREDITOR_ACCOUNT_NAME',
+              value,
+            );
+          },
+        };
+      },
+    },
+    cbpii_debtor_account: {
+      get() {
+        const self = this;
+        return {
+          get identification() {
+            return self.$store.state.config.configuration.cbpii_debtor_account.identification;
+          },
+          set identification(value) {
+            self.$store.commit(
+              'config/SET_CBPII_DEBTOR_ACCOUNT_IDENTIFICATION',
+              value,
+            );
+          },
+          get scheme_name() {
+            return self.$store.state.config.configuration.cbpii_debtor_account.scheme_name;
+          },
+          set scheme_name(value) {
+            self.$store.commit(
+              'config/SET_CBPII_DEBTOR_ACCOUNT_SCHEME_NAME',
+              value,
+            );
+          },
+          get name() {
+            return self.$store.state.config.configuration.cbpii_debtor_account.name;
+          },
+          set name(value) {
+            self.$store.commit(
+              'config/SET_CBPII_DEBTOR_ACCOUNT_NAME',
               value,
             );
           },

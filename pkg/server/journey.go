@@ -54,30 +54,30 @@ type Journey interface {
 	NewDaemonController()
 	Results() executors.DaemonController
 	SetConfig(config JourneyConfig) error
-	ConditionalProperties() []discovery.ConditionalAPIProperties	
+	ConditionalProperties() []discovery.ConditionalAPIProperties
 	Events() events.Events
 	TLSVersionResult() map[string]*discovery.TLSValidationResult
 }
 
 type journey struct {
-	generator                generation.Generator
-	validator                discovery.Validator
-	daemonController         executors.DaemonController
-	journeyLock              *sync.Mutex
-	specRun                  generation.SpecRun
-	testCasesRunGenerated    bool
-	collector                executors.TokenCollector
-	allCollected             bool
-	validDiscoveryModel      *discovery.Model
-	context                  model.Context
-	log                      *logrus.Entry
-	config                   JourneyConfig
-	events                   events.Events
-	permissions              map[string][]manifest.RequiredTokens
-	manifests                []manifest.Scripts
-	filteredManifests        manifest.Scripts
-	tlsValidator             discovery.TLSValidator
-	conditionalProperties    []discovery.ConditionalAPIProperties
+	generator             generation.Generator
+	validator             discovery.Validator
+	daemonController      executors.DaemonController
+	journeyLock           *sync.Mutex
+	specRun               generation.SpecRun
+	testCasesRunGenerated bool
+	collector             executors.TokenCollector
+	allCollected          bool
+	validDiscoveryModel   *discovery.Model
+	context               model.Context
+	log                   *logrus.Entry
+	config                JourneyConfig
+	events                events.Events
+	permissions           map[string][]manifest.RequiredTokens
+	manifests             []manifest.Scripts
+	filteredManifests     manifest.Scripts
+	tlsValidator          discovery.TLSValidator
+	conditionalProperties []discovery.ConditionalAPIProperties
 }
 
 // NewJourney creates an instance for a user journey
@@ -282,6 +282,14 @@ func (wj *journey) TestCases() (generation.SpecRun, error) {
 						}
 					}
 				}
+				if k == "cbpii" {
+					cbpiiPerms := wj.permissions["cbpii"]
+					if len(cbpiiPerms) > 0 {
+						for _, spec := range wj.specRun.SpecTestCases {
+							manifest.MapTokensToCBPIITestCases(cbpiiPerms, spec.TestCases, &wj.context)
+						}
+					}
+				}
 			}
 
 			for k, v := range tokenMap {
@@ -327,6 +335,14 @@ func (wj *journey) TestCases() (generation.SpecRun, error) {
 						for _, spec := range wj.specRun.SpecTestCases {
 							logger.Tracef("Analysing %d test cases for token mapping", len(spec.TestCases))
 							manifest.MapTokensToPaymentTestCases(paymentpermissions, spec.TestCases, &wj.context)
+						}
+					}
+				}
+				if k == "cbpii" {
+					cbpiiPerms := wj.permissions["cbpii"]
+					if len(cbpiiPerms) > 0 {
+						for _, spec := range wj.specRun.SpecTestCases {
+							manifest.MapTokensToCBPIITestCases(cbpiiPerms, spec.TestCases, &wj.context)
 						}
 					}
 				}
@@ -564,6 +580,7 @@ type JourneyConfig struct {
 	useDynamicResourceID          bool
 	AcrValuesSupported            []string
 	conditionalProperties         []discovery.ConditionalAPIProperties
+	cbpiiDebtorAccount            discovery.CBPIIDebtorAccount
 }
 
 func (wj *journey) SetConfig(config JourneyConfig) error {
