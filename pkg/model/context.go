@@ -88,6 +88,12 @@ func (c Context) PutStringSlice(key string, values []string) {
 // GetStringSlice gets a slice of string from context
 func (c Context) GetStringSlice(key string) ([]string, error) {
 	result := []string{}
+
+	_, ok := c[key]
+	if !ok {
+		return nil, ErrNotFound
+	}
+
 	stringsSlice, ok := c[key].([]interface{})
 	if !ok {
 		return nil, errors.New("cast error can't get string slice from context")

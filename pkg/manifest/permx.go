@@ -40,34 +40,24 @@ type TokenStore struct {
 	store     []RequiredTokens
 }
 
+// Used for tests
 const accountSwaggerLocation31 = "https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.0/dist/account-info-swagger.json"
-const accountSwaggerLocation30 = "https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.0.0/dist/account-info-swagger.json"
 const paymentsSwaggerLocation31 = "https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.0/dist/payment-initiation-swagger.json"
-const paymentsSwaggerLocation30 = "https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.0.0/dist/payment-initiation-swagger.json"
-const confirmationOfFundsSwaggerLocation30 = "https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.0.0/dist/confirmation-funds-swagger.json"
-const confirmationOfFundsSwaggerLocation31 = "https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.0/dist/confirmation-funds-swagger.json"
 
-var notificationSwaggerLocation = ""
+const accountType = "account-info-swagger"
+const paymentType = "payment-initiation-swagger"
+const confirmFundsType = "confirmation-funds-swagger"
 
-// GetSpecType -
-// TODO - check that this mapping is reasonable
-func GetSpecType(s string) (string, error) {
-	spec := strings.TrimSpace(s)
-	switch spec {
-	case accountSwaggerLocation31:
-		fallthrough
-	case accountSwaggerLocation30:
+// GetSpecType - examines the
+func GetSpecType(spec string) (string, error) {
+	if strings.Contains(spec, accountType) {
 		return "accounts", nil
-	case paymentsSwaggerLocation31:
-		fallthrough
-	case paymentsSwaggerLocation30:
+	}
+	if strings.Contains(spec, paymentType) {
 		return "payments", nil
-	case confirmationOfFundsSwaggerLocation31:
-		fallthrough
-	case confirmationOfFundsSwaggerLocation30:
+	}
+	if strings.Contains(spec, confirmFundsType) {
 		return "cbpii", nil
-	case notificationSwaggerLocation:
-		return "notifications", nil
 	}
 	return "unknown", errors.New("Unknown specification:  `" + spec + "`")
 }

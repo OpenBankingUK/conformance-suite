@@ -22,7 +22,7 @@ func TestGenerateTestCases(t *testing.T) {
 	}
 	specType, err := GetSpecType(apiSpec.SchemaVersion)
 	assert.Nil(t, err)
-	scripts, _, err := LoadGenerationResources(specType, manifestPath)
+	scripts, _, err := LoadGenerationResources(specType, manifestPath, nil)
 
 	params := GenerationParameters{Scripts: scripts,
 		Spec:         apiSpec,
@@ -54,7 +54,7 @@ func TestPaymentPermissions(t *testing.T) {
 	}
 	specType, err := GetSpecType(apiSpec.SchemaVersion)
 	assert.Nil(t, err)
-	scripts, _, err := LoadGenerationResources(specType, manifestPath)
+	scripts, _, err := LoadGenerationResources(specType, manifestPath, nil)
 	if err != nil {
 		fmt.Println("Error on loadGenerationResources")
 		return
@@ -137,7 +137,7 @@ func TestPermissionFiteringAccounts(t *testing.T) {
 	apiSpec := discovery.ModelAPISpecification{
 		SchemaVersion: accountSwaggerLocation31,
 	}
-	scripts, _, err := LoadGenerationResources("accounts", manifestPath)
+	scripts, _, err := LoadGenerationResources("accounts", manifestPath, nil)
 	if err != nil {
 		fmt.Println("Error on loadGenerationResources")
 		return
@@ -264,7 +264,7 @@ func TestPaymentTestCaseCreation(t *testing.T) {
 
 	specType, err := GetSpecType(apiSpec.SchemaVersion)
 	assert.Nil(t, err)
-	scripts, _, err := LoadGenerationResources(specType, manifestPath)
+	scripts, _, err := LoadGenerationResources(specType, manifestPath, ctx)
 	assert.Nil(t, err)
 
 	params := GenerationParameters{
@@ -433,4 +433,14 @@ func TestContains(t *testing.T) {
 	assert.True(t, contains(collection, subjectExists))
 	assert.False(t, contains(collection, subjectNotExists))
 
+}
+
+func TestGetVersionSpecificScripts(t *testing.T) {
+
+	ctx := &model.Context{}
+	ctx.PutStringSlice("apiversions", []string{"payments_v3.1.2", "accounts_v3.1.2", "cbpii_v3.1.0"})
+
+	sc, _ := getVersionSpecificScripts("accounts", "3.1.2", ctx)
+
+	fmt.Printf("%#v\n", sc)
 }

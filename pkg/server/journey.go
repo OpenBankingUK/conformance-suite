@@ -235,6 +235,10 @@ func (wj *journey) TestCases() (generation.SpecRun, error) {
 		config := wj.makeGeneratorConfig()
 		discovery := wj.validDiscoveryModel.DiscoveryModel
 		if len(discovery.DiscoveryItems) > 0 { // default currently "v3.1" ... allow "v3.0"
+			apiversions := DetermineAPIVersions(discovery.DiscoveryItems)
+			if len(apiversions) > 0 {
+				wj.context.PutStringSlice("apiversions", apiversions)
+			}
 			// version string gets replaced in URLS like  "endpoint": "/open-banking/$api-version/aisp/account-access-consents",
 			version, err := semver.ParseTolerant(discovery.DiscoveryItems[0].APISpecification.Version)
 			if err != nil {
@@ -662,4 +666,15 @@ func (wj *journey) dumpJSON(i interface{}) {
 // EnableDynamicResourceIDs is triggered by and environment variable dynids=true
 func EnableDynamicResourceIDs() {
 	dynamicResourceIDs = true
+}
+
+// DetermineAPIVersions
+func DetermineAPIVersions(apis []discovery.ModelDiscoveryItem) []string {
+	apiversions := []string{}
+	for _, v := range apis {
+		v.APISpecification.SpecType, _ = manifest.GetSpecType(v.APISpecification.SchemaVersion)
+		apiversions = append(apiversions, v.APISpecification.SpecType+"_"+v.APISpecification.Version)
+		logrus.Warnf("spectype %s, specversion %s", v.APISpecification.SpecType, v.APISpecification.Version)
+	}
+	return apiversions
 }

@@ -1,0 +1,32 @@
+{
+  "scripts": [{
+    "description": "Creates Funds Confirmation Consents is AwaitingAuthorisation",
+    "id": "OB-312-CBPII-000100",
+    "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937951380/Confirmation+of+Funds+API+Specification+-+v3.1",
+    "detail": "Creates Funds Confirmation Consents",
+    "uri": "/funds-confirmation-consents",
+    "uriImplementation": "mandatory",
+    "parameters": {
+      "debtorAccountSchemeName": "$cbpiiDebtorAccountSchemeName",
+      "debtorAccountIdentification": "$cbpiiDebtorAccountIdentification",
+      "debtorAccountName": "$cbpiiDebtorAccountName",
+      "postData": "$OBFundsConfirmationConsent1",
+      "expirationDateTime": "2020-01-01T00:00:00+01:00",
+      "requestConsent": "false"
+    },
+    "method": "post",
+    "body": "$postData",
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "removeHeaders": ["x_fapi_financial_id"],
+    "asserts": [
+      "OB3GLOAssertOn201",
+      "OB3GLOFAPIHeader",
+      "OB3GLOAAssertConsentId",
+      "OB3DOPAssertAwaitingAuthorisation",
+      "OB3GLOAssertContentType"
+    ],
+    "schemaCheck": true
+  }]
+}
