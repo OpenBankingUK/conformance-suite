@@ -310,11 +310,9 @@ func MapTokensToCBPIITestCases(rt []RequiredTokens, tcs []model.TestCase, ctx *m
 					test.InjectBearerToken("$" + tokenName)
 				}
 			}
-		} else {
-			if test.Input.Method == "GET" && strings.Contains(test.ID, "CBPII") {
-				test.InjectBearerToken("$cbpii_ccg_token")
-				continue
-			}
+		} else if test.Input.Method == "GET" && strings.Contains(test.ID, "CBPII") {
+			test.InjectBearerToken("$cbpii_ccg_token")
+			continue
 		}
 		tcs[k] = test
 	}
@@ -486,10 +484,8 @@ func addPermToGathererItem(tp TestCasePermission, tg RequiredTokens) RequiredTok
 		for _, tpPerm := range tp.Perms {
 			if tpPerm == tgPerm {
 				continue
-			} else {
-				if tpPerm != "" {
-					permsToAdd = append(permsToAdd, tpPerm)
-				}
+			} else if tpPerm != "" {
+				permsToAdd = append(permsToAdd, tpPerm)
 			}
 		}
 	}
@@ -497,10 +493,8 @@ func addPermToGathererItem(tp TestCasePermission, tg RequiredTokens) RequiredTok
 		for _, tpPermx := range tp.Permsx {
 			if tpPermx == tgPermx {
 				continue
-			} else {
-				if tpPermx != "" {
-					permsxToAdd = append(permsxToAdd, tpPermx)
-				}
+			} else if tpPermx != "" {
+				permsxToAdd = append(permsxToAdd, tpPermx)
 			}
 		}
 	}

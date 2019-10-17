@@ -35,8 +35,7 @@ func TestGenerateTestCases(t *testing.T) {
 	tests, _, err := GenerateTestCases(&params)
 	assert.Nil(t, err)
 
-	perms, err := getAccountPermissions(tests)
-	assert.Nil(t, err)
+	perms := getAccountPermissions(tests)
 	m := map[string]string{}
 	for _, v := range perms {
 		t.Logf("perms: %s %-50.50s %s\n", v.ID, v.Path, v.Permissions)

@@ -499,7 +499,7 @@ type ScriptPermission struct {
 }
 
 // GetPermissions -
-func getAccountPermissions(tests []model.TestCase) ([]ScriptPermission, error) {
+func getAccountPermissions(tests []model.TestCase) []ScriptPermission {
 	permCollector := []ScriptPermission{}
 
 	for _, test := range tests {
@@ -513,7 +513,7 @@ func getAccountPermissions(tests []model.TestCase) ([]ScriptPermission, error) {
 		permCollector = append(permCollector, sp)
 	}
 
-	return permCollector, nil
+	return permCollector
 }
 
 // FilterTestsBasedOnDiscoveryEndpoints returns a subset of the first `scripts` parameter, thus filtering `scripts`.
