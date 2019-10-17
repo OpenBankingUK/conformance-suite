@@ -159,15 +159,6 @@ func runPaymentConsents(rt []manifest.RequiredTokens, ctx *model.Context, execut
 	return rt, nil
 }
 
-func findTest(tcs []model.TestCase, testID string) (*model.TestCase, error) {
-	for k, test := range tcs {
-		if test.ID == testID {
-			return &tcs[k], nil
-		}
-	}
-	return nil, errors.New("Test " + testID + " not found in findTest")
-}
-
 func executePaymentTest(tc *model.TestCase, ctx *model.Context, executor *Executor) error {
 	req, err := tc.Prepare(ctx)
 	if err != nil {

@@ -3,8 +3,8 @@ package schema
 import (
 	"fmt"
 	"mime"
-	"strings"
 	"net/http"
+	"strings"
 
 	"github.com/pkg/errors"
 )

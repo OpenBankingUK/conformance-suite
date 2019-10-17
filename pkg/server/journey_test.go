@@ -48,7 +48,7 @@ func TestJourneySetDiscoveryModelValidatesModel(t *testing.T) {
 	validator := &mocks.Validator{}
 	validator.On("Validate", discoveryModel).Return(discovery.NoValidationFailures(), nil)
 	generator := &gmocks.MockGenerator{}
-	journey := NewJourney(nullLogger(), generator, validator, discovery.NewNullTLSValidator())
+	journey := NewJourney(nullLogger(), generator, validator, discovery.NewNullTLSValidator(), false)
 
 	failures, err := journey.SetDiscoveryModel(discoveryModel)
 
@@ -66,7 +66,7 @@ func TestJourneySetDiscoveryModelHandlesErrorFromValidator(t *testing.T) {
 	expectedFailures := discovery.ValidationFailures{}
 	validator.On("Validate", discoveryModel).Return(expectedFailures, errors.New("validator error"))
 	generator := &gmocks.MockGenerator{}
-	journey := NewJourney(nullLogger(), generator, validator, discovery.NewNullTLSValidator())
+	journey := NewJourney(nullLogger(), generator, validator, discovery.NewNullTLSValidator(), false)
 
 	failures, err := journey.SetDiscoveryModel(discoveryModel)
 
@@ -87,7 +87,7 @@ func TestJourneySetDiscoveryModelReturnsFailuresFromValidator(t *testing.T) {
 	expectedFailures := discovery.ValidationFailures{failure}
 	validator.On("Validate", discoveryModel).Return(expectedFailures, nil)
 	generator := &gmocks.MockGenerator{}
-	journey := NewJourney(nullLogger(), generator, validator, discovery.NewNullTLSValidator())
+	journey := NewJourney(nullLogger(), generator, validator, discovery.NewNullTLSValidator(), false)
 
 	failures, err := journey.SetDiscoveryModel(discoveryModel)
 
@@ -100,7 +100,7 @@ func TestJourneyTestCasesCantGenerateIfDiscoveryNotSet(t *testing.T) {
 
 	validator := &mocks.Validator{}
 	generator := &gmocks.MockGenerator{}
-	journey := NewJourney(nullLogger(), generator, validator, discovery.NewNullTLSValidator())
+	journey := NewJourney(nullLogger(), generator, validator, discovery.NewNullTLSValidator(), false)
 
 	testCases, err := journey.TestCases()
 
@@ -113,7 +113,7 @@ func TestJourneyRunTestCasesCantRunIfNoTestCases(t *testing.T) {
 
 	validator := &mocks.Validator{}
 	generator := &gmocks.MockGenerator{}
-	journey := NewJourney(nullLogger(), generator, validator, discovery.NewNullTLSValidator())
+	journey := NewJourney(nullLogger(), generator, validator, discovery.NewNullTLSValidator(), false)
 
 	err := journey.RunTests()
 
@@ -125,7 +125,7 @@ func TestJourneySetConfig(t *testing.T) {
 
 	validator := &mocks.Validator{}
 	generator := &gmocks.MockGenerator{}
-	journey := NewJourney(nullLogger(), generator, validator, discovery.NewNullTLSValidator())
+	journey := NewJourney(nullLogger(), generator, validator, discovery.NewNullTLSValidator(), false)
 
 	require.Equal(JourneyConfig{}, journey.config)
 

@@ -8,7 +8,6 @@ import (
 	"regexp"
 	"sort"
 	"strings"
-	"time"
 
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/schema"
 	"github.com/pkg/errors"
@@ -343,7 +342,7 @@ func testCaseBuilder(s Script, refs map[string]Reference, ctx *model.Context, co
 		}
 		tc.ExpectOneOf = append(tc.ExpectOneOf, ref.Expect.Clone())
 	}
-	
+
 	tc.Expect.SchemaValidation = s.SchemaCheck
 
 	// Handled PutContext parameters
@@ -379,20 +378,6 @@ func processPutContext(s *Script) []model.Match {
 	mx := model.Match{ContextName: name, JSON: value}
 	m = append(m, mx)
 	return m
-}
-
-func processPutContextx(s *Script) []model.Match {
-	m := []model.Match{}
-	for k, v := range s.ContextPut {
-		m = append(m, model.Match{ContextName: k, JSON: v})
-	}
-	return m
-
-}
-
-func getAccountConsent(refs *References, vx string) []string {
-	ref := refs.References[vx]
-	return ref.Permissions
 }
 
 func buildInputSection(s Script, i *model.Input) {
@@ -890,28 +875,23 @@ var paymentsRegex = []PathRegex{
 
 var cbpiiRegex = []PathRegex{
 	{
-		Regex: "^/funds-confirmation-consents$",
+		Regex:  "^/funds-confirmation-consents$",
 		Method: "POST",
-		Name:  "Create Funds Confirmation Consent",
+		Name:   "Create Funds Confirmation Consent",
 	},
 	{
-		Regex: "^/funds-confirmation-consents/" + subPathx + "$",
+		Regex:  "^/funds-confirmation-consents/" + subPathx + "$",
 		Method: "GET",
-		Name:  "Retrieve Funds Confirmation Consent",
+		Name:   "Retrieve Funds Confirmation Consent",
 	},
 	{
-		Regex: "^/funds-confirmation-consents/" + subPathx + "$",
+		Regex:  "^/funds-confirmation-consents/" + subPathx + "$",
 		Method: "DELETE",
-		Name:  "Delete Funds Confirmation Consent",
+		Name:   "Delete Funds Confirmation Consent",
 	},
 	{
-		Regex: "^/funds-confirmations$",
+		Regex:  "^/funds-confirmations$",
 		Method: "POST",
-		Name:  "Create Funds Confirmation",
+		Name:   "Create Funds Confirmation",
 	},
-}
-
-func timeNowMillis() string {
-	tm := time.Now().UnixNano() / int64(time.Millisecond)
-	return fmt.Sprintf("%d", tm)
 }

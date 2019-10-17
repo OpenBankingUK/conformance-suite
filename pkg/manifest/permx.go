@@ -83,6 +83,9 @@ func GetRequiredTokensFromTests(tcs []model.TestCase, spec string) (rt []Require
 			return nil, err
 		}
 		rt, err = getRequiredTokens(tcp)
+		if err != nil {
+			return nil, err
+		}
 	case "payments":
 		rt, err = GetPaymentPermissions(tcs)
 	case "cbpii":
@@ -323,43 +326,43 @@ func MapTokensToCBPIITestCases(rt []RequiredTokens, tcs []model.TestCase, ctx *m
 func requiresAuthCodeToken(id, method, endpoint string) bool {
 	// "get" with "funds confirmation"
 	authCodeEndpointsRegex := []discovery.ModelEndpoint{
-		discovery.ModelEndpoint{
+		{
 			Path:   "^/domestic-payments$",
 			Method: "POST",
 		},
-		discovery.ModelEndpoint{
+		{
 			Path:   "^/domestic-scheduled-payments$",
 			Method: "GET",
 		},
-		discovery.ModelEndpoint{
+		{
 			Path:   "^/domestic-standing-orders$",
 			Method: "POST",
 		},
-		discovery.ModelEndpoint{
+		{
 			Path:   "^/international-payment-consents/[a-zA-Z0-9_{}-]+/funds-confirmation$",
 			Method: "GET",
 		},
-		discovery.ModelEndpoint{
+		{
 			Path:   "^/international-payments$",
 			Method: "POST",
 		},
-		discovery.ModelEndpoint{
+		{
 			Path:   "^/international-scheduled-payment-consents/[a-zA-Z0-9_{}-]+/funds-confirmation$",
 			Method: "GET",
 		},
-		discovery.ModelEndpoint{
+		{
 			Path:   "^/international-scheduled-payments$",
 			Method: "POST",
 		},
-		discovery.ModelEndpoint{
+		{
 			Path:   "^/international-standing-orders$",
 			Method: "POST",
 		},
-		discovery.ModelEndpoint{
+		{
 			Path:   "^/file-payments$",
 			Method: "POST",
 		},
-		discovery.ModelEndpoint{
+		{
 			Path:   "^/funds-confirmations$",
 			Method: "POST",
 		},
@@ -405,12 +408,6 @@ func getRequiredTokenForTestcase(rt []RequiredTokens, testcaseID string) (tokenN
 		}
 	}
 	return "", false, errors.New("token not found for " + testcaseID)
-}
-
-func dumpTG(tg []RequiredTokens) {
-	for _, v := range tg {
-		fmt.Printf("grouplineitem: %v - %v -  %v\n", v.IDs, v.Perms, v.Permsx)
-	}
 }
 
 // GetNextTokenName -

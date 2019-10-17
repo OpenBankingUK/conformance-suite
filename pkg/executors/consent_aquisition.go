@@ -119,14 +119,6 @@ func getAccountConsents(consentRequirements []model.SpecConsentRequirements, def
 	return consentItems, tokenParameters, err
 }
 
-func getTokenParametersFromRequiredTokens(tokens []manifest.RequiredTokens) map[string][]string {
-	tokenParameters := map[string][]string{}
-	for _, reqToken := range tokens {
-		tokenParameters[reqToken.Name] = reqToken.Perms
-	}
-	return tokenParameters
-}
-
 func waitForConsentIDs(consentIDChannel chan TokenConsentIDItem, consentIDsRequired int) (TokenConsentIDs, error) {
 	logger := logrus.StandardLogger().WithFields(logrus.Fields{
 		"function":           "waitForConsentIDs",
@@ -170,30 +162,6 @@ func waitForConsentIDs(consentIDChannel chan TokenConsentIDItem, consentIDsRequi
 			return consentItems, errors.New("ConsentChannel Timeout")
 		}
 	}
-}
-
-func getConsentTokensAndPermissions(consentRequirements []model.SpecConsentRequirements, logger *logrus.Entry) map[string][]string {
-	tokenParameters := make(map[string][]string)
-	for _, v := range consentRequirements {
-		for _, namedPermission := range v.NamedPermissions {
-			codeset := namedPermission.CodeSet
-			for _, b := range codeset.CodeSet {
-				mystring := string(b)
-				set := tokenParameters[namedPermission.Name]
-				set = append(set, mystring)
-				tokenParameters[namedPermission.Name] = set
-			}
-		}
-	}
-
-	for tokenParameterKey, tokenParameterValue := range tokenParameters {
-		logger.WithFields(logrus.Fields{
-			"tokenParameterValue":   tokenParameterValue,
-			"tokenParameterKey":     tokenParameterKey,
-			"buildPermissionString": buildPermissionString(tokenParameterValue),
-		}).Debugf("Getting ConsentToken")
-	}
-	return tokenParameters
 }
 
 func buildPermissionString(permissionSlice []string) string {
