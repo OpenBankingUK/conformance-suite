@@ -70,6 +70,7 @@ func TestPaymentPermissions(t *testing.T) {
 		Validator:    schema.NewNullValidator(),
 	}
 	tests, _, err := GenerateTestCases(&params)
+	assert.NoError(t, err)
 
 	fmt.Printf("we have %d tests\n", len(tests))
 	for _, v := range tests {
@@ -77,7 +78,7 @@ func TestPaymentPermissions(t *testing.T) {
 	}
 
 	requiredTokens, err := GetPaymentPermissions(tests)
-	assert.Nil(t, err)
+	assert.NoError(t, err)
 
 	for _, v := range requiredTokens {
 		fmt.Printf("%#v\n", v)
@@ -152,8 +153,8 @@ func TestPermissionFiteringAccounts(t *testing.T) {
 		Validator:    schema.NewNullValidator(),
 	}
 	tests, _, err := GenerateTestCases(&params)
+	assert.NoError(t, err)
 
-	assert.Nil(t, err)
 	fmt.Printf("%d tests loaded", len(tests))
 
 	filteredScripts, err := FilterTestsBasedOnDiscoveryEndpointsPlayground(scripts, endpoints)
@@ -277,13 +278,11 @@ func TestPaymentTestCaseCreation(t *testing.T) {
 		Validator:    schema.NewNullValidator(),
 	}
 	tests, _, err := GenerateTestCases(&params)
-
 	assert.Nil(t, err)
+
 	fmt.Printf("we have %d tests\n", len(tests))
 	for _, v := range tests {
-		//if v.ID == "OB-301-DOP-101000" {
 		dumpJSON(v)
-		//}
 	}
 
 }
@@ -432,5 +431,4 @@ func TestContains(t *testing.T) {
 
 	assert.True(t, contains(collection, subjectExists))
 	assert.False(t, contains(collection, subjectNotExists))
-
 }

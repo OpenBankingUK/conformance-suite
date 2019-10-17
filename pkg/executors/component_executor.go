@@ -88,7 +88,7 @@ func getPaymentHeadlessTokens(paymentTests []model.TestCase, ctx *model.Context,
 
 // CallPaymentHeadlessConsentUrls -
 func CallPaymentHeadlessConsentUrls(rt *[]manifest.RequiredTokens, ctx *model.Context, logger *logrus.Entry) (map[string]string, error) {
-	matchingGroup := []string{}
+	var matchingGroup []string
 	exchangeCode := ""
 	exhangeCodeRegex := "code=([^&]*)&"
 	consentedTokens := map[string]string{}

@@ -19,6 +19,7 @@ func TestPermx(t *testing.T) {
 	}
 
 	specType, err := GetSpecType(apiSpec.SchemaVersion)
+	assert.Nil(t, err)
 	scripts, _, err := LoadGenerationResources(specType, manifestPath)
 	assert.Nil(t, err)
 
@@ -48,6 +49,7 @@ func TestGetScriptConsentTokens(t *testing.T) {
 		SchemaVersion: accountSwaggerLocation31,
 	}
 	specType, err := GetSpecType(apiSpec.SchemaVersion)
+	assert.Nil(t, err)
 	scripts, _, err := LoadGenerationResources(specType, manifestPath)
 	assert.Nil(t, err)
 
@@ -61,9 +63,6 @@ func TestGetScriptConsentTokens(t *testing.T) {
 		Validator:    schema.NewNullValidator(),
 	}
 	tests, _, err := GenerateTestCases(&params)
-
-	assert.Nil(t, err)
-
 	assert.Nil(t, err)
 
 	testcasePermissions, err := getTestCasePermissions(tests)
