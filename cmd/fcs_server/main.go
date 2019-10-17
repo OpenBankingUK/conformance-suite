@@ -38,10 +38,6 @@ standard built with love by Open Banking and friends in Go.
 
 Complete documentation is available at https://bitbucket.org/openbankingteam/conformance-suite`,
 		RunE: func(cmd *cobra.Command, args []string) error {
-			var dynResIDs bool
-			if viper.GetBool("dynres") {
-				dynResIDs = true
-			}
 			logger := logger.WithField("app", "server")
 			ver := version.NewBitBucket(version.BitBucketAPIRepository)
 
@@ -50,7 +46,7 @@ Complete documentation is available at https://bitbucket.org/openbankingteam/con
 			validatorEngine := discovery.NewFuncValidator(model.NewConditionalityChecker())
 			testGenerator := generation.NewGenerator()
 			tlsValidator := discovery.NewStdTLSValidator(tls.VersionTLS11)
-			journey := server.NewJourney(logger, testGenerator, validatorEngine, tlsValidator, dynResIDs)
+			journey := server.NewJourney(logger, testGenerator, validatorEngine, tlsValidator, viper.GetBool("dynres"))
 
 			echoServer := server.NewServer(journey, logger, ver)
 			address := fmt.Sprintf("%s:%d", server.ListenHost, viper.GetInt("port"))
