@@ -41,8 +41,11 @@ type Validator interface {
 func NewSwaggerOBSpecValidator(specName, version string) (Validator, error) {
 	var err error
 
+	prodDir := "pkg/schema/spec/" + version
+	testDir := "../../pkg/schema/spec/" + version
+
 	dirnameIndex := 0
-	dirnames := []string{"pkg/schema/spec/v3.1.0", "../../pkg/schema/spec/v3.1.0"}
+	dirnames := []string{prodDir, testDir}
 	files := []os.FileInfo{}
 	for index, dirname := range dirnames {
 		filesReadDir, errReadDir := ioutil.ReadDir(dirname)

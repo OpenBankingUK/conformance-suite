@@ -124,7 +124,6 @@ func TestApi311To312(t *testing.T) {
 	}
 
 	fmt.Println("\n-----Done")
-	t.Error()
 }
 
 func TestCompareApiVersions(t *testing.T) {
@@ -145,5 +144,4 @@ func TestCompareApiVersions(t *testing.T) {
 	fmt.Printf("compare %s,%s = %d\n", api1[0], api2[0], s1.Compare(s2))
 	fmt.Printf("compare %s,%s = %d\n", api1[0], api3[0], s1.Compare(s3))
 
-	t.Error()
 }

@@ -440,14 +440,19 @@ func LoadGenerationResources(specType, manifestPath string, ctx *model.Context) 
 }
 
 func getVersionSpecificScripts(spectype, version string, ctx *model.Context) (Scripts, error) {
-	apiVersions, err := ctx.GetStringSlice("apiversions")
+	var apiVersions []string
+	var err error
+	apiVersions = []string{}
+	if ctx != nil {
+		apiVersions, err = ctx.GetStringSlice("apiversions")
+		if err == model.ErrNotFound {
+			return Scripts{}, nil
+		}
 
-	if err == model.ErrNotFound {
-		fmt.Println("apiversions not found")
-		return Scripts{}, nil
 	}
+
 	if err != nil {
-		fmt.Println("getVersionscript - err " + err.Error())
+		logrus.Errorln("getVersionscript - err " + err.Error())
 		return Scripts{}, err
 	}
 
