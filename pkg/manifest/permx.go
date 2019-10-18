@@ -83,6 +83,9 @@ func GetRequiredTokensFromTests(tcs []model.TestCase, spec string) (rt []Require
 			return nil, err
 		}
 		rt, err = getRequiredTokens(tcp)
+		if err != nil {
+			return nil, err
+		}
 	case "payments":
 		rt, err = GetPaymentPermissions(tcs)
 	case "cbpii":
@@ -123,11 +126,8 @@ func GetCbpiiPermissions(tests []model.TestCase) ([]RequiredTokens, error) {
 
 // GetPaymentPermissions - and annotate test cases with token ids
 func GetPaymentPermissions(tests []model.TestCase) ([]RequiredTokens, error) {
-	requiredTokens, err := getPaymentPermissions(tests)
-	if err != nil {
-		return nil, err
-	}
-	requiredTokens, err = updateTokensFromConsent(requiredTokens, tests)
+	requiredTokens := getPaymentPermissions(tests)
+	requiredTokens, err := updateTokensFromConsent(requiredTokens, tests)
 	if err != nil {
 		return nil, err
 	}
@@ -137,7 +137,7 @@ func GetPaymentPermissions(tests []model.TestCase) ([]RequiredTokens, error) {
 }
 
 // looks for post consent Tests that need to be run to get consentIds
-func getPaymentPermissions(tcs []model.TestCase) ([]RequiredTokens, error) {
+func getPaymentPermissions(tcs []model.TestCase) []RequiredTokens {
 	rt := make([]RequiredTokens, 0)
 	ts := TokenStore{}
 	ts.store = rt
@@ -160,7 +160,7 @@ func getPaymentPermissions(tcs []model.TestCase) ([]RequiredTokens, error) {
 		}
 	}
 
-	return rt, nil
+	return rt
 }
 
 // scans all payment test to make test against consent provider
@@ -310,11 +310,9 @@ func MapTokensToCBPIITestCases(rt []RequiredTokens, tcs []model.TestCase, ctx *m
 					test.InjectBearerToken("$" + tokenName)
 				}
 			}
-		} else {
-			if test.Input.Method == "GET" && strings.Contains(test.ID, "CBPII") {
-				test.InjectBearerToken("$cbpii_ccg_token")
-				continue
-			}
+		} else if test.Input.Method == "GET" && strings.Contains(test.ID, "CBPII") {
+			test.InjectBearerToken("$cbpii_ccg_token")
+			continue
 		}
 		tcs[k] = test
 	}
@@ -323,43 +321,43 @@ func MapTokensToCBPIITestCases(rt []RequiredTokens, tcs []model.TestCase, ctx *m
 func requiresAuthCodeToken(id, method, endpoint string) bool {
 	// "get" with "funds confirmation"
 	authCodeEndpointsRegex := []discovery.ModelEndpoint{
-		discovery.ModelEndpoint{
+		{
 			Path:   "^/domestic-payments$",
 			Method: "POST",
 		},
-		discovery.ModelEndpoint{
+		{
 			Path:   "^/domestic-scheduled-payments$",
 			Method: "GET",
 		},
-		discovery.ModelEndpoint{
+		{
 			Path:   "^/domestic-standing-orders$",
 			Method: "POST",
 		},
-		discovery.ModelEndpoint{
+		{
 			Path:   "^/international-payment-consents/[a-zA-Z0-9_{}-]+/funds-confirmation$",
 			Method: "GET",
 		},
-		discovery.ModelEndpoint{
+		{
 			Path:   "^/international-payments$",
 			Method: "POST",
 		},
-		discovery.ModelEndpoint{
+		{
 			Path:   "^/international-scheduled-payment-consents/[a-zA-Z0-9_{}-]+/funds-confirmation$",
 			Method: "GET",
 		},
-		discovery.ModelEndpoint{
+		{
 			Path:   "^/international-scheduled-payments$",
 			Method: "POST",
 		},
-		discovery.ModelEndpoint{
+		{
 			Path:   "^/international-standing-orders$",
 			Method: "POST",
 		},
-		discovery.ModelEndpoint{
+		{
 			Path:   "^/file-payments$",
 			Method: "POST",
 		},
-		discovery.ModelEndpoint{
+		{
 			Path:   "^/funds-confirmations$",
 			Method: "POST",
 		},
@@ -405,12 +403,6 @@ func getRequiredTokenForTestcase(rt []RequiredTokens, testcaseID string) (tokenN
 		}
 	}
 	return "", false, errors.New("token not found for " + testcaseID)
-}
-
-func dumpTG(tg []RequiredTokens) {
-	for _, v := range tg {
-		fmt.Printf("grouplineitem: %v - %v -  %v\n", v.IDs, v.Perms, v.Permsx)
-	}
 }
 
 // GetNextTokenName -
@@ -492,10 +484,8 @@ func addPermToGathererItem(tp TestCasePermission, tg RequiredTokens) RequiredTok
 		for _, tpPerm := range tp.Perms {
 			if tpPerm == tgPerm {
 				continue
-			} else {
-				if tpPerm != "" {
-					permsToAdd = append(permsToAdd, tpPerm)
-				}
+			} else if tpPerm != "" {
+				permsToAdd = append(permsToAdd, tpPerm)
 			}
 		}
 	}
@@ -503,10 +493,8 @@ func addPermToGathererItem(tp TestCasePermission, tg RequiredTokens) RequiredTok
 		for _, tpPermx := range tp.Permsx {
 			if tpPermx == tgPermx {
 				continue
-			} else {
-				if tpPermx != "" {
-					permsxToAdd = append(permsxToAdd, tpPermx)
-				}
+			} else if tpPermx != "" {
+				permsxToAdd = append(permsxToAdd, tpPermx)
 			}
 		}
 	}

@@ -9,7 +9,7 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-func getPaymentConsents(tests []model.TestCase, definition RunDefinition, requiredTokens []manifest.RequiredTokens, ctx *model.Context) (TokenConsentIDs, error) {
+func getPaymentConsents(definition RunDefinition, requiredTokens []manifest.RequiredTokens, ctx *model.Context) (TokenConsentIDs, error) {
 	executor := &Executor{}
 	err := executor.SetCertificates(definition.SigningCert, definition.TransportCert)
 	if err != nil {
@@ -157,15 +157,6 @@ func runPaymentConsents(rt []manifest.RequiredTokens, ctx *model.Context, execut
 	logrus.Debug("Exit runPayment Consents")
 	logrus.Tracef("%#v\n", rt)
 	return rt, nil
-}
-
-func findTest(tcs []model.TestCase, testID string) (*model.TestCase, error) {
-	for k, test := range tcs {
-		if test.ID == testID {
-			return &tcs[k], nil
-		}
-	}
-	return nil, errors.New("Test " + testID + " not found in findTest")
 }
 
 func executePaymentTest(tc *model.TestCase, ctx *model.Context, executor *Executor) error {

@@ -11,7 +11,6 @@ import (
 )
 
 func getCbpiiConsents(
-	tests []model.TestCase,
 	definition RunDefinition,
 	requiredTokens []manifest.RequiredTokens,
 	ctx *model.Context,

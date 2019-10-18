@@ -80,7 +80,7 @@ func TestRun(t *testing.T) {
 	validatorEngine := discovery.NewFuncValidator(model.NewConditionalityChecker())
 	testGenerator := generation.NewGenerator()
 	tlsValidator := discovery.NewStdTLSValidator(tls.VersionTLS11)
-	journey := server.NewJourney(logger, testGenerator, validatorEngine, tlsValidator)
+	journey := server.NewJourney(logger, testGenerator, validatorEngine, tlsValidator, false)
 
 	echoServer := server.NewServer(journey, logger, ver)
 

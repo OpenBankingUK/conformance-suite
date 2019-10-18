@@ -24,20 +24,15 @@ const (
 
 // GetPsuConsent -
 func GetPsuConsent(definition RunDefinition, ctx *model.Context, runTests *generation.SpecRun, permissions map[string][]manifest.RequiredTokens) (TokenConsentIDs, map[string]string, error) {
-	consentRequirements := runTests.SpecConsentRequirements
 	var consentIdsToReturn TokenConsentIDs
 	logrus.Debugf("running with %#v\n", permissions)
 
 	for specType := range permissions {
 		logrus.Tracef("Getting PSU Consent for api type: %s\n", specType)
-		tests, err := getSpecForSpecType(specType, runTests)
-		if err != nil {
-			return nil, nil, err
-		}
 
 		switch specType {
 		case "accounts":
-			consentIds, _, err := getAccountConsents(consentRequirements, definition, permissions["accounts"], ctx)
+			consentIds, _, err := getAccountConsents(definition, permissions["accounts"], ctx)
 			consentIdsToReturn = append(consentIdsToReturn, consentIds...)
 			if err != nil {
 				logrus.Error("GetPSUConsent - accounts error: " + err.Error())
@@ -45,14 +40,14 @@ func GetPsuConsent(definition RunDefinition, ctx *model.Context, runTests *gener
 			}
 
 		case "payments":
-			consentIds, err := getPaymentConsents(tests, definition, permissions["payments"], ctx)
+			consentIds, err := getPaymentConsents(definition, permissions["payments"], ctx)
 			consentIdsToReturn = append(consentIdsToReturn, consentIds...)
 			if err != nil {
 				logrus.Error("GetPSUConsent - payments error: " + err.Error())
 				return nil, nil, err
 			}
 		case "cbpii":
-			consentIds, err := getCbpiiConsents(tests, definition, permissions["cbpii"], ctx)
+			consentIds, err := getCbpiiConsents(definition, permissions["cbpii"], ctx)
 			consentIdsToReturn = append(consentIdsToReturn, consentIds...)
 			if err != nil {
 				logrus.Error("GetPSUConsent - cbpii error: " + err.Error())
@@ -83,7 +78,7 @@ func getSpecForSpecType(stype string, specRun *generation.SpecRun) ([]model.Test
 }
 
 // getAccountConsents - get required tokens
-func getAccountConsents(consentRequirements []model.SpecConsentRequirements, definition RunDefinition, permissions []manifest.RequiredTokens, ctx *model.Context) (TokenConsentIDs, map[string]string, error) {
+func getAccountConsents(definition RunDefinition, permissions []manifest.RequiredTokens, ctx *model.Context) (TokenConsentIDs, map[string]string, error) {
 	consentIDChannel := make(chan TokenConsentIDItem, 100)
 	logger := logrus.StandardLogger().WithField("module", "getAccountConsents")
 	logger.Tracef("getAccountConsents")
@@ -117,14 +112,6 @@ func getAccountConsents(consentRequirements []model.SpecConsentRequirements, def
 	}
 	logrus.Debugf("we have %d consentIds: %#v", len(consentItems), consentItems)
 	return consentItems, tokenParameters, err
-}
-
-func getTokenParametersFromRequiredTokens(tokens []manifest.RequiredTokens) map[string][]string {
-	tokenParameters := map[string][]string{}
-	for _, reqToken := range tokens {
-		tokenParameters[reqToken.Name] = reqToken.Perms
-	}
-	return tokenParameters
 }
 
 func waitForConsentIDs(consentIDChannel chan TokenConsentIDItem, consentIDsRequired int) (TokenConsentIDs, error) {
@@ -170,30 +157,6 @@ func waitForConsentIDs(consentIDChannel chan TokenConsentIDItem, consentIDsRequi
 			return consentItems, errors.New("ConsentChannel Timeout")
 		}
 	}
-}
-
-func getConsentTokensAndPermissions(consentRequirements []model.SpecConsentRequirements, logger *logrus.Entry) map[string][]string {
-	tokenParameters := make(map[string][]string)
-	for _, v := range consentRequirements {
-		for _, namedPermission := range v.NamedPermissions {
-			codeset := namedPermission.CodeSet
-			for _, b := range codeset.CodeSet {
-				mystring := string(b)
-				set := tokenParameters[namedPermission.Name]
-				set = append(set, mystring)
-				tokenParameters[namedPermission.Name] = set
-			}
-		}
-	}
-
-	for tokenParameterKey, tokenParameterValue := range tokenParameters {
-		logger.WithFields(logrus.Fields{
-			"tokenParameterValue":   tokenParameterValue,
-			"tokenParameterKey":     tokenParameterKey,
-			"buildPermissionString": buildPermissionString(tokenParameterValue),
-		}).Debugf("Getting ConsentToken")
-	}
-	return tokenParameters
 }
 
 func buildPermissionString(permissionSlice []string) string {

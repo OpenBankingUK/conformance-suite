@@ -105,6 +105,10 @@ func (g generator) GenerateManifestTests(log *logrus.Entry, config GeneratorConf
 			Info("swagger spec validator created")
 
 		scripts, _, err := manifest.LoadGenerationResources(specType, item.APISpecification.Manifest)
+		if err != nil {
+			log.Warnf("failed to load manifest failed: manifest %s, spec type %s", item.APISpecification.Manifest, specType)
+			continue
+		}
 
 		params := manifest.GenerationParameters{
 			Scripts:      scripts,
@@ -126,17 +130,20 @@ func (g generator) GenerateManifestTests(log *logrus.Entry, config GeneratorConf
 
 		spectype := item.APISpecification.SpecType
 		requiredSpecTokens, err := manifest.GetRequiredTokensFromTests(tcs, spectype)
+		if err != nil {
+			log.Warnf("failed to retrieve required spec tokens from test for spec %s", spectype)
+			continue
+		}
 		logrus.Debugf("%s required spec tokens: %+v", spectype, requiredSpecTokens)
 		specreq, err := getSpecConsentsFromRequiredTokens(requiredSpecTokens, item.APISpecification.Name)
+		if err != nil {
+			log.Warnf("failed to retrieve spec consents from required spec tokens for spec %s", spectype)
+			continue
+		}
 		scrSlice = append(scrSlice, specreq)
 		if spectype == "payments" || spectype == "cbpii" { //
 			// three sets of test case. all, UI, consent (Non-ui)
-			uiTestCases, err := getUITests(tcs)
-			if err != nil {
-				log.Error("error processing getUITests")
-				continue
-			}
-			tcs = uiTestCases
+			tcs = getUITests(tcs)
 		}
 		stc := SpecificationTestCases{Specification: item.APISpecification, TestCases: tcs}
 		logrus.Debugf("%d test cases generated for %s", len(tcs), item.APISpecification.Name)
@@ -157,7 +164,7 @@ func (g generator) GenerateManifestTests(log *logrus.Entry, config GeneratorConf
 // returns two sets
 // set 1) - payment tests that show in the UI and execution when runtests is called
 // set 2) - payment consent tests that need to be authorised before runtests can happen
-func getUITests(tcs []model.TestCase) ([]model.TestCase, error) {
+func getUITests(tcs []model.TestCase) []model.TestCase {
 
 	uiTests := []model.TestCase{}
 	consentJobs := manifest.GetConsentJobs()
@@ -171,7 +178,7 @@ func getUITests(tcs []model.TestCase) ([]model.TestCase, error) {
 		uiTests = append(uiTests, test)
 	}
 
-	return uiTests, nil
+	return uiTests
 }
 
 // Packages up Required tokens into a SpecConsentRequirements structure
