@@ -21,6 +21,43 @@ type Specification struct {
 var (
 	specifications = []Specification{
 		{
+			Identifier:    "account-transaction-v3.1.2",
+			Name:          "Account and Transaction API Specification",
+			URL:           mustParseURL("https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1077805296/Account+and+Transaction+API+Specification+-+v3.1.2"),
+			Version:       "v3.1.2",
+			SchemaVersion: mustParseURL("https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.2/dist/account-info-swagger.json"),
+		},
+
+		{
+			Identifier:    "account-transaction-v3.1.1",
+			Name:          "Account and Transaction API Specification",
+			URL:           mustParseURL("https://openbanking.atlassian.net/wiki/spaces/DZ/pages/999622968/Account+and+Transaction+API+Specification+-+v3.1.1"),
+			Version:       "v3.1.1",
+			SchemaVersion: mustParseURL("https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.1/dist/account-info-swagger.json"),
+		},
+		{
+			Identifier:    "payment-initiation-v3.1.1",
+			Name:          "Payment Initiation API",
+			URL:           mustParseURL("https://openbanking.atlassian.net/wiki/spaces/DZ/pages/999426309/Payment+Initiation+API+Specification+-+v3.1.1"),
+			Version:       "v3.1.1",
+			SchemaVersion: mustParseURL("https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.1/dist/payment-initiation-swagger.json"),
+		},
+		{
+			Identifier:    "confirmation-funds-v3.1.1",
+			Name:          "Confirmation of Funds API Specification",
+			URL:           mustParseURL("https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1000015607/Confirmation+of+Funds+API+Specification+-+v3.1.1"),
+			Version:       "v3.1.1",
+			SchemaVersion: mustParseURL("https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.1/dist/confirmation-funds-swagger.json"),
+		},
+		{
+			Identifier:    "event-notification-aspsp-v3.1",
+			Name:          "Event Notification API Specification - ASPSP Endpoints",
+			URL:           mustParseURL("https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1000114043/Event+Notification+API+Specification+-+v3.1.1"),
+			Version:       "v3.1.1",
+			SchemaVersion: mustParseURL("https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.1/dist/callback-urls-swagger.yaml"),
+		},
+
+		{
 			Identifier:    "account-transaction-v3.1",
 			Name:          "Account and Transaction API Specification",
 			URL:           mustParseURL("https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937820271/Account+and+Transaction+API+Specification+-+v3.1"),

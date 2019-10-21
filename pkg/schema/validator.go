@@ -110,6 +110,10 @@ func newValidator(doc *loads.Document) (Validator, error) {
 	case "v3.0.0":
 		fallthrough
 	case "v3.1.0":
+		fallthrough
+	case "v3.1.1":
+		fallthrough
+	case "v3.1.2":
 		return validators{
 			validators: []Validator{
 				newContentTypeValidator(f),
@@ -120,7 +124,7 @@ func newValidator(doc *loads.Document) (Validator, error) {
 		}, nil
 	}
 
-	return nil, errors.New("unsupported spec version")
+	return nil, errors.New("unsupported spec version from newValidator")
 }
 
 func (v validators) Validate(r Response) ([]Failure, error) {
