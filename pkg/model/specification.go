@@ -36,6 +36,13 @@ var (
 			SchemaVersion: mustParseURL("https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.1/dist/account-info-swagger.json"),
 		},
 		{
+			Identifier:    "payment-initiation-v3.1.2",
+			Name:          "Payment Initiation API",
+			URL:           mustParseURL("https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1077805743/Payment+Initiation+API+Specification+-+v3.1.2"),
+			Version:       "v3.1.2",
+			SchemaVersion: mustParseURL("https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.2/dist/payment-initiation-swagger.json"),
+		},
+		{
 			Identifier:    "payment-initiation-v3.1.1",
 			Name:          "Payment Initiation API",
 			URL:           mustParseURL("https://openbanking.atlassian.net/wiki/spaces/DZ/pages/999426309/Payment+Initiation+API+Specification+-+v3.1.1"),
@@ -43,11 +50,25 @@ var (
 			SchemaVersion: mustParseURL("https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.1/dist/payment-initiation-swagger.json"),
 		},
 		{
+			Identifier:    "confirmation-funds-v3.1.2",
+			Name:          "Confirmation of Funds API Specification",
+			URL:           mustParseURL("https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1077806537/Confirmation+of+Funds+API+Specification+-+v3.1.2"),
+			Version:       "v3.1.2",
+			SchemaVersion: mustParseURL("https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.2/dist/confirmation-funds-swagger.json"),
+		},
+		{
 			Identifier:    "confirmation-funds-v3.1.1",
 			Name:          "Confirmation of Funds API Specification",
 			URL:           mustParseURL("https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1000015607/Confirmation+of+Funds+API+Specification+-+v3.1.1"),
 			Version:       "v3.1.1",
 			SchemaVersion: mustParseURL("https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.1/dist/confirmation-funds-swagger.json"),
+		},
+		{
+			Identifier:    "event-notification-aspsp-v3.1.2",
+			Name:          "Event Notification API Specification - ASPSP Endpoints",
+			URL:           mustParseURL("https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1000114043/Event+Notification+API+Specification+-+v3.1.1"),
+			Version:       "v3.1.2",
+			SchemaVersion: mustParseURL("https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.2/dist/callback-urls-swagger.yaml"),
 		},
 		{
 			Identifier:    "event-notification-aspsp-v3.1",
