@@ -229,7 +229,7 @@
         "tokenRequestScope": "payments",
         "instructedAmountValue": "$instructedAmountValue",
         "instructedAmountCurrency": "$instructedAmountCurrency",
-        "instructionIdentification": "fn:instructionIdentificationID()",
+        "instructionIdentification": "$fn:instructionIdentificationID()",
         "endToEndIdentification": "e2e-domestic-sched-pay",
         "postData": "$minimalScheduledDomesticPaymentConsent"
       },
