@@ -1,9 +1,9 @@
 {
   "scripts": [{
-    "description": "Creates Funds Confirmation Consents is AwaitingAuthorisation",
+    "description": "3.1.2 x-fapi-financial-id no longer required",
     "id": "OB-312-CBPII-000100",
     "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937951380/Confirmation+of+Funds+API+Specification+-+v3.1",
-    "detail": "Creates Funds Confirmation Consents",
+    "detail": "checks x-fapi-financial-id being removed allows Creates Funds Confirmation Consents to run normally",
     "uri": "/funds-confirmation-consents",
     "uriImplementation": "mandatory",
     "parameters": {
@@ -19,7 +19,7 @@
     "headers": {
       "Content-Type": "application/json"
     },
-    "removeHeaders": ["x_fapi_financial_id"],
+    "removeHeaders": ["x-fapi-financial-id"],
     "asserts": [
       "OB3GLOAssertOn201",
       "OB3GLOFAPIHeader",

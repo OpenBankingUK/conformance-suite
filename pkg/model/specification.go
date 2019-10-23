@@ -66,9 +66,9 @@ var (
 		{
 			Identifier:    "event-notification-aspsp-v3.1.2",
 			Name:          "Event Notification API Specification - ASPSP Endpoints",
-			URL:           mustParseURL("https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1000114043/Event+Notification+API+Specification+-+v3.1.1"),
+			URL:           mustParseURL("https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1077806617/Event+Notification+API+Specification+-+v3.1.2"),
 			Version:       "v3.1.2",
-			SchemaVersion: mustParseURL("https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.2/dist/callback-urls-swagger.yaml"),
+			SchemaVersion: mustParseURL("https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.2/dist/event-subscriptions-swagger.json"),
 		},
 		{
 			Identifier:    "event-notification-aspsp-v3.1",

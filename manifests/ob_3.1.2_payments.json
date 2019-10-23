@@ -1,9 +1,9 @@
 {
   "scripts": [{
-    "description": "Domestic Payment consents is AwaitingAuthorisation",
+    "description": "3.1.2 Payments - x-fapi-financial-id no longer required",
     "id": "OB-312-DOP-100100",
     "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937984109/Domestic+Payments+v3.1#DomesticPaymentsv3.1-POST/domestic-payment-consents",
-    "detail": "Check Domestic Payment consents returns in AwaitingAuthorisation.",
+    "detail": "check that removal of x-fapi-financial-id succeeds for Check Domestic Payment consents",
     "parameters": {
       "tokenRequestScope": "payments",
       "instructedAmountCurrency": "$instructedAmountCurrency",
@@ -20,7 +20,7 @@
     "uri": "/domestic-payment-consents",
     "uriImplementation": "mandatory",
     "resource": "DomesticPayment",
-    "removeHeaders": ["x_fapi_financial_id"],    
+    "removeHeaders": ["x-fapi-financial-id"],    
     "asserts": [
       "OB3GLOAssertOn201",
       "OB3GLOFAPIHeader",
