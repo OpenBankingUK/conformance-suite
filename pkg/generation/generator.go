@@ -104,15 +104,7 @@ func (g generator) GenerateManifestTests(log *logrus.Entry, config GeneratorConf
 		log.WithFields(logrus.Fields{"name": item.APISpecification.Name, "version": item.APISpecification.Version}).
 			Info("swagger spec validator created")
 
-<<<<<<< HEAD
 		//scripts, _, err := manifest.LoadGenerationResources(specType, item.APISpecification.Manifest)
-=======
-		scripts, _, err := manifest.LoadGenerationResources(specType, item.APISpecification.Manifest)
-		if err != nil {
-			log.Warnf("failed to load manifest failed: manifest %s, spec type %s", item.APISpecification.Manifest, specType)
-			continue
-		}
->>>>>>> develop
 
 		params := manifest.GenerationParameters{
 			//	Scripts:      scripts,
