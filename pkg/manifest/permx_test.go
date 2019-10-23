@@ -64,9 +64,6 @@ func TestGetScriptConsentTokens(t *testing.T) {
 		Validator:    schema.NewNullValidator(),
 	}
 	tests, _, err := GenerateTestCases(&params)
-
-	assert.Nil(t, err)
-
 	assert.Nil(t, err)
 
 	testcasePermissions, err := getTestCasePermissions(tests)

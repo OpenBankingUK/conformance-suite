@@ -214,11 +214,6 @@ func TestValidateConfigTestsEmpty(t *testing.T) {
 			config:      configStubMissing("XFAPIFinancialID"),
 			expectedMsg: "x_fapi_financial_id is empty",
 		},
-		//{
-		//	name:        "missing_request_object_signing_alg",
-		//	config:      configStubMissing("RequestObjectSigningAlgorithm"),
-		//	expectedMsg: "request_object_signing_alg is empty",
-		//},
 	}
 
 	for _, testCase := range testCases {
@@ -278,7 +273,7 @@ func TestServerConfigGlobalPostValid(t *testing.T) {
 		CBPIIDebtorAccount: discovery.CBPIIDebtorAccount{
 			SchemeName:     "UK.OBIE.SortCodeAccountNumber",
 			Identification: "20202010981789",
-			Name: "Bob Stone",
+			Name:           "Bob Stone",
 		},
 	}
 	globalConfigurationJSON, err := json.MarshalIndent(globalConfiguration, ``, `  `)
@@ -353,7 +348,7 @@ func TestServerConfigGlobalPostInvalid(t *testing.T) {
 				CBPIIDebtorAccount: discovery.CBPIIDebtorAccount{
 					SchemeName:     "UK.OBIE.SortCodeAccountNumber",
 					Identification: "20202010981789",
-					Name: "Bob Stone",
+					Name:           "Bob Stone",
 				},
 			},
 		},
@@ -401,7 +396,7 @@ func TestServerConfigGlobalPostInvalid(t *testing.T) {
 				CBPIIDebtorAccount: discovery.CBPIIDebtorAccount{
 					SchemeName:     "UK.OBIE.SortCodeAccountNumber",
 					Identification: "20202010981789",
-					Name: "Bob Stone",
+					Name:           "Bob Stone",
 				},
 			},
 		},
@@ -441,7 +436,7 @@ func TestServerConfigGlobalPostInvalid(t *testing.T) {
 				CBPIIDebtorAccount: discovery.CBPIIDebtorAccount{
 					SchemeName:     "UK.OBIE.SortCodeAccountNumber",
 					Identification: "20202010981789",
-					Name: "Bob Stone",
+					Name:           "Bob Stone",
 				},
 			},
 		},
@@ -486,7 +481,7 @@ func TestServerConfigGlobalPostInvalid(t *testing.T) {
 				CBPIIDebtorAccount: discovery.CBPIIDebtorAccount{
 					SchemeName:     "UK.OBIE.SortCodeAccountNumber",
 					Identification: "20202010981789",
-					Name: "Bob Stone",
+					Name:           "Bob Stone",
 				},
 			},
 		},
@@ -535,7 +530,7 @@ func TestServerConfigGlobalPostInvalid(t *testing.T) {
 				CBPIIDebtorAccount: discovery.CBPIIDebtorAccount{
 					SchemeName:     "UK.OBIE.SortCodeAccountNumber",
 					Identification: "20202010981789",
-					Name: "Bob Stone",
+					Name:           "Bob Stone",
 				},
 			},
 		},
@@ -580,7 +575,7 @@ func TestServerConfigGlobalPostInvalid(t *testing.T) {
 				CBPIIDebtorAccount: discovery.CBPIIDebtorAccount{
 					SchemeName:     "UK.OBIE.SortCodeAccountNumber",
 					Identification: "20202010981789",
-					Name: "Bob Stone",
+					Name:           "Bob Stone",
 				},
 			},
 		},
@@ -629,7 +624,7 @@ func TestServerConfigGlobalPostInvalid(t *testing.T) {
 				CBPIIDebtorAccount: discovery.CBPIIDebtorAccount{
 					SchemeName:     "UK.OBIE.SortCodeAccountNumber",
 					Identification: "20202010981789",
-					Name: "Bob Stone",
+					Name:           "Bob Stone",
 				},
 			},
 		},
@@ -670,7 +665,7 @@ func TestServerConfigGlobalPostInvalid(t *testing.T) {
 				CBPIIDebtorAccount: discovery.CBPIIDebtorAccount{
 					SchemeName:     "UK.OBIE.SortCodeAccountNumber",
 					Identification: "20202010981789",
-					Name: "Bob Stone",
+					Name:           "Bob Stone",
 				},
 			},
 		},
@@ -718,7 +713,7 @@ func TestServerConfigGlobalPostInvalid(t *testing.T) {
 				CBPIIDebtorAccount: discovery.CBPIIDebtorAccount{
 					SchemeName:     "UK.OBIE.SortCodeAccountNumber",
 					Identification: "20202010981789",
-					Name: "Bob Stone",
+					Name:           "Bob Stone",
 				},
 			},
 		},
@@ -762,7 +757,7 @@ func TestServerConfigGlobalPostInvalid(t *testing.T) {
 				CBPIIDebtorAccount: discovery.CBPIIDebtorAccount{
 					SchemeName:     "UK.OBIE.SortCodeAccountNumber",
 					Identification: "20202010981789",
-					Name: "Bob Stone",
+					Name:           "Bob Stone",
 				},
 			},
 		},
@@ -807,7 +802,7 @@ func TestServerConfigGlobalPostInvalid(t *testing.T) {
 				CBPIIDebtorAccount: discovery.CBPIIDebtorAccount{
 					SchemeName:     "UK.OBIE.SortCodeAccountNumber",
 					Identification: "20202010981789",
-					Name: "Bob Stone",
+					Name:           "Bob Stone",
 				},
 			},
 		},
@@ -852,7 +847,7 @@ func TestServerConfigGlobalPostInvalid(t *testing.T) {
 				CBPIIDebtorAccount: discovery.CBPIIDebtorAccount{
 					SchemeName:     "UK.OBIE.SortCodeAccountNumber",
 					Identification: "20202010981789",
-					Name: "Bob Stone",
+					Name:           "Bob Stone",
 				},
 			},
 		},
@@ -889,5 +884,5 @@ func testJourney() Journey {
 	logger := nullLogger()
 	validatorEngine := discovery.NewFuncValidator(model.NewConditionalityChecker())
 	testGenerator := generation.NewGenerator()
-	return NewJourney(logger, testGenerator, validatorEngine, discovery.NewNullTLSValidator())
+	return NewJourney(logger, testGenerator, validatorEngine, discovery.NewNullTLSValidator(), false)
 }

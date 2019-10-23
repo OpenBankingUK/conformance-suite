@@ -1,7 +1,6 @@
 package executors
 
 import (
-	"encoding/json"
 	"fmt"
 	"net/http"
 	"regexp"
@@ -89,7 +88,7 @@ func getPaymentHeadlessTokens(paymentTests []model.TestCase, ctx *model.Context,
 
 // CallPaymentHeadlessConsentUrls -
 func CallPaymentHeadlessConsentUrls(rt *[]manifest.RequiredTokens, ctx *model.Context, logger *logrus.Entry) (map[string]string, error) {
-	matchingGroup := []string{}
+	var matchingGroup []string
 	exchangeCode := ""
 	exhangeCodeRegex := "code=([^&]*)&"
 	consentedTokens := map[string]string{}
@@ -303,11 +302,4 @@ func executeComponent(ctx *model.Context, executor TestCaseExecutor) (*model.Con
 	}
 
 	return executeCtx, nil
-}
-
-// Utility to Dump Json
-func dumpJSON(i interface{}) {
-	var model []byte
-	model, _ = json.MarshalIndent(i, "", "    ")
-	fmt.Println(string(model))
 }

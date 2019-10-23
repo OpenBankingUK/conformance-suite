@@ -1,7 +1,6 @@
-import actions from './actions';
-import { mutationTypes as types } from './index';
-
 import api from '../../../api';
+import actions from './actions';
+import * as types from './mutation-types.js';
 
 jest.mock('../../../api');
 

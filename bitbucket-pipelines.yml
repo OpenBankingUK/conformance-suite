@@ -24,7 +24,6 @@ pipelines:
               - apk update && apk add git make bash curl
               - |
                 echo ${OZONE_CONFIG} | base64 -d  > config/config-ozone-run_test.json
-                echo ${OZONE_CONFIG_OLD} | base64 -d  > config/config-ozone-run_test-old.json
               - make init
               - make devtools
               - make build
@@ -41,7 +40,7 @@ pipelines:
                 export FORCE_COLOR=1
                 export NODE_DISABLE_COLORS=0
               - cd web/
-              - yarn install
+              - yarn install --frozen-lockfile --non-interactive
               - yarn lint --no-fix
               - yarn test:unit:coverage
 

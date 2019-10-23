@@ -315,8 +315,8 @@
           "schemaVersion": "https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.0/dist/confirmation-funds-swagger.json",
           "manifest": "file://manifests/ob_3.1_cbpii_fca.json"
         },
-        "openidConfigurationUri": "https://ob19-auth1-ui.o3bank.co.uk/.well-known/openid-configuration",
-        "resourceBaseUri": "https://ob19-rs1.o3bank.co.uk:4501/open-banking/v3.1/cbpii",
+        "openidConfigurationUri": "",
+        "resourceBaseUri": "",
         "endpoints": [
           {
             "method": "POST",

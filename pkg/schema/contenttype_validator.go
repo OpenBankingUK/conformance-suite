@@ -3,6 +3,7 @@ package schema
 import (
 	"fmt"
 	"mime"
+	"net/http"
 	"strings"
 
 	"github.com/pkg/errors"
@@ -58,6 +59,9 @@ func (v contentTypeValidator) IsRequestProperty(method, path, propertpath string
 }
 
 func (v contentTypeValidator) expectedContentType(r Response) (string, error) {
+	if r.StatusCode == http.StatusNoContent {
+		return "", ErrNotFound
+	}
 	spec := v.finder.Spec()
 
 	operation, err := v.finder.Operation(r.Method, r.Path)

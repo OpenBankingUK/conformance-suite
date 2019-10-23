@@ -8,7 +8,6 @@ import (
 	"regexp"
 	"sort"
 	"strings"
-	"time"
 
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/schema"
 	"github.com/blang/semver"
@@ -383,20 +382,6 @@ func processPutContext(s *Script) []model.Match {
 	return m
 }
 
-func processPutContextx(s *Script) []model.Match {
-	m := []model.Match{}
-	for k, v := range s.ContextPut {
-		m = append(m, model.Match{ContextName: k, JSON: v})
-	}
-	return m
-
-}
-
-func getAccountConsent(refs *References, vx string) []string {
-	ref := refs.References[vx]
-	return ref.Permissions
-}
-
 func buildInputSection(s Script, i *model.Input) {
 	i.Method = strings.ToUpper(s.Method)
 	i.Endpoint = s.URI
@@ -574,7 +559,7 @@ type ScriptPermission struct {
 }
 
 // GetPermissions -
-func getAccountPermissions(tests []model.TestCase) ([]ScriptPermission, error) {
+func getAccountPermissions(tests []model.TestCase) []ScriptPermission {
 	permCollector := []ScriptPermission{}
 
 	for _, test := range tests {
@@ -588,7 +573,7 @@ func getAccountPermissions(tests []model.TestCase) ([]ScriptPermission, error) {
 		permCollector = append(permCollector, sp)
 	}
 
-	return permCollector, nil
+	return permCollector
 }
 
 // FilterTestsBasedOnDiscoveryEndpoints returns a subset of the first `scripts` parameter, thus filtering `scripts`.
@@ -969,9 +954,4 @@ var cbpiiRegex = []PathRegex{
 		Method: "POST",
 		Name:   "Create Funds Confirmation",
 	},
-}
-
-func timeNowMillis() string {
-	tm := time.Now().UnixNano() / int64(time.Millisecond)
-	return fmt.Sprintf("%d", tm)
 }

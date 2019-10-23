@@ -28,8 +28,6 @@ var (
 	errNotFinishedCollectingTokens     = errors.New("error not finished collecting tokens")
 	errConsentIDAcquisitionFailed      = errors.New("ConsentId acquistion failed")
 	errDynamicResourceAllocationFailed = errors.New("Dynamic Resource allocation failed")
-
-	dynamicResourceIDs = false
 )
 
 // Journey represents all possible steps for a user test conformance journey
@@ -78,10 +76,11 @@ type journey struct {
 	filteredManifests     manifest.Scripts
 	tlsValidator          discovery.TLSValidator
 	conditionalProperties []discovery.ConditionalAPIProperties
+	dynamicResourceIDs    bool
 }
 
 // NewJourney creates an instance for a user journey
-func NewJourney(logger *logrus.Entry, generator generation.Generator, validator discovery.Validator, tlsValidator discovery.TLSValidator) *journey {
+func NewJourney(logger *logrus.Entry, generator generation.Generator, validator discovery.Validator, tlsValidator discovery.TLSValidator, dynamicResourceIDs bool) *journey {
 	return &journey{
 		generator:             generator,
 		validator:             validator,
@@ -95,6 +94,7 @@ func NewJourney(logger *logrus.Entry, generator generation.Generator, validator 
 		permissions:           make(map[string][]manifest.RequiredTokens),
 		manifests:             make([]manifest.Scripts, 0),
 		tlsValidator:          tlsValidator,
+		dynamicResourceIDs:    dynamicResourceIDs,
 	}
 }
 
@@ -592,7 +592,7 @@ func (wj *journey) SetConfig(config JourneyConfig) error {
 	defer wj.journeyLock.Unlock()
 
 	wj.config = config
-	wj.config.useDynamicResourceID = dynamicResourceIDs // fed from environment variable 'dynres'=true/false
+	wj.config.useDynamicResourceID = wj.dynamicResourceIDs // fed from environment variable 'dynres'=true/false
 	err := PutParametersToJourneyContext(wj.config, wj.context)
 	if err != nil {
 		return err
@@ -664,8 +664,8 @@ func (wj *journey) dumpJSON(i interface{}) {
 }
 
 // EnableDynamicResourceIDs is triggered by and environment variable dynids=true
-func EnableDynamicResourceIDs() {
-	dynamicResourceIDs = true
+func (wj *journey) EnableDynamicResourceIDs() {
+	wj.dynamicResourceIDs = true
 }
 
 // DetermineAPIVersions

@@ -28,7 +28,7 @@ func TestServerPostExport(t *testing.T) {
 	validator := &discovery_mocks.Validator{}
 	validator.On("Validate", discoveryModel).Return(discovery.NoValidationFailures(), nil)
 	generator := &gmocks.MockGenerator{}
-	journey := NewJourney(nullLogger(), generator, validator, discovery.NewNullTLSValidator())
+	journey := NewJourney(nullLogger(), generator, validator, discovery.NewNullTLSValidator(), false)
 
 	failures, err := journey.SetDiscoveryModel(discoveryModel)
 	require.NoError(err)

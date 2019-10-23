@@ -46,7 +46,7 @@ Complete documentation is available at https://bitbucket.org/openbankingteam/con
 			validatorEngine := discovery.NewFuncValidator(model.NewConditionalityChecker())
 			testGenerator := generation.NewGenerator()
 			tlsValidator := discovery.NewStdTLSValidator(tls.VersionTLS11)
-			journey := server.NewJourney(logger, testGenerator, validatorEngine, tlsValidator)
+			journey := server.NewJourney(logger, testGenerator, validatorEngine, tlsValidator, viper.GetBool("dynres"))
 
 			echoServer := server.NewServer(journey, logger, ver)
 			address := fmt.Sprintf("%s:%d", server.ListenHost, viper.GetInt("port"))
@@ -149,10 +149,6 @@ func initConfig() {
 
 	if viper.GetBool("enable_jws") {
 		model.EnableJWS()
-	}
-
-	if viper.GetBool("dynres") {
-		server.EnableDynamicResourceIDs()
 	}
 
 	if viper.GetBool("dumpcontexts") {

@@ -50,7 +50,7 @@ COPY web .
 ENV FORCE_COLOR=1
 ENV NODE_DISABLE_COLORS=0
 
-RUN yarn install \
+RUN yarn install --frozen-lockfile --non-interactive \
 	&& NODE_ENV=production yarn build
 
 # Certificates needed if you are building a networking application

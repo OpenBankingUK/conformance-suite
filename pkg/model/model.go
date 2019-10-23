@@ -17,8 +17,6 @@ import (
 	"gopkg.in/resty.v1"
 )
 
-const ignoreHTTPStatus = -1
-
 // Manifest is the high level container for test suite definition
 // It contains a list of all the rules required to be passed for conformance testing
 // Each rule can have multiple testcases which contribute to testing that particular rule
