@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/pkg/errors"
+	"github.com/sirupsen/logrus"
 
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
 
@@ -208,6 +209,12 @@ func HasValidEndpoints(checker model.ConditionalityChecker, discoveryConfig *Mod
 					Key:   fmt.Sprintf("DiscoveryModel.DiscoveryItems[%d].Endpoints[%d]", discoveryItemIndex, endpointIndex),
 					Error: err.Error(),
 				}
+				logrus.WithFields(logrus.Fields{
+					"function": "HasValidEndpoints",
+					"module":   "func_validator",
+					"package":  "discovery",
+				}).Debugf("failure=%#v", failure)
+
 				failures = append(failures, failure)
 				continue
 			}
@@ -216,6 +223,13 @@ func HasValidEndpoints(checker model.ConditionalityChecker, discoveryConfig *Mod
 					Key:   fmt.Sprintf("DiscoveryModel.DiscoveryItems[%d].Endpoints[%d]", discoveryItemIndex, endpointIndex),
 					Error: fmt.Sprintf("Invalid endpoint Method='%s', Path='%s'", endpoint.Method, endpoint.Path),
 				}
+
+				logrus.WithFields(logrus.Fields{
+					"function": "HasValidEndpoints",
+					"module":   "func_validator",
+					"package":  "discovery",
+				}).Debugf("failure=%#v", failure)
+
 				failures = append(failures, failure)
 			}
 		}

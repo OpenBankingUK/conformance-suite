@@ -10,6 +10,7 @@ import (
 	"strings"
 
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/schema"
+	"github.com/blang/semver"
 	"github.com/pkg/errors"
 	"github.com/tidwall/sjson"
 
@@ -34,6 +35,7 @@ type Script struct {
 	RefURI              string            `json:"refURI,omitempty"`
 	Parameters          map[string]string `json:"parameters,omitempty"`
 	Headers             map[string]string `json:"headers,omitempty"`
+	RemoveHeaders       []string          `json:"removeHeaders,omitempty"`
 	Body                string            `json:"body,omitempty"`
 	Permissions         []string          `json:"permissions,omitemtpy"`
 	PermissionsExcluded []string          `json:"permissions-excluded,omitemtpy"`
@@ -114,7 +116,7 @@ func GenerateTestCases(params *GenerationParameters) ([]model.TestCase, Scripts,
 
 	}
 	logrus.Debug("GenerateManifestTestCases for spec type:" + specType)
-	scripts, refs, err := LoadGenerationResources(specType, params.ManifestPath)
+	scripts, refs, err := LoadGenerationResources(specType, params.ManifestPath, params.Ctx)
 	if err != nil {
 		logger.WithFields(logrus.Fields{
 			"err": err,
@@ -386,27 +388,85 @@ func buildInputSection(s Script, i *model.Input) {
 	for k, v := range s.Headers {
 		i.Headers[k] = v
 	}
+	var removeHeaders []string
+	for _, v := range s.RemoveHeaders {
+		removeHeaders = append(removeHeaders, v)
+	}
+	i.RemoveHeaders = removeHeaders
 	i.RequestBody = s.Body
 }
 
-func LoadGenerationResources(specType, manifestPath string) (Scripts, References, error) {
+func LoadGenerationResources(specType, manifestPath string, ctx *model.Context) (Scripts, References, error) {
+
+	if specType == "notifications" {
+		return Scripts{}, References{}, errors.New("loadGenerationResources: invalid spec type")
+	}
+
 	assertions, err := loadAssertions()
 	if err != nil {
 		return Scripts{}, References{}, err
 	}
-	switch specType {
-	case "accounts":
-		sc, err := loadScripts(manifestPath)
-		return sc, assertions, err
-	case "payments":
-		pay, err := loadScripts(manifestPath)
-		return pay, assertions, err
-	case "cbpii":
-		cbpii, err := loadScripts(manifestPath)
-		return cbpii, assertions, err
-	case "notifications":
+	sc, err := loadScripts(manifestPath)
+	if err != nil {
+		return Scripts{}, References{}, err
 	}
-	return Scripts{}, References{}, errors.New("loadGenerationResources: invalid spec type")
+
+	vsScripts, err := getVersionSpecificScripts(specType, "3.1.2", ctx)
+	if err != nil {
+		return Scripts{}, References{}, err
+	}
+
+	if len(vsScripts.Scripts) != 0 {
+		sc.Scripts = append(sc.Scripts, vsScripts.Scripts...)
+	}
+
+	return sc, assertions, err
+
+}
+
+func getVersionSpecificScripts(spectype, version string, ctx *model.Context) (Scripts, error) {
+	var apiVersions []string
+	var err error
+	apiVersions = []string{}
+	if ctx != nil {
+		apiVersions, err = ctx.GetStringSlice("apiversions")
+		if err == model.ErrNotFound {
+			return Scripts{}, nil
+		}
+
+	}
+
+	if err != nil {
+		logrus.Errorln("getVersionscript - err " + err.Error())
+		return Scripts{}, err
+	}
+
+	sver, err := semver.Make(version)
+	if err != nil {
+		return Scripts{}, err
+	}
+
+	for _, v := range apiVersions {
+		api := strings.Split(v, "_v")
+		if len(api) > 1 {
+			if strings.Compare(spectype, api[0]) == 0 {
+				s1, err := semver.Make(api[1])
+				if err != nil {
+					return Scripts{}, err
+				}
+				if sver.Compare(s1) == 0 {
+					scriptname := fmt.Sprintf("file://manifests/ob_%s_%s.json", api[1], api[0])
+					sc, err := loadScripts(scriptname)
+					if err != nil {
+						return Scripts{}, err
+					}
+					return sc, nil
+				}
+			}
+		}
+	}
+
+	return Scripts{}, nil
 }
 
 func loadAssertions() (References, error) {

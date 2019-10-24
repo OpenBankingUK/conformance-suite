@@ -28,15 +28,16 @@ import (
 // to the parent Rule which determine how to execute the requestion object. On execution an http response object
 // is received and passed back to the testcase for validation using the Expects object.
 type Input struct {
-	Method         string            `json:"method,omitempty"`      // http Method that this test case uses
-	Endpoint       string            `json:"endpoint,omitempty"`    // resource endpoint where the http object needs to be sent to get a response
-	Headers        map[string]string `json:"headers,omitempty"`     // Allows for provision of specific http headers
-	FormData       map[string]string `json:"formData,omitempty"`    // Allow for provision of http form data
-	RequestBody    string            `json:"bodyData,omitempty"`    // Optional request body raw data
-	Generation     map[string]string `json:"generation,omitempty"`  // Allows for different ways of generating testcases
-	Claims         map[string]string `json:"claims,omitempty"`      // collects claims for input strategies that require them
-	JwsSig         bool              `json:"jws,omitempty"`         // controls inclusion of x-jws-signature header
-	IdempotencyKey bool              `json:"idempotency,omitempty"` // specifices the inclusion of x-idempotency-key in the request
+	Method         string            `json:"method,omitempty"`        // http Method that this test case uses
+	Endpoint       string            `json:"endpoint,omitempty"`      // resource endpoint where the http object needs to be sent to get a response
+	Headers        map[string]string `json:"headers,omitempty"`       // Allows for provision of specific http headers
+	RemoveHeaders  []string          `json:"removeheaders,omitempty"` // Allows for removing specific http headers
+	FormData       map[string]string `json:"formData,omitempty"`      // Allow for provision of http form data
+	RequestBody    string            `json:"bodyData,omitempty"`      // Optional request body raw data
+	Generation     map[string]string `json:"generation,omitempty"`    // Allows for different ways of generating testcases
+	Claims         map[string]string `json:"claims,omitempty"`        // collects claims for input strategies that require them
+	JwsSig         bool              `json:"jws,omitempty"`           // controls inclusion of x-jws-signature header
+	IdempotencyKey bool              `json:"idempotency,omitempty"`   // specifices the inclusion of x-idempotency-key in the request
 }
 
 var disableJws = true // defaults to JWS disabled in line with waiver 007
@@ -97,6 +98,10 @@ func (i *Input) CreateRequest(tc *TestCase, ctx *Context) (*resty.Request, error
 
 	if i.IdempotencyKey {
 		i.SetHeader("x-idempotency-key", tc.ID+"-"+makeMiliSecondStringTimestamp()) // initial trivial x-idempotency-key implementation
+	}
+
+	if err = i.removeHeaders(req, ctx); err != nil {
+		return nil, err
 	}
 
 	if err = i.setHeaders(req, ctx); err != nil {
@@ -204,6 +209,31 @@ func (i *Input) setFormData(req *resty.Request, ctx *Context) error {
 		}
 		req.SetFormData(i.FormData)
 	}
+	return nil
+}
+
+func (i *Input) removeHeaders(req *resty.Request, ctx *Context) error {
+	remainingHeaders := make(map[string]string, 0)
+	if len(i.RemoveHeaders) > 0 {
+		i.AppMsg(fmt.Sprintf("RemoveHeaders %v", i.RemoveHeaders))
+	}
+
+	var found bool
+	for x, y := range i.Headers {
+		for _, v := range i.RemoveHeaders {
+			if strings.EqualFold(v, x) {
+				found = true
+				i.AppMsg("removing header: " + x)
+				break
+			}
+		}
+		if !found {
+			remainingHeaders[x] = y
+		}
+		found = false
+	}
+
+	i.Headers = remainingHeaders
 	return nil
 }
 

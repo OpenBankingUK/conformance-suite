@@ -91,11 +91,6 @@ func (g generator) GenerateManifestTests(log *logrus.Entry, config GeneratorConf
 	tokens := map[string][]manifest.RequiredTokens{}
 
 	for _, item := range discovery.DiscoveryItems {
-		specType, err := manifest.GetSpecType(item.APISpecification.SchemaVersion)
-		if err != nil {
-			log.Warnf("failed to determine spec type for: `%s`", item.APISpecification.SchemaVersion)
-			continue
-		}
 		validator, err := schema.NewSwaggerOBSpecValidator(item.APISpecification.Name, item.APISpecification.Version)
 		if err != nil {
 			log.WithError(err).Warnf("manifest testcase generation failed for %s", item.APISpecification.SchemaVersion)
@@ -104,14 +99,10 @@ func (g generator) GenerateManifestTests(log *logrus.Entry, config GeneratorConf
 		log.WithFields(logrus.Fields{"name": item.APISpecification.Name, "version": item.APISpecification.Version}).
 			Info("swagger spec validator created")
 
-		scripts, _, err := manifest.LoadGenerationResources(specType, item.APISpecification.Manifest)
-		if err != nil {
-			log.Warnf("failed to load manifest failed: manifest %s, spec type %s", item.APISpecification.Manifest, specType)
-			continue
-		}
+		//scripts, _, err := manifest.LoadGenerationResources(specType, item.APISpecification.Manifest)
 
 		params := manifest.GenerationParameters{
-			Scripts:      scripts,
+			//	Scripts:      scripts,
 			Spec:         item.APISpecification,
 			Baseurl:      item.ResourceBaseURI,
 			Ctx:          ctx,

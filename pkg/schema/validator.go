@@ -41,8 +41,11 @@ type Validator interface {
 func NewSwaggerOBSpecValidator(specName, version string) (Validator, error) {
 	var err error
 
+	prodDir := "pkg/schema/spec/" + version
+	testDir := "../../pkg/schema/spec/" + version
+
 	dirnameIndex := 0
-	dirnames := []string{"pkg/schema/spec/v3.1.0", "../../pkg/schema/spec/v3.1.0"}
+	dirnames := []string{prodDir, testDir}
 	files := []os.FileInfo{}
 	for index, dirname := range dirnames {
 		filesReadDir, errReadDir := ioutil.ReadDir(dirname)
@@ -107,6 +110,10 @@ func newValidator(doc *loads.Document) (Validator, error) {
 	case "v3.0.0":
 		fallthrough
 	case "v3.1.0":
+		fallthrough
+	case "v3.1.1":
+		fallthrough
+	case "v3.1.2":
 		return validators{
 			validators: []Validator{
 				newContentTypeValidator(f),
@@ -117,7 +124,7 @@ func newValidator(doc *loads.Document) (Validator, error) {
 		}, nil
 	}
 
-	return nil, errors.New("unsupported spec version")
+	return nil, errors.New("unsupported spec version from newValidator")
 }
 
 func (v validators) Validate(r Response) ([]Failure, error) {
