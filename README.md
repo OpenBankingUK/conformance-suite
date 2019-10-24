@@ -17,7 +17,7 @@ To provide feedback, please use the public [issue tracker](https://bitbucket.org
 ## Release Notes 
 * * *
 
-# Release v1.2.0 (16th Oct 2019)
+# Release v1.2.0 (24th Oct 2019)
 
 The release is called **v1.2.0**, it updates the tool to support the [OBIE CBPII](https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1077806537/Confirmation+of+Funds+API+Specification+-+v3.1.2) endpoints and read write v3.1.2 specifications.
 
