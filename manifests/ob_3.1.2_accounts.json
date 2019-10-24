@@ -22,6 +22,6 @@
       "OB3GLOFAPIHeader"
     ],
     "method": "get",
-    "schemaCheck": false
+    "schemaCheck": true
   }]
 }

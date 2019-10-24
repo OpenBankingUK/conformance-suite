@@ -209,7 +209,12 @@ func HasValidEndpoints(checker model.ConditionalityChecker, discoveryConfig *Mod
 					Key:   fmt.Sprintf("DiscoveryModel.DiscoveryItems[%d].Endpoints[%d]", discoveryItemIndex, endpointIndex),
 					Error: err.Error(),
 				}
-				logrus.Debugf("%#v", failure)
+				logrus.WithFields(logrus.Fields{
+					"function": "HasValidEndpoints",
+					"module":   "func_validator",
+					"package":  "discovery",
+				}).Debugf("failure=%#v", failure)
+
 				failures = append(failures, failure)
 				continue
 			}
@@ -218,7 +223,13 @@ func HasValidEndpoints(checker model.ConditionalityChecker, discoveryConfig *Mod
 					Key:   fmt.Sprintf("DiscoveryModel.DiscoveryItems[%d].Endpoints[%d]", discoveryItemIndex, endpointIndex),
 					Error: fmt.Sprintf("Invalid endpoint Method='%s', Path='%s'", endpoint.Method, endpoint.Path),
 				}
-				logrus.Debugf("%#v", failure)
+
+				logrus.WithFields(logrus.Fields{
+					"function": "HasValidEndpoints",
+					"module":   "func_validator",
+					"package":  "discovery",
+				}).Debugf("failure=%#v", failure)
+
 				failures = append(failures, failure)
 			}
 		}
