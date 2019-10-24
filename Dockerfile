@@ -85,6 +85,8 @@ COPY --from=nodebuilder /app/dist /app/web/dist
 
 COPY pkg/schema/spec/v3.0.0/*.json /app/pkg/schema/spec/v3.0.0/
 COPY pkg/schema/spec/v3.1.0/*.json /app/pkg/schema/spec/v3.1.0/
+COPY pkg/schema/spec/v3.1.1/*.json /app/pkg/schema/spec/v3.1.1/
+COPY pkg/schema/spec/v3.1.2/*.json /app/pkg/schema/spec/v3.1.2/
 
 EXPOSE 8443
 
