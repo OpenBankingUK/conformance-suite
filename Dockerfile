@@ -45,6 +45,8 @@ COPY pkg/discovery/templates/*.json /pkg/discovery/templates/
 COPY pkg/model/testdata/*.json /pkg/model/testdata/
 COPY pkg/schema/spec/v3.0.0/*.json /pkg/schema/spec/v3.0.0/
 COPY pkg/schema/spec/v3.1.0/*.json /pkg/schema/spec/v3.1.0/
+COPY pkg/schema/spec/v3.1.1/*.json /pkg/schema/spec/v3.1.1/
+COPY pkg/schema/spec/v3.1.2/*.json /pkg/schema/spec/v3.1.2/
 COPY web .
 
 ENV FORCE_COLOR=1
