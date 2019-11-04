@@ -10,6 +10,7 @@ import (
 	"strings"
 
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/schema"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/schemaprops"
 
 	"github.com/sirupsen/logrus"
 
@@ -143,6 +144,10 @@ func (t *TestCase) Validate(resp *resty.Response, rulectx *Context) (bool, []err
 	} else {
 		logSchemaValidationOffWarning(t)
 	}
+
+	// Gather fields within json response - for reporting
+	collector := schemaprops.GetPropertyCollector()
+	collector.CollectProperties(t.Input.Method, t.Input.Endpoint, t.Body, resp.StatusCode())
 
 	return pass, errs
 }

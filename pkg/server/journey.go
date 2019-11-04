@@ -498,7 +498,8 @@ func (wj *journey) RunTests() error {
 	runDefinition := wj.makeRunDefinition()
 	runner := executors.NewTestCaseRunner(wj.log, runDefinition, wj.daemonController)
 	wj.context.PutString(CtxPhase, "run")
-	return runner.RunTestCases(&wj.context)
+	err := runner.RunTestCases(&wj.context)
+	return err
 }
 
 func (wj *journey) Results() executors.DaemonController {
