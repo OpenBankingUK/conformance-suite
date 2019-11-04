@@ -5,6 +5,7 @@ import (
 	"sync"
 
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/executors/results"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/schemaprops"
 )
 
 type DaemonController interface {
@@ -107,6 +108,9 @@ func (rc *daemonController) Results() <-chan results.TestCase {
 
 // SetCompleted - mark the tests as completed.
 func (rc *daemonController) SetCompleted() {
+	collector := schemaprops.GetPropertyCollector()
+	collector.DumpProperties()
+
 	rc.isCompletedChan <- true
 }
 
