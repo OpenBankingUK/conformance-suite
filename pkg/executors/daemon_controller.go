@@ -109,7 +109,7 @@ func (rc *daemonController) Results() <-chan results.TestCase {
 // SetCompleted - mark the tests as completed.
 func (rc *daemonController) SetCompleted() {
 	collector := schemaprops.GetPropertyCollector()
-	collector.DumpProperties()
+	collector.OutputJSON(schemaprops.PropertyOutput{Api: "Account and Transaction API Specification", Version: "3.1.1"})
 
 	rc.isCompletedChan <- true
 }

@@ -2,6 +2,8 @@ package schemaprops
 
 import (
 	"testing"
+
+	"github.com/sirupsen/logrus"
 )
 
 func TestCollectReturnedJSONFields(t *testing.T) {
@@ -11,7 +13,151 @@ func TestCollectReturnedJSONFields(t *testing.T) {
 	t.Fail()
 }
 
+func TestTransactionsJSONFields(t *testing.T) {
+	logrus.SetLevel(logrus.TraceLevel)
+
+	c := MakeCollector()
+	c.CollectProperties("GET", "/open-banking/3.1/aisp/accounts", string(atransaction), 200)
+	c.DumpProperties()
+	c.OutputJSON(PropertyOutput{Api: "Account and Transaction API Specification", Version: "3.1.1"})
+	t.Fail()
+}
+
+func TestAccountsJSONFields(t *testing.T) {
+	c := MakeCollector()
+	c.CollectProperties("GET", "/accounts", string(accounts), 200)
+	c.DumpProperties()
+	t.Fail()
+}
+
 var (
+	accounts = []byte(`{
+		"Data": {
+		   "Account": [
+			  {
+				 "AccountId": "700004000000000000000005",
+				 "Currency": "GBP",
+				 "Nickname": "xxxx0005",
+				 "AccountType": "Business",
+				 "AccountSubType": "CurrentAccount",
+				 "Account": [
+					{
+					   "SchemeName": "UK.OBIE.SortCodeAccountNumber",
+					   "Identification": "70000170000005",
+					   "Name": "Octon Inc"
+					}
+				 ]
+			  },
+			  {
+				 "AccountId": "700004000000000000000001",
+				 "Currency": "GBP",
+				 "Nickname": "xxxx0001",
+				 "AccountType": "Personal",
+				 "AccountSubType": "CurrentAccount",
+				 "Account": [
+					{
+					   "SchemeName": "UK.OBIE.SortCodeAccountNumber",
+					   "Identification": "70000170000001",
+					   "SecondaryIdentification": "Roll No. 001"
+					}
+				 ]
+			  },
+			  {
+				 "AccountId": "700004000000000000000006",
+				 "Currency": "GBP",
+				 "Nickname": "xxxx0002",
+				 "AccountType": "Business",
+				 "AccountSubType": "Other",
+				 "Account": [
+					{
+					   "SchemeName": "UK.OBIE.SortCodeAccountNumber",
+					   "Identification": "70000170000006",
+					   "SecondaryIdentification": "Roll No. 002"
+					}
+				 ]
+			  },
+			  {
+				 "AccountId": "700004000000000000000003",
+				 "Currency": "GBP",
+				 "Nickname": "xxxx0003",
+				 "AccountType": "Business",
+				 "AccountSubType": "CurrentAccount",
+				 "Account": [
+					{
+					   "SchemeName": "UK.OBIE.IBAN",
+					   "Identification": "GB29OBI170000170000001",
+					   "Name": "Mario Carpentry"
+					}
+				 ],
+				 "Servicer": {
+					"SchemeName": "UK.OBIE.BICFI",
+					"Identification": "GB29OBI1XXX"
+				 }
+			  },
+			  {
+				 "AccountId": "700004000000000000000002",
+				 "Currency": "GBP",
+				 "Nickname": "xxxx0006",
+				 "AccountType": "Personal",
+				 "AccountSubType": "CurrentAccount",
+				 "Account": [
+					{
+					   "SchemeName": "UK.OBIE.SortCodeAccountNumber",
+					   "Identification": "70000170000002",
+					   "SecondaryIdentification": "Roll No. 002"
+					}
+				 ]
+			  }
+		   ]
+		},
+		"Links": {
+		   "Self": "https://ob19-rs1.o3bank.co.uk:4501/open-banking/v3.1/aisp/accounts"
+		},
+		"Meta": {
+		   "TotalPages": 1
+		}
+	 }`)
+
+	atransaction = []byte(`{
+		"Data": {
+		   "Transaction": [
+			  {
+				 "AccountId": "700004000000000000000005",
+				 "TransactionId": "ffcb7ac9-b178-4093-8a10-b7281c39cf15",
+				 "TransactionReference": "60c09267-21a0-4fc2-8a08-551a839bb77",
+				 "BookingDateTime": "2019-09-16T01:59:39.629Z",
+				 "ValueDateTime": "2019-09-16T01:59:39.629Z",
+				 "ProprietaryBankTransactionCode": {
+					"Code": "PMT"
+				 },
+				 "TransactionInformation": "Payment Id: pmt-cfd4aa73-8aa8-41c6-9342-66d3bf37bd9b",
+				 "Amount": {
+					"Amount": "0.10",
+					"Currency": "GBP"
+				 },
+				 "CreditDebitIndicator": "Debit",
+				 "Status": "Booked",
+				 "Balance": {
+					"Amount": {
+					   "Amount": "0.10",
+					   "Currency": "GBP"
+					},
+					"CreditDebitIndicator": "Debit",
+					"Type": "ClosingAvailable"
+				 }
+			  }
+		   ]
+		},
+		"Links": {
+		   "Self": "https://ob19-rs1.o3bank.co.uk:4501/open-banking/v3.1/aisp/accounts/700004000000000000000005/transactions"
+		},
+		"Meta": {
+		   "TotalPages": 1,
+		   "FirstAvailableDateTime": "2016-01-01T08:40:00.000Z",
+		   "LastAvailableDateTime": "2025-12-31T08:40:00.000Z"
+		}
+	 }`)
+
 	tdata1 = []byte(`
 	{
 	   "Data": {

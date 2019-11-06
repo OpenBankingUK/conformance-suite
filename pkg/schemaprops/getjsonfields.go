@@ -4,8 +4,10 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"log"
 	"sort"
 	"strconv"
+	"strings"
 
 	"github.com/sirupsen/logrus"
 )
@@ -14,6 +16,23 @@ type Collector struct {
 	level     int
 	path      []string
 	endpoints map[string]map[string]int
+}
+
+type PropertyOutput struct {
+	Api       string     `json:"api,omitempty"`
+	Version   string     `json:"version,omitempty"`
+	Endpoints []Endpoint `json:"endpoints,omitempty"`
+}
+
+type Endpoint struct {
+	Method    string     `json:"method,omitempty"`
+	Path      string     `json:"path,omitempty"`
+	Responses []Response `json:"responses,omitempty"`
+}
+
+type Response struct {
+	Code   string   `json:"code,omitempty"`
+	Fields []string `json:"fields,omitempty"`
 }
 
 var (
@@ -44,22 +63,6 @@ func (c *Collector) GetProperties() map[string]map[string]int {
 	return c.endpoints
 }
 
-func (c *Collector) DumpProperties() {
-	logrus.Debug("Dump Properties===============")
-	endpoints := sortEndpoints(c.endpoints)
-	for _, k := range endpoints {
-		logrus.Debugf("%s", k)
-		fmt.Printf("%s\n", k)
-		v := c.endpoints[k]
-		sortedv := sortPaths(v)
-		for _, x := range sortedv {
-			logrus.Debugf("%s", x)
-			fmt.Printf("%s\n", x)
-		}
-	}
-	logrus.Debug("End Dump Properties===============")
-}
-
 func sortEndpoints(m map[string]map[string]int) []string {
 	keyslice := make([]string, 0)
 	for k, _ := range m {
@@ -83,7 +86,11 @@ func sortPaths(m map[string]int) []string {
 }
 
 func (c *Collector) CollectProperties(method, endpoint, body string, code int) map[string]int {
+	if strings.Contains(endpoint, "PsuDummyURL") {
+		return map[string]int{}
+	}
 	requestPaths := make(map[string]int, 20)
+	c.path = make([]string, 20)
 	var anyJson map[string]interface{}
 	json.Unmarshal([]byte(body), &anyJson)
 	for k, _ := range anyJson {
@@ -108,9 +115,18 @@ func (c *Collector) CollectProperties(method, endpoint, body string, code int) m
 	for _, v := range keyslice {
 		pathmap[v] = 0
 	}
-	c.endpoints[method+" "+endpoint+" "+strconv.Itoa(code)] = pathmap // Store path under method/endpoint/response code key
+
+	shortname := c.stripName(endpoint)
+
+	c.endpoints[method+" "+shortname+" "+strconv.Itoa(code)] = pathmap // Store path under method/endpoint/response code key
 
 	return pathmap
+}
+
+func (c *Collector) stripName(endpoint string) string {
+	result := strings.Split(endpoint, "/open-banking/")
+	len := len(result)
+	return "/open-banking/" + result[len-1]
 }
 
 func (c *Collector) makePath(level int) string {
@@ -127,7 +143,6 @@ func (c *Collector) makePath(level int) string {
 }
 
 func (c *Collector) expand(i interface{}, m map[string]int) {
-	c.level++
 	r, ok := i.(map[string]interface{})
 	if !ok {
 		switch i.(type) {
@@ -139,13 +154,101 @@ func (c *Collector) expand(i interface{}, m map[string]int) {
 		case string:
 		default:
 		}
-		c.level--
 		return
 	}
+	c.level++
 	for k := range r {
 		c.path[c.level] = k
 		m[c.makePath(c.level)] = 0
 		c.expand(r[k], m)
 	}
 	c.level--
+}
+
+func (c *Collector) DumpProperties() {
+	if logrus.GetLevel() == logrus.TraceLevel {
+		logrus.Debug("Dump Properties===============")
+		endpoints := sortEndpoints(c.endpoints)
+		for _, k := range endpoints {
+			logrus.Debugf("%s", k)
+			v := c.endpoints[k]
+			sortedv := sortPaths(v)
+			for _, x := range sortedv {
+				logrus.Debugf("%s", x)
+			}
+		}
+		logrus.Debug("End Dump Properties===============")
+	}
+}
+
+func (c *Collector) OutputJSON(props PropertyOutput) string {
+	logrus.Debug("---------------------")
+	logrus.Debug("OutputJSON")
+	props.Endpoints = make([]Endpoint, 0)
+
+	endpoints := sortEndpoints(c.endpoints)
+	for _, k := range endpoints {
+		logrus.Debugf("%s", k)
+
+		v := c.endpoints[k]
+		method, path, code := c.parseEndpoint(k)
+		logrus.Debugf("endpoint: %s, %s, %s", method, path, code)
+		endp := Endpoint{Method: method, Path: path}
+		// find if endpoint and code already exists - if so use that endpoint
+
+		// Find if endpoint already exists
+		// - if so,
+		response, endpoint := c.findEndpointResponse(&props, endp, code)
+		if response.Code == "" {
+			response = Response{Code: code}
+			response.Fields = make([]string, 0)
+		}
+		if endpoint.Method == "" {
+			endpoint = Endpoint{}
+			endpoint.Method = method
+			endpoint.Path = path
+			endpoint.Responses = make([]Response, 0)
+		}
+
+		sortedv := sortPaths(v)
+		for _, x := range sortedv {
+			response.Fields = append(response.Fields, x)
+			logrus.Debugf("%s", x)
+		}
+
+		endpoint.Responses = append(endpoint.Responses, response)
+
+		props.Endpoints = append(props.Endpoints, endpoint)
+
+	}
+
+	// Convert structs to JSON.
+	jsondata, err := json.MarshalIndent(props, "", " ")
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Printf("\n%s\n", jsondata)
+
+	return ""
+}
+
+func (c *Collector) parseEndpoint(ep string) (string, string, string) {
+	split := strings.Split(ep, " ")
+	if len(split) != 3 {
+		return "", "", ""
+	}
+	return split[0], split[1], split[2]
+}
+
+func (c *Collector) findEndpointResponse(props *PropertyOutput, endpoint Endpoint, code string) (Response, Endpoint) {
+	for ek, ep := range props.Endpoints {
+		if endpoint.Method == ep.Method && endpoint.Path == ep.Path {
+			for rk, resp := range ep.Responses {
+				if resp.Code == code {
+					return props.Endpoints[ek].Responses[rk], props.Endpoints[ek]
+				}
+			}
+		}
+	}
+	return Response{}, Endpoint{}
 }
