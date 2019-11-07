@@ -24,7 +24,7 @@
           "endpoint": "$token_endpoint",
           "headers": {
             "content-type": "application/x-www-form-urlencoded",
-            "accept": "*/*",
+            "accept": "application/json",
             "authorization": "Basic $basic_authentication"
           },
           "formData": {
@@ -54,7 +54,7 @@
           "endpoint": "/open-banking/v3.1/aisp/account-access-consents",
           "headers": {
             "content-type": "application/json",
-            "accept": "*/*",
+            "accept": "application/json",
             "x-fapi-interaction-id": "c4405450-febe-11e8-80a5-0fcebb157400",
             "x-fapi-financial-id": "$x-fapi-financial-id",
             "authorization": "Bearer $client_access_token"
@@ -125,7 +125,7 @@
           "headers": {
             "content-type": "application/x-www-form-urlencoded",
             "authorization": "Basic $basic_authentication",
-            "accept": "*/*"
+            "accept": "application/json"
           },
           "formData": {
             "code": "$xchange_code",

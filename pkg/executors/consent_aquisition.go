@@ -261,7 +261,7 @@ func exchangeCodeForToken(code string, ctx *model.Context, logger *logrus.Entry)
 	case authentication.ClientSecretBasic:
 		resp, errResponse = resty.R().
 			SetHeader("content-type", "application/x-www-form-urlencoded").
-			SetHeader("accept", "*/*").
+			SetHeader("accept", "application/json").
 			SetHeader("authorization", "Basic "+basicAuth).
 			SetFormData(map[string]string{
 				authentication.GrantType: authentication.GrantTypeAuthorizationCode,
@@ -272,7 +272,7 @@ func exchangeCodeForToken(code string, ctx *model.Context, logger *logrus.Entry)
 	case authentication.TlsClientAuth:
 		resp, errResponse = resty.R().
 			SetHeader("content-type", "application/x-www-form-urlencoded").
-			SetHeader("accept", "*/*").
+			SetHeader("accept", "application/json").
 			SetFormData(map[string]string{
 				authentication.GrantType: authentication.GrantTypeAuthorizationCode,
 				"code":                   code,
@@ -321,7 +321,7 @@ func exchangeCodeForToken(code string, ctx *model.Context, logger *logrus.Entry)
 
 		resp, errResponse = resty.R().
 			SetHeader("content-type", "application/x-www-form-urlencoded").
-			SetHeader("accept", "*/*").
+			SetHeader("accept", "application/json").
 			SetFormData(map[string]string{
 				authentication.GrantType:           authentication.GrantTypeAuthorizationCode,
 				"code":                             code,
