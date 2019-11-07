@@ -7,27 +7,25 @@ import (
 )
 
 func TestCollectReturnedJSONFields(t *testing.T) {
+	logrus.SetLevel(logrus.TraceLevel)
 	c := MakeCollector()
 	c.CollectProperties("GET", "/accounts", string(tdata1), 200)
 	c.DumpProperties()
-	t.Fail()
 }
 
 func TestTransactionsJSONFields(t *testing.T) {
 	logrus.SetLevel(logrus.TraceLevel)
-
 	c := MakeCollector()
 	c.CollectProperties("GET", "/open-banking/3.1/aisp/accounts", string(atransaction), 200)
 	c.DumpProperties()
 	c.OutputJSON(PropertyOutput{Api: "Account and Transaction API Specification", Version: "3.1.1"})
-	t.Fail()
 }
 
 func TestAccountsJSONFields(t *testing.T) {
+	logrus.SetLevel(logrus.TraceLevel)
 	c := MakeCollector()
 	c.CollectProperties("GET", "/accounts", string(accounts), 200)
 	c.DumpProperties()
-	t.Fail()
 }
 
 var (
