@@ -15,8 +15,7 @@ type Collector struct {
 	level      int
 	currentApi int
 	path       []string
-	//endpoints  map[string]map[string]int // deprecated
-	Apis []PropertyOutput
+	Apis       []PropertyOutput
 }
 
 type PropertyOutput struct {
@@ -66,7 +65,6 @@ type PropertyCollector interface {
 func MakeCollector() *Collector {
 	c := &Collector{}
 	c.path = make([]string, 20)
-	//c.endpoints = make(map[string]map[string]int, 0)
 	return c
 }
 
