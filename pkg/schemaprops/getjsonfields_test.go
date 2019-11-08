@@ -8,24 +8,47 @@ import (
 
 func TestCollectReturnedJSONFields(t *testing.T) {
 	logrus.SetLevel(logrus.TraceLevel)
-	c := MakeCollector()
+	c := GetPropertyCollector()
+	c.SetCollectorAPIDetails("myapi", "v3.1.0")
 	c.CollectProperties("GET", "/accounts", string(tdata1), 200)
-	c.DumpProperties()
+	c.dumpProperties()
 }
 
 func TestTransactionsJSONFields(t *testing.T) {
 	logrus.SetLevel(logrus.TraceLevel)
-	c := MakeCollector()
-	c.CollectProperties("GET", "/open-banking/3.1/aisp/accounts", string(atransaction), 200)
-	c.DumpProperties()
-	c.OutputJSON(PropertyOutput{Api: "Account and Transaction API Specification", Version: "3.1.1"})
+	c := GetPropertyCollector()
+	c.SetCollectorAPIDetails("myapi", "v3.1.0")
+	c.CollectProperties("GET", "https://myserver/open-banking/3.1/aisp/accounts/1234567853/transactions", string(atransaction), 200)
+	c.SetCollectorAPIDetails("yourapi", "v3.1.1")
+	c.CollectProperties("GET", "https://myserver/open-banking/3.1/aisp/accounts", string(accounts), 200)
+
+	c.OutputJSON()
 }
 
 func TestAccountsJSONFields(t *testing.T) {
 	logrus.SetLevel(logrus.TraceLevel)
-	c := MakeCollector()
+	c := GetPropertyCollector()
+	c.SetCollectorAPIDetails("myapi", "v3.1.0")
 	c.CollectProperties("GET", "/accounts", string(accounts), 200)
-	c.DumpProperties()
+	c.dumpProperties()
+}
+
+func (c *Collector) dumpProperties() {
+	logrus.SetLevel(logrus.TraceLevel)
+
+	if logrus.GetLevel() == logrus.TraceLevel {
+		logrus.Debug("Dump Properties===============")
+		endpoints := sortEndpoints(c.Apis[c.currentApi].endpoints)
+		for _, k := range endpoints {
+			logrus.Debugf("%s", k)
+			v := c.Apis[c.currentApi].endpoints[k]
+			sortedv := sortPaths(v)
+			for _, x := range sortedv {
+				logrus.Debugf("%s", x)
+			}
+		}
+		logrus.Debug("End Dump Properties===============")
+	}
 }
 
 var (

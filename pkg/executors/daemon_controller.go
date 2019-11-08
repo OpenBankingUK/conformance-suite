@@ -5,7 +5,6 @@ import (
 	"sync"
 
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/executors/results"
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/schemaprops"
 )
 
 type DaemonController interface {
@@ -108,9 +107,6 @@ func (rc *daemonController) Results() <-chan results.TestCase {
 
 // SetCompleted - mark the tests as completed.
 func (rc *daemonController) SetCompleted() {
-	collector := schemaprops.GetPropertyCollector()
-	collector.OutputJSON(schemaprops.PropertyOutput{Api: "Account and Transaction API Specification", Version: "3.1.1"})
-
 	rc.isCompletedChan <- true
 }
 
