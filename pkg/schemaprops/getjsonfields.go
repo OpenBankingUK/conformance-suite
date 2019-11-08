@@ -3,7 +3,6 @@ package schemaprops
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"log"
 	"sort"
 	"strconv"
@@ -13,15 +12,18 @@ import (
 )
 
 type Collector struct {
-	level     int
-	path      []string
-	endpoints map[string]map[string]int
+	level      int
+	currentApi int
+	path       []string
+	//endpoints  map[string]map[string]int // deprecated
+	Apis []PropertyOutput
 }
 
 type PropertyOutput struct {
 	Api       string     `json:"api,omitempty"`
 	Version   string     `json:"version,omitempty"`
 	Endpoints []Endpoint `json:"endpoints,omitempty"`
+	endpoints map[string]map[string]int
 }
 
 type Endpoint struct {
@@ -34,6 +36,15 @@ type Response struct {
 	Code   string   `json:"code,omitempty"`
 	Fields []string `json:"fields,omitempty"`
 }
+
+type PathRegex struct {
+	Regex   string
+	Method  string
+	Name    string
+	Mapping string
+}
+
+var subPathx = "[a-zA-Z0-9_{}-]+" // url sub path regex
 
 var (
 	collector *Collector
@@ -55,12 +66,19 @@ type PropertyCollector interface {
 func MakeCollector() *Collector {
 	c := &Collector{}
 	c.path = make([]string, 20)
-	c.endpoints = make(map[string]map[string]int, 0)
+	//c.endpoints = make(map[string]map[string]int, 0)
 	return c
 }
 
+func (c *Collector) SetCollectorAPIDetails(api, version string) {
+	p := PropertyOutput{Api: api, Version: version}
+	p.endpoints = make(map[string]map[string]int, 0)
+	c.Apis = append(c.Apis, p)
+	c.currentApi = len(c.Apis) - 1
+}
+
 func (c *Collector) GetProperties() map[string]map[string]int {
-	return c.endpoints
+	return c.Apis[c.currentApi].endpoints
 }
 
 func sortEndpoints(m map[string]map[string]int) []string {
@@ -84,10 +102,20 @@ func sortPaths(m map[string]int) []string {
 	sort.Strings(keyslice)
 	return keyslice
 }
+func sortPathStrings(m map[string]string) []string {
+	keyslice := make([]string, 0)
+	for k, _ := range m {
+		if len(k) != 0 {
+			keyslice = append(keyslice, k)
+		}
+	}
+	sort.Strings(keyslice)
+	return keyslice
+}
 
-func (c *Collector) CollectProperties(method, endpoint, body string, code int) map[string]int {
-	if strings.Contains(endpoint, "PsuDummyURL") {
-		return map[string]int{}
+func (c *Collector) CollectProperties(method, endpoint, body string, code int) {
+	if len(c.Apis) == 0 {
+		return
 	}
 	requestPaths := make(map[string]int, 20)
 	c.path = make([]string, 20)
@@ -111,16 +139,14 @@ func (c *Collector) CollectProperties(method, endpoint, body string, code int) m
 	sort.Strings(keyslice)
 
 	pathmap := make(map[string]int, 0)
-	logrus.Debugf("Paths for endpoint: %s %s %d", method, endpoint, code)
 	for _, v := range keyslice {
 		pathmap[v] = 0
 	}
 
 	shortname := c.stripName(endpoint)
+	c.Apis[c.currentApi].endpoints[method+" "+shortname+" "+strconv.Itoa(code)] = pathmap
 
-	c.endpoints[method+" "+shortname+" "+strconv.Itoa(code)] = pathmap // Store path under method/endpoint/response code key
-
-	return pathmap
+	return
 }
 
 func (c *Collector) stripName(endpoint string) string {
@@ -165,71 +191,46 @@ func (c *Collector) expand(i interface{}, m map[string]int) {
 	c.level--
 }
 
-func (c *Collector) DumpProperties() {
-	if logrus.GetLevel() == logrus.TraceLevel {
-		logrus.Debug("Dump Properties===============")
-		endpoints := sortEndpoints(c.endpoints)
+func (c *Collector) OutputJSON() string {
+	apis := c.Apis
+	for i, api := range apis {
+		endpoints := sortEndpoints(api.endpoints)
 		for _, k := range endpoints {
-			logrus.Debugf("%s", k)
-			v := c.endpoints[k]
+			v := c.Apis[i].endpoints[k]
+			method, path, code := c.parseEndpoint(k)
+			path = pathToSwagger(path)
+			endp := Endpoint{Method: method, Path: path}
+			// find if endpoint and code already exists - if so use that endpoint
+			response, endpoint := c.findEndpointResponse(api.Endpoints, endp, code)
+			if response.Code == "" {
+				response = Response{Code: code}
+				response.Fields = make([]string, 0)
+			}
+			if endpoint.Method == "" {
+				endpoint = Endpoint{}
+				endpoint.Method = method
+				endpoint.Path = path
+				endpoint.Responses = make([]Response, 0)
+			}
+
 			sortedv := sortPaths(v)
 			for _, x := range sortedv {
-				logrus.Debugf("%s", x)
+				response.Fields = append(response.Fields, x)
 			}
+			endpoint.Responses = append(endpoint.Responses, response)
+			c.Apis[i].Endpoints = append(c.Apis[i].Endpoints, endpoint)
 		}
-		logrus.Debug("End Dump Properties===============")
-	}
-}
-
-func (c *Collector) OutputJSON(props PropertyOutput) string {
-	logrus.Debug("---------------------")
-	logrus.Debug("OutputJSON")
-	props.Endpoints = make([]Endpoint, 0)
-
-	endpoints := sortEndpoints(c.endpoints)
-	for _, k := range endpoints {
-		logrus.Debugf("%s", k)
-
-		v := c.endpoints[k]
-		method, path, code := c.parseEndpoint(k)
-		logrus.Debugf("endpoint: %s, %s, %s", method, path, code)
-		endp := Endpoint{Method: method, Path: path}
-		// find if endpoint and code already exists - if so use that endpoint
-
-		// Find if endpoint already exists
-		// - if so,
-		response, endpoint := c.findEndpointResponse(&props, endp, code)
-		if response.Code == "" {
-			response = Response{Code: code}
-			response.Fields = make([]string, 0)
-		}
-		if endpoint.Method == "" {
-			endpoint = Endpoint{}
-			endpoint.Method = method
-			endpoint.Path = path
-			endpoint.Responses = make([]Response, 0)
-		}
-
-		sortedv := sortPaths(v)
-		for _, x := range sortedv {
-			response.Fields = append(response.Fields, x)
-			logrus.Debugf("%s", x)
-		}
-
-		endpoint.Responses = append(endpoint.Responses, response)
-
-		props.Endpoints = append(props.Endpoints, endpoint)
-
 	}
 
 	// Convert structs to JSON.
-	jsondata, err := json.MarshalIndent(props, "", " ")
+	jsondata, err := json.MarshalIndent(c.Apis, "", " ")
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Printf("\n%s\n", jsondata)
 
-	return ""
+	logrus.Traceln(string(jsondata))
+
+	return string(jsondata)
 }
 
 func (c *Collector) parseEndpoint(ep string) (string, string, string) {
@@ -240,12 +241,12 @@ func (c *Collector) parseEndpoint(ep string) (string, string, string) {
 	return split[0], split[1], split[2]
 }
 
-func (c *Collector) findEndpointResponse(props *PropertyOutput, endpoint Endpoint, code string) (Response, Endpoint) {
-	for ek, ep := range props.Endpoints {
+func (c *Collector) findEndpointResponse(endpoints []Endpoint, endpoint Endpoint, code string) (Response, Endpoint) {
+	for ek, ep := range endpoints {
 		if endpoint.Method == ep.Method && endpoint.Path == ep.Path {
 			for rk, resp := range ep.Responses {
 				if resp.Code == code {
-					return props.Endpoints[ek].Responses[rk], props.Endpoints[ek]
+					return endpoints[ek].Responses[rk], endpoints[ek]
 				}
 			}
 		}
