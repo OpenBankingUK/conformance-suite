@@ -117,7 +117,7 @@ func (r *TestCaseRunner) runTestCasesAsync(ctx *model.Context) {
 	}
 
 	collector := schemaprops.GetPropertyCollector()
-	collector.OutputJSON()
+	r.daemonController.AddResponseFields(collector.OutputJSON())
 
 	r.daemonController.SetCompleted()
 

@@ -45,8 +45,10 @@ func (h exportHandlers) postExport(c echo.Context) error {
 	logger.WithField("request", request).Info("Exporting ...")
 
 	results := h.journey.Results().AllResultsGrouped()
+	responseFields := h.journey.Results().ResponseFieldsJSON()
 	tokens := h.journey.Events().AllAcquiredAccessToken()
 	discovery, err := h.journey.DiscoveryModel()
+
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, NewErrorResponse(errors.Wrap(err, "exporting report-get journey discovery model")))
 	}
@@ -58,6 +60,7 @@ func (h exportHandlers) postExport(c echo.Context) error {
 		Tokens:           tokens,
 		DiscoveryModel:   discovery,
 		TLSVersionResult: h.journey.TLSVersionResult(),
+		ResponseFields:   responseFields,
 	}
 	logger.WithField("exportResults", exportResults).Info("Exported")
 
