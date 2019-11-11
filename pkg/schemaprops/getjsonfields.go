@@ -7,8 +7,6 @@ import (
 	"sort"
 	"strconv"
 	"strings"
-
-	"github.com/sirupsen/logrus"
 )
 
 type Collector struct {
@@ -226,9 +224,7 @@ func (c *Collector) OutputJSON() string {
 		log.Fatal(err)
 	}
 
-	logrus.Traceln(string(jsondata))
-
-	return string(jsondata)
+	return "{ \n\"responseFields\": " + string(jsondata) + "\n}"
 }
 
 func (c *Collector) parseEndpoint(ep string) (string, string, string) {

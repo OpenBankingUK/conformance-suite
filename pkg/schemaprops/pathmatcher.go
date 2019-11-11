@@ -1,7 +1,6 @@
 package schemaprops
 
 import (
-	"fmt"
 	"regexp"
 )
 
@@ -11,7 +10,6 @@ var (
 )
 
 func pathToSwagger(path string) string {
-	fmt.Printf("Checking path %s", path)
 	for _, regPath := range allregex {
 		matched, err := regexp.MatchString(regPath.Regex, path)
 		if err != nil {
