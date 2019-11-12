@@ -24,7 +24,7 @@ func getCbpiiConsents(
 
 	logrus.Debugf("we have %d cbpii consent required tokens\n", len(requiredTokens))
 	for _, rt := range requiredTokens {
-		logrus.Tracef("%#v\n", rt)
+		logrus.Tracef("%#v", rt)
 	}
 
 	requiredTokens, err = runCbpiiConsents(requiredTokens, ctx, executor)
@@ -156,6 +156,6 @@ func runCbpiiConsents(rt []manifest.RequiredTokens, ctx *model.Context, executor
 	}
 
 	logrus.Debug("Exit runCbpiiConsents Consents")
-	logrus.Tracef("%#v\n", rt)
+	logrus.Tracef("%#v", rt)
 	return rt, nil
 }
