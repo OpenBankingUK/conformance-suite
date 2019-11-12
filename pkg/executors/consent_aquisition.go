@@ -57,7 +57,7 @@ func GetPsuConsent(definition RunDefinition, ctx *model.Context, runTests *gener
 		}
 	}
 
-	logrus.Warnf("No Consent Acquistion Performed\n")
+	logrus.Warnf("No Consent Acquistion Performed")
 	return consentIdsToReturn, nil, nil
 }
 
