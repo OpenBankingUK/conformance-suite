@@ -252,7 +252,9 @@ func MapTokensToTestCases(rt []RequiredTokens, tcs []model.TestCase) map[string]
 func MapTokensToPaymentTestCases(rt []RequiredTokens, tcs []model.TestCase, ctx *model.Context) {
 	for k, test := range tcs {
 		authCodeTokenRequired := requiresAuthCodeToken(test.ID, test.Input.Method, test.Input.Endpoint)
+
 		if authCodeTokenRequired {
+			logrus.Trace("MapTokensToPaymentTestCases: authCodeToken Required")
 			tokenName, isEmptyToken, err := getRequiredTokenForPaymentTestcase(rt, test.ID)
 			if err != nil {
 				logrus.Warnf("no token for Payment testcase %s %s %s", test.ID, test.Input.Method, test.Input.Endpoint)
@@ -268,11 +270,13 @@ func MapTokensToPaymentTestCases(rt []RequiredTokens, tcs []model.TestCase, ctx 
 			}
 		} else {
 			if test.Input.Method == "GET" {
+				logrus.Trace("MapTokensToPaymentTestCases: authCodeToken NOT Required for GET")
 				test.InjectBearerToken("$payment_ccg_token")
 				continue
 			}
 			useCCGToken, _ := test.Context.Get("useCCGToken")
 			if useCCGToken == "yes" { // payment POSTs
+				logrus.Trace("MapTokensToPaymentTestCases: authCodeToken NOT Required for POST")
 				test.InjectBearerToken("$payment_ccg_token")
 				continue
 			}
@@ -285,7 +289,7 @@ func MapTokensToPaymentTestCases(rt []RequiredTokens, tcs []model.TestCase, ctx 
 // maps them into test cases that require access tokens (ccg tokens)
 func MapTokensToCBPIITestCases(rt []RequiredTokens, tcs []model.TestCase, ctx *model.Context) {
 	for k, test := range tcs {
-		authCodeTokenRequired := requiresAuthCodeToken(test.ID, test.Input.Method, test.Input.Endpoint)
+		authCodeTokenRequired := requiresCBPIIAuthCodeToken1(test.ID, test.Input.Method, test.Input.Endpoint)
 		if authCodeTokenRequired {
 			tokenName, isEmptyToken, err := getRequiredTokenForPaymentTestcase(rt, test.ID)
 			if err != nil {
@@ -308,45 +312,25 @@ func MapTokensToCBPIITestCases(rt []RequiredTokens, tcs []model.TestCase, ctx *m
 	}
 }
 
+// For Payments,
+// Requires Auth Token if its a GET and contains 'funds-confirmation' in the URL OR
+// A POST that doesn't contain 'consents' in the URL
 func requiresAuthCodeToken(id, method, endpoint string) bool {
-	// "get" with "funds confirmation"
+	if strings.ToUpper(method) == "GET" && strings.Contains(endpoint, "funds-confirmation") {
+		logrus.Tracef("%s %s %s requires auth code token", id, method, endpoint)
+		return true
+	}
+	if strings.ToUpper(method) == "POST" && !strings.Contains(endpoint, "consents") {
+		logrus.Tracef("%s %s %s requires auth code token", id, method, endpoint)
+		return true
+	}
+
+	return false
+}
+
+// For CBPII
+func requiresCBPIIAuthCodeToken1(id, method, endpoint string) bool {
 	authCodeEndpointsRegex := []discovery.ModelEndpoint{
-		{
-			Path:   "^/domestic-payments$",
-			Method: "POST",
-		},
-		{
-			Path:   "^/domestic-scheduled-payments$",
-			Method: "GET",
-		},
-		{
-			Path:   "^/domestic-standing-orders$",
-			Method: "POST",
-		},
-		{
-			Path:   "^/international-payment-consents/[a-zA-Z0-9_{}-]+/funds-confirmation$",
-			Method: "GET",
-		},
-		{
-			Path:   "^/international-payments$",
-			Method: "POST",
-		},
-		{
-			Path:   "^/international-scheduled-payment-consents/[a-zA-Z0-9_{}-]+/funds-confirmation$",
-			Method: "GET",
-		},
-		{
-			Path:   "^/international-scheduled-payments$",
-			Method: "POST",
-		},
-		{
-			Path:   "^/international-standing-orders$",
-			Method: "POST",
-		},
-		{
-			Path:   "^/file-payments$",
-			Method: "POST",
-		},
 		{
 			Path:   "^/funds-confirmations$",
 			Method: "POST",

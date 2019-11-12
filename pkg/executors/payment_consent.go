@@ -17,9 +17,9 @@ func getPaymentConsents(definition RunDefinition, requiredTokens []manifest.Requ
 		return nil, err
 	}
 
-	logrus.Debugf("we have %d required tokens\n", len(requiredTokens))
+	logrus.Debugf("we have %d required tokens", len(requiredTokens))
 	for _, rt := range requiredTokens {
-		logrus.Tracef("%#v\n", rt)
+		logrus.Tracef("%#v", rt)
 	}
 
 	requiredTokens, err = runPaymentConsents(requiredTokens, ctx, executor)
@@ -155,7 +155,7 @@ func runPaymentConsents(rt []manifest.RequiredTokens, ctx *model.Context, execut
 		ctx.PutString("client_access_token", clientGrantToken)
 	}
 	logrus.Debug("Exit runPayment Consents")
-	logrus.Tracef("%#v\n", rt)
+	logrus.Tracef("%#v", rt)
 	return rt, nil
 }
 

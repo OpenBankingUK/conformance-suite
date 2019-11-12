@@ -25,10 +25,9 @@ const (
 // GetPsuConsent -
 func GetPsuConsent(definition RunDefinition, ctx *model.Context, runTests *generation.SpecRun, permissions map[string][]manifest.RequiredTokens) (TokenConsentIDs, map[string]string, error) {
 	var consentIdsToReturn TokenConsentIDs
-	logrus.Debugf("running with %#v\n", permissions)
 
 	for specType := range permissions {
-		logrus.Tracef("Getting PSU Consent for api type: %s\n", specType)
+		logrus.Tracef("Getting PSU Consent for api type: %s", specType)
 
 		switch specType {
 		case "accounts":
@@ -58,7 +57,7 @@ func GetPsuConsent(definition RunDefinition, ctx *model.Context, runTests *gener
 		}
 	}
 
-	logrus.Warnf("No Consent Acquistion Performed\n")
+	logrus.Warnf("No Consent Acquistion Performed")
 	return consentIdsToReturn, nil, nil
 }
 
@@ -86,11 +85,11 @@ func getAccountConsents(definition RunDefinition, permissions []manifest.Require
 	tokenParameters := map[string]string{}
 	requiredTokens := permissions
 	logrus.Tracef("we require %d tokens for `accounts`", len(requiredTokens))
-	logrus.Tracef("required tokens %#v\n", requiredTokens)
+	logrus.Tracef("required tokens %#v", requiredTokens)
 	for _, rt := range requiredTokens {
 		tokenParameters[rt.Name] = buildPermissionString(rt.Perms)
 	}
-	logrus.Tracef("required tokens %#v\n", tokenParameters)
+	logrus.Tracef("required tokens %#v", tokenParameters)
 	//for tokenName, permissionList := range tokenParameters {
 	for _, rt := range requiredTokens {
 		permissionList := rt.Perms
