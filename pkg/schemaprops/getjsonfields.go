@@ -9,6 +9,13 @@ import (
 	"strings"
 )
 
+type PropertyCollector interface {
+	CollectProperties(string, string, string, int)
+	GetProperties() map[string]map[string]int
+	SetCollectorAPIDetails(api, version string)
+	OutputJSON() string
+}
+
 type Collector struct {
 	level      int
 	currentApi int
@@ -44,36 +51,30 @@ type PathRegex struct {
 var subPathx = "[a-zA-Z0-9_{}-]+" // url sub path regex
 
 var (
-	collector *Collector
+	collector PropertyCollector
 )
 
-func GetPropertyCollector() *Collector {
+func GetPropertyCollector() PropertyCollector {
 	if collector == nil {
 		collector = MakeCollector()
 	}
 	return collector
 }
 
-type PropertyCollector interface {
-	CollectProperties(string, string, string, int) map[string]int
-	GetProperties() map[string]map[string]int
-	DumpProperties()
-}
-
-func MakeCollector() *Collector {
+func MakeCollector() PropertyCollector {
 	c := &Collector{}
 	c.path = make([]string, 20)
 	return c
 }
 
-func (c *Collector) SetCollectorAPIDetails(api, version string) {
+func (c Collector) SetCollectorAPIDetails(api, version string) {
 	p := PropertyOutput{Api: api, Version: version}
 	p.endpoints = make(map[string]map[string]int, 0)
 	c.Apis = append(c.Apis, p)
 	c.currentApi = len(c.Apis) - 1
 }
 
-func (c *Collector) GetProperties() map[string]map[string]int {
+func (c Collector) GetProperties() map[string]map[string]int {
 	return c.Apis[c.currentApi].endpoints
 }
 
@@ -109,7 +110,7 @@ func sortPathStrings(m map[string]string) []string {
 	return keyslice
 }
 
-func (c *Collector) CollectProperties(method, endpoint, body string, code int) {
+func (c Collector) CollectProperties(method, endpoint, body string, code int) {
 	if len(c.Apis) == 0 {
 		return
 	}
@@ -187,7 +188,7 @@ func (c *Collector) expand(i interface{}, m map[string]int) {
 	c.level--
 }
 
-func (c *Collector) OutputJSON() string {
+func (c Collector) OutputJSON() string {
 	apis := c.Apis
 	for i, api := range apis {
 		endpoints := sortEndpoints(api.endpoints)

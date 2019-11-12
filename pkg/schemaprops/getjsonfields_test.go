@@ -11,7 +11,7 @@ func TestCollectReturnedJSONFields(t *testing.T) {
 	c := GetPropertyCollector()
 	c.SetCollectorAPIDetails("myapi", "v3.1.0")
 	c.CollectProperties("GET", "/accounts", string(tdata1), 200)
-	c.dumpProperties()
+	c.OutputJSON()
 }
 
 func TestTransactionsJSONFields(t *testing.T) {
@@ -30,7 +30,7 @@ func TestAccountsJSONFields(t *testing.T) {
 	c := GetPropertyCollector()
 	c.SetCollectorAPIDetails("myapi", "v3.1.0")
 	c.CollectProperties("GET", "/accounts", string(accounts), 200)
-	c.dumpProperties()
+	c.OutputJSON()
 }
 
 func (c *Collector) dumpProperties() {
