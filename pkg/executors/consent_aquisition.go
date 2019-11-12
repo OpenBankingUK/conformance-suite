@@ -25,7 +25,6 @@ const (
 // GetPsuConsent -
 func GetPsuConsent(definition RunDefinition, ctx *model.Context, runTests *generation.SpecRun, permissions map[string][]manifest.RequiredTokens) (TokenConsentIDs, map[string]string, error) {
 	var consentIdsToReturn TokenConsentIDs
-	logrus.Debugf("running with %#v\n", permissions)
 
 	for specType := range permissions {
 		logrus.Tracef("Getting PSU Consent for api type: %s", specType)

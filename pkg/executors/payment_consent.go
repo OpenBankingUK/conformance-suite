@@ -17,7 +17,7 @@ func getPaymentConsents(definition RunDefinition, requiredTokens []manifest.Requ
 		return nil, err
 	}
 
-	logrus.Debugf("we have %d required tokens\n", len(requiredTokens))
+	logrus.Debugf("we have %d required tokens", len(requiredTokens))
 	for _, rt := range requiredTokens {
 		logrus.Tracef("%#v", rt)
 	}

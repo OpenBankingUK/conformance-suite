@@ -22,7 +22,7 @@ func getCbpiiConsents(
 		return nil, err
 	}
 
-	logrus.Debugf("we have %d cbpii consent required tokens\n", len(requiredTokens))
+	logrus.Debugf("we have %d cbpii consent required tokens", len(requiredTokens))
 	for _, rt := range requiredTokens {
 		logrus.Tracef("%#v", rt)
 	}
