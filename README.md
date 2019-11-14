@@ -17,11 +17,11 @@ To provide feedback, please use the public [issue tracker](https://bitbucket.org
 ## Release Notes 
 * * *
 
-# Release v1.2.0 (24th Oct 2019)
+# Release v1.2.1 (13th Nov 2019)
 
-The release is called **v1.2.0**, it updates the tool to support the [OBIE CBPII](https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1077806537/Confirmation+of+Funds+API+Specification+-+v3.1.2) endpoints and read write v3.1.2 specifications.
+The release is called **v1.2.1**, it fixes a regex issue with the OBIE CBPII and removes * . * as a accept value in Payment requests.
 
-[Full Release Notes](https://bitbucket.org/openbankingteam/conformance-suite/src/develop/docs/releases/v1.2.0.md) (v1.2.0.md)
+[Full Release Notes](https://bitbucket.org/openbankingteam/conformance-suite/src/develop/docs/releases/v1.2.1.md) (v1.2.1.md)
 
 ## Quickstart
 * * *
