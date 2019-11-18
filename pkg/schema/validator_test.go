@@ -1,10 +1,12 @@
 package schema
 
 import (
+	"fmt"
 	"net/http"
 	"strings"
 	"testing"
 
+	"github.com/davecgh/go-spew/spew"
 	"github.com/go-openapi/loads"
 	"github.com/go-openapi/spec"
 	"github.com/stretchr/testify/assert"
@@ -148,7 +150,7 @@ func TestCheckRequestSchema(t *testing.T) {
 				for _, param := range op.Parameters {
 					if param.ParamProps.In == "body" {
 						schema := param.ParamProps.Schema
-						found := findPropertyInSchema(schema, "Data.Initiation.CreditorAccount.SecondaryIdentification", "")
+						found, _ := findPropertyInSchema(schema, "Data.Initiation.CreditorAccount.SecondaryIdentification", "")
 						if found {
 							t.Log("*** FOUND IT ******")
 						} else {
@@ -183,6 +185,50 @@ func TestTraverseSchemaLookingforNonRequiredProperties(t *testing.T) { // Exampl
 	}
 }
 
+func TestCheckPostalAddressFormat(t *testing.T) {
+	doc, err := loads.Spec("spec/v3.1.0/payment-initiation-swagger.flattened.json")
+	require.NoError(t, err)
+
+	spec := doc.Spec()
+
+	for path, props := range spec.Paths.Paths {
+		for meth, op := range getOperations(&props) {
+			_ = meth
+			if path == "/international-payment-consents" && meth == "POST" {
+				for _, param := range op.Parameters {
+					if param.ParamProps.In == "body" {
+						schema := param.ParamProps.Schema
+						found, objtype := findPropertyInSchema(schema, "Data.Initiation.CreditorAgent.PostalAddress.Country", "")
+						if found {
+							fmt.Printf("ObjectType: %s\n", objtype)
+							fmt.Printf("*** FOUND IT ******")
+						} else {
+							t.Fail()
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+func getObjectType(sc *spec.Schema, path string) {
+	for k, j := range sc.SchemaProps.Properties {
+		var element string
+		if len(path) == 0 {
+			element = k
+		} else {
+			element = path + "." + k
+		}
+
+		if element == path {
+			fmt.Printf("%s\n", element)
+			//spew.Dump(j.SchemaProps.Type)
+		}
+		getObjectType(&j, element)
+	}
+}
+
 func dumpSchema(t *testing.T, sc *spec.Schema, previousPath string) {
 	for k, j := range sc.SchemaProps.Properties {
 		var element string
@@ -192,9 +238,13 @@ func dumpSchema(t *testing.T, sc *spec.Schema, previousPath string) {
 			element = previousPath + "." + k
 		}
 		if len(j.Required) > 0 {
-			t.Logf("*** %s required:%s\n", element, j.Required)
+			fmt.Printf("*** %s required:%s\n", element, j.Required)
 		} else {
-			t.Logf("%s\n", element)
+			fmt.Printf("%s\n", element)
+			if element == "Data.Initiation.Creditor.PostalAddress.AddressLine" {
+				spew.Dump(j.SchemaProps.Type)
+
+			}
 		}
 		dumpSchema(t, &j, element)
 	}
