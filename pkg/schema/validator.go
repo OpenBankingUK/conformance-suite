@@ -181,27 +181,6 @@ func findPropertyInSchema(sc *spec.Schema, propertyPath, previousPath string) (b
 	return false, ""
 }
 
-func findPropertyInSchema1(sc *spec.Schema, propertyPath, previousPath string) bool {
-	for k, j := range sc.SchemaProps.Properties {
-		var element string
-		if len(previousPath) == 0 {
-			element = k
-		} else {
-			element = previousPath + "." + k
-		}
-		if element == propertyPath {
-			fmt.Printf("%s: %s", k, j.Type)
-			return true
-		}
-
-		if findPropertyInSchema1(&j, propertyPath, element) {
-			fmt.Printf("%s: %s", k, j.Type)
-			return true
-		}
-	}
-	return false
-}
-
 // getOperations returns a mapping of HTTP Verb name to "spec operation name"
 func getOperations(props *spec.PathItem) map[string]*spec.Operation {
 	ops := map[string]*spec.Operation{
