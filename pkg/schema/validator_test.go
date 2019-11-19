@@ -6,7 +6,6 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/davecgh/go-spew/spew"
 	"github.com/go-openapi/loads"
 	"github.com/go-openapi/spec"
 	"github.com/stretchr/testify/assert"
@@ -223,7 +222,6 @@ func getObjectType(sc *spec.Schema, path string) {
 
 		if element == path {
 			fmt.Printf("%s\n", element)
-			//spew.Dump(j.SchemaProps.Type)
 		}
 		getObjectType(&j, element)
 	}
@@ -242,7 +240,7 @@ func dumpSchema(t *testing.T, sc *spec.Schema, previousPath string) {
 		} else {
 			fmt.Printf("%s\n", element)
 			if element == "Data.Initiation.Creditor.PostalAddress.AddressLine" {
-				spew.Dump(j.SchemaProps.Type)
+				fmt.Printf("%#v\n", j.SchemaProps.Type)
 
 			}
 		}
