@@ -176,19 +176,22 @@ func GenerateTestCases(params *GenerationParameters) ([]model.TestCase, Scripts,
 }
 
 func addConditionalPropertiesToRequest(tc *model.TestCase, conditional []discovery.ConditionalAPIProperties, log *logrus.Entry) error {
-
 	for _, cond := range conditional {
 		for _, ep := range cond.Endpoints {
 			if tc.Input.Method == ep.Method && tc.Input.Endpoint == ep.Path {
 				// try to add property to body request
 				for _, prop := range ep.ConditionalProperties {
-					isRequestProperty, err := tc.Validator.IsRequestProperty(tc.Input.Method, tc.Input.Endpoint, prop.Path)
+					isRequestProperty, propertyType, err := tc.Validator.IsRequestProperty(tc.Input.Method, tc.Input.Endpoint, prop.Path)
 					if err != nil {
 						log.Error(err)
 						return err
 					}
 					if isRequestProperty && len(prop.Value) > 0 {
 						var err error
+						if propertyType == "array" {
+							logrus.Warn("This field is and array %s %s %s", tc.Input.Method, tc.Input.Endpoint, prop.Path)
+							convertInputStringToArray(prop.Value)
+						}
 						tc.Input.RequestBody, err = sjson.Set(tc.Input.RequestBody, prop.Path, prop.Value)
 						if err != nil {
 							log.Error(err)
@@ -200,6 +203,11 @@ func addConditionalPropertiesToRequest(tc *model.TestCase, conditional []discove
 			}
 		}
 	}
+
+	return nil
+}
+
+func convertInputStringToArray(value string) []string {
 
 	return nil
 }

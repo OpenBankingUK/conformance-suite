@@ -108,7 +108,7 @@ func GetConditionalProperties(disco *Model) ([]ConditionalAPIProperties, bool, e
 			if len(endpoint.ConditionalProperties) > 0 {
 
 				for _, prop := range endpoint.ConditionalProperties {
-					isRequest, err := validator.IsRequestProperty(endpoint.Method, endpoint.Path, prop.Path)
+					isRequest, _, err := validator.IsRequestProperty(endpoint.Method, endpoint.Path, prop.Path)
 					if err != nil {
 						logrus.Error(err)
 						return nil, false, err
