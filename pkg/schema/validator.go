@@ -10,7 +10,6 @@ import (
 	"github.com/go-openapi/loads"
 	"github.com/go-openapi/spec"
 	"github.com/pkg/errors"
-	"github.com/sirupsen/logrus"
 )
 
 // Response represents a response object from a HTTP Call
@@ -151,7 +150,6 @@ func (v validators) IsRequestProperty(checkmethod, checkpath, propertyPath strin
 						schema := param.ParamProps.Schema
 						found, objtype := findPropertyInSchema(schema, propertyPath, "")
 						if found {
-							logrus.Warnf("Property %s type : %s", propertyPath, objtype)
 							return true, objtype, nil
 						}
 					}

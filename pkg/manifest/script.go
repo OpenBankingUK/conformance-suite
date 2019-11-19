@@ -188,16 +188,16 @@ func addConditionalPropertiesToRequest(tc *model.TestCase, conditional []discove
 					}
 					if isRequestProperty && len(prop.Value) > 0 {
 						var err error
-						if propertyType == "array" {
-							logrus.Warn("This field is and array %s %s %s", tc.Input.Method, tc.Input.Endpoint, prop.Path)
-							convertInputStringToArray(prop.Value)
+						if propertyType == "[array]" {
+							stringArray := convertInputStringToArray(prop.Value)
+							tc.Input.RequestBody, err = sjson.Set(tc.Input.RequestBody, prop.Path, stringArray)
+						} else {
+							tc.Input.RequestBody, err = sjson.Set(tc.Input.RequestBody, prop.Path, prop.Value)
+							if err != nil {
+								log.Error(err)
+								return err
+							}
 						}
-						tc.Input.RequestBody, err = sjson.Set(tc.Input.RequestBody, prop.Path, prop.Value)
-						if err != nil {
-							log.Error(err)
-							return err
-						}
-						log.Tracef("Conditional body set to : %s", tc.Body)
 					}
 				}
 			}
@@ -208,8 +208,7 @@ func addConditionalPropertiesToRequest(tc *model.TestCase, conditional []discove
 }
 
 func convertInputStringToArray(value string) []string {
-
-	return nil
+	return strings.Split(value, ",")
 }
 
 var fnReplacementRegex = regexp.MustCompile(`[^\$fn:]?\$fn:([\w|_]*)\(([\w,\s-]*)\)`)
