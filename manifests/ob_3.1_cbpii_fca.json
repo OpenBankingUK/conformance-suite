@@ -74,9 +74,6 @@
       },
       "uriImplementation": "mandatory",
       "method": "get",
-      "headers": {
-        "Content-Type": "application/json"
-      },
       "asserts": [
         "OB3GLOAssertOn200",
         "OB3GLOFAPIHeader",
