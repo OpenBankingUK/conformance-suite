@@ -198,7 +198,7 @@ func TestCheckPostalAddressFormat(t *testing.T) {
 				for _, param := range op.Parameters {
 					if param.ParamProps.In == "body" {
 						schema := param.ParamProps.Schema
-						found, objtype := findPropertyInSchema(schema, "Data.Initiation.CreditorAgent.PostalAddress.Country", "")
+						found, objtype := findPropertyInSchema(schema, "Data.Initiation.CreditorAgent.PostalAddress.AddressLine", "")
 						if found {
 							fmt.Printf("ObjectType: %s\n", objtype)
 							fmt.Printf("*** FOUND IT ******")
