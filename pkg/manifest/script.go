@@ -193,10 +193,10 @@ func addConditionalPropertiesToRequest(tc *model.TestCase, conditional []discove
 							tc.Input.RequestBody, err = sjson.Set(tc.Input.RequestBody, prop.Path, stringArray)
 						} else {
 							tc.Input.RequestBody, err = sjson.Set(tc.Input.RequestBody, prop.Path, prop.Value)
-							if err != nil {
-								log.Error(err)
-								return err
-							}
+						}
+						if err != nil {
+							log.Error(err)
+							return err
 						}
 					}
 				}
