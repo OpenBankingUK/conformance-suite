@@ -1,3 +1,6 @@
+# Release v1.2.2 (20th Nov 2019)
+
+The release is called **v1.2.2** and contains a minor release that fixes "Content-Type" headers with GET requests and allows request conditional property string input to be rendered as a string array.
 
 # Release v1.2.1 (13th Nov 2019)
 
