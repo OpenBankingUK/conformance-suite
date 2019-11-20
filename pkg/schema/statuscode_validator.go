@@ -28,6 +28,6 @@ func (v statusCodeValidator) Validate(r Response) ([]Failure, error) {
 	return nil, nil
 }
 
-func (v statusCodeValidator) IsRequestProperty(method, path, propertpath string) (bool, error) {
-	return false, nil
+func (v statusCodeValidator) IsRequestProperty(method, path, propertpath string) (bool, string, error) {
+	return false, "", nil
 }

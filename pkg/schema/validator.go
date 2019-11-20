@@ -35,7 +35,7 @@ func newFailure(message string) Failure {
 // Validator validates a HTTP response object against a schema
 type Validator interface {
 	Validate(Response) ([]Failure, error)
-	IsRequestProperty(method, path, propertpath string) (bool, error)
+	IsRequestProperty(method, path, propertpath string) (bool, string, error)
 }
 
 func NewSwaggerOBSpecValidator(specName, version string) (Validator, error) {
@@ -139,7 +139,7 @@ func (v validators) Validate(r Response) ([]Failure, error) {
 	return allFailures, nil
 }
 
-func (v validators) IsRequestProperty(checkmethod, checkpath, propertyPath string) (bool, error) {
+func (v validators) IsRequestProperty(checkmethod, checkpath, propertyPath string) (bool, string, error) {
 	spec := v.document.Spec()
 
 	for path, props := range spec.Paths.Paths {
@@ -148,9 +148,9 @@ func (v validators) IsRequestProperty(checkmethod, checkpath, propertyPath strin
 				for _, param := range op.Parameters {
 					if param.ParamProps.In == "body" {
 						schema := param.ParamProps.Schema
-						found := findPropertyInSchema(schema, propertyPath, "")
+						found, objtype := findPropertyInSchema(schema, propertyPath, "")
 						if found {
-							return true, nil
+							return true, objtype, nil
 						}
 					}
 				}
@@ -158,10 +158,10 @@ func (v validators) IsRequestProperty(checkmethod, checkpath, propertyPath strin
 		}
 	}
 
-	return false, nil
+	return false, "", nil
 }
 
-func findPropertyInSchema(sc *spec.Schema, propertyPath, previousPath string) bool {
+func findPropertyInSchema(sc *spec.Schema, propertyPath, previousPath string) (bool, string) {
 	for k, j := range sc.SchemaProps.Properties {
 		var element string
 		if len(previousPath) == 0 {
@@ -170,14 +170,15 @@ func findPropertyInSchema(sc *spec.Schema, propertyPath, previousPath string) bo
 			element = previousPath + "." + k
 		}
 		if element == propertyPath {
-			return true
+			return true, fmt.Sprintf("%s", j.SchemaProps.Type)
 		}
 
-		if findPropertyInSchema(&j, propertyPath, element) {
-			return true
+		ret, propType := findPropertyInSchema(&j, propertyPath, element)
+		if ret {
+			return true, propType
 		}
 	}
-	return false
+	return false, ""
 }
 
 // getOperations returns a mapping of HTTP Verb name to "spec operation name"
