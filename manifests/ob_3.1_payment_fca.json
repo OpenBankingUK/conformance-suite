@@ -79,9 +79,6 @@
         "tokenRequestScope": "payments",
         "consentId": "$OB-301-DOP-100300-ConsentId"
       },
-      "headers": {
-        "Content-Type": "application/json"
-      },
       "uri": "/domestic-payment-consents/$consentId",
       "uriImplementation": "mandatory",
       "resource": "DomesticPayment",
@@ -102,9 +99,6 @@
         "tokenRequestScope": "payments",
         "paymentType": "domestic-payment-consents",
         "consentId": "$OB-301-DOP-100300-ConsentId"
-      },
-      "headers": {
-        "Content-Type": "application/json"
       },
       "uri": "/domestic-payment-consents/$consentId/funds-confirmation",
       "uriImplementation": "mandatory",
@@ -157,9 +151,6 @@
       "parameters": {
         "tokenRequestScope": "payments",
         "paymentId": "$OB-301-DOP-100600-DomesticPaymentId"
-      },
-      "headers": {
-        "Content-Type": "application/json"
       },
       "uri": "/domestic-payments/$paymentId",
       "uriImplementation": "mandatory",
