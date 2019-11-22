@@ -31,8 +31,8 @@ func (v bodyValidator) Validate(r Response) ([]Failure, error) {
 	return v.validate(r, body)
 }
 
-func (v bodyValidator) IsRequestProperty(method, path, propertpath string) (bool, error) {
-	return false, nil
+func (v bodyValidator) IsRequestProperty(method, path, propertpath string) (bool, string, error) {
+	return false, "", nil
 }
 
 func (v bodyValidator) validate(r Response, body []byte) ([]Failure, error) {

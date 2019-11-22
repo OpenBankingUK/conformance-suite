@@ -97,7 +97,7 @@ func (r *TestCaseRunner) RunConsentAcquisition(item TokenConsentIDItem, ctx *mod
 		return errors.New("consent acquisition test cases runner already running")
 	}
 	r.running = true
-	logrus.Tracef("runConsentAquisition with %s, %s, %s\n", item.TokenName, item.ConsentURL, item.Permissions)
+	logrus.Tracef("runConsentAquisition with %s, %s, %s", item.TokenName, item.ConsentURL, item.Permissions)
 	go r.runConsentAcquisitionAsync(item, ctx, consentType, consentIDChannel)
 
 	return nil

@@ -140,7 +140,7 @@ func CallPaymentHeadlessConsentUrls(rt *[]manifest.RequiredTokens, ctx *model.Co
 
 		resp, err = resty.R().
 			SetHeader("content-type", "application/x-www-form-urlencoded").
-			SetHeader("accept", "*/*").
+			SetHeader("accept", "application/json").
 			SetHeader("authorization", "Basic "+params["basic_authentication"]).
 			SetFormData(map[string]string{
 				"code":         exchangeCode,
