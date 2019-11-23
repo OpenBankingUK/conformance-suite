@@ -1,6 +1,7 @@
 package schemaprops
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/sirupsen/logrus"
@@ -22,7 +23,7 @@ func TestTransactionsJSONFields(t *testing.T) {
 	c.SetCollectorAPIDetails("yourapi", "v3.1.1")
 	c.CollectProperties("GET", "https://myserver/open-banking/3.1/aisp/accounts", string(accounts), 200)
 
-	c.OutputJSON()
+	fmt.Println(c.OutputJSON())
 }
 
 func TestAccountsJSONFields(t *testing.T) {
@@ -30,7 +31,8 @@ func TestAccountsJSONFields(t *testing.T) {
 	c := GetPropertyCollector()
 	c.SetCollectorAPIDetails("myapi", "v3.1.0")
 	c.CollectProperties("GET", "/accounts", string(accounts), 200)
-	c.OutputJSON()
+	result := c.OutputJSON()
+	fmt.Println(result)
 }
 
 func (c *Collector) dumpProperties() {

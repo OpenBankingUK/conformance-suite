@@ -3,10 +3,13 @@ package schemaprops
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"log"
 	"sort"
 	"strconv"
 	"strings"
+
+	"github.com/sirupsen/logrus"
 )
 
 type PropertyCollector interface {
@@ -64,10 +67,11 @@ func GetPropertyCollector() PropertyCollector {
 func MakeCollector() PropertyCollector {
 	c := &Collector{}
 	c.path = make([]string, 20)
+	c.Apis = []PropertyOutput{}
 	return c
 }
 
-func (c Collector) SetCollectorAPIDetails(api, version string) {
+func (c *Collector) SetCollectorAPIDetails(api, version string) {
 	p := PropertyOutput{Api: api, Version: version}
 	p.endpoints = make(map[string]map[string]int, 0)
 	c.Apis = append(c.Apis, p)
@@ -111,7 +115,9 @@ func sortPathStrings(m map[string]string) []string {
 }
 
 func (c Collector) CollectProperties(method, endpoint, body string, code int) {
+	fmt.Printf("collect prpoerties len api %d\n", len(c.Apis))
 	if len(c.Apis) == 0 {
+		logrus.Warnln("Warning no APIS")
 		return
 	}
 	requestPaths := make(map[string]int, 20)
@@ -191,6 +197,7 @@ func (c *Collector) expand(i interface{}, m map[string]int) {
 func (c Collector) OutputJSON() string {
 	apis := c.Apis
 	for i, api := range apis {
+		fmt.Printf("Examine %s\n", api.Api)
 		endpoints := sortEndpoints(api.endpoints)
 		for _, k := range endpoints {
 			v := c.Apis[i].endpoints[k]
