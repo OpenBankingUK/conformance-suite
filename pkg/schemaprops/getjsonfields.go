@@ -115,7 +115,6 @@ func sortPathStrings(m map[string]string) []string {
 }
 
 func (c Collector) CollectProperties(method, endpoint, body string, code int) {
-	fmt.Printf("collect prpoerties len api %d\n", len(c.Apis))
 	if len(c.Apis) == 0 {
 		logrus.Warnln("Warning no APIS")
 		return
