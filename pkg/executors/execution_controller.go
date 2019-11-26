@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"sync"
 
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/schema"
+
 	"gopkg.in/resty.v1"
 
 	"github.com/google/uuid"
@@ -22,7 +24,7 @@ import (
 // RunDefinition captures all the information required to run the test cases
 type RunDefinition struct {
 	DiscoModel    *discovery.Model
-	TestCaseRun   generation.TestCasesRun
+	SpecRun       generation.SpecRun
 	SigningCert   authentication.Certificate
 	TransportCert authentication.Certificate
 }
@@ -75,9 +77,7 @@ func NewExchangeComponentRunner(definition RunDefinition, daemonController Daemo
 // RunTestCases runs the testCases
 func (r *TestCaseRunner) RunTestCases(ctx *model.Context) error {
 	r.runningLock.Lock()
-	defer func() {
-		r.runningLock.Unlock()
-	}()
+	defer r.runningLock.Unlock()
 	if r.running {
 		return errors.New("test cases runner already running")
 	}
@@ -91,14 +91,12 @@ func (r *TestCaseRunner) RunTestCases(ctx *model.Context) error {
 // RunConsentAcquisition -
 func (r *TestCaseRunner) RunConsentAcquisition(item TokenConsentIDItem, ctx *model.Context, consentType string, consentIDChannel chan<- TokenConsentIDItem) error {
 	r.runningLock.Lock()
-	defer func() {
-		r.runningLock.Unlock()
-	}()
+	defer r.runningLock.Unlock()
 	if r.running {
 		return errors.New("consent acquisition test cases runner already running")
 	}
 	r.running = true
-	logrus.Tracef("runConsentAquisition with %s, %s, %s\n", item.TokenName, item.ConsentURL, item.Permissions)
+	logrus.Tracef("runConsentAquisition with %s, %s, %s", item.TokenName, item.ConsentURL, item.Permissions)
 	go r.runConsentAcquisitionAsync(item, ctx, consentType, consentIDChannel)
 
 	return nil
@@ -113,7 +111,7 @@ func (r *TestCaseRunner) runTestCasesAsync(ctx *model.Context) {
 	ruleCtx := r.makeRuleCtx(ctx)
 
 	ctxLogger := r.logger.WithField("id", uuid.New())
-	for _, spec := range r.definition.TestCaseRun.TestCases {
+	for _, spec := range r.definition.SpecRun.SpecTestCases {
 		r.executeSpecTests(spec, ruleCtx, ctxLogger)
 	}
 	r.daemonController.SetCompleted()
@@ -138,7 +136,7 @@ func (r *TestCaseRunner) runConsentAcquisitionAsync(item TokenConsentIDItem, ctx
 	// Check for MTLS vs client basic authentication
 	authMethod, err := ctx.GetString("token_endpoint_auth_method")
 	if err != nil {
-		authMethod = "client_secret_basic"
+		authMethod = authentication.ClientSecretBasic
 	}
 
 	if consentType == "psu" {
@@ -168,6 +166,7 @@ func (r *TestCaseRunner) runConsentAcquisitionAsync(item TokenConsentIDItem, ctx
 
 	for k, v := range comp.GetTests() {
 		v.ProcessReplacementFields(ruleCtx, true)
+		v.Validator = schema.NewNullValidator()
 		comp.Tests[k] = v
 	}
 
@@ -197,17 +196,71 @@ func (r *TestCaseRunner) executeComponentTests(comp *model.Component, ruleCtx *m
 		}
 
 		if testcase.ID == "#compPsuConsent01" {
-			if authMethod == "client_secret_basic" {
+			switch authMethod {
+			case authentication.ClientSecretBasic:
 				testcase.Input.SetHeader("authorization", "Basic $basic_authentication")
-			}
-			if authMethod == "tls_client_auth" {
+			case authentication.TlsClientAuth:
 				clientid, err := ruleCtx.GetString("client_id")
 				if err != nil {
-					ctxLogger.Warn("cannot locate client_id for tls_client_auth form field")
+					ctxLogger.WithFields(logrus.Fields{
+						"authMethod": authMethod,
+						"err":        err,
+					}).Error("cannot locate client_id to populate form field")
+					continue
 				}
+
 				testcase.Input.SetFormField("client_id", clientid)
+			case authentication.PrivateKeyJwt:
+				clientID, err := ruleCtx.GetString("client_id")
+				if err != nil {
+					ctxLogger.WithFields(logrus.Fields{
+						"authMethod": authMethod,
+						"err":        err,
+					}).Error("cannot locate client_id to populate form field")
+					continue
+				}
+
+				tokenEndpoint, err := ruleCtx.GetString("token_endpoint")
+				if err != nil {
+					ctxLogger.WithFields(logrus.Fields{
+						"authMethod": authMethod,
+						"err":        err,
+					}).Error("cannot locate token_endpoint to populate form field")
+				}
+
+				if testcase.Input.Claims == nil {
+					testcase.Input.Claims = map[string]string{}
+				}
+
+				// https://openid.net/specs/openid-connect-core-1_0.html#ClientAuthentication
+				// iss
+				// REQUIRED. Issuer. This MUST contain the client_id of the OAuth Client.
+				// sub
+				// REQUIRED. Subject. This MUST contain the client_id of the OAuth Client.
+				// aud
+				// REQUIRED. Audience. The aud (audience) Claim. Value that identifies the Authorization Server as an intended audience. The Authorization Server MUST verify that it is an intended audience for the token. The Audience SHOULD be the URL of the Authorization Server's Token Endpoint.
+				testcase.Input.Claims["iss"] = clientID
+				testcase.Input.Claims["sub"] = clientID
+				testcase.Input.Claims["aud"] = tokenEndpoint
+				clientAssertion, err := testcase.Input.GenerateRequestToken(ruleCtx)
+				if err != nil {
+					ctxLogger.WithFields(logrus.Fields{
+						"testcase": testcase,
+						"err":      err,
+					}).Error("failed on testcase.Input.GenerateRequestToken")
+					continue
+				}
+
+				testcase.Input.SetFormField(authentication.ClientAssertionType, authentication.ClientAssertionTypeValue)
+				testcase.Input.SetFormField(authentication.ClientAssertion, clientAssertion)
+			default:
+				ctxLogger.WithFields(logrus.Fields{
+					"authMethod": authMethod,
+				}).Error("Unsupported token_endpoint_auth_method")
+				continue
 			}
 		}
+
 		testResult := r.executeTest(testcase, ruleCtx, logger)
 		r.daemonController.AddResult(testResult)
 
@@ -272,6 +325,7 @@ func (r *TestCaseRunner) executeSpecTests(spec generation.SpecificationTestCases
 			ctxLogger.Info("stop test run received, aborting runner")
 			return
 		}
+		ctxLogger = ctxLogger.WithField("ID", testcase.ID)
 		ruleCtx.DumpContext("ruleCtx before: " + testcase.ID)
 		testResult := r.executeTest(testcase, ruleCtx, ctxLogger)
 		r.daemonController.AddResult(testResult)
@@ -283,43 +337,59 @@ func (r *TestCaseRunner) executeTest(tc model.TestCase, ruleCtx *model.Context, 
 	req, err := tc.Prepare(ruleCtx)
 	if err != nil {
 		ctxLogger.WithError(err).Error("preparing executing test")
-		return results.NewTestCaseFail(tc.ID, results.NoMetrics, []error{err}, tc.Input.Endpoint, tc.APIName, tc.APIVersion)
+		return results.NewTestCaseFail(tc.ID, results.NoMetrics(), []error{err}, tc.Input.Endpoint, tc.APIName, tc.APIVersion, tc.Detail, tc.RefURI)
 	}
 	resp, metrics, err := r.executor.ExecuteTestCase(req, &tc, ruleCtx)
 	ctxLogger = logWithMetrics(ctxLogger, metrics)
 	if err != nil {
 		ctxLogger.WithError(err).WithFields(logrus.Fields{"result": "FAIL", "ID": tc.ID}).Error("test result")
-		return results.NewTestCaseFail(tc.ID, metrics, []error{err}, tc.Input.Endpoint, tc.APIName, tc.APIVersion)
+		return results.NewTestCaseFail(tc.ID, metrics, []error{err}, tc.Input.Endpoint, tc.APIName, tc.APIVersion, tc.Detail, tc.RefURI)
 	}
 
 	result, errs := tc.Validate(resp, ruleCtx)
 	if errs != nil {
 		detailedErrors := detailedErrors(errs, resp)
-		ctxLogger.WithField("errs", detailedErrors).WithFields(logrus.Fields{"result": passText[result], "ID": tc.ID}).Error("test result validate")
-		return results.NewTestCaseFail(tc.ID, metrics, detailedErrors, tc.Input.Endpoint, tc.APIName, tc.APIVersion)
+		ctxLogger.WithField("errs", detailedErrors).WithFields(logrus.Fields{"result": passText()[result], "ID": tc.ID}).Error("test result validate")
+		return results.NewTestCaseFail(tc.ID, metrics, detailedErrors, tc.Input.Endpoint, tc.APIName, tc.APIVersion, tc.Detail, tc.RefURI)
 	}
 
 	if !result {
-		ctxLogger.WithError(err).WithFields(logrus.Fields{"result": passText[result], "ID": tc.ID}).Error("test result blank")
+		ctxLogger.WithError(err).WithFields(logrus.Fields{"result": passText()[result], "ID": tc.ID}).Error("test result blank")
 	} else {
-		ctxLogger.WithError(err).WithFields(logrus.Fields{"result": passText[result], "ID": tc.ID}).Info("test result")
+		ctxLogger.WithError(err).WithFields(logrus.Fields{"result": passText()[result], "ID": tc.ID}).Info("test result")
 	}
 
-	return results.NewTestCaseResult(tc.ID, result, metrics, []error{}, tc.Input.Endpoint, tc.APIName, tc.APIVersion)
+	return results.NewTestCaseResult(tc.ID, result, metrics, []error{}, tc.Input.Endpoint, tc.APIName, tc.APIVersion, tc.Detail, tc.RefURI)
+}
+
+type DetailError struct {
+	EndpointResponse string `json:"endpointResponse"`
+	TestCaseMessage  string `json:"testCaseMessage"`
+}
+
+func (de DetailError) Error() string {
+	j, _ := json.Marshal(de)
+
+	return string(j)
 }
 
 func detailedErrors(errs []error, resp *resty.Response) []error {
-	var detailedErrors []error
+	detailedErrors := []error{}
 	for _, err := range errs {
-		detailedError := errors.WithMessagef(err, "Response: (%.250s)", resp.String())
+		detailedError := DetailError{
+			EndpointResponse: string(resp.Body()),
+			TestCaseMessage:  err.Error(),
+		}
 		detailedErrors = append(detailedErrors, detailedError)
 	}
 	return detailedErrors
 }
 
-var passText = map[bool]string{
-	true:  "PASS",
-	false: "FAIL",
+func passText() map[bool]string {
+	return map[bool]string{
+		true:  "PASS",
+		false: "FAIL",
+	}
 }
 
 func logWithTestCase(logger *logrus.Entry, tc model.TestCase) *logrus.Entry {

@@ -4,8 +4,10 @@ package server
 import (
 	"encoding/json"
 	"fmt"
+	"strings"
 	"sync"
 
+	"github.com/blang/semver"
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 
@@ -20,12 +22,12 @@ import (
 )
 
 var (
-	errDiscoveryModelNotSet        = errors.New("error discovery model not set")
-	errTestCasesNotGenerated       = errors.New("error test cases not generated")
-	errTestCasesGenerated          = errors.New("error test cases already generated")
-	errNotFinishedCollectingTokens = errors.New("error not finished collecting tokens")
-	errConsentIDAcquisitionFailed  = errors.New("ConsentId acquistion failed")
-	errTokenMappingFailed          = errors.New("token mapping to testcases ailed")
+	errDiscoveryModelNotSet            = errors.New("error discovery model not set")
+	errTestCasesNotGenerated           = errors.New("error test cases not generated")
+	errTestCasesGenerated              = errors.New("error test cases already generated")
+	errNotFinishedCollectingTokens     = errors.New("error not finished collecting tokens")
+	errConsentIDAcquisitionFailed      = errors.New("ConsentId acquistion failed")
+	errDynamicResourceAllocationFailed = errors.New("Dynamic Resource allocation failed")
 )
 
 // Journey represents all possible steps for a user test conformance journey
@@ -40,7 +42,9 @@ var (
 type Journey interface {
 	SetDiscoveryModel(discoveryModel *discovery.Model) (discovery.ValidationFailures, error)
 	DiscoveryModel() (discovery.Model, error)
-	TestCases() (generation.TestCasesRun, error)
+	SetFilteredManifests(manifest.Scripts)
+	FilteredManifests() (manifest.Scripts, error)
+	TestCases() (generation.SpecRun, error)
 	CollectToken(code, state, scope string) error
 	AllTokenCollected() bool
 	RunTests() error
@@ -48,7 +52,9 @@ type Journey interface {
 	NewDaemonController()
 	Results() executors.DaemonController
 	SetConfig(config JourneyConfig) error
+	ConditionalProperties() []discovery.ConditionalAPIProperties
 	Events() events.Events
+	TLSVersionResult() map[string]*discovery.TLSValidationResult
 }
 
 type journey struct {
@@ -56,7 +62,7 @@ type journey struct {
 	validator             discovery.Validator
 	daemonController      executors.DaemonController
 	journeyLock           *sync.Mutex
-	testCasesRun          generation.TestCasesRun
+	specRun               generation.SpecRun
 	testCasesRunGenerated bool
 	collector             executors.TokenCollector
 	allCollected          bool
@@ -66,10 +72,15 @@ type journey struct {
 	config                JourneyConfig
 	events                events.Events
 	permissions           map[string][]manifest.RequiredTokens
+	manifests             []manifest.Scripts
+	filteredManifests     manifest.Scripts
+	tlsValidator          discovery.TLSValidator
+	conditionalProperties []discovery.ConditionalAPIProperties
+	dynamicResourceIDs    bool
 }
 
 // NewJourney creates an instance for a user journey
-func NewJourney(logger *logrus.Entry, generator generation.Generator, validator discovery.Validator) *journey {
+func NewJourney(logger *logrus.Entry, generator generation.Generator, validator discovery.Validator, tlsValidator discovery.TLSValidator, dynamicResourceIDs bool) *journey {
 	return &journey{
 		generator:             generator,
 		validator:             validator,
@@ -78,9 +89,12 @@ func NewJourney(logger *logrus.Entry, generator generation.Generator, validator 
 		allCollected:          false,
 		testCasesRunGenerated: false,
 		context:               model.Context{},
-		log:                   logger.WithField("module", "Journey"),
+		log:                   logger.WithField("module", "journey"),
 		events:                events.NewEvents(),
-		permissions:           make(map[string][]manifest.RequiredTokens, 0),
+		permissions:           make(map[string][]manifest.RequiredTokens),
+		manifests:             make([]manifest.Scripts, 0),
+		tlsValidator:          tlsValidator,
+		dynamicResourceIDs:    dynamicResourceIDs,
 	}
 }
 
@@ -100,7 +114,7 @@ func (wj *journey) NewDaemonController() {
 func (wj *journey) SetDiscoveryModel(discoveryModel *discovery.Model) (discovery.ValidationFailures, error) {
 	failures, err := wj.validator.Validate(discoveryModel)
 	if err != nil {
-		return nil, errors.Wrap(err, "error setting discovery model")
+		return nil, errors.Wrap(err, "journey.SetDiscoveryModel: error setting discovery model")
 	}
 
 	if !failures.Empty() {
@@ -113,7 +127,21 @@ func (wj *journey) SetDiscoveryModel(discoveryModel *discovery.Model) (discovery
 	wj.testCasesRunGenerated = false
 	wj.allCollected = false
 
-	return discovery.NoValidationFailures, nil
+	if discoveryModel.DiscoveryModel.DiscoveryVersion == "v0.4.0" { // Conditional properties requires 0.4.0
+		//TODO: remove this constraint once support for v0.3.0 discovery model is dropped
+		conditionalApiProperties, hasProperties, err := discovery.GetConditionalProperties(discoveryModel)
+		if err != nil {
+			return nil, errors.Wrap(err, "journey.SetDiscoveryModel: error processing conditional properties")
+		}
+		if hasProperties {
+			wj.conditionalProperties = conditionalApiProperties
+			logrus.Tracef("conditionalProperties from discovery model: %#v", wj.conditionalProperties)
+		} else {
+			logrus.Trace("No Conditional Properties found")
+		}
+	}
+
+	return discovery.NoValidationFailures(), nil
 }
 
 func (wj *journey) DiscoveryModel() (discovery.Model, error) {
@@ -122,21 +150,63 @@ func (wj *journey) DiscoveryModel() (discovery.Model, error) {
 	wj.journeyLock.Unlock()
 
 	if discoveryModel == nil {
-		return discovery.Model{}, errors.New("discovery model not set yet")
+		return discovery.Model{}, errors.New("journey.DiscoveryModel: discovery model not set yet")
 	}
 	return *discoveryModel, nil
 }
 
-func (wj *journey) TestCases() (generation.TestCasesRun, error) {
+func (wj *journey) TLSVersionResult() map[string]*discovery.TLSValidationResult {
+	logger := wj.log.WithFields(logrus.Fields{
+		"package":  "server",
+		"module":   "journey",
+		"function": "TLSVersionResult",
+	})
+	tlsValidationResult := make(map[string]*discovery.TLSValidationResult, len(wj.validDiscoveryModel.DiscoveryModel.DiscoveryItems))
+	for _, discoveryItem := range wj.validDiscoveryModel.DiscoveryModel.DiscoveryItems {
+		tlsVersionKey := wj.tlsVersionCtxKey(discoveryItem.APISpecification.Name)
+		tlsVersion, err := wj.context.GetString(tlsVersionKey)
+		if err != nil {
+			logger.WithFields(logrus.Fields{
+				"err":                err,
+				"discoveryItem[key]": tlsVersionKey,
+				"discoveryItem.discoveryItem.APISpecification.Name": discoveryItem.APISpecification.Name,
+			}).Errorf("Error getting %s from context ...", tlsVersionKey)
+			continue
+		}
+		tlsValidKey := wj.tlsValidCtxKey(discoveryItem.APISpecification.Name)
+		tlsValid, ok := wj.context.Get(tlsValidKey)
+		if !ok {
+			logger.WithFields(logrus.Fields{
+				"discoveryItem[key]": tlsValidKey,
+				"discoveryItem.discoveryItem.APISpecification.Name": discoveryItem.APISpecification.Name,
+			}).Errorf("Error getting %s from context ...", tlsValidKey)
+			continue
+		}
+		tlsValidationResult[strings.ReplaceAll(discoveryItem.APISpecification.Name, " ", "-")] = &discovery.TLSValidationResult{TLSVersion: tlsVersion, Valid: tlsValid.(bool)}
+	}
+
+	return tlsValidationResult
+}
+
+func (wj *journey) SetFilteredManifests(fmfs manifest.Scripts) {
+	wj.filteredManifests = fmfs
+}
+
+func (wj *journey) FilteredManifests() (manifest.Scripts, error) {
+	return wj.filteredManifests, nil
+}
+
+func (wj *journey) TestCases() (generation.SpecRun, error) {
 	wj.journeyLock.Lock()
 	defer wj.journeyLock.Unlock()
 	logger := wj.log.WithFields(logrus.Fields{
 		"package":  "server",
+		"module":   "journey",
 		"function": "TestCases",
 	})
 
 	if wj.validDiscoveryModel == nil {
-		return generation.TestCasesRun{}, errDiscoveryModelNotSet
+		return generation.SpecRun{}, errDiscoveryModelNotSet
 	}
 
 	if wj.testCasesRunGenerated {
@@ -144,49 +214,83 @@ func (wj *journey) TestCases() (generation.TestCasesRun, error) {
 			"err":                      errTestCasesGenerated,
 			"wj.testCasesRunGenerated": wj.testCasesRunGenerated,
 		}).Error("Error getting generation.TestCasesRun ...")
-		return generation.TestCasesRun{}, errTestCasesGenerated
+		return generation.SpecRun{}, errTestCasesGenerated
+	}
+
+	for k, discoveryItem := range wj.validDiscoveryModel.DiscoveryModel.DiscoveryItems {
+		tlsValidationResult, err := wj.tlsValidator.ValidateTLSVersion(discoveryItem.ResourceBaseURI)
+		if err != nil {
+			logger.WithFields(logrus.Fields{
+				"err":                           errors.Wrapf(err, "unable to validate TLS version for uri %s", discoveryItem.ResourceBaseURI),
+				"discoveryItem[key]":            k,
+				"discoveryItem.ResourceBaseURI": discoveryItem.ResourceBaseURI,
+			}).Error("Error validating TLS version for discovery item ResourceBaseURI")
+		}
+		wj.context.PutString(wj.tlsVersionCtxKey(discoveryItem.APISpecification.Name), tlsValidationResult.TLSVersion)
+		wj.context.Put(wj.tlsValidCtxKey(discoveryItem.APISpecification.Name), tlsValidationResult.Valid)
 	}
 
 	if !wj.testCasesRunGenerated {
+		wj.context.PutString(CtxPhase, "generation")
 		config := wj.makeGeneratorConfig()
 		discovery := wj.validDiscoveryModel.DiscoveryModel
 		if len(discovery.DiscoveryItems) > 0 { // default currently "v3.1" ... allow "v3.0"
+			apiversions := DetermineAPIVersions(discovery.DiscoveryItems)
+			if len(apiversions) > 0 {
+				wj.context.PutStringSlice("apiversions", apiversions)
+			}
 			// version string gets replaced in URLS like  "endpoint": "/open-banking/$api-version/aisp/account-access-consents",
-			wj.config.apiVersion = discovery.DiscoveryItems[0].APISpecification.Version
-			wj.context.PutString(ctxAPIVersion, wj.config.apiVersion)
+			version, err := semver.ParseTolerant(discovery.DiscoveryItems[0].APISpecification.Version)
+			if err != nil {
+				logger.WithError(err).Error("parsing spec version")
+			} else {
+				wj.config.apiVersion = fmt.Sprintf("v%d.%d", version.Major, version.Minor)
+				wj.context.PutString(CtxAPIVersion, wj.config.apiVersion)
+			}
+			logger.WithField("version", wj.config.apiVersion).Info("API url version")
 		}
 
 		logger.Debug("generator.GenerateManifestTests ...")
-		wj.testCasesRun, wj.permissions = wj.generator.GenerateManifestTests(wj.log, config, discovery, &wj.context)
-		logger.WithFields(logrus.Fields{
-			"len(wj.permissions)": len(wj.permissions),
-		}).Debug("manifest.RequiredTokens")
-		for _, permission := range wj.permissions {
-			logger.WithFields(logrus.Fields{
-				"permission": permission,
-			}).Debug("We have a permission ([]manifest.RequiredTokens)")
+		logrus.Tracef("conditionalProperties from journey config: %#v", wj.config.conditionalProperties)
+		wj.specRun, wj.filteredManifests, wj.permissions = wj.generator.GenerateManifestTests(wj.log, config, discovery, &wj.context, wj.config.conditionalProperties)
+
+		for _, spec := range wj.permissions {
+			for _, required := range spec {
+				logger.WithFields(logrus.Fields{
+					"permission": required.Name,
+					"idlist":     required.IDs,
+				}).Debug("We have a permission ([]manifest.RequiredTokens)")
+			}
 		}
 
-		if discovery.TokenAcquisition == "psu" {
+		if discovery.TokenAcquisition == "psu" { // Handle  PSU Consent
 			logger.WithFields(logrus.Fields{
 				"discovery.TokenAcquisition": discovery.TokenAcquisition,
 			}).Debug("AcquirePSUTokens ...")
 			definition := wj.makeRunDefinition()
 
-			consentIds, tokenMap, err := executors.GetPsuConsent(definition, &wj.context, &wj.testCasesRun, wj.permissions)
+			consentIds, tokenMap, err := executors.GetPsuConsent(definition, &wj.context, &wj.specRun, wj.permissions)
 			if err != nil {
 				logger.WithFields(logrus.Fields{
 					"err": err,
 				}).Error("Error on executors.GetPsuConsent ...")
-				return generation.TestCasesRun{}, errors.WithMessage(errConsentIDAcquisitionFailed, err.Error())
+				return generation.SpecRun{}, errors.WithMessage(errConsentIDAcquisitionFailed, err.Error())
 			}
 
 			for k := range wj.permissions {
 				if k == "payments" {
 					paymentpermissions := wj.permissions["payments"]
 					if len(paymentpermissions) > 0 {
-						for _, spec := range wj.testCasesRun.TestCases {
+						for _, spec := range wj.specRun.SpecTestCases {
 							manifest.MapTokensToPaymentTestCases(paymentpermissions, spec.TestCases, &wj.context)
+						}
+					}
+				}
+				if k == "cbpii" {
+					cbpiiPerms := wj.permissions["cbpii"]
+					if len(cbpiiPerms) > 0 {
+						for _, spec := range wj.specRun.SpecTestCases {
+							manifest.MapTokensToCBPIITestCases(cbpiiPerms, spec.TestCases, &wj.context)
 						}
 					}
 				}
@@ -194,26 +298,58 @@ func (wj *journey) TestCases() (generation.TestCasesRun, error) {
 
 			for k, v := range tokenMap {
 				wj.context.PutString(k, v)
+				logger.Tracef("processtokenMap %s:%s into context", k, v)
 			}
 
 			wj.createTokenCollector(consentIds)
-		} else {
+
+		} else { // Handle headless token acquistion
+
 			logger.WithFields(logrus.Fields{
 				"discovery.TokenAcquisition": discovery.TokenAcquisition,
 			}).Debug("AcquireHeadlessTokens ...")
-			runDefinition := wj.makeRunDefinition()
-			// TODO:Process multiple specs ... don't restrict to element [0]!!
-			tokenPermissionsMap, err := executors.AcquireHeadlessTokens(wj.testCasesRun.TestCases[0].TestCases, &wj.context, runDefinition)
+			definition := wj.makeRunDefinition()
+
+			tokenPermissionsMap, err := executors.GetHeadlessConsent(definition, &wj.context, &wj.specRun, wj.permissions)
 			if err != nil {
 				logger.WithFields(logrus.Fields{
 					"err": err,
 				}).Error("Error on executors.AcquireHeadlessTokens ...")
-				return generation.TestCasesRun{}, errConsentIDAcquisitionFailed
+				return generation.SpecRun{}, errConsentIDAcquisitionFailed
 			}
-			// TODO:Process multipe specs
-			tokenMap := manifest.MapTokensToTestCases(tokenPermissionsMap, wj.testCasesRun.TestCases[0].TestCases)
+
+			tokenMap := map[string]string{} // Put access tokens into context
+			for _, v := range wj.specRun.SpecTestCases {
+				aMap := manifest.MapTokensToTestCases(tokenPermissionsMap, v.TestCases)
+				for x, y := range aMap {
+					tokenMap[x] = y
+				}
+			}
+
 			for k, v := range tokenMap {
 				wj.context.PutString(k, v)
+				logger.Tracef("processtokenMap %s:%s into context", k, v)
+			}
+
+			for k := range wj.permissions {
+				if k == "payments" {
+					paymentpermissions := wj.permissions["payments"]
+					logger.Tracef("We have %d Payment Permissions", len(paymentpermissions))
+					if len(paymentpermissions) > 0 {
+						for _, spec := range wj.specRun.SpecTestCases {
+							logger.Tracef("Analysing %d test cases for token mapping", len(spec.TestCases))
+							manifest.MapTokensToPaymentTestCases(paymentpermissions, spec.TestCases, &wj.context)
+						}
+					}
+				}
+				if k == "cbpii" {
+					cbpiiPerms := wj.permissions["cbpii"]
+					if len(cbpiiPerms) > 0 {
+						for _, spec := range wj.specRun.SpecTestCases {
+							manifest.MapTokensToCBPIITestCases(cbpiiPerms, spec.TestCases, &wj.context)
+						}
+					}
+				}
 			}
 
 			wj.allCollected = true
@@ -221,24 +357,29 @@ func (wj *journey) TestCases() (generation.TestCasesRun, error) {
 		wj.testCasesRunGenerated = true
 	}
 
-	logger.Tracef("TestCaseRun.SpecConsentRequirements: %#v\n", wj.testCasesRun.SpecConsentRequirements)
-	for k := range wj.testCasesRun.TestCases {
-		logger.Tracef("TestCaseRun-Specificatino: %#v\n", wj.testCasesRun.TestCases[k].Specification)
+	logger.Tracef("SpecRun.SpecConsentRequirements: %#v", wj.specRun.SpecConsentRequirements)
+	for k := range wj.specRun.SpecTestCases {
+		logger.Tracef("SpecRun-Specification: %#v", wj.specRun.SpecTestCases[k].Specification)
 	}
-	logger.Tracef("Dumping Consents:---------------------------\n")
-	for _, v := range wj.testCasesRun.SpecConsentRequirements {
-		logger.Tracef("%s", v.Identifier)
-		for _, x := range v.NamedPermissions {
-			logger.Tracef("\tname: %s codeset: %#v\n\tconsent Url: %s", x.Name, x.CodeSet.CodeSet, x.ConsentUrl)
-		}
-	}
-	return wj.testCasesRun, nil
+	return wj.specRun, nil
+}
+
+func (wj *journey) tlsVersionCtxKey(discoveryItemName string) string {
+	return fmt.Sprintf("tlsVersionForDiscoveryItem-%s", strings.ReplaceAll(discoveryItemName, " ", "-"))
+}
+
+func (wj *journey) tlsValidCtxKey(discoveryItemName string) string {
+	return fmt.Sprintf("tlsIsValidForDiscoveryItem-%s", strings.ReplaceAll(discoveryItemName, " ", "-"))
 }
 
 func (wj *journey) CollectToken(code, state, scope string) error {
 	wj.journeyLock.Lock()
 	defer wj.journeyLock.Unlock()
-	logger := wj.log.WithField("function", "CollectToken")
+	logger := wj.log.WithFields(logrus.Fields{
+		"package":  "server",
+		"module":   "journey",
+		"function": "CollectToken",
+	})
 
 	if !wj.testCasesRunGenerated {
 		logger.WithFields(logrus.Fields{
@@ -250,8 +391,7 @@ func (wj *journey) CollectToken(code, state, scope string) error {
 		return errTestCasesNotGenerated
 	}
 
-	runDefinition := wj.makeRunDefinition()
-	accessToken, err := executors.ExchangeCodeForAccessToken(state, code, scope, runDefinition, &wj.context)
+	accessToken, err := executors.ExchangeCodeForAccessToken(state, code, &wj.context)
 	if err != nil {
 		logger.WithFields(logrus.Fields{
 			"err":         err,
@@ -273,6 +413,20 @@ func (wj *journey) CollectToken(code, state, scope string) error {
 			"accessToken": accessToken,
 		}).Warn(`Setting 'access_token' because state == "Token001"`)
 		wj.context.PutString("access_token", accessToken) // tmp measure to get testcases running
+	}
+
+	if wj.config.useDynamicResourceID {
+		err := executors.GetDynamicResourceIds(state, accessToken, &wj.context, wj.permissions["accounts"])
+		if err != nil {
+			logger.WithFields(logrus.Fields{
+				"err": err,
+			}).Error("Dynamic resource allocation failure")
+			return errDynamicResourceAllocationFailed
+		}
+	}
+
+	for _, v := range wj.permissions["accounts"] {
+		logger.Tracef("journey perms: %#v", v)
 	}
 
 	return wj.collector.Collect(state, accessToken)
@@ -305,16 +459,45 @@ func (wj *journey) RunTests() error {
 		return errNotFinishedCollectingTokens
 	}
 
+	if wj.config.useDynamicResourceID {
+		for _, accountPermissions := range wj.permissions["accounts"] {
+			// cycle over all test case ids for this account permission/token set
+			for _, tcID := range accountPermissions.IDs {
+				for i := range wj.specRun.SpecTestCases {
+					specType := wj.specRun.SpecTestCases[i].Specification.SpecType
+					// isolate all testcases to be run that are from and 'account' spec type
+					if specType == "accounts" {
+						tc := wj.specRun.SpecTestCases[i].TestCases
+						// look for test cases matching the permission set test case list
+						for j, test := range tc {
+							if test.ID == tcID {
+								resourceCtx := model.Context{}
+								resourceCtx.PutString(CtxConsentedAccountID, accountPermissions.AccountID)
+								// perform the dynamic resource id replacement
+								test.ProcessReplacementFields(&resourceCtx, false)
+								wj.specRun.SpecTestCases[i].TestCases[j] = test
+							}
+						}
+					}
+				}
+			}
+		}
+		// put a default accountid and statement id in the journey context for those tests that haven't got a token that can call /accounts
+		wj.context.PutString(CtxConsentedAccountID, wj.config.resourceIDs.AccountIDs[0].AccountID)
+		wj.context.PutString(CtxStatementID, wj.config.resourceIDs.StatementIDs[0].StatementID)
+	}
+
 	requiredTokens := wj.permissions
-	for k := range wj.testCasesRun.TestCases {
-		specType := wj.testCasesRun.TestCases[k].Specification.SpecType
-		manifest.MapTokensToTestCases(requiredTokens[specType], wj.testCasesRun.TestCases[k].TestCases)
-		wj.dumpJSON(wj.testCasesRun.TestCases[k].TestCases)
+
+	for k := range wj.specRun.SpecTestCases {
+		specType := wj.specRun.SpecTestCases[k].Specification.SpecType
+		manifest.MapTokensToTestCases(requiredTokens[specType], wj.specRun.SpecTestCases[k].TestCases)
+		wj.dumpJSON(wj.specRun.SpecTestCases[k].TestCases)
 	}
 
 	runDefinition := wj.makeRunDefinition()
 	runner := executors.NewTestCaseRunner(wj.log, runDefinition, wj.daemonController)
-	wj.context.DumpContext("runTestCases with context")
+	wj.context.PutString(CtxPhase, "run")
 	return runner.RunTestCases(&wj.context)
 }
 
@@ -329,7 +512,7 @@ func (wj *journey) StopTestRun() {
 func (wj *journey) createTokenCollector(consentIds executors.TokenConsentIDs) {
 	if len(consentIds) > 0 {
 		wj.collector = executors.NewTokenCollector(wj.log, consentIds, wj.doneCollectionCallback, wj.events)
-		consentIdsToTestCaseRun(wj.log, consentIds, &wj.testCasesRun)
+		consentIdsToTestCaseRun(wj.log, consentIds, &wj.specRun)
 
 		wj.allCollected = false
 	} else {
@@ -337,6 +520,8 @@ func (wj *journey) createTokenCollector(consentIds executors.TokenConsentIDs) {
 	}
 
 	wj.log.WithFields(logrus.Fields{
+		"package":      "server",
+		"module":       "journey",
 		"function":     "createTokenCollector",
 		"consentIds":   fmt.Sprintf("%#v", consentIds),
 		"allCollected": wj.allCollected,
@@ -358,12 +543,13 @@ func (wj *journey) makeGeneratorConfig() generation.GeneratorConfig {
 func (wj *journey) makeRunDefinition() executors.RunDefinition {
 	return executors.RunDefinition{
 		DiscoModel:    wj.validDiscoveryModel,
-		TestCaseRun:   wj.testCasesRun,
+		SpecRun:       wj.specRun,
 		SigningCert:   wj.config.certificateSigning,
 		TransportCert: wj.config.certificateTransport,
 	}
 }
 
+// JourneyConfig main configuration variables
 type JourneyConfig struct {
 	certificateSigning            authentication.Certificate
 	certificateTransport          authentication.Certificate
@@ -375,16 +561,30 @@ type JourneyConfig struct {
 	authorizationEndpoint         string
 	resourceBaseURL               string
 	xXFAPIFinancialID             string
+	xXFAPICustomerIPAddress       string
 	issuer                        string
 	redirectURL                   string
 	resourceIDs                   model.ResourceIDs
 	creditorAccount               models.Payment
+	internationalCreditorAccount  models.Payment
+	instructedAmount              models.InstructedAmount
+	paymentFrequency              models.PaymentFrequency
+	firstPaymentDateTime          string
+	requestedExecutionDateTime    string
+	currencyOfTransfer            string
 	apiVersion                    string
 	transactionFromDate           string
 	transactionToDate             string
 	requestObjectSigningAlgorithm string
 	signingPrivate                string
 	signingPublic                 string
+	useNonOBDirectory             bool
+	signingKid                    string
+	signatureTrustAnchor          string
+	useDynamicResourceID          bool
+	AcrValuesSupported            []string
+	conditionalProperties         []discovery.ConditionalAPIProperties
+	cbpiiDebtorAccount            discovery.CBPIIDebtorAccount
 }
 
 func (wj *journey) SetConfig(config JourneyConfig) error {
@@ -392,7 +592,8 @@ func (wj *journey) SetConfig(config JourneyConfig) error {
 	defer wj.journeyLock.Unlock()
 
 	wj.config = config
-	err := wj.configParametersToJourneyContext()
+	wj.config.useDynamicResourceID = wj.dynamicResourceIDs // fed from environment variable 'dynres'=true/false
+	err := PutParametersToJourneyContext(wj.config, wj.context)
 	if err != nil {
 		return err
 	}
@@ -401,66 +602,14 @@ func (wj *journey) SetConfig(config JourneyConfig) error {
 	return nil
 }
 
-func (wj *journey) Events() events.Events {
-	return wj.events
+// ConditionalProperties retrieve conditional properties right after
+// they have been set from the discovery model to the webJourney.ConditionalProperties
+func (wj *journey) ConditionalProperties() []discovery.ConditionalAPIProperties {
+	return wj.conditionalProperties
 }
 
-const (
-	ctxConstClientID                = "client_id"
-	ctxConstClientSecret            = "client_secret"
-	ctxConstTokenEndpoint           = "token_endpoint"
-	ctxResponseType                 = "responseType"
-	ctxConstTokenEndpointAuthMethod = "token_endpoint_auth_method"
-	ctxConstFapiFinancialID         = "x-fapi-financial-id"
-	ctxConstRedirectURL             = "redirect_url"
-	ctxConstAuthorisationEndpoint   = "authorisation_endpoint"
-	ctxConstBasicAuthentication     = "basic_authentication"
-	ctxConstResourceBaseURL         = "resource_server"
-	ctxConstIssuer                  = "issuer"
-	ctxAPIVersion                   = "api-version"
-	ctxConsentedAccountID           = "consentedAccountId"
-	ctxStatementID                  = "statementId"
-	ctxCreditorSchema               = "creditorScheme"
-	ctxCreditorIdentification       = "creditorIdentification"
-	ctxCreditorName                 = "creditorName"
-	ctxTransactionFromDate          = "transactionFromDate"
-	ctxTransactionToDate            = "transactionToDate"
-	ctxRequestObjectSigningAlg      = "requestObjectSigningAlg"
-	ctxSigningPrivate               = "signingPrivate"
-	ctxSigningPublic                = "signingPublic"
-)
-
-func (wj *journey) configParametersToJourneyContext() error {
-	wj.context.PutString(ctxConstClientID, wj.config.clientID)
-	wj.context.PutString(ctxConstClientSecret, wj.config.clientSecret)
-	wj.context.PutString(ctxConstTokenEndpoint, wj.config.tokenEndpoint)
-	wj.context.PutString(ctxResponseType, wj.config.ResponseType)
-	wj.context.PutString(ctxConstTokenEndpointAuthMethod, wj.config.tokenEndpointAuthMethod)
-	wj.context.PutString(ctxConstFapiFinancialID, wj.config.xXFAPIFinancialID)
-	wj.context.PutString(ctxConstRedirectURL, wj.config.redirectURL)
-	wj.context.PutString(ctxConstAuthorisationEndpoint, wj.config.authorizationEndpoint)
-	wj.context.PutString(ctxConstResourceBaseURL, wj.config.resourceBaseURL)
-	wj.config.apiVersion = "v3.1"
-	wj.context.PutString(ctxAPIVersion, wj.config.apiVersion)
-	wj.context.PutString(ctxConsentedAccountID, wj.config.resourceIDs.AccountIDs[0].AccountID)
-	wj.context.PutString(ctxStatementID, wj.config.resourceIDs.StatementIDs[0].StatementID)
-	wj.context.PutString(ctxCreditorSchema, wj.config.creditorAccount.SchemeName)
-	wj.context.PutString(ctxCreditorIdentification, wj.config.creditorAccount.Identification)
-	wj.context.PutString(ctxCreditorName, wj.config.creditorAccount.Name)
-	wj.context.PutString(ctxRequestObjectSigningAlg, wj.config.requestObjectSigningAlgorithm)
-	wj.context.PutString(ctxSigningPrivate, wj.config.signingPrivate)
-	wj.context.PutString(ctxSigningPublic, wj.config.signingPublic)
-	wj.context.PutString(ctxTransactionFromDate, wj.config.transactionFromDate)
-	wj.context.PutString(ctxTransactionToDate, wj.config.transactionToDate)
-
-	basicauth, err := authentication.CalculateClientSecretBasicToken(wj.config.clientID, wj.config.clientSecret)
-	if err != nil {
-		return err
-	}
-	wj.context.PutString(ctxConstBasicAuthentication, basicauth)
-	wj.context.PutString(ctxConstIssuer, wj.config.issuer)
-
-	return nil
+func (wj *journey) Events() events.Events {
+	return wj.events
 }
 
 func (wj *journey) customTestParametersToJourneyContext() {
@@ -476,10 +625,12 @@ func (wj *journey) customTestParametersToJourneyContext() {
 	}
 }
 
-func consentIdsToTestCaseRun(log *logrus.Entry, consentIds []executors.TokenConsentIDItem, testCasesRun *generation.TestCasesRun) {
+func consentIdsToTestCaseRun(log *logrus.Entry, consentIds []executors.TokenConsentIDItem, testCasesRun *generation.SpecRun) {
 	log.WithFields(logrus.Fields{
+		"package":    "server",
+		"function":   "consentIdsToTestCaseRun",
 		"consentIds": consentIds,
-	}).Debug("consentIdsToTestCaseRun ...")
+	}).Debug("...")
 	for _, v := range testCasesRun.SpecConsentRequirements {
 		for x, permission := range v.NamedPermissions {
 			for _, consentID := range consentIds {
@@ -498,16 +649,25 @@ func consentIdsToTestCaseRun(log *logrus.Entry, consentIds []executors.TokenCons
 	}
 }
 
-func dumpPermissions(p map[string][]manifest.RequiredTokens, title string) {
-	logrus.Tracef("Dump Permissions at %s \n", title)
-	for _, v := range p {
-		logrus.Tracef("%#v\n", v)
-	}
-}
-
 // Utility to Dump Json
 func (wj *journey) dumpJSON(i interface{}) {
 	var model []byte
 	model, _ = json.MarshalIndent(i, "", "    ")
 	wj.log.Traceln(string(model))
+}
+
+// EnableDynamicResourceIDs is triggered by and environment variable dynids=true
+func (wj *journey) EnableDynamicResourceIDs() {
+	wj.dynamicResourceIDs = true
+}
+
+// DetermineAPIVersions
+func DetermineAPIVersions(apis []discovery.ModelDiscoveryItem) []string {
+	apiversions := []string{}
+	for _, v := range apis {
+		v.APISpecification.SpecType, _ = manifest.GetSpecType(v.APISpecification.SchemaVersion)
+		apiversions = append(apiversions, v.APISpecification.SpecType+"_"+v.APISpecification.Version)
+		logrus.Warnf("spectype %s, specversion %s", v.APISpecification.SpecType, v.APISpecification.Version)
+	}
+	return apiversions
 }

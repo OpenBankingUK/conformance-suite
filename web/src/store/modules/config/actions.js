@@ -2,7 +2,7 @@ import * as _ from 'lodash';
 import moment from 'moment';
 import api from '../../../api';
 import constants from './constants';
-import { mutationTypes as types } from './index';
+import * as types from './mutation-types.js';
 
 const findImageData = (model, images) => {
   const { name } = model.discoveryModel;
@@ -116,13 +116,33 @@ export default {
         'authorization_endpoint',
         'resource_base_url',
         'x_fapi_financial_id',
+        'send_x_fapi_customer_ip_address',
+        'x_fapi_customer_ip_address',
         'issuer',
         'redirect_url',
+        'use_non_ob_directory',
+        'signing_kid',
+        'signature_trust_anchor',
         'resource_ids',
         'creditor_account',
+        'international_creditor_account',
+        'instructed_amount',
+        'currency_of_transfer',
+        'acr_values_supported',
+        'payment_frequency',
+        'first_payment_date_time',
+        'requested_execution_date_time',
+        'conditional_properties',
+        'cbpii_debtor_account',
       ];
       const newConfig = _.pick(merged, validKeys);
+      // TODO: Fix this as I think it is working by accident. There needs to be an individual commit to the
+      // store for each thing in the config that has changed, not just a global commit to set the new config.
+      // For now, just do a commit for `SET_PAYMENT_FREQUENCY`.
       commit(types.SET_CONFIGURATION, newConfig);
+      commit(types.SET_PAYMENT_FREQUENCY, newConfig.payment_frequency);
+      commit(types.SET_CONDITIONAL_PROPERTIES, newConfig.conditional_properties);
+
       dispatch('status/clearErrors', null, { root: true });
       commit(types.SET_WIZARD_STEP, constants.WIZARD.STEP_THREE);
     } catch (e) {
@@ -256,6 +276,10 @@ export default {
     if (_.isEmpty(state.configuration.redirect_url)) {
       errors.push('Redirect URL empty');
     }
+    // TODO: Enable this validation rule.
+    // if (_.isEmpty(state.configuration.payment_frequency)) {
+    //   errors.push('Payment frequency empty');
+    // }
 
     if (!_.isEmpty(errors)) {
       dispatch('status/setErrors', errors, { root: true });

@@ -1,12 +1,8 @@
 package model
 
 import (
-	"crypto/rsa"
-	"crypto/sha1"
-	"encoding/base64"
 	"encoding/json"
 	"fmt"
-	"io"
 	"net/url"
 	"regexp"
 	"strings"
@@ -32,16 +28,19 @@ import (
 // to the parent Rule which determine how to execute the requestion object. On execution an http response object
 // is received and passed back to the testcase for validation using the Expects object.
 type Input struct {
-	Method         string            `json:"method,omitempty"`      // http Method that this test case uses
-	Endpoint       string            `json:"endpoint,omitempty"`    // resource endpoint where the http object needs to be sent to get a response
-	Headers        map[string]string `json:"headers,omitempty"`     // Allows for provision of specific http headers
-	FormData       map[string]string `json:"formData,omitempty"`    // Allow for provision of http form data
-	RequestBody    string            `json:"bodyData,omitempty"`    // Optional request body raw data
-	Generation     map[string]string `json:"generation,omitempty"`  // Allows for different ways of generating testcases
-	Claims         map[string]string `json:"claims,omitempty"`      // collects claims for input strategies that require them
-	JwsSig         bool              `json:"jws,omitempty"`         // controls inclusion of x-jws-signature header
-	IdempotencyKey bool              `json:"idempotency,omitempty"` // specifices the inclusion of x-idempotency-key in the request
+	Method         string            `json:"method,omitempty"`        // http Method that this test case uses
+	Endpoint       string            `json:"endpoint,omitempty"`      // resource endpoint where the http object needs to be sent to get a response
+	Headers        map[string]string `json:"headers,omitempty"`       // Allows for provision of specific http headers
+	RemoveHeaders  []string          `json:"removeheaders,omitempty"` // Allows for removing specific http headers
+	FormData       map[string]string `json:"formData,omitempty"`      // Allow for provision of http form data
+	RequestBody    string            `json:"bodyData,omitempty"`      // Optional request body raw data
+	Generation     map[string]string `json:"generation,omitempty"`    // Allows for different ways of generating testcases
+	Claims         map[string]string `json:"claims,omitempty"`        // collects claims for input strategies that require them
+	JwsSig         bool              `json:"jws,omitempty"`           // controls inclusion of x-jws-signature header
+	IdempotencyKey bool              `json:"idempotency,omitempty"`   // specifices the inclusion of x-idempotency-key in the request
 }
+
+var disableJws = true // defaults to JWS disabled in line with waiver 007
 
 // CreateRequest is the main Input work horse which examines the various Input parameters and generates an
 // http.Request object which represents the request
@@ -101,6 +100,10 @@ func (i *Input) CreateRequest(tc *TestCase, ctx *Context) (*resty.Request, error
 		i.SetHeader("x-idempotency-key", tc.ID+"-"+makeMiliSecondStringTimestamp()) // initial trivial x-idempotency-key implementation
 	}
 
+	if err = i.removeHeaders(req, ctx); err != nil {
+		return nil, err
+	}
+
 	if err = i.setHeaders(req, ctx); err != nil {
 		return nil, err
 	}
@@ -111,9 +114,6 @@ func (i *Input) CreateRequest(tc *TestCase, ctx *Context) (*resty.Request, error
 }
 
 func (i *Input) setClaims(tc *TestCase, ctx *Context) error {
-	logrus.WithFields(logrus.Fields{
-		"i.Claims": i.Claims,
-	}).Debug("Input.setClaims before ...")
 	ctx.DumpContext()
 
 	for k, v := range i.Claims {
@@ -131,7 +131,7 @@ func (i *Input) setClaims(tc *TestCase, ctx *Context) error {
 			fallthrough
 		case "consenturl":
 			i.AppMsg("==> executing consenturl strategy")
-			token, err := i.generateRequestToken(ctx)
+			token, err := i.GenerateRequestToken(ctx)
 			if err != nil {
 				return i.AppErr(fmt.Sprintf("error creating request token %s", err.Error()))
 			}
@@ -149,7 +149,7 @@ func (i *Input) setClaims(tc *TestCase, ctx *Context) error {
 			}
 		case "jwt-bearer":
 			i.AppMsg("==> executing jwt-bearer strategy")
-			token, err := i.generateSignedJWT(ctx, jwt.SigningMethodRS256)
+			token, err := i.GenerateSignedJWT(ctx, jwt.SigningMethodRS256)
 			if err != nil {
 				return i.AppErr(fmt.Sprintf("error creating AlgRS256JWT %s", err.Error()))
 			}
@@ -158,40 +158,19 @@ func (i *Input) setClaims(tc *TestCase, ctx *Context) error {
 		}
 	}
 
-	logrus.WithFields(logrus.Fields{
-		"i.Claims": i.Claims,
-	}).Debug("Input.setClaims after ...")
-	ctx.DumpContext()
-
 	return nil
 }
 
-func (i *Input) generateRequestToken(ctx *Context) (string, error) {
+func (i *Input) GenerateRequestToken(ctx *Context) (string, error) {
 	alg, err := ctx.GetString("requestObjectSigningAlg")
 	if err != nil && err != ErrNotFound {
 		return "", err
 	}
-
-	var token string
-	switch strings.ToUpper(alg) {
-	case "PS256":
-		// Workaround
-		// https://github.com/dgrijalva/jwt-go/issues/285
-		fixedSigningMethodPS256 := &jwt.SigningMethodRSAPSS{
-			SigningMethodRSA: jwt.SigningMethodPS256.SigningMethodRSA,
-			Options: &rsa.PSSOptions{
-				SaltLength: rsa.PSSSaltLengthEqualsHash,
-			},
-		}
-		token, err = i.generateSignedJWT(ctx, fixedSigningMethodPS256)
-	case "RS256":
-		token, err = i.generateSignedJWT(ctx, jwt.SigningMethodRS256)
-	case "NONE":
-		fallthrough
-	default:
-		token, err = i.generateUnsignedJWT()
+	signingMethod, err := authentication.GetSigningAlg(alg)
+	if err != nil {
+		return i.generateUnsignedJWT(ctx)
 	}
-	return token, err
+	return i.GenerateSignedJWT(ctx, signingMethod)
 }
 
 func consentURL(authEndpoint string, claims map[string]string, token string) string {
@@ -233,6 +212,31 @@ func (i *Input) setFormData(req *resty.Request, ctx *Context) error {
 	return nil
 }
 
+func (i *Input) removeHeaders(req *resty.Request, ctx *Context) error {
+	remainingHeaders := make(map[string]string, 0)
+	if len(i.RemoveHeaders) > 0 {
+		i.AppMsg(fmt.Sprintf("RemoveHeaders %v", i.RemoveHeaders))
+	}
+
+	var found bool
+	for x, y := range i.Headers {
+		for _, v := range i.RemoveHeaders {
+			if strings.EqualFold(v, x) {
+				found = true
+				i.AppMsg("removing header: " + x)
+				break
+			}
+		}
+		if !found {
+			remainingHeaders[x] = y
+		}
+		found = false
+	}
+
+	i.Headers = remainingHeaders
+	return nil
+}
+
 func (i *Input) setHeaders(req *resty.Request, ctx *Context) error {
 	if len(i.Headers) > 0 {
 		i.AppMsg(fmt.Sprintf("SetHeaders %v", i.Headers))
@@ -250,12 +254,17 @@ func (i *Input) setHeaders(req *resty.Request, ctx *Context) error {
 	return nil
 }
 
-func (i *Input) createJWSDetachedSignature(ctx *Context) error {
-
-	if len(i.RequestBody) > 0 {
-
-		token, err := i.generateJWSSignature(ctx, jwt.SigningMethodRS256)
-
+func (i *Input) createJWSDetachedSignature(ctx authentication.ContextInterface) error {
+	if len(i.RequestBody) > 0 && !disableJws {
+		requestObjSigningAlg, err := ctx.GetString("requestObjectSigningAlg")
+		if err != nil {
+			return errors.Wrap(err, "input.createJWSDetachedSignature: unable to retrieve requestObjectSigningAlg")
+		}
+		alg, err := authentication.GetSigningAlg(requestObjSigningAlg)
+		if err != nil {
+			return errors.Wrapf(err, "input.createJWSDetachedSignature: unable to parse signing alg")
+		}
+		token, err := authentication.NewJWSSignature(i.RequestBody, ctx, alg)
 		if err != nil {
 			return i.AppErr(fmt.Sprintf("error generating jws signature %s", err.Error()))
 		}
@@ -264,8 +273,11 @@ func (i *Input) createJWSDetachedSignature(ctx *Context) error {
 		return nil
 	}
 
+	if disableJws {
+		i.AppMsg("x-jws-signature disabled")
+		return nil
+	}
 	return i.AppErr("cannot create x-jws-signature, as request body is empty")
-
 }
 
 func (i *Input) getBody(req *resty.Request, ctx *Context) (string, error) {
@@ -362,25 +374,48 @@ func signingCertFromContext(ctx *Context) (authentication.Certificate, error) {
 	return cert, nil
 }
 
-func (i *Input) generateSignedJWT(ctx *Context, alg jwt.SigningMethod) (string, error) {
+func (i *Input) GenerateSignedJWT(ctx *Context, alg jwt.SigningMethod) (string, error) {
 	uuid := uuid.New()
 	claims := jwt.MapClaims{}
-	claims["iss"] = i.Claims["iss"]
-	claims["sub"] = i.Claims["iss"]
-	claims["scope"] = i.Claims["scope"]
-	claims["aud"] = i.Claims["aud"]
+	if iss, ok := i.Claims["iss"]; ok {
+		claims["iss"] = iss
+	}
+	if iss, ok := i.Claims["iss"]; ok {
+		claims["sub"] = iss
+	}
+	if scope, ok := i.Claims["scope"]; ok {
+		claims["scope"] = scope
+	}
+	if aud, ok := i.Claims["aud"]; ok {
+		claims["aud"] = aud
+	}
+
 	claims["iat"] = time.Now().Unix()
-	claims["exp"] = time.Now().Add(time.Minute * time.Duration(60)).Unix()
+	claims["exp"] = time.Now().Add(time.Minute * time.Duration(30)).Unix()
 	claims["jti"] = uuid
-	claims["redirect_uri"] = i.Claims["redirect_url"]
 	claims["nonce"] = uuid
-	claims["client_id"] = i.Claims["iss"]
-	claims["state"] = i.Claims["state"]
+
+	if redirectURI, ok := i.Claims["redirect_url"]; ok {
+		claims["redirect_uri"] = redirectURI
+	}
+	if iss, ok := i.Claims["iss"]; ok {
+		claims["client_id"] = iss
+	}
+	if state, ok := i.Claims["state"]; ok {
+		claims["state"] = state
+	}
+
 	consentClaim := consentClaims{Essential: true, Value: i.Claims["consentId"]}
-	myIdent := obintentID{IntentID: consentClaim}
+	myIdent := obIDToken{IntentID: consentClaim}
+	acrValuesSupported, err := ctx.GetStringSlice("acrValuesSupported")
+	if err == nil && len(acrValuesSupported) > 0 {
+		myIdent = obIDToken{IntentID: consentClaim, Acr: &acr{Essential: true, Values: acrValuesSupported}}
+	}
 	var consentIDToken = consentIDTok{Token: myIdent}
 	claims["claims"] = consentIDToken
-	claims["response_type"] = i.Claims["responseType"]
+	if responseType, ok := i.Claims["responseType"]; ok {
+		claims["response_type"] = responseType
+	}
 
 	logrus.WithFields(logrus.Fields{
 		"claims":   claims,
@@ -394,13 +429,14 @@ func (i *Input) generateSignedJWT(ctx *Context, alg jwt.SigningMethod) (string, 
 	if err != nil {
 		return "", i.AppErr(errors.Wrap(err, "Create certificate from context").Error())
 	}
-
-	modulus := cert.PublicKey().N.Bytes()
-	modulusBase64 := base64.RawURLEncoding.EncodeToString(modulus)
-	token.Header["kid"], err = calcKid(modulusBase64)
+	kid, err := authentication.GetKID(ctx, cert.PublicKey().N.Bytes())
 	if err != nil {
-		return "", i.AppErr(fmt.Sprintf("error calculating kid: %s", err.Error()))
+		return "", errors.Wrap(err, "model.Input.generateJWSSignature failure: unable to get KID")
 	}
+	logrus.WithFields(logrus.Fields{
+		"kid": kid,
+	}).Debug("GenerateSignedJWT")
+	token.Header["kid"] = kid
 
 	tokenString, err := token.SignedString(cert.PrivateKey()) // sign the token - get as encoded string
 	if err != nil {
@@ -409,123 +445,21 @@ func (i *Input) generateSignedJWT(ctx *Context, alg jwt.SigningMethod) (string, 
 	return tokenString, nil
 }
 
-type payload []byte
-
-func (p payload) Valid() error {
-	return nil
+// acr
+// TPPs MAY provide a space-separated string that specifies the acr values that the Authorization Server is being requested to use for processing this Authentication Request, with the values appearing in order of preference.
+// The values MUST be one or both of:
+// urn:openbanking:psd2:sca: To indiciate that secure customer authentication must be carried out as mandated by the PSD2 RTS
+// urn:openbanking:psd2:ca: To request that the customer is authenticated without using SCA (if permitted)
+//
+// https://openbanking.atlassian.net/wiki/spaces/DZ/pages/7046134/Open+Banking+Security+Profile+-+Implementer+s+Draft+v1.1.0
+type acr struct {
+	Essential bool     `json:"essential,omitempty"`
+	Values    []string `json:"values,omitempty"`
 }
 
-func (i *Input) generateJWSSignature(ctx *Context, alg jwt.SigningMethod) (string, error) {
-
-	m := minify.New()
-	m.AddFuncRegexp(regexp.MustCompile("[/+]json$"), minjson.Minify)
-	minifiedBody, err := m.String("application/json", i.RequestBody)
-	if err != nil {
-		return "", err
-	}
-	cert, err := signingCertFromContext(ctx)
-	if err != nil {
-		return "", err
-	}
-	modulus := cert.PublicKey().N.Bytes()
-	modulusBase64 := base64.RawURLEncoding.EncodeToString(modulus)
-	kid, _ := calcKid(modulusBase64)
-	issuer, err := cert.DN()
-	if err != nil {
-		logrus.Warn("cannot get certificate DN: ", err.Error())
-	}
-
-	logrus.WithFields(logrus.Fields{
-		"kid":    kid,
-		"issuer": issuer,
-		"alg":    alg.Alg(),
-		"claims": minifiedBody,
-	}).Trace("jws signature creation")
-
-	tok := jwt.Token{
-		Header: map[string]interface{}{
-			"typ":                           "JOSE",
-			"kid":                           kid,
-			"b64":                           false,
-			"cty":                           "application/json",
-			"http://openbanking.org.uk/iat": time.Now().Unix(),
-			"http://openbanking.org.uk/iss": issuer,               //ASPSP ORGID or TTP ORGID/SSAID
-			"http://openbanking.org.uk/tan": "openbanking.org.uk", //Trust anchor
-			"alg":                           alg.Alg(),
-			"crit":                          []string{"b64", "http://openbanking.org.uk/iat", "http://openbanking.org.uk/iss", "http://openbanking.org.uk/tan"},
-		},
-		Method: alg,
-	}
-
-	tokenString, err := SignedString(&tok, cert.PrivateKey(), minifiedBody) // sign the token - get as encoded string
-
-	logrus.Tracef("jws:  %v", tokenString)
-	detachedJWS := splitJwsWithBody(tokenString)
-	logrus.Tracef("detached jws: %v", detachedJWS)
-
-	return detachedJWS, nil
-}
-
-func splitJwsWithBody(token string) string {
-	firstPart := token[:strings.IndexByte(token, '.')]
-	idx := strings.LastIndex(token, ".")
-	lastPart := token[idx:]
-	return firstPart + "." + lastPart
-}
-
-// SignedString Get the complete, signed token for jws usage
-func SignedString(t *jwt.Token, key interface{}, body string) (string, error) {
-	var sig, sstr string
-	var err error
-	if sstr, err = SigningString(t, body); err != nil {
-		return "", err
-	}
-	if sig, err = t.Method.Sign(sstr, key); err != nil {
-		return "", err
-	}
-	return strings.Join([]string{sstr, sig}, "."), nil
-}
-
-// SigningString -
-func SigningString(t *jwt.Token, body string) (string, error) {
-	var err error
-	parts := make([]string, 2)
-	for i := range parts {
-		var jsonValue []byte
-		if i == 0 {
-			if jsonValue, err = json.Marshal(t.Header); err != nil {
-				return "", err
-			}
-		} else {
-			jsonValue = []byte(body)
-		}
-		if i == 0 {
-			parts[i] = jwt.EncodeSegment(jsonValue)
-		} else {
-			parts[i] = string(jsonValue)
-		}
-	}
-	return strings.Join(parts, "."), nil
-}
-
-func calcKid(modulus string) (string, error) {
-	canonicalInput := fmt.Sprintf(`{"e":"AQAB","kty":"RSA","n":"%s"}`, modulus)
-
-	sumer := sha1.New()
-	_, err := io.WriteString(sumer, canonicalInput)
-	if err != nil {
-		return "", nil
-	}
-	sum := sumer.Sum(nil)
-
-	sumBase64 := base64.RawURLEncoding.EncodeToString(sum)
-	sumBase64NoTrailingEquals := strings.TrimSuffix(sumBase64, "=")
-
-	return sumBase64NoTrailingEquals, nil
-}
-
-type obintentID struct {
+type obIDToken struct {
 	IntentID consentClaims `json:"openbanking_intent_id,omitempty"`
+	Acr      *acr          `json:"acr,omitempty"`
 }
 
 type consentClaims struct {
@@ -534,19 +468,103 @@ type consentClaims struct {
 }
 
 type consentIDTok struct {
-	Token obintentID `json:"id_token,omitempty"`
+	Token obIDToken `json:"id_token,omitempty"`
 }
 
-func (i *Input) generateUnsignedJWT() (string, error) {
+// SetAdditonalClaims - read the comments in the function body, please.
+func SetAdditonalClaims(jwtClaims jwt.MapClaims, inputClaims map[string]string) {
+	// https://openid.net/specs/openid-financial-api-part-2.html#authorization-server Pt 13
+	// Ozone recently (the time I write this is 22/07/2019) went through FAPI certification so it is now more strict.
+	//
+	// We get an error when doing headless if the `exp` is not set. Here is the actual log:
+	//
+	// ---------------------- REQUEST LOG -----------------------
+	// GET  /auth?client_id=081756dd-17f5-4543-a221-012e7ec8694e&redirect_uri=https%3A%2F%2F127.0.0.1%3A8443%2Fconformancesuite%2Fcallback&request=eyJhbGciOiJub25lIn0.eyJhdWQiOiJodHRwczovL29iMTktYXV0aDEtdWkubzNiYW5rLmNvLnVrIiwiY2xhaW1zIjp7ImlkX3Rva2VuIjp7Im9wZW5iYW5raW5nX2ludGVudF9pZCI6eyJlc3NlbnRpYWwiOnRydWUsInZhbHVlIjoiYWFjLTdlNDE5ZTY3LWNiYTMtNGNlOS1iMzRkLTM3YjdmYjY4MDYzNyJ9fX0sImlzcyI6IjA4MTc1NmRkLTE3ZjUtNDU0My1hMjIxLTAxMmU3ZWM4Njk0ZSIsInJlZGlyZWN0X3VyaSI6Imh0dHBzOi8vMTI3LjAuMC4xOjg0NDMvY29uZm9ybWFuY2VzdWl0ZS9jYWxsYmFjayIsInNjb3BlIjoib3BlbmlkIGFjY291bnRzIn0.&response_type=code&scope=openid+accounts&state=  HTTP/1.1
+	// HOST   : ob19-auth1-ui.o3bank.co.uk
+	// HEADERS:
+	// 				User-Agent: go-resty/1.10.3 (https://github.com/go-resty/resty)
+	// BODY   :
+	// ***** NO CONTENT *****
+	// ----------------------------------------------------------
+	// RESTY 2019/07/19 10:29:01
+	// ---------------------- RESPONSE LOG -----------------------
+	// STATUS 		: 400 Bad Request
+	// RECEIVED AT	: 2019-07-19T10:29:01.086224+01:00
+	// RESPONSE TIME	: 134.991846ms
+	// HEADERS:
+	// 				Connection: keep-alive
+	// 			Content-Length: 194
+	// 				Content-Type: application/json; charset=utf-8
+	// 						Date: Fri, 19 Jul 2019 09:29:01 GMT
+	// 						Etag: W/"c2-g632OX8LPgukAE/rB/n5eQtwF3w"
+	// 				X-Powered-By: Express
+	// BODY   :
+	// {
+	// 	"noRedirect": true,
+	// 	"error": "invalid_request",
+	// 	"error_description": "request_object_exp_undefined: The request object must have an exp claim",
+	// 	"interactionId": "bd9fe4d9-9014-4c04-ae42-db053024f265"
+	// }
+	// ----------------------------------------------------------
+	//
+	// To fix this, if `claims` has the `exp` set to `true`, we set the `exp` claim to 30 minutes from now.
+	// "claims": {
+	// 	...
+	// 	"exp": "true",
+	// 	...
+	// }
+	//
+	// We do the same thing for `nonce`
+	logger := logrus.WithFields(logrus.Fields{
+		"package":     "model",
+		"function":    "authEndpoint",
+		"inputClaims": inputClaims,
+	})
+
+	if exp, ok := inputClaims["exp"]; ok {
+		if strings.ToLower(exp) == "true" {
+			jwtClaims["exp"] = time.Now().Add(time.Minute * time.Duration(30)).Unix()
+			logger.WithFields(logrus.Fields{
+				`jwtClaims["exp"]`: jwtClaims["exp"],
+			}).Debug(`setting "exp" claim because "exp" == "true"`)
+		}
+	}
+
+	if nonce, ok := inputClaims["nonce"]; ok {
+		if strings.ToLower(nonce) == "true" {
+			uuid := uuid.New()
+			jwtClaims["nonce"] = uuid
+			logger.WithFields(logrus.Fields{
+				`jwtClaims["nonce"]`: jwtClaims["nonce"],
+			}).Debug(`setting "nonce" claim because "nonce" == "true"`)
+		}
+	}
+
+	if state, ok := inputClaims["state"]; ok {
+		if len(state) > 0 {
+			jwtClaims["state"] = state
+			logger.WithFields(logrus.Fields{
+				`jwtClaims["state"]`: jwtClaims["state"],
+			}).Debug(`setting "state" claim because len("state") > 0`)
+		}
+	}
+}
+
+func (i *Input) generateUnsignedJWT(ctx *Context) (string, error) {
 	claims := jwt.MapClaims{}
 	claims["iss"] = i.Claims["iss"]
 	claims["scope"] = i.Claims["scope"]
 	claims["aud"] = i.Claims["aud"]
 	claims["redirect_uri"] = i.Claims["redirect_url"]
+	SetAdditonalClaims(claims, i.Claims)
 
 	consentClaim := consentClaims{Essential: true, Value: i.Claims["consentId"]}
-	myident := obintentID{IntentID: consentClaim}
-	var consentIDToken = consentIDTok{Token: myident}
+	myIdent := obIDToken{IntentID: consentClaim}
+	acrValuesSupported, err := ctx.GetStringSlice("acrValuesSupported")
+	if err == nil && len(acrValuesSupported) > 0 {
+		myIdent = obIDToken{IntentID: consentClaim, Acr: &acr{Essential: true, Values: acrValuesSupported}}
+	}
+	var consentIDToken = consentIDTok{Token: myIdent}
 
 	claims["claims"] = consentIDToken
 
@@ -592,4 +610,9 @@ func makeMiliSecondStringTimestamp() string {
 	a := time.Now().UnixNano() / int64(time.Millisecond)
 	milliString := fmt.Sprintf("%d", a)
 	return milliString
+}
+
+// DisableJWS - disable jws-signature for ozone
+func EnableJWS() {
+	disableJws = false
 }

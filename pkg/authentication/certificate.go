@@ -20,7 +20,8 @@ type Certificate interface {
 	PublicKey() *rsa.PublicKey
 	PrivateKey() *rsa.PrivateKey
 	TLSCert() tls.Certificate
-	DN() (string, error)
+	DN() (string, string, string, error)
+	SignatureIssuer(bool) (string, error)
 }
 
 // certificate implements Certificate
@@ -99,14 +100,44 @@ func validateKeys(publicKey *rsa.PublicKey, privateKey *rsa.PrivateKey) error {
 	return nil
 }
 
-func (c certificate) DN() (string, error) {
+func (c certificate) DN() (string, string, string, error) {
+	co, o, ou, cn, err := c.nameComponents()
+	if err != nil {
+		return "", "", "", errors.New("error getting certificate DN " + err.Error())
+	}
+	dn := fmt.Sprintf("C=%s, O=%s, OU=%s, CN=%s", co, o, ou, cn)
+	return dn, ou, cn, err
+}
 
+// SignatureIssuer - produces a string for use as the "http://openbanking.org.uk/iss" header field for
+// x-jws-signature generation for the payments api v3.1
+// for v3.0 the DN is used as this issuer
+// addresses: https://openbanking.atlassian.net/browse/OBSD-8663
+// bug fix: https://openbanking.atlassian.net/browse/REFAPP-784
+// The handling of the issuer will likely change for in future iterations to handle thinks like EIDAS certs
+// where the organisation id and software statement id are not present in the certificate DN
+func (c certificate) SignatureIssuer(tpp bool) (string, error) {
+	_, _, ou, cn, err := c.nameComponents()
+	if err != nil {
+		return "", errors.New("error getting certificate DN for SignatureIssuer: " + err.Error())
+	}
+
+	if tpp {
+		return ou + "/" + cn, nil
+	}
+
+	return ou, nil
+
+}
+
+func (c certificate) nameComponents() (string, string, string, string, error) {
 	cpb, _ := pem.Decode(c.publicCertPem)
 	crt, err := x509.ParseCertificate(cpb.Bytes)
 	if err != nil {
 		logrus.Errorf("cannot parse cert %s", err.Error())
-		return "", err
+		return "", "", "", "", err
 	}
+
 	subject := crt.Subject
 
 	var co string
@@ -125,7 +156,6 @@ func (c certificate) DN() (string, error) {
 	}
 
 	cn := subject.CommonName
-	dn := fmt.Sprintf("C=%s, O=%s, OU=%s, CN=%s", co, o, ou, cn)
 
-	return dn, nil
+	return co, o, ou, cn, nil
 }

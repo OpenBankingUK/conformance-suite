@@ -36,6 +36,21 @@ func (c Context) GetString(key string) (string, error) {
 	return valueStr, nil
 }
 
+// GetBool get the bool value associated with key
+func (c Context) GetBool(key string) (bool, error) {
+	value, exist := c[key]
+	if !exist {
+		return false, ErrNotFound
+	}
+
+	valueBool, ok := value.(bool)
+	if !ok {
+		return false, errors.New("error casting key to bool")
+	}
+
+	return valueBool, nil
+}
+
 // PutContext - puts another context into this one
 func (c Context) PutContext(ctx *Context) {
 	for k, v := range *ctx {
@@ -73,6 +88,12 @@ func (c Context) PutStringSlice(key string, values []string) {
 // GetStringSlice gets a slice of string from context
 func (c Context) GetStringSlice(key string) ([]string, error) {
 	result := []string{}
+
+	_, ok := c[key]
+	if !ok {
+		return nil, ErrNotFound
+	}
+
 	stringsSlice, ok := c[key].([]interface{})
 	if !ok {
 		return nil, errors.New("cast error can't get string slice from context")
@@ -94,8 +115,19 @@ func (c *Context) Delete(delKey string) {
 	delete(*c, delKey)
 }
 
+var dumpContexts bool
+
+func EnableContextDumps() {
+	dumpContexts = true
+}
+
 // DumpContext - send the contents of a context to a logger
 func (c *Context) DumpContext(text ...string) {
+
+	if !dumpContexts {
+		return
+	}
+
 	if len(text) > 0 {
 		logrus.StandardLogger().Trace("[Context] |=== " + text[0] + "===|")
 	}
@@ -104,14 +136,45 @@ func (c *Context) DumpContext(text ...string) {
 		for i := 1; i < len(text); i++ {
 			key := text[i]
 			value, _ := c.Get(key)
-			logrus.StandardLogger().Tracef("[Context] %s : %v\n", key, value)
+			logrus.StandardLogger().Tracef("[Context] %s : %v", key, value)
 		}
 	} else {
 		for k, v := range *c {
 			if k == "client_secret" || k == "basic_authentication" || k == "signingPublic" || k == "signingPrivate" { // skip potentially sensitive fields - likely need to be more robust
 				continue
 			}
-			logrus.StandardLogger().Tracef("[Context] %s:%v\n", k, v)
+			logrus.StandardLogger().Tracef("[Context] %s:%v", k, v)
 		}
 	}
+}
+
+// IsSet returns true if the key exists and is not set to zero value (nil or empty string)
+func (c *Context) IsSet(key string) bool {
+	val, exists := c.Get(key)
+	if !exists {
+		return false
+	} else if val, ok := val.(string); ok && val == "" {
+		return false
+	}
+	if val == nil {
+		return false
+	}
+	return true
+}
+
+// GetStrings - given a list of strings, returns a map of the strings values from context
+func (c *Context) GetStrings(text ...string) (map[string]string, error) {
+	stringsMap := map[string]string{}
+	for i := 0; i < len(text); i++ {
+		key := text[i]
+		value, err := c.GetString(key)
+		if err != nil {
+			return nil, errors.New("cannot get value of " + key + " from context")
+		}
+		if len(value) < 1 {
+			return nil, errors.New("cannot get value of " + key + " from context is empty")
+		}
+		stringsMap[key] = value
+	}
+	return stringsMap, nil
 }

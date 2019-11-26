@@ -4,16 +4,16 @@
       "body": {
         "Data": {
           "Initiation": {
-            "InstructionIdentification": "$creditorIdentification",
-            "EndToEndIdentification": "$creditorIdentification",
+            "InstructionIdentification": "$instructionIdentification",
+            "EndToEndIdentification": "$endToEndIdentification",
             "InstructedAmount": {
-              "Amount": "1.00",
-              "Currency": "$thisCurrency"
+              "Amount": "$instructedAmountValue",
+              "Currency": "$instructedAmountCurrency"
             },
             "CreditorAccount": {
               "SchemeName": "$creditorScheme",
               "Identification": "$creditorIdentification",
-              "Name": "CF Tool"
+              "Name": "$creditorName"
             }
           }
         },
@@ -25,16 +25,16 @@
         "Data": {
           "ConsentId": "$consentId",
           "Initiation": {
-            "InstructionIdentification": "$creditorIdentification",
-            "EndToEndIdentification": "$creditorIdentification",
+            "InstructionIdentification": "$instructionIdentification",
+            "EndToEndIdentification": "$endToEndIdentification",
             "InstructedAmount": {
-              "Amount": "1.00",
-              "Currency": "$thisCurrency"
+              "Amount": "$instructedAmountValue",
+              "Currency": "$instructedAmountCurrency"
             },
             "CreditorAccount": {
               "SchemeName": "$creditorScheme",
               "Identification": "$creditorIdentification",
-              "Name": "CF Tool"
+              "Name": "$creditorName"
             }
           }
         },
@@ -46,17 +46,80 @@
         "Data": {
           "Permission": "Create",
           "Initiation": {
-            "RequestedExecutionDateTime": "2020-10-01T13:14:25+00:00",
-            "InstructionIdentification": "ACME412",
-            "EndToEndIdentification": "FRESCO.21302.GFX.20",
+            "RequestedExecutionDateTime": "$requestedExecutionDateTime",
+            "InstructionIdentification": "$instructionIdentification",
+            "EndToEndIdentification": "$endToEndIdentification",
             "InstructedAmount": {
-              "Amount": "15.00",
-              "Currency": "GBP"
+              "Amount": "$instructedAmountValue",
+              "Currency": "$instructedAmountCurrency"
             },
             "CreditorAccount": {
-              "SchemeName": "SortCodeAccountNumber",
-              "Identification": "20000319470104",
-              "Name": "Messers Simplex & Co"
+              "SchemeName": "$creditorScheme",
+              "Identification": "$creditorIdentification",
+              "Name": "$creditorName"
+            }
+          }
+        },
+        "Risk": {}
+      }
+    },
+    "minimalDomesticStandingOrderConsent": {
+      "body": {
+        "Data": {
+          "Permission": "Create",
+          "Initiation": {
+            "Frequency": "$frequency",
+            "FirstPaymentDateTime": "$firstPaymentDateTime",
+            "FirstPaymentAmount": {
+              "Amount": "$instructedAmountValue",
+              "Currency": "$instructedAmountCurrency"
+            },
+            "CreditorAccount": {
+              "SchemeName": "$creditorScheme",
+              "Identification": "$creditorIdentification",
+              "Name": "$creditorName"
+            }
+          }
+        },
+        "Risk": {}
+      }
+    },
+    "minimalDomesticStandingOrder": {
+      "body": {
+        "Data": {
+          "ConsentId": "$consentId",
+          "Initiation": {
+            "Frequency": "$frequency",
+            "FirstPaymentDateTime": "$firstPaymentDateTime",
+            "FirstPaymentAmount": {
+              "Amount": "$instructedAmountValue",
+              "Currency": "$instructedAmountCurrency"
+            },
+            "CreditorAccount": {
+              "SchemeName": "$creditorScheme",
+              "Identification": "$creditorIdentification",
+              "Name": "$creditorName"
+            }
+          }
+        },
+        "Risk": {}
+      }
+    },
+    "minimalDomesticStandingOrderInvalid": {
+      "body": {
+        "Data": {
+          "ConsentId": "$consentId",
+          "Initiation": {
+            "Frequency": "foobar",
+            "FirstPaymentDateTime": "$firstPaymentDateTime",
+            "FirstPaymentAmount": {
+              "Amount": "$instructedAmountValue",
+              "Currency": "$instructedAmountCurrency"
+            },
+            "CreditorAccount": {
+              "SchemeName": "$creditorScheme",
+              "Identification": "$creditorIdentification",
+              "Name": "$creditorName"
             }
           }
         },
@@ -67,60 +130,39 @@
       "body": {
         "Data": {
           "Initiation": {
-            "InstructionIdentification": "Excaliber International",
-            "EndToEndIdentification": "Excaliber International",
-            "CurrencyOfTransfer": "USD",
+            "InstructionIdentification": "$instructionIdentification",
+            "EndToEndIdentification": "$endToEndIdentification",
+            "CurrencyOfTransfer": "$currencyOfTransfer",
             "InstructedAmount": {
-              "Amount": "1.00",
-              "Currency": "USD"
+              "Amount": "$instructedAmountValue",
+              "Currency": "$instructedAmountCurrency"
             },
             "CreditorAccount": {
-              "SchemeName": "SortCodeAccountNumber",
-              "Identification": "20202010981789",
-              "Name": "Dr Foo"
+              "SchemeName": "$internationalCreditorScheme",
+              "Identification": "$internationalCreditorIdentification",
+              "Name": "$internationalCreditorName"
             }
           }
         },
         "Risk": {}
       }
     },
-    "minimalInternationalStandingOrderConsent": {
+    "minimalInternationalPayment": {
       "body": {
         "Data": {
-          "Permission": "Create",
+          "ConsentId": "$OB-301-DOP-101600-ConsentId",
           "Initiation": {
-            "Frequency": "EvryDay",
-            "FirstPaymentDateTime": "2020-10-01T13:14:25+00:00",
-            "CurrencyOfTransfer": "USD",
+            "InstructionIdentification": "$instructionIdentification",
+            "EndToEndIdentification": "$endToEndIdentification",
+            "CurrencyOfTransfer": "$currencyOfTransfer",
             "InstructedAmount": {
-              "Amount": "1.00",
-              "Currency": "USD"
+              "Amount": "$instructedAmountValue",
+              "Currency": "$instructedAmountCurrency"
             },
             "CreditorAccount": {
-              "SchemeName": "SortCodeAccountNumber",
-              "Identification": "20202010981789",
-              "Name": "Dr Foo"
-            }
-          }
-        },
-        "Risk": {}
-      }
-    },
-    "minimalInternationalStandingOrder": {
-      "body": {
-        "Data": {
-          "Initiation": {
-            "Frequency": "EvryDay",
-            "FirstPaymentDateTime": "2020-10-01T13:14:25+00:00",
-            "CurrencyOfTransfer": "USD",
-            "InstructedAmount": {
-              "Amount": "1.00",
-              "Currency": "USD"
-            },
-            "CreditorAccount": {
-              "SchemeName": "SortCodeAccountNumber",
-              "Identification": "20202010981789",
-              "Name": "Dr Foo"
+              "SchemeName": "$internationalCreditorScheme",
+              "Identification": "$internationalCreditorIdentification",
+              "Name": "$internationalCreditorName"
             }
           }
         },
@@ -132,18 +174,18 @@
         "Data": {
           "Permission": "Create",
           "Initiation": {
-            "RequestedExecutionDateTime": "2020-10-01T13:14:25+00:00",
-            "InstructionIdentification": "Excaliber International",
-            "EndToEndIdentification": "Excaliber International",
-            "CurrencyOfTransfer": "USD",
+            "RequestedExecutionDateTime": "$requestedExecutionDateTime",
+            "InstructionIdentification": "$instructionIdentification",
+            "EndToEndIdentification": "$endToEndIdentification",
+            "CurrencyOfTransfer": "$currencyOfTransfer",
             "InstructedAmount": {
-              "Amount": "1.00",
-              "Currency": "USD"
+              "Amount": "$instructedAmountValue",
+              "Currency": "$instructedAmountCurrency"
             },
             "CreditorAccount": {
-              "SchemeName": "SortCodeAccountNumber",
-              "Identification": "20202010981789",
-              "Name": "Dr Foo"
+              "SchemeName": "$internationalCreditorScheme",
+              "Identification": "$internationalCreditorIdentification",
+              "Name": "$internationalCreditorName"
             }
           }
         },
@@ -153,23 +195,48 @@
     "minimalInternationalScheduledPayment": {
       "body": {
         "Data": {
+          "ConsentId": "$OB-301-DOP-102000-ConsentId",
           "Initiation": {
-            "RequestedExecutionDateTime": "2020-10-01T13:14:25+00:00",
-            "InstructionIdentification": "Excaliber International",
-            "EndToEndIdentification": "Excaliber International",
-            "CurrencyOfTransfer": "USD",
+            "RequestedExecutionDateTime": "$requestedExecutionDateTime",
+            "InstructionIdentification": "$instructionIdentification",
+            "EndToEndIdentification": "$endToEndIdentification",
+            "CurrencyOfTransfer": "$currencyOfTransfer",
             "InstructedAmount": {
-              "Amount": "1.00",
-              "Currency": "USD"
+              "Amount": "$instructedAmountValue",
+              "Currency": "$instructedAmountCurrency"
             },
             "CreditorAccount": {
-              "SchemeName": "UK.OBIE.IBAN",
-              "Identification": "GB29PAPA20000390210002",
-              "Name": "Charitable Funds"
+              "SchemeName": "$internationalCreditorScheme",
+              "Identification": "$internationalCreditorIdentification",
+              "Name": "$internationalCreditorName"
             }
           }
         },
         "Risk": {}
+      }
+    },
+    "OBFundsConfirmationConsent1": {
+      "body": {
+        "Data": {
+          "ExpirationDateTime": "$expirationDateTime",
+          "DebtorAccount": {
+            "SchemeName": "$debtorAccountSchemeName",
+            "Identification": "$debtorAccountIdentification",
+            "Name": "$debtorAccountName"
+          }
+        }
+      }
+    },
+    "OBFundsConfirmation1": {
+      "body": {
+        "Data": {
+          "ConsentId": "$consentId",
+          "Reference": "$uniqueCbpiiReference",
+          "InstructedAmount": {
+            "Amount": "$instructedAmountValue",
+            "Currency": "$instructedAmountCurrency"
+          }
+        }
       }
     }
   }

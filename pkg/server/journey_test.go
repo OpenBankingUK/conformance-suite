@@ -4,12 +4,13 @@ import (
 	"fmt"
 	"testing"
 
-	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/test"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/authentication"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery/mocks"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/generation"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/server/models"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/test"
 
 	gmocks "bitbucket.org/openbankingteam/conformance-suite/pkg/generation"
 	"github.com/pkg/errors"
@@ -45,14 +46,14 @@ func TestJourneySetDiscoveryModelValidatesModel(t *testing.T) {
 
 	discoveryModel := &discovery.Model{}
 	validator := &mocks.Validator{}
-	validator.On("Validate", discoveryModel).Return(discovery.NoValidationFailures, nil)
+	validator.On("Validate", discoveryModel).Return(discovery.NoValidationFailures(), nil)
 	generator := &gmocks.MockGenerator{}
-	journey := NewJourney(nullLogger(), generator, validator)
+	journey := NewJourney(nullLogger(), generator, validator, discovery.NewNullTLSValidator(), false)
 
 	failures, err := journey.SetDiscoveryModel(discoveryModel)
 
 	require.NoError(t, err)
-	assert.Equal(discovery.NoValidationFailures, failures)
+	assert.Equal(discovery.NoValidationFailures(), failures)
 	validator.AssertExpectations(t)
 	generator.AssertExpectations(t)
 }
@@ -65,12 +66,12 @@ func TestJourneySetDiscoveryModelHandlesErrorFromValidator(t *testing.T) {
 	expectedFailures := discovery.ValidationFailures{}
 	validator.On("Validate", discoveryModel).Return(expectedFailures, errors.New("validator error"))
 	generator := &gmocks.MockGenerator{}
-	journey := NewJourney(nullLogger(), generator, validator)
+	journey := NewJourney(nullLogger(), generator, validator, discovery.NewNullTLSValidator(), false)
 
 	failures, err := journey.SetDiscoveryModel(discoveryModel)
 
 	require.Error(t, err)
-	assert.Equal("error setting discovery model: validator error", err.Error())
+	assert.Equal("journey.SetDiscoveryModel: error setting discovery model: validator error", err.Error())
 	assert.Nil(failures)
 }
 
@@ -86,7 +87,7 @@ func TestJourneySetDiscoveryModelReturnsFailuresFromValidator(t *testing.T) {
 	expectedFailures := discovery.ValidationFailures{failure}
 	validator.On("Validate", discoveryModel).Return(expectedFailures, nil)
 	generator := &gmocks.MockGenerator{}
-	journey := NewJourney(nullLogger(), generator, validator)
+	journey := NewJourney(nullLogger(), generator, validator, discovery.NewNullTLSValidator(), false)
 
 	failures, err := journey.SetDiscoveryModel(discoveryModel)
 
@@ -99,12 +100,12 @@ func TestJourneyTestCasesCantGenerateIfDiscoveryNotSet(t *testing.T) {
 
 	validator := &mocks.Validator{}
 	generator := &gmocks.MockGenerator{}
-	journey := NewJourney(nullLogger(), generator, validator)
+	journey := NewJourney(nullLogger(), generator, validator, discovery.NewNullTLSValidator(), false)
 
 	testCases, err := journey.TestCases()
 
 	assert.Error(err)
-	assert.Equal(generation.TestCasesRun{}, testCases)
+	assert.Equal(generation.SpecRun{}, testCases)
 }
 
 func TestJourneyRunTestCasesCantRunIfNoTestCases(t *testing.T) {
@@ -112,7 +113,7 @@ func TestJourneyRunTestCasesCantRunIfNoTestCases(t *testing.T) {
 
 	validator := &mocks.Validator{}
 	generator := &gmocks.MockGenerator{}
-	journey := NewJourney(nullLogger(), generator, validator)
+	journey := NewJourney(nullLogger(), generator, validator, discovery.NewNullTLSValidator(), false)
 
 	err := journey.RunTests()
 
@@ -124,7 +125,7 @@ func TestJourneySetConfig(t *testing.T) {
 
 	validator := &mocks.Validator{}
 	generator := &gmocks.MockGenerator{}
-	journey := NewJourney(nullLogger(), generator, validator)
+	journey := NewJourney(nullLogger(), generator, validator, discovery.NewNullTLSValidator(), false)
 
 	require.Equal(JourneyConfig{}, journey.config)
 
@@ -146,15 +147,17 @@ func TestJourneySetConfig(t *testing.T) {
 		clientSecret:          "2cfb31a3-5443-4e65-b2bc-ef8e00266a77",
 		tokenEndpoint:         "https://modelobank2018.o3bank.co.uk:4201/token",
 		authorizationEndpoint: "https://modelobankauth2018.o3bank.co.uk:4101/auth",
-		resourceBaseURL:       "https://modelobank2018.o3bank.co.uk:4501",
+		resourceBaseURL:       "https://ob19-rs1.o3bank.co.uk:4501",
 		xXFAPIFinancialID:     "0015800001041RHAAY",
 		issuer:                "https://modelobankauth2018.o3bank.co.uk:4101",
 		redirectURL:           fmt.Sprintf("https://%s:8443/conformancesuite/callback", ListenHost),
 		resourceIDs:           resourceIDs,
 		apiVersion:            "v3.1",
+		instructedAmount: models.InstructedAmount{
+			Currency: "USD",
+			Value:    "0.1",
+		},
 	}
-	err = journey.SetConfig(config)
-	require.NoError(err)
-
+	require.NoError(journey.SetConfig(config))
 	require.Equal(config, journey.config)
 }

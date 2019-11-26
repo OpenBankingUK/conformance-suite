@@ -27,7 +27,9 @@ func (m Metrics) MarshalJSON() ([]byte, error) {
 	})
 }
 
-var NoMetrics = Metrics{}
+func NoMetrics() Metrics {
+	return Metrics{}
+}
 
 func NewMetricsFromRestyResponse(testCase *model.TestCase, response *resty.Response) Metrics {
 	return NewMetrics(testCase, response.Time(), len(response.Body()))

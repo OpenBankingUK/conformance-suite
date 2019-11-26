@@ -5,7 +5,9 @@ import (
 	"fmt"
 	"testing"
 
-	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/test"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/schema"
+
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/test"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -91,12 +93,40 @@ var (
         },
         "context": {
 			"baseurl":"http://myaspsp"
-		},
+	},
         "expect": {
             "status-code": 200,
             "schema-validation": true
         }
-    }
+        }
+	`)
+
+	expectOneOfTestCase = []byte(`
+	{
+        "@id": "#t1008",
+        "name": "Get a list of accounts",
+        "input": {
+            "method": "GET",
+            "endpoint": "/accounts"
+        },
+        "context": {
+			"baseurl":"http://myaspsp"
+		},
+        "expect": {
+            "status-code": 0,
+            "schema-validation": true
+	},
+	"expect_one_of": [
+	    {
+	        "status-code": 400,
+	        "schema-validation": true
+	    },
+	    {
+		"status-code": 200,
+		"schema-validation": true
+	    }	
+	]
+        }
 	`)
 
 	jsonTestCase = []byte(`
@@ -183,6 +213,40 @@ func TestMockedTestCase(t *testing.T) {
 	assert.Equal(t, result, true)
 }
 
+func TestMockedTestCaseExpectOneOfSucceeds(t *testing.T) {
+	var testcase TestCase // get the testcase
+	err := json.Unmarshal(expectOneOfTestCase, &testcase)
+	assert.NoError(t, err)
+
+	req, err := testcase.Prepare(&Context{})
+	assert.Nil(t, err)
+	assert.NotNil(t, req)
+
+	res := test.CreateHTTPResponse(200, "OK", string(getAccountResponse))
+	result, errs := testcase.ApplyExpects(res, nil)
+	assert.Nil(t, errs)
+	assert.Equal(t, res.StatusCode(), 200)
+	assert.Nil(t, err)
+	assert.Equal(t, result, true)
+}
+
+func TestMockedTestCaseExpectOneOfFails(t *testing.T) {
+	var testcase TestCase // get the testcase
+	err := json.Unmarshal(expectOneOfTestCase, &testcase)
+	assert.NoError(t, err)
+
+	req, err := testcase.Prepare(&Context{})
+	assert.Nil(t, err)
+	assert.NotNil(t, req)
+
+	res := test.CreateHTTPResponse(404, "OK", string(getAccountResponse))
+	result, errs := testcase.ApplyExpects(res, nil)
+	assert.NotNil(t, errs)
+	assert.Equal(t, res.StatusCode(), 404)
+	assert.Nil(t, err)
+	assert.Equal(t, result, false)
+}
+
 // test a testcase against mock service which supplies incorrect http status code
 func TestResponseStatusCodeMismatch(t *testing.T) {
 
@@ -202,6 +266,7 @@ func TestResponseStatusCodeMismatch(t *testing.T) {
 func TestJsonExpectMatch(t *testing.T) {
 	var testcase TestCase // get the testcase
 	err := json.Unmarshal(jsonTestCase, &testcase)
+	testcase.Validator = schema.NewNullValidator()
 	assert.NoError(t, err)
 
 	res := test.CreateHTTPResponse(200, "OK", string(getAccountResponse))

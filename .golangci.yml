@@ -35,7 +35,7 @@ linters:
     # - scopelint # Scopelint checks for unpinned variables in go programs [fast: true, auto-fix: false]
     - gocritic # The most opinionated Go source code linter [fast: true, auto-fix: false]
     # - gochecknoinits # Checks that no init functions are present in Go code [fast: true, auto-fix: false]
-    # - gochecknoglobals # Checks that no globals are present in Go code [fast: true, auto-fix: false]
+    - gochecknoglobals # Checks that no globals are present in Go code [fast: true, auto-fix: false]
 
   enable-all: false
   disable-all: true

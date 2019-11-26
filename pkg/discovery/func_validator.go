@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/pkg/errors"
+	"github.com/sirupsen/logrus"
 
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
 
@@ -14,14 +15,20 @@ import (
 
 // Version returns the current version of the Discovery Model parser
 func Version() string {
-	version := "v0.3.0"
+	version := "v0.4.0"
 	return version
+}
+
+func MinVersion() string {
+	minversion := "v0.3.0"
+	return minversion
 }
 
 // SupportedVersions - returns map of supported versions
 func SupportedVersions() map[string]bool {
 	return map[string]bool{
-		Version(): true,
+		Version():    true,
+		MinVersion(): true,
 	}
 }
 
@@ -56,9 +63,7 @@ func Validate(checker model.ConditionalityChecker, discovery *Model) (bool, []Va
 		return err == nil && (u.Scheme == "file" || u.Scheme == "https")
 	}
 	if err := v.RegisterValidation("fileorhttps", httpsValidate); err != nil {
-		if err != nil {
-			return false, nil, errors.Wrap(err, "register `fileorhttps` validation")
-		}
+		return false, nil, errors.Wrap(err, "register `fileorhttps` validation")
 	}
 
 	if err := v.Struct(discovery); err != nil {
@@ -204,6 +209,12 @@ func HasValidEndpoints(checker model.ConditionalityChecker, discoveryConfig *Mod
 					Key:   fmt.Sprintf("DiscoveryModel.DiscoveryItems[%d].Endpoints[%d]", discoveryItemIndex, endpointIndex),
 					Error: err.Error(),
 				}
+				logrus.WithFields(logrus.Fields{
+					"function": "HasValidEndpoints",
+					"module":   "func_validator",
+					"package":  "discovery",
+				}).Debugf("failure=%#v", failure)
+
 				failures = append(failures, failure)
 				continue
 			}
@@ -212,6 +223,13 @@ func HasValidEndpoints(checker model.ConditionalityChecker, discoveryConfig *Mod
 					Key:   fmt.Sprintf("DiscoveryModel.DiscoveryItems[%d].Endpoints[%d]", discoveryItemIndex, endpointIndex),
 					Error: fmt.Sprintf("Invalid endpoint Method='%s', Path='%s'", endpoint.Method, endpoint.Path),
 				}
+
+				logrus.WithFields(logrus.Fields{
+					"function": "HasValidEndpoints",
+					"module":   "func_validator",
+					"package":  "discovery",
+				}).Debugf("failure=%#v", failure)
+
 				failures = append(failures, failure)
 			}
 		}

@@ -58,11 +58,11 @@ func testUnmarshalDiscoveryJSON(t *testing.T, discoveryJSON string) *Model {
 func discoveryStub(field string, value string) string {
 	name := "ob-v3.1-generic"
 	description := "An Open Banking UK generic discovery template for v3.1 of Accounts and Payments."
-	version := "v0.3.0"
+	version := "v0.4.0"
 	tokenAcquisition := "psu"
 	specName := "Account and Transaction API Specification"
 	specURL := "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937820271/Account+and+Transaction+API+Specification+-+v3.1"
-	specVersion := "v3.1"
+	specVersion := "v3.1.0"
 	schemaVersion := "https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.0/dist/account-info-swagger.json"
 	manifest := "https://www.example.com"
 	endpoints := `, "endpoints": [
@@ -278,6 +278,10 @@ func TestValidate(t *testing.T) {
 					Key:   "DiscoveryModel.DiscoveryItems[0].APISpecification.SchemaVersion",
 					Error: "Field 'DiscoveryModel.DiscoveryItems[0].APISpecification.SchemaVersion' is required",
 				},
+				{
+					Key:   "DiscoveryModel.DiscoveryItems[0].APISpecification.Manifest",
+					Error: "Field 'DiscoveryModel.DiscoveryItems[0].APISpecification.Manifest' is required",
+				},
 			}})
 	})
 
@@ -309,7 +313,7 @@ func TestValidate(t *testing.T) {
 			failures: []ValidationFailure{
 				{
 					Key:   "DiscoveryModel.DiscoveryItems[0].APISpecification.Version",
-					Error: "'Version' should be 'v3.1' when schemaVersion is 'https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.0/dist/account-info-swagger.json'",
+					Error: "'Version' should be 'v3.1.0' when schemaVersion is 'https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.0/dist/account-info-swagger.json'",
 				},
 			}})
 	})
@@ -428,17 +432,13 @@ func TestValidate(t *testing.T) {
 		})
 	})
 
-	t.Run("Validation should pass when `manifest` is empty", func(t *testing.T) {
+	t.Run("Validation should fail when `manifest` is empty", func(t *testing.T) {
 		testValidateFailures(t, conditionalityCheckerMock{}, &invalidTest{
 			discoveryJSON: discoveryStub("manifest", ""),
 			failures: []ValidationFailure{
 				{
-					Key:   "DiscoveryModel.DiscoveryItems[0].Endpoints[0]",
-					Error: "Invalid endpoint Method='POST', Path='/account-access-consents'",
-				},
-				{
-					Key:   "DiscoveryModel.DiscoveryItems[0].Endpoints[1]",
-					Error: "Invalid endpoint Method='GET', Path='/accounts/{AccountId}/balances'",
+					Key:   "DiscoveryModel.DiscoveryItems[0].APISpecification.Manifest",
+					Error: "Field 'DiscoveryModel.DiscoveryItems[0].APISpecification.Manifest' is required",
 				},
 			},
 		})
@@ -488,5 +488,5 @@ func TestValidate(t *testing.T) {
 func TestDiscovery_Version(t *testing.T) {
 	assert := assert.New(t)
 
-	assert.Equal(Version(), "v0.3.0")
+	assert.Equal(Version(), "v0.4.0")
 }

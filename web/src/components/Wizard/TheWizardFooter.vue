@@ -21,7 +21,7 @@
 <script>
 import invert from 'lodash/invert';
 import { createNamespacedHelpers } from 'vuex';
-import BSpinner from '@/components/BSpinner';
+import BSpinner from '../BSpinner';
 
 const { mapGetters } = createNamespacedHelpers('status');
 

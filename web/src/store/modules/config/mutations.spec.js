@@ -1,4 +1,5 @@
-import { mutationTypes as types, mutations } from './index';
+import { mutations } from './index';
+import * as types from './mutation-types.js';
 
 describe('Config', () => {
   describe('mutations', () => {

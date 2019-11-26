@@ -1,12 +1,16 @@
 package server
 
 import (
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/server/models"
 	"fmt"
-	"gopkg.in/resty.v1"
 	"net/http"
 	"net/url"
 	"reflect"
+	"regexp"
+	"time"
+
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/server/models"
+	"gopkg.in/resty.v1"
 
 	validation "github.com/go-ozzo/ozzo-validation"
 	"github.com/labstack/echo"
@@ -21,14 +25,14 @@ import (
 // https://github.com/go-ozzo/ozzo-validation/blob/master/in_test.go
 type ResponseType = interface{}
 
-var (
-	// responseTypesSupported REQUIRED. JSON array containing a list of the OAuth 2.0 response_type values that this OP supports. Dynamic OpenID Providers MUST support the code, id_token, and the token id_token Response Type values
-	responseTypesSupported = [3]ResponseType{
+// responseTypesSupported REQUIRED. JSON array containing a list of the OAuth 2.0 response_type values that this OP supports. Dynamic OpenID Providers MUST support the code, id_token, and the token id_token Response Type values
+func responseTypesSupported() [3]ResponseType {
+	return [3]ResponseType{
 		"code",
 		"code id_token",
 		"id_token",
 	}
-)
+}
 
 type configHandlers struct {
 	logger  *logrus.Entry
@@ -39,36 +43,111 @@ type configHandlers struct {
 // https://github.com/go-ozzo/ozzo-validation/blob/master/in_test.go
 type SupportedRequestSignAlg interface{}
 
-var SupportedRequestSignAlgValues = []interface{}{"PS256", "RS256", "NONE"}
+func SupportedRequestSignAlgValues() []interface{} {
+	return []interface{}{"PS256", "RS256", "NONE"}
+}
+
+// SupportedAcrValues returns a slice of supported acr values to be used in the request object
+// those are values that the Authorization Server is being requested to use for processing this Authentication Request
+// https://openbanking.atlassian.net/wiki/spaces/DZ/pages/7046134/Open+Banking+Security+Profile+-+Implementer+s+Draft+v1.1.0
+func SupportedAcrValues() []string {
+	return []string{"urn:openbanking:psd2:sca", "urn:openbanking:psd2:ca"}
+}
 
 type GlobalConfiguration struct {
-	SigningPrivate                string            `json:"signing_private" validate:"not_empty"`
-	SigningPublic                 string            `json:"signing_public" validate:"not_empty"`
-	TransportPrivate              string            `json:"transport_private" validate:"not_empty"`
-	TransportPublic               string            `json:"transport_public" validate:"not_empty"`
-	ClientID                      string            `json:"client_id" validate:"not_empty"`
-	ClientSecret                  string            `json:"client_secret" validate:"not_empty"`
-	TokenEndpoint                 string            `json:"token_endpoint" validate:"valid_url"`
-	ResponseType                  string            `json:"response_type" validate:"not_empty"`
-	TokenEndpointAuthMethod       string            `json:"token_endpoint_auth_method" validate:"not_empty"`
-	AuthorizationEndpoint         string            `json:"authorization_endpoint" validate:"valid_url"`
-	ResourceBaseURL               string            `json:"resource_base_url" validate:"valid_url"`
-	XFAPIFinancialID              string            `json:"x_fapi_financial_id" validate:"not_empty"`
-	Issuer                        string            `json:"issuer" validate:"valid_url"`
-	RedirectURL                   string            `json:"redirect_url" validate:"valid_url"`
-	ResourceIDs                   model.ResourceIDs `json:"resource_ids" validate:"not_empty"`
-	CreditorAccount               models.Payment    `json:"creditor_account"`
-	TransactionFromDate           string            `json:"transaction_from_date" validate:"not_empty"`
-	TransactionToDate             string            `json:"transaction_to_date" validate:"not_empty"`
-	RequestObjectSigningAlgorithm string            `json:"request_object_signing_alg"`
+	SigningPrivate                string                               `json:"signing_private" validate:"not_empty"`
+	SigningPublic                 string                               `json:"signing_public" validate:"not_empty"`
+	TransportPrivate              string                               `json:"transport_private" validate:"not_empty"`
+	TransportPublic               string                               `json:"transport_public" validate:"not_empty"`
+	ClientID                      string                               `json:"client_id" validate:"not_empty"`
+	ClientSecret                  string                               `json:"client_secret" validate:"not_empty"`
+	TokenEndpoint                 string                               `json:"token_endpoint" validate:"valid_url"`
+	ResponseType                  string                               `json:"response_type" validate:"not_empty"`
+	TokenEndpointAuthMethod       string                               `json:"token_endpoint_auth_method" validate:"not_empty"`
+	AuthorizationEndpoint         string                               `json:"authorization_endpoint" validate:"valid_url"`
+	ResourceBaseURL               string                               `json:"resource_base_url" validate:"valid_url"`
+	XFAPIFinancialID              string                               `json:"x_fapi_financial_id" validate:"not_empty"`
+	XFAPICustomerIPAddress        string                               `json:"x_fapi_customer_ip_address,omitempty"`
+	Issuer                        string                               `json:"issuer" validate:"valid_url"`
+	RedirectURL                   string                               `json:"redirect_url" validate:"valid_url"`
+	ResourceIDs                   model.ResourceIDs                    `json:"resource_ids" validate:"not_empty"`
+	CreditorAccount               models.Payment                       `json:"creditor_account"`
+	InternationalCreditorAccount  models.Payment                       `json:"international_creditor_account"`
+	TransactionFromDate           string                               `json:"transaction_from_date" validate:"not_empty"`
+	TransactionToDate             string                               `json:"transaction_to_date" validate:"not_empty"`
+	RequestObjectSigningAlgorithm string                               `json:"request_object_signing_alg"`
+	InstructedAmount              models.InstructedAmount              `json:"instructed_amount"`
+	PaymentFrequency              models.PaymentFrequency              `json:"payment_frequency"`
+	FirstPaymentDateTime          string                               `json:"first_payment_date_time"`
+	RequestedExecutionDateTime    string                               `json:"requested_execution_date_time"`
+	CurrencyOfTransfer            string                               `json:"currency_of_transfer"`
+	UseNonOBDirectory             bool                                 `json:"use_non_ob_directory"`
+	SigningKid                    string                               `json:"signing_kid,omitempty"`
+	SignatureTrustAnchor          string                               `json:"signature_trust_anchor,omitempty"`
+	AcrValuesSupported            []string                             `json:"acr_values_supported,omitempty"`
+	ConditionalProperties         []discovery.ConditionalAPIProperties `json:"conditional_properties,omitempty"`
+	CBPIIDebtorAccount            discovery.CBPIIDebtorAccount         `json:"cbpii_debtor_account"`
 }
 
 // Validate - used by https://github.com/go-ozzo/ozzo-validation to validate struct.
 func (c GlobalConfiguration) Validate() error {
+	values := responseTypesSupported()
 	return validation.ValidateStruct(&c,
 		validation.Field(&c.CreditorAccount, validation.Required),
-		validation.Field(&c.ResponseType, validation.Required, validation.In(responseTypesSupported[:]...)),
+		validation.Field(&c.InternationalCreditorAccount, validation.Required),
+		validation.Field(&c.ResponseType, validation.Required, validation.In(values[:]...)),
+		validation.Field(&c.InstructedAmount),
+		validation.Field(&c.CurrencyOfTransfer, validation.Match(regexp.MustCompile("^[A-Z]{3,3}$"))),
+		validation.Field(&c.AcrValuesSupported, validation.By(acrValuesValidator)),
+		validation.Field(&c.FirstPaymentDateTime, validation.By(futureDateTimeValidator)),
+		validation.Field(&c.RequestedExecutionDateTime, validation.By(futureDateTimeValidator)),
+		validation.Field(&c.PaymentFrequency, validation.Required),
+		validation.Field(&c.CBPIIDebtorAccount, validation.Required),
 	)
+}
+
+func futureDateTimeValidator(value interface{}) error {
+	dateTimeStr, ok := value.(string)
+	if !ok {
+		return fmt.Errorf("futureDateTimeValidator: value must be a valid string")
+	}
+	parsedDateTime, err := time.Parse("2006-01-02T15:04:05-07:00", dateTimeStr)
+	if err != nil {
+		return errors.Wrapf(err, "futureDateTimeValidator: the date provided is not in a supported format, please use `2006-01-02T15:04:05-07:00`")
+	}
+	if time.Now().Unix() >= parsedDateTime.Unix() {
+		return fmt.Errorf("futureDateTimeValidator: value must be a valid date in the future")
+	}
+
+	return nil
+}
+
+func acrValuesValidator(value interface{}) error {
+	values, ok := value.([]string)
+	if !ok {
+		return nil
+	}
+	supportedAcrValues := SupportedAcrValues()
+	if len(values) > len(supportedAcrValues) {
+		return fmt.Errorf("acrValuesValidator: `acr_values_supported` cannot be more than %d", len(supportedAcrValues))
+	}
+	for _, v := range values {
+		if !strSliceContains(supportedAcrValues, v) {
+			return fmt.Errorf("acrValuesValidator: `acr_values_supported` invalid value provided: %s", v)
+		}
+	}
+
+	return nil
+}
+
+func strSliceContains(slice []string, str string) bool {
+	for _, s := range slice {
+		if s == str {
+			return true
+		}
+	}
+
+	return false
 }
 
 func newConfigHandlers(journey Journey, logger *logrus.Entry) configHandlers {
@@ -76,6 +155,18 @@ func newConfigHandlers(journey Journey, logger *logrus.Entry) configHandlers {
 		journey: journey,
 		logger:  logger.WithField("module", "configHandlers"),
 	}
+}
+
+// GET /api/config/conditional-property
+func (h configHandlers) configConditionalPropertyHandler(c echo.Context) error {
+	conditionalProperties := h.journey.ConditionalProperties()
+	filteredProps := make([]discovery.ConditionalAPIProperties, 0, len(conditionalProperties))
+	for _, v := range conditionalProperties {
+		if len(v.Endpoints) > 0 {
+			filteredProps = append(filteredProps, v)
+		}
+	}
+	return c.JSON(http.StatusOK, filteredProps)
 }
 
 // POST /api/config/global
@@ -132,15 +223,28 @@ func MakeJourneyConfig(config *GlobalConfiguration) (JourneyConfig, error) {
 		authorizationEndpoint:         config.AuthorizationEndpoint,
 		resourceBaseURL:               config.ResourceBaseURL,
 		xXFAPIFinancialID:             config.XFAPIFinancialID,
+		xXFAPICustomerIPAddress:       config.XFAPICustomerIPAddress,
 		issuer:                        config.Issuer,
 		redirectURL:                   config.RedirectURL,
 		resourceIDs:                   config.ResourceIDs,
 		creditorAccount:               config.CreditorAccount,
+		internationalCreditorAccount:  config.InternationalCreditorAccount,
+		instructedAmount:              config.InstructedAmount,
+		paymentFrequency:              config.PaymentFrequency,
+		firstPaymentDateTime:          config.FirstPaymentDateTime,
+		requestedExecutionDateTime:    config.RequestedExecutionDateTime,
+		currencyOfTransfer:            config.CurrencyOfTransfer,
 		transactionFromDate:           config.TransactionFromDate,
 		transactionToDate:             config.TransactionToDate,
 		requestObjectSigningAlgorithm: config.RequestObjectSigningAlgorithm,
 		signingPublic:                 config.SigningPublic,
 		signingPrivate:                config.SigningPrivate,
+		useNonOBDirectory:             config.UseNonOBDirectory,
+		signingKid:                    config.SigningKid,
+		signatureTrustAnchor:          config.SignatureTrustAnchor,
+		AcrValuesSupported:            config.AcrValuesSupported,
+		conditionalProperties:         config.ConditionalProperties,
+		cbpiiDebtorAccount:            config.CBPIIDebtorAccount,
 	}, nil
 }
 
@@ -226,9 +330,11 @@ func and(left, right validateFunc) validateFunc {
 	}
 }
 
-var rulesFunc = map[string]validateFunc{
-	"not_empty": notEmpty,
-	"valid_url": and(notEmpty, validURL),
+func rulesFunc() map[string]validateFunc {
+	return map[string]validateFunc{
+		"not_empty": notEmpty,
+		"valid_url": and(notEmpty, validURL),
+	}
 }
 
 func parseRules(config *GlobalConfiguration) []validationRule {
@@ -244,7 +350,7 @@ func parseRules(config *GlobalConfiguration) []validationRule {
 			continue
 		}
 
-		validate, ok := rulesFunc[tag.Get("validate")]
+		validate, ok := rulesFunc()[tag.Get("validate")]
 		if !ok {
 			// no rule func found
 			continue

@@ -1,6 +1,6 @@
-# Functional Conformance Suite Setup Guide using Ozone Model Bank
+# Functional Conformance Tool and Ozone Model Bank
 
-This guide will assist you with the technical steps required to setup the Functional Conformance Suite (FCS) and run your first test. In this guide we will be connecting to and running tests against the Ozone Model Bank.
+This guide will assist you with the technical steps required to setup the Functional Conformance Tool and run your first test. In this guide we will be connecting to and running tests against the Ozone Model Bank.
 
 Please note the following goals of this document:
 
@@ -23,17 +23,11 @@ This guide assumes the following tools are installed and functioning correctly. 
 *Note for Windows 10 users - Docker on Windows 10 requires Hyper-V to be installed. Hyper-V is only available
 on Pro or Enterprise versions. Please refer to [this guide](https://techcommunity.microsoft.com/t5/ITOps-Talk-Blog/Step-By-Step-Enabling-Hyper-V-for-use-on-Windows-10/ba-p/267945) for more information.*
 
-## Step 1: Register with Ozone Bank (Model Bank)
+## Step 1: Register a client with Ozone Bank (Model Bank)
 
 Ozone Bank is an Mock Account Servicing Payment Service Provider (ASPSP), which the FCS will connect to as a TPP.
 
-* [Enrol with Ozone](https://ob2018.o3bank.co.uk:444/pub/home).
-
-Following the enrolment screens:
-
-* Use a Google or LinkedIn as identity provider to login.
-* Enter an organisation name
-* Enter the following redirect URI: `https://0.0.0.0:8443/conformancesuite/callback`
+In order to register a new client you need to use [Dynamic Client Registration Protocol](https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1078034771/Dynamic+Client+Registration+-+v3.2). Please follow the steps described in this page to register a new client with Ozone [https://openbanking.atlassian.net/wiki/spaces/DZ/pages/313918598/Integrating+a+TPP+with+Ozone+Model+Banks+Using+Postman+on+Directory+Sandbox](https://openbanking.atlassian.net/wiki/spaces/DZ/pages/313918598/Integrating+a+TPP+with+Ozone+Model+Banks+Using+Postman+on+Directory+Sandbox) 
 
 Once completed, make a note of the certificates and the `CLIENT ID` and `CLIENT SECRET` values.
 
@@ -99,28 +93,49 @@ at this point by running `docker login`.
 ### Production
 
 ```sh
-docker run --rm -it -p 8443:8443 -e LOG_LEVEL=debug -e LOG_TRACER=true -e LOG_HTTP_TRACE=true "openbanking/conformance-suite:v1.1.5"
+docker run --rm -it -p 8443:8443 -e LOG_LEVEL=debug -e LOG_TRACER=true -e LOG_HTTP_TRACE=true -e DISABLE_JWS=TRUE "openbanking/conformance-suite:v1.1.19"
 ```
 
 ### Non-production run
 
 ```sh
-docker run --rm -it -p 8443:8443 -e LOG_LEVEL=debug -e LOG_TRACER=true -e LOG_HTTP_TRACE=true "openbanking/conformance-suite:latest"
+docker run --rm -it -p 8443:8443 -e LOG_LEVEL=debug -e LOG_TRACER=true -e LOG_HTTP_TRACE=true -e DISABLE_JWS=TRUE "openbanking/conformance-suite:latest"
 ```
 
 If all goes well you should be able to launch the FCS UI from you browser via `https://0.0.0.0:8443`
 
-### Optional - Docker Content Trust
+### Dynamic Resource Allocation
 
-Docker ensures that all content is securely received and verified by Open Banking. Docker cryptographically signs the images upon completion of a satisfactory image check, so
-that implementers can verify and trust certified content.
+Setting the environment variable:
 
-To verify the content has not been tampered with you can you the `DOCKER_CONTENT_TRUST` flag, for example:
+`DYNRES=true`
+
+enables Dynamic Resource Allocation for the Account and Transaction Apis for Account Numbers.
+When this flag is active, for each token obtained, an additional call is made to the /accounts endpoint. This call retrieves a list of account numbers associated with the consent.
+The first account number in this list is used to as the account resource id for the tests associated with the specific token.
+
+This is a new feature, and as such will rely on feedback from ASPSPs to align with variations in Dynamic Resource Allocation implementations.
+
+### Optional - Docker Content Trust (recommended)
+
+Docker Content Trust *(DCT)* ensures that all content is securely received and verified. Open Banking cryptographically signs the images upon completion of a satisfactory image check, so that implementers can verify and trust certified content.
+
+To verify the content has not been tampered with you can you the `DOCKER_CONTENT_TRUST` flaG. For example:
 
     DOCKER_CONTENT_TRUST=1 docker pull openbanking/conformance-suite:TAG
     DOCKER_CONTENT_TRUST=1 docker RUN openbanking/conformance-suite:TAG
 
-## Step 4: Congig & Run the Functional Conformance Suite
+Alternatively, you can set DCT with an environmental variable. `export DOCKER_CONTENT_TRUST=1`
+
+Once DCT is enabled remote trust is checked on every pull request. If no trust data for a tag is found you will be presented with an error.
+
+    export DOCKER_CONTENT_TRUST=1
+    docker pull openbanking/conformance-suite:TAG
+    Error: remote trust data does not exist for docker.io/openbanking/conformance-suite: notary.docker.io does not have trust data for docker.io/openbanking/conformance-suite
+
+[More on Docker Content Trust](docs/docker_content_trust.md)
+
+## Step 4: Config & Run the Functional Conformance Suite
 
 Running a test plan on the FCS involves five steps, as follows:
 
@@ -131,13 +146,36 @@ Running a test plan on the FCS involves five steps, as follows:
 Select the Ozone PSU template.
 
 ### Configuration
+* Client
+	* Provide the keys, as created earlier signing and transport (first 4 boxes) 
+	* Account ID: `500000000000000000000001`
+	* Statement ID: `140000000000000000000001`
+	* Transaction _from_/_to_ dates: _pre-populated value ok_
+	* Enter the _client ID_ and _secret_ from Ozone Bank, generated during on-boarding in Step 1
+	* _x-fapi-financial-id_ = `0015800001041RHAAY` (Ozone Bank)
+	* Send _x-fapi-customer-ip-address_ is an optional value. Is used to indicate presence of PSU during interaction.
+* Well-Known
+	* Token Endpoint: _pre-populated value ok_
+	* OAuth 2.0 response_type: `code id_token`
+	* Token Endpoint Auth Method: `client_secret_basic`
+	* Request object signing algorithm: `PS256`
+	* Authorization Endpoint: _pre-populated value ok_
+	* Resource Base URL: `https://ob19-rs1.o3bank.co.uk:4501`
+	* Issuer: _pre-populated value ok_
+	* Redirect URL: `https://0.0.0.0:8443/conformancesuite/callback`
+	* Use NON OB Directory: false (not checked)
+* Payments
+	* Frequency: `EvryDay`
+	* Creditor Account
+		* SchemeName: `UK.OBIE.IBAN`
+		* Identification: `GB29PAPA20000390210002`
+		* Name: `Mr Jackson`
+		* Instructed Amount Value: `1.00`
+		* Instructed Amount Currency: `GBP`
+		* Currency of transfer for international payments: `USD`
 
-* Provide the keys, as created earlier signing and transport.
-* Enter a cleint ID and secret from Ozone Bank
-* x-fapi-financial-id = `0015800001041RHAAY`
-* Resource Base URL = <https://modelobank2018.o3bank.co.uk:4501/open-banking/v3.1/aisp>
-
-The rest of the values are taken from the well-known.
+_Please note: If an item has been pre-populated, that is a generally acceptable default, unless specified above or specific tests
+are being defined._
 
 4. Run / Overview
 
@@ -150,10 +188,6 @@ The rest of the values are taken from the well-known.
     **TBC**
 
 ### Review test results
-
-**TBC**
-
-# How to get help
 
 **TBC**
 

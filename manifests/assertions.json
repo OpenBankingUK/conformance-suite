@@ -12,10 +12,16 @@
         "detail": "Expected status code 201 (Created)"
       }
     },
+    "OB3GLOAssertOn204": {
+      "expect": {
+        "status-code": 204,
+        "detail": "Expected status code 204 (No Content)"
+      }
+    },
     "OB3GLOAssertOn400": {
       "expect": {
         "status-code": 400,
-        "detail": "Expected status code 400 (Not Found)."
+        "detail": "Expected status code 400 (Bad Request). When a TPP tries to request a resource URL with a resource Id that does not exist, the ASPSP must respond with a 400 (Bad Request) rather than a 404 (Not Found)."
       }
     },
     "OB3GLOAssertOn401": {
@@ -33,7 +39,7 @@
     "OB3GLOAssertOn404": {
       "expect": {
         "status-code": 404,
-        "detail": "Expected status code 404 (Not Found)."
+        "detail": "Expected status code 404 (Not Found). If an ASPSP has not implemented an API endpoint, it must respond with a 404 (Not Found) for requests to that URL."
       }
     },
     "OB3GLOFAPIHeader": {
@@ -111,7 +117,7 @@
     "OB3DOPFundsAvailable": {
       "expect": {
         "matches": [{
-          "JSON": "Data.FundsAvailable",
+          "JSON": "Data.FundsAvailableResult.FundsAvailable",
           "Value": "true",
           "detail": "Expected FundsAvailable to be set to 'true'"
         }]
@@ -125,11 +131,72 @@
         }]
       }
     },
+    "OB3IPAssertInternationalScheduledPaymentId": {
+      "expect": {
+        "matches": [{
+          "JSON": "Data.InternationalScheduledPaymentId",
+          "detail": "Expected a unique identification as assigned by the ASPSP to uniquely identify the international scheduled payment resource."
+        }]
+      }
+    },
     "OB3IPAssertInternationalStandingOrderPaymentId": {
       "expect": {
         "matches": [{
           "JSON": "Data.InternationalStandingOrderPaymentId",
           "detail": "Expected a unique identification as assigned by the ASPSP to uniquely identify the international payment resource."
+        }]
+      }
+    },
+    "OB3IPAssertInternationalStandingOrderId": {
+      "expect": {
+        "matches": [{
+          "JSON": "Data.InternationalStandingOrderId",
+          "detail": "Expected a unique identification as assigned by the ASPSP to uniquely identify the international standing order resource."
+        }]
+      }
+    },
+    "OB3IPAssertUnexpectedErrorOBErrorCode": {
+      "expect": {
+        "matches": [{
+          "JSON": "Errors.#[ErrorCode=\"UK.OBIE.UnexpectedError\"].ErrorCode",
+          "Value": "UK.OBIE.UnexpectedError",
+          "detail": "Expected a specific error code for unexpected error."
+        }]
+      }
+    },
+    "OB3IPAssertHeaderMissingOBErrorCode": {
+      "expect": {
+        "matches": [{
+          "JSON": "Errors.#[ErrorCode=\"UK.OBIE.Header.Missing\"].ErrorCode",
+          "Value": "UK.OBIE.Header.Missing",
+          "detail": "Expected a specific error code for missing header."
+        }]
+      }
+    },
+    "OB3IPAssertHeaderInvalidOBErrorCode": {
+      "expect": {
+        "matches": [{
+          "JSON": "Errors.#[ErrorCode=\"UK.OBIE.Header.Invalid\"].ErrorCode",
+          "Value": "UK.OBIE.Header.Invalid",
+          "detail": "Expected a specific error code for invalid header."
+        }]
+      }
+    },
+    "OB3IPAssertResourceInvalidConsentStatusOBErrorCode": {
+      "expect": {
+        "matches": [{
+          "JSON": "Errors.#[ErrorCode=\"UK.OBIE.Resource.InvalidConsentStatus\"].ErrorCode",
+          "Value": "UK.OBIE.Resource.InvalidConsentStatus",
+          "detail": "Expected a specific error code for consent status."
+        }]
+      }
+    },
+    "OB3IPAssertResourceFieldInvalidOBErrorCode": {
+      "expect": {
+        "matches": [{
+          "JSON": "Errors.#[ErrorCode=\"UK.OBIE.Field.Invalid\"].ErrorCode",
+          "Value": "UK.OBIE.Field.Invalid",
+          "detail": "Expected a specific error code for consent status."
         }]
       }
     }

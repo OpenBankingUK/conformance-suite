@@ -2,12 +2,13 @@
 package generation
 
 import (
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/schema"
 	"github.com/sirupsen/logrus"
 
-	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/names"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/manifest"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/names"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/permissions"
 )
 
@@ -29,7 +30,8 @@ type GeneratorConfig struct {
 
 // Generator - generates test cases from discovery model
 type Generator interface {
-	GenerateManifestTests(log *logrus.Entry, config GeneratorConfig, discovery discovery.ModelDiscovery, ctx *model.Context) (TestCasesRun, map[string][]manifest.RequiredTokens)
+	GenerateManifestTests(log *logrus.Entry, config GeneratorConfig, discovery discovery.ModelDiscovery,
+		ctx *model.Context, conditional []discovery.ConditionalAPIProperties) (SpecRun, manifest.Scripts, map[string][]manifest.RequiredTokens)
 }
 
 // NewGenerator - returns implementation of Generator interface
@@ -68,43 +70,71 @@ func shouldIgnoreDiscoveryItem(apiSpecification discovery.ModelAPISpecification)
 }
 
 // Work in progress to integrate Manifest Test
-func (g generator) GenerateManifestTests(log *logrus.Entry, config GeneratorConfig, discovery discovery.ModelDiscovery, ctx *model.Context) (TestCasesRun, map[string][]manifest.RequiredTokens) {
+func (g generator) GenerateManifestTests(log *logrus.Entry, config GeneratorConfig, discovery discovery.ModelDiscovery,
+	ctx *model.Context, conditionalProperties []discovery.ConditionalAPIProperties) (SpecRun, manifest.Scripts, map[string][]manifest.RequiredTokens) {
 	log = log.WithField("module", "GenerateManifestTests")
 	for k, item := range discovery.DiscoveryItems {
 		spectype, err := manifest.GetSpecType(item.APISpecification.SchemaVersion)
 		if err != nil {
-			logrus.Warnf("Cannot get spec type from scheam version: " + item.APISpecification.SchemaVersion)
-			log.Warnf("specification %s not found\n", item.APISpecification.SchemaVersion)
+			logrus.Warnf("Cannot get spec type from schema version: " + item.APISpecification.SchemaVersion)
+			log.Warnf("specification %s not found", item.APISpecification.SchemaVersion)
 			continue
 		}
 		item.APISpecification.SpecType = spectype
-		log.Debugf("Generating testcases for %s API\n", spectype)
+		log.Debugf("Generating testcases for %s API", spectype)
 		discovery.DiscoveryItems[k].APISpecification.SpecType = spectype
 	}
 
 	specTestCases := []SpecificationTestCases{}
-	var scrSlice []model.SpecConsentRequirements
+	scrSlice := []model.SpecConsentRequirements{}
+	var filteredScripts manifest.Scripts
 	tokens := map[string][]manifest.RequiredTokens{}
 
 	for _, item := range discovery.DiscoveryItems {
-		tcs, err := manifest.GenerateTestCases(item.APISpecification, item.ResourceBaseURI, ctx, item.Endpoints)
+		validator, err := schema.NewSwaggerOBSpecValidator(item.APISpecification.Name, item.APISpecification.Version)
+		if err != nil {
+			log.WithError(err).Warnf("manifest testcase generation failed for %s", item.APISpecification.SchemaVersion)
+			validator = schema.NewNullValidator()
+		}
+		log.WithFields(logrus.Fields{"name": item.APISpecification.Name, "version": item.APISpecification.Version}).
+			Info("swagger spec validator created")
+
+		//scripts, _, err := manifest.LoadGenerationResources(specType, item.APISpecification.Manifest)
+
+		params := manifest.GenerationParameters{
+			//	Scripts:      scripts,
+			Spec:         item.APISpecification,
+			Baseurl:      item.ResourceBaseURI,
+			Ctx:          ctx,
+			Endpoints:    item.Endpoints,
+			ManifestPath: item.APISpecification.Manifest,
+			Validator:    validator,
+			Conditional:  conditionalProperties,
+		}
+		tcs, fsc, err := manifest.GenerateTestCases(&params)
+
+		filteredScripts = fsc
 		if err != nil {
 			log.Warnf("manifest testcase generation failed for %s", item.APISpecification.SchemaVersion)
 			continue
 		}
+
 		spectype := item.APISpecification.SpecType
 		requiredSpecTokens, err := manifest.GetRequiredTokensFromTests(tcs, spectype)
+		if err != nil {
+			log.Warnf("failed to retrieve required spec tokens from test for spec %s", spectype)
+			continue
+		}
+		logrus.Debugf("%s required spec tokens: %+v", spectype, requiredSpecTokens)
 		specreq, err := getSpecConsentsFromRequiredTokens(requiredSpecTokens, item.APISpecification.Name)
+		if err != nil {
+			log.Warnf("failed to retrieve spec consents from required spec tokens for spec %s", spectype)
+			continue
+		}
 		scrSlice = append(scrSlice, specreq)
-		if spectype == "payments" { //
+		if spectype == "payments" || spectype == "cbpii" { //
 			// three sets of test case. all, UI, consent (Non-ui)
-			uiTestCases, err := getPaymentUITests(tcs)
-			if err != nil {
-				log.Error("error processing getPaymentUITests")
-				continue
-			}
-			tcs = uiTestCases
-			_ = uiTestCases
+			tcs = getUITests(tcs)
 		}
 		stc := SpecificationTestCases{Specification: item.APISpecification, TestCases: tcs}
 		logrus.Debugf("%d test cases generated for %s", len(tcs), item.APISpecification.Name)
@@ -112,34 +142,20 @@ func (g generator) GenerateManifestTests(log *logrus.Entry, config GeneratorConf
 		tokens[spectype] = requiredSpecTokens
 	}
 
-	// for _, v := range specTestCases {
-	// 	requiredSpecTokens, err := manifest.GetRequiredTokensFromTests(v.TestCases, v.Specification.SpecType)
-	// 	if err != nil {
-	// 		log.Warnf("getRequiredTokensFromTests return error:%s", err.Error())
-	// 	}
-	// 	specreq, err := getSpecConsentsFromRequiredTokens(requiredSpecTokens, v.Specification.Name)
-	// 	scrSlice = append(scrSlice, specreq)
-	// 	tokens[v.Specification.SpecType] = requiredSpecTokens
-	// }
-
-	logrus.Trace("---------------------------------------")
-	logrus.Tracef("we have %d specConsentRequirement items", len(scrSlice))
 	for _, item := range scrSlice {
 		logrus.Tracef("%#v", item)
 	}
-	logrus.Tracef("Dumping required %d tokens from GenerateManifestTests", len(tokens))
 	for _, v := range tokens {
 		logrus.Tracef("%#v", v)
 	}
-	logrus.Trace("---------------------------------------")
-	return TestCasesRun{specTestCases, scrSlice}, tokens
+	return SpecRun{specTestCases, scrSlice}, filteredScripts, tokens
 }
 
 // taks all the payment testscases
 // returns two sets
 // set 1) - payment tests that show in the UI and execution when runtests is called
 // set 2) - payment consent tests that need to be authorised before runtests can happen
-func getPaymentUITests(tcs []model.TestCase) ([]model.TestCase, error) {
+func getUITests(tcs []model.TestCase) []model.TestCase {
 
 	uiTests := []model.TestCase{}
 	consentJobs := manifest.GetConsentJobs()
@@ -153,7 +169,7 @@ func getPaymentUITests(tcs []model.TestCase) ([]model.TestCase, error) {
 		uiTests = append(uiTests, test)
 	}
 
-	return uiTests, nil
+	return uiTests
 }
 
 // Packages up Required tokens into a SpecConsentRequirements structure
@@ -188,9 +204,9 @@ func (g generator) consentRequirements(specTestCases []SpecificationTestCases) [
 	return specConsentRequirements
 }
 
-// TestCasesRun represents all specs and their test and a list of tokens
+// SpecRun represents all specs and their test and a list of tokens
 // required to run those tests
-type TestCasesRun struct {
-	TestCases               []SpecificationTestCases        `json:"specCases"`
+type SpecRun struct {
+	SpecTestCases           []SpecificationTestCases        `json:"specCases"`
 	SpecConsentRequirements []model.SpecConsentRequirements `json:"specTokens"`
 }

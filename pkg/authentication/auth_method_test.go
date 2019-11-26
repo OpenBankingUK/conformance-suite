@@ -1,12 +1,14 @@
 package authentication
 
 import (
-	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/test"
 	"testing"
+
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/test"
 )
 
 func TestDefaultAuthMethodReturnsFirstSuiteSupportedMethodWhenOneMatch(t *testing.T) {
-	expected := SuiteSupportedAuthMethodsMostSecureFirst[0]
+	require := test.NewRequire(t)
+	expected := SuiteSupportedAuthMethodsMostSecureFirst()[0]
 
 	openIDConfigAuthMethods := []string{
 		"client_secret_post",
@@ -17,20 +19,24 @@ func TestDefaultAuthMethodReturnsFirstSuiteSupportedMethodWhenOneMatch(t *testin
 	}
 
 	actual := DefaultAuthMethod(openIDConfigAuthMethods, test.NullLogger())
-	test.NewRequire(t).Equal(expected, actual)
+	require.Equal(expected, actual)
+	require.Equal("tls_client_auth", actual)
 }
 
 func TestDefaultAuthMethodReturnsFirstSuiteSupportedMethodWhenNoMatch(t *testing.T) {
+	require := test.NewRequire(t)
 	openIDConfigAuthMethods := []string{
 		"tls_client_auth",
 	}
 	actual := DefaultAuthMethod(openIDConfigAuthMethods, test.NullLogger())
 
-	expected := SuiteSupportedAuthMethodsMostSecureFirst[0]
-	test.NewRequire(t).Equal(expected, actual)
+	expected := SuiteSupportedAuthMethodsMostSecureFirst()[0]
+	require.Equal(expected, actual)
+	require.Equal("tls_client_auth", actual)
 }
 
 func TestDefaultAuthMethodReturnsFirstSuiteSupportedMethodWhenMultipleMatches(t *testing.T) {
+	require := test.NewRequire(t)
 	openIDConfigAuthMethods := []string{
 		"client_secret_basic",
 		"tls_client_auth",
@@ -38,12 +44,11 @@ func TestDefaultAuthMethodReturnsFirstSuiteSupportedMethodWhenMultipleMatches(t 
 	mockSuiteSupported := []string{
 		TlsClientAuth,
 		PrivateKeyJwt,
-		ClientSecretJwt,
-		ClientSecretPost,
 		ClientSecretBasic,
 	}
 
 	actual := defaultAuthMethod(mockSuiteSupported, openIDConfigAuthMethods, test.NullLogger())
 	expected := mockSuiteSupported[0]
-	test.NewRequire(t).Equal(expected, actual)
+	require.Equal(expected, actual)
+	require.Equal("tls_client_auth", actual)
 }

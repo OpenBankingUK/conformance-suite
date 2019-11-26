@@ -10,6 +10,7 @@ http-trace.log
 
 /config/report.json
 /config/config-ozone.json
+/config/config-ozone-run_test.json
 
 web/dist
 # For testing purposes we symbolic link web/public to lib/server/web/dist

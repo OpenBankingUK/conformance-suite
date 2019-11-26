@@ -3,7 +3,9 @@ package server
 import (
 	"strings"
 
-	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/version"
+	"math"
+
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/version"
 
 	"github.com/gorilla/websocket"
 	"github.com/labstack/echo"
@@ -80,6 +82,7 @@ func registerRoutes(journey Journey, server *Server, logger *logrus.Entry, versi
 	configHandlers := newConfigHandlers(journey, logger)
 	// endpoint to post global configuration
 	api.POST("/config/global", configHandlers.configGlobalPostHandler)
+	api.GET("/config/conditional-property", configHandlers.configConditionalPropertyHandler)
 
 	// endpoints for discovery model
 	discoveryHandlers := newDiscoveryHandlers(journey, logger)
@@ -148,8 +151,9 @@ func skipperGzip(c echo.Context) bool {
 
 // NewWebSocketUpgrader creates a new websocket.Ugprader.
 func NewWebSocketUpgrader() *websocket.Upgrader {
+	maxMessageSize := math.MaxInt32
 	return &websocket.Upgrader{
-		ReadBufferSize:  1024,
-		WriteBufferSize: 1024,
+		ReadBufferSize:  maxMessageSize,
+		WriteBufferSize: maxMessageSize,
 	}
 }

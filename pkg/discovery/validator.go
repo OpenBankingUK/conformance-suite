@@ -31,7 +31,7 @@ func (v funcWrapperValidator) Validate(model *Model) (ValidationFailures, error)
 	}
 
 	if len(failures) == 0 {
-		return NoValidationFailures, nil
+		return NoValidationFailures(), nil
 	}
 
 	return ValidationFailures(failures), nil
@@ -51,7 +51,9 @@ type ValidationFailure struct {
 type ValidationFailures []ValidationFailure
 
 // NoValidationFailures represents a return of no validation errors found
-var NoValidationFailures = ValidationFailures{}
+func NoValidationFailures() ValidationFailures {
+	return ValidationFailures{}
+}
 
 // Empty returns if there are validation failures present
 func (v ValidationFailures) Empty() bool {

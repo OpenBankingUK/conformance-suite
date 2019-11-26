@@ -3,7 +3,9 @@ package manifest
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/pkg/errors"
 	"io/ioutil"
+	"os"
 	"strings"
 
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
@@ -12,7 +14,14 @@ import (
 // LoadScripts loads the scripts from JSON encoded contents of filename
 // and returns Scripts objects
 func LoadScripts(filename string) (Scripts, error) {
-	plan, err := ioutil.ReadFile(filename)
+	if strings.HasPrefix(filename, "https://") {
+		return Scripts{}, errors.New("https:// manifest loading not implemented")
+	}
+	path := strings.TrimPrefix(filename, "file://")
+	plan, err := ioutil.ReadFile(path)
+	if err != nil && os.IsNotExist(err) {
+		plan, err = ioutil.ReadFile("../../" + path)
+	}
 	if err != nil {
 		return Scripts{}, err
 	}

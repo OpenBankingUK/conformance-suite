@@ -8,6 +8,8 @@ import (
 	"strings"
 	"testing"
 
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/schema"
+
 	"github.com/stretchr/testify/assert"
 
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
@@ -18,11 +20,22 @@ func TestGenerateTestCases(t *testing.T) {
 	apiSpec := discovery.ModelAPISpecification{
 		SchemaVersion: accountSwaggerLocation31,
 	}
-	tests, err := GenerateTestCases(apiSpec, "http://mybaseurl", &model.Context{}, readDiscovery())
+	specType, err := GetSpecType(apiSpec.SchemaVersion)
+	assert.Nil(t, err)
+	scripts, _, err := LoadGenerationResources(specType, manifestPath, nil)
+
+	params := GenerationParameters{Scripts: scripts,
+		Spec:         apiSpec,
+		Baseurl:      "http://mybaseurl",
+		Ctx:          &model.Context{},
+		Endpoints:    readDiscovery(),
+		ManifestPath: manifestPath,
+		Validator:    schema.NewNullValidator(),
+	}
+	tests, _, err := GenerateTestCases(&params)
 	assert.Nil(t, err)
 
-	perms, err := getAccountPermissions(tests)
-	assert.Nil(t, err)
+	perms := getAccountPermissions(tests)
 	m := map[string]string{}
 	for _, v := range perms {
 		t.Logf("perms: %s %-50.50s %s\n", v.ID, v.Path, v.Permissions)
@@ -36,16 +49,35 @@ func TestGenerateTestCases(t *testing.T) {
 
 func TestPaymentPermissions(t *testing.T) {
 	apiSpec := discovery.ModelAPISpecification{
-		SchemaVersion: accountSwaggerLocation30,
+		SchemaVersion: accountSwaggerLocation31,
 	}
-	tests, err := GenerateTestCases(apiSpec, "http://mybaseurl", &model.Context{}, readDiscovery())
+	specType, err := GetSpecType(apiSpec.SchemaVersion)
+	assert.Nil(t, err)
+	scripts, _, err := LoadGenerationResources(specType, manifestPath, nil)
+	if err != nil {
+		fmt.Println("Error on loadGenerationResources")
+		return
+	}
+
+	params := GenerationParameters{
+		Scripts:      scripts,
+		Spec:         apiSpec,
+		Baseurl:      "http://mybaseurl",
+		Ctx:          &model.Context{},
+		Endpoints:    readDiscovery(),
+		ManifestPath: manifestPath,
+		Validator:    schema.NewNullValidator(),
+	}
+	tests, _, err := GenerateTestCases(&params)
+	assert.NoError(t, err)
+
 	fmt.Printf("we have %d tests\n", len(tests))
 	for _, v := range tests {
 		dumpJSON(v)
 	}
 
 	requiredTokens, err := GetPaymentPermissions(tests)
-	assert.Nil(t, err)
+	assert.NoError(t, err)
 
 	for _, v := range requiredTokens {
 		fmt.Printf("%#v\n", v)
@@ -105,17 +137,26 @@ func TestPermissionFiteringAccounts(t *testing.T) {
 	apiSpec := discovery.ModelAPISpecification{
 		SchemaVersion: accountSwaggerLocation31,
 	}
-	tests, err := GenerateTestCases(apiSpec, "http://mybaseurl", &ctx, endpoints)
-	assert.Nil(t, err)
-	fmt.Printf("%d tests loaded", len(tests))
-
-	scripts, _, err := loadGenerationResources("accounts")
+	scripts, _, err := LoadGenerationResources("accounts", manifestPath, nil)
 	if err != nil {
 		fmt.Println("Error on loadGenerationResources")
 		return
 	}
+	params := GenerationParameters{
+		Scripts:      scripts,
+		Spec:         apiSpec,
+		Baseurl:      "http://mybaseurl",
+		Ctx:          &ctx,
+		Endpoints:    readDiscovery(),
+		ManifestPath: manifestPath,
+		Validator:    schema.NewNullValidator(),
+	}
+	tests, _, err := GenerateTestCases(&params)
+	assert.NoError(t, err)
 
-	filteredScripts, err := filterTestsBasedOnDiscoveryEndpointsPlayground(scripts, endpoints)
+	fmt.Printf("%d tests loaded", len(tests))
+
+	filteredScripts, err := FilterTestsBasedOnDiscoveryEndpointsPlayground(scripts, endpoints)
 	if err != nil {
 
 	}
@@ -139,7 +180,7 @@ func readDiscovery() []discovery.ModelEndpoint {
 
 }
 
-func filterTestsBasedOnDiscoveryEndpointsPlayground(scripts Scripts, endpoints []discovery.ModelEndpoint) (Scripts, error) {
+func FilterTestsBasedOnDiscoveryEndpointsPlayground(scripts Scripts, endpoints []discovery.ModelEndpoint) (Scripts, error) {
 
 	lookupMap := make(map[string]bool)
 	_ = lookupMap
@@ -217,18 +258,186 @@ func TestPaymentTestCaseCreation(t *testing.T) {
 		"thisCurrency":                        "GBP",
 		"creditorScheme":                      "default",
 	}
-
 	apiSpec := discovery.ModelAPISpecification{
-		SchemaVersion: accountSwaggerLocation31,
+		SchemaVersion: paymentsSwaggerLocation31,
 	}
 
-	tests, err := GenerateTestCases(apiSpec, "http://mybaseurl", ctx, readDiscovery())
+	specType, err := GetSpecType(apiSpec.SchemaVersion)
 	assert.Nil(t, err)
+	scripts, _, err := LoadGenerationResources(specType, manifestPath, ctx)
+	assert.Nil(t, err)
+
+	params := GenerationParameters{
+		Scripts:      scripts,
+		Spec:         apiSpec,
+		Baseurl:      "http://mybaseurl",
+		Ctx:          ctx,
+		Endpoints:    readDiscovery(),
+		ManifestPath: manifestPath,
+		Validator:    schema.NewNullValidator(),
+	}
+	tests, _, err := GenerateTestCases(&params)
+	assert.Nil(t, err)
+
 	fmt.Printf("we have %d tests\n", len(tests))
 	for _, v := range tests {
-		//if v.ID == "OB-301-DOP-101000" {
 		dumpJSON(v)
-		//}
 	}
 
+}
+
+// TestFilterTestsBasedOnDiscoveryEndpoints with this test we want to test filtering of Scripts.
+// Given a collection of `Scripts` and a collection of `endpoints`, we want the tested function return
+// a subset of `Scripts`, where the URI of each returned script matches an endpoint (via regex) of at least one of
+// the paths in the collection of `endpoints`.
+func TestFilterTestsBasedOnDiscoveryEndpoints(t *testing.T) {
+	scripts := Scripts{
+		Scripts: []Script{
+			{
+				ID:  "0000",
+				URI: "/domestic-payment-consents/ConsentID-Here1234",
+			},
+			{
+				ID:  "1000",
+				URI: "/domestic-payment-consents",
+			},
+			{
+				ID:  "2000",
+				URI: "/domestic-payment-consents/ConsentID-Here1234/funds-confirmation",
+			},
+			{
+				ID:  "3000",
+				URI: "/domestic-payments",
+			},
+			{
+				ID:  "4000",
+				URI: "/domestic-payments/ConsentID-Here1234",
+			},
+			{
+				ID:  "5000",
+				URI: "/domestic-scheduled-payment-consents",
+			},
+			{
+				ID:  "6000",
+				URI: "/domestic-scheduled-payment-consents/ConsentID-Here1234",
+			},
+			{
+				ID:  "7000",
+				URI: "/domestic-scheduled-payment-consents/ConsentID-Here1234",
+			},
+			{
+				ID:  "8000",
+				URI: "/domestic-scheduled-payments/DomesticSceduledPaymentID-Here1234",
+			},
+			{
+				ID:  "90000",
+				URI: "/domestic-standing-order-consents",
+			},
+			{
+				ID:  "10000",
+				URI: "/domestic-standing-order-consents/ConsentID-Here1234",
+			},
+			{
+				ID:  "11000",
+				URI: "/domestic-standing-orders/DomesticStandingOrderID-Here1234",
+			},
+			{
+				ID:  "12000",
+				URI: "/international-payment-consents",
+			},
+			{
+				ID:  "13000",
+				URI: "/international-payment-consents/ConsentID-Here1234",
+			},
+			{
+				ID:  "14000",
+				URI: "/international-payments",
+			},
+			{
+				ID:  "15000",
+				URI: "/international-payments/ConsentID-Here1234",
+			},
+			{
+				ID:  "16000",
+				URI: "/international-scheduled-payment-consents",
+			},
+			{
+				ID:  "17000",
+				URI: "/international-scheduled-payment-consents/ConsentID-Here1234",
+			},
+			{
+				ID:  "18000",
+				URI: "/international-scheduled-payments",
+			},
+			{
+				ID:  "19000",
+				URI: "/international-scheduled-payments/InternationalScheduledPaymentID-Here1234",
+			},
+		},
+	}
+	endpoints := []discovery.ModelEndpoint{
+		{
+			Path: "/domestic-payment-consents/1234",
+		},
+		{
+			Path: "/domestic-payment-consents",
+		},
+		{
+			Path: "/domestic-payment-consents/2345678987DFGHJGH/funds-confirmation",
+		},
+		{
+			Path: "/international-payment-consents",
+		},
+		{
+			Path: "/international-payments/INT-PAY-1234-ID",
+		},
+		{
+			Path: "/international-scheduled-payments/InternationalScheduledPaymentID-Here1234",
+		},
+	}
+	filtered, err := FilterTestsBasedOnDiscoveryEndpoints(scripts, endpoints, paymentsRegex)
+	assert.NoError(t, err)
+
+	// As a simple check validate the lengths match
+	assert.Equal(t, len(endpoints), len(filtered.Scripts))
+
+	// Now, we need to check that the scripts we expect are actually in the result set
+	// We know what to check for by manually matching the paths in `endpoints` to paths in `scripts`
+	assert.True(t, contains(filtered.Scripts, scripts.Scripts[0]))
+	assert.True(t, contains(filtered.Scripts, scripts.Scripts[1]))
+	assert.True(t, contains(filtered.Scripts, scripts.Scripts[2]))
+	assert.True(t, contains(filtered.Scripts, scripts.Scripts[12]))
+	assert.True(t, contains(filtered.Scripts, scripts.Scripts[15]))
+	assert.True(t, contains(filtered.Scripts, scripts.Scripts[19]))
+}
+
+func TestContains(t *testing.T) {
+	collection := []Script{
+		{
+			ID: "123",
+		},
+		{
+			ID: "456",
+		},
+	}
+
+	subjectExists := Script{
+		ID: "123",
+	}
+	subjectNotExists := Script{
+		ID: "789",
+	}
+
+	assert.True(t, contains(collection, subjectExists))
+	assert.False(t, contains(collection, subjectNotExists))
+}
+
+func TestGetVersionSpecificScripts(t *testing.T) {
+
+	ctx := &model.Context{}
+	ctx.PutStringSlice("apiversions", []string{"payments_v3.1.2", "accounts_v3.1.2", "cbpii_v3.1.0"})
+
+	sc, _ := getVersionSpecificScripts("accounts", "3.1.2", ctx)
+
+	fmt.Printf("%#v\n", sc)
 }

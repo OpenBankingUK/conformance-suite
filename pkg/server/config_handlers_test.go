@@ -5,9 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"net/http"
-	"os"
 	"reflect"
 	"testing"
 
@@ -16,14 +14,61 @@ import (
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
 	"github.com/stretchr/testify/assert"
 
-	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/test"
-	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/version/mocks"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/server/models"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/test"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/version/mocks"
 )
 
-var (
-	privateKey = readFile("./testdata/certs/key.pem")
-	publicKey  = readFile("./testdata/certs/cert.pem")
+const (
+	privateKey = `-----BEGIN RSA PRIVATE KEY-----
+MIIEpAIBAAKCAQEAvxbCEsZsrweSIQMpXQluO1anf8RYqEoVbdi0q09886Chl6N0
+2f1UTQEiVDivBrXCawz00MoLSbrSiI05h7K6DH0+gUjdFfO4pVfbHsTktNbSy/Qs
+L08KCBkxlOKHUCJi3AkhmX5orqzh1Nv89Q4sN1xFNlMXZ6CR0CJxtSVBPgqf4DeM
+eIT4BMKHcyVXYEdquECFZvQWs6DZsS0WszIUNotscjvFuP68H0KQYH0vm05s/Yz2
+VALEfx0SVaQmPGDu92SEnn6xY1pjzS602KlR1U7zjm0gRHBFdFG+IVik5y41+clg
+L2TBGO8JFqeHd6laEbRwVBVXl3jmwd/q3kX6OwIDAQABAoIBAQCR69EcAUZxinh+
+mSl3EIKK8atLGCcTrC8dCQU+ZJ7odFuxrnLHHHrJqvoKEpclqprioKw63G8uSGoJ
+OL8b7tHAQ8v9ciTSZKE2Mhb0MirsJbgnYzhykAr7EDIanbny6a9Qk/CChFNwQDjc
+EXnjsIT3aZC44U7YJXfz1rm6OM7Pjn6z8H4vYGRDOsYkhXvPfnPW8C2LFJVr9nvE
+0gIAOVoGejEJrsJVK3Uj/nPcqSQYXmwEmtjtzOw7u6yp1b2VZEK7tR47HwJt6ltG
+Z9zhpwhpvdOuXNMqMOYRf9bLBWnSqIlTHOO0UlAnyRCY1HxluZB7ZSg9VnoJDrD7
+w+JqAGnBAoGBAO5qyIzjldwR004YjepmZfuX3PnGLZhzhmTTC7Pl9gqv1TvxfxvD
+6yBFL2GrN1IcnrX9Qk2xncUAbpM989MF+EC7I4++1t1I6akUKFEDkfvQwQjCXfPS
+Jv2rkwIVSkt8F0X/tOb13OeIiHuFVI/Bb9VoJSP/k4DfPV+/HnwBxvzLAoGBAM0u
+b/rYfm5rb20/PKClUs154s0eKSokVogqiJkf+5qLsV+TD50JVZBVw8s4XM79iwQI
+PyGY9nI1AvqG7yIzxSy5/Qk1+ZVdVYpmWIO5PnJ8TVraDVhCQ3fVz1uWtcyaqPVr
+3QzdyvsEgFUGFItmRdhSvA8RGrpVCHTBzrDj3jpRAoGBAKNaSLS3jkstb3D3w+yR
+YliisYX1cfIdXTyhmUgWTKD/3oLmsSdt8iC3JoKt1AaPk3Kv5ojjJG0BIcIC1ZeF
+ZJW9Yt0vbXpKZcYyCHmRj6lQW6JLwiG3oH133A62VaQojq2oSONiG4wL8S9oqAqj
+B6PZanEiwIaw7hU3FoTylstHAoGAFYvE0pCdZjb98njrgusZcN5VxLhgFj7On2no
+AjxrjWUR8TleMF1kkM2Qy+xVQp85U+kRyBNp/cA3WduFjQ/mqrW1LpxuYxL0Ap6Q
+uPRg7GDFNr8jG5uJvjHDnpiK6rtq9qqnAczgnc9xMnx699B7kSXO/b4MEnkPdENN
+0yF6mqECgYA88UELxbhqMSdG24DX0zHXvkXLIml2JNVb54glFByIIem+acff9oG9
+X5GajlBroPoKk7FgA9ouqcQMH66UnFi6qh07l0J2xb0aXP8yzLAGauVGTTNIQCR4
+VpqyDpjlc1ZqfZWOrvwSrUH1mEkxbeVvQsOUja2Jvu+lc3Zo099ILw==
+-----END RSA PRIVATE KEY-----
+
+`
+	publicKey = `-----BEGIN CERTIFICATE-----
+MIIC+TCCAeGgAwIBAgIQe/dw9alKTWAPhsHoLdkn+TANBgkqhkiG9w0BAQsFADAS
+MRAwDgYDVQQKEwdBY21lIENvMB4XDTE2MDkyNTAwNDcxN1oXDTE3MDkyNTAwNDcx
+N1owEjEQMA4GA1UEChMHQWNtZSBDbzCCASIwDQYJKoZIhvcNAQEBBQADggEPADCC
+AQoCggEBAL8WwhLGbK8HkiEDKV0JbjtWp3/EWKhKFW3YtKtPfPOgoZejdNn9VE0B
+IlQ4rwa1wmsM9NDKC0m60oiNOYeyugx9PoFI3RXzuKVX2x7E5LTW0sv0LC9PCggZ
+MZTih1AiYtwJIZl+aK6s4dTb/PUOLDdcRTZTF2egkdAicbUlQT4Kn+A3jHiE+ATC
+h3MlV2BHarhAhWb0FrOg2bEtFrMyFDaLbHI7xbj+vB9CkGB9L5tObP2M9lQCxH8d
+ElWkJjxg7vdkhJ5+sWNaY80utNipUdVO845tIERwRXRRviFYpOcuNfnJYC9kwRjv
+CRanh3epWhG0cFQVV5d45sHf6t5F+jsCAwEAAaNLMEkwDgYDVR0PAQH/BAQDAgWg
+MBMGA1UdJQQMMAoGCCsGAQUFBwMBMAwGA1UdEwEB/wQCMAAwFAYDVR0RBA0wC4IJ
+bG9jYWxob3N0MA0GCSqGSIb3DQEBCwUAA4IBAQAdd3ZW6R4cImmxIzfoz7Ttq862
+oOiyzFnisCxgNdA78epit49zg0CgF7q9guTEArXJLI+/qnjPPObPOlTlsEyomb2F
+UOS+2hn/ZyU5/tUxhkeOBYqdEaryk6zF6vPLUJ5IphJgOg00uIQGL0UvupBLEyIG
+Rsa/lKEtW5Z9PbIi9GeVn51U+9VMCYft/T7SDziKl7OcE/qoVh1G0/tTRkAqOqpZ
+bzc8ssEhJVNZ/DO+uYHNYf/waB6NjfXQuTegU/SyxnawvQ4oBHIzyuWplGCcTlfT
+IXsOQdJo2xuu8807d+rO1FpN8yWi5OF/0sif0RrocSskLAIL/PI1qfWuuPck
+-----END CERTIFICATE-----
+
+`
 )
 
 func TestValidateConfig(t *testing.T) {
@@ -81,6 +126,7 @@ func configStubMissing(missingField string) GlobalConfiguration {
 		RequestObjectSigningAlgorithm: "PS256",
 		Issuer:                        "https://modelobankauth2018.o3bank.co.uk:4101",
 		CreditorAccount:               creditorAccount,
+		InternationalCreditorAccount:  creditorAccount,
 		ResourceIDs: model.ResourceIDs{
 			AccountIDs:   []model.ResourceAccountID{{AccountID: "account-id"}},
 			StatementIDs: []model.ResourceStatementID{{StatementID: "statement-id"}},
@@ -168,11 +214,6 @@ func TestValidateConfigTestsEmpty(t *testing.T) {
 			config:      configStubMissing("XFAPIFinancialID"),
 			expectedMsg: "x_fapi_financial_id is empty",
 		},
-		//{
-		//	name:        "missing_request_object_signing_alg",
-		//	config:      configStubMissing("RequestObjectSigningAlgorithm"),
-		//	expectedMsg: "request_object_signing_alg is empty",
-		//},
 	}
 
 	for _, testCase := range testCases {
@@ -184,16 +225,6 @@ func TestValidateConfigTestsEmpty(t *testing.T) {
 			assert.Equal(testCase.expectedMsg, msg)
 		})
 	}
-}
-
-func readFile(filename string) string {
-	file, err := ioutil.ReadFile(filename)
-	if err != nil {
-		fmt.Fprint(os.Stderr, err)
-		fmt.Fprint(os.Stderr, "\n")
-		os.Exit(1)
-	}
-	return string(file)
 }
 
 // TestServerConfigGlobalPostValid - tests /api/config/global
@@ -221,7 +252,7 @@ func TestServerConfigGlobalPostValid(t *testing.T) {
 		XFAPIFinancialID:              `0015800001041RHAAY`,
 		RedirectURL:                   fmt.Sprintf(`https://%s:8443/conformancesuite/callback`, ListenHost),
 		AuthorizationEndpoint:         `https://modelobank2018.o3bank.co.uk:4201/token`,
-		ResourceBaseURL:               `https://modelobank2018.o3bank.co.uk:4501`,
+		ResourceBaseURL:               `https://ob19-rs1.o3bank.co.uk:4501`,
 		Issuer:                        "https://modelobankauth2018.o3bank.co.uk:4101",
 		RequestObjectSigningAlgorithm: "PS256",
 		ResourceIDs: model.ResourceIDs{
@@ -231,6 +262,18 @@ func TestServerConfigGlobalPostValid(t *testing.T) {
 		CreditorAccount: models.Payment{
 			SchemeName:     "UK.OBIE.SortCodeAccountNumber",
 			Identification: "20202010981789",
+		},
+		InternationalCreditorAccount: models.Payment{
+			SchemeName:     "UK.OBIE.SortCodeAccountNumber",
+			Identification: "20202010981789",
+		},
+		RequestedExecutionDateTime: "2020-01-01T00:00:00+01:00",
+		FirstPaymentDateTime:       "2020-01-01T00:00:00+01:00",
+		PaymentFrequency:           models.PaymentFrequency("EvryDay"),
+		CBPIIDebtorAccount: discovery.CBPIIDebtorAccount{
+			SchemeName:     "UK.OBIE.SortCodeAccountNumber",
+			Identification: "20202010981789",
+			Name:           "Bob Stone",
 		},
 	}
 	globalConfigurationJSON, err := json.MarshalIndent(globalConfiguration, ``, `  `)
@@ -250,7 +293,7 @@ func TestServerConfigGlobalPostValid(t *testing.T) {
 	require.JSONEq(bodyExpected, bodyActual)
 
 	require.Equal(http.StatusCreated, code)
-	require.Equal(expectedJsonHeaders, headers)
+	require.Equal(expectedJsonHeaders(), headers)
 }
 
 // TestServerConfigGlobalPostInvalid - tests /api/config/global invalid cases.
@@ -295,6 +338,18 @@ func TestServerConfigGlobalPostInvalid(t *testing.T) {
 					SchemeName:     "UK.OBIE.SortCodeAccountNumber",
 					Identification: "20202010981789",
 				},
+				InternationalCreditorAccount: models.Payment{
+					SchemeName:     "UK.OBIE.SortCodeAccountNumber",
+					Identification: "20202010981789",
+				},
+				RequestedExecutionDateTime: "2020-01-01T00:00:00+01:00",
+				FirstPaymentDateTime:       "2020-01-01T00:00:00+01:00",
+				PaymentFrequency:           models.PaymentFrequency("EvryDay"),
+				CBPIIDebtorAccount: discovery.CBPIIDebtorAccount{
+					SchemeName:     "UK.OBIE.SortCodeAccountNumber",
+					Identification: "20202010981789",
+					Name:           "Bob Stone",
+				},
 			},
 		},
 		{
@@ -331,6 +386,18 @@ func TestServerConfigGlobalPostInvalid(t *testing.T) {
 					SchemeName:     "UK.OBIE.SortCodeAccountNumber",
 					Identification: "20202010981789",
 				},
+				InternationalCreditorAccount: models.Payment{
+					SchemeName:     "UK.OBIE.SortCodeAccountNumber",
+					Identification: "20202010981789",
+				},
+				RequestedExecutionDateTime: "2020-01-01T00:00:00+01:00",
+				FirstPaymentDateTime:       "2020-01-01T00:00:00+01:00",
+				PaymentFrequency:           models.PaymentFrequency("EvryDay"),
+				CBPIIDebtorAccount: discovery.CBPIIDebtorAccount{
+					SchemeName:     "UK.OBIE.SortCodeAccountNumber",
+					Identification: "20202010981789",
+					Name:           "Bob Stone",
+				},
 			},
 		},
 		{
@@ -358,6 +425,18 @@ func TestServerConfigGlobalPostInvalid(t *testing.T) {
 				CreditorAccount: models.Payment{
 					SchemeName:     "UK.OBIE.SortCodeAccountNumber",
 					Identification: "20202010981789",
+				},
+				InternationalCreditorAccount: models.Payment{
+					SchemeName:     "UK.OBIE.SortCodeAccountNumber",
+					Identification: "20202010981789",
+				},
+				RequestedExecutionDateTime: "2020-01-01T00:00:00+01:00",
+				FirstPaymentDateTime:       "2020-01-01T00:00:00+01:00",
+				PaymentFrequency:           models.PaymentFrequency("EvryDay"),
+				CBPIIDebtorAccount: discovery.CBPIIDebtorAccount{
+					SchemeName:     "UK.OBIE.SortCodeAccountNumber",
+					Identification: "20202010981789",
+					Name:           "Bob Stone",
 				},
 			},
 		},
@@ -391,6 +470,18 @@ func TestServerConfigGlobalPostInvalid(t *testing.T) {
 				CreditorAccount: models.Payment{
 					SchemeName:     "UK.OBIE.SortCodeAccountNumber",
 					Identification: "20202010981789",
+				},
+				InternationalCreditorAccount: models.Payment{
+					SchemeName:     "UK.OBIE.SortCodeAccountNumber",
+					Identification: "20202010981789",
+				},
+				RequestedExecutionDateTime: "2020-01-01T00:00:00+01:00",
+				FirstPaymentDateTime:       "2020-01-01T00:00:00+01:00",
+				PaymentFrequency:           models.PaymentFrequency("EvryDay"),
+				CBPIIDebtorAccount: discovery.CBPIIDebtorAccount{
+					SchemeName:     "UK.OBIE.SortCodeAccountNumber",
+					Identification: "20202010981789",
+					Name:           "Bob Stone",
 				},
 			},
 		},
@@ -429,6 +520,18 @@ func TestServerConfigGlobalPostInvalid(t *testing.T) {
 					SchemeName:     "UK.OBIE.SortCodeAccountNumber",
 					Identification: "20202010981789",
 				},
+				InternationalCreditorAccount: models.Payment{
+					SchemeName:     "UK.OBIE.SortCodeAccountNumber",
+					Identification: "20202010981789",
+				},
+				RequestedExecutionDateTime: "2020-01-01T00:00:00+01:00",
+				FirstPaymentDateTime:       "2020-01-01T00:00:00+01:00",
+				PaymentFrequency:           models.PaymentFrequency("EvryDay"),
+				CBPIIDebtorAccount: discovery.CBPIIDebtorAccount{
+					SchemeName:     "UK.OBIE.SortCodeAccountNumber",
+					Identification: "20202010981789",
+					Name:           "Bob Stone",
+				},
 			},
 		},
 		{
@@ -461,6 +564,18 @@ func TestServerConfigGlobalPostInvalid(t *testing.T) {
 				CreditorAccount: models.Payment{
 					SchemeName:     "UK.OBIE.SortCodeAccountNumber",
 					Identification: "20202010981789",
+				},
+				InternationalCreditorAccount: models.Payment{
+					SchemeName:     "UK.OBIE.SortCodeAccountNumber",
+					Identification: "20202010981789",
+				},
+				RequestedExecutionDateTime: "2020-01-01T00:00:00+01:00",
+				FirstPaymentDateTime:       "2020-01-01T00:00:00+01:00",
+				PaymentFrequency:           models.PaymentFrequency("EvryDay"),
+				CBPIIDebtorAccount: discovery.CBPIIDebtorAccount{
+					SchemeName:     "UK.OBIE.SortCodeAccountNumber",
+					Identification: "20202010981789",
+					Name:           "Bob Stone",
 				},
 			},
 		},
@@ -499,11 +614,23 @@ func TestServerConfigGlobalPostInvalid(t *testing.T) {
 					SchemeName:     "UK.OBIE.SortCodeAccountNumber",
 					Identification: "20202010981789",
 				},
+				InternationalCreditorAccount: models.Payment{
+					SchemeName:     "UK.OBIE.SortCodeAccountNumber",
+					Identification: "20202010981789",
+				},
+				RequestedExecutionDateTime: "2020-01-01T00:00:00+01:00",
+				FirstPaymentDateTime:       "2020-01-01T00:00:00+01:00",
+				PaymentFrequency:           models.PaymentFrequency("EvryDay"),
+				CBPIIDebtorAccount: discovery.CBPIIDebtorAccount{
+					SchemeName:     "UK.OBIE.SortCodeAccountNumber",
+					Identification: "20202010981789",
+					Name:           "Bob Stone",
+				},
 			},
 		},
 		{
 			name:               `invalid_credit_account_1`,
-			expectedBody:       `{"error":"creditor_account: (identification: cannot be blank; scheme_name: cannot be blank.)."}`,
+			expectedBody:       `{"error":"creditor_account: (identification: cannot be blank; scheme_name: cannot be blank.); international_creditor_account: (identification: cannot be blank; scheme_name: cannot be blank.)."}`,
 			expectedStatusCode: http.StatusBadRequest,
 			config: GlobalConfiguration{
 				SigningPrivate:                privateKey,
@@ -531,6 +658,14 @@ func TestServerConfigGlobalPostInvalid(t *testing.T) {
 						{StatementID: ""},
 						{StatementID: "statement-id"},
 					},
+				},
+				RequestedExecutionDateTime: "2020-01-01T00:00:00+01:00",
+				FirstPaymentDateTime:       "2020-01-01T00:00:00+01:00",
+				PaymentFrequency:           models.PaymentFrequency("EvryDay"),
+				CBPIIDebtorAccount: discovery.CBPIIDebtorAccount{
+					SchemeName:     "UK.OBIE.SortCodeAccountNumber",
+					Identification: "20202010981789",
+					Name:           "Bob Stone",
 				},
 			},
 		},
@@ -568,6 +703,18 @@ func TestServerConfigGlobalPostInvalid(t *testing.T) {
 				CreditorAccount: models.Payment{
 					SchemeName: "UK.OBIE.SortCodeAccountNumber",
 				},
+				InternationalCreditorAccount: models.Payment{
+					SchemeName:     "UK.OBIE.SortCodeAccountNumber",
+					Identification: "20202010981789",
+				},
+				RequestedExecutionDateTime: "2020-01-01T00:00:00+01:00",
+				FirstPaymentDateTime:       "2020-01-01T00:00:00+01:00",
+				PaymentFrequency:           models.PaymentFrequency("EvryDay"),
+				CBPIIDebtorAccount: discovery.CBPIIDebtorAccount{
+					SchemeName:     "UK.OBIE.SortCodeAccountNumber",
+					Identification: "20202010981789",
+					Name:           "Bob Stone",
+				},
 			},
 		},
 		{
@@ -599,6 +746,18 @@ func TestServerConfigGlobalPostInvalid(t *testing.T) {
 				CreditorAccount: models.Payment{
 					SchemeName:     "UK.OBIE.SortCodeAccountNumber",
 					Identification: "20202010981789",
+				},
+				InternationalCreditorAccount: models.Payment{
+					SchemeName:     "UK.OBIE.SortCodeAccountNumber",
+					Identification: "20202010981789",
+				},
+				RequestedExecutionDateTime: "2020-01-01T00:00:00+01:00",
+				FirstPaymentDateTime:       "2020-01-01T00:00:00+01:00",
+				PaymentFrequency:           models.PaymentFrequency("EvryDay"),
+				CBPIIDebtorAccount: discovery.CBPIIDebtorAccount{
+					SchemeName:     "UK.OBIE.SortCodeAccountNumber",
+					Identification: "20202010981789",
+					Name:           "Bob Stone",
 				},
 			},
 		},
@@ -633,6 +792,63 @@ func TestServerConfigGlobalPostInvalid(t *testing.T) {
 					SchemeName:     "UK.OBIE.SortCodeAccountNumber",
 					Identification: "20202010981789",
 				},
+				InternationalCreditorAccount: models.Payment{
+					SchemeName:     "UK.OBIE.SortCodeAccountNumber",
+					Identification: "20202010981789",
+				},
+				RequestedExecutionDateTime: "2020-01-01T00:00:00+01:00",
+				FirstPaymentDateTime:       "2020-01-01T00:00:00+01:00",
+				PaymentFrequency:           models.PaymentFrequency("EvryDay"),
+				CBPIIDebtorAccount: discovery.CBPIIDebtorAccount{
+					SchemeName:     "UK.OBIE.SortCodeAccountNumber",
+					Identification: "20202010981789",
+					Name:           "Bob Stone",
+				},
+			},
+		},
+		{
+			name:               `payment_frequency_invalid`,
+			expectedBody:       `{"error":"payment_frequency: must be in a valid format (^(EvryDay)$|^(EvryWorkgDay)$|^(IntrvlWkDay:0[1-9]:0[1-7])$|^(WkInMnthDay:0[1-5]:0[1-7])$|^(IntrvlMnthDay:(0[1-6]|12|24):(-0[1-5]|0[1-9]|[12][0-9]|3[01]))$|^(QtrDay:(ENGLISH|SCOTTISH|RECEIVED))$)."}`,
+			expectedStatusCode: http.StatusBadRequest,
+			config: GlobalConfiguration{
+				SigningPrivate:          privateKey,
+				SigningPublic:           publicKey,
+				TransportPrivate:        "--------------",
+				TransportPublic:         "--------------",
+				ClientID:                "client_id",
+				ClientSecret:            "client_secret",
+				TokenEndpoint:           "token_endpoint",
+				ResponseType:            "code id_token",
+				TokenEndpointAuthMethod: "client_secret_basic",
+				AuthorizationEndpoint:   "http://server",
+				ResourceBaseURL:         "https://server",
+				RedirectURL:             "http://server",
+				XFAPIFinancialID:        "123",
+				Issuer:                  "https://modelobankauth2018.o3bank.co.uk:4101",
+				ResourceIDs: model.ResourceIDs{
+					AccountIDs: []model.ResourceAccountID{
+						{AccountID: "account-id"},
+					},
+					StatementIDs: []model.ResourceStatementID{
+						{StatementID: "statement-id"},
+					},
+				},
+				CreditorAccount: models.Payment{
+					SchemeName:     "UK.OBIE.SortCodeAccountNumber",
+					Identification: "20202010981789",
+				},
+				InternationalCreditorAccount: models.Payment{
+					SchemeName:     "UK.OBIE.SortCodeAccountNumber",
+					Identification: "20202010981789",
+				},
+				PaymentFrequency:           models.PaymentFrequency("INVALID"),
+				RequestedExecutionDateTime: "2020-01-01T00:00:00+01:00",
+				FirstPaymentDateTime:       "2020-01-01T00:00:00+01:00",
+				CBPIIDebtorAccount: discovery.CBPIIDebtorAccount{
+					SchemeName:     "UK.OBIE.SortCodeAccountNumber",
+					Identification: "20202010981789",
+					Name:           "Bob Stone",
+				},
 			},
 		},
 	}
@@ -659,7 +875,7 @@ func TestServerConfigGlobalPostInvalid(t *testing.T) {
 			require.JSONEq(testCase.expectedBody, bodyActual)
 
 			require.Equal(testCase.expectedStatusCode, code)
-			require.Equal(expectedJsonHeaders, headers)
+			require.Equal(expectedJsonHeaders(), headers)
 		})
 	}
 }
@@ -668,5 +884,5 @@ func testJourney() Journey {
 	logger := nullLogger()
 	validatorEngine := discovery.NewFuncValidator(model.NewConditionalityChecker())
 	testGenerator := generation.NewGenerator()
-	return NewJourney(logger, testGenerator, validatorEngine)
+	return NewJourney(logger, testGenerator, validatorEngine, discovery.NewNullTLSValidator(), false)
 }

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"crypto/tls"
 	"fmt"
 	"os"
 	"strings"
@@ -9,10 +10,10 @@ import (
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/generation"
 
-	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/version"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/server"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/tracer"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/version"
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
@@ -44,10 +45,10 @@ Complete documentation is available at https://bitbucket.org/openbankingteam/con
 
 			validatorEngine := discovery.NewFuncValidator(model.NewConditionalityChecker())
 			testGenerator := generation.NewGenerator()
-			journey := server.NewJourney(logger, testGenerator, validatorEngine)
+			tlsValidator := discovery.NewStdTLSValidator(tls.VersionTLS11)
+			journey := server.NewJourney(logger, testGenerator, validatorEngine, tlsValidator, viper.GetBool("dynres"))
 
 			echoServer := server.NewServer(journey, logger, ver)
-			server.PrintRoutesInfo(echoServer, logger)
 			address := fmt.Sprintf("%s:%d", server.ListenHost, viper.GetInt("port"))
 			logger.Infof("listening on https://%s", address)
 			return echoServer.StartTLS(address, certFile, keyFile)
@@ -82,6 +83,9 @@ func init() {
 	rootCmd.PersistentFlags().Bool("log_tracer", false, "Enable tracer logging")
 	rootCmd.PersistentFlags().Bool("log_http_trace", false, "Enable HTTP logging")
 	rootCmd.PersistentFlags().Int("port", 8443, "Server port")
+	rootCmd.PersistentFlags().Bool("enable_jws", false, "Enable JWS Signature")
+	rootCmd.PersistentFlags().Bool("dynres", false, "Use Dynamic Resource IDs - accounts")
+	rootCmd.PersistentFlags().Bool("dumpcontexts", false, "Dump contexts when trace enabled")
 
 	if err := viper.BindPFlags(rootCmd.PersistentFlags()); err != nil {
 		fmt.Fprint(os.Stderr, err)
@@ -143,7 +147,16 @@ func initConfig() {
 		}
 	}
 
+	if viper.GetBool("enable_jws") {
+		model.EnableJWS()
+	}
+
+	if viper.GetBool("dumpcontexts") {
+		model.EnableContextDumps()
+	}
+
 	resty.SetDebug(viper.GetBool("log_http_trace"))
+	resty.SetRedirectPolicy(resty.FlexibleRedirectPolicy(15))
 
 	printConfigurationFlags()
 }
@@ -157,5 +170,8 @@ func printConfigurationFlags() {
 		"log_to_file":    viper.GetBool("log_to_file"),
 		"port":           viper.GetInt("port"),
 		"tracer.Silent":  tracer.Silent,
+		"enable_jws":     viper.GetBool("enable_jws"),
+		"dynres":         viper.GetBool("dynres"),
+		"dumpcontexts":   viper.GetBool("dumpcontexts"),
 	}).Info("configuration flags")
 }

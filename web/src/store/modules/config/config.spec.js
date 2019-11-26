@@ -11,9 +11,11 @@ import Vuex from 'vuex';
 import api from '../../../api';
 import actions from './actions';
 import {
-  getters, mutations, mutationTypes as types, state,
+  getters, mutations,
+  // import state - please don't remove comment.
+  state,
 } from './index';
-
+import * as types from './mutation-types.js';
 
 // https://jestjs.io/docs/en/mock-functions#mocking-modules
 jest.mock('../../../api');
@@ -58,8 +60,13 @@ describe('web/src/store/modules/config', () => {
         authorization_endpoint: '',
         resource_base_url: '',
         x_fapi_financial_id: '',
+        send_x_fapi_customer_ip_address: false,
+        x_fapi_customer_ip_address: '',
         issuer: '',
         redirect_url: 'https://127.0.0.1:8443/conformancesuite/callback',
+        use_non_ob_directory: false,
+        signature_trust_anchor: '',
+        signing_kid: '',
         resource_ids: {
           account_ids: [{ account_id: '' }],
           statement_ids: [{ statement_id: '' }],
@@ -69,6 +76,26 @@ describe('web/src/store/modules/config', () => {
           identification: '',
           name: '',
         },
+        international_creditor_account: {
+          scheme_name: '',
+          identification: '',
+          name: '',
+        },
+        cbpii_debtor_account: {
+          scheme_name: '',
+          identification: '',
+          name: '',
+        },
+        currency_of_transfer: 'USD',
+        instructed_amount: {
+          currency: 'GBP',
+          value: '1.00',
+        },
+        payment_frequency: 'EvryDay',
+        first_payment_date_time: '2020-01-01T00:00:00+01:00',
+        requested_execution_date_time: '2020-01-01T00:00:00+01:00',
+        acr_values_supported: [],
+        conditional_properties: [],
       });
     });
 
@@ -116,17 +143,22 @@ describe('web/src/store/modules/config', () => {
         signing_public: '',
         transport_private: '',
         transport_public: '',
+        use_non_ob_directory: false,
         transaction_from_date: '',
         transaction_to_date: '',
         client_id: '',
         client_secret: '',
         token_endpoint: '',
         response_type: '',
+        signature_trust_anchor: '',
+        signing_kid: '',
         token_endpoint_auth_method: 'client_secret_basic',
         request_object_signing_alg: '',
         authorization_endpoint: '',
         resource_base_url: '',
         x_fapi_financial_id: '',
+        send_x_fapi_customer_ip_address: false,
+        x_fapi_customer_ip_address: '',
         issuer: '',
         redirect_url: 'https://127.0.0.1:8443/conformancesuite/callback',
         resource_ids: {
@@ -138,6 +170,26 @@ describe('web/src/store/modules/config', () => {
           identification: '',
           name: '',
         },
+        international_creditor_account: {
+          scheme_name: '',
+          identification: '',
+          name: '',
+        },
+        cbpii_debtor_account: {
+          scheme_name: '',
+          identification: '',
+          name: '',
+        },
+        currency_of_transfer: 'USD',
+        instructed_amount: {
+          currency: 'GBP',
+          value: '1.00',
+        },
+        payment_frequency: 'EvryDay',
+        first_payment_date_time: '2020-01-01T00:00:00+01:00',
+        requested_execution_date_time: '2020-01-01T00:00:00+01:00',
+        acr_values_supported: [],
+        conditional_properties: [],
       });
 
       store.commit(types.SET_TOKEN_ENDPOINT_AUTH_METHODS, ['tls_client_auth', 'client_secret_basic']);
@@ -147,17 +199,22 @@ describe('web/src/store/modules/config', () => {
         signing_public: '',
         transport_private: '',
         transport_public: '',
+        use_non_ob_directory: false,
         transaction_from_date: '',
         transaction_to_date: '',
         client_id: '8672384e-9a33-439f-8924-67bb14340d71',
         client_secret: '',
         token_endpoint: '',
         response_type: '',
+        signature_trust_anchor: '',
+        signing_kid: '',
         token_endpoint_auth_method: 'client_secret_basic',
         request_object_signing_alg: '',
         authorization_endpoint: '',
         resource_base_url: '',
         x_fapi_financial_id: '',
+        send_x_fapi_customer_ip_address: false,
+        x_fapi_customer_ip_address: '',
         issuer: '',
         redirect_url: 'https://127.0.0.1:8443/conformancesuite/callback',
         resource_ids: {
@@ -169,6 +226,26 @@ describe('web/src/store/modules/config', () => {
           identification: '',
           name: '',
         },
+        international_creditor_account: {
+          scheme_name: '',
+          identification: '',
+          name: '',
+        },
+        cbpii_debtor_account: {
+          scheme_name: '',
+          identification: '',
+          name: '',
+        },
+        currency_of_transfer: 'USD',
+        instructed_amount: {
+          currency: 'GBP',
+          value: '1.00',
+        },
+        payment_frequency: 'EvryDay',
+        first_payment_date_time: '2020-01-01T00:00:00+01:00',
+        requested_execution_date_time: '2020-01-01T00:00:00+01:00',
+        acr_values_supported: [],
+        conditional_properties: [],
       });
 
       store.commit(types.SET_CLIENT_SECRET, '2cfb31a3-5443-4e65-b2bc-ef8e00266a77');
@@ -177,17 +254,22 @@ describe('web/src/store/modules/config', () => {
         signing_public: '',
         transport_private: '',
         transport_public: '',
+        use_non_ob_directory: false,
         transaction_from_date: '',
         transaction_to_date: '',
         client_id: '8672384e-9a33-439f-8924-67bb14340d71',
         client_secret: '2cfb31a3-5443-4e65-b2bc-ef8e00266a77',
         token_endpoint: '',
         response_type: '',
+        signature_trust_anchor: '',
+        signing_kid: '',
         token_endpoint_auth_method: 'client_secret_basic',
         request_object_signing_alg: '',
         authorization_endpoint: '',
         resource_base_url: '',
         x_fapi_financial_id: '',
+        send_x_fapi_customer_ip_address: false,
+        x_fapi_customer_ip_address: '',
         issuer: '',
         redirect_url: 'https://127.0.0.1:8443/conformancesuite/callback',
         resource_ids: {
@@ -199,6 +281,26 @@ describe('web/src/store/modules/config', () => {
           identification: '',
           name: '',
         },
+        international_creditor_account: {
+          scheme_name: '',
+          identification: '',
+          name: '',
+        },
+        cbpii_debtor_account: {
+          scheme_name: '',
+          identification: '',
+          name: '',
+        },
+        currency_of_transfer: 'USD',
+        instructed_amount: {
+          currency: 'GBP',
+          value: '1.00',
+        },
+        payment_frequency: 'EvryDay',
+        first_payment_date_time: '2020-01-01T00:00:00+01:00',
+        requested_execution_date_time: '2020-01-01T00:00:00+01:00',
+        acr_values_supported: [],
+        conditional_properties: [],
       });
 
       store.commit(types.SET_TOKEN_ENDPOINT, 'https://modelobank2018.o3bank.co.uk:4201/token');
@@ -207,17 +309,22 @@ describe('web/src/store/modules/config', () => {
         signing_public: '',
         transport_private: '',
         transport_public: '',
+        use_non_ob_directory: false,
         transaction_from_date: '',
         transaction_to_date: '',
         client_id: '8672384e-9a33-439f-8924-67bb14340d71',
         client_secret: '2cfb31a3-5443-4e65-b2bc-ef8e00266a77',
         token_endpoint: 'https://modelobank2018.o3bank.co.uk:4201/token',
         response_type: '',
+        signature_trust_anchor: '',
+        signing_kid: '',
         token_endpoint_auth_method: 'client_secret_basic',
         request_object_signing_alg: '',
         authorization_endpoint: '',
         resource_base_url: '',
         x_fapi_financial_id: '',
+        send_x_fapi_customer_ip_address: false,
+        x_fapi_customer_ip_address: '',
         issuer: '',
         redirect_url: 'https://127.0.0.1:8443/conformancesuite/callback',
         resource_ids: {
@@ -229,6 +336,26 @@ describe('web/src/store/modules/config', () => {
           identification: '',
           name: '',
         },
+        international_creditor_account: {
+          scheme_name: '',
+          identification: '',
+          name: '',
+        },
+        cbpii_debtor_account: {
+          scheme_name: '',
+          identification: '',
+          name: '',
+        },
+        currency_of_transfer: 'USD',
+        instructed_amount: {
+          currency: 'GBP',
+          value: '1.00',
+        },
+        payment_frequency: 'EvryDay',
+        first_payment_date_time: '2020-01-01T00:00:00+01:00',
+        requested_execution_date_time: '2020-01-01T00:00:00+01:00',
+        acr_values_supported: [],
+        conditional_properties: [],
       });
 
       store.commit(types.SET_TOKEN_ENDPOINT_AUTH_METHOD, 'client_secret_basic');
@@ -240,17 +367,22 @@ describe('web/src/store/modules/config', () => {
         signing_public: '',
         transport_private: '',
         transport_public: '',
+        use_non_ob_directory: false,
         transaction_from_date: '',
         transaction_to_date: '',
         client_id: '8672384e-9a33-439f-8924-67bb14340d71',
         client_secret: '2cfb31a3-5443-4e65-b2bc-ef8e00266a77',
         token_endpoint: 'https://modelobank2018.o3bank.co.uk:4201/token',
         response_type: '',
+        signature_trust_anchor: '',
+        signing_kid: '',
         token_endpoint_auth_method: 'client_secret_basic',
         request_object_signing_alg: '',
         authorization_endpoint: 'https://modelobankauth2018.o3bank.co.uk:4101/auth',
         resource_base_url: '',
         x_fapi_financial_id: '',
+        send_x_fapi_customer_ip_address: false,
+        x_fapi_customer_ip_address: '',
         issuer: '',
         redirect_url: 'https://127.0.0.1:8443/conformancesuite/callback',
         resource_ids: {
@@ -262,25 +394,50 @@ describe('web/src/store/modules/config', () => {
           identification: '',
           name: '',
         },
+        international_creditor_account: {
+          scheme_name: '',
+          identification: '',
+          name: '',
+        },
+        cbpii_debtor_account: {
+          scheme_name: '',
+          identification: '',
+          name: '',
+        },
+        currency_of_transfer: 'USD',
+        instructed_amount: {
+          currency: 'GBP',
+          value: '1.00',
+        },
+        payment_frequency: 'EvryDay',
+        first_payment_date_time: '2020-01-01T00:00:00+01:00',
+        requested_execution_date_time: '2020-01-01T00:00:00+01:00',
+        acr_values_supported: [],
+        conditional_properties: [],
       });
 
-      store.commit(types.SET_RESOURCE_BASE_URL, 'https://modelobank2018.o3bank.co.uk:4501');
+      store.commit(types.SET_RESOURCE_BASE_URL, 'https://ob19-rs1.o3bank.co.uk:4501');
       expect(store.state.configuration).toEqual({
         signing_private: '',
         signing_public: '',
         transport_private: '',
         transport_public: '',
+        use_non_ob_directory: false,
         transaction_from_date: '',
         transaction_to_date: '',
         client_id: '8672384e-9a33-439f-8924-67bb14340d71',
         client_secret: '2cfb31a3-5443-4e65-b2bc-ef8e00266a77',
         token_endpoint: 'https://modelobank2018.o3bank.co.uk:4201/token',
         response_type: '',
+        signature_trust_anchor: '',
+        signing_kid: '',
         token_endpoint_auth_method: 'client_secret_basic',
         request_object_signing_alg: '',
         authorization_endpoint: 'https://modelobankauth2018.o3bank.co.uk:4101/auth',
-        resource_base_url: 'https://modelobank2018.o3bank.co.uk:4501',
+        resource_base_url: 'https://ob19-rs1.o3bank.co.uk:4501',
         x_fapi_financial_id: '',
+        send_x_fapi_customer_ip_address: false,
+        x_fapi_customer_ip_address: '',
         issuer: '',
         redirect_url: 'https://127.0.0.1:8443/conformancesuite/callback',
         resource_ids: {
@@ -292,6 +449,26 @@ describe('web/src/store/modules/config', () => {
           identification: '',
           name: '',
         },
+        international_creditor_account: {
+          scheme_name: '',
+          identification: '',
+          name: '',
+        },
+        cbpii_debtor_account: {
+          scheme_name: '',
+          identification: '',
+          name: '',
+        },
+        currency_of_transfer: 'USD',
+        instructed_amount: {
+          currency: 'GBP',
+          value: '1.00',
+        },
+        payment_frequency: 'EvryDay',
+        first_payment_date_time: '2020-01-01T00:00:00+01:00',
+        requested_execution_date_time: '2020-01-01T00:00:00+01:00',
+        acr_values_supported: [],
+        conditional_properties: [],
       });
 
       store.commit(types.SET_X_FAPI_FINANCIAL_ID, '0015800001041RHAAY');
@@ -300,17 +477,22 @@ describe('web/src/store/modules/config', () => {
         signing_public: '',
         transport_private: '',
         transport_public: '',
+        use_non_ob_directory: false,
         transaction_from_date: '',
         transaction_to_date: '',
         client_id: '8672384e-9a33-439f-8924-67bb14340d71',
         client_secret: '2cfb31a3-5443-4e65-b2bc-ef8e00266a77',
         token_endpoint: 'https://modelobank2018.o3bank.co.uk:4201/token',
         response_type: '',
+        signature_trust_anchor: '',
+        signing_kid: '',
         token_endpoint_auth_method: 'client_secret_basic',
         request_object_signing_alg: '',
         authorization_endpoint: 'https://modelobankauth2018.o3bank.co.uk:4101/auth',
-        resource_base_url: 'https://modelobank2018.o3bank.co.uk:4501',
+        resource_base_url: 'https://ob19-rs1.o3bank.co.uk:4501',
         x_fapi_financial_id: '0015800001041RHAAY',
+        send_x_fapi_customer_ip_address: false,
+        x_fapi_customer_ip_address: '',
         issuer: '',
         redirect_url: 'https://127.0.0.1:8443/conformancesuite/callback',
         resource_ids: {
@@ -322,6 +504,26 @@ describe('web/src/store/modules/config', () => {
           identification: '',
           name: '',
         },
+        international_creditor_account: {
+          scheme_name: '',
+          identification: '',
+          name: '',
+        },
+        cbpii_debtor_account: {
+          scheme_name: '',
+          identification: '',
+          name: '',
+        },
+        currency_of_transfer: 'USD',
+        instructed_amount: {
+          currency: 'GBP',
+          value: '1.00',
+        },
+        payment_frequency: 'EvryDay',
+        first_payment_date_time: '2020-01-01T00:00:00+01:00',
+        requested_execution_date_time: '2020-01-01T00:00:00+01:00',
+        acr_values_supported: [],
+        conditional_properties: [],
       });
 
       store.commit(types.SET_ISSUER, 'https://modelobankauth2018.o3bank.co.uk:4101');
@@ -330,17 +532,22 @@ describe('web/src/store/modules/config', () => {
         signing_public: '',
         transport_private: '',
         transport_public: '',
+        use_non_ob_directory: false,
         transaction_from_date: '',
         transaction_to_date: '',
         client_id: '8672384e-9a33-439f-8924-67bb14340d71',
         client_secret: '2cfb31a3-5443-4e65-b2bc-ef8e00266a77',
         token_endpoint: 'https://modelobank2018.o3bank.co.uk:4201/token',
         response_type: '',
+        signature_trust_anchor: '',
+        signing_kid: '',
         token_endpoint_auth_method: 'client_secret_basic',
         request_object_signing_alg: '',
         authorization_endpoint: 'https://modelobankauth2018.o3bank.co.uk:4101/auth',
-        resource_base_url: 'https://modelobank2018.o3bank.co.uk:4501',
+        resource_base_url: 'https://ob19-rs1.o3bank.co.uk:4501',
         x_fapi_financial_id: '0015800001041RHAAY',
+        send_x_fapi_customer_ip_address: false,
+        x_fapi_customer_ip_address: '',
         issuer: 'https://modelobankauth2018.o3bank.co.uk:4101',
         redirect_url: 'https://127.0.0.1:8443/conformancesuite/callback',
         resource_ids: {
@@ -352,12 +559,33 @@ describe('web/src/store/modules/config', () => {
           identification: '',
           name: '',
         },
+        international_creditor_account: {
+          scheme_name: '',
+          identification: '',
+          name: '',
+        },
+        cbpii_debtor_account: {
+          scheme_name: '',
+          identification: '',
+          name: '',
+        },
+        currency_of_transfer: 'USD',
+        instructed_amount: {
+          currency: 'GBP',
+          value: '1.00',
+        },
+        payment_frequency: 'EvryDay',
+        first_payment_date_time: '2020-01-01T00:00:00+01:00',
+        requested_execution_date_time: '2020-01-01T00:00:00+01:00',
+        acr_values_supported: [],
+        conditional_properties: [],
       });
 
       store.commit(types.ADD_RESOURCE_ACCOUNT_ID, { account_id: 'account-id' });
       expect(store.state.configuration).toEqual({
         signing_private: '',
         signing_public: '',
+        use_non_ob_directory: false,
         transport_private: '',
         transport_public: '',
         transaction_from_date: '',
@@ -366,11 +594,15 @@ describe('web/src/store/modules/config', () => {
         client_secret: '2cfb31a3-5443-4e65-b2bc-ef8e00266a77',
         token_endpoint: 'https://modelobank2018.o3bank.co.uk:4201/token',
         response_type: '',
+        signature_trust_anchor: '',
+        signing_kid: '',
         token_endpoint_auth_method: 'client_secret_basic',
         request_object_signing_alg: '',
         authorization_endpoint: 'https://modelobankauth2018.o3bank.co.uk:4101/auth',
-        resource_base_url: 'https://modelobank2018.o3bank.co.uk:4501',
+        resource_base_url: 'https://ob19-rs1.o3bank.co.uk:4501',
         x_fapi_financial_id: '0015800001041RHAAY',
+        send_x_fapi_customer_ip_address: false,
+        x_fapi_customer_ip_address: '',
         issuer: 'https://modelobankauth2018.o3bank.co.uk:4101',
         redirect_url: 'https://127.0.0.1:8443/conformancesuite/callback',
         resource_ids: {
@@ -382,12 +614,33 @@ describe('web/src/store/modules/config', () => {
           identification: '',
           name: '',
         },
+        international_creditor_account: {
+          scheme_name: '',
+          identification: '',
+          name: '',
+        },
+        cbpii_debtor_account: {
+          scheme_name: '',
+          identification: '',
+          name: '',
+        },
+        currency_of_transfer: 'USD',
+        instructed_amount: {
+          currency: 'GBP',
+          value: '1.00',
+        },
+        payment_frequency: 'EvryDay',
+        first_payment_date_time: '2020-01-01T00:00:00+01:00',
+        requested_execution_date_time: '2020-01-01T00:00:00+01:00',
+        acr_values_supported: [],
+        conditional_properties: [],
       });
 
       store.commit(types.ADD_RESOURCE_STATEMENT_ID, { statement_id: 'statement-id' });
       expect(store.state.configuration).toEqual({
         signing_private: '',
         signing_public: '',
+        use_non_ob_directory: false,
         transport_private: '',
         transport_public: '',
         transaction_from_date: '',
@@ -396,11 +649,15 @@ describe('web/src/store/modules/config', () => {
         client_secret: '2cfb31a3-5443-4e65-b2bc-ef8e00266a77',
         token_endpoint: 'https://modelobank2018.o3bank.co.uk:4201/token',
         response_type: '',
+        signature_trust_anchor: '',
+        signing_kid: '',
         token_endpoint_auth_method: 'client_secret_basic',
         request_object_signing_alg: '',
         authorization_endpoint: 'https://modelobankauth2018.o3bank.co.uk:4101/auth',
-        resource_base_url: 'https://modelobank2018.o3bank.co.uk:4501',
+        resource_base_url: 'https://ob19-rs1.o3bank.co.uk:4501',
         x_fapi_financial_id: '0015800001041RHAAY',
+        send_x_fapi_customer_ip_address: false,
+        x_fapi_customer_ip_address: '',
         issuer: 'https://modelobankauth2018.o3bank.co.uk:4101',
         redirect_url: 'https://127.0.0.1:8443/conformancesuite/callback',
         resource_ids: {
@@ -412,6 +669,26 @@ describe('web/src/store/modules/config', () => {
           identification: '',
           name: '',
         },
+        international_creditor_account: {
+          scheme_name: '',
+          identification: '',
+          name: '',
+        },
+        cbpii_debtor_account: {
+          scheme_name: '',
+          identification: '',
+          name: '',
+        },
+        currency_of_transfer: 'USD',
+        instructed_amount: {
+          currency: 'GBP',
+          value: '1.00',
+        },
+        payment_frequency: 'EvryDay',
+        first_payment_date_time: '2020-01-01T00:00:00+01:00',
+        requested_execution_date_time: '2020-01-01T00:00:00+01:00',
+        acr_values_supported: [],
+        conditional_properties: [],
       });
 
       store.commit(types.SET_REQUEST_OBJECT_SIGNING_ALG, 'PS256');
@@ -426,17 +703,22 @@ describe('web/src/store/modules/config', () => {
         signing_public: '',
         transport_private: '',
         transport_public: '',
+        use_non_ob_directory: false,
         transaction_from_date: '',
         transaction_to_date: '',
         client_id: '',
         client_secret: '',
         token_endpoint: '',
         response_type: '',
+        signature_trust_anchor: '',
+        signing_kid: '',
         token_endpoint_auth_method: 'client_secret_basic',
         request_object_signing_alg: '',
         authorization_endpoint: '',
         resource_base_url: '',
         x_fapi_financial_id: '',
+        send_x_fapi_customer_ip_address: false,
+        x_fapi_customer_ip_address: '',
         issuer: '',
         redirect_url: 'https://127.0.0.1:8443/conformancesuite/callback',
         resource_ids: {
@@ -448,6 +730,26 @@ describe('web/src/store/modules/config', () => {
           identification: '',
           name: '',
         },
+        international_creditor_account: {
+          scheme_name: '',
+          identification: '',
+          name: '',
+        },
+        cbpii_debtor_account: {
+          scheme_name: '',
+          identification: '',
+          name: '',
+        },
+        currency_of_transfer: 'USD',
+        instructed_amount: {
+          currency: 'GBP',
+          value: '1.00',
+        },
+        payment_frequency: 'EvryDay',
+        first_payment_date_time: '2020-01-01T00:00:00+01:00',
+        requested_execution_date_time: '2020-01-01T00:00:00+01:00',
+        acr_values_supported: [],
+        conditional_properties: [],
       });
 
       const acctIDs = [{ account_id: '123' }, { account_id: '456' }];
@@ -458,17 +760,22 @@ describe('web/src/store/modules/config', () => {
         signing_public: '',
         transport_private: '',
         transport_public: '',
+        use_non_ob_directory: false,
         transaction_from_date: '',
         transaction_to_date: '',
         client_id: '',
         client_secret: '',
         token_endpoint: '',
         response_type: '',
+        signature_trust_anchor: '',
+        signing_kid: '',
         token_endpoint_auth_method: 'client_secret_basic',
         request_object_signing_alg: '',
         authorization_endpoint: '',
         resource_base_url: '',
         x_fapi_financial_id: '',
+        send_x_fapi_customer_ip_address: false,
+        x_fapi_customer_ip_address: '',
         issuer: '',
         redirect_url: 'https://127.0.0.1:8443/conformancesuite/callback',
         resource_ids: {
@@ -480,6 +787,26 @@ describe('web/src/store/modules/config', () => {
           identification: '',
           name: '',
         },
+        international_creditor_account: {
+          scheme_name: '',
+          identification: '',
+          name: '',
+        },
+        cbpii_debtor_account: {
+          scheme_name: '',
+          identification: '',
+          name: '',
+        },
+        currency_of_transfer: 'USD',
+        instructed_amount: {
+          currency: 'GBP',
+          value: '1.00',
+        },
+        payment_frequency: 'EvryDay',
+        first_payment_date_time: '2020-01-01T00:00:00+01:00',
+        requested_execution_date_time: '2020-01-01T00:00:00+01:00',
+        acr_values_supported: [],
+        conditional_properties: [],
       });
 
       const stmtIDs = [{ statement_id: '123' }, { statement_id: '456' }];
@@ -490,17 +817,22 @@ describe('web/src/store/modules/config', () => {
         signing_public: '',
         transport_private: '',
         transport_public: '',
+        use_non_ob_directory: false,
         transaction_from_date: '',
         transaction_to_date: '',
         client_id: '',
         client_secret: '',
         token_endpoint: '',
         response_type: '',
+        signature_trust_anchor: '',
+        signing_kid: '',
         token_endpoint_auth_method: 'client_secret_basic',
         request_object_signing_alg: '',
         authorization_endpoint: '',
         resource_base_url: '',
         x_fapi_financial_id: '',
+        send_x_fapi_customer_ip_address: false,
+        x_fapi_customer_ip_address: '',
         issuer: '',
         redirect_url: 'https://127.0.0.1:8443/conformancesuite/callback',
         resource_ids: {
@@ -512,6 +844,26 @@ describe('web/src/store/modules/config', () => {
           identification: '',
           name: '',
         },
+        international_creditor_account: {
+          scheme_name: '',
+          identification: '',
+          name: '',
+        },
+        cbpii_debtor_account: {
+          scheme_name: '',
+          identification: '',
+          name: '',
+        },
+        currency_of_transfer: 'USD',
+        instructed_amount: {
+          currency: 'GBP',
+          value: '1.00',
+        },
+        payment_frequency: 'EvryDay',
+        first_payment_date_time: '2020-01-01T00:00:00+01:00',
+        requested_execution_date_time: '2020-01-01T00:00:00+01:00',
+        acr_values_supported: [],
+        conditional_properties: [],
       });
 
       store.commit(types.SET_TRANSACTION_FROM_DATE, '2016-01-01T10:40:00+02:00');
@@ -522,17 +874,22 @@ describe('web/src/store/modules/config', () => {
         signing_public: '',
         transport_private: '',
         transport_public: '',
+        use_non_ob_directory: false,
         transaction_from_date: '2016-01-01T10:40:00+02:00',
         transaction_to_date: '2016-01-01T10:40:00+02:00',
         client_id: '',
         client_secret: '',
         token_endpoint: '',
         response_type: '',
+        signature_trust_anchor: '',
+        signing_kid: '',
         token_endpoint_auth_method: 'client_secret_basic',
         request_object_signing_alg: '',
         authorization_endpoint: '',
         resource_base_url: '',
         x_fapi_financial_id: '',
+        send_x_fapi_customer_ip_address: false,
+        x_fapi_customer_ip_address: '',
         issuer: '',
         redirect_url: 'https://127.0.0.1:8443/conformancesuite/callback',
         resource_ids: {
@@ -544,6 +901,26 @@ describe('web/src/store/modules/config', () => {
           identification: '',
           name: '',
         },
+        international_creditor_account: {
+          scheme_name: '',
+          identification: '',
+          name: '',
+        },
+        cbpii_debtor_account: {
+          scheme_name: '',
+          identification: '',
+          name: '',
+        },
+        currency_of_transfer: 'USD',
+        instructed_amount: {
+          currency: 'GBP',
+          value: '1.00',
+        },
+        payment_frequency: 'EvryDay',
+        first_payment_date_time: '2020-01-01T00:00:00+01:00',
+        requested_execution_date_time: '2020-01-01T00:00:00+01:00',
+        acr_values_supported: [],
+        conditional_properties: [],
       });
     });
 
@@ -560,17 +937,22 @@ describe('web/src/store/modules/config', () => {
           signing_public: '',
           transport_private: '',
           transport_public: '',
+          use_non_ob_directory: false,
           transaction_from_date: '',
           transaction_to_date: '',
           client_id: '',
           client_secret: '',
           token_endpoint: '',
           response_type: '',
+          signature_trust_anchor: '',
+          signing_kid: '',
           token_endpoint_auth_method: 'client_secret_basic',
           request_object_signing_alg: '',
           authorization_endpoint: '',
           resource_base_url: '',
           x_fapi_financial_id: '',
+          send_x_fapi_customer_ip_address: false,
+          x_fapi_customer_ip_address: '',
           issuer: '',
           redirect_url: 'https://127.0.0.1:8443/conformancesuite/callback',
           resource_ids: {
@@ -582,6 +964,26 @@ describe('web/src/store/modules/config', () => {
             identification: '',
             name: '',
           },
+          international_creditor_account: {
+            scheme_name: '',
+            identification: '',
+            name: '',
+          },
+          cbpii_debtor_account: {
+            scheme_name: '',
+            identification: '',
+            name: '',
+          },
+          currency_of_transfer: 'USD',
+          instructed_amount: {
+            currency: 'GBP',
+            value: '1.00',
+          },
+          payment_frequency: 'EvryDay',
+          first_payment_date_time: '2020-01-01T00:00:00+01:00',
+          requested_execution_date_time: '2020-01-01T00:00:00+01:00',
+          acr_values_supported: [],
+          conditional_properties: [],
         });
 
         api.validateDiscoveryConfig.mockReturnValueOnce({
@@ -617,6 +1019,8 @@ describe('web/src/store/modules/config', () => {
               'code',
               'code id_token',
             ],
+            acr_values_supported: [],
+            conditional_properties: [],
           },
         });
 
@@ -630,17 +1034,22 @@ describe('web/src/store/modules/config', () => {
           signing_public: '',
           transport_private: '',
           transport_public: '',
+          use_non_ob_directory: false,
           transaction_from_date: '2016-01-01T10:40:00+02:00',
           transaction_to_date: '2025-12-31T10:40:00+02:00',
           client_id: '',
           client_secret: '',
           token_endpoint: '',
           response_type: '',
+          signature_trust_anchor: '',
+          signing_kid: '',
           token_endpoint_auth_method: 'client_secret_basic',
           request_object_signing_alg: '',
           authorization_endpoint: 'https://modelobankauth2018.o3bank.co.uk:4101/auth_1',
           resource_base_url: '',
           x_fapi_financial_id: '',
+          send_x_fapi_customer_ip_address: false,
+          x_fapi_customer_ip_address: '',
           issuer: 'https://modelobankauth2018.o3bank.co.uk:4101_1',
           redirect_url: 'https://127.0.0.1:8443/conformancesuite/callback',
           resource_ids: {
@@ -652,6 +1061,26 @@ describe('web/src/store/modules/config', () => {
             identification: '',
             name: '',
           },
+          international_creditor_account: {
+            scheme_name: '',
+            identification: '',
+            name: '',
+          },
+          cbpii_debtor_account: {
+            scheme_name: '',
+            identification: '',
+            name: '',
+          },
+          currency_of_transfer: 'USD',
+          instructed_amount: {
+            currency: 'GBP',
+            value: '1.00',
+          },
+          payment_frequency: 'EvryDay',
+          first_payment_date_time: '2020-01-01T00:00:00+01:00',
+          requested_execution_date_time: '2020-01-01T00:00:00+01:00',
+          acr_values_supported: [],
+          conditional_properties: [],
         });
       });
     });
@@ -821,7 +1250,7 @@ describe('web/src/store/modules/config', () => {
         store.commit(types.SET_TOKEN_ENDPOINT, 'https://modelobank2018.o3bank.co.uk:4201/token');
         store.commit(types.SET_RESPONSE_TYPE, 'code id_token');
         store.commit(types.SET_AUTHORIZATION_ENDPOINT, 'https://modelobankauth2018.o3bank.co.uk:4101/auth');
-        store.commit(types.SET_RESOURCE_BASE_URL, 'https://modelobank2018.o3bank.co.uk:4501');
+        store.commit(types.SET_RESOURCE_BASE_URL, 'https://ob19-rs1.o3bank.co.uk:4501');
         store.commit(types.SET_X_FAPI_FINANCIAL_ID, '0015800001041RHAAY');
         store.commit(types.SET_ISSUER, 'https://modelobankauth2018.o3bank.co.uk:4101');
         store.commit(types.SET_REQUEST_OBJECT_SIGNING_ALG, 'PS256');
@@ -856,7 +1285,7 @@ describe('web/src/store/modules/config', () => {
         store.commit(types.SET_TOKEN_ENDPOINT, 'https://modelobank2018.o3bank.co.uk:4201/token');
         store.commit(types.SET_RESPONSE_TYPE, 'code id_token');
         store.commit(types.SET_AUTHORIZATION_ENDPOINT, 'https://modelobankauth2018.o3bank.co.uk:4101/auth');
-        store.commit(types.SET_RESOURCE_BASE_URL, 'https://modelobank2018.o3bank.co.uk:4501');
+        store.commit(types.SET_RESOURCE_BASE_URL, 'https://ob19-rs1.o3bank.co.uk:4501');
         store.commit(types.SET_X_FAPI_FINANCIAL_ID, '0015800001041RHAAY');
         store.commit(types.SET_ISSUER, 'https://modelobankauth2018.o3bank.co.uk:4101');
         store.commit(types.SET_REQUEST_OBJECT_SIGNING_ALG, 'PS256');
@@ -931,7 +1360,7 @@ describe('web/src/store/modules/config', () => {
         store.commit(types.SET_TOKEN_ENDPOINT, 'https://modelobank2018.o3bank.co.uk:4201/token');
         store.commit(types.SET_RESPONSE_TYPE, 'code id_token');
         store.commit(types.SET_AUTHORIZATION_ENDPOINT, 'https://modelobankauth2018.o3bank.co.uk:4101/auth');
-        store.commit(types.SET_RESOURCE_BASE_URL, 'https://modelobank2018.o3bank.co.uk:4501');
+        store.commit(types.SET_RESOURCE_BASE_URL, 'https://ob19-rs1.o3bank.co.uk:4501');
         store.commit(types.SET_X_FAPI_FINANCIAL_ID, '0015800001041RHAAY');
         store.commit(types.SET_ISSUER, 'https://modelobankauth2018.o3bank.co.uk:4101');
         store.commit(types.SET_REQUEST_OBJECT_SIGNING_ALG, 'PS256');
@@ -963,7 +1392,7 @@ describe('web/src/store/modules/config', () => {
         store.commit(types.SET_CLIENT_SECRET, '2cfb31a3-5443-4e65-b2bc-ef8e00266a77');
         store.commit(types.SET_TOKEN_ENDPOINT, 'https://modelobank2018.o3bank.co.uk:4201/token');
         store.commit(types.SET_AUTHORIZATION_ENDPOINT, 'https://modelobankauth2018.o3bank.co.uk:4101/auth');
-        store.commit(types.SET_RESOURCE_BASE_URL, 'https://modelobank2018.o3bank.co.uk:4501');
+        store.commit(types.SET_RESOURCE_BASE_URL, 'https://ob19-rs1.o3bank.co.uk:4501');
         store.commit(types.SET_X_FAPI_FINANCIAL_ID, '0015800001041RHAAY');
         store.commit(types.SET_ISSUER, 'https://modelobankauth2018.o3bank.co.uk:4101');
         store.commit(types.SET_REQUEST_OBJECT_SIGNING_ALG, 'PS256');

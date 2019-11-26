@@ -115,6 +115,7 @@ func TestSetBearerAuthTokenFromContext(t *testing.T) {
 
 func TestCreateHeaderContextMissingForReplacement(t *testing.T) {
 	ctx := Context{
+		"phase":                  "run",
 		"nomatch":                "myNewValue",
 		"authorisation_endpoint": "https://example.com/authorisation",
 	}
@@ -157,12 +158,13 @@ func TestFormData(t *testing.T) {
 }
 
 func TestFormDataMissingContextVariable(t *testing.T) {
+	ctx1 := Context{"phase": "run"}
 	i := Input{Endpoint: "/accounts", Method: "POST", FormData: map[string]string{
 		"grant_type": "$client_credentials",
 		"scope":      "accounts openid"}}
 	ctx := Context{"baseurl": "http://mybaseurl", "authorisation_endpoint": "https://example.com/authorisation"}
 	tc := TestCase{Input: i, Context: ctx}
-	req, err := tc.Prepare(emptyContext)
+	req, err := tc.Prepare(&ctx1)
 	assert.NotNil(t, err)
 	assert.Nil(t, req)
 }
@@ -258,6 +260,7 @@ func TestClaimsJWTBearer(t *testing.T) {
 		"signingPrivate":         selfsignedDummykey,
 		"signingPublic":          selfsignedDummypub,
 		"authorisation_endpoint": "https://example.com/authorisation",
+		"nonOBDirectory":         false,
 	}
 
 	i := Input{Endpoint: "/as/token.oauth2", Method: "POST",
@@ -292,7 +295,7 @@ func TestJWTSignRS256(t *testing.T) {
 
 	alg := jwt.GetSigningMethod("RS256")
 	if alg == nil {
-		fmt.Printf("Couldn't find signing method: %v\n", alg)
+		t.Logf("Couldn't find signing method: %v\n", alg)
 	}
 	claims := jwt.MapClaims{}
 	claims["iat"] = time.Now().Unix()
@@ -301,7 +304,7 @@ func TestJWTSignRS256(t *testing.T) {
 	prikey := cert.PrivateKey()
 	tokenString, err := token.SignedString(prikey) // sign the token - get as encoded string
 	if err != nil {
-		fmt.Println("error signing jwt: ", err)
+		t.Log("error signing jwt: ", err)
 	}
 	assert.True(t, len(tokenString) > 30)
 
@@ -371,9 +374,9 @@ func TestPaymentBodyReplaceTestCase100300(t *testing.T) {
 	}
 	_ = ctx
 	var tc TestCase
-	err := json.Unmarshal(paymentTestCaseData100300, &tc)
+	err := json.Unmarshal([]byte(paymentTestCaseData100300), &tc)
 	assert.Nil(t, err)
-	fmt.Printf("%#v\n", tc)
+	t.Logf("%#v\n", tc)
 	ctx.PutContext(&tc.Context)
 	logrus.SetOutput(os.Stdout)
 	logrus.SetLevel(logrus.TraceLevel)
@@ -382,11 +385,11 @@ func TestPaymentBodyReplaceTestCase100300(t *testing.T) {
 
 	assert.Nil(t, err)
 	_ = req
-	fmt.Printf("%#v\n", tc)
-
+	t.Logf("%#v\n", tc)
 }
 
 func TestJWSDetachedSignature(t *testing.T) {
+	EnableJWS()
 	ctx := Context{
 		"signingPrivate":            selfsignedDummykey,
 		"signingPublic":             selfsignedDummypub,
@@ -394,6 +397,9 @@ func TestJWSDetachedSignature(t *testing.T) {
 		"consent_id":                "sdp-1-b5bbdb18-eeb1-4c11-919d-9a237c8f1c7d",
 		"domestic_payment_template": "{\"Data\": {\"ConsentId\": \"$consent_id\",\"Initiation\":$initiation },\"Risk\":{}}",
 		"authorisation_endpoint":    "https://example.com/authorisation",
+		"api-version":               "v3.0",
+		"nonOBDirectory":            false,
+		"requestObjectSigningAlg":   "PS256",
 	}
 
 	i := Input{JwsSig: true, Method: "POST", Endpoint: "https://google.com", RequestBody: "$domestic_payment_template"}
@@ -420,6 +426,7 @@ func TestJWSSignaturNotPOST(t *testing.T) {
 }
 
 func TestJWSSignatureEmptyBody(t *testing.T) {
+	EnableJWS()
 	ctx := Context{
 		"initiation":                "{\"InstructionIdentification\":\"SIDP01\",\"EndToEndIdentification\":\"FRESCO.21302.GFX.20\",\"InstructedAmount\":{\"Amount\":\"15.00\",\"Currency\":\"GBP\"},\"CreditorAccount\":{\"SchemeName\":\"SortCodeAccountNumber\",\"Identification\":\"20000319470104\",\"Name\":\"Messers Simplex & Co\"}}",
 		"consent_id":                "sdp-1-b5bbdb18-eeb1-4c11-919d-9a237c8f1c7d",
@@ -450,7 +457,7 @@ func TestJWSDetachedSignatureGET(t *testing.T) {
 }
 
 func TestCertDNRetrieval(t *testing.T) {
-	cert, err := loadSigningCert()
+	cert, err := loadSigningCert(t)
 	if err != nil {
 		t.Log("Certs not found, skip test")
 		return
@@ -459,30 +466,10 @@ func TestCertDNRetrieval(t *testing.T) {
 
 }
 
-func TestGenSig(t *testing.T) {
-	transportCert, err := tls.LoadX509KeyPair("../../../certs/sig-xRWcKt4rSGqsIhqJ3xKC6DOjblY.pem", "../../../certs/4XQsc1dvWnggAqjZLV3sH2-sign.key")
-	if err != nil {
-		t.Logf("cannot get certs %s", err.Error())
-		return
-	}
-	fmt.Println("Good to go!")
-	x509 := transportCert.Leaf
-
-	subject := x509.Subject
-	fmt.Printf("subject %#v\n", subject)
-	c := subject.Country
-	o := subject.Organization
-	ou := subject.OrganizationalUnit
-	cn := subject.CommonName
-	dn := fmt.Sprintf("C=%s, O=%s, OU=%s, CN=%s", c, o, ou, cn)
-	fmt.Printf("DN is :%s\n" + dn)
-
-}
-
 func TestReadCerts(t *testing.T) {
 	certPEMBlock, err := ioutil.ReadFile("../../../certs/sig-xRWcKt4rSGqsIhqJ3xKC6DOjblY.pem")
 	if err != nil {
-		fmt.Println(err.Error())
+		t.Log(err.Error())
 	}
 	var cert tls.Certificate
 	var skippedBlockTypes []string
@@ -500,21 +487,20 @@ func TestReadCerts(t *testing.T) {
 	}
 	if len(cert.Certificate) == 0 {
 		if len(skippedBlockTypes) == 0 {
-			fmt.Print("tls: failed to find any PEM data in certificate input")
+			t.Log("tls: failed to find any PEM data in certificate input")
 		}
 		if len(skippedBlockTypes) == 1 && strings.HasSuffix(skippedBlockTypes[0], "PRIVATE KEY") {
-			fmt.Print(errors.New("tls: failed to find certificate PEM data in certificate input, but did find a private key; PEM inputs may have been switched"))
+			t.Log(errors.New("tls: failed to find certificate PEM data in certificate input, but did find a private key; PEM inputs may have been switched"))
 		}
-		fmt.Print(fmt.Errorf("tls: failed to find \"CERTIFICATE\" PEM block in certificate input after skipping PEM blocks of the following types: %v", skippedBlockTypes))
+		t.Log(fmt.Errorf("tls: failed to find \"CERTIFICATE\" PEM block in certificate input after skipping PEM blocks of the following types: %v", skippedBlockTypes))
 	}
 	spew.Dump(cert)
-
 }
 
 func TestLoadX509Cert(t *testing.T) {
 	cf, err := ioutil.ReadFile("../../../certs/sig-xRWcKt4rSGqsIhqJ3xKC6DOjblY.pem")
 	if err != nil {
-		fmt.Println("cfload:", err.Error())
+		t.Log("cfload:", err.Error())
 		return
 	}
 	cpb, _ := pem.Decode(cf)
@@ -529,38 +515,40 @@ func TestLoadX509Cert(t *testing.T) {
 	ou := subject.OrganizationalUnit[0]
 	cn := subject.CommonName
 	dn := fmt.Sprintf("C=%s, O=%s, OU=%s, CN=%s", c, o, ou, cn)
-	fmt.Printf("DN is\n %s \n", dn)
-
+	t.Logf("DN is\n %s \n", dn)
 }
 
-func loadSigningCert() (tls.Certificate, error) {
+func loadSigningCert(t *testing.T) (tls.Certificate, error) {
 	certSigning, err := ioutil.ReadFile("../../../certstore/testcertSigning.pem")
 	if err != nil {
-		fmt.Println("cannot read signing certificate")
+		t.Log("cannot read signing certificate")
 		return tls.Certificate{}, err
 	}
 	keySigning, err := ioutil.ReadFile("../../../certstore/testprivateKeySigning.key")
 	if err != nil {
-		fmt.Println("cannot read signing key")
+		t.Log("cannot read signing key")
 		return tls.Certificate{}, err
 	}
 
-	cert, err := tls.X509KeyPair([]byte(certSigning), []byte(keySigning))
+	cert, err := tls.X509KeyPair(certSigning, keySigning)
+	if err != nil {
+		t.Log("tls.X509KeyPair failed")
+		return tls.Certificate{}, err
+	}
 
 	return cert, nil
 }
 
 func TestInputTest(t *testing.T) {
-	fmt.Println("Running...")
+	t.Log("Running...")
 	x := "123.1......45.789"
 	firstPart := x[:strings.IndexByte(x, '.')]
 	idx := strings.LastIndex(x, ".")
 	lastPart := x[idx:]
-	fmt.Printf("%s.%s\n", firstPart, lastPart)
-
+	t.Logf("%s.%s\n", firstPart, lastPart)
 }
 
-var paymentTestCaseData100300 = []byte(`
+const paymentTestCaseData100300 = `
 {
     "@id": "OB-301-DOP-100300",
     "name": "Domestic Payment consents succeeds with minimal data set with additional schema checks.",
@@ -608,28 +596,9 @@ var paymentTestCaseData100300 = []byte(`
             ]
         }
     }
-}`)
-
-var paymentPayload = `{
-	"Data": {
-		"Initiation": {
-			"InstructionIdentification": "SIDP01",
-			"EndToEndIdentification": "FRESCO.21302.GFX.20",
-			"InstructedAmount": {
-				"Amount": "15.00",
-				"Currency": "GBP"
-			},
-			"CreditorAccount": {
-				"SchemeName": "SortCodeAccountNumber",
-				"Identification": "20000319470104",
-				"Name": "Messers Simplex & Co"
-			}
-		}
-	},
-	"Risk": {}
 }`
 
-var selfsignedDummykey = `-----BEGIN RSA PRIVATE KEY----- 
+const selfsignedDummykey = `-----BEGIN RSA PRIVATE KEY-----
 MIIEpAIBAAKCAQEA8Gl2x9KsmqwdmZd+BdZYtDWHNRXtPd/kwiR6luU+4w76T+9m
 lmePXqALi7aSyvYQDLeffR8+2dSGcdwvkf6bDWZNeMRXl7Z1jsk+xFN91mSYNk1n
 R6N1EsDTK2KXlZZyaTmpu/5p8SxwDO34uE5AaeESeM3RVqqOgRcXskmp/atwUMC+
@@ -656,7 +625,7 @@ Yi9OehPCelBbM5l1YZMtXoK0w1F4Xj9JUVgY4UKEWS5gynITbfrQON0O3HzmaaKw
 nuz0bzQ7ARNqBkWLQ4bqzwy0aKXlcvbIMBaVXyfQTiwzwWAZsAWr6WHPlvWDP6mP
 1vAUje5xEMtsIwj6UnkJ3OpPVVeJ56aKQIxg6QU2ROrWYDccx4gg0g==
 -----END RSA PRIVATE KEY-----`
-var selfsignedDummypub = `-----BEGIN CERTIFICATE-----
+const selfsignedDummypub = `-----BEGIN CERTIFICATE-----
 MIIDBzCCAe+gAwIBAgIJAOze8GNkMIMMMA0GCSqGSIb3DQEBBQUAMBoxGDAWBgNV
 BAMMD3d3dy5leGFtcGxlLmNvbTAeFw0xOTAxMjExMzUyMjFaFw0yOTAxMTgxMzUy
 MjFaMBoxGDAWBgNVBAMMD3d3dy5leGFtcGxlLmNvbTCCASIwDQYJKoZIhvcNAQEB

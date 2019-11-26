@@ -10,6 +10,19 @@
             <h5>Export Configuration</h5>
             <b-form>
               <b-form-group
+                id="environment_group"
+                label-for="environment_group"
+                label="Environment"
+              >
+                <b-form-select
+                  id="environment"
+                  v-model="environment"
+                  :options="available_environments"
+                  :state="isNotEmpty(environment)"
+                  required
+                />
+              </b-form-group>
+              <b-form-group
                 id="implementer_group"
                 label-for="implementer"
                 label="Implementer/Brand Name"
@@ -48,6 +61,17 @@
                 />
               </b-form-group>
               <b-form-group
+                id="products_group"
+                label-for="products"
+                label="Products">
+                <b-form-select
+                  id="products"
+                  v-model="products"
+                  :options="available_products"
+                  :state="isNotEmpty(products)"
+                  multiple />
+              </b-form-group>
+              <b-form-group
                 id="has_agreed_group"
                 :label="has_agreed_terms"
                 label-for="has_agreed">
@@ -59,7 +83,7 @@
               <b-form-group
                 id="add_digital_signature_group"
                 label-for="add_digital_signature"
-                label="Sign this report with your public keys"
+                label="Sign this report with your private key"
               >
                 <b-form-checkbox
                   id="add_digital_signature"
@@ -68,25 +92,24 @@
               </b-form-group>
             </b-form>
           </b-card>
-          <br>
+          <br >
           <a
             v-if="export_results_blob"
             :href="export_results_download"
             :download="export_results_filename"
             :filename="export_results_filename"
             class="download-report-link"
-            target="_blank">
+            target="_blank"
+          >
             <b-button
               block
-              variant="primary">
-              Download {{ export_results_filename }}
-            </b-button>
+              variant="primary">Download {{ export_results_filename }}</b-button>
           </a>
-          <br>
+          <br >
           <b-card
             v-if="hasErrors"
             bg-variant="light">
-            <TheErrorStatus/>
+            <TheErrorStatus />
           </b-card>
         </div>
 
@@ -116,12 +139,25 @@ export default {
   data() {
     return {
       has_agreed_terms: 'I the Implementer has tested the Deployment (including by successfully completing the validation testing using the Conformance Test Suite Software) and verified that it conforms to the Open Banking Specifications, and hereby certifies to the Open Banking Implementation Entity and the public that the Deployment conforms to the Open Banking Functional Standards for',
+      available_products: [
+        'Business',
+        'Personal',
+        'Cards',
+      ],
     };
   },
   computed: {
     ...mapGetters('status', [
       'hasErrors',
     ]),
+    environment: {
+      get() {
+        return this.$store.state.exporter.environment;
+      },
+      set(value) {
+        this.$store.commit('exporter/SET_ENVIRONMENT', value);
+      },
+    },
     implementer: {
       get() {
         return this.$store.state.exporter.implementer;
@@ -144,6 +180,14 @@ export default {
       },
       set(value) {
         this.$store.commit('exporter/SET_JOB_TITLE', value);
+      },
+    },
+    products: {
+      get() {
+        return this.$store.state.exporter.products;
+      },
+      set(value) {
+        this.$store.commit('exporter/SET_PRODUCTS', value);
       },
     },
     has_agreed: {
@@ -172,6 +216,15 @@ export default {
         return this.$store.state.exporter.export_results_filename;
       },
     },
+    available_environments: {
+      get() {
+        return [
+          'testing',
+          'sandbox',
+          'production',
+        ];
+      },
+    },
     export_results_download() {
       if (this.export_results_blob) {
         // TODO(mbana): Remember to call `window.URL.revokeObjectURL()`. No big deal.
@@ -185,6 +238,7 @@ export default {
         this.isNotEmpty(this.authorised_by),
         this.isNotEmpty(this.job_title),
         this.has_agreed,
+        this.isNotEmpty(this.products),
       ];
 
       const canExport = every(conditions);

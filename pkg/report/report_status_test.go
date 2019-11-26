@@ -3,7 +3,7 @@ package report
 import (
 	"testing"
 
-	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/test"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/test"
 )
 
 func TestStatus_String(t *testing.T) {

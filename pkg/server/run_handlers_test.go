@@ -6,9 +6,9 @@ import (
 	"net/http"
 	"testing"
 
-	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/test"
-	versionmock "bitbucket.org/openbankingteam/conformance-suite/internal/pkg/version/mocks"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/executors/results"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/test"
+	versionmock "bitbucket.org/openbankingteam/conformance-suite/pkg/version/mocks"
 )
 
 const (
@@ -36,7 +36,7 @@ func TestServerRunStartPost(t *testing.T) {
 	require.JSONEq(expected, actual)
 
 	require.Equal(http.StatusBadRequest, code)
-	require.Equal(expectedJsonHeaders, headers)
+	require.Equal(expectedJsonHeaders(), headers)
 }
 
 func TestServerRunHandlersnewTestCaseResultWebSocketEvent(t *testing.T) {
@@ -45,6 +45,8 @@ func TestServerRunHandlersnewTestCaseResultWebSocketEvent(t *testing.T) {
 	testCaseResult := results.TestCase{
 		Id:       "#t1025",
 		Pass:     true,
+		Detail:   "Example Test Case",
+		RefURI:   "https://openbanking.org.uk/ref/uri",
 		Endpoint: "/foobar",
 	}
 	wsEvent := newTestCaseResultWebSocketEvent(testCaseResult)
@@ -63,6 +65,8 @@ func TestServerRunHandlersnewTestCaseResultWebSocketEvent(t *testing.T) {
             "response_time": 0,
             "response_size": 0
         },
+		"detail": "Example Test Case",
+		"refURI": "https://openbanking.org.uk/ref/uri",
 		"endpoint": "/foobar"
     }
 }

@@ -1,16 +1,17 @@
 {
   "discoveryModel": {
     "name": "ob-v3.1-generic",
-    "description": "An Open Banking UK discovery template for v3.1 of Accounts and Payments with pre-populated model Bank (Ozone) data.",
-    "discoveryVersion": "v0.3.0",
+    "description": "An Open Banking UK discovery template for v3.1 of Accounts and Payments.",
+    "discoveryVersion": "v0.4.0",
     "tokenAcquisition": "psu",
     "discoveryItems": [
       {
         "apiSpecification": {
           "name": "Account and Transaction API Specification",
           "url": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937820271/Account+and+Transaction+API+Specification+-+v3.1",
-          "version": "v3.1",
-          "schemaVersion": "https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.0/dist/account-info-swagger.json"
+          "version": "v3.1.0",
+          "schemaVersion": "https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.0/dist/account-info-swagger.json",
+          "manifest": "file://manifests/ob_3.1_accounts_transactions_fca.json"
         },
         "openidConfigurationUri": "",
         "resourceBaseUri": "",
@@ -29,14 +30,6 @@
           },
           {
             "method": "GET",
-            "path": "/accounts/{AccountId}/product"
-          },
-          {
-            "method": "GET",
-            "path": "/accounts/{AccountId}/transactions"
-          },
-          {
-            "method": "GET",
             "path": "/accounts"
           },
           {
@@ -46,6 +39,94 @@
           {
             "method": "GET",
             "path": "/accounts/{AccountId}/balances"
+          },
+          {
+            "method": "GET",
+            "path": "/accounts/{AccountId}/beneficiaries"
+          },
+          {
+            "method": "GET",
+            "path": "/accounts/{AccountId}/direct-debits"
+          },
+          {
+            "method": "GET",
+            "path": "/accounts/{AccountId}/offers"
+          },
+          {
+            "method": "GET",
+            "path": "/accounts/{AccountId}/party"
+          },
+          {
+            "method": "GET",
+            "path": "/accounts/{AccountId}/product"
+          },
+          {
+            "method": "GET",
+            "path": "/accounts/{AccountId}/scheduled-payments"
+          },
+          {
+            "method": "GET",
+            "path": "/accounts/{AccountId}/standing-orders"
+          },
+          {
+            "method": "GET",
+            "path": "/accounts/{AccountId}/statements"
+          },
+          {
+            "method": "GET",
+            "path": "/accounts/{AccountId}/statements/{StatementId}"
+          },
+          {
+            "method": "GET",
+            "path": "/accounts/{AccountId}/statements/{StatementId}/file"
+          },
+          {
+            "method": "GET",
+            "path": "/accounts/{AccountId}/statements/{StatementId}/transactions"
+          },
+          {
+            "method": "GET",
+            "path": "/accounts/{AccountId}/transactions"
+          },
+          {
+            "method": "GET",
+            "path": "/balances"
+          },
+          {
+            "method": "GET",
+            "path": "/beneficiaries"
+          },
+          {
+            "method": "GET",
+            "path": "/direct-debits"
+          },
+          {
+            "method": "GET",
+            "path": "/offers"
+          },
+          {
+            "method": "GET",
+            "path": "/party"
+          },
+          {
+            "method": "GET",
+            "path": "/products"
+          },
+          {
+            "method": "GET",
+            "path": "/scheduled-payments"
+          },
+          {
+            "method": "GET",
+            "path": "/standing-orders"
+          },
+          {
+            "method": "GET",
+            "path": "/statements"
+          },
+          {
+            "method": "GET",
+            "path": "/transactions"
           }
         ]
       },
@@ -53,12 +134,12 @@
         "apiSpecification": {
           "name": "Payment Initiation API",
           "url": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937754701/Payment+Initiation+API+Specification+-+v3.1",
-          "version": "v3.1",
+          "version": "v3.1.0",
           "schemaVersion": "https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.0/dist/payment-initiation-swagger.json",
           "manifest": "file://manifests/ob_3.1_payment_fca.json"
         },
-        "openidConfigurationUri": "https://modelobankauth2018.o3bank.co.uk:4101/.well-known/openid-configuration",
-        "resourceBaseUri": "https://modelobank2018.o3bank.co.uk:4501/open-banking/v3.1/pisp",
+        "openidConfigurationUri": "https://ob19-auth1-ui.o3bank.co.uk/.well-known/openid-configuration",
+        "resourceBaseUri": "https://ob19-rs1.o3bank.co.uk:4501/open-banking/v3.1/pisp",
         "endpoints": [
           {
             "method": "POST",
@@ -66,7 +147,7 @@
             "conditionalProperties": [
               {
                 "schema": "OBWriteDataDomesticConsentResponse1",
-                "property": "Charges",
+                "name": "Charges",
                 "path": "Data.Charges"
               }
             ]
@@ -77,7 +158,7 @@
             "conditionalProperties": [
               {
                 "schema": "OBWriteDataDomesticConsentResponse1",
-                "property": "Charges",
+                "name": "Charges",
                 "path": "Data.Charges"
               }
             ]
@@ -92,7 +173,7 @@
             "conditionalProperties": [
               {
                 "schema": "OBWriteDataDomesticResponse1",
-                "property": "Charges",
+                "name": "Charges",
                 "path": "Data.Charges"
               }
             ]
@@ -103,7 +184,7 @@
             "conditionalProperties": [
               {
                 "schema": "OBWriteDataDomesticResponse1",
-                "property": "Charges",
+                "name": "Charges",
                 "path": "Data.Charges"
               }
             ]
@@ -223,6 +304,35 @@
           {
             "method": "GET",
             "path": "/file-payments/{FilePaymentId}/report-file"
+          }
+        ]
+      },
+      {
+        "apiSpecification": {
+          "name": "Confirmation of Funds API Specification",
+          "url": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937951380/Confirmation+of+Funds+API+Specification+-+v3.1",
+          "version": "v3.1.0",
+          "schemaVersion": "https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.0/dist/confirmation-funds-swagger.json",
+          "manifest": "file://manifests/ob_3.1_cbpii_fca.json"
+        },
+        "openidConfigurationUri": "",
+        "resourceBaseUri": "",
+        "endpoints": [
+          {
+            "method": "POST",
+            "path": "/funds-confirmation-consents"
+          },
+          {
+            "method": "GET",
+            "path": "/funds-confirmation-consents/{ConsentId}"
+          },
+          {
+            "method": "DELETE",
+            "path": "/funds-confirmation-consents/{ConsentId}"
+          },
+          {
+            "method": "POST",
+            "path": "/funds-confirmations"
           }
         ]
       }

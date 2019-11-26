@@ -25,7 +25,8 @@ TABLE A:
 | detail            | 0..1       | Long description describing the and expected result     | String (max 256) |             |
 | parameters        | 1..1       | Maps context                                            | json             | see example |
 | uri               | 1..1       | A resource to test.                                     | String           |             |
-| asserts           | 1..1       | List of linked asserts.                                 | List             |             |
+| asserts           | 1..1       | List of linked asserts all of which must be true.       | List             |             |
+| asserts_one_of    | 0..1       | List of linked asserts one of which must be true.       | List             |             |
 | uriImplementation | 1..1       |                                                         |                  |             |
 | resource          | 1..1       |                                                         |                  |             |
 | keepContext       | 1..1       |                                                         |                  |             |
@@ -115,6 +116,44 @@ as assertions, seen previously.
 
 The schema for data items is currently "free form" and specific to each test. With this in mind,
 it would be useful to examine any associated notes for the each test.
+
+## Manifest Functions
+
+Manifests have the ability to call a function which is mapped to a Go function in `pkg/model/macro.go`. An example function is shown below, which generates a unique identifier, to be used in the
+`instructionIdentication` parameter in some payment tests.
+
+Manifest Functions also supports any number of parameters, which are passed and parsed as strings. It is worth noting that all function parameters will passed to the implementation as strings. If other types
+are required, the specific function implementation is required to perform type assertions and casting of types.
+
+Function implementations must return one value, of type `string`
+
+Register and implement function in `pkg/model/macro.go`
+```
+var macroMap = map[string]interface{}{
+	"instructionIdentificationID": instructionIdentificationID,
+}
+```
+
+```
+func instructionIdentificationID() string {
+	return strings.ReplaceAll(uuid.New().String(), "-", "")
+}
+```
+
+In manifest file, call the fuction. Note the pattern required here. The function should be followed by parentheses (`()`).
+
+```
+"parameters": {
+        "tokenRequestScope": "payments",
+        "instructedAmountValue": "$instructedAmountValue",
+        "instructedAmountCurrency": "$instructedAmountCurrency",
+        "currencyOfTransfer": "$currencyOfTransfer",
+        "instructionIdentification": "$fn:instructionIdentificationID()",
+        "endToEndIdentification": "e2e-internat-sched-pay",
+        "postData": "$minimalInternationalScheduledPayment",
+        "consentId": "$OB-301-DOP-102000-ConsentId"
+      },
+```
 
 ## Supplementary Manifests
 

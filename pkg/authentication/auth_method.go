@@ -1,26 +1,38 @@
 package authentication
 
+// UK Open Banking OIDC Security Profile
+// https://openbanking.atlassian.net/wiki/spaces/DZ/pages/83919096/Open+Banking+Security+Profile+-+Implementer+s+Draft+v1.1.2.
+// https://bitbucket.org/openid/OBUK/raw/1.1.2/uk-openbanking-security-profile.md?_=1556543617032
+//
+//    1. shall authenticate the confidential client at the Token Endpoint using one of the following methods:
+//     1. `tls_client_auth` as per [MTLS] (Recommended); or
+//     2. `client_secret_basic` or `client_secret_post` provided the client identifier matches the client identifier bound to the underlying mutually authenticated TLS session (Allowed); or
+//     3. `private_key_jwt` or 'client_secret_jwt` (Recommended);
+
 import (
 	"github.com/sirupsen/logrus"
 )
 
+// token_endpoint_auth_methods_supported
 const (
 	TlsClientAuth     = "tls_client_auth"
 	PrivateKeyJwt     = "private_key_jwt"
-	ClientSecretJwt   = "client_secret_jwt"
-	ClientSecretPost  = "client_secret_post"
 	ClientSecretBasic = "client_secret_basic"
 )
 
 // SuiteSupportedAuthMethodsMostSecureFirst -
 // We have made our own determination of security offered by each auth method.
 // It is not from a formal definition.
-var SuiteSupportedAuthMethodsMostSecureFirst = []string{
-	TlsClientAuth, ClientSecretBasic,
+func SuiteSupportedAuthMethodsMostSecureFirst() []string {
+	return []string{
+		TlsClientAuth,
+		PrivateKeyJwt,
+		ClientSecretBasic,
+	}
 }
 
 func DefaultAuthMethod(openIDConfigAuthMethods []string, logger *logrus.Entry) string {
-	return defaultAuthMethod(SuiteSupportedAuthMethodsMostSecureFirst, openIDConfigAuthMethods, logger)
+	return defaultAuthMethod(SuiteSupportedAuthMethodsMostSecureFirst(), openIDConfigAuthMethods, logger)
 }
 
 // defaultAuthMethod - return first match from openIDConfigAuthMethods in

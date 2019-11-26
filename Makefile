@@ -1,5 +1,7 @@
 .DEFAULT_GOAL:=help
 SHELL:=/bin/bash
+IMAGE_TAG=latest
+ENABLE_IMAGE_SIGNING=0
 
 .PHONY: all
 
@@ -41,12 +43,13 @@ build_cli: ## build the cli binary directly.
 	go build -o fcs cmd/cli/*.go
 
 .PHONY: build_image
-build_image: ## build the docker image.
+build_image: ## build the docker image. Use available args IMAGE_TAG=v1.x.y, ENABLE_IMAGE_SIGNING=1
 	@echo -e "\033[92m  ---> Building image ... \033[0m"
 	@# We could enable parallel builds for multi-staged builds with `DOCKER_BUILDKIT=1`
 	@# See: https://github.com/moby/moby/pull/37151
 	@#DOCKER_BUILDKIT=1
-	docker build ${DOCKER_BUILD_ARGS} -t "openbanking/conformance-suite:latest" .
+	@export DOCKER_CONTENT_TRUST=${ENABLE_IMAGE_SIGNING}
+	docker build ${DOCKER_BUILD_ARGS} -t "openbanking/conformance-suite:${IMAGE_TAG}" .
 
 ##@ Dependencies:
 
@@ -58,14 +61,14 @@ init: ## initialise.
 init_web: ./web/node_modules ## install node_modules when not present.
 
 ./web/node_modules:
-	cd web && yarn install
+	cd web && yarn install --frozen-lockfile --non-interactive
 
 .PHONY: devtools
 devtools: ## install dev tools.
 	@echo -e "\033[92m  ---> Installing mockery (github.com/vektra/mockery) ... \033[0m"
 	go get github.com/vektra/mockery
 	@echo -e "\033[92m  ---> Installing golangci-lint (https://github.com/golangci/golangci-lint) ... \033[0m"
-	curl -sfL "https://install.goreleaser.com/github.com/golangci/golangci-lint.sh" | sh -s -- -b $(shell go env GOPATH)/bin v1.12.5
+	curl -sfL "https://install.goreleaser.com/github.com/golangci/golangci-lint.sh" | sh -s -- -b $(shell go env GOPATH)/bin v1.16.0
 
 ##@ Cleanup:
 

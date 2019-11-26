@@ -39,12 +39,15 @@
         slot="meta.status"
         slot-scope="row">
         <b-badge
+          v-if="row.value !== ''"
           :variant="row.value === 'PASSED' ? 'success' : (row.value === 'FAILED' ? 'danger' : (row.value === 'PENDING' ? 'info' : 'secondary'))"
           :class="row.value === 'FAILED' ? 'clickable' : ''"
           :id="statusIdSelector(row)"
           tag="h6"
           @click.stop="toggleError(row)"
-        >{{ row.value }}</b-badge>
+        >{{ row.value }} <i
+          v-if="row.value === 'FAILED'"
+          class="arrow down"/></b-badge>
       </template>
 
       <template
@@ -52,7 +55,23 @@
         slot-scope="row">
         <b-card>
           <b-card-text><strong>Test ID:</strong> {{ row.item.id }}</b-card-text>
-          <b-card-text><strong>Errors:</strong> {{ row.item.error }}</b-card-text>
+          <b-card-text><strong>Ref URI:</strong> <a
+            ref="noreferrer"
+            :href="row.item.refURI"
+            target="_blank"> {{ row.item.refURI }}</a></b-card-text>
+          <b-card-text><strong>Detail:</strong> {{ row.item.detail }}</b-card-text>
+          <b-card-text><strong>Errors:</strong>
+            <ol>
+              <li
+                v-for="error in row.item.error"
+                :key="error">
+                <ul>
+                  <li><strong>Test Case message:</strong> {{ JSON.parse(error).testCaseMessage }}</li>
+                  <li><strong>Endpoint response:</strong> {{ JSON.parse(error).endpointResponse }}</li>
+                </ul>
+              </li>
+            </ol>
+          </b-card-text>
         </b-card>
       </template>
     </b-table>
@@ -125,9 +144,19 @@ export default {
           label: 'Endpoint',
         },
         'expect.status-code': {
-          tdClass: 'table-data-breakable',
           sortable: true,
           label: 'Expect',
+          formatter(value, key, item) {
+            if (item.expect['status-code'] > 0) {
+              return item.expect['status-code'];
+            }
+
+            return item
+              .expect_one_of
+              .map(expect => expect['status-code'])
+              .filter(statusCode => statusCode > 0)
+              .join(' or ');
+          },
         },
         'meta.status': {
           label: 'Status',

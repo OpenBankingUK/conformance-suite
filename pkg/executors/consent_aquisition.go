@@ -5,44 +5,51 @@ import (
 	"fmt"
 	"time"
 
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/authentication"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/generation"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/manifest"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
 
+	"github.com/dgrijalva/jwt-go"
+	"github.com/google/uuid"
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 	resty "gopkg.in/resty.v1"
 )
 
-var consentChannelTimeout = 30
+const (
+	// consentChannelTimeout - seconds in 5 minutes.
+	consentChannelTimeout = 300
+)
 
 // GetPsuConsent -
-func GetPsuConsent(definition RunDefinition, ctx *model.Context, runTests *generation.TestCasesRun, permissions map[string][]manifest.RequiredTokens) (TokenConsentIDs, map[string]string, error) {
-	consentRequirements := runTests.SpecConsentRequirements
+func GetPsuConsent(definition RunDefinition, ctx *model.Context, runTests *generation.SpecRun, permissions map[string][]manifest.RequiredTokens) (TokenConsentIDs, map[string]string, error) {
 	var consentIdsToReturn TokenConsentIDs
-	logrus.Debugf("running with %#v\n", permissions)
 
 	for specType := range permissions {
-		logrus.Tracef("Getting PSU Consent for api type: %s\n", specType)
-		tests, err := getSpecForSpecType(specType, runTests)
-		if err != nil {
-			return nil, nil, err
-		}
+		logrus.Tracef("Getting PSU Consent for api type: %s", specType)
 
 		switch specType {
 		case "accounts":
-			consentIds, _, err := getAccountConsents(consentRequirements, definition, permissions["accounts"], ctx)
+			consentIds, _, err := getAccountConsents(definition, permissions["accounts"], ctx)
 			consentIdsToReturn = append(consentIdsToReturn, consentIds...)
 			if err != nil {
 				logrus.Error("GetPSUConsent - accounts error: " + err.Error())
 				return nil, nil, err
 			}
 
-		case "payments": //TODO: Handle multipe spec returns
-			consentIds, err := getPaymentConsents(tests, definition, permissions["payments"], ctx)
+		case "payments":
+			consentIds, err := getPaymentConsents(definition, permissions["payments"], ctx)
 			consentIdsToReturn = append(consentIdsToReturn, consentIds...)
 			if err != nil {
 				logrus.Error("GetPSUConsent - payments error: " + err.Error())
+				return nil, nil, err
+			}
+		case "cbpii":
+			consentIds, err := getCbpiiConsents(definition, permissions["cbpii"], ctx)
+			consentIdsToReturn = append(consentIdsToReturn, consentIds...)
+			if err != nil {
+				logrus.Error("GetPSUConsent - cbpii error: " + err.Error())
 				return nil, nil, err
 			}
 		default:
@@ -50,12 +57,12 @@ func GetPsuConsent(definition RunDefinition, ctx *model.Context, runTests *gener
 		}
 	}
 
-	logrus.Warnf("No Consent Acquistion Performed\n")
+	logrus.Warnf("No Consent Acquistion Performed")
 	return consentIdsToReturn, nil, nil
 }
 
-func getSpecForSpecType(stype string, runTests *generation.TestCasesRun) ([]model.TestCase, error) {
-	for _, spec := range runTests.TestCases {
+func getSpecForSpecType(stype string, specRun *generation.SpecRun) ([]model.TestCase, error) {
+	for _, spec := range specRun.SpecTestCases {
 		specType, err := manifest.GetSpecType(spec.Specification.SchemaVersion)
 		if err != nil {
 			logrus.Warnf("cannot get spec type from SchemaVersion %s\n", spec.Specification.SchemaVersion)
@@ -70,23 +77,19 @@ func getSpecForSpecType(stype string, runTests *generation.TestCasesRun) ([]mode
 }
 
 // getAccountConsents - get required tokens
-func getAccountConsents(consentRequirements []model.SpecConsentRequirements, definition RunDefinition, permissions []manifest.RequiredTokens, ctx *model.Context,
-) (TokenConsentIDs, map[string]string, error) {
-
+func getAccountConsents(definition RunDefinition, permissions []manifest.RequiredTokens, ctx *model.Context) (TokenConsentIDs, map[string]string, error) {
 	consentIDChannel := make(chan TokenConsentIDItem, 100)
 	logger := logrus.StandardLogger().WithField("module", "getAccountConsents")
 	logger.Tracef("getAccountConsents")
 
-	tokenParameters := make(map[string]string, 0)
-
-	//requiredTokens, err := manifest.GetRequiredTokensFromTests(spec.TestCases, "accounts")
+	tokenParameters := map[string]string{}
 	requiredTokens := permissions
 	logrus.Tracef("we require %d tokens for `accounts`", len(requiredTokens))
-	logrus.Tracef("required tokens %#v\n", requiredTokens)
+	logrus.Tracef("required tokens %#v", requiredTokens)
 	for _, rt := range requiredTokens {
 		tokenParameters[rt.Name] = buildPermissionString(rt.Perms)
 	}
-	logrus.Tracef("required tokens %#v\n", tokenParameters)
+	logrus.Tracef("required tokens %#v", tokenParameters)
 	//for tokenName, permissionList := range tokenParameters {
 	for _, rt := range requiredTokens {
 		permissionList := rt.Perms
@@ -108,14 +111,6 @@ func getAccountConsents(consentRequirements []model.SpecConsentRequirements, def
 	}
 	logrus.Debugf("we have %d consentIds: %#v", len(consentItems), consentItems)
 	return consentItems, tokenParameters, err
-}
-
-func getTokenParametersFromRequiredTokens(tokens []manifest.RequiredTokens) map[string][]string {
-	tokenParameters := map[string][]string{}
-	for _, reqToken := range tokens {
-		tokenParameters[reqToken.Name] = reqToken.Perms
-	}
-	return tokenParameters
 }
 
 func waitForConsentIDs(consentIDChannel chan TokenConsentIDItem, consentIDsRequired int) (TokenConsentIDs, error) {
@@ -163,30 +158,6 @@ func waitForConsentIDs(consentIDChannel chan TokenConsentIDItem, consentIDsRequi
 	}
 }
 
-func getConsentTokensAndPermissions(consentRequirements []model.SpecConsentRequirements, logger *logrus.Entry) map[string][]string {
-	tokenParameters := make(map[string][]string)
-	for _, v := range consentRequirements {
-		for _, namedPermission := range v.NamedPermissions {
-			codeset := namedPermission.CodeSet
-			for _, b := range codeset.CodeSet {
-				mystring := string(b)
-				set := tokenParameters[namedPermission.Name]
-				set = append(set, mystring)
-				tokenParameters[namedPermission.Name] = set
-			}
-		}
-	}
-
-	for tokenParameterKey, tokenParameterValue := range tokenParameters {
-		logger.WithFields(logrus.Fields{
-			"tokenParameterValue":   tokenParameterValue,
-			"tokenParameterKey":     tokenParameterKey,
-			"buildPermissionString": buildPermissionString(tokenParameterValue),
-		}).Debugf("Getting ConsentToken")
-	}
-	return tokenParameters
-}
-
 func buildPermissionString(permissionSlice []string) string {
 	var permissions string
 	first := true
@@ -212,20 +183,20 @@ type ExchangeParameters struct {
 }
 
 // ExchangeCodeForAccessToken - runs a testcase to perform this operation
-func ExchangeCodeForAccessToken(tokenName, code, scope string, definition RunDefinition, ctx *model.Context) (accesstoken string, err error) {
-	logger := logrus.StandardLogger().WithField("module", "ExchangeCodeForAccessToken")
-	logger.WithFields(logrus.Fields{
-		"code":      code,
+func ExchangeCodeForAccessToken(tokenName, code string, ctx *model.Context) (accesstoken string, err error) {
+	logger := logrus.StandardLogger().WithFields(logrus.Fields{
+		"module":    "ExchangeCodeForAccessToken",
 		"tokenName": tokenName,
-	}).Debug("Exchanging code for token")
-	grantToken, err := exchangeCodeForToken(code, scope, ctx, logger)
+		"code":      code,
+	})
+
+	grantToken, err := exchangeCodeForToken(code, ctx, logger)
 	if err != nil {
 		logger.WithFields(logrus.Fields{
-			"code":      code,
-			"tokenName": tokenName,
-			"err":       err,
-		}).Error("Exchanging code for token failed")
+			"err": err,
+		}).Error("exchangeCodeForToken failed")
 	}
+
 	return grantToken.AccessToken, err
 }
 
@@ -237,88 +208,151 @@ type grantToken struct {
 	IDToken     string `json:"id_token,omitempty"`
 }
 
-func exchangeCodeForToken(code string, scope string, ctx *model.Context, logger *logrus.Entry) (grantToken, error) {
+func exchangeCodeForToken(code string, ctx *model.Context, logger *logrus.Entry) (*grantToken, error) {
 	logger = logger.WithFields(logrus.Fields{
 		"function": "exchangeCodeForToken",
 		"code":     code,
-		"scope":    scope,
 	})
 	ctx.DumpContext()
 
 	basicAuth, err := ctx.GetString("basic_authentication")
 	if err != nil {
-		return grantToken{}, errors.New("cannot get basic authentication for code")
+		return nil, errors.Wrap(err, "executors.exchangeCodeForToken: cannot get basic authentication for code")
 	}
 	tokenEndpoint, err := ctx.GetString("token_endpoint")
 	if err != nil {
-		return grantToken{}, errors.New("cannot get token_endpoint for code exchange")
+		return nil, errors.Wrap(err, "executors.exchangeCodeForToken: cannot get token_endpoint for code exchange")
 	}
-	redirectURL, err := ctx.GetString("redirect_url")
+	redirectURI, err := ctx.GetString("redirect_url")
 	if err != nil {
-		return grantToken{}, errors.New("Cannot get redirectURL for code exchange")
+		return nil, errors.Wrap(err, "executors.exchangeCodeForToken: cannot get redirect_url for code exchange")
 	}
-	if scope == "" {
-		scope = "accounts" // lets default to a scope of accounts
-	}
-
 	clientID, err := ctx.GetString("client_id")
 	if err != nil {
-		return grantToken{}, errors.New("cannot get clientid for exchange code")
+		return nil, errors.Wrap(err, "executors.exchangeCodeForToken: cannot get client_id for exchange code")
+	}
+	alg, err := ctx.GetString("requestObjectSigningAlg")
+	if err != nil {
+		return nil, errors.Wrap(err, "executors.exchangeCodeForToken: cannot get requestObjectSigningAlg for exchange code")
+	}
+	privKey, err := ctx.GetString("signingPrivate")
+	if err != nil {
+		return nil, errors.Wrap(err, "executors.exchangeCodeForToken: cannot get `signingPrivate` in context")
+	}
+	pubKey, err := ctx.GetString("signingPublic")
+	if err != nil {
+		return nil, errors.Wrap(err, "executors.exchangeCodeForToken: cannot get `signingPublic` in context")
+	}
+	cert, err := authentication.NewCertificate(pubKey, privKey)
+	if err != nil {
+		return nil, errors.Wrap(err, "executors.exchangeCodeForToken: cannot get `certificate` from pub/priv keys")
 	}
 
 	// Check for MTLS vs client basic authentication
 	authMethod, err := ctx.GetString("token_endpoint_auth_method")
 	if err != nil {
-		authMethod = "client_secret_basic"
+		authMethod = authentication.ClientSecretBasic
 	}
+
 	var resp *resty.Response
-	if authMethod == "client_secret_basic" {
-		resp, err = resty.R().
+	var errResponse error
+	switch authMethod {
+	case authentication.ClientSecretBasic:
+		resp, errResponse = resty.R().
 			SetHeader("content-type", "application/x-www-form-urlencoded").
-			SetHeader("accept", "*/*").
+			SetHeader("accept", "application/json").
 			SetHeader("authorization", "Basic "+basicAuth).
 			SetFormData(map[string]string{
-				"grant_type":   "authorization_code",
-				"scope":        scope, // accounts or payments currently
-				"code":         code,
-				"redirect_uri": redirectURL,
+				authentication.GrantType: authentication.GrantTypeAuthorizationCode,
+				"code":                   code,
+				"redirect_uri":           redirectURI,
 			}).
 			Post(tokenEndpoint)
-
-	}
-	if authMethod == "tls_client_auth" {
-		resp, err = resty.R().
+	case authentication.TlsClientAuth:
+		resp, errResponse = resty.R().
 			SetHeader("content-type", "application/x-www-form-urlencoded").
-			SetHeader("accept", "*/*").
+			SetHeader("accept", "application/json").
 			SetFormData(map[string]string{
-				"grant_type":   "authorization_code",
-				"scope":        scope, // accounts or payments currently
-				"code":         code,
-				"redirect_uri": redirectURL,
-				"client_id":    clientID,
+				authentication.GrantType: authentication.GrantTypeAuthorizationCode,
+				"code":                   code,
+				"redirect_uri":           redirectURI,
+				"client_id":              clientID,
 			}).
 			Post(tokenEndpoint)
+	case authentication.PrivateKeyJwt:
+		now := time.Now()
+		iat := now.Unix()
+		exp := now.Add(30 * time.Minute).Unix()
+		jti := uuid.New().String()
+		// https://openid.net/specs/openid-connect-core-1_0.html#ClientAuthentication
+		// iss
+		// REQUIRED. Issuer. This MUST contain the client_id of the OAuth Client.
+		// sub
+		// REQUIRED. Subject. This MUST contain the client_id of the OAuth Client.
+		// aud
+		// REQUIRED. Audience. The aud (audience) Claim. Value that identifies the Authorization Server as an intended audience. The Authorization Server MUST verify that it is an intended audience for the token. The Audience SHOULD be the URL of the Authorization Server's Token Endpoint.
+		claims := jwt.MapClaims{
+			"iss": clientID,
+			"sub": clientID,
+			"aud": tokenEndpoint,
+			"iat": iat,
+			"exp": exp,
+			"jti": jti,
+		}
+
+		signingMethod, err := authentication.GetSigningAlg(alg)
+		if err != nil {
+			return nil, errors.Wrap(err, "executors.exchangeCodeForToken: cannot get signingMethod")
+		}
+
+		token := jwt.NewWithClaims(signingMethod, claims) // create new token
+
+		kid, err := authentication.GetKID(ctx, cert.PublicKey().N.Bytes())
+		if err != nil {
+			return nil, errors.Wrap(err, "executors.exchangeCodeForToken: cannot get KID")
+		}
+		token.Header["kid"] = kid
+
+		clientAssertion, err := token.SignedString(cert.PrivateKey()) // sign the token - get as encoded string
+		if err != nil {
+			return nil, errors.Wrap(err, "executors.exchangeCodeForToken: could not generate client_assertion")
+		}
+
+		resp, errResponse = resty.R().
+			SetHeader("content-type", "application/x-www-form-urlencoded").
+			SetHeader("accept", "application/json").
+			SetFormData(map[string]string{
+				authentication.GrantType:           authentication.GrantTypeAuthorizationCode,
+				"code":                             code,
+				"redirect_uri":                     redirectURI,
+				authentication.ClientAssertionType: authentication.ClientAssertionTypeValue,
+				authentication.ClientAssertion:     clientAssertion,
+			}).
+			Post(tokenEndpoint)
+	default:
+		return nil, errors.Errorf("executors.exchangeCodeForToken: token_endpoint_auth_method %q unsupported", authMethod)
 	}
 
-	logger.WithFields(logrus.Fields{
-		"tokenEndpoint": tokenEndpoint,
-	}).Debug("Attempting POST")
-
-	if err != nil {
+	if errResponse != nil {
 		logger.WithFields(logrus.Fields{
 			"tokenEndpoint": tokenEndpoint,
-			"err":           err,
+			"errResponse":   errResponse,
 		}).Debug("Error accessing exchange code")
-		return grantToken{}, err
-	}
-	if resp.StatusCode() != 200 {
-		return grantToken{}, fmt.Errorf("bad status code %d from exchange token %s/token", resp.StatusCode(), tokenEndpoint)
+		return nil, errResponse
 	}
 
-	var t grantToken
-	err = json.Unmarshal(resp.Body(), &t)
+	if resp.StatusCode() != 200 {
+		return nil, fmt.Errorf("executors.exchangeCodeForToken: bad status code %d from exchange token %q", resp.StatusCode(), tokenEndpoint)
+	}
+
+	grantToken := &grantToken{}
+	if err := json.Unmarshal(resp.Body(), grantToken); err != nil {
+		return nil, err
+	}
+
 	logger.WithFields(logrus.Fields{
-		"t": fmt.Sprintf("%#v", t),
-	}).Debugf("OK")
-	return t, err
+		"grantToken": grantToken,
+	}).Tracef("OK")
+
+	return grantToken, nil
 }

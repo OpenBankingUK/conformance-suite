@@ -7,10 +7,10 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/test"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/permissions"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/test"
 )
 
 func testLoadDiscoveryModel(t *testing.T) *discovery.ModelDiscovery {
@@ -29,8 +29,8 @@ func TestGenerateSpecificationTestCases(t *testing.T) {
 	discovery := *testLoadDiscoveryModel(t)
 	generator := NewGenerator()
 	config := GeneratorConfig{}
-	testCasesRun, _ := generator.GenerateManifestTests(logger, config, discovery, &model.Context{})
-	cases := testCasesRun.TestCases
+	specRun, _, _ := generator.GenerateManifestTests(logger, config, discovery, &model.Context{}, nil)
+	cases := specRun.SpecTestCases
 
 	t.Run("returns slice of SpecificationTestCases, one per discovery item", func(t *testing.T) {
 		assert := test.NewAssert(t)

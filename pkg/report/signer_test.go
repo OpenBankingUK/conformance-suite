@@ -1,18 +1,19 @@
 package report
 
 import (
-	"bitbucket.org/openbankingteam/conformance-suite/internal/pkg/test"
 	"crypto/x509"
 	"encoding/pem"
 	"fmt"
+	"testing"
+
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/test"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/pkg/errors"
-	"testing"
 )
 
-var exampleRawJWT = "eyJhbGciOiJQUzI1NiIsImhlYWRlci1mb28iOiJoZWFkZXItYmFyIiwidHlwIjoiSldUIn0.eyJleHAiOjQwNzc2MTQxMzIsImp0aSI6InVuaXF1ZS1qd3QtaWQiLCJpc3MiOiJodHRwczovL29wZW5iYW5raW5nLm9yZy51ay9mY3MvcmVwb3J0aW5nIiwibmJmIjo5MDAwMCwic3ViIjoib3BlbmJhbmtpbmcub3JnLnVrIiwicmVwb3J0RGlnZXN0IjoicmVwb3J0LWhhc2gtc3VtIiwiZGlzY292ZXJ5RGlnZXN0IjoiZGlzY292ZXJ5LWhhc2gtc3VtIiwibWFuaWZlc3REaWdlc3QiOiJtYW5pZmVzdC1oYXNoLXN1bSJ9.i0ry9tHVyDIkhIGVIYXmpEVGcLDRxKbio1uQdwQM0lj1h8nyPKwZnvnnB7Y0IkHc0nmELa2_nIVyfZxYAio1bk7Nj-M6bqQFv2Q-hE8deeJMwzLPOni4KtSf-a2tOXQQM29wQhAQ5fTIj3hlIsJQaRY5SnZUTejgLRaBVdtaWxo6bwOkzeqPOUEGlS67cleQZJvS6EcXA_tXVhyjgfUxr5oc9W7qFvbsmDYzipcTNdQ2q5ZPMg4K7KDh7QaoTnJi1U2JnVr12xMHoJFgmJDj79L-orTsJaBxWb0-CjTDr5i4CCBqkrSCiJAttkZNERZy11zGNL0x2ojL3ymvNH_xkg"
+const exampleRawJWT = "eyJhbGciOiJQUzI1NiIsImhlYWRlci1mb28iOiJoZWFkZXItYmFyIiwidHlwIjoiSldUIn0.eyJleHAiOjQwNzc2MTQxMzIsImp0aSI6InVuaXF1ZS1qd3QtaWQiLCJpc3MiOiJodHRwczovL29wZW5iYW5raW5nLm9yZy51ay9mY3MvcmVwb3J0aW5nIiwibmJmIjo5MDAwMCwic3ViIjoib3BlbmJhbmtpbmcub3JnLnVrIiwicmVwb3J0RGlnZXN0IjoicmVwb3J0LWhhc2gtc3VtIiwiZGlzY292ZXJ5RGlnZXN0IjoiZGlzY292ZXJ5LWhhc2gtc3VtIiwibWFuaWZlc3REaWdlc3QiOiJtYW5pZmVzdC1oYXNoLXN1bSJ9.i0ry9tHVyDIkhIGVIYXmpEVGcLDRxKbio1uQdwQM0lj1h8nyPKwZnvnnB7Y0IkHc0nmELa2_nIVyfZxYAio1bk7Nj-M6bqQFv2Q-hE8deeJMwzLPOni4KtSf-a2tOXQQM29wQhAQ5fTIj3hlIsJQaRY5SnZUTejgLRaBVdtaWxo6bwOkzeqPOUEGlS67cleQZJvS6EcXA_tXVhyjgfUxr5oc9W7qFvbsmDYzipcTNdQ2q5ZPMg4K7KDh7QaoTnJi1U2JnVr12xMHoJFgmJDj79L-orTsJaBxWb0-CjTDr5i4CCBqkrSCiJAttkZNERZy11zGNL0x2ojL3ymvNH_xkg"
 
-var samplePrivateKey = `-----BEGIN RSA PRIVATE KEY-----
+const samplePrivateKey = `-----BEGIN RSA PRIVATE KEY-----
 MIIEowIBAAKCAQEAsK8mIapI9HetPmwfptmHr2+oYW5YGKhzq4xEl6zAISChNVk9
 DSMMLALfnlOaAK02yPqSiVSOYpyPjlEK/mRwETMSsRQvO/i+pO5aI9NeSfTo0HAc
 NZ4nEwzsdrgrL3vrEagBxA2UgJM397CYhij/kJNK7Gec/jvlJAZxvr/k0SPV1iik
@@ -40,7 +41,7 @@ GRw/287a1mi9hDUlbOZSIVNJHAzxArCnJJnrW6C29NDFqWGIAgUS066KRZIyEuB3
 SEtoekWeoBbByz3ehuKpuBK5St7Mz1MHyqb7YHQlTFj7oRQ9uHNK
 -----END RSA PRIVATE KEY-----`
 
-var samplePublicKey = `-----BEGIN RSA PUBLIC KEY-----
+const samplePublicKey = `-----BEGIN RSA PUBLIC KEY-----
 MIIBCgKCAQEAsK8mIapI9HetPmwfptmHr2+oYW5YGKhzq4xEl6zAISChNVk9DSMM
 LALfnlOaAK02yPqSiVSOYpyPjlEK/mRwETMSsRQvO/i+pO5aI9NeSfTo0HAcNZ4n
 EwzsdrgrL3vrEagBxA2UgJM397CYhij/kJNK7Gec/jvlJAZxvr/k0SPV1iikmYPC

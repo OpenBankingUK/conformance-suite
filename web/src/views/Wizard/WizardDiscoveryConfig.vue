@@ -6,6 +6,14 @@
           <h5>Discovery {{ name }}</h5>
         </div>
         <div class="d-flex flex-column flex-fill panel-body">
+          <div>
+            When authoring your own discovery file, more information about the Discovery Model can be found
+            <a
+              href="https://bitbucket.org/openbankingteam/conformance-suite/src/develop/docs/discovery.md"
+              target="_blank">here.
+            </a>
+          </div>
+          <br>
           <TheErrorStatus />
           <TheJsonEditor
             :problem-annotations="problemAnnotations"

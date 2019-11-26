@@ -6,7 +6,7 @@
 </template>
 
 <script>
-import TheNotificationBell from '@/components/TheNotificationBell.vue';
+import TheNotificationBell from './TheNotificationBell.vue';
 
 export default {
   name: 'TheHeader',

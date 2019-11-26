@@ -1,0 +1,37 @@
+{
+  "scripts": [{
+    "description": "3.1.2 Payments - x-fapi-financial-id no longer required",
+    "id": "OB-312-DOP-100100",
+    "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937984109/Domestic+Payments+v3.1#DomesticPaymentsv3.1-POST/domestic-payment-consents",
+    "detail": "check that removal of x-fapi-financial-id succeeds for Check Domestic Payment consents",
+    "parameters": {
+      "tokenRequestScope": "payments",
+      "instructedAmountCurrency": "$instructedAmountCurrency",
+      "instructedAmountValue": "$instructedAmountValue",
+      "instructionIdentification": "$fn:instructionIdentificationID()",
+      "endToEndIdentification": "e2e-domestic-pay",
+      "postData": "$minimalDomesticPaymentConsent",
+      "requestConsent": "false"
+    },
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "body": "$postData",
+    "uri": "/domestic-payment-consents",
+    "uriImplementation": "mandatory",
+    "resource": "DomesticPayment",
+    "removeHeaders": ["x-fapi-financial-id"],    
+    "asserts": [
+      "OB3GLOAssertOn201",
+      "OB3GLOFAPIHeader",
+      "OB3DOPAssertAwaitingAuthorisation",
+      "OB3GLOAAssertConsentId"
+    ],
+    "keepContextOnSuccess": {
+      "name": "OB-312-DOP-100100-ConsentId",
+      "value": "Data.ConsentId"
+    },
+    "method": "post",
+    "schemaCheck": true
+  }]
+}

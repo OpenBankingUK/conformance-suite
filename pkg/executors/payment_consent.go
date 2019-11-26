@@ -1,14 +1,15 @@
 package executors
 
 import (
-	"errors"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/authentication"
+	"github.com/pkg/errors"
 
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/manifest"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
 	"github.com/sirupsen/logrus"
 )
 
-func getPaymentConsents(tests []model.TestCase, definition RunDefinition, requiredTokens []manifest.RequiredTokens, ctx *model.Context) (TokenConsentIDs, error) {
+func getPaymentConsents(definition RunDefinition, requiredTokens []manifest.RequiredTokens, ctx *model.Context) (TokenConsentIDs, error) {
 	executor := &Executor{}
 	err := executor.SetCertificates(definition.SigningCert, definition.TransportCert)
 	if err != nil {
@@ -16,12 +17,12 @@ func getPaymentConsents(tests []model.TestCase, definition RunDefinition, requir
 		return nil, err
 	}
 
-	logrus.Debugf("we have %d required tokens\n", len(requiredTokens))
+	logrus.Debugf("we have %d required tokens", len(requiredTokens))
 	for _, rt := range requiredTokens {
-		logrus.Tracef("%#v\n", rt)
+		logrus.Tracef("%#v", rt)
 	}
 
-	requiredTokens, err = runPaymentConsents(tests, requiredTokens, ctx, executor)
+	requiredTokens, err = runPaymentConsents(requiredTokens, ctx, executor)
 	if err != nil {
 		logrus.Errorf("getPaymentConsents error: " + err.Error())
 	}
@@ -36,7 +37,7 @@ func getPaymentConsents(tests []model.TestCase, definition RunDefinition, requir
 	return consentItems, err
 }
 
-func runPaymentConsents(tcs []model.TestCase, rt []manifest.RequiredTokens, ctx *model.Context, executor *Executor) ([]manifest.RequiredTokens, error) {
+func runPaymentConsents(rt []manifest.RequiredTokens, ctx *model.Context, executor *Executor) ([]manifest.RequiredTokens, error) {
 	localCtx := model.Context{}
 	localCtx.PutContext(ctx)
 	localCtx.PutString("scope", "payments")
@@ -44,7 +45,7 @@ func runPaymentConsents(tcs []model.TestCase, rt []manifest.RequiredTokens, ctx 
 
 	tc, err := readClientCredentialGrant()
 	if err != nil {
-		return nil, errors.New("Payment PSU consent load clientCredentials testcase failed")
+		return nil, errors.New("payment PSU consent load clientCredentials testcase failed")
 	}
 
 	// Check for MTLS vs client basic authentication
@@ -52,10 +53,31 @@ func runPaymentConsents(tcs []model.TestCase, rt []manifest.RequiredTokens, ctx 
 	if err != nil {
 		authMethod = "client_secret_basic"
 	}
-	if authMethod == "client_secret_basic" {
+	switch authMethod {
+	case authentication.ClientSecretBasic:
 		tc.Input.SetHeader("authorization", "Basic $basic_authentication")
-	}
-	if authMethod == "tls_client_auth" {
+	case authentication.PrivateKeyJwt:
+		clientID, err := ctx.GetString("client_id")
+		if err != nil {
+			return nil, errors.Wrap(err, "cannot find client_id for private_key_jwt form field")
+		}
+		tokenEndpoint, err := ctx.GetString("token_endpoint")
+		if err != nil {
+			return nil, errors.Wrap(err, "cannot find token_endpoint for private_key_jwt form field")
+		}
+		if tc.Input.Claims == nil {
+			tc.Input.Claims = map[string]string{}
+		}
+		tc.Input.Claims["iss"] = clientID
+		tc.Input.Claims["sub"] = clientID
+		tc.Input.Claims["aud"] = tokenEndpoint
+		clientAssertion, err := tc.Input.GenerateRequestToken(ctx)
+		if err != nil {
+			return nil, errors.Wrap(err, "cannot generate request token for private_key_jwt form field")
+		}
+		tc.Input.SetFormField(authentication.ClientAssertionType, authentication.ClientAssertionTypeValue)
+		tc.Input.SetFormField(authentication.ClientAssertion, clientAssertion)
+	case authentication.TlsClientAuth:
 		clientid, err := ctx.GetString("client_id")
 		if err != nil {
 			logrus.Warn("cannot locate client_id for tls_client_auth form field")
@@ -75,15 +97,14 @@ func runPaymentConsents(tcs []model.TestCase, rt []manifest.RequiredTokens, ctx 
 		return nil, errors.New("Cannot get Token for consent client credentials grant: " + err.Error())
 	}
 
-	logrus.Tracef("runPaymentConsents:requiredTokens: %#v", rt)
+	logrus.Tracef("runPaymentConsents %d requiredTokens %#v", len(rt), rt)
 
 	for k, v := range rt {
 		localCtx.PutString("token_name", v.Name)
-		logrus.Warnln("Loop through requesting consent authorisation")
-		//test, err := findTest(tcs, v.ConsentProvider)
+
 		test, exists := consentJobs.Get(v.ConsentProvider)
 		if !exists {
-			return nil, errors.New("Testcase " + v.ConsentProvider + " does not existing in consentJob list")
+			return nil, errors.New("Testcase " + v.ConsentProvider + " does not exist in consentJob list")
 		}
 		test.InjectBearerToken(bearerToken) //client credential grant token
 		test.Input.Headers["Content-Type"] = "application/json"
@@ -130,21 +151,12 @@ func runPaymentConsents(tcs []model.TestCase, rt []manifest.RequiredTokens, ctx 
 
 	clientGrantToken, err := localCtx.GetString("client_access_token")
 	if err == nil {
-		logrus.Tracef("setting client credential grant token to %s", clientGrantToken)
+		logrus.Tracef("setting payments client credential grant token to %s", clientGrantToken)
 		ctx.PutString("client_access_token", clientGrantToken)
 	}
 	logrus.Debug("Exit runPayment Consents")
-	logrus.Tracef("%#v\n", rt)
+	logrus.Tracef("%#v", rt)
 	return rt, nil
-}
-
-func findTest(tcs []model.TestCase, testID string) (*model.TestCase, error) {
-	for k, test := range tcs {
-		if test.ID == testID {
-			return &tcs[k], nil
-		}
-	}
-	return nil, errors.New("Test " + testID + " not found in findTest")
 }
 
 func executePaymentTest(tc *model.TestCase, ctx *model.Context, executor *Executor) error {
@@ -161,7 +173,7 @@ func executePaymentTest(tc *model.TestCase, ctx *model.Context, executor *Execut
 	if errs != nil {
 		return err
 	}
-	if result == false {
+	if !result {
 		return errors.New("testcase validation failed:" + err.Error())
 	}
 	return nil

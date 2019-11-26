@@ -49,9 +49,9 @@
 <script>
 import { createNamespacedHelpers, mapGetters, mapActions } from 'vuex';
 
-import TheErrorStatus from '@/components/TheErrorStatus.vue';
-import TestCases from '@/components/Wizard/TestCases/TestCases.vue';
-import TheWizardFooter from '@/components/Wizard/TheWizardFooter.vue';
+import TheErrorStatus from '../../components/TheErrorStatus.vue';
+import TestCases from '../../components/Wizard/TestCases/TestCases.vue';
+import TheWizardFooter from '../../components/Wizard/TheWizardFooter.vue';
 
 const {
   mapState,
