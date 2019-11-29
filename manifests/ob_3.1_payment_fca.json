@@ -222,7 +222,8 @@
         "instructedAmountCurrency": "$instructedAmountCurrency",
         "instructionIdentification": "$fn:instructionIdentificationID()",
         "endToEndIdentification": "e2e-domestic-sched-pay",
-        "postData": "$minimalScheduledDomesticPaymentConsent"
+        "postData": "$minimalScheduledDomesticPaymentConsent",
+        "requestConsent": "true"
       },
       "headers": {
         "Content-Type": "application/json"
@@ -259,6 +260,40 @@
         "OB3GLOAssertOn200"
       ],
       "method": "get",
+      "schemaCheck": true
+    },
+    {
+      "description": "Once the consent has been authorised, PISP can submit the Domestic Scheduled Payment for processing.",
+      "id": "OB-301-DOP-101101",
+      "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937558149/Domestic+Scheduled+Payment+v3.1#DomesticScheduledPaymentv3.1-POST/domestic-scheduled-payments",
+      "detail": "PISP can post a Domestic Scheduled Payment for processing and get a response of InitiationPending or InitiationCompleted.",
+      "parameters": {
+        "tokenRequestScope": "payments",
+        "paymentID": "$OB-301-DOP-101000-DomesticScheduledPaymentId",
+        "consentId": "$OB-301-DOP-101000-DomesticScheduledPaymentConsentId",
+        "creditorScheme": "$creditorScheme",
+        "creditorIdentification": "$creditorIdentification",
+        "debtorIdentification": "debtor-Identification",
+        "instructionIdentification": "$instructionIdentification",
+        "endToEndIdentification": "e2e-domestic-sched-pay",
+        "instructedAmountCurrency": "$instructedAmountCurrency",
+        "instructedAmountValue": "$instructedAmountValue",
+        "localInstrument": "UK.OBIE.Link",
+        "postData": "$minimalDomesticScheduledPaymentPost",
+        "requestedExecutionTime": "2019-11-30T06:17:19+00:00"
+      },
+      "uri": "/domestic-scheduled-payments",
+      "uriImplementation": "conditional",
+      "resource": "DomesticScheduledPayment",
+      "useCCGToken": true,
+      "asserts": [
+        "OB3GLOAssertOn200"
+      ],
+      "headers": {
+        "Content-Type": "application/json"
+      },
+      "method": "post",
+      "body": "$postData",
       "schemaCheck": true
     },
     {
