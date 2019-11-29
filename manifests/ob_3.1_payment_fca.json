@@ -221,6 +221,7 @@
         "instructedAmountValue": "$instructedAmountValue",
         "instructedAmountCurrency": "$instructedAmountCurrency",
         "instructionIdentification": "$fn:instructionIdentificationID()",
+        "OB-301-DOP-101000-InstructionIdentification": "$instructionIdentification",
         "endToEndIdentification": "e2e-domestic-sched-pay",
         "postData": "$minimalScheduledDomesticPaymentConsent",
         "requestConsent": "true"
@@ -271,23 +272,18 @@
         "tokenRequestScope": "payments",
         "paymentID": "$OB-301-DOP-101000-DomesticScheduledPaymentId",
         "consentId": "$OB-301-DOP-101000-DomesticScheduledPaymentConsentId",
-        "creditorScheme": "$creditorScheme",
-        "creditorIdentification": "$creditorIdentification",
-        "debtorIdentification": "debtor-Identification",
-        "instructionIdentification": "$instructionIdentification",
+        "instructionIdentification": "$OB-301-DOP-101000-InstructionIdentification",
         "endToEndIdentification": "e2e-domestic-sched-pay",
         "instructedAmountCurrency": "$instructedAmountCurrency",
         "instructedAmountValue": "$instructedAmountValue",
-        "localInstrument": "UK.OBIE.Link",
-        "postData": "$minimalDomesticScheduledPaymentPost",
-        "requestedExecutionTime": "2019-11-30T06:17:19+00:00"
+        "postData": "$minimalDomesticScheduledPaymentPost"
       },
       "uri": "/domestic-scheduled-payments",
       "uriImplementation": "conditional",
       "resource": "DomesticScheduledPayment",
       "useCCGToken": true,
       "asserts": [
-        "OB3GLOAssertOn200"
+        "OB3GLOAssertOn201"
       ],
       "headers": {
         "Content-Type": "application/json"
