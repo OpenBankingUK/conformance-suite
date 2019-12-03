@@ -221,8 +221,10 @@
         "instructedAmountValue": "$instructedAmountValue",
         "instructedAmountCurrency": "$instructedAmountCurrency",
         "instructionIdentification": "$fn:instructionIdentificationID()",
+        "OB-301-DOP-101000-InstructionIdentification": "$instructionIdentification",
         "endToEndIdentification": "e2e-domestic-sched-pay",
-        "postData": "$minimalScheduledDomesticPaymentConsent"
+        "postData": "$minimalScheduledDomesticPaymentConsent",
+        "requestConsent": "true"
       },
       "headers": {
         "Content-Type": "application/json"
@@ -259,6 +261,35 @@
         "OB3GLOAssertOn200"
       ],
       "method": "get",
+      "schemaCheck": true
+    },
+    {
+      "description": "Once the consent has been authorised, PISP can submit the Domestic Scheduled Payment for processing.",
+      "id": "OB-301-DOP-101101",
+      "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937558149/Domestic+Scheduled+Payment+v3.1#DomesticScheduledPaymentv3.1-POST/domestic-scheduled-payments",
+      "detail": "PISP can post a Domestic Scheduled Payment for processing and get a response of InitiationPending or InitiationCompleted.",
+      "parameters": {
+        "tokenRequestScope": "payments",
+        "paymentID": "$OB-301-DOP-101000-DomesticScheduledPaymentId",
+        "consentId": "$OB-301-DOP-101000-DomesticScheduledPaymentConsentId",
+        "instructionIdentification": "$OB-301-DOP-101000-InstructionIdentification",
+        "endToEndIdentification": "e2e-domestic-sched-pay",
+        "instructedAmountCurrency": "$instructedAmountCurrency",
+        "instructedAmountValue": "$instructedAmountValue",
+        "postData": "$minimalDomesticScheduledPaymentPost"
+      },
+      "uri": "/domestic-scheduled-payments",
+      "uriImplementation": "conditional",
+      "resource": "DomesticScheduledPayment",
+      "useCCGToken": true,
+      "asserts": [
+        "OB3GLOAssertOn201"
+      ],
+      "headers": {
+        "Content-Type": "application/json"
+      },
+      "method": "post",
+      "body": "$postData",
       "schemaCheck": true
     },
     {
