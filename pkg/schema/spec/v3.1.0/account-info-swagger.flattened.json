@@ -9664,12 +9664,10 @@
                             "type": "object",
                             "additionalProperties": true
                           }
-                        },
-                        "additionalProperties": false
+                        }
                       }
                     }
-                  },
-                  "additionalProperties": false
+                  }
                 },
                 "Links": {
                   "description": "Links relevant to the payload",
@@ -9723,8 +9721,7 @@
                   },
                   "additionalProperties": false
                 }
-              },
-              "additionalProperties": false
+              }
             },
             "headers": {
               "x-fapi-interaction-id": {
@@ -52537,12 +52534,10 @@
                       "type": "object",
                       "additionalProperties": true
                     }
-                  },
-                  "additionalProperties": false
+                  }
                 }
               }
-            },
-            "additionalProperties": false
+            }
           },
           "Links": {
             "description": "Links relevant to the payload",
