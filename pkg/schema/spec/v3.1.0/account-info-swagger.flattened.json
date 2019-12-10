@@ -9664,10 +9664,12 @@
                             "type": "object",
                             "additionalProperties": true
                           }
-                        }
+                        },
+                        "additionalProperties": false
                       }
                     }
-                  }
+                  },
+                  "additionalProperties": false
                 },
                 "Links": {
                   "description": "Links relevant to the payload",
@@ -9721,7 +9723,8 @@
                   },
                   "additionalProperties": false
                 }
-              }
+              },
+              "additionalProperties": false
             },
             "headers": {
               "x-fapi-interaction-id": {
@@ -52532,12 +52535,14 @@
                     "SupplementaryData": {
                       "description": "Additional information that can not be captured in the structured fields and/or any other specific block.",
                       "type": "object",
-                      "additionalProperties": true
+                      "additionalProperties": false
                     }
-                  }
+                  },
+                  "additionalProperties": false
                 }
               }
-            }
+            },
+            "additionalProperties": false
           },
           "Links": {
             "description": "Links relevant to the payload",
@@ -52591,7 +52596,8 @@
             },
             "additionalProperties": false
           }
-        }
+        },
+        "additionalProperties": false
       },
       "headers": {
         "x-fapi-interaction-id": {
