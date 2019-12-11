@@ -3,8 +3,10 @@ package schemaprops
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"log"
+	"regexp"
 	"sort"
 	"strconv"
 	"strings"
@@ -114,10 +116,22 @@ func sortPathStrings(m map[string]string) []string {
 	return keyslice
 }
 
-func (c Collector) CollectProperties(method, endpoint, body string, code int) {
+func (c *Collector) CollectProperties(method, endpoint, body string, code int) {
+	// TODO - partition conditional collection by api type
+	apiType, err := FindApi(endpoint)
+	if err != nil {
+		logrus.Warnf("FindAPI %s returned %s ", apiType, err.Error())
+		return
+	}
+	if apiType == "" {
+		logrus.Warnf("No apiType found for %s - not collected ", endpoint)
+		return
+	}
+	_ = apiType
+
 	if len(c.Apis) == 0 {
 		logrus.Warnln("Warning no APIS")
-		return
+		c.SetCollectorAPIDetails("API undefined", "0.0")
 	}
 	requestPaths := make(map[string]int, 20)
 	c.path = make([]string, 20)
@@ -195,13 +209,81 @@ func (c *Collector) expand(i interface{}, m map[string]int) {
 
 func (c Collector) OutputJSON() string {
 	apis := c.Apis
+	var err error
+
+	for _, api := range apis {
+		fmt.Printf("API:::%s\n", api.Api)
+		for k, _ := range api.endpoints {
+			_, path, _ := c.parseEndpoint(k)
+			apigroup, _ := FindApi(path)
+			fmt.Println("apigroup: " + apigroup)
+
+		}
+
+		//_, _ = i, err
+		//fmt.Println(apitype + " <====")
+
+	}
+	fmt.Println("--------------------------")
 	for i, api := range apis {
 		fmt.Printf("Examine %s\n", api.Api)
 		endpoints := sortEndpoints(api.endpoints)
 		for _, k := range endpoints {
 			v := c.Apis[i].endpoints[k]
 			method, path, code := c.parseEndpoint(k)
-			path = pathToSwagger(path)
+			path, err = pathToSwagger(path)
+			if err != nil {
+				logrus.Warn(err)
+				continue
+			}
+
+			endp := Endpoint{Method: method, Path: path}
+			// find if endpoint and code already exists - if so use that endpoint
+			response, endpoint := c.findEndpointResponse(api.Endpoints, endp, code)
+			if response.Code == "" {
+				response = Response{Code: code}
+				response.Fields = make([]string, 0)
+			}
+			if endpoint.Method == "" {
+				endpoint = Endpoint{}
+				endpoint.Method = method
+				endpoint.Path = path
+				endpoint.Responses = make([]Response, 0)
+			}
+
+			sortedv := sortPaths(v)
+			for _, x := range sortedv {
+				response.Fields = append(response.Fields, x)
+			}
+			endpoint.Responses = append(endpoint.Responses, response)
+			c.Apis[i].Endpoints = append(c.Apis[i].Endpoints, endpoint)
+		}
+	}
+
+	// Convert structs to JSON.
+	jsondata, err := json.MarshalIndent(c.Apis, "", " ")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return "{ \n\"responseFields\": " + string(jsondata) + "\n}"
+}
+
+func (c Collector) OutputJSON1() string {
+	apis := c.Apis
+	var err error
+	for i, api := range apis {
+		fmt.Printf("Examine %s\n", api.Api)
+		endpoints := sortEndpoints(api.endpoints)
+		for _, k := range endpoints {
+			v := c.Apis[i].endpoints[k]
+			method, path, code := c.parseEndpoint(k)
+			path, err = pathToSwagger(path)
+			if err != nil {
+				logrus.Warn(err)
+				continue
+			}
+
 			endp := Endpoint{Method: method, Path: path}
 			// find if endpoint and code already exists - if so use that endpoint
 			response, endpoint := c.findEndpointResponse(api.Endpoints, endp, code)
@@ -253,4 +335,62 @@ func (c *Collector) findEndpointResponse(endpoints []Endpoint, endpoint Endpoint
 		}
 	}
 	return Response{}, Endpoint{}
+}
+
+// Is it accounts/payments or cbpii? // or something else
+func FindApi(path string) (string, error) {
+	matched := strings.Contains(path, "/aisp/")
+	if matched {
+		logrus.Println("accounts match, " + path)
+		return "accounts", nil
+	}
+
+	matched = strings.Contains(path, "/pisp/")
+	if matched {
+		logrus.Println("payments match, " + path)
+		return "payments", nil
+	}
+
+	matched = strings.Contains(path, "/cbpii/")
+	if matched {
+		logrus.Println("cbpii match, " + path)
+		return "cbpii", nil
+	}
+
+	return "", errors.New("Unknown path " + path)
+}
+
+func FindApi1(path string) (string, error) {
+
+	for _, regPath := range accountsRegex {
+		matched, err := regexp.MatchString(regPath.Regex, path)
+		if err != nil {
+			return "", errors.New("path mapping error: " + path)
+		}
+		if matched {
+			return "accounts", nil
+		}
+	}
+
+	for _, regPath := range paymentsRegex {
+		matched, err := regexp.MatchString(regPath.Regex, path)
+		if err != nil {
+			return "", errors.New("path mapping error" + path)
+		}
+		if matched {
+			return "payments", nil
+		}
+	}
+
+	for _, regPath := range cbpiiRegex {
+		matched, err := regexp.MatchString(regPath.Regex, path)
+		if err != nil {
+			return "", errors.New("path mapping error" + path)
+		}
+		if matched {
+			return "cbpii", nil
+		}
+	}
+
+	return "", errors.New("Unknown path " + path)
 }

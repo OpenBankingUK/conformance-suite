@@ -1,10 +1,13 @@
 package schemaprops
 
 import (
+	"errors"
 	"fmt"
+	"regexp"
 	"testing"
 
 	"github.com/sirupsen/logrus"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestCollectReturnedJSONFields(t *testing.T) {
@@ -30,9 +33,85 @@ func TestAccountsJSONFields(t *testing.T) {
 	logrus.SetLevel(logrus.TraceLevel)
 	c := GetPropertyCollector()
 	c.SetCollectorAPIDetails("myapi", "v3.1.0")
-	c.CollectProperties("GET", "/accounts", string(accounts), 200)
+	c.CollectProperties("GET", "/open-banking/3.1/aisp/accounts", string(accounts), 200)
 	result := c.OutputJSON()
 	fmt.Println(result)
+}
+
+func TestAddEmptyAPI(t *testing.T) {
+	c := GetPropertyCollector()
+	c.CollectProperties("GET", "https://myserver/open-banking/3.1/aisp/accounts/1234567853/transactions", string(atransaction), 200)
+	apitype, err := FindApi("https://myserver/open-banking/3.1/aisp/accounts/1234567853/transactions")
+	assert.Equal(t, "accounts", apitype)
+	assert.Nil(t, err)
+	apitype, err = FindApi("https://myserver/open-banking/3.1/pisp/domestic-payment-consents")
+	assert.Equal(t, "payments", apitype)
+	assert.Nil(t, err)
+	apitype, err = FindApi("https://myserver/open-banking/3.1/cbpii/funds-confirmation-consents")
+	assert.Equal(t, "cbpii", apitype)
+	assert.Nil(t, err)
+	apitype, err = FindApi("https://myserver/open-banking/3.1/cbpii/funds-confirmations")
+	assert.Equal(t, "cbpii", apitype)
+	assert.Nil(t, err)
+	apitype, err = FindApi("this does not exist")
+	assert.Equal(t, "", apitype)
+	assert.NotNil(t, err)
+}
+
+func TestAddUnnamedApiThenMerge(t *testing.T) {
+	// Add random api
+	// Add standard api
+	// merge random api into standard api
+	c := GetPropertyCollector()
+	c.CollectProperties("GET", "https://myserver/open-banking/3.1/aisp/accounts", string(accounts), 200)
+
+	c.SetCollectorAPIDetails("Accounts and Trasactions", "v3.1.0")
+	c.CollectProperties("GET", "https://myserver/open-banking/3.1/aisp/accounts/1234567853/transactions", string(atransaction), 200)
+
+	result := c.OutputJSON()
+	fmt.Println(result)
+
+}
+
+// Processing
+// Skip "API undefined"
+// look at first endpoint and categorise
+
+var (
+	acctPay1  = append(accountsRegex, paymentsRegex...)
+	allregex1 = append(acctPay, cbpiiRegex...)
+)
+
+func toSwagger(path string) (string, error) {
+	for _, regPath := range allregex {
+		matched, err := regexp.MatchString(regPath.Regex, path)
+		if err != nil {
+			return "", errors.New("path mapping error")
+		}
+		if matched {
+			return regPath.Mapping, nil
+		}
+	}
+	logrus.Tracef("Unknown swagger path for %s", path)
+	return "", errors.New("Unknown swaggerPath for " + path)
+}
+
+func pathsToSwagger(endpoints []string) []string {
+	lookupMap := make(map[string]string)
+	for _, ep := range endpoints {
+		for _, regPath := range allregex {
+			matched, err := regexp.MatchString(regPath.Regex, ep)
+			if err != nil {
+				continue
+			}
+			if matched {
+				lookupMap[regPath.Mapping] = ep
+			}
+		}
+	}
+
+	paths := sortPathStrings(lookupMap)
+	return paths
 }
 
 func (c *Collector) dumpProperties() {
