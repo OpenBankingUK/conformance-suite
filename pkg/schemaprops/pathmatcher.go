@@ -1,7 +1,10 @@
 package schemaprops
 
 import (
+	"errors"
 	"regexp"
+
+	"github.com/sirupsen/logrus"
 )
 
 var (
@@ -9,17 +12,18 @@ var (
 	allregex = append(acctPay, cbpiiRegex...)
 )
 
-func pathToSwagger(path string) string {
+func pathToSwagger(path string) (string, error) {
 	for _, regPath := range allregex {
 		matched, err := regexp.MatchString(regPath.Regex, path)
 		if err != nil {
-			return "path mapping error"
+			return "", errors.New("path mapping error")
 		}
 		if matched {
-			return regPath.Mapping
+			return regPath.Mapping, nil
 		}
 	}
-	return "unknown"
+	logrus.Tracef("Unknown swagger path for %s", path)
+	return "", errors.New("Unknown swaggerPath for " + path)
 }
 
 func mapPathsToSwagger(endpoints []string) []string {
@@ -47,6 +51,11 @@ var accountsRegex = []PathRegex{
 		Regex:   ".*/accounts$",
 		Name:    "Get Accounts",
 		Mapping: "/accounts",
+	},
+	{
+		Regex:   ".*/account-access-consents$",
+		Name:    "Get Accounts",
+		Mapping: "/account-access-consents",
 	},
 	{
 		Regex:   ".*/accounts/" + subPathx + "$",
