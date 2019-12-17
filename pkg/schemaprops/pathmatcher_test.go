@@ -11,7 +11,7 @@ func TestMatchCallPathsToSwaggerPaths(t *testing.T) {
 	assert.Equal(t, swaggerPaths, resultPaths)
 }
 
-var resultPaths = []string{"/accounts", "/accounts/{AccountId}", "/accounts/{AccountId}/balances",
+var resultPaths = []string{"/account-access-consents", "/accounts", "/accounts/{AccountId}", "/accounts/{AccountId}/balances",
 	"/accounts/{AccountId}/beneficiaries", "/accounts/{AccountId}/direct-debits",
 	"/accounts/{AccountId}/offers", "/accounts/{AccountId}/party", "/accounts/{AccountId}/products",
 	"/accounts/{AccountId}/scheduled-payments", "/accounts/{AccountId}/standing-orders",
