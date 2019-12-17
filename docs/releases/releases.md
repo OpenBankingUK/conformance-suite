@@ -1,3 +1,7 @@
+# Release v1.2.3 (11th Dec 2019)
+
+The release is called **v1.2.3** it contains a fix to the report json output and other minor fixes.
+
 # Release v1.2.2 (20th Nov 2019)
 
 The release is called **v1.2.2** and contains a minor release that fixes "Content-Type" headers with GET requests and allows request conditional property string input to be rendered as a string array.

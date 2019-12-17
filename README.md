@@ -17,11 +17,11 @@ To provide feedback, please use the public [issue tracker](https://bitbucket.org
 ## Release Notes 
 * * *
 
-# Release v1.2.2 (20th Nov 2019)
+# Release v1.2.3 (11th Dec 2019)
 
-The release is called **v1.2.2** it contains a minor release that fixes "Content-Type" headers with GET requests and allows request conditional property string input to be rendered as a string array.
+The release is called **v1.2.3** it contains a fix to the report json output and other minor fixes.
 
-[Full Release Notes](https://bitbucket.org/openbankingteam/conformance-suite/src/develop/docs/releases/v1.2.2.md) (v1.2.2.md)
+[Full Release Notes](https://bitbucket.org/openbankingteam/conformance-suite/src/develop/docs/releases/v1.2.3.md) (v1.2.3.md)
 
 ## Quickstart
 * * *
