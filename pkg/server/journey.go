@@ -18,6 +18,7 @@ import (
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/generation"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/manifest"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/schemaprops"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/server/models"
 )
 
@@ -262,6 +263,9 @@ func (wj *journey) TestCases() (generation.SpecRun, error) {
 				}).Debug("We have a permission ([]manifest.RequiredTokens)")
 			}
 		}
+
+		collector := schemaprops.GetPropertyCollector()
+		collector.SetCollectorAPIDetails(schemaprops.ConsentGathering, "")
 
 		if discovery.TokenAcquisition == "psu" { // Handle  PSU Consent
 			logger.WithFields(logrus.Fields{

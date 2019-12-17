@@ -59,23 +59,36 @@ func TestAddEmptyAPI(t *testing.T) {
 }
 
 func TestAddUnnamedApiThenMerge(t *testing.T) {
-	// Add random api
-	// Add standard api
-	// merge random api into standard api
 	c := GetPropertyCollector()
+	c.SetCollectorAPIDetails(ConsentGathering, "1")
+
 	c.CollectProperties("GET", "https://myserver/open-banking/3.1/aisp/accounts", string(accounts), 200)
 
 	c.SetCollectorAPIDetails("Accounts and Trasactions", "v3.1.0")
 	c.CollectProperties("GET", "https://myserver/open-banking/3.1/aisp/accounts/1234567853/transactions", string(atransaction), 200)
 
 	result := c.OutputJSON()
+	assert.Contains(t, result, "Data.Transaction.Balance.CreditDebitIndicator")
+
 	fmt.Println(result)
 
 }
 
-// Processing
-// Skip "API undefined"
-// look at first endpoint and categorise
+func TestMergeUnnamedApiThenMerge(t *testing.T) {
+
+	c := GetPropertyCollector()
+	c.SetCollectorAPIDetails("ConsentGathering", "")
+	c.CollectProperties("GET", "https://myserver/open-banking/3.1/aisp/accounts", string(accountsmerge), 200)
+
+	c.SetCollectorAPIDetails("Accounts and Trasactions", "v3.1.0")
+	c.CollectProperties("GET", "https://myserver/open-banking/3.1/aisp/accounts", string(accounts), 200)
+	c.CollectProperties("GET", "https://myserver/open-banking/3.1/aisp/accounts/1234567853/transactions", string(atransaction), 200)
+
+	result := c.OutputJSON()
+	assert.Contains(t, result, "MyFatMergeField")
+	fmt.Println(result)
+
+}
 
 var (
 	acctPay1  = append(accountsRegex, paymentsRegex...)
@@ -219,6 +232,94 @@ var (
 		   "TotalPages": 1
 		}
 	 }`)
+
+	accountsmerge = []byte(`{
+			"Data": {
+			   "Account": [
+				  {
+					 "AccountId": "700004000000000000000005",
+					 "MyFatMergeField":"hellothere",
+					 "Currency": "GBP",
+					 "Nickname": "xxxx0005",
+					 "AccountType": "Business",
+					 "AccountSubType": "CurrentAccount",
+					 "Account": [
+						{
+						   "SchemeName": "UK.OBIE.SortCodeAccountNumber",
+						   "Identification": "70000170000005",
+						   "Name": "Octon Inc"
+						}
+					 ]
+				  },
+				  {
+					 "AccountId": "700004000000000000000001",
+					 "Currency": "GBP",
+					 "Nickname": "xxxx0001",
+					 "AccountType": "Personal",
+					 "AccountSubType": "CurrentAccount",
+					 "Account": [
+						{
+						   "SchemeName": "UK.OBIE.SortCodeAccountNumber",
+						   "Identification": "70000170000001",
+						   "SecondaryIdentification": "Roll No. 001"
+						}
+					 ]
+				  },
+				  {
+					 "AccountId": "700004000000000000000006",
+					 "Currency": "GBP",
+					 "Nickname": "xxxx0002",
+					 "AccountType": "Business",
+					 "AccountSubType": "Other",
+					 "Account": [
+						{
+						   "SchemeName": "UK.OBIE.SortCodeAccountNumber",
+						   "Identification": "70000170000006",
+						   "SecondaryIdentification": "Roll No. 002"
+						}
+					 ]
+				  },
+				  {
+					 "AccountId": "700004000000000000000003",
+					 "Currency": "GBP",
+					 "Nickname": "xxxx0003",
+					 "AccountType": "Business",
+					 "AccountSubType": "CurrentAccount",
+					 "Account": [
+						{
+						   "SchemeName": "UK.OBIE.IBAN",
+						   "Identification": "GB29OBI170000170000001",
+						   "Name": "Mario Carpentry"
+						}
+					 ],
+					 "Servicer": {
+						"SchemeName": "UK.OBIE.BICFI",
+						"Identification": "GB29OBI1XXX"
+					 }
+				  },
+				  {
+					 "AccountId": "700004000000000000000002",
+					 "Currency": "GBP",
+					 "Nickname": "xxxx0006",
+					 "AccountType": "Personal",
+					 "AccountSubType": "CurrentAccount",
+					 "Account": [
+						{
+						   "SchemeName": "UK.OBIE.SortCodeAccountNumber",
+						   "Identification": "70000170000002",
+						   "SecondaryIdentification": "Roll No. 002"
+						}
+					 ]
+				  }
+			   ]
+			},
+			"Links": {
+			   "Self": "https://ob19-rs1.o3bank.co.uk:4501/open-banking/v3.1/aisp/accounts"
+			},
+			"Meta": {
+			   "TotalPages": 1
+			}
+		 }`)
 
 	atransaction = []byte(`{
 		"Data": {

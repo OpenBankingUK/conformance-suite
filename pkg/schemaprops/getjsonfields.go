@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"log"
 	"regexp"
 	"sort"
@@ -52,6 +51,8 @@ type PathRegex struct {
 	Name    string
 	Mapping string
 }
+
+var ConsentGathering = "ConsentGathering"
 
 var subPathx = "[a-zA-Z0-9_{}-]+" // url sub path regex
 
@@ -117,22 +118,11 @@ func sortPathStrings(m map[string]string) []string {
 }
 
 func (c *Collector) CollectProperties(method, endpoint, body string, code int) {
-	// TODO - partition conditional collection by api type
-	apiType, err := FindApi(endpoint)
-	if err != nil {
-		logrus.Warnf("FindAPI %s returned %s ", apiType, err.Error())
-		return
-	}
-	if apiType == "" {
-		logrus.Warnf("No apiType found for %s - not collected ", endpoint)
-		return
-	}
-	_ = apiType
-
 	if len(c.Apis) == 0 {
-		logrus.Warnln("Warning no APIS")
-		c.SetCollectorAPIDetails("API undefined", "0.0")
+		logrus.Warnln("Warning no API defined yet")
+		c.SetCollectorAPIDetails("undefined", "0.0")
 	}
+
 	requestPaths := make(map[string]int, 20)
 	c.path = make([]string, 20)
 	var anyJson map[string]interface{}
@@ -211,22 +201,25 @@ func (c Collector) OutputJSON() string {
 	apis := c.Apis
 	var err error
 
-	for _, api := range apis {
-		fmt.Printf("API:::%s\n", api.Api)
-		for k, _ := range api.endpoints {
-			_, path, _ := c.parseEndpoint(k)
-			apigroup, _ := FindApi(path)
-			fmt.Println("apigroup: " + apigroup)
-
+	consentApis := PropertyOutput{}
+	for i, api := range apis {
+		if api.Api == ConsentGathering {
+			consentApis = api
+			continue // store ref but don't process consent fields - merge later
 		}
 
-		//_, _ = i, err
-		//fmt.Println(apitype + " <====")
+		if len(api.endpoints) > 0 {
+			var apigroup string
+			for k, _ := range api.endpoints {
+				_, path, _ := c.parseEndpoint(k)
+				apigroup, _ = FindApi(path)
+				break
+			}
 
-	}
-	fmt.Println("--------------------------")
-	for i, api := range apis {
-		fmt.Printf("Examine %s\n", api.Api)
+			// merge consents to apigroup, api
+			c.addConsentsToApiGroup(apigroup, &consentApis, &api)
+		}
+
 		endpoints := sortEndpoints(api.endpoints)
 		for _, k := range endpoints {
 			v := c.Apis[i].endpoints[k]
@@ -260,8 +253,20 @@ func (c Collector) OutputJSON() string {
 		}
 	}
 
-	// Convert structs to JSON.
-	jsondata, err := json.MarshalIndent(c.Apis, "", " ")
+	// filter out ConsentApis for output
+	var jsonOutApis []PropertyOutput
+	for _, v := range c.Apis {
+		if v.Api == ConsentGathering {
+			continue
+		}
+		jsonOutApis = append(jsonOutApis, v)
+	}
+
+	rawdata, _ := json.MarshalIndent(c.Apis, "", " ")
+
+	logrus.Debugf("{ \n\"responseFieldsRawData\": %s \n}", rawdata)
+
+	jsondata, err := json.MarshalIndent(jsonOutApis, "", " ")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -269,11 +274,26 @@ func (c Collector) OutputJSON() string {
 	return "{ \n\"responseFields\": " + string(jsondata) + "\n}"
 }
 
+func (c Collector) addConsentsToApiGroup(group string, consents, api *PropertyOutput) {
+	for k, _ := range consents.endpoints {
+		_, path, _ := c.parseEndpoint(k)
+		apigroup, _ := FindApi(path)
+		if apigroup == group {
+			for consentField, _ := range consents.endpoints[k] {
+				if api.endpoints[k] == nil {
+					api.endpoints[k] = make(map[string]int)
+				}
+				api.endpoints[k][consentField] = 0
+			}
+		}
+	}
+
+}
+
 func (c Collector) OutputJSON1() string {
 	apis := c.Apis
 	var err error
 	for i, api := range apis {
-		fmt.Printf("Examine %s\n", api.Api)
 		endpoints := sortEndpoints(api.endpoints)
 		for _, k := range endpoints {
 			v := c.Apis[i].endpoints[k]
@@ -337,30 +357,7 @@ func (c *Collector) findEndpointResponse(endpoints []Endpoint, endpoint Endpoint
 	return Response{}, Endpoint{}
 }
 
-// Is it accounts/payments or cbpii? // or something else
 func FindApi(path string) (string, error) {
-	matched := strings.Contains(path, "/aisp/")
-	if matched {
-		logrus.Println("accounts match, " + path)
-		return "accounts", nil
-	}
-
-	matched = strings.Contains(path, "/pisp/")
-	if matched {
-		logrus.Println("payments match, " + path)
-		return "payments", nil
-	}
-
-	matched = strings.Contains(path, "/cbpii/")
-	if matched {
-		logrus.Println("cbpii match, " + path)
-		return "cbpii", nil
-	}
-
-	return "", errors.New("Unknown path " + path)
-}
-
-func FindApi1(path string) (string, error) {
 
 	for _, regPath := range accountsRegex {
 		matched, err := regexp.MatchString(regPath.Regex, path)
