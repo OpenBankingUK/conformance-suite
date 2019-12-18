@@ -217,17 +217,21 @@ func (wj *journey) TestCases() (generation.SpecRun, error) {
 		return generation.SpecRun{}, errTestCasesGenerated
 	}
 
-	for k, discoveryItem := range wj.validDiscoveryModel.DiscoveryModel.DiscoveryItems {
-		tlsValidationResult, err := wj.tlsValidator.ValidateTLSVersion(discoveryItem.ResourceBaseURI)
-		if err != nil {
-			logger.WithFields(logrus.Fields{
-				"err":                           errors.Wrapf(err, "unable to validate TLS version for uri %s", discoveryItem.ResourceBaseURI),
-				"discoveryItem[key]":            k,
-				"discoveryItem.ResourceBaseURI": discoveryItem.ResourceBaseURI,
-			}).Error("Error validating TLS version for discovery item ResourceBaseURI")
+	if tlsCheck {
+		for k, discoveryItem := range wj.validDiscoveryModel.DiscoveryModel.DiscoveryItems {
+			tlsValidationResult, err := wj.tlsValidator.ValidateTLSVersion(discoveryItem.ResourceBaseURI)
+			if err != nil {
+				logger.WithFields(logrus.Fields{
+					"err":                           errors.Wrapf(err, "unable to validate TLS version for uri %s", discoveryItem.ResourceBaseURI),
+					"discoveryItem[key]":            k,
+					"discoveryItem.ResourceBaseURI": discoveryItem.ResourceBaseURI,
+				}).Error("Error validating TLS version for discovery item ResourceBaseURI")
+			}
+			wj.context.PutString(wj.tlsVersionCtxKey(discoveryItem.APISpecification.Name), tlsValidationResult.TLSVersion)
+			wj.context.Put(wj.tlsValidCtxKey(discoveryItem.APISpecification.Name), tlsValidationResult.Valid)
 		}
-		wj.context.PutString(wj.tlsVersionCtxKey(discoveryItem.APISpecification.Name), tlsValidationResult.TLSVersion)
-		wj.context.Put(wj.tlsValidCtxKey(discoveryItem.APISpecification.Name), tlsValidationResult.Valid)
+	} else {
+		logrus.Warn("TLS Check disabled")
 	}
 
 	if !wj.testCasesRunGenerated {
@@ -670,4 +674,10 @@ func DetermineAPIVersions(apis []discovery.ModelDiscoveryItem) []string {
 		logrus.Warnf("spectype %s, specversion %s", v.APISpecification.SpecType, v.APISpecification.Version)
 	}
 	return apiversions
+}
+
+var tlsCheck = true
+
+func EnableTLSCheck(state bool) {
+	tlsCheck = state
 }
