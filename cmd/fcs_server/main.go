@@ -86,6 +86,7 @@ func init() {
 	rootCmd.PersistentFlags().Bool("enable_jws", false, "Enable JWS Signature")
 	rootCmd.PersistentFlags().Bool("dynres", false, "Use Dynamic Resource IDs - accounts")
 	rootCmd.PersistentFlags().Bool("dumpcontexts", false, "Dump contexts when trace enabled")
+	rootCmd.PersistentFlags().Bool("tlscheck", true, "enable tls version checking - default enabled")
 
 	if err := viper.BindPFlags(rootCmd.PersistentFlags()); err != nil {
 		fmt.Fprint(os.Stderr, err)
@@ -155,6 +156,10 @@ func initConfig() {
 		model.EnableContextDumps()
 	}
 
+	if viper.GetBool("tlscheck") == false {
+		server.EnableTLSCheck(false)
+	}
+
 	resty.SetDebug(viper.GetBool("log_http_trace"))
 	resty.SetRedirectPolicy(resty.FlexibleRedirectPolicy(15))
 
@@ -173,5 +178,6 @@ func printConfigurationFlags() {
 		"enable_jws":     viper.GetBool("enable_jws"),
 		"dynres":         viper.GetBool("dynres"),
 		"dumpcontexts":   viper.GetBool("dumpcontexts"),
+		"tlscheck":       viper.GetBool("tlscheck"),
 	}).Info("configuration flags")
 }
