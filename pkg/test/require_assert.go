@@ -1,9 +1,6 @@
 package test
 
 import (
-	"flag"
-	"os"
-	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -19,12 +16,12 @@ var (
 // Returns false is args is: `GOMAXPROCS=4 go test ./...`
 func computeIsParallel() bool {
 	// call flag.Parse() here if TestMain uses flags
-	flag.Parse()
-	for _, arg := range os.Args {
-		if strings.HasPrefix(arg, "-test.parallel") {
-			return true
-		}
-	}
+	// flag.Parse()
+	// for _, arg := range os.Args {
+	// 	if strings.HasPrefix(arg, "-test.parallel") {
+	// 		return true
+	// 	}
+	// }
 	return false
 }
 
