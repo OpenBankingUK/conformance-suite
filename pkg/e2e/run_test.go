@@ -62,7 +62,7 @@ func init() {
 	viper.AutomaticEnv()
 }
 
-func TestRun(t *testing.T) {
+func disableTestRun(t *testing.T) {
 	debug := viper.GetBool("LOG_HTTP_TRACE")
 	logLevel, err := logrus.ParseLevel(viper.GetString("LOG_LEVEL"))
 	if err != nil {
