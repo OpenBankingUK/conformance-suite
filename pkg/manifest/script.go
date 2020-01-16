@@ -191,6 +191,9 @@ func addConditionalPropertiesToRequest(tc *model.TestCase, conditional []discove
 						if propertyType == "[array]" {
 							stringArray := convertInputStringToArray(prop.Value)
 							tc.Input.RequestBody, err = sjson.Set(tc.Input.RequestBody, prop.Path, stringArray)
+						} else if propertyType == "[object]" && prop.Schema == "OBSupplementaryData1" { // handle freeform supplementary data into request payload
+							path := prop.Path + "." + prop.Name
+							tc.Input.RequestBody, err = sjson.Set(tc.Input.RequestBody, path, prop.Value)
 						} else {
 							tc.Input.RequestBody, err = sjson.Set(tc.Input.RequestBody, prop.Path, prop.Value)
 						}
