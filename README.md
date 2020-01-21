@@ -19,7 +19,7 @@ To provide feedback, please use the public [issue tracker](https://bitbucket.org
 
 # Release v1.2.4 (21st Jan 2020)
 
-The release is called **v1.2.4** it fixes an incorrect expiry time/date field for CPBII and allows supplementation data input.
+The release is called **v1.2.4** it fixes an incorrect expiry time/date field for CPBII and allows supplementary data input.
 
 [Full Release Notes](https://bitbucket.org/openbankingteam/conformance-suite/src/develop/docs/releases/v1.2.4.md) (v1.2.4.md)
 
