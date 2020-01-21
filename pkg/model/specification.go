@@ -21,6 +21,13 @@ type Specification struct {
 var (
 	specifications = []Specification{
 		{
+			Identifier:    "account-transaction-v3.1.3",
+			Name:          "Account and Transaction API Specification",
+			URL:           mustParseURL("https://openbankinguk.github.io/read-write-api-site3/v3.1.3/profiles/account-and-transaction-api-profile.html"),
+			Version:       "v3.1.3",
+			SchemaVersion: mustParseURL("https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.3/dist/account-info-swagger.json"),
+		},
+		{
 			Identifier:    "account-transaction-v3.1.2",
 			Name:          "Account and Transaction API Specification",
 			URL:           mustParseURL("https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1077805296/Account+and+Transaction+API+Specification+-+v3.1.2"),
