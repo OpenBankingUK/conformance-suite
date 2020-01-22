@@ -183,6 +183,25 @@ func NewJWSSignature(requestBody string, ctx ContextInterface, alg jwt.SigningMe
 
 	var tok jwt.Token
 	switch apiVersion {
+	case "v.3.1.3":
+		// Contains `http://openbanking.org.uk/tan`.
+		tok = jwt.Token{
+			Header: map[string]interface{}{
+				"typ":                           "JOSE",
+				"kid":                           kid,
+				"cty":                           "application/json",
+				"http://openbanking.org.uk/iat": time.Now().Unix(),
+				"http://openbanking.org.uk/iss": issuer,      //ASPSP ORGID or TTP ORGID/SSAID
+				"http://openbanking.org.uk/tan": trustAnchor, //Trust anchor
+				"alg":                           alg.Alg(),
+				"crit": []string{
+					"http://openbanking.org.uk/iat",
+					"http://openbanking.org.uk/iss",
+					"http://openbanking.org.uk/tan",
+				},
+			},
+			Method: alg,
+		}
 	case "v3.1":
 		// Contains `http://openbanking.org.uk/tan`.
 		tok = jwt.Token{
