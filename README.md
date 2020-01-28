@@ -17,11 +17,11 @@ To provide feedback, please use the public [issue tracker](https://bitbucket.org
 ## Release Notes 
 * * *
 
-# Release v1.2.4 (21st Jan 2020)
+# Release v1.2.5 (28th Jan 2020)
 
-The release is called **v1.2.4** it fixes an incorrect expiry time/date field for CPBII and allows supplementary data input.
+The release is called **v1.2.5** it adds conditional response properties to the exported report and fixes invalid 401 body checking.
 
-[Full Release Notes](https://bitbucket.org/openbankingteam/conformance-suite/src/develop/docs/releases/v1.2.4.md) (v1.2.4.md)
+[Full Release Notes](https://bitbucket.org/openbankingteam/conformance-suite/src/develop/docs/releases/v1.2.5.md) (v1.2.5.md)
 
 ## Quickstart
 * * *
