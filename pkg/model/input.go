@@ -80,7 +80,6 @@ func (i *Input) CreateRequest(tc *TestCase, ctx *Context) (*resty.Request, error
 			return nil, err
 		}
 		i.RequestBody = body
-		logrus.Tracef("setting resty body to: %s", body)
 		req.SetBody(body)
 	}
 

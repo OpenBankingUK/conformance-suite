@@ -16,7 +16,7 @@ var (
 // Returns false is args is: `GOMAXPROCS=4 go test ./...`
 func computeIsParallel() bool {
 	// call flag.Parse() here if TestMain uses flags
-	// flag.Parse()
+	//flag.Parse()
 	// for _, arg := range os.Args {
 	// 	if strings.HasPrefix(arg, "-test.parallel") {
 	// 		return true
@@ -33,8 +33,9 @@ func NewRequire(t *testing.T) *require.Assertions {
 		t.Parallel()
 	}
 
-	require := require.New(t)
-	return require
+	//require := require.New(t)
+	//return require
+	return &require.Assertions{}
 }
 
 // NewAssert - calls `t.Parallel()` if tests were run with `GOMAXPROCS=4 go test -parallel=4 ./...`.

@@ -13,10 +13,11 @@ import (
 )
 
 const (
-	marshalIndentPrefix = ""
-	marshalIndent       = "  "
-	reportFilename      = "report.json"
-	discoveryFilename   = "discovery.json"
+	marshalIndentPrefix    = ""
+	marshalIndent          = "  "
+	reportFilename         = "report.json"
+	discoveryFilename      = "discovery.json"
+	responseFieldsFilename = "responseFields.json"
 )
 
 // Exporter - allows the exporting of a `Report`.
@@ -86,6 +87,15 @@ func (e *zipExporter) create(zipWriter *zip.Writer, reportJSON, discoveryJSON []
 	// Create discovery contents to zip
 	if _, err := discoveryFile.Write(discoveryJSON); err != nil {
 		return errors.Wrapf(err, "zipExporter.Export: zip.Writer.Write failed, could write to %q, discoveryJSON=%+v", discoveryFilename, string(reportJSON))
+	}
+
+	responseFieldsFile, err := zipWriter.Create(responseFieldsFilename)
+	if err != nil {
+		return errors.Wrapf(err, "zipExporter.Export: zip.Writer.Create failed, could not create file %q", responseFieldsFilename)
+	}
+
+	if _, err := responseFieldsFile.Write([]byte(e.report.ResponseFields)); err != nil {
+		return errors.Wrapf(err, "zipExporter.Export: zip.Writer.Write failed, could write to %q, responseFields=%+v", responseFieldsFile, e.report.ResponseFields)
 	}
 
 	for _, manifest := range e.report.Discovery.DiscoveryModel.DiscoveryItems {

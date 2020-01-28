@@ -6,6 +6,7 @@ import (
 	"sync"
 
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/schema"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/schemaprops"
 
 	"gopkg.in/resty.v1"
 
@@ -112,8 +113,12 @@ func (r *TestCaseRunner) runTestCasesAsync(ctx *model.Context) {
 
 	ctxLogger := r.logger.WithField("id", uuid.New())
 	for _, spec := range r.definition.SpecRun.SpecTestCases {
-		r.executeSpecTests(spec, ruleCtx, ctxLogger)
+		r.executeSpecTests(spec, ruleCtx, ctxLogger) // Run Tests for each spec
 	}
+
+	collector := schemaprops.GetPropertyCollector()
+	r.daemonController.AddResponseFields(collector.OutputJSON())
+
 	r.daemonController.SetCompleted()
 
 	r.setNotRunning()
@@ -320,6 +325,9 @@ func (r *TestCaseRunner) makeRuleCtx(ctx *model.Context) *model.Context {
 
 func (r *TestCaseRunner) executeSpecTests(spec generation.SpecificationTestCases, ruleCtx *model.Context, ctxLogger *logrus.Entry) {
 	ctxLogger = ctxLogger.WithField("spec", spec.Specification.Name)
+	collector := schemaprops.GetPropertyCollector()
+	collector.SetCollectorAPIDetails(spec.Specification.Name, spec.Specification.Version)
+
 	for _, testcase := range spec.TestCases {
 		if r.daemonController.ShouldStop() {
 			ctxLogger.Info("stop test run received, aborting runner")
