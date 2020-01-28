@@ -599,7 +599,7 @@
       "uriImplementation": "optional",
       "resource": "Beneficiary",
       "method": "get",
-      "asserts": 
+      "asserts": [
         "OB3GLOAssertOn401"
       ],
       "schemaCheck": false
