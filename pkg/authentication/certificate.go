@@ -42,21 +42,23 @@ type certificate struct {
 func NewCertificate(publicKeyPem, privateKeyPem string) (Certificate, error) {
 	publicKey, err := jwt.ParseRSAPublicKeyFromPEM([]byte(publicKeyPem))
 	if err != nil {
-		return nil, errors.Wrap(err, "error with public key")
+		return nil, errors.Wrap(err, "NewCertificate: error with public key")
 	}
 	publicPem := []byte(publicKeyPem)
 
 	privateKey, err := jwt.ParseRSAPrivateKeyFromPEM([]byte(privateKeyPem))
 	if err != nil {
-		return nil, errors.Wrap(err, "error with private key")
+		return nil, errors.Wrap(err, "NewCertificate: error with private key")
 	}
 
 	tlsCert, err := tls.X509KeyPair([]byte(publicKeyPem), []byte(privateKeyPem))
 	if err != nil {
-		logrus.StandardLogger().Warnln("tls.X509KeyPair, err=", err)
+		logrus.Error("NewCertificate: tls.X509KeyPair, err=", err)
+		return nil, err
 	}
 
 	if err := validateKeys(publicKey, privateKey); err != nil {
+		logrus.Error("NewCertificate: validate keys, err=", err)
 		return nil, err
 	}
 

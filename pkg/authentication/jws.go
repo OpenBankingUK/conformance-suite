@@ -139,7 +139,6 @@ func NewJWSSignature(requestBody string, ctx ContextInterface, alg jwt.SigningMe
 	if err != nil {
 		return "", errors.Wrap(err, "authentication.NewJWSSignature: CalcKid(modulusBase64) failed")
 	}
-
 	issuer, err := GetJWSIssuerString(ctx, cert)
 	if err != nil {
 		return "", errors.Wrap(err, "authentication.NewJWSSignature: unable to retrieve issuer from context")
@@ -248,14 +247,14 @@ func NewJWSSignature(requestBody string, ctx ContextInterface, alg jwt.SigningMe
 		return "", errors.New("authentication.GetJWSIssuerString: cannot get issuer for jws signature but api-version doesn't match 3.0.0 or 3.1.0")
 	}
 
+	val, _ := json.Marshal(tok.Header)
+	fmt.Printf("Signing string %s, body %s\n", val, minifiedBody)
+
 	tokenString, err := SignedString(&tok, cert.PrivateKey(), minifiedBody) // sign the token - get as encoded string
 	if err != nil {
 		return "", errors.Wrap(err, "authentication.NewJWSSignature: SignedString(&tok, cert.PrivateKey(), minifiedBody) failed")
 	}
 
-	logrus.Tracef("jws:  %v", tokenString)
 	detachedJWS := SplitJWSWithBody(tokenString)
-	logrus.Tracef("detached jws: %v", detachedJWS)
-
 	return detachedJWS, nil
 }
