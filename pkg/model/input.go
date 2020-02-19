@@ -145,6 +145,7 @@ func (i *Input) setClaims(tc *TestCase, ctx *Context) error {
 			i.AppMsg("consent url: " + tc.Input.Endpoint)
 			if i.Generation["strategy"] == "psuConsenturl" {
 				tc.Input.Endpoint = i.Claims["aud"] + "/PsuDummyURL"
+				tc.DoNotCallEndpoint = true
 			}
 		case "jwt-bearer":
 			i.AppMsg("==> executing jwt-bearer strategy")
