@@ -17,11 +17,11 @@ To provide feedback, please use the public [issue tracker](https://bitbucket.org
 ## Release Notes 
 * * *
 
-# Release v1.2.5 (28th Jan 2020)
+# Release v1.2.6 (25th Feb 2020)
 
-The release is called **v1.2.5** it adds conditional response properties to the exported report and fixes invalid 401 body checking.
+The release is called **v1.2.6** it adds one minor fix that prevents the psudummy url from being called, which simplifies the suites interactionn with implements and prevents a 404 and/or redirect issues.
 
-[Full Release Notes](https://bitbucket.org/openbankingteam/conformance-suite/src/develop/docs/releases/v1.2.5.md) (v1.2.5.md)
+[Full Release Notes](https://bitbucket.org/openbankingteam/conformance-suite/src/develop/docs/releases/v1.2.6.md) (v1.2.6.md)
 
 ## Quickstart
 * * *
