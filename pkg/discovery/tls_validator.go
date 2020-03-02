@@ -34,7 +34,10 @@ func (v NullTLSValidator) ValidateTLSVersion(uri string) (TLSValidationResult, e
 }
 
 func NewStdTLSValidator(minSupportedTLSVersion uint16) StdTLSValidator {
-	return StdTLSValidator{&tls.Config{InsecureSkipVerify: true}, minSupportedTLSVersion}
+	return StdTLSValidator{&tls.Config{
+		InsecureSkipVerify: true,
+		Renegotiation:      tls.RenegotiateFreelyAsClient,
+	}, minSupportedTLSVersion}
 }
 
 func (v StdTLSValidator) ValidateTLSVersion(uri string) (TLSValidationResult, error) {
