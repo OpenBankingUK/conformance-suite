@@ -1,3 +1,21 @@
+# Release v1.2.6 (25th Feb 2020)
+
+The release is called **v1.2.6** it adds one minor fix that prevents the psudummy url from being called, which simplifies the suites interactionn with implements and prevents a 404 and/or redirect issues.
+
+[Full Release Notes](https://bitbucket.org/openbankingteam/conformance-suite/src/develop/docs/releases/v1.2.6.md) (v1.2.6.md)
+
+# Release v1.2.5 (28th Jan 2020)
+
+The release is called **v1.2.5** it adds conditional response properties to the exported report and fixes invalid 401 body checking.
+
+[Full Release Notes](https://bitbucket.org/openbankingteam/conformance-suite/src/develop/docs/releases/v1.2.5.md) (v1.2.5.md)
+
+# Release v1.2.4 (21st Jan 2020)
+
+The release is called **v1.2.4** it fixes an incorrect expiry time/date field for CPBII and allows supplementary data input.
+
+[Full Release Notes](https://bitbucket.org/openbankingteam/conformance-suite/src/develop/docs/releases/v1.2.4.md) (v1.24.md)
+
 # Release v1.2.3 (11th Dec 2019)
 
 The release is called **v1.2.3** it contains a fix to the report json output and other minor fixes.

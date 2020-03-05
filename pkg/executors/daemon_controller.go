@@ -15,6 +15,9 @@ type DaemonController interface {
 	AddResult(result results.TestCase)
 	AllResults() []results.TestCase
 	AllResultsGrouped() map[results.ResultKey][]results.TestCase
+	AddResponseFields(string)
+	ResponseFieldsJSON() string
+
 	Results() <-chan results.TestCase
 
 	SetCompleted()
@@ -27,6 +30,7 @@ type daemonController struct {
 	results         []results.TestCase
 	resultsGrouped  map[results.ResultKey][]results.TestCase
 	resultChan      chan results.TestCase
+	responseFields  string
 	stopLock        *sync.Mutex
 	shouldStop      bool
 	isCompletedChan chan bool
@@ -98,6 +102,14 @@ func (rc *daemonController) AllResults() []results.TestCase {
 // AllResultsGrouped - returns all the accumulated results Grouped by the type `ResultKey`.
 func (rc *daemonController) AllResultsGrouped() map[results.ResultKey][]results.TestCase {
 	return rc.resultsGrouped
+}
+
+func (rc *daemonController) AddResponseFields(f string) {
+	rc.responseFields = f
+}
+
+func (rc *daemonController) ResponseFieldsJSON() string {
+	return rc.responseFields
 }
 
 // ResultsChannel - return channel for receiving results.

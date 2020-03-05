@@ -18,6 +18,7 @@ import (
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/generation"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/manifest"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/schemaprops"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/server/models"
 )
 
@@ -267,6 +268,9 @@ func (wj *journey) TestCases() (generation.SpecRun, error) {
 			}
 		}
 
+		collector := schemaprops.GetPropertyCollector()
+		collector.SetCollectorAPIDetails(schemaprops.ConsentGathering, "")
+
 		if discovery.TokenAcquisition == "psu" { // Handle  PSU Consent
 			logger.WithFields(logrus.Fields{
 				"discovery.TokenAcquisition": discovery.TokenAcquisition,
@@ -502,7 +506,8 @@ func (wj *journey) RunTests() error {
 	runDefinition := wj.makeRunDefinition()
 	runner := executors.NewTestCaseRunner(wj.log, runDefinition, wj.daemonController)
 	wj.context.PutString(CtxPhase, "run")
-	return runner.RunTestCases(&wj.context)
+	err := runner.RunTestCases(&wj.context)
+	return err
 }
 
 func (wj *journey) Results() executors.DaemonController {

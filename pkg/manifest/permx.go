@@ -270,13 +270,11 @@ func MapTokensToPaymentTestCases(rt []RequiredTokens, tcs []model.TestCase, ctx 
 			}
 		} else {
 			if test.Input.Method == "GET" {
-				logrus.Trace("MapTokensToPaymentTestCases: authCodeToken NOT Required for GET")
 				test.InjectBearerToken("$payment_ccg_token")
 				continue
 			}
 			useCCGToken, _ := test.Context.Get("useCCGToken")
 			if useCCGToken == "yes" { // payment POSTs
-				logrus.Trace("MapTokensToPaymentTestCases: authCodeToken NOT Required for POST")
 				test.InjectBearerToken("$payment_ccg_token")
 				continue
 			}
