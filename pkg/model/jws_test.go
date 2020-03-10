@@ -2,18 +2,14 @@ package model
 
 import (
 	"encoding/base64"
-	"encoding/json"
 	"fmt"
 	"regexp"
 	"strings"
-	"testing"
-	"time"
 
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/authentication"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
-	"github.com/stretchr/testify/assert"
 	"github.com/tdewolff/minify/v2"
 	minjson "github.com/tdewolff/minify/v2/json"
 
@@ -21,61 +17,6 @@ import (
 
 	"github.com/dgrijalva/jwt-go/test"
 )
-
-func TestJWSDetachedSignature312andBefore1(t *testing.T) {
-
-	EnableJWS()
-	ctx := Context{
-		"signingPrivate":            selfsignedDummykey,
-		"signingPublic":             selfsignedDummypub,
-		"initiation":                "{\"InstructionIdentification\":\"SIDP01\",\"EndToEndIdentification\":\"FRESCO.21302.GFX.20\",\"InstructedAmount\":{\"Amount\":\"15.00\",\"Currency\":\"GBP\"},\"CreditorAccount\":{\"SchemeName\":\"SortCodeAccountNumber\",\"Identification\":\"20000319470104\",\"Name\":\"Messers Simplex & Co\"}}",
-		"consent_id":                "sdp-1-b5bbdb18-eeb1-4c11-919d-9a237c8f1c7d",
-		"domestic_payment_template": "{\"Data\": {\"ConsentId\": \"$consent_id\",\"Initiation\":$initiation },\"Risk\":{}}",
-		"authorisation_endpoint":    "https://example.com/authorisation",
-		"api-version":               "v3.0",
-		"nonOBDirectory":            false,
-		"requestObjectSigningAlg":   "PS256",
-	}
-
-	i := Input{JwsSig: true, Method: "POST", Endpoint: "https://google.com", RequestBody: "$domestic_payment_template"}
-	tc := TestCase{Input: i}
-	req, err := tc.Prepare(&ctx)
-	assert.Nil(t, err)
-	sig := req.Header.Get("x-jws-signature")
-	assert.NotEmpty(t, sig)
-
-	detachedJWS := authentication.SplitJWSWithBody(sig)
-
-	token := &jwt.Token{Raw: detachedJWS}
-
-	alg, err := authentication.GetSigningAlg("PS256")
-
-	minified, err := MinifyBody(req.Body.(string))
-
-	cert, err := SigningCertFromContext(ctx)
-	if err != nil {
-		t.Error(err)
-		t.Fail()
-	}
-
-	fmt.Printf("First Part: %s\n", GetFirstPart(sig))
-
-	// val, err := json.Unmarshal(headerBytes, &token.Header)
-	// fmt.Printf("%v\n", val)
-
-	tim := time.Now().Unix()
-	token1, _ := MyNewJWSSignature(minified, ctx, alg, cert, tim)
-
-	token2, _ := MyNewJWSSignature(minified, ctx, alg, cert, tim)
-	assert.Equal(t, token1, token2)
-
-	var headerBytes []byte
-	json.Unmarshal(headerBytes, &token.Header)
-	fmt.Printf("headers %v\n", headerBytes)
-
-	assert.Equal(t, token, detachedJWS)
-
-}
 
 func SplitJWSWithBody(token string) string {
 	firstPart := token[:strings.IndexByte(token, '.')]
@@ -273,33 +214,6 @@ func SigningCertFromContext(ctx ContextInterface) (authentication.Certificate, e
 		return nil, errors.Wrap(err, "authentication.SigningCertFromContext: couldn't create `certificate` from pub/priv keys")
 	}
 	return cert, nil
-}
-
-func TestStuff(t *testing.T) {
-	// Invalid signature on jwt.io: https://bit.ly/2FfYHLr
-	before := makeToken(jwt.SigningMethodPS256)
-	fmt.Printf("Before: %s\nAccepted before: %v\nAccepted after fix: %v\n",
-		before, verify(jwt.SigningMethodPS256, before), verify(fixedSigningMethodPS256, before),
-	)
-	fmt.Println()
-	// Valid signature on jwt.io: https://bit.ly/2FfYHLr (print some spaces to Encoded field to refresh signature status)
-	after := makeToken(fixedSigningMethodPS256)
-	fmt.Printf("After: %s\nAccepted before: %v\nAccepted after fix: %v\n",
-		after, verify(jwt.SigningMethodPS256, after), verify(fixedSigningMethodPS256, after),
-	)
-}
-
-func makeToken(method jwt.SigningMethod) string {
-	token := jwt.NewWithClaims(method, jwt.StandardClaims{
-		Issuer:   "example",
-		IssuedAt: time.Now().Unix(),
-	})
-	privateKey := test.LoadRSAPrivateKeyFromDisk("test/sample_key")
-	signed, err := token.SignedString(privateKey)
-	if err != nil {
-		panic(err)
-	}
-	return signed
 }
 
 var fixedSigningMethodPS256 = &jwt.SigningMethodRSAPSS{
