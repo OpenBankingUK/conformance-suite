@@ -1,84 +1,22 @@
-package authentication
+package model
 
 import (
-	"crypto"
-	"crypto/rsa"
 	"encoding/base64"
-	"encoding/json"
 	"fmt"
 	"regexp"
 	"strings"
-	"time"
 
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/authentication"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 	"github.com/tdewolff/minify/v2"
 	minjson "github.com/tdewolff/minify/v2/json"
+
+	"crypto/rsa"
+
+	"github.com/dgrijalva/jwt-go/test"
 )
-
-func GetSigningAlg(alg string) (jwt.SigningMethod, error) {
-	switch strings.ToUpper(alg) {
-	case "PS256":
-		// Workaround
-		// https://github.com/dgrijalva/jwt-go/issues/285
-		return &jwt.SigningMethodRSAPSS{
-			SigningMethodRSA: jwt.SigningMethodPS256.SigningMethodRSA,
-			Options: &rsa.PSSOptions{
-				SaltLength: rsa.PSSSaltLengthEqualsHash,
-				Hash:       crypto.SHA256,
-			},
-		}, nil
-	case "RS256":
-		return jwt.SigningMethodRS256, nil
-	case "NONE":
-		fallthrough
-	default:
-		return nil, fmt.Errorf("authentication.GetSigningAlg: unable to find signing algorithm %q", alg)
-	}
-}
-
-func SigningCertFromContext(ctx ContextInterface) (Certificate, error) {
-	privKey, err := ctx.GetString("signingPrivate")
-	if err != nil {
-		return nil, errors.New("authentication.SigningCertFromContext: couldn't find `SigningPrivate` in context")
-	}
-	pubKey, err := ctx.GetString("signingPublic")
-	if err != nil {
-		return nil, errors.New("authentication.SigningCertFromContext: couldn't find `SigningPublic` in context")
-	}
-	cert, err := NewCertificate(pubKey, privKey)
-	if err != nil {
-		return nil, errors.Wrap(err, "authentication.SigningCertFromContext: couldn't create `certificate` from pub/priv keys")
-	}
-	return cert, nil
-}
-
-func GetJWSIssuerString(ctx ContextInterface, cert Certificate) (string, error) {
-	apiVersion, err := ctx.GetString("api-version")
-	if err != nil {
-		return "", errors.New("authentication.GetJWSIssuerString: cannot find api-version: " + err.Error())
-	}
-
-	var issuer string
-	switch apiVersion {
-	case "v3.1":
-		issuer, err = cert.SignatureIssuer(true)
-		if err != nil {
-			logrus.Warn("cannot Issuer for Signature: ", err.Error())
-			return "", errors.New("authentication.GetJWSIssuerString: cannot Issuer for Signature: " + err.Error())
-		}
-	case "v3.0":
-		issuer, _, _, err = cert.DN()
-		if err != nil {
-			logrus.Warn("cannot get certificate DN: ", err.Error())
-			return "", errors.New("authentication.GetJWSIssuerString: cert.DN() failed" + err.Error())
-		}
-	default:
-		return "", errors.New("authentication.GetJWSIssuerString: cannot get issuer for jws signature but api-version doesn't match 3.0.0 or 3.1.0")
-	}
-	return issuer, nil
-}
 
 func SplitJWSWithBody(token string) string {
 	firstPart := token[:strings.IndexByte(token, '.')]
@@ -87,66 +25,70 @@ func SplitJWSWithBody(token string) string {
 	return firstPart + "." + lastPart
 }
 
-// SignedString Get the complete, signed token for jws usage
-func SignedString(t *jwt.Token, key interface{}, body string) (string, error) {
-	var sig, sstr string
-	var err error
-	if sstr, err = SigningString(t, body); err != nil {
-		return "", errors.Wrap(err, "authentication.SignedString: SigningString(t, body) failed")
+// Decode JWT specific base64url encoding with padding stripped
+func DecodeSegment(seg string) ([]byte, error) {
+	if l := len(seg) % 4; l > 0 {
+		seg += strings.Repeat("=", 4-l)
 	}
-	if sig, err = t.Method.Sign(sstr, key); err != nil {
-		return "", errors.Wrap(err, "authentication.SignedString: t.Method.Sign(sstr, key failed")
-	}
-	return strings.Join([]string{sstr, sig}, "."), nil
+
+	return base64.URLEncoding.DecodeString(seg)
 }
 
-// SigningString -
-func SigningString(t *jwt.Token, body string) (string, error) {
-	var err error
-	parts := make([]string, 2)
-	for i := range parts {
-		var jsonValue []byte
-		if i == 0 {
-			if jsonValue, err = json.Marshal(t.Header); err != nil {
-				return "", errors.Wrap(err, "authentication.SigningString: json.Marshal(t.Header) failed")
-			}
-		} else {
-			jsonValue = []byte(body)
-		}
-		if i == 0 {
-			parts[i] = jwt.EncodeSegment(jsonValue)
-		} else {
-			parts[i] = string(jsonValue)
-		}
-	}
-	return strings.Join(parts, "."), nil
-}
+// //}
 
-func NewJWSSignature(requestBody string, ctx ContextInterface, alg jwt.SigningMethod) (string, error) {
+func MinifyBody(body string) (string, error) {
 	m := minify.New()
 	m.AddFuncRegexp(regexp.MustCompile("[/+]json$"), minjson.Minify)
-	minifiedBody, err := m.String("application/json", requestBody)
-	if err != nil {
-		return "", errors.Wrap(err, `authentication.NewJWSSignature: m.String("application/json", requestBody) failed`)
-	}
-	cert, err := SigningCertFromContext(ctx)
-	if err != nil {
-		return "", errors.Wrap(err, "authentication.NewJWSSignature: unable to sign certificate from context")
-	}
+	minifiedBody, err := m.String("application/json", body)
+
+	return minifiedBody, err
+}
+
+func SplitBody(token string) string {
+	firstPart := token[:strings.IndexByte(token, '.')]
+	idx := strings.LastIndex(token, ".")
+	lastPart := token[idx:]
+	return firstPart + "." + lastPart
+}
+
+func GetFirstPart(token string) string {
+	firstPart := token[:strings.IndexByte(token, '.')]
+	//idx := strings.LastIndex(token, ".")
+	//lastPart := token[idx:]
+	return firstPart
+}
+
+func InsertBodyIn(token string, body interface{}) string {
+	firstPart := token[:strings.IndexByte(token, '.')]
+	idx := strings.LastIndex(token, ".")
+	lastPart := token[idx:]
+	return firstPart + "." + body.(string) + lastPart
+}
+
+type ContextInterface interface {
+	// GetString get the string value associated with key
+	GetString(key string) (string, error)
+	// Get the key form the Context map - currently assumes value converts easily to a string!
+	Get(key string) (interface{}, bool)
+}
+
+// TEST
+func MyNewJWSSignature(minifiedBody string, ctx ContextInterface, alg jwt.SigningMethod, cert authentication.Certificate, tim int64) (string, error) {
 	modulus := cert.PublicKey().N.Bytes()
 	modulusBase64 := base64.RawURLEncoding.EncodeToString(modulus)
-	kid, err := CalcKid(modulusBase64)
+	kid, err := authentication.CalcKid(modulusBase64)
 	if err != nil {
 		return "", errors.Wrap(err, "authentication.NewJWSSignature: CalcKid(modulusBase64) failed")
 	}
-	issuer, err := GetJWSIssuerString(ctx, cert)
+
+	issuer, err := authentication.GetJWSIssuerString(ctx, cert)
 	if err != nil {
 		return "", errors.Wrap(err, "authentication.NewJWSSignature: unable to retrieve issuer from context")
 	}
 	trustAnchor := "openbanking.org.uk"
 	useNonOBDirectory, exists := ctx.Get("nonOBDirectory")
 	if !exists {
-		return "", errors.New("authentication.NewJWSSignature: unable to retrieve nonOBDirectory from context")
+		return "", errors.New("authentication.NewJWSSiMyNewJWSSignaturegnature: unable to retrieve nonOBDirectory from context")
 	}
 	useNonOBDirectoryAsBool, ok := useNonOBDirectory.(bool)
 	if !ok {
@@ -189,7 +131,7 @@ func NewJWSSignature(requestBody string, ctx ContextInterface, alg jwt.SigningMe
 				"typ":                           "JOSE",
 				"kid":                           kid,
 				"cty":                           "application/json",
-				"http://openbanking.org.uk/iat": time.Now().Unix(),
+				"http://openbanking.org.uk/iat": tim,
 				"http://openbanking.org.uk/iss": issuer,      //ASPSP ORGID or TTP ORGID/SSAID
 				"http://openbanking.org.uk/tan": trustAnchor, //Trust anchor
 				"alg":                           alg.Alg(),
@@ -209,7 +151,7 @@ func NewJWSSignature(requestBody string, ctx ContextInterface, alg jwt.SigningMe
 				"kid":                           kid,
 				"b64":                           false,
 				"cty":                           "application/json",
-				"http://openbanking.org.uk/iat": time.Now().Unix(),
+				"http://openbanking.org.uk/iat": tim,
 				"http://openbanking.org.uk/iss": issuer,      //ASPSP ORGID or TTP ORGID/SSAID
 				"http://openbanking.org.uk/tan": trustAnchor, //Trust anchor
 				"alg":                           alg.Alg(),
@@ -232,7 +174,7 @@ func NewJWSSignature(requestBody string, ctx ContextInterface, alg jwt.SigningMe
 				"kid":                           kid,
 				"b64":                           false,
 				"cty":                           "application/json",
-				"http://openbanking.org.uk/iat": time.Now().Unix(),
+				"http://openbanking.org.uk/iat": tim,
 				"http://openbanking.org.uk/iss": issuer, //ASPSP ORGID or TTP ORGID/SSAID
 				"alg":                           alg.Alg(),
 				"crit": []string{
@@ -247,14 +189,42 @@ func NewJWSSignature(requestBody string, ctx ContextInterface, alg jwt.SigningMe
 		return "", errors.New("authentication.GetJWSIssuerString: cannot get issuer for jws signature but api-version doesn't match 3.0.0 or 3.1.0")
 	}
 
-	val, _ := json.Marshal(tok.Header)
-	fmt.Printf("Signing string %s, body %s\n", val, minifiedBody)
-
-	tokenString, err := SignedString(&tok, cert.PrivateKey(), minifiedBody) // sign the token - get as encoded string
+	//tokenString, err := tok.SignedString(cert.PrivateKey())
+	tokenString, err := authentication.SignedString(&tok, cert.PrivateKey(), minifiedBody) // sign the token - get as encoded string
+	fmt.Println("token string:" + tokenString)
 	if err != nil {
 		return "", errors.Wrap(err, "authentication.NewJWSSignature: SignedString(&tok, cert.PrivateKey(), minifiedBody) failed")
 	}
 
-	detachedJWS := SplitJWSWithBody(tokenString)
+	detachedJWS := authentication.SplitJWSWithBody(tokenString)
 	return detachedJWS, nil
+}
+
+func SigningCertFromContext(ctx ContextInterface) (authentication.Certificate, error) {
+	privKey, err := ctx.GetString("signingPrivate")
+	if err != nil {
+		return nil, errors.New("authentication.SigningCertFromContext: couldn't find `SigningPrivate` in context")
+	}
+	pubKey, err := ctx.GetString("signingPublic")
+	if err != nil {
+		return nil, errors.New("authentication.SigningCertFromContext: couldn't find `SigningPublic` in context")
+	}
+	cert, err := authentication.NewCertificate(pubKey, privKey)
+	if err != nil {
+		return nil, errors.Wrap(err, "authentication.SigningCertFromContext: couldn't create `certificate` from pub/priv keys")
+	}
+	return cert, nil
+}
+
+var fixedSigningMethodPS256 = &jwt.SigningMethodRSAPSS{
+	SigningMethodRSA: jwt.SigningMethodPS256.SigningMethodRSA,
+	Options: &rsa.PSSOptions{
+		SaltLength: rsa.PSSSaltLengthEqualsHash,
+	},
+}
+
+func verify(signingMethod jwt.SigningMethod, token string) bool {
+	segments := strings.Split(token, ".")
+	err := signingMethod.Verify(strings.Join(segments[:2], "."), segments[2], test.LoadRSAPublicKeyFromDisk("test/sample_key.pub"))
+	return err == nil
 }

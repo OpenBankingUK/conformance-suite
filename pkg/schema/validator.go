@@ -10,6 +10,7 @@ import (
 	"github.com/go-openapi/loads"
 	"github.com/go-openapi/spec"
 	"github.com/pkg/errors"
+	"github.com/sirupsen/logrus"
 )
 
 // Response represents a response object from a HTTP Call
@@ -75,8 +76,11 @@ func NewSwaggerOBSpecValidator(specName, version string) (Validator, error) {
 		if err != nil {
 			return nil, errors.Wrapf(err, "schema: opening spec file, filename=%q", filename)
 		}
+
 		if doc.Spec().Info.Version == version && doc.Spec().Info.Title == specName {
 			return NewSwaggerValidator(filename)
+		} else {
+			logrus.Debugf("No Swagger match: versions %v : %v , titles %v : %v ", doc.Spec().Info.Version, version, doc.Spec().Info.Title, specName)
 		}
 	}
 
@@ -114,6 +118,8 @@ func newValidator(doc *loads.Document) (Validator, error) {
 	case "v3.1.1":
 		fallthrough
 	case "v3.1.2":
+		fallthrough
+	case "v3.1.3":
 		return validators{
 			validators: []Validator{
 				newContentTypeValidator(f),

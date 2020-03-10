@@ -88,6 +88,7 @@ func (i *Input) CreateRequest(tc *TestCase, ctx *Context) (*resty.Request, error
 		if i.Method == "POST" {
 			err := i.createJWSDetachedSignature(ctx)
 			if err != nil {
+				logrus.Tracef("error creating detached signature: %s", err)
 				return nil, err
 			}
 		} else {
