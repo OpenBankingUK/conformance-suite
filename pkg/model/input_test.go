@@ -1,7 +1,6 @@
 package model
 
 import (
-	"crypto/rsa"
 	"crypto/tls"
 	"crypto/x509"
 	"encoding/json"
@@ -520,181 +519,21 @@ func TestJWSSign(t *testing.T) {
 	// useful if you use multiple keys for your application.  The standard is to use 'kid' in the
 	// head of the token to identify which key to use, but the parsed token (head and claims) is provided
 	// to the callback, providing flexibility.
-	token, err = jwt.Parse(tokenString, keyFunc)
+	token, err = jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+		// Don't forget to validate the alg is what you expect:
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
+		}
+
+		// hmacSampleSecret is a []byte containing your secret, e.g. []byte("my_secret_key")
+		return hmacSampleSecret, nil
+	})
 
 	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
-
-		//		time.Time(claims["nbf"]
-		value := claims["nbf"]
-
-		t2 := value.(float64)
-		t1 := int64(t2)
-
-		// i, err := strconv.ParseInt(tm1, 10, 64)
-		// if err != nil {
-		// 	panic(err)
-		// }
-		tm := time.Unix(t1, 0)
-		fmt.Println(tm)
-
-		fmt.Println(claims["foo"], tm)
+		fmt.Println(claims["foo"], claims["nbf"])
 	} else {
 		fmt.Println("An Error has occurred: " + err.Error())
 	}
-}
-
-type reportClaims struct {
-	jwt.StandardClaims
-	ReportDigest    string `json:"reportDigest,omitempty"`
-	DiscoveryDigest string `json:"discoveryDigest,omitempty"`
-	ManifestDigest  string `json:"manifestDigest,omitempty"`
-}
-
-func TestGenealSigs(t *testing.T) {
-	pb, rest := pem.Decode([]byte(signing_private))
-	require.NotNil(t, pb, "pem decode private key, block nil")
-	require.Len(t, rest, 0, "rest should be zero length")
-	privateKey, err := x509.ParsePKCS8PrivateKey(pb.Bytes)
-	require.NoError(t, err, "parse private key")
-
-	meta := map[string]string{
-		"header-foo": "header-bar",
-	}
-
-	knownClaims := reportClaims{
-		ReportDigest:    "report-hash-sum",
-		DiscoveryDigest: "discovery-hash-sum",
-		ManifestDigest:  "manifest-hash-sum",
-		StandardClaims: jwt.StandardClaims{
-			Issuer:    "https://openbanking.org.uk/fcs/reporting",
-			Subject:   "openbanking.org.uk",
-			Id:        "unique-jwt-id",
-			ExpiresAt: 4077614132,
-			NotBefore: 90000,
-		},
-	}
-
-	signed, err := sign(knownClaims, meta, privateKey.(*rsa.PrivateKey))
-	require.NoError(t, err, "Sign error")
-
-	fmt.Println(signed)
-
-	calcClaims := reportClaims{}
-	tk, err := jwt.ParseWithClaims(signed, &calcClaims, keyFunc)
-	require.NoError(t, err, "jwt.Parse")
-	fmt.Printf("claims: %v", calcClaims)
-
-	signedString, err := tk.SigningString()
-	require.NoError(t, err, "tk.SigningString()")
-	expectedString := fmt.Sprintf("%s.%s", signedString, tk.Signature)
-
-	require.Equal(t, signed, expectedString)
-	require.Equal(t, knownClaims.Issuer, calcClaims.Issuer, "claim Issuer")
-	require.Equal(t, knownClaims.Subject, calcClaims.Subject, "claim Subject")
-	require.Equal(t, knownClaims.Id, calcClaims.Id, "claim Id")
-	require.Equal(t, knownClaims.NotBefore, calcClaims.NotBefore, "claim NotBefore")
-	require.Equal(t, knownClaims.ExpiresAt, calcClaims.ExpiresAt, "claim ExpiresAt")
-	require.Equal(t, knownClaims.ReportDigest, calcClaims.ReportDigest, "claim ReportDigest")
-	require.Equal(t, knownClaims.DiscoveryDigest, calcClaims.DiscoveryDigest, "claim DiscoveryDigest")
-	require.Equal(t, knownClaims.ManifestDigest, calcClaims.ManifestDigest, "claim ManifestDigest")
-
-}
-
-func keyFunc(_ *jwt.Token) (interface{}, error) {
-	pb, _ := pem.Decode([]byte(signing_public))
-	publicKey, err := x509.ParsePKIXPublicKey(pb.Bytes)
-	return publicKey, err
-}
-
-func sign(claims jwt.Claims, meta map[string]string, privateKey *rsa.PrivateKey) (string, error) {
-	t := jwt.NewWithClaims(jwt.SigningMethodPS256, claims)
-
-	for k, v := range meta {
-		t.Header[k] = v
-	}
-
-	signed, err := t.SignedString(privateKey)
-	if err != nil {
-		return "", err
-	}
-
-	return signed, nil
-}
-
-func TestDirEncodedJwt(t *testing.T) {
-	EnableJWS()
-	ctx := Context{
-		"signingPrivate":            signing_private,
-		"signingPublic":             signing_public_cert,
-		"initiation":                "{\"InstructionIdentification\":\"SIDP01\",\"EndToEndIdentification\":\"FRESCO.21302.GFX.20\",\"InstructedAmount\":{\"Amount\":\"15.00\",\"Currency\":\"GBP\"},\"CreditorAccount\":{\"SchemeName\":\"SortCodeAccountNumber\",\"Identification\":\"20000319470104\",\"Name\":\"Messers Simplex & Co\"}}",
-		"consent_id":                "sdp-1-b5bbdb18-eeb1-4c11-919d-9a237c8f1c7d",
-		"domestic_payment_template": "{\"Data\": {\"ConsentId\": \"$consent_id\",\"Initiation\":$initiation },\"Risk\":{}}",
-		"authorisation_endpoint":    "https://example.com/authorisation",
-		"api-version":               "v3.0",
-		"nonOBDirectory":            false,
-		"requestObjectSigningAlg":   "PS256",
-	}
-
-	i := Input{JwsSig: true, Method: "POST", Endpoint: "https://google.com", RequestBody: "$domestic_payment_template"}
-	tc := TestCase{Input: i}
-	req, err := tc.Prepare(&ctx)
-	assert.Nil(t, err)
-	sig := req.Header.Get("x-jws-signature")
-	assert.NotEmpty(t, sig)
-
-	keyFuncSelfSigned(nil)
-
-	token, err := jwt.Parse(sig, keyFuncSelfSigned)
-	if err != nil {
-		fmt.Printf("Error verifying signature: %s", err)
-		t.Fail()
-	} else {
-		fmt.Println("Verify signature ok")
-	}
-
-	_ = token
-
-}
-
-func keyFuncSelfSigned(_ *jwt.Token) (interface{}, error) {
-	pb, _ := pem.Decode([]byte(signing_public))
-	publicKey, err := x509.ParsePKIXPublicKey(pb.Bytes)
-	return publicKey, err
-}
-
-func keyFuncSelfSigned1(_ *jwt.Token) (interface{}, error) {
-	logrus.Warnln("Before spewing - keyfuncentry")
-	fmt.Println("Parse Token")
-	var cert tls.Certificate
-	//var certPEMBlock []byte
-	var skippedBlockTypes []string
-	var certDERBlock *pem.Block
-	certDERBlock, _ = pem.Decode([]byte(signing_public_cert))
-	if certDERBlock == nil {
-		return nil, errors.New("Empty der block")
-	}
-	if certDERBlock.Type == "CERTIFICATE" {
-		cert.Certificate = append(cert.Certificate, certDERBlock.Bytes)
-	} else {
-		skippedBlockTypes = append(skippedBlockTypes, certDERBlock.Type)
-	}
-
-	if len(cert.Certificate) == 0 {
-		if len(skippedBlockTypes) == 0 {
-			logrus.Errorln("tls: failed to find any PEM data in certificate input")
-		}
-		if len(skippedBlockTypes) == 1 && strings.HasSuffix(skippedBlockTypes[0], "PRIVATE KEY") {
-			logrus.Errorln(errors.New("tls: failed to find certificate PEM data in certificate input, but did find a private key; PEM inputs may have been switched"))
-		}
-		logrus.Errorln(fmt.Errorf("tls: failed to find \"CERTIFICATE\" PEM block in certificate input after skipping PEM blocks of the following types: %v", skippedBlockTypes))
-	}
-
-	//	spew.Dump(cert)
-
-	//pb, _ := pem.Decode([]byte(cert.Certificate[0]))
-	publicKey, err := x509.ParsePKIXPublicKey(cert.Certificate[0])
-	return publicKey, err
-
 }
 
 func TestCertDNRetrieval(t *testing.T) {
@@ -866,7 +705,6 @@ Yi9OehPCelBbM5l1YZMtXoK0w1F4Xj9JUVgY4UKEWS5gynITbfrQON0O3HzmaaKw
 nuz0bzQ7ARNqBkWLQ4bqzwy0aKXlcvbIMBaVXyfQTiwzwWAZsAWr6WHPlvWDP6mP
 1vAUje5xEMtsIwj6UnkJ3OpPVVeJ56aKQIxg6QU2ROrWYDccx4gg0g==
 -----END RSA PRIVATE KEY-----`
-
 const selfsignedDummypub = `-----BEGIN CERTIFICATE-----
 MIIDBzCCAe+gAwIBAgIJAOze8GNkMIMMMA0GCSqGSIb3DQEBBQUAMBoxGDAWBgNV
 BAMMD3d3dy5leGFtcGxlLmNvbTAeFw0xOTAxMjExMzUyMjFaFw0yOTAxMTgxMzUy
@@ -885,122 +723,5 @@ QxGi8GkcwKSwnxSrkKQz8xXcL+P3daOmaAUQDo6JPqxYE4DNsQ3HRtkCj9kTUk8+
 ppJAzXoBrutQz7e2daEXHUNc+1+KcD+se5cmvK2cJg6vk1vpgY1kjXdLQr1CySxJ
 XgfLm2jJfzMF/L5RX5Vdnon6x4ufi7e/3fOThjlhLRXMOkhlb0E+wSYP0NvLA12E
 rjs761ndZ9Qrb0s=
------END CERTIFICATE-----`
-
-const selfsignedPubKey = `-----BEGIN PUBLIC KEY-----
-MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA8Gl2x9KsmqwdmZd+BdZY
-tDWHNRXtPd/kwiR6luU+4w76T+9mlmePXqALi7aSyvYQDLeffR8+2dSGcdwvkf6b
-DWZNeMRXl7Z1jsk+xFN91mSYNk1nR6N1EsDTK2KXlZZyaTmpu/5p8SxwDO34uE5A
-aeESeM3RVqqOgRcXskmp/atwUMC+qLfuXPoNSjKguWdcuZwJxbjJbqbvF5/zXISE
-oKly5iGK+11eDRcX2Rp8yRpOhO84LtSpC21QTkMSK8VA4O3e1tOW+DXaJb3Qtzwo
-cTb+wXTw74agwvcAQP9yDilgR1t6fdqeGrW4Y25bDulXlsD+S6PzhVo+EVPq1T3R
-JQIDAQAB
------END PUBLIC KEY-----`
-
-const samplePrivateKey = `-----BEGIN RSA PRIVATE KEY-----
-MIIEowIBAAKCAQEAsK8mIapI9HetPmwfptmHr2+oYW5YGKhzq4xEl6zAISChNVk9
-DSMMLALfnlOaAK02yPqSiVSOYpyPjlEK/mRwETMSsRQvO/i+pO5aI9NeSfTo0HAc
-NZ4nEwzsdrgrL3vrEagBxA2UgJM397CYhij/kJNK7Gec/jvlJAZxvr/k0SPV1iik
-mYPCk0jHdbuMCEYMJ769pDvNwZr/JtV/uwG4H6BJUFtfKj3T0kjLQC4Y/uGTjKfm
-l39iEuEop8Gi05WniEvbcpcI64XZpKasnuj7nYpjBW57oZzRW8viok9/+UEW0nE6
-whKnyfhQ9TfJEicyoKFeLEOVbq9UdrhC2vwcaQIDAQABAoIBAQCQ/vwFDrEWZwx2
-uNb033n5oGGHq72CZuOeOdukubFmvldt55Exsbxwdd88GJG+0meuYexV5V2AUcmB
-2sJx6M0LYGWLiuwEhGs4AR9aXUD44pMZU5fi7KpWePmpqBRQwJo2ADGKyjY/mhGJ
-JJTXLNgmtqn6/kEZZt/yQ5OfHe3TLv21nwhjfk9BV7MTEdA1Rr2BXyHD7h9MjgxK
-9Q7vHtmhwwV67fQZFXwwN7kgrSSNFVNXDz2S+8IOcDondGTQFTau+S6x/0ziY6rg
-ENjkzyoV9JO2WqnQyKb+rtpaFnDNdkuJHw6oVdeZOZwIL6CQ/RhmWDQPeDoc/NDK
-aD6mzwaBAoGBAMDgCctycsilaxqZlHY5l6Qt1V0NH57+RNpzFzHidS8tEjbwHii7
-FFQusTTcCFnFPpiQzKTTrjbPqEH5dcC99ip0BA9CGIzVWaWHFSVUPI0comhZhLVX
-Y5+uX309f3LrSqNQmuRkwAOCeNlH5l9r0ncrDX9DkXp3x6uNtmITvOoRAoGBAOqC
-jo/z7X9XJRhWwgW39AGIpvxrJgK9lIWsxfQma+NglyqvUA/Dzw9Ou870oJCVBZ39
-CfZkLiJAUAk3F6lOdeEByzRy4A7NL94O8B3lQ6huOayksgfr8A4ScCWMyrTIgtCh
-zATedKa69QGm/TAg6KJA8eP3K0snAPRt38cvKnTZAoGAJxkDQ0eG9x95L6I0Uybn
-k3NrDfrMDynSAUpVSFp0kMSdLZ/NLUqHG21/pIx58OCoCLtJkJwMc7XykLUl5pVb
-Yk20SPeIDHxvOLvCUJfb0mscjPSgjzYQztzFJJkjzcLelW6Qh33Y4p0/LCSEEZHE
-zz1d9g9XXTEMu7z1XLpNkFECgYAB0kPDMHTOwWGDX+Ef5D7b6DDL0xU3fjtyElZz
-P/0khfKGnVf012N7TfQ9dj7tAItLn9R8+mg1UeSNPcVMRlS6C6aFYMMGumc9xUXu
-JYKyAzElex3628VAhroiQIaugsQpVKhd/VBQnzEZ8y8SOZ8062Y1jAzlB4eFXnkX
-dfFReQKBgB8uf54s2HOI+Yx1YuQ5bYzOUp/J4PjyzPECjylsKe5J4pBntV1TvA9m
-GRw/287a1mi9hDUlbOZSIVNJHAzxArCnJJnrW6C29NDFqWGIAgUS066KRZIyEuB3
-SEtoekWeoBbByz3ehuKpuBK5St7Mz1MHyqb7YHQlTFj7oRQ9uHNK
------END RSA PRIVATE KEY-----`
-
-const samplePublicKey = `-----BEGIN RSA PUBLIC KEY-----
-MIIBCgKCAQEAsK8mIapI9HetPmwfptmHr2+oYW5YGKhzq4xEl6zAISChNVk9DSMM
-LALfnlOaAK02yPqSiVSOYpyPjlEK/mRwETMSsRQvO/i+pO5aI9NeSfTo0HAcNZ4n
-EwzsdrgrL3vrEagBxA2UgJM397CYhij/kJNK7Gec/jvlJAZxvr/k0SPV1iikmYPC
-k0jHdbuMCEYMJ769pDvNwZr/JtV/uwG4H6BJUFtfKj3T0kjLQC4Y/uGTjKfml39i
-EuEop8Gi05WniEvbcpcI64XZpKasnuj7nYpjBW57oZzRW8viok9/+UEW0nE6whKn
-yfhQ9TfJEicyoKFeLEOVbq9UdrhC2vwcaQIDAQAB
------END RSA PUBLIC KEY-----`
-
-const signing_private = `-----BEGIN PRIVATE KEY-----
-MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQC61SZkZGSX7eAy
-3mcqGxPkZf+yMOYIAv2iQmdHW69ssqHiRHxrDZmAx20QP9GjjJ8tbyQk2QORJ9ej
-sAOVhdwMpq70QacjLc2AK9kgAO3LHdD1lnuN9onoWkZZFDctJgMYxUnujZi25PtQ
-vuJl+Pi1UHnsosBf8HYou7SvP1HxoAYacWVuCL+PZJnuJfyevFyRJMyvrdTA3Qyu
-I3+Hgj/nXrOtm6MEhmuWuXOExbopUgtzNbCN3MWxRu/CCS63YjBXmtwIY8zc3BkO
-kdJbjOf1u4/z23CZyyAVEBjIBEeOwJcmxDqD2Ay4igpLmMUlAdKOQ90ihliufF1w
-JqnhCQ1DAgMBAAECggEAKf1HoJ5zgTXEAoq7ctodEWLfIaQdvsU1TadQ4Ne5SFup
-SFoOAF1RF4E6gMFnEzPCfoqQ+/sN8yyaKT6gv5UTDIDVpy2uK5jaq6ivJqMuzkyI
-LvnAEPrMqbzIPLLvZ6U4YvPMFuIZ5Vj3JoGQDkzzUISisk0toSJA3Ay7oftAJmZn
-Sosy3tLp8/MNkUfsCavtHVzFRrFAJ1N4i+UNpUE7hQ9YE1fPL11cmKYf3I6FQHPp
-U8MCLPrGhOztnK9bV4rI9Rd9xFIQCDv2mpFwSTeh8lSTM8pUdxOAT0XbhCHMjQGu
-xz3Wlrv66J0ebH8opE3ztnsq+h1WciOLjtHrRglHWQKBgQDcCp44dnpumLKox0Ew
-kQSdE5zP4WdGZq4aJwE17w/o4upldaV9qXx3QmAs6eCwvvJOdKQXr/uMsZzIcMxt
-VyQGMmBytAPdmGj0+qZ4E7DaM9Gfyluy+xf89pZVkxdQQS/jhUAoL+DKmUshWh1k
-+9ngYUzGaWxooKQcD7XhWTVkpwKBgQDZXT9Pn6pj0vXW3dWQ6gkuIXe+LNWwSWZy
-MzE1RaoixBiV2Y06Gul87I5h3Q5n94UGDRNlqdfGuda1Uv5J65lRTmUrnTPnO3s+
-Pm6G9HxjPH2czEtnLcK9AvEVpLrl1rq/0Otv+4XoYBM/v8NYuy2cntP9PPIXabyO
-TBjM+xX6BQKBgHGCyLw34lDLVN7cazSymr6tL2fNz4jxzz6OgIFiIcLxzBkq54Q7
-uomLJDIHNHH5DuaKJVxS3GFn/okoJ00AdwT7V+XUF2ppBTvbUaUAA2uM78aOjV93
-SJimXEco6g3skte8FaylhkD9c1RxOFiv02V8zC5OlC4lMIOJVzo42uJhAoGBAJ/Q
-QHFRily0yc298n0GpdNGBh1MJ5ziirEiVGa/nrTLCux6NKzpBoyz/IeVmTb1tNdb
-G8zekGhrUKKmr5I359Tw18+2WGgFwrpj+q286guoeQ6k4jetXIXNuOXZ5RSByXKo
-r8H4416T7PMtEfqWPJXv7Rs/CRwPwPO6nW1wmprlAoGAN0pBAuw4/Ywj94oZpDBH
-JYM2qdSstLt/KcYeYYOQw/N8NIYK0pKgWzn5QnPn24xrBFddO3GYt56KacYTv2nP
-h3Tytkib/u85ZlNif8TB259RDjPJ3zmAfjQAWvhzTPmyXjBOttPMLUsLlBPNEkRL
-hFVMxtUuf8fxNOFewsjOAMg=
------END PRIVATE KEY-----`
-
-const signing_public_cert = `-----BEGIN CERTIFICATE-----
-MIIFLTCCBBWgAwIBAgIEWcWi3DANBgkqhkiG9w0BAQsFADBTMQswCQYDVQQGEwJH
-QjEUMBIGA1UEChMLT3BlbkJhbmtpbmcxLjAsBgNVBAMTJU9wZW5CYW5raW5nIFBy
-ZS1Qcm9kdWN0aW9uIElzc3VpbmcgQ0EwHhcNMTkwOTE4MTM0NzExWhcNMjAxMDE4
-MTQxNzExWjBhMQswCQYDVQQGEwJHQjEUMBIGA1UEChMLT3BlbkJhbmtpbmcxGzAZ
-BgNVBAsTEjAwMTU4MDAwMDEwNDFSYkFBSTEfMB0GA1UEAxMWZkp1VVU2ZE50MHp4
-bkRlNTllRzBZTjCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBALrVJmRk
-ZJft4DLeZyobE+Rl/7Iw5ggC/aJCZ0dbr2yyoeJEfGsNmYDHbRA/0aOMny1vJCTZ
-A5En16OwA5WF3AymrvRBpyMtzYAr2SAA7csd0PWWe432iehaRlkUNy0mAxjFSe6N
-mLbk+1C+4mX4+LVQeeyiwF/wdii7tK8/UfGgBhpxZW4Iv49kme4l/J68XJEkzK+t
-1MDdDK4jf4eCP+des62bowSGa5a5c4TFuilSC3M1sI3cxbFG78IJLrdiMFea3Ahj
-zNzcGQ6R0luM5/W7j/PbcJnLIBUQGMgER47AlybEOoPYDLiKCkuYxSUB0o5D3SKG
-WK58XXAmqeEJDUMCAwEAAaOCAfkwggH1MA4GA1UdDwEB/wQEAwIGwDAVBgNVHSUE
-DjAMBgorBgEEAYI3CgMMMIHgBgNVHSAEgdgwgdUwgdIGCysGAQQBqHWBBgFkMIHC
-MCoGCCsGAQUFBwIBFh5odHRwOi8vb2IudHJ1c3Rpcy5jb20vcG9saWNpZXMwgZMG
-CCsGAQUFBwICMIGGDIGDVXNlIG9mIHRoaXMgQ2VydGlmaWNhdGUgY29uc3RpdHV0
-ZXMgYWNjZXB0YW5jZSBvZiB0aGUgT3BlbkJhbmtpbmcgUm9vdCBDQSBDZXJ0aWZp
-Y2F0aW9uIFBvbGljaWVzIGFuZCBDZXJ0aWZpY2F0ZSBQcmFjdGljZSBTdGF0ZW1l
-bnQwbQYIKwYBBQUHAQEEYTBfMCYGCCsGAQUFBzABhhpodHRwOi8vb2IudHJ1c3Rp
-cy5jb20vb2NzcDA1BggrBgEFBQcwAoYpaHR0cDovL29iLnRydXN0aXMuY29tL29i
-X3BwX2lzc3VpbmdjYS5jcnQwOgYDVR0fBDMwMTAvoC2gK4YpaHR0cDovL29iLnRy
-dXN0aXMuY29tL29iX3BwX2lzc3VpbmdjYS5jcmwwHwYDVR0jBBgwFoAUUHORxiFy
-03f0/gASBoFceXluP1AwHQYDVR0OBBYEFHricuOycGqmX586P9epTpowEnx9MA0G
-CSqGSIb3DQEBCwUAA4IBAQBjptS/LoJpSs35r5O6UkU7KsB2Aeemb18VDUvCfbbX
-XI8nONI+74YzXV2V/vHOJBZL5lUD7BhDGr03M76YIvRalbecGVVfcKUJbTadjRSL
-LAvsjVcnuHLj67gr3gTGcqkTk6QHKldlP38m1ZSjdGTqzlEDrcE1f5tXm3lP+RVV
-9lKhDsrhn7PqNROMkP+XnD2oxovTIPNCpvyPad+lCFuK/DT7ZrnRgw+bG3cwP82+
-4FKu6rKdQIlt25v3a4MnAs5rlqS8yONhPGrc0W3LcL8UhuTnb/Zb8Z774JO18/9I
-W5KE7L11WczOWn5kMtn4juswluDQ02i8163BdDrsE9NC
------END CERTIFICATE-----`
-
-const signing_public = `-----BEGIN PUBLIC KEY-----
-MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAutUmZGRkl+3gMt5nKhsT
-5GX/sjDmCAL9okJnR1uvbLKh4kR8aw2ZgMdtED/Ro4yfLW8kJNkDkSfXo7ADlYXc
-DKau9EGnIy3NgCvZIADtyx3Q9ZZ7jfaJ6FpGWRQ3LSYDGMVJ7o2YtuT7UL7iZfj4
-tVB57KLAX/B2KLu0rz9R8aAGGnFlbgi/j2SZ7iX8nrxckSTMr63UwN0MriN/h4I/
-516zrZujBIZrlrlzhMW6KVILczWwjdzFsUbvwgkut2IwV5rcCGPM3NwZDpHSW4zn
-9buP89twmcsgFRAYyARHjsCXJsQ6g9gMuIoKS5jFJQHSjkPdIoZYrnxdcCap4QkN
-QwIDAQAB
------END PUBLIC KEY-----
+-----END CERTIFICATE-----
 `
