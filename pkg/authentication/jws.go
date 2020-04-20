@@ -139,7 +139,6 @@ func NewJWSSignature(requestBody string, ctx ContextInterface, alg jwt.SigningMe
 	if err != nil {
 		return "", errors.Wrap(err, "authentication.NewJWSSignature: CalcKid(modulusBase64) failed")
 	}
-
 	issuer, err := GetJWSIssuerString(ctx, cert)
 	if err != nil {
 		return "", errors.Wrap(err, "authentication.NewJWSSignature: unable to retrieve issuer from context")
@@ -183,6 +182,25 @@ func NewJWSSignature(requestBody string, ctx ContextInterface, alg jwt.SigningMe
 
 	var tok jwt.Token
 	switch apiVersion {
+	case "v.3.1.3":
+		// Contains `http://openbanking.org.uk/tan`.
+		tok = jwt.Token{
+			Header: map[string]interface{}{
+				"typ":                           "JOSE",
+				"kid":                           kid,
+				"cty":                           "application/json",
+				"http://openbanking.org.uk/iat": time.Now().Unix(),
+				"http://openbanking.org.uk/iss": issuer,      //ASPSP ORGID or TTP ORGID/SSAID
+				"http://openbanking.org.uk/tan": trustAnchor, //Trust anchor
+				"alg":                           alg.Alg(),
+				"crit": []string{
+					"http://openbanking.org.uk/iat",
+					"http://openbanking.org.uk/iss",
+					"http://openbanking.org.uk/tan",
+				},
+			},
+			Method: alg,
+		}
 	case "v3.1":
 		// Contains `http://openbanking.org.uk/tan`.
 		tok = jwt.Token{
@@ -229,14 +247,14 @@ func NewJWSSignature(requestBody string, ctx ContextInterface, alg jwt.SigningMe
 		return "", errors.New("authentication.GetJWSIssuerString: cannot get issuer for jws signature but api-version doesn't match 3.0.0 or 3.1.0")
 	}
 
+	val, _ := json.Marshal(tok.Header)
+	fmt.Printf("Signing string %s, body %s\n", val, minifiedBody)
+
 	tokenString, err := SignedString(&tok, cert.PrivateKey(), minifiedBody) // sign the token - get as encoded string
 	if err != nil {
 		return "", errors.Wrap(err, "authentication.NewJWSSignature: SignedString(&tok, cert.PrivateKey(), minifiedBody) failed")
 	}
 
-	logrus.Tracef("jws:  %v", tokenString)
 	detachedJWS := SplitJWSWithBody(tokenString)
-	logrus.Tracef("detached jws: %v", detachedJWS)
-
 	return detachedJWS, nil
 }

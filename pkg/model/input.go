@@ -80,7 +80,6 @@ func (i *Input) CreateRequest(tc *TestCase, ctx *Context) (*resty.Request, error
 			return nil, err
 		}
 		i.RequestBody = body
-		logrus.Tracef("setting resty body to: %s", body)
 		req.SetBody(body)
 	}
 
@@ -89,6 +88,7 @@ func (i *Input) CreateRequest(tc *TestCase, ctx *Context) (*resty.Request, error
 		if i.Method == "POST" {
 			err := i.createJWSDetachedSignature(ctx)
 			if err != nil {
+				logrus.Tracef("error creating detached signature: %s", err)
 				return nil, err
 			}
 		} else {
@@ -146,6 +146,7 @@ func (i *Input) setClaims(tc *TestCase, ctx *Context) error {
 			i.AppMsg("consent url: " + tc.Input.Endpoint)
 			if i.Generation["strategy"] == "psuConsenturl" {
 				tc.Input.Endpoint = i.Claims["aud"] + "/PsuDummyURL"
+				tc.DoNotCallEndpoint = true
 			}
 		case "jwt-bearer":
 			i.AppMsg("==> executing jwt-bearer strategy")

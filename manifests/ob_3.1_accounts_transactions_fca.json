@@ -1,2043 +1,2276 @@
 {
-    "scripts": [
-        {
-            "description": "Fails 404 on an invalid endpoint.",
-            "id": "OB-301-ACC-001000",
-            "refURI": "",
-            "detail": "Validates that the base resource returns the correct status code (404 Not Found) given an invalid endpoint.",
-            "parameters": {
-                "tokenRequestScope": "accounts"
-            },
-            "permissions": [
-                "ReadAccountsBasic"
-            ],
-            "uri": "/foobar",
-            "uriImplementation": "optional",
-            "resource": "Global",
-            "asserts": [
-                "OB3GLOAssertOn404"
-            ],
-            "method": "get",
-            "schemaCheck": false
-        },
-        {
-            "description": "Minimal data returned for a given Account using the ReadAccountsBasic permission, status and headers.",
-            "id": "OB-301-ACC-100000",
-            "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937623627/Accounts+v3.1#Accountsv3.1-PermissionCodes",
-            "detail": "Checks that the resource differs depending on the permissions (ReadAccountsBasic and ReadAccountsDetail) used to access the resource with additional schema checks on status and headers.",
-            "parameters": {
-                "tokenRequestScope": "accounts",
-                "accountId": "$consentedAccountId"
-            },
-            "permissions": [
-                "ReadAccountsBasic"
-            ],
-            "permissions-excluded": [
-                "ReadAccountsDetail"
-            ],
-            "uri": "/accounts/$accountId",
-            "uriImplementation": "mandatory",
-            "resource": "Account",
-            "asserts": [
-                "OB3GLOAssertOn200",
-                "OB3GLOFAPIHeader"
-            ],
-            "method": "get",
-            "schemaCheck": true
-        },
-        {
-            "description": "All data returned for a given Account with ReadAccountsDetail permission, status and headers.",
-            "id": "OB-301-ACC-100200",
-            "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937623627/Accounts+v3.1#Accountsv3.1-PermissionCodes",
-            "detail": "Checks that the resource returns the correct data depending on the permissions ReadAccountsDetail with additional additional schema checks on status and headers.",
-            "parameters": {
-                "tokenRequestScope": "accounts",
-                "accountId": "$consentedAccountId"
-            },
-            "permissions": [
-                "ReadAccountsDetail"
-            ],
-            "uri": "/accounts/$accountId",
-            "uriImplementation": "mandatory",
-            "resource": "Account",
-            "asserts": [
-                "OB3GLOAssertOn200",
-                "OB3GLOFAPIHeader"
-            ],
-            "method": "get",
-            "schemaCheck": true
-        },
-        {
-            "description": "Minimal data returned for bulk Accounts using the ReadAccountsBasic permission, status and headers.",
-            "id": "OB-301-ACC-100300",
-            "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937623627/Accounts+v3.1#Accountsv3.1-PermissionCodes",
-            "detail": "Checks that the resource differs depending on the permissions (ReadAccountsBasic and ReadAccountsDetail) used to access the resource with additional additional schema checks on status and headers.",
-            "parameters": {
-                "tokenRequestScope": "accounts"
-            },
-            "permissions": [
-                "ReadAccountsBasic"
-            ],
-            "permissions-excluded": [
-                "ReadAccountsDetail"
-            ],
-            "uri": "/accounts",
-            "uriImplementation": "mandatory",
-            "resource": "Account",
-            "asserts": [
-                "OB3GLOAssertOn200",
-                "OB3GLOFAPIHeader"
-            ],
-            "method": "get",
-            "schemaCheck": true
-        },
-        {
-            "description": "All data returned for bulk Accounts with ReadAccountsDetail permission, status and headers.",
-            "id": "OB-301-ACC-100400",
-            "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937623627/Accounts+v3.1#Accountsv3.1-PermissionCodes",
-            "detail": "Checks that the resource returns the correct data depending on the permissions ReadAccountsDetail with additional additional schema checks on status and headers.",
-            "parameters": {
-                "tokenRequestScope": "accounts"
-            },
-            "permissions": [
-                "ReadAccountsDetail"
-            ],
-            "uri": "/accounts",
-            "uriImplementation": "mandatory",
-            "resource": "Account",
-            "asserts": [
-                "OB3GLOAssertOn200",
-                "OB3GLOFAPIHeader"
-            ],
-            "method": "get",
-            "schemaCheck": true
-        },
-        {
-            "description": "Fails using incorrect permissions for a given Account.",
-            "id": "OB-301-ACC-100500",
-            "refURI": "",
-            "detail": "Validates that the account resource fails correctly given an invalid or incorrect token.",
-            "parameters": {
-                "tokenRequestScope": "accounts",
-                "accountId": "$consentedAccountId"
-            },
-            "permissions-excluded": [
-                "ReadAccountsBasic",
-                "ReadAccountsDetail"
-            ],
-            "uri": "/accounts/$accountId",
-            "uriImplementation": "mandatory",
-            "resource": "Account",
-            "method": "get",
-            "asserts": [
-                "OB3GLOAssertOn401"
-            ],
-            "schemaCheck": false
-        },
-        {
-            "description": "Fails using incorrect permissions for Bulk Account.",
-            "id": "OB-301-ACC-100600",
-            "refURI": "",
-            "detail": "Validates that the account list resource fails correctly given an invalid or incorrect token.",
-            "parameters": {
-                "tokenRequestScope": "accounts"
-            },
-            "uri": "/accounts",
-            "uriImplementation": "mandatory",
-            "resource": "Account",
-            "method": "get",
-            "asserts": [
-                "OB3GLOAssertOn401"
-            ],
-            "schemaCheck": false
-        },
-        {
-            "description": "The x-fapi-interaction-id is replayed for an Account.",
-            "id": "OB-301-ACC-100700",
-            "refURI": "",
-            "detail": "Checks that the x-fapi-interaction-id value is played-back for an Account.",
-            "parameters": {
-                "tokenRequestScope": "accounts",
-                "accountId": "$consentedAccountId",
-                "x-fapi-interaction-id": "f5a10e5e-0c46-41c5-a7b7-c8f56020520c"
-            },
-            "headers": {
-                "x-fapi-interaction-id": "$x-fapi-interaction-id"
-            },
-            "permissions": [
-                "ReadAccountsDetail"
-            ],
-            "uri": "/accounts/$accountId",
-            "uriImplementation": "mandatory",
-            "resource": "Account",
-            "method": "get",
-            "asserts": [
-                "OB3GLOAssertFAPIPlayBack"
-            ],
-            "schemaCheck": false
-        },
-        {
-            "description": "The x-fapi-interaction-id is replayed for bulk accounts if given.",
-            "id": "OB-301-ACC-100800",
-            "refURI": "",
-            "detail": "Checks that the x-fapi-interaction-id value is played-back for bulk Account.",
-            "parameters": {
-                "tokenRequestScope": "accounts",
-                "accountId": "$consentedAccountId",
-                "x-fapi-interaction-id": "f5a10e5e-0c46-41c5-a7b7-c8f560205200"
-            },
-            "headers": {
-                "x-fapi-interaction-id": "$x-fapi-interaction-id"
-            },
-            "permissions": [
-                "ReadAccountsDetail"
-            ],
-            "uri": "/accounts/$accountId",
-            "uriImplementation": "mandatory",
-            "resource": "Account",
-            "method": "get",
-            "asserts": [
-                "OB3GLOAssertFAPIPlayBack"
-            ],
-            "schemaCheck": false
-        },
-        {
-            "description": "Fails using 401 unauthorized given no token for Accounts.",
-            "id": "OB-301-ACC-101000",
-            "refURI": "",
-            "detail": "Checks the correct response is returned 401 if no token is used on an Account.",
-            "parameters": {
-                "tokenRequestScope": "accounts",
-                "accountId": "$consentedAccountId"
-            },
-            "uri": "/accounts/$accountId",
-            "uriImplementation": "mandatory",
-            "resource": "Account",
-            "method": "get",
-            "asserts": [
-                "OB3GLOAssertOn401"
-            ],
-            "schemaCheck": false
-        },
-        {
-            "description": "Fails using 401 unauthorized given no token for Bulk Accounts.",
-            "id": "OB-301-ACC-101100",
-            "refURI": "",
-            "detail": "Checks the correct response is returned 401 given if no token is used on a bulk account.",
-            "parameters": {
-                "tokenRequestScope": "accounts"
-            },
-            "uri": "/accounts",
-            "uriImplementation": "mandatory",
-            "resource": "Account",
-            "method": "get",
-            "asserts": [
-                "OB3GLOAssertOn401"
-            ],
-            "schemaCheck": false
-        },
-        {
-            "description": "Fails 404 on an invalid Account resource.",
-            "id": "OB-301-ACC-101101",
-            "refURI": "",
-            "detail": "Validates that the Account resource returns the correct status code (404 Not Found) given an invalid endpoint.",
-            "parameters": {
-                "tokenRequestScope": "accounts",
-                "accountId": "$consentedAccountId"
-            },
-            "permissions": [
-                "ReadAccountsBasic"
-            ],
-            "uri": "/accounts/$accountId/foobar",
-            "uriImplementation": "mandatory",
-            "resource": "Account",
-            "asserts": [
-                "OB3GLOAssertOn404"
-            ],
-            "method": "get",
-            "schemaCheck": false
-        },
-        {
-            "description": "All data returned for an Account with ReadBalances permission, status and headers.",
-            "id": "OB-301-BAL-101200",
-            "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937754673/Balances+v3.1#Balancesv3.1-PermissionCodes",
-            "detail": "Checks that the resource returns the correct data with additional schema checks status and headers for a given account. The resource response payload does not differ depending on the permissions granted.",
-            "parameters": {
-                "tokenRequestScope": "accounts",
-                "accountId": "$consentedAccountId"
-            },
-            "permissions": [
-                "ReadAccountsBasic",
-                "ReadBalances"
-            ],
-            "uri": "/accounts/$accountId/balances",
-            "uriImplementation": "mandatory",
-            "resource": "Balance",
-            "asserts": [
-                "OB3GLOAssertOn200",
-                "OB3GLOFAPIHeader"
-            ],
-            "method": "get",
-            "schemaCheck": true
-        },
-        {
-            "description": "All data returned for Bulk Accounts with ReadBalances permission, status and headers.",
-            "id": "OB-301-BAL-101300",
-            "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937754673/Balances+v3.1#Balancesv3.1-PermissionCodes",
-            "detail": "Checks that the bulk balances resource returns the correct data with additional schema checks, status and headers for a given account.",
-            "parameters": {
-                "accountAccessConsent": "balancesAccessConsent",
-                "tokenRequestScope": "accounts",
-                "accountId": "$consentedAccountId"
-            },
-            "permissions": [
-                "ReadAccountsBasic",
-                "ReadBalances"
-            ],
-            "uri": "/balances",
-            "uriImplementation": "optional",
-            "resource": "Balance",
-            "asserts": [
-                "OB3GLOAssertOn200",
-                "OB3GLOFAPIHeader"
-            ],
-            "method": "get",
-            "schemaCheck": true
-        },
-        {
-            "description": "Fails on incorrect permissions are provided for balance.",
-            "id": "OB-301-BAL-101400",
-            "refURI": "",
-            "detail": "Validates that the balance resource fails correctly given an invalid permissions",
-            "parameters": {
-                "tokenRequestScope": "accounts",
-                "accountId": "$consentedAccountId"
-            },
-            "permissions": [
-                "ReadAccountsBasic"
-            ],
-            "permissions-excluded": [
-                "ReadBalances"
-            ],
-            "uri": "/accounts/$accountId/balances",
-            "uriImplementation": "mandatory",
-            "resource": "Balance",
-            "method": "get",
-            "asserts": [],
-            "asserts_one_of": [
-                "OB3GLOAssertOn400",
-                "OB3GLOAssertOn403"
-            ],
-            "schemaCheck": false
-        },
-        {
-            "description": "Fails on incorrect permissions for Bulk Balances.",
-            "id": "OB-301-BAL-101500",
-            "refURI": "",
-            "detail": "Validates that the bulk balances resource fails correctly given an invalid permissions",
-            "parameters": {
-                "tokenRequestScope": "accounts"
-            },
-            "permissions-excluded": [
-                "ReadAccountsBasic",
-                "ReadBalances"
-            ],
-            "uri": "/balances",
-            "uriImplementation": "optional",
-            "resource": "Balance",
-            "method": "get",
-            "asserts": [
-                "OB3GLOAssertOn401"
-            ],
-            "schemaCheck": false
-        },
-        {
-            "description": "Fails when account is invalid for Balances.",
-            "id": "OB-301-BAL-101600",
-            "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1000702294/Read+Write+Data+API+Specification+-+v3.1.1#Read/WriteDataAPISpecification-v3.1.1-400(BadRequest)v/s404(NotFound)",
-            "detail": "Checks the correct response is returned when given an invalid Account for a Balance.",
-            "parameters": {
-                "tokenRequestScope": "accounts",
-                "accountId": "foobar"
-            },
-            "permissions": [
-                "ReadAccountsBasic",
-                "ReadBalances"
-            ],
-            "uri": "/accounts/$accountId/balances",
-            "uriImplementation": "mandatory",
-            "resource": "Balance",
-            "method": "get",
-            "asserts_one_of": [
-              "OB3GLOAssertOn400",
-              "OB3GLOAssertOn403"
-            ],
-            "schemaCheck": false
-        },
-        {
-            "description": "Fails when token is from client grant.",
-            "id": "OB-301-BAL-101700",
-            "refURI": "",
-            "detail": "Checks the correct response is returned 401 using a CCG token",
-            "parameters": {
-                "tokenRequestScope": "accounts"
-            },
-            "headers": {
-                "Authorization": "Bearer $client_access_token"
-            },
-            "uri": "/balances",
-            "uriImplementation": "optional",
-            "resource": "Balance",
-            "method": "get",
-            "asserts": [
-                "OB3GLOAssertOn401"
-            ],
-            "schemaCheck": false
-        },
-        {
-            "description": "Fails 404 on an invalid Balance resource.",
-            "id": "OB-301-BAL-101701",
-            "refURI": "",
-            "detail": "Validates that the balance resource returns the correct status code (404 Not Found) given an invalid endpoint.",
-            "parameters": {
-                "tokenRequestScope": "accounts",
-                "accountId": "$consentedAccountId"
-            },
-            "permissions": [
-                "ReadAccountsBasic",
-                "ReadBalances"
-            ],
-            "uri": "/accounts/$accountId/balances/foobar",
-            "uriImplementation": "optional",
-            "resource": "Balance",
-            "asserts": [
-                "OB3GLOAssertOn404"
-            ],
-            "method": "get",
-            "schemaCheck": false
-        },
-        {
-            "description": "The x-fapi-interaction-id is played-black for account Balances.",
-            "id": "OB-301-BAL-101702",
-            "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1000015541/Balances+v3.1.1",
-            "detail": "Checks that the value in the x-fapi-interaction-id response header is played-back for account Balances.",
-            "parameters": {
-                "tokenRequestScope": "accounts",
-                "accountId": "$consentedAccountId",
-                "x-fapi-interaction-id": "93bac548-d2de-4546-b106-880a5018460d"
-            },
-            "headers": {
-                "x-fapi-interaction-id": "$x-fapi-interaction-id"
-            },
-            "permissions": [
-                "ReadAccountsBasic",
-                "ReadBalances"
-            ],
-            "uri": "/accounts/$accountId/balances",
-            "uriImplementation": "mandatory",
-            "resource": "Balance",
-            "method": "get",
-            "asserts": [
-                "OB3GLOAssertFAPIPlayBack"
-            ],
-            "schemaCheck": false
-        },
-        {
-            "description": "The x-fapi-interaction-id is played-black for Balances.",
-            "id": "OB-301-BAL-101703",
-            "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1000015541/Balances+v3.1.1",
-            "detail": "Checks that the value in the x-fapi-interaction-id response header is played-back for Balances.",
-            "parameters": {
-                "tokenRequestScope": "accounts",
-                "accountId": "$consentedAccountId",
-                "x-fapi-interaction-id": "f5a10e5e-0c46-41c5-a7b7-c8f560205200"
-            },
-            "headers": {
-                "x-fapi-interaction-id": "$x-fapi-interaction-id"
-            },
-            "permissions": [
-                "ReadAccountsBasic",
-                "ReadBalances"
-            ],
-            "uri": "/balances",
-            "uriImplementation": "optional",
-            "resource": "Account",
-            "method": "get",
-            "asserts": [
-                "OB3GLOAssertFAPIPlayBack"
-            ],
-            "schemaCheck": false
-        },
-        {
-            "description": "Minimal data returned for a given Beneficiary using the ReadBeneficiariesBasic permission, status and headers.",
-            "id": "OB-301-BEN-101800",
-            "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937951315/Beneficiaries+v3.1#Beneficiariesv3.1-PermissionCodes",
-            "detail": "Checks that the resource differs depending on the permission ReadBeneficiariesBasic used to access the resource with additional schema checks on status and headers.",
-            "parameters": {
-                "tokenRequestScope": "accounts",
-                "accountId": "$consentedAccountId"
-            },
-            "permissions": [
-                "ReadAccountsBasic",
-                "ReadBeneficiariesBasic"
-            ],
-            "uri": "/accounts/$accountId/beneficiaries",
-            "uriImplementation": "conditional",
-            "resource": "Beneficiary",
-            "asserts": [
-                "OB3GLOAssertOn200",
-                "OB3GLOFAPIHeader"
-            ],
-            "method": "get",
-            "schemaCheck": true
-        },
-        {
-            "description": "Minimal data returned for a given Bulk Beneficiaries using the ReadBeneficiariesBasic permission, status and headers.",
-            "id": "OB-301-BEN-101900",
-            "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937951315/Beneficiaries+v3.1#Beneficiariesv3.1-PermissionCodes",
-            "detail": "Checks that the resource differs depending on the permissions (ReadBeneficiariesBasic and ReadBeneficiariesDetail) used to access the resource with additional schema checks, status and headers.",
-            "parameters": {
-                "tokenRequestScope": "accounts"
-            },
-            "permissions": [
-                "ReadAccountsBasic",
-                "ReadBeneficiariesBasic"
-            ],
-            "uri": "/beneficiaries",
-            "uriImplementation": "optional",
-            "resource": "Beneficiary",
-            "asserts": [
-                "OB3GLOAssertOn200",
-                "OB3GLOFAPIHeader"
-            ],
-            "method": "get",
-            "schemaCheck": true
-        },
-        {
-            "description": "Fails when incorrect permissions are provided for Bulk Beneficiaries.",
-            "id": "OB-301-BEN-102000",
-            "refURI": "",
-            "detail": "Validates that the bulk Beneficiaries resource fails correctly given an invalid permission.",
-            "parameters": {
-                "tokenRequestScope": "accounts"
-            },
-            "permissions-excluded": [
-                "ReadAccountsBasic",
-                "ReadBeneficiariesBasic"
-            ],
-            "uri": "/beneficiaries",
-            "uriImplementation": "optional",
-            "resource": "Beneficiary",
-            "method": "get",
-            "asserts": [
-                "OB3GLOAssertOn401",
-                "OB3IPAssertHeaderMissingOBErrorCode"
-            ],
-            "schemaCheck": false
-        },
-        {
-            "description": "Fails given incorrect permission is provided for a Beneficiary.",
-            "id": "OB-301-BEN-102100",
-            "refURI": "",
-            "detail": "Validates that the beneficiary resource fails correctly given an invalid permission.",
-            "parameters": {
-                "tokenRequestScope": "accounts",
-                "accountId": "$consentedAccountId"
-            },
-            "permissions-excluded": [
-                "ReadAccountsBasic",
-                "ReadBeneficiariesBasic"
-            ],
-            "uri": "/accounts/$accountId/beneficiaries",
-            "uriImplementation": "conditional",
-            "resource": "Beneficiary",
-            "method": "get",
-            "asserts": [
-                "OB3GLOAssertOn401"
-            ],
-            "schemaCheck": false
-        },
-        {
-            "description": "Fails when account is invalid for Beneficiary.",
-            "id": "OB-301-BEN-102200",
-            "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1000702294/Read+Write+Data+API+Specification+-+v3.1.1#Read/WriteDataAPISpecification-v3.1.1-400(BadRequest)v/s404(NotFound)",
-            "detail": "Checks the correct response is returned when given an invalid account for a Beneficiary.",
-            "parameters": {
-                "tokenRequestScope": "accounts",
-                "accountId": "foobar"
-            },
-            "permissions": [
-                "ReadAccountsBasic",
-                "ReadBeneficiariesBasic"
-            ],
-            "uri": "/accounts/$accountId/beneficiaries",
-            "uriImplementation": "conditional",
-            "resource": "Beneficiary",
-            "method": "get",
-            "asserts": [
-                "OB3IPAssertResourceFieldInvalidOBErrorCode"
-            ],
-            "asserts_one_of": [
-              "OB3GLOAssertOn400",
-              "OB3GLOAssertOn403"
-            ],
-            "schemaCheck": false
-        },
-        {
-            "description": "Fails 404 on an invalid Beneficiary resource.",
-            "id": "OB-301-BEN-102201",
-            "refURI": "",
-            "detail": "Validates that the beneficiary resource returns the correct status code (404 Not Found) given an invalid endpoint.",
-            "parameters": {
-                "tokenRequestScope": "accounts",
-                "accountId": "$consentedAccountId"
-            },
-            "permissions": [
-                "ReadAccountsBasic",
-                "ReadBeneficiariesBasic"
-            ],
-            "uri": "/accounts/$accountId/beneficiaries/foobar",
-            "uriImplementation": "conditional",
-            "resource": "Beneficiary",
-            "asserts": [
-                "OB3GLOAssertOn404"
-            ],
-            "method": "get",
-            "schemaCheck": false
-        },
-        {
-            "description": "Fails using client grant token on Beneficiaries.",
-            "id": "OB-301-BEN-102203",
-            "refURI": "",
-            "detail": "Checks the correct response is returned 401 using a CCG token on Beneficiaries",
-            "parameters": {
-                "tokenRequestScope": "accounts"
-            },
-            "headers": {
-                "Authorization": "Bearer $client_access_token"
-            },
-            "uri": "/beneficiaries",
-            "uriImplementation": "optional",
-            "resource": "Beneficiary",
-            "method": "get",
-            "asserts": [
-                "OB3GLOAssertOn401",
-                "OB3IPAssertHeaderInvalidOBErrorCode"
-            ],
-            "schemaCheck": false
-        },
-        {
-            "description": "The x-fapi-interaction-id is played-black for account Beneficiary.",
-            "id": "OB-301-BEN-102204",
-            "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1000702338/Beneficiaries+v3.1.1",
-            "detail": "Checks that the value in the x-fapi-interaction-id response header is played-back for account Beneficiary.",
-            "parameters": {
-                "tokenRequestScope": "accounts",
-                "accountId": "$consentedAccountId",
-                "x-fapi-interaction-id": "93bac548-d2de-4546-b106-880a5018460d"
-            },
-            "headers": {
-                "x-fapi-interaction-id": "$x-fapi-interaction-id"
-            },
-            "permissions": [
-                "ReadAccountsBasic",
-                "ReadBeneficiariesBasic"
-            ],
-            "uri": "/accounts/$accountId/beneficiaries/",
-            "uriImplementation": "conditional",
-            "resource": "Beneficiary",
-            "method": "get",
-            "asserts": [
-                "OB3GLOAssertFAPIPlayBack"
-            ],
-            "schemaCheck": false
-        },
-        {
-            "description": "The x-fapi-interaction-id is played-black for Beneficiary.",
-            "id": "OB-301-BEN-102205",
-            "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1000702338/Beneficiaries+v3.1.1",
-            "detail": "Checks that the value in the x-fapi-interaction-id response header is played-back for Beneficiary.",
-            "parameters": {
-                "tokenRequestScope": "accounts",
-                "accountId": "$consentedAccountId",
-                "x-fapi-interaction-id": "f5a10e5e-0c46-41c5-a7b7-c8f560205200"
-            },
-            "headers": {
-                "x-fapi-interaction-id": "$x-fapi-interaction-id"
-            },
-            "permissions": [
-                "ReadAccountsBasic",
-                "ReadBeneficiariesBasic"
-            ],
-            "uri": "/beneficiaries",
-            "uriImplementation": "optional",
-            "resource": "Beneficiary",
-            "method": "get",
-            "asserts": [
-                "OB3GLOAssertFAPIPlayBack"
-            ],
-            "schemaCheck": false
-        },
-        {
-            "description": "All data returned for a given account with ReadDirectDebits permission, status and headers.",
-            "id": "OB-301-DIR-102300",
-            "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937558106/Direct+Debits+v3.1",
-            "detail": "Checks that the resource returns the correct data depending permission ReadDirectDebits with additional schema checks on status and headers.",
-            "parameters": {
-                "tokenRequestScope": "accounts",
-                "accountId": "$consentedAccountId"
-            },
-            "permissions": [
-                "ReadAccountsBasic",
-                "ReadDirectDebits"
-            ],
-            "uri": "/accounts/$accountId/direct-debits",
-            "uriImplementation": "conditional",
-            "resource": "DirectDebit",
-            "asserts": [
-                "OB3GLOAssertOn200",
-                "OB3GLOFAPIHeader"
-            ],
-            "method": "get",
-            "schemaCheck": true
-        },
-        {
-            "description": "All data returned for a given account with ReadDirectDebits permission, status and headers.",
-            "id": "OB-301-DIR-102400",
-            "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937558106/Direct+Debits+v3.1",
-            "detail": "Checks that the resource returns the correct data for the permission ReadDirectDebits bulk with additional schema checks on status and headers.",
-            "parameters": {
-                "tokenRequestScope": "accounts"
-            },
-            "permissions": [
-                "ReadAccountsBasic",
-                "ReadDirectDebits"
-            ],
-            "uri": "/direct-debits",
-            "uriImplementation": "optional",
-            "resource": "DirectDebit",
-            "asserts": [
-                "OB3GLOAssertOn200",
-                "OB3GLOFAPIHeader"
-            ],
-            "method": "get",
-            "schemaCheck": true
-        },
-        {
-            "description": "Fails when account is invalid for Direct Debit.",
-            "id": "OB-301-DIR-102500",
-            "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1000702294/Read+Write+Data+API+Specification+-+v3.1.1#Read/WriteDataAPISpecification-v3.1.1-400(BadRequest)v/s404(NotFound)",
-            "detail": "Checks the correct response is returned when given an invalid account for Direct Debit.",
-            "parameters": {
-                "tokenRequestScope": "accounts",
-                "accountId": "foobar"
-            },
-            "permissions": [
-                "ReadAccountsBasic",
-                "ReadDirectDebits"
-            ],
-            "uri": "/accounts/$accountId/direct-debits",
-            "uriImplementation": "conditional",
-            "resource": "DirectDebit",
-            "method": "get",
-            "asserts_one_of": [
-                "OB3GLOAssertOn400",
-                "OB3GLOAssertOn403"
-            ],
-            "schemaCheck": false
-        },
-        {
-            "description": "Fails 404 on an invalid Direct Debit resource.",
-            "id": "OB-301-DIR-102501",
-            "refURI": "",
-            "detail": "Validates that the Direct Debit resource returns the correct status code (404 Not Found) given an invalid endpoint.",
-            "parameters": {
-                "tokenRequestScope": "accounts",
-                "accountId": "$consentedAccountId"
-            },
-            "permissions": [
-                "ReadAccountsBasic",
-                "ReadDirectDebits"
-            ],
-            "uri": "/accounts/$accountId/direct-debits/foobar",
-            "uriImplementation": "conditional",
-            "resource": "DirectDebit",
-            "asserts": [
-                "OB3GLOAssertOn404"
-            ],
-            "method": "get",
-            "schemaCheck": false
-        },
-        {
-            "description": "Fails when token using on Direct Debit is from client grant.",
-            "id": "OB-301-DIR-102502",
-            "refURI": "",
-            "detail": "Checks the correct response is returned 401 using a CCG token",
-            "parameters": {
-                "tokenRequestScope": "accounts"
-            },
-            "headers": {
-                "Authorization": "Bearer $client_access_token"
-            },
-            "uri": "/direct-debits",
-            "uriImplementation": "optional",
-            "resource": "DirectDebit",
-            "method": "get",
-            "asserts": [
-                "OB3GLOAssertOn401",
-                "OB3IPAssertHeaderInvalidOBErrorCode"
-            ],
-            "schemaCheck": false
-        },
-        {
-            "description": "The x-fapi-interaction-id is played-black for account Direct Debit.",
-            "id": "OB-301-DIR-102503",
-            "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/999426259/Direct+Debits+v3.1.1",
-            "detail": "Checks that the value in the x-fapi-interaction-id response header is played-back for account Direct Debit.",
-            "parameters": {
-                "tokenRequestScope": "accounts",
-                "accountId": "$consentedAccountId",
-                "x-fapi-interaction-id": "93bac548-d2de-4546-b106-880a5018460d"
-            },
-            "headers": {
-                "x-fapi-interaction-id": "$x-fapi-interaction-id"
-            },
-            "permissions": [
-                "ReadAccountsBasic",
-                "ReadDirectDebits"
-            ],
-            "uri": "/accounts/$accountId/direct-debits",
-            "uriImplementation": "conditional",
-            "resource": "DirectDebit",
-            "method": "get",
-            "asserts": [
-                "OB3GLOAssertFAPIPlayBack"
-            ],
-            "schemaCheck": false
-        },
-        {
-            "description": "The x-fapi-interaction-id is played-black for Direct Debit.",
-            "id": "OB-301-DIR-102504",
-            "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/999426259/Direct+Debits+v3.1.1",
-            "detail": "Checks that the value in the x-fapi-interaction-id response header is played-back for Direct Debit.",
-            "parameters": {
-                "tokenRequestScope": "accounts",
-                "x-fapi-interaction-id": "f5a10e5e-0c46-41c5-a7b7-c8f560205200"
-            },
-            "headers": {
-                "x-fapi-interaction-id": "$x-fapi-interaction-id"
-            },
-            "permissions": [
-                "ReadAccountsBasic",
-                "ReadDirectDebits"
-            ],
-            "uri": "/direct-debits",
-            "uriImplementation": "optional",
-            "resource": "DirectDebit",
-            "method": "get",
-            "asserts": [
-                "OB3GLOAssertFAPIPlayBack"
-            ],
-            "schemaCheck": false
-        },
-        {
-            "description": "All data returned for a given Account with ReadOffers permission with additional schema checks, status and headers.",
-            "id": "OB-301-OFF-102600",
-            "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937558127/Offers+v3.1#Offersv3.1-PermissionCodes",
-            "detail": "Checks that the resource returns the correct data depending permission ReadOffers with additional schema checks on status and headers.",
-            "parameters": {
-                "tokenRequestScope": "accounts",
-                "accountId": "$consentedAccountId"
-            },
-            "permissions": [
-                "ReadAccountsBasic",
-                "ReadOffers"
-            ],
-            "uri": "/accounts/$accountId/offers",
-            "uriImplementation": "conditional",
-            "resource": "Offer",
-            "asserts": [
-                "OB3GLOAssertOn200",
-                "OB3GLOFAPIHeader"
-            ],
-            "method": "get",
-            "schemaCheck": true
-        },
-        {
-            "description": "All data returned for Offers with ReadOffers permission with additional schema checks, status and headers.",
-            "id": "OB-301-OFF-102700",
-            "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937558127/Offers+v3.1#Offersv3.1-PermissionCodes",
-            "detail": "Checks that the resource returns the correct data depending permission ReadOffers with additional schema checks on status and headers.",
-            "parameters": {
-                "tokenRequestScope": "accounts",
-                "accountId": "$consentedAccountId"
-            },
-            "permissions": [
-                "ReadAccountsBasic",
-                "ReadOffers"
-            ],
-            "uri": "/offers",
-            "resource": "Offer",
-            "uriImplementation": "optional",
-            "asserts": [
-                "OB3GLOAssertOn200",
-                "OB3GLOFAPIHeader"
-            ],
-            "method": "get",
-            "schemaCheck": true
-        },
-        {
-            "description": "Fails when account is invalid for Offer.",
-            "id": "OB-301-OFF-102800",
-            "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1000702294/Read+Write+Data+API+Specification+-+v3.1.1#Read/WriteDataAPISpecification-v3.1.1-400(BadRequest)v/s404(NotFound)",
-            "detail": "Checks the correct response is returned when given an invalid account for an Offer.",
-            "parameters": {
-                "tokenRequestScope": "accounts",
-                "accountId": "foobar"
-            },
-            "permissions": [
-                "ReadAccountsBasic",
-                "ReadOffers"
-            ],
-            "uri": "/accounts/$accountId/offers",
-            "uriImplementation": "conditional",
-            "resource": "Offer",
-            "method": "get",
-            "asserts": [
-                "OB3GLOAssertOn400",
-                "OB3IPAssertResourceFieldInvalidOBErrorCode"
-            ],
-            "schemaCheck": false
-        },
-        {
-            "description": "Fails 404 on an invalid Offer resource.",
-            "id": "OB-301-OFF-102801",
-            "refURI": "",
-            "detail": "Validates that the offer resource returns the correct status code (404 Not Found) given an invalid endpoint.",
-            "parameters": {
-                "tokenRequestScope": "accounts",
-                "accountId": "$consentedAccountId"
-            },
-            "permissions": [
-                "ReadAccountsBasic",
-                "ReadOffers"
-            ],
-            "uri": "/accounts/$accountId/offers/foobar",
-            "uriImplementation": "conditional",
-            "resource": "Offer",
-            "asserts": [
-                "OB3GLOAssertOn404"
-            ],
-            "method": "get",
-            "schemaCheck": false
-        },
-        {
-            "description": "Fails when token using on Offers is from client grant.",
-            "id": "OB-301-OFF-102802",
-            "refURI": "",
-            "detail": "Checks the correct response is returned 401 using a CCG token",
-            "parameters": {
-                "tokenRequestScope": "accounts"
-            },
-            "headers": {
-                "Authorization": "Bearer $client_access_token"
-            },
-            "uri": "/offers",
-            "uriImplementation": "optional",
-            "resource": "Offer",
-            "method": "get",
-            "asserts": [
-                "OB3GLOAssertOn401",
-                "OB3IPAssertHeaderInvalidOBErrorCode"
-            ],
-            "schemaCheck": false
-        },
-        {
-            "description": "The x-fapi-interaction-id is played-black for account Offer.",
-            "id": "OB-301-OFF-102803",
-            "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1000571846/Offers+v3.1.1",
-            "detail": "Checks that the value in the x-fapi-interaction-id response header is played-back for account Offer.",
-            "parameters": {
-                "tokenRequestScope": "accounts",
-                "accountId": "$consentedAccountId",
-                "x-fapi-interaction-id": "93bac548-d2de-4546-b106-880a5018460d"
-            },
-            "headers": {
-                "x-fapi-interaction-id": "$x-fapi-interaction-id"
-            },
-            "permissions": [
-                "ReadAccountsBasic",
-                "ReadOffers"
-            ],
-            "uri": "/accounts/$accountId/offers",
-            "uriImplementation": "conditional",
-            "resource": "Offer",
-            "method": "get",
-            "asserts": [
-                "OB3GLOAssertFAPIPlayBack"
-            ],
-            "schemaCheck": false
-        },
-        {
-            "description": "The x-fapi-interaction-id is played-black for Offer.",
-            "id": "OB-301-OFF-102804",
-            "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1000571846/Offers+v3.1.1",
-            "detail": "Checks that the value in the x-fapi-interaction-id response header is played-back for Offer.",
-            "parameters": {
-                "tokenRequestScope": "accounts",
-                "x-fapi-interaction-id": "f5a10e5e-0c46-41c5-a7b7-c8f560205200"
-            },
-            "headers": {
-                "x-fapi-interaction-id": "$x-fapi-interaction-id"
-            },
-            "permissions": [
-                "ReadAccountsBasic",
-                "ReadOffers"
-            ],
-            "uri": "/offers",
-            "uriImplementation": "optional",
-            "resource": "Offer",
-            "method": "get",
-            "asserts": [
-                "OB3GLOAssertFAPIPlayBack"
-            ],
-            "schemaCheck": false
-        },
-        {
-            "description": "All data returned for a given Account with ReadParty permission with additional schema checks, status and headers.",
-            "id": "OB-301-PAR-102900",
-            "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937984104/Party+v3.1#Partyv3.1-PermissionCodes",
-            "detail": "Checks that the resource returns the correct data depending permission ReadParty with additional schema checks on status and headers.",
-            "parameters": {
-                "tokenRequestScope": "accounts",
-                "accountId": "$consentedAccountId"
-            },
-            "permissions": [
-                "ReadAccountsBasic",
-                "ReadParty"
-            ],
-            "uri": "/accounts/$accountId/party",
-            "uriImplementation": "conditional",
-            "resource": "Party",
-            "asserts": [
-                "OB3GLOAssertOn200",
-                "OB3GLOFAPIHeader"
-            ],
-            "method": "get",
-            "schemaCheck": true
-        },
-        {
-            "description": "Data returned for a given Bulk Party using ReadPartyPSU permission, status and headers.",
-            "id": "OB-301-PAR-102901",
-            "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1000015561/Parties+v3.1.1#Partiesv3.1.1-GET/party",
-            "detail": "Checks that data is returned for ReadPartyPSU with additional schema checks, status and headers.",
-            "parameters": {
-                "tokenRequestScope": "accounts"
-            },
-            "permissions": [
-                "ReadAccountsBasic",
-                "ReadPartyPSU"
-            ],
-            "uri": "/party",
-            "uriImplementation": "optional",
-            "resource": "Beneficiary",
-            "asserts": [
-                "OB3GLOAssertOn200",
-                "OB3GLOFAPIHeader"
-            ],
-            "method": "get",
-            "schemaCheck": true
-        },
-        {
-            "description": "All data returned for ReadParty permission with additional schema checks, status and headers.",
-            "id": "OB-301-PAR-103000",
-            "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937984104/Party+v3.1#Partyv3.1-PermissionCodes",
-            "detail": "Checks that the resource returns the correct data depending permission ReadParty with additional schema checks on status and headers.",
-            "parameters": {
-                "tokenRequestScope": "accounts",
-                "accountId": "$consentedAccountId"
-            },
-            "permissions": [
-                "ReadAccountsBasic",
-                "ReadParty"
-            ],
-            "uri": "/accounts/$accountId/party",
-            "uriImplementation": "conditional",
-            "resource": "Party",
-            "asserts": [
-                "OB3GLOAssertOn200",
-                "OB3GLOFAPIHeader"
-            ],
-            "method": "get",
-            "schemaCheck": true
-        },
-        {
-            "description": "Fails when account is invalid for an Party.",
-            "id": "OB-301-PAR-103100",
-            "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1000702294/Read+Write+Data+API+Specification+-+v3.1.1#Read/WriteDataAPISpecification-v3.1.1-400(BadRequest)v/s404(NotFound)",
-            "detail": "Checks the correct response is returned when given an invalid account for an Party.",
-            "parameters": {
-                "tokenRequestScope": "accounts",
-                "accountId": "foobar"
-            },
-            "permissions": [
-                "ReadAccountsBasic",
-                "ReadParty"
-            ],
-            "uri": "/accounts/$accountId/party",
-            "uriImplementation": "conditional",
-            "resource": "Party",
-            "method": "get",
-            "asserts": [
-                "OB3GLOAssertOn400"
-            ],
-            "schemaCheck": false
-        },
-        {
-            "description": "Fails 404 on an invalid Party resource.",
-            "id": "OB-301-PAR-103101",
-            "refURI": "",
-            "detail": "Validates that the party resource returns the correct status code (404 Not Found) given an invalid endpoint.",
-            "parameters": {
-                "tokenRequestScope": "accounts",
-                "accountId": "$consentedAccountId"
-            },
-            "permissions": [
-                "ReadAccountsBasic",
-                "ReadParty"
-            ],
-            "uri": "/accounts/$accountId/party/foobar",
-            "uriImplementation": "conditional",
-            "resource": "Party",
-            "asserts": [
-                "OB3GLOAssertOn404"
-            ],
-            "method": "get",
-            "schemaCheck": false
-        },
-        {
-            "description": "Fails when token using on Party is from client grant.",
-            "id": "OB-301-PAR-103102",
-            "refURI": "",
-            "detail": "Checks the correct response is returned 401 using a CCG token",
-            "parameters": {
-                "tokenRequestScope": "accounts"
-            },
-            "headers": {
-                "Authorization": "Bearer $client_access_token"
-            },
-            "uri": "/party",
-            "uriImplementation": "optional",
-            "resource": "Party",
-            "method": "get",
-            "asserts": [
-                "OB3GLOAssertOn401",
-                "OB3IPAssertHeaderInvalidOBErrorCode"
-            ],
-            "schemaCheck": false
-        },
-        {
-            "description": "Fails when incorrect permissions are provided for Bulk Party.",
-            "id": "OB-301-PAR-103103",
-            "refURI": "",
-            "detail": "Validates that the Bulk Party resource fails correctly given an invalid permission.",
-            "parameters": {
-                "tokenRequestScope": "accounts"
-            },
-            "permissions-excluded": [
-                "ReadAccountsBasic",
-                "ReadParty"
-            ],
-            "uri": "/beneficiaries",
-            "uriImplementation": "optional",
-            "resource": "Party",
-            "method": "get",
-            "asserts": [
-                "OB3GLOAssertOn401"
-            ],
-            "schemaCheck": false
-        },
-        {
-            "description": "The x-fapi-interaction-id is played-black for account Party.",
-            "id": "OB-301-PAR-103104",
-            "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1000015561/Parties+v3.1.1",
-            "detail": "Checks that the value in the x-fapi-interaction-id response header is played-back for account Party.",
-            "parameters": {
-                "tokenRequestScope": "accounts",
-                "accountId": "$consentedAccountId",
-                "x-fapi-interaction-id": "93bac548-d2de-4546-b106-880a5018460d"
-            },
-            "headers": {
-                "x-fapi-interaction-id": "$x-fapi-interaction-id"
-            },
-            "permissions": [
-                "ReadAccountsBasic",
-                "ReadParty"
-            ],
-            "uri": "/accounts/$accountId/party",
-            "uriImplementation": "conditional",
-            "resource": "Party",
-            "method": "get",
-            "asserts": [
-                "OB3GLOAssertFAPIPlayBack"
-            ],
-            "schemaCheck": false
-        },
-        {
-            "description": "The x-fapi-interaction-id is played-black for Party.",
-            "id": "OB-301-PAR-103105",
-            "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1000015561/Parties+v3.1.1",
-            "detail": "Checks that the value in the x-fapi-interaction-id response header is played-back for Party.",
-            "parameters": {
-                "tokenRequestScope": "accounts",
-                "x-fapi-interaction-id": "f5a10e5e-0c46-41c5-a7b7-c8f560205200"
-            },
-            "headers": {
-                "x-fapi-interaction-id": "$x-fapi-interaction-id"
-            },
-            "permissions": [
-                "ReadAccountsBasic",
-                "ReadParty"
-            ],
-            "uri": "/party",
-            "uriImplementation": "optional",
-            "resource": "Party",
-            "method": "get",
-            "asserts": [
-                "OB3GLOAssertFAPIPlayBack"
-            ],
-            "schemaCheck": false
-        },
-        {
-            "description": "All data returned for a given account with ReadProducts permission with additional schema checks, status and headers.",
-            "id": "OB-301-PRO-103200",
-            "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937820288/Products+v3.1#Productsv3.1-PermissionCodes",
-            "detail": "Checks that the resource returns the correct data depending permission ReadProducts with additional schema checks on status and headers.",
-            "parameters": {
-                "tokenRequestScope": "accounts",
-                "accountId": "$consentedAccountId"
-            },
-            "permissions": [
-                "ReadAccountsBasic",
-                "ReadProducts"
-            ],
-            "uri": "/accounts/$accountId/product",
-            "uriImplementation": "conditional",
-            "resource": "Product",
-            "asserts": [
-                "OB3GLOAssertOn200",
-                "OB3GLOFAPIHeader"
-            ],
-            "method": "get",
-            "schemaCheck": true
-        },
-        {
-            "description": "All data returned for ReadProducts permission with additional schema checks, status and headers.",
-            "id": "OB-301-PRO-103300",
-            "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937820288/Products+v3.1#Productsv3.1-PermissionCodes",
-            "detail": "Checks that the bulk resource returns the correct data depending permission ReadProducts with additional schema checks on status and headers.",
-            "parameters": {
-                "tokenRequestScope": "accounts"
-            },
-            "permissions": [
-                "ReadAccountsBasic",
-                "ReadProducts"
-            ],
-            "uri": "/products",
-            "uriImplementation": "optional",
-            "resource": "Product",
-            "asserts": [
-                "OB3GLOAssertOn200",
-                "OB3GLOFAPIHeader"
-            ],
-            "method": "get",
-            "schemaCheck": true
-        },
-        {
-            "description": "Fails when account is invalid for a Product.",
-            "id": "OB-301-PRO-103400",
-            "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1000702294/Read+Write+Data+API+Specification+-+v3.1.1#Read/WriteDataAPISpecification-v3.1.1-400(BadRequest)v/s404(NotFound)",
-            "detail": "Checks the correct response is returned when given an invalid account for a Product.",
-            "parameters": {
-                "tokenRequestScope": "accounts",
-                "accountId": "foobar"
-            },
-            "permissions": [
-                "ReadAccountsBasic",
-                "ReadProducts"
-            ],
-            "uri": "/accounts/$accountId/product",
-            "uriImplementation": "conditional",
-            "resource": "Product",
-            "method": "get",
-            "asserts_one_of": [
-                "OB3GLOAssertOn400",
-                "OB3GLOAssertOn403"
-            ],
-            "schemaCheck": false
-        },
-        {
-            "description": "Fails 404 on an invalid Product resource.",
-            "id": "OB-301-PRO-103401",
-            "refURI": "",
-            "detail": "Validates that the product resource returns the correct status code (404 Not Found) given an invalid endpoint.",
-            "parameters": {
-                "tokenRequestScope": "accounts",
-                "accountId": "$consentedAccountId"
-            },
-            "permissions": [
-                "ReadAccountsBasic",
-                "ReadProducts"
-            ],
-            "uri": "/accounts/$accountId/product/foobar",
-            "resource": "Product",
-            "asserts": [
-                "OB3GLOAssertOn404"
-            ],
-            "method": "get",
-            "schemaCheck": false
-        },
-        {
-            "description": "Fails when token using on Product is from client grant.",
-            "id": "OB-301-PRO-102802",
-            "refURI": "",
-            "detail": "Checks the correct response is returned 401 using a CCG token.",
-            "parameters": {
-                "tokenRequestScope": "accounts"
-            },
-            "headers": {
-                "Authorization": "Bearer $client_access_token"
-            },
-            "uri": "/products",
-            "uriImplementation": "optional",
-            "resource": "Product",
-            "method": "get",
-            "asserts": [
-                "OB3GLOAssertOn401",
-                "OB3IPAssertHeaderInvalidOBErrorCode"
-            ],
-            "schemaCheck": false
-        },
-        {
-            "description": "The x-fapi-interaction-id is played-black for account Product.",
-            "id": "OB-301-PRO-103402",
-            "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1000604814/Products+v3.1.1",
-            "detail": "Checks that the value in the x-fapi-interaction-id response header is played-back for account Product.",
-            "parameters": {
-                "tokenRequestScope": "accounts",
-                "accountId": "$consentedAccountId",
-                "x-fapi-interaction-id": "93bac548-d2de-4546-b106-880a5018460d"
-            },
-            "headers": {
-                "x-fapi-interaction-id": "$x-fapi-interaction-id"
-            },
-            "permissions": [
-                "ReadAccountsBasic",
-                "ReadProducts"
-            ],
-            "uri": "/accounts/$accountId/product",
-            "uriImplementation": "conditional",
-            "resource": "Product",
-            "method": "get",
-            "asserts": [
-                "OB3GLOAssertFAPIPlayBack"
-            ],
-            "schemaCheck": false
-        },
-        {
-            "description": "The x-fapi-interaction-id is played-black for Product.",
-            "id": "OB-301-PRO-103403",
-            "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1000604814/Products+v3.1.1",
-            "detail": "Checks that the value in the x-fapi-interaction-id response header is played-back for Product.",
-            "parameters": {
-                "tokenRequestScope": "accounts",
-                "x-fapi-interaction-id": "f5a10e5e-0c46-41c5-a7b7-c8f560205200"
-            },
-            "headers": {
-                "x-fapi-interaction-id": "$x-fapi-interaction-id"
-            },
-            "permissions": [
-                "ReadAccountsBasic",
-                "ReadProducts"
-            ],
-            "uri": "/product",
-            "uriImplementation": "optional",
-            "resource": "Product",
-            "method": "get",
-            "asserts": [
-                "OB3GLOAssertFAPIPlayBack"
-            ],
-            "schemaCheck": false
-        },
-        {
-            "description": "Detailed level data returned for a given account using the ReadScheduledPaymentsDetail permission.",
-            "id": "OB-301-SCP-103500",
-            "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937066541/Scheduled+Payments+v3.1#ScheduledPaymentsv3.1-Endpoints",
-            "detail": "Checks that detail level is returned resource with permission ReadScheduledPaymentsDetail to access the resource with additional schema checks on status and headers.",
-            "parameters": {
-                "tokenRequestScope": "accounts",
-                "accountId": "$consentedAccountId"
-            },
-            "permissions": [
-                "ReadAccountsBasic",
-                "ReadScheduledPaymentsDetail"
-            ],
-            "uri": "/accounts/$accountId/scheduled-payments",
-            "uriImplementation": "conditional",
-            "resource": "ScheduledPayment",
-            "asserts": [
-                "OB3GLOAssertOn200",
-                "OB3GLOFAPIHeader"
-            ],
-            "method": "get",
-            "schemaCheck": true
-        },
-        {
-            "description": "All data returned for ReadScheduledPaymentsDetail permission with additional schema checks, status and headers.",
-            "id": "OB-301-SCP-103600",
-            "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937066541/Scheduled+Payments+v3.1#ScheduledPaymentsv3.1-Endpoints",
-            "detail": "Checks that the bulk resource returns the correct data depending permission ReadScheduledPaymentsDetail with additional schema checks on status and headers.",
-            "parameters": {
-                "tokenRequestScope": "accounts"
-            },
-            "permissions": [
-                "ReadAccountsBasic",
-                "ReadScheduledPaymentsDetail"
-            ],
-            "uri": "/scheduled-payments",
-            "uriImplementation": "optional",
-            "resource": "ScheduledPayment",
-            "asserts": [
-                "OB3GLOAssertOn200",
-                "OB3GLOFAPIHeader"
-            ],
-            "method": "get",
-            "schemaCheck": true
-        },
-        {
-            "description": "Fails when account is invalid for Scheduled Payment.",
-            "id": "OB-301-SCP-103700",
-            "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1000702294/Read+Write+Data+API+Specification+-+v3.1.1#Read/WriteDataAPISpecification-v3.1.1-400(BadRequest)v/s404(NotFound)",
-            "detail": "Checks the correct response is returned when given an invalid account for a Scheduled Payment.",
-            "parameters": {
-                "tokenRequestScope": "accounts",
-                "accountId": "foobar"
-            },
-            "permissions": [
-                "ReadAccountsBasic",
-                "ReadScheduledPaymentsDetail"
-            ],
-            "uri": "/accounts/$accountId/scheduled-payments",
-            "uriImplementation": "conditional",
-            "resource": "ScheduledPayment",
-            "method": "get",
-            "asserts": [
-                "OB3IPAssertResourceFieldInvalidOBErrorCode"
-            ],
-            "asserts_one_of": [
-              "OB3GLOAssertOn400",
-              "OB3GLOAssertOn403"
-            ],
-            "schemaCheck": false
-        },
-        {
-            "description": "Fails 404 on an invalid Scheduled Payment resource.",
-            "id": "OB-301-SCP-103701",
-            "refURI": "",
-            "detail": "Validates that the Scheduled Payment resource returns the correct status code (404 Not Found) given an invalid endpoint.",
-            "parameters": {
-                "tokenRequestScope": "accounts",
-                "accountId": "$consentedAccountId"
-            },
-            "permissions": [
-                "ReadAccountsBasic",
-                "ReadScheduledPaymentsDetail"
-            ],
-            "uri": "/accounts/$accountId/scheduled-payments/foobar",
-            "resource": "ScheduledPayment",
-            "asserts": [
-                "OB3GLOAssertOn404"
-            ],
-            "method": "get",
-            "schemaCheck": false
-        },
-        {
-            "description": "Fails when token is from client grant.",
-            "id": "OB-301-SCP-103702",
-            "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/999623000/Scheduled+Payments+v3.1.1#ScheduledPaymentsv3.1.1-GET/scheduled-payments",
-            "detail": "Checks the correct response is returned 401 using a CCG token",
-            "parameters": {
-                "tokenRequestScope": "accounts"
-            },
-            "headers": {
-                "Authorization": "Bearer $client_access_token"
-            },
-            "uri": "/scheduled-payments",
-            "uriImplementation": "optional",
-            "resource": "ScheduledPayment",
-            "method": "get",
-            "asserts": [
-                "OB3GLOAssertOn401",
-                "OB3IPAssertHeaderInvalidOBErrorCode"
-            ],
-            "schemaCheck": false
-        },
-        {
-            "description": "The x-fapi-interaction-id is played-black for account Scheduled Payments.",
-            "id": "OB-301-SCP-103703",
-            "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/999623000/Scheduled+Payments+v3.1.1",
-            "detail": "Checks that the value in the x-fapi-interaction-id response header is played-back for account Product.",
-            "parameters": {
-                "tokenRequestScope": "accounts",
-                "accountId": "$consentedAccountId",
-                "x-fapi-interaction-id": "93bac548-d2de-4546-b106-880a5018460d"
-            },
-            "headers": {
-                "x-fapi-interaction-id": "$x-fapi-interaction-id"
-            },
-            "permissions": [
-                "ReadAccountsBasic",
-                "ReadScheduledPaymentsDetail"
-            ],
-            "uri": "/accounts/$accountId/scheduled-payments",
-            "uriImplementation": "conditional",
-            "resource": "ScheduledPayment",
-            "method": "get",
-            "asserts": [
-                "OB3GLOAssertFAPIPlayBack"
-            ],
-            "schemaCheck": false
-        },
-        {
-            "description": "The x-fapi-interaction-id is played-black for Scheduled Payments.",
-            "id": "OB-301-SCP-103704",
-            "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/999623000/Scheduled+Payments+v3.1.1",
-            "detail": "Checks that the value in the x-fapi-interaction-id response header is played-back for Product.",
-            "parameters": {
-                "tokenRequestScope": "accounts",
-                "x-fapi-interaction-id": "f5a10e5e-0c46-41c5-a7b7-c8f560205200"
-            },
-            "headers": {
-                "x-fapi-interaction-id": "$x-fapi-interaction-id"
-            },
-            "permissions": [
-                "ReadAccountsBasic",
-                "ReadScheduledPaymentsDetail"
-            ],
-            "uri": "/scheduled-payments",
-            "uriImplementation": "optional",
-            "resource": "ScheduledPayment",
-            "method": "get",
-            "asserts": [
-                "OB3GLOAssertFAPIPlayBack"
-            ],
-            "schemaCheck": false
-        },
-        {
-            "description": "Detailed level data returned for a given account using the ReadStandingOrdersDetail permission.",
-            "id": "OB-301-STO-103800",
-            "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937721918/Standing+Orders+v3.1#StandingOrdersv3.1-PermissionCodes",
-            "detail": "Checks that detail level is returned resource with permission ReadStandingOrdersDetail to access the resource with additional schema checks on status and headers.",
-            "parameters": {
-                "tokenRequestScope": "accounts",
-                "accountId": "$consentedAccountId"
-            },
-            "permissions": [
-                "ReadAccountsBasic",
-                "ReadStandingOrdersDetail"
-            ],
-            "uri": "/accounts/$accountId/standing-orders",
-            "uriImplementation": "conditional",
-            "resource": "StandingOrder",
-            "asserts": [
-                "OB3GLOAssertOn200",
-                "OB3GLOFAPIHeader"
-            ],
-            "method": "get",
-            "schemaCheck": true
-        },
-        {
-            "description": "All data returned for a given account using the ReadStandingOrdersDetail permission.",
-            "id": "OB-301-STO-103900",
-            "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937721918/Standing+Orders+v3.1#StandingOrdersv3.1-PermissionCodes",
-            "detail": "Checks that all data for bulk resource with permission ReadStandingOrdersDetail to access the resource with additional schema checks on status and headers.",
-            "parameters": {
-                "tokenRequestScope": "accounts"
-            },
-            "permissions": [
-                "ReadAccountsBasic",
-                "ReadStandingOrdersDetail"
-            ],
-            "uri": "/standing-orders",
-            "uriImplementation": "optional",
-            "resource": "StandingOrder",
-            "asserts": [
-                "OB3GLOAssertOn200",
-                "OB3GLOFAPIHeader"
-            ],
-            "method": "get",
-            "schemaCheck": true
-        },
-        {
-            "description": "Fails when account is invalid for a Standing Order.",
-            "id": "OB-301-STO-104000",
-            "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1000702294/Read+Write+Data+API+Specification+-+v3.1.1#Read/WriteDataAPISpecification-v3.1.1-400(BadRequest)v/s404(NotFound)",
-            "detail": "Checks the correct response is returned when given an invalid account for a Standing Order.",
-            "parameters": {
-                "tokenRequestScope": "accounts",
-                "accountId": "foobar"
-            },
-            "permissions": [
-                "ReadAccountsBasic",
-                "ReadStandingOrdersDetail"
-            ],
-            "uri": "/accounts/$accountId/standing-orders",
-            "uriImplementation": "conditional",
-            "resource": "StandingOrder",
-            "method": "get",
-            "asserts": [
-                "OB3IPAssertResourceFieldInvalidOBErrorCode"
-            ],
-            "asserts_one_of": [
-              "OB3GLOAssertOn400",
-              "OB3GLOAssertOn403"
-            ],
-            "schemaCheck": false
-        },
-        {
-            "description": "Fails 404 on an invalid Standing Order resource.",
-            "id": "OB-301-STO-104100",
-            "refURI": "",
-            "detail": "Validates that the Standing Order resource returns the correct status code (404 Not Found) given an invalid endpoint.",
-            "parameters": {
-                "tokenRequestScope": "accounts",
-                "accountId": "$consentedAccountId"
-            },
-            "permissions": [
-                "ReadAccountsBasic",
-                "ReadStandingOrdersDetail"
-            ],
-            "uri": "/accounts/$accountId/standing-orders/foobar",
-            "resource": "StandingOrder",
-            "asserts": [
-                "OB3GLOAssertOn404"
-            ],
-            "method": "get",
-            "schemaCheck": false
-        },
-        {
-            "description": "Fails when token is from client grant.",
-            "id": "OB-301-STO-104101",
-            "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1000113950/Standing+Orders+v3.1.1#StandingOrdersv3.1.1-GET/standing-orders",
-            "detail": "Checks the correct response is returned 401 using a CCG token",
-            "parameters": {
-                "tokenRequestScope": "accounts"
-            },
-            "headers": {
-                "Authorization": "Bearer $client_access_token"
-            },
-            "uri": "/standing-orders",
-            "uriImplementation": "optional",
-            "resource": "StandingOrder",
-            "method": "get",
-            "asserts": [
-                "OB3GLOAssertOn401",
-                "OB3IPAssertHeaderInvalidOBErrorCode"
-            ],
-            "schemaCheck": false
-        },
-        {
-            "description": "The x-fapi-interaction-id is played-black for account Standing Orders.",
-            "id": "OB-301-STO-104102",
-            "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1000113950/Standing+Orders+v3.1.1",
-            "detail": "Checks that the value in the x-fapi-interaction-id response header is played-back for account Product.",
-            "parameters": {
-                "tokenRequestScope": "accounts",
-                "accountId": "$consentedAccountId",
-                "x-fapi-interaction-id": "93bac548-d2de-4546-b106-880a5018460d"
-            },
-            "headers": {
-                "x-fapi-interaction-id": "$x-fapi-interaction-id"
-            },
-            "permissions": [
-                "ReadAccountsBasic",
-                "ReadStandingOrdersDetail"
-            ],
-            "uri": "/accounts/$accountId/standing-orders",
-            "uriImplementation": "conditional",
-            "resource": "StandingOrder",
-            "method": "get",
-            "asserts": [
-                "OB3GLOAssertFAPIPlayBack"
-            ],
-            "schemaCheck": false
-        },
-        {
-            "description": "The x-fapi-interaction-id is played-black for Standing Orders.",
-            "id": "OB-301-STO-104103",
-            "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1000113950/Standing+Orders+v3.1.1",
-            "detail": "Checks that the value in the x-fapi-interaction-id response header is played-back for Product.",
-            "parameters": {
-                "tokenRequestScope": "accounts",
-                "x-fapi-interaction-id": "f5a10e5e-0c46-41c5-a7b7-c8f560205200"
-            },
-            "headers": {
-                "x-fapi-interaction-id": "$x-fapi-interaction-id"
-            },
-            "permissions": [
-                "ReadAccountsBasic",
-                "ReadStandingOrdersDetail"
-            ],
-            "uri": "/standing-orders",
-            "uriImplementation": "optional",
-            "resource": "StandingOrder",
-            "method": "get",
-            "asserts": [
-                "OB3GLOAssertFAPIPlayBack"
-            ],
-            "schemaCheck": false
-        },
-        {
-            "description": "Minimal data returned for a given Transactions using the ReadTransactionsBasic permission, status and headers.",
-            "id": "OB-301-TRA-105000",
-            "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1004208451/Transactions+v3.1.1#Transactionsv3.1.1-PermissionCodes",
-            "detail": "Checks that the resource differs depending on the permissions (ReadTransactionsBasic and ReadTransactionsDetail) used to access the resource with additional schema checks on status and headers.",
-            "parameters": {
-                "tokenRequestScope": "accounts",
-                "accountId": "$consentedAccountId"
-            },
-            "permissions": [
-                "ReadAccountsBasic",
-                "ReadTransactionsBasic",
-                "ReadTransactionsDebits",
-                "ReadTransactionsCredits"
-            ],
-            "permissions-excluded": [
-                "ReadTransactionsDetail"
-            ],
-            "uri": "/accounts/$accountId/transactions",
-            "uriImplementation": "mandatory",
-            "resource": "Transaction",
-            "asserts": [
-                "OB3GLOAssertOn200",
-                "OB3GLOFAPIHeader"
-            ],
-            "method": "get",
-            "schemaCheck": true
-        },
-        {
-            "description": "All data returned for a given Account with ReadTransactionsBasic permission, status and headers.",
-            "id": "OB-301-TRA-105100",
-            "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1004208451/Transactions+v3.1.1#Transactionsv3.1.1-PermissionCodes",
-            "detail": "Checks that the resource returns the correct data depending on the permissions ReadTransactionsBasic with additional additional schema checks on status and headers.",
-            "parameters": {
-                "tokenRequestScope": "accounts",
-                "accountId": "$consentedAccountId"
-            },
-            "permissions": [
-                "ReadAccountsBasic",
-                "ReadTransactionsDetail",
-                "ReadTransactionsBasic",
-                "ReadTransactionsDebits",
-                "ReadTransactionsCredits"
-            ],
-            "uri": "/accounts/$accountId/transactions",
-            "uriImplementation": "mandatory",
-            "resource": "Transaction",
-            "asserts": [
-                "OB3GLOAssertOn200",
-                "OB3GLOFAPIHeader"
-            ],
-            "method": "get",
-            "schemaCheck": true
-        },
-        {
-            "description": "Minimal data returned for bulk Transaction using the ReadTransactionsBasic permission, status and headers.",
-            "id": "OB-301-TRA-105200",
-            "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937623627/Accounts+v3.1#Accountsv3.1-PermissionCodes",
-            "detail": "Checks that the resource differs depending on the permissions (ReadTransactionsBasic and ReadTransactionsDetail) used to access the resource with additional additional schema checks on status and headers.",
-            "parameters": {
-                "tokenRequestScope": "accounts"
-            },
-            "permissions": [
-                "ReadAccountsBasic",
-                "ReadTransactionsBasic",
-                "ReadTransactionsDebits",
-                "ReadTransactionsCredits"
-            ],
-            "permissions-excluded": [
-                "ReadTransactionsDetail"
-            ],
-            "uri": "/transactions",
-            "uriImplementation": "optional",
-            "resource": "Transaction",
-            "asserts": [
-                "OB3GLOAssertOn200",
-                "OB3GLOFAPIHeader"
-            ],
-            "method": "get",
-            "schemaCheck": true
-        },
-        {
-            "description": "Fails using incorrect permissions for a given Transaction.",
-            "id": "OB-301-TRA-105300",
-            "refURI": "",
-            "detail": "Validates that the Transaction resource fails correctly given an invalid or incorrect token.",
-            "parameters": {
-                "tokenRequestScope": "accounts",
-                "accountId": "$consentedAccountId"
-            },
-            "permissions-excluded": [
-                "ReadAccountsBasic",
-                "ReadTransactionsBasic",
-                "ReadTransactionsDebits",
-                "ReadTransactionsCredits"
-            ],
-            "uri": "/accounts/$accountId/transactions",
-            "uriImplementation": "mandatory",
-            "resource": "Transaction",
-            "method": "get",
-            "asserts": [
-                "OB3GLOAssertOn401"
-            ],
-            "schemaCheck": false
-        },
-        {
-            "description": "Fails using incorrect permissions for Bulk Transaction.",
-            "id": "OB-301-TRA-105400",
-            "refURI": "",
-            "detail": "Validates that the Transaction list resource fails correctly given an invalid or incorrect token.",
-            "parameters": {
-                "tokenRequestScope": "accounts"
-            },
-            "uri": "/transactions",
-            "uriImplementation": "optional",
-            "resource": "Transaction",
-            "method": "get",
-            "asserts": [
-                "OB3GLOAssertOn401"
-            ],
-            "schemaCheck": false
-        },
+  "scripts": [{
+      "description": "Fails 404 on an invalid endpoint.",
+      "id": "OB-301-ACC-001000",
+      "refURI": "",
+      "detail": "Validates that the base resource returns the correct status code (404 Not Found) given an invalid endpoint.",
+      "parameters": {
+        "tokenRequestScope": "accounts"
+      },
+      "permissions": [
+        "ReadAccountsBasic"
+      ],
+      "headers": {
+        "Content-Type": "application/json"
+      },
+      "uri": "/foobar",
+      "uriImplementation": "optional",
+      "resource": "Global",
+      "asserts": [
+        "OB3GLOAssertOn404"
+      ],
+      "method": "get",
+      "schemaCheck": false
+    },
+    {
+      "description": "Minimal data returned for a given Account using the ReadAccountsBasic permission, status and headers.",
+      "id": "OB-301-ACC-100000",
+      "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937623627/Accounts+v3.1#Accountsv3.1-PermissionCodes",
+      "detail": "Checks that the resource differs depending on the permissions (ReadAccountsBasic and ReadAccountsDetail) used to access the resource with additional schema checks on status and headers.",
+      "parameters": {
+        "tokenRequestScope": "accounts",
+        "accountId": "$consentedAccountId"
+      },
+      "permissions": [
+        "ReadAccountsBasic"
+      ],
+      "permissions-excluded": [
+        "ReadAccountsDetail"
+      ],
+      "headers": {
+        "Content-Type": "application/json"
+      },
+      "uri": "/accounts/$accountId",
+      "uriImplementation": "mandatory",
+      "resource": "Account",
+      "asserts": [
+        "OB3GLOAssertOn200",
+        "OB3GLOFAPIHeader"
+      ],
+      "method": "get",
+      "schemaCheck": true
+    },
+    {
+      "description": "All data returned for a given Account with ReadAccountsDetail permission, status and headers.",
+      "id": "OB-301-ACC-100200",
+      "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937623627/Accounts+v3.1#Accountsv3.1-PermissionCodes",
+      "detail": "Checks that the resource returns the correct data depending on the permissions ReadAccountsDetail with additional additional schema checks on status and headers.",
+      "parameters": {
+        "tokenRequestScope": "accounts",
+        "accountId": "$consentedAccountId"
+      },
+      "permissions": [
+        "ReadAccountsDetail"
+      ],
+      "headers": {
+        "Content-Type": "application/json"
+      },
+      "uri": "/accounts/$accountId",
+      "uriImplementation": "mandatory",
+      "resource": "Account",
+      "asserts": [
+        "OB3GLOAssertOn200",
+        "OB3GLOFAPIHeader"
+      ],
+      "method": "get",
+      "schemaCheck": true
+    },
+    {
+      "description": "Minimal data returned for bulk Accounts using the ReadAccountsBasic permission, status and headers.",
+      "id": "OB-301-ACC-100300",
+      "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937623627/Accounts+v3.1#Accountsv3.1-PermissionCodes",
+      "detail": "Checks that the resource differs depending on the permissions (ReadAccountsBasic and ReadAccountsDetail) used to access the resource with additional additional schema checks on status and headers.",
+      "parameters": {
+        "tokenRequestScope": "accounts"
+      },
+      "permissions": [
+        "ReadAccountsBasic"
+      ],
+      "permissions-excluded": [
+        "ReadAccountsDetail"
+      ],
+      "headers": {
+        "Content-Type": "application/json"
+      },
+      "uri": "/accounts",
+      "uriImplementation": "mandatory",
+      "resource": "Account",
+      "asserts": [
+        "OB3GLOAssertOn200",
+        "OB3GLOFAPIHeader"
+      ],
+      "method": "get",
+      "schemaCheck": true
+    },
+    {
+      "description": "All data returned for bulk Accounts with ReadAccountsDetail permission, status and headers.",
+      "id": "OB-301-ACC-100400",
+      "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937623627/Accounts+v3.1#Accountsv3.1-PermissionCodes",
+      "detail": "Checks that the resource returns the correct data depending on the permissions ReadAccountsDetail with additional additional schema checks on status and headers.",
+      "parameters": {
+        "tokenRequestScope": "accounts"
+      },
+      "permissions": [
+        "ReadAccountsDetail"
+      ],
+      "headers": {
+        "Content-Type": "application/json"
+      },
+
+      "uri": "/accounts",
+      "uriImplementation": "mandatory",
+      "resource": "Account",
+      "asserts": [
+        "OB3GLOAssertOn200",
+        "OB3GLOFAPIHeader"
+      ],
+      "method": "get",
+      "schemaCheck": true
+    },
+    {
+      "description": "Fails using incorrect permissions for a given Account.",
+      "id": "OB-301-ACC-100500",
+      "refURI": "",
+      "detail": "Validates that the account resource fails correctly given an invalid or incorrect token.",
+      "parameters": {
+        "tokenRequestScope": "accounts",
+        "accountId": "$consentedAccountId"
+      },
+      "permissions-excluded": [
+        "ReadAccountsBasic",
+        "ReadAccountsDetail"
+      ],
+      "headers": {
+        "Content-Type": "application/json"
+      },
+      "uri": "/accounts/$accountId",
+      "uriImplementation": "mandatory",
+      "resource": "Account",
+      "method": "get",
+      "asserts": [
+        "OB3GLOAssertOn401"      
+      ],
+      "schemaCheck": false
+    },
+    {
+      "description": "Fails using incorrect permissions for Bulk Account.",
+      "id": "OB-301-ACC-100600",
+      "refURI": "",
+      "detail": "Validates that the account list resource fails correctly given an invalid or incorrect token.",
+      "parameters": {
+        "tokenRequestScope": "accounts"
+      },
+      "headers": {
+        "Content-Type": "application/json"
+      },
+
+      "uri": "/accounts",
+      "uriImplementation": "mandatory",
+      "resource": "Account",
+      "method": "get",
+      "asserts": [
+        "OB3GLOAssertOn401"
+      ],
+      "schemaCheck": false
+    },
+    {
+      "description": "The x-fapi-interaction-id is replayed for an Account.",
+      "id": "OB-301-ACC-100700",
+      "refURI": "",
+      "detail": "Checks that the x-fapi-interaction-id value is played-back for an Account.",
+      "parameters": {
+        "tokenRequestScope": "accounts",
+        "accountId": "$consentedAccountId",
+        "x-fapi-interaction-id": "f5a10e5e-0c46-41c5-a7b7-c8f56020520c"
+      },
+      "headers": {
+        "x-fapi-interaction-id": "$x-fapi-interaction-id"
+      },
+      "permissions": [
+        "ReadAccountsDetail"
+      ],
+      "uri": "/accounts/$accountId",
+      "uriImplementation": "mandatory",
+      "resource": "Account",
+      "method": "get",
+      "asserts": [
+        "OB3GLOAssertFAPIPlayBack"
+      ],
+      "schemaCheck": false
+    },
+    {
+      "description": "The x-fapi-interaction-id is replayed for bulk accounts if given.",
+      "id": "OB-301-ACC-100800",
+      "refURI": "",
+      "detail": "Checks that the x-fapi-interaction-id value is played-back for bulk Account.",
+      "parameters": {
+        "tokenRequestScope": "accounts",
+        "accountId": "$consentedAccountId",
+        "x-fapi-interaction-id": "f5a10e5e-0c46-41c5-a7b7-c8f560205200"
+      },
+      "headers": {
+        "x-fapi-interaction-id": "$x-fapi-interaction-id",
+        "Content-Type": "application/json"
+      },
+      "permissions": [
+        "ReadAccountsDetail"
+      ],
+      "uri": "/accounts/$accountId",
+      "uriImplementation": "mandatory",
+      "resource": "Account",
+      "method": "get",
+      "asserts": [
+        "OB3GLOAssertFAPIPlayBack"
+      ],
+      "schemaCheck": false
+    },
+    {
+      "description": "Fails using 401 unauthorized given no token for Accounts.",
+      "id": "OB-301-ACC-101000",
+      "refURI": "",
+      "detail": "Checks the correct response is returned 401 if no token is used on an Account.",
+      "parameters": {
+        "tokenRequestScope": "accounts",
+        "accountId": "$consentedAccountId"
+      },
+      "headers": {
+        "Content-Type": "application/json"
+      },
+
+      "uri": "/accounts/$accountId",
+      "uriImplementation": "mandatory",
+      "resource": "Account",
+      "method": "get",
+      "asserts": [
+        "OB3GLOAssertOn401"
+      ],
+      "schemaCheck": false
+    },
+    {
+      "description": "Fails using 401 unauthorized given no token for Bulk Accounts.",
+      "id": "OB-301-ACC-101100",
+      "refURI": "",
+      "detail": "Checks the correct response is returned 401 given if no token is used on a bulk account.",
+      "parameters": {
+        "tokenRequestScope": "accounts"
+      },
+      "uri": "/accounts",
+      "uriImplementation": "mandatory",
+      "resource": "Account",
+      "headers": {
+        "Content-Type": "application/json"
+      },
+
+      "method": "get",
+      "asserts": [
+        "OB3GLOAssertOn401"      
+      ],
+      "schemaCheck": false
+    },
+    {
+      "description": "Fails 404 on an invalid Account resource.",
+      "id": "OB-301-ACC-101101",
+      "refURI": "",
+      "detail": "Validates that the Account resource returns the correct status code (404 Not Found) given an invalid endpoint.",
+      "parameters": {
+        "tokenRequestScope": "accounts",
+        "accountId": "$consentedAccountId"
+      },
+      "permissions": [
+        "ReadAccountsBasic"
+      ],
+      "headers": {
+        "Content-Type": "application/json"
+      },
+      "uri": "/accounts/$accountId/foobar",
+      "uriImplementation": "mandatory",
+      "resource": "Account",
+      "asserts": [
+        "OB3GLOAssertOn404"
+      ],
+      "method": "get",
+      "schemaCheck": false
+    },
+    {
+      "description": "All data returned for an Account with ReadBalances permission, status and headers.",
+      "id": "OB-301-BAL-101200",
+      "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937754673/Balances+v3.1#Balancesv3.1-PermissionCodes",
+      "detail": "Checks that the resource returns the correct data with additional schema checks status and headers for a given account. The resource response payload does not differ depending on the permissions granted.",
+      "parameters": {
+        "tokenRequestScope": "accounts",
+        "accountId": "$consentedAccountId"
+      },
+      "permissions": [
+        "ReadAccountsBasic",
+        "ReadBalances"
+      ],
+      "headers": {
+        "Content-Type": "application/json"
+      },
+      "uri": "/accounts/$accountId/balances",
+      "uriImplementation": "mandatory",
+      "resource": "Balance",
+      "asserts": [
+        "OB3GLOAssertOn200",
+        "OB3GLOFAPIHeader"
+      ],
+      "method": "get",
+      "schemaCheck": true
+    },
+    {
+      "description": "All data returned for Bulk Accounts with ReadBalances permission, status and headers.",
+      "id": "OB-301-BAL-101300",
+      "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937754673/Balances+v3.1#Balancesv3.1-PermissionCodes",
+      "detail": "Checks that the bulk balances resource returns the correct data with additional schema checks, status and headers for a given account.",
+      "parameters": {
+        "accountAccessConsent": "balancesAccessConsent",
+        "tokenRequestScope": "accounts",
+        "accountId": "$consentedAccountId"
+      },
+      "permissions": [
+        "ReadAccountsBasic",
+        "ReadBalances"
+      ],
+      "headers": {
+        "Content-Type": "application/json"
+      },
+      "uri": "/balances",
+      "uriImplementation": "optional",
+      "resource": "Balance",
+      "asserts": [
+        "OB3GLOAssertOn200",
+        "OB3GLOFAPIHeader"
+      ],
+      "method": "get",
+      "schemaCheck": true
+    },
+    {
+      "description": "Fails on incorrect permissions are provided for balance.",
+      "id": "OB-301-BAL-101400",
+      "refURI": "",
+      "detail": "Validates that the balance resource fails correctly given an invalid permissions",
+      "parameters": {
+        "tokenRequestScope": "accounts",
+        "accountId": "$consentedAccountId"
+      },
+      "permissions": [
+        "ReadAccountsBasic"
+      ],
+      "permissions-excluded": [
+        "ReadBalances"
+      ],
+      "headers": {
+        "Content-Type": "application/json"
+      },
+      "uri": "/accounts/$accountId/balances",
+      "uriImplementation": "mandatory",
+      "resource": "Balance",
+      "method": "get",
+      "asserts": [],
+      "asserts_one_of": [
+        "OB3GLOAssertOn400",
+        "OB3GLOAssertOn403"
+      ],
+      "schemaCheck": false
+    },
+    {
+      "description": "Fails on incorrect permissions for Bulk Balances.",
+      "id": "OB-301-BAL-101500",
+      "refURI": "",
+      "detail": "Validates that the bulk balances resource fails correctly given an invalid permissions",
+      "parameters": {
+        "tokenRequestScope": "accounts"
+      },
+      "permissions-excluded": [
+        "ReadAccountsBasic",
+        "ReadBalances"
+      ],
+      "headers": {
+        "Content-Type": "application/json"
+      },
+      "uri": "/balances",
+      "uriImplementation": "optional",
+      "resource": "Balance",
+      "method": "get",
+      "asserts": [
+        "OB3GLOAssertOn401"
+      ],
+      "schemaCheck": false
+    },
+    {
+      "description": "Fails when account is invalid for Balances.",
+      "id": "OB-301-BAL-101600",
+      "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1000702294/Read+Write+Data+API+Specification+-+v3.1.1#Read/WriteDataAPISpecification-v3.1.1-400(BadRequest)v/s404(NotFound)",
+      "detail": "Checks the correct response is returned when given an invalid Account for a Balance.",
+      "parameters": {
+        "tokenRequestScope": "accounts",
+        "accountId": "foobar"
+      },
+      "permissions": [
+        "ReadAccountsBasic",
+        "ReadBalances"
+      ],
+      "headers": {
+        "Content-Type": "application/json"
+      },
+      "uri": "/accounts/$accountId/balances",
+      "uriImplementation": "mandatory",
+      "resource": "Balance",
+      "method": "get",
+      "asserts_one_of": [
+        "OB3GLOAssertOn400",
+        "OB3GLOAssertOn403"
+      ],
+      "schemaCheck": false
+    },
+    {
+      "description": "Fails when token is from client grant.",
+      "id": "OB-301-BAL-101700",
+      "refURI": "",
+      "detail": "Checks the correct response is returned 401 using a CCG token",
+      "parameters": {
+        "tokenRequestScope": "accounts"
+      },
+      "headers": {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer $client_access_token"
+      },
+      "uri": "/balances",
+      "uriImplementation": "optional",
+      "resource": "Balance",
+      "method": "get",
+      "asserts": [
+        "OB3GLOAssertOn401"
+      ],
+      "schemaCheck": false
+    },
+    {
+      "description": "Fails 404 on an invalid Balance resource.",
+      "id": "OB-301-BAL-101701",
+      "refURI": "",
+      "detail": "Validates that the balance resource returns the correct status code (404 Not Found) given an invalid endpoint.",
+      "parameters": {
+        "tokenRequestScope": "accounts",
+        "accountId": "$consentedAccountId"
+      },
+      "permissions": [
+        "ReadAccountsBasic",
+        "ReadBalances"
+      ],
+      "headers": {
+        "Content-Type": "application/json"
+      },
+
+      "uri": "/accounts/$accountId/balances/foobar",
+      "uriImplementation": "optional",
+      "resource": "Balance",
+      "asserts": [
+        "OB3GLOAssertOn404"
+      ],
+      "method": "get",
+      "schemaCheck": false
+    },
+    {
+      "description": "The x-fapi-interaction-id is played-black for account Balances.",
+      "id": "OB-301-BAL-101702",
+      "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1000015541/Balances+v3.1.1",
+      "detail": "Checks that the value in the x-fapi-interaction-id response header is played-back for account Balances.",
+      "parameters": {
+        "tokenRequestScope": "accounts",
+        "accountId": "$consentedAccountId",
+        "x-fapi-interaction-id": "93bac548-d2de-4546-b106-880a5018460d"
+      },
+      "headers": {
+        "x-fapi-interaction-id": "$x-fapi-interaction-id",
+        "Content-Type": "application/json"
+
+      },
+      "permissions": [
+        "ReadAccountsBasic",
+        "ReadBalances"
+      ],
+      "uri": "/accounts/$accountId/balances",
+      "uriImplementation": "mandatory",
+      "resource": "Balance",
+      "method": "get",
+      "asserts": [
+        "OB3GLOAssertFAPIPlayBack"
+      ],
+      "schemaCheck": false
+    },
+    {
+      "description": "The x-fapi-interaction-id is played-black for Balances.",
+      "id": "OB-301-BAL-101703",
+      "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1000015541/Balances+v3.1.1",
+      "detail": "Checks that the value in the x-fapi-interaction-id response header is played-back for Balances.",
+      "parameters": {
+        "tokenRequestScope": "accounts",
+        "accountId": "$consentedAccountId",
+        "x-fapi-interaction-id": "f5a10e5e-0c46-41c5-a7b7-c8f560205200"
+      },
+      "headers": {
+        "Content-Type": "application/json",
+
+        "x-fapi-interaction-id": "$x-fapi-interaction-id"
+      },
+      "permissions": [
+        "ReadAccountsBasic",
+        "ReadBalances"
+      ],
+      "uri": "/balances",
+      "uriImplementation": "optional",
+      "resource": "Account",
+      "method": "get",
+      "asserts": [
+        "OB3GLOAssertFAPIPlayBack"
+      ],
+      "schemaCheck": false
+    },
+    {
+      "description": "Minimal data returned for a given Beneficiary using the ReadBeneficiariesBasic permission, status and headers.",
+      "id": "OB-301-BEN-101800",
+      "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937951315/Beneficiaries+v3.1#Beneficiariesv3.1-PermissionCodes",
+      "detail": "Checks that the resource differs depending on the permission ReadBeneficiariesBasic used to access the resource with additional schema checks on status and headers.",
+      "parameters": {
+        "tokenRequestScope": "accounts",
+        "accountId": "$consentedAccountId"
+      },
+      "permissions": [
+        "ReadAccountsBasic",
+        "ReadBeneficiariesBasic"
+      ],
+      "headers": {
+        "Content-Type": "application/json"
+      },
+
+      "uri": "/accounts/$accountId/beneficiaries",
+      "uriImplementation": "conditional",
+      "resource": "Beneficiary",
+      "asserts": [
+        "OB3GLOAssertOn200",
+        "OB3GLOFAPIHeader"
+      ],
+      "method": "get",
+      "schemaCheck": true
+    },
+    {
+      "description": "Minimal data returned for a given Bulk Beneficiaries using the ReadBeneficiariesBasic permission, status and headers.",
+      "id": "OB-301-BEN-101900",
+      "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937951315/Beneficiaries+v3.1#Beneficiariesv3.1-PermissionCodes",
+      "detail": "Checks that the resource differs depending on the permissions (ReadBeneficiariesBasic and ReadBeneficiariesDetail) used to access the resource with additional schema checks, status and headers.",
+      "parameters": {
+        "tokenRequestScope": "accounts"
+      },
+      "permissions": [
+        "ReadAccountsBasic",
+        "ReadBeneficiariesBasic"
+      ],
+      "headers": {
+        "Content-Type": "application/json"
+      },
+
+      "uri": "/beneficiaries",
+      "uriImplementation": "optional",
+      "resource": "Beneficiary",
+      "asserts": [
+        "OB3GLOAssertOn200",
+        "OB3GLOFAPIHeader"
+      ],
+      "method": "get",
+      "schemaCheck": true
+    },
+    {
+      "description": "Fails when incorrect permissions are provided for Bulk Beneficiaries.",
+      "id": "OB-301-BEN-102000",
+      "refURI": "",
+      "detail": "Validates that the bulk Beneficiaries resource fails correctly given an invalid permission.",
+      "parameters": {
+        "tokenRequestScope": "accounts"
+      },
+      "permissions-excluded": [
+        "ReadAccountsBasic",
+        "ReadBeneficiariesBasic"
+      ],
+      "headers": {
+        "Content-Type": "application/json"
+      },
+
+      "uri": "/beneficiaries",
+      "uriImplementation": "optional",
+      "resource": "Beneficiary",
+      "method": "get",
+      "asserts": [
+        "OB3GLOAssertOn401"
+      ],
+      "schemaCheck": false
+    },
+    {
+      "description": "Fails given incorrect permission is provided for a Beneficiary.",
+      "id": "OB-301-BEN-102100",
+      "refURI": "",
+      "detail": "Validates that the beneficiary resource fails correctly given an invalid permission.",
+      "parameters": {
+        "tokenRequestScope": "accounts",
+        "accountId": "$consentedAccountId"
+      },
+      "permissions-excluded": [
+        "ReadAccountsBasic",
+        "ReadBeneficiariesBasic"
+      ],
+      "headers": {
+        "Content-Type": "application/json"
+      },
+
+      "uri": "/accounts/$accountId/beneficiaries",
+      "uriImplementation": "conditional",
+      "resource": "Beneficiary",
+      "method": "get",
+      "asserts": [
+        "OB3GLOAssertOn401"
+      ],
+      "schemaCheck": false
+    },
+    {
+      "description": "Fails when account is invalid for Beneficiary.",
+      "id": "OB-301-BEN-102200",
+      "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1000702294/Read+Write+Data+API+Specification+-+v3.1.1#Read/WriteDataAPISpecification-v3.1.1-400(BadRequest)v/s404(NotFound)",
+      "detail": "Checks the correct response is returned when given an invalid account for a Beneficiary.",
+      "parameters": {
+        "tokenRequestScope": "accounts",
+        "accountId": "foobar"
+      },
+      "permissions": [
+        "ReadAccountsBasic",
+        "ReadBeneficiariesBasic"
+      ],
+      "headers": {
+        "Content-Type": "application/json"
+      },
+
+      "uri": "/accounts/$accountId/beneficiaries",
+      "uriImplementation": "conditional",
+      "resource": "Beneficiary",
+      "method": "get",
+      "asserts": [
+        "OB3IPAssertResourceFieldInvalidOBErrorCode"
+      ],
+      "asserts_one_of": [
+        "OB3GLOAssertOn400",
+        "OB3GLOAssertOn403"
+      ],
+      "schemaCheck": false
+    },
+    {
+      "description": "Fails 404 on an invalid Beneficiary resource.",
+      "id": "OB-301-BEN-102201",
+      "refURI": "",
+      "detail": "Validates that the beneficiary resource returns the correct status code (404 Not Found) given an invalid endpoint.",
+      "parameters": {
+        "tokenRequestScope": "accounts",
+        "accountId": "$consentedAccountId"
+      },
+      "permissions": [
+        "ReadAccountsBasic",
+        "ReadBeneficiariesBasic"
+      ],
+      "headers": {
+        "Content-Type": "application/json"
+      },
+
+      "uri": "/accounts/$accountId/beneficiaries/foobar",
+      "uriImplementation": "conditional",
+      "resource": "Beneficiary",
+      "asserts": [
+        "OB3GLOAssertOn404"
+      ],
+      "method": "get",
+      "schemaCheck": false
+    },
+    {
+      "description": "Fails using client grant token on Beneficiaries.",
+      "id": "OB-301-BEN-102203",
+      "refURI": "",
+      "detail": "Checks the correct response is returned 401 using a CCG token on Beneficiaries",
+      "parameters": {
+        "tokenRequestScope": "accounts"
+      },
+      "headers": {
+        "Authorization": "Bearer $client_access_token",
+        "Content-Type": "application/json"
+
+      },
+      "uri": "/beneficiaries",
+      "uriImplementation": "optional",
+      "resource": "Beneficiary",
+      "method": "get",
+      "asserts": [
+        "OB3GLOAssertOn401"
+      ],
+      "schemaCheck": false
+    },
+    {
+      "description": "The x-fapi-interaction-id is played-black for account Beneficiary.",
+      "id": "OB-301-BEN-102204",
+      "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1000702338/Beneficiaries+v3.1.1",
+      "detail": "Checks that the value in the x-fapi-interaction-id response header is played-back for account Beneficiary.",
+      "parameters": {
+        "tokenRequestScope": "accounts",
+        "accountId": "$consentedAccountId",
+        "x-fapi-interaction-id": "93bac548-d2de-4546-b106-880a5018460d"
+      },
+      "headers": {
+        "x-fapi-interaction-id": "$x-fapi-interaction-id",
+        "Content-Type": "application/json"
+      },
+      "permissions": [
+        "ReadAccountsBasic",
+        "ReadBeneficiariesBasic"
+      ],
+      "uri": "/accounts/$accountId/beneficiaries/",
+      "uriImplementation": "conditional",
+      "resource": "Beneficiary",
+      "method": "get",
+      "asserts": [
+        "OB3GLOAssertFAPIPlayBack"
+      ],
+      "schemaCheck": false
+    },
+    {
+      "description": "The x-fapi-interaction-id is played-black for Beneficiary.",
+      "id": "OB-301-BEN-102205",
+      "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1000702338/Beneficiaries+v3.1.1",
+      "detail": "Checks that the value in the x-fapi-interaction-id response header is played-back for Beneficiary.",
+      "parameters": {
+        "tokenRequestScope": "accounts",
+        "accountId": "$consentedAccountId",
+        "x-fapi-interaction-id": "f5a10e5e-0c46-41c5-a7b7-c8f560205200"
+      },
+      "headers": {
+        "x-fapi-interaction-id": "$x-fapi-interaction-id",
+        "Content-Type": "application/json"
+      },
+      "permissions": [
+        "ReadAccountsBasic",
+        "ReadBeneficiariesBasic"
+      ],
+      "uri": "/beneficiaries",
+      "uriImplementation": "optional",
+      "resource": "Beneficiary",
+      "method": "get",
+      "asserts": [
+        "OB3GLOAssertFAPIPlayBack"
+      ],
+      "schemaCheck": false
+    },
+    {
+      "description": "All data returned for a given account with ReadDirectDebits permission, status and headers.",
+      "id": "OB-301-DIR-102300",
+      "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937558106/Direct+Debits+v3.1",
+      "detail": "Checks that the resource returns the correct data depending permission ReadDirectDebits with additional schema checks on status and headers.",
+      "parameters": {
+        "tokenRequestScope": "accounts",
+        "accountId": "$consentedAccountId"
+      },
+      "permissions": [
+        "ReadAccountsBasic",
+        "ReadDirectDebits"
+      ],
+      "uri": "/accounts/$accountId/direct-debits",
+      "uriImplementation": "conditional",
+      "resource": "DirectDebit",
+      "asserts": [
+        "OB3GLOAssertOn200",
+        "OB3GLOFAPIHeader"
+      ],
+      "method": "get",
+      "schemaCheck": true
+    },
+    {
+      "description": "All data returned for a given account with ReadDirectDebits permission, status and headers.",
+      "id": "OB-301-DIR-102400",
+      "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937558106/Direct+Debits+v3.1",
+      "detail": "Checks that the resource returns the correct data for the permission ReadDirectDebits bulk with additional schema checks on status and headers.",
+      "parameters": {
+        "tokenRequestScope": "accounts"
+      },
+      "permissions": [
+        "ReadAccountsBasic",
+        "ReadDirectDebits"
+      ],
+      "headers": {
+        "Content-Type": "application/json"
+      },
+
+      "uri": "/direct-debits",
+      "uriImplementation": "optional",
+      "resource": "DirectDebit",
+      "asserts": [
+        "OB3GLOAssertOn200",
+        "OB3GLOFAPIHeader"
+      ],
+      "method": "get",
+      "schemaCheck": true
+    },
+    {
+      "description": "Fails when account is invalid for Direct Debit.",
+      "id": "OB-301-DIR-102500",
+      "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1000702294/Read+Write+Data+API+Specification+-+v3.1.1#Read/WriteDataAPISpecification-v3.1.1-400(BadRequest)v/s404(NotFound)",
+      "detail": "Checks the correct response is returned when given an invalid account for Direct Debit.",
+      "parameters": {
+        "tokenRequestScope": "accounts",
+        "accountId": "foobar"
+      },
+      "permissions": [
+        "ReadAccountsBasic",
+        "ReadDirectDebits"
+      ],
+      "headers": {
+        "Content-Type": "application/json"
+      },
+
+      "uri": "/accounts/$accountId/direct-debits",
+      "uriImplementation": "conditional",
+      "resource": "DirectDebit",
+      "method": "get",
+      "asserts_one_of": [
+        "OB3GLOAssertOn400",
+        "OB3GLOAssertOn403"
+      ],
+      "schemaCheck": false
+    },
+    {
+      "description": "Fails 404 on an invalid Direct Debit resource.",
+      "id": "OB-301-DIR-102501",
+      "refURI": "",
+      "detail": "Validates that the Direct Debit resource returns the correct status code (404 Not Found) given an invalid endpoint.",
+      "parameters": {
+        "tokenRequestScope": "accounts",
+        "accountId": "$consentedAccountId"
+      },
+      "permissions": [
+        "ReadAccountsBasic",
+        "ReadDirectDebits"
+      ],
+      "headers": {
+        "Content-Type": "application/json"
+      },
+
+      "uri": "/accounts/$accountId/direct-debits/foobar",
+      "uriImplementation": "conditional",
+      "resource": "DirectDebit",
+      "asserts": [
+        "OB3GLOAssertOn404"
+      ],
+      "method": "get",
+      "schemaCheck": false
+    },
+    {
+      "description": "Fails when token using on Direct Debit is from client grant.",
+      "id": "OB-301-DIR-102502",
+      "refURI": "",
+      "detail": "Checks the correct response is returned 401 using a CCG token",
+      "parameters": {
+        "tokenRequestScope": "accounts"
+      },
+      "headers": {
+        "Authorization": "Bearer $client_access_token",
+        "Content-Type": "application/json"
+      },
+      "uri": "/direct-debits",
+      "uriImplementation": "optional",
+      "resource": "DirectDebit",
+      "method": "get",
+      "asserts": [
+        "OB3GLOAssertOn401"
+      ],
+      "schemaCheck": false
+    },
+    {
+      "description": "The x-fapi-interaction-id is played-black for account Direct Debit.",
+      "id": "OB-301-DIR-102503",
+      "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/999426259/Direct+Debits+v3.1.1",
+      "detail": "Checks that the value in the x-fapi-interaction-id response header is played-back for account Direct Debit.",
+      "parameters": {
+        "tokenRequestScope": "accounts",
+        "accountId": "$consentedAccountId",
+        "x-fapi-interaction-id": "93bac548-d2de-4546-b106-880a5018460d"
+      },
+      "headers": {
+        "x-fapi-interaction-id": "$x-fapi-interaction-id"
+      },
+      "permissions": [
+        "ReadAccountsBasic",
+        "ReadDirectDebits"
+      ],
+      "uri": "/accounts/$accountId/direct-debits",
+      "uriImplementation": "conditional",
+      "resource": "DirectDebit",
+      "method": "get",
+      "asserts": [
+        "OB3GLOAssertFAPIPlayBack"
+      ],
+      "schemaCheck": false
+    },
+    {
+      "description": "The x-fapi-interaction-id is played-black for Direct Debit.",
+      "id": "OB-301-DIR-102504",
+      "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/999426259/Direct+Debits+v3.1.1",
+      "detail": "Checks that the value in the x-fapi-interaction-id response header is played-back for Direct Debit.",
+      "parameters": {
+        "tokenRequestScope": "accounts",
+        "x-fapi-interaction-id": "f5a10e5e-0c46-41c5-a7b7-c8f560205200"
+      },
+      "headers": {
+        "x-fapi-interaction-id": "$x-fapi-interaction-id",
+        "Content-Type": "application/json"
+      },
+      "permissions": [
+        "ReadAccountsBasic",
+        "ReadDirectDebits"
+      ],
+      "uri": "/direct-debits",
+      "uriImplementation": "optional",
+      "resource": "DirectDebit",
+      "method": "get",
+      "asserts": [
+        "OB3GLOAssertFAPIPlayBack"
+      ],
+      "schemaCheck": false
+    },
+    {
+      "description": "All data returned for a given Account with ReadOffers permission with additional schema checks, status and headers.",
+      "id": "OB-301-OFF-102600",
+      "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937558127/Offers+v3.1#Offersv3.1-PermissionCodes",
+      "detail": "Checks that the resource returns the correct data depending permission ReadOffers with additional schema checks on status and headers.",
+      "parameters": {
+        "tokenRequestScope": "accounts",
+        "accountId": "$consentedAccountId"
+      },
+      "permissions": [
+        "ReadAccountsBasic",
+        "ReadOffers"
+      ],
+      "headers": {
+        "Content-Type": "application/json"
+      },
+
+      "uri": "/accounts/$accountId/offers",
+      "uriImplementation": "conditional",
+      "resource": "Offer",
+      "asserts": [
+        "OB3GLOAssertOn200",
+        "OB3GLOFAPIHeader"
+      ],
+      "method": "get",
+      "schemaCheck": true
+    },
+    {
+      "description": "All data returned for Offers with ReadOffers permission with additional schema checks, status and headers.",
+      "id": "OB-301-OFF-102700",
+      "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937558127/Offers+v3.1#Offersv3.1-PermissionCodes",
+      "detail": "Checks that the resource returns the correct data depending permission ReadOffers with additional schema checks on status and headers.",
+      "parameters": {
+        "tokenRequestScope": "accounts",
+        "accountId": "$consentedAccountId"
+      },
+      "permissions": [
+        "ReadAccountsBasic",
+        "ReadOffers"
+      ],
+      "headers": {
+        "x-fapi-interaction-id": "$x-fapi-interaction-id",
+        "Content-Type": "application/json"
+      },
+
+      "uri": "/offers",
+      "resource": "Offer",
+      "uriImplementation": "optional",
+      "asserts": [
+        "OB3GLOAssertOn200",
+        "OB3GLOFAPIHeader"
+      ],
+      "method": "get",
+      "schemaCheck": true
+    },
+    {
+      "description": "Fails when account is invalid for Offer.",
+      "id": "OB-301-OFF-102800",
+      "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1000702294/Read+Write+Data+API+Specification+-+v3.1.1#Read/WriteDataAPISpecification-v3.1.1-400(BadRequest)v/s404(NotFound)",
+      "detail": "Checks the correct response is returned when given an invalid account for an Offer.",
+      "parameters": {
+        "tokenRequestScope": "accounts",
+        "accountId": "foobar"
+      },
+      "permissions": [
+        "ReadAccountsBasic",
+        "ReadOffers"
+      ],
+      "headers": {
+        "x-fapi-interaction-id": "$x-fapi-interaction-id",
+        "Content-Type": "application/json"
+      },
+
+      "uri": "/accounts/$accountId/offers",
+      "uriImplementation": "conditional",
+      "resource": "Offer",
+      "method": "get",
+      "asserts": [
+        "OB3GLOAssertOn400",
+        "OB3IPAssertResourceFieldInvalidOBErrorCode"
+      ],
+      "schemaCheck": false
+    },
+    {
+      "description": "Fails 404 on an invalid Offer resource.",
+      "id": "OB-301-OFF-102801",
+      "refURI": "",
+      "detail": "Validates that the offer resource returns the correct status code (404 Not Found) given an invalid endpoint.",
+      "parameters": {
+        "tokenRequestScope": "accounts",
+        "accountId": "$consentedAccountId"
+      },
+      "permissions": [
+        "ReadAccountsBasic",
+        "ReadOffers"
+      ],
+      "headers": {
+        "x-fapi-interaction-id": "$x-fapi-interaction-id",
+        "Content-Type": "application/json"
+      },
+
+      "uri": "/accounts/$accountId/offers/foobar",
+      "uriImplementation": "conditional",
+      "resource": "Offer",
+      "asserts": [
+        "OB3GLOAssertOn404"
+      ],
+      "method": "get",
+      "schemaCheck": false
+    },
+    {
+      "description": "Fails when token using on Offers is from client grant.",
+      "id": "OB-301-OFF-102802",
+      "refURI": "",
+      "detail": "Checks the correct response is returned 401 using a CCG token",
+      "parameters": {
+        "tokenRequestScope": "accounts"
+      },
+      "headers": {
+        "Authorization": "Bearer $client_access_token",
+        "x-fapi-interaction-id": "$x-fapi-interaction-id",
+        "Content-Type": "application/json"
+      },
+
+      "uri": "/offers",
+      "uriImplementation": "optional",
+      "resource": "Offer",
+      "method": "get",
+      "asserts": [
+        "OB3GLOAssertOn401"
+      ],
+      "schemaCheck": false
+    },
+    {
+      "description": "The x-fapi-interaction-id is played-black for account Offer.",
+      "id": "OB-301-OFF-102803",
+      "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1000571846/Offers+v3.1.1",
+      "detail": "Checks that the value in the x-fapi-interaction-id response header is played-back for account Offer.",
+      "parameters": {
+        "tokenRequestScope": "accounts",
+        "accountId": "$consentedAccountId",
+        "x-fapi-interaction-id": "93bac548-d2de-4546-b106-880a5018460d"
+      },
+      "headers": {
+        "x-fapi-interaction-id": "$x-fapi-interaction-id",
+        "Content-Type": "application/json"
+      },
+
+      "permissions": [
+        "ReadAccountsBasic",
+        "ReadOffers"
+      ],
+      "uri": "/accounts/$accountId/offers",
+      "uriImplementation": "conditional",
+      "resource": "Offer",
+      "method": "get",
+      "asserts": [
+        "OB3GLOAssertFAPIPlayBack"
+      ],
+      "schemaCheck": false
+    },
+    {
+      "description": "The x-fapi-interaction-id is played-black for Offer.",
+      "id": "OB-301-OFF-102804",
+      "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1000571846/Offers+v3.1.1",
+      "detail": "Checks that the value in the x-fapi-interaction-id response header is played-back for Offer.",
+      "parameters": {
+        "tokenRequestScope": "accounts",
+        "x-fapi-interaction-id": "f5a10e5e-0c46-41c5-a7b7-c8f560205200"
+      },
+      "headers": {
+        "x-fapi-interaction-id": "$x-fapi-interaction-id",
+        "Content-Type": "application/json"
+      },
+      "permissions": [
+        "ReadAccountsBasic",
+        "ReadOffers"
+      ],
+      "uri": "/offers",
+      "uriImplementation": "optional",
+      "resource": "Offer",
+      "method": "get",
+      "asserts": [
+        "OB3GLOAssertFAPIPlayBack"
+      ],
+      "schemaCheck": false
+    },
+    {
+      "description": "All data returned for a given Account with ReadParty permission with additional schema checks, status and headers.",
+      "id": "OB-301-PAR-102900",
+      "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937984104/Party+v3.1#Partyv3.1-PermissionCodes",
+      "detail": "Checks that the resource returns the correct data depending permission ReadParty with additional schema checks on status and headers.",
+      "parameters": {
+        "tokenRequestScope": "accounts",
+        "accountId": "$consentedAccountId"
+      },
+      "permissions": [
+        "ReadAccountsBasic",
+        "ReadParty"
+      ],
+      "headers": {
+        "Content-Type": "application/json"
+      },
+      "uri": "/accounts/$accountId/party",
+      "uriImplementation": "conditional",
+      "resource": "Party",
+      "asserts": [
+        "OB3GLOAssertOn200",
+        "OB3GLOFAPIHeader"
+      ],
+      "method": "get",
+      "schemaCheck": true
+    },
+    {
+      "description": "Data returned for a given Bulk Party using ReadPartyPSU permission, status and headers.",
+      "id": "OB-301-PAR-102901",
+      "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1000015561/Parties+v3.1.1#Partiesv3.1.1-GET/party",
+      "detail": "Checks that data is returned for ReadPartyPSU with additional schema checks, status and headers.",
+      "parameters": {
+        "tokenRequestScope": "accounts"
+      },
+      "permissions": [
+        "ReadAccountsBasic",
+        "ReadPartyPSU"
+      ],
+      "headers": {
+        "Content-Type": "application/json"
+      },
+
+      "uri": "/party",
+      "uriImplementation": "optional",
+      "resource": "Beneficiary",
+      "asserts": [
+        "OB3GLOAssertOn200",
+        "OB3GLOFAPIHeader"
+      ],
+      "method": "get",
+      "schemaCheck": true
+    },
+    {
+      "description": "All data returned for ReadParty permission with additional schema checks, status and headers.",
+      "id": "OB-301-PAR-103000",
+      "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937984104/Party+v3.1#Partyv3.1-PermissionCodes",
+      "detail": "Checks that the resource returns the correct data depending permission ReadParty with additional schema checks on status and headers.",
+      "parameters": {
+        "tokenRequestScope": "accounts",
+        "accountId": "$consentedAccountId"
+      },
+      "permissions": [
+        "ReadAccountsBasic",
+        "ReadParty"
+      ],
+      "headers": {
+        "Content-Type": "application/json"
+      },
+
+      "uri": "/accounts/$accountId/party",
+      "uriImplementation": "conditional",
+      "resource": "Party",
+      "asserts": [
+        "OB3GLOAssertOn200",
+        "OB3GLOFAPIHeader"
+      ],
+      "method": "get",
+      "schemaCheck": true
+    },
+    {
+      "description": "Fails when account is invalid for an Party.",
+      "id": "OB-301-PAR-103100",
+      "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1000702294/Read+Write+Data+API+Specification+-+v3.1.1#Read/WriteDataAPISpecification-v3.1.1-400(BadRequest)v/s404(NotFound)",
+      "detail": "Checks the correct response is returned when given an invalid account for an Party.",
+      "parameters": {
+        "tokenRequestScope": "accounts",
+        "accountId": "foobar"
+      },
+      "permissions": [
+        "ReadAccountsBasic",
+        "ReadParty"
+      ],
+      "uri": "/accounts/$accountId/party",
+      "uriImplementation": "conditional",
+      "resource": "Party",
+      "method": "get",
+      "asserts": [
+        "OB3GLOAssertOn400"
+      ],
+      "schemaCheck": false
+    },
+    {
+      "description": "Fails 404 on an invalid Party resource.",
+      "id": "OB-301-PAR-103101",
+      "refURI": "",
+      "detail": "Validates that the party resource returns the correct status code (404 Not Found) given an invalid endpoint.",
+      "parameters": {
+        "tokenRequestScope": "accounts",
+        "accountId": "$consentedAccountId"
+      },
+      "permissions": [
+        "ReadAccountsBasic",
+        "ReadParty"
+      ],
+      "headers": {
+        "Content-Type": "application/json"
+      },
+
+      "uri": "/accounts/$accountId/party/foobar",
+      "uriImplementation": "conditional",
+      "resource": "Party",
+      "asserts": [
+        "OB3GLOAssertOn404"
+      ],
+      "method": "get",
+      "schemaCheck": false
+    },
+    {
+      "description": "Fails when token using on Party is from client grant.",
+      "id": "OB-301-PAR-103102",
+      "refURI": "",
+      "detail": "Checks the correct response is returned 401 using a CCG token",
+      "parameters": {
+        "tokenRequestScope": "accounts"
+      },
+      "headers": {
+        "Authorization": "Bearer $client_access_token",
+        "Content-Type": "application/json"
+
+      },
+      "uri": "/party",
+      "uriImplementation": "optional",
+      "resource": "Party",
+      "method": "get",
+      "asserts": [
+        "OB3GLOAssertOn401"
+      ],
+      "schemaCheck": false
+    },
+    {
+      "description": "Fails when incorrect permissions are provided for Bulk Party.",
+      "id": "OB-301-PAR-103103",
+      "refURI": "",
+      "detail": "Validates that the Bulk Party resource fails correctly given an invalid permission.",
+      "parameters": {
+        "tokenRequestScope": "accounts"
+      },
+      "permissions-excluded": [
+        "ReadAccountsBasic",
+        "ReadParty"
+      ],
+      "headers": {
+        "Content-Type": "application/json"
+      },
+
+      "uri": "/beneficiaries",
+      "uriImplementation": "optional",
+      "resource": "Party",
+      "method": "get",
+      "asserts": [
+        "OB3GLOAssertOn401"
+      ],
+      "schemaCheck": false
+    },
+    {
+      "description": "The x-fapi-interaction-id is played-black for account Party.",
+      "id": "OB-301-PAR-103104",
+      "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1000015561/Parties+v3.1.1",
+      "detail": "Checks that the value in the x-fapi-interaction-id response header is played-back for account Party.",
+      "parameters": {
+        "tokenRequestScope": "accounts",
+        "accountId": "$consentedAccountId",
+        "x-fapi-interaction-id": "93bac548-d2de-4546-b106-880a5018460d"
+      },
+      "headers": {
+        "x-fapi-interaction-id": "$x-fapi-interaction-id",
+        "Content-Type": "application/json"
+      },
+      "permissions": [
+        "ReadAccountsBasic",
+        "ReadParty"
+      ],
+      "uri": "/accounts/$accountId/party",
+      "uriImplementation": "conditional",
+      "resource": "Party",
+      "method": "get",
+      "asserts": [
+        "OB3GLOAssertFAPIPlayBack"
+      ],
+      "schemaCheck": false
+    },
+    {
+      "description": "The x-fapi-interaction-id is played-black for Party.",
+      "id": "OB-301-PAR-103105",
+      "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1000015561/Parties+v3.1.1",
+      "detail": "Checks that the value in the x-fapi-interaction-id response header is played-back for Party.",
+      "parameters": {
+        "tokenRequestScope": "accounts",
+        "x-fapi-interaction-id": "f5a10e5e-0c46-41c5-a7b7-c8f560205200"
+      },
+      "headers": {
+        "x-fapi-interaction-id": "$x-fapi-interaction-id",
+        "Content-Type": "application/json"
+
+      },
+      "permissions": [
+        "ReadAccountsBasic",
+        "ReadParty"
+      ],
+      "uri": "/party",
+      "uriImplementation": "optional",
+      "resource": "Party",
+      "method": "get",
+      "asserts": [
+        "OB3GLOAssertFAPIPlayBack"
+      ],
+      "schemaCheck": false
+    },
+    {
+      "description": "All data returned for a given account with ReadProducts permission with additional schema checks, status and headers.",
+      "id": "OB-301-PRO-103200",
+      "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937820288/Products+v3.1#Productsv3.1-PermissionCodes",
+      "detail": "Checks that the resource returns the correct data depending permission ReadProducts with additional schema checks on status and headers.",
+      "parameters": {
+        "tokenRequestScope": "accounts",
+        "accountId": "$consentedAccountId"
+      },
+      "permissions": [
+        "ReadAccountsBasic",
+        "ReadProducts"
+      ],
+      "headers": {
+        "Content-Type": "application/json"
+
+      },
+      "uri": "/accounts/$accountId/product",
+      "uriImplementation": "conditional",
+      "resource": "Product",
+      "asserts": [
+        "OB3GLOAssertOn200",
+        "OB3GLOFAPIHeader"
+      ],
+      "method": "get",
+      "schemaCheck": true
+    },
+    {
+      "description": "All data returned for ReadProducts permission with additional schema checks, status and headers.",
+      "id": "OB-301-PRO-103300",
+      "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937820288/Products+v3.1#Productsv3.1-PermissionCodes",
+      "detail": "Checks that the bulk resource returns the correct data depending permission ReadProducts with additional schema checks on status and headers.",
+      "parameters": {
+        "tokenRequestScope": "accounts"
+      },
+      "permissions": [
+        "ReadAccountsBasic",
+        "ReadProducts"
+      ],
+      "headers": {
+        "Content-Type": "application/json"
+
+      },
+      "uri": "/products",
+      "uriImplementation": "optional",
+      "resource": "Product",
+      "asserts": [
+        "OB3GLOAssertOn200",
+        "OB3GLOFAPIHeader"
+      ],
+      "method": "get",
+      "schemaCheck": true
+    },
+    {
+      "description": "Fails when account is invalid for a Product.",
+      "id": "OB-301-PRO-103400",
+      "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1000702294/Read+Write+Data+API+Specification+-+v3.1.1#Read/WriteDataAPISpecification-v3.1.1-400(BadRequest)v/s404(NotFound)",
+      "detail": "Checks the correct response is returned when given an invalid account for a Product.",
+      "parameters": {
+        "tokenRequestScope": "accounts",
+        "accountId": "foobar"
+      },
+      "permissions": [
+        "ReadAccountsBasic",
+        "ReadProducts"
+      ],
+      "headers": {
+        "Content-Type": "application/json"
+      },
+      "uri": "/accounts/$accountId/product",
+      "uriImplementation": "conditional",
+      "resource": "Product",
+      "method": "get",
+      "asserts_one_of": [
+        "OB3GLOAssertOn400",
+        "OB3GLOAssertOn403"
+      ],
+      "schemaCheck": false
+    },
+    {
+      "description": "Fails 404 on an invalid Product resource.",
+      "id": "OB-301-PRO-103401",
+      "refURI": "",
+      "detail": "Validates that the product resource returns the correct status code (404 Not Found) given an invalid endpoint.",
+      "parameters": {
+        "tokenRequestScope": "accounts",
+        "accountId": "$consentedAccountId"
+      },
+      "permissions": [
+        "ReadAccountsBasic",
+        "ReadProducts"
+      ],
+      "headers": {
+        "Content-Type": "application/json"
+      },
+      "uri": "/accounts/$accountId/product/foobar",
+      "resource": "Product",
+      "asserts": [
+        "OB3GLOAssertOn404"
+      ],
+      "method": "get",
+      "schemaCheck": false
+    },
+    {
+      "description": "Fails when token using on Product is from client grant.",
+      "id": "OB-301-PRO-102802",
+      "refURI": "",
+      "detail": "Checks the correct response is returned 401 using a CCG token.",
+      "parameters": {
+        "tokenRequestScope": "accounts"
+      },
+      "headers": {
+        "Authorization": "Bearer $client_access_token",
+            "Content-Type": "application/json"
+      },
+      "uri": "/products",
+      "uriImplementation": "optional",
+      "resource": "Product",
+      "method": "get",
+      "asserts": [
+        "OB3GLOAssertOn401"
+      ],
+      "schemaCheck": false
+    },
+    {
+      "description": "The x-fapi-interaction-id is played-black for account Product.",
+      "id": "OB-301-PRO-103402",
+      "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1000604814/Products+v3.1.1",
+      "detail": "Checks that the value in the x-fapi-interaction-id response header is played-back for account Product.",
+      "parameters": {
+        "tokenRequestScope": "accounts",
+        "accountId": "$consentedAccountId",
+        "x-fapi-interaction-id": "93bac548-d2de-4546-b106-880a5018460d"
+      },
+      "headers": {
+        "x-fapi-interaction-id": "$x-fapi-interaction-id",
+            "Content-Type": "application/json"
+            },
+      "permissions": [
+        "ReadAccountsBasic",
+        "ReadProducts"
+      ],
+      "uri": "/accounts/$accountId/product",
+      "uriImplementation": "conditional",
+      "resource": "Product",
+      "method": "get",
+      "asserts": [
+        "OB3GLOAssertFAPIPlayBack"
+      ],
+      "schemaCheck": false
+    },
+    {
+      "description": "The x-fapi-interaction-id is played-black for Product.",
+      "id": "OB-301-PRO-103403",
+      "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1000604814/Products+v3.1.1",
+      "detail": "Checks that the value in the x-fapi-interaction-id response header is played-back for Product.",
+      "parameters": {
+        "tokenRequestScope": "accounts",
+        "x-fapi-interaction-id": "f5a10e5e-0c46-41c5-a7b7-c8f560205200"
+      },
+      "permissions": [
+        "ReadAccountsBasic",
+        "ReadProducts"
+      ],
+      "headers": {
+        "x-fapi-interaction-id": "$x-fapi-interaction-id",
+        "Content-Type": "application/json"
+
+      },      "uri": "/product",
+      "uriImplementation": "optional",
+      "resource": "Product",
+      "method": "get",
+      "asserts": [
+        "OB3GLOAssertFAPIPlayBack"
+      ],
+      "schemaCheck": false
+    },
+    {
+      "description": "Detailed level data returned for a given account using the ReadScheduledPaymentsDetail permission.",
+      "id": "OB-301-SCP-103500",
+      "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937066541/Scheduled+Payments+v3.1#ScheduledPaymentsv3.1-Endpoints",
+      "detail": "Checks that detail level is returned resource with permission ReadScheduledPaymentsDetail to access the resource with additional schema checks on status and headers.",
+      "parameters": {
+        "tokenRequestScope": "accounts",
+        "accountId": "$consentedAccountId"
+      },
+      "permissions": [
+        "ReadAccountsBasic",
+        "ReadScheduledPaymentsDetail"
+      ],
+      "headers": {
+        "Content-Type": "application/json"
+      },
+      "uri": "/accounts/$accountId/scheduled-payments",
+      "uriImplementation": "conditional",
+      "resource": "ScheduledPayment",
+      "asserts": [
+        "OB3GLOAssertOn200",
+        "OB3GLOFAPIHeader"
+      ],
+      "method": "get",
+      "schemaCheck": true
+    },
+    {
+      "description": "All data returned for ReadScheduledPaymentsDetail permission with additional schema checks, status and headers.",
+      "id": "OB-301-SCP-103600",
+      "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937066541/Scheduled+Payments+v3.1#ScheduledPaymentsv3.1-Endpoints",
+      "detail": "Checks that the bulk resource returns the correct data depending permission ReadScheduledPaymentsDetail with additional schema checks on status and headers.",
+      "parameters": {
+        "tokenRequestScope": "accounts"
+      },
+      "permissions": [
+        "ReadAccountsBasic",
+        "ReadScheduledPaymentsDetail"
+      ],
+      "headers": {
+        "Content-Type": "application/json"
+      },
+      "uri": "/scheduled-payments",
+      "uriImplementation": "optional",
+      "resource": "ScheduledPayment",
+      "asserts": [
+        "OB3GLOAssertOn200",
+        "OB3GLOFAPIHeader"
+      ],
+      "method": "get",
+      "schemaCheck": true
+    },
+    {
+      "description": "Fails when account is invalid for Scheduled Payment.",
+      "id": "OB-301-SCP-103700",
+      "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1000702294/Read+Write+Data+API+Specification+-+v3.1.1#Read/WriteDataAPISpecification-v3.1.1-400(BadRequest)v/s404(NotFound)",
+      "detail": "Checks the correct response is returned when given an invalid account for a Scheduled Payment.",
+      "parameters": {
+        "tokenRequestScope": "accounts",
+        "accountId": "foobar"
+      },
+      "permissions": [
+        "ReadAccountsBasic",
+        "ReadScheduledPaymentsDetail"
+      ],
+      "headers": {
+        "Content-Type": "application/json"
+
+      },      "uri": "/accounts/$accountId/scheduled-payments",
+      "uriImplementation": "conditional",
+      "resource": "ScheduledPayment",
+      "method": "get",
+      "asserts": [
+        "OB3IPAssertResourceFieldInvalidOBErrorCode"
+      ],
+      "asserts_one_of": [
+        "OB3GLOAssertOn400",
+        "OB3GLOAssertOn403"
+      ],
+      "schemaCheck": false
+    },
+    {
+      "description": "Fails 404 on an invalid Scheduled Payment resource.",
+      "id": "OB-301-SCP-103701",
+      "refURI": "",
+      "detail": "Validates that the Scheduled Payment resource returns the correct status code (404 Not Found) given an invalid endpoint.",
+      "parameters": {
+        "tokenRequestScope": "accounts",
+        "accountId": "$consentedAccountId"
+      },
+      "permissions": [
+        "ReadAccountsBasic",
+        "ReadScheduledPaymentsDetail"
+      ],      "headers": {
+        "Content-Type": "application/json"
+
+      },
+      "uri": "/accounts/$accountId/scheduled-payments/foobar",
+      "resource": "ScheduledPayment",
+      "asserts": [
+        "OB3GLOAssertOn404"
+      ],
+      "method": "get",
+      "schemaCheck": false
+    },
+    {
+      "description": "Fails when token is from client grant.",
+      "id": "OB-301-SCP-103702",
+      "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/999623000/Scheduled+Payments+v3.1.1#ScheduledPaymentsv3.1.1-GET/scheduled-payments",
+      "detail": "Checks the correct response is returned 401 using a CCG token",
+      "parameters": {
+        "tokenRequestScope": "accounts"
+      },
+      "headers": {
+        "Authorization": "Bearer $client_access_token",
+        "Content-Type": "application/json"
+
+      },
+      "uri": "/scheduled-payments",
+      "uriImplementation": "optional",
+      "resource": "ScheduledPayment",
+      "method": "get",
+      "asserts": [
+        "OB3GLOAssertOn401"
+      ],
+      "schemaCheck": false
+    },
+    {
+      "description": "The x-fapi-interaction-id is played-black for account Scheduled Payments.",
+      "id": "OB-301-SCP-103703",
+      "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/999623000/Scheduled+Payments+v3.1.1",
+      "detail": "Checks that the value in the x-fapi-interaction-id response header is played-back for account Product.",
+      "parameters": {
+        "tokenRequestScope": "accounts",
+        "accountId": "$consentedAccountId",
+        "x-fapi-interaction-id": "93bac548-d2de-4546-b106-880a5018460d"
+      },
+      "headers": {
+        "x-fapi-interaction-id": "$x-fapi-interaction-id",
+        "Content-Type": "application/json"
+      },
+      "permissions": [
+        "ReadAccountsBasic",
+        "ReadScheduledPaymentsDetail"
+      ],
+      "uri": "/accounts/$accountId/scheduled-payments",
+      "uriImplementation": "conditional",
+      "resource": "ScheduledPayment",
+      "method": "get",
+      "asserts": [
+        "OB3GLOAssertFAPIPlayBack"
+      ],
+      "schemaCheck": false
+    },
+    {
+      "description": "The x-fapi-interaction-id is played-black for Scheduled Payments.",
+      "id": "OB-301-SCP-103704",
+      "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/999623000/Scheduled+Payments+v3.1.1",
+      "detail": "Checks that the value in the x-fapi-interaction-id response header is played-back for Product.",
+      "parameters": {
+        "tokenRequestScope": "accounts",
+        "x-fapi-interaction-id": "f5a10e5e-0c46-41c5-a7b7-c8f560205200"
+      },
+      "permissions": [
+        "ReadAccountsBasic",
+        "ReadScheduledPaymentsDetail"
+      ],
+      "headers": {
+        "x-fapi-interaction-id": "$x-fapi-interaction-id",
+        "Content-Type": "application/json"
+
+      },   "uri": "/scheduled-payments",
+      "uriImplementation": "optional",
+      "resource": "ScheduledPayment",
+      "method": "get",
+      "asserts": [
+        "OB3GLOAssertFAPIPlayBack"
+      ],
+      "schemaCheck": false
+    },
+    {
+      "description": "Detailed level data returned for a given account using the ReadStandingOrdersDetail permission.",
+      "id": "OB-301-STO-103800",
+      "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937721918/Standing+Orders+v3.1#StandingOrdersv3.1-PermissionCodes",
+      "detail": "Checks that detail level is returned resource with permission ReadStandingOrdersDetail to access the resource with additional schema checks on status and headers.",
+      "parameters": {
+        "tokenRequestScope": "accounts",
+        "accountId": "$consentedAccountId"
+      },
+      "permissions": [
+        "ReadAccountsBasic",
+        "ReadStandingOrdersDetail"
+      ],
+      "headers": {
+        "Content-Type": "application/json"
+
+      },
+      "uri": "/accounts/$accountId/standing-orders",
+      "uriImplementation": "conditional",
+      "resource": "StandingOrder",
+      "asserts": [
+        "OB3GLOAssertOn200",
+        "OB3GLOFAPIHeader"
+      ],
+      "method": "get",
+      "schemaCheck": true
+    },
+    {
+      "description": "All data returned for a given account using the ReadStandingOrdersDetail permission.",
+      "id": "OB-301-STO-103900",
+      "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937721918/Standing+Orders+v3.1#StandingOrdersv3.1-PermissionCodes",
+      "detail": "Checks that all data for bulk resource with permission ReadStandingOrdersDetail to access the resource with additional schema checks on status and headers.",
+      "parameters": {
+        "tokenRequestScope": "accounts"
+      },
+      "permissions": [
+        "ReadAccountsBasic",
+        "ReadStandingOrdersDetail"
+      ],
+      "headers": {
+        "Content-Type": "application/json"
+      },
+      "uri": "/standing-orders",
+      "uriImplementation": "optional",
+      "resource": "StandingOrder",
+      "asserts": [
+        "OB3GLOAssertOn200",
+        "OB3GLOFAPIHeader"
+      ],
+      "method": "get",
+      "schemaCheck": true
+    },
+    {
+      "description": "Fails when account is invalid for a Standing Order.",
+      "id": "OB-301-STO-104000",
+      "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1000702294/Read+Write+Data+API+Specification+-+v3.1.1#Read/WriteDataAPISpecification-v3.1.1-400(BadRequest)v/s404(NotFound)",
+      "detail": "Checks the correct response is returned when given an invalid account for a Standing Order.",
+      "parameters": {
+        "tokenRequestScope": "accounts",
+        "accountId": "foobar"
+      },
+      "permissions": [
+        "ReadAccountsBasic",
+        "ReadStandingOrdersDetail"
+      ],
+      "headers": {
+        "Content-Type": "application/json"
+
+      },
+      "uri": "/accounts/$accountId/standing-orders",
+      "uriImplementation": "conditional",
+      "resource": "StandingOrder",
+      "method": "get",
+      "asserts": [
+        "OB3IPAssertResourceFieldInvalidOBErrorCode"
+      ],
+      "asserts_one_of": [
+        "OB3GLOAssertOn400",
+        "OB3GLOAssertOn403"
+      ],
+      "schemaCheck": false
+    },
+    {
+      "description": "Fails 404 on an invalid Standing Order resource.",
+      "id": "OB-301-STO-104100",
+      "refURI": "",
+      "detail": "Validates that the Standing Order resource returns the correct status code (404 Not Found) given an invalid endpoint.",
+      "parameters": {
+        "tokenRequestScope": "accounts",
+        "accountId": "$consentedAccountId"
+      },
+      "permissions": [
+        "ReadAccountsBasic",
+        "ReadStandingOrdersDetail"
+      ],
+      "headers": {
+        "Content-Type": "application/json"
+      },
+      "uri": "/accounts/$accountId/standing-orders/foobar",
+      "resource": "StandingOrder",
+      "asserts": [
+        "OB3GLOAssertOn404"
+      ],
+      "method": "get",
+      "schemaCheck": false
+    },
+    {
+      "description": "Fails when token is from client grant.",
+      "id": "OB-301-STO-104101",
+      "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1000113950/Standing+Orders+v3.1.1#StandingOrdersv3.1.1-GET/standing-orders",
+      "detail": "Checks the correct response is returned 401 using a CCG token",
+      "parameters": {
+        "tokenRequestScope": "accounts"
+      },
+      "headers": {
+        "Authorization": "Bearer $client_access_token",
+            "Content-Type": "application/json"
+    },
+      "uri": "/standing-orders",
+      "uriImplementation": "optional",
+      "resource": "StandingOrder",
+      "method": "get",
+      "asserts": [
+        "OB3GLOAssertOn401"
+      ],
+      "schemaCheck": false
+    },
+    {
+      "description": "The x-fapi-interaction-id is played-black for account Standing Orders.",
+      "id": "OB-301-STO-104102",
+      "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1000113950/Standing+Orders+v3.1.1",
+      "detail": "Checks that the value in the x-fapi-interaction-id response header is played-back for account Product.",
+      "parameters": {
+        "tokenRequestScope": "accounts",
+        "accountId": "$consentedAccountId",
+        "x-fapi-interaction-id": "93bac548-d2de-4546-b106-880a5018460d"
+      },
+      "permissions": [
+        "ReadAccountsBasic",
+        "ReadStandingOrdersDetail"
+      ],
+      "headers": {
+        "x-fapi-interaction-id": "$x-fapi-interaction-id",
+        "Content-Type": "application/json"
+
+      },
+      "uri": "/accounts/$accountId/standing-orders",
+      "uriImplementation": "conditional",
+      "resource": "StandingOrder",
+      "method": "get",
+      "asserts": [
+        "OB3GLOAssertFAPIPlayBack"
+      ],
+      "schemaCheck": false
+    },
+    {
+      "description": "The x-fapi-interaction-id is played-black for Standing Orders.",
+      "id": "OB-301-STO-104103",
+      "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1000113950/Standing+Orders+v3.1.1",
+      "detail": "Checks that the value in the x-fapi-interaction-id response header is played-back for Product.",
+      "parameters": {
+        "tokenRequestScope": "accounts",
+        "x-fapi-interaction-id": "f5a10e5e-0c46-41c5-a7b7-c8f560205200"
+      },
+      "permissions": [
+        "ReadAccountsBasic",
+        "ReadStandingOrdersDetail"
+      ],
+      "headers": {
+        "x-fapi-interaction-id": "$x-fapi-interaction-id",
+        "Content-Type": "application/json"
+
+      },
+      "uri": "/standing-orders",
+      "uriImplementation": "optional",
+      "resource": "StandingOrder",
+      "method": "get",
+      "asserts": [
+        "OB3GLOAssertFAPIPlayBack"
+      ],
+      "schemaCheck": false
+    },
+    {
+      "description": "Minimal data returned for a given Transactions using the ReadTransactionsBasic permission, status and headers.",
+      "id": "OB-301-TRA-105000",
+      "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1004208451/Transactions+v3.1.1#Transactionsv3.1.1-PermissionCodes",
+      "detail": "Checks that the resource differs depending on the permissions (ReadTransactionsBasic and ReadTransactionsDetail) used to access the resource with additional schema checks on status and headers.",
+      "parameters": {
+        "tokenRequestScope": "accounts",
+        "accountId": "$consentedAccountId"
+      },
+      "permissions": [
+        "ReadAccountsBasic",
+        "ReadTransactionsBasic",
+        "ReadTransactionsDebits",
+        "ReadTransactionsCredits"
+      ],
+      "permissions-excluded": [
+        "ReadTransactionsDetail"
+      ],
+      "headers": {
+        "x-fapi-interaction-id": "$x-fapi-interaction-id",
+        "Content-Type": "application/json"
+
+      },
+      "uri": "/accounts/$accountId/transactions",
+      "uriImplementation": "mandatory",
+      "resource": "Transaction",
+      "asserts": [
+        "OB3GLOAssertOn200",
+        "OB3GLOFAPIHeader"
+      ],
+      "method": "get",
+      "schemaCheck": true
+    },
+    {
+      "description": "All data returned for a given Account with ReadTransactionsBasic permission, status and headers.",
+      "id": "OB-301-TRA-105100",
+      "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1004208451/Transactions+v3.1.1#Transactionsv3.1.1-PermissionCodes",
+      "detail": "Checks that the resource returns the correct data depending on the permissions ReadTransactionsBasic with additional additional schema checks on status and headers.",
+      "parameters": {
+        "tokenRequestScope": "accounts",
+        "accountId": "$consentedAccountId"
+      },
+      "permissions": [
+        "ReadAccountsBasic",
+        "ReadTransactionsDetail",
+        "ReadTransactionsBasic",
+        "ReadTransactionsDebits",
+        "ReadTransactionsCredits"
+      ],
+      "headers": {
+        "Content-Type": "application/json"
+
+      },
+      "uri": "/accounts/$accountId/transactions",
+      "uriImplementation": "mandatory",
+      "resource": "Transaction",
+      "asserts": [
+        "OB3GLOAssertOn200",
+        "OB3GLOFAPIHeader"
+      ],
+      "method": "get",
+      "schemaCheck": true
+    },
+    {
+      "description": "Minimal data returned for bulk Transaction using the ReadTransactionsBasic permission, status and headers.",
+      "id": "OB-301-TRA-105200",
+      "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937623627/Accounts+v3.1#Accountsv3.1-PermissionCodes",
+      "detail": "Checks that the resource differs depending on the permissions (ReadTransactionsBasic and ReadTransactionsDetail) used to access the resource with additional additional schema checks on status and headers.",
+      "parameters": {
+        "tokenRequestScope": "accounts"
+      },
+      "permissions": [
+        "ReadAccountsBasic",
+        "ReadTransactionsBasic",
+        "ReadTransactionsDebits",
+        "ReadTransactionsCredits"
+      ],
+      "permissions-excluded": [
+        "ReadTransactionsDetail"
+      ],
+      "headers": {
+        "Content-Type": "application/json"
+
+      },
+      "uri": "/transactions",
+      "uriImplementation": "optional",
+      "resource": "Transaction",
+      "asserts": [
+        "OB3GLOAssertOn200",
+        "OB3GLOFAPIHeader"
+      ],
+      "method": "get",
+      "schemaCheck": true
+    },
+    {
+      "description": "Fails using incorrect permissions for a given Transaction.",
+      "id": "OB-301-TRA-105300",
+      "refURI": "",
+      "detail": "Validates that the Transaction resource fails correctly given an invalid or incorrect token.",
+      "parameters": {
+        "tokenRequestScope": "accounts",
+        "accountId": "$consentedAccountId"
+      },
+      "permissions-excluded": [
+        "ReadAccountsBasic",
+        "ReadTransactionsBasic",
+        "ReadTransactionsDebits",
+        "ReadTransactionsCredits"
+      ],
+      "headers": {
+        "Content-Type": "application/json"
+
+      },
+      "uri": "/accounts/$accountId/transactions",
+      "uriImplementation": "mandatory",
+      "resource": "Transaction",
+      "method": "get",
+      "asserts": [
+        "OB3GLOAssertOn401"
+      ],
+      "schemaCheck": false
+    },
+    {
+      "description": "Fails using incorrect permissions for Bulk Transaction.",
+      "id": "OB-301-TRA-105400",
+      "refURI": "",
+      "detail": "Validates that the Transaction list resource fails correctly given an invalid or incorrect token.",
+      "parameters": {
+        "tokenRequestScope": "accounts"
+      },
+      "headers": {
+        "Content-Type": "application/json"
+
+      },
+      "uri": "/transactions",
+      "uriImplementation": "optional",
+      "resource": "Transaction",
+      "method": "get",
+      "asserts": [
+        "OB3GLOAssertOn401"
+      ],
+      "schemaCheck": false
+    },
 
 
-        {
-            "description": "The x-fapi-interaction-id is replayed for an Transaction.",
-            "id": "OB-301-TRA-105500",
-            "refURI": "",
-            "detail": "Checks that the x-fapi-interaction-id value is played-back for an Transaction.",
-            "parameters": {
-                "tokenRequestScope": "accounts",
-                "accountId": "$consentedAccountId",
-                "x-fapi-interaction-id": "f5a10e5e-0c46-41c5-a7b7-c8f56020520c"
-            },
-            "headers": {
-                "x-fapi-interaction-id": "$x-fapi-interaction-id"
-            },
-            "permissions": [
-                "ReadAccountsBasic",
-                "ReadTransactionsBasic",
-                "ReadTransactionsDebits",
-                "ReadTransactionsCredits"
-            ],
-            "uri": "/accounts/$accountId/transactions",
-            "uriImplementation": "mandatory",
-            "resource": "Transaction",
-            "method": "get",
-            "asserts": [
-                "OB3GLOAssertFAPIPlayBack"
-            ],
-            "schemaCheck": false
-        },
-        {
-            "description": "The x-fapi-interaction-id is replayed for bulk Transaction if given.",
-            "id": "OB-301-TRA-105600",
-            "refURI": "",
-            "detail": "Checks that the x-fapi-interaction-id value is played-back for bulk Transaction.",
-            "parameters": {
-                "tokenRequestScope": "accounts",
-                "x-fapi-interaction-id": "f5a10e5e-0c46-41c5-a7b7-c8f560205200"
-            },
-            "headers": {
-                "x-fapi-interaction-id": "$x-fapi-interaction-id"
-            },
-            "permissions": [
-                "ReadAccountsBasic",
-                "ReadTransactionsBasic",
-                "ReadTransactionsDebits",
-                "ReadTransactionsCredits"
-            ],
-            "uri": "/transactions",
-            "uriImplementation": "mandatory",
-            "resource": "Transaction",
-            "method": "get",
-            "asserts": [
-                "OB3GLOAssertFAPIPlayBack"
-            ],
-            "schemaCheck": false
-        },
-        {
-            "description": "Fails when account is invalid for a Transaction.",
-            "id": "OB-301-TRA-105700",
-            "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1000702294/Read+Write+Data+API+Specification+-+v3.1.1#Read/WriteDataAPISpecification-v3.1.1-400(BadRequest)v/s404(NotFound)",
-            "detail": "Checks the correct response is returned when given an invalid account for a Transaction.",
-            "parameters": {
-                "tokenRequestScope": "accounts",
-                "accountId": "foobar"
-            },
-            "permissions": [
-                "ReadTransactionsBasic",
-                "ReadTransactionsDetail"
-            ],
-            "uri": "/accounts/$accountId/transactions",
-            "uriImplementation": "mandatory",
-            "resource": "Transaction",
-            "method": "get",
-            "asserts_one_of": [
-                "OB3GLOAssertOn400",
-                "OB3GLOAssertOn403"
-            ],
-            "schemaCheck": false
-        },
-        {
-            "description": "Succeeds when fromStatementDateTime is a valid ISO8601 formatted date variant 1.",
-            "id": "OB-301-STA-105900",
-            "refURI": "",
-            "detail": "Checks that the x-fapi-interaction-id value is played-back for bulk Transaction.",
-            "parameters": {
-                "tokenRequestScope": "accounts",
-                "accountId": "$consentedAccountId",
-                "x-fapi-interaction-id": "93bac548-d2de-4546-b106-880a5018460d",
-                "fromStatementDateTime": "2016-01-01T10:40:00+0200"
-            },
-            "headers": {
-                "x-fapi-interaction-id": "$x-fapi-interaction-id"
-            },
-            "permissions": [
-                "ReadAccountsBasic",
-                "ReadStatementsBasic"
-            ],
-            "uri": "/statements",
-            "uriImplementation": "optional",
-            "resource": "Statement",
-            "method": "get",
-            "asserts": [
-                "OB3GLOAssertOn200",
-                "OB3GLOAssertFAPIPlayBack"
-            ],
-            "schemaCheck": true
-        },
-        {
-            "description": "Succeeds when fromStatementDateTime is a valid ISO8601 formatted date variant 2.",
-            "id": "OB-301-STA-106000",
-            "refURI": "",
-            "detail": "Checks that the x-fapi-interaction-id value is played-back for bulk Transaction.",
-            "parameters": {
-                "tokenRequestScope": "accounts",
-                "accountId": "$consentedAccountId",
-                "x-fapi-interaction-id": "93bac548-d2de-4546-b106-880a5018460d",
-                "fromStatementDateTime": "2016-01-01T104012.345Z"
-            },
-            "headers": {
-                "x-fapi-interaction-id": "$x-fapi-interaction-id"
-            },
-            "permissions": [
-                "ReadAccountsBasic",
-                "ReadStatementsBasic"
-            ],
-            "uri": "/statements",
-            "uriImplementation": "optional",
-            "resource": "Statement",
-            "method": "get",
-            "asserts": [
-                "OB3GLOAssertOn200",
-                "OB3GLOAssertFAPIPlayBack"
-            ],
-            "schemaCheck": true
-        },
-        {
-            "description": "Succeeds when fromStatementDateTime is a valid ISO8601 formatted date variant 3.",
-            "id": "OB-301-STA-106100",
-            "refURI": "",
-            "detail": "Checks that the x-fapi-interaction-id value is played-back for bulk Transaction.",
-            "parameters": {
-                "tokenRequestScope": "accounts",
-                "accountId": "$consentedAccountId",
-                "x-fapi-interaction-id": "93bac548-d2de-4546-b106-880a5018460d",
-                "fromStatementDateTime": "2016-01-01T10:40:12.34.567Z"
-            },
-            "headers": {
-                "x-fapi-interaction-id": "$x-fapi-interaction-id"
-            },
-            "permissions": [
-                "ReadAccountsBasic",
-                "ReadStatementsBasic"
-            ],
-            "uri": "/statements",
-            "uriImplementation": "optional",
-            "resource": "Statement",
-            "method": "get",
-            "asserts": [
-                "OB3GLOAssertOn200",
-                "OB3GLOAssertFAPIPlayBack"
-            ],
-            "schemaCheck": true
-        },
-        {
-            "description": "Succeeds when fromStatementDateTime is a valid ISO8601 formatted date variant 4.",
-            "id": "OB-301-STA-106200",
-            "refURI": "",
-            "detail": "Checks that the x-fapi-interaction-id value is played-back for bulk Transaction.",
-            "parameters": {
-                "tokenRequestScope": "accounts",
-                "accountId": "$consentedAccountId",
-                "x-fapi-interaction-id": "93bac548-d2de-4546-b106-880a5018460d",
-                "fromStatementDateTime": "2016-01-01T10:40:12.34.567+01"
-            },
-            "headers": {
-                "x-fapi-interaction-id": "$x-fapi-interaction-id"
-            },
-            "permissions": [
-                "ReadAccountsBasic",
-                "ReadStatementsBasic"
-            ],
-            "uri": "/statements",
-            "uriImplementation": "optional",
-            "resource": "Statement",
-            "method": "get",
-            "asserts": [
-                "OB3GLOAssertOn200",
-                "OB3GLOAssertFAPIPlayBack"
-            ],
-            "schemaCheck": true
-        },
-        {
-            "description": "Succeeds when fromStatementDateTime is a valid ISO8601 formatted date variant 5.",
-            "id": "OB-301-STA-106300",
-            "refURI": "",
-            "detail": "Checks that the x-fapi-interaction-id value is played-back for bulk Transaction.",
-            "parameters": {
-                "tokenRequestScope": "accounts",
-                "accountId": "$consentedAccountId",
-                "x-fapi-interaction-id": "93bac548-d2de-4546-b106-880a5018460d",
-                "fromStatementDateTime": "20160101T104012.567+01"
-            },
-            "headers": {
-                "x-fapi-interaction-id": "$x-fapi-interaction-id"
-            },
-            "permissions": [
-                "ReadAccountsBasic",
-                "ReadStatementsBasic"
-            ],
-            "uri": "/statements",
-            "uriImplementation": "optional",
-            "resource": "Statement",
-            "method": "get",
-            "asserts": [
-                "OB3GLOAssertOn200",
-                "OB3GLOAssertFAPIPlayBack"
-            ],
-            "schemaCheck": true
-        }
-    ]
+    {
+      "description": "The x-fapi-interaction-id is replayed for an Transaction.",
+      "id": "OB-301-TRA-105500",
+      "refURI": "",
+      "detail": "Checks that the x-fapi-interaction-id value is played-back for an Transaction.",
+      "parameters": {
+        "tokenRequestScope": "accounts",
+        "accountId": "$consentedAccountId",
+        "x-fapi-interaction-id": "f5a10e5e-0c46-41c5-a7b7-c8f56020520c"
+      },
+      "headers": {
+        "x-fapi-interaction-id": "$x-fapi-interaction-id",
+        "Content-Type": "application/json"
+
+      },
+      "permissions": [
+        "ReadAccountsBasic",
+        "ReadTransactionsBasic",
+        "ReadTransactionsDebits",
+        "ReadTransactionsCredits"
+      ],
+      "uri": "/accounts/$accountId/transactions",
+      "uriImplementation": "mandatory",
+      "resource": "Transaction",
+      "method": "get",
+      "asserts": [
+        "OB3GLOAssertFAPIPlayBack"
+      ],
+      "schemaCheck": false
+    },
+    {
+      "description": "The x-fapi-interaction-id is replayed for bulk Transaction if given.",
+      "id": "OB-301-TRA-105600",
+      "refURI": "",
+      "detail": "Checks that the x-fapi-interaction-id value is played-back for bulk Transaction.",
+      "parameters": {
+        "tokenRequestScope": "accounts",
+        "x-fapi-interaction-id": "f5a10e5e-0c46-41c5-a7b7-c8f560205200"
+      },
+      "headers": {
+        "x-fapi-interaction-id": "$x-fapi-interaction-id",
+        "Content-Type": "application/json"
+
+      },
+      "permissions": [
+        "ReadAccountsBasic",
+        "ReadTransactionsBasic",
+        "ReadTransactionsDebits",
+        "ReadTransactionsCredits"
+      ],
+      "uri": "/transactions",
+      "uriImplementation": "mandatory",
+      "resource": "Transaction",
+      "method": "get",
+      "asserts": [
+        "OB3GLOAssertFAPIPlayBack"
+      ],
+      "schemaCheck": false
+    },
+    {
+      "description": "Fails when account is invalid for a Transaction.",
+      "id": "OB-301-TRA-105700",
+      "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1000702294/Read+Write+Data+API+Specification+-+v3.1.1#Read/WriteDataAPISpecification-v3.1.1-400(BadRequest)v/s404(NotFound)",
+      "detail": "Checks the correct response is returned when given an invalid account for a Transaction.",
+      "parameters": {
+        "tokenRequestScope": "accounts",
+        "accountId": "foobar"
+      },
+      "permissions": [
+        "ReadTransactionsBasic",
+        "ReadTransactionsDetail"
+      ],
+      "headers": {
+        "x-fapi-interaction-id": "$x-fapi-interaction-id",
+        "Content-Type": "application/json"
+
+      },
+      "uri": "/accounts/$accountId/transactions",
+      "uriImplementation": "mandatory",
+      "resource": "Transaction",
+      "method": "get",
+      "asserts_one_of": [
+        "OB3GLOAssertOn400",
+        "OB3GLOAssertOn403"
+      ],
+      "schemaCheck": false
+    },
+    {
+      "description": "Succeeds when fromStatementDateTime is a valid ISO8601 formatted date variant 1.",
+      "id": "OB-301-STA-105900",
+      "refURI": "",
+      "detail": "Checks that the x-fapi-interaction-id value is played-back for bulk Transaction.",
+      "parameters": {
+        "tokenRequestScope": "accounts",
+        "accountId": "$consentedAccountId",
+        "x-fapi-interaction-id": "93bac548-d2de-4546-b106-880a5018460d",
+        "fromStatementDateTime": "2016-01-01T10:40:00+0200"
+      },
+      "headers": {
+        "x-fapi-interaction-id": "$x-fapi-interaction-id",
+        "Content-Type": "application/json"
+
+      },
+      "permissions": [
+        "ReadAccountsBasic",
+        "ReadStatementsBasic"
+      ],
+      "uri": "/statements",
+      "uriImplementation": "optional",
+      "resource": "Statement",
+      "method": "get",
+      "asserts": [
+        "OB3GLOAssertOn200",
+        "OB3GLOAssertFAPIPlayBack"
+      ],
+      "schemaCheck": true
+    },
+    {
+      "description": "Succeeds when fromStatementDateTime is a valid ISO8601 formatted date variant 2.",
+      "id": "OB-301-STA-106000",
+      "refURI": "",
+      "detail": "Checks that the x-fapi-interaction-id value is played-back for bulk Transaction.",
+      "parameters": {
+        "tokenRequestScope": "accounts",
+        "accountId": "$consentedAccountId",
+        "x-fapi-interaction-id": "93bac548-d2de-4546-b106-880a5018460d",
+        "fromStatementDateTime": "2016-01-01T104012.345Z"
+      },
+      "headers": {
+        "x-fapi-interaction-id": "$x-fapi-interaction-id",
+        "Content-Type": "application/json"
+
+      },
+      "permissions": [
+        "ReadAccountsBasic",
+        "ReadStatementsBasic"
+      ],
+      "uri": "/statements",
+      "uriImplementation": "optional",
+      "resource": "Statement",
+      "method": "get",
+      "asserts": [
+        "OB3GLOAssertOn200",
+        "OB3GLOAssertFAPIPlayBack"
+      ],
+      "schemaCheck": true
+    },
+    {
+      "description": "Succeeds when fromStatementDateTime is a valid ISO8601 formatted date variant 3.",
+      "id": "OB-301-STA-106100",
+      "refURI": "",
+      "detail": "Checks that the x-fapi-interaction-id value is played-back for bulk Transaction.",
+      "parameters": {
+        "tokenRequestScope": "accounts",
+        "accountId": "$consentedAccountId",
+        "x-fapi-interaction-id": "93bac548-d2de-4546-b106-880a5018460d",
+        "fromStatementDateTime": "2016-01-01T10:40:12.34.567Z"
+      },
+      "headers": {
+        "x-fapi-interaction-id": "$x-fapi-interaction-id",
+        "Content-Type": "application/json"
+
+      },
+      "permissions": [
+        "ReadAccountsBasic",
+        "ReadStatementsBasic"
+      ],
+      "uri": "/statements",
+      "uriImplementation": "optional",
+      "resource": "Statement",
+      "method": "get",
+      "asserts": [
+        "OB3GLOAssertOn200",
+        "OB3GLOAssertFAPIPlayBack"
+      ],
+      "schemaCheck": true
+    },
+    {
+      "description": "Succeeds when fromStatementDateTime is a valid ISO8601 formatted date variant 4.",
+      "id": "OB-301-STA-106200",
+      "refURI": "",
+      "detail": "Checks that the x-fapi-interaction-id value is played-back for bulk Transaction.",
+      "parameters": {
+        "tokenRequestScope": "accounts",
+        "accountId": "$consentedAccountId",
+        "x-fapi-interaction-id": "93bac548-d2de-4546-b106-880a5018460d",
+        "fromStatementDateTime": "2016-01-01T10:40:12.34.567+01"
+      },
+      "headers": {
+        "x-fapi-interaction-id": "$x-fapi-interaction-id",
+        "Content-Type": "application/json"
+
+      },
+      "permissions": [
+        "ReadAccountsBasic",
+        "ReadStatementsBasic"
+      ],
+      "uri": "/statements",
+      "uriImplementation": "optional",
+      "resource": "Statement",
+      "method": "get",
+      "asserts": [
+        "OB3GLOAssertOn200",
+        "OB3GLOAssertFAPIPlayBack"
+      ],
+      "schemaCheck": true
+    },
+    {
+      "description": "Succeeds when fromStatementDateTime is a valid ISO8601 formatted date variant 5.",
+      "id": "OB-301-STA-106300",
+      "refURI": "",
+      "detail": "Checks that the x-fapi-interaction-id value is played-back for bulk Transaction.",
+      "parameters": {
+        "tokenRequestScope": "accounts",
+        "accountId": "$consentedAccountId",
+        "x-fapi-interaction-id": "93bac548-d2de-4546-b106-880a5018460d",
+        "fromStatementDateTime": "20160101T104012.567+01"
+      },
+      "headers": {
+        "x-fapi-interaction-id": "$x-fapi-interaction-id",
+        "Content-Type": "application/json"
+
+      },
+      "permissions": [
+        "ReadAccountsBasic",
+        "ReadStatementsBasic"
+      ],
+      "uri": "/statements",
+      "uriImplementation": "optional",
+      "resource": "Statement",
+      "method": "get",
+      "asserts": [
+        "OB3GLOAssertOn200",
+        "OB3GLOAssertFAPIPlayBack"
+      ],
+      "schemaCheck": true
+    }
+  ]
 }

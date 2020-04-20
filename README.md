@@ -17,18 +17,18 @@ To provide feedback, please use the public [issue tracker](https://bitbucket.org
 ## Release Notes 
 * * *
 
-# Release v1.2.2 (20th Nov 2019)
+# Release v1.4.0 (20th April 2020)
 
-The release is called **v1.2.2** it contains a minor release that fixes "Content-Type" headers with GET requests and allows request conditional property string input to be rendered as a string array.
+The release is called **v1.4.0**, a minor update that adds support for the [Read/Write Data API Specification 3.1.4](https://openbankinguk.github.io/read-write-api-site3/v3.1.4/profiles/account-and-transaction-api-profile.html) including swagger validation for accounts, payments and CBPII. This release is backwards compatible with older versions of the standard.
 
-[Full Release Notes](https://bitbucket.org/openbankingteam/conformance-suite/src/develop/docs/releases/v1.2.2.md) (v1.2.2.md)
+[Full Release Notes](https://bitbucket.org/openbankingteam/conformance-suite/src/develop/docs/releases/v1.4.0.md) (v1.4.0.md)
 
 ## Quickstart
 * * *
 
 Pull and run the latest (stable) tagged Docker image:
 
-    > docker run --rm -it -p 8443:8443 "openbanking/conformance-suite:v1.1.16"
+    > docker run --rm -it -p 8443:8443 "openbanking/conformance-suite:v1.4.0"
 
 [See Setup Guide](https://bitbucket.org/openbankingteam/conformance-suite/src/develop/docs/setup-guide.md)
 

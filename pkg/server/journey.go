@@ -18,6 +18,7 @@ import (
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/generation"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/manifest"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/schemaprops"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/server/models"
 )
 
@@ -217,17 +218,21 @@ func (wj *journey) TestCases() (generation.SpecRun, error) {
 		return generation.SpecRun{}, errTestCasesGenerated
 	}
 
-	for k, discoveryItem := range wj.validDiscoveryModel.DiscoveryModel.DiscoveryItems {
-		tlsValidationResult, err := wj.tlsValidator.ValidateTLSVersion(discoveryItem.ResourceBaseURI)
-		if err != nil {
-			logger.WithFields(logrus.Fields{
-				"err":                           errors.Wrapf(err, "unable to validate TLS version for uri %s", discoveryItem.ResourceBaseURI),
-				"discoveryItem[key]":            k,
-				"discoveryItem.ResourceBaseURI": discoveryItem.ResourceBaseURI,
-			}).Error("Error validating TLS version for discovery item ResourceBaseURI")
+	if tlsCheck {
+		for k, discoveryItem := range wj.validDiscoveryModel.DiscoveryModel.DiscoveryItems {
+			tlsValidationResult, err := wj.tlsValidator.ValidateTLSVersion(discoveryItem.ResourceBaseURI)
+			if err != nil {
+				logger.WithFields(logrus.Fields{
+					"err":                           errors.Wrapf(err, "unable to validate TLS version for uri %s", discoveryItem.ResourceBaseURI),
+					"discoveryItem[key]":            k,
+					"discoveryItem.ResourceBaseURI": discoveryItem.ResourceBaseURI,
+				}).Error("Error validating TLS version for discovery item ResourceBaseURI")
+			}
+			wj.context.PutString(wj.tlsVersionCtxKey(discoveryItem.APISpecification.Name), tlsValidationResult.TLSVersion)
+			wj.context.Put(wj.tlsValidCtxKey(discoveryItem.APISpecification.Name), tlsValidationResult.Valid)
 		}
-		wj.context.PutString(wj.tlsVersionCtxKey(discoveryItem.APISpecification.Name), tlsValidationResult.TLSVersion)
-		wj.context.Put(wj.tlsValidCtxKey(discoveryItem.APISpecification.Name), tlsValidationResult.Valid)
+	} else {
+		logrus.Warn("TLS Check disabled")
 	}
 
 	if !wj.testCasesRunGenerated {
@@ -262,6 +267,9 @@ func (wj *journey) TestCases() (generation.SpecRun, error) {
 				}).Debug("We have a permission ([]manifest.RequiredTokens)")
 			}
 		}
+
+		collector := schemaprops.GetPropertyCollector()
+		collector.SetCollectorAPIDetails(schemaprops.ConsentGathering, "")
 
 		if discovery.TokenAcquisition == "psu" { // Handle  PSU Consent
 			logger.WithFields(logrus.Fields{
@@ -498,7 +506,8 @@ func (wj *journey) RunTests() error {
 	runDefinition := wj.makeRunDefinition()
 	runner := executors.NewTestCaseRunner(wj.log, runDefinition, wj.daemonController)
 	wj.context.PutString(CtxPhase, "run")
-	return runner.RunTestCases(&wj.context)
+	err := runner.RunTestCases(&wj.context)
+	return err
 }
 
 func (wj *journey) Results() executors.DaemonController {
@@ -670,4 +679,10 @@ func DetermineAPIVersions(apis []discovery.ModelDiscoveryItem) []string {
 		logrus.Warnf("spectype %s, specversion %s", v.APISpecification.SpecType, v.APISpecification.Version)
 	}
 	return apiversions
+}
+
+var tlsCheck = true
+
+func EnableTLSCheck(state bool) {
+	tlsCheck = state
 }

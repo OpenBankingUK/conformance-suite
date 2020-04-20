@@ -47,6 +47,8 @@ COPY pkg/schema/spec/v3.0.0/*.json /pkg/schema/spec/v3.0.0/
 COPY pkg/schema/spec/v3.1.0/*.json /pkg/schema/spec/v3.1.0/
 COPY pkg/schema/spec/v3.1.1/*.json /pkg/schema/spec/v3.1.1/
 COPY pkg/schema/spec/v3.1.2/*.json /pkg/schema/spec/v3.1.2/
+COPY pkg/schema/spec/v3.1.3/*.json /pkg/schema/spec/v3.1.3/
+COPY pkg/schema/spec/v3.1.4/*.json /pkg/schema/spec/v3.1.4/
 COPY web .
 
 ENV FORCE_COLOR=1
@@ -89,6 +91,8 @@ COPY pkg/schema/spec/v3.0.0/*.json /app/pkg/schema/spec/v3.0.0/
 COPY pkg/schema/spec/v3.1.0/*.json /app/pkg/schema/spec/v3.1.0/
 COPY pkg/schema/spec/v3.1.1/*.json /app/pkg/schema/spec/v3.1.1/
 COPY pkg/schema/spec/v3.1.2/*.json /app/pkg/schema/spec/v3.1.2/
+COPY pkg/schema/spec/v3.1.3/*.json /app/pkg/schema/spec/v3.1.3/
+COPY pkg/schema/spec/v3.1.4/*.json /app/pkg/schema/spec/v3.1.4/
 
 EXPOSE 8443
 

@@ -1,3 +1,41 @@
+# Release v1.4.0 (20th April 2020)
+
+The release is called **v1.4.0**, a minor update that adds support for the [Read/Write Data API Specification 3.1.4](https://openbankinguk.github.io/read-write-api-site3/v3.1.4/profiles/account-and-transaction-api-profile.html) including swagger validation for accounts, payments and CBPII. This release is backwards compatible with older versions of the standard.
+
+[Full Release Notes](https://bitbucket.org/openbankingteam/conformance-suite/src/develop/docs/releases/v1.4.0.md) (v1.4.0.md)
+
+# Release v1.3.1 (7th of April 2020)
+
+The release is called **v1.3.1**, a minor fix that adds support for the [Read/Write Data API Specification 3.1.3](https://openbankinguk.github.io/read-write-api-site3/v3.1.3/profiles/account-and-transaction-api-profile.html) into the Dockerimage.
+
+# Release v1.3.0 (10th March 2020)
+
+The release is called **v1.3.0**, a minor update that adds support for the [Read/Write Data API Specification 3.1.3](https://openbankinguk.github.io/read-write-api-site3/v3.1.3/profiles/account-and-transaction-api-profile.html) including swagger validation for accounts, payments and CBPII. Also, this release adds new tests for 3.1.3 Read/Write standards and is backwards compatible with older versions of the standard.
+
+[Full Release Notes](https://bitbucket.org/openbankingteam/conformance-suite/src/develop/docs/releases/v1.3.0.md) (v1.3.0.md)
+
+# Release v1.2.6 (25th Feb 2020)
+
+The release is called **v1.2.6** it adds one minor fix that prevents the psudummy url from being called, which simplifies the suites interactionn with implements and prevents a 404 and/or redirect issues.
+
+[Full Release Notes](https://bitbucket.org/openbankingteam/conformance-suite/src/develop/docs/releases/v1.2.6.md) (v1.2.6.md)
+
+# Release v1.2.5 (28th Jan 2020)
+
+The release is called **v1.2.5** it adds conditional response properties to the exported report and fixes invalid 401 body checking.
+
+[Full Release Notes](https://bitbucket.org/openbankingteam/conformance-suite/src/develop/docs/releases/v1.2.5.md) (v1.2.5.md)
+
+# Release v1.2.4 (21st Jan 2020)
+
+The release is called **v1.2.4** it fixes an incorrect expiry time/date field for CPBII and allows supplementary data input.
+
+[Full Release Notes](https://bitbucket.org/openbankingteam/conformance-suite/src/develop/docs/releases/v1.2.4.md) (v1.24.md)
+
+# Release v1.2.3 (11th Dec 2019)
+
+The release is called **v1.2.3** it contains a fix to the report json output and other minor fixes.
+
 # Release v1.2.2 (20th Nov 2019)
 
 The release is called **v1.2.2** and contains a minor release that fixes "Content-Type" headers with GET requests and allows request conditional property string input to be rendered as a string array.

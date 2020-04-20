@@ -191,6 +191,9 @@ func addConditionalPropertiesToRequest(tc *model.TestCase, conditional []discove
 						if propertyType == "[array]" {
 							stringArray := convertInputStringToArray(prop.Value)
 							tc.Input.RequestBody, err = sjson.Set(tc.Input.RequestBody, prop.Path, stringArray)
+						} else if propertyType == "[object]" && prop.Schema == "OBSupplementaryData1" { // handle freeform supplementary data into request payload
+							path := prop.Path + "." + prop.Name
+							tc.Input.RequestBody, err = sjson.Set(tc.Input.RequestBody, path, prop.Value)
 						} else {
 							tc.Input.RequestBody, err = sjson.Set(tc.Input.RequestBody, prop.Path, prop.Value)
 						}
@@ -427,6 +430,20 @@ func LoadGenerationResources(specType, manifestPath string, ctx *model.Context) 
 		sc.Scripts = append(sc.Scripts, vsScripts.Scripts...)
 	}
 
+	vsScripts, err = getVersionSpecificScripts(specType, "3.1.3", ctx)
+	if err != nil {
+		return Scripts{}, References{}, err
+	}
+
+	vsScripts, err = getVersionSpecificScripts(specType, "3.1.4", ctx)
+	if err != nil {
+		return Scripts{}, References{}, err
+	}
+
+	if len(vsScripts.Scripts) != 0 {
+		sc.Scripts = append(sc.Scripts, vsScripts.Scripts...)
+	}
+
 	return sc, assertions, err
 
 }
@@ -452,7 +469,6 @@ func getVersionSpecificScripts(spectype, version string, ctx *model.Context) (Sc
 	if err != nil {
 		return Scripts{}, err
 	}
-
 	for _, v := range apiVersions {
 		api := strings.Split(v, "_v")
 		if len(api) > 1 {

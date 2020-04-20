@@ -41,6 +41,28 @@
         "Risk": {}
       }
     },
+    "minimalDomesticScheduledPaymentPost": {
+      "body": {
+        "Data": {
+          "ConsentId": "$consentId",
+          "Initiation": {
+            "RequestedExecutionDateTime": "$requestedExecutionDateTime",
+            "InstructionIdentification": "$instructionIdentification",
+            "EndToEndIdentification": "$endToEndIdentification",
+            "InstructedAmount": {
+              "Amount": "$instructedAmountValue",
+              "Currency": "$instructedAmountCurrency"
+            },
+            "CreditorAccount": {
+              "SchemeName": "$creditorScheme",
+              "Identification": "$creditorIdentification",
+              "Name": "$creditorName"
+            }
+          }
+          },
+        "Risk": {}
+        }
+    },
     "minimalScheduledDomesticPaymentConsent": {
       "body": {
         "Data": {

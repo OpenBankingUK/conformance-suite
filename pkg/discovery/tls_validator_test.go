@@ -47,7 +47,8 @@ func TestValidateTLSVersionSucceeds(t *testing.T) {
 	srv, uri := test.HTTPSServer(&tls.Config{MinVersion: tls.VersionTLS12}, http.StatusServiceUnavailable, "", nil)
 	defer srv.Close()
 	r, err := validator.ValidateTLSVersion(uri)
-	assert.Equal(t, r, TLSValidationResult{Valid: true, TLSVersion: "TLS12"})
+	result := r.TLSVersion
+	assert.True(t, result == "TLS12" || result == "TLS13")
 	assert.Nil(t, err)
 }
 

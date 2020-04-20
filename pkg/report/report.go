@@ -32,6 +32,7 @@ type Report struct {
 	CertifiedBy      CertifiedBy        `json:"certifiedBy"`              // The certifier of the report.
 	SignatureChain   *[]SignatureChain  `json:"signatureChain,omitempty"` // When Add digital signature is set this contains the signature chain.
 	Discovery        discovery.Model    `json:"-"`                        // Original used discovery model
+	ResponseFields   string             `json:"-"`                        // ResponseFields - already in JSON format
 	APISpecification []APISpecification `json:"apiSpecification"`         // API and version tested, along with test cases
 	FCSVersion       string             `json:"fcsVersion"`               // Version of FCS running the tests
 	Products         []string           `json:"products"`                 // Products tested, e.g., "Business, Personal, Cards"
@@ -106,6 +107,7 @@ func NewReport(exportResults models.ExportResults, environment string) (Report, 
 		CertifiedBy:      certifiedBy,
 		SignatureChain:   &signatureChain,
 		Discovery:        exportResults.DiscoveryModel,
+		ResponseFields:   exportResults.ResponseFields,
 		APISpecification: apiSpecs,
 		FCSVersion:       version.FullVersion,
 		Products:         exportResults.ExportRequest.Products,
