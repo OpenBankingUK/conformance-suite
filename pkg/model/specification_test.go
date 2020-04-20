@@ -1,11 +1,14 @@
 package model
 
 import (
+	"flag"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
+
+var update = flag.Bool("update", false, "update .golden files")
 
 func TestSpecificationIdentifierFromSchemaVersion(t *testing.T) {
 	t.Run("returns specifications identifier when given valid schema version URL", func(t *testing.T) {
