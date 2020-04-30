@@ -20,7 +20,7 @@ import (
 const (
 	// Checker must conform to the format expected, major, minor and patch.
 	major = "1"
-	minor = "4"
+	minor = "5"
 	patch = "0"
 	// Checker is the full string version of Conformance Suite.
 	FullVersion = major + "." + minor + "." + patch
