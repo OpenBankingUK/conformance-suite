@@ -21,6 +21,13 @@ type Specification struct {
 var (
 	specifications = []Specification{
 		{
+			Identifier:    "account-transaction-v3.1.5",
+			Name:          "Account and Transaction API Specification",
+			URL:           mustParseURL("https://openbankinguk.github.io/read-write-api-site3/v3.1.5/profiles/account-and-transaction-api-profile.html"),
+			Version:       "v3.1.5",
+			SchemaVersion: mustParseURL("https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.5/dist/swagger/account-info-swagger.json"),
+		},
+		{
 			Identifier:    "account-transaction-v3.1.4",
 			Name:          "Account and Transaction API Specification",
 			URL:           mustParseURL("https://openbankinguk.github.io/read-write-api-site3/v3.1.4/profiles/account-and-transaction-api-profile.html"),
@@ -50,13 +57,19 @@ var (
 			SchemaVersion: mustParseURL("https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.1/dist/account-info-swagger.json"),
 		},
 		{
+			Identifier:    "payment-initiation-v3.1.5",
+			Name:          "Payment Initiation API",
+			URL:           mustParseURL("https://openbankinguk.github.io/read-write-api-site3/v3.1.5/profiles/payment-initiation-api-profile.html"),
+			Version:       "v3.1.5",
+			SchemaVersion: mustParseURL("https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.5/dist/swagger/payment-initiation-swagger.json"),
+		},
+		{
 			Identifier:    "payment-initiation-v3.1.4",
 			Name:          "Payment Initiation API",
 			URL:           mustParseURL("https://openbankinguk.github.io/read-write-api-site3/v3.1.4/profiles/payment-initiation-api-profile.html"),
 			Version:       "v3.1.4",
 			SchemaVersion: mustParseURL("https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.4/dist/swagger/payment-initiation-swagger.json"),
 		},
-
 		{
 			Identifier:    "payment-initiation-v3.1.3",
 			Name:          "Payment Initiation API",
@@ -77,6 +90,13 @@ var (
 			URL:           mustParseURL("https://openbanking.atlassian.net/wiki/spaces/DZ/pages/999426309/Payment+Initiation+API+Specification+-+v3.1.1"),
 			Version:       "v3.1.1",
 			SchemaVersion: mustParseURL("https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.1/dist/payment-initiation-swagger.json"),
+		},
+		{
+			Identifier:    "confirmation-funds-v3.1.5",
+			Name:          "Confirmation of Funds API Specification",
+			URL:           mustParseURL("https://openbankinguk.github.io/read-write-api-site3/v3.1.5/profiles/confirmation-of-funds-api-profile.html"),
+			Version:       "v3.1.5",
+			SchemaVersion: mustParseURL("https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.5/dist/swagger/confirmation-funds-swagger.json"),
 		},
 		{
 			Identifier:    "confirmation-funds-v3.1.4",

@@ -1,0 +1,28 @@
+{
+    "scripts": [{
+      "description": "v3.1.5 Read accounts - x-fapi-financial-id header is no longer required",
+      "id": "OB-315-ACC-000100",
+      "refURI": "https://openbankinguk.github.io/read-write-api-site3/v3.1.5/profiles/read-write-data-api-profile.html#request-headers",
+      "detail": "Checks that a basic GET Accounts call works without the x-fapi-financial-id header which was dropped in v3.1.3",
+      "parameters": {
+        "tokenRequestScope": "accounts"
+      },
+      "permissions": [
+        "ReadAccountsBasic"
+      ],
+      "permissions-excluded": [
+        "ReadAccountsDetail"
+      ],
+      "uri": "/accounts",
+      "uriImplementation": "mandatory",
+      "resource": "Account",
+      "removeHeaders": ["x-fapi-financial-id"],
+      "asserts": [
+        "OB3GLOAssertOn200",
+        "OB3GLOFAPIHeader"
+      ],
+      "method": "get",
+      "schemaCheck": true
+    }]
+  }
+  

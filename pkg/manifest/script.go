@@ -440,6 +440,11 @@ func LoadGenerationResources(specType, manifestPath string, ctx *model.Context) 
 		return Scripts{}, References{}, err
 	}
 
+	vsScripts, err = getVersionSpecificScripts(specType, "3.1.5", ctx)
+	if err != nil {
+		return Scripts{}, References{}, err
+	}
+
 	if len(vsScripts.Scripts) != 0 {
 		sc.Scripts = append(sc.Scripts, vsScripts.Scripts...)
 	}
