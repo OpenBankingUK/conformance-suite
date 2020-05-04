@@ -143,25 +143,11 @@
         "endpoints": [
           {
             "method": "POST",
-            "path": "/domestic-payment-consents",
-            "conditionalProperties": [
-              {
-                "schema": "OBWriteDataDomesticConsentResponse1",
-                "name": "Charges",
-                "path": "Data.Charges"
-              }
-            ]
+            "path": "/domestic-payment-consents"
           },
           {
             "method": "GET",
-            "path": "/domestic-payment-consents/{ConsentId}",
-            "conditionalProperties": [
-              {
-                "schema": "OBWriteDataDomesticConsentResponse1",
-                "name": "Charges",
-                "path": "Data.Charges"
-              }
-            ]
+            "path": "/domestic-payment-consents/{ConsentId}"
           },
           {
             "method": "GET",
@@ -169,25 +155,11 @@
           },
           {
             "method": "POST",
-            "path": "/domestic-payments",
-            "conditionalProperties": [
-              {
-                "schema": "OBWriteDataDomesticResponse1",
-                "name": "Charges",
-                "path": "Data.Charges"
-              }
-            ]
+            "path": "/domestic-payments"
           },
           {
             "method": "GET",
-            "path": "/domestic-payments/{DomesticPaymentId}",
-            "conditionalProperties": [
-              {
-                "schema": "OBWriteDataDomesticResponse1",
-                "name": "Charges",
-                "path": "Data.Charges"
-              }
-            ]
+            "path": "/domestic-payments/{DomesticPaymentId}"
           },
           {
             "method": "POST",
