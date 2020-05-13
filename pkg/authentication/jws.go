@@ -88,20 +88,27 @@ func SplitJWSWithBody(token string) string {
 }
 
 // SignedString Get the complete, signed token for jws usage
-func SignedString(t *jwt.Token, key interface{}, body string) (string, error) {
+// Takes the token object, private key, payload body and b64encoding indicator
+// Create the signing string which includes the token header and payload body
+// Then signs this string using the key provided - the signing algorithm is part of the jwt.Token object
+func SignedString(t *jwt.Token, key interface{}, body string, b64encoded bool) (string, error) {
 	var sig, sstr string
 	var err error
-	if sstr, err = SigningString(t, body); err != nil {
+	if sstr, err = SigningString(t, body, b64encoded); err != nil {
 		return "", errors.Wrap(err, "authentication.SignedString: SigningString(t, body) failed")
 	}
+
 	if sig, err = t.Method.Sign(sstr, key); err != nil {
 		return "", errors.Wrap(err, "authentication.SignedString: t.Method.Sign(sstr, key failed")
 	}
 	return strings.Join([]string{sstr, sig}, "."), nil
 }
 
-// SigningString -
-func SigningString(t *jwt.Token, body string) (string, error) {
+// JWT SigningString
+// takes the token, body string and b64 indicator
+// if b64encoded=true - base64urlEncodes the payload string as part of the string to be signed
+// if b64encoded=false - includes the payload unencoded (unmodified) in the string to be signed
+func SigningString(t *jwt.Token, body string, b64encoded bool) (string, error) {
 	var err error
 	parts := make([]string, 2)
 	for i := range parts {
@@ -116,57 +123,78 @@ func SigningString(t *jwt.Token, body string) (string, error) {
 		if i == 0 {
 			parts[i] = jwt.EncodeSegment(jsonValue)
 		} else {
-			parts[i] = string(jsonValue)
+			if b64encoded { // b64=true so encode segment - Sign with payload B64 encoding true - default for v3.1.4 and above of apis
+				parts[i] = jwt.EncodeSegment(jsonValue)
+			} else { // b64=false so include unencoded - Sign with payload B64 encoding false - v3.1.3 and previous versions of apis
+				parts[i] = string(jsonValue)
+			}
 		}
 	}
 	return strings.Join(parts, "."), nil
 }
 
-func NewJWSSignature(requestBody string, ctx ContextInterface, alg jwt.SigningMethod) (string, error) {
+func minifiyJSONBody(body string) (string, error) {
 	m := minify.New()
 	m.AddFuncRegexp(regexp.MustCompile("[/+]json$"), minjson.Minify)
-	minifiedBody, err := m.String("application/json", requestBody)
+	minifiedBody, err := m.String("application/json", body)
 	if err != nil {
-		return "", errors.Wrap(err, `authentication.NewJWSSignature: m.String("application/json", requestBody) failed`)
+		logrus.Error(err, `minifyJSONBody failed`)
+		return "", err
 	}
-	cert, err := SigningCertFromContext(ctx)
-	if err != nil {
-		return "", errors.Wrap(err, "authentication.NewJWSSignature: unable to sign certificate from context")
-	}
+	return minifiedBody, nil
+}
+
+func getKidFromCertificate(cert Certificate) (string, error) {
 	modulus := cert.PublicKey().N.Bytes()
 	modulusBase64 := base64.RawURLEncoding.EncodeToString(modulus)
 	kid, err := CalcKid(modulusBase64)
+	return kid, err
+}
+
+func NewJWSSignature(requestBody string, ctx ContextInterface, alg jwt.SigningMethod) (string, error) {
+
+	minifiedBody, err := minifiyJSONBody(requestBody)
 	if err != nil {
-		return "", errors.Wrap(err, "authentication.NewJWSSignature: CalcKid(modulusBase64) failed")
+		return "", errors.Wrap(err, `NewJWSSignature: minifyBody failed`)
 	}
+
+	cert, err := SigningCertFromContext(ctx)
+	if err != nil {
+		return "", errors.Wrap(err, "NewJWSSignature: unable to sign certificate from context")
+	}
+
+	kid, err := getKidFromCertificate(cert)
+	if err != nil {
+		return "", errors.Wrap(err, "NewJWSSignature: getKidFromCertificate failed")
+	}
+
 	issuer, err := GetJWSIssuerString(ctx, cert)
 	if err != nil {
-		return "", errors.Wrap(err, "authentication.NewJWSSignature: unable to retrieve issuer from context")
+		return "", errors.Wrap(err, "NewJWSSignature: unable to retrieve issuer from context")
 	}
 	trustAnchor := "openbanking.org.uk"
 	useNonOBDirectory, exists := ctx.Get("nonOBDirectory")
 	if !exists {
-		return "", errors.New("authentication.NewJWSSignature: unable to retrieve nonOBDirectory from context")
+		return "", errors.New("NewJWSSignature: unable to retrieve nonOBDirectory from context")
 	}
 	useNonOBDirectoryAsBool, ok := useNonOBDirectory.(bool)
 	if !ok {
-		return "", errors.New("authentication.NewJWSSignature: unable to cast nonOBDirectory to bool")
+		return "", errors.New("NewJWSSignature: unable to cast nonOBDirectory to bool")
 	}
 	if useNonOBDirectoryAsBool {
 		kid, err = ctx.GetString("signingKid")
 		if err != nil {
-			return "", errors.Wrap(err, "authentication.NewJWSSignature: unable to retrieve singingKid from context")
+			return "", errors.Wrap(err, "NewJWSSignature: unable to retrieve singingKid from context")
 		}
 		issuer, err = ctx.GetString("issuer")
 		if err != nil {
-			return "", errors.Wrap(err, "authentication.NewJWSSignature: unable to retrieve issue from context")
+			return "", errors.Wrap(err, "NewJWSSignature: unable to retrieve issue from context")
 		}
 		trustAnchor, err = ctx.GetString("signatureTrustAnchor")
 		if err != nil {
-			return "", errors.Wrap(err, "authentication.NewJWSSignature: unable to retrieve signatureTrustAnchor from context")
+			return "", errors.Wrap(err, "NewJWSSignature: unable to retrieve signatureTrustAnchor from context")
 		}
 	}
-	logrus.Tracef("jws issuer=%s", issuer)
 
 	logrus.WithFields(logrus.Fields{
 		"kid":    kid,
@@ -180,81 +208,107 @@ func NewJWSSignature(requestBody string, ctx ContextInterface, alg jwt.SigningMe
 		return "", errors.New("authentication.NewJWSSignature: cannot find api-version: " + err.Error())
 	}
 
-	var tok jwt.Token
+	return buildSignature(apiVersion, kid, issuer, trustAnchor, minifiedBody, alg, cert.PrivateKey())
+}
+
+// buildSignature - takes all the token parameters and assembles a detached header signed token string which is returned
+func buildSignature(apiVersion, kid, issuer, trustAnchor, body string, alg jwt.SigningMethod, privKey *rsa.PrivateKey) (string, error) {
+	var token jwt.Token
+	var b64Encoded bool
+
 	switch apiVersion {
-	case "v.3.1.3":
-		// Contains `http://openbanking.org.uk/tan`.
-		tok = jwt.Token{
-			Header: map[string]interface{}{
-				"typ":                           "JOSE",
-				"kid":                           kid,
-				"cty":                           "application/json",
-				"http://openbanking.org.uk/iat": time.Now().Unix(),
-				"http://openbanking.org.uk/iss": issuer,      //ASPSP ORGID or TTP ORGID/SSAID
-				"http://openbanking.org.uk/tan": trustAnchor, //Trust anchor
-				"alg":                           alg.Alg(),
-				"crit": []string{
-					"http://openbanking.org.uk/iat",
-					"http://openbanking.org.uk/iss",
-					"http://openbanking.org.uk/tan",
-				},
-			},
-			Method: alg,
-		}
+	case "v3.1.5":
+		fallthrough
+	case "v3.1.4":
+		b64Encoded = true
+		token = GetSignatureToken314Plus(kid, issuer, trustAnchor, alg)
+	case "v3.1.3":
+		fallthrough
+	case "v3.1.2":
+		fallthrough
+	case "v3.1.1":
+		fallthrough
 	case "v3.1":
-		// Contains `http://openbanking.org.uk/tan`.
-		tok = jwt.Token{
-			Header: map[string]interface{}{
-				"typ":                           "JOSE",
-				"kid":                           kid,
-				"b64":                           false,
-				"cty":                           "application/json",
-				"http://openbanking.org.uk/iat": time.Now().Unix(),
-				"http://openbanking.org.uk/iss": issuer,      //ASPSP ORGID or TTP ORGID/SSAID
-				"http://openbanking.org.uk/tan": trustAnchor, //Trust anchor
-				"alg":                           alg.Alg(),
-				"crit": []string{
-					"b64",
-					"http://openbanking.org.uk/iat",
-					"http://openbanking.org.uk/iss",
-					"http://openbanking.org.uk/tan",
-				},
-			},
-			Method: alg,
-		}
+		token = GetSignatureToken313Minus(kid, issuer, trustAnchor, alg)
 	case "v3.0":
-		// Does not contain `http://openbanking.org.uk/tan`.
-		// Read/Write Data API Specification - v3.0 Specification: https://openbanking.atlassian.net/wiki/spaces/DZ/pages/641992418/Read+Write+Data+API+Specification+-+v3.0.
-		// According to the spec this field `http://openbanking.org.uk/tan` should not be sent in the `x-jws-signature` header.
-		tok = jwt.Token{
-			Header: map[string]interface{}{
-				"typ":                           "JOSE",
-				"kid":                           kid,
-				"b64":                           false,
-				"cty":                           "application/json",
-				"http://openbanking.org.uk/iat": time.Now().Unix(),
-				"http://openbanking.org.uk/iss": issuer, //ASPSP ORGID or TTP ORGID/SSAID
-				"alg":                           alg.Alg(),
-				"crit": []string{
-					"b64",
-					"http://openbanking.org.uk/iat",
-					"http://openbanking.org.uk/iss",
-				},
-			},
-			Method: alg,
-		}
+		token = GetSignatureToken30(kid, issuer, trustAnchor, alg)
 	default:
-		return "", errors.New("authentication.GetJWSIssuerString: cannot get issuer for jws signature but api-version doesn't match 3.0.0 or 3.1.0")
+		return "", errors.New("buildSignature: unknown apiVersion (" + apiVersion + ")")
 	}
 
-	val, _ := json.Marshal(tok.Header)
-	fmt.Printf("Signing string %s, body %s\n", val, minifiedBody)
-
-	tokenString, err := SignedString(&tok, cert.PrivateKey(), minifiedBody) // sign the token - get as encoded string
+	tokenString, err := SignedString(&token, privKey, body, b64Encoded) // sign the token
 	if err != nil {
-		return "", errors.Wrap(err, "authentication.NewJWSSignature: SignedString(&tok, cert.PrivateKey(), minifiedBody) failed")
+		return "", errors.Wrap(err, "authentication.NewJWSSignature: SignedString failed")
 	}
-
-	detachedJWS := SplitJWSWithBody(tokenString)
+	detachedJWS := SplitJWSWithBody(tokenString) // remove the body from the signature string to form the detached signature
 	return detachedJWS, nil
+}
+
+// Get Token with correct headers for v3.1.4 and above of the R/W Apis
+func GetSignatureToken314Plus(kid, issuer, trustAnchor string, alg jwt.SigningMethod) jwt.Token {
+	token := jwt.Token{
+		Header: map[string]interface{}{
+			"typ":                           "JOSE",
+			"kid":                           kid,
+			"cty":                           "application/json",
+			"http://openbanking.org.uk/iat": time.Now().Unix(),
+			"http://openbanking.org.uk/iss": issuer,      //ASPSP ORGID or TTP ORGID/SSAID
+			"http://openbanking.org.uk/tan": trustAnchor, //Trust anchor
+			"alg":                           alg.Alg(),
+			"crit": []string{
+				"http://openbanking.org.uk/iat",
+				"http://openbanking.org.uk/iss",
+				"http://openbanking.org.uk/tan",
+			},
+		},
+		Method: alg,
+	}
+	return token
+}
+
+// Get Token with correct headers for v3.1.3 and previous versions of the R/W Apis
+func GetSignatureToken313Minus(kid, issuer, trustAnchor string, alg jwt.SigningMethod) jwt.Token {
+	token := jwt.Token{
+		Header: map[string]interface{}{
+			"typ":                           "JOSE",
+			"kid":                           kid,
+			"b64":                           false,
+			"cty":                           "application/json",
+			"http://openbanking.org.uk/iat": time.Now().Unix(),
+			"http://openbanking.org.uk/iss": issuer,      //ASPSP ORGID or TTP ORGID/SSAID
+			"http://openbanking.org.uk/tan": trustAnchor, //Trust anchor
+			"alg":                           alg.Alg(),
+			"crit": []string{
+				"b64",
+				"http://openbanking.org.uk/iat",
+				"http://openbanking.org.uk/iss",
+				"http://openbanking.org.uk/tan",
+			},
+		},
+		Method: alg,
+	}
+	return token
+}
+
+// Read/Write Data API Specification - v3.0 Specification: https://openbanking.atlassian.net/wiki/spaces/DZ/pages/641992418/Read+Write+Data+API+Specification+-+v3.0.
+// According to the spec this field `http://openbanking.org.uk/tan` should not be sent in the `x-jws-signature` header.
+func GetSignatureToken30(kid, issuer, trustAnchor string, alg jwt.SigningMethod) jwt.Token {
+	token := jwt.Token{
+		Header: map[string]interface{}{
+			"typ":                           "JOSE",
+			"kid":                           kid,
+			"b64":                           false,
+			"cty":                           "application/json",
+			"http://openbanking.org.uk/iat": time.Now().Unix(),
+			"http://openbanking.org.uk/iss": issuer, //ASPSP ORGID or TTP ORGID/SSAID
+			"alg":                           alg.Alg(),
+			"crit": []string{
+				"b64",
+				"http://openbanking.org.uk/iat",
+				"http://openbanking.org.uk/iss",
+			},
+		},
+		Method: alg,
+	}
+	return token
 }

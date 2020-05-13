@@ -281,6 +281,35 @@ func (i *Input) createJWSDetachedSignature(ctx authentication.ContextInterface) 
 	return i.AppErr("cannot create x-jws-signature, as request body is empty")
 }
 
+// createNewJWSDetachedSignature
+// create a JWS signature following guidelines in version 3.1.4 and later of the OB APIs ... see ...
+// https://openbankinguk.github.io/read-write-api-site3/v3.1.4/profiles/read-write-data-api-profile.html#message-signing-2
+func (i *Input) createNewJWSDetachedSignature(ctx authentication.ContextInterface) error {
+	if len(i.RequestBody) > 0 && !disableJws {
+		requestObjSigningAlg, err := ctx.GetString("requestObjectSigningAlg")
+		if err != nil {
+			return errors.Wrap(err, "input.createNewJWSDetachedSignature: unable to retrieve requestObjectSigningAlg")
+		}
+		alg, err := authentication.GetSigningAlg(requestObjSigningAlg)
+		if err != nil {
+			return errors.Wrapf(err, "input.createNewJWSDetachedSignature: unable to parse signing alg")
+		}
+		token, err := authentication.NewJWSSignature(i.RequestBody, ctx, alg)
+		if err != nil {
+			return i.AppErr(fmt.Sprintf("error generating jws signature %s", err.Error()))
+		}
+		i.SetHeader("x-jws-signature", token)
+
+		return nil
+	}
+
+	if disableJws {
+		i.AppMsg("x-jws-signature disabled")
+		return nil
+	}
+	return i.AppErr("cannot create x-jws-signature, as request body is empty")
+}
+
 func (i *Input) getBody(req *resty.Request, ctx *Context) (string, error) {
 	value := i.RequestBody
 	for {

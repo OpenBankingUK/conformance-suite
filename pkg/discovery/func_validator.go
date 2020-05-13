@@ -260,7 +260,7 @@ func HasMandatoryEndpoints(checker model.ConditionalityChecker, discoveryConfig 
 		}
 		var missingMandatory []model.Input // disable mandatory endpoint checking for payment apis - to allow single token test runs
 		if strings.HasPrefix(specification.Identifier, "payment") {
-			logrus.Warn("Skipping payment spec mandatory endpoint check")
+			logrus.Trace("Skipping payment spec mandatory endpoint check")
 		} else {
 			missingMandatory, err = checker.MissingMandatory(discoveryEndpoints, specification.Identifier)
 		}
