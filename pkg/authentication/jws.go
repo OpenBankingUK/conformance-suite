@@ -1,7 +1,6 @@
 package authentication
 
 import (
-	"crypto"
 	"crypto/rsa"
 	"encoding/base64"
 	"encoding/json"
@@ -17,18 +16,19 @@ import (
 	minjson "github.com/tdewolff/minify/v2/json"
 )
 
+// Workaround for default PS256 signing parameter issue
+// https://github.com/dgrijalva/jwt-go/issues/285
+var SigningMethodPS256 = &jwt.SigningMethodRSAPSS{
+	SigningMethodRSA: jwt.SigningMethodPS256.SigningMethodRSA,
+	Options: &rsa.PSSOptions{
+		SaltLength: rsa.PSSSaltLengthEqualsHash,
+	},
+}
+
 func GetSigningAlg(alg string) (jwt.SigningMethod, error) {
 	switch strings.ToUpper(alg) {
 	case "PS256":
-		// Workaround
-		// https://github.com/dgrijalva/jwt-go/issues/285
-		return &jwt.SigningMethodRSAPSS{
-			SigningMethodRSA: jwt.SigningMethodPS256.SigningMethodRSA,
-			Options: &rsa.PSSOptions{
-				SaltLength: rsa.PSSSaltLengthEqualsHash,
-				Hash:       crypto.SHA256,
-			},
-		}, nil
+		return SigningMethodPS256, nil
 	case "RS256":
 		return jwt.SigningMethodRS256, nil
 	case "NONE":
@@ -133,24 +133,6 @@ func SigningString(t *jwt.Token, body string, b64encoded bool) (string, error) {
 	return strings.Join(parts, "."), nil
 }
 
-func minifiyJSONBody(body string) (string, error) {
-	m := minify.New()
-	m.AddFuncRegexp(regexp.MustCompile("[/+]json$"), minjson.Minify)
-	minifiedBody, err := m.String("application/json", body)
-	if err != nil {
-		logrus.Error(err, `minifyJSONBody failed`)
-		return "", err
-	}
-	return minifiedBody, nil
-}
-
-func getKidFromCertificate(cert Certificate) (string, error) {
-	modulus := cert.PublicKey().N.Bytes()
-	modulusBase64 := base64.RawURLEncoding.EncodeToString(modulus)
-	kid, err := CalcKid(modulusBase64)
-	return kid, err
-}
-
 func NewJWSSignature(requestBody string, ctx ContextInterface, alg jwt.SigningMethod) (string, error) {
 
 	minifiedBody, err := minifiyJSONBody(requestBody)
@@ -205,23 +187,28 @@ func NewJWSSignature(requestBody string, ctx ContextInterface, alg jwt.SigningMe
 
 	apiVersion, err := ctx.GetString("api-version")
 	if err != nil {
-		return "", errors.New("authentication.NewJWSSignature: cannot find api-version: " + err.Error())
+		return "", errors.New("NewJWSSignature: cannot find api-version: " + err.Error())
 	}
 
-	return buildSignature(apiVersion, kid, issuer, trustAnchor, minifiedBody, alg, cert.PrivateKey())
+	paymentApiVersion, err := getPaymentApiVersion(ctx)
+	if err != nil {
+		return "", errors.New("NewJWSSignature: cannot find payment apiversion: " + err.Error())
+	}
+
+	b64encoding, err := getB64Encoding(paymentApiVersion)
+	if err != nil {
+		return "", errors.New("NewJWSSignature: cannot getB64Encoding " + err.Error())
+	}
+
+	return buildSignature(apiVersion, b64encoding, kid, issuer, trustAnchor, minifiedBody, alg, cert.PrivateKey())
 }
 
-// buildSignature - takes all the token parameters and assembles a detached header signed token string which is returned
-func buildSignature(apiVersion, kid, issuer, trustAnchor, body string, alg jwt.SigningMethod, privKey *rsa.PrivateKey) (string, error) {
-	var token jwt.Token
-	var b64Encoded bool
-
-	switch apiVersion {
+func getB64Encoding(paymentVersion string) (bool, error) {
+	switch paymentVersion {
 	case "v3.1.5":
 		fallthrough
 	case "v3.1.4":
-		b64Encoded = true
-		token = GetSignatureToken314Plus(kid, issuer, trustAnchor, alg)
+		return true, nil
 	case "v3.1.3":
 		fallthrough
 	case "v3.1.2":
@@ -229,18 +216,32 @@ func buildSignature(apiVersion, kid, issuer, trustAnchor, body string, alg jwt.S
 	case "v3.1.1":
 		fallthrough
 	case "v3.1":
-		token = GetSignatureToken313Minus(kid, issuer, trustAnchor, alg)
 	case "v3.0":
+		return false, nil
+	}
+	return false, errors.New("b64Encoding: unknown Payment apiVersion (" + paymentVersion + ")")
+}
+
+// buildSignature - takes all the token parameters and assembles a detached header signed token string which is returned
+// Handles api versions v3.1.4 and above, v3.1.3 and prior, plus v3.0 which has a slightly different JWT header
+func buildSignature(apiVersion string, b64 bool, kid, issuer, trustAnchor, body string, alg jwt.SigningMethod, privKey *rsa.PrivateKey) (string, error) {
+	var token jwt.Token
+
+	if b64 {
+		token = GetSignatureToken314Plus(kid, issuer, trustAnchor, alg)
+	} else {
+		token = GetSignatureToken313Minus(kid, issuer, trustAnchor, alg)
+	}
+	if apiVersion == "v3.0" {
 		token = GetSignatureToken30(kid, issuer, trustAnchor, alg)
-	default:
-		return "", errors.New("buildSignature: unknown apiVersion (" + apiVersion + ")")
 	}
 
-	tokenString, err := SignedString(&token, privKey, body, b64Encoded) // sign the token
+	tokenString, err := SignedString(&token, privKey, body, b64) // sign the token
 	if err != nil {
-		return "", errors.Wrap(err, "authentication.NewJWSSignature: SignedString failed")
+		return "", errors.Wrap(err, "buildSignature: SignedString failed")
 	}
 	detachedJWS := SplitJWSWithBody(tokenString) // remove the body from the signature string to form the detached signature
+
 	return detachedJWS, nil
 }
 
@@ -311,4 +312,56 @@ func GetSignatureToken30(kid, issuer, trustAnchor string, alg jwt.SigningMethod)
 		Method: alg,
 	}
 	return token
+}
+
+func minifiyJSONBody(body string) (string, error) {
+	m := minify.New()
+	m.AddFuncRegexp(regexp.MustCompile("[/+]json$"), minjson.Minify)
+	minifiedBody, err := m.String("application/json", body)
+	if err != nil {
+		logrus.Error(err, `minifyJSONBody failed`)
+		return "", err
+	}
+	return minifiedBody, nil
+}
+
+func getKidFromCertificate(cert Certificate) (string, error) {
+	modulus := cert.PublicKey().N.Bytes()
+	modulusBase64 := base64.RawURLEncoding.EncodeToString(modulus)
+	kid, err := CalcKid(modulusBase64)
+	return kid, err
+}
+
+// Gets the payment api version from the context
+// looks for the "apiversions" key
+// requires payment version to be in the form similar to "payments_v3.1.0"
+// apiversions is a string slice
+func getPaymentApiVersion(ctx ContextInterface) (string, error) {
+	apiVersions, err := ctx.GetStringSlice("apiversions")
+	if err != nil {
+		return "", errors.New("NewJWSSignature: cannot find apiversions: " + err.Error())
+	}
+	for _, str := range apiVersions {
+		if strings.HasPrefix("payments_", str) {
+			paymentVersion := after(str, "payments_")
+			if paymentVersion == "" {
+				return "", errors.New("Cannot find payment api version: " + str)
+			}
+			return paymentVersion, nil
+		}
+	}
+	return "", errors.New("Payment API version not found: " + strings.Join(apiVersions, ","))
+}
+
+// Get a string after the given string
+func after(value string, a string) string {
+	pos := strings.LastIndex(value, a)
+	if pos == -1 {
+		return ""
+	}
+	adjustedPos := pos + len(a)
+	if adjustedPos >= len(value) {
+		return ""
+	}
+	return value[adjustedPos:]
 }

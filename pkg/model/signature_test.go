@@ -1,34 +1,67 @@
-package authentication
+package model
 
 import (
 	"crypto"
-	"errors"
 	"strings"
 	"testing"
 
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/authentication"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/sirupsen/logrus"
+	"github.com/stretchr/testify/assert"
 
 	"crypto/rsa"
 
 	"github.com/dgrijalva/jwt-go/test"
 )
 
+/*
+	High level signature tests, using Testcases, Input
+	Specifically for Waiver007 testing - B64=true, B64=false
+*/
+
+const OzoneTestSignature = `eyJ0eXAiOiJKT1NFIiwiY3R5IjoiYXBwbGljYXRpb24vanNvbiIsImh0dHA6Ly9vcGVuYmFua2luZy5vcmcudWsvaWF0IjoxNTg4NTg3NjgyLjQ1NiwiaHR0cDovL29wZW5iYW5raW5nLm9yZy51ay9pc3MiOiIwMDE1ODAwMDAxMDQxUkhBQVkiLCJodHRwOi8vb3BlbmJhbmtpbmcub3JnLnVrL3RhbiI6Im9wZW5iYW5raW5nLm9yZy51ayIsImNyaXQiOlsiaHR0cDovL29wZW5iYW5raW5nLm9yZy51ay9pYXQiLCJodHRwOi8vb3BlbmJhbmtpbmcub3JnLnVrL2lzcyIsImh0dHA6Ly9vcGVuYmFua2luZy5vcmcudWsvdGFuIl0sImFsZyI6IlBTMjU2Iiwia2lkIjoiREtlUE9MQU9pWEx3WWhNZkxTOGFTNllVLWQwIn0..1zMW5n7jXFGaOhVvL-Qz6ELVRzbfDzZahdXR3ioWA_H2MOib1Z346ZRaSczqjF2AY5qJfUX6AVpDopjCEDqmlCvSYsBOSFk0gwaNqnQVK4AN-yWK5OqC-gmo7W8RSTTF6s41yuXTdvZAPw7cdqmGKTHRvg2QpPkdHP8wXXurWqOgnUSgI6Czn_VKeIsc5W7rNpYF9onxY1HMDpXoYyXF_znYyWR3dNCueQaTHkIdt6b0MCBXINcgsY7pXsyHn-hZVGAW877sJjRC4GUfbZWKvkR2URLUOYKlzLYSGitsjtoHocESCG2uoovknTMLSIertSqbnm3VDVPRtBbJ0RSCuQ`
+const OzoneResponseBody = `{"Data":{"FundsAvailableResult":{"FundsAvailableDateTime":"2020-05-04T10:21:22.456Z","FundsAvailable":true}},"Links":{"Self":"http://ob19-rs1.o3bank.co.uk/open-banking/v3.1/pisp/domestic-payment-consents/sdp-1-241c9cc1-5dbc-46ca-a0df-9d512799c869/funds-confirmation"},"Meta":{}}`
+const domesticPayBody = `{"Data":{"ConsentId":"sdp-1-b5bbdb18-eeb1-4c11-919d-9a237c8f1c7d","Initiation":{"InstructionIdentification":"SIDP01","EndToEndIdentification":"FRESCO.21302.GFX.20","InstructedAmount":{"Amount":"15.00","Currency":"GBP"},"CreditorAccount":{"SchemeName":"SortCodeAccountNumber","Identification":"20000319470104","Name":"Messers Simplex & Co"}}},"Risk":{}}`
+
+var ctx Context = Context{
+	"signingPrivate":            selfsignedDummySigkey,
+	"signingPublic":             selfsignedDummySigpub,
+	"initiation":                "{\"InstructionIdentification\":\"SIDP01\",\"EndToEndIdentification\":\"FRESCO.21302.GFX.20\",\"InstructedAmount\":{\"Amount\":\"15.00\",\"Currency\":\"GBP\"},\"CreditorAccount\":{\"SchemeName\":\"SortCodeAccountNumber\",\"Identification\":\"20000319470104\",\"Name\":\"Messers Simplex & Co\"}}",
+	"consent_id":                "sdp-1-b5bbdb18-eeb1-4c11-919d-9a237c8f1c7d",
+	"domestic_payment_template": "{\"Data\": {\"ConsentId\": \"$consent_id\",\"Initiation\":$initiation },\"Risk\":{}}",
+	"authorisation_endpoint":    "https://example.com/authorisation",
+	"api-version":               "v3.0",
+	"nonOBDirectory":            false,
+	"requestObjectSigningAlg":   "PS256",
+}
+
 func TestSimpleb64trueSignature(t *testing.T) {
-	cert, _ := SigningCertFromContext(ctx)
+	EnableJWS()
+	cert, _ := authentication.SigningCertFromContext(ctx)
 	pubKey := cert.PublicKey()
 	_ = pubKey
-	i := model.Input{JwsSig: true, Method: "POST", Endpoint: "https://google.com", RequestBody: "$domestic_payment_template"}
-	tc := model.TestCase{Input: i}
-	_ = tc
-	// req, err := tc.Prepare(&ctx)
-	// assert.Nil(t, err)
-	// sig := req.Header.Get("x-jws-signature")
-	// assert.NotEmpty(t, sig)
-	// fmt.Println(sig)
-	// fmt.Println("Now validate this")
+	i := Input{JwsSig: true, Method: "POST", Endpoint: "https://google.com", RequestBody: "$domestic_payment_template"}
+	tc := TestCase{Input: i}
+	req, err := tc.Prepare(&ctx)
+	assert.Nil(t, err)
+	sig := req.Header.Get("x-jws-signature")
+	assert.NotEmpty(t, sig)
+	logrus.Infoln(sig)
+	validatedOK, err := validateSignature(sig, domesticPayBody, authentication.SigningMethodPS256, pubKey)
+	assert.True(t, validatedOK)
+}
 
+func validateSignature(token, body string, signingMethod jwt.SigningMethod, pubKey *rsa.PublicKey) (bool, error) {
+	segments := strings.Split(token, ".")
+	segments[1] = body
+	err := signingMethod.Verify(strings.Join(segments[:2], "."), segments[2], pubKey)
+	if err != nil {
+		logrus.Errorln("failed to validate signature" + err.Error())
+		return false, err
+	}
+	logrus.Infoln("Succeeded to validate signature")
+	return true, nil
 }
 
 var fixedSigningMethodPS256 = &jwt.SigningMethodRSAPSS{
@@ -77,46 +110,7 @@ func getPS256SigingAlg() jwt.SigningMethod {
 	}
 }
 
-type Context map[string]interface{}
-
-func (c Context) GetString(key string) (string, error) {
-	value, exist := c[key]
-	if !exist {
-		return "", errors.New("key not found")
-	}
-	valueStr, ok := value.(string)
-	if !ok {
-		return "", errors.New("error casting key to string")
-	}
-	return valueStr, nil
-}
-
-func (c Context) Get(key string) (interface{}, bool) {
-	value, exist := c[key]
-	return value, exist
-}
-
-func (c Context) GetStringSlice(key string) ([]string, error) {
-	return nil, nil
-}
-
-const OzoneTestSignature = `eyJ0eXAiOiJKT1NFIiwiY3R5IjoiYXBwbGljYXRpb24vanNvbiIsImh0dHA6Ly9vcGVuYmFua2luZy5vcmcudWsvaWF0IjoxNTg4NTg3NjgyLjQ1NiwiaHR0cDovL29wZW5iYW5raW5nLm9yZy51ay9pc3MiOiIwMDE1ODAwMDAxMDQxUkhBQVkiLCJodHRwOi8vb3BlbmJhbmtpbmcub3JnLnVrL3RhbiI6Im9wZW5iYW5raW5nLm9yZy51ayIsImNyaXQiOlsiaHR0cDovL29wZW5iYW5raW5nLm9yZy51ay9pYXQiLCJodHRwOi8vb3BlbmJhbmtpbmcub3JnLnVrL2lzcyIsImh0dHA6Ly9vcGVuYmFua2luZy5vcmcudWsvdGFuIl0sImFsZyI6IlBTMjU2Iiwia2lkIjoiREtlUE9MQU9pWEx3WWhNZkxTOGFTNllVLWQwIn0..1zMW5n7jXFGaOhVvL-Qz6ELVRzbfDzZahdXR3ioWA_H2MOib1Z346ZRaSczqjF2AY5qJfUX6AVpDopjCEDqmlCvSYsBOSFk0gwaNqnQVK4AN-yWK5OqC-gmo7W8RSTTF6s41yuXTdvZAPw7cdqmGKTHRvg2QpPkdHP8wXXurWqOgnUSgI6Czn_VKeIsc5W7rNpYF9onxY1HMDpXoYyXF_znYyWR3dNCueQaTHkIdt6b0MCBXINcgsY7pXsyHn-hZVGAW877sJjRC4GUfbZWKvkR2URLUOYKlzLYSGitsjtoHocESCG2uoovknTMLSIertSqbnm3VDVPRtBbJ0RSCuQ`
-const OzoneResponseBody = `{"Data":{"FundsAvailableResult":{"FundsAvailableDateTime":"2020-05-04T10:21:22.456Z","FundsAvailable":true}},"Links":{"Self":"http://ob19-rs1.o3bank.co.uk/open-banking/v3.1/pisp/domestic-payment-consents/sdp-1-241c9cc1-5dbc-46ca-a0df-9d512799c869/funds-confirmation"},"Meta":{}}`
-const domesticPayBody = `{"Data":{"ConsentId":"sdp-1-b5bbdb18-eeb1-4c11-919d-9a237c8f1c7d","Initiation":{"InstructionIdentification":"SIDP01","EndToEndIdentification":"FRESCO.21302.GFX.20","InstructedAmount":{"Amount":"15.00","Currency":"GBP"},"CreditorAccount":{"SchemeName":"SortCodeAccountNumber","Identification":"20000319470104","Name":"Messers Simplex & Co"}}},"Risk":{}}`
-
-var ctx Context = Context{
-	"signingPrivate":            selfsignedDummykey,
-	"signingPublic":             selfsignedDummypub,
-	"initiation":                "{\"InstructionIdentification\":\"SIDP01\",\"EndToEndIdentification\":\"FRESCO.21302.GFX.20\",\"InstructedAmount\":{\"Amount\":\"15.00\",\"Currency\":\"GBP\"},\"CreditorAccount\":{\"SchemeName\":\"SortCodeAccountNumber\",\"Identification\":\"20000319470104\",\"Name\":\"Messers Simplex & Co\"}}",
-	"consent_id":                "sdp-1-b5bbdb18-eeb1-4c11-919d-9a237c8f1c7d",
-	"domestic_payment_template": "{\"Data\": {\"ConsentId\": \"$consent_id\",\"Initiation\":$initiation },\"Risk\":{}}",
-	"authorisation_endpoint":    "https://example.com/authorisation",
-	"api-version":               "v3.0",
-	"nonOBDirectory":            false,
-	"requestObjectSigningAlg":   "PS256",
-}
-
-const selfsignedDummykey = `-----BEGIN RSA PRIVATE KEY-----
+const selfsignedDummySigkey = `-----BEGIN RSA PRIVATE KEY-----
 MIIEpAIBAAKCAQEA8Gl2x9KsmqwdmZd+BdZYtDWHNRXtPd/kwiR6luU+4w76T+9m
 lmePXqALi7aSyvYQDLeffR8+2dSGcdwvkf6bDWZNeMRXl7Z1jsk+xFN91mSYNk1n
 R6N1EsDTK2KXlZZyaTmpu/5p8SxwDO34uE5AaeESeM3RVqqOgRcXskmp/atwUMC+
@@ -144,7 +138,7 @@ nuz0bzQ7ARNqBkWLQ4bqzwy0aKXlcvbIMBaVXyfQTiwzwWAZsAWr6WHPlvWDP6mP
 1vAUje5xEMtsIwj6UnkJ3OpPVVeJ56aKQIxg6QU2ROrWYDccx4gg0g==
 -----END RSA PRIVATE KEY-----`
 
-const selfsignedDummypub = `-----BEGIN CERTIFICATE-----
+const selfsignedDummySigpub = `-----BEGIN CERTIFICATE-----
 MIIDBzCCAe+gAwIBAgIJAOze8GNkMIMMMA0GCSqGSIb3DQEBBQUAMBoxGDAWBgNV
 BAMMD3d3dy5leGFtcGxlLmNvbTAeFw0xOTAxMjExMzUyMjFaFw0yOTAxMTgxMzUy
 MjFaMBoxGDAWBgNVBAMMD3d3dy5leGFtcGxlLmNvbTCCASIwDQYJKoZIhvcNAQEB

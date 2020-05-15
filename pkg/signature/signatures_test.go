@@ -55,7 +55,7 @@ func TestJWSDetachedSignature313andBefore(t *testing.T) {
 	assert.NotEmpty(t, sig)
 	fmt.Println(sig)
 	fmt.Println("Now validate this")
-	validateSignature(sig, SigningMethodPS256, pubKey)
+	validateSignature(sig, authentication.SigningMethodPS256, pubKey)
 }
 
 func TestJWSDetachedSignature315andAfter(t *testing.T) {
@@ -71,7 +71,7 @@ func TestJWSDetachedSignature315andAfter(t *testing.T) {
 	assert.NotEmpty(t, sig)
 	fmt.Println(sig)
 	fmt.Println("Now validate this")
-	validateSignature(sig, SigningMethodPS256, pubKey)
+	validateSignature(sig, authentication.SigningMethodPS256, pubKey)
 }
 
 func validateSignature(token string, signingMethod jwt.SigningMethod, pubKey *rsa.PublicKey) {
@@ -96,7 +96,7 @@ func getSignatureParameters() (SignatureParameters, error) {
 		kid:         "mykeylookup",
 		trustAnchor: "mytrustanchor",
 		apiVersion:  "v3.1.3",
-		alg:         SigningMethodPS256,
+		alg:         authentication.SigningMethodPS256,
 	}
 	return params, nil
 }
@@ -189,7 +189,7 @@ func TestSignAndValidateB64True(t *testing.T) { // New Way
 				"http://openbanking.org.uk/tan",
 			},
 		},
-		Method: SigningMethodPS256,
+		Method: authentication.SigningMethodPS256,
 	}
 
 	cert, _ := SigningCertFromContext(ctx)

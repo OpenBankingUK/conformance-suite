@@ -68,6 +68,20 @@ func NewCertificate(publicKeyPem, privateKeyPem string) (Certificate, error) {
 	}, nil
 }
 
+// creates a certificate from only the public key, in the case of the aspsp public cert to validate signatures
+func NewPublicCertificate(publicKeyPem string) (Certificate, error) {
+	publicKey, err := jwt.ParseRSAPublicKeyFromPEM([]byte(publicKeyPem))
+	if err != nil {
+		return nil, errors.Wrap(err, "error with public key")
+	}
+	publicPem := []byte(publicKeyPem)
+
+	return &certificate{
+		publicKey:     publicKey,
+		publicCertPem: publicPem,
+	}, nil
+}
+
 func (c certificate) PublicKey() *rsa.PublicKey {
 	return c.publicKey
 }

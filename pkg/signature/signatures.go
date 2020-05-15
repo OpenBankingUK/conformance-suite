@@ -1,7 +1,6 @@
 package signature
 
 import (
-	"crypto/rsa"
 	"encoding/json"
 
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/authentication"
@@ -41,13 +40,6 @@ func (s SignatureBodyClaim) MarshalJSON() ([]byte, error) {
 func CreateSignature(sig SignatureParameters) (jwt.Token, error) {
 
 	return jwt.Token{}, nil
-}
-
-var SigningMethodPS256 = &jwt.SigningMethodRSAPSS{
-	SigningMethodRSA: jwt.SigningMethodPS256.SigningMethodRSA,
-	Options: &rsa.PSSOptions{
-		SaltLength: rsa.PSSSaltLengthEqualsHash,
-	},
 }
 
 func SigningCertFromContext(ctx model.Context) (authentication.Certificate, error) {

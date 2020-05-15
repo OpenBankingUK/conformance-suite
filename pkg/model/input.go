@@ -8,7 +8,6 @@ import (
 	"strings"
 	"time"
 
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/authentication"
 	"github.com/pkg/errors"
 	"github.com/tdewolff/minify/v2"
 	minjson "github.com/tdewolff/minify/v2/json"
@@ -16,6 +15,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/sirupsen/logrus"
 
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/authentication"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/tracer"
 	"github.com/dgrijalva/jwt-go"
 	"gopkg.in/resty.v1"
