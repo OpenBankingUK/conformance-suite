@@ -34,9 +34,10 @@ var ctx Context = Context{
 	"api-version":               "v3.0",
 	"nonOBDirectory":            false,
 	"requestObjectSigningAlg":   "PS256",
+	"apiversions":               []interface{}{"payments_v3.1.3"},
 }
 
-func TestSimpleb64trueSignature(t *testing.T) {
+func TestSimpleb64falseSignature(t *testing.T) {
 	EnableJWS()
 	cert, _ := authentication.SigningCertFromContext(ctx)
 	pubKey := cert.PublicKey()
@@ -52,6 +53,25 @@ func TestSimpleb64trueSignature(t *testing.T) {
 	assert.True(t, validatedOK)
 }
 
+func TestSimpleb64trueSignature(t *testing.T) {
+	EnableJWS()
+	ctx.PutStringSlice("apiversions", []string{"payments_v3.1.4"})
+	cert, _ := authentication.SigningCertFromContext(ctx)
+	pubKey := cert.PublicKey()
+	_ = pubKey
+	i := Input{JwsSig: true, Method: "POST", Endpoint: "https://google.com", RequestBody: "$domestic_payment_template"}
+	tc := TestCase{Input: i}
+	req, err := tc.Prepare(&ctx)
+	assert.Nil(t, err)
+	sig := req.Header.Get("x-jws-signature")
+	assert.NotEmpty(t, sig)
+	logrus.Infoln(sig)
+	encodedBody := jwt.EncodeSegment([]byte(domesticPayBody))
+	validatedOK, err := validateSignature(sig, encodedBody, authentication.SigningMethodPS256, pubKey)
+	assert.True(t, validatedOK)
+
+}
+
 func validateSignature(token, body string, signingMethod jwt.SigningMethod, pubKey *rsa.PublicKey) (bool, error) {
 	segments := strings.Split(token, ".")
 	segments[1] = body
@@ -60,7 +80,7 @@ func validateSignature(token, body string, signingMethod jwt.SigningMethod, pubK
 		logrus.Errorln("failed to validate signature" + err.Error())
 		return false, err
 	}
-	logrus.Infoln("Succeeded to validate signature")
+	logrus.Infoln("Signature validation succeeded")
 	return true, nil
 }
 

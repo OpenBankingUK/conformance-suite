@@ -216,6 +216,7 @@ func getB64Encoding(paymentVersion string) (bool, error) {
 	case "v3.1.1":
 		fallthrough
 	case "v3.1":
+		fallthrough
 	case "v3.0":
 		return false, nil
 	}
@@ -341,8 +342,9 @@ func getPaymentApiVersion(ctx ContextInterface) (string, error) {
 	if err != nil {
 		return "", errors.New("NewJWSSignature: cannot find apiversions: " + err.Error())
 	}
+
 	for _, str := range apiVersions {
-		if strings.HasPrefix("payments_", str) {
+		if strings.HasPrefix(str, "payments_") {
 			paymentVersion := after(str, "payments_")
 			if paymentVersion == "" {
 				return "", errors.New("Cannot find payment api version: " + str)
