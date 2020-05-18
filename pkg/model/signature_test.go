@@ -2,6 +2,10 @@ package model
 
 import (
 	"crypto"
+	"encoding/base64"
+	"encoding/pem"
+	"errors"
+	"fmt"
 	"strings"
 	"testing"
 
@@ -9,8 +13,11 @@ import (
 	"github.com/dgrijalva/jwt-go"
 	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
+	"gopkg.in/resty.v1"
 
 	"crypto/rsa"
+	"crypto/tls"
+	"crypto/x509"
 
 	"github.com/dgrijalva/jwt-go/test"
 )
@@ -37,8 +44,10 @@ var ctx Context = Context{
 	"apiversions":               []interface{}{"payments_v3.1.3"},
 }
 
+// Create and validate b64=false signature
 func TestSimpleb64falseSignature(t *testing.T) {
 	EnableJWS()
+	ctx.PutStringSlice("apiversions", []string{"payments_v3.1.3"})
 	cert, _ := authentication.SigningCertFromContext(ctx)
 	pubKey := cert.PublicKey()
 	_ = pubKey
@@ -53,6 +62,7 @@ func TestSimpleb64falseSignature(t *testing.T) {
 	assert.True(t, validatedOK)
 }
 
+// create and validate b64=true signature - apiversion 3.1.4
 func TestSimpleb64trueSignature(t *testing.T) {
 	EnableJWS()
 	ctx.PutStringSlice("apiversions", []string{"payments_v3.1.4"})
@@ -69,6 +79,47 @@ func TestSimpleb64trueSignature(t *testing.T) {
 	encodedBody := jwt.EncodeSegment([]byte(domesticPayBody))
 	validatedOK, err := validateSignature(sig, encodedBody, authentication.SigningMethodPS256, pubKey)
 	assert.True(t, validatedOK)
+}
+
+// Test using ozone server certificate
+func TestOzone314SignatureString(t *testing.T) {
+	signingMethod := jwt.SigningMethodPS256.SigningMethodRSA
+
+	segments := strings.Split(OzoneTestSignature, ".")
+	segments[1] = jwt.EncodeSegment([]byte(OzoneResponseBody))
+	logrus.Printf(strings.Join(segments, "."))
+
+	pubkey := test.LoadRSAPublicKeyFromDisk("../../../certs/waiver007/DKePOLAOiXLwYhMfLS8aS6YU-d0.pem")
+	modulus := pubkey.N.Bytes()
+	modulusBase64 := base64.RawURLEncoding.EncodeToString(modulus)
+	kid, err := authentication.CalcKid(modulusBase64)
+	logrus.Infof("kid: " + kid)
+	err = signingMethod.Verify(strings.Join(segments[:2], "."), segments[2], pubkey)
+	logrus.Error(err)
+}
+
+// GetPem -
+func GetPem(url string) (*x509.Certificate, error) {
+	resty.SetTLSClientConfig(&tls.Config{InsecureSkipVerify: true})
+	resp, err := resty.R().Get(url)
+	if err != nil {
+		fmt.Printf("error accessing %s, %s\n", url, err)
+		return &x509.Certificate{}, err
+	}
+
+	if resp.StatusCode() != 200 {
+		return nil, errors.New("Cannot access certificate: http code: " + resp.Status())
+	}
+
+	block, _ := pem.Decode(resp.Body())
+	cert, err := x509.ParseCertificate(block.Bytes)
+
+	if err != nil {
+		fmt.Println("Cannot parse PEM - omg error: ", err)
+		return nil, err
+	}
+
+	return cert, nil
 
 }
 
@@ -95,23 +146,6 @@ func verify(signingMethod jwt.SigningMethod, token string) bool {
 	segments := strings.Split(token, ".")
 	err := signingMethod.Verify(strings.Join(segments[:2], "."), segments[2], test.LoadRSAPublicKeyFromDisk("test/sample_key.pub"))
 	return err == nil
-}
-
-func TestOzone314SignatureString(t *testing.T) {
-	signingMethod := jwt.SigningMethodPS256.SigningMethodRSA
-
-	segments := strings.Split(OzoneTestSignature, ".")
-	segments[1] = OzoneResponseBody
-
-	//result := InsertBodyString(OzoneTestSignature, OzoneResponseBody)
-	logrus.Printf("%v", segments)
-
-	pubkey := test.LoadRSAPublicKeyFromDisk("../../../certs/waiver007/ozonepub.pem")
-
-	err := signingMethod.Verify(strings.Join(segments[:2], "."), segments[2], pubkey)
-
-	logrus.Error(err)
-
 }
 
 func TestReversibleLocalSignature(t *testing.T) {

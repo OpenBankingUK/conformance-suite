@@ -1,6 +1,7 @@
 package authentication
 
 import (
+	"crypto"
 	"crypto/rsa"
 	"encoding/base64"
 	"encoding/json"
@@ -22,6 +23,7 @@ var SigningMethodPS256 = &jwt.SigningMethodRSAPSS{
 	SigningMethodRSA: jwt.SigningMethodPS256.SigningMethodRSA,
 	Options: &rsa.PSSOptions{
 		SaltLength: rsa.PSSSaltLengthEqualsHash,
+		Hash:       crypto.SHA256,
 	},
 }
 
@@ -216,9 +218,9 @@ func getB64Encoding(paymentVersion string) (bool, error) {
 	case "v3.1.1":
 		fallthrough
 	case "v3.1":
-		fallthrough
-	case "v3.0":
 		return false, nil
+	case "v3.0":
+		return false, errors.New("b64Encoding: Unsupported Payment api Version (" + paymentVersion + ")")
 	}
 	return false, errors.New("b64Encoding: unknown Payment apiVersion (" + paymentVersion + ")")
 }
@@ -232,9 +234,6 @@ func buildSignature(apiVersion string, b64 bool, kid, issuer, trustAnchor, body 
 		token = GetSignatureToken314Plus(kid, issuer, trustAnchor, alg)
 	} else {
 		token = GetSignatureToken313Minus(kid, issuer, trustAnchor, alg)
-	}
-	if apiVersion == "v3.0" {
-		token = GetSignatureToken30(kid, issuer, trustAnchor, alg)
 	}
 
 	tokenString, err := SignedString(&token, privKey, body, b64) // sign the token

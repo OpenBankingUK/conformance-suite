@@ -9,6 +9,7 @@ import (
 	"regexp"
 	"strings"
 
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/authentication"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/schema"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/schemaprops"
 
@@ -77,6 +78,7 @@ type TestCase struct {
 	APIName           string           `json:"apiName"`
 	APIVersion        string           `json:"apiVersion"`
 	Validator         schema.Validator `json:"-"` // Swagger schema validator
+	ValidateSignature bool             `json:"validateSignature,omitempty"`
 }
 
 // MakeTestCase builds an empty testcase
@@ -143,6 +145,29 @@ func (t *TestCase) Validate(resp *resty.Response, rulectx *Context) (bool, []err
 		}
 	} else {
 		logSchemaValidationOffWarning(t)
+	}
+
+	// Apply Signature Validator
+	if t.ValidateSignature {
+		header := resp.Header()
+		signature := header.Get("x-jws-signature")
+		if signature != "" {
+			jwks_uri, err := rulectx.GetString("jwks_uri")
+			if err != nil {
+				return false, []error{t.AppErr("ValidateSignature - JWKS_URI not present ")}
+			}
+			pass, err := authentication.ValidateSignature(signature, t.Body, jwks_uri)
+			if err != nil {
+				return false, []error{t.AppErr("Signature validation failed: " + err.Error())}
+			}
+			if !pass {
+				errs = append(errs, errors.New("Invalid x-jws-signature found - unable to validate"))
+			} else {
+				logrus.Infoln("x-jws-signature validation succeded")
+			}
+		} else {
+			return false, []error{t.AppErr("x-jws-signature header not found for Validation")}
+		}
 	}
 
 	// Gather fields within json response - for reporting

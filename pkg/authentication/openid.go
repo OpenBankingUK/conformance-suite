@@ -8,18 +8,26 @@ import (
 
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/client"
 	"github.com/pkg/errors"
+	"github.com/sirupsen/logrus"
 )
 
 // OpenIDConfiguration - The OpenID Connect discovery document retrieved by calling /.well-known/openid-configuration.
 // https://openid.net/specs/openid-connect-discovery-1_0.html
 type OpenIDConfiguration struct {
-	TokenEndpoint                          string   `json:"token_endpoint"`
-	TokenEndpointAuthMethodsSupported      []string `json:"token_endpoint_auth_methods_supported"`
-	RequestObjectSigningAlgValuesSupported []string `json:"request_object_signing_alg_values_supported"`
-	AuthorizationEndpoint                  string   `json:"authorization_endpoint"`
-	Issuer                                 string   `json:"issuer"`
-	ResponseTypesSupported                 []string `json:"response_types_supported"`
+	TokenEndpoint                          string   `json:"token_endpoint,omitempty"`
+	TokenEndpointAuthMethodsSupported      []string `json:"token_endpoint_auth_methods_supported,omitempty"`
+	RequestObjectSigningAlgValuesSupported []string `json:"request_object_signing_alg_values_supported,omitempty"`
+	AuthorizationEndpoint                  string   `json:"authorization_endpoint,omitempty"`
+	Issuer                                 string   `json:"issuer,omitempty"`
+	ResponseTypesSupported                 []string `json:"response_types_supported,omitempty"`
 	AcrValuesSupported                     []string `json:"acr_values_supported,omitempty"`
+	JwksURI                                string   `json:"jwks_uri,omitempty"`
+}
+
+var jwks_uri = ""
+
+func GetJWKSUri() string {
+	return jwks_uri
 }
 
 func OpenIdConfig(url string) (OpenIDConfiguration, error) {
@@ -48,5 +56,7 @@ func OpenIdConfig(url string) (OpenIDConfiguration, error) {
 	if err := json.NewDecoder(resp.Body).Decode(&config); err != nil {
 		return config, errors.Wrap(err, fmt.Sprintf("Invalid OpenIDConfiguration: url=%+v", url))
 	}
+	jwks_uri = config.JwksURI
+	logrus.Tracef("Setting JWKS Uri to %s", jwks_uri)
 	return config, nil
 }
