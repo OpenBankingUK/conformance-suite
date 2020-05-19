@@ -58,7 +58,7 @@ func TestSimpleb64falseSignature(t *testing.T) {
 	sig := req.Header.Get("x-jws-signature")
 	assert.NotEmpty(t, sig)
 	logrus.Infoln(sig)
-	validatedOK, err := validateSignature(sig, domesticPayBody, authentication.SigningMethodPS256, pubKey)
+	validatedOK, err := validateSignatureTest(sig, domesticPayBody, authentication.SigningMethodPS256, pubKey)
 	assert.True(t, validatedOK)
 }
 
@@ -77,7 +77,7 @@ func TestSimpleb64trueSignature(t *testing.T) {
 	assert.NotEmpty(t, sig)
 	logrus.Infoln(sig)
 	encodedBody := jwt.EncodeSegment([]byte(domesticPayBody))
-	validatedOK, err := validateSignature(sig, encodedBody, authentication.SigningMethodPS256, pubKey)
+	validatedOK, err := validateSignatureTest(sig, encodedBody, authentication.SigningMethodPS256, pubKey)
 	assert.True(t, validatedOK)
 }
 
@@ -123,7 +123,7 @@ func GetPem(url string) (*x509.Certificate, error) {
 
 }
 
-func validateSignature(token, body string, signingMethod jwt.SigningMethod, pubKey *rsa.PublicKey) (bool, error) {
+func validateSignatureTest(token, body string, signingMethod jwt.SigningMethod, pubKey *rsa.PublicKey) (bool, error) {
 	segments := strings.Split(token, ".")
 	segments[1] = body
 	err := signingMethod.Verify(strings.Join(segments[:2], "."), segments[2], pubKey)

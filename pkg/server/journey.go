@@ -221,7 +221,7 @@ func (wj *journey) TestCases() (generation.SpecRun, error) {
 
 	jwks_uri := authentication.GetJWKSUri()
 	if jwks_uri != "" { // STORE jwks_uri from well known endpoint in journey context
-		wj.context.PutString("jwks_url", jwks_uri)
+		wj.context.PutString("jwks_uri", jwks_uri)
 	} else {
 		logrus.Warn("JWKS URI is empty")
 	}

@@ -192,17 +192,26 @@ func NewJWSSignature(requestBody string, ctx ContextInterface, alg jwt.SigningMe
 		return "", errors.New("NewJWSSignature: cannot find api-version: " + err.Error())
 	}
 
+	b64encoding, err := GetB64Encoding(ctx)
+	if err != nil {
+		return "", errors.New("NewJWSSignature: cannot GetB64Encoding " + err.Error())
+	}
+
+	return buildSignature(apiVersion, b64encoding, kid, issuer, trustAnchor, minifiedBody, alg, cert.PrivateKey())
+}
+
+func GetB64Encoding(ctx ContextInterface) (bool, error) {
 	paymentApiVersion, err := getPaymentApiVersion(ctx)
 	if err != nil {
-		return "", errors.New("NewJWSSignature: cannot find payment apiversion: " + err.Error())
+		return false, errors.New("NewJWSSignature: cannot find payment apiversion: " + err.Error())
 	}
 
 	b64encoding, err := getB64Encoding(paymentApiVersion)
 	if err != nil {
-		return "", errors.New("NewJWSSignature: cannot getB64Encoding " + err.Error())
+		return false, errors.New("NewJWSSignature: cannot getB64Encoding " + err.Error())
 	}
 
-	return buildSignature(apiVersion, b64encoding, kid, issuer, trustAnchor, minifiedBody, alg, cert.PrivateKey())
+	return b64encoding, nil
 }
 
 func getB64Encoding(paymentVersion string) (bool, error) {

@@ -24,10 +24,10 @@ type OpenIDConfiguration struct {
 	JwksURI                                string   `json:"jwks_uri,omitempty"`
 }
 
-var jwks_uri = ""
+var jwks_uri_accessor = ""
 
 func GetJWKSUri() string {
-	return jwks_uri
+	return jwks_uri_accessor
 }
 
 func OpenIdConfig(url string) (OpenIDConfiguration, error) {
@@ -56,7 +56,8 @@ func OpenIdConfig(url string) (OpenIDConfiguration, error) {
 	if err := json.NewDecoder(resp.Body).Decode(&config); err != nil {
 		return config, errors.Wrap(err, fmt.Sprintf("Invalid OpenIDConfiguration: url=%+v", url))
 	}
-	jwks_uri = config.JwksURI
-	logrus.Tracef("Setting JWKS Uri to %s", jwks_uri)
+
+	logrus.Tracef("JWKS Uri = %s", config.JwksURI)
+	jwks_uri_accessor = config.JwksURI
 	return config, nil
 }

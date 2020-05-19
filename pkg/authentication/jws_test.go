@@ -6,7 +6,6 @@ import (
 	"strings"
 	"testing"
 
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/sirupsen/logrus"
 
@@ -16,12 +15,12 @@ import (
 )
 
 func TestSimpleb64trueSignature(t *testing.T) {
-	cert, _ := SigningCertFromContext(ctx)
-	pubKey := cert.PublicKey()
-	_ = pubKey
-	i := model.Input{JwsSig: true, Method: "POST", Endpoint: "https://google.com", RequestBody: "$domestic_payment_template"}
-	tc := model.TestCase{Input: i}
-	_ = tc
+	// cert, _ := SigningCertFromContext(ctx)
+	// pubKey := cert.PublicKey()
+	// _ = pubKey
+	// i := model.Input{JwsSig: true, Method: "POST", Endpoint: "https://google.com", RequestBody: "$domestic_payment_template"}
+	// tc := model.TestCase{Input: i}
+	// _ = tc
 	// req, err := tc.Prepare(&ctx)
 	// assert.Nil(t, err)
 	// sig := req.Header.Get("x-jws-signature")

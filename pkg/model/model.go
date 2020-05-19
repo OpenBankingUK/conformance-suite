@@ -112,8 +112,8 @@ func (t *TestCase) Prepare(ctx *Context) (*resty.Request, error) {
 //         false - validation unsuccessful
 //         error - adds detail to validation failure
 //         NOTE: Validate will only return false if a check fails - no checks = true
-func (t *TestCase) Validate(resp *resty.Response, rulectx *Context) (bool, []error) {
-	if rulectx == nil {
+func (t *TestCase) Validate(resp *resty.Response, ctx *Context) (bool, []error) {
+	if ctx == nil {
 		return false, []error{t.AppErr("error Valdate:rulectx == nil")}
 	}
 	t.Body = resp.String()
@@ -121,7 +121,7 @@ func (t *TestCase) Validate(resp *resty.Response, rulectx *Context) (bool, []err
 		logrus.WithField("testcase", t.String()).Debug("Validate: resty.body is empty")
 	}
 	t.Header = resp.Header()
-	pass, errs := t.ApplyExpects(resp, rulectx)
+	pass, errs := t.ApplyExpects(resp, ctx)
 
 	var failures []schema.Failure
 	if t.Expect.SchemaValidation {
@@ -149,24 +149,17 @@ func (t *TestCase) Validate(resp *resty.Response, rulectx *Context) (bool, []err
 
 	// Apply Signature Validator
 	if t.ValidateSignature {
-		header := resp.Header()
-		signature := header.Get("x-jws-signature")
-		if signature != "" {
-			jwks_uri, err := rulectx.GetString("jwks_uri")
-			if err != nil {
-				return false, []error{t.AppErr("ValidateSignature - JWKS_URI not present ")}
-			}
-			pass, err := authentication.ValidateSignature(signature, t.Body, jwks_uri)
-			if err != nil {
-				return false, []error{t.AppErr("Signature validation failed: " + err.Error())}
-			}
-			if !pass {
-				errs = append(errs, errors.New("Invalid x-jws-signature found - unable to validate"))
-			} else {
-				logrus.Infoln("x-jws-signature validation succeded")
-			}
+		xJwsSignature := resp.Header().Get("x-jws-signature")
+		logrus.Warn("Validating Signature: " + xJwsSignature)
+		logrus.Warn("body: ", t.Body)
+		valid, err := validateSignature(xJwsSignature, t.Body, ctx)
+		if err != nil {
+			return false, []error{t.AppErr("Signature validation failed: " + err.Error())}
+		}
+		if !valid {
+			errs = append(errs, errors.New("Invalid x-jws-signature found - unable to validate"))
 		} else {
-			return false, []error{t.AppErr("x-jws-signature header not found for Validation")}
+			logrus.Infoln("x-jws-signature validation succeded")
 		}
 	}
 
@@ -175,6 +168,35 @@ func (t *TestCase) Validate(resp *resty.Response, rulectx *Context) (bool, []err
 	collector.CollectProperties(t.Input.Method, t.Input.Endpoint, t.Body, resp.StatusCode())
 
 	return pass, errs
+}
+
+func validateSignature(signature, body string, ctx *Context) (bool, error) {
+	var pass bool
+	if signature != "" {
+		jwks_uri, err := ctx.GetString("jwks_uri")
+		if err != nil {
+			return false, errors.New("ValidateSignature - JWKS_URI not present ")
+		}
+
+		b64encoding, err := authentication.GetB64Encoding(ctx)
+		if err != nil {
+			return false, errors.New("ValidationSignature cannot get B64Encoding: " + err.Error())
+		}
+
+		pass, err = authentication.ValidateSignature(signature, body, jwks_uri, b64encoding)
+		if err != nil {
+			return false, errors.New("Invalid x-jws-signature found - unable to validate: " + err.Error())
+		}
+		if !pass {
+			return false, errors.New("Invalid x-jws-signature - fails validation")
+		} else {
+			logrus.Infoln("x-jws-signature validation succeded")
+		}
+	} else {
+		return false, errors.New("x-jws-signature header not found for Validation")
+	}
+	logrus.Tracef("Signature validation succeeded")
+	return pass, nil
 }
 
 func logSchemaValidationOffWarning(testCase *TestCase) {
