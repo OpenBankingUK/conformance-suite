@@ -8,7 +8,6 @@ import (
 	"fmt"
 	"regexp"
 	"strings"
-	"time"
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/pkg/errors"
@@ -187,17 +186,12 @@ func NewJWSSignature(requestBody string, ctx ContextInterface, alg jwt.SigningMe
 		"claims": minifiedBody,
 	}).Trace("jws signature creation")
 
-	apiVersion, err := ctx.GetString("api-version")
-	if err != nil {
-		return "", errors.New("NewJWSSignature: cannot find api-version: " + err.Error())
-	}
-
 	b64encoding, err := GetB64Encoding(ctx)
 	if err != nil {
 		return "", errors.New("NewJWSSignature: cannot GetB64Encoding " + err.Error())
 	}
 
-	return buildSignature(apiVersion, b64encoding, kid, issuer, trustAnchor, minifiedBody, alg, cert.PrivateKey())
+	return buildSignature(b64encoding, kid, issuer, trustAnchor, minifiedBody, alg, cert.PrivateKey())
 }
 
 func GetB64Encoding(ctx ContextInterface) (bool, error) {
@@ -226,101 +220,14 @@ func getB64Encoding(paymentVersion string) (bool, error) {
 		fallthrough
 	case "v3.1.1":
 		fallthrough
+	case "v3.1.0":
+		fallthrough
 	case "v3.1":
 		return false, nil
 	case "v3.0":
 		return false, errors.New("b64Encoding: Unsupported Payment api Version (" + paymentVersion + ")")
 	}
 	return false, errors.New("b64Encoding: unknown Payment apiVersion (" + paymentVersion + ")")
-}
-
-// buildSignature - takes all the token parameters and assembles a detached header signed token string which is returned
-// Handles api versions v3.1.4 and above, v3.1.3 and prior, plus v3.0 which has a slightly different JWT header
-func buildSignature(apiVersion string, b64 bool, kid, issuer, trustAnchor, body string, alg jwt.SigningMethod, privKey *rsa.PrivateKey) (string, error) {
-	var token jwt.Token
-
-	if b64 {
-		token = GetSignatureToken314Plus(kid, issuer, trustAnchor, alg)
-	} else {
-		token = GetSignatureToken313Minus(kid, issuer, trustAnchor, alg)
-	}
-
-	tokenString, err := SignedString(&token, privKey, body, b64) // sign the token
-	if err != nil {
-		return "", errors.Wrap(err, "buildSignature: SignedString failed")
-	}
-	detachedJWS := SplitJWSWithBody(tokenString) // remove the body from the signature string to form the detached signature
-
-	return detachedJWS, nil
-}
-
-// Get Token with correct headers for v3.1.4 and above of the R/W Apis
-func GetSignatureToken314Plus(kid, issuer, trustAnchor string, alg jwt.SigningMethod) jwt.Token {
-	token := jwt.Token{
-		Header: map[string]interface{}{
-			"typ":                           "JOSE",
-			"kid":                           kid,
-			"cty":                           "application/json",
-			"http://openbanking.org.uk/iat": time.Now().Unix(),
-			"http://openbanking.org.uk/iss": issuer,      //ASPSP ORGID or TTP ORGID/SSAID
-			"http://openbanking.org.uk/tan": trustAnchor, //Trust anchor
-			"alg":                           alg.Alg(),
-			"crit": []string{
-				"http://openbanking.org.uk/iat",
-				"http://openbanking.org.uk/iss",
-				"http://openbanking.org.uk/tan",
-			},
-		},
-		Method: alg,
-	}
-	return token
-}
-
-// Get Token with correct headers for v3.1.3 and previous versions of the R/W Apis
-func GetSignatureToken313Minus(kid, issuer, trustAnchor string, alg jwt.SigningMethod) jwt.Token {
-	token := jwt.Token{
-		Header: map[string]interface{}{
-			"typ":                           "JOSE",
-			"kid":                           kid,
-			"b64":                           false,
-			"cty":                           "application/json",
-			"http://openbanking.org.uk/iat": time.Now().Unix(),
-			"http://openbanking.org.uk/iss": issuer,      //ASPSP ORGID or TTP ORGID/SSAID
-			"http://openbanking.org.uk/tan": trustAnchor, //Trust anchor
-			"alg":                           alg.Alg(),
-			"crit": []string{
-				"b64",
-				"http://openbanking.org.uk/iat",
-				"http://openbanking.org.uk/iss",
-				"http://openbanking.org.uk/tan",
-			},
-		},
-		Method: alg,
-	}
-	return token
-}
-
-// Read/Write Data API Specification - v3.0 Specification: https://openbanking.atlassian.net/wiki/spaces/DZ/pages/641992418/Read+Write+Data+API+Specification+-+v3.0.
-// According to the spec this field `http://openbanking.org.uk/tan` should not be sent in the `x-jws-signature` header.
-func GetSignatureToken30(kid, issuer, trustAnchor string, alg jwt.SigningMethod) jwt.Token {
-	token := jwt.Token{
-		Header: map[string]interface{}{
-			"typ":                           "JOSE",
-			"kid":                           kid,
-			"b64":                           false,
-			"cty":                           "application/json",
-			"http://openbanking.org.uk/iat": time.Now().Unix(),
-			"http://openbanking.org.uk/iss": issuer, //ASPSP ORGID or TTP ORGID/SSAID
-			"alg":                           alg.Alg(),
-			"crit": []string{
-				"b64",
-				"http://openbanking.org.uk/iat",
-				"http://openbanking.org.uk/iss",
-			},
-		},
-		Method: alg,
-	}
-	return token
 }
 
 func minifiyJSONBody(body string) (string, error) {

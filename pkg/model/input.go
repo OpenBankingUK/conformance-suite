@@ -40,7 +40,7 @@ type Input struct {
 	IdempotencyKey bool              `json:"idempotency,omitempty"`   // specifices the inclusion of x-idempotency-key in the request
 }
 
-var disableJws = true // defaults to JWS disabled in line with waiver 007
+var disableJws = false // defaults to JWS disabled in line with waiver 007
 
 // CreateRequest is the main Input work horse which examines the various Input parameters and generates an
 // http.Request object which represents the request
