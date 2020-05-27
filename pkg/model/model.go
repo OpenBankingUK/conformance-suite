@@ -149,7 +149,7 @@ func (t *TestCase) Validate(resp *resty.Response, ctx *Context) (bool, []error) 
 	}
 
 	// Apply Signature Validator
-	if t.ValidateSignature {
+	if t.ValidateSignature && !disableJws {
 		xJwsSignature := resp.Header().Get("x-jws-signature")
 		logrus.Warn("Validating Signature: " + xJwsSignature)
 		logrus.Warn("body: ", t.Body)

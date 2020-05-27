@@ -41,6 +41,7 @@ type Input struct {
 }
 
 var disableJws = false // defaults to JWS disabled in line with waiver 007
+var b64Status bool     // store b64 value for report
 
 // CreateRequest is the main Input work horse which examines the various Input parameters and generates an
 // http.Request object which represents the request
@@ -643,6 +644,16 @@ func makeMiliSecondStringTimestamp() string {
 }
 
 // DisableJWS - disable jws-signature for ozone
-func EnableJWS() {
-	disableJws = false
+func DisableJWS() {
+	disableJws = true
+}
+
+func JWSStatus() string {
+	if disableJws {
+		return "disabled"
+	}
+	if authentication.GetB64Status() {
+		return "true"
+	}
+	return "false"
 }

@@ -26,6 +26,8 @@ var SigningMethodPS256 = &jwt.SigningMethodRSAPSS{
 	},
 }
 
+var b64Status bool // for report export
+
 func GetSigningAlg(alg string) (jwt.SigningMethod, error) {
 	switch strings.ToUpper(alg) {
 	case "PS256":
@@ -213,6 +215,7 @@ func getB64Encoding(paymentVersion string) (bool, error) {
 	case "v3.1.5":
 		fallthrough
 	case "v3.1.4":
+		setB64Status(true) // record setting for report
 		return true, nil
 	case "v3.1.3":
 		fallthrough
@@ -281,4 +284,11 @@ func after(value string, a string) string {
 		return ""
 	}
 	return value[adjustedPos:]
+}
+
+func setB64Status(status bool) {
+	b64Status = status
+}
+func GetB64Status() bool {
+	return b64Status
 }

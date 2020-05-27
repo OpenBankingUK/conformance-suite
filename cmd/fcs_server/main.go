@@ -83,7 +83,7 @@ func init() {
 	rootCmd.PersistentFlags().Bool("log_tracer", false, "Enable tracer logging")
 	rootCmd.PersistentFlags().Bool("log_http_trace", false, "Enable HTTP logging")
 	rootCmd.PersistentFlags().Int("port", 8443, "Server port")
-	rootCmd.PersistentFlags().Bool("enable_jws", false, "Enable JWS Signature")
+	rootCmd.PersistentFlags().Bool("disable_jws", false, "Disalbe JWS Signatures")
 	rootCmd.PersistentFlags().Bool("dynres", false, "Use Dynamic Resource IDs - accounts")
 	rootCmd.PersistentFlags().Bool("dumpcontexts", false, "Dump contexts when trace enabled")
 	rootCmd.PersistentFlags().Bool("tlscheck", true, "enable tls version checking - default enabled")
@@ -148,8 +148,8 @@ func initConfig() {
 		}
 	}
 
-	if viper.GetBool("enable_jws") {
-		model.EnableJWS()
+	if viper.GetBool("disable_jws") {
+		model.DisableJWS()
 	}
 
 	if viper.GetBool("dumpcontexts") {
@@ -175,7 +175,7 @@ func printConfigurationFlags() {
 		"log_to_file":    viper.GetBool("log_to_file"),
 		"port":           viper.GetInt("port"),
 		"tracer.Silent":  tracer.Silent,
-		"enable_jws":     viper.GetBool("enable_jws"),
+		"disable_jws":    viper.GetBool("disable_jws"),
 		"dynres":         viper.GetBool("dynres"),
 		"dumpcontexts":   viper.GetBool("dumpcontexts"),
 		"tlscheck":       viper.GetBool("tlscheck"),
