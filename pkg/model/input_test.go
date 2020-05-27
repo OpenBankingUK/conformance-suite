@@ -388,28 +388,6 @@ func TestPaymentBodyReplaceTestCase100300(t *testing.T) {
 	t.Logf("%#v\n", tc)
 }
 
-func TestJWSDetachedSignature(t *testing.T) {
-	EnableJWS()
-	ctx := Context{
-		"signingPrivate":            selfsignedDummykey,
-		"signingPublic":             selfsignedDummypub,
-		"initiation":                "{\"InstructionIdentification\":\"SIDP01\",\"EndToEndIdentification\":\"FRESCO.21302.GFX.20\",\"InstructedAmount\":{\"Amount\":\"15.00\",\"Currency\":\"GBP\"},\"CreditorAccount\":{\"SchemeName\":\"SortCodeAccountNumber\",\"Identification\":\"20000319470104\",\"Name\":\"Messers Simplex & Co\"}}",
-		"consent_id":                "sdp-1-b5bbdb18-eeb1-4c11-919d-9a237c8f1c7d",
-		"domestic_payment_template": "{\"Data\": {\"ConsentId\": \"$consent_id\",\"Initiation\":$initiation },\"Risk\":{}}",
-		"authorisation_endpoint":    "https://example.com/authorisation",
-		"api-version":               "v3.0",
-		"nonOBDirectory":            false,
-		"requestObjectSigningAlg":   "PS256",
-	}
-
-	i := Input{JwsSig: true, Method: "POST", Endpoint: "https://google.com", RequestBody: "$domestic_payment_template"}
-	tc := TestCase{Input: i}
-	req, err := tc.Prepare(&ctx)
-	assert.Nil(t, err)
-	sig := req.Header.Get("x-jws-signature")
-	assert.NotEmpty(t, sig)
-}
-
 func TestJWSSignaturNotPOST(t *testing.T) {
 	ctx := Context{
 		"initiation":                "{\"InstructionIdentification\":\"SIDP01\",\"EndToEndIdentification\":\"FRESCO.21302.GFX.20\",\"InstructedAmount\":{\"Amount\":\"15.00\",\"Currency\":\"GBP\"},\"CreditorAccount\":{\"SchemeName\":\"SortCodeAccountNumber\",\"Identification\":\"20000319470104\",\"Name\":\"Messers Simplex & Co\"}}",
@@ -426,7 +404,6 @@ func TestJWSSignaturNotPOST(t *testing.T) {
 }
 
 func TestJWSSignatureEmptyBody(t *testing.T) {
-	EnableJWS()
 	ctx := Context{
 		"initiation":                "{\"InstructionIdentification\":\"SIDP01\",\"EndToEndIdentification\":\"FRESCO.21302.GFX.20\",\"InstructedAmount\":{\"Amount\":\"15.00\",\"Currency\":\"GBP\"},\"CreditorAccount\":{\"SchemeName\":\"SortCodeAccountNumber\",\"Identification\":\"20000319470104\",\"Name\":\"Messers Simplex & Co\"}}",
 		"consent_id":                "sdp-1-b5bbdb18-eeb1-4c11-919d-9a237c8f1c7d",
@@ -456,86 +433,6 @@ func TestJWSDetachedSignatureGET(t *testing.T) {
 	assert.Nil(t, req)
 }
 
-func TestJWSDetachedSignature312andBefore(t *testing.T) {
-	EnableJWS()
-	ctx := Context{
-		"signingPrivate":            selfsignedDummykey,
-		"signingPublic":             selfsignedDummypub,
-		"initiation":                "{\"InstructionIdentification\":\"SIDP01\",\"EndToEndIdentification\":\"FRESCO.21302.GFX.20\",\"InstructedAmount\":{\"Amount\":\"15.00\",\"Currency\":\"GBP\"},\"CreditorAccount\":{\"SchemeName\":\"SortCodeAccountNumber\",\"Identification\":\"20000319470104\",\"Name\":\"Messers Simplex & Co\"}}",
-		"consent_id":                "sdp-1-b5bbdb18-eeb1-4c11-919d-9a237c8f1c7d",
-		"domestic_payment_template": "{\"Data\": {\"ConsentId\": \"$consent_id\",\"Initiation\":$initiation },\"Risk\":{}}",
-		"authorisation_endpoint":    "https://example.com/authorisation",
-		"api-version":               "v3.0",
-		"nonOBDirectory":            false,
-		"requestObjectSigningAlg":   "PS256",
-	}
-
-	i := Input{JwsSig: true, Method: "POST", Endpoint: "https://google.com", RequestBody: "$domestic_payment_template"}
-	tc := TestCase{Input: i}
-	req, err := tc.Prepare(&ctx)
-	assert.Nil(t, err)
-	sig := req.Header.Get("x-jws-signature")
-	assert.NotEmpty(t, sig)
-	fmt.Println(sig)
-}
-
-func TestJWSSign(t *testing.T) {
-	EnableJWS()
-	ctx := Context{
-		"signingPrivate":            selfsignedDummykey,
-		"signingPublic":             selfsignedDummypub,
-		"initiation":                "{\"InstructionIdentification\":\"SIDP01\",\"EndToEndIdentification\":\"FRESCO.21302.GFX.20\",\"InstructedAmount\":{\"Amount\":\"15.00\",\"Currency\":\"GBP\"},\"CreditorAccount\":{\"SchemeName\":\"SortCodeAccountNumber\",\"Identification\":\"20000319470104\",\"Name\":\"Messers Simplex & Co\"}}",
-		"consent_id":                "sdp-1-b5bbdb18-eeb1-4c11-919d-9a237c8f1c7d",
-		"domestic_payment_template": "{\"Data\": {\"ConsentId\": \"$consent_id\",\"Initiation\":$initiation },\"Risk\":{}}",
-		"authorisation_endpoint":    "https://example.com/authorisation",
-		"api-version":               "v3.0",
-		"nonOBDirectory":            false,
-		"requestObjectSigningAlg":   "PS256",
-	}
-
-	i := Input{JwsSig: true, Method: "POST", Endpoint: "https://google.com", RequestBody: "$domestic_payment_template"}
-	tc := TestCase{Input: i}
-	req, err := tc.Prepare(&ctx)
-	assert.Nil(t, err)
-	sig := req.Header.Get("x-jws-signature")
-	assert.NotEmpty(t, sig)
-	fmt.Println(sig)
-
-	hmacSampleSecret := []byte("hello")
-	// Create a new token object, specifying signing method and the claims
-	// you would like it to contain.
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"foo": "bar",
-		"nbf": time.Date(2015, 10, 10, 12, 0, 0, 0, time.UTC).Unix(),
-	})
-	// Sign and get the complete encoded token as a string using the secret
-	tokenString, err := token.SignedString(hmacSampleSecret)
-	fmt.Println(tokenString)
-
-	// sample token string taken from the New example
-	//tokenString := "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmb28iOiJiYXIiLCJuYmYiOjE0NDQ0Nzg0MDB9.u1riaD1rW97opCoAuRCTy4w58Br-Zk-bh7vLiRIsrpU"
-
-	// Parse takes the token string and a function for looking up the key. The latter is especially
-	// useful if you use multiple keys for your application.  The standard is to use 'kid' in the
-	// head of the token to identify which key to use, but the parsed token (head and claims) is provided
-	// to the callback, providing flexibility.
-	token, err = jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
-		// Don't forget to validate the alg is what you expect:
-		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-			return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
-		}
-
-		// hmacSampleSecret is a []byte containing your secret, e.g. []byte("my_secret_key")
-		return hmacSampleSecret, nil
-	})
-
-	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
-		fmt.Println(claims["foo"], claims["nbf"])
-	} else {
-		fmt.Println("An Error has occurred: " + err.Error())
-	}
-}
-
 func TestCertDNRetrieval(t *testing.T) {
 	cert, err := loadSigningCert(t)
 	if err != nil {
@@ -550,6 +447,7 @@ func TestReadCerts(t *testing.T) {
 	certPEMBlock, err := ioutil.ReadFile("../../../certs/sig-xRWcKt4rSGqsIhqJ3xKC6DOjblY.pem")
 	if err != nil {
 		t.Log(err.Error())
+		return
 	}
 	var cert tls.Certificate
 	var skippedBlockTypes []string

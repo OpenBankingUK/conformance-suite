@@ -219,6 +219,13 @@ func (wj *journey) TestCases() (generation.SpecRun, error) {
 		return generation.SpecRun{}, errTestCasesGenerated
 	}
 
+	jwks_uri := authentication.GetJWKSUri()
+	if jwks_uri != "" { // STORE jwks_uri from well known endpoint in journey context
+		wj.context.PutString("jwks_uri", jwks_uri)
+	} else {
+		logrus.Warn("JWKS URI is empty")
+	}
+
 	if tlsCheck {
 		for k, discoveryItem := range wj.validDiscoveryModel.DiscoveryModel.DiscoveryItems {
 			tlsValidationResult, err := wj.tlsValidator.ValidateTLSVersion(discoveryItem.ResourceBaseURI)

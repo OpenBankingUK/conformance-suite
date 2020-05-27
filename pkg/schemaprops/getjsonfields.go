@@ -262,10 +262,6 @@ func (c Collector) OutputJSON() string {
 		jsonOutApis = append(jsonOutApis, v)
 	}
 
-	rawdata, _ := json.MarshalIndent(c.Apis, "", " ")
-
-	logrus.Debugf("{ \n\"responseFieldsRawData\": %s \n}", rawdata)
-
 	jsondata, err := json.MarshalIndent(jsonOutApis, "", " ")
 	if err != nil {
 		log.Fatal(err)

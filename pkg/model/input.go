@@ -8,7 +8,6 @@ import (
 	"strings"
 	"time"
 
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/authentication"
 	"github.com/pkg/errors"
 	"github.com/tdewolff/minify/v2"
 	minjson "github.com/tdewolff/minify/v2/json"
@@ -16,6 +15,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/sirupsen/logrus"
 
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/authentication"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/tracer"
 	"github.com/dgrijalva/jwt-go"
 	"gopkg.in/resty.v1"
@@ -40,7 +40,8 @@ type Input struct {
 	IdempotencyKey bool              `json:"idempotency,omitempty"`   // specifices the inclusion of x-idempotency-key in the request
 }
 
-var disableJws = true // defaults to JWS disabled in line with waiver 007
+var disableJws = false // defaults to JWS disabled in line with waiver 007
+var b64Status bool     // store b64 value for report
 
 // CreateRequest is the main Input work horse which examines the various Input parameters and generates an
 // http.Request object which represents the request
@@ -264,6 +265,35 @@ func (i *Input) createJWSDetachedSignature(ctx authentication.ContextInterface) 
 		alg, err := authentication.GetSigningAlg(requestObjSigningAlg)
 		if err != nil {
 			return errors.Wrapf(err, "input.createJWSDetachedSignature: unable to parse signing alg")
+		}
+		token, err := authentication.NewJWSSignature(i.RequestBody, ctx, alg)
+		if err != nil {
+			return i.AppErr(fmt.Sprintf("error generating jws signature %s", err.Error()))
+		}
+		i.SetHeader("x-jws-signature", token)
+
+		return nil
+	}
+
+	if disableJws {
+		i.AppMsg("x-jws-signature disabled")
+		return nil
+	}
+	return i.AppErr("cannot create x-jws-signature, as request body is empty")
+}
+
+// createNewJWSDetachedSignature
+// create a JWS signature following guidelines in version 3.1.4 and later of the OB APIs ... see ...
+// https://openbankinguk.github.io/read-write-api-site3/v3.1.4/profiles/read-write-data-api-profile.html#message-signing-2
+func (i *Input) createNewJWSDetachedSignature(ctx authentication.ContextInterface) error {
+	if len(i.RequestBody) > 0 && !disableJws {
+		requestObjSigningAlg, err := ctx.GetString("requestObjectSigningAlg")
+		if err != nil {
+			return errors.Wrap(err, "input.createNewJWSDetachedSignature: unable to retrieve requestObjectSigningAlg")
+		}
+		alg, err := authentication.GetSigningAlg(requestObjSigningAlg)
+		if err != nil {
+			return errors.Wrapf(err, "input.createNewJWSDetachedSignature: unable to parse signing alg")
 		}
 		token, err := authentication.NewJWSSignature(i.RequestBody, ctx, alg)
 		if err != nil {
@@ -614,6 +644,16 @@ func makeMiliSecondStringTimestamp() string {
 }
 
 // DisableJWS - disable jws-signature for ozone
-func EnableJWS() {
-	disableJws = false
+func DisableJWS() {
+	disableJws = true
+}
+
+func JWSStatus() string {
+	if disableJws {
+		return "disabled"
+	}
+	if authentication.GetB64Status() {
+		return "true"
+	}
+	return "false"
 }

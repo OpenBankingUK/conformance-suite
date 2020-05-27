@@ -57,11 +57,13 @@ func (e *Executor) ExecuteTestCase(r *resty.Request, t *model.TestCase, ctx *mod
 	if err != nil {
 		if resp.StatusCode() == http.StatusFound { // catch status code 302 redirects and pass back as good response
 			header := resp.Header()
+			t.StatusCode = resp.Status()
 			logrus.StandardLogger().Printf("redirection headers: %#v\n", header)
 			e.appMsg(fmt.Sprintf("Response: (%.250s)", resp.String()))
 			return resp, metrics(t, resp), nil
 		}
 	}
+	t.StatusCode = resp.Status()
 	var elipsis string
 	if len(resp.String()) > 450 {
 		elipsis = " ..."
