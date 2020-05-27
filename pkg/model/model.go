@@ -79,6 +79,7 @@ type TestCase struct {
 	APIVersion        string           `json:"apiVersion"`
 	Validator         schema.Validator `json:"-"` // Swagger schema validator
 	ValidateSignature bool             `json:"validateSignature,omitempty"`
+	StatusCode        string           `json:"statusCode,omitempty"`
 }
 
 // MakeTestCase builds an empty testcase
