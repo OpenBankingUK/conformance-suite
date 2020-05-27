@@ -6,11 +6,13 @@ import (
 	"encoding/pem"
 	"errors"
 	"fmt"
+	"io/ioutil"
 	"strings"
 	"testing"
 
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/authentication"
 	"github.com/dgrijalva/jwt-go"
+	"github.com/dgrijalva/jwt-go/test"
 	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
 	"gopkg.in/resty.v1"
@@ -18,8 +20,6 @@ import (
 	"crypto/rsa"
 	"crypto/tls"
 	"crypto/x509"
-
-	"github.com/dgrijalva/jwt-go/test"
 )
 
 /*
@@ -89,13 +89,30 @@ func TestOzone314SignatureString(t *testing.T) {
 	segments[1] = jwt.EncodeSegment([]byte(OzoneResponseBody))
 	logrus.Printf(strings.Join(segments, "."))
 
-	pubkey := test.LoadRSAPublicKeyFromDisk("../../../certs/waiver007/DKePOLAOiXLwYhMfLS8aS6YU-d0.pem")
+	pubkey, err := LoadRSAPublicKeyFromDisk("../../../certs/waiver007/DKePOLAOiXLwYhMfLS8aS6YU-d0.pem")
+	if err != nil {
+		fmt.Println("WARNING - keyfile not found")
+		return
+	}
+
 	modulus := pubkey.N.Bytes()
 	modulusBase64 := base64.RawURLEncoding.EncodeToString(modulus)
 	kid, err := authentication.CalcKid(modulusBase64)
 	logrus.Infof("kid: " + kid)
 	err = signingMethod.Verify(strings.Join(segments[:2], "."), segments[2], pubkey)
 	logrus.Error(err)
+}
+
+func LoadRSAPublicKeyFromDisk(location string) (*rsa.PublicKey, error) {
+	keyData, err := ioutil.ReadFile(location)
+	if err != nil {
+		return nil, err
+	}
+	key, err := jwt.ParseRSAPublicKeyFromPEM(keyData)
+	if err != nil {
+		return nil, err
+	}
+	return key, err
 }
 
 // GetPem -
