@@ -5,6 +5,7 @@ import (
 	"crypto/x509"
 	"encoding/pem"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"strings"
 	"testing"
@@ -64,6 +65,11 @@ func TestSigningStringB64True(t *testing.T) {
 	signingString, err := SigningString(&tokenb64true, rawBody, true)
 	assert.Nil(t, err)
 	fmt.Println("signing string: b64=true: ", signingString)
+	pembytes, err := getPemBytes()
+	if err != nil {
+		fmt.Println("WARNING - missing OB Test private key file: " + err.Error())
+		return
+	}
 	key, err := ParseRSAPrivateKeyFromPEM([]byte(pembytes))
 	assert.Nil(t, err)
 	sig, err := tokenb64true.Method.Sign(signingString, key)
@@ -82,6 +88,11 @@ func TestSigningStringB64False(t *testing.T) {
 	signingString, err := SigningString(&tokenb64false, rawBody, false)
 	assert.Nil(t, err)
 	fmt.Println("signing string b64=false: ", signingString)
+	pembytes, err := getPemBytes()
+	if err != nil {
+		fmt.Println("WARNING - missing OB Test private key file: " + err.Error())
+		return
+	}
 	key, err := ParseRSAPrivateKeyFromPEM([]byte(pembytes))
 	assert.Nil(t, err)
 	sig, err := tokenb64false.Method.Sign(signingString, key)
@@ -168,32 +179,7 @@ func ParseRSAPrivateKeyFromPEM(key []byte) (*rsa.PrivateKey, error) {
 	return pkey, nil
 }
 
-var pembytes = `-----BEGIN PRIVATE KEY-----
-MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQC61SZkZGSX7eAy
-3mcqGxPkZf+yMOYIAv2iQmdHW69ssqHiRHxrDZmAx20QP9GjjJ8tbyQk2QORJ9ej
-sAOVhdwMpq70QacjLc2AK9kgAO3LHdD1lnuN9onoWkZZFDctJgMYxUnujZi25PtQ
-vuJl+Pi1UHnsosBf8HYou7SvP1HxoAYacWVuCL+PZJnuJfyevFyRJMyvrdTA3Qyu
-I3+Hgj/nXrOtm6MEhmuWuXOExbopUgtzNbCN3MWxRu/CCS63YjBXmtwIY8zc3BkO
-kdJbjOf1u4/z23CZyyAVEBjIBEeOwJcmxDqD2Ay4igpLmMUlAdKOQ90ihliufF1w
-JqnhCQ1DAgMBAAECggEAKf1HoJ5zgTXEAoq7ctodEWLfIaQdvsU1TadQ4Ne5SFup
-SFoOAF1RF4E6gMFnEzPCfoqQ+/sN8yyaKT6gv5UTDIDVpy2uK5jaq6ivJqMuzkyI
-LvnAEPrMqbzIPLLvZ6U4YvPMFuIZ5Vj3JoGQDkzzUISisk0toSJA3Ay7oftAJmZn
-Sosy3tLp8/MNkUfsCavtHVzFRrFAJ1N4i+UNpUE7hQ9YE1fPL11cmKYf3I6FQHPp
-U8MCLPrGhOztnK9bV4rI9Rd9xFIQCDv2mpFwSTeh8lSTM8pUdxOAT0XbhCHMjQGu
-xz3Wlrv66J0ebH8opE3ztnsq+h1WciOLjtHrRglHWQKBgQDcCp44dnpumLKox0Ew
-kQSdE5zP4WdGZq4aJwE17w/o4upldaV9qXx3QmAs6eCwvvJOdKQXr/uMsZzIcMxt
-VyQGMmBytAPdmGj0+qZ4E7DaM9Gfyluy+xf89pZVkxdQQS/jhUAoL+DKmUshWh1k
-+9ngYUzGaWxooKQcD7XhWTVkpwKBgQDZXT9Pn6pj0vXW3dWQ6gkuIXe+LNWwSWZy
-MzE1RaoixBiV2Y06Gul87I5h3Q5n94UGDRNlqdfGuda1Uv5J65lRTmUrnTPnO3s+
-Pm6G9HxjPH2czEtnLcK9AvEVpLrl1rq/0Otv+4XoYBM/v8NYuy2cntP9PPIXabyO
-TBjM+xX6BQKBgHGCyLw34lDLVN7cazSymr6tL2fNz4jxzz6OgIFiIcLxzBkq54Q7
-uomLJDIHNHH5DuaKJVxS3GFn/okoJ00AdwT7V+XUF2ppBTvbUaUAA2uM78aOjV93
-SJimXEco6g3skte8FaylhkD9c1RxOFiv02V8zC5OlC4lMIOJVzo42uJhAoGBAJ/Q
-QHFRily0yc298n0GpdNGBh1MJ5ziirEiVGa/nrTLCux6NKzpBoyz/IeVmTb1tNdb
-G8zekGhrUKKmr5I359Tw18+2WGgFwrpj+q286guoeQ6k4jetXIXNuOXZ5RSByXKo
-r8H4416T7PMtEfqWPJXv7Rs/CRwPwPO6nW1wmprlAoGAN0pBAuw4/Ywj94oZpDBH
-JYM2qdSstLt/KcYeYYOQw/N8NIYK0pKgWzn5QnPn24xrBFddO3GYt56KacYTv2nP
-h3Tytkib/u85ZlNif8TB259RDjPJ3zmAfjQAWvhzTPmyXjBOttPMLUsLlBPNEkRL
-hFVMxtUuf8fxNOFewsjOAMg=
------END PRIVATE KEY-----
-`
+func getPemBytes() (string, error) {
+	raw, err := ioutil.ReadFile("../../../certs/testprivatekey.pem")
+	return string(raw), err
+}
