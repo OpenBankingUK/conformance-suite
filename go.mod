@@ -33,6 +33,7 @@ require (
 	github.com/sirupsen/logrus v1.4.0
 	github.com/spf13/cobra v0.0.3
 	github.com/spf13/viper v1.3.1
+	github.com/square/go-jose v2.5.1+incompatible
 	github.com/stretchr/testify v1.5.1
 	github.com/tdewolff/minify/v2 v2.3.8
 	github.com/tidwall/gjson v1.1.3
@@ -46,6 +47,7 @@ require (
 	gopkg.in/go-playground/assert.v1 v1.2.1 // indirect
 	gopkg.in/go-playground/validator.v9 v9.21.1
 	gopkg.in/resty.v1 v1.10.3
+	gopkg.in/square/go-jose.v2 v2.5.1 // indirect
 )
 
 go 1.13

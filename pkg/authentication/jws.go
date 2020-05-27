@@ -88,19 +88,19 @@ func SplitJWSWithBody(token string) string {
 	return firstPart + "." + lastPart
 }
 
-// SignedString Get the complete, signed token for jws usage
+// CreateSignature Get the complete, signed token for jws usage
 // Takes the token object, private key, payload body and b64encoding indicator
 // Create the signing string which includes the token header and payload body
 // Then signs this string using the key provided - the signing algorithm is part of the jwt.Token object
-func SignedString(t *jwt.Token, key interface{}, body string, b64encoded bool) (string, error) {
+func CreateSignature(t *jwt.Token, key interface{}, body string, b64encoded bool) (string, error) {
 	var sig, sstr string
 	var err error
 	if sstr, err = SigningString(t, body, b64encoded); err != nil {
-		return "", errors.Wrap(err, "authentication.SignedString: SigningString(t, body) failed")
+		return "", errors.Wrap(err, "authentication.CreateSignature: SigningString(t, body) failed")
 	}
 
 	if sig, err = t.Method.Sign(sstr, key); err != nil {
-		return "", errors.Wrap(err, "authentication.SignedString: t.Method.Sign(sstr, key failed")
+		return "", errors.Wrap(err, "authentication.CreateSignature: t.Method.Sign(sstr, key failed")
 	}
 	return strings.Join([]string{sstr, sig}, "."), nil
 }

@@ -14,7 +14,8 @@ import (
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/lestrrat-go/jwx/jwa"
-	"github.com/lestrrat-go/jwx/jws"
+	"github.com/lestrrat-go/jwx/jws/verify"
+
 	"github.com/shopspring/decimal"
 	"github.com/sirupsen/logrus"
 )
@@ -70,7 +71,7 @@ func ValidateSignature(jwtToken, body, jwksUri string, b64 bool) (bool, error) {
 	}
 	logrus.Trace("Signature with payload: " + signature)
 
-	verified, err := jws.Verify([]byte(signature), jwa.PS256, cert.PublicKey)
+	verified, err := MyJwsVerify(signature, jwa.PS256, cert.PublicKey, b64)
 	if err != nil {
 		logrus.Errorf("failed to verify message: %v", err)
 		return false, err
@@ -187,10 +188,13 @@ func buildSignature(b64 bool, kid, issuer, trustAnchor, body string, alg jwt.Sig
 		token = GetSignatureToken313Minus(kid, issuer, trustAnchor, alg)
 	}
 
-	tokenString, err := SignedString(&token, privKey, body, b64) // sign the token
+	tokenString, err := CreateSignature(&token, privKey, body, b64) // sign the token
 	if err != nil {
-		return "", errors.New("buildSignature: SignedString failed " + err.Error())
+		return "", errors.New("buildSignature: CreateSignature failed " + err.Error())
 	}
+
+	logrus.Tracef("Full Request JWT: %s", tokenString)
+
 	detachedJWS := SplitJWSWithBody(tokenString) // remove the body from the signature string to form the detached signature
 
 	return detachedJWS, nil
@@ -264,21 +268,6 @@ func GetSignatureToken30(kid, issuer, trustAnchor string, alg jwt.SigningMethod)
 	}
 	return token
 }
-
-/*
-for b64 encoded - 3.1.5
- alg must = PS265
- type if present must be JOSE
- cty - if set json - appliation/json or mimetype of signed body
- kid - mandatory
- http://openbanking.org.uk/iat - time - must be present
- http://openbanking.org.uk/iss - orig-id for bank - or orgid/softwarestatement-id for tpp
- http://openbanking.org.uk/tan - must be "openbanking.org.uk"
- crit {
-	 must have the values
-	 http://openbanking.org.uk/iat, http://openbanking.org.uk/iss, http://openbanking.org.uk/tan
- }
-*/
 
 type signatureHeader struct {
 	Type        string          `json:"typ,omitempty"`
@@ -399,4 +388,44 @@ func containsAllElements(source []string, elements ...string) bool {
 		}
 	}
 	return true
+}
+
+// Verify checks if the given JWS message is verifiable using `alg` and `key`.
+// If the verification is successful, `err` is nil, and the content of the
+// payload that was signed is returned.
+func MyJwsVerify(buf string, alg jwa.SignatureAlgorithm, key interface{}, b64 bool) (ret []byte, err error) {
+	verifier, err := verify.New(alg)
+	if err != nil {
+		return nil, errors.New("failed to create verifier")
+	}
+	protected, payload, signature := payloadSplit(buf)
+	verifyBuf := []byte(protected + "." + payload)
+	decodedSignature := make([]byte, base64.RawURLEncoding.DecodedLen(len(signature)))
+	if _, err := base64.RawURLEncoding.Decode(decodedSignature, []byte(signature)); err != nil {
+		return nil, errors.New(`failed to decode signature`)
+	}
+	if err := verifier.Verify(verifyBuf, decodedSignature, key); err != nil {
+		return nil, errors.New(`failed to verify message`)
+	}
+
+	decodedPayload := make([]byte, base64.RawURLEncoding.DecodedLen(len(payload)))
+	if b64 {
+		if _, err := base64.RawURLEncoding.Decode(decodedPayload, []byte(payload)); err != nil {
+			return nil, errors.New(`message verified, failed to decode payload`)
+		}
+	} else {
+		decodedPayload = []byte(payload)
+	}
+	return decodedPayload, nil
+}
+
+// splits out a 3 part JWT into head, body, signature splitting by '.'
+// Note the body may contain multiple '.' characters if its not base64 encoded (b64=false)
+func payloadSplit(msg string) (head, body, sig string) {
+	firstIdx := strings.IndexByte(msg, '.')
+	firstPart := msg[:firstIdx]
+	idx := strings.LastIndex(msg, ".")
+	lastPart := msg[idx+1:]
+	middle := msg[firstIdx+1 : idx]
+	return firstPart, middle, lastPart
 }
