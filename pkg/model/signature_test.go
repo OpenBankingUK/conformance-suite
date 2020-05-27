@@ -46,7 +46,6 @@ var ctx Context = Context{
 
 // Create and validate b64=false signature
 func TestSimpleb64falseSignature(t *testing.T) {
-	EnableJWS()
 	ctx.PutStringSlice("apiversions", []string{"payments_v3.1.3"})
 	cert, _ := authentication.SigningCertFromContext(ctx)
 	pubKey := cert.PublicKey()
@@ -64,7 +63,6 @@ func TestSimpleb64falseSignature(t *testing.T) {
 
 // create and validate b64=true signature - apiversion 3.1.4
 func TestSimpleb64trueSignature(t *testing.T) {
-	EnableJWS()
 	ctx.PutStringSlice("apiversions", []string{"payments_v3.1.4"})
 	cert, _ := authentication.SigningCertFromContext(ctx)
 	pubKey := cert.PublicKey()
