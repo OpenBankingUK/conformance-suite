@@ -305,7 +305,7 @@ func ValidateSignatureHeader(token string, b64 bool) error {
 func dumpJSON(i interface{}) {
 	var model []byte
 	model, _ = json.MarshalIndent(i, "", "    ")
-	fmt.Println(string(model))
+	logrus.Traceln(string(model))
 }
 
 // validate a signatureHeader structure
