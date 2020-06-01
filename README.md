@@ -34,6 +34,8 @@ Pull and run the latest (stable) tagged Docker image:
 
 ### Prerequisites
 
+The tool is compatible with the Open Banking UK R/W specification versions: 3.1.0, 3.1.1, 3.1.2, 3.1.3, 3.1.4, 3.1.5.
+
 In order to run a container you'll need docker installed.
 
 * [Windows](https://docs.docker.com/windows/started)
