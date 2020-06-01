@@ -17,12 +17,11 @@ To provide feedback, please use the public [issue tracker](https://bitbucket.org
 ## Release Notes 
 * * *
 
-# Release v1.5.0 (30th April 2020)
+# Release v1.5.1 (1st June 2020)
 
-The release is called **v1.5.0**, a minor update that adds support for the [Read/Write Data API Specification 3.1.5](https://openbankinguk.github.io/read-write-api-site3/v3.1.5/profiles/account-and-transaction-api-profile.html) including swagger validation for accounts, payments and CBPII. This release is backwards compatible with older versions of the standard.
+The release is called **v1.5.1**, a minor update that enables JWS signature checking for version 3.1.4 and above, 3.1.3 and previous versions of the Open Banking Read/Write Data API Specification in line with the expiry of [Waiver 007](https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1112670669/W007).
 
-
-[Full Release Notes](https://bitbucket.org/openbankingteam/conformance-suite/src/develop/docs/releases/v1.5.0.md) (v1.5.0.md)
+[Full Release Notes](https://bitbucket.org/openbankingteam/conformance-suite/src/develop/docs/releases/v1.5.1.md) (v1.5.1.md)
 
 ## Quickstart
 * * *
@@ -34,6 +33,8 @@ Pull and run the latest (stable) tagged Docker image:
 [See Setup Guide](https://bitbucket.org/openbankingteam/conformance-suite/src/develop/docs/setup-guide.md)
 
 ### Prerequisites
+
+The tool is compatible with the Open Banking UK R/W specification versions: 3.1.0, 3.1.1, 3.1.2, 3.1.3, 3.1.4, 3.1.5.
 
 In order to run a container you'll need docker installed.
 
