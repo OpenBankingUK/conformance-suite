@@ -19,7 +19,8 @@
       "https"
     ],
     "produces": [
-      "application/json; charset=utf-8"
+      "application/json; charset=utf-8",
+      "application/json"
     ],
     "paths": {
       "/funds-confirmation-consents": {

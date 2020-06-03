@@ -10,7 +10,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestContentTypeValidator_Validate(t *testing.T) {
+func TestContentTypeValidator(t *testing.T) {
 	doc, err := loads.Spec("spec/v3.1.0/confirmation-funds-swagger.flattened.json")
 	require.NoError(t, err)
 	f := newFinder(doc)
@@ -22,6 +22,16 @@ func TestContentTypeValidator_Validate(t *testing.T) {
 		responseContentType string
 		failures            []Failure
 	}{
+		{
+			name:                "expected usage",
+			responseContentType: "application/json",
+			failures:            nil,
+		},
+		{
+			name:                "expected usage quoted param value",
+			responseContentType: `application/json;charset="utf-8"`,
+			failures:            nil,
+		},
 		{
 			name:                "expected usage",
 			responseContentType: "application/json;charset=utf-8",
@@ -45,12 +55,12 @@ func TestContentTypeValidator_Validate(t *testing.T) {
 		{
 			name:                "wrong media type",
 			responseContentType: "text/html",
-			failures:            []Failure{{Message: "Content-Type Error: Should produce 'application/json', but got: 'text/html'"}},
+			failures:            []Failure{{Message: "Content-Type Error: acceptable content types: 'application/json; charset=utf-8','application/json','application/jose+jwe', : actual content type is 'text/html'"}},
 		},
 		{
 			name:                "wrong param expected",
 			responseContentType: "application/json;charset=klingon",
-			failures:            []Failure{{Message: "Content-Type Error: Should produce params 'charset=utf-8', but got: 'charset=klingon'"}},
+			failures:            []Failure{{Message: "Content-Type Error: acceptable content types: 'application/json; charset=utf-8','application/json','application/jose+jwe', : actual content type is 'application/json;charset=klingon'"}},
 		},
 	}
 
