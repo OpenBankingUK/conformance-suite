@@ -55,12 +55,12 @@ func TestContentTypeValidator(t *testing.T) {
 		{
 			name:                "wrong media type",
 			responseContentType: "text/html",
-			failures:            []Failure{{Message: "Content-Type Error: acceptable content types: 'application/json; charset=utf-8','application/json','application/jose+jwe', : actual content type is 'text/html'"}},
+			failures:            []Failure{{Message: "Content-Type Error: acceptable content types: 'application/json; charset=utf-8','application/json', : actual content type is 'text/html'"}},
 		},
 		{
 			name:                "wrong param expected",
 			responseContentType: "application/json;charset=klingon",
-			failures:            []Failure{{Message: "Content-Type Error: acceptable content types: 'application/json; charset=utf-8','application/json','application/jose+jwe', : actual content type is 'application/json;charset=klingon'"}},
+			failures:            []Failure{{Message: "Content-Type Error: acceptable content types: 'application/json; charset=utf-8','application/json', : actual content type is 'application/json;charset=klingon'"}},
 		},
 	}
 

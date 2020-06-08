@@ -45,7 +45,6 @@ func (v contentTypeValidator) Validate(r Response) ([]Failure, error) {
 		}
 
 		if mediaRequest == mediaType {
-			fmt.Println("MediaTypes match!!")
 			if len(parameters) == 0 && len(paramsRequest) == 0 {
 				return nil, nil
 			}
