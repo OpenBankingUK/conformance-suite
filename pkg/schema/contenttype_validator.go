@@ -23,16 +23,13 @@ func newContentTypeValidator(finder finder) Validator {
 }
 
 func (v contentTypeValidator) Validate(r Response) ([]Failure, error) {
-	expectedContentType, err := v.expectedContentType(r)
-	if err == ErrNotFound {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-
-	mediaExpected, paramsExpected, err := mime.ParseMediaType(expectedContentType)
+	expectedContentTypes, err := v.expectedContentTypes(r)
 	if err != nil {
-		return nil, errors.Wrap(err, "parse expected content type validator")
+		if err == ErrNotFound {
+			return nil, nil
+		} else if err != nil {
+			return nil, err
+		}
 	}
 
 	contentTypeRequest := r.Header.Get("Content-type")
@@ -41,49 +38,60 @@ func (v contentTypeValidator) Validate(r Response) ([]Failure, error) {
 		return nil, errors.Wrap(err, "parse request content type validator")
 	}
 
-	if mediaRequest != mediaExpected {
-		message := fmt.Sprintf("Content-Type Error: Should produce '%s', but got: '%s'", mediaExpected, contentTypeRequest)
-		return []Failure{newFailure(message)}, nil
-	}
+	for _, contentType := range expectedContentTypes {
+		mediaType, parameters, err := mime.ParseMediaType(contentType)
+		if err != nil {
+			return nil, errors.Wrap(err, "parse expected content type validator")
+		}
 
-	if !sameParams(paramsExpected, paramsRequest) {
-		message := fmt.Sprintf("Content-Type Error: Should produce params '%s', but got: '%s'", mapToString(paramsExpected), mapToString(paramsRequest))
-		return []Failure{newFailure(message)}, nil
+		if mediaRequest == mediaType {
+			if len(parameters) == 0 && len(paramsRequest) == 0 {
+				return nil, nil
+			}
+			if sameParams(parameters, paramsRequest) {
+				return nil, nil
+			}
+		}
 	}
+	message := fmt.Sprintf("Content-Type Error: acceptable content types: '%s', : actual content type is '%s'", strings.Join(expectedContentTypes, "','"), contentTypeRequest)
+	return []Failure{newFailure(message)}, nil
 
-	return nil, nil
 }
 
+// here to satisfy Validator interface
 func (v contentTypeValidator) IsRequestProperty(method, path, propertpath string) (bool, string, error) {
 	return false, "", nil
 }
 
-func (v contentTypeValidator) expectedContentType(r Response) (string, error) {
+func (v contentTypeValidator) expectedContentTypes(r Response) ([]string, error) {
 	if r.StatusCode == http.StatusNoContent {
-		return "", ErrNotFound
+		return nil, ErrNotFound
 	}
 	spec := v.finder.Spec()
 
 	operation, err := v.finder.Operation(r.Method, r.Path)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
 	if len(spec.Produces) == 0 && len(operation.Produces) == 0 {
-		return "", ErrNotFound
+		return nil, ErrNotFound
 	}
 
-	var expectedContentType string
+	var expectedContentTypes []string
 
 	if spec != nil && len(spec.Produces) > 0 {
-		expectedContentType = spec.Produces[0]
+		expectedContentTypes = make([]string, len(spec.Produces))
+		copy(expectedContentTypes, spec.Produces)
 	}
 
 	if operation != nil && len(operation.Produces) > 0 {
-		expectedContentType = operation.Produces[0]
+		expectedContentTypes = make([]string, len(spec.Produces))
+		copy(expectedContentTypes, operation.Produces)
 	}
 
-	return expectedContentType, nil
+	return expectedContentTypes, nil
+
 }
 
 func sameParams(params1, params2 map[string]string) bool {
