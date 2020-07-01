@@ -50,9 +50,12 @@ func runPaymentConsents(rt []manifest.RequiredTokens, ctx *model.Context, execut
 
 	// Check for MTLS vs client basic authentication
 	authMethod, err := ctx.GetString("token_endpoint_auth_method")
+	logrus.Tracef("runpaymentconsent auth %s", authMethod)
+
 	if err != nil {
 		authMethod = "client_secret_basic"
 	}
+
 	switch authMethod {
 	case authentication.ClientSecretBasic:
 		tc.Input.SetHeader("authorization", "Basic $basic_authentication")
