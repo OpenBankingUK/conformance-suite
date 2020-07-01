@@ -137,6 +137,9 @@ func (c certificate) SignatureIssuer(tpp bool) (string, error) {
 	}
 
 	if tpp {
+		if ou == "" {
+			logrus.Warn("certificate ou is empty - if you're using EIDAS certificates you need to configure issuer")
+		}
 		return ou + "/" + cn, nil
 	}
 
