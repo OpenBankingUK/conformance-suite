@@ -26,7 +26,9 @@ var SigningMethodPS256 = &jwt.SigningMethodRSAPSS{
 	},
 }
 
-var b64Status bool // for report export
+var b64Status bool      // for report export
+var eidas_kid string    // key id when using eidas certificates
+var eidas_issuer string // issuer for jwt signing for eidas certificates
 
 func GetSigningAlg(alg string) (jwt.SigningMethod, error) {
 	switch strings.ToUpper(alg) {
@@ -148,15 +150,28 @@ func NewJWSSignature(requestBody string, ctx ContextInterface, alg jwt.SigningMe
 		return "", errors.Wrap(err, "NewJWSSignature: unable to sign certificate from context")
 	}
 
-	kid, err := getKidFromCertificate(cert)
-	if err != nil {
-		return "", errors.Wrap(err, "NewJWSSignature: getKidFromCertificate failed")
+	var kid string
+	if eidas_kid != "" {
+		kid = eidas_kid
+		logrus.Debugf("using Kid for eidas cert : %s", kid)
+	} else {
+		kid, err = getKidFromCertificate(cert)
+		if err != nil {
+			return "", errors.Wrap(err, "NewJWSSignature: getKidFromCertificate failed")
+		}
 	}
 
-	issuer, err := GetJWSIssuerString(ctx, cert)
-	if err != nil {
-		return "", errors.Wrap(err, "NewJWSSignature: unable to retrieve issuer from context")
+	var issuer string
+	if eidas_issuer != "" {
+		issuer = eidas_issuer
+		logrus.Debugf("using issuer for eidas cert : %s", issuer)
+	} else {
+		issuer, err = GetJWSIssuerString(ctx, cert)
+		if err != nil {
+			return "", errors.Wrap(err, "NewJWSSignature: unable to retrieve issuer from context")
+		}
 	}
+
 	trustAnchor := "openbanking.org.uk"
 	useNonOBDirectory, exists := ctx.Get("nonOBDirectory")
 	if !exists {
@@ -291,4 +306,10 @@ func setB64Status(status bool) {
 }
 func GetB64Status() bool {
 	return b64Status
+}
+
+func SetEidasSigningParameters(issuer, kid string) {
+	eidas_issuer = issuer
+	eidas_kid = kid
+	logrus.Debugf("Setting EIDAS Signing Parameters ssa: %s, kid: %s", issuer, kid)
 }
