@@ -2,13 +2,13 @@ package templates
 
 import (
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"regexp"
 	"sort"
 	"strings"
 
 	"github.com/go-openapi/spec"
+	"github.com/sirupsen/logrus"
 
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
@@ -117,7 +117,7 @@ func newItem(spec model.Specification, specVersion string) discovery.ModelDiscov
 func checkName(doc *loads.Document, spec model.Specification) {
 	title := doc.Spec().Info.Title
 	if title != spec.Name {
-		fmt.Println("Our configured spec.Name: " +
+		logrus.Println("Our configured spec.Name: " +
 			spec.Name +
 			" must match swagger title: " +
 			title)
@@ -129,7 +129,7 @@ func checkVersion(doc *loads.Document, spec model.Specification) string {
 	patchRe := regexp.MustCompile(`\..$`)
 	specVersion := patchRe.ReplaceAllString(version, "")
 	if specVersion != spec.Version {
-		fmt.Println("Our configured spec.Version: " +
+		logrus.Println("Our configured spec.Version: " +
 			spec.Version +
 			" must match swagger version: " +
 			specVersion)
@@ -150,7 +150,7 @@ func loadSpec(spec string, print bool) (*loads.Document, error) {
 			return nil, err
 		}
 
-		fmt.Println(string(jsondoc))
+		logrus.Println(string(jsondoc))
 	}
 	return doc, err
 }

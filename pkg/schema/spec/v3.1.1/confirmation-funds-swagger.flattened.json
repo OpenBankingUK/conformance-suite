@@ -5,6 +5,7 @@
   ],
   "produces": [
     "application/json; charset=utf-8",
+    "application/json",
     "application/jose+jwe"
   ],
   "schemes": [

@@ -3,7 +3,8 @@
     "application/json; charset=utf-8"
   ],
   "produces": [
-    "application/json; charset=utf-8"
+    "application/json; charset=utf-8",
+    "application/json"
   ],
   "schemes": [
     "https"

@@ -1,0 +1,3249 @@
+{
+    "consumes": [
+      "application/json; charset=utf-8",
+      "application/json",
+      "application/jose+jwe"
+    ],
+    "produces": [
+      "application/json; charset=utf-8",
+      "application/json",
+      "application/jose+jwe"
+    ],
+    "schemes": [
+      "https"
+    ],
+    "swagger": "2.0",
+    "info": {
+      "description": "Swagger for Confirmation of Funds API Specification",
+      "title": "Confirmation of Funds API Specification",
+      "termsOfService": "https://www.openbanking.org.uk/terms",
+      "contact": {
+        "name": "Service Desk",
+        "email": "ServiceDesk@openbanking.org.uk"
+      },
+      "license": {
+        "name": "open-licence",
+        "url": "https://www.openbanking.org.uk/open-licence"
+      },
+      "version": "v3.1.0"
+    },
+    "basePath": "/open-banking/v3.1/cbpii",
+    "paths": {
+      "/funds-confirmation-consents": {
+        "post": {
+          "security": [
+            {
+              "TPPOAuth2Security": [
+                "fundsconfirmations"
+              ]
+            }
+          ],
+          "tags": [
+            "Funds Confirmations"
+          ],
+          "summary": "Create Funds Confirmation Consent",
+          "operationId": "CreateFundsConfirmationConsents",
+          "parameters": [
+            {
+              "description": "Default",
+              "name": "OBFundsConfirmationConsent1Param",
+              "in": "body",
+              "required": true,
+              "schema": {
+                "type": "object",
+                "required": [
+                  "Data"
+                ],
+                "properties": {
+                  "Data": {
+                    "type": "object",
+                    "required": [
+                      "DebtorAccount"
+                    ],
+                    "properties": {
+                      "DebtorAccount": {
+                        "description": "Unambiguous identification of the account of the debtor to which a confirmation of funds consent will be applied.",
+                        "type": "object",
+                        "required": [
+                          "SchemeName",
+                          "Identification"
+                        ],
+                        "properties": {
+                          "Identification": {
+                            "description": "Identification assigned by an institution to identify an account. This identification is known by the account owner.",
+                            "type": "string",
+                            "maxLength": 256,
+                            "minLength": 1
+                          },
+                          "Name": {
+                            "description": "Name of the account, as assigned by the account servicing institution.\nUsage: The account name is the name or names of the account owner(s) represented at an account level. The account name is not the product name or the nickname of the account.",
+                            "type": "string",
+                            "maxLength": 70,
+                            "minLength": 1
+                          },
+                          "SchemeName": {
+                            "description": "Name of the identification scheme, in a coded form as published in an external list.",
+                            "type": "string",
+                            "maxLength": 40,
+                            "minLength": 1,
+                            "example": [
+                              "UK.OBIE.BBAN",
+                              "UK.OBIE.IBAN",
+                              "UK.OBIE.PAN",
+                              "UK.OBIE.Paym",
+                              "UK.OBIE.SortCodeAccountNumber"
+                            ]
+                          },
+                          "SecondaryIdentification": {
+                            "description": "This is secondary identification of the account, as assigned by the account servicing institution. \nThis can be used by building societies to additionally identify accounts with a roll number (in addition to a sort code and account number combination).",
+                            "type": "string",
+                            "maxLength": 34,
+                            "minLength": 1
+                          }
+                        },
+                        "additionalProperties": false
+                      },
+                      "ExpirationDateTime": {
+                        "description": "Specified date and time the funds confirmation authorisation will expire.\n If this is not populated, the authorisation will be open ended.\nAll dates in the JSON payloads are represented in ISO 8601 date-time format. \nAll date-time fields in responses must include the timezone. An example is below:\n2017-04-05T10:43:07+00:00",
+                        "type": "string",
+                        "format": "date-time"
+                      }
+                    },
+                    "additionalProperties": false
+                  }
+                },
+                "additionalProperties": false
+              }
+            },
+            {
+              "type": "string",
+              "description": "The unique id of the ASPSP to which the request is issued. The unique id will be issued by OB.",
+              "name": "x-fapi-financial-id",
+              "in": "header",
+              "required": true
+            },
+            {
+              "pattern": "^(Mon|Tue|Wed|Thu|Fri|Sat|Sun), \\d{2} (Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) \\d{4} \\d{2}:\\d{2}:\\d{2} (GMT|UTC)$",
+              "type": "string",
+              "description": "The time when the PSU last logged in with the TPP. \nAll dates in the HTTP headers are represented as RFC 7231 Full Dates. An example is below: \nSun, 10 Sep 2017 19:43:31 UTC",
+              "name": "x-fapi-customer-last-logged-time",
+              "in": "header"
+            },
+            {
+              "type": "string",
+              "description": "The PSU's IP address if the PSU is currently logged in with the TPP.",
+              "name": "x-fapi-customer-ip-address",
+              "in": "header"
+            },
+            {
+              "type": "string",
+              "description": "An RFC4122 UID used as a correlation id.",
+              "name": "x-fapi-interaction-id",
+              "in": "header"
+            },
+            {
+              "type": "string",
+              "description": "An Authorisation Token as per https://tools.ietf.org/html/rfc6750",
+              "name": "Authorization",
+              "in": "header",
+              "required": true
+            },
+            {
+              "type": "string",
+              "description": "Indicates the user-agent that the PSU is using.",
+              "name": "x-customer-user-agent",
+              "in": "header"
+            }
+          ],
+          "responses": {
+            "201": {
+              "description": "Funds Confirmation Consent Created",
+              "schema": {
+                "type": "object",
+                "required": [
+                  "Data",
+                  "Links",
+                  "Meta"
+                ],
+                "properties": {
+                  "Data": {
+                    "type": "object",
+                    "required": [
+                      "ConsentId",
+                      "CreationDateTime",
+                      "Status",
+                      "StatusUpdateDateTime",
+                      "DebtorAccount"
+                    ],
+                    "properties": {
+                      "ConsentId": {
+                        "description": "Unique identification as assigned to identify the funds confirmation consent resource.",
+                        "type": "string",
+                        "maxLength": 128,
+                        "minLength": 1
+                      },
+                      "CreationDateTime": {
+                        "description": "Date and time at which the resource was created.\nAll dates in the JSON payloads are represented in ISO 8601 date-time format. \nAll date-time fields in responses must include the timezone. An example is below:\n2017-04-05T10:43:07+00:00",
+                        "type": "string",
+                        "format": "date-time"
+                      },
+                      "DebtorAccount": {
+                        "description": "Unambiguous identification of the account of the debtor to which a confirmation of funds consent will be applied.",
+                        "type": "object",
+                        "required": [
+                          "SchemeName",
+                          "Identification"
+                        ],
+                        "properties": {
+                          "Identification": {
+                            "description": "Identification assigned by an institution to identify an account. This identification is known by the account owner.",
+                            "type": "string",
+                            "maxLength": 256,
+                            "minLength": 1
+                          },
+                          "Name": {
+                            "description": "Name of the account, as assigned by the account servicing institution.\nUsage: The account name is the name or names of the account owner(s) represented at an account level. The account name is not the product name or the nickname of the account.",
+                            "type": "string",
+                            "maxLength": 70,
+                            "minLength": 1
+                          },
+                          "SchemeName": {
+                            "description": "Name of the identification scheme, in a coded form as published in an external list.",
+                            "type": "string",
+                            "maxLength": 40,
+                            "minLength": 1,
+                            "example": [
+                              "UK.OBIE.BBAN",
+                              "UK.OBIE.IBAN",
+                              "UK.OBIE.PAN",
+                              "UK.OBIE.Paym",
+                              "UK.OBIE.SortCodeAccountNumber"
+                            ]
+                          },
+                          "SecondaryIdentification": {
+                            "description": "This is secondary identification of the account, as assigned by the account servicing institution. \nThis can be used by building societies to additionally identify accounts with a roll number (in addition to a sort code and account number combination).",
+                            "type": "string",
+                            "maxLength": 34,
+                            "minLength": 1
+                          }
+                        },
+                        "additionalProperties": false
+                      },
+                      "ExpirationDateTime": {
+                        "description": "Specified date and time the funds confirmation authorisation will expire.\nIf this is not populated, the authorisation will be open ended.\nAll dates in the JSON payloads are represented in ISO 8601 date-time format. \nAll date-time fields in responses must include the timezone. An example is below:\n2017-04-05T10:43:07+00:00",
+                        "type": "string",
+                        "format": "date-time"
+                      },
+                      "Status": {
+                        "description": "Specifies the status of consent resource in code form.",
+                        "type": "string",
+                        "enum": [
+                          "Authorised",
+                          "AwaitingAuthorisation",
+                          "Rejected",
+                          "Revoked"
+                        ]
+                      },
+                      "StatusUpdateDateTime": {
+                        "description": "Date and time at which the resource status was updated.\nAll dates in the JSON payloads are represented in ISO 8601 date-time format. \nAll date-time fields in responses must include the timezone. An example is below:\n2017-04-05T10:43:07+00:00",
+                        "type": "string",
+                        "format": "date-time"
+                      }
+                    },
+                    "additionalProperties": false
+                  },
+                  "Links": {
+                    "description": "Links relevant to the payload",
+                    "type": "object",
+                    "required": [
+                      "Self"
+                    ],
+                    "properties": {
+                      "First": {
+                        "type": "string",
+                        "format": "uri"
+                      },
+                      "Last": {
+                        "type": "string",
+                        "format": "uri"
+                      },
+                      "Next": {
+                        "type": "string",
+                        "format": "uri"
+                      },
+                      "Prev": {
+                        "type": "string",
+                        "format": "uri"
+                      },
+                      "Self": {
+                        "type": "string",
+                        "format": "uri"
+                      }
+                    },
+                    "additionalProperties": false
+                  },
+                  "Meta": {
+                    "description": "Meta Data relevant to the payload",
+                    "type": "object",
+                    "title": "MetaData",
+                    "properties": {
+                      "FirstAvailableDateTime": {
+                        "description": "All dates in the JSON payloads are represented in ISO 8601 date-time format. \nAll date-time fields in responses must include the timezone. An example is below:\n2017-04-05T10:43:07+00:00",
+                        "type": "string",
+                        "format": "date-time"
+                      },
+                      "LastAvailableDateTime": {
+                        "description": "All dates in the JSON payloads are represented in ISO 8601 date-time format. \nAll date-time fields in responses must include the timezone. An example is below:\n2017-04-05T10:43:07+00:00",
+                        "type": "string",
+                        "format": "date-time"
+                      },
+                      "TotalPages": {
+                        "type": "integer",
+                        "format": "int32"
+                      }
+                    },
+                    "additionalProperties": false
+                  }
+                },
+                "additionalProperties": false
+              },
+              "headers": {
+                "x-fapi-interaction-id": {
+                  "type": "string",
+                  "description": "An RFC4122 UID used as a correlation id."
+                }
+              }
+            },
+            "400": {
+              "description": "Bad request",
+              "schema": {
+                "description": "An array of detail error codes, and messages, and URLs to documentation to help remediation.",
+                "type": "object",
+                "required": [
+                  "Code",
+                  "Message",
+                  "Errors"
+                ],
+                "properties": {
+                  "Code": {
+                    "description": "High level textual error code, to help categorize the errors.",
+                    "type": "string",
+                    "maxLength": 40,
+                    "minLength": 1
+                  },
+                  "Errors": {
+                    "type": "array",
+                    "minItems": 1,
+                    "items": {
+                      "type": "object",
+                      "minProperties": 1,
+                      "required": [
+                        "ErrorCode",
+                        "Message"
+                      ],
+                      "properties": {
+                        "ErrorCode": {
+                          "description": "Low level textual error code, e.g., UK.OBIE.Field.Missing",
+                          "type": "string",
+                          "maxLength": 128,
+                          "minLength": 1
+                        },
+                        "Message": {
+                          "description": "A description of the error that occurred. e.g., 'A mandatory field isn't supplied' or 'RequestedExecutionDateTime must be in future'\nOBIE doesn't standardise this field",
+                          "type": "string",
+                          "maxLength": 500,
+                          "minLength": 1
+                        },
+                        "Path": {
+                          "description": "Recommended but optional reference to the JSON Path of the field with error, e.g., Data.Initiation.InstructedAmount.Currency",
+                          "type": "string",
+                          "maxLength": 500,
+                          "minLength": 1
+                        },
+                        "Url": {
+                          "description": "URL to help remediate the problem, or provide more information, or to API Reference, or help etc",
+                          "type": "string"
+                        }
+                      },
+                      "additionalProperties": false
+                    }
+                  },
+                  "Id": {
+                    "description": "A unique reference for the error instance, for audit purposes, in case of unknown/unclassified errors.",
+                    "type": "string",
+                    "maxLength": 40,
+                    "minLength": 1
+                  },
+                  "Message": {
+                    "description": "Brief Error message, e.g., 'There is something wrong with the request parameters provided'",
+                    "type": "string",
+                    "maxLength": 500,
+                    "minLength": 1
+                  }
+                },
+                "additionalProperties": false
+              }
+            },
+            "401": {
+              "description": "Unauthorized"
+            },
+            "403": {
+              "description": "Forbidden"
+            },
+            "404": {
+              "description": "Not found"
+            },
+            "405": {
+              "description": "Method Not Allowed"
+            },
+            "406": {
+              "description": "Not Acceptable"
+            },
+            "415": {
+              "description": "Unsupported Media Type"
+            },
+            "429": {
+              "description": "Too Many Requests",
+              "headers": {
+                "Retry-After": {
+                  "type": "integer",
+                  "description": "Number in seconds to wait"
+                }
+              }
+            },
+            "500": {
+              "description": "Internal Server Error",
+              "schema": {
+                "description": "An array of detail error codes, and messages, and URLs to documentation to help remediation.",
+                "type": "object",
+                "required": [
+                  "Code",
+                  "Message",
+                  "Errors"
+                ],
+                "properties": {
+                  "Code": {
+                    "description": "High level textual error code, to help categorize the errors.",
+                    "type": "string",
+                    "maxLength": 40,
+                    "minLength": 1
+                  },
+                  "Errors": {
+                    "type": "array",
+                    "minItems": 1,
+                    "items": {
+                      "type": "object",
+                      "minProperties": 1,
+                      "required": [
+                        "ErrorCode",
+                        "Message"
+                      ],
+                      "properties": {
+                        "ErrorCode": {
+                          "description": "Low level textual error code, e.g., UK.OBIE.Field.Missing",
+                          "type": "string",
+                          "maxLength": 128,
+                          "minLength": 1
+                        },
+                        "Message": {
+                          "description": "A description of the error that occurred. e.g., 'A mandatory field isn't supplied' or 'RequestedExecutionDateTime must be in future'\nOBIE doesn't standardise this field",
+                          "type": "string",
+                          "maxLength": 500,
+                          "minLength": 1
+                        },
+                        "Path": {
+                          "description": "Recommended but optional reference to the JSON Path of the field with error, e.g., Data.Initiation.InstructedAmount.Currency",
+                          "type": "string",
+                          "maxLength": 500,
+                          "minLength": 1
+                        },
+                        "Url": {
+                          "description": "URL to help remediate the problem, or provide more information, or to API Reference, or help etc",
+                          "type": "string"
+                        }
+                      },
+                      "additionalProperties": false
+                    }
+                  },
+                  "Id": {
+                    "description": "A unique reference for the error instance, for audit purposes, in case of unknown/unclassified errors.",
+                    "type": "string",
+                    "maxLength": 40,
+                    "minLength": 1
+                  },
+                  "Message": {
+                    "description": "Brief Error message, e.g., 'There is something wrong with the request parameters provided'",
+                    "type": "string",
+                    "maxLength": 500,
+                    "minLength": 1
+                  }
+                },
+                "additionalProperties": false
+              }
+            }
+          }
+        }
+      },
+      "/funds-confirmation-consents/{ConsentId}": {
+        "get": {
+          "security": [
+            {
+              "TPPOAuth2Security": [
+                "fundsconfirmations"
+              ]
+            }
+          ],
+          "tags": [
+            "Funds Confirmations"
+          ],
+          "summary": "Get Funds Confirmation Consent",
+          "operationId": "GetFundsConfirmationConsentsConsentId",
+          "parameters": [
+            {
+              "type": "string",
+              "description": "ConsentId",
+              "name": "ConsentId",
+              "in": "path",
+              "required": true
+            },
+            {
+              "type": "string",
+              "description": "The unique id of the ASPSP to which the request is issued. The unique id will be issued by OB.",
+              "name": "x-fapi-financial-id",
+              "in": "header",
+              "required": true
+            },
+            {
+              "pattern": "^(Mon|Tue|Wed|Thu|Fri|Sat|Sun), \\d{2} (Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) \\d{4} \\d{2}:\\d{2}:\\d{2} (GMT|UTC)$",
+              "type": "string",
+              "description": "The time when the PSU last logged in with the TPP. \nAll dates in the HTTP headers are represented as RFC 7231 Full Dates. An example is below: \nSun, 10 Sep 2017 19:43:31 UTC",
+              "name": "x-fapi-customer-last-logged-time",
+              "in": "header"
+            },
+            {
+              "type": "string",
+              "description": "The PSU's IP address if the PSU is currently logged in with the TPP.",
+              "name": "x-fapi-customer-ip-address",
+              "in": "header"
+            },
+            {
+              "type": "string",
+              "description": "An RFC4122 UID used as a correlation id.",
+              "name": "x-fapi-interaction-id",
+              "in": "header"
+            },
+            {
+              "type": "string",
+              "description": "An Authorisation Token as per https://tools.ietf.org/html/rfc6750",
+              "name": "Authorization",
+              "in": "header",
+              "required": true
+            },
+            {
+              "type": "string",
+              "description": "Indicates the user-agent that the PSU is using.",
+              "name": "x-customer-user-agent",
+              "in": "header"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Funds Confirmation Consent Read",
+              "schema": {
+                "type": "object",
+                "required": [
+                  "Data",
+                  "Links",
+                  "Meta"
+                ],
+                "properties": {
+                  "Data": {
+                    "type": "object",
+                    "required": [
+                      "ConsentId",
+                      "CreationDateTime",
+                      "Status",
+                      "StatusUpdateDateTime",
+                      "DebtorAccount"
+                    ],
+                    "properties": {
+                      "ConsentId": {
+                        "description": "Unique identification as assigned to identify the funds confirmation consent resource.",
+                        "type": "string",
+                        "maxLength": 128,
+                        "minLength": 1
+                      },
+                      "CreationDateTime": {
+                        "description": "Date and time at which the resource was created.\nAll dates in the JSON payloads are represented in ISO 8601 date-time format. \nAll date-time fields in responses must include the timezone. An example is below:\n2017-04-05T10:43:07+00:00",
+                        "type": "string",
+                        "format": "date-time"
+                      },
+                      "DebtorAccount": {
+                        "description": "Unambiguous identification of the account of the debtor to which a confirmation of funds consent will be applied.",
+                        "type": "object",
+                        "required": [
+                          "SchemeName",
+                          "Identification"
+                        ],
+                        "properties": {
+                          "Identification": {
+                            "description": "Identification assigned by an institution to identify an account. This identification is known by the account owner.",
+                            "type": "string",
+                            "maxLength": 256,
+                            "minLength": 1
+                          },
+                          "Name": {
+                            "description": "Name of the account, as assigned by the account servicing institution.\nUsage: The account name is the name or names of the account owner(s) represented at an account level. The account name is not the product name or the nickname of the account.",
+                            "type": "string",
+                            "maxLength": 70,
+                            "minLength": 1
+                          },
+                          "SchemeName": {
+                            "description": "Name of the identification scheme, in a coded form as published in an external list.",
+                            "type": "string",
+                            "maxLength": 40,
+                            "minLength": 1,
+                            "example": [
+                              "UK.OBIE.BBAN",
+                              "UK.OBIE.IBAN",
+                              "UK.OBIE.PAN",
+                              "UK.OBIE.Paym",
+                              "UK.OBIE.SortCodeAccountNumber"
+                            ]
+                          },
+                          "SecondaryIdentification": {
+                            "description": "This is secondary identification of the account, as assigned by the account servicing institution. \nThis can be used by building societies to additionally identify accounts with a roll number (in addition to a sort code and account number combination).",
+                            "type": "string",
+                            "maxLength": 34,
+                            "minLength": 1
+                          }
+                        },
+                        "additionalProperties": false
+                      },
+                      "ExpirationDateTime": {
+                        "description": "Specified date and time the funds confirmation authorisation will expire.\nIf this is not populated, the authorisation will be open ended.\nAll dates in the JSON payloads are represented in ISO 8601 date-time format. \nAll date-time fields in responses must include the timezone. An example is below:\n2017-04-05T10:43:07+00:00",
+                        "type": "string",
+                        "format": "date-time"
+                      },
+                      "Status": {
+                        "description": "Specifies the status of consent resource in code form.",
+                        "type": "string",
+                        "enum": [
+                          "Authorised",
+                          "AwaitingAuthorisation",
+                          "Rejected",
+                          "Revoked"
+                        ]
+                      },
+                      "StatusUpdateDateTime": {
+                        "description": "Date and time at which the resource status was updated.\nAll dates in the JSON payloads are represented in ISO 8601 date-time format. \nAll date-time fields in responses must include the timezone. An example is below:\n2017-04-05T10:43:07+00:00",
+                        "type": "string",
+                        "format": "date-time"
+                      }
+                    },
+                    "additionalProperties": false
+                  },
+                  "Links": {
+                    "description": "Links relevant to the payload",
+                    "type": "object",
+                    "required": [
+                      "Self"
+                    ],
+                    "properties": {
+                      "First": {
+                        "type": "string",
+                        "format": "uri"
+                      },
+                      "Last": {
+                        "type": "string",
+                        "format": "uri"
+                      },
+                      "Next": {
+                        "type": "string",
+                        "format": "uri"
+                      },
+                      "Prev": {
+                        "type": "string",
+                        "format": "uri"
+                      },
+                      "Self": {
+                        "type": "string",
+                        "format": "uri"
+                      }
+                    },
+                    "additionalProperties": false
+                  },
+                  "Meta": {
+                    "description": "Meta Data relevant to the payload",
+                    "type": "object",
+                    "title": "MetaData",
+                    "properties": {
+                      "FirstAvailableDateTime": {
+                        "description": "All dates in the JSON payloads are represented in ISO 8601 date-time format. \nAll date-time fields in responses must include the timezone. An example is below:\n2017-04-05T10:43:07+00:00",
+                        "type": "string",
+                        "format": "date-time"
+                      },
+                      "LastAvailableDateTime": {
+                        "description": "All dates in the JSON payloads are represented in ISO 8601 date-time format. \nAll date-time fields in responses must include the timezone. An example is below:\n2017-04-05T10:43:07+00:00",
+                        "type": "string",
+                        "format": "date-time"
+                      },
+                      "TotalPages": {
+                        "type": "integer",
+                        "format": "int32"
+                      }
+                    },
+                    "additionalProperties": false
+                  }
+                },
+                "additionalProperties": false
+              },
+              "headers": {
+                "x-fapi-interaction-id": {
+                  "type": "string",
+                  "description": "An RFC4122 UID used as a correlation id."
+                }
+              }
+            },
+            "400": {
+              "description": "Bad request",
+              "schema": {
+                "description": "An array of detail error codes, and messages, and URLs to documentation to help remediation.",
+                "type": "object",
+                "required": [
+                  "Code",
+                  "Message",
+                  "Errors"
+                ],
+                "properties": {
+                  "Code": {
+                    "description": "High level textual error code, to help categorize the errors.",
+                    "type": "string",
+                    "maxLength": 40,
+                    "minLength": 1
+                  },
+                  "Errors": {
+                    "type": "array",
+                    "minItems": 1,
+                    "items": {
+                      "type": "object",
+                      "minProperties": 1,
+                      "required": [
+                        "ErrorCode",
+                        "Message"
+                      ],
+                      "properties": {
+                        "ErrorCode": {
+                          "description": "Low level textual error code, e.g., UK.OBIE.Field.Missing",
+                          "type": "string",
+                          "maxLength": 128,
+                          "minLength": 1
+                        },
+                        "Message": {
+                          "description": "A description of the error that occurred. e.g., 'A mandatory field isn't supplied' or 'RequestedExecutionDateTime must be in future'\nOBIE doesn't standardise this field",
+                          "type": "string",
+                          "maxLength": 500,
+                          "minLength": 1
+                        },
+                        "Path": {
+                          "description": "Recommended but optional reference to the JSON Path of the field with error, e.g., Data.Initiation.InstructedAmount.Currency",
+                          "type": "string",
+                          "maxLength": 500,
+                          "minLength": 1
+                        },
+                        "Url": {
+                          "description": "URL to help remediate the problem, or provide more information, or to API Reference, or help etc",
+                          "type": "string"
+                        }
+                      },
+                      "additionalProperties": false
+                    }
+                  },
+                  "Id": {
+                    "description": "A unique reference for the error instance, for audit purposes, in case of unknown/unclassified errors.",
+                    "type": "string",
+                    "maxLength": 40,
+                    "minLength": 1
+                  },
+                  "Message": {
+                    "description": "Brief Error message, e.g., 'There is something wrong with the request parameters provided'",
+                    "type": "string",
+                    "maxLength": 500,
+                    "minLength": 1
+                  }
+                },
+                "additionalProperties": false
+              }
+            },
+            "401": {
+              "description": "Unauthorized"
+            },
+            "403": {
+              "description": "Forbidden"
+            },
+            "404": {
+              "description": "Not found"
+            },
+            "405": {
+              "description": "Method Not Allowed"
+            },
+            "406": {
+              "description": "Not Acceptable"
+            },
+            "429": {
+              "description": "Too Many Requests",
+              "headers": {
+                "Retry-After": {
+                  "type": "integer",
+                  "description": "Number in seconds to wait"
+                }
+              }
+            },
+            "500": {
+              "description": "Internal Server Error",
+              "schema": {
+                "description": "An array of detail error codes, and messages, and URLs to documentation to help remediation.",
+                "type": "object",
+                "required": [
+                  "Code",
+                  "Message",
+                  "Errors"
+                ],
+                "properties": {
+                  "Code": {
+                    "description": "High level textual error code, to help categorize the errors.",
+                    "type": "string",
+                    "maxLength": 40,
+                    "minLength": 1
+                  },
+                  "Errors": {
+                    "type": "array",
+                    "minItems": 1,
+                    "items": {
+                      "type": "object",
+                      "minProperties": 1,
+                      "required": [
+                        "ErrorCode",
+                        "Message"
+                      ],
+                      "properties": {
+                        "ErrorCode": {
+                          "description": "Low level textual error code, e.g., UK.OBIE.Field.Missing",
+                          "type": "string",
+                          "maxLength": 128,
+                          "minLength": 1
+                        },
+                        "Message": {
+                          "description": "A description of the error that occurred. e.g., 'A mandatory field isn't supplied' or 'RequestedExecutionDateTime must be in future'\nOBIE doesn't standardise this field",
+                          "type": "string",
+                          "maxLength": 500,
+                          "minLength": 1
+                        },
+                        "Path": {
+                          "description": "Recommended but optional reference to the JSON Path of the field with error, e.g., Data.Initiation.InstructedAmount.Currency",
+                          "type": "string",
+                          "maxLength": 500,
+                          "minLength": 1
+                        },
+                        "Url": {
+                          "description": "URL to help remediate the problem, or provide more information, or to API Reference, or help etc",
+                          "type": "string"
+                        }
+                      },
+                      "additionalProperties": false
+                    }
+                  },
+                  "Id": {
+                    "description": "A unique reference for the error instance, for audit purposes, in case of unknown/unclassified errors.",
+                    "type": "string",
+                    "maxLength": 40,
+                    "minLength": 1
+                  },
+                  "Message": {
+                    "description": "Brief Error message, e.g., 'There is something wrong with the request parameters provided'",
+                    "type": "string",
+                    "maxLength": 500,
+                    "minLength": 1
+                  }
+                },
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "delete": {
+          "security": [
+            {
+              "TPPOAuth2Security": [
+                "fundsconfirmations"
+              ]
+            }
+          ],
+          "tags": [
+            "Funds Confirmations"
+          ],
+          "summary": "Delete Funds Confirmation Consent",
+          "operationId": "DeleteFundsConfirmationConsentsConsentId",
+          "parameters": [
+            {
+              "type": "string",
+              "description": "ConsentId",
+              "name": "ConsentId",
+              "in": "path",
+              "required": true
+            },
+            {
+              "type": "string",
+              "description": "The unique id of the ASPSP to which the request is issued. The unique id will be issued by OB.",
+              "name": "x-fapi-financial-id",
+              "in": "header",
+              "required": true
+            },
+            {
+              "pattern": "^(Mon|Tue|Wed|Thu|Fri|Sat|Sun), \\d{2} (Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) \\d{4} \\d{2}:\\d{2}:\\d{2} (GMT|UTC)$",
+              "type": "string",
+              "description": "The time when the PSU last logged in with the TPP. \nAll dates in the HTTP headers are represented as RFC 7231 Full Dates. An example is below: \nSun, 10 Sep 2017 19:43:31 UTC",
+              "name": "x-fapi-customer-last-logged-time",
+              "in": "header"
+            },
+            {
+              "type": "string",
+              "description": "The PSU's IP address if the PSU is currently logged in with the TPP.",
+              "name": "x-fapi-customer-ip-address",
+              "in": "header"
+            },
+            {
+              "type": "string",
+              "description": "An RFC4122 UID used as a correlation id.",
+              "name": "x-fapi-interaction-id",
+              "in": "header"
+            },
+            {
+              "type": "string",
+              "description": "An Authorisation Token as per https://tools.ietf.org/html/rfc6750",
+              "name": "Authorization",
+              "in": "header",
+              "required": true
+            },
+            {
+              "type": "string",
+              "description": "Indicates the user-agent that the PSU is using.",
+              "name": "x-customer-user-agent",
+              "in": "header"
+            }
+          ],
+          "responses": {
+            "204": {
+              "description": "Funds Confirmation Consent Deleted",
+              "headers": {
+                "x-fapi-interaction-id": {
+                  "type": "string",
+                  "description": "An RFC4122 UID used as a correlation id."
+                }
+              }
+            },
+            "400": {
+              "description": "Bad request",
+              "schema": {
+                "description": "An array of detail error codes, and messages, and URLs to documentation to help remediation.",
+                "type": "object",
+                "required": [
+                  "Code",
+                  "Message",
+                  "Errors"
+                ],
+                "properties": {
+                  "Code": {
+                    "description": "High level textual error code, to help categorize the errors.",
+                    "type": "string",
+                    "maxLength": 40,
+                    "minLength": 1
+                  },
+                  "Errors": {
+                    "type": "array",
+                    "minItems": 1,
+                    "items": {
+                      "type": "object",
+                      "minProperties": 1,
+                      "required": [
+                        "ErrorCode",
+                        "Message"
+                      ],
+                      "properties": {
+                        "ErrorCode": {
+                          "description": "Low level textual error code, e.g., UK.OBIE.Field.Missing",
+                          "type": "string",
+                          "maxLength": 128,
+                          "minLength": 1
+                        },
+                        "Message": {
+                          "description": "A description of the error that occurred. e.g., 'A mandatory field isn't supplied' or 'RequestedExecutionDateTime must be in future'\nOBIE doesn't standardise this field",
+                          "type": "string",
+                          "maxLength": 500,
+                          "minLength": 1
+                        },
+                        "Path": {
+                          "description": "Recommended but optional reference to the JSON Path of the field with error, e.g., Data.Initiation.InstructedAmount.Currency",
+                          "type": "string",
+                          "maxLength": 500,
+                          "minLength": 1
+                        },
+                        "Url": {
+                          "description": "URL to help remediate the problem, or provide more information, or to API Reference, or help etc",
+                          "type": "string"
+                        }
+                      },
+                      "additionalProperties": false
+                    }
+                  },
+                  "Id": {
+                    "description": "A unique reference for the error instance, for audit purposes, in case of unknown/unclassified errors.",
+                    "type": "string",
+                    "maxLength": 40,
+                    "minLength": 1
+                  },
+                  "Message": {
+                    "description": "Brief Error message, e.g., 'There is something wrong with the request parameters provided'",
+                    "type": "string",
+                    "maxLength": 500,
+                    "minLength": 1
+                  }
+                },
+                "additionalProperties": false
+              }
+            },
+            "401": {
+              "description": "Unauthorized"
+            },
+            "403": {
+              "description": "Forbidden"
+            },
+            "404": {
+              "description": "Not found"
+            },
+            "405": {
+              "description": "Method Not Allowed"
+            },
+            "406": {
+              "description": "Not Acceptable"
+            },
+            "429": {
+              "description": "Too Many Requests",
+              "headers": {
+                "Retry-After": {
+                  "type": "integer",
+                  "description": "Number in seconds to wait"
+                }
+              }
+            },
+            "500": {
+              "description": "Internal Server Error",
+              "schema": {
+                "description": "An array of detail error codes, and messages, and URLs to documentation to help remediation.",
+                "type": "object",
+                "required": [
+                  "Code",
+                  "Message",
+                  "Errors"
+                ],
+                "properties": {
+                  "Code": {
+                    "description": "High level textual error code, to help categorize the errors.",
+                    "type": "string",
+                    "maxLength": 40,
+                    "minLength": 1
+                  },
+                  "Errors": {
+                    "type": "array",
+                    "minItems": 1,
+                    "items": {
+                      "type": "object",
+                      "minProperties": 1,
+                      "required": [
+                        "ErrorCode",
+                        "Message"
+                      ],
+                      "properties": {
+                        "ErrorCode": {
+                          "description": "Low level textual error code, e.g., UK.OBIE.Field.Missing",
+                          "type": "string",
+                          "maxLength": 128,
+                          "minLength": 1
+                        },
+                        "Message": {
+                          "description": "A description of the error that occurred. e.g., 'A mandatory field isn't supplied' or 'RequestedExecutionDateTime must be in future'\nOBIE doesn't standardise this field",
+                          "type": "string",
+                          "maxLength": 500,
+                          "minLength": 1
+                        },
+                        "Path": {
+                          "description": "Recommended but optional reference to the JSON Path of the field with error, e.g., Data.Initiation.InstructedAmount.Currency",
+                          "type": "string",
+                          "maxLength": 500,
+                          "minLength": 1
+                        },
+                        "Url": {
+                          "description": "URL to help remediate the problem, or provide more information, or to API Reference, or help etc",
+                          "type": "string"
+                        }
+                      },
+                      "additionalProperties": false
+                    }
+                  },
+                  "Id": {
+                    "description": "A unique reference for the error instance, for audit purposes, in case of unknown/unclassified errors.",
+                    "type": "string",
+                    "maxLength": 40,
+                    "minLength": 1
+                  },
+                  "Message": {
+                    "description": "Brief Error message, e.g., 'There is something wrong with the request parameters provided'",
+                    "type": "string",
+                    "maxLength": 500,
+                    "minLength": 1
+                  }
+                },
+                "additionalProperties": false
+              }
+            }
+          }
+        }
+      },
+      "/funds-confirmations": {
+        "post": {
+          "security": [
+            {
+              "PSUOAuth2Security": [
+                "fundsconfirmations"
+              ]
+            }
+          ],
+          "tags": [
+            "Funds Confirmations"
+          ],
+          "summary": "Create Funds Confirmation",
+          "operationId": "CreateFundsConfirmations",
+          "parameters": [
+            {
+              "description": "Default",
+              "name": "OBFundsConfirmation1Param",
+              "in": "body",
+              "required": true,
+              "schema": {
+                "type": "object",
+                "required": [
+                  "Data"
+                ],
+                "properties": {
+                  "Data": {
+                    "type": "object",
+                    "required": [
+                      "ConsentId",
+                      "Reference",
+                      "InstructedAmount"
+                    ],
+                    "properties": {
+                      "ConsentId": {
+                        "description": "Unique identification as assigned by the ASPSP to uniquely identify the funds confirmation consent resource.",
+                        "type": "string",
+                        "maxLength": 128,
+                        "minLength": 1
+                      },
+                      "InstructedAmount": {
+                        "description": "Amount of money to be confirmed as available funds in the debtor account. Contains an Amount and a Currency.",
+                        "type": "object",
+                        "required": [
+                          "Amount",
+                          "Currency"
+                        ],
+                        "properties": {
+                          "Amount": {
+                            "description": "A number of monetary units specified in an active currency where the unit of currency is explicit and compliant with ISO 4217.",
+                            "type": "string",
+                            "pattern": "^\\d{1,13}\\.\\d{1,5}$"
+                          },
+                          "Currency": {
+                            "description": "A code allocated to a currency by a Maintenance Agency under an international identification scheme, as described in the latest edition of the international standard ISO 4217 \"Codes for the representation of currencies and funds\".",
+                            "type": "string",
+                            "pattern": "^[A-Z]{3,3}$"
+                          }
+                        },
+                        "additionalProperties": false
+                      },
+                      "Reference": {
+                        "description": "Unique reference, as assigned by the CBPII, to unambiguously refer to the request related to the payment transaction.",
+                        "type": "string",
+                        "maxLength": 35,
+                        "minLength": 1
+                      }
+                    },
+                    "additionalProperties": false
+                  }
+                },
+                "additionalProperties": false
+              }
+            },
+            {
+              "type": "string",
+              "description": "The unique id of the ASPSP to which the request is issued. The unique id will be issued by OB.",
+              "name": "x-fapi-financial-id",
+              "in": "header",
+              "required": true
+            },
+            {
+              "pattern": "^(Mon|Tue|Wed|Thu|Fri|Sat|Sun), \\d{2} (Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) \\d{4} \\d{2}:\\d{2}:\\d{2} (GMT|UTC)$",
+              "type": "string",
+              "description": "The time when the PSU last logged in with the TPP. \nAll dates in the HTTP headers are represented as RFC 7231 Full Dates. An example is below: \nSun, 10 Sep 2017 19:43:31 UTC",
+              "name": "x-fapi-customer-last-logged-time",
+              "in": "header"
+            },
+            {
+              "type": "string",
+              "description": "The PSU's IP address if the PSU is currently logged in with the TPP.",
+              "name": "x-fapi-customer-ip-address",
+              "in": "header"
+            },
+            {
+              "type": "string",
+              "description": "An RFC4122 UID used as a correlation id.",
+              "name": "x-fapi-interaction-id",
+              "in": "header"
+            },
+            {
+              "type": "string",
+              "description": "An Authorisation Token as per https://tools.ietf.org/html/rfc6750",
+              "name": "Authorization",
+              "in": "header",
+              "required": true
+            },
+            {
+              "type": "string",
+              "description": "Indicates the user-agent that the PSU is using.",
+              "name": "x-customer-user-agent",
+              "in": "header"
+            }
+          ],
+          "responses": {
+            "201": {
+              "description": "Funds Confirmation Created",
+              "schema": {
+                "type": "object",
+                "required": [
+                  "Data",
+                  "Links",
+                  "Meta"
+                ],
+                "properties": {
+                  "Data": {
+                    "type": "object",
+                    "required": [
+                      "FundsConfirmationId",
+                      "ConsentId",
+                      "CreationDateTime",
+                      "FundsAvailable",
+                      "Reference",
+                      "InstructedAmount"
+                    ],
+                    "properties": {
+                      "ConsentId": {
+                        "description": "Unique identification as assigned by the ASPSP to uniquely identify the funds confirmation consent resource.",
+                        "type": "string",
+                        "maxLength": 128,
+                        "minLength": 1
+                      },
+                      "CreationDateTime": {
+                        "description": "Date and time at which the resource was created.\nAll dates in the JSON payloads are represented in ISO 8601 date-time format. \nAll date-time fields in responses must include the timezone. An example is below:\n2017-04-05T10:43:07+00:00",
+                        "type": "string",
+                        "format": "date-time"
+                      },
+                      "FundsAvailable": {
+                        "description": "Flag to indicate the result of a confirmation of funds check.",
+                        "type": "boolean"
+                      },
+                      "FundsConfirmationId": {
+                        "description": "Unique identification as assigned by the ASPSP to uniquely identify the funds confirmation resource.",
+                        "type": "string",
+                        "maxLength": 40,
+                        "minLength": 1
+                      },
+                      "InstructedAmount": {
+                        "description": "Amount of money to be confirmed as available funds in the debtor account. Contains an Amount and a Currency.",
+                        "type": "object",
+                        "required": [
+                          "Amount",
+                          "Currency"
+                        ],
+                        "properties": {
+                          "Amount": {
+                            "description": "A number of monetary units specified in an active currency where the unit of currency is explicit and compliant with ISO 4217.",
+                            "type": "string",
+                            "pattern": "^\\d{1,13}\\.\\d{1,5}$"
+                          },
+                          "Currency": {
+                            "description": "A code allocated to a currency by a Maintenance Agency under an international identification scheme, as described in the latest edition of the international standard ISO 4217 \"Codes for the representation of currencies and funds\".",
+                            "type": "string",
+                            "pattern": "^[A-Z]{3,3}$"
+                          }
+                        },
+                        "additionalProperties": false
+                      },
+                      "Reference": {
+                        "description": "Unique reference, as assigned by the CBPII, to unambiguously refer to the request related to the payment transaction.",
+                        "type": "string",
+                        "maxLength": 35,
+                        "minLength": 1
+                      }
+                    },
+                    "additionalProperties": false
+                  },
+                  "Links": {
+                    "description": "Links relevant to the payload",
+                    "type": "object",
+                    "required": [
+                      "Self"
+                    ],
+                    "properties": {
+                      "First": {
+                        "type": "string",
+                        "format": "uri"
+                      },
+                      "Last": {
+                        "type": "string",
+                        "format": "uri"
+                      },
+                      "Next": {
+                        "type": "string",
+                        "format": "uri"
+                      },
+                      "Prev": {
+                        "type": "string",
+                        "format": "uri"
+                      },
+                      "Self": {
+                        "type": "string",
+                        "format": "uri"
+                      }
+                    },
+                    "additionalProperties": false
+                  },
+                  "Meta": {
+                    "description": "Meta Data relevant to the payload",
+                    "type": "object",
+                    "title": "MetaData",
+                    "properties": {
+                      "FirstAvailableDateTime": {
+                        "description": "All dates in the JSON payloads are represented in ISO 8601 date-time format. \nAll date-time fields in responses must include the timezone. An example is below:\n2017-04-05T10:43:07+00:00",
+                        "type": "string",
+                        "format": "date-time"
+                      },
+                      "LastAvailableDateTime": {
+                        "description": "All dates in the JSON payloads are represented in ISO 8601 date-time format. \nAll date-time fields in responses must include the timezone. An example is below:\n2017-04-05T10:43:07+00:00",
+                        "type": "string",
+                        "format": "date-time"
+                      },
+                      "TotalPages": {
+                        "type": "integer",
+                        "format": "int32"
+                      }
+                    },
+                    "additionalProperties": false
+                  }
+                },
+                "additionalProperties": false
+              },
+              "headers": {
+                "x-fapi-interaction-id": {
+                  "type": "string",
+                  "description": "An RFC4122 UID used as a correlation id."
+                }
+              }
+            },
+            "400": {
+              "description": "Bad request",
+              "schema": {
+                "description": "An array of detail error codes, and messages, and URLs to documentation to help remediation.",
+                "type": "object",
+                "required": [
+                  "Code",
+                  "Message",
+                  "Errors"
+                ],
+                "properties": {
+                  "Code": {
+                    "description": "High level textual error code, to help categorize the errors.",
+                    "type": "string",
+                    "maxLength": 40,
+                    "minLength": 1
+                  },
+                  "Errors": {
+                    "type": "array",
+                    "minItems": 1,
+                    "items": {
+                      "type": "object",
+                      "minProperties": 1,
+                      "required": [
+                        "ErrorCode",
+                        "Message"
+                      ],
+                      "properties": {
+                        "ErrorCode": {
+                          "description": "Low level textual error code, e.g., UK.OBIE.Field.Missing",
+                          "type": "string",
+                          "maxLength": 128,
+                          "minLength": 1
+                        },
+                        "Message": {
+                          "description": "A description of the error that occurred. e.g., 'A mandatory field isn't supplied' or 'RequestedExecutionDateTime must be in future'\nOBIE doesn't standardise this field",
+                          "type": "string",
+                          "maxLength": 500,
+                          "minLength": 1
+                        },
+                        "Path": {
+                          "description": "Recommended but optional reference to the JSON Path of the field with error, e.g., Data.Initiation.InstructedAmount.Currency",
+                          "type": "string",
+                          "maxLength": 500,
+                          "minLength": 1
+                        },
+                        "Url": {
+                          "description": "URL to help remediate the problem, or provide more information, or to API Reference, or help etc",
+                          "type": "string"
+                        }
+                      },
+                      "additionalProperties": false
+                    }
+                  },
+                  "Id": {
+                    "description": "A unique reference for the error instance, for audit purposes, in case of unknown/unclassified errors.",
+                    "type": "string",
+                    "maxLength": 40,
+                    "minLength": 1
+                  },
+                  "Message": {
+                    "description": "Brief Error message, e.g., 'There is something wrong with the request parameters provided'",
+                    "type": "string",
+                    "maxLength": 500,
+                    "minLength": 1
+                  }
+                },
+                "additionalProperties": false
+              }
+            },
+            "401": {
+              "description": "Unauthorized"
+            },
+            "403": {
+              "description": "Forbidden"
+            },
+            "404": {
+              "description": "Not found"
+            },
+            "405": {
+              "description": "Method Not Allowed"
+            },
+            "406": {
+              "description": "Not Acceptable"
+            },
+            "415": {
+              "description": "Unsupported Media Type"
+            },
+            "429": {
+              "description": "Too Many Requests",
+              "headers": {
+                "Retry-After": {
+                  "type": "integer",
+                  "description": "Number in seconds to wait"
+                }
+              }
+            },
+            "500": {
+              "description": "Internal Server Error",
+              "schema": {
+                "description": "An array of detail error codes, and messages, and URLs to documentation to help remediation.",
+                "type": "object",
+                "required": [
+                  "Code",
+                  "Message",
+                  "Errors"
+                ],
+                "properties": {
+                  "Code": {
+                    "description": "High level textual error code, to help categorize the errors.",
+                    "type": "string",
+                    "maxLength": 40,
+                    "minLength": 1
+                  },
+                  "Errors": {
+                    "type": "array",
+                    "minItems": 1,
+                    "items": {
+                      "type": "object",
+                      "minProperties": 1,
+                      "required": [
+                        "ErrorCode",
+                        "Message"
+                      ],
+                      "properties": {
+                        "ErrorCode": {
+                          "description": "Low level textual error code, e.g., UK.OBIE.Field.Missing",
+                          "type": "string",
+                          "maxLength": 128,
+                          "minLength": 1
+                        },
+                        "Message": {
+                          "description": "A description of the error that occurred. e.g., 'A mandatory field isn't supplied' or 'RequestedExecutionDateTime must be in future'\nOBIE doesn't standardise this field",
+                          "type": "string",
+                          "maxLength": 500,
+                          "minLength": 1
+                        },
+                        "Path": {
+                          "description": "Recommended but optional reference to the JSON Path of the field with error, e.g., Data.Initiation.InstructedAmount.Currency",
+                          "type": "string",
+                          "maxLength": 500,
+                          "minLength": 1
+                        },
+                        "Url": {
+                          "description": "URL to help remediate the problem, or provide more information, or to API Reference, or help etc",
+                          "type": "string"
+                        }
+                      },
+                      "additionalProperties": false
+                    }
+                  },
+                  "Id": {
+                    "description": "A unique reference for the error instance, for audit purposes, in case of unknown/unclassified errors.",
+                    "type": "string",
+                    "maxLength": 40,
+                    "minLength": 1
+                  },
+                  "Message": {
+                    "description": "Brief Error message, e.g., 'There is something wrong with the request parameters provided'",
+                    "type": "string",
+                    "maxLength": 500,
+                    "minLength": 1
+                  }
+                },
+                "additionalProperties": false
+              }
+            }
+          }
+        }
+      }
+    },
+    "definitions": {
+      "ISODateTime": {
+        "description": "All dates in the JSON payloads are represented in ISO 8601 date-time format. \nAll date-time fields in responses must include the timezone. An example is below:\n2017-04-05T10:43:07+00:00",
+        "type": "string",
+        "format": "date-time"
+      },
+      "Links": {
+        "description": "Links relevant to the payload",
+        "type": "object",
+        "required": [
+          "Self"
+        ],
+        "properties": {
+          "First": {
+            "type": "string",
+            "format": "uri"
+          },
+          "Last": {
+            "type": "string",
+            "format": "uri"
+          },
+          "Next": {
+            "type": "string",
+            "format": "uri"
+          },
+          "Prev": {
+            "type": "string",
+            "format": "uri"
+          },
+          "Self": {
+            "type": "string",
+            "format": "uri"
+          }
+        },
+        "additionalProperties": false
+      },
+      "Meta": {
+        "description": "Meta Data relevant to the payload",
+        "type": "object",
+        "title": "MetaData",
+        "properties": {
+          "FirstAvailableDateTime": {
+            "description": "All dates in the JSON payloads are represented in ISO 8601 date-time format. \nAll date-time fields in responses must include the timezone. An example is below:\n2017-04-05T10:43:07+00:00",
+            "type": "string",
+            "format": "date-time"
+          },
+          "LastAvailableDateTime": {
+            "description": "All dates in the JSON payloads are represented in ISO 8601 date-time format. \nAll date-time fields in responses must include the timezone. An example is below:\n2017-04-05T10:43:07+00:00",
+            "type": "string",
+            "format": "date-time"
+          },
+          "TotalPages": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false
+      },
+      "OBActiveCurrencyAndAmount_SimpleType": {
+        "description": "A number of monetary units specified in an active currency where the unit of currency is explicit and compliant with ISO 4217.",
+        "type": "string",
+        "pattern": "^\\d{1,13}\\.\\d{1,5}$"
+      },
+      "OBActiveOrHistoricCurrencyAndAmount": {
+        "description": "Amount of money to be confirmed as available funds in the debtor account. Contains an Amount and a Currency.",
+        "type": "object",
+        "required": [
+          "Amount",
+          "Currency"
+        ],
+        "properties": {
+          "Amount": {
+            "description": "A number of monetary units specified in an active currency where the unit of currency is explicit and compliant with ISO 4217.",
+            "type": "string",
+            "pattern": "^\\d{1,13}\\.\\d{1,5}$"
+          },
+          "Currency": {
+            "description": "A code allocated to a currency by a Maintenance Agency under an international identification scheme, as described in the latest edition of the international standard ISO 4217 \"Codes for the representation of currencies and funds\".",
+            "type": "string",
+            "pattern": "^[A-Z]{3,3}$"
+          }
+        },
+        "additionalProperties": false
+      },
+      "OBCashAccountDebtor4": {
+        "description": "Unambiguous identification of the account of the debtor to which a confirmation of funds consent will be applied.",
+        "type": "object",
+        "required": [
+          "SchemeName",
+          "Identification"
+        ],
+        "properties": {
+          "Identification": {
+            "description": "Identification assigned by an institution to identify an account. This identification is known by the account owner.",
+            "type": "string",
+            "maxLength": 256,
+            "minLength": 1
+          },
+          "Name": {
+            "description": "Name of the account, as assigned by the account servicing institution.\nUsage: The account name is the name or names of the account owner(s) represented at an account level. The account name is not the product name or the nickname of the account.",
+            "type": "string",
+            "maxLength": 70,
+            "minLength": 1
+          },
+          "SchemeName": {
+            "description": "Name of the identification scheme, in a coded form as published in an external list.",
+            "type": "string",
+            "maxLength": 40,
+            "minLength": 1,
+            "example": [
+              "UK.OBIE.BBAN",
+              "UK.OBIE.IBAN",
+              "UK.OBIE.PAN",
+              "UK.OBIE.Paym",
+              "UK.OBIE.SortCodeAccountNumber"
+            ]
+          },
+          "SecondaryIdentification": {
+            "description": "This is secondary identification of the account, as assigned by the account servicing institution. \nThis can be used by building societies to additionally identify accounts with a roll number (in addition to a sort code and account number combination).",
+            "type": "string",
+            "maxLength": 34,
+            "minLength": 1
+          }
+        },
+        "additionalProperties": false
+      },
+      "OBError1": {
+        "type": "object",
+        "minProperties": 1,
+        "required": [
+          "ErrorCode",
+          "Message"
+        ],
+        "properties": {
+          "ErrorCode": {
+            "description": "Low level textual error code, e.g., UK.OBIE.Field.Missing",
+            "type": "string",
+            "maxLength": 128,
+            "minLength": 1
+          },
+          "Message": {
+            "description": "A description of the error that occurred. e.g., 'A mandatory field isn't supplied' or 'RequestedExecutionDateTime must be in future'\nOBIE doesn't standardise this field",
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 1
+          },
+          "Path": {
+            "description": "Recommended but optional reference to the JSON Path of the field with error, e.g., Data.Initiation.InstructedAmount.Currency",
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 1
+          },
+          "Url": {
+            "description": "URL to help remediate the problem, or provide more information, or to API Reference, or help etc",
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "OBErrorResponse1": {
+        "description": "An array of detail error codes, and messages, and URLs to documentation to help remediation.",
+        "type": "object",
+        "required": [
+          "Code",
+          "Message",
+          "Errors"
+        ],
+        "properties": {
+          "Code": {
+            "description": "High level textual error code, to help categorize the errors.",
+            "type": "string",
+            "maxLength": 40,
+            "minLength": 1
+          },
+          "Errors": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "object",
+              "minProperties": 1,
+              "required": [
+                "ErrorCode",
+                "Message"
+              ],
+              "properties": {
+                "ErrorCode": {
+                  "description": "Low level textual error code, e.g., UK.OBIE.Field.Missing",
+                  "type": "string",
+                  "maxLength": 128,
+                  "minLength": 1
+                },
+                "Message": {
+                  "description": "A description of the error that occurred. e.g., 'A mandatory field isn't supplied' or 'RequestedExecutionDateTime must be in future'\nOBIE doesn't standardise this field",
+                  "type": "string",
+                  "maxLength": 500,
+                  "minLength": 1
+                },
+                "Path": {
+                  "description": "Recommended but optional reference to the JSON Path of the field with error, e.g., Data.Initiation.InstructedAmount.Currency",
+                  "type": "string",
+                  "maxLength": 500,
+                  "minLength": 1
+                },
+                "Url": {
+                  "description": "URL to help remediate the problem, or provide more information, or to API Reference, or help etc",
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "Id": {
+            "description": "A unique reference for the error instance, for audit purposes, in case of unknown/unclassified errors.",
+            "type": "string",
+            "maxLength": 40,
+            "minLength": 1
+          },
+          "Message": {
+            "description": "Brief Error message, e.g., 'There is something wrong with the request parameters provided'",
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 1
+          }
+        },
+        "additionalProperties": false
+      },
+      "OBExternalAccountIdentification4Code": {
+        "description": "Name of the identification scheme, in a coded form as published in an external list.",
+        "type": "string",
+        "maxLength": 40,
+        "minLength": 1,
+        "example": [
+          "UK.OBIE.BBAN",
+          "UK.OBIE.IBAN",
+          "UK.OBIE.PAN",
+          "UK.OBIE.Paym",
+          "UK.OBIE.SortCodeAccountNumber"
+        ]
+      },
+      "OBExternalRequestStatus1Code": {
+        "description": "Specifies the status of consent resource in code form.",
+        "type": "string",
+        "enum": [
+          "Authorised",
+          "AwaitingAuthorisation",
+          "Rejected",
+          "Revoked"
+        ]
+      },
+      "OBFundsConfirmation1": {
+        "type": "object",
+        "required": [
+          "Data"
+        ],
+        "properties": {
+          "Data": {
+            "type": "object",
+            "required": [
+              "ConsentId",
+              "Reference",
+              "InstructedAmount"
+            ],
+            "properties": {
+              "ConsentId": {
+                "description": "Unique identification as assigned by the ASPSP to uniquely identify the funds confirmation consent resource.",
+                "type": "string",
+                "maxLength": 128,
+                "minLength": 1
+              },
+              "InstructedAmount": {
+                "description": "Amount of money to be confirmed as available funds in the debtor account. Contains an Amount and a Currency.",
+                "type": "object",
+                "required": [
+                  "Amount",
+                  "Currency"
+                ],
+                "properties": {
+                  "Amount": {
+                    "description": "A number of monetary units specified in an active currency where the unit of currency is explicit and compliant with ISO 4217.",
+                    "type": "string",
+                    "pattern": "^\\d{1,13}\\.\\d{1,5}$"
+                  },
+                  "Currency": {
+                    "description": "A code allocated to a currency by a Maintenance Agency under an international identification scheme, as described in the latest edition of the international standard ISO 4217 \"Codes for the representation of currencies and funds\".",
+                    "type": "string",
+                    "pattern": "^[A-Z]{3,3}$"
+                  }
+                },
+                "additionalProperties": false
+              },
+              "Reference": {
+                "description": "Unique reference, as assigned by the CBPII, to unambiguously refer to the request related to the payment transaction.",
+                "type": "string",
+                "maxLength": 35,
+                "minLength": 1
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "additionalProperties": false
+      },
+      "OBFundsConfirmationConsent1": {
+        "type": "object",
+        "required": [
+          "Data"
+        ],
+        "properties": {
+          "Data": {
+            "type": "object",
+            "required": [
+              "DebtorAccount"
+            ],
+            "properties": {
+              "DebtorAccount": {
+                "description": "Unambiguous identification of the account of the debtor to which a confirmation of funds consent will be applied.",
+                "type": "object",
+                "required": [
+                  "SchemeName",
+                  "Identification"
+                ],
+                "properties": {
+                  "Identification": {
+                    "description": "Identification assigned by an institution to identify an account. This identification is known by the account owner.",
+                    "type": "string",
+                    "maxLength": 256,
+                    "minLength": 1
+                  },
+                  "Name": {
+                    "description": "Name of the account, as assigned by the account servicing institution.\nUsage: The account name is the name or names of the account owner(s) represented at an account level. The account name is not the product name or the nickname of the account.",
+                    "type": "string",
+                    "maxLength": 70,
+                    "minLength": 1
+                  },
+                  "SchemeName": {
+                    "description": "Name of the identification scheme, in a coded form as published in an external list.",
+                    "type": "string",
+                    "maxLength": 40,
+                    "minLength": 1,
+                    "example": [
+                      "UK.OBIE.BBAN",
+                      "UK.OBIE.IBAN",
+                      "UK.OBIE.PAN",
+                      "UK.OBIE.Paym",
+                      "UK.OBIE.SortCodeAccountNumber"
+                    ]
+                  },
+                  "SecondaryIdentification": {
+                    "description": "This is secondary identification of the account, as assigned by the account servicing institution. \nThis can be used by building societies to additionally identify accounts with a roll number (in addition to a sort code and account number combination).",
+                    "type": "string",
+                    "maxLength": 34,
+                    "minLength": 1
+                  }
+                },
+                "additionalProperties": false
+              },
+              "ExpirationDateTime": {
+                "description": "Specified date and time the funds confirmation authorisation will expire.\n If this is not populated, the authorisation will be open ended.\nAll dates in the JSON payloads are represented in ISO 8601 date-time format. \nAll date-time fields in responses must include the timezone. An example is below:\n2017-04-05T10:43:07+00:00",
+                "type": "string",
+                "format": "date-time"
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "additionalProperties": false
+      },
+      "OBFundsConfirmationConsentData1": {
+        "type": "object",
+        "required": [
+          "DebtorAccount"
+        ],
+        "properties": {
+          "DebtorAccount": {
+            "description": "Unambiguous identification of the account of the debtor to which a confirmation of funds consent will be applied.",
+            "type": "object",
+            "required": [
+              "SchemeName",
+              "Identification"
+            ],
+            "properties": {
+              "Identification": {
+                "description": "Identification assigned by an institution to identify an account. This identification is known by the account owner.",
+                "type": "string",
+                "maxLength": 256,
+                "minLength": 1
+              },
+              "Name": {
+                "description": "Name of the account, as assigned by the account servicing institution.\nUsage: The account name is the name or names of the account owner(s) represented at an account level. The account name is not the product name or the nickname of the account.",
+                "type": "string",
+                "maxLength": 70,
+                "minLength": 1
+              },
+              "SchemeName": {
+                "description": "Name of the identification scheme, in a coded form as published in an external list.",
+                "type": "string",
+                "maxLength": 40,
+                "minLength": 1,
+                "example": [
+                  "UK.OBIE.BBAN",
+                  "UK.OBIE.IBAN",
+                  "UK.OBIE.PAN",
+                  "UK.OBIE.Paym",
+                  "UK.OBIE.SortCodeAccountNumber"
+                ]
+              },
+              "SecondaryIdentification": {
+                "description": "This is secondary identification of the account, as assigned by the account servicing institution. \nThis can be used by building societies to additionally identify accounts with a roll number (in addition to a sort code and account number combination).",
+                "type": "string",
+                "maxLength": 34,
+                "minLength": 1
+              }
+            },
+            "additionalProperties": false
+          },
+          "ExpirationDateTime": {
+            "description": "Specified date and time the funds confirmation authorisation will expire.\n If this is not populated, the authorisation will be open ended.\nAll dates in the JSON payloads are represented in ISO 8601 date-time format. \nAll date-time fields in responses must include the timezone. An example is below:\n2017-04-05T10:43:07+00:00",
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "additionalProperties": false
+      },
+      "OBFundsConfirmationConsentDataResponse1": {
+        "type": "object",
+        "required": [
+          "ConsentId",
+          "CreationDateTime",
+          "Status",
+          "StatusUpdateDateTime",
+          "DebtorAccount"
+        ],
+        "properties": {
+          "ConsentId": {
+            "description": "Unique identification as assigned to identify the funds confirmation consent resource.",
+            "type": "string",
+            "maxLength": 128,
+            "minLength": 1
+          },
+          "CreationDateTime": {
+            "description": "Date and time at which the resource was created.\nAll dates in the JSON payloads are represented in ISO 8601 date-time format. \nAll date-time fields in responses must include the timezone. An example is below:\n2017-04-05T10:43:07+00:00",
+            "type": "string",
+            "format": "date-time"
+          },
+          "DebtorAccount": {
+            "description": "Unambiguous identification of the account of the debtor to which a confirmation of funds consent will be applied.",
+            "type": "object",
+            "required": [
+              "SchemeName",
+              "Identification"
+            ],
+            "properties": {
+              "Identification": {
+                "description": "Identification assigned by an institution to identify an account. This identification is known by the account owner.",
+                "type": "string",
+                "maxLength": 256,
+                "minLength": 1
+              },
+              "Name": {
+                "description": "Name of the account, as assigned by the account servicing institution.\nUsage: The account name is the name or names of the account owner(s) represented at an account level. The account name is not the product name or the nickname of the account.",
+                "type": "string",
+                "maxLength": 70,
+                "minLength": 1
+              },
+              "SchemeName": {
+                "description": "Name of the identification scheme, in a coded form as published in an external list.",
+                "type": "string",
+                "maxLength": 40,
+                "minLength": 1,
+                "example": [
+                  "UK.OBIE.BBAN",
+                  "UK.OBIE.IBAN",
+                  "UK.OBIE.PAN",
+                  "UK.OBIE.Paym",
+                  "UK.OBIE.SortCodeAccountNumber"
+                ]
+              },
+              "SecondaryIdentification": {
+                "description": "This is secondary identification of the account, as assigned by the account servicing institution. \nThis can be used by building societies to additionally identify accounts with a roll number (in addition to a sort code and account number combination).",
+                "type": "string",
+                "maxLength": 34,
+                "minLength": 1
+              }
+            },
+            "additionalProperties": false
+          },
+          "ExpirationDateTime": {
+            "description": "Specified date and time the funds confirmation authorisation will expire.\nIf this is not populated, the authorisation will be open ended.\nAll dates in the JSON payloads are represented in ISO 8601 date-time format. \nAll date-time fields in responses must include the timezone. An example is below:\n2017-04-05T10:43:07+00:00",
+            "type": "string",
+            "format": "date-time"
+          },
+          "Status": {
+            "description": "Specifies the status of consent resource in code form.",
+            "type": "string",
+            "enum": [
+              "Authorised",
+              "AwaitingAuthorisation",
+              "Rejected",
+              "Revoked"
+            ]
+          },
+          "StatusUpdateDateTime": {
+            "description": "Date and time at which the resource status was updated.\nAll dates in the JSON payloads are represented in ISO 8601 date-time format. \nAll date-time fields in responses must include the timezone. An example is below:\n2017-04-05T10:43:07+00:00",
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "additionalProperties": false
+      },
+      "OBFundsConfirmationConsentResponse1": {
+        "type": "object",
+        "required": [
+          "Data",
+          "Links",
+          "Meta"
+        ],
+        "properties": {
+          "Data": {
+            "type": "object",
+            "required": [
+              "ConsentId",
+              "CreationDateTime",
+              "Status",
+              "StatusUpdateDateTime",
+              "DebtorAccount"
+            ],
+            "properties": {
+              "ConsentId": {
+                "description": "Unique identification as assigned to identify the funds confirmation consent resource.",
+                "type": "string",
+                "maxLength": 128,
+                "minLength": 1
+              },
+              "CreationDateTime": {
+                "description": "Date and time at which the resource was created.\nAll dates in the JSON payloads are represented in ISO 8601 date-time format. \nAll date-time fields in responses must include the timezone. An example is below:\n2017-04-05T10:43:07+00:00",
+                "type": "string",
+                "format": "date-time"
+              },
+              "DebtorAccount": {
+                "description": "Unambiguous identification of the account of the debtor to which a confirmation of funds consent will be applied.",
+                "type": "object",
+                "required": [
+                  "SchemeName",
+                  "Identification"
+                ],
+                "properties": {
+                  "Identification": {
+                    "description": "Identification assigned by an institution to identify an account. This identification is known by the account owner.",
+                    "type": "string",
+                    "maxLength": 256,
+                    "minLength": 1
+                  },
+                  "Name": {
+                    "description": "Name of the account, as assigned by the account servicing institution.\nUsage: The account name is the name or names of the account owner(s) represented at an account level. The account name is not the product name or the nickname of the account.",
+                    "type": "string",
+                    "maxLength": 70,
+                    "minLength": 1
+                  },
+                  "SchemeName": {
+                    "description": "Name of the identification scheme, in a coded form as published in an external list.",
+                    "type": "string",
+                    "maxLength": 40,
+                    "minLength": 1,
+                    "example": [
+                      "UK.OBIE.BBAN",
+                      "UK.OBIE.IBAN",
+                      "UK.OBIE.PAN",
+                      "UK.OBIE.Paym",
+                      "UK.OBIE.SortCodeAccountNumber"
+                    ]
+                  },
+                  "SecondaryIdentification": {
+                    "description": "This is secondary identification of the account, as assigned by the account servicing institution. \nThis can be used by building societies to additionally identify accounts with a roll number (in addition to a sort code and account number combination).",
+                    "type": "string",
+                    "maxLength": 34,
+                    "minLength": 1
+                  }
+                },
+                "additionalProperties": false
+              },
+              "ExpirationDateTime": {
+                "description": "Specified date and time the funds confirmation authorisation will expire.\nIf this is not populated, the authorisation will be open ended.\nAll dates in the JSON payloads are represented in ISO 8601 date-time format. \nAll date-time fields in responses must include the timezone. An example is below:\n2017-04-05T10:43:07+00:00",
+                "type": "string",
+                "format": "date-time"
+              },
+              "Status": {
+                "description": "Specifies the status of consent resource in code form.",
+                "type": "string",
+                "enum": [
+                  "Authorised",
+                  "AwaitingAuthorisation",
+                  "Rejected",
+                  "Revoked"
+                ]
+              },
+              "StatusUpdateDateTime": {
+                "description": "Date and time at which the resource status was updated.\nAll dates in the JSON payloads are represented in ISO 8601 date-time format. \nAll date-time fields in responses must include the timezone. An example is below:\n2017-04-05T10:43:07+00:00",
+                "type": "string",
+                "format": "date-time"
+              }
+            },
+            "additionalProperties": false
+          },
+          "Links": {
+            "description": "Links relevant to the payload",
+            "type": "object",
+            "required": [
+              "Self"
+            ],
+            "properties": {
+              "First": {
+                "type": "string",
+                "format": "uri"
+              },
+              "Last": {
+                "type": "string",
+                "format": "uri"
+              },
+              "Next": {
+                "type": "string",
+                "format": "uri"
+              },
+              "Prev": {
+                "type": "string",
+                "format": "uri"
+              },
+              "Self": {
+                "type": "string",
+                "format": "uri"
+              }
+            },
+            "additionalProperties": false
+          },
+          "Meta": {
+            "description": "Meta Data relevant to the payload",
+            "type": "object",
+            "title": "MetaData",
+            "properties": {
+              "FirstAvailableDateTime": {
+                "description": "All dates in the JSON payloads are represented in ISO 8601 date-time format. \nAll date-time fields in responses must include the timezone. An example is below:\n2017-04-05T10:43:07+00:00",
+                "type": "string",
+                "format": "date-time"
+              },
+              "LastAvailableDateTime": {
+                "description": "All dates in the JSON payloads are represented in ISO 8601 date-time format. \nAll date-time fields in responses must include the timezone. An example is below:\n2017-04-05T10:43:07+00:00",
+                "type": "string",
+                "format": "date-time"
+              },
+              "TotalPages": {
+                "type": "integer",
+                "format": "int32"
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "additionalProperties": false
+      },
+      "OBFundsConfirmationData1": {
+        "type": "object",
+        "required": [
+          "ConsentId",
+          "Reference",
+          "InstructedAmount"
+        ],
+        "properties": {
+          "ConsentId": {
+            "description": "Unique identification as assigned by the ASPSP to uniquely identify the funds confirmation consent resource.",
+            "type": "string",
+            "maxLength": 128,
+            "minLength": 1
+          },
+          "InstructedAmount": {
+            "description": "Amount of money to be confirmed as available funds in the debtor account. Contains an Amount and a Currency.",
+            "type": "object",
+            "required": [
+              "Amount",
+              "Currency"
+            ],
+            "properties": {
+              "Amount": {
+                "description": "A number of monetary units specified in an active currency where the unit of currency is explicit and compliant with ISO 4217.",
+                "type": "string",
+                "pattern": "^\\d{1,13}\\.\\d{1,5}$"
+              },
+              "Currency": {
+                "description": "A code allocated to a currency by a Maintenance Agency under an international identification scheme, as described in the latest edition of the international standard ISO 4217 \"Codes for the representation of currencies and funds\".",
+                "type": "string",
+                "pattern": "^[A-Z]{3,3}$"
+              }
+            },
+            "additionalProperties": false
+          },
+          "Reference": {
+            "description": "Unique reference, as assigned by the CBPII, to unambiguously refer to the request related to the payment transaction.",
+            "type": "string",
+            "maxLength": 35,
+            "minLength": 1
+          }
+        },
+        "additionalProperties": false
+      },
+      "OBFundsConfirmationDataResponse1": {
+        "type": "object",
+        "required": [
+          "FundsConfirmationId",
+          "ConsentId",
+          "CreationDateTime",
+          "FundsAvailable",
+          "Reference",
+          "InstructedAmount"
+        ],
+        "properties": {
+          "ConsentId": {
+            "description": "Unique identification as assigned by the ASPSP to uniquely identify the funds confirmation consent resource.",
+            "type": "string",
+            "maxLength": 128,
+            "minLength": 1
+          },
+          "CreationDateTime": {
+            "description": "Date and time at which the resource was created.\nAll dates in the JSON payloads are represented in ISO 8601 date-time format. \nAll date-time fields in responses must include the timezone. An example is below:\n2017-04-05T10:43:07+00:00",
+            "type": "string",
+            "format": "date-time"
+          },
+          "FundsAvailable": {
+            "description": "Flag to indicate the result of a confirmation of funds check.",
+            "type": "boolean"
+          },
+          "FundsConfirmationId": {
+            "description": "Unique identification as assigned by the ASPSP to uniquely identify the funds confirmation resource.",
+            "type": "string",
+            "maxLength": 40,
+            "minLength": 1
+          },
+          "InstructedAmount": {
+            "description": "Amount of money to be confirmed as available funds in the debtor account. Contains an Amount and a Currency.",
+            "type": "object",
+            "required": [
+              "Amount",
+              "Currency"
+            ],
+            "properties": {
+              "Amount": {
+                "description": "A number of monetary units specified in an active currency where the unit of currency is explicit and compliant with ISO 4217.",
+                "type": "string",
+                "pattern": "^\\d{1,13}\\.\\d{1,5}$"
+              },
+              "Currency": {
+                "description": "A code allocated to a currency by a Maintenance Agency under an international identification scheme, as described in the latest edition of the international standard ISO 4217 \"Codes for the representation of currencies and funds\".",
+                "type": "string",
+                "pattern": "^[A-Z]{3,3}$"
+              }
+            },
+            "additionalProperties": false
+          },
+          "Reference": {
+            "description": "Unique reference, as assigned by the CBPII, to unambiguously refer to the request related to the payment transaction.",
+            "type": "string",
+            "maxLength": 35,
+            "minLength": 1
+          }
+        },
+        "additionalProperties": false
+      },
+      "OBFundsConfirmationResponse1": {
+        "type": "object",
+        "required": [
+          "Data",
+          "Links",
+          "Meta"
+        ],
+        "properties": {
+          "Data": {
+            "type": "object",
+            "required": [
+              "FundsConfirmationId",
+              "ConsentId",
+              "CreationDateTime",
+              "FundsAvailable",
+              "Reference",
+              "InstructedAmount"
+            ],
+            "properties": {
+              "ConsentId": {
+                "description": "Unique identification as assigned by the ASPSP to uniquely identify the funds confirmation consent resource.",
+                "type": "string",
+                "maxLength": 128,
+                "minLength": 1
+              },
+              "CreationDateTime": {
+                "description": "Date and time at which the resource was created.\nAll dates in the JSON payloads are represented in ISO 8601 date-time format. \nAll date-time fields in responses must include the timezone. An example is below:\n2017-04-05T10:43:07+00:00",
+                "type": "string",
+                "format": "date-time"
+              },
+              "FundsAvailable": {
+                "description": "Flag to indicate the result of a confirmation of funds check.",
+                "type": "boolean"
+              },
+              "FundsConfirmationId": {
+                "description": "Unique identification as assigned by the ASPSP to uniquely identify the funds confirmation resource.",
+                "type": "string",
+                "maxLength": 40,
+                "minLength": 1
+              },
+              "InstructedAmount": {
+                "description": "Amount of money to be confirmed as available funds in the debtor account. Contains an Amount and a Currency.",
+                "type": "object",
+                "required": [
+                  "Amount",
+                  "Currency"
+                ],
+                "properties": {
+                  "Amount": {
+                    "description": "A number of monetary units specified in an active currency where the unit of currency is explicit and compliant with ISO 4217.",
+                    "type": "string",
+                    "pattern": "^\\d{1,13}\\.\\d{1,5}$"
+                  },
+                  "Currency": {
+                    "description": "A code allocated to a currency by a Maintenance Agency under an international identification scheme, as described in the latest edition of the international standard ISO 4217 \"Codes for the representation of currencies and funds\".",
+                    "type": "string",
+                    "pattern": "^[A-Z]{3,3}$"
+                  }
+                },
+                "additionalProperties": false
+              },
+              "Reference": {
+                "description": "Unique reference, as assigned by the CBPII, to unambiguously refer to the request related to the payment transaction.",
+                "type": "string",
+                "maxLength": 35,
+                "minLength": 1
+              }
+            },
+            "additionalProperties": false
+          },
+          "Links": {
+            "description": "Links relevant to the payload",
+            "type": "object",
+            "required": [
+              "Self"
+            ],
+            "properties": {
+              "First": {
+                "type": "string",
+                "format": "uri"
+              },
+              "Last": {
+                "type": "string",
+                "format": "uri"
+              },
+              "Next": {
+                "type": "string",
+                "format": "uri"
+              },
+              "Prev": {
+                "type": "string",
+                "format": "uri"
+              },
+              "Self": {
+                "type": "string",
+                "format": "uri"
+              }
+            },
+            "additionalProperties": false
+          },
+          "Meta": {
+            "description": "Meta Data relevant to the payload",
+            "type": "object",
+            "title": "MetaData",
+            "properties": {
+              "FirstAvailableDateTime": {
+                "description": "All dates in the JSON payloads are represented in ISO 8601 date-time format. \nAll date-time fields in responses must include the timezone. An example is below:\n2017-04-05T10:43:07+00:00",
+                "type": "string",
+                "format": "date-time"
+              },
+              "LastAvailableDateTime": {
+                "description": "All dates in the JSON payloads are represented in ISO 8601 date-time format. \nAll date-time fields in responses must include the timezone. An example is below:\n2017-04-05T10:43:07+00:00",
+                "type": "string",
+                "format": "date-time"
+              },
+              "TotalPages": {
+                "type": "integer",
+                "format": "int32"
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "parameters": {
+      "AuthorizationParam": {
+        "type": "string",
+        "description": "An Authorisation Token as per https://tools.ietf.org/html/rfc6750",
+        "name": "Authorization",
+        "in": "header",
+        "required": true
+      },
+      "ConsentId": {
+        "type": "string",
+        "description": "ConsentId",
+        "name": "ConsentId",
+        "in": "path",
+        "required": true
+      },
+      "OBFundsConfirmation1Param": {
+        "description": "Default",
+        "name": "OBFundsConfirmation1Param",
+        "in": "body",
+        "required": true,
+        "schema": {
+          "type": "object",
+          "required": [
+            "Data"
+          ],
+          "properties": {
+            "Data": {
+              "type": "object",
+              "required": [
+                "ConsentId",
+                "Reference",
+                "InstructedAmount"
+              ],
+              "properties": {
+                "ConsentId": {
+                  "description": "Unique identification as assigned by the ASPSP to uniquely identify the funds confirmation consent resource.",
+                  "type": "string",
+                  "maxLength": 128,
+                  "minLength": 1
+                },
+                "InstructedAmount": {
+                  "description": "Amount of money to be confirmed as available funds in the debtor account. Contains an Amount and a Currency.",
+                  "type": "object",
+                  "required": [
+                    "Amount",
+                    "Currency"
+                  ],
+                  "properties": {
+                    "Amount": {
+                      "description": "A number of monetary units specified in an active currency where the unit of currency is explicit and compliant with ISO 4217.",
+                      "type": "string",
+                      "pattern": "^\\d{1,13}\\.\\d{1,5}$"
+                    },
+                    "Currency": {
+                      "description": "A code allocated to a currency by a Maintenance Agency under an international identification scheme, as described in the latest edition of the international standard ISO 4217 \"Codes for the representation of currencies and funds\".",
+                      "type": "string",
+                      "pattern": "^[A-Z]{3,3}$"
+                    }
+                  },
+                  "additionalProperties": false
+                },
+                "Reference": {
+                  "description": "Unique reference, as assigned by the CBPII, to unambiguously refer to the request related to the payment transaction.",
+                  "type": "string",
+                  "maxLength": 35,
+                  "minLength": 1
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "OBFundsConfirmationConsent1Param": {
+        "description": "Default",
+        "name": "OBFundsConfirmationConsent1Param",
+        "in": "body",
+        "required": true,
+        "schema": {
+          "type": "object",
+          "required": [
+            "Data"
+          ],
+          "properties": {
+            "Data": {
+              "type": "object",
+              "required": [
+                "DebtorAccount"
+              ],
+              "properties": {
+                "DebtorAccount": {
+                  "description": "Unambiguous identification of the account of the debtor to which a confirmation of funds consent will be applied.",
+                  "type": "object",
+                  "required": [
+                    "SchemeName",
+                    "Identification"
+                  ],
+                  "properties": {
+                    "Identification": {
+                      "description": "Identification assigned by an institution to identify an account. This identification is known by the account owner.",
+                      "type": "string",
+                      "maxLength": 256,
+                      "minLength": 1
+                    },
+                    "Name": {
+                      "description": "Name of the account, as assigned by the account servicing institution.\nUsage: The account name is the name or names of the account owner(s) represented at an account level. The account name is not the product name or the nickname of the account.",
+                      "type": "string",
+                      "maxLength": 70,
+                      "minLength": 1
+                    },
+                    "SchemeName": {
+                      "description": "Name of the identification scheme, in a coded form as published in an external list.",
+                      "type": "string",
+                      "maxLength": 40,
+                      "minLength": 1,
+                      "example": [
+                        "UK.OBIE.BBAN",
+                        "UK.OBIE.IBAN",
+                        "UK.OBIE.PAN",
+                        "UK.OBIE.Paym",
+                        "UK.OBIE.SortCodeAccountNumber"
+                      ]
+                    },
+                    "SecondaryIdentification": {
+                      "description": "This is secondary identification of the account, as assigned by the account servicing institution. \nThis can be used by building societies to additionally identify accounts with a roll number (in addition to a sort code and account number combination).",
+                      "type": "string",
+                      "maxLength": 34,
+                      "minLength": 1
+                    }
+                  },
+                  "additionalProperties": false
+                },
+                "ExpirationDateTime": {
+                  "description": "Specified date and time the funds confirmation authorisation will expire.\n If this is not populated, the authorisation will be open ended.\nAll dates in the JSON payloads are represented in ISO 8601 date-time format. \nAll date-time fields in responses must include the timezone. An example is below:\n2017-04-05T10:43:07+00:00",
+                  "type": "string",
+                  "format": "date-time"
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "x-customer-user-agent-Param": {
+        "type": "string",
+        "description": "Indicates the user-agent that the PSU is using.",
+        "name": "x-customer-user-agent",
+        "in": "header"
+      },
+      "x-fapi-customer-ip-address-Param": {
+        "type": "string",
+        "description": "The PSU's IP address if the PSU is currently logged in with the TPP.",
+        "name": "x-fapi-customer-ip-address",
+        "in": "header"
+      },
+      "x-fapi-customer-last-logged-time-Param": {
+        "pattern": "^(Mon|Tue|Wed|Thu|Fri|Sat|Sun), \\d{2} (Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) \\d{4} \\d{2}:\\d{2}:\\d{2} (GMT|UTC)$",
+        "type": "string",
+        "description": "The time when the PSU last logged in with the TPP. \nAll dates in the HTTP headers are represented as RFC 7231 Full Dates. An example is below: \nSun, 10 Sep 2017 19:43:31 UTC",
+        "name": "x-fapi-customer-last-logged-time",
+        "in": "header"
+      },
+      "x-fapi-financial-id-Param": {
+        "type": "string",
+        "description": "The unique id of the ASPSP to which the request is issued. The unique id will be issued by OB.",
+        "name": "x-fapi-financial-id",
+        "in": "header",
+        "required": true
+      },
+      "x-fapi-interaction-id-Param": {
+        "type": "string",
+        "description": "An RFC4122 UID used as a correlation id.",
+        "name": "x-fapi-interaction-id",
+        "in": "header"
+      }
+    },
+    "responses": {
+      "200FundsConfirmationConsentsConsentIdRead": {
+        "description": "Funds Confirmation Consent Read",
+        "schema": {
+          "type": "object",
+          "required": [
+            "Data",
+            "Links",
+            "Meta"
+          ],
+          "properties": {
+            "Data": {
+              "type": "object",
+              "required": [
+                "ConsentId",
+                "CreationDateTime",
+                "Status",
+                "StatusUpdateDateTime",
+                "DebtorAccount"
+              ],
+              "properties": {
+                "ConsentId": {
+                  "description": "Unique identification as assigned to identify the funds confirmation consent resource.",
+                  "type": "string",
+                  "maxLength": 128,
+                  "minLength": 1
+                },
+                "CreationDateTime": {
+                  "description": "Date and time at which the resource was created.\nAll dates in the JSON payloads are represented in ISO 8601 date-time format. \nAll date-time fields in responses must include the timezone. An example is below:\n2017-04-05T10:43:07+00:00",
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "DebtorAccount": {
+                  "description": "Unambiguous identification of the account of the debtor to which a confirmation of funds consent will be applied.",
+                  "type": "object",
+                  "required": [
+                    "SchemeName",
+                    "Identification"
+                  ],
+                  "properties": {
+                    "Identification": {
+                      "description": "Identification assigned by an institution to identify an account. This identification is known by the account owner.",
+                      "type": "string",
+                      "maxLength": 256,
+                      "minLength": 1
+                    },
+                    "Name": {
+                      "description": "Name of the account, as assigned by the account servicing institution.\nUsage: The account name is the name or names of the account owner(s) represented at an account level. The account name is not the product name or the nickname of the account.",
+                      "type": "string",
+                      "maxLength": 70,
+                      "minLength": 1
+                    },
+                    "SchemeName": {
+                      "description": "Name of the identification scheme, in a coded form as published in an external list.",
+                      "type": "string",
+                      "maxLength": 40,
+                      "minLength": 1,
+                      "example": [
+                        "UK.OBIE.BBAN",
+                        "UK.OBIE.IBAN",
+                        "UK.OBIE.PAN",
+                        "UK.OBIE.Paym",
+                        "UK.OBIE.SortCodeAccountNumber"
+                      ]
+                    },
+                    "SecondaryIdentification": {
+                      "description": "This is secondary identification of the account, as assigned by the account servicing institution. \nThis can be used by building societies to additionally identify accounts with a roll number (in addition to a sort code and account number combination).",
+                      "type": "string",
+                      "maxLength": 34,
+                      "minLength": 1
+                    }
+                  },
+                  "additionalProperties": false
+                },
+                "ExpirationDateTime": {
+                  "description": "Specified date and time the funds confirmation authorisation will expire.\nIf this is not populated, the authorisation will be open ended.\nAll dates in the JSON payloads are represented in ISO 8601 date-time format. \nAll date-time fields in responses must include the timezone. An example is below:\n2017-04-05T10:43:07+00:00",
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "Status": {
+                  "description": "Specifies the status of consent resource in code form.",
+                  "type": "string",
+                  "enum": [
+                    "Authorised",
+                    "AwaitingAuthorisation",
+                    "Rejected",
+                    "Revoked"
+                  ]
+                },
+                "StatusUpdateDateTime": {
+                  "description": "Date and time at which the resource status was updated.\nAll dates in the JSON payloads are represented in ISO 8601 date-time format. \nAll date-time fields in responses must include the timezone. An example is below:\n2017-04-05T10:43:07+00:00",
+                  "type": "string",
+                  "format": "date-time"
+                }
+              },
+              "additionalProperties": false
+            },
+            "Links": {
+              "description": "Links relevant to the payload",
+              "type": "object",
+              "required": [
+                "Self"
+              ],
+              "properties": {
+                "First": {
+                  "type": "string",
+                  "format": "uri"
+                },
+                "Last": {
+                  "type": "string",
+                  "format": "uri"
+                },
+                "Next": {
+                  "type": "string",
+                  "format": "uri"
+                },
+                "Prev": {
+                  "type": "string",
+                  "format": "uri"
+                },
+                "Self": {
+                  "type": "string",
+                  "format": "uri"
+                }
+              },
+              "additionalProperties": false
+            },
+            "Meta": {
+              "description": "Meta Data relevant to the payload",
+              "type": "object",
+              "title": "MetaData",
+              "properties": {
+                "FirstAvailableDateTime": {
+                  "description": "All dates in the JSON payloads are represented in ISO 8601 date-time format. \nAll date-time fields in responses must include the timezone. An example is below:\n2017-04-05T10:43:07+00:00",
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "LastAvailableDateTime": {
+                  "description": "All dates in the JSON payloads are represented in ISO 8601 date-time format. \nAll date-time fields in responses must include the timezone. An example is below:\n2017-04-05T10:43:07+00:00",
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "TotalPages": {
+                  "type": "integer",
+                  "format": "int32"
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "additionalProperties": false
+        },
+        "headers": {
+          "x-fapi-interaction-id": {
+            "type": "string",
+            "description": "An RFC4122 UID used as a correlation id."
+          }
+        }
+      },
+      "201FundsConfirmationConsentsCreated": {
+        "description": "Funds Confirmation Consent Created",
+        "schema": {
+          "type": "object",
+          "required": [
+            "Data",
+            "Links",
+            "Meta"
+          ],
+          "properties": {
+            "Data": {
+              "type": "object",
+              "required": [
+                "ConsentId",
+                "CreationDateTime",
+                "Status",
+                "StatusUpdateDateTime",
+                "DebtorAccount"
+              ],
+              "properties": {
+                "ConsentId": {
+                  "description": "Unique identification as assigned to identify the funds confirmation consent resource.",
+                  "type": "string",
+                  "maxLength": 128,
+                  "minLength": 1
+                },
+                "CreationDateTime": {
+                  "description": "Date and time at which the resource was created.\nAll dates in the JSON payloads are represented in ISO 8601 date-time format. \nAll date-time fields in responses must include the timezone. An example is below:\n2017-04-05T10:43:07+00:00",
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "DebtorAccount": {
+                  "description": "Unambiguous identification of the account of the debtor to which a confirmation of funds consent will be applied.",
+                  "type": "object",
+                  "required": [
+                    "SchemeName",
+                    "Identification"
+                  ],
+                  "properties": {
+                    "Identification": {
+                      "description": "Identification assigned by an institution to identify an account. This identification is known by the account owner.",
+                      "type": "string",
+                      "maxLength": 256,
+                      "minLength": 1
+                    },
+                    "Name": {
+                      "description": "Name of the account, as assigned by the account servicing institution.\nUsage: The account name is the name or names of the account owner(s) represented at an account level. The account name is not the product name or the nickname of the account.",
+                      "type": "string",
+                      "maxLength": 70,
+                      "minLength": 1
+                    },
+                    "SchemeName": {
+                      "description": "Name of the identification scheme, in a coded form as published in an external list.",
+                      "type": "string",
+                      "maxLength": 40,
+                      "minLength": 1,
+                      "example": [
+                        "UK.OBIE.BBAN",
+                        "UK.OBIE.IBAN",
+                        "UK.OBIE.PAN",
+                        "UK.OBIE.Paym",
+                        "UK.OBIE.SortCodeAccountNumber"
+                      ]
+                    },
+                    "SecondaryIdentification": {
+                      "description": "This is secondary identification of the account, as assigned by the account servicing institution. \nThis can be used by building societies to additionally identify accounts with a roll number (in addition to a sort code and account number combination).",
+                      "type": "string",
+                      "maxLength": 34,
+                      "minLength": 1
+                    }
+                  },
+                  "additionalProperties": false
+                },
+                "ExpirationDateTime": {
+                  "description": "Specified date and time the funds confirmation authorisation will expire.\nIf this is not populated, the authorisation will be open ended.\nAll dates in the JSON payloads are represented in ISO 8601 date-time format. \nAll date-time fields in responses must include the timezone. An example is below:\n2017-04-05T10:43:07+00:00",
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "Status": {
+                  "description": "Specifies the status of consent resource in code form.",
+                  "type": "string",
+                  "enum": [
+                    "Authorised",
+                    "AwaitingAuthorisation",
+                    "Rejected",
+                    "Revoked"
+                  ]
+                },
+                "StatusUpdateDateTime": {
+                  "description": "Date and time at which the resource status was updated.\nAll dates in the JSON payloads are represented in ISO 8601 date-time format. \nAll date-time fields in responses must include the timezone. An example is below:\n2017-04-05T10:43:07+00:00",
+                  "type": "string",
+                  "format": "date-time"
+                }
+              },
+              "additionalProperties": false
+            },
+            "Links": {
+              "description": "Links relevant to the payload",
+              "type": "object",
+              "required": [
+                "Self"
+              ],
+              "properties": {
+                "First": {
+                  "type": "string",
+                  "format": "uri"
+                },
+                "Last": {
+                  "type": "string",
+                  "format": "uri"
+                },
+                "Next": {
+                  "type": "string",
+                  "format": "uri"
+                },
+                "Prev": {
+                  "type": "string",
+                  "format": "uri"
+                },
+                "Self": {
+                  "type": "string",
+                  "format": "uri"
+                }
+              },
+              "additionalProperties": false
+            },
+            "Meta": {
+              "description": "Meta Data relevant to the payload",
+              "type": "object",
+              "title": "MetaData",
+              "properties": {
+                "FirstAvailableDateTime": {
+                  "description": "All dates in the JSON payloads are represented in ISO 8601 date-time format. \nAll date-time fields in responses must include the timezone. An example is below:\n2017-04-05T10:43:07+00:00",
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "LastAvailableDateTime": {
+                  "description": "All dates in the JSON payloads are represented in ISO 8601 date-time format. \nAll date-time fields in responses must include the timezone. An example is below:\n2017-04-05T10:43:07+00:00",
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "TotalPages": {
+                  "type": "integer",
+                  "format": "int32"
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "additionalProperties": false
+        },
+        "headers": {
+          "x-fapi-interaction-id": {
+            "type": "string",
+            "description": "An RFC4122 UID used as a correlation id."
+          }
+        }
+      },
+      "201FundsConfirmationsCreated": {
+        "description": "Funds Confirmation Created",
+        "schema": {
+          "type": "object",
+          "required": [
+            "Data",
+            "Links",
+            "Meta"
+          ],
+          "properties": {
+            "Data": {
+              "type": "object",
+              "required": [
+                "FundsConfirmationId",
+                "ConsentId",
+                "CreationDateTime",
+                "FundsAvailable",
+                "Reference",
+                "InstructedAmount"
+              ],
+              "properties": {
+                "ConsentId": {
+                  "description": "Unique identification as assigned by the ASPSP to uniquely identify the funds confirmation consent resource.",
+                  "type": "string",
+                  "maxLength": 128,
+                  "minLength": 1
+                },
+                "CreationDateTime": {
+                  "description": "Date and time at which the resource was created.\nAll dates in the JSON payloads are represented in ISO 8601 date-time format. \nAll date-time fields in responses must include the timezone. An example is below:\n2017-04-05T10:43:07+00:00",
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "FundsAvailable": {
+                  "description": "Flag to indicate the result of a confirmation of funds check.",
+                  "type": "boolean"
+                },
+                "FundsConfirmationId": {
+                  "description": "Unique identification as assigned by the ASPSP to uniquely identify the funds confirmation resource.",
+                  "type": "string",
+                  "maxLength": 40,
+                  "minLength": 1
+                },
+                "InstructedAmount": {
+                  "description": "Amount of money to be confirmed as available funds in the debtor account. Contains an Amount and a Currency.",
+                  "type": "object",
+                  "required": [
+                    "Amount",
+                    "Currency"
+                  ],
+                  "properties": {
+                    "Amount": {
+                      "description": "A number of monetary units specified in an active currency where the unit of currency is explicit and compliant with ISO 4217.",
+                      "type": "string",
+                      "pattern": "^\\d{1,13}\\.\\d{1,5}$"
+                    },
+                    "Currency": {
+                      "description": "A code allocated to a currency by a Maintenance Agency under an international identification scheme, as described in the latest edition of the international standard ISO 4217 \"Codes for the representation of currencies and funds\".",
+                      "type": "string",
+                      "pattern": "^[A-Z]{3,3}$"
+                    }
+                  },
+                  "additionalProperties": false
+                },
+                "Reference": {
+                  "description": "Unique reference, as assigned by the CBPII, to unambiguously refer to the request related to the payment transaction.",
+                  "type": "string",
+                  "maxLength": 35,
+                  "minLength": 1
+                }
+              },
+              "additionalProperties": false
+            },
+            "Links": {
+              "description": "Links relevant to the payload",
+              "type": "object",
+              "required": [
+                "Self"
+              ],
+              "properties": {
+                "First": {
+                  "type": "string",
+                  "format": "uri"
+                },
+                "Last": {
+                  "type": "string",
+                  "format": "uri"
+                },
+                "Next": {
+                  "type": "string",
+                  "format": "uri"
+                },
+                "Prev": {
+                  "type": "string",
+                  "format": "uri"
+                },
+                "Self": {
+                  "type": "string",
+                  "format": "uri"
+                }
+              },
+              "additionalProperties": false
+            },
+            "Meta": {
+              "description": "Meta Data relevant to the payload",
+              "type": "object",
+              "title": "MetaData",
+              "properties": {
+                "FirstAvailableDateTime": {
+                  "description": "All dates in the JSON payloads are represented in ISO 8601 date-time format. \nAll date-time fields in responses must include the timezone. An example is below:\n2017-04-05T10:43:07+00:00",
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "LastAvailableDateTime": {
+                  "description": "All dates in the JSON payloads are represented in ISO 8601 date-time format. \nAll date-time fields in responses must include the timezone. An example is below:\n2017-04-05T10:43:07+00:00",
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "TotalPages": {
+                  "type": "integer",
+                  "format": "int32"
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "additionalProperties": false
+        },
+        "headers": {
+          "x-fapi-interaction-id": {
+            "type": "string",
+            "description": "An RFC4122 UID used as a correlation id."
+          }
+        }
+      },
+      "204FundsConfirmationConsentsConsentIdDeleted": {
+        "description": "Funds Confirmation Consent Deleted",
+        "headers": {
+          "x-fapi-interaction-id": {
+            "type": "string",
+            "description": "An RFC4122 UID used as a correlation id."
+          }
+        }
+      },
+      "400ErrorResponse": {
+        "description": "Bad request",
+        "schema": {
+          "description": "An array of detail error codes, and messages, and URLs to documentation to help remediation.",
+          "type": "object",
+          "required": [
+            "Code",
+            "Message",
+            "Errors"
+          ],
+          "properties": {
+            "Code": {
+              "description": "High level textual error code, to help categorize the errors.",
+              "type": "string",
+              "maxLength": 40,
+              "minLength": 1
+            },
+            "Errors": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "type": "object",
+                "minProperties": 1,
+                "required": [
+                  "ErrorCode",
+                  "Message"
+                ],
+                "properties": {
+                  "ErrorCode": {
+                    "description": "Low level textual error code, e.g., UK.OBIE.Field.Missing",
+                    "type": "string",
+                    "maxLength": 128,
+                    "minLength": 1
+                  },
+                  "Message": {
+                    "description": "A description of the error that occurred. e.g., 'A mandatory field isn't supplied' or 'RequestedExecutionDateTime must be in future'\nOBIE doesn't standardise this field",
+                    "type": "string",
+                    "maxLength": 500,
+                    "minLength": 1
+                  },
+                  "Path": {
+                    "description": "Recommended but optional reference to the JSON Path of the field with error, e.g., Data.Initiation.InstructedAmount.Currency",
+                    "type": "string",
+                    "maxLength": 500,
+                    "minLength": 1
+                  },
+                  "Url": {
+                    "description": "URL to help remediate the problem, or provide more information, or to API Reference, or help etc",
+                    "type": "string"
+                  }
+                },
+                "additionalProperties": false
+              }
+            },
+            "Id": {
+              "description": "A unique reference for the error instance, for audit purposes, in case of unknown/unclassified errors.",
+              "type": "string",
+              "maxLength": 40,
+              "minLength": 1
+            },
+            "Message": {
+              "description": "Brief Error message, e.g., 'There is something wrong with the request parameters provided'",
+              "type": "string",
+              "maxLength": 500,
+              "minLength": 1
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "401ErrorResponse": {
+        "description": "Unauthorized"
+      },
+      "403ErrorResponse": {
+        "description": "Forbidden"
+      },
+      "404ErrorResponse": {
+        "description": "Not found"
+      },
+      "405ErrorResponse": {
+        "description": "Method Not Allowed"
+      },
+      "406ErrorResponse": {
+        "description": "Not Acceptable"
+      },
+      "415ErrorResponse": {
+        "description": "Unsupported Media Type"
+      },
+      "429ErrorResponse": {
+        "description": "Too Many Requests",
+        "headers": {
+          "Retry-After": {
+            "type": "integer",
+            "description": "Number in seconds to wait"
+          }
+        }
+      },
+      "500ErrorResponse": {
+        "description": "Internal Server Error",
+        "schema": {
+          "description": "An array of detail error codes, and messages, and URLs to documentation to help remediation.",
+          "type": "object",
+          "required": [
+            "Code",
+            "Message",
+            "Errors"
+          ],
+          "properties": {
+            "Code": {
+              "description": "High level textual error code, to help categorize the errors.",
+              "type": "string",
+              "maxLength": 40,
+              "minLength": 1
+            },
+            "Errors": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "type": "object",
+                "minProperties": 1,
+                "required": [
+                  "ErrorCode",
+                  "Message"
+                ],
+                "properties": {
+                  "ErrorCode": {
+                    "description": "Low level textual error code, e.g., UK.OBIE.Field.Missing",
+                    "type": "string",
+                    "maxLength": 128,
+                    "minLength": 1
+                  },
+                  "Message": {
+                    "description": "A description of the error that occurred. e.g., 'A mandatory field isn't supplied' or 'RequestedExecutionDateTime must be in future'\nOBIE doesn't standardise this field",
+                    "type": "string",
+                    "maxLength": 500,
+                    "minLength": 1
+                  },
+                  "Path": {
+                    "description": "Recommended but optional reference to the JSON Path of the field with error, e.g., Data.Initiation.InstructedAmount.Currency",
+                    "type": "string",
+                    "maxLength": 500,
+                    "minLength": 1
+                  },
+                  "Url": {
+                    "description": "URL to help remediate the problem, or provide more information, or to API Reference, or help etc",
+                    "type": "string"
+                  }
+                },
+                "additionalProperties": false
+              }
+            },
+            "Id": {
+              "description": "A unique reference for the error instance, for audit purposes, in case of unknown/unclassified errors.",
+              "type": "string",
+              "maxLength": 40,
+              "minLength": 1
+            },
+            "Message": {
+              "description": "Brief Error message, e.g., 'There is something wrong with the request parameters provided'",
+              "type": "string",
+              "maxLength": 500,
+              "minLength": 1
+            }
+          },
+          "additionalProperties": false
+        }
+      }
+    },
+    "securityDefinitions": {
+      "PSUOAuth2Security": {
+        "description": "OAuth flow, it is required when the PSU needs to perform SCA with the ASPSP when a TPP wants to access an ASPSP resource owned by the PSU",
+        "type": "oauth2",
+        "flow": "accessCode",
+        "authorizationUrl": "https://authserver.example/authorization",
+        "tokenUrl": "https://authserver.example/token",
+        "scopes": {
+          "fundsconfirmations": "Funds confirmation entitlement"
+        }
+      },
+      "TPPOAuth2Security": {
+        "description": "TPP client credential authorisation flow with the ASPSP",
+        "type": "oauth2",
+        "flow": "application",
+        "tokenUrl": "https://authserver.example/token",
+        "scopes": {
+          "fundsconfirmations": "Funds confirmation entitlement"
+        }
+      }
+    }
+  }

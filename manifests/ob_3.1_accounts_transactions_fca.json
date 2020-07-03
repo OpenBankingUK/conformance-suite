@@ -10,9 +10,6 @@
       "permissions": [
         "ReadAccountsBasic"
       ],
-      "headers": {
-        "Content-Type": "application/json"
-      },
       "uri": "/foobar",
       "uriImplementation": "optional",
       "resource": "Global",
@@ -37,9 +34,6 @@
       "permissions-excluded": [
         "ReadAccountsDetail"
       ],
-      "headers": {
-        "Content-Type": "application/json"
-      },
       "uri": "/accounts/$accountId",
       "uriImplementation": "mandatory",
       "resource": "Account",
@@ -62,9 +56,6 @@
       "permissions": [
         "ReadAccountsDetail"
       ],
-      "headers": {
-        "Content-Type": "application/json"
-      },
       "uri": "/accounts/$accountId",
       "uriImplementation": "mandatory",
       "resource": "Account",
@@ -89,9 +80,6 @@
       "permissions-excluded": [
         "ReadAccountsDetail"
       ],
-      "headers": {
-        "Content-Type": "application/json"
-      },
       "uri": "/accounts",
       "uriImplementation": "mandatory",
       "resource": "Account",
@@ -113,10 +101,6 @@
       "permissions": [
         "ReadAccountsDetail"
       ],
-      "headers": {
-        "Content-Type": "application/json"
-      },
-
       "uri": "/accounts",
       "uriImplementation": "mandatory",
       "resource": "Account",
@@ -140,9 +124,6 @@
         "ReadAccountsBasic",
         "ReadAccountsDetail"
       ],
-      "headers": {
-        "Content-Type": "application/json"
-      },
       "uri": "/accounts/$accountId",
       "uriImplementation": "mandatory",
       "resource": "Account",
@@ -160,10 +141,6 @@
       "parameters": {
         "tokenRequestScope": "accounts"
       },
-      "headers": {
-        "Content-Type": "application/json"
-      },
-
       "uri": "/accounts",
       "uriImplementation": "mandatory",
       "resource": "Account",
@@ -209,8 +186,7 @@
         "x-fapi-interaction-id": "f5a10e5e-0c46-41c5-a7b7-c8f560205200"
       },
       "headers": {
-        "x-fapi-interaction-id": "$x-fapi-interaction-id",
-        "Content-Type": "application/json"
+        "x-fapi-interaction-id": "$x-fapi-interaction-id"
       },
       "permissions": [
         "ReadAccountsDetail"
@@ -233,10 +209,6 @@
         "tokenRequestScope": "accounts",
         "accountId": "$consentedAccountId"
       },
-      "headers": {
-        "Content-Type": "application/json"
-      },
-
       "uri": "/accounts/$accountId",
       "uriImplementation": "mandatory",
       "resource": "Account",
@@ -257,10 +229,6 @@
       "uri": "/accounts",
       "uriImplementation": "mandatory",
       "resource": "Account",
-      "headers": {
-        "Content-Type": "application/json"
-      },
-
       "method": "get",
       "asserts": [
         "OB3GLOAssertOn401"      
@@ -279,9 +247,6 @@
       "permissions": [
         "ReadAccountsBasic"
       ],
-      "headers": {
-        "Content-Type": "application/json"
-      },
       "uri": "/accounts/$accountId/foobar",
       "uriImplementation": "mandatory",
       "resource": "Account",
@@ -304,9 +269,6 @@
         "ReadAccountsBasic",
         "ReadBalances"
       ],
-      "headers": {
-        "Content-Type": "application/json"
-      },
       "uri": "/accounts/$accountId/balances",
       "uriImplementation": "mandatory",
       "resource": "Balance",
@@ -331,9 +293,6 @@
         "ReadAccountsBasic",
         "ReadBalances"
       ],
-      "headers": {
-        "Content-Type": "application/json"
-      },
       "uri": "/balances",
       "uriImplementation": "optional",
       "resource": "Balance",
@@ -359,9 +318,6 @@
       "permissions-excluded": [
         "ReadBalances"
       ],
-      "headers": {
-        "Content-Type": "application/json"
-      },
       "uri": "/accounts/$accountId/balances",
       "uriImplementation": "mandatory",
       "resource": "Balance",
@@ -385,9 +341,6 @@
         "ReadAccountsBasic",
         "ReadBalances"
       ],
-      "headers": {
-        "Content-Type": "application/json"
-      },
       "uri": "/balances",
       "uriImplementation": "optional",
       "resource": "Balance",
@@ -410,9 +363,6 @@
         "ReadAccountsBasic",
         "ReadBalances"
       ],
-      "headers": {
-        "Content-Type": "application/json"
-      },
       "uri": "/accounts/$accountId/balances",
       "uriImplementation": "mandatory",
       "resource": "Balance",
@@ -432,7 +382,6 @@
         "tokenRequestScope": "accounts"
       },
       "headers": {
-        "Content-Type": "application/json",
         "Authorization": "Bearer $client_access_token"
       },
       "uri": "/balances",
@@ -457,10 +406,6 @@
         "ReadAccountsBasic",
         "ReadBalances"
       ],
-      "headers": {
-        "Content-Type": "application/json"
-      },
-
       "uri": "/accounts/$accountId/balances/foobar",
       "uriImplementation": "optional",
       "resource": "Balance",
@@ -481,9 +426,7 @@
         "x-fapi-interaction-id": "93bac548-d2de-4546-b106-880a5018460d"
       },
       "headers": {
-        "x-fapi-interaction-id": "$x-fapi-interaction-id",
-        "Content-Type": "application/json"
-
+        "x-fapi-interaction-id": "$x-fapi-interaction-id"
       },
       "permissions": [
         "ReadAccountsBasic",
@@ -509,8 +452,6 @@
         "x-fapi-interaction-id": "f5a10e5e-0c46-41c5-a7b7-c8f560205200"
       },
       "headers": {
-        "Content-Type": "application/json",
-
         "x-fapi-interaction-id": "$x-fapi-interaction-id"
       },
       "permissions": [
@@ -539,10 +480,6 @@
         "ReadAccountsBasic",
         "ReadBeneficiariesBasic"
       ],
-      "headers": {
-        "Content-Type": "application/json"
-      },
-
       "uri": "/accounts/$accountId/beneficiaries",
       "uriImplementation": "conditional",
       "resource": "Beneficiary",
@@ -565,10 +502,6 @@
         "ReadAccountsBasic",
         "ReadBeneficiariesBasic"
       ],
-      "headers": {
-        "Content-Type": "application/json"
-      },
-
       "uri": "/beneficiaries",
       "uriImplementation": "optional",
       "resource": "Beneficiary",
@@ -591,10 +524,6 @@
         "ReadAccountsBasic",
         "ReadBeneficiariesBasic"
       ],
-      "headers": {
-        "Content-Type": "application/json"
-      },
-
       "uri": "/beneficiaries",
       "uriImplementation": "optional",
       "resource": "Beneficiary",
@@ -617,10 +546,6 @@
         "ReadAccountsBasic",
         "ReadBeneficiariesBasic"
       ],
-      "headers": {
-        "Content-Type": "application/json"
-      },
-
       "uri": "/accounts/$accountId/beneficiaries",
       "uriImplementation": "conditional",
       "resource": "Beneficiary",
@@ -643,10 +568,6 @@
         "ReadAccountsBasic",
         "ReadBeneficiariesBasic"
       ],
-      "headers": {
-        "Content-Type": "application/json"
-      },
-
       "uri": "/accounts/$accountId/beneficiaries",
       "uriImplementation": "conditional",
       "resource": "Beneficiary",
@@ -673,10 +594,6 @@
         "ReadAccountsBasic",
         "ReadBeneficiariesBasic"
       ],
-      "headers": {
-        "Content-Type": "application/json"
-      },
-
       "uri": "/accounts/$accountId/beneficiaries/foobar",
       "uriImplementation": "conditional",
       "resource": "Beneficiary",
@@ -695,9 +612,7 @@
         "tokenRequestScope": "accounts"
       },
       "headers": {
-        "Authorization": "Bearer $client_access_token",
-        "Content-Type": "application/json"
-
+        "Authorization": "Bearer $client_access_token"
       },
       "uri": "/beneficiaries",
       "uriImplementation": "optional",
@@ -719,8 +634,7 @@
         "x-fapi-interaction-id": "93bac548-d2de-4546-b106-880a5018460d"
       },
       "headers": {
-        "x-fapi-interaction-id": "$x-fapi-interaction-id",
-        "Content-Type": "application/json"
+        "x-fapi-interaction-id": "$x-fapi-interaction-id"
       },
       "permissions": [
         "ReadAccountsBasic",
@@ -746,8 +660,7 @@
         "x-fapi-interaction-id": "f5a10e5e-0c46-41c5-a7b7-c8f560205200"
       },
       "headers": {
-        "x-fapi-interaction-id": "$x-fapi-interaction-id",
-        "Content-Type": "application/json"
+        "x-fapi-interaction-id": "$x-fapi-interaction-id"
       },
       "permissions": [
         "ReadAccountsBasic",
@@ -797,10 +710,6 @@
         "ReadAccountsBasic",
         "ReadDirectDebits"
       ],
-      "headers": {
-        "Content-Type": "application/json"
-      },
-
       "uri": "/direct-debits",
       "uriImplementation": "optional",
       "resource": "DirectDebit",
@@ -824,10 +733,6 @@
         "ReadAccountsBasic",
         "ReadDirectDebits"
       ],
-      "headers": {
-        "Content-Type": "application/json"
-      },
-
       "uri": "/accounts/$accountId/direct-debits",
       "uriImplementation": "conditional",
       "resource": "DirectDebit",
@@ -851,10 +756,6 @@
         "ReadAccountsBasic",
         "ReadDirectDebits"
       ],
-      "headers": {
-        "Content-Type": "application/json"
-      },
-
       "uri": "/accounts/$accountId/direct-debits/foobar",
       "uriImplementation": "conditional",
       "resource": "DirectDebit",
@@ -873,8 +774,7 @@
         "tokenRequestScope": "accounts"
       },
       "headers": {
-        "Authorization": "Bearer $client_access_token",
-        "Content-Type": "application/json"
+        "Authorization": "Bearer $client_access_token"
       },
       "uri": "/direct-debits",
       "uriImplementation": "optional",
@@ -921,8 +821,7 @@
         "x-fapi-interaction-id": "f5a10e5e-0c46-41c5-a7b7-c8f560205200"
       },
       "headers": {
-        "x-fapi-interaction-id": "$x-fapi-interaction-id",
-        "Content-Type": "application/json"
+        "x-fapi-interaction-id": "$x-fapi-interaction-id"
       },
       "permissions": [
         "ReadAccountsBasic",
@@ -950,10 +849,6 @@
         "ReadAccountsBasic",
         "ReadOffers"
       ],
-      "headers": {
-        "Content-Type": "application/json"
-      },
-
       "uri": "/accounts/$accountId/offers",
       "uriImplementation": "conditional",
       "resource": "Offer",
@@ -978,10 +873,8 @@
         "ReadOffers"
       ],
       "headers": {
-        "x-fapi-interaction-id": "$x-fapi-interaction-id",
-        "Content-Type": "application/json"
+        "x-fapi-interaction-id": "$x-fapi-interaction-id"
       },
-
       "uri": "/offers",
       "resource": "Offer",
       "uriImplementation": "optional",
@@ -1006,8 +899,7 @@
         "ReadOffers"
       ],
       "headers": {
-        "x-fapi-interaction-id": "$x-fapi-interaction-id",
-        "Content-Type": "application/json"
+        "x-fapi-interaction-id": "$x-fapi-interaction-id"      
       },
 
       "uri": "/accounts/$accountId/offers",
@@ -1034,8 +926,7 @@
         "ReadOffers"
       ],
       "headers": {
-        "x-fapi-interaction-id": "$x-fapi-interaction-id",
-        "Content-Type": "application/json"
+        "x-fapi-interaction-id": "$x-fapi-interaction-id"
       },
 
       "uri": "/accounts/$accountId/offers/foobar",
@@ -1057,8 +948,7 @@
       },
       "headers": {
         "Authorization": "Bearer $client_access_token",
-        "x-fapi-interaction-id": "$x-fapi-interaction-id",
-        "Content-Type": "application/json"
+        "x-fapi-interaction-id": "$x-fapi-interaction-id"
       },
 
       "uri": "/offers",
@@ -1081,8 +971,7 @@
         "x-fapi-interaction-id": "93bac548-d2de-4546-b106-880a5018460d"
       },
       "headers": {
-        "x-fapi-interaction-id": "$x-fapi-interaction-id",
-        "Content-Type": "application/json"
+        "x-fapi-interaction-id": "$x-fapi-interaction-id"
       },
 
       "permissions": [
@@ -1108,8 +997,7 @@
         "x-fapi-interaction-id": "f5a10e5e-0c46-41c5-a7b7-c8f560205200"
       },
       "headers": {
-        "x-fapi-interaction-id": "$x-fapi-interaction-id",
-        "Content-Type": "application/json"
+        "x-fapi-interaction-id": "$x-fapi-interaction-id"
       },
       "permissions": [
         "ReadAccountsBasic",
@@ -1137,9 +1025,6 @@
         "ReadAccountsBasic",
         "ReadParty"
       ],
-      "headers": {
-        "Content-Type": "application/json"
-      },
       "uri": "/accounts/$accountId/party",
       "uriImplementation": "conditional",
       "resource": "Party",
@@ -1162,10 +1047,6 @@
         "ReadAccountsBasic",
         "ReadPartyPSU"
       ],
-      "headers": {
-        "Content-Type": "application/json"
-      },
-
       "uri": "/party",
       "uriImplementation": "optional",
       "resource": "Beneficiary",
@@ -1189,10 +1070,6 @@
         "ReadAccountsBasic",
         "ReadParty"
       ],
-      "headers": {
-        "Content-Type": "application/json"
-      },
-
       "uri": "/accounts/$accountId/party",
       "uriImplementation": "conditional",
       "resource": "Party",
@@ -1238,10 +1115,6 @@
         "ReadAccountsBasic",
         "ReadParty"
       ],
-      "headers": {
-        "Content-Type": "application/json"
-      },
-
       "uri": "/accounts/$accountId/party/foobar",
       "uriImplementation": "conditional",
       "resource": "Party",
@@ -1260,9 +1133,7 @@
         "tokenRequestScope": "accounts"
       },
       "headers": {
-        "Authorization": "Bearer $client_access_token",
-        "Content-Type": "application/json"
-
+        "Authorization": "Bearer $client_access_token"
       },
       "uri": "/party",
       "uriImplementation": "optional",
@@ -1285,10 +1156,6 @@
         "ReadAccountsBasic",
         "ReadParty"
       ],
-      "headers": {
-        "Content-Type": "application/json"
-      },
-
       "uri": "/beneficiaries",
       "uriImplementation": "optional",
       "resource": "Party",
@@ -1309,8 +1176,7 @@
         "x-fapi-interaction-id": "93bac548-d2de-4546-b106-880a5018460d"
       },
       "headers": {
-        "x-fapi-interaction-id": "$x-fapi-interaction-id",
-        "Content-Type": "application/json"
+        "x-fapi-interaction-id": "$x-fapi-interaction-id"
       },
       "permissions": [
         "ReadAccountsBasic",
@@ -1335,9 +1201,7 @@
         "x-fapi-interaction-id": "f5a10e5e-0c46-41c5-a7b7-c8f560205200"
       },
       "headers": {
-        "x-fapi-interaction-id": "$x-fapi-interaction-id",
-        "Content-Type": "application/json"
-
+        "x-fapi-interaction-id": "$x-fapi-interaction-id"
       },
       "permissions": [
         "ReadAccountsBasic",
@@ -1365,10 +1229,6 @@
         "ReadAccountsBasic",
         "ReadProducts"
       ],
-      "headers": {
-        "Content-Type": "application/json"
-
-      },
       "uri": "/accounts/$accountId/product",
       "uriImplementation": "conditional",
       "resource": "Product",
@@ -1391,10 +1251,6 @@
         "ReadAccountsBasic",
         "ReadProducts"
       ],
-      "headers": {
-        "Content-Type": "application/json"
-
-      },
       "uri": "/products",
       "uriImplementation": "optional",
       "resource": "Product",
@@ -1418,9 +1274,6 @@
         "ReadAccountsBasic",
         "ReadProducts"
       ],
-      "headers": {
-        "Content-Type": "application/json"
-      },
       "uri": "/accounts/$accountId/product",
       "uriImplementation": "conditional",
       "resource": "Product",
@@ -1444,9 +1297,6 @@
         "ReadAccountsBasic",
         "ReadProducts"
       ],
-      "headers": {
-        "Content-Type": "application/json"
-      },
       "uri": "/accounts/$accountId/product/foobar",
       "resource": "Product",
       "asserts": [
@@ -1464,8 +1314,7 @@
         "tokenRequestScope": "accounts"
       },
       "headers": {
-        "Authorization": "Bearer $client_access_token",
-            "Content-Type": "application/json"
+        "Authorization": "Bearer $client_access_token"
       },
       "uri": "/products",
       "uriImplementation": "optional",
@@ -1487,9 +1336,8 @@
         "x-fapi-interaction-id": "93bac548-d2de-4546-b106-880a5018460d"
       },
       "headers": {
-        "x-fapi-interaction-id": "$x-fapi-interaction-id",
-            "Content-Type": "application/json"
-            },
+        "x-fapi-interaction-id": "$x-fapi-interaction-id"
+      },
       "permissions": [
         "ReadAccountsBasic",
         "ReadProducts"
@@ -1517,10 +1365,9 @@
         "ReadProducts"
       ],
       "headers": {
-        "x-fapi-interaction-id": "$x-fapi-interaction-id",
-        "Content-Type": "application/json"
-
-      },      "uri": "/product",
+        "x-fapi-interaction-id": "$x-fapi-interaction-id"
+      },      
+      "uri": "/product",
       "uriImplementation": "optional",
       "resource": "Product",
       "method": "get",
@@ -1542,9 +1389,6 @@
         "ReadAccountsBasic",
         "ReadScheduledPaymentsDetail"
       ],
-      "headers": {
-        "Content-Type": "application/json"
-      },
       "uri": "/accounts/$accountId/scheduled-payments",
       "uriImplementation": "conditional",
       "resource": "ScheduledPayment",
@@ -1567,9 +1411,6 @@
         "ReadAccountsBasic",
         "ReadScheduledPaymentsDetail"
       ],
-      "headers": {
-        "Content-Type": "application/json"
-      },
       "uri": "/scheduled-payments",
       "uriImplementation": "optional",
       "resource": "ScheduledPayment",
@@ -1592,11 +1433,8 @@
       "permissions": [
         "ReadAccountsBasic",
         "ReadScheduledPaymentsDetail"
-      ],
-      "headers": {
-        "Content-Type": "application/json"
-
-      },      "uri": "/accounts/$accountId/scheduled-payments",
+      ],      
+      "uri": "/accounts/$accountId/scheduled-payments",
       "uriImplementation": "conditional",
       "resource": "ScheduledPayment",
       "method": "get",
@@ -1621,10 +1459,7 @@
       "permissions": [
         "ReadAccountsBasic",
         "ReadScheduledPaymentsDetail"
-      ],      "headers": {
-        "Content-Type": "application/json"
-
-      },
+      ],
       "uri": "/accounts/$accountId/scheduled-payments/foobar",
       "resource": "ScheduledPayment",
       "asserts": [
@@ -1642,9 +1477,7 @@
         "tokenRequestScope": "accounts"
       },
       "headers": {
-        "Authorization": "Bearer $client_access_token",
-        "Content-Type": "application/json"
-
+        "Authorization": "Bearer $client_access_token"
       },
       "uri": "/scheduled-payments",
       "uriImplementation": "optional",
@@ -1666,8 +1499,7 @@
         "x-fapi-interaction-id": "93bac548-d2de-4546-b106-880a5018460d"
       },
       "headers": {
-        "x-fapi-interaction-id": "$x-fapi-interaction-id",
-        "Content-Type": "application/json"
+        "x-fapi-interaction-id": "$x-fapi-interaction-id"
       },
       "permissions": [
         "ReadAccountsBasic",
@@ -1696,10 +1528,9 @@
         "ReadScheduledPaymentsDetail"
       ],
       "headers": {
-        "x-fapi-interaction-id": "$x-fapi-interaction-id",
-        "Content-Type": "application/json"
-
-      },   "uri": "/scheduled-payments",
+        "x-fapi-interaction-id": "$x-fapi-interaction-id"
+      },   
+      "uri": "/scheduled-payments",
       "uriImplementation": "optional",
       "resource": "ScheduledPayment",
       "method": "get",
@@ -1721,10 +1552,6 @@
         "ReadAccountsBasic",
         "ReadStandingOrdersDetail"
       ],
-      "headers": {
-        "Content-Type": "application/json"
-
-      },
       "uri": "/accounts/$accountId/standing-orders",
       "uriImplementation": "conditional",
       "resource": "StandingOrder",
@@ -1747,9 +1574,6 @@
         "ReadAccountsBasic",
         "ReadStandingOrdersDetail"
       ],
-      "headers": {
-        "Content-Type": "application/json"
-      },
       "uri": "/standing-orders",
       "uriImplementation": "optional",
       "resource": "StandingOrder",
@@ -1773,10 +1597,6 @@
         "ReadAccountsBasic",
         "ReadStandingOrdersDetail"
       ],
-      "headers": {
-        "Content-Type": "application/json"
-
-      },
       "uri": "/accounts/$accountId/standing-orders",
       "uriImplementation": "conditional",
       "resource": "StandingOrder",
@@ -1803,9 +1623,6 @@
         "ReadAccountsBasic",
         "ReadStandingOrdersDetail"
       ],
-      "headers": {
-        "Content-Type": "application/json"
-      },
       "uri": "/accounts/$accountId/standing-orders/foobar",
       "resource": "StandingOrder",
       "asserts": [
@@ -1823,9 +1640,8 @@
         "tokenRequestScope": "accounts"
       },
       "headers": {
-        "Authorization": "Bearer $client_access_token",
-            "Content-Type": "application/json"
-    },
+        "Authorization": "Bearer $client_access_token"
+      },
       "uri": "/standing-orders",
       "uriImplementation": "optional",
       "resource": "StandingOrder",
@@ -1850,9 +1666,7 @@
         "ReadStandingOrdersDetail"
       ],
       "headers": {
-        "x-fapi-interaction-id": "$x-fapi-interaction-id",
-        "Content-Type": "application/json"
-
+        "x-fapi-interaction-id": "$x-fapi-interaction-id"
       },
       "uri": "/accounts/$accountId/standing-orders",
       "uriImplementation": "conditional",
@@ -1877,9 +1691,7 @@
         "ReadStandingOrdersDetail"
       ],
       "headers": {
-        "x-fapi-interaction-id": "$x-fapi-interaction-id",
-        "Content-Type": "application/json"
-
+        "x-fapi-interaction-id": "$x-fapi-interaction-id"
       },
       "uri": "/standing-orders",
       "uriImplementation": "optional",
@@ -1909,9 +1721,7 @@
         "ReadTransactionsDetail"
       ],
       "headers": {
-        "x-fapi-interaction-id": "$x-fapi-interaction-id",
-        "Content-Type": "application/json"
-
+        "x-fapi-interaction-id": "$x-fapi-interaction-id"
       },
       "uri": "/accounts/$accountId/transactions",
       "uriImplementation": "mandatory",
@@ -1939,10 +1749,6 @@
         "ReadTransactionsDebits",
         "ReadTransactionsCredits"
       ],
-      "headers": {
-        "Content-Type": "application/json"
-
-      },
       "uri": "/accounts/$accountId/transactions",
       "uriImplementation": "mandatory",
       "resource": "Transaction",
@@ -1970,10 +1776,6 @@
       "permissions-excluded": [
         "ReadTransactionsDetail"
       ],
-      "headers": {
-        "Content-Type": "application/json"
-
-      },
       "uri": "/transactions",
       "uriImplementation": "optional",
       "resource": "Transaction",
@@ -1999,10 +1801,6 @@
         "ReadTransactionsDebits",
         "ReadTransactionsCredits"
       ],
-      "headers": {
-        "Content-Type": "application/json"
-
-      },
       "uri": "/accounts/$accountId/transactions",
       "uriImplementation": "mandatory",
       "resource": "Transaction",
@@ -2019,10 +1817,6 @@
       "detail": "Validates that the Transaction list resource fails correctly given an invalid or incorrect token.",
       "parameters": {
         "tokenRequestScope": "accounts"
-      },
-      "headers": {
-        "Content-Type": "application/json"
-
       },
       "uri": "/transactions",
       "uriImplementation": "optional",
@@ -2046,9 +1840,7 @@
         "x-fapi-interaction-id": "f5a10e5e-0c46-41c5-a7b7-c8f56020520c"
       },
       "headers": {
-        "x-fapi-interaction-id": "$x-fapi-interaction-id",
-        "Content-Type": "application/json"
-
+        "x-fapi-interaction-id": "$x-fapi-interaction-id"
       },
       "permissions": [
         "ReadAccountsBasic",
@@ -2075,9 +1867,7 @@
         "x-fapi-interaction-id": "f5a10e5e-0c46-41c5-a7b7-c8f560205200"
       },
       "headers": {
-        "x-fapi-interaction-id": "$x-fapi-interaction-id",
-        "Content-Type": "application/json"
-
+        "x-fapi-interaction-id": "$x-fapi-interaction-id"
       },
       "permissions": [
         "ReadAccountsBasic",
@@ -2108,9 +1898,7 @@
         "ReadTransactionsDetail"
       ],
       "headers": {
-        "x-fapi-interaction-id": "$x-fapi-interaction-id",
-        "Content-Type": "application/json"
-
+        "x-fapi-interaction-id": "$x-fapi-interaction-id"
       },
       "uri": "/accounts/$accountId/transactions",
       "uriImplementation": "mandatory",
@@ -2134,9 +1922,7 @@
         "fromStatementDateTime": "2016-01-01T10:40:00+0200"
       },
       "headers": {
-        "x-fapi-interaction-id": "$x-fapi-interaction-id",
-        "Content-Type": "application/json"
-
+        "x-fapi-interaction-id": "$x-fapi-interaction-id"
       },
       "permissions": [
         "ReadAccountsBasic",
@@ -2164,9 +1950,7 @@
         "fromStatementDateTime": "2016-01-01T104012.345Z"
       },
       "headers": {
-        "x-fapi-interaction-id": "$x-fapi-interaction-id",
-        "Content-Type": "application/json"
-
+        "x-fapi-interaction-id": "$x-fapi-interaction-id"
       },
       "permissions": [
         "ReadAccountsBasic",
@@ -2194,9 +1978,7 @@
         "fromStatementDateTime": "2016-01-01T10:40:12.34.567Z"
       },
       "headers": {
-        "x-fapi-interaction-id": "$x-fapi-interaction-id",
-        "Content-Type": "application/json"
-
+        "x-fapi-interaction-id": "$x-fapi-interaction-id"
       },
       "permissions": [
         "ReadAccountsBasic",
@@ -2224,9 +2006,7 @@
         "fromStatementDateTime": "2016-01-01T10:40:12.34.567+01"
       },
       "headers": {
-        "x-fapi-interaction-id": "$x-fapi-interaction-id",
-        "Content-Type": "application/json"
-
+        "x-fapi-interaction-id": "$x-fapi-interaction-id"
       },
       "permissions": [
         "ReadAccountsBasic",
@@ -2254,9 +2034,7 @@
         "fromStatementDateTime": "20160101T104012.567+01"
       },
       "headers": {
-        "x-fapi-interaction-id": "$x-fapi-interaction-id",
-        "Content-Type": "application/json"
-
+        "x-fapi-interaction-id": "$x-fapi-interaction-id"
       },
       "permissions": [
         "ReadAccountsBasic",
