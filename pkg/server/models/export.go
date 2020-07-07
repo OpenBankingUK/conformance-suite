@@ -77,4 +77,5 @@ type ExportResults struct {
 	DiscoveryModel   discovery.Model                           `json:"discovery_model"`
 	ResponseFields   string                                    `json:"-"`
 	TLSVersionResult map[string]*discovery.TLSValidationResult `json:"-"`
+	JWSStatus        string                                    `json:"jws_status"`
 }

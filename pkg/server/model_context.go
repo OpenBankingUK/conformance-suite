@@ -4,6 +4,7 @@ import (
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/authentication"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/version"
+	"github.com/sirupsen/logrus"
 	"gopkg.in/resty.v1"
 )
 
@@ -113,5 +114,7 @@ func PutParametersToJourneyContext(config JourneyConfig, context model.Context) 
 	} else {
 		resty.SetHeader("User-Agent", "OpenBankingFCS/"+version.NewBitBucket("").GetHumanVersion())
 	}
+
+	logrus.Tracef("TokenEndpoint auth method %s", config.tokenEndpointAuthMethod)
 	return nil
 }

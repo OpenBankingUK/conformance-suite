@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/test"
+	"github.com/stretchr/testify/require"
 
 	"errors"
 	"testing"
@@ -13,7 +14,7 @@ func TestNewTestCaseResult123(t *testing.T) {
 	assert := test.NewAssert(t)
 
 	err := errors.New("some error")
-	result := NewTestCaseResult("123", true, NoMetrics(), []error{err}, "endpoint", "api-name", "api-version", "detailed description", "https://openbanking.org.uk/ref/uri")
+	result := NewTestCaseResult("123", true, NoMetrics(), []error{err}, "endpoint", "api-name", "api-version", "detailed description", "https://openbanking.org.uk/ref/uri", "200")
 
 	assert.Equal("123", result.Id)
 	assert.True(result.Pass)
@@ -26,7 +27,7 @@ func TestNewTestCaseResult321(t *testing.T) {
 
 	err := errors.New("some error")
 
-	result := NewTestCaseResult("321", true, NoMetrics(), []error{err}, "endpoint", "api-name", "api-version", "detailed description", "https://openbanking.org.uk/ref/uri")
+	result := NewTestCaseResult("321", true, NoMetrics(), []error{err}, "endpoint", "api-name", "api-version", "detailed description", "https://openbanking.org.uk/ref/uri", "200")
 	assert.Equal("321", result.Id)
 	assert.True(result.Pass)
 	assert.Equal(NoMetrics(), result.Metrics)
@@ -37,7 +38,7 @@ func TestNewTestCaseFailResult(t *testing.T) {
 	assert := test.NewAssert(t)
 	err := errors.New("some error")
 
-	result := NewTestCaseFail("id", NoMetrics(), []error{err}, "endpoint", "api-name", "api-version", "detailed description", "https://openbanking.org.uk/ref/uri")
+	result := NewTestCaseFail("id", NoMetrics(), []error{err}, "endpoint", "api-name", "api-version", "detailed description", "https://openbanking.org.uk/ref/uri", "200")
 
 	assert.Equal("id", result.Id)
 	assert.False(result.Pass)
@@ -46,9 +47,7 @@ func TestNewTestCaseFailResult(t *testing.T) {
 }
 
 func TestTestCaseResultJsonMarshal(t *testing.T) {
-	require := test.NewRequire(t)
-
-	result := NewTestCaseResult("123", true, NoMetrics(), nil, "endpoint", "api-name", "api-version", "detailed description", "https://openbanking.org.uk/ref/uri")
+	result := NewTestCaseResult("123", true, NoMetrics(), nil, "endpoint", "api-name", "api-version", "detailed description", "https://openbanking.org.uk/ref/uri", "200")
 
 	expected := `
 {
@@ -60,12 +59,13 @@ func TestTestCaseResultJsonMarshal(t *testing.T) {
 		"response_size": 0
 	},
 	"detail": "detailed description",
-	"refURI": "https://openbanking.org.uk/ref/uri"
+	"refURI": "https://openbanking.org.uk/ref/uri",
+	"httpStatusCode":"200"
 }
 	`
 	actual, err := json.Marshal(result)
-	require.NoError(err)
-	require.NotEmpty(actual)
+	require.NoError(t, err)
+	require.NotEmpty(t, actual)
 
-	require.JSONEq(expected, string(actual))
+	require.JSONEq(t, expected, string(actual))
 }

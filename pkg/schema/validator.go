@@ -78,9 +78,8 @@ func NewSwaggerOBSpecValidator(specName, version string) (Validator, error) {
 		}
 
 		if doc.Spec().Info.Version == version && doc.Spec().Info.Title == specName {
+			logrus.Traceln("Returning swagger validator filename: " + filename)
 			return NewSwaggerValidator(filename)
-		} else {
-			logrus.Debugf("No Swagger match: versions %v : %v , titles %v : %v ", doc.Spec().Info.Version, version, doc.Spec().Info.Title, specName)
 		}
 	}
 
@@ -122,6 +121,8 @@ func newValidator(doc *loads.Document) (Validator, error) {
 	case "v3.1.3":
 		fallthrough
 	case "v3.1.4":
+		fallthrough
+	case "v3.1.5":
 		return validators{
 			validators: []Validator{
 				newContentTypeValidator(f),

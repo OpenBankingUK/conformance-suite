@@ -31,7 +31,8 @@
         "value": "Data.ConsentId"
       },
       "method": "post",
-      "schemaCheck": true
+      "schemaCheck": true,
+      "validateSignature": true
     },
     {
       "description": "Domestic Payment consents succeeds with minimal data set with additional schema checks and default status is AwaitingAuthorisation.",
@@ -68,7 +69,8 @@
        "value": "Data.ConsentId"
       },
       "method": "post",
-      "schemaCheck": true
+      "schemaCheck": true,
+      "validateSignature": true
     },
     {
       "description": "Domestic Payment status is Authorised.",
@@ -88,7 +90,8 @@
         "OB3DOPAssertAuthorised"
       ],
       "method": "get",
-      "schemaCheck": true
+      "schemaCheck": true,
+      "validateSignature": true
     },
     {
       "description": "PISP Domestic Payment funds-confirmation for authorised status and consent status",
@@ -108,7 +111,8 @@
         "OB3DOPFundsAvailable"
       ],
       "method": "get",
-      "schemaCheck": true
+      "schemaCheck": true,
+      "validateSignature": true
     },
     {
       "description": "Domestic Payment for processing succeeds with minimal data.",
@@ -141,7 +145,8 @@
         "value": "Data.DomesticPaymentId"
       },
       "method": "post",
-      "schemaCheck": true
+      "schemaCheck": true,
+      "validateSignature": true
     },
     {
       "description": "PISP can retrieve the Domestic Payment status.",
@@ -159,7 +164,8 @@
         "OB3GLOAssertOn200"
       ],
       "method": "get",
-      "schemaCheck": true
+      "schemaCheck": true,
+      "validateSignature": true
     },
     {
       "description": "Domestic Scheduled Payment consents succeeds with minimal data set with additional schema checks.",
@@ -209,7 +215,8 @@
         "OB3DOPAssertAuthorised"
       ],
       "method": "get",
-      "schemaCheck": true
+      "schemaCheck": true,
+      "validateSignature": true
     },
     {
       "description": "Domestic Scheduled Payment succeeds with minimal data set with additional schema checks.",
@@ -261,7 +268,8 @@
         "OB3GLOAssertOn200"
       ],
       "method": "get",
-      "schemaCheck": true
+      "schemaCheck": true,
+      "validateSignature": true
     },
     {
       "description": "Once the consent has been authorised, PISP can submit the Domestic Scheduled Payment for processing.",
@@ -290,7 +298,8 @@
       },
       "method": "post",
       "body": "$postData",
-      "schemaCheck": true
+      "schemaCheck": true,
+      "validateSignature": true
     },
     {
       "description": "Domestic standing order consents succeeds with minimal data set with additional schema checks.",
@@ -321,7 +330,8 @@
         "value": "Data.ConsentId"
       },
       "method": "post",
-      "schemaCheck": true
+      "schemaCheck": true,
+      "validateSignature": true
     },
     {
       "description": "PISP can retrieve Domestic Standing Order consent resource status.",
@@ -340,7 +350,8 @@
         "OB3DOPAssertAuthorised"
       ],
       "method": "get",
-      "schemaCheck": true
+      "schemaCheck": true,
+      "validateSignature": true
     },
     {
       "description": "Domestic Standing Order succeeds with minimal data set with additional schema checks.",
@@ -371,7 +382,8 @@
         "value": "Data.DomesticStandingOrderId"
       },
       "method": "post",
-      "schemaCheck": true
+      "schemaCheck": true,
+      "validateSignature": true
     },
     {
       "description": "Domestic Standing Order fails with invalid frequency provided.",
@@ -397,7 +409,8 @@
         "OB3GLOAssertOn400"
       ],
       "method": "post",
-      "schemaCheck": true
+      "schemaCheck": true,
+      "validateSignature": true
     },
     {
       "description": "PISP can retrieve the Domestic Standing Order, status checks and response.",
@@ -415,7 +428,8 @@
         "OB3GLOAssertOn200"
       ],
       "method": "get",
-      "schemaCheck": true
+      "schemaCheck": true,
+      "validateSignature": true
     },
     {
       "description": "International Payment consent succeeds with minimal data set with additional schema checks.",
@@ -464,7 +478,8 @@
         "OB3DOPAssertAuthorised"
       ],
       "method": "get",
-      "schemaCheck": true
+      "schemaCheck": true,
+      "validateSignature": true
     },
     {
       "description": "International Payment succeeds with minimal data set with additional schema checks.",
@@ -515,7 +530,8 @@
         "OB3GLOAssertOn200"
       ],
       "method": "get",
-      "schemaCheck": true
+      "schemaCheck": true,
+      "validateSignature": true
     },
     {
       "description": "International Scheduled Payment consent succeeds with minimal data set with additional schema checks.",
@@ -567,7 +583,8 @@
         "OB3DOPAssertAuthorised"
       ],
       "method": "get",
-      "schemaCheck": true
+      "schemaCheck": true,
+      "validateSignature": true
     },
     {
       "description": "International Scheduled Payment succeeds with minimal data set with additional schema checks.",
@@ -600,7 +617,8 @@
         "value": "Data.InternationalScheduledPaymentId"
       },
       "method": "post",
-      "schemaCheck": true
+      "schemaCheck": true,
+      "validateSignature": true
     },
     {
       "description": "PISP can retrieve the International Scheduled Payment, status checks and response.",
@@ -618,7 +636,8 @@
         "OB3GLOAssertOn200"
       ],
       "method": "get",
-      "schemaCheck": true
+      "schemaCheck": true,
+      "validateSignature": true
     }
   ]
 }

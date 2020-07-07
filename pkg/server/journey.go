@@ -29,6 +29,7 @@ var (
 	errNotFinishedCollectingTokens     = errors.New("error not finished collecting tokens")
 	errConsentIDAcquisitionFailed      = errors.New("ConsentId acquistion failed")
 	errDynamicResourceAllocationFailed = errors.New("Dynamic Resource allocation failed")
+	errNoTestCases                     = errors.New("No testcases were generated - please select a wider set of endpoints to test")
 )
 
 // Journey represents all possible steps for a user test conformance journey
@@ -218,6 +219,13 @@ func (wj *journey) TestCases() (generation.SpecRun, error) {
 		return generation.SpecRun{}, errTestCasesGenerated
 	}
 
+	jwks_uri := authentication.GetJWKSUri()
+	if jwks_uri != "" { // STORE jwks_uri from well known endpoint in journey context
+		wj.context.PutString("jwks_uri", jwks_uri)
+	} else {
+		logrus.Warn("JWKS URI is empty")
+	}
+
 	if tlsCheck {
 		for k, discoveryItem := range wj.validDiscoveryModel.DiscoveryModel.DiscoveryItems {
 			tlsValidationResult, err := wj.tlsValidator.ValidateTLSVersion(discoveryItem.ResourceBaseURI)
@@ -258,6 +266,15 @@ func (wj *journey) TestCases() (generation.SpecRun, error) {
 		logger.Debug("generator.GenerateManifestTests ...")
 		logrus.Tracef("conditionalProperties from journey config: %#v", wj.config.conditionalProperties)
 		wj.specRun, wj.filteredManifests, wj.permissions = wj.generator.GenerateManifestTests(wj.log, config, discovery, &wj.context, wj.config.conditionalProperties)
+
+		tests := 0
+		for _, sp := range wj.specRun.SpecTestCases {
+			tests += len(sp.TestCases)
+		}
+		if tests == 0 { // no tests to run
+			logrus.Warn("No TestCases Generated!!!")
+			return generation.SpecRun{}, errNoTestCases
+		}
 
 		for _, spec := range wj.permissions {
 			for _, required := range spec {

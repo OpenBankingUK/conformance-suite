@@ -12,34 +12,6 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestValidators_Validate_AggregatesMultipleFailures(t *testing.T) {
-	doc, err := loads.Spec("spec/v3.1.0/confirmation-funds-swagger.flattened.json")
-	require.NoError(t, err)
-	validator, err := newValidator(doc)
-	require.NoError(t, err)
-	body := strings.NewReader(getAccountsResponse)
-	header := &http.Header{}
-	header.Add("Content-type", "application/klingon")
-	r := Response{
-		Method:     "POST",
-		Path:       "/funds-confirmation-consents",
-		StatusCode: http.StatusTeapot,
-		Body:       body,
-		Header:     *header,
-	}
-
-	failures, err := validator.Validate(r)
-
-	require.NoError(t, err)
-	assert.Len(t, failures, 3)
-	expected := []Failure{
-		{Message: "Content-Type Error: Should produce 'application/json', but got: 'application/klingon'"},
-		{Message: "server Status 418 not defined by the spec"},
-		{Message: "could't find a schema to validate for status code 418"},
-	}
-	assert.Equal(t, expected, failures)
-}
-
 func TestValidators_Validate_Transactions(t *testing.T) {
 	doc, err := loads.Spec("spec/v3.1.0/account-info-swagger.flattened.json")
 	require.NoError(t, err)

@@ -8,7 +8,6 @@ import (
 	"fmt"
 	"regexp"
 	"strings"
-	"time"
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/pkg/errors"
@@ -17,18 +16,24 @@ import (
 	minjson "github.com/tdewolff/minify/v2/json"
 )
 
+// Workaround for default PS256 signing parameter issue
+// https://github.com/dgrijalva/jwt-go/issues/285
+var SigningMethodPS256 = &jwt.SigningMethodRSAPSS{
+	SigningMethodRSA: jwt.SigningMethodPS256.SigningMethodRSA,
+	Options: &rsa.PSSOptions{
+		SaltLength: rsa.PSSSaltLengthEqualsHash,
+		Hash:       crypto.SHA256,
+	},
+}
+
+var b64Status bool      // for report export
+var eidas_kid string    // key id when using eidas certificates
+var eidas_issuer string // issuer for jwt signing for eidas certificates
+
 func GetSigningAlg(alg string) (jwt.SigningMethod, error) {
 	switch strings.ToUpper(alg) {
 	case "PS256":
-		// Workaround
-		// https://github.com/dgrijalva/jwt-go/issues/285
-		return &jwt.SigningMethodRSAPSS{
-			SigningMethodRSA: jwt.SigningMethodPS256.SigningMethodRSA,
-			Options: &rsa.PSSOptions{
-				SaltLength: rsa.PSSSaltLengthEqualsHash,
-				Hash:       crypto.SHA256,
-			},
-		}, nil
+		return SigningMethodPS256, nil
 	case "RS256":
 		return jwt.SigningMethodRS256, nil
 	case "NONE":
@@ -87,21 +92,28 @@ func SplitJWSWithBody(token string) string {
 	return firstPart + "." + lastPart
 }
 
-// SignedString Get the complete, signed token for jws usage
-func SignedString(t *jwt.Token, key interface{}, body string) (string, error) {
+// CreateSignature Get the complete, signed token for jws usage
+// Takes the token object, private key, payload body and b64encoding indicator
+// Create the signing string which includes the token header and payload body
+// Then signs this string using the key provided - the signing algorithm is part of the jwt.Token object
+func CreateSignature(t *jwt.Token, key interface{}, body string, b64encoded bool) (string, error) {
 	var sig, sstr string
 	var err error
-	if sstr, err = SigningString(t, body); err != nil {
-		return "", errors.Wrap(err, "authentication.SignedString: SigningString(t, body) failed")
+	if sstr, err = SigningString(t, body, b64encoded); err != nil {
+		return "", errors.Wrap(err, "authentication.CreateSignature: SigningString(t, body) failed")
 	}
+
 	if sig, err = t.Method.Sign(sstr, key); err != nil {
-		return "", errors.Wrap(err, "authentication.SignedString: t.Method.Sign(sstr, key failed")
+		return "", errors.Wrap(err, "authentication.CreateSignature: t.Method.Sign(sstr, key failed")
 	}
 	return strings.Join([]string{sstr, sig}, "."), nil
 }
 
-// SigningString -
-func SigningString(t *jwt.Token, body string) (string, error) {
+// JWT SigningString
+// takes the token, body string and b64 indicator
+// if b64encoded=true - base64urlEncodes the payload string as part of the string to be signed
+// if b64encoded=false - includes the payload unencoded (unmodified) in the string to be signed
+func SigningString(t *jwt.Token, body string, b64encoded bool) (string, error) {
 	var err error
 	parts := make([]string, 2)
 	for i := range parts {
@@ -116,57 +128,73 @@ func SigningString(t *jwt.Token, body string) (string, error) {
 		if i == 0 {
 			parts[i] = jwt.EncodeSegment(jsonValue)
 		} else {
-			parts[i] = string(jsonValue)
+			if b64encoded { // b64=true so encode segment - Sign with payload B64 encoding true - default for v3.1.4 and above of apis
+				parts[i] = jwt.EncodeSegment(jsonValue)
+			} else { // b64=false so include unencoded - Sign with payload B64 encoding false - v3.1.3 and previous versions of apis
+				parts[i] = string(jsonValue)
+			}
 		}
 	}
 	return strings.Join(parts, "."), nil
 }
 
 func NewJWSSignature(requestBody string, ctx ContextInterface, alg jwt.SigningMethod) (string, error) {
-	m := minify.New()
-	m.AddFuncRegexp(regexp.MustCompile("[/+]json$"), minjson.Minify)
-	minifiedBody, err := m.String("application/json", requestBody)
+
+	minifiedBody, err := minifiyJSONBody(requestBody)
 	if err != nil {
-		return "", errors.Wrap(err, `authentication.NewJWSSignature: m.String("application/json", requestBody) failed`)
+		return "", errors.Wrap(err, `NewJWSSignature: minifyBody failed`)
 	}
+
 	cert, err := SigningCertFromContext(ctx)
 	if err != nil {
-		return "", errors.Wrap(err, "authentication.NewJWSSignature: unable to sign certificate from context")
+		return "", errors.Wrap(err, "NewJWSSignature: unable to sign certificate from context")
 	}
-	modulus := cert.PublicKey().N.Bytes()
-	modulusBase64 := base64.RawURLEncoding.EncodeToString(modulus)
-	kid, err := CalcKid(modulusBase64)
-	if err != nil {
-		return "", errors.Wrap(err, "authentication.NewJWSSignature: CalcKid(modulusBase64) failed")
+
+	var kid string
+	if eidas_kid != "" {
+		kid = eidas_kid
+		logrus.Debugf("using Kid for eidas cert : %s", kid)
+	} else {
+		kid, err = getKidFromCertificate(cert)
+		if err != nil {
+			return "", errors.Wrap(err, "NewJWSSignature: getKidFromCertificate failed")
+		}
 	}
-	issuer, err := GetJWSIssuerString(ctx, cert)
-	if err != nil {
-		return "", errors.Wrap(err, "authentication.NewJWSSignature: unable to retrieve issuer from context")
+
+	var issuer string
+	if eidas_issuer != "" {
+		issuer = eidas_issuer
+		logrus.Debugf("using issuer for eidas cert : %s", issuer)
+	} else {
+		issuer, err = GetJWSIssuerString(ctx, cert)
+		if err != nil {
+			return "", errors.Wrap(err, "NewJWSSignature: unable to retrieve issuer from context")
+		}
 	}
+
 	trustAnchor := "openbanking.org.uk"
 	useNonOBDirectory, exists := ctx.Get("nonOBDirectory")
 	if !exists {
-		return "", errors.New("authentication.NewJWSSignature: unable to retrieve nonOBDirectory from context")
+		return "", errors.New("NewJWSSignature: unable to retrieve nonOBDirectory from context")
 	}
 	useNonOBDirectoryAsBool, ok := useNonOBDirectory.(bool)
 	if !ok {
-		return "", errors.New("authentication.NewJWSSignature: unable to cast nonOBDirectory to bool")
+		return "", errors.New("NewJWSSignature: unable to cast nonOBDirectory to bool")
 	}
 	if useNonOBDirectoryAsBool {
 		kid, err = ctx.GetString("signingKid")
 		if err != nil {
-			return "", errors.Wrap(err, "authentication.NewJWSSignature: unable to retrieve singingKid from context")
+			return "", errors.Wrap(err, "NewJWSSignature: unable to retrieve singingKid from context")
 		}
 		issuer, err = ctx.GetString("issuer")
 		if err != nil {
-			return "", errors.Wrap(err, "authentication.NewJWSSignature: unable to retrieve issue from context")
+			return "", errors.Wrap(err, "NewJWSSignature: unable to retrieve issue from context")
 		}
 		trustAnchor, err = ctx.GetString("signatureTrustAnchor")
 		if err != nil {
-			return "", errors.Wrap(err, "authentication.NewJWSSignature: unable to retrieve signatureTrustAnchor from context")
+			return "", errors.Wrap(err, "NewJWSSignature: unable to retrieve signatureTrustAnchor from context")
 		}
 	}
-	logrus.Tracef("jws issuer=%s", issuer)
 
 	logrus.WithFields(logrus.Fields{
 		"kid":    kid,
@@ -175,86 +203,113 @@ func NewJWSSignature(requestBody string, ctx ContextInterface, alg jwt.SigningMe
 		"claims": minifiedBody,
 	}).Trace("jws signature creation")
 
-	apiVersion, err := ctx.GetString("api-version")
+	b64encoding, err := GetB64Encoding(ctx)
 	if err != nil {
-		return "", errors.New("authentication.NewJWSSignature: cannot find api-version: " + err.Error())
+		return "", errors.New("NewJWSSignature: cannot GetB64Encoding " + err.Error())
 	}
 
-	var tok jwt.Token
-	switch apiVersion {
-	case "v.3.1.3":
-		// Contains `http://openbanking.org.uk/tan`.
-		tok = jwt.Token{
-			Header: map[string]interface{}{
-				"typ":                           "JOSE",
-				"kid":                           kid,
-				"cty":                           "application/json",
-				"http://openbanking.org.uk/iat": time.Now().Unix(),
-				"http://openbanking.org.uk/iss": issuer,      //ASPSP ORGID or TTP ORGID/SSAID
-				"http://openbanking.org.uk/tan": trustAnchor, //Trust anchor
-				"alg":                           alg.Alg(),
-				"crit": []string{
-					"http://openbanking.org.uk/iat",
-					"http://openbanking.org.uk/iss",
-					"http://openbanking.org.uk/tan",
-				},
-			},
-			Method: alg,
-		}
+	return buildSignature(b64encoding, kid, issuer, trustAnchor, minifiedBody, alg, cert.PrivateKey())
+}
+
+func GetB64Encoding(ctx ContextInterface) (bool, error) {
+	paymentApiVersion, err := getPaymentApiVersion(ctx)
+	if err != nil {
+		return false, errors.New("NewJWSSignature: cannot find payment apiversion: " + err.Error())
+	}
+
+	b64encoding, err := getB64Encoding(paymentApiVersion)
+	if err != nil {
+		return false, errors.New("NewJWSSignature: cannot getB64Encoding " + err.Error())
+	}
+
+	return b64encoding, nil
+}
+
+func getB64Encoding(paymentVersion string) (bool, error) {
+	switch paymentVersion {
+	case "v3.1.5":
+		fallthrough
+	case "v3.1.4":
+		setB64Status(true) // record setting for report
+		return true, nil
+	case "v3.1.3":
+		fallthrough
+	case "v3.1.2":
+		fallthrough
+	case "v3.1.1":
+		fallthrough
+	case "v3.1.0":
+		fallthrough
 	case "v3.1":
-		// Contains `http://openbanking.org.uk/tan`.
-		tok = jwt.Token{
-			Header: map[string]interface{}{
-				"typ":                           "JOSE",
-				"kid":                           kid,
-				"b64":                           false,
-				"cty":                           "application/json",
-				"http://openbanking.org.uk/iat": time.Now().Unix(),
-				"http://openbanking.org.uk/iss": issuer,      //ASPSP ORGID or TTP ORGID/SSAID
-				"http://openbanking.org.uk/tan": trustAnchor, //Trust anchor
-				"alg":                           alg.Alg(),
-				"crit": []string{
-					"b64",
-					"http://openbanking.org.uk/iat",
-					"http://openbanking.org.uk/iss",
-					"http://openbanking.org.uk/tan",
-				},
-			},
-			Method: alg,
-		}
+		return false, nil
 	case "v3.0":
-		// Does not contain `http://openbanking.org.uk/tan`.
-		// Read/Write Data API Specification - v3.0 Specification: https://openbanking.atlassian.net/wiki/spaces/DZ/pages/641992418/Read+Write+Data+API+Specification+-+v3.0.
-		// According to the spec this field `http://openbanking.org.uk/tan` should not be sent in the `x-jws-signature` header.
-		tok = jwt.Token{
-			Header: map[string]interface{}{
-				"typ":                           "JOSE",
-				"kid":                           kid,
-				"b64":                           false,
-				"cty":                           "application/json",
-				"http://openbanking.org.uk/iat": time.Now().Unix(),
-				"http://openbanking.org.uk/iss": issuer, //ASPSP ORGID or TTP ORGID/SSAID
-				"alg":                           alg.Alg(),
-				"crit": []string{
-					"b64",
-					"http://openbanking.org.uk/iat",
-					"http://openbanking.org.uk/iss",
-				},
-			},
-			Method: alg,
-		}
-	default:
-		return "", errors.New("authentication.GetJWSIssuerString: cannot get issuer for jws signature but api-version doesn't match 3.0.0 or 3.1.0")
+		return false, errors.New("b64Encoding: Unsupported Payment api Version (" + paymentVersion + ")")
 	}
+	return false, errors.New("b64Encoding: unknown Payment apiVersion (" + paymentVersion + ")")
+}
 
-	val, _ := json.Marshal(tok.Header)
-	fmt.Printf("Signing string %s, body %s\n", val, minifiedBody)
-
-	tokenString, err := SignedString(&tok, cert.PrivateKey(), minifiedBody) // sign the token - get as encoded string
+func minifiyJSONBody(body string) (string, error) {
+	m := minify.New()
+	m.AddFuncRegexp(regexp.MustCompile("[/+]json$"), minjson.Minify)
+	minifiedBody, err := m.String("application/json", body)
 	if err != nil {
-		return "", errors.Wrap(err, "authentication.NewJWSSignature: SignedString(&tok, cert.PrivateKey(), minifiedBody) failed")
+		logrus.Error(err, `minifyJSONBody failed`)
+		return "", err
+	}
+	return minifiedBody, nil
+}
+
+func getKidFromCertificate(cert Certificate) (string, error) {
+	modulus := cert.PublicKey().N.Bytes()
+	modulusBase64 := base64.RawURLEncoding.EncodeToString(modulus)
+	kid, err := CalcKid(modulusBase64)
+	return kid, err
+}
+
+// Gets the payment api version from the context
+// looks for the "apiversions" key
+// requires payment version to be in the form similar to "payments_v3.1.0"
+// apiversions is a string slice
+func getPaymentApiVersion(ctx ContextInterface) (string, error) {
+	apiVersions, err := ctx.GetStringSlice("apiversions")
+	if err != nil {
+		return "", errors.New("NewJWSSignature: cannot find apiversions: " + err.Error())
 	}
 
-	detachedJWS := SplitJWSWithBody(tokenString)
-	return detachedJWS, nil
+	for _, str := range apiVersions {
+		if strings.HasPrefix(str, "payments_") {
+			paymentVersion := after(str, "payments_")
+			if paymentVersion == "" {
+				return "", errors.New("Cannot find payment api version: " + str)
+			}
+			return paymentVersion, nil
+		}
+	}
+	return "", errors.New("Payment API version not found: " + strings.Join(apiVersions, ","))
+}
+
+// Get a string after the given string
+func after(value string, a string) string {
+	pos := strings.LastIndex(value, a)
+	if pos == -1 {
+		return ""
+	}
+	adjustedPos := pos + len(a)
+	if adjustedPos >= len(value) {
+		return ""
+	}
+	return value[adjustedPos:]
+}
+
+func setB64Status(status bool) {
+	b64Status = status
+}
+func GetB64Status() bool {
+	return b64Status
+}
+
+func SetEidasSigningParameters(issuer, kid string) {
+	eidas_issuer = issuer
+	eidas_kid = kid
+	logrus.Debugf("Setting EIDAS Signing Parameters ssa: %s, kid: %s", issuer, kid)
 }

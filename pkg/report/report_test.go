@@ -309,9 +309,9 @@ func stubResults(pass1, pass2, pass3 bool) map[results.ResultKey][]results.TestC
 		APIName:    "APIName1",
 	}
 	specs[spec1] = []results.TestCase{
-		results.NewTestCaseResult("1.1", pass1, results.NoMetrics(), nil, "endpoint", "api-name", "api-version", "detailed description", "https://openbanking.org.uk/ref/uri"),
-		results.NewTestCaseResult("1.2", true, results.NoMetrics(), nil, "endpoint", "api-name", "api-version", "detailed description", "https://openbanking.org.uk/ref/uri"),
-		results.NewTestCaseResult("1.3", true, results.NoMetrics(), nil, "endpoint", "api-name", "api-version", "detailed description", "https://openbanking.org.uk/ref/uri"),
+		results.NewTestCaseResult("1.1", pass1, results.NoMetrics(), nil, "endpoint", "api-name", "api-version", "detailed description", "https://openbanking.org.uk/ref/uri", "200 0K"),
+		results.NewTestCaseResult("1.2", true, results.NoMetrics(), nil, "endpoint", "api-name", "api-version", "detailed description", "https://openbanking.org.uk/ref/uri", "200 0K"),
+		results.NewTestCaseResult("1.3", true, results.NoMetrics(), nil, "endpoint", "api-name", "api-version", "detailed description", "https://openbanking.org.uk/ref/uri", "200 0K"),
 	}
 
 	spec2 := results.ResultKey{
@@ -319,9 +319,9 @@ func stubResults(pass1, pass2, pass3 bool) map[results.ResultKey][]results.TestC
 		APIName:    "APIName2",
 	}
 	specs[spec2] = []results.TestCase{
-		results.NewTestCaseResult("2.1", true, results.NoMetrics(), nil, "endpoint", "api-name", "api-version", "detailed description", "https://openbanking.org.uk/ref/uri"),
-		results.NewTestCaseResult("2.2", pass2, results.NoMetrics(), nil, "endpoint", "api-name", "api-version", "detailed description", "https://openbanking.org.uk/ref/uri"),
-		results.NewTestCaseResult("2.3", true, results.NoMetrics(), nil, "endpoint", "api-name", "api-version", "detailed description", "https://openbanking.org.uk/ref/uri"),
+		results.NewTestCaseResult("2.1", true, results.NoMetrics(), nil, "endpoint", "api-name", "api-version", "detailed description", "https://openbanking.org.uk/ref/uri", "200 0K"),
+		results.NewTestCaseResult("2.2", pass2, results.NoMetrics(), nil, "endpoint", "api-name", "api-version", "detailed description", "https://openbanking.org.uk/ref/uri", "200 0K"),
+		results.NewTestCaseResult("2.3", true, results.NoMetrics(), nil, "endpoint", "api-name", "api-version", "detailed description", "https://openbanking.org.uk/ref/uri", "200 0K"),
 	}
 
 	spec3 := results.ResultKey{
@@ -329,9 +329,9 @@ func stubResults(pass1, pass2, pass3 bool) map[results.ResultKey][]results.TestC
 		APIName:    "APIName3",
 	}
 	specs[spec3] = []results.TestCase{
-		results.NewTestCaseResult("3.1", true, results.NoMetrics(), nil, "endpoint", "api-name", "api-version", "detailed description", "https://openbanking.org.uk/ref/uri"),
-		results.NewTestCaseResult("3.2", true, results.NoMetrics(), nil, "endpoint", "api-name", "api-version", "detailed description", "https://openbanking.org.uk/ref/uri"),
-		results.NewTestCaseResult("3.3", pass3, results.NoMetrics(), nil, "endpoint", "api-name", "api-version", "detailed description", "https://openbanking.org.uk/ref/uri"),
+		results.NewTestCaseResult("3.1", true, results.NoMetrics(), nil, "endpoint", "api-name", "api-version", "detailed description", "https://openbanking.org.uk/ref/uri", "200 0K"),
+		results.NewTestCaseResult("3.2", true, results.NoMetrics(), nil, "endpoint", "api-name", "api-version", "detailed description", "https://openbanking.org.uk/ref/uri", "200 0K"),
+		results.NewTestCaseResult("3.3", pass3, results.NoMetrics(), nil, "endpoint", "api-name", "api-version", "detailed description", "https://openbanking.org.uk/ref/uri", "200 0K"),
 	}
 
 	spec4 := results.ResultKey{
@@ -339,9 +339,9 @@ func stubResults(pass1, pass2, pass3 bool) map[results.ResultKey][]results.TestC
 		APIName:    "APIName4",
 	}
 	specs[spec4] = []results.TestCase{
-		results.NewTestCaseResult("4.1", true, results.NoMetrics(), nil, "endpoint", "api-name", "api-version", "detailed description", "https://openbanking.org.uk/ref/uri"),
-		results.NewTestCaseResult("4.2", true, results.NoMetrics(), nil, "endpoint", "api-name", "api-version", "detailed description", "https://openbanking.org.uk/ref/uri"),
-		results.NewTestCaseResult("4.3", true, results.NoMetrics(), nil, "endpoint", "api-name", "api-version", "detailed description", "https://openbanking.org.uk/ref/uri"),
+		results.NewTestCaseResult("4.1", true, results.NoMetrics(), nil, "endpoint", "api-name", "api-version", "detailed description", "https://openbanking.org.uk/ref/uri", "200 0K"),
+		results.NewTestCaseResult("4.2", true, results.NoMetrics(), nil, "endpoint", "api-name", "api-version", "detailed description", "https://openbanking.org.uk/ref/uri", "200 0K"),
+		results.NewTestCaseResult("4.3", true, results.NoMetrics(), nil, "endpoint", "api-name", "api-version", "detailed description", "https://openbanking.org.uk/ref/uri", "200 0K"),
 	}
 
 	return specs

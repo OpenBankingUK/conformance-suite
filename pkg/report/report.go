@@ -36,6 +36,7 @@ type Report struct {
 	APISpecification []APISpecification `json:"apiSpecification"`         // API and version tested, along with test cases
 	FCSVersion       string             `json:"fcsVersion"`               // Version of FCS running the tests
 	Products         []string           `json:"products"`                 // Products tested, e.g., "Business, Personal, Cards"
+	JWSStatus        string             `json:"jwsStatus"`                // Signature status
 }
 
 type APISpecification struct {
@@ -111,6 +112,7 @@ func NewReport(exportResults models.ExportResults, environment string) (Report, 
 		APISpecification: apiSpecs,
 		FCSVersion:       version.FullVersion,
 		Products:         exportResults.ExportRequest.Products,
+		JWSStatus:        exportResults.JWSStatus,
 	}, nil
 }
 

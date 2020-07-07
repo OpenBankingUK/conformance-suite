@@ -48,6 +48,7 @@ type Script struct {
 	SchemaCheck         bool              `json:"schemaCheck,omitempty"`
 	ContextPut          map[string]string `json:"keepContextOnSuccess,omitempty"`
 	UseCCGToken         bool              `json:"useCCGToken,omitempty"`
+	ValidateSignature   bool              `json:"validateSignature,omitempty"`
 }
 
 // References - reference collection
@@ -312,6 +313,7 @@ func testCaseBuilder(s Script, refs map[string]Reference, ctx *model.Context, co
 	tc.APIName = apiSpec.Name
 	tc.APIVersion = apiSpec.Version
 	tc.Validator = validator
+	tc.ValidateSignature = s.ValidateSignature
 
 	//TODO: make these more configurable - header also get set in buildInput Section
 	tc.Input.Headers["x-fapi-financial-id"] = "$x-fapi-financial-id"
@@ -436,6 +438,11 @@ func LoadGenerationResources(specType, manifestPath string, ctx *model.Context) 
 	}
 
 	vsScripts, err = getVersionSpecificScripts(specType, "3.1.4", ctx)
+	if err != nil {
+		return Scripts{}, References{}, err
+	}
+
+	vsScripts, err = getVersionSpecificScripts(specType, "3.1.5", ctx)
 	if err != nil {
 		return Scripts{}, References{}, err
 	}

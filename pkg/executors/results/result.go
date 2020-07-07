@@ -11,15 +11,16 @@ type TestCase struct {
 	Endpoint   string   `json:"endpoint"`
 	API        string   `json:"-"`
 	APIVersion string   `json:"-"`
+	HttpStatus string   `json:"httpStatusCode"`
 }
 
 // NewTestCaseFail returns a failed test
-func NewTestCaseFail(id string, metrics Metrics, errs []error, endpoint, api, apiVersion, detail, refURI string) TestCase {
-	return NewTestCaseResult(id, false, metrics, errs, endpoint, api, apiVersion, detail, refURI)
+func NewTestCaseFail(id string, metrics Metrics, errs []error, endpoint, api, apiVersion, detail, refURI, httpStatus string) TestCase {
+	return NewTestCaseResult(id, false, metrics, errs, endpoint, api, apiVersion, detail, refURI, httpStatus)
 }
 
 // NewTestCaseResult return a new TestCase instance
-func NewTestCaseResult(id string, pass bool, metrics Metrics, errs []error, endpoint, apiName, apiVersion, detail, refURI string) TestCase {
+func NewTestCaseResult(id string, pass bool, metrics Metrics, errs []error, endpoint, apiName, apiVersion, detail, refURI, httpStatus string) TestCase {
 	reasons := []string{}
 	for _, err := range errs {
 		reasons = append(reasons, err.Error())
@@ -34,6 +35,7 @@ func NewTestCaseResult(id string, pass bool, metrics Metrics, errs []error, endp
 		Endpoint:   endpoint,
 		Detail:     detail,
 		RefURI:     refURI,
+		HttpStatus: httpStatus,
 	}
 }
 

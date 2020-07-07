@@ -258,7 +258,12 @@ func HasMandatoryEndpoints(checker model.ConditionalityChecker, discoveryConfig 
 		for _, endpoint := range discoveryItem.Endpoints {
 			discoveryEndpoints = append(discoveryEndpoints, model.Input{Endpoint: endpoint.Path, Method: endpoint.Method})
 		}
-		missingMandatory, err := checker.MissingMandatory(discoveryEndpoints, specification.Identifier)
+		var missingMandatory []model.Input // disable mandatory endpoint checking for payment apis - to allow single token test runs
+		if strings.HasPrefix(specification.Identifier, "payment") {
+			logrus.Trace("Skipping payment spec mandatory endpoint check")
+		} else {
+			missingMandatory, err = checker.MissingMandatory(discoveryEndpoints, specification.Identifier)
+		}
 		if err != nil {
 			failure := ValidationFailure{
 				Key:   fmt.Sprintf("DiscoveryModel.DiscoveryItems[%d].Endpoints", discoveryItemIndex),
@@ -273,6 +278,7 @@ func HasMandatoryEndpoints(checker model.ConditionalityChecker, discoveryConfig 
 				Error: fmt.Sprintf("Missing mandatory endpoint Method='%s', Path='%s'", mandatoryEndpoint.Method,
 					mandatoryEndpoint.Endpoint),
 			}
+			logrus.Warnf("Missing mandatory endpoint Method='%s', Path='%s'", mandatoryEndpoint.Method, mandatoryEndpoint.Endpoint)
 			failures = append(failures, failure)
 		}
 	}

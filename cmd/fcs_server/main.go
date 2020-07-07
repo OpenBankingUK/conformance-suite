@@ -7,6 +7,7 @@ import (
 	"strings"
 	"time"
 
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/authentication"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/generation"
 
@@ -83,10 +84,12 @@ func init() {
 	rootCmd.PersistentFlags().Bool("log_tracer", false, "Enable tracer logging")
 	rootCmd.PersistentFlags().Bool("log_http_trace", false, "Enable HTTP logging")
 	rootCmd.PersistentFlags().Int("port", 8443, "Server port")
-	rootCmd.PersistentFlags().Bool("enable_jws", false, "Enable JWS Signature")
+	rootCmd.PersistentFlags().Bool("disable_jws", false, "Disalbe JWS Signatures")
 	rootCmd.PersistentFlags().Bool("dynres", false, "Use Dynamic Resource IDs - accounts")
 	rootCmd.PersistentFlags().Bool("dumpcontexts", false, "Dump contexts when trace enabled")
 	rootCmd.PersistentFlags().Bool("tlscheck", true, "enable tls version checking - default enabled")
+	rootCmd.PersistentFlags().String("eadas_issuer", "", "Signing issuer when using EIDAS certificates")
+	rootCmd.PersistentFlags().String("eidas_siging_kid", "", "Signing Key Id when using EIDAS signing certification")
 
 	if err := viper.BindPFlags(rootCmd.PersistentFlags()); err != nil {
 		fmt.Fprint(os.Stderr, err)
@@ -148,8 +151,8 @@ func initConfig() {
 		}
 	}
 
-	if viper.GetBool("enable_jws") {
-		model.EnableJWS()
+	if viper.GetBool("disable_jws") {
+		model.DisableJWS()
 	}
 
 	if viper.GetBool("dumpcontexts") {
@@ -162,6 +165,9 @@ func initConfig() {
 
 	resty.SetDebug(viper.GetBool("log_http_trace"))
 	resty.SetRedirectPolicy(resty.FlexibleRedirectPolicy(15))
+	eisas_issuer := viper.GetString("eidas_issuer")
+	eidas_kid := viper.GetString("eidas_kid")
+	authentication.SetEidasSigningParameters(eisas_issuer, eidas_kid)
 
 	printConfigurationFlags()
 }
@@ -175,9 +181,11 @@ func printConfigurationFlags() {
 		"log_to_file":    viper.GetBool("log_to_file"),
 		"port":           viper.GetInt("port"),
 		"tracer.Silent":  tracer.Silent,
-		"enable_jws":     viper.GetBool("enable_jws"),
+		"disable_jws":    viper.GetBool("disable_jws"),
 		"dynres":         viper.GetBool("dynres"),
 		"dumpcontexts":   viper.GetBool("dumpcontexts"),
 		"tlscheck":       viper.GetBool("tlscheck"),
+		"eidas_issuer":   viper.GetString("eidas_issuer"),
+		"eidas_keyid":    viper.GetString("eidas_kid"),
 	}).Info("configuration flags")
 }

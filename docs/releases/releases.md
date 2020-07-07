@@ -1,3 +1,20 @@
+# Release v1.5.2 (7th July 2020)
+
+The release is called **v1.5.2**, a minor update that allows the provision of two new command line parameters "eidas_issuer" and "eidas_kid" for EIDAS signing certificates (QSeals and OBseals) that are registered with the Open Banking Directory.
+
+[Full Release Notes](https://bitbucket.org/openbankingteam/conformance-suite/src/develop/docs/releases/v1.5.2.md) (v1.5.2.md)
+
+# Release v1.5.1 (1st June 2020)
+
+The release is called **v1.5.1**, a minor update that enables JWS signature checking for version 3.1.4 and above, 3.1.3 and previous versions of the Open Banking Read/Write Data API Specification in line with the expiry of [Waiver 007](https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1112670669/W007).
+
+# Release v1.5.0 (30th April 2020)
+
+The release is called **v1.5.0**, a minor update that adds support for the [Read/Write Data API Specification 3.1.5](https://openbankinguk.github.io/read-write-api-site3/v3.1.5/profiles/account-and-transaction-api-profile.html) including swagger validation for accounts, payments and CBPII. This release is backwards compatible with older versions of the standard.
+
+
+[Full Release Notes](https://bitbucket.org/openbankingteam/conformance-suite/src/develop/docs/releases/v1.5.0.md) (v1.5.0.md)
+
 # Release v1.4.0 (20th April 2020)
 
 The release is called **v1.4.0**, a minor update that adds support for the [Read/Write Data API Specification 3.1.4](https://openbankinguk.github.io/read-write-api-site3/v3.1.4/profiles/account-and-transaction-api-profile.html) including swagger validation for accounts, payments and CBPII. This release is backwards compatible with older versions of the standard.

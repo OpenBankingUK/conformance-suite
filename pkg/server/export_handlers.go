@@ -9,6 +9,7 @@ import (
 	"github.com/labstack/echo"
 	"github.com/sirupsen/logrus"
 
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/report"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/server/models"
 )
@@ -61,8 +62,8 @@ func (h exportHandlers) postExport(c echo.Context) error {
 		DiscoveryModel:   discovery,
 		TLSVersionResult: h.journey.TLSVersionResult(),
 		ResponseFields:   responseFields,
+		JWSStatus:        model.JWSStatus(),
 	}
-	logger.WithField("exportResults", exportResults).Info("Exported")
 
 	r, err := report.NewReport(exportResults, request.Environment)
 	if err != nil {
