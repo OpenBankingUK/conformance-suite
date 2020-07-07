@@ -19,7 +19,7 @@ To provide feedback, please use the public [issue tracker](https://bitbucket.org
 
 # Release v1.5.2 (7th July 2020)
 
-The release is called **v1.5.2**, a minor update that allows the provision of two new command line parameters "eidas_issuer" and "eidas_kid" for OBwac OBseal support.
+The release is called **v1.5.2**, a minor update that allows the provision of two new command line parameters "eidas_issuer" and "eidas_kid" for EIDAS signing certificates (QSeals and OBseals) that are registered with the Open Banking Directory.
 
 [Full Release Notes](https://bitbucket.org/openbankingteam/conformance-suite/src/develop/docs/releases/v1.5.2.md) (v1.5.2.md)
 
