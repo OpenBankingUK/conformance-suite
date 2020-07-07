@@ -17,11 +17,11 @@ To provide feedback, please use the public [issue tracker](https://bitbucket.org
 ## Release Notes 
 * * *
 
-# Release v1.5.1 (1st June 2020)
+# Release v1.5.2 (7th July 2020)
 
-The release is called **v1.5.1**, a minor update that enables JWS signature checking for version 3.1.4 and above, 3.1.3 and previous versions of the Open Banking Read/Write Data API Specification in line with the expiry of [Waiver 007](https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1112670669/W007).
+The release is called **v1.5.2**, a minor update that allows the provision of two new command line parameters "eidas_issuer" and "eidas_kid" for EIDAS signing certificates (QSeals and OBseals) that are registered with the Open Banking Directory.
 
-[Full Release Notes](https://bitbucket.org/openbankingteam/conformance-suite/src/develop/docs/releases/v1.5.1.md) (v1.5.1.md)
+[Full Release Notes](https://bitbucket.org/openbankingteam/conformance-suite/src/develop/docs/releases/v1.5.2.md) (v1.5.2.md)
 
 ## Quickstart
 * * *
