@@ -28,10 +28,18 @@ export const mutations = {
   [mutationTypes.SET_CONFIGURATION_TRANSPORT_PUBLIC](state, transportPublic) {
     state.configuration.transport_public = transportPublic;
   },
+  [mutationTypes.SET_USE_EIDAS_CERT](state, value) {
+    state.configuration.use_eidas_cert = value;
+  },
+  [mutationTypes.SET_EIDAS_SIGNING_KID](state, value) {
+    state.configuration.eidas_signing_kid = value;
+  },
+  [mutationTypes.SET_EIDAS_ISSUER](state, value) {
+    state.configuration.eidas_issuer = value;
+  },
   [mutationTypes.SET_DISCOVERY_TEMPLATES](state, templates) {
     state.discoveryTemplates = templates;
   },
-
   [mutationTypes.SET_WIZARD_STEP](state, step) {
     state.wizard.step = step;
   },
@@ -244,6 +252,9 @@ export const state = {
     signing_public: '',
     transport_private: '',
     transport_public: '',
+    use_eidas_cert: false,
+    eidas_signing_kid: '',
+    eidas_issuer: '',
     transaction_from_date: '',
     transaction_to_date: '',
     client_id: '',
