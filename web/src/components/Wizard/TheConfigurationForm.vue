@@ -65,7 +65,7 @@
             required
             type="text"
           />
-        </b-form-group>        
+        </b-form-group>
 
         <b-form-group
           id="resource_account_id_group"
@@ -666,27 +666,27 @@ export default {
       },
     },
     use_eidas_cert: {
-      get(){
+      get() {
         return this.$store.state.config.configuration.use_eidas_cert;
       },
-      set(value){
-        this.$store.commit('config/SET_USE_EIDAS_CERT',value);
+      set(value) {
+        this.$store.commit('config/SET_USE_EIDAS_CERT', value);
       },
     },
     eidas_signing_kid: {
-      get(){
+      get() {
         return this.$store.state.config.configuration.eidas_signing_kid;
       },
-      set(value){
-        this.$store.commit('config/SET_EIDAS_SIGNING_KID',value);
+      set(value) {
+        this.$store.commit('config/SET_EIDAS_SIGNING_KID', value);
       },
     },
     eidas_issuer: {
-      get(){
+      get() {
         return this.$store.state.config.configuration.eidas_issuer;
       },
-      set(value){
-        this.$store.commit('config/SET_EIDAS_ISSUER',value);
+      set(value) {
+        this.$store.commit('config/SET_EIDAS_ISSUER', value);
       },
     },
     // For an explanation on how these work. See:
