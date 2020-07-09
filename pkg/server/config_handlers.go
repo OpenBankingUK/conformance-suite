@@ -59,6 +59,9 @@ type GlobalConfiguration struct {
 	SigningPublic                 string                               `json:"signing_public" validate:"not_empty"`
 	TransportPrivate              string                               `json:"transport_private" validate:"not_empty"`
 	TransportPublic               string                               `json:"transport_public" validate:"not_empty"`
+	UseEIDASCert                  *bool                                `json:"use_eidas_cert,omitempty"` // TBD: if we can ensure that this field is always populated in the requests, we can use non-pointer
+	EIDASSigningKID               string                               `json:"eidas_signing_kid,omitempty"`
+	EIDASIssuer                   string                               `json:"eidas_issuer,omitempty"`
 	ClientID                      string                               `json:"client_id" validate:"not_empty"`
 	ClientSecret                  string                               `json:"client_secret" validate:"not_empty"`
 	TokenEndpoint                 string                               `json:"token_endpoint" validate:"valid_url"`
@@ -183,6 +186,11 @@ func (h configHandlers) configGlobalPostHandler(c echo.Context) error {
 	journeyConfig, err := MakeJourneyConfig(config)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, NewErrorResponse(err))
+	}
+
+	// Set EIDAS KID & Issuer
+	if config.UseEIDASCert != nil && *config.UseEIDASCert {
+		authentication.SetEidasSigningParameters(config.EIDASSigningKID, config.EIDASSigningKID)
 	}
 
 	// Use the transport keys for MATLS as some endpoints require this
