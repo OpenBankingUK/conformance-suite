@@ -190,7 +190,7 @@ func (h configHandlers) configGlobalPostHandler(c echo.Context) error {
 
 	// Set EIDAS KID & Issuer
 	if config.UseEIDASCert != nil && *config.UseEIDASCert {
-		authentication.SetEidasSigningParameters(config.EIDASSigningKID, config.EIDASSigningKID)
+		authentication.SetEidasSigningParameters(config.EIDASIssuer, config.EIDASSigningKID)
 	}
 
 	// Use the transport keys for MATLS as some endpoints require this
