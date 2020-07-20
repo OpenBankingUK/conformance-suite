@@ -191,7 +191,7 @@
         }]
       }
     },
-    "OB3IPAssertResourceFieldInvalidOBErrorCode": {
+    "OB3IPAssertResourceFieldInvalidOBErrorCode400": {
       "expect": {
         "status-code": 400,
         "matches": [{

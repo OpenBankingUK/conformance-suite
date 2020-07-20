@@ -8,12 +8,12 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"gopkg.in/resty.v1"
 
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/manifest"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/schema"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/test"
-	"gopkg.in/resty.v1"
 )
 
 var (
@@ -25,7 +25,6 @@ var (
 // It is important to note that there is no automatic mechanism keeping the above file and these tests synchronised
 // which means that in case the above file changes then these tests must be updated accordingly.
 func TestAccountTransactions(t *testing.T) {
-	const emptyBody = ""
 	emptyContext := &model.Context{}
 
 	b, err := ioutil.ReadFile(*assertionsPath)
@@ -44,7 +43,7 @@ func TestAccountTransactions(t *testing.T) {
 	// but responses with 403 code may return with any body.
 	testCase := model.TestCase{
 		ExpectOneOf: []model.Expect{
-			refs.References["OB3IPAssertResourceFieldInvalidOBErrorCode"].Expect,
+			refs.References["OB3IPAssertResourceFieldInvalidOBErrorCode400"].Expect,
 			refs.References["OB3GLOAssertOn403"].Expect,
 		},
 	}
@@ -56,7 +55,7 @@ func TestAccountTransactions(t *testing.T) {
 
 	t.Run("Returning 403 without response body should PASS", func(t *testing.T) {
 		headers := map[string]string{}
-		resp := CreateHTTPResponse(403, emptyBody, headers)
+		resp := createHTTPResponse(403, "", headers)
 		result, err := testCase.Validate(resp, emptyContext)
 		if len(err) != 0 {
 			t.Fatal(err)
@@ -66,7 +65,7 @@ func TestAccountTransactions(t *testing.T) {
 
 	t.Run("Returning 403 with any response body should PASS", func(t *testing.T) {
 		headers := map[string]string{}
-		resp := CreateHTTPResponse(403, "response body is not checked (TBD: does non-empty body have to follow schema?)", headers)
+		resp := createHTTPResponse(403, "response body is not checked (TBD: does non-empty body have to follow schema?)", headers)
 		result, err := testCase.Validate(resp, emptyContext)
 		if len(err) != 0 {
 			t.Fatal(err)
@@ -76,7 +75,7 @@ func TestAccountTransactions(t *testing.T) {
 
 	t.Run("Returning 400 with correct body should PASS", func(t *testing.T) {
 		headers := map[string]string{}
-		resp := CreateHTTPResponse(400, `{"Errors":[{"ErrorCode":"UK.OBIE.Field.Invalid"}]}`, headers)
+		resp := createHTTPResponse(400, `{"Errors":[{"ErrorCode":"UK.OBIE.Field.Invalid"}]}`, headers)
 		result, err := testCase.Validate(resp, emptyContext)
 		if len(err) != 0 {
 			t.Fatal(err)
@@ -86,7 +85,7 @@ func TestAccountTransactions(t *testing.T) {
 
 	t.Run("Returning 400 with incorrect body should FAIL", func(t *testing.T) {
 		headers := map[string]string{}
-		resp := CreateHTTPResponse(400, `{"Errors":[]}`, headers)
+		resp := createHTTPResponse(400, `{"Errors":[]}`, headers)
 		result, err := testCase.Validate(resp, emptyContext)
 		assert.True(t, errorsContain(err, "JSON Match Failed"))
 		assert.False(t, result, "expected: %v actual: %v", false, result)
@@ -94,7 +93,7 @@ func TestAccountTransactions(t *testing.T) {
 
 	t.Run("Returning incorrect status should FAIL", func(t *testing.T) {
 		headers := map[string]string{}
-		resp := CreateHTTPResponse(200, `OK`, headers)
+		resp := createHTTPResponse(200, `OK`, headers)
 		result, err := testCase.Validate(resp, emptyContext)
 		assert.True(t, errorsContain(err, "HTTP Status code does not match"))
 		assert.False(t, result, "expected: %v actual: %v", true, result)
@@ -110,7 +109,7 @@ func errorsContain(errs []error, s string) bool {
 	return false
 }
 
-func CreateHTTPResponse(code int, body string, headers map[string]string) *resty.Response {
+func createHTTPResponse(code int, body string, headers map[string]string) *resty.Response {
 	mockedServer, mockedServerURL := test.HTTPServer(code, body, headers)
 	defer mockedServer.Close()
 	res, _ := resty.R().Get(mockedServerURL)

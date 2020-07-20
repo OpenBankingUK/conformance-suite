@@ -573,7 +573,7 @@
       "resource": "Beneficiary",
       "method": "get",
       "asserts_one_of": [
-        "OB3IPAssertResourceFieldInvalidOBErrorCode",
+        "OB3IPAssertResourceFieldInvalidOBErrorCode400",
         "OB3GLOAssertOn403"
       ],
       "schemaCheck": false
@@ -904,7 +904,7 @@
       "resource": "Offer",
       "method": "get",
       "asserts": [
-        "OB3IPAssertResourceFieldInvalidOBErrorCode"
+        "OB3IPAssertResourceFieldInvalidOBErrorCode400"
       ],
       "schemaCheck": false
     },
@@ -1435,7 +1435,7 @@
       "resource": "ScheduledPayment",
       "method": "get",
       "asserts_one_of": [
-        "OB3IPAssertResourceFieldInvalidOBErrorCode",
+        "OB3IPAssertResourceFieldInvalidOBErrorCode400",
         "OB3GLOAssertOn403"
       ],
       "schemaCheck": false
@@ -1595,7 +1595,7 @@
       "resource": "StandingOrder",
       "method": "get",
       "asserts_one_of": [
-        "OB3IPAssertResourceFieldInvalidOBErrorCode",
+        "OB3IPAssertResourceFieldInvalidOBErrorCode400",
         "OB3GLOAssertOn403"
       ],
       "schemaCheck": false
