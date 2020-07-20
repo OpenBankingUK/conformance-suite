@@ -80,7 +80,7 @@ func (g generator) GenerateManifestTests(log *logrus.Entry, config GeneratorConf
 			log.Warnf("specification %s not found", item.APISpecification.SchemaVersion)
 			continue
 		}
-		item.APISpecification.SpecType = spectype
+
 		log.Debugf("Generating testcases for %s API", spectype)
 		discovery.DiscoveryItems[k].APISpecification.SpecType = spectype
 	}
