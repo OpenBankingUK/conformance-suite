@@ -21,6 +21,9 @@ var (
 	assertionsPath  = flag.String("assertions", "../assertions.json", "Path to the JSON file containing the assertion rules.")
 )
 
+// Testing the scenarios in the manifests/ob_3.1_accounts_transactions_fca.json
+// It is important to note that there is no automatic mechanism keeping the above file and these tests synchronised
+// which means that in case the above file changes then these tests must be updated accordingly.
 func TestAccountTransactions(t *testing.T) {
 	const emptyBody = ""
 	emptyContext := &model.Context{}
@@ -36,6 +39,9 @@ func TestAccountTransactions(t *testing.T) {
 		t.Fatal(err)
 	}
 
+	// Testing the cases where API returns either 400 or 403 status code
+	// Responses with status code 400 must provide correct error message
+	// but responses with 403 code may return with any body.
 	testCase := model.TestCase{
 		ExpectOneOf: []model.Expect{
 			refs.References["OB3IPAssertResourceFieldInvalidOBErrorCode"].Expect,
