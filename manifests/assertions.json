@@ -193,10 +193,11 @@
     },
     "OB3IPAssertResourceFieldInvalidOBErrorCode": {
       "expect": {
+        "status-code": 400,
         "matches": [{
           "JSON": "Errors.#[ErrorCode=\"UK.OBIE.Field.Invalid\"].ErrorCode",
           "Value": "UK.OBIE.Field.Invalid",
-          "detail": "Expected a specific error code for consent status."
+          "detail": "Expected a specific error code for an invalid field."
         }]
       }
     }
