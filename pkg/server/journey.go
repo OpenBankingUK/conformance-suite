@@ -243,144 +243,142 @@ func (wj *journey) TestCases() (generation.SpecRun, error) {
 		logrus.Warn("TLS Check disabled")
 	}
 
-	if !wj.testCasesRunGenerated {
-		wj.context.PutString(CtxPhase, "generation")
-		config := wj.makeGeneratorConfig()
-		discovery := wj.validDiscoveryModel.DiscoveryModel
-		if len(discovery.DiscoveryItems) > 0 { // default currently "v3.1" ... allow "v3.0"
-			apiversions := DetermineAPIVersions(discovery.DiscoveryItems)
-			if len(apiversions) > 0 {
-				wj.context.PutStringSlice("apiversions", apiversions)
-			}
-			// version string gets replaced in URLS like  "endpoint": "/open-banking/$api-version/aisp/account-access-consents",
-			version, err := semver.ParseTolerant(discovery.DiscoveryItems[0].APISpecification.Version)
-			if err != nil {
-				logger.WithError(err).Error("parsing spec version")
-			} else {
-				wj.config.apiVersion = fmt.Sprintf("v%d.%d", version.Major, version.Minor)
-				wj.context.PutString(CtxAPIVersion, wj.config.apiVersion)
-			}
-			logger.WithField("version", wj.config.apiVersion).Info("API url version")
+	wj.context.PutString(CtxPhase, "generation")
+	config := wj.makeGeneratorConfig()
+	discovery := wj.validDiscoveryModel.DiscoveryModel
+	if len(discovery.DiscoveryItems) > 0 { // default currently "v3.1" ... allow "v3.0"
+		apiversions := DetermineAPIVersions(discovery.DiscoveryItems)
+		if len(apiversions) > 0 {
+			wj.context.PutStringSlice("apiversions", apiversions)
 		}
-
-		logger.Debug("generator.GenerateManifestTests ...")
-		logrus.Tracef("conditionalProperties from journey config: %#v", wj.config.conditionalProperties)
-		wj.specRun, wj.filteredManifests, wj.permissions = wj.generator.GenerateManifestTests(wj.log, config, discovery, &wj.context, wj.config.conditionalProperties)
-
-		tests := 0
-		for _, sp := range wj.specRun.SpecTestCases {
-			tests += len(sp.TestCases)
+		// version string gets replaced in URLS like  "endpoint": "/open-banking/$api-version/aisp/account-access-consents",
+		version, err := semver.ParseTolerant(discovery.DiscoveryItems[0].APISpecification.Version)
+		if err != nil {
+			logger.WithError(err).Error("parsing spec version")
+		} else {
+			wj.config.apiVersion = fmt.Sprintf("v%d.%d", version.Major, version.Minor)
+			wj.context.PutString(CtxAPIVersion, wj.config.apiVersion)
 		}
-		if tests == 0 { // no tests to run
-			logrus.Warn("No TestCases Generated!!!")
-			return generation.SpecRun{}, errNoTestCases
-		}
-
-		for _, spec := range wj.permissions {
-			for _, required := range spec {
-				logger.WithFields(logrus.Fields{
-					"permission": required.Name,
-					"idlist":     required.IDs,
-				}).Debug("We have a permission ([]manifest.RequiredTokens)")
-			}
-		}
-
-		collector := schemaprops.GetPropertyCollector()
-		collector.SetCollectorAPIDetails(schemaprops.ConsentGathering, "")
-
-		if discovery.TokenAcquisition == "psu" { // Handle  PSU Consent
-			logger.WithFields(logrus.Fields{
-				"discovery.TokenAcquisition": discovery.TokenAcquisition,
-			}).Debug("AcquirePSUTokens ...")
-			definition := wj.makeRunDefinition()
-
-			consentIds, tokenMap, err := executors.GetPsuConsent(definition, &wj.context, &wj.specRun, wj.permissions)
-			if err != nil {
-				logger.WithFields(logrus.Fields{
-					"err": err,
-				}).Error("Error on executors.GetPsuConsent ...")
-				return generation.SpecRun{}, errors.WithMessage(errConsentIDAcquisitionFailed, err.Error())
-			}
-
-			for k := range wj.permissions {
-				if k == "payments" {
-					paymentpermissions := wj.permissions["payments"]
-					if len(paymentpermissions) > 0 {
-						for _, spec := range wj.specRun.SpecTestCases {
-							manifest.MapTokensToPaymentTestCases(paymentpermissions, spec.TestCases, &wj.context)
-						}
-					}
-				}
-				if k == "cbpii" {
-					cbpiiPerms := wj.permissions["cbpii"]
-					if len(cbpiiPerms) > 0 {
-						for _, spec := range wj.specRun.SpecTestCases {
-							manifest.MapTokensToCBPIITestCases(cbpiiPerms, spec.TestCases, &wj.context)
-						}
-					}
-				}
-			}
-
-			for k, v := range tokenMap {
-				wj.context.PutString(k, v)
-				logger.Tracef("processtokenMap %s:%s into context", k, v)
-			}
-
-			wj.createTokenCollector(consentIds)
-
-		} else { // Handle headless token acquistion
-
-			logger.WithFields(logrus.Fields{
-				"discovery.TokenAcquisition": discovery.TokenAcquisition,
-			}).Debug("AcquireHeadlessTokens ...")
-			definition := wj.makeRunDefinition()
-
-			tokenPermissionsMap, err := executors.GetHeadlessConsent(definition, &wj.context, &wj.specRun, wj.permissions)
-			if err != nil {
-				logger.WithFields(logrus.Fields{
-					"err": err,
-				}).Error("Error on executors.AcquireHeadlessTokens ...")
-				return generation.SpecRun{}, errConsentIDAcquisitionFailed
-			}
-
-			tokenMap := map[string]string{} // Put access tokens into context
-			for _, v := range wj.specRun.SpecTestCases {
-				aMap := manifest.MapTokensToTestCases(tokenPermissionsMap, v.TestCases)
-				for x, y := range aMap {
-					tokenMap[x] = y
-				}
-			}
-
-			for k, v := range tokenMap {
-				wj.context.PutString(k, v)
-				logger.Tracef("processtokenMap %s:%s into context", k, v)
-			}
-
-			for k := range wj.permissions {
-				if k == "payments" {
-					paymentpermissions := wj.permissions["payments"]
-					logger.Tracef("We have %d Payment Permissions", len(paymentpermissions))
-					if len(paymentpermissions) > 0 {
-						for _, spec := range wj.specRun.SpecTestCases {
-							logger.Tracef("Analysing %d test cases for token mapping", len(spec.TestCases))
-							manifest.MapTokensToPaymentTestCases(paymentpermissions, spec.TestCases, &wj.context)
-						}
-					}
-				}
-				if k == "cbpii" {
-					cbpiiPerms := wj.permissions["cbpii"]
-					if len(cbpiiPerms) > 0 {
-						for _, spec := range wj.specRun.SpecTestCases {
-							manifest.MapTokensToCBPIITestCases(cbpiiPerms, spec.TestCases, &wj.context)
-						}
-					}
-				}
-			}
-
-			wj.allCollected = true
-		}
-		wj.testCasesRunGenerated = true
+		logger.WithField("version", wj.config.apiVersion).Info("API url version")
 	}
+
+	logger.Debug("generator.GenerateManifestTests ...")
+	logrus.Tracef("conditionalProperties from journey config: %#v", wj.config.conditionalProperties)
+	wj.specRun, wj.filteredManifests, wj.permissions = wj.generator.GenerateManifestTests(wj.log, config, discovery, &wj.context, wj.config.conditionalProperties)
+
+	tests := 0
+	for _, sp := range wj.specRun.SpecTestCases {
+		tests += len(sp.TestCases)
+	}
+	if tests == 0 { // no tests to run
+		logrus.Warn("No TestCases Generated!!!")
+		return generation.SpecRun{}, errNoTestCases
+	}
+
+	for _, spec := range wj.permissions {
+		for _, required := range spec {
+			logger.WithFields(logrus.Fields{
+				"permission": required.Name,
+				"idlist":     required.IDs,
+			}).Debug("We have a permission ([]manifest.RequiredTokens)")
+		}
+	}
+
+	collector := schemaprops.GetPropertyCollector()
+	collector.SetCollectorAPIDetails(schemaprops.ConsentGathering, "")
+
+	if discovery.TokenAcquisition == "psu" { // Handle  PSU Consent
+		logger.WithFields(logrus.Fields{
+			"discovery.TokenAcquisition": discovery.TokenAcquisition,
+		}).Debug("AcquirePSUTokens ...")
+		definition := wj.makeRunDefinition()
+
+		consentIds, tokenMap, err := executors.GetPsuConsent(definition, &wj.context, &wj.specRun, wj.permissions)
+		if err != nil {
+			logger.WithFields(logrus.Fields{
+				"err": err,
+			}).Error("Error on executors.GetPsuConsent ...")
+			return generation.SpecRun{}, errors.WithMessage(errConsentIDAcquisitionFailed, err.Error())
+		}
+
+		for k := range wj.permissions {
+			if k == "payments" {
+				paymentpermissions := wj.permissions["payments"]
+				if len(paymentpermissions) > 0 {
+					for _, spec := range wj.specRun.SpecTestCases {
+						manifest.MapTokensToPaymentTestCases(paymentpermissions, spec.TestCases, &wj.context)
+					}
+				}
+			}
+			if k == "cbpii" {
+				cbpiiPerms := wj.permissions["cbpii"]
+				if len(cbpiiPerms) > 0 {
+					for _, spec := range wj.specRun.SpecTestCases {
+						manifest.MapTokensToCBPIITestCases(cbpiiPerms, spec.TestCases, &wj.context)
+					}
+				}
+			}
+		}
+
+		for k, v := range tokenMap {
+			wj.context.PutString(k, v)
+			logger.Tracef("processtokenMap %s:%s into context", k, v)
+		}
+
+		wj.createTokenCollector(consentIds)
+
+	} else { // Handle headless token acquistion
+
+		logger.WithFields(logrus.Fields{
+			"discovery.TokenAcquisition": discovery.TokenAcquisition,
+		}).Debug("AcquireHeadlessTokens ...")
+		definition := wj.makeRunDefinition()
+
+		tokenPermissionsMap, err := executors.GetHeadlessConsent(definition, &wj.context, &wj.specRun, wj.permissions)
+		if err != nil {
+			logger.WithFields(logrus.Fields{
+				"err": err,
+			}).Error("Error on executors.AcquireHeadlessTokens ...")
+			return generation.SpecRun{}, errConsentIDAcquisitionFailed
+		}
+
+		tokenMap := map[string]string{} // Put access tokens into context
+		for _, v := range wj.specRun.SpecTestCases {
+			aMap := manifest.MapTokensToTestCases(tokenPermissionsMap, v.TestCases)
+			for x, y := range aMap {
+				tokenMap[x] = y
+			}
+		}
+
+		for k, v := range tokenMap {
+			wj.context.PutString(k, v)
+			logger.Tracef("processtokenMap %s:%s into context", k, v)
+		}
+
+		for k := range wj.permissions {
+			if k == "payments" {
+				paymentpermissions := wj.permissions["payments"]
+				logger.Tracef("We have %d Payment Permissions", len(paymentpermissions))
+				if len(paymentpermissions) > 0 {
+					for _, spec := range wj.specRun.SpecTestCases {
+						logger.Tracef("Analysing %d test cases for token mapping", len(spec.TestCases))
+						manifest.MapTokensToPaymentTestCases(paymentpermissions, spec.TestCases, &wj.context)
+					}
+				}
+			}
+			if k == "cbpii" {
+				cbpiiPerms := wj.permissions["cbpii"]
+				if len(cbpiiPerms) > 0 {
+					for _, spec := range wj.specRun.SpecTestCases {
+						manifest.MapTokensToCBPIITestCases(cbpiiPerms, spec.TestCases, &wj.context)
+					}
+				}
+			}
+		}
+
+		wj.allCollected = true
+	}
+	wj.testCasesRunGenerated = true
 
 	logger.Tracef("SpecRun.SpecConsentRequirements: %#v", wj.specRun.SpecConsentRequirements)
 	for k := range wj.specRun.SpecTestCases {

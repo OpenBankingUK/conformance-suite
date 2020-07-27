@@ -155,8 +155,7 @@ func GenerateTestCases(params *GenerationParameters) ([]model.TestCase, Scripts,
 			return nil, Scripts{}, err
 		}
 
-		consents := []string{}
-		tc, err := testCaseBuilder(script, refs.References, localCtx, consents, params.Baseurl, specType, params.Validator, params.Spec)
+		tc, err := testCaseBuilder(script, refs.References, localCtx, params.Baseurl, specType, params.Validator, params.Spec)
 		if err != nil {
 			logger.WithError(err).Error("Error on testCaseBuilder")
 		}
@@ -304,7 +303,7 @@ func updateTestAuthenticationFromToken(tcs []model.TestCase, rts []RequiredToken
 	return tcs
 }
 
-func testCaseBuilder(s Script, refs map[string]Reference, ctx *model.Context, consents []string, baseurl string, specType string, validator schema.Validator, apiSpec discovery.ModelAPISpecification) (model.TestCase, error) {
+func testCaseBuilder(s Script, refs map[string]Reference, ctx *model.Context, baseurl string, specType string, validator schema.Validator, apiSpec discovery.ModelAPISpecification) (model.TestCase, error) {
 	tc := model.MakeTestCase()
 	tc.ID = s.ID
 	tc.Name = s.Description
