@@ -29,6 +29,43 @@
           label="Public Transport Certificate (.pem):"
           validExtension=".pem"
         />
+        <b-form-group
+          id="use_eidas_cert"
+          label-for="use_eidas_cert"
+          label="Use EIDAS certificate">
+          <b-form-checkbox
+            id="use_eidas_certs"
+            v-model="use_eidas_cert"
+          />
+        </b-form-group>
+
+        <b-form-group
+          v-if="use_eidas_cert"
+          id="eidas_signing_kid"
+          label-for="eidas_signing_kid"
+          label="EIDAS Signing KID">
+          <b-form-input
+            id="eidas_signing_kid"
+            v-model="eidas_signing_kid"
+            :state="isNotEmpty(eidas_signing_kid)"
+            required
+            type="text"
+          />
+        </b-form-group>
+
+        <b-form-group
+          v-if="use_eidas_cert"
+          id="eidas_issuer"
+          label-for="eidas_issuer"
+          label="EIDAS Issuer">
+          <b-form-input
+            id="eidas_issuer"
+            v-model="eidas_issuer"
+            :state="isNotEmpty(eidas_issuer)"
+            required
+            type="text"
+          />
+        </b-form-group>
 
         <b-form-group
           id="resource_account_id_group"
@@ -626,6 +663,30 @@ export default {
       },
       set(value) {
         this.$store.commit('config/SET_TRANSACTION_TO_DATE', value);
+      },
+    },
+    use_eidas_cert: {
+      get() {
+        return this.$store.state.config.configuration.use_eidas_cert;
+      },
+      set(value) {
+        this.$store.commit('config/SET_USE_EIDAS_CERT', value);
+      },
+    },
+    eidas_signing_kid: {
+      get() {
+        return this.$store.state.config.configuration.eidas_signing_kid;
+      },
+      set(value) {
+        this.$store.commit('config/SET_EIDAS_SIGNING_KID', value);
+      },
+    },
+    eidas_issuer: {
+      get() {
+        return this.$store.state.config.configuration.eidas_issuer;
+      },
+      set(value) {
+        this.$store.commit('config/SET_EIDAS_ISSUER', value);
       },
     },
     // For an explanation on how these work. See:

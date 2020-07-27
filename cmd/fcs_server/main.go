@@ -84,12 +84,12 @@ func init() {
 	rootCmd.PersistentFlags().Bool("log_tracer", false, "Enable tracer logging")
 	rootCmd.PersistentFlags().Bool("log_http_trace", false, "Enable HTTP logging")
 	rootCmd.PersistentFlags().Int("port", 8443, "Server port")
-	rootCmd.PersistentFlags().Bool("disable_jws", false, "Disalbe JWS Signatures")
+	rootCmd.PersistentFlags().Bool("disable_jws", false, "Disable JWS Signatures")
 	rootCmd.PersistentFlags().Bool("dynres", false, "Use Dynamic Resource IDs - accounts")
 	rootCmd.PersistentFlags().Bool("dumpcontexts", false, "Dump contexts when trace enabled")
 	rootCmd.PersistentFlags().Bool("tlscheck", true, "enable tls version checking - default enabled")
-	rootCmd.PersistentFlags().String("eadas_issuer", "", "Signing issuer when using EIDAS certificates")
-	rootCmd.PersistentFlags().String("eidas_siging_kid", "", "Signing Key Id when using EIDAS signing certification")
+	rootCmd.PersistentFlags().String("eidas_issuer", "", "Signing issuer when using EIDAS certificates")
+	rootCmd.PersistentFlags().String("eidas_signing_kid", "", "Signing Key Id when using EIDAS signing certification")
 
 	if err := viper.BindPFlags(rootCmd.PersistentFlags()); err != nil {
 		fmt.Fprint(os.Stderr, err)
@@ -165,9 +165,9 @@ func initConfig() {
 
 	resty.SetDebug(viper.GetBool("log_http_trace"))
 	resty.SetRedirectPolicy(resty.FlexibleRedirectPolicy(15))
-	eisas_issuer := viper.GetString("eidas_issuer")
-	eidas_kid := viper.GetString("eidas_kid")
-	authentication.SetEidasSigningParameters(eisas_issuer, eidas_kid)
+	eidasIssuer := viper.GetString("eidas_issuer")
+	eidasKID := viper.GetString("eidas_signing_kid")
+	authentication.SetEidasSigningParameters(eidasIssuer, eidasKID)
 
 	printConfigurationFlags()
 }

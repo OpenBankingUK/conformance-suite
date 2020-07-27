@@ -863,11 +863,11 @@ func TestServerConfigGlobalPostInvalid(t *testing.T) {
 			}()
 			require.NotNil(server)
 
-			configJson, err := json.MarshalIndent(testCase.config, ``, `  `)
+			configJSON, err := json.MarshalIndent(testCase.config, ``, `  `)
 			require.NoError(err)
-			require.NotNil(configJson)
+			require.NotNil(configJSON)
 
-			code, body, headers := request(http.MethodPost, "/api/config/global", bytes.NewReader(configJson), server)
+			code, body, headers := request(http.MethodPost, "/api/config/global", bytes.NewReader(configJSON), server)
 
 			require.NotNil(body)
 			require.NoError(err)
