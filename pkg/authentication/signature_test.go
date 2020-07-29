@@ -19,9 +19,11 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-var detachedJWT = `eyJ0eXAiOiJKT1NFIiwiY3R5IjoiYXBwbGljYXRpb24vanNvbiIsImh0dHA6Ly9vcGVuYmFua2luZy5vcmcudWsvaWF0IjoxNTg4NTg3NjgyLjQ1NiwiaHR0cDovL29wZW5iYW5raW5nLm9yZy51ay9pc3MiOiIwMDE1ODAwMDAxMDQxUkhBQVkiLCJodHRwOi8vb3BlbmJhbmtpbmcub3JnLnVrL3RhbiI6Im9wZW5iYW5raW5nLm9yZy51ayIsImNyaXQiOlsiaHR0cDovL29wZW5iYW5raW5nLm9yZy51ay9pYXQiLCJodHRwOi8vb3BlbmJhbmtpbmcub3JnLnVrL2lzcyIsImh0dHA6Ly9vcGVuYmFua2luZy5vcmcudWsvdGFuIl0sImFsZyI6IlBTMjU2Iiwia2lkIjoiREtlUE9MQU9pWEx3WWhNZkxTOGFTNllVLWQwIn0..1zMW5n7jXFGaOhVvL-Qz6ELVRzbfDzZahdXR3ioWA_H2MOib1Z346ZRaSczqjF2AY5qJfUX6AVpDopjCEDqmlCvSYsBOSFk0gwaNqnQVK4AN-yWK5OqC-gmo7W8RSTTF6s41yuXTdvZAPw7cdqmGKTHRvg2QpPkdHP8wXXurWqOgnUSgI6Czn_VKeIsc5W7rNpYF9onxY1HMDpXoYyXF_znYyWR3dNCueQaTHkIdt6b0MCBXINcgsY7pXsyHn-hZVGAW877sJjRC4GUfbZWKvkR2URLUOYKlzLYSGitsjtoHocESCG2uoovknTMLSIertSqbnm3VDVPRtBbJ0RSCuQ`
+var detachedJWT = `eyJ0eXAiOiJKT1NFIiwiY3R5IjoiYXBwbGljYXRpb24vanNvbiIsImh0dHA6Ly9vcGVuYmFua2luZy5vcmcudWsvaWF0IjoxNTk2MDMwMjczLjU4MiwiaHR0cDovL29wZW5iYW5raW5nLm9yZy51ay9pc3MiOiIwMDE1ODAwMDAxMDQxUkhBQVkiLCJodHRwOi8vb3BlbmJhbmtpbmcub3JnLnVrL3RhbiI6Im9wZW5iYW5raW5nLm9yZy51ayIsImNyaXQiOlsiaHR0cDovL29wZW5iYW5raW5nLm9yZy51ay9pYXQiLCJodHRwOi8vb3BlbmJhbmtpbmcub3JnLnVrL2lzcyIsImh0dHA6Ly9vcGVuYmFua2luZy5vcmcudWsvdGFuIl0sImFsZyI6IlBTMjU2Iiwia2lkIjoiemtib0tGalFSd0JkOVVFblBDNXdsdjU3aWc0In0..ioBQDgKbY04pjS3LF4ezFuB-so4DwAobnLJPhn4uCLyUjN2JEWQTCkkKbilMTSKq3mYuFywu8Nc3eELpZfK50wxPOdKyGt5fBH89_F0OzAw-9xvGWLlAyubIhIMnTe05sSXEi-6pOti6SdoKP4KabxeBustwMzUoH0Fq0UTPel0pgJam9aSRqG8y-MfueeAHWE0icrAzsb1Wtprpinn62EmZyfYCgWWIIPgk323L4ETptBvn6PHBpybCIQHF8omxRw9mjcyLlq0mdI-JeVyXjikHXjRHLbx2ZtHpGuiwloCOhdyrslH3kpIGAAOr9sny1JLljPy-dGZ04H8WYVEzsw`
+var expiredDetachedJWT = `eyJ0eXAiOiJKT1NFIiwiY3R5IjoiYXBwbGljYXRpb24vanNvbiIsImh0dHA6Ly9vcGVuYmFua2luZy5vcmcudWsvaWF0IjoxNTg4NTg3NjgyLjQ1NiwiaHR0cDovL29wZW5iYW5raW5nLm9yZy51ay9pc3MiOiIwMDE1ODAwMDAxMDQxUkhBQVkiLCJodHRwOi8vb3BlbmJhbmtpbmcub3JnLnVrL3RhbiI6Im9wZW5iYW5raW5nLm9yZy51ayIsImNyaXQiOlsiaHR0cDovL29wZW5iYW5raW5nLm9yZy51ay9pYXQiLCJodHRwOi8vb3BlbmJhbmtpbmcub3JnLnVrL2lzcyIsImh0dHA6Ly9vcGVuYmFua2luZy5vcmcudWsvdGFuIl0sImFsZyI6IlBTMjU2Iiwia2lkIjoiREtlUE9MQU9pWEx3WWhNZkxTOGFTNllVLWQwIn0..1zMW5n7jXFGaOhVvL-Qz6ELVRzbfDzZahdXR3ioWA_H2MOib1Z346ZRaSczqjF2AY5qJfUX6AVpDopjCEDqmlCvSYsBOSFk0gwaNqnQVK4AN-yWK5OqC-gmo7W8RSTTF6s41yuXTdvZAPw7cdqmGKTHRvg2QpPkdHP8wXXurWqOgnUSgI6Czn_VKeIsc5W7rNpYF9onxY1HMDpXoYyXF_znYyWR3dNCueQaTHkIdt6b0MCBXINcgsY7pXsyHn-hZVGAW877sJjRC4GUfbZWKvkR2URLUOYKlzLYSGitsjtoHocESCG2uoovknTMLSIertSqbnm3VDVPRtBbJ0RSCuQ`
 
-var rawBody = `{"Data":{"FundsAvailableResult":{"FundsAvailableDateTime":"2020-05-04T10:21:22.456Z","FundsAvailable":true}},"Links":{"Self":"http://ob19-rs1.o3bank.co.uk/open-banking/v3.1/pisp/domestic-payment-consents/sdp-1-241c9cc1-5dbc-46ca-a0df-9d512799c869/funds-confirmation"},"Meta":{}}`
+var rawBody = `{"Data":{"Initiation":{"CreditorAccount":{"Identification":"70000170000002","Name":"Mr. Roberto Rastapopoulos & Ivan Sakharine & mits","SchemeName":"UK.OBIE.SortCodeAccountNumber"},"EndToEndIdentification":"e2e-domestic-pay","InstructedAmount":{"Amount":"1.00","Currency":"GBP"},"InstructionIdentification":"b470d6561b4147c29e519bb9dfca40af"},"ConsentId":"sdp-1-007c81e6-76be-4592-9fb5-72691751eb32","CreationDateTime":"2020-07-29T13:44:33.577Z","Status":"AwaitingAuthorisation","StatusUpdateDateTime":"2020-07-29T13:44:33.577Z"},"Risk":{},"Links":{"Self":"https://ob19-rs1.o3bank.co.uk:4501/open-banking/v3.1/pisp/domestic-payment-consents/sdp-1-007c81e6-76be-4592-9fb5-72691751eb32"},"Meta":{}}`
+var expiredRawBody = `{"Data":{"FundsAvailableResult":{"FundsAvailableDateTime":"2020-05-04T10:21:22.456Z","FundsAvailable":true}},"Links":{"Self":"http://ob19-rs1.o3bank.co.uk/open-banking/v3.1/pisp/domestic-payment-consents/sdp-1-241c9cc1-5dbc-46ca-a0df-9d512799c869/funds-confirmation"},"Meta":{}}`
 
 var tokenb64true = jwt.Token{
 	Header: map[string]interface{}{
@@ -132,6 +134,11 @@ func TestOzonePublicKey2EncodePayload(t *testing.T) {
 	assert.Nil(t, err)
 	jwk, err := getJwkFromJwks(kid, "https://keystore.openbankingtest.org.uk/0015800001041RHAAY/0015800001041RHAAY.jwks")
 	assert.Nil(t, err)
+
+	if jwk.X5c == nil {
+		fmt.Println("certificate chain not found in jwk.X5c claim")
+		return
+	}
 	certs, err := ParseCertificateChain(jwk.X5c)
 	assert.Nil(t, err)
 	cert := certs[0]
@@ -144,6 +151,30 @@ func TestOzonePublicKey2EncodePayload(t *testing.T) {
 	}
 	log.Printf("signed message verified! -> %s", verified)
 }
+
+func TestOzoneExpiredPublicKey2EncodePayload(t *testing.T) {
+	kid, err := getKidFromToken(expiredDetachedJWT)
+	assert.Nil(t, err)
+	jwk, err := getJwkFromJwks(kid, "https://keystore.openbankingtest.org.uk/0015800001041RHAAY/0015800001041RHAAY.jwks")
+	assert.Nil(t, err)
+
+	if jwk.X5c == nil {
+		fmt.Println("certificate chain not found in jwk.X5c claim")
+		return
+	}
+	certs, err := ParseCertificateChain(jwk.X5c)
+	assert.Nil(t, err)
+	cert := certs[0]
+	signedJWT, err := insertBodyIntoJWT(expiredDetachedJWT, expiredRawBody, true)
+	assert.Nil(t, err)
+	verified, err := jws.Verify([]byte(signedJWT), jwa.PS256, cert.PublicKey)
+	if err != nil {
+		log.Printf("failed to verify message: %s", err)
+		return
+	}
+	log.Printf("signed message verified! -> %s", verified)
+}
+
 func TestOzoneHeaderValidation314(t *testing.T) {
 	err := ValidateSignatureHeader(detachedJWT, true)
 	assert.Nil(t, err)

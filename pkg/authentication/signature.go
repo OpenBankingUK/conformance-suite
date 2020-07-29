@@ -57,12 +57,16 @@ func ValidateSignature(jwtToken, body, jwksUri string, b64 bool) (bool, error) {
 		return false, err
 	}
 
+	if jwk.X5c == nil {
+		return false, errors.New(fmt.Sprintf("No X5c certificate chain found for kid %s", kid))
+	}
+
 	certs, err := ParseCertificateChain(jwk.X5c)
 	if err != nil {
 		return false, err
 	}
 
-	cert := certs[0]
+	cert := certs[0] // assumes a single certificate in chain which is the style used by the OB directory
 
 	signature, err := insertBodyIntoJWT(jwtToken, body, b64) // b64claim
 	if err != nil {
@@ -140,6 +144,7 @@ func getJwkFromJwks(kid, url string) (JWK, error) {
 		logrus.Traceln("Using cached jwk")
 		return jwk, nil
 	}
+	logrus.Traceln("no matching key found")
 	return JWK{}, nil
 }
 
