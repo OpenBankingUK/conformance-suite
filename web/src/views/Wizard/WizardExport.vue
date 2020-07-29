@@ -7,6 +7,12 @@
         </div>
         <div class="flex-fill panel-body">
           <b-card bg-variant="light">
+            <h5>List of tested APIs</h5>
+            <ul>
+              <li
+                v-for="item in api_versions"
+                :key="item">{{ item.version }} {{ item.name }}</li>
+            </ul>
             <h5>Export Configuration</h5>
             <b-form>
               <b-form-group
@@ -172,6 +178,21 @@ export default {
       },
       set(value) {
         this.$store.commit('exporter/SET_AUTHORISED_BY', value);
+      },
+    },
+    api_versions: {
+      get() {
+        const versions = [];
+        /* eslint-disable */
+        for (const item of this.$store.state.config.discoveryModel
+          .discoveryModel.discoveryItems) {
+          versions.push({
+            name: item.apiSpecification.name,
+            version: item.apiSpecification.version,
+          });
+        }
+        return versions;
+        /* eslint-enable */
       },
     },
     job_title: {

@@ -1,6 +1,7 @@
 package report
 
 import (
+	"sort"
 	"strings"
 	"time"
 
@@ -30,6 +31,7 @@ type Report struct {
 	Version          string             `json:"version"`                  // The current version of the report model used.
 	Status           Status             `json:"status"`                   // A status describing overall condition of the report.
 	CertifiedBy      CertifiedBy        `json:"certifiedBy"`              // The certifier of the report.
+	APIVersions      APIVersionList     `json:"apiVersions"`              // List with the version & name of the tested APIs
 	SignatureChain   *[]SignatureChain  `json:"signatureChain,omitempty"` // When Add digital signature is set this contains the signature chain.
 	Discovery        discovery.Model    `json:"-"`                        // Original used discovery model
 	ResponseFields   string             `json:"-"`                        // ResponseFields - already in JSON format
@@ -38,6 +40,18 @@ type Report struct {
 	Products         []string           `json:"products"`                 // Products tested, e.g., "Business, Personal, Cards"
 	JWSStatus        string             `json:"jwsStatus"`                // Signature status
 }
+
+// APIVersionList is a sortable collection of API name and version pairs
+type APIVersionList []*apiVersion
+
+type apiVersion struct {
+	Name    string `json:"name"`
+	Version string `json:"version"`
+}
+
+func (avl APIVersionList) Less(i, j int) bool { return avl[i].Version < avl[j].Version }
+func (avl APIVersionList) Len() int           { return len(avl) }
+func (avl APIVersionList) Swap(i, j int)      { avl[i], avl[j] = avl[j], avl[i] }
 
 type APISpecification struct {
 	Name            string             `json:"name"`
@@ -83,11 +97,18 @@ func NewReport(exportResults models.ExportResults, environment string) (Report, 
 
 	fails := GetFails(exportResults.Results)
 	apiSpecs := []APISpecification{}
+	apiVersions := make(APIVersionList, 0, len(exportResults.Results))
 	for k, results := range exportResults.Results {
 		tlsVersionResult := exportResults.TLSVersionResult[strings.ReplaceAll(k.APIName, " ", "-")]
 		if tlsVersionResult == nil {
 			tlsVersionResult = &discovery.TLSValidationResult{Valid: false, TLSVersion: "unknown"}
 		}
+
+		apiVersions = append(apiVersions, &apiVersion{
+			Name:    k.APIName,
+			Version: k.APIVersion,
+		})
+
 		apiSpec := APISpecification{
 			Name:            k.APIName,
 			Version:         k.APIVersion,
@@ -98,6 +119,7 @@ func NewReport(exportResults models.ExportResults, environment string) (Report, 
 		apiSpecs = append(apiSpecs, apiSpec)
 	}
 
+	sort.Sort(apiVersions)
 	return Report{
 		ID:               uuid.String(),
 		Created:          created,
@@ -106,6 +128,7 @@ func NewReport(exportResults models.ExportResults, environment string) (Report, 
 		Version:          Version,
 		Status:           StatusComplete,
 		CertifiedBy:      certifiedBy,
+		APIVersions:      apiVersions,
 		SignatureChain:   &signatureChain,
 		Discovery:        exportResults.DiscoveryModel,
 		ResponseFields:   exportResults.ResponseFields,
