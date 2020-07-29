@@ -23,7 +23,7 @@ func TestReport_Validate(t *testing.T) {
 		Status         Status
 		CertifiedBy    CertifiedBy
 		SignatureChain *[]SignatureChain
-		AgreedToTC     bool
+		AgreedTC       bool
 	}
 	tests := []struct {
 		name    string
@@ -66,9 +66,9 @@ func TestReport_Validate(t *testing.T) {
 					AuthorisedBy: "AuthorisedBy",
 					JobTitle:     "JobTitle",
 				},
-				AgreedToTC: false,
+				AgreedTC: false,
 			},
-			wantErr: "agreed_to_terms_and_conditions: cannot be blank.",
+			wantErr: "agreedTermsConditions: cannot be blank.",
 		},
 		{
 			name: "invalid_id_format",
@@ -201,7 +201,7 @@ func TestReport_Validate(t *testing.T) {
 					AuthorisedBy: "AuthorisedBy",
 					JobTitle:     "JobTitle",
 				},
-				AgreedToTC: true,
+				AgreedTC: true,
 			},
 		},
 	}
@@ -218,7 +218,7 @@ func TestReport_Validate(t *testing.T) {
 				Status:         tt.fields.Status,
 				CertifiedBy:    tt.fields.CertifiedBy,
 				SignatureChain: tt.fields.SignatureChain,
-				AgreedTC:       tt.fields.AgreedToTC,
+				AgreedTC:       tt.fields.AgreedTC,
 			}
 			err := r.Validate()
 			if tt.wantErr == "" {
