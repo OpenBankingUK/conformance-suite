@@ -78,7 +78,9 @@
                 <b-form-checkbox
                   id="has_agreed"
                   v-model="has_agreed"
-                  required>I agree</b-form-checkbox>
+                  :required="requires_agreement">
+                  I agree
+                </b-form-checkbox>
               </b-form-group>
               <b-form-group
                 id="add_digital_signature_group"
@@ -138,7 +140,7 @@ export default {
   },
   data() {
     return {
-      has_agreed_terms: 'I the Implementer has tested the Deployment (including by successfully completing the validation testing using the Conformance Test Suite Software) and verified that it conforms to the Open Banking Specifications, and hereby certifies to the Open Banking Implementation Entity and the public that the Deployment conforms to the Open Banking Functional Standards for',
+      has_agreed_terms: 'Certification: Implementer has tested the Deployment and verified that it conforms to the OBIE Standard, and hereby certifies to the Open Banking Implementation Entity and the public that the Deployment conforms to the OBIE Standard as set forth above.',
       available_products: [
         'Business',
         'Personal',
@@ -190,6 +192,11 @@ export default {
         this.$store.commit('exporter/SET_PRODUCTS', value);
       },
     },
+    requires_agreement: {
+      get() {
+        return this.environment === 'production';
+      },
+    },
     has_agreed: {
       get() {
         return this.$store.state.exporter.has_agreed;
@@ -237,10 +244,9 @@ export default {
         this.isNotEmpty(this.implementer),
         this.isNotEmpty(this.authorised_by),
         this.isNotEmpty(this.job_title),
-        this.has_agreed,
+        this.has_agreed || !this.requires_agreement,
         this.isNotEmpty(this.products),
       ];
-
       const canExport = every(conditions);
       return canExport;
     },

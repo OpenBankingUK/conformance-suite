@@ -20,15 +20,27 @@ type ExportRequest struct {
 	AddDigitalSignature bool     `json:"add_digital_signature"` // Sign this report
 }
 
+func (e *ExportRequest) requiresTCAgreement() bool {
+	if e.Environment == "production" {
+		return true
+	}
+	return false
+}
+
 func (e ExportRequest) Validate() error {
-	return validation.ValidateStruct(&e,
+	rules := []*validation.FieldRules{
 		validation.Field(&e.Environment, validation.Required),
 		validation.Field(&e.Implementer, validation.Required),
 		validation.Field(&e.AuthorisedBy, validation.Required),
 		validation.Field(&e.JobTitle, validation.Required),
 		validation.Field(&e.Products, validation.Required, validation.By(productsValuesValidator)),
-		validation.Field(&e.HasAgreed, validation.Required, validation.In(true)),
-	)
+	}
+
+	if e.requiresTCAgreement() {
+		rules = append(rules, validation.Field(&e.HasAgreed, validation.Required, validation.In(true)))
+	}
+
+	return validation.ValidateStruct(&e, rules...)
 }
 
 func productsValuesValidator(value interface{}) error {

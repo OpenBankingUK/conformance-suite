@@ -37,6 +37,7 @@ type Report struct {
 	FCSVersion       string             `json:"fcsVersion"`               // Version of FCS running the tests
 	Products         []string           `json:"products"`                 // Products tested, e.g., "Business, Personal, Cards"
 	JWSStatus        string             `json:"jwsStatus"`                // Signature status
+	AgreedTC         bool               `json:"agreedTermsConditions"`    // Implementer acknowledged and agreed to T&C as displayed on the UI
 }
 
 type APISpecification struct {
@@ -47,9 +48,16 @@ type APISpecification struct {
 	Results         []results.TestCase `json:"results"`
 }
 
+func (r *Report) requiresTCAgreement() bool {
+	if r.CertifiedBy.Environment == CertifiedByEnvironmentProduction {
+		return true
+	}
+	return false
+}
+
 // Validate - called by `github.com/go-ozzo/ozzo-validation` to validate struct.
 func (r Report) Validate() error {
-	return validation.ValidateStruct(&r,
+	rules := []*validation.FieldRules{
 		validation.Field(&r.ID, validation.Required, is.UUIDv4),
 		validation.Field(&r.Created, validation.Required, validation.Date(internal_time.Layout)),
 		validation.Field(&r.Expiration, validation.Date(internal_time.Layout)),
@@ -60,7 +68,13 @@ func (r Report) Validate() error {
 			StatusError,
 		)),
 		validation.Field(&r.CertifiedBy, validation.Required),
-	)
+	}
+
+	if r.requiresTCAgreement() {
+		rules = append(rules, validation.Field(&r.AgreedTC, validation.Required))
+	}
+
+	return validation.ValidateStruct(&r, rules...)
 }
 
 // NewReport - create `Report` from `ExportResults`.
@@ -113,6 +127,7 @@ func NewReport(exportResults models.ExportResults, environment string) (Report, 
 		FCSVersion:       version.FullVersion,
 		Products:         exportResults.ExportRequest.Products,
 		JWSStatus:        exportResults.JWSStatus,
+		AgreedTC:         exportResults.ExportRequest.HasAgreed,
 	}, nil
 }
 
