@@ -13,7 +13,7 @@
                 v-for="{version, name } in api_versions"
                 :key="version + name"
                 :id="(version+name).replace(/[^a-zA-Z0-9-]/g, '_')"
-                >
+              >
                 {{ version }} {{ name }}
               </li>
             </ul>

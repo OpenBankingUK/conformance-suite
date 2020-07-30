@@ -9,28 +9,28 @@ import WizardExport from './WizardExport.vue';
 // import mutations from '../../store';
 
 const discoveryModel = {
-  "discoveryModel": {
-    "discoveryItems": [
+  discoveryModel: {
+    discoveryItems: [
       {
-        "apiSpecification": {
-          "name": "Specification A",
-          "version": "v3.1.5"
-        }
+        apiSpecification: {
+          name: 'Specification A',
+          version: 'v3.1.5',
+        },
       },
       {
-        "apiSpecification": {
-          "name": "Specification A",
-          "version": "v3.1.4"
-        }
+        apiSpecification: {
+          name: 'Specification A',
+          version: 'v3.1.4',
+        },
       },
       {
-        "apiSpecification": {
-          "name": "Specification B",
-          "version": "v3.1.5"
-        }
-      }           
-    ]
-  }
+        apiSpecification: {
+          name: 'Specification B',
+          version: 'v3.1.5',
+        },
+      },
+    ],
+  },
 };
 
 describe('WizardExport', () => {
@@ -43,7 +43,7 @@ describe('WizardExport', () => {
     localVue.use(VueRouter);
 
     // discoveryModel is used for testing displayed specification versions
-    TheStore.commit("config/SET_DISCOVERY_MODEL", discoveryModel);
+    TheStore.commit('config/SET_DISCOVERY_MODEL', discoveryModel);
     return {
       localVue,
       store: TheStore,
@@ -96,9 +96,9 @@ describe('WizardExport', () => {
     // all items are listed for tested versions
     discoveryModel.discoveryModel.discoveryItems.forEach((item) => {
       const id = (item.apiSpecification.version + item.apiSpecification.name).replace(/[^a-zA-Z0-9-]/g, '_');
-      expect(wrapper.contains('#'+ id)).toBe(true);
+      expect(wrapper.contains(`#${id}`)).toBe(true);
     });
-    
+
     // form
     expect(wrapper.contains('#implementer')).toBe(true);
     expect(wrapper.contains('#authorised_by')).toBe(true);
