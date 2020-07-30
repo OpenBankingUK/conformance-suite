@@ -6,7 +6,6 @@ import Vuex from 'vuex';
 import TheWizardFooter from '../../components/Wizard/TheWizardFooter.vue';
 import TheStore from '../../store';
 import WizardExport from './WizardExport.vue';
-// import mutations from '../../store';
 
 const discoveryModel = {
   discoveryModel: {
