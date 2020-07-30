@@ -8,10 +8,14 @@
         <div class="flex-fill panel-body">
           <b-card bg-variant="light">
             <h5>List of tested APIs</h5>
-            <ul>
+            <ul id="versions">
               <li
-                v-for="item in api_versions"
-                :key="item">{{ item.version }} {{ item.name }}</li>
+                v-for="{version, name } in api_versions"
+                :key="version + name"
+                :id="(version+name).replace(/[^a-zA-Z0-9-]/g, '_')"
+                >
+                {{ version }} {{ name }}
+              </li>
             </ul>
             <h5>Export Configuration</h5>
             <b-form>
