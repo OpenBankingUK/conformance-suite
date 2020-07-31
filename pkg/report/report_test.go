@@ -23,6 +23,7 @@ func TestReport_Validate(t *testing.T) {
 		Status         Status
 		CertifiedBy    CertifiedBy
 		SignatureChain *[]SignatureChain
+		AgreedTC       bool
 	}
 	tests := []struct {
 		name    string
@@ -50,6 +51,24 @@ func TestReport_Validate(t *testing.T) {
 				},
 			},
 			wantErr: "id: cannot be blank.",
+		},
+		{
+			name: "has_not_agreed_production", // non production envs are tested implicitly with all other cases
+			fields: fields{
+				ID:         "f47ac10b-58cc-4372-8567-0e02b2c3d479",
+				Created:    time.Now().Format(time.RFC3339),
+				Expiration: time.Now().Format(time.RFC3339),
+				Version:    "Version",
+				Status:     StatusPending,
+				CertifiedBy: CertifiedBy{
+					Environment:  CertifiedByEnvironmentProduction,
+					Brand:        "Brand",
+					AuthorisedBy: "AuthorisedBy",
+					JobTitle:     "JobTitle",
+				},
+				AgreedTC: false,
+			},
+			wantErr: "agreedTermsConditions: cannot be blank.",
 		},
 		{
 			name: "invalid_id_format",
@@ -137,7 +156,7 @@ func TestReport_Validate(t *testing.T) {
 		},
 		// valid cases
 		{
-			name: "valid",
+			name: "valid_testing_env",
 			fields: fields{
 				ID:         "f47ac10b-58cc-4372-8567-0e02b2c3d479",
 				Created:    time.Now().Format(time.RFC3339),
@@ -150,6 +169,39 @@ func TestReport_Validate(t *testing.T) {
 					AuthorisedBy: "AuthorisedBy",
 					JobTitle:     "JobTitle",
 				},
+			},
+		},
+		{
+			name: "valid_sandbox_env",
+			fields: fields{
+				ID:         "f47ac10b-58cc-4372-8567-0e02b2c3d479",
+				Created:    time.Now().Format(time.RFC3339),
+				Expiration: time.Now().Format(time.RFC3339),
+				Version:    "Version",
+				Status:     StatusComplete,
+				CertifiedBy: CertifiedBy{
+					Environment:  CertifiedByEnvironmentSandbox,
+					Brand:        "Brand",
+					AuthorisedBy: "AuthorisedBy",
+					JobTitle:     "JobTitle",
+				},
+			},
+		},
+		{
+			name: "valid_production_env",
+			fields: fields{
+				ID:         "f47ac10b-58cc-4372-8567-0e02b2c3d479",
+				Created:    time.Now().Format(time.RFC3339),
+				Expiration: time.Now().Format(time.RFC3339),
+				Version:    "Version",
+				Status:     StatusComplete,
+				CertifiedBy: CertifiedBy{
+					Environment:  CertifiedByEnvironmentProduction,
+					Brand:        "Brand",
+					AuthorisedBy: "AuthorisedBy",
+					JobTitle:     "JobTitle",
+				},
+				AgreedTC: true,
 			},
 		},
 	}
@@ -166,9 +218,9 @@ func TestReport_Validate(t *testing.T) {
 				Status:         tt.fields.Status,
 				CertifiedBy:    tt.fields.CertifiedBy,
 				SignatureChain: tt.fields.SignatureChain,
+				AgreedTC:       tt.fields.AgreedTC,
 			}
 			err := r.Validate()
-
 			if tt.wantErr == "" {
 				require.NoError(err)
 			} else {

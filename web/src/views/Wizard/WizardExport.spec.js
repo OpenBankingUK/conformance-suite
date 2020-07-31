@@ -7,6 +7,30 @@ import TheWizardFooter from '../../components/Wizard/TheWizardFooter.vue';
 import TheStore from '../../store';
 import WizardExport from './WizardExport.vue';
 
+const discoveryModel = {
+  discoveryModel: {
+    discoveryItems: [
+      {
+        apiSpecification: {
+          name: 'Specification A',
+          version: 'v3.1.5',
+        },
+      },
+      {
+        apiSpecification: {
+          name: 'Specification A',
+          version: 'v3.1.4',
+        },
+      },
+      {
+        apiSpecification: {
+          name: 'Specification B',
+          version: 'v3.1.5',
+        },
+      },
+    ],
+  },
+};
 
 describe('WizardExport', () => {
   const mountOptions = () => {
@@ -17,6 +41,8 @@ describe('WizardExport', () => {
     localVue.use(BootstrapVue);
     localVue.use(VueRouter);
 
+    // discoveryModel is used for testing displayed specification versions
+    TheStore.commit('config/SET_DISCOVERY_MODEL', discoveryModel);
     return {
       localVue,
       store: TheStore,
@@ -62,6 +88,15 @@ describe('WizardExport', () => {
 
     // component heading
     expect(wrapper.find('.panel-heading').text()).toBe('Export');
+
+    // tested versions
+    expect(wrapper.contains('#versions')).toBe(true);
+
+    // all items are listed for tested versions
+    discoveryModel.discoveryModel.discoveryItems.forEach((item) => {
+      const id = (item.apiSpecification.version + item.apiSpecification.name).replace(/[^a-zA-Z0-9-]/g, '_');
+      expect(wrapper.contains(`#${id}`)).toBe(true);
+    });
 
     // form
     expect(wrapper.contains('#implementer')).toBe(true);

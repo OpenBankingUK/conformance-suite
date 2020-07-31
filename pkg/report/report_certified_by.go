@@ -16,6 +16,7 @@ func (r CertifiedBy) Validate() error {
 		validation.Field(&r.Environment, validation.Required, validation.In(
 			CertifiedByEnvironmentTesting,
 			CertifiedByEnvironmentProduction,
+			CertifiedByEnvironmentSandbox,
 		)),
 		validation.Field(&r.Brand, validation.Required, validation.Length(1, 60)),
 		validation.Field(&r.AuthorisedBy, validation.Required, validation.Length(1, 60)),
