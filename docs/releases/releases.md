@@ -1,3 +1,9 @@
+# Release v1.5.3 (3rd August 2020)
+
+The release is called **v1.5.3**, a minor update that includes new UI support for SSA & KID for EIDAS certificates, 403 error status code fixes and updates to the report export.
+
+[Full Release Notes](https://bitbucket.org/openbankingteam/conformance-suite/src/develop/docs/releases/v1.5.3.md) (v1.5.3.md)
+
 # Release v1.5.2 (7th July 2020)
 
 The release is called **v1.5.2**, a minor update that allows the provision of two new command line parameters "eidas_issuer" and "eidas_kid" for EIDAS signing certificates (QSeals and OBseals) that are registered with the Open Banking Directory.
