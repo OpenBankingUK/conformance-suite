@@ -123,6 +123,8 @@ func newValidator(doc *loads.Document) (Validator, error) {
 	case "v3.1.4":
 		fallthrough
 	case "v3.1.5":
+		fallthrough
+	case "v3.1.6":
 		return validators{
 			validators: []Validator{
 				newContentTypeValidator(f),
