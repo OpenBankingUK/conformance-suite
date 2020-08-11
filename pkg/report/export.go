@@ -27,7 +27,7 @@ var (
 	// ErrExportFailure is the common error type returned on all export errors
 	ErrExportFailure = errors.New("export failed")
 
-	// Not a real secret; it's used when calculating a checksum (HMAC) for the exported report files.
+	// Not a real secret; it's used when calculating a checksum for the exported report files.
 	// The main purpose is to protect against accidental edits in the exported files.
 	exportSecret = []byte(os.Getenv("EXPORT_SECRET"))
 )
