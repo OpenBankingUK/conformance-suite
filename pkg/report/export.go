@@ -2,11 +2,14 @@ package report
 
 import (
 	"archive/zip"
+	"crypto/sha256"
+	"encoding/hex"
 	"encoding/json"
+	"fmt"
 	"io"
 	"io/ioutil"
 	"os"
-	"path/filepath"
+	"path"
 	"strings"
 
 	"github.com/pkg/errors"
@@ -18,6 +21,15 @@ const (
 	reportFilename         = "report.json"
 	discoveryFilename      = "discovery.json"
 	responseFieldsFilename = "responseFields.json"
+)
+
+var (
+	// ErrExportFailure is the common error type returned on all export errors
+	ErrExportFailure = errors.New("export failed")
+
+	// Not a real secret; it's used when calculating a checksum (HMAC) for the exported report files.
+	// The main purpose is to protect against accidental edits in the exported files.
+	exportSecret = []byte(os.Getenv("EXPORT_SECRET"))
 )
 
 // Exporter - allows the exporting of a `Report`.
@@ -51,78 +63,82 @@ func (e *zipExporter) Export() error {
 	zipWriter := zip.NewWriter(e.writer)
 	defer zipWriter.Close()
 
+	toExport, err := readManifestFiles(&e.report)
+	if err != nil {
+		return fmt.Errorf("%w: %s", ErrExportFailure, err)
+	}
+
 	reportJSON, err := json.MarshalIndent(e.report, marshalIndentPrefix, marshalIndent)
 	if err != nil {
-		return errors.Wrapf(err, "zipExporter.Export: json.MarshalIndent failed, report=%+v", e.report)
+		return fmt.Errorf("%w: json.MarshalIndent failed: %s, report=%+v", ErrExportFailure, err.Error(), e.report)
 	}
-
-	// Create file within ZIP archive
-	reportFile, err := zipWriter.Create(reportFilename)
-	if err != nil {
-		return errors.Wrapf(err, "zipExporter.Export: zip.Writer.Create failed, could not create file %q", reportFilename)
-	}
-
-	// Create report contents to zip
-	n, err := reportFile.Write(reportJSON)
-	if err != nil {
-		return errors.Wrapf(err, "zipExporter.Export: zip.Writer.Write failed, could write to %q, reportJSON=%+v", reportFilename, string(reportJSON))
-	}
-	_ = n // silence linter
 
 	discoveryJSON, err := json.MarshalIndent(e.report.Discovery, marshalIndentPrefix, marshalIndent)
 	if err != nil {
-		return errors.Wrapf(err, "zipExporter.Export: json.MarshalIndent failed, report=%+v", e.report)
+		return fmt.Errorf("%w: json.MarshalIndent failed: %s, discovery=%+v", ErrExportFailure, err.Error(), e.report.Discovery)
 	}
 
-	return e.create(zipWriter, reportJSON, discoveryJSON)
+	toExport[reportFilename] = reportJSON
+	toExport[discoveryFilename] = discoveryJSON
+	toExport[responseFieldsFilename] = []byte(e.report.ResponseFields)
+	toExport["report.checksum"] = createChecksum(exportSecret, reportJSON)
+
+	return writeFiles(zipWriter, toExport)
 }
 
-func (e *zipExporter) create(zipWriter *zip.Writer, reportJSON, discoveryJSON []byte) error {
-	// Create file within ZIP archive
-	discoveryFile, err := zipWriter.Create(discoveryFilename)
-	if err != nil {
-		return errors.Wrapf(err, "zipExporter.Export: zip.Writer.Create failed, could not create file %q", discoveryFilename)
-	}
+func createChecksum(data, secret []byte) []byte {
+	h := sha256.New()
+	h.Write(data)   // never returns non-nil error
+	h.Write(secret) //
 
-	// Create discovery contents to zip
-	if _, err := discoveryFile.Write(discoveryJSON); err != nil {
-		return errors.Wrapf(err, "zipExporter.Export: zip.Writer.Write failed, could write to %q, discoveryJSON=%+v", discoveryFilename, string(reportJSON))
-	}
+	src := h.Sum(nil)
+	dst := make([]byte, hex.EncodedLen(len(src)))
+	hex.Encode(dst, src)
+	return dst
+}
 
-	responseFieldsFile, err := zipWriter.Create(responseFieldsFilename)
-	if err != nil {
-		return errors.Wrapf(err, "zipExporter.Export: zip.Writer.Create failed, could not create file %q", responseFieldsFilename)
-	}
-
-	if _, err := responseFieldsFile.Write([]byte(e.report.ResponseFields)); err != nil {
-		return errors.Wrapf(err, "zipExporter.Export: zip.Writer.Write failed, could write to %q, responseFields=%+v", responseFieldsFile, e.report.ResponseFields)
-	}
-
-	for _, manifest := range e.report.Discovery.DiscoveryModel.DiscoveryItems {
-		_, filename := filepath.Split(manifest.APISpecification.Manifest)
-
-		// Create manifest file within ZIP archive
-		manifestFile, err := zipWriter.Create(filename)
+func writeFiles(zipWriter *zip.Writer, files map[string][]byte) error {
+	for fileName, contents := range files {
+		f, err := zipWriter.Create(fileName)
 		if err != nil {
-			return errors.Wrapf(err, "zipExporter.Export: zip.Writer.Create failed, could not create file %q", filename)
+			return fmt.Errorf("error writing file: '%s': %s", fileName, err.Error())
 		}
 
-		path := strings.TrimPrefix(manifest.APISpecification.Manifest, "file://")
-		fileContents, err := ioutil.ReadFile(path)
-		if err != nil && os.IsNotExist(err) {
-			fileContents, err = ioutil.ReadFile("../../" + path)
-			if err != nil {
-				return errors.Wrapf(err, "zipExporter.Export: zip.Writer.Write failed, could open manifest file %s", filename)
-			}
-		} else if err != nil {
-			return errors.Wrapf(err, "zipExporter.Export: zip.Writer.Write failed, could open manifest file %s", filename)
-		}
-
-		// Create manifest contents to zip
-		if _, err := manifestFile.Write(fileContents); err != nil {
-			return errors.Wrapf(err, "zipExporter.Export: zip.Writer.Write failed, could write manifest file %s", filename)
+		if _, err := f.Write(contents); err != nil {
+			return fmt.Errorf("error writing file: '%s': %s", fileName, err.Error())
 		}
 	}
-
 	return nil
+}
+
+func readManifestFiles(report *Report) (map[string][]byte, error) {
+	manifests := map[string][]byte{}
+	for _, manifestPath := range report.manifestFilePaths() {
+		fileContents, err := readManifestFile(manifestPath)
+		if err != nil {
+			return nil, fmt.Errorf("failed to read manifest file: %w", err)
+		}
+
+		fileName := path.Base(manifestPath)
+		manifests[fileName] = fileContents
+	}
+	return manifests, nil
+}
+
+func readManifestFile(path string) ([]byte, error) {
+	searchPaths := []string{".", "../.."}
+	var err error
+	for _, searchPath := range searchPaths {
+		filePath := strings.Join([]string{searchPath, path}, "/")
+		var fileContents []byte
+		fileContents, err = ioutil.ReadFile(filePath)
+		if err == nil {
+			return fileContents, nil
+		}
+		if os.IsNotExist(err) {
+			continue
+		}
+		break
+	}
+	return nil, err
 }
