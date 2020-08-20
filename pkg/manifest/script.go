@@ -10,7 +10,7 @@ import (
 	"strings"
 
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/schema"
-	"github.com/blang/semver"
+	"github.com/blang/semver/v4"
 	"github.com/pkg/errors"
 	"github.com/tidwall/sjson"
 
