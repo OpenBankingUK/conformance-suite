@@ -408,99 +408,75 @@ func buildInputSection(s Script, i *model.Input) {
 }
 
 func LoadGenerationResources(specType, manifestPath string, ctx *model.Context) (Scripts, References, error) {
+	var err error
+	apiVersions := []string{}
+	if ctx != nil {
+		apiVersions, err = ctx.GetStringSlice("apiversions")
+		if err == model.ErrNotFound {
+			return Scripts{}, References{}, errors.New("loadGenerationResources: apiversions - context variable not found")
+		}
+	}
 
 	if specType == "notifications" {
 		return Scripts{}, References{}, errors.New("loadGenerationResources: invalid spec type")
+	}
+
+	specVersion, err := getSpecVersion(specType, apiVersions)
+	if err != nil {
+		return Scripts{}, References{}, fmt.Errorf("loadGenerationResources: cannot get spec version from spec type %s:%v", specType, apiVersions)
 	}
 
 	assertions, err := loadAssertions()
 	if err != nil {
 		return Scripts{}, References{}, err
 	}
-	sc, err := loadScripts(manifestPath)
+	scripts, err := loadScripts(manifestPath)
 	if err != nil {
 		return Scripts{}, References{}, err
 	}
 
-	vsScripts, err := getVersionSpecificScripts(specType, "3.1.2", ctx)
+	sc, err := filterScriptsByVersion(specVersion, scripts)
 	if err != nil {
 		return Scripts{}, References{}, err
-	}
-
-	if len(vsScripts.Scripts) != 0 {
-		sc.Scripts = append(sc.Scripts, vsScripts.Scripts...)
-	}
-
-	vsScripts, err = getVersionSpecificScripts(specType, "3.1.3", ctx)
-	if err != nil {
-		return Scripts{}, References{}, err
-	}
-
-	vsScripts, err = getVersionSpecificScripts(specType, "3.1.4", ctx)
-	if err != nil {
-		return Scripts{}, References{}, err
-	}
-
-	vsScripts, err = getVersionSpecificScripts(specType, "3.1.5", ctx)
-	if err != nil {
-		return Scripts{}, References{}, err
-	}
-
-	vsScripts, err = getVersionSpecificScripts(specType, "3.1.6", ctx)
-	if err != nil {
-		return Scripts{}, References{}, err
-	}
-
-	if len(vsScripts.Scripts) != 0 {
-		sc.Scripts = append(sc.Scripts, vsScripts.Scripts...)
 	}
 
 	return sc, assertions, err
 
 }
 
-func getVersionSpecificScripts(spectype, version string, ctx *model.Context) (Scripts, error) {
-	var apiVersions []string
-	var err error
-	apiVersions = []string{}
-	if ctx != nil {
-		apiVersions, err = ctx.GetStringSlice("apiversions")
-		if err == model.ErrNotFound {
-			return Scripts{}, nil
+func filterScriptsByVersion(specVersion semver.Version, scAllVersions Scripts) (Scripts, error) {
+	sc := Scripts{}
+	for _, v := range scAllVersions.Scripts {
+		if v.APIVersion == "" {
+			sc.Scripts = append(sc.Scripts, v)
+		} else {
+			testRange, err := semver.ParseRange(v.APIVersion)
+			if err != nil {
+				return Scripts{}, err
+			}
+			if testRange(specVersion) {
+				sc.Scripts = append(sc.Scripts, v)
+			}
 		}
-
 	}
+	return sc, nil
+}
 
-	if err != nil {
-		logrus.Errorln("getVersionscript - err " + err.Error())
-		return Scripts{}, err
-	}
-
-	sver, err := semver.Make(version)
-	if err != nil {
-		return Scripts{}, err
-	}
+func getSpecVersion(spectype string, apiVersions []string) (semver.Version, error) {
 	for _, v := range apiVersions {
 		api := strings.Split(v, "_v")
 		if len(api) > 1 {
 			if strings.Compare(spectype, api[0]) == 0 {
 				s1, err := semver.Make(api[1])
 				if err != nil {
-					return Scripts{}, err
+					return s1, err
 				}
-				if sver.Compare(s1) == 0 {
-					scriptname := fmt.Sprintf("file://manifests/ob_%s_%s.json", api[1], api[0])
-					sc, err := loadScripts(scriptname)
-					if err != nil {
-						return Scripts{}, err
-					}
-					return sc, nil
-				}
+				return s1, nil
 			}
 		}
 	}
 
-	return Scripts{}, nil
+	return semver.Version{}, fmt.Errorf("getSpecVersion: cannot parse versions %v", apiVersions)
 }
 
 func loadAssertions() (References, error) {

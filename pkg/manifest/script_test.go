@@ -431,13 +431,3 @@ func TestContains(t *testing.T) {
 	assert.True(t, contains(collection, subjectExists))
 	assert.False(t, contains(collection, subjectNotExists))
 }
-
-func TestGetVersionSpecificScripts(t *testing.T) {
-
-	ctx := &model.Context{}
-	ctx.PutStringSlice("apiversions", []string{"payments_v3.1.2", "accounts_v3.1.2", "cbpii_v3.1.0"})
-
-	sc, _ := getVersionSpecificScripts("accounts", "3.1.2", ctx)
-
-	fmt.Printf("%#v\n", sc)
-}
