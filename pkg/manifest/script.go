@@ -12,9 +12,8 @@ import (
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/schema"
 	"github.com/blang/semver/v4"
 	"github.com/pkg/errors"
-	"github.com/tidwall/sjson"
-
 	"github.com/sirupsen/logrus"
+	"github.com/tidwall/sjson"
 
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
@@ -226,19 +225,14 @@ func (s *Script) processParameters(refs *References, resources *model.Context) (
 			continue
 		}
 
-		if strings.HasPrefix(value, "$fn:") {
-			fnNameAndArgs := fnReplacementRegex.FindStringSubmatch(value)
-			if fnNameAndArgs == nil {
-				return nil, errors.New("function name format error processing " + value)
-			}
-			fnArgs := []string{}
-			// fn has some parameters
-			if len(fnNameAndArgs) > 2 && fnNameAndArgs[2] != "" {
-				fnArgs = strings.Split(fnNameAndArgs[2], ",")
-			}
-			result, err := model.ExecuteMacro(fnNameAndArgs[1], fnArgs)
+		if isFunction(value) {
+			fnName, fnArgs, err := fnNameAndArgs(value)
 			if err != nil {
-				logrus.Debugf("found error while executing function for context var %s. err %v", fnNameAndArgs[1], err)
+				return nil, err
+			}
+			result, err := model.ExecuteMacro(fnName, fnArgs)
+			if err != nil {
+				logrus.Debugf("error executing function '%s' with parameters %s : %v", fnName, fnArgs, err)
 				return nil, err
 			}
 			localCtx.PutString(k, result)
@@ -277,6 +271,24 @@ func (s *Script) processParameters(refs *References, resources *model.Context) (
 		localCtx.PutStringSlice("permissions-excluded", s.PermissionsExcluded)
 	}
 	return &localCtx, nil
+}
+
+func isFunction(param string) bool {
+	return strings.HasPrefix(param, "$fn:")
+}
+
+func fnNameAndArgs(param string) (string, []string, error) {
+	fnNameAndArgs := fnReplacementRegex.FindStringSubmatch(param)
+	if fnNameAndArgs == nil {
+		return "", nil, errors.New("function name format error processing " + param)
+	}
+	fnArgs := []string{}
+	// fn has some parameters
+	if len(fnNameAndArgs) > 2 && fnNameAndArgs[2] != "" {
+		fnArgs = strings.Split(fnNameAndArgs[2], ",")
+	}
+
+	return fnNameAndArgs[1], fnArgs, nil
 }
 
 func (r *Reference) getValue() string {
@@ -487,14 +499,15 @@ func loadAssertions() (References, error) {
 			return References{}, err
 		}
 	}
-	refs2, err := loadReferences("manifests/data.json")
 
+	refs2, err := loadReferences("manifests/data.json")
 	if err != nil {
 		refs2, err = loadReferences("../../manifests/data.json")
 		if err != nil {
 			return References{}, err
 		}
 	}
+
 	for k, v := range refs2.References { // read in data references with body payloads
 		body := jsonString(v.Body)
 		l := len(body)

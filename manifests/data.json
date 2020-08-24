@@ -59,9 +59,9 @@
               "Name": "$creditorName"
             }
           }
-          },
+        },
         "Risk": {}
-        }
+      }
     },
     "minimalScheduledDomesticPaymentConsent": {
       "body": {
@@ -69,6 +69,28 @@
           "Permission": "Create",
           "Initiation": {
             "RequestedExecutionDateTime": "$requestedExecutionDateTime",
+            "InstructionIdentification": "$instructionIdentification",
+            "EndToEndIdentification": "$endToEndIdentification",
+            "InstructedAmount": {
+              "Amount": "$instructedAmountValue",
+              "Currency": "$instructedAmountCurrency"
+            },
+            "CreditorAccount": {
+              "SchemeName": "$creditorScheme",
+              "Identification": "$creditorIdentification",
+              "Name": "$creditorName"
+            }
+          }
+        },
+        "Risk": {}
+      }
+    },
+    "scheduledDomesticPaymentConsentISO8601Test": {
+      "body": {
+        "Data": {
+          "Permission": "Create",
+          "Initiation": {
+            "RequestedExecutionDateTime": "$replacementDateTime",
             "InstructionIdentification": "$instructionIdentification",
             "EndToEndIdentification": "$endToEndIdentification",
             "InstructedAmount": {
