@@ -154,6 +154,15 @@ func NewReport(exportResults models.ExportResults, environment string) (Report, 
 	}, nil
 }
 
+func (r *Report) manifestFilePaths() []string {
+	paths := make([]string, 0, len(r.Discovery.DiscoveryModel.DiscoveryItems))
+	for _, manifest := range r.Discovery.DiscoveryModel.DiscoveryItems {
+		path := strings.TrimPrefix(manifest.APISpecification.Manifest, "file://")
+		paths = append(paths, path)
+	}
+	return paths
+}
+
 // GetFails - fails is the number of specification tests that failed, it is not the number of failed tests.
 func GetFails(specs map[results.ResultKey][]results.TestCase) int {
 	var fails int

@@ -94,7 +94,7 @@ func TestHTTPErrorUpdateWarningVersion(t *testing.T) {
 	// Assert the default UI/Human error message is returned.
 	assert.Equal(t, message, "Version check is unavailable at this time.")
 	// Assert that an error() is actually returned.
-	assert.EqualError(t, err, "HTTP on GET to BitBucket API: Get https://.com: dial tcp: lookup .com: no such host")
+	assert.EqualError(t, err, "HTTP on GET to BitBucket API: Get \"https://.com\": dial tcp: lookup .com: no such host")
 
 }
 
