@@ -11,6 +11,7 @@ import (
 	"os"
 	"path"
 	"strings"
+	"time"
 
 	"github.com/pkg/errors"
 )
@@ -99,7 +100,13 @@ func createChecksum(data, secret []byte) []byte {
 
 func writeFiles(zipWriter *zip.Writer, files map[string][]byte) error {
 	for fileName, contents := range files {
-		f, err := zipWriter.Create(fileName)
+		header := &zip.FileHeader{
+			Name:     fileName,
+			Method:   zip.Deflate,
+			Modified: time.Now(),
+		}
+
+		f, err := zipWriter.CreateHeader(header)
 		if err != nil {
 			return fmt.Errorf("error writing file: '%s': %s", fileName, err.Error())
 		}
