@@ -11,7 +11,7 @@ import (
 
 var macroMap = map[string]interface{}{
 	"instructionIdentificationID": instructionIdentificationID,
-	"futureDateTimeVariant":       futureDateTimeVariant,
+	"nextDayDateTime":             nextDayDateTime,
 }
 
 // AddMacro inserts the provided macro in the map where they are held.
@@ -49,24 +49,9 @@ func instructionIdentificationID() string {
 	return strings.ReplaceAll(uuid.New().String(), "-", "")
 }
 
-func futureDateTimeVariant(v string) string {
-	var dateTimeFormat string
-	switch strings.ToLower(v) {
-	case "v1":
-		dateTimeFormat = "2006-01-02T15:04:05.999Z07:00"
-	case "v2":
-		dateTimeFormat = "2006-01-02T15:04:05.999-07:00"
-	case "v3":
-		dateTimeFormat = "2006-01-02T15:04:05Z07:00"
-	case "v4":
-		dateTimeFormat = "2006-01-02T15:04:05-07:00"
-	default:
-		dateTimeFormat = time.RFC3339
-	}
-
-	// UTC tests with a format where the timezone is always Z or 00:00.
+func nextDayDateTime(format string) string {
 	// In the tests which use generated times, there must be no assertion
 	// on the timestamp's actual value, (e.g. checking if time == 2022-01-01T12:00:00Z).
 	tomorrow := time.Now().UTC().Add(24 * time.Hour)
-	return tomorrow.Format(dateTimeFormat)
+	return tomorrow.Format(format)
 }

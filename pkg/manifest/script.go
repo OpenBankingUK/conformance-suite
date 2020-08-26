@@ -213,7 +213,7 @@ func convertInputStringToArray(value string) []string {
 	return strings.Split(value, ",")
 }
 
-var fnReplacementRegex = regexp.MustCompile(`[^\$fn:]?\$fn:([\w|_]*)\(([\w,\s-]*)\)`)
+var fnReplacementRegex = regexp.MustCompile(`[^\$fn:]?\$fn:([\w|_]*)\(([\w,\s-,:,\.]*)\)`)
 
 func (s *Script) processParameters(refs *References, resources *model.Context) (*model.Context, error) {
 	localCtx := model.Context{}
