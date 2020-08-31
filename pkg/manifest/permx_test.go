@@ -22,14 +22,20 @@ func TestPermx(t *testing.T) {
 	}
 
 	specType, err := GetSpecType(apiSpec.SchemaVersion)
-	scripts, _, err := LoadGenerationResources(specType, manifestPath, nil)
+
+	var values []interface{}
+	values = append(values, "accounts_v3.1.1", "payments_v3.1.1")
+	context := model.Context{"apiversions": values}
+
+	scripts, _, err := LoadGenerationResources(specType, manifestPath, &context)
+
 	assert.Nil(t, err)
 
 	params := GenerationParameters{
 		Scripts:      scripts,
 		Spec:         apiSpec,
 		Baseurl:      "http://mybaseurl",
-		Ctx:          &model.Context{},
+		Ctx:          &context,
 		Endpoints:    readDiscovery(),
 		ManifestPath: manifestPath,
 		Validator:    schema.NewNullValidator(),
@@ -41,24 +47,28 @@ func TestPermx(t *testing.T) {
 	testcasePermissions, err := getTestCasePermissions(tests)
 	assert.Nil(t, err)
 
-	requiredTokens, err := getRequiredTokens(testcasePermissions)
+	_, err = getRequiredTokens(testcasePermissions)
 	assert.Nil(t, err)
-	dumpJSON(requiredTokens)
 }
 
 func TestGetScriptConsentTokens(t *testing.T) {
 	apiSpec := discovery.ModelAPISpecification{
 		SchemaVersion: accountSwaggerLocation31,
 	}
+
+	var values []interface{}
+	values = append(values, "accounts_v3.1.1", "payments_v3.1.1")
+	context := model.Context{"apiversions": values}
+
 	specType, err := GetSpecType(apiSpec.SchemaVersion)
-	scripts, _, err := LoadGenerationResources(specType, manifestPath, nil)
+	scripts, _, err := LoadGenerationResources(specType, manifestPath, &context)
 	assert.Nil(t, err)
 
 	params := GenerationParameters{
 		Scripts:      scripts,
 		Spec:         apiSpec,
 		Baseurl:      "http://mybaseurl",
-		Ctx:          &model.Context{},
+		Ctx:          &context,
 		Endpoints:    readDiscovery(),
 		ManifestPath: manifestPath,
 		Validator:    schema.NewNullValidator(),
@@ -73,7 +83,6 @@ func TestGetScriptConsentTokens(t *testing.T) {
 	assert.Nil(t, err)
 
 	populateTokens(t, requiredTokens)
-	dumpJSON(requiredTokens)
 }
 
 func populateTokens(t *testing.T, gatherer []RequiredTokens) error {
