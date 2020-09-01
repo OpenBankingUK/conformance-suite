@@ -24,36 +24,6 @@ func testLoadDiscoveryModel(t *testing.T) *discovery.ModelDiscovery {
 	return &model.DiscoveryModel
 }
 
-func TestGenerateSpecificationTestCases(t *testing.T) {
-	logger := test.NullLogger()
-	discovery := *testLoadDiscoveryModel(t)
-	generator := NewGenerator()
-	config := GeneratorConfig{}
-	specRun, _, _ := generator.GenerateManifestTests(logger, config, discovery, &model.Context{}, nil)
-	cases := specRun.SpecTestCases
-
-	t.Run("returns slice of SpecificationTestCases, one per discovery item", func(t *testing.T) {
-		assert := test.NewAssert(t)
-
-		require.NotNil(t, cases)
-		assert.Equal(len(discovery.DiscoveryItems), len(cases))
-	})
-
-	t.Run("returns each SpecificationTestCases with a Specification matching discovery item", func(t *testing.T) {
-		assert := test.NewAssert(t)
-
-		require.Equal(t, len(discovery.DiscoveryItems), len(cases))
-
-		for i, specificationCases := range cases {
-			if specificationCases.Specification.Name == "CustomTest-GetOzoneToken" {
-				continue
-			}
-			expectedSpec := discovery.DiscoveryItems[i].APISpecification
-			assert.Equal(expectedSpec, specificationCases.Specification)
-		}
-	})
-}
-
 func TestPermissionsSetsEmpty(t *testing.T) {
 	assert := test.NewAssert(t)
 

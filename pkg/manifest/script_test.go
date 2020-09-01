@@ -21,13 +21,19 @@ func TestGenerateTestCases(t *testing.T) {
 		SchemaVersion: accountSwaggerLocation31,
 	}
 	specType, err := GetSpecType(apiSpec.SchemaVersion)
+	fmt.Println(specType)
 	assert.Nil(t, err)
-	scripts, _, err := LoadGenerationResources(specType, manifestPath, nil)
+
+	var values []interface{}
+	values = append(values, "accounts_v3.1.1", "payments_v3.1.1")
+	context := model.Context{"apiversions": values}
+
+	scripts, _, err := LoadGenerationResources(specType, manifestPath, &context)
 
 	params := GenerationParameters{Scripts: scripts,
 		Spec:         apiSpec,
 		Baseurl:      "http://mybaseurl",
-		Ctx:          &model.Context{},
+		Ctx:          &context,
 		Endpoints:    readDiscovery(),
 		ManifestPath: manifestPath,
 		Validator:    schema.NewNullValidator(),
@@ -258,6 +264,11 @@ func TestPaymentTestCaseCreation(t *testing.T) {
 		"thisCurrency":                        "GBP",
 		"creditorScheme":                      "default",
 	}
+
+	var values []interface{}
+	values = append(values, "accounts_v3.1.1", "payments_v3.1.1")
+	ctx.Put("apiversions", values)
+
 	apiSpec := discovery.ModelAPISpecification{
 		SchemaVersion: paymentsSwaggerLocation31,
 	}
@@ -430,14 +441,4 @@ func TestContains(t *testing.T) {
 
 	assert.True(t, contains(collection, subjectExists))
 	assert.False(t, contains(collection, subjectNotExists))
-}
-
-func TestGetVersionSpecificScripts(t *testing.T) {
-
-	ctx := &model.Context{}
-	ctx.PutStringSlice("apiversions", []string{"payments_v3.1.2", "accounts_v3.1.2", "cbpii_v3.1.0"})
-
-	sc, _ := getVersionSpecificScripts("accounts", "3.1.2", ctx)
-
-	fmt.Printf("%#v\n", sc)
 }
