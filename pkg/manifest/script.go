@@ -34,6 +34,7 @@ type Script struct {
 	ID                  string            `json:"id,omitempty"`
 	RefURI              string            `json:"refURI,omitempty"`
 	Parameters          map[string]string `json:"parameters,omitempty"`
+	QueryParameters     map[string]string `json:"queryParameters"`
 	Headers             map[string]string `json:"headers,omitempty"`
 	RemoveHeaders       []string          `json:"removeHeaders,omitempty"`
 	Body                string            `json:"body,omitempty"`
@@ -169,10 +170,18 @@ func GenerateTestCases(params *GenerationParameters) ([]model.TestCase, Scripts,
 			return nil, Scripts{}, err
 		}
 
+		addQueryParametersToRequest(&tc, script.QueryParameters)
 		tests = append(tests, tc)
 	}
 
 	return tests, filteredScripts, nil
+}
+
+func addQueryParametersToRequest(tc *model.TestCase, parameters map[string]string) {
+	for k, v := range parameters {
+		// FormData is encoded to URL query parameters on "GET" requests
+		tc.Input.QueryParameters[k] = v
+	}
 }
 
 func addConditionalPropertiesToRequest(tc *model.TestCase, conditional []discovery.ConditionalAPIProperties, log *logrus.Entry) error {

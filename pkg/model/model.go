@@ -86,6 +86,7 @@ type TestCase struct {
 func MakeTestCase() TestCase {
 	i := Input{}
 	i.FormData = make(map[string]string)
+	i.QueryParameters = make(map[string]string)
 	i.Generation = make(map[string]string)
 	i.Headers = make(map[string]string)
 	i.Claims = make(map[string]string)
@@ -269,7 +270,7 @@ type Expect struct {
 // ApplyInput - creates an HTTP request for this test case
 // The reason why we're doing this is that a testcase behaves like an http object
 // It produces an http.Request - which can be sent to a server
-// It consumes and http.Response - which it uses to validate the response against "Expects"
+// It consumes an http.Response - which it uses to validate the response against "Expects"
 // TestCase lifecycle:
 //     Create a Testcase Object
 //     Create / retrieve the http request object
