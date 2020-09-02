@@ -1,10 +1,10 @@
 {
   "scripts": [
     {
-      "description": "Creates Funds Confirmation Consents is AwaitingAuthorisation",
+      "description": "Creates Funds Confirmation Consent with status AwaitingAuthorisation",
       "id": "OB-301-CBPII-000001",
       "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937951380/Confirmation+of+Funds+API+Specification+-+v3.1",
-      "detail": "Creates Funds Confirmation Consents",
+      "detail": "Creates Funds Confirmation Consent",
       "uri": "/funds-confirmation-consents",
       "uriImplementation": "mandatory",
       "parameters": {
@@ -30,10 +30,10 @@
       "schemaCheck": true
     },
     {
-      "description": "Creates Funds Confirmation Consents",
+      "description": "Creates Funds Confirmation Consent",
       "id": "OB-301-CBPII-000002",
       "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937951380/Confirmation+of+Funds+API+Specification+-+v3.1",
-      "detail": "Creates Funds Confirmation Consents",
+      "detail": "Creates Funds Confirmation Consent",
       "uri": "/funds-confirmation-consents",
       "uriImplementation": "mandatory",
       "parameters": {
@@ -128,10 +128,10 @@
       "schemaCheck": true
     },
     {
-      "description": "Creates Funds Confirmation Consents fails due to invalid account name",
+      "description": "Creating Funds Confirmation Consent fails due to invalid account name",
       "id": "OB-301-CBPII-000006",
       "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937951380/Confirmation+of+Funds+API+Specification+-+v3.1",
-      "detail": "Creates Funds Confirmation Consents",
+      "detail": "Creates Funds Confirmation Consent",
       "uri": "/funds-confirmation-consents",
       "uriImplementation": "mandatory",
       "parameters": {
@@ -153,10 +153,10 @@
       "schemaCheck": true
     },
     {
-      "description": "Creates Funds Confirmation Consents fails due to invalid account Identification",
+      "description": "Creating Funds Confirmation Consent fails due to invalid account Identification",
       "id": "OB-301-CBPII-000007",
       "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937951380/Confirmation+of+Funds+API+Specification+-+v3.1",
-      "detail": "Creates Funds Confirmation Consents",
+      "detail": "Creates Funds Confirmation Consent",
       "uri": "/funds-confirmation-consents",
       "uriImplementation": "mandatory",
       "parameters": {
@@ -178,10 +178,10 @@
       "schemaCheck": true
     },
     {
-      "description": "Creates Funds Confirmation Consents fails due to invalid scheme name",
+      "description": "Creating Funds Confirmation Consent fails due to invalid scheme name",
       "id": "OB-301-CBPII-000008",
       "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937951380/Confirmation+of+Funds+API+Specification+-+v3.1",
-      "detail": "Creates Funds Confirmation Consents",
+      "detail": "Creates Funds Confirmation Consent",
       "uri": "/funds-confirmation-consents",
       "uriImplementation": "mandatory",
       "parameters": {
@@ -203,10 +203,10 @@
       "schemaCheck": true
     },
     {
-      "description": "Deletes Funds Confirmation Consents fails due to invalid consent ID",
+      "description": "Deleting Funds Confirmation Consent fails due to invalid consent ID",
       "id": "OB-301-CBPII-000009",
       "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937951380/Confirmation+of+Funds+API+Specification+-+v3.1",
-      "detail": "Deletes Funds Confirmation Consents",
+      "detail": "Deletes Funds Confirmation Consent",
       "uri": "/funds-confirmation-consents/$consentId",
       "uriImplementation": "mandatory",
       "parameters": {
@@ -218,6 +218,110 @@
         "OB3GLOAssertOn400"
       ],
       "schemaCheck": true
+    },
+    {
+      "description": "Creates Funds Confirmation Consent with expirationDateTime formatted as '2006-01-02T15:04:05.999Z'",
+      "id": "OB-301-CBPII-000009",
+      "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937951380/Confirmation+of+Funds+API+Specification+-+v3.1",
+      "detail": "Creates Funds Confirmation Consent with expirationDateTime formatted as '2006-01-02T15:04:05.999Z'",
+      "apiVersion":">=3.1.6",
+      "uri": "/funds-confirmation-consents",
+      "uriImplementation": "mandatory",
+      "parameters": {
+        "debtorAccountSchemeName": "$cbpiiDebtorAccountSchemeName",
+        "debtorAccountIdentification": "$cbpiiDebtorAccountIdentification",
+        "debtorAccountName": "$cbpiiDebtorAccountName",
+        "postData": "$OBFundsConfirmationConsent1",
+        "expirationDateTime": "$fn:nextDayDateTime(2006-01-02T15:04:05.999Z)",
+        "requestConsent": "false"
+      },
+      "method": "post",
+      "body": "$postData",
+      "headers": {
+        "Content-Type": "application/json"
+      },
+      "asserts": [
+        "OB3GLOAssertOn201"
+      ],
+      "schemaCheck": false
+    },
+    {
+      "description": "Creates Funds Confirmation Consent with expirationDate formatted as '2006-01-02T15:04:05.999-07:00'",
+      "id": "OB-301-CBPII-000010",
+      "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937951380/Confirmation+of+Funds+API+Specification+-+v3.1",
+      "detail": "Creates Funds Confirmation Consent with expirationDate formatted as '2006-01-02T15:04:05.999-07:00'",
+      "apiVersion":">=3.1.6",
+      "uri": "/funds-confirmation-consents",
+      "uriImplementation": "mandatory",
+      "parameters": {
+        "debtorAccountSchemeName": "$cbpiiDebtorAccountSchemeName",
+        "debtorAccountIdentification": "$cbpiiDebtorAccountIdentification",
+        "debtorAccountName": "$cbpiiDebtorAccountName",
+        "postData": "$OBFundsConfirmationConsent1",
+        "expirationDateTime": "$fn:nextDayDateTime(2006-01-02T15:04:05.999-07:00)",
+        "requestConsent": "false"
+      },
+      "method": "post",
+      "body": "$postData",
+      "headers": {
+        "Content-Type": "application/json"
+      },
+      "asserts": [
+        "OB3GLOAssertOn201"
+      ],
+      "schemaCheck": false
+    },
+    {
+      "description": "Creates Funds Confirmation Consent with expirationDate formatted as '2006-01-02T15:04:05Z'",
+      "id": "OB-301-CBPII-000011",
+      "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937951380/Confirmation+of+Funds+API+Specification+-+v3.1",
+      "detail": "Creates Funds Confirmation Consent with expirationDate formatted as '2006-01-02T15:04:05Z'",
+      "apiVersion":">=3.1.6",
+      "uri": "/funds-confirmation-consents",
+      "uriImplementation": "mandatory",
+      "parameters": {
+        "debtorAccountSchemeName": "$cbpiiDebtorAccountSchemeName",
+        "debtorAccountIdentification": "$cbpiiDebtorAccountIdentification",
+        "debtorAccountName": "$cbpiiDebtorAccountName",
+        "postData": "$OBFundsConfirmationConsent1",
+        "expirationDateTime": "$fn:nextDayDateTime(2006-01-02T15:04:05Z)",
+        "requestConsent": "false"
+      },
+      "method": "post",
+      "body": "$postData",
+      "headers": {
+        "Content-Type": "application/json"
+      },
+      "asserts": [
+        "OB3GLOAssertOn201"
+      ],
+      "schemaCheck": false
+    },
+    {
+      "description": "Creates Funds Confirmation Consent with expirationDate formatted as '2006-01-02T15:04:05-07:00'",
+      "id": "OB-301-CBPII-000012",
+      "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937951380/Confirmation+of+Funds+API+Specification+-+v3.1",
+      "detail": "Creates Funds Confirmation Consent with expirationDate formatted as '2006-01-02T15:04:05-07:00'",
+      "apiVersion":">=3.1.6",
+      "uri": "/funds-confirmation-consents",
+      "uriImplementation": "mandatory",
+      "parameters": {
+        "debtorAccountSchemeName": "$cbpiiDebtorAccountSchemeName",
+        "debtorAccountIdentification": "$cbpiiDebtorAccountIdentification",
+        "debtorAccountName": "$cbpiiDebtorAccountName",
+        "postData": "$OBFundsConfirmationConsent1",
+        "expirationDateTime": "$fn:nextDayDateTime(2006-01-02T15:04:05-07:00)",
+        "requestConsent": "false"
+      },
+      "method": "post",
+      "body": "$postData",
+      "headers": {
+        "Content-Type": "application/json"
+      },
+      "asserts": [
+        "OB3GLOAssertOn201"
+      ],
+      "schemaCheck": false
     },
     {
       "description": "3.1.2 x-fapi-financial-id no longer required",
@@ -249,6 +353,6 @@
         "OB3GLOAssertContentType"
       ],
       "schemaCheck": true
-    }    
+    }
   ]
 }
