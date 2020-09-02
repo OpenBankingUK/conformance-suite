@@ -4,25 +4,35 @@ import (
 	"errors"
 	"reflect"
 	"strings"
+	"time"
 
 	"github.com/google/uuid"
 )
 
 var macroMap = map[string]interface{}{
 	"instructionIdentificationID": instructionIdentificationID,
+	"nextDayDateTime":             nextDayDateTime,
+}
+
+// AddMacro inserts the provided macro in the map where they are held.
+// It is not expected to be called concurrently.
+func AddMacro(name string, macro interface{}) {
+	macroMap[name] = macro
 }
 
 // ExecuteMacro calls a macro by `name`, with parameters to be passed using `params`. `params` is a collection of strings
 // that get passed as is. Type assertions will need be performed in the macro implementation.
 func ExecuteMacro(name string, params []string) (string, error) {
-	if _, fnFound := macroMap[name]; !fnFound {
+	macro, found := macroMap[name]
+	if !found {
 		return "", errors.New("macro not found")
 	}
 
-	f := reflect.ValueOf(macroMap[name])
+	f := reflect.ValueOf(macro)
 	if len(params) != f.Type().NumIn() {
 		return "", errors.New("the number of params is not adapted")
 	}
+
 	in := make([]reflect.Value, len(params))
 	for k, param := range params {
 		in[k] = reflect.ValueOf(param)
@@ -37,4 +47,11 @@ func ExecuteMacro(name string, params []string) (string, error) {
 // instructionIdentificationID is a macro used in manifests
 func instructionIdentificationID() string {
 	return strings.ReplaceAll(uuid.New().String(), "-", "")
+}
+
+func nextDayDateTime(format string) string {
+	// In the tests which use generated times, there must be no assertion
+	// on the timestamp's actual value, (e.g. checking if time == 2022-01-01T12:00:00Z).
+	tomorrow := time.Now().UTC().Add(24 * time.Hour)
+	return tomorrow.Format(format)
 }
