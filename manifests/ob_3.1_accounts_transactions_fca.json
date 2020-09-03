@@ -1754,7 +1754,7 @@
       "id": "OB-301-TRA-105110",
       "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1004208451/Transactions+v3.1.1#Transactionsv3.1.1-PermissionCodes",
       "detail": "Checks that the endpoint processed the query parameters and returns the expected resource format.",
-      "apiVersion":">=3.1.6",
+      "apiVersion":">=3.1.5",
       "parameters": {
         "tokenRequestScope": "accounts",
         "accountId": "$consentedAccountId"
@@ -1785,7 +1785,7 @@
       "id": "OB-301-TRA-105120",
       "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1004208451/Transactions+v3.1.1#Transactionsv3.1.1-PermissionCodes",
       "detail": "Checks that the endpoint processed the query parameters and returns the expected resource format.",
-      "apiVersion":">=3.1.6",
+      "apiVersion":">=3.1.5",
       "parameters": {
         "tokenRequestScope": "accounts",
         "accountId": "$consentedAccountId"
@@ -1967,7 +1967,7 @@
       "id": "OB-301-STA-105900",
       "refURI": "",
       "detail": "Checks that the x-fapi-interaction-id value is played-back for bulk Transaction.",
-      "apiVersion":">=3.1.6",
+      "apiVersion":">=3.1.5",
       "parameters": {
         "tokenRequestScope": "accounts",
         "accountId": "$consentedAccountId",
@@ -1998,7 +1998,7 @@
       "id": "OB-301-STA-106000",
       "refURI": "",
       "detail": "Checks that the x-fapi-interaction-id value is played-back for bulk Transaction.",
-      "apiVersion":">=3.1.6",
+      "apiVersion":">=3.1.5",
       "parameters": {
         "tokenRequestScope": "accounts",
         "accountId": "$consentedAccountId",
@@ -2029,7 +2029,7 @@
       "id": "OB-301-STA-106100",
       "refURI": "",
       "detail": "Checks that the x-fapi-interaction-id value is played-back for bulk Transaction.",
-      "apiVersion":">=3.1.6",
+      "apiVersion":">=3.1.5",
       "parameters": {
         "tokenRequestScope": "accounts",
         "accountId": "$consentedAccountId",
@@ -2060,7 +2060,7 @@
       "id": "OB-301-STA-106200",
       "refURI": "",
       "detail": "Checks that the x-fapi-interaction-id value is played-back for bulk Transaction.",
-      "apiVersion":">=3.1.6",
+      "apiVersion":">=3.1.5",
       "parameters": {
         "tokenRequestScope": "accounts",
         "accountId": "$consentedAccountId",
@@ -2091,7 +2091,7 @@
       "id": "OB-301-STA-106300",
       "refURI": "",
       "detail": "Checks that the x-fapi-interaction-id value is played-back for bulk Transaction.",
-      "apiVersion":">=3.1.6",
+      "apiVersion":">=3.1.5",
       "parameters": {
         "tokenRequestScope": "accounts",
         "accountId": "$consentedAccountId",
