@@ -224,7 +224,7 @@
       "id": "OB-301-CBPII-000009",
       "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937951380/Confirmation+of+Funds+API+Specification+-+v3.1",
       "detail": "Creates Funds Confirmation Consent with expirationDateTime formatted as '2006-01-02T15:04:05.999Z'",
-      "apiVersion":">=3.1.6",
+      "apiVersion":">=3.1.5",
       "uri": "/funds-confirmation-consents",
       "uriImplementation": "mandatory",
       "parameters": {
@@ -250,7 +250,7 @@
       "id": "OB-301-CBPII-000010",
       "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937951380/Confirmation+of+Funds+API+Specification+-+v3.1",
       "detail": "Creates Funds Confirmation Consent with expirationDate formatted as '2006-01-02T15:04:05.999-07:00'",
-      "apiVersion":">=3.1.6",
+      "apiVersion":">=3.1.5",
       "uri": "/funds-confirmation-consents",
       "uriImplementation": "mandatory",
       "parameters": {
@@ -276,7 +276,7 @@
       "id": "OB-301-CBPII-000011",
       "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937951380/Confirmation+of+Funds+API+Specification+-+v3.1",
       "detail": "Creates Funds Confirmation Consent with expirationDate formatted as '2006-01-02T15:04:05Z'",
-      "apiVersion":">=3.1.6",
+      "apiVersion":">=3.1.5",
       "uri": "/funds-confirmation-consents",
       "uriImplementation": "mandatory",
       "parameters": {
@@ -302,7 +302,7 @@
       "id": "OB-301-CBPII-000012",
       "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937951380/Confirmation+of+Funds+API+Specification+-+v3.1",
       "detail": "Creates Funds Confirmation Consent with expirationDate formatted as '2006-01-02T15:04:05-07:00'",
-      "apiVersion":">=3.1.6",
+      "apiVersion":">=3.1.5",
       "uri": "/funds-confirmation-consents",
       "uriImplementation": "mandatory",
       "parameters": {
