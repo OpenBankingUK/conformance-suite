@@ -1750,6 +1750,68 @@
       "schemaCheck": true
     },
     {
+      "description": "Query parameters (fromBookingTime & toBookingTime) are accepted in ISO8601 format 2006-01-02T15:04:05",
+      "id": "OB-301-TRA-105110",
+      "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1004208451/Transactions+v3.1.1#Transactionsv3.1.1-PermissionCodes",
+      "detail": "Checks that the endpoint processed the query parameters and returns the expected resource format.",
+      "apiVersion":">=3.1.5",
+      "parameters": {
+        "tokenRequestScope": "accounts",
+        "accountId": "$consentedAccountId"
+      },
+      "queryParameters": {
+        "fromBookingDateTime": "2020-04-23T15:47:00",
+        "toBookingDateTime": "2020-04-23T15:48:00"
+      },
+      "permissions": [
+        "ReadAccountsBasic",
+        "ReadTransactionsDetail",
+        "ReadTransactionsBasic",
+        "ReadTransactionsDebits",
+        "ReadTransactionsCredits"
+      ],
+      "uri": "/accounts/$accountId/transactions",
+      "uriImplementation": "mandatory",
+      "resource": "Transaction",
+      "asserts": [
+        "OB3GLOAssertOn200",
+        "OB3GLOFAPIHeader"
+      ],
+      "method": "get",
+      "schemaCheck": true
+    },
+    {
+      "description": "Query parameters (fromBookingTime & toBookingTime) are accepted in ISO8601 format 2006-01-02T15:04:05.999",
+      "id": "OB-301-TRA-105120",
+      "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1004208451/Transactions+v3.1.1#Transactionsv3.1.1-PermissionCodes",
+      "detail": "Checks that the endpoint processed the query parameters and returns the expected resource format.",
+      "apiVersion":">=3.1.5",
+      "parameters": {
+        "tokenRequestScope": "accounts",
+        "accountId": "$consentedAccountId"
+      },
+      "queryParameters": {
+        "fromBookingDateTime": "2020-04-23T15:47:00.999",
+        "toBookingDateTime": "2020-04-23T15:48:00.999"
+      },
+      "permissions": [
+        "ReadAccountsBasic",
+        "ReadTransactionsDetail",
+        "ReadTransactionsBasic",
+        "ReadTransactionsDebits",
+        "ReadTransactionsCredits"
+      ],
+      "uri": "/accounts/$accountId/transactions",
+      "uriImplementation": "mandatory",
+      "resource": "Transaction",
+      "asserts": [
+        "OB3GLOAssertOn200",
+        "OB3GLOFAPIHeader"
+      ],
+      "method": "get",
+      "schemaCheck": true
+    },
+    {
       "description": "Minimal data returned for bulk Transaction using the ReadTransactionsBasic permission, status and headers.",
       "id": "OB-301-TRA-105200",
       "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937623627/Accounts+v3.1#Accountsv3.1-PermissionCodes",
@@ -1905,11 +1967,14 @@
       "id": "OB-301-STA-105900",
       "refURI": "",
       "detail": "Checks that the x-fapi-interaction-id value is played-back for bulk Transaction.",
+      "apiVersion":">=3.1.5",
       "parameters": {
         "tokenRequestScope": "accounts",
         "accountId": "$consentedAccountId",
-        "x-fapi-interaction-id": "93bac548-d2de-4546-b106-880a5018460d",
-        "fromStatementDateTime": "2016-01-01T10:40:00+0200"
+        "x-fapi-interaction-id": "93bac548-d2de-4546-b106-880a5018460d"
+      },
+      "queryParameters":{
+        "fromStatementDateTime": "2016-01-01T10:40:00"
       },
       "headers": {
         "x-fapi-interaction-id": "$x-fapi-interaction-id"
@@ -1933,10 +1998,13 @@
       "id": "OB-301-STA-106000",
       "refURI": "",
       "detail": "Checks that the x-fapi-interaction-id value is played-back for bulk Transaction.",
+      "apiVersion":">=3.1.5",
       "parameters": {
         "tokenRequestScope": "accounts",
         "accountId": "$consentedAccountId",
-        "x-fapi-interaction-id": "93bac548-d2de-4546-b106-880a5018460d",
+        "x-fapi-interaction-id": "93bac548-d2de-4546-b106-880a5018460d"
+      },
+      "queryParameters":{
         "fromStatementDateTime": "2016-01-01T104012.345Z"
       },
       "headers": {
@@ -1961,10 +2029,13 @@
       "id": "OB-301-STA-106100",
       "refURI": "",
       "detail": "Checks that the x-fapi-interaction-id value is played-back for bulk Transaction.",
+      "apiVersion":">=3.1.5",
       "parameters": {
         "tokenRequestScope": "accounts",
         "accountId": "$consentedAccountId",
-        "x-fapi-interaction-id": "93bac548-d2de-4546-b106-880a5018460d",
+        "x-fapi-interaction-id": "93bac548-d2de-4546-b106-880a5018460d"
+      },
+      "queryParameters":{
         "fromStatementDateTime": "2016-01-01T10:40:12.34.567Z"
       },
       "headers": {
@@ -1989,10 +2060,13 @@
       "id": "OB-301-STA-106200",
       "refURI": "",
       "detail": "Checks that the x-fapi-interaction-id value is played-back for bulk Transaction.",
+      "apiVersion":">=3.1.5",
       "parameters": {
         "tokenRequestScope": "accounts",
         "accountId": "$consentedAccountId",
-        "x-fapi-interaction-id": "93bac548-d2de-4546-b106-880a5018460d",
+        "x-fapi-interaction-id": "93bac548-d2de-4546-b106-880a5018460d"
+      },
+      "queryParameters":{
         "fromStatementDateTime": "2016-01-01T10:40:12.34.567+01"
       },
       "headers": {
@@ -2017,10 +2091,13 @@
       "id": "OB-301-STA-106300",
       "refURI": "",
       "detail": "Checks that the x-fapi-interaction-id value is played-back for bulk Transaction.",
+      "apiVersion":">=3.1.5",
       "parameters": {
         "tokenRequestScope": "accounts",
         "accountId": "$consentedAccountId",
-        "x-fapi-interaction-id": "93bac548-d2de-4546-b106-880a5018460d",
+        "x-fapi-interaction-id": "93bac548-d2de-4546-b106-880a5018460d"
+      },
+      "queryParameters":{
         "fromStatementDateTime": "20160101T104012.567+01"
       },
       "headers": {

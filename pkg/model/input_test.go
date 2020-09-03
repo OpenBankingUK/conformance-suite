@@ -154,6 +154,18 @@ func TestFormData(t *testing.T) {
 	assert.Equal(t, 2, len(req.FormData))
 }
 
+func TestQueryParam(t *testing.T) {
+	i := Input{Endpoint: "/accounts", Method: "GET", QueryParameters: map[string]string{
+		"fromDate": "2012-01-02T12:23:34Z",
+		"toDate":   "2012-01-02T12:23:34Z"}}
+	ctx := Context{"baseurl": "http://mybaseurl", "authorisation_endpoint": "https://example.com/authorisation"}
+	tc := TestCase{Input: i, Context: ctx}
+	req, err := tc.Prepare(emptyContext)
+	assert.Nil(t, err)
+	assert.NotNil(t, req)
+	assert.Equal(t, 2, len(req.QueryParam))
+}
+
 func TestFormDataMissingContextVariable(t *testing.T) {
 	ctx1 := Context{"phase": "run"}
 	i := Input{Endpoint: "/accounts", Method: "POST", FormData: map[string]string{
