@@ -442,7 +442,7 @@ func (i *Input) generateRequestJWT(ctx *Context, alg jwt.SigningMethod) (string,
 		"claims":   claims,
 		"alg":      alg,
 		"i.Claims": i.Claims,
-	}).Debug("GenerateRequestJWT ...")
+	}).Debug("generateRequestJWT ...")
 
 	token := jwt.NewWithClaims(alg, claims) // create new token
 
@@ -452,11 +452,11 @@ func (i *Input) generateRequestJWT(ctx *Context, alg jwt.SigningMethod) (string,
 	}
 	kid, err := authentication.GetKID(ctx, cert.PublicKey().N.Bytes())
 	if err != nil {
-		return "", errors.Wrap(err, "GenerateRequestJWT failure: unable to get KID")
+		return "", errors.Wrap(err, "generateRequestJWT failure: unable to get KID")
 	}
 	logrus.WithFields(logrus.Fields{
 		"kid": kid,
-	}).Debug("GenerateRequestJWT")
+	}).Debug("generateRequestJWT")
 	token.Header["kid"] = kid
 
 	tokenString, err := token.SignedString(cert.PrivateKey()) // sign the token - get as encoded string
