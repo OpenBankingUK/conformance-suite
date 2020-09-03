@@ -12,12 +12,9 @@ import (
 	"os"
 	"strings"
 	"testing"
-	"time"
 
 	"github.com/davecgh/go-spew/spew"
 
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/authentication"
-	"github.com/dgrijalva/jwt-go"
 	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -244,70 +241,6 @@ func TestInputClaimsConsentId(t *testing.T) {
 	res, err := i.CreateRequest(&tc, &ctx)
 	assert.NoError(t, err, "create request should succeed")
 	assert.NotNil(t, res)
-}
-
-func TestClaimsJWTBearer(t *testing.T) {
-	cert, err := authentication.NewCertificate(selfsignedDummypub, selfsignedDummykey)
-	require.NoError(t, err)
-	ctx := Context{
-		"consent_id":             "aac-fee2b8eb-ce1b-48f1-af7f-dc8f576d53dc",
-		"xchange_code":           "10e9d80b-10d4-4abd-9fe0-15789cc512b5",
-		"baseurl":                "https://matls-sso.openbankingtest.org.uk",
-		"access_token":           "18d5a754-0b76-4a8f-9c68-dc5caaf812e2",
-		"client_id":              "12312",
-		"scope":                  "AuthoritiesReadAccess ASPSPReadAccess TPPReadAll",
-		"SigningCert":            cert,
-		"signingPrivate":         selfsignedDummykey,
-		"signingPublic":          selfsignedDummypub,
-		"authorisation_endpoint": "https://example.com/authorisation",
-		"nonOBDirectory":         false,
-	}
-
-	i := Input{Endpoint: "/as/token.oauth2", Method: "POST",
-		Generation: map[string]string{
-			"strategy": "jwt-bearer",
-		},
-		Claims: map[string]string{
-			"aud":   "$baseurl",
-			"iss":   "$client_id",
-			"scope": "AuthoritiesReadAccess ASPSPReadAccess TPPReadAll",
-		},
-		FormData: map[string]string{
-			"client_assertion_type": "urn:ietf:params:oauth:client-assertion-type:jwt-bearer",
-			"grant_type":            "client_credentials",
-			"client_id":             "$client_id",
-			"scope":                 "$scope",
-		},
-	}
-	tc := TestCase{Input: i, Context: ctx}
-	res, err := i.CreateRequest(&tc, &ctx)
-	require.NoError(t, err, "create request should succeed")
-	assert.NotNil(t, res)
-	jwtbearer, exists := ctx.Get("jwtbearer")
-	assert.True(t, exists)
-	assert.True(t, len(jwtbearer.(string)) > 20)
-}
-
-func TestJWTSignRS256(t *testing.T) {
-	cert, err := authentication.NewCertificate(selfsignedDummypub, selfsignedDummykey)
-	require.NoError(t, err)
-	require.NotNil(t, cert)
-
-	alg := jwt.GetSigningMethod("RS256")
-	if alg == nil {
-		t.Logf("Couldn't find signing method: %v\n", alg)
-	}
-	claims := jwt.MapClaims{}
-	claims["iat"] = time.Now().Unix()
-	token := jwt.NewWithClaims(alg, claims) // create new token
-	token.Header["kid"] = "mykeyid"
-	prikey := cert.PrivateKey()
-	tokenString, err := token.SignedString(prikey) // sign the token - get as encoded string
-	if err != nil {
-		t.Log("error signing jwt: ", err)
-	}
-	assert.True(t, len(tokenString) > 30)
-
 }
 
 func TestBodyLiteral(t *testing.T) {

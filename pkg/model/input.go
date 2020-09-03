@@ -149,14 +149,6 @@ func (i *Input) setClaims(tc *TestCase, ctx *Context) error {
 				tc.Input.Endpoint = i.Claims["aud"] + "/PsuDummyURL"
 				tc.DoNotCallEndpoint = true
 			}
-		case "jwt-bearer":
-			i.AppMsg("==> executing jwt-bearer strategy")
-			token, err := i.GenerateSignedJWT(ctx, jwt.SigningMethodRS256)
-			if err != nil {
-				return i.AppErr(fmt.Sprintf("error creating AlgRS256JWT %s", err.Error()))
-			}
-			i.AppMsg(fmt.Sprintf("jwt-bearer Token: %s", token))
-			ctx.Put("jwtbearer", token) // Result - set jwt-bearer token in context
 		}
 	}
 
@@ -170,9 +162,10 @@ func (i *Input) GenerateRequestToken(ctx *Context) (string, error) {
 	}
 	signingMethod, err := authentication.GetSigningAlg(alg)
 	if err != nil {
-		return i.generateUnsignedJWT(ctx)
+		logrus.Warnln("Using Unsigned Jwt as Request Object")
+		return i.generateUnsignedJWT(ctx) // not sure if this is still appropraite
 	}
-	return i.GenerateSignedJWT(ctx, signingMethod)
+	return i.generateRequestJWT(ctx, signingMethod)
 }
 
 func consentURL(authEndpoint string, claims map[string]string, token string) string {
@@ -405,14 +398,11 @@ func signingCertFromContext(ctx *Context) (authentication.Certificate, error) {
 	return cert, nil
 }
 
-func (i *Input) GenerateSignedJWT(ctx *Context, alg jwt.SigningMethod) (string, error) {
+func (i *Input) generateRequestJWT(ctx *Context, alg jwt.SigningMethod) (string, error) {
 	uuid := uuid.New()
 	claims := jwt.MapClaims{}
 	if iss, ok := i.Claims["iss"]; ok {
 		claims["iss"] = iss
-	}
-	if iss, ok := i.Claims["iss"]; ok {
-		claims["sub"] = iss
 	}
 	if scope, ok := i.Claims["scope"]; ok {
 		claims["scope"] = scope
@@ -452,7 +442,7 @@ func (i *Input) GenerateSignedJWT(ctx *Context, alg jwt.SigningMethod) (string, 
 		"claims":   claims,
 		"alg":      alg,
 		"i.Claims": i.Claims,
-	}).Debug("Input.generateSignedJWT ...")
+	}).Debug("generateRequestJWT ...")
 
 	token := jwt.NewWithClaims(alg, claims) // create new token
 
@@ -462,11 +452,11 @@ func (i *Input) GenerateSignedJWT(ctx *Context, alg jwt.SigningMethod) (string, 
 	}
 	kid, err := authentication.GetKID(ctx, cert.PublicKey().N.Bytes())
 	if err != nil {
-		return "", errors.Wrap(err, "model.Input.generateJWSSignature failure: unable to get KID")
+		return "", errors.Wrap(err, "generateRequestJWT failure: unable to get KID")
 	}
 	logrus.WithFields(logrus.Fields{
 		"kid": kid,
-	}).Debug("GenerateSignedJWT")
+	}).Debug("generateRequestJWT")
 	token.Header["kid"] = kid
 
 	tokenString, err := token.SignedString(cert.PrivateKey()) // sign the token - get as encoded string
@@ -502,8 +492,8 @@ type consentIDTok struct {
 	Token obIDToken `json:"id_token,omitempty"`
 }
 
-// SetAdditonalClaims - read the comments in the function body, please.
-func SetAdditonalClaims(jwtClaims jwt.MapClaims, inputClaims map[string]string) {
+// setAdditonalClaims - read the comments in the function body, please.
+func setAdditonalClaims(jwtClaims jwt.MapClaims, inputClaims map[string]string) {
 	// https://openid.net/specs/openid-financial-api-part-2.html#authorization-server Pt 13
 	// Ozone recently (the time I write this is 22/07/2019) went through FAPI certification so it is now more strict.
 	//
@@ -587,7 +577,7 @@ func (i *Input) generateUnsignedJWT(ctx *Context) (string, error) {
 	claims["scope"] = i.Claims["scope"]
 	claims["aud"] = i.Claims["aud"]
 	claims["redirect_uri"] = i.Claims["redirect_url"]
-	SetAdditonalClaims(claims, i.Claims)
+	setAdditonalClaims(claims, i.Claims)
 
 	consentClaim := consentClaims{Essential: true, Value: i.Claims["consentId"]}
 	myIdent := obIDToken{IntentID: consentClaim}
