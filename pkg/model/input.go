@@ -149,14 +149,6 @@ func (i *Input) setClaims(tc *TestCase, ctx *Context) error {
 				tc.Input.Endpoint = i.Claims["aud"] + "/PsuDummyURL"
 				tc.DoNotCallEndpoint = true
 			}
-		case "jwt-bearer":
-			i.AppMsg("==> executing jwt-bearer strategy")
-			token, err := i.GenerateSignedJWT(ctx, jwt.SigningMethodRS256)
-			if err != nil {
-				return i.AppErr(fmt.Sprintf("error creating AlgRS256JWT %s", err.Error()))
-			}
-			i.AppMsg(fmt.Sprintf("jwt-bearer Token: %s", token))
-			ctx.Put("jwtbearer", token) // Result - set jwt-bearer token in context
 		}
 	}
 
@@ -403,6 +395,74 @@ func signingCertFromContext(ctx *Context) (authentication.Certificate, error) {
 		return nil, errors.Wrap(err, "input, couldn't create `certificate` from pub/priv keys")
 	}
 	return cert, nil
+}
+
+func (i *Input) GenerateRequestObject(ctx *Context, alg jwt.SigningMethod) (string, error) {
+	uuid := uuid.New()
+	claims := jwt.MapClaims{}
+	if iss, ok := i.Claims["iss"]; ok {
+		claims["iss"] = iss
+	}
+	if scope, ok := i.Claims["scope"]; ok {
+		claims["scope"] = scope
+	}
+	if aud, ok := i.Claims["aud"]; ok {
+		claims["aud"] = aud
+	}
+
+	claims["iat"] = time.Now().Unix()
+	claims["exp"] = time.Now().Add(time.Minute * time.Duration(30)).Unix()
+	claims["jti"] = uuid
+	claims["nonce"] = uuid
+
+	if redirectURI, ok := i.Claims["redirect_url"]; ok {
+		claims["redirect_uri"] = redirectURI
+	}
+	if iss, ok := i.Claims["iss"]; ok {
+		claims["client_id"] = iss
+	}
+	if state, ok := i.Claims["state"]; ok {
+		claims["state"] = state
+	}
+	consentClaim := consentClaims{Essential: true, Value: i.Claims["consentId"]}
+	myIdent := obIDToken{IntentID: consentClaim}
+	acrValuesSupported, err := ctx.GetStringSlice("acrValuesSupported")
+	if err == nil && len(acrValuesSupported) > 0 {
+		myIdent = obIDToken{IntentID: consentClaim, Acr: &acr{Essential: true, Values: acrValuesSupported}}
+	}
+	var consentIDToken = consentIDTok{Token: myIdent}
+	claims["claims"] = consentIDToken
+	if responseType, ok := i.Claims["responseType"]; ok {
+		claims["response_type"] = responseType
+	}
+
+	logrus.WithFields(logrus.Fields{
+		"claims":   claims,
+		"alg":      alg,
+		"i.Claims": i.Claims,
+	}).Debug("Input.generateSignedJWT ...")
+
+	token := jwt.NewWithClaims(alg, claims) // create new token
+
+	cert, err := signingCertFromContext(ctx)
+	if err != nil {
+		return "", i.AppErr(errors.Wrap(err, "Create certificate from context").Error())
+	}
+	kid, err := authentication.GetKID(ctx, cert.PublicKey().N.Bytes())
+	if err != nil {
+		return "", errors.Wrap(err, "model.Input.generateJWSSignature failure: unable to get KID")
+	}
+	logrus.WithFields(logrus.Fields{
+		"kid": kid,
+	}).Debug("GenerateSignedJWT")
+	token.Header["kid"] = kid
+
+	tokenString, err := token.SignedString(cert.PrivateKey()) // sign the token - get as encoded string
+	if err != nil {
+		return "", i.AppErr(fmt.Sprintf("error siging jwt: %s", err.Error()))
+	}
+	return tokenString, nil
+
 }
 
 func (i *Input) GenerateSignedJWT(ctx *Context, alg jwt.SigningMethod) (string, error) {
