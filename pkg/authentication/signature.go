@@ -9,6 +9,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"regexp"
 	"strings"
 	"time"
 
@@ -373,10 +374,25 @@ func (s signatureHeader) validateSignatureHeader(b64 bool) error {
 	}
 
 	if len(s.Issuer) == 0 {
-		return errors.New("Validate Signature - `http://openbanking.org.uk/iss` claim MUST the ORG-ID for an ASPSP")
+		return errors.New("Validate Signature - `http://openbanking.org.uk/iss` claim MUST be the ORG-ID for an ASPSP")
+	}
+
+	if !checkSignatureIssuerASPSP(s.Issuer) {
+		return fmt.Errorf("Validate Signature - `http://openbanking.org.uk/iss` claim in ASPSP response MUST be only the ORG-ID: %s", s.Issuer)
 	}
 
 	return nil
+}
+
+var isASPSPIssuer = regexp.MustCompile(`^[a-zA-Z0-9]{18}$`).MatchString
+var isTPPIssuer = regexp.MustCompile(`^[a-zA-Z0-9]{18}/[a-zA-Z0-9]{22}$`).MatchString
+
+func checkSignatureIssuerASPSP(iss string) bool {
+	return isASPSPIssuer(iss)
+}
+
+func checkSignatureIssuerTPP(iss string) bool {
+	return isTPPIssuer(iss)
 }
 
 func containsAllElements(source []string, elements ...string) bool {

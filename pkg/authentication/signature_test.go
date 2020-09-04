@@ -185,6 +185,67 @@ func Test314HeaderFailsValidationWhenB64False(t *testing.T) {
 	assert.NotNil(t, err)
 }
 
+var aspspIssuerTests = []struct {
+	iss      string // input
+	expected bool   // expected result
+}{
+	{"0014H00002LmnSNQAZ", true},
+	{"", false},
+	{"0014H00002LmnSNQAZz", false},
+	{"0014H000 2LmnSNQAZ", false},
+	{"0014H00002LmnSNQA=", false},
+	{"0014H00002LmnSNQA,", false},
+	{"0014H00002LmnSNQA,", false},
+	{"0014H00002LmnSNQA14H00002Lmn", false},
+	{"001=93939d9dkkdmde", false},
+	{"000000", false},
+	{"CN=AORlKI9oUF85BB2WUr7ZK2,OU=0015800000Af7GZAAI,O=OpenBanking,C=GB", false},
+	{"0014H0", false},
+}
+
+var tppIssuerTests = []struct {
+	iss      string // input
+	expected bool   // expected result
+}{
+	{"0014H00002LmnSNQAZ/AORlKI7oUF85BB2WUr7ZK2", true},
+	{"", false}, // empty
+	{"0014H00002LmnSNQA/AORlKI7oUF85BB2WUr7ZK2", false},   // orgid too short
+	{"0014H00002LmnSNQAZ/ARlKI7oUF85BB2WUr7ZK2", false},   // ssa too short
+	{"0014H00002LmnSNQAZ/AORlKI7oUF85BB2WUr7ZK22", false}, // ssa too long
+	{"0014H00002LmnSNQAZZ/AORlKI7oUF85BB2WUr7ZK2", false}, // orgid too long
+	{"0014H00002LmnSNQAZz/", false},                       // ssa missing
+	{"/0014H00002LmnSNQA=", false},                        // orgid missing
+	{"0014H00002LmnSNQA,/AORlKI7oUF85BB2WUr7ZK2", false},  // orgid included ,
+	{"0014H00002LmnSNQA=/AORlKI7oUF85BB2WUr7ZK2", false},  // orgid included =
+	{"0014H00002LmnSNQAA/AOR,KI7oUF85BB2WUr7ZK2", false},  // orgid in
+	{"0014H00002LmnSNQAA/AORlKI7:UF85BB2WU,7ZK2", false},
+	{"0014H00002AmnSNQAA/AORlKI7oUF85BB2WU=7ZK2", false},
+	{"0014H00002AmnSNQAA/AORlKI7oUF85BB2WU 7ZK2", false},
+	{"0014H00002A nSNQAA/AORlKI7oUF85BB2WU 7ZK2", false},
+	{"0014H00002LmnSNQA,", false},
+	{"000000", false},
+	{"CN=AORlKI7oUF85BB2WUrGZK2,OU=0015800000X67GgAAI,O=OpenBanking,C=GB", false},
+	{"0014H0", false},
+}
+
+func TestInvalidASPSPIssuerString(t *testing.T) {
+	for _, tt := range aspspIssuerTests {
+		actual := checkSignatureIssuerASPSP(tt.iss)
+		if actual != tt.expected {
+			t.Errorf("checkSignatureIssuerASPSP(%s): expected %t, actual %t", tt.iss, tt.expected, actual)
+		}
+	}
+}
+
+func TestInvalidTPPIssuerString(t *testing.T) {
+	for _, tt := range tppIssuerTests {
+		actual := checkSignatureIssuerTPP(tt.iss)
+		if actual != tt.expected {
+			t.Errorf("checkSignatureIssuerTPP(%s): expected %t, actual %t", tt.iss, tt.expected, actual)
+		}
+	}
+}
+
 func ParseRSAPrivateKeyFromPEM(key []byte) (*rsa.PrivateKey, error) {
 	var err error
 

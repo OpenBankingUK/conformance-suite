@@ -310,8 +310,12 @@ func GetB64Status() bool {
 	return b64Status
 }
 
-func SetEidasSigningParameters(issuer, kid string) {
+func SetEidasSigningParameters(issuer, kid string) error {
 	eidas_issuer = issuer
 	eidas_kid = kid
 	logrus.Debugf("Setting EIDAS Signing Parameters ssa: %s, kid: %s", issuer, kid)
+	if !checkSignatureIssuerTPP(eidas_issuer) {
+		return fmt.Errorf("Invalid EIDAS Issuer String (%s)", eidas_issuer)
+	}
+	return nil
 }
