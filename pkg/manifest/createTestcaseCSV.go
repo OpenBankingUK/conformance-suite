@@ -23,7 +23,7 @@ func GenerateTestCaseListCSV() {
 	values = append(values, "accounts_v0.0.0", "payments_v0.0.0", "cbpii_v0.0.0")
 	context := &model.Context{"apiversions": values}
 
-	fmt.Println("Resource,Id,Method,Path,Condition,Version,Schema,Sig,Description")
+	fmt.Println("Resource,TestCase Id,Method,Path,Condition,Version,Schema,Sig,Description")
 	for _, api := range apis {
 		scripts, _, err := LoadGenerationResources(api.ApiType, api.PathtoTests, context)
 		if err != nil {
