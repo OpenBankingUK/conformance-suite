@@ -12,7 +12,7 @@
       ],
       "uri": "/foobar",
       "uriImplementation": "optional",
-      "resource": "Global",
+      "resource": "Account",
       "asserts": [
         "OB3GLOAssertOn404"
       ],
