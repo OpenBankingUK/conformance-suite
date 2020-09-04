@@ -10,6 +10,7 @@ import (
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/authentication"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/generation"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/manifest"
 
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/server"
@@ -90,6 +91,7 @@ func init() {
 	rootCmd.PersistentFlags().Bool("tlscheck", true, "enable tls version checking - default enabled")
 	rootCmd.PersistentFlags().String("eidas_issuer", "", "Signing issuer when using EIDAS certificates")
 	rootCmd.PersistentFlags().String("eidas_signing_kid", "", "Signing Key Id when using EIDAS signing certification")
+	rootCmd.PersistentFlags().Bool("export_testcases", false, "Dump all testcases to console in CSV format")
 
 	if err := viper.BindPFlags(rootCmd.PersistentFlags()); err != nil {
 		fmt.Fprint(os.Stderr, err)
@@ -122,6 +124,11 @@ func initConfig() {
 		os.Exit(1)
 	}
 	logger.SetLevel(level)
+
+	if viper.GetBool("export_testcases") {
+		manifest.GenerateTestCaseListCSV()
+		os.Exit(0)
+	}
 
 	tracer.Silent = !viper.GetBool("log_tracer")
 	if viper.GetBool("log_to_file") {
@@ -174,18 +181,19 @@ func initConfig() {
 
 func printConfigurationFlags() {
 	logger.WithFields(logrus.Fields{
-		"log_level":      viper.GetString("log_level"),
-		"log_tracer":     viper.GetBool("log_tracer"),
-		"log_http_trace": viper.GetBool("log_http_trace"),
-		"log_http_file":  viper.GetBool("log_http_file"),
-		"log_to_file":    viper.GetBool("log_to_file"),
-		"port":           viper.GetInt("port"),
-		"tracer.Silent":  tracer.Silent,
-		"disable_jws":    viper.GetBool("disable_jws"),
-		"dynres":         viper.GetBool("dynres"),
-		"dumpcontexts":   viper.GetBool("dumpcontexts"),
-		"tlscheck":       viper.GetBool("tlscheck"),
-		"eidas_issuer":   viper.GetString("eidas_issuer"),
-		"eidas_keyid":    viper.GetString("eidas_kid"),
+		"log_level":        viper.GetString("log_level"),
+		"log_tracer":       viper.GetBool("log_tracer"),
+		"log_http_trace":   viper.GetBool("log_http_trace"),
+		"log_http_file":    viper.GetBool("log_http_file"),
+		"log_to_file":      viper.GetBool("log_to_file"),
+		"port":             viper.GetInt("port"),
+		"tracer.Silent":    tracer.Silent,
+		"disable_jws":      viper.GetBool("disable_jws"),
+		"dynres":           viper.GetBool("dynres"),
+		"dumpcontexts":     viper.GetBool("dumpcontexts"),
+		"tlscheck":         viper.GetBool("tlscheck"),
+		"eidas_issuer":     viper.GetString("eidas_issuer"),
+		"eidas_keyid":      viper.GetString("eidas_kid"),
+		"export_testcases": viper.GetString("export_testcases"),
 	}).Info("configuration flags")
 }
