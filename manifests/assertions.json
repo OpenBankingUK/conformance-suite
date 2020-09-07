@@ -200,16 +200,16 @@
           "detail": "Expected a specific error code for an invalid field."
         }]
       }
-    }
-  },
-  "OB3IPAssertResourceNotFoundOBErrorCode400": {
-    "expect": {
-      "status-code": 400,
-      "matches": [{
-        "JSON": "Errors.#[ErrorCode=\"UK.OBIE.Resource.Not.Found\"].ErrorCode",
-        "Value": "UK.OBIE.Resource.Not.Found",
-        "detail": "Expected a specific error code for resource not found."
-      }]
+    },
+    "OB3IPAssertResourceNotFoundOBErrorCode400": {
+      "expect": {
+        "status-code": 400,
+        "matches": [{
+          "JSON": "Errors.#[ErrorCode=\"UK.OBIE.Resource.Not.Found\"].ErrorCode",
+          "Value": "UK.OBIE.Resource.Not.Found",
+          "detail": "Expected a specific error code for resource not found."
+        }]
+      }
     }
   }
 }
