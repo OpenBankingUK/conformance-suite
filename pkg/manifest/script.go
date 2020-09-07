@@ -44,7 +44,7 @@ type Script struct {
 	AssertsOneOf        []string          `json:"asserts_one_of,omitempty"`
 	Method              string            `json:"method,omitempty"`
 	URI                 string            `json:"uri,omitempty"`
-	URIImplemenation    string            `json:"uri_implemenation,omitempty"`
+	URIImplemenation    string            `json:"uriImplementation,omitempty"`
 	SchemaCheck         bool              `json:"schemaCheck,omitempty"`
 	ContextPut          map[string]string `json:"keepContextOnSuccess,omitempty"`
 	UseCCGToken         bool              `json:"useCCGToken,omitempty"`
@@ -467,10 +467,15 @@ func LoadGenerationResources(specType, manifestPath string, ctx *model.Context) 
 
 func filterScriptsByVersion(specVersion semver.Version, scAllVersions Scripts) (Scripts, error) {
 	sc := Scripts{}
+	allVersions, _ := semver.Make("0.0.0")
 	for _, v := range scAllVersions.Scripts {
 		if v.APIVersion == "" {
 			sc.Scripts = append(sc.Scripts, v)
 		} else {
+			if allVersions.Compare(specVersion) == 0 {
+				sc.Scripts = append(sc.Scripts, v)
+				continue
+			}
 			testRange, err := semver.ParseRange(v.APIVersion)
 			if err != nil {
 				return Scripts{}, err

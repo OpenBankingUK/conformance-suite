@@ -20,6 +20,7 @@
       "headers": {
         "Content-Type": "application/json"
       },
+      "resource": "FundsConfirmation",
       "asserts": [
         "OB3GLOAssertOn201",
         "OB3GLOFAPIHeader",
@@ -53,6 +54,7 @@
         "name": "OB-301-CBPII-000002-ConsentId",
         "value": "Data.ConsentId"
       },
+      "resource": "FundsConfirmation",
       "asserts": [
         "OB3GLOAssertOn201",
         "OB3GLOFAPIHeader",
@@ -74,6 +76,7 @@
       },
       "uriImplementation": "mandatory",
       "method": "get",
+      "resource": "FundsConfirmation",
       "asserts": [
         "OB3GLOAssertOn200",
         "OB3GLOFAPIHeader",
@@ -102,6 +105,7 @@
       "headers": {
         "Content-Type": "application/json"
       },
+      "resource": "FundsConfirmation",
       "asserts": [
         "OB3GLOAssertOn201",
         "OB3GLOFAPIHeader",
@@ -121,6 +125,7 @@
         "requestConsent": "false"
       },
       "method": "delete",
+      "resource": "FundsConfirmation",
       "asserts": [
         "OB3GLOAssertOn204",
         "OB3GLOFAPIHeader"
@@ -147,6 +152,7 @@
       "headers": {
         "Content-Type": "application/json"
       },
+      "resource": "FundsConfirmation",
       "asserts": [
         "OB3GLOAssertOn400"
       ],
@@ -172,6 +178,7 @@
       "headers": {
         "Content-Type": "application/json"
       },
+      "resource": "FundsConfirmation",
       "asserts": [
         "OB3GLOAssertOn400"
       ],
@@ -197,6 +204,7 @@
       "headers": {
         "Content-Type": "application/json"
       },
+      "resource": "FundsConfirmation",
       "asserts": [
         "OB3GLOAssertOn400"
       ],
@@ -214,6 +222,7 @@
         "requestConsent": "false"
       },
       "method": "delete",
+      "resource": "FundsConfirmation",
       "asserts": [
         "OB3GLOAssertOn400"
       ],
@@ -240,6 +249,7 @@
       "headers": {
         "Content-Type": "application/json"
       },
+      "resource": "FundsConfirmation",
       "asserts": [
         "OB3GLOAssertOn201"
       ],
@@ -266,6 +276,7 @@
       "headers": {
         "Content-Type": "application/json"
       },
+      "resource": "FundsConfirmation",
       "asserts": [
         "OB3GLOAssertOn201"
       ],
@@ -292,6 +303,7 @@
       "headers": {
         "Content-Type": "application/json"
       },
+      "resource": "FundsConfirmation",
       "asserts": [
         "OB3GLOAssertOn201"
       ],
@@ -318,6 +330,7 @@
       "headers": {
         "Content-Type": "application/json"
       },
+      "resource": "FundsConfirmation",
       "asserts": [
         "OB3GLOAssertOn201"
       ],
@@ -345,6 +358,7 @@
         "Content-Type": "application/json"
       },
       "removeHeaders": ["x-fapi-financial-id"],
+      "resource": "FundsConfirmation",
       "asserts": [
         "OB3GLOAssertOn201",
         "OB3GLOFAPIHeader",

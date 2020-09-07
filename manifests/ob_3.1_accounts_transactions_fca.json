@@ -12,7 +12,7 @@
       ],
       "uri": "/foobar",
       "uriImplementation": "optional",
-      "resource": "Global",
+      "resource": "Account",
       "asserts": [
         "OB3GLOAssertOn404"
       ],
@@ -460,7 +460,7 @@
       ],
       "uri": "/balances",
       "uriImplementation": "optional",
-      "resource": "Account",
+      "resource": "Balance",
       "method": "get",
       "asserts": [
         "OB3GLOAssertFAPIPlayBack"
@@ -1045,7 +1045,7 @@
       ],
       "uri": "/party",
       "uriImplementation": "optional",
-      "resource": "Beneficiary",
+      "resource": "Party",
       "asserts": [
         "OB3GLOAssertOn200",
         "OB3GLOFAPIHeader"
@@ -1294,6 +1294,7 @@
         "ReadProducts"
       ],
       "uri": "/accounts/$accountId/product/foobar",
+      "uriImplementation": "conditional",
       "resource": "Product",
       "asserts": [
         "OB3GLOAssertOn404"
@@ -1454,6 +1455,7 @@
         "ReadScheduledPaymentsDetail"
       ],
       "uri": "/accounts/$accountId/scheduled-payments/foobar",
+      "uriImplementation": "conditional",
       "resource": "ScheduledPayment",
       "asserts": [
         "OB3GLOAssertOn404"
@@ -1614,6 +1616,7 @@
         "ReadStandingOrdersDetail"
       ],
       "uri": "/accounts/$accountId/standing-orders/foobar",
+      "uriImplementation": "conditional",
       "resource": "StandingOrder",
       "asserts": [
         "OB3GLOAssertOn404"
