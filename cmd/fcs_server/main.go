@@ -174,7 +174,11 @@ func initConfig() {
 	resty.SetRedirectPolicy(resty.FlexibleRedirectPolicy(15))
 	eidasIssuer := viper.GetString("eidas_issuer")
 	eidasKID := viper.GetString("eidas_signing_kid")
-	authentication.SetEidasSigningParameters(eidasIssuer, eidasKID)
+	err = authentication.SetEidasSigningParameters(eidasIssuer, eidasKID)
+	if err != nil {
+		logrus.Errorf("problem with EIDAS issuer - aborting: %v", err)
+		os.Exit(1)
+	}
 
 	printConfigurationFlags()
 }
