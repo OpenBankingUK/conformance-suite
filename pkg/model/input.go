@@ -409,6 +409,9 @@ func (i *Input) generateRequestJWT(ctx *Context, alg jwt.SigningMethod) (string,
 	if iss, ok := i.Claims["iss"]; ok {
 		claims["iss"] = iss
 	}
+	if sub, ok := i.Claims["sub"]; ok {
+		claims["sub"] = sub
+	}
 	if scope, ok := i.Claims["scope"]; ok {
 		claims["scope"] = scope
 	}
