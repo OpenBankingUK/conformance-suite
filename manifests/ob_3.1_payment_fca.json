@@ -231,16 +231,16 @@
       "schemaCheck": true
     },
     {
-      "description": "Domestic Scheduled Payment consents accepts 'RequestedExecutionDateTime' formatted as ISO8601 datetime (2006-01-02T15:04:05.999Z07:00).",
+      "description": "Domestic Scheduled Payment consents accepts 'RequestedExecutionDateTime' formatted as ISO8601 datetime (2006-01-02T15:04:05.999Z).",
       "id": "OB-301-DOP-100820",
       "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/999786587/Domestic+Scheduled+Payment+v3.1.1#DomesticScheduledPaymentv3.1.1-POST/domestic-scheduled-payment-consents",
-      "detail": "Checks that the resource succeeds for a PISP posting a Domestic Scheduled Payment consent with a minimal data set where RequestedExecutionDateTime is an ISO8601 datetime (2006-01-02T15:04:05.999Z07:00).",
+      "detail": "Checks that the resource succeeds for a PISP posting a Domestic Scheduled Payment consent with a minimal data set where RequestedExecutionDateTime is an ISO8601 datetime (2006-01-02T15:04:05.999Z).",
       "apiVersion":">=3.1.5",
       "parameters": {
         "tokenRequestScope": "payments",
         "instructedAmountValue": "$instructedAmountValue",
         "instructedAmountCurrency": "$instructedAmountCurrency",
-        "replacementDateTime": "$fn:nextDayDateTime(2006-01-02T15:04:05.999Z07:00)",
+        "replacementDateTime": "$fn:nextDayDateTime(2006-01-02T15:04:05.999Z)",
         "postData": "$scheduledDomesticPaymentConsentISO8601Test",
         "endToEndIdentification": "e2e-domestic-sched-pay-v2",
         "requestConsent": "false"
@@ -296,13 +296,13 @@
       "description": "Domestic Scheduled Payment consents accepts 'RequestedExecutionDateTime' formatted as ISO8601 datetime (2006-01-02T150405-07).",
       "id": "OB-301-DOP-100840",
       "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/999786587/Domestic+Scheduled+Payment+v3.1.1#DomesticScheduledPaymentv3.1.1-POST/domestic-scheduled-payment-consents",
-      "detail": "Checks that the resource succeeds for a PISP posting a Domestic Scheduled Payment consent with a minimal data set where RequestedExecutionDateTime is an ISO8601 datetime (2006-01-02T150405.999-07).",
+      "detail": "Checks that the resource succeeds for a PISP posting a Domestic Scheduled Payment consent with a minimal data set where RequestedExecutionDateTime is an ISO8601 datetime (2006-01-02T150405-07).",
       "apiVersion":">=3.1.5",
       "parameters": {
         "tokenRequestScope": "payments",
         "instructedAmountValue": "$instructedAmountValue",
         "instructedAmountCurrency": "$instructedAmountCurrency",
-        "replacementDateTime": "$fn:nextDayDateTime(2006-01-02T150405.999-07)",
+        "replacementDateTime": "$fn:nextDayDateTime(2006-01-02T150405-07)",
         "postData": "$scheduledDomesticPaymentConsentISO8601Test",
         "endToEndIdentification": "e2e-domestic-sched-pay-v4",
         "requestConsent": "false"
