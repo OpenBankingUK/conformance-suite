@@ -62,7 +62,7 @@ We use the 'ranges' feature of the semver library as the apiVersion which allows
 * "apiVersion": ">=3.1.4"
 * "apiVersion": ">=3.1.0 <=3.1.3"
 * "apiVersion": "3.1.4, 3.1.6, 3.1.7, 4.0.1"
-* "apiVersion": ">=3.1.4. <=3.1.6"
+* "apiVersion": ">=3.1.4, <=3.1.6"
 * "apiVersion": "3.1.6"
 
 The end result is that we have one testcase json file for each api (accounts,payments,cbpii), and that file contains all the tests for all versions of that API. 
