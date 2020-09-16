@@ -76,7 +76,7 @@ The API version to be used for the tests is determined by the "version" tag of t
 
 ## Other Fixes and features.
 
-* Hotfix to add dates in files in exports. [PR](https://bitbucket.org/openbankingteam/conformance-suite/pull-requests/544)
+* Hotfix dates in exported files. [PR](https://bitbucket.org/openbankingteam/conformance-suite/pull-requests/544)
 * Exported Report Checksum. The exported report now includes a SHA256 checksum. [PR](https://bitbucket.org/openbankingteam/conformance-suite/pull-requests/542)
 * New tests for >=3.1.6 checking if ASPSPs accept commonly used date-time formats in the request body. [PR](https://bitbucket.org/openbankingteam/conformance-suite/pull-requests/545)
 * Remove redundant jwt-bearer and RS256 code. [PR](https://bitbucket.org/openbankingteam/conformance-suite/pull-requests/549)
