@@ -123,6 +123,15 @@
         }]
       }
     },
+    "OB3DOPAssertSignatureMissingOBErrorCode": {
+      "expect": {
+        "matches": [{
+          "JSON": "Errors.#[ErrorCode=\"UK.OBIE.Signature.Missing\"].ErrorCode",
+          "Value": "UK.OBIE.Signature.Missing",
+          "detail": "Expected a specific error code for missing signature."
+        }]
+      }
+    },
     "OB3IPAssertInternationalPaymentId": {
       "expect": {
         "matches": [{
