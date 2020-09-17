@@ -32,6 +32,7 @@ type Input struct {
 	Endpoint        string            `json:"endpoint,omitempty"`        // resource endpoint where the http object needs to be sent to get a response
 	Headers         map[string]string `json:"headers,omitempty"`         // Allows for provision of specific http headers
 	RemoveHeaders   []string          `json:"removeheaders,omitempty"`   // Allows for removing specific http headers
+	RemoveClaims    []string          `json:"removeClaims,omitempty"`    // Allows for removing specific signature claims
 	FormData        map[string]string `json:"formData,omitempty"`        // Allow for provision of http form data
 	QueryParameters map[string]string `json:"queryParameters,omitempty"` // Allow for provision of http URL query parameters
 	RequestBody     string            `json:"bodyData,omitempty"`        // Optional request body raw data
@@ -451,6 +452,10 @@ func (i *Input) generateRequestJWT(ctx *Context, alg jwt.SigningMethod) (string,
 		"alg":      alg,
 		"i.Claims": i.Claims,
 	}).Debug("generateRequestJWT ...")
+
+	for _, k := range i.RemoveClaims {
+		delete(claims, k)
+	}
 
 	token := jwt.NewWithClaims(alg, claims) // create new token
 

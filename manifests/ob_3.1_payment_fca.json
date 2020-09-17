@@ -36,6 +36,40 @@
       "validateSignature": true
     },
     {
+      "description": "Correct error code is returned when claim is missing from the JWT signature.",
+      "id": "OB-301-DOP-100110",
+      "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937984109/Domestic+Payments+v3.1#DomesticPaymentsv3.1-POST/domestic-payment-consents",
+      "detail": "correct error on missing claim",
+      "parameters": {
+        "tokenRequestScope": "payments",
+        "instructedAmountCurrency": "$instructedAmountCurrency",
+        "instructedAmountValue": "$instructedAmountValue",
+        "instructionIdentification": "$fn:instructionIdentificationID()",
+        "endToEndIdentification": "$fn:instructionIdentificationID()",
+        "postData": "$minimalDomesticPaymentConsent",
+        "requestConsent": "false"
+      },
+      "headers": {
+        "Content-Type": "application/json"
+      },
+      "body": "$postData",
+      "uri": "/domestic-payment-consents",
+      "uriImplementation": "mandatory",
+      "resource": "DomesticPayment",
+      "removeSignatureClaims": [""],    
+      "asserts": [
+        "OB3GLOAssertOn400"
+      ],
+      "asserts_one_of": [
+        "OB3GLOAssertSignatureInvalidClaimErrorCode",
+        "OB3GLOAssertSignatureMissingClaimErrorCode",
+        "OB3GLOAssertSignatureMalformedErrorCode"
+      ],
+      "method": "post",
+      "schemaCheck": true,
+      "validateSignature": true
+    },
+    {
       "description": "Domestic Payment consents succeeds with minimal data set with additional schema checks and default status is AwaitingAuthorisation.",
       "id": "OB-301-DOP-100300",
       "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937984109/Domestic+Payments+v3.1#DomesticPaymentsv3.1-POST/domestic-payment-consents",

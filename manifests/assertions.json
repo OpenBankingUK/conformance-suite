@@ -78,6 +78,33 @@
         }]
       }
     },
+    "OB3GLOAssertSignatureInvalidClaimErrorCode": {
+      "expect": {
+        "matches": [{
+          "JSON": "Errors.#[ErrorCode=\"UK.OBIE.Signature.InvalidClaim\"].ErrorCode",
+          "Value": "UK.OBIE.Signature.InvalidClaim",
+          "detail": "Expected a specific error code for invalid claim in signature error."
+        }]
+      }
+    },
+    "OB3GLOAssertSignatureMissingClaimErrorCode": {
+      "expect": {
+        "matches": [{
+          "JSON": "Errors.#[ErrorCode=\"UK.OBIE.Signature.MissingClaim\"].ErrorCode",
+          "Value": "UK.OBIE.Signature.MissingClaim",
+          "detail": "Expected a specific error code for missing claim in signature error."
+        }]
+      }
+    },
+    "OB3GLOAssertSignatureMalformedErrorCode": {
+      "expect": {
+        "matches": [{
+          "JSON": "Errors.#[ErrorCode=\"UK.OBIE.UK.OBIE.Signature.Malformed\"].ErrorCode",
+          "Value": "UK.OBIE.Signature.Malformed",
+          "detail": "Expected a specific error code for malformed signature error."
+        }]
+      }
+    },
     "OB3DOPAssertOnAcceptedSettlementCompleted": {
       "expect": {
         "matches": [{
