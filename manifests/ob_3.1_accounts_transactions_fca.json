@@ -574,6 +574,7 @@
       "method": "get",
       "asserts_one_of": [
         "OB3IPAssertResourceFieldInvalidOBErrorCode400",
+        "OB3IPAssertResourceNotFoundOBErrorCode400",
         "OB3GLOAssertOn403"
       ],
       "schemaCheck": false
@@ -903,8 +904,9 @@
       "uriImplementation": "conditional",
       "resource": "Offer",
       "method": "get",
-      "asserts": [
-        "OB3IPAssertResourceFieldInvalidOBErrorCode400"
+      "asserts_one_of": [
+        "OB3IPAssertResourceFieldInvalidOBErrorCode400",
+        "OB3IPAssertResourceNotFoundOBErrorCode400"
       ],
       "schemaCheck": false
     },
@@ -1437,6 +1439,7 @@
       "method": "get",
       "asserts_one_of": [
         "OB3IPAssertResourceFieldInvalidOBErrorCode400",
+        "OB3IPAssertResourceNotFoundOBErrorCode400",
         "OB3GLOAssertOn403"
       ],
       "schemaCheck": false
@@ -1598,6 +1601,7 @@
       "method": "get",
       "asserts_one_of": [
         "OB3IPAssertResourceFieldInvalidOBErrorCode400",
+        "OB3IPAssertResourceNotFoundOBErrorCode400",
         "OB3GLOAssertOn403"
       ],
       "schemaCheck": false
