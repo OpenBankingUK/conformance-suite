@@ -106,7 +106,7 @@ Non-normative example
           "url": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/642090641/Account+and+Transaction+API+Specification+-+v3.0",
           "version": "v3.0",
           "schemaVersion": "https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.0.0/dist/account-info-swagger.json",
-          "manifest": "file://../pkg/discovery/templates/manifests/ob_3.1_accounts_fca.json"
+          "manifest": "file://../pkg/discovery/templates/ob_3.1_accounts_fca.json"
         },
         "openidConfigurationUri": "https://as.aspsp.ob.forgerock.financial/oauth2/.well-known/openid-configuration",
         "resourceBaseUri": "https://rs.aspsp.ob.forgerock.financial:443/",
