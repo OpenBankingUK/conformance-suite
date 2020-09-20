@@ -99,7 +99,7 @@
     "OB3GLOAssertSignatureMalformedErrorCode": {
       "expect": {
         "matches": [{
-          "JSON": "Errors.#[ErrorCode=\"UK.OBIE.UK.OBIE.Signature.Malformed\"].ErrorCode",
+          "JSON": "Errors.#[ErrorCode=\"UK.OBIE.Signature.Malformed\"].ErrorCode",
           "Value": "UK.OBIE.Signature.Malformed",
           "detail": "Expected a specific error code for malformed signature error."
         }]

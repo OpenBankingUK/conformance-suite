@@ -89,6 +89,7 @@ func MakeTestCase() TestCase {
 	i.QueryParameters = make(map[string]string)
 	i.Generation = make(map[string]string)
 	i.Headers = make(map[string]string)
+	i.RemoveClaims = []string{}
 	i.Claims = make(map[string]string)
 
 	tc := TestCase{Input: i, Validator: schema.NewNullValidator()}

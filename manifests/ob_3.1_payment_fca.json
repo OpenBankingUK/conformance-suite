@@ -56,7 +56,7 @@
       "uri": "/domestic-payment-consents",
       "uriImplementation": "mandatory",
       "resource": "DomesticPayment",
-      "removeSignatureClaims": [""],    
+      "removeSignatureClaims": ["iss"],    
       "asserts": [
         "OB3GLOAssertOn400"
       ],
@@ -65,9 +65,7 @@
         "OB3GLOAssertSignatureMissingClaimErrorCode",
         "OB3GLOAssertSignatureMalformedErrorCode"
       ],
-      "method": "post",
-      "schemaCheck": true,
-      "validateSignature": true
+      "method": "post"
     },
     {
       "description": "Domestic Payment consents succeeds with minimal data set with additional schema checks and default status is AwaitingAuthorisation.",
