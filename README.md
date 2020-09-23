@@ -17,18 +17,18 @@ To provide feedback, please use the public [issue tracker](https://bitbucket.org
 ## Release Notes 
 * * *
 
-# Release v1.6.0 (16th September 2020)
+# Release v1.6.1 (23rd September 2020)
 
-The release is called **v1.6.0**, a minor update that adds support for the Read/Write Data API Specification 3.1.6 including swagger validation for accounts, payments and CBPII. This release is backwards compatible with older versions of the standard.
+The release is called **v1.6.1**, an update to support [additional roadmap tests](https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1564083551/OBIE+Functional+Conformance+Tool+Roadmap). 
 
-[Full Release Notes](https://bitbucket.org/openbankingteam/conformance-suite/src/develop/docs/releases/v1.6.0.md) (v1.6.0.md)
+[Full Release Notes](https://bitbucket.org/openbankingteam/conformance-suite/src/develop/docs/releases/v1.6.1.md) (v1.6.1.md)
 
 ## Quickstart
 * * *
 
 Pull and run the latest (stable) tagged Docker image:
 
-    > docker run --rm -it -p 8443:8443 "openbanking/conformance-suite:v1.6.0"
+    > docker run --rm -it -p 8443:8443 "openbanking/conformance-suite:v1.6.1"
 
 [See Setup Guide](https://bitbucket.org/openbankingteam/conformance-suite/src/develop/docs/setup-guide.md)
 

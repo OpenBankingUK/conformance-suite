@@ -1,3 +1,7 @@
+# Release v1.6.1 (23rd September 2020)
+
+The release is called **v1.6.1**, an update to support [additional roadmap tests](https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1564083551/OBIE+Functional+Conformance+Tool+Roadmap). 
+
 # Release v1.6.0 (16th September 2020)
 
 The release is called **v1.6.0**, a minor update that adds support for the Read/Write Data API Specification 3.1.6 including swagger validation for accounts, payments and CBPII. This release is backwards compatible with older versions of the standard.
