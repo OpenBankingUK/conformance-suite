@@ -23,7 +23,6 @@ The following discovery templates are available:
 * [Open Banking](https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937656404/Read+Write+Data+API+Specification+-+v3.1) - Read/Write Data API Specifications v3.0/v3.1 templates:
  * Generic - a customizable template for implementers of the Open Banking v3.0/v3.1 to describe their API endpoints.
  * Ozone -  a customizable template that is pre-populated with Ozone endpoints and data.
- * ForgeRock -  a customizable template that is pre-populated with ForgeRock endpoints and data.
 
 ## Data Model
 
@@ -108,8 +107,8 @@ Non-normative example
           "schemaVersion": "https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.0.0/dist/account-info-swagger.json",
           "manifest": "file://../pkg/discovery/templates/ob_3.1_accounts_fca.json"
         },
-        "openidConfigurationUri": "https://as.aspsp.ob.forgerock.financial/oauth2/.well-known/openid-configuration",
-        "resourceBaseUri": "https://rs.aspsp.ob.forgerock.financial:443/",
+        "openidConfigurationUri": "https://ob19-auth1-ui.o3bank.co.uk/.well-known/openid-configuration",
+        "resourceBaseUri": "https://ob19-rs1.o3bank.co.uk:4501/open-banking/v3.1/aisp",
         "endpoints": []
       }
     ]
