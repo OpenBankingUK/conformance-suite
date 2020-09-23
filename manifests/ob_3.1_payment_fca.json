@@ -38,8 +38,9 @@
     {
       "description": "Correct error code is returned when claim is missing from the JWT signature.",
       "id": "OB-301-DOP-100110",
-      "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937984109/Domestic+Payments+v3.1#DomesticPaymentsv3.1-POST/domestic-payment-consents",
+      "refURI": "https://openbankinguk.github.io/read-write-api-site3/v3.1.6/resources-and-data-models/pisp/domestic-payment-consents.html#post-domestic-payment-consents",
       "detail": "correct error on missing claim",
+      "apiVersion":">=3.1.6",
       "parameters": {
         "tokenRequestScope": "payments",
         "instructedAmountCurrency": "$instructedAmountCurrency",

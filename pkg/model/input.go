@@ -123,11 +123,6 @@ func (i *Input) CreateRequest(tc *TestCase, ctx *Context) (*resty.Request, error
 func (i *Input) setClaims(tc *TestCase, ctx *Context) error {
 	ctx.DumpContext()
 
-	for _, k := range i.RemoveClaims {
-		// i.Claims is used with requests where signature is passed as query string.
-		delete(i.Claims, k)
-	}
-
 	for k, v := range i.Claims {
 		value, err := replaceContextField(v, ctx)
 		if err != nil {
