@@ -76,9 +76,9 @@
     {
       "description": "Domestic Payment Consent without signature fails with the correct error message.",
       "id": "OB-316-DOP-100310",
-      "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937984109/Domestic+Payments+v3.1#DomesticPaymentsv3.1-POST/domestic-payment-consents",
+      "refURI": "https://openbankinguk.github.io/read-write-api-site3/v3.1.5/resources-and-data-models/pisp/domestic-payment-consents.html#post-domestic-payment-consents",
       "detail": "Check that the ASPSP returns the error code 400 and correct error in the response 'UK.OBIE.Signature.Missing' when the request doesn't contain the header 'x-jws-signature'.",
-      "apiVersion":">=3.1.6",
+      "apiVersion":">=3.1.5",
       "parameters": {
         "tokenRequestScope": "payments",
         "instructedAmountCurrency": "$instructedAmountCurrency",
