@@ -1759,7 +1759,7 @@
     {
       "description": "Query parameters (fromBookingTime & toBookingTime) are accepted in ISO8601 format 2006-01-02T15:04:05",
       "id": "OB-301-TRA-105110",
-      "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1004208451/Transactions+v3.1.1#Transactionsv3.1.1-PermissionCodes",
+      "refURI": "https://openbankinguk.github.io/read-write-api-site3/v3.1.5/resources-and-data-models/aisp/Transactions.html#permission-codes",
       "detail": "Checks that the endpoint processed the query parameters and returns the expected resource format.",
       "apiVersion":">=3.1.5",
       "parameters": {
@@ -1790,7 +1790,7 @@
     {
       "description": "Query parameters (fromBookingTime & toBookingTime) are accepted in ISO8601 format 2006-01-02T15:04:05.999",
       "id": "OB-301-TRA-105120",
-      "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1004208451/Transactions+v3.1.1#Transactionsv3.1.1-PermissionCodes",
+      "refURI": "https://openbankinguk.github.io/read-write-api-site3/v3.1.5/resources-and-data-models/aisp/Transactions.html#permission-codes",
       "detail": "Checks that the endpoint processed the query parameters and returns the expected resource format.",
       "apiVersion":">=3.1.5",
       "parameters": {
@@ -1972,7 +1972,7 @@
     {
       "description": "Succeeds when fromStatementDateTime is a valid ISO8601 formatted date variant 1.",
       "id": "OB-301-STA-105900",
-      "refURI": "",
+      "refURI": "https://openbankinguk.github.io/read-write-api-site3/v3.1.5/resources-and-data-models/aisp/Statements.html#data-dictionary",
       "detail": "Checks that the x-fapi-interaction-id value is played-back for bulk Transaction.",
       "apiVersion":">=3.1.5",
       "parameters": {
@@ -2003,7 +2003,7 @@
     {
       "description": "Succeeds when fromStatementDateTime is a valid ISO8601 formatted date variant 2.",
       "id": "OB-301-STA-106000",
-      "refURI": "",
+      "refURI": "https://openbankinguk.github.io/read-write-api-site3/v3.1.5/resources-and-data-models/aisp/Statements.html#data-dictionary",
       "detail": "Checks that the x-fapi-interaction-id value is played-back for bulk Transaction.",
       "apiVersion":">=3.1.5",
       "parameters": {
@@ -2034,7 +2034,7 @@
     {
       "description": "Succeeds when fromStatementDateTime is a valid ISO8601 formatted date variant 3.",
       "id": "OB-301-STA-106100",
-      "refURI": "",
+      "refURI": "https://openbankinguk.github.io/read-write-api-site3/v3.1.5/resources-and-data-models/aisp/Statements.html#data-dictionary",
       "detail": "Checks that the x-fapi-interaction-id value is played-back for bulk Transaction.",
       "apiVersion":">=3.1.5",
       "parameters": {
@@ -2065,7 +2065,7 @@
     {
       "description": "Succeeds when fromStatementDateTime is a valid ISO8601 formatted date variant 4.",
       "id": "OB-301-STA-106200",
-      "refURI": "",
+      "refURI": "https://openbankinguk.github.io/read-write-api-site3/v3.1.5/resources-and-data-models/aisp/Statements.html#data-dictionary",
       "detail": "Checks that the x-fapi-interaction-id value is played-back for bulk Transaction.",
       "apiVersion":">=3.1.5",
       "parameters": {
@@ -2096,7 +2096,7 @@
     {
       "description": "Succeeds when fromStatementDateTime is a valid ISO8601 formatted date variant 5.",
       "id": "OB-301-STA-106300",
-      "refURI": "",
+      "refURI": "https://openbankinguk.github.io/read-write-api-site3/v3.1.5/resources-and-data-models/aisp/Statements.html#data-dictionary",
       "detail": "Checks that the x-fapi-interaction-id value is played-back for bulk Transaction.",
       "apiVersion":">=3.1.5",
       "parameters": {
