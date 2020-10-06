@@ -209,7 +209,7 @@
         "tokenRequestScope": "payments",
         "instructedAmountValue": "$instructedAmountValue",
         "instructedAmountCurrency": "$instructedAmountCurrency",
-        "replacementDateTime": "$fn:nextDayDateTime(2006-01-02T15:04:05-07:00)",
+        "replacementDateTime": "$fn:nextDayDateTimeHour(2006-01-02T15:04:05-07:00)",
         "postData": "$scheduledDomesticPaymentConsentISO8601Test",
         "endToEndIdentification": "e2e-domestic-sched-pay-v1",
         "requestConsent": "false"
@@ -240,7 +240,7 @@
         "tokenRequestScope": "payments",
         "instructedAmountValue": "$instructedAmountValue",
         "instructedAmountCurrency": "$instructedAmountCurrency",
-        "replacementDateTime": "$fn:nextDayDateTime(2006-01-02T15:04:05Z07:00)",
+        "replacementDateTime": "$fn:nextDayDateTimeHour(2006-01-02T15:04:05Z07:00)",
         "postData": "$scheduledDomesticPaymentConsentISO8601Test",
         "endToEndIdentification": "e2e-domestic-sched-pay-v2",
         "requestConsent": "false"
@@ -271,7 +271,7 @@
         "tokenRequestScope": "payments",
         "instructedAmountValue": "$instructedAmountValue",
         "instructedAmountCurrency": "$instructedAmountCurrency",
-        "replacementDateTime": "$fn:nextDayDateTime(2006-01-02T15:04:05.999-07:00)",
+        "replacementDateTime": "$fn:nextDayDateTimeHour(2006-01-02T15:04:05.999-07:00)",
         "postData": "$scheduledDomesticPaymentConsentISO8601Test",
         "endToEndIdentification": "e2e-domestic-sched-pay-v3",
         "requestConsent": "false"
@@ -302,7 +302,7 @@
         "tokenRequestScope": "payments",
         "instructedAmountValue": "$instructedAmountValue",
         "instructedAmountCurrency": "$instructedAmountCurrency",
-        "replacementDateTime": "$fn:nextDayDateTime(2006-01-02T15:04:05.999Z07:00)",
+        "replacementDateTime": "$fn:nextDayDateTimeHour(2006-01-02T15:04:05.999Z07:00)",
         "postData": "$scheduledDomesticPaymentConsentISO8601Test",
         "endToEndIdentification": "e2e-domestic-sched-pay-v4",
         "requestConsent": "false"
