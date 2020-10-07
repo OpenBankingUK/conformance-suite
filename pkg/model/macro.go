@@ -12,7 +12,7 @@ import (
 var macroMap = map[string]interface{}{
 	"instructionIdentificationID": instructionIdentificationID,
 	"nextDayDateTime":             nextDayDateTime,
-	"nextDayDateTimeHour":         nextDayDateTimeHour,
+	"nextDayDate":                 nextDayDate,
 }
 
 // AddMacro inserts the provided macro in the map where they are held.
@@ -57,18 +57,17 @@ func nextDayDateTime(format string) string {
 	return nextDay.Format(format)
 }
 
-func nextDayDateTimeHour(format string) string {
-	nextDay := roundDownToHour(time.Now().UTC().Add(24 * time.Hour))
+func nextDayDate(format string) string {
+	nextDay := roundDownToDay(time.Now().UTC().Add(24 * time.Hour))
 	return nextDay.Format(format)
 }
 
-func roundDownToHour(t time.Time) time.Time {
+func roundDownToDay(t time.Time) time.Time {
 	return time.Date(
 		t.Year(),
 		t.Month(),
 		t.Day(),
-		t.Hour(),
-		0, 0, 0,
+		0, 0, 0, 0,
 		t.Location(),
 	)
 }
