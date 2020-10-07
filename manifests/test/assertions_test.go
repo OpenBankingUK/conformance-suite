@@ -159,6 +159,41 @@ func TestAssertions(t *testing.T) {
 			schemaSpec:           *paymentSpecPath,
 			ExpectValidationPass: false,
 		},
+		{
+			name:       "OB-316-DOP-100310 pass if ASPSP returns correct error code and message",
+			manifestID: "OB-316-DOP-100310",
+			response: mockResponse{
+				400,
+				map[string]string{},
+				`{"Errors":[{"ErrorCode":"UK.OBIE.Signature.Missing"}]}`,
+			},
+			schemaSpec:           *paymentSpecPath,
+			ExpectValidationPass: true,
+		},
+		{
+			name:       "OB-316-DOP-100310 fails if ASPSP returns incorrect error code",
+			manifestID: "OB-316-DOP-100310",
+			response: mockResponse{
+				401,
+				map[string]string{},
+				`{"Errors":[{"ErrorCode":"UK.OBIE.Signature.Missing"}]}`,
+			},
+			schemaSpec:                    *paymentSpecPath,
+			ExpectValidationPass:          false,
+			ExpectValidationErrorContains: "HTTP Status code does not match: expected 400 got 401",
+		},
+		{
+			name:       "OB-316-DOP-100310 fails if ASPSP returns incorrect error message",
+			manifestID: "OB-316-DOP-100310",
+			response: mockResponse{
+				400,
+				map[string]string{},
+				`{"Errors":[{"ErrorCode":"UK.OBIE.Incorrect"}]}`,
+			},
+			schemaSpec:                    *paymentSpecPath,
+			ExpectValidationPass:          false,
+			ExpectValidationErrorContains: "JSON Match Failed - expected (UK.OBIE.Signature.Missing)",
+		},
 	}
 
 	for _, test := range testCases {
@@ -171,12 +206,12 @@ func TestAssertions(t *testing.T) {
 		mockResp := createHTTPResponse(test.response.code, test.response.body, test.response.headers)
 		result, errors := manifestTC.Validate(mockResp, emptyContext)
 		if result != true {
-			// DEBUG actual validation errors (useful when adding new tests)
-			// for _, e := range errors {
-			// 	fmt.Println("============", e)
-			// }
+			errorMessages := &strings.Builder{}
+			for _, e := range errors {
+				errorMessages.WriteString(fmt.Sprintf("\t- %s\n", e))
+			}
 			assert.True(t, errorsContain(errors, test.ExpectValidationErrorContains),
-				"%s: validation errors should contain an error with text: '%s'\nERRORS:\n%v", test.name, test.ExpectValidationErrorContains, errors)
+				"%s: validation errors should contain an error with text: '%s'\nERRORS:\n%v", test.name, test.ExpectValidationErrorContains, errorMessages)
 		}
 		assert.Equal(t, test.ExpectValidationPass, result, "%s result - expected: %v actual: %v", test.name, test.ExpectValidationPass, result)
 	}
