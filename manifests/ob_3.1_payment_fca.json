@@ -36,6 +36,39 @@
       "validateSignature": true
     },
     {
+      "description": "Correct error code is returned when claim is missing from the JWT signature.",
+      "id": "OB-301-DOP-100110",
+      "refURI": "https://openbankinguk.github.io/read-write-api-site3/v3.1.6/resources-and-data-models/pisp/domestic-payment-consents.html#post-domestic-payment-consents",
+      "detail": "correct error on missing claim",
+      "apiVersion":">=3.1.6",
+      "parameters": {
+        "tokenRequestScope": "payments",
+        "instructedAmountCurrency": "$instructedAmountCurrency",
+        "instructedAmountValue": "$instructedAmountValue",
+        "instructionIdentification": "$fn:instructionIdentificationID()",
+        "endToEndIdentification": "$fn:instructionIdentificationID()",
+        "postData": "$minimalDomesticPaymentConsent",
+        "requestConsent": "false"
+      },
+      "headers": {
+        "Content-Type": "application/json"
+      },
+      "body": "$postData",
+      "uri": "/domestic-payment-consents",
+      "uriImplementation": "mandatory",
+      "resource": "DomesticPayment",
+      "removeSignatureClaims": ["iss"],    
+      "asserts": [
+        "OB3GLOAssertOn400"
+      ],
+      "asserts_one_of": [
+        "OB3GLOAssertSignatureInvalidClaimErrorCode",
+        "OB3GLOAssertSignatureMissingClaimErrorCode",
+        "OB3GLOAssertSignatureMalformedErrorCode"
+      ],
+      "method": "post"
+    },
+    {
       "description": "Domestic Payment consents succeeds with minimal data set with additional schema checks and default status is AwaitingAuthorisation.",
       "id": "OB-301-DOP-100300",
       "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937984109/Domestic+Payments+v3.1#DomesticPaymentsv3.1-POST/domestic-payment-consents",
@@ -239,7 +272,7 @@
         "tokenRequestScope": "payments",
         "instructedAmountValue": "$instructedAmountValue",
         "instructedAmountCurrency": "$instructedAmountCurrency",
-        "replacementDateTime": "$fn:nextDayDateTime(2006-01-02T15:04:05-07:00)",
+        "replacementDateTime": "$fn:nextDayDate(2006-01-02T15:04:05-07:00)",
         "postData": "$scheduledDomesticPaymentConsentISO8601Test",
         "endToEndIdentification": "e2e-domestic-sched-pay-v1",
         "requestConsent": "false"
@@ -270,71 +303,9 @@
         "tokenRequestScope": "payments",
         "instructedAmountValue": "$instructedAmountValue",
         "instructedAmountCurrency": "$instructedAmountCurrency",
-        "replacementDateTime": "$fn:nextDayDateTime(2006-01-02T15:04:05Z07:00)",
+        "replacementDateTime": "$fn:nextDayDate(2006-01-02T15:04:05Z07:00)",
         "postData": "$scheduledDomesticPaymentConsentISO8601Test",
         "endToEndIdentification": "e2e-domestic-sched-pay-v2",
-        "requestConsent": "false"
-      },
-      "headers": {
-        "Content-Type": "application/json"
-      },
-      "body": "$postData",
-      "uri": "/domestic-scheduled-payment-consents",
-      "uriImplementation": "conditional",
-      "resource": "DomesticScheduledPayment",
-      "asserts": [
-        "OB3GLOAssertOn201",
-        "OB3GLOFAPIHeader",
-        "OB3DOPAssertAwaitingAuthorisation",
-        "OB3GLOAAssertConsentId"
-      ],
-      "method": "post",
-      "schemaCheck": true
-    },
-    {
-      "description": "Domestic Scheduled Payment consents accepts 'RequestedExecutionDateTime' formatted as ISO8601 datetime (2006-01-02T15:04:05.999-07:00).",
-      "id": "OB-301-DOP-100830",
-      "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/999786587/Domestic+Scheduled+Payment+v3.1.1#DomesticScheduledPaymentv3.1.1-POST/domestic-scheduled-payment-consents",
-      "detail": "Checks that the resource succeeds for a PISP posting a Domestic Scheduled Payment consent with a minimal data set where RequestedExecutionDateTime is an ISO8601 datetime (2006-01-02T15:04:05.999-07:00).",
-      "apiVersion":">=3.1.5",
-      "parameters": {
-        "tokenRequestScope": "payments",
-        "instructedAmountValue": "$instructedAmountValue",
-        "instructedAmountCurrency": "$instructedAmountCurrency",
-        "replacementDateTime": "$fn:nextDayDateTime(2006-01-02T15:04:05.999-07:00)",
-        "postData": "$scheduledDomesticPaymentConsentISO8601Test",
-        "endToEndIdentification": "e2e-domestic-sched-pay-v3",
-        "requestConsent": "false"
-      },
-      "headers": {
-        "Content-Type": "application/json"
-      },
-      "body": "$postData",
-      "uri": "/domestic-scheduled-payment-consents",
-      "uriImplementation": "conditional",
-      "resource": "DomesticScheduledPayment",
-      "asserts": [
-        "OB3GLOAssertOn201",
-        "OB3GLOFAPIHeader",
-        "OB3DOPAssertAwaitingAuthorisation",
-        "OB3GLOAAssertConsentId"
-      ],
-      "method": "post",
-      "schemaCheck": true
-    },
-    {
-      "description": "Domestic Scheduled Payment consents accepts 'RequestedExecutionDateTime' formatted as ISO8601 datetime (2006-01-02T15:04:05.999Z07:00).",
-      "id": "OB-301-DOP-100840",
-      "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/999786587/Domestic+Scheduled+Payment+v3.1.1#DomesticScheduledPaymentv3.1.1-POST/domestic-scheduled-payment-consents",
-      "detail": "Checks that the resource succeeds for a PISP posting a Domestic Scheduled Payment consent with a minimal data set where RequestedExecutionDateTime is an ISO8601 datetime (2006-01-02T15:04:05.999Z07:00).",
-      "apiVersion":">=3.1.5",
-      "parameters": {
-        "tokenRequestScope": "payments",
-        "instructedAmountValue": "$instructedAmountValue",
-        "instructedAmountCurrency": "$instructedAmountCurrency",
-        "replacementDateTime": "$fn:nextDayDateTime(2006-01-02T15:04:05.999Z07:00)",
-        "postData": "$scheduledDomesticPaymentConsentISO8601Test",
-        "endToEndIdentification": "e2e-domestic-sched-pay-v4",
         "requestConsent": "false"
       },
       "headers": {

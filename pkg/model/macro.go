@@ -12,6 +12,7 @@ import (
 var macroMap = map[string]interface{}{
 	"instructionIdentificationID": instructionIdentificationID,
 	"nextDayDateTime":             nextDayDateTime,
+	"nextDayDate":                 nextDayDate,
 }
 
 // AddMacro inserts the provided macro in the map where they are held.
@@ -52,6 +53,21 @@ func instructionIdentificationID() string {
 func nextDayDateTime(format string) string {
 	// In the tests which use generated times, there must be no assertion
 	// on the timestamp's actual value, (e.g. checking if time == 2022-01-01T12:00:00Z).
-	tomorrow := time.Now().UTC().Add(24 * time.Hour)
-	return tomorrow.Format(format)
+	nextDay := time.Now().UTC().Add(24 * time.Hour)
+	return nextDay.Format(format)
+}
+
+func nextDayDate(format string) string {
+	nextDay := roundDownToDay(time.Now().UTC().Add(24 * time.Hour))
+	return nextDay.Format(format)
+}
+
+func roundDownToDay(t time.Time) time.Time {
+	return time.Date(
+		t.Year(),
+		t.Month(),
+		t.Day(),
+		0, 0, 0, 0,
+		t.Location(),
+	)
 }

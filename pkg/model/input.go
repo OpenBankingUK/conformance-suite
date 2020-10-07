@@ -32,6 +32,7 @@ type Input struct {
 	Endpoint        string            `json:"endpoint,omitempty"`        // resource endpoint where the http object needs to be sent to get a response
 	Headers         map[string]string `json:"headers,omitempty"`         // Allows for provision of specific http headers
 	RemoveHeaders   []string          `json:"removeheaders,omitempty"`   // Allows for removing specific http headers
+	RemoveClaims    []string          `json:"removeClaims,omitempty"`    // Allows for removing specific signature claims
 	FormData        map[string]string `json:"formData,omitempty"`        // Allow for provision of http form data
 	QueryParameters map[string]string `json:"queryParameters,omitempty"` // Allow for provision of http URL query parameters
 	RequestBody     string            `json:"bodyData,omitempty"`        // Optional request body raw data
@@ -106,7 +107,7 @@ func (i *Input) CreateRequest(tc *TestCase, ctx *Context) (*resty.Request, error
 		i.SetHeader("x-idempotency-key", tc.ID+"-"+makeMiliSecondStringTimestamp()) // initial trivial x-idempotency-key implementation
 	}
 
-	if err = i.removeHeaders(req, ctx); err != nil {
+	if err = i.removeHeaders(); err != nil {
 		return nil, err
 	}
 
@@ -212,7 +213,7 @@ func (i *Input) setFormData(req *resty.Request, ctx *Context) error {
 	return nil
 }
 
-func (i *Input) removeHeaders(req *resty.Request, ctx *Context) error {
+func (i *Input) removeHeaders() error {
 	remainingHeaders := make(map[string]string, 0)
 	if len(i.RemoveHeaders) > 0 {
 		i.AppMsg(fmt.Sprintf("RemoveHeaders %v", i.RemoveHeaders))
@@ -255,58 +256,39 @@ func (i *Input) setHeaders(req *resty.Request, ctx *Context) error {
 }
 
 func (i *Input) createJWSDetachedSignature(ctx authentication.ContextInterface) error {
-	if len(i.RequestBody) > 0 && !disableJws {
-		requestObjSigningAlg, err := ctx.GetString("requestObjectSigningAlg")
-		if err != nil {
-			return errors.Wrap(err, "input.createJWSDetachedSignature: unable to retrieve requestObjectSigningAlg")
-		}
-		alg, err := authentication.GetSigningAlg(requestObjSigningAlg)
-		if err != nil {
-			return errors.Wrapf(err, "input.createJWSDetachedSignature: unable to parse signing alg")
-		}
-		token, err := authentication.NewJWSSignature(i.RequestBody, ctx, alg)
-		if err != nil {
-			return i.AppErr(fmt.Sprintf("error generating jws signature %s", err.Error()))
-		}
-		i.SetHeader("x-jws-signature", token)
-
-		return nil
+	if len(i.RequestBody) == 0 {
+		return i.AppErr("cannot create x-jws-signature, as request body is empty")
 	}
 
 	if disableJws {
 		i.AppMsg("x-jws-signature disabled")
 		return nil
 	}
-	return i.AppErr("cannot create x-jws-signature, as request body is empty")
-}
 
-// createNewJWSDetachedSignature
-// create a JWS signature following guidelines in version 3.1.4 and later of the OB APIs ... see ...
-// https://openbankinguk.github.io/read-write-api-site3/v3.1.4/profiles/read-write-data-api-profile.html#message-signing-2
-func (i *Input) createNewJWSDetachedSignature(ctx authentication.ContextInterface) error {
-	if len(i.RequestBody) > 0 && !disableJws {
-		requestObjSigningAlg, err := ctx.GetString("requestObjectSigningAlg")
-		if err != nil {
-			return errors.Wrap(err, "input.createNewJWSDetachedSignature: unable to retrieve requestObjectSigningAlg")
-		}
-		alg, err := authentication.GetSigningAlg(requestObjSigningAlg)
-		if err != nil {
-			return errors.Wrapf(err, "input.createNewJWSDetachedSignature: unable to parse signing alg")
-		}
-		token, err := authentication.NewJWSSignature(i.RequestBody, ctx, alg)
-		if err != nil {
-			return i.AppErr(fmt.Sprintf("error generating jws signature %s", err.Error()))
-		}
-		i.SetHeader("x-jws-signature", token)
-
-		return nil
+	requestObjSigningAlg, err := ctx.GetString("requestObjectSigningAlg")
+	if err != nil {
+		return errors.Wrap(err, "input.createJWSDetachedSignature: unable to retrieve requestObjectSigningAlg")
 	}
 
-	if disableJws {
-		i.AppMsg("x-jws-signature disabled")
-		return nil
+	alg, err := authentication.GetSigningAlg(requestObjSigningAlg)
+	if err != nil {
+		return errors.Wrapf(err, "input.createJWSDetachedSignature: unable to parse signing alg")
 	}
-	return i.AppErr("cannot create x-jws-signature, as request body is empty")
+
+	token, err := authentication.NewJWSSignature(i.RequestBody, ctx, alg)
+	if err != nil {
+		return i.AppErr(fmt.Sprintf("error generating jws signature %s", err.Error()))
+	}
+
+	if len(i.RemoveClaims) > 0 {
+		token, err = authentication.ModifyJWSHeaders(token, ctx, authentication.RemoveJWSHeader(i.RemoveClaims))
+		if err != nil {
+			return err
+		}
+	}
+
+	i.SetHeader("x-jws-signature", token)
+	return nil
 }
 
 func (i *Input) getBody(req *resty.Request, ctx *Context) (string, error) {
@@ -426,9 +408,6 @@ func (i *Input) generateRequestJWT(ctx *Context, alg jwt.SigningMethod) (string,
 
 	if redirectURI, ok := i.Claims["redirect_url"]; ok {
 		claims["redirect_uri"] = redirectURI
-	}
-	if iss, ok := i.Claims["iss"]; ok {
-		claims["client_id"] = iss
 	}
 	if state, ok := i.Claims["state"]; ok {
 		claims["state"] = state

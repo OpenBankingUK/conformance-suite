@@ -26,29 +26,30 @@ type Scripts struct {
 
 // Script represents a highlevel test definition
 type Script struct {
-	APIName             string            `json:"apiName"`
-	APIVersion          string            `json:"apiVersion"`
-	Description         string            `json:"description,omitempty"`
-	Detail              string            `json:"detail,omitempty"`
-	ID                  string            `json:"id,omitempty"`
-	RefURI              string            `json:"refURI,omitempty"`
-	Parameters          map[string]string `json:"parameters,omitempty"`
-	QueryParameters     map[string]string `json:"queryParameters"`
-	Headers             map[string]string `json:"headers,omitempty"`
-	RemoveHeaders       []string          `json:"removeHeaders,omitempty"`
-	Body                string            `json:"body,omitempty"`
-	Permissions         []string          `json:"permissions,omitemtpy"`
-	PermissionsExcluded []string          `json:"permissions-excluded,omitemtpy"`
-	Resource            string            `json:"resource,omitempty"`
-	Asserts             []string          `json:"asserts,omitempty"`
-	AssertsOneOf        []string          `json:"asserts_one_of,omitempty"`
-	Method              string            `json:"method,omitempty"`
-	URI                 string            `json:"uri,omitempty"`
-	URIImplemenation    string            `json:"uriImplementation,omitempty"`
-	SchemaCheck         bool              `json:"schemaCheck,omitempty"`
-	ContextPut          map[string]string `json:"keepContextOnSuccess,omitempty"`
-	UseCCGToken         bool              `json:"useCCGToken,omitempty"`
-	ValidateSignature   bool              `json:"validateSignature,omitempty"`
+	APIName               string            `json:"apiName"`
+	APIVersion            string            `json:"apiVersion"`
+	Description           string            `json:"description,omitempty"`
+	Detail                string            `json:"detail,omitempty"`
+	ID                    string            `json:"id,omitempty"`
+	RefURI                string            `json:"refURI,omitempty"`
+	Parameters            map[string]string `json:"parameters,omitempty"`
+	QueryParameters       map[string]string `json:"queryParameters"`
+	Headers               map[string]string `json:"headers,omitempty"`
+	RemoveHeaders         []string          `json:"removeHeaders,omitempty"`
+	RemoveSignatureClaims []string          `json:"removeSignatureClaims,omitempty"`
+	Body                  string            `json:"body,omitempty"`
+	Permissions           []string          `json:"permissions,omitemtpy"`
+	PermissionsExcluded   []string          `json:"permissions-excluded,omitemtpy"`
+	Resource              string            `json:"resource,omitempty"`
+	Asserts               []string          `json:"asserts,omitempty"`
+	AssertsOneOf          []string          `json:"asserts_one_of,omitempty"`
+	Method                string            `json:"method,omitempty"`
+	URI                   string            `json:"uri,omitempty"`
+	URIImplemenation      string            `json:"uriImplementation,omitempty"`
+	SchemaCheck           bool              `json:"schemaCheck,omitempty"`
+	ContextPut            map[string]string `json:"keepContextOnSuccess,omitempty"`
+	UseCCGToken           bool              `json:"useCCGToken,omitempty"`
+	ValidateSignature     bool              `json:"validateSignature,omitempty"`
 }
 
 // References - reference collection
@@ -420,11 +421,17 @@ func buildInputSection(s Script, i *model.Input) {
 	for k, v := range s.Headers {
 		i.Headers[k] = v
 	}
-	var removeHeaders []string
-	for _, v := range s.RemoveHeaders {
-		removeHeaders = append(removeHeaders, v)
+
+	i.RemoveHeaders = make([]string, 0, len(s.RemoveHeaders))
+	for _, header := range s.RemoveHeaders {
+		i.RemoveHeaders = append(i.RemoveHeaders, header)
 	}
-	i.RemoveHeaders = removeHeaders
+
+	i.RemoveClaims = make([]string, 0, len(s.RemoveSignatureClaims))
+	for _, claim := range s.RemoveSignatureClaims {
+		i.RemoveClaims = append(i.RemoveClaims, claim)
+	}
+
 	i.RequestBody = s.Body
 }
 

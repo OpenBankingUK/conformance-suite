@@ -69,7 +69,10 @@ func getScript(id string) *manifest.Script {
 	return nil
 }
 
-// Testing assertions as defined on specific scripts
+// Testing assertions as defined on specific scripts.
+// These tests verify that the validation specified for a given test case
+// passes or fails according the expectations when certain (mocked) reponses
+// from the ASPSP are processed.
 func TestAssertions(t *testing.T) {
 	emptyContext := &model.Context{}
 	_ = emptyContext
@@ -101,6 +104,61 @@ func TestAssertions(t *testing.T) {
 		// 	ExpectValidationPass:          true,
 		// 	ExpectValidationErrorContains: "????????????????",
 		// },
+		{
+			name:       "OB-301-DOP-100110 pass if ASPSP returns missing claim error with code 400",
+			manifestID: "OB-301-DOP-100110",
+			response: mockResponse{
+				400,
+				map[string]string{},
+				`{"Errors":[{"ErrorCode":"UK.OBIE.Signature.MissingClaim"}]}`,
+			},
+			schemaSpec:           *paymentSpecPath,
+			ExpectValidationPass: true,
+		},
+		{
+			name:       "OB-301-DOP-100110 pass if ASPSP returns invalid claim error with code 400",
+			manifestID: "OB-301-DOP-100110",
+			response: mockResponse{
+				400,
+				map[string]string{},
+				`{"Errors":[{"ErrorCode":"UK.OBIE.Signature.InvalidClaim"}]}`,
+			},
+			schemaSpec:           *paymentSpecPath,
+			ExpectValidationPass: true,
+		},
+		{
+			name:       "OB-301-DOP-100110 pass if ASPSP returns malformed signature error with code 400",
+			manifestID: "OB-301-DOP-100110",
+			response: mockResponse{
+				400,
+				map[string]string{},
+				`{"Errors":[{"ErrorCode":"UK.OBIE.Signature.Malformed"}]}`,
+			},
+			schemaSpec:           *paymentSpecPath,
+			ExpectValidationPass: true,
+		},
+		{
+			name:       "OB-301-DOP-100110 does not pass if ASPSP returns any error with code other than 400",
+			manifestID: "OB-301-DOP-100110",
+			response: mockResponse{
+				401,
+				map[string]string{},
+				`{"Errors":[{"ErrorCode":"UK.OBIE.Signature.Malformed"}]}`,
+			},
+			schemaSpec:           *paymentSpecPath,
+			ExpectValidationPass: false,
+		},
+		{
+			name:       "OB-301-DOP-100110 does not pass if ASPSP returns incorrect error with code 400",
+			manifestID: "OB-301-DOP-100110",
+			response: mockResponse{
+				400,
+				map[string]string{},
+				`{"Errors":[{"ErrorCode":"UK.OBIE.Signature.Invalid"}]}`,
+			},
+			schemaSpec:           *paymentSpecPath,
+			ExpectValidationPass: false,
+		},
 		{
 			name:       "OB-316-DOP-100310 pass if ASPSP returns correct error code and message",
 			manifestID: "OB-316-DOP-100310",
