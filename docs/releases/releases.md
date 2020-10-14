@@ -1,3 +1,7 @@
+# Release v1.6.2 (9th October 2020)
+
+The release is called **v1.6.2**, an update to support [additional roadmap tests](https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1564083551/OBIE+Functional+Conformance+Tool+Roadmap).
+
 # Release v1.6.1 (23rd September 2020)
 
 The release is called **v1.6.1**, an update to support [additional roadmap tests](https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1564083551/OBIE+Functional+Conformance+Tool+Roadmap). 
