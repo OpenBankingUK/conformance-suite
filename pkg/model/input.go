@@ -390,7 +390,9 @@ func (i *Input) generateRequestJWT(ctx *Context, alg jwt.SigningMethod) (string,
 	claims := jwt.MapClaims{}
 	if iss, ok := i.Claims["iss"]; ok {
 		claims["iss"] = iss
+		claims["client_id"] = iss
 	}
+
 	if sub, ok := i.Claims["sub"]; ok {
 		claims["sub"] = sub
 	}
