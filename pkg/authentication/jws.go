@@ -304,6 +304,7 @@ func NewJWSSignature(requestBody string, ctx ContextInterface, alg jwt.SigningMe
 		"issuer": issuer,
 		"alg":    alg.Alg(),
 		"claims": minifiedBody,
+		"tan":    trustAnchor,
 	}).Trace("jws signature creation")
 
 	b64encoding, err := GetB64Encoding(ctx)

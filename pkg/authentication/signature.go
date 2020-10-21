@@ -2,13 +2,10 @@ package authentication
 
 import (
 	"crypto/rsa"
-	"crypto/tls"
-	"crypto/x509"
 	"encoding/base64"
 	"encoding/json"
 	"errors"
 	"fmt"
-	"net/http"
 	"regexp"
 	"strings"
 	"time"
@@ -53,21 +50,12 @@ func ValidateSignature(jwtToken, body, jwksUri string, b64 bool) (bool, error) {
 	if err != nil {
 		return false, err
 	}
-	jwk, err := getJwkFromJwks(kid, jwksUri)
+
+	cert, err := getCertForKid(kid, jwksUri)
+
 	if err != nil {
 		return false, err
 	}
-
-	if jwk.X5c == nil {
-		return false, errors.New(fmt.Sprintf("No X5c certificate chain found for kid %s", kid))
-	}
-
-	certs, err := ParseCertificateChain(jwk.X5c)
-	if err != nil {
-		return false, err
-	}
-
-	cert := certs[0] // assumes a single certificate in chain which is the style used by the OB directory
 
 	signature, err := insertBodyIntoJWT(jwtToken, body, b64) // b64claim
 	if err != nil {
@@ -123,64 +111,6 @@ func getKidFromToken(token string) (string, error) {
 	}
 
 	return kid, nil
-}
-
-var jwkCache = make(map[string]JWK)
-
-// Get JWK from JWKS_URI - cache responses
-func getJwkFromJwks(kid, url string) (JWK, error) {
-	if jwk, ok := jwkCache[kid]; !ok {
-		logrus.Traceln("Retrieving JWKS url: " + url)
-		jwks, err := GetJwks(url)
-		if err != nil {
-			return JWK{}, fmt.Errorf("GetJwkFromJwks: errors: %v", err)
-		}
-		for _, k := range jwks.Keys {
-			if k.Kid == kid {
-				jwkCache[kid] = k
-				return k, nil
-			}
-		}
-	} else {
-		logrus.Traceln("Using cached jwk")
-		return jwk, nil
-	}
-	logrus.Traceln("no matching key found")
-	return JWK{}, nil
-}
-
-func ParseCertificateChain(chain []string) ([]*x509.Certificate, error) {
-	certchain := make([]*x509.Certificate, len(chain))
-	for i, cert := range chain {
-		raw, err := base64.StdEncoding.DecodeString(cert)
-		if err != nil {
-			return nil, errors.New("ParseCertificateChain: decode cert: " + err.Error())
-		}
-		certchain[i], err = x509.ParseCertificate(raw)
-		if err != nil {
-			return nil, errors.New("ParseCertificateChain: parse certificate: " + err.Error())
-		}
-	}
-	return certchain, nil
-}
-
-func GetJwks(url string) (JWKS, error) {
-	tr := &http.Transport{
-		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
-	}
-	client := &http.Client{Transport: tr}
-	resp, err := client.Get(url)
-	if err != nil {
-		return JWKS{}, fmt.Errorf("GetJwkss error retrieving url: %s, %v", url, err)
-	}
-	defer resp.Body.Close()
-	jwksbytes := json.NewDecoder(resp.Body)
-	var jwks JWKS
-	if err := jwksbytes.Decode(&jwks); err != nil {
-		return JWKS{}, fmt.Errorf("GetJwks: decoding error %s : %v", url, err)
-	}
-
-	return jwks, nil
 }
 
 // buildSignature - takes all the token parameters and assembles a detached header signed token string which is returned
@@ -369,16 +299,17 @@ func (s signatureHeader) validateSignatureHeader(b64 bool) error {
 	if s.IssuedAt == decimal.Zero {
 		return errors.New("Validate Signature - `http://openbanking.org.uk/iat` claim must be a JSON number representing time")
 	}
-	if s.TrustAnchor != "openbanking.org.uk" {
-		return errors.New("Validate Signature - `http://openbanking.org.uk/tan` claim MUST equal `openbanking.org.uk`")
+	if s.TrustAnchor != "openbanking.org.uk" && !isHSBCTrustAnchor(s.TrustAnchor) { // allow trust anchors from OBIE HSBC
+		return errors.New("Validate Signature - `http://openbanking.org.uk/tan` claim MUST equal `openbanking.org.uk` or be ASPSP specific")
 	}
 
 	if len(s.Issuer) == 0 {
-		return errors.New("Validate Signature - `http://openbanking.org.uk/iss` claim MUST be the ORG-ID for an ASPSP")
+		return errors.New("Validate Signature - `http://openbanking.org.uk/iss` claim MUST NOT be empty")
 	}
-
-	if !checkSignatureIssuerASPSP(s.Issuer) {
-		return fmt.Errorf("Validate Signature - `http://openbanking.org.uk/iss` claim in ASPSP response MUST be only the ORG-ID: %s", s.Issuer)
+	if s.TrustAnchor == "openbanking.org.uk" { // only check when trust anchor is OBIE
+		if !checkSignatureIssuerASPSP(s.Issuer) {
+			return fmt.Errorf("Validate Signature - `http://openbanking.org.uk/iss` claim in ASPSP response MUST be only the ORG-ID: %s", s.Issuer)
+		}
 	}
 
 	return nil
