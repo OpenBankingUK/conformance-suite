@@ -52,6 +52,7 @@ func ValidateSignature(jwtToken, body, jwksUri string, b64 bool) (bool, error) {
 	}
 
 	cert, err := getCertForKid(kid, jwksUri)
+
 	if err != nil {
 		return false, err
 	}
