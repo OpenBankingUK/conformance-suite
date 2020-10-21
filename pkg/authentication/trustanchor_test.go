@@ -60,3 +60,28 @@ func verifyHSBCSig(t *testing.T, signingMethod jwt.SigningMethod, signingString,
 	assert.Nil(t, err)
 	return err == nil
 }
+
+var hsbcTanTestList = []struct {
+	tan      string
+	expected bool
+}{
+	{"https://ob.hsbc.co.uk/jwks/public.jwks", true},
+	{"https://ob.firstdirect.com/jwks/public.jwks", true},
+	{"https://ob.mandsbank.com/jwks/public.jwks", true},
+	{"https://ob.business.hsbc.co.uk/jwks/public.jwks", true},
+	{"https://ob.hsbckinetic.co.uk/jwks/public.jwks", true},
+	{"openbanking.org.uk", false},
+	{"hsbc.co.uk", false},
+	{"", false},
+	{":", false},
+}
+
+func TestIsHSBCTrustAnchor(t *testing.T) {
+	for _, tt := range hsbcTanTestList {
+		actual := isHSBCTrustAnchor(tt.tan)
+		if actual != tt.expected {
+			t.Errorf("isHSBCTrustAnchor(%s): expected %t, actual %t", tt.tan, tt.expected, actual)
+		}
+	}
+
+}

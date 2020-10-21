@@ -298,7 +298,7 @@ func (s signatureHeader) validateSignatureHeader(b64 bool) error {
 	if s.IssuedAt == decimal.Zero {
 		return errors.New("Validate Signature - `http://openbanking.org.uk/iat` claim must be a JSON number representing time")
 	}
-	if s.TrustAnchor != "openbanking.org.uk" && !strings.Contains(s.TrustAnchor, "hsbc.co.uk") { // allow trust anchors of hsbc.co.uk or OBIE
+	if s.TrustAnchor != "openbanking.org.uk" && !isHSBCTrustAnchor(s.TrustAnchor) { // allow trust anchors from OBIE HSBC
 		return errors.New("Validate Signature - `http://openbanking.org.uk/tan` claim MUST equal `openbanking.org.uk` or be ASPSP specific")
 	}
 
