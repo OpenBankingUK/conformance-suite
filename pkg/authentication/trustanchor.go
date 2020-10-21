@@ -30,15 +30,15 @@ func isHSBCTrustAnchor(tan string) bool {
 	return false
 }
 
-// getCertFromKid
+// getCertForKid
 // Given a Kid - return the public cert from the JWKS keystore of the TrustAnchor
-func getCertFromKid(kid, jwks_uri string) (*x509.Certificate, error) {
+func getCertForKid(kid, jwks_uri string) (*x509.Certificate, error) {
 	jwk, err := getJwkFromJwks(kid, jwks_uri)
 	if err != nil {
 		return nil, err
 	}
 
-	if jwk.X5c == nil {
+	if len(jwk.X5c) == 0 {
 		return nil, errors.New(fmt.Sprintf("No X5c certificate chain found for kid %s", kid))
 	}
 
