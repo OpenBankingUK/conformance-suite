@@ -417,7 +417,7 @@ func GetB64Status() bool {
 func SetEidasSigningParameters(issuer, kid string) error {
 	eidas_issuer = issuer
 	eidas_kid = kid
-	logrus.Debugf("Setting EIDAS Signing Parameters ssa: %s, kid: %s", issuer, kid)
+	logrus.Debugf("Setting EIDAS Signing Parameters iss: %s, kid: %s", issuer, kid)
 	// Check relaxed to allow HSBC Trust Anchor issuers
 	// if !checkSignatureIssuerTPP(eidas_issuer) {
 	// 	return fmt.Errorf("Invalid EIDAS Issuer String (%s)", eidas_issuer)
