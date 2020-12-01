@@ -61,4 +61,25 @@ func TestRepresentativeAPR(t *testing.T) {
 			assert.True(t, valisationDone, "expected: validated=%v actual: validated=%v", true, valisationDone)
 		}
 	})
+
+	t.Run("Schema validation should FAIL using response with incorrectly formatted RepresentativeAPR value.", func(t *testing.T) {
+		testCase := model.TestCase{
+			Input:  model.Input{Method: "GET", Endpoint: "/open-banking/v3.1/aisp/products"},
+			Expect: model.Expect{SchemaValidation: true}}
+
+		emptyContext := &model.Context{}
+		invalidValue := 4242.4242 // added an extra digit: must be +/-ddd.dddd
+		response := fmt.Sprintf(productsResponse200, invalidValue)
+		for _, specPath := range []string{*accountSpecPath313, *accountSpecPath314, *accountSpecPath315, *accountSpecPath316} {
+			testCase.Validator, err = schema.NewSwaggerValidator(specPath)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			resp := test.CreateHTTPResponse(200, "OK", response, "Content-Type", "application/json")
+			validationDone, errs := testCase.Validate(resp, emptyContext)
+			assert.Len(t, errs, 1) // expect one error
+			assert.True(t, validationDone, "expected: validated=%v actual: validated=%v", true, validationDone)
+		}
+	})
 }
