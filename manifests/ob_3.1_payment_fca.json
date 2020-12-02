@@ -265,7 +265,7 @@
     {
       "description": "Domestic Scheduled Payment consents accepts 'RequestedExecutionDateTime' formatted as ISO8601 datetime (2006-01-02T15:04:05-07:00).",
       "id": "OB-301-DOP-100810",
-      "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/999786587/Domestic+Scheduled+Payment+v3.1.1#DomesticScheduledPaymentv3.1.1-POST/domestic-scheduled-payment-consents",
+      "refURI": "https://openbankinguk.github.io/read-write-api-site3/v3.1.5/resources-and-data-models/pisp/domestic-scheduled-payment-consents.html#post-domestic-scheduled-payment-consents",
       "detail": "Checks that the resource succeeds for a PISP posting a Domestic Scheduled Payment consent with a minimal data set where RequestedExecutionDateTime is an ISO8601 datetime (2006-01-02T15:04:05-07:00).",
       "apiVersion":">=3.1.5",
       "parameters": {
@@ -296,7 +296,7 @@
     {
       "description": "Domestic Scheduled Payment consents accepts 'RequestedExecutionDateTime' formatted as ISO8601 datetime (2006-01-02T15:04:05Z07:00).",
       "id": "OB-301-DOP-100820",
-      "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/999786587/Domestic+Scheduled+Payment+v3.1.1#DomesticScheduledPaymentv3.1.1-POST/domestic-scheduled-payment-consents",
+      "refURI": "https://openbankinguk.github.io/read-write-api-site3/v3.1.5/resources-and-data-models/pisp/domestic-scheduled-payment-consents.html#post-domestic-scheduled-payment-consents",
       "detail": "Checks that the resource succeeds for a PISP posting a Domestic Scheduled Payment consent with a minimal data set where RequestedExecutionDateTime is an ISO8601 datetime (2006-01-02T15:04:05Z07:00).",
       "apiVersion":">=3.1.5",
       "parameters": {
@@ -768,7 +768,7 @@
     {
         "description": "3.1.3 Payments - x-fapi-financial-id no longer required",
         "id": "OB-313-DOP-100100",
-        "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937984109/Domestic+Payments+v3.1#DomesticPaymentsv3.1-POST/domestic-payment-consents",
+        "refURI": "https://openbankinguk.github.io/read-write-api-site3/v3.1.3/resources-and-data-models/pisp/domestic-payment-consents.html#post-domestic-payment-consents",
         "detail": "check that removal of x-fapi-financial-id succeeds for Check Domestic Payment consents for 3.1.3 and above",
         "apiVersion":">=3.1.3",
         "parameters": {
