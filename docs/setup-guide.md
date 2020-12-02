@@ -93,7 +93,15 @@ at this point by running `docker login`.
 ### Production
 
 ```sh
-docker run --rm -it -p 8443:8443 -e LOG_LEVEL=debug -e LOG_TRACER=true -e LOG_HTTP_TRACE=true -e DISABLE_JWS=TRUE "openbanking/conformance-suite:v1.1.19"
+docker run --rm -it -p 8443:8443 -e LOG_LEVEL=debug -e LOG_TRACER=true -e LOG_HTTP_TRACE=true "openbanking/conformance-suite:v1.6.3"
+```
+
+*Please substitute the container version (1.6.3 in this example) with the version of the latest stable release.*
+
+### Production - JWS signatures disabled (for testing purposes only)
+
+```sh
+docker run --rm -it -p 8443:8443 -e LOG_LEVEL=debug -e LOG_TRACER=true -e LOG_HTTP_TRACE=true -e DISABLE_JWS=TRUE "openbanking/conformance-suite:v1.6.3"
 ```
 
 ### Non-production run
