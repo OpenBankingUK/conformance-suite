@@ -30,8 +30,26 @@ func GetJWKSUri() string {
 	return jwks_uri_accessor
 }
 
-func OpenIdConfig(url string) (OpenIDConfiguration, error) {
-	resp, err := client.NewHTTPClient(client.DefaultTimeout).Get(url)
+type CachedOpenIdConfigGetter struct {
+	client *http.Client
+	cache  map[string]OpenIDConfiguration
+}
+
+func NewOpenIdConfigGetter() *CachedOpenIdConfigGetter {
+	return &CachedOpenIdConfigGetter{
+		client: client.NewHTTPClient(client.DefaultTimeout),
+		cache:  map[string]OpenIDConfiguration{},
+	}
+}
+
+func (g CachedOpenIdConfigGetter) Get(url string) (OpenIDConfiguration, error) {
+	config, ok := g.cache[url]
+	if ok {
+		logrus.Tracef("Cache hit on getting openid config Uri = %s", url)
+		return config, nil
+	}
+
+	resp, err := g.client.Get(url)
 	if err != nil {
 		return OpenIDConfiguration{}, errors.Wrapf(err, "Failed to GET OpenIDConfiguration: url=%+v", url)
 	}
@@ -52,12 +70,13 @@ func OpenIdConfig(url string) (OpenIDConfiguration, error) {
 	}
 
 	defer resp.Body.Close()
-	config := OpenIDConfiguration{}
+	config = OpenIDConfiguration{}
 	if err := json.NewDecoder(resp.Body).Decode(&config); err != nil {
 		return config, errors.Wrap(err, fmt.Sprintf("Invalid OpenIDConfiguration: url=%+v", url))
 	}
 
 	logrus.Tracef("JWKS Uri = %s", config.JwksURI)
 	jwks_uri_accessor = config.JwksURI
+	g.cache[url] = config
 	return config, nil
 }

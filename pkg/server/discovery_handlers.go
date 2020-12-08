@@ -76,6 +76,8 @@ func (d discoveryHandlers) setDiscoveryModelHandler(c echo.Context) error {
 		ResponseTypesSupported:                        []string{},
 		AcrValuesSupported:                            []string{},
 	}
+
+	configGetter := authentication.NewOpenIdConfigGetter()
 	for discoveryItemIndex, discoveryItem := range discoveryModel.DiscoveryModel.DiscoveryItems {
 		key := fmt.Sprintf("schema_version=%s", discoveryItem.APISpecification.SchemaVersion)
 
@@ -83,7 +85,7 @@ func (d discoveryHandlers) setDiscoveryModelHandler(c echo.Context) error {
 		ctxLogger.WithFields(logrus.Fields{
 			"url": url,
 		}).Info("GET /.well-known/openid-configuration")
-		config, e := authentication.OpenIdConfig(url)
+		config, e := configGetter.Get(url)
 		if e != nil {
 			ctxLogger.WithFields(logrus.Fields{
 				"url": url,
