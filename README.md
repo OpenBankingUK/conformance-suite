@@ -17,12 +17,11 @@ To provide feedback, please use the public [issue tracker](https://bitbucket.org
 ## Release Notes 
 * * *
 
-# Release v1.6.3 (27th October 2020)
+# Release v1.6.4 (8th December 2020)
 
-The release is called **v1.6.3**, an update to support [additional roadmap tests](https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1564083551/OBIE+Functional+Conformance+Tool+Roadmap).
+The release is called **v1.6.4**, an update to support [additional roadmap tests](https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1564083551/OBIE+Functional+Conformance+Tool+Roadmap) and contains minor fixes.
 
-[Full Release Notes](https://bitbucket.org/openbankingteam/conformance-suite/src/develop/docs/releases/v1.6.3.md) (v1.6.3.md)
-
+[Full Release Notes](https://bitbucket.org/openbankingteam/conformance-suite/src/develop/docs/releases/v1.6.4.md) (v1.6.4.md)
 ## Quickstart
 * * *
 
