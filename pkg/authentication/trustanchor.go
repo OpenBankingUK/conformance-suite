@@ -19,7 +19,8 @@ var hsbcTanList = []string{
 	"https://ob.firstdirect.com/jwks/public.jwks",
 	"https://ob.mandsbank.com/jwks/public.jwks",
 	"https://ob.business.hsbc.co.uk/jwks/public.jwks",
-	"https://ob.hsbckinetic.co.uk/jwks/public.jwks"}
+	"https://ob.hsbckinetic.co.uk/jwks/public.jwks",
+	"https://ob.hsbcnet.com/jwks/public.jwks"}
 
 func isHSBCTrustAnchor(tan string) bool {
 	for _, v := range hsbcTanList {
