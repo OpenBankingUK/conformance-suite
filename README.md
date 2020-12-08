@@ -17,24 +17,24 @@ To provide feedback, please use the public [issue tracker](https://bitbucket.org
 ## Release Notes 
 * * *
 
-# Release v1.5.3 (3rd August 2020)
+# Release v1.6.3 (27th October 2020)
 
-The release is called **v1.5.3**, a minor update that includes new UI support for SSA & KID for EIDAS certificates, 403 error status code fixes and updates to the report export.
+The release is called **v1.6.3**, an update to support [additional roadmap tests](https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1564083551/OBIE+Functional+Conformance+Tool+Roadmap).
 
-[Full Release Notes](https://bitbucket.org/openbankingteam/conformance-suite/src/develop/docs/releases/v1.5.3.md) (v1.5.3.md)
+[Full Release Notes](https://bitbucket.org/openbankingteam/conformance-suite/src/develop/docs/releases/v1.6.3.md) (v1.6.3.md)
 
 ## Quickstart
 * * *
 
 Pull and run the latest (stable) tagged Docker image:
 
-    > docker run --rm -it -p 8443:8443 "openbanking/conformance-suite:v1.4.0"
+    > docker run --rm -it -p 8443:8443 "openbanking/conformance-suite:v1.6.1"
 
 [See Setup Guide](https://bitbucket.org/openbankingteam/conformance-suite/src/develop/docs/setup-guide.md)
 
 ### Prerequisites
 
-The tool is compatible with the Open Banking UK R/W specification versions: 3.1.0, 3.1.1, 3.1.2, 3.1.3, 3.1.4, 3.1.5.
+The tool is compatible with the Open Banking UK R/W specification versions: 3.1.0, 3.1.1, 3.1.2, 3.1.3, 3.1.4, 3.1.5, 3.1.6.
 
 In order to run a container you'll need docker installed.
 

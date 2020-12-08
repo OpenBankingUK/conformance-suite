@@ -231,7 +231,7 @@
     {
       "description": "Creates Funds Confirmation Consent with expirationDateTime formatted as '2006-01-02T15:04:05.999Z'",
       "id": "OB-301-CBPII-000009",
-      "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937951380/Confirmation+of+Funds+API+Specification+-+v3.1",
+      "refURI": "https://openbankinguk.github.io/read-write-api-site3/v3.1.5/profiles/confirmation-of-funds-api-profile.html",
       "detail": "Creates Funds Confirmation Consent with expirationDateTime formatted as '2006-01-02T15:04:05.999Z'",
       "apiVersion":">=3.1.5",
       "uri": "/funds-confirmation-consents",
@@ -258,7 +258,7 @@
     {
       "description": "Creates Funds Confirmation Consent with expirationDate formatted as '2006-01-02T15:04:05.999-07:00'",
       "id": "OB-301-CBPII-000010",
-      "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937951380/Confirmation+of+Funds+API+Specification+-+v3.1",
+      "refURI": "https://openbankinguk.github.io/read-write-api-site3/v3.1.5/profiles/confirmation-of-funds-api-profile.html",
       "detail": "Creates Funds Confirmation Consent with expirationDate formatted as '2006-01-02T15:04:05.999-07:00'",
       "apiVersion":">=3.1.5",
       "uri": "/funds-confirmation-consents",
@@ -285,7 +285,7 @@
     {
       "description": "Creates Funds Confirmation Consent with expirationDate formatted as '2006-01-02T15:04:05Z'",
       "id": "OB-301-CBPII-000011",
-      "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937951380/Confirmation+of+Funds+API+Specification+-+v3.1",
+      "refURI": "https://openbankinguk.github.io/read-write-api-site3/v3.1.5/profiles/confirmation-of-funds-api-profile.html",
       "detail": "Creates Funds Confirmation Consent with expirationDate formatted as '2006-01-02T15:04:05Z'",
       "apiVersion":">=3.1.5",
       "uri": "/funds-confirmation-consents",
@@ -312,7 +312,7 @@
     {
       "description": "Creates Funds Confirmation Consent with expirationDate formatted as '2006-01-02T15:04:05-07:00'",
       "id": "OB-301-CBPII-000012",
-      "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937951380/Confirmation+of+Funds+API+Specification+-+v3.1",
+      "refURI": "https://openbankinguk.github.io/read-write-api-site3/v3.1.5/profiles/confirmation-of-funds-api-profile.html",
       "detail": "Creates Funds Confirmation Consent with expirationDate formatted as '2006-01-02T15:04:05-07:00'",
       "apiVersion":">=3.1.5",
       "uri": "/funds-confirmation-consents",
@@ -339,7 +339,7 @@
     {
       "description": "3.1.2 x-fapi-financial-id no longer required",
       "id": "OB-312-CBPII-000100",
-      "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937951380/Confirmation+of+Funds+API+Specification+-+v3.1",
+      "refURI": "https://openbankinguk.github.io/read-write-api-site3/v3.1.3/profiles/confirmation-of-funds-api-profile.html",
       "detail": "checks x-fapi-financial-id being removed allows Creates Funds Confirmation Consents to run normally",
       "uri": "/funds-confirmation-consents",
       "apiVersion":">=3.1.3",

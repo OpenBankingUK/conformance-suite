@@ -116,7 +116,7 @@ func verifySig(t *testing.T, signingMethod jwt.SigningMethod, signingString, sig
 	assert.Nil(t, err)
 	jwk, err := getJwkFromJwks(kid, "https://keystore.openbankingtest.org.uk/0015800001041RbAAI/fJuUU6dNt0zxnDe59eG0YN.jwks")
 	assert.Nil(t, err)
-	certs, err := ParseCertificateChain(jwk.X5c)
+	certs, err := parseCertificateChain(jwk.X5c)
 	assert.Nil(t, err)
 	cert := certs[0]
 	verified, err := MyJwsVerify(signingString+signature, jwa.PS256, cert.PublicKey, b64)
@@ -139,7 +139,7 @@ func TestOzonePublicKey2EncodePayload(t *testing.T) {
 		fmt.Println("certificate chain not found in jwk.X5c claim")
 		return
 	}
-	certs, err := ParseCertificateChain(jwk.X5c)
+	certs, err := parseCertificateChain(jwk.X5c)
 	assert.Nil(t, err)
 	cert := certs[0]
 	signedJWT, err := insertBodyIntoJWT(detachedJWT, rawBody, true)
@@ -162,7 +162,7 @@ func TestOzoneExpiredPublicKey2EncodePayload(t *testing.T) {
 		fmt.Println("certificate chain not found in jwk.X5c claim")
 		return
 	}
-	certs, err := ParseCertificateChain(jwk.X5c)
+	certs, err := parseCertificateChain(jwk.X5c)
 	assert.Nil(t, err)
 	cert := certs[0]
 	signedJWT, err := insertBodyIntoJWT(expiredDetachedJWT, expiredRawBody, true)

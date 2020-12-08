@@ -109,33 +109,136 @@ func CreateSignature(t *jwt.Token, key interface{}, body string, b64encoded bool
 	return strings.Join([]string{sstr, sig}, "."), nil
 }
 
-// JWT SigningString
-// takes the token, body string and b64 indicator
+// SigningString takes the token, body string and b64 indicator
 // if b64encoded=true - base64urlEncodes the payload string as part of the string to be signed
 // if b64encoded=false - includes the payload unencoded (unmodified) in the string to be signed
 func SigningString(t *jwt.Token, body string, b64encoded bool) (string, error) {
-	var err error
-	parts := make([]string, 2)
-	for i := range parts {
-		var jsonValue []byte
-		if i == 0 {
-			if jsonValue, err = json.Marshal(t.Header); err != nil {
-				return "", errors.Wrap(err, "authentication.SigningString: json.Marshal(t.Header) failed")
-			}
-		} else {
-			jsonValue = []byte(body)
-		}
-		if i == 0 {
-			parts[i] = jwt.EncodeSegment(jsonValue)
-		} else {
-			if b64encoded { // b64=true so encode segment - Sign with payload B64 encoding true - default for v3.1.4 and above of apis
-				parts[i] = jwt.EncodeSegment(jsonValue)
-			} else { // b64=false so include unencoded - Sign with payload B64 encoding false - v3.1.3 and previous versions of apis
-				parts[i] = string(jsonValue)
-			}
-		}
+	headersJSON, err := json.Marshal(t.Header)
+	if err != nil {
+		return "", errors.Wrap(err, "authentication.SigningString: json.Marshal(t.Header) failed")
 	}
-	return strings.Join(parts, "."), nil
+	headers := jwt.EncodeSegment(headersJSON)
+
+	var payload string
+	if b64encoded {
+		payload = jwt.EncodeSegment([]byte(body))
+	} else {
+		payload = body
+	}
+
+	return strings.Join([]string{headers, payload}, "."), nil
+}
+
+// RemoveJWSHeader provides an option which modifies an existing JWT by
+// deleting specified keys from its header.
+func RemoveJWSHeader(removed []string) JWSHeaderOpt {
+	substitutes := map[string]string{
+		"iat": "http://openbanking.org.uk/iat",
+		"iss": "http://openbanking.org.uk/iss",
+		"tan": "http://openbanking.org.uk/tan",
+	}
+
+	return func(current map[string]interface{}) map[string]interface{} {
+		result := map[string]interface{}{}
+		for key, value := range current {
+			result[key] = value
+		}
+
+		for _, key := range removed {
+			substitute, ok := substitutes[key]
+			if ok {
+				key = substitute
+			}
+
+			delete(result, key)
+		}
+		return result
+	}
+}
+
+// SetJWSHeader provides an option which modifies an existing JWT by
+// setting specified keys on its header.
+func SetJWSHeader(entries map[string]interface{}) JWSHeaderOpt {
+	return func(current map[string]interface{}) map[string]interface{} {
+		result := map[string]interface{}{}
+		for key, value := range current {
+			// not concurrently accessed, delete should be sufficient.
+			result[key] = value
+		}
+
+		for key, value := range entries {
+			result[key] = value
+		}
+		return result
+	}
+}
+
+// JWSHeaderOpt is a function signature which is used for altering JWS header when passed to ModifyJWSHeaders
+type JWSHeaderOpt func(map[string]interface{}) map[string]interface{}
+
+// ModifyJWSHeaders allows the caller to mutate an existing JWS, re-signed with the new contents
+func ModifyJWSHeaders(jws string, ctx ContextInterface, opts ...JWSHeaderOpt) (string, error) {
+	if len(opts) == 0 {
+		return jws, nil
+	}
+
+	// decode the headers
+	segments := strings.Split(jws, ".")
+	if len(segments) == 0 {
+		return "", fmt.Errorf("failed to modify JWS: received invalid JWS as input")
+	}
+
+	// assuming b64 encoded body, meaning that this can't be used in tests prior 3.1.4 (!)
+	b64Encoded := true
+	body := []byte{}
+	if len(segments) > 1 {
+		body = []byte(segments[1])
+	}
+
+	headersB64Decoded, err := base64.StdEncoding.DecodeString(segments[0])
+	if err != nil {
+		return "", fmt.Errorf("failed to modify JWS: %w", err)
+	}
+	header := map[string]interface{}{}
+	err = json.Unmarshal(headersB64Decoded, &header)
+	if err != nil {
+		return "", fmt.Errorf("failed to modify JWS: %w", err)
+	}
+
+	// apply mutators (header opts)
+	for _, opt := range opts {
+		header = opt(header)
+	}
+
+	// The new signature is using the alg specified in the token;
+	// if alg is not set then the signature can't be created
+	alg, ok := header["alg"].(string)
+	if !ok {
+		return "", fmt.Errorf("failed to modify JWS: signing alg is undefined, 'alg' key is not set")
+	}
+
+	signingMethod, err := GetSigningAlg(alg)
+	if err != nil {
+		return "", fmt.Errorf("failed to modify JWS: %w", err)
+	}
+
+	token := &jwt.Token{
+		Header: header,
+		Method: signingMethod,
+	}
+
+	// sign anew and return the produce
+	cert, err := SigningCertFromContext(ctx)
+	if err != nil {
+		return "", fmt.Errorf("failed to modify JWS: %w", err)
+	}
+
+	privKey := cert.PrivateKey()
+	tokenString, err := CreateSignature(token, privKey, string(body), b64Encoded)
+	if err != nil {
+		return "", fmt.Errorf("failed to modify JWS: %w", err)
+	}
+	return SplitJWSWithBody(tokenString), nil
 }
 
 func NewJWSSignature(requestBody string, ctx ContextInterface, alg jwt.SigningMethod) (string, error) {
@@ -201,6 +304,7 @@ func NewJWSSignature(requestBody string, ctx ContextInterface, alg jwt.SigningMe
 		"issuer": issuer,
 		"alg":    alg.Alg(),
 		"claims": minifiedBody,
+		"tan":    trustAnchor,
 	}).Trace("jws signature creation")
 
 	b64encoding, err := GetB64Encoding(ctx)
@@ -313,9 +417,10 @@ func GetB64Status() bool {
 func SetEidasSigningParameters(issuer, kid string) error {
 	eidas_issuer = issuer
 	eidas_kid = kid
-	logrus.Debugf("Setting EIDAS Signing Parameters ssa: %s, kid: %s", issuer, kid)
-	if !checkSignatureIssuerTPP(eidas_issuer) {
-		return fmt.Errorf("Invalid EIDAS Issuer String (%s)", eidas_issuer)
-	}
+	logrus.Debugf("Setting EIDAS Signing Parameters iss: %s, kid: %s", issuer, kid)
+	// Check relaxed to allow HSBC Trust Anchor issuers
+	// if !checkSignatureIssuerTPP(eidas_issuer) {
+	// 	return fmt.Errorf("Invalid EIDAS Issuer String (%s)", eidas_issuer)
+	// }
 	return nil
 }

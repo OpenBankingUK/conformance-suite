@@ -78,6 +78,33 @@
         }]
       }
     },
+    "OB3GLOAssertSignatureInvalidClaimErrorCode": {
+      "expect": {
+        "matches": [{
+          "JSON": "Errors.#[ErrorCode=\"UK.OBIE.Signature.InvalidClaim\"].ErrorCode",
+          "Value": "UK.OBIE.Signature.InvalidClaim",
+          "detail": "Expected a specific error code for invalid claim in signature error."
+        }]
+      }
+    },
+    "OB3GLOAssertSignatureMissingClaimErrorCode": {
+      "expect": {
+        "matches": [{
+          "JSON": "Errors.#[ErrorCode=\"UK.OBIE.Signature.MissingClaim\"].ErrorCode",
+          "Value": "UK.OBIE.Signature.MissingClaim",
+          "detail": "Expected a specific error code for missing claim in signature error."
+        }]
+      }
+    },
+    "OB3GLOAssertSignatureMalformedErrorCode": {
+      "expect": {
+        "matches": [{
+          "JSON": "Errors.#[ErrorCode=\"UK.OBIE.Signature.Malformed\"].ErrorCode",
+          "Value": "UK.OBIE.Signature.Malformed",
+          "detail": "Expected a specific error code for malformed signature error."
+        }]
+      }
+    },
     "OB3DOPAssertOnAcceptedSettlementCompleted": {
       "expect": {
         "matches": [{
@@ -120,6 +147,15 @@
           "JSON": "Data.FundsAvailableResult.FundsAvailable",
           "Value": "true",
           "detail": "Expected FundsAvailable to be set to 'true'"
+        }]
+      }
+    },
+    "OB3DOPAssertSignatureMissingOBErrorCode": {
+      "expect": {
+        "matches": [{
+          "JSON": "Errors.#[ErrorCode=\"UK.OBIE.Signature.Missing\"].ErrorCode",
+          "Value": "UK.OBIE.Signature.Missing",
+          "detail": "Expected a specific error code for missing signature."
         }]
       }
     },
@@ -198,6 +234,16 @@
           "JSON": "Errors.#[ErrorCode=\"UK.OBIE.Field.Invalid\"].ErrorCode",
           "Value": "UK.OBIE.Field.Invalid",
           "detail": "Expected a specific error code for an invalid field."
+        }]
+      }
+    },
+    "OB3IPAssertResourceNotFoundOBErrorCode400": {
+      "expect": {
+        "status-code": 400,
+        "matches": [{
+          "JSON": "Errors.#[ErrorCode=\"UK.OBIE.Resource.NotFound\"].ErrorCode",
+          "Value": "UK.OBIE.Resource.NotFound",
+          "detail": "Expected a specific error code for resource not found."
         }]
       }
     }
