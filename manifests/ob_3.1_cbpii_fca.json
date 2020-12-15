@@ -142,7 +142,7 @@
       "parameters": {
         "debtorAccountSchemeName": "$cbpiiDebtorAccountSchemeName",
         "debtorAccountIdentification": "$cbpiiDebtorAccountIdentification",
-        "debtorAccountName": "MoreThan70characters-MoreThan70characters-MoreThan70characters-MoreThan70Characters",
+        "debtorAccountName": "MoreThan350characters-MoreThan350characters-MoreThan350characters-MoreThan350characters-MoreThan350characters-MoreThan350characters-MoreThan350characters-MoreThan350characters-MoreThan350characters-MoreThan350characters-MoreThan350characters-MoreThan350characters-MoreThan350characters-MoreThan350characters-MoreThan350characters-MoreThan350characters-MoreThan350characters",
         "postData": "$OBFundsConfirmationConsent1",
         "expirationDateTime": "2021-01-01T00:00:00+01:00",
         "requestConsent": "false"
