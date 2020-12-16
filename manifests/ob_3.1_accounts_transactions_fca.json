@@ -906,7 +906,8 @@
       "method": "get",
       "asserts_one_of": [
         "OB3IPAssertResourceFieldInvalidOBErrorCode400",
-        "OB3IPAssertResourceNotFoundOBErrorCode400"
+        "OB3IPAssertResourceNotFoundOBErrorCode400",
+        "OB3GLOAssertOn403"
       ],
       "schemaCheck": false
     },
