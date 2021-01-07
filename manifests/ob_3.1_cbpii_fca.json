@@ -12,7 +12,7 @@
         "debtorAccountIdentification": "$cbpiiDebtorAccountIdentification",
         "debtorAccountName": "$cbpiiDebtorAccountName",
         "postData": "$OBFundsConfirmationConsent1",
-        "expirationDateTime": "2021-01-01T00:00:00+01:00",
+        "expirationDateTime": "$fn:nextDayDate(2006-01-02T15:04:05Z07:00)",
         "requestConsent": "false"
       },
       "method": "post",
@@ -42,7 +42,7 @@
         "debtorAccountIdentification": "$cbpiiDebtorAccountIdentification",
         "debtorAccountName": "$cbpiiDebtorAccountName",
         "postData": "$OBFundsConfirmationConsent1",
-        "expirationDateTime": "2021-01-01T00:00:00+01:00",
+        "expirationDateTime": "$fn:nextDayDate(2006-01-02T15:04:05Z07:00)",
         "requestConsent": "true"
       },
       "method": "post",
@@ -144,7 +144,7 @@
         "debtorAccountIdentification": "$cbpiiDebtorAccountIdentification",
         "debtorAccountName": "MoreThan350characters-MoreThan350characters-MoreThan350characters-MoreThan350characters-MoreThan350characters-MoreThan350characters-MoreThan350characters-MoreThan350characters-MoreThan350characters-MoreThan350characters-MoreThan350characters-MoreThan350characters-MoreThan350characters-MoreThan350characters-MoreThan350characters-MoreThan350characters-MoreThan350characters",
         "postData": "$OBFundsConfirmationConsent1",
-        "expirationDateTime": "2021-01-01T00:00:00+01:00",
+        "expirationDateTime": "$fn:nextDayDate(2006-01-02T15:04:05Z07:00)",
         "requestConsent": "false"
       },
       "method": "post",
@@ -170,7 +170,7 @@
         "debtorAccountIdentification": "MoreThan256characters-MoreThan256characters-MoreThan256characters-MoreThan256Characters-MoreThan256characters-MoreThan256characters-MoreThan256characters-MoreThan256Characters-MoreThan256characters-MoreThan256characters-MoreThan256characters-MoreThan256Characters-MoreThan256characters-MoreThan256characters-MoreThan256characters-MoreThan256Characters",
         "debtorAccountName": "$cbpiiDebtorAccountName",
         "postData": "$OBFundsConfirmationConsent1",
-        "expirationDateTime": "2021-01-01T00:00:00+01:00",
+        "expirationDateTime": "$fn:nextDayDate(2006-01-02T15:04:05Z07:00)",
         "requestConsent": "false"
       },
       "method": "post",
@@ -196,7 +196,7 @@
         "debtorAccountIdentification": "$cbpiiDebtorAccountIdentification",
         "debtorAccountName": "$cbpiiDebtorAccountName",
         "postData": "$OBFundsConfirmationConsent1",
-        "expirationDateTime": "2021-01-01T00:00:00+01:00",
+        "expirationDateTime": "$fn:nextDayDate(2006-01-02T15:04:05Z07:00)",
         "requestConsent": "false"
       },
       "method": "post",
@@ -349,7 +349,7 @@
         "debtorAccountIdentification": "$cbpiiDebtorAccountIdentification",
         "debtorAccountName": "$cbpiiDebtorAccountName",
         "postData": "$OBFundsConfirmationConsent1",
-        "expirationDateTime": "2021-01-01T00:00:00+01:00",
+        "expirationDateTime": "$fn:nextDayDate(2006-01-02T15:04:05Z07:00)",
         "requestConsent": "false"
       },
       "method": "post",

@@ -8,10 +8,12 @@ import (
 	"net/http"
 	"reflect"
 	"testing"
+	"time"
 
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/generation"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
+	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
 
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/server/models"
@@ -69,6 +71,13 @@ IXsOQdJo2xuu8807d+rO1FpN8yWi5OF/0sif0RrocSskLAIL/PI1qfWuuPck
 -----END CERTIFICATE-----
 
 `
+
+	timeFormat = "2006-01-02T15:04:05-07:00"
+)
+
+var (
+	executionDateTime = time.Now().Add(24 * time.Hour).Format(timeFormat)
+	paymentDateTime   = time.Now().Add(24 * time.Hour).Format(timeFormat)
 )
 
 func TestValidateConfig(t *testing.T) {
@@ -230,8 +239,8 @@ func TestValidateConfigTestsEmpty(t *testing.T) {
 // TestServerConfigGlobalPostValid - tests /api/config/global
 func TestServerConfigGlobalPostValid(t *testing.T) {
 	require := test.NewRequire(t)
-
-	server := NewServer(testJourney(), nullLogger(), &mocks.Version{})
+	logger := logrus.New()
+	server := NewServer(testJourney(), logger.WithField("component", "test-server"), &mocks.Version{})
 	defer func() {
 		require.NoError(server.Shutdown(context.TODO()))
 	}()
@@ -267,8 +276,8 @@ func TestServerConfigGlobalPostValid(t *testing.T) {
 			SchemeName:     "UK.OBIE.SortCodeAccountNumber",
 			Identification: "20202010981789",
 		},
-		RequestedExecutionDateTime: "2021-01-01T00:00:00+01:00",
-		FirstPaymentDateTime:       "2021-01-01T00:00:00+01:00",
+		RequestedExecutionDateTime: executionDateTime,
+		FirstPaymentDateTime:       paymentDateTime,
 		PaymentFrequency:           models.PaymentFrequency("EvryDay"),
 		CBPIIDebtorAccount: discovery.CBPIIDebtorAccount{
 			SchemeName:     "UK.OBIE.SortCodeAccountNumber",
@@ -285,6 +294,7 @@ func TestServerConfigGlobalPostValid(t *testing.T) {
 	// `?pretty` makes the JSON more readable in the event of a failure
 	// see the example: https://echo.labstack.com/guide/response#json-pretty
 	code, body, headers := request(http.MethodPost, "/api/config/global?pretty", bytes.NewReader(globalConfigurationJSON), server)
+	// t.Log(body.String())
 
 	// do assertions
 	require.NotNil(body)
@@ -342,8 +352,8 @@ func TestServerConfigGlobalPostInvalid(t *testing.T) {
 					SchemeName:     "UK.OBIE.SortCodeAccountNumber",
 					Identification: "20202010981789",
 				},
-				RequestedExecutionDateTime: "2021-01-01T00:00:00+01:00",
-				FirstPaymentDateTime:       "2021-01-01T00:00:00+01:00",
+				RequestedExecutionDateTime: executionDateTime,
+				FirstPaymentDateTime:       paymentDateTime,
 				PaymentFrequency:           models.PaymentFrequency("EvryDay"),
 				CBPIIDebtorAccount: discovery.CBPIIDebtorAccount{
 					SchemeName:     "UK.OBIE.SortCodeAccountNumber",
@@ -390,8 +400,8 @@ func TestServerConfigGlobalPostInvalid(t *testing.T) {
 					SchemeName:     "UK.OBIE.SortCodeAccountNumber",
 					Identification: "20202010981789",
 				},
-				RequestedExecutionDateTime: "2021-01-01T00:00:00+01:00",
-				FirstPaymentDateTime:       "2021-01-01T00:00:00+01:00",
+				RequestedExecutionDateTime: executionDateTime,
+				FirstPaymentDateTime:       paymentDateTime,
 				PaymentFrequency:           models.PaymentFrequency("EvryDay"),
 				CBPIIDebtorAccount: discovery.CBPIIDebtorAccount{
 					SchemeName:     "UK.OBIE.SortCodeAccountNumber",
@@ -430,8 +440,8 @@ func TestServerConfigGlobalPostInvalid(t *testing.T) {
 					SchemeName:     "UK.OBIE.SortCodeAccountNumber",
 					Identification: "20202010981789",
 				},
-				RequestedExecutionDateTime: "2021-01-01T00:00:00+01:00",
-				FirstPaymentDateTime:       "2021-01-01T00:00:00+01:00",
+				RequestedExecutionDateTime: executionDateTime,
+				FirstPaymentDateTime:       paymentDateTime,
 				PaymentFrequency:           models.PaymentFrequency("EvryDay"),
 				CBPIIDebtorAccount: discovery.CBPIIDebtorAccount{
 					SchemeName:     "UK.OBIE.SortCodeAccountNumber",
@@ -475,8 +485,8 @@ func TestServerConfigGlobalPostInvalid(t *testing.T) {
 					SchemeName:     "UK.OBIE.SortCodeAccountNumber",
 					Identification: "20202010981789",
 				},
-				RequestedExecutionDateTime: "2021-01-01T00:00:00+01:00",
-				FirstPaymentDateTime:       "2021-01-01T00:00:00+01:00",
+				RequestedExecutionDateTime: executionDateTime,
+				FirstPaymentDateTime:       paymentDateTime,
 				PaymentFrequency:           models.PaymentFrequency("EvryDay"),
 				CBPIIDebtorAccount: discovery.CBPIIDebtorAccount{
 					SchemeName:     "UK.OBIE.SortCodeAccountNumber",
@@ -524,8 +534,8 @@ func TestServerConfigGlobalPostInvalid(t *testing.T) {
 					SchemeName:     "UK.OBIE.SortCodeAccountNumber",
 					Identification: "20202010981789",
 				},
-				RequestedExecutionDateTime: "2021-01-01T00:00:00+01:00",
-				FirstPaymentDateTime:       "2021-01-01T00:00:00+01:00",
+				RequestedExecutionDateTime: executionDateTime,
+				FirstPaymentDateTime:       paymentDateTime,
 				PaymentFrequency:           models.PaymentFrequency("EvryDay"),
 				CBPIIDebtorAccount: discovery.CBPIIDebtorAccount{
 					SchemeName:     "UK.OBIE.SortCodeAccountNumber",
@@ -569,8 +579,8 @@ func TestServerConfigGlobalPostInvalid(t *testing.T) {
 					SchemeName:     "UK.OBIE.SortCodeAccountNumber",
 					Identification: "20202010981789",
 				},
-				RequestedExecutionDateTime: "2021-01-01T00:00:00+01:00",
-				FirstPaymentDateTime:       "2021-01-01T00:00:00+01:00",
+				RequestedExecutionDateTime: executionDateTime,
+				FirstPaymentDateTime:       paymentDateTime,
 				PaymentFrequency:           models.PaymentFrequency("EvryDay"),
 				CBPIIDebtorAccount: discovery.CBPIIDebtorAccount{
 					SchemeName:     "UK.OBIE.SortCodeAccountNumber",
@@ -618,8 +628,8 @@ func TestServerConfigGlobalPostInvalid(t *testing.T) {
 					SchemeName:     "UK.OBIE.SortCodeAccountNumber",
 					Identification: "20202010981789",
 				},
-				RequestedExecutionDateTime: "2021-01-01T00:00:00+01:00",
-				FirstPaymentDateTime:       "2021-01-01T00:00:00+01:00",
+				RequestedExecutionDateTime: executionDateTime,
+				FirstPaymentDateTime:       paymentDateTime,
 				PaymentFrequency:           models.PaymentFrequency("EvryDay"),
 				CBPIIDebtorAccount: discovery.CBPIIDebtorAccount{
 					SchemeName:     "UK.OBIE.SortCodeAccountNumber",
@@ -659,8 +669,8 @@ func TestServerConfigGlobalPostInvalid(t *testing.T) {
 						{StatementID: "statement-id"},
 					},
 				},
-				RequestedExecutionDateTime: "2021-01-01T00:00:00+01:00",
-				FirstPaymentDateTime:       "2021-01-01T00:00:00+01:00",
+				RequestedExecutionDateTime: executionDateTime,
+				FirstPaymentDateTime:       paymentDateTime,
 				PaymentFrequency:           models.PaymentFrequency("EvryDay"),
 				CBPIIDebtorAccount: discovery.CBPIIDebtorAccount{
 					SchemeName:     "UK.OBIE.SortCodeAccountNumber",
@@ -707,8 +717,8 @@ func TestServerConfigGlobalPostInvalid(t *testing.T) {
 					SchemeName:     "UK.OBIE.SortCodeAccountNumber",
 					Identification: "20202010981789",
 				},
-				RequestedExecutionDateTime: "2021-01-01T00:00:00+01:00",
-				FirstPaymentDateTime:       "2021-01-01T00:00:00+01:00",
+				RequestedExecutionDateTime: executionDateTime,
+				FirstPaymentDateTime:       paymentDateTime,
 				PaymentFrequency:           models.PaymentFrequency("EvryDay"),
 				CBPIIDebtorAccount: discovery.CBPIIDebtorAccount{
 					SchemeName:     "UK.OBIE.SortCodeAccountNumber",
@@ -751,8 +761,8 @@ func TestServerConfigGlobalPostInvalid(t *testing.T) {
 					SchemeName:     "UK.OBIE.SortCodeAccountNumber",
 					Identification: "20202010981789",
 				},
-				RequestedExecutionDateTime: "2021-01-01T00:00:00+01:00",
-				FirstPaymentDateTime:       "2021-01-01T00:00:00+01:00",
+				RequestedExecutionDateTime: executionDateTime,
+				FirstPaymentDateTime:       paymentDateTime,
 				PaymentFrequency:           models.PaymentFrequency("EvryDay"),
 				CBPIIDebtorAccount: discovery.CBPIIDebtorAccount{
 					SchemeName:     "UK.OBIE.SortCodeAccountNumber",
@@ -796,8 +806,8 @@ func TestServerConfigGlobalPostInvalid(t *testing.T) {
 					SchemeName:     "UK.OBIE.SortCodeAccountNumber",
 					Identification: "20202010981789",
 				},
-				RequestedExecutionDateTime: "2021-01-01T00:00:00+01:00",
-				FirstPaymentDateTime:       "2021-01-01T00:00:00+01:00",
+				RequestedExecutionDateTime: executionDateTime,
+				FirstPaymentDateTime:       paymentDateTime,
 				PaymentFrequency:           models.PaymentFrequency("EvryDay"),
 				CBPIIDebtorAccount: discovery.CBPIIDebtorAccount{
 					SchemeName:     "UK.OBIE.SortCodeAccountNumber",
@@ -842,8 +852,8 @@ func TestServerConfigGlobalPostInvalid(t *testing.T) {
 					Identification: "20202010981789",
 				},
 				PaymentFrequency:           models.PaymentFrequency("INVALID"),
-				RequestedExecutionDateTime: "2021-01-01T00:00:00+01:00",
-				FirstPaymentDateTime:       "2021-01-01T00:00:00+01:00",
+				RequestedExecutionDateTime: executionDateTime,
+				FirstPaymentDateTime:       paymentDateTime,
 				CBPIIDebtorAccount: discovery.CBPIIDebtorAccount{
 					SchemeName:     "UK.OBIE.SortCodeAccountNumber",
 					Identification: "20202010981789",
