@@ -195,7 +195,7 @@ func ModifyJWSHeaders(jws string, ctx ContextInterface, opts ...JWSHeaderOpt) (s
 		body = []byte(segments[1])
 	}
 
-	headersB64Decoded, err := base64.StdEncoding.DecodeString(segments[0])
+	headersB64Decoded, err := base64.RawURLEncoding.DecodeString(segments[0])
 	if err != nil {
 		return "", fmt.Errorf("failed to modify JWS: %w", err)
 	}
