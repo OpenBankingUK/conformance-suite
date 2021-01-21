@@ -21,7 +21,9 @@ To provide feedback, please use the public [issue tracker](https://bitbucket.org
 
 The release is called **v1.6.6**, an update to support [additional roadmap tests](https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1564083551/OBIE+Functional+Conformance+Tool+Roadmap) and contains minor fixes.
 
-[Full Release Notes](https://bitbucket.org/openbankingteam/conformance-suite/src/develop/docs/releases/v1.6.6.md) (v1.6.6.md)
+[Full Release Notes](https://bitbucket.org/openbankingteam/conformance-suite/src/v1.6.6/docs/releases/v1.6.6.md)
+(v1.6.6.md)
+
 ## Quickstart
 * * *
 
