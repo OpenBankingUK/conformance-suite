@@ -276,7 +276,7 @@ func NewJWSSignature(requestBody string, ctx ContextInterface, alg jwt.SigningMe
 	}
 
 	trustAnchor := "openbanking.org.uk"
-	useNonOBDirectory, exists := ctx.Get("nonOBDirectory")
+	useNonOBDirectory, exists := ctx.Get("nonOBDirectoryTPP")
 	if !exists {
 		return "", errors.New("NewJWSSignature: unable to retrieve nonOBDirectory from context")
 	}

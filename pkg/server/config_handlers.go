@@ -84,7 +84,8 @@ type GlobalConfiguration struct {
 	FirstPaymentDateTime          string                               `json:"first_payment_date_time"`
 	RequestedExecutionDateTime    string                               `json:"requested_execution_date_time"`
 	CurrencyOfTransfer            string                               `json:"currency_of_transfer"`
-	UseNonOBDirectory             bool                                 `json:"use_non_ob_directory"`
+	UseNonOBDirectoryASPSP        bool                                 `json:"use_non_ob_directory_aspsp"`
+	UseNonOBDirectoryTPP          bool                                 `json:"use_non_ob_directory_tpp"`
 	SigningKid                    string                               `json:"signing_kid,omitempty"`
 	SignatureTrustAnchor          string                               `json:"signature_trust_anchor,omitempty"`
 	AcrValuesSupported            []string                             `json:"acr_values_supported,omitempty"`
@@ -250,7 +251,8 @@ func MakeJourneyConfig(config *GlobalConfiguration) (JourneyConfig, error) {
 		requestObjectSigningAlgorithm: config.RequestObjectSigningAlgorithm,
 		signingPublic:                 config.SigningPublic,
 		signingPrivate:                config.SigningPrivate,
-		useNonOBDirectory:             config.UseNonOBDirectory,
+		useNonOBDirectoryASPSP:        config.UseNonOBDirectoryASPSP,
+		useNonOBDirectoryTPP:          config.UseNonOBDirectoryTPP,
 		signingKid:                    config.SigningKid,
 		signatureTrustAnchor:          config.SignatureTrustAnchor,
 		AcrValuesSupported:            config.AcrValuesSupported,

@@ -602,7 +602,8 @@ type JourneyConfig struct {
 	requestObjectSigningAlgorithm string
 	signingPrivate                string
 	signingPublic                 string
-	useNonOBDirectory             bool
+	useNonOBDirectoryASPSP        bool
+	useNonOBDirectoryTPP          bool
 	signingKid                    string
 	signatureTrustAnchor          string
 	useDynamicResourceID          bool

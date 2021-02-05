@@ -11,7 +11,9 @@ import (
 
 var macroMap = map[string]interface{}{
 	"instructionIdentificationID": instructionIdentificationID,
+	"currentDateTime":             currentDateTime,
 	"nextDayDateTime":             nextDayDateTime,
+	"previousDayDateTime":         previousDayDateTime,
 	"nextDayDate":                 nextDayDate,
 }
 
@@ -55,6 +57,17 @@ func nextDayDateTime(format string) string {
 	// on the timestamp's actual value, (e.g. checking if time == 2022-01-01T12:00:00Z).
 	nextDay := time.Now().UTC().Add(24 * time.Hour)
 	return nextDay.Format(format)
+}
+
+func previousDayDateTime(format string) string {
+	// In the tests which use generated times, there must be no assertion
+	// on the timestamp's actual value, (e.g. checking if time == 2022-01-01T12:00:00Z).
+	previousDay := time.Now().UTC().Add(-24 * time.Hour)
+	return previousDay.Format(format)
+}
+
+func currentDateTime(format string) string {
+	return time.Now().UTC().Format(format)
 }
 
 func nextDayDate(format string) string {

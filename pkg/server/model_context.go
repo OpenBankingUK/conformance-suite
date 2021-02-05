@@ -45,7 +45,8 @@ const (
 	CtxSigningPrivate                      = "signingPrivate"
 	CtxSigningPublic                       = "signingPublic"
 	CtxPhase                               = "phase"
-	CtxNonOBDirectory                      = "nonOBDirectory"
+	CtxNonOBDirectoryASPSP                 = "nonOBDirectoryASPSP"
+	CtxNonOBDirectoryTPP                   = "nonOBDirectoryTPP"
 	CtxSigningKid                          = "signingKid"
 	CtxSignatureTrustAnchor                = "signatureTrustAnchor"
 	CtxDynamicResourceIDs                  = "dynamicResourceIDs"
@@ -89,7 +90,8 @@ func PutParametersToJourneyContext(config JourneyConfig, context model.Context) 
 	context.PutString(CtxSigningPublic, config.signingPublic)
 	context.PutString(CtxTransactionFromDate, config.transactionFromDate)
 	context.PutString(CtxTransactionToDate, config.transactionToDate)
-	context.Put(CtxNonOBDirectory, config.useNonOBDirectory)
+	context.Put(CtxNonOBDirectoryASPSP, config.useNonOBDirectoryASPSP)
+	context.Put(CtxNonOBDirectoryTPP, config.useNonOBDirectoryTPP)
 	context.PutString(CtxSigningKid, config.signingKid)
 	context.PutString(CtxSignatureTrustAnchor, config.signatureTrustAnchor)
 	context.Put(CtxDynamicResourceIDs, config.useDynamicResourceID)
