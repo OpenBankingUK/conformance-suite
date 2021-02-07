@@ -353,34 +353,34 @@
           <b-form-checkbox
             id="use_non_ob_directory_tpp"
             v-model="use_non_ob_directory_tpp"/>
-            <b-form-group
-              id="signing_kid_group_tpp"
-              v-if="use_non_ob_directory_tpp"
-			        label="Signing Key ID (KID)"
-              label-for="signing_kid_tpp"
-              description="Key ID for the public certificate as stored by the Signature Trust Anchor.">	
-              <b-form-input
-                id="signing_kid_tpp"
-                v-model="signing_kid_tpp"
-                :state="isNotEmpty(signing_kid_tpp)"
-                required
-                type="text"
-              />
-            </b-form-group>
-            <b-form-group
-              id="signature_trust_anchor_group_tpp"
-              v-if="use_non_ob_directory_tpp"
-			        label="Signature Trust Anchor"
-              label-for="signature_trust_anchor_tpp"
-			        description="The URL for the Trust Anchor where public certificate with the KID is available as a JSON Web Key Set entry.">
-              <b-form-input
-                id="signature_trust_anchor_tpp"
-                v-model="signature_trust_anchor_tpp"
-                :state="isNotEmpty(signature_trust_anchor_tpp)"
-                required
-                type="text"
-              />
-          </b-form-group>        
+          <b-form-group
+            v-if="use_non_ob_directory_tpp"
+            id="signing_kid_group_tpp"
+            label="Signing Key ID (KID)"
+            label-for="signing_kid_tpp"
+            description="Key ID for the public certificate as stored by the Signature Trust Anchor.">
+            <b-form-input
+              id="signing_kid_tpp"
+              v-model="signing_kid_tpp"
+              :state="isNotEmpty(signing_kid_tpp)"
+              required
+              type="text"
+            />
+          </b-form-group>
+          <b-form-group
+            v-if="use_non_ob_directory_tpp"
+            id="signature_trust_anchor_group_tpp"
+            label="Signature Trust Anchor"
+            label-for="signature_trust_anchor_tpp"
+            description="The URL for the Trust Anchor where public certificate with the KID is available as a JSON Web Key Set entry.">
+            <b-form-input
+              id="signature_trust_anchor_tpp"
+              v-model="signature_trust_anchor_tpp"
+              :state="isNotEmpty(signature_trust_anchor_tpp)"
+              required
+              type="text"
+            />
+          </b-form-group>
         </b-form-group>
       </b-card>
 
