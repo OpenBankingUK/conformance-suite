@@ -604,8 +604,10 @@ type JourneyConfig struct {
 	signingPublic                 string
 	useNonOBDirectoryASPSP        bool
 	useNonOBDirectoryTPP          bool
-	signingKid                    string
-	signatureTrustAnchor          string
+	signingKidASPSP               string
+	signingKidTPP                 string
+	signatureTrustAnchorASPSP     string
+	signatureTrustAnchorTPP       string
 	useDynamicResourceID          bool
 	AcrValuesSupported            []string
 	conditionalProperties         []discovery.ConditionalAPIProperties

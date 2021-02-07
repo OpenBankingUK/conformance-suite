@@ -266,7 +266,7 @@ func (s signatureHeader) validateSignatureHeader(b64 bool) error {
 
 	if s.Ctype != "" { // Optional - if present must be json or application/json
 		if s.Ctype != "json" && s.Ctype != "application/json" {
-			return errors.New("Validate Signature - kid claim MUST be present")
+			return errors.New("Validate Signature - cty must be 'json' or 'application/json'")
 		}
 	}
 

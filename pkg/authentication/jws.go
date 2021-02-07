@@ -285,7 +285,7 @@ func NewJWSSignature(requestBody string, ctx ContextInterface, alg jwt.SigningMe
 		return "", errors.New("NewJWSSignature: unable to cast nonOBDirectory to bool")
 	}
 	if useNonOBDirectoryAsBool {
-		kid, err = ctx.GetString("signingKid")
+		kid, err = ctx.GetString("signingKidTPP")
 		if err != nil {
 			return "", errors.Wrap(err, "NewJWSSignature: unable to retrieve singingKid from context")
 		}
@@ -293,7 +293,7 @@ func NewJWSSignature(requestBody string, ctx ContextInterface, alg jwt.SigningMe
 		if err != nil {
 			return "", errors.Wrap(err, "NewJWSSignature: unable to retrieve issue from context")
 		}
-		trustAnchor, err = ctx.GetString("signatureTrustAnchor")
+		trustAnchor, err = ctx.GetString("signatureTrustAnchorTPP")
 		if err != nil {
 			return "", errors.Wrap(err, "NewJWSSignature: unable to retrieve signatureTrustAnchor from context")
 		}

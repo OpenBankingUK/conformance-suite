@@ -350,17 +350,16 @@
 
         <b-form-group
           id="use_non_ob_directory_group_aspsp"
-          label="Use Non OB Directory for ASPSP signature verification"
-		  description="Select if the certificate that is used in response signatures by the ASPSP is not by the OB Directory.">
+          label="Use Non OB Directory for ASPSP signature verification.">
           <b-form-checkbox
             id="use_non_ob_directory_aspsp"
             v-model="use_non_ob_directory_aspsp"/>
             <b-form-group
               id="signing_kid_group_aspsp"
               v-if="use_non_ob_directory_aspsp"
-			  label="Signing Key ID (KID)"
+			        label="Signing Key ID (KID)"
               label-for="signing_kid_aspsp"
-			  description="Key ID for the public certificate as stored by the Signature Trust Anchor.">	
+			        description="Key ID for the public certificate as stored by the Signature Trust Anchor.">	
               <b-form-input
                 id="signing_kid_aspsp"
                 v-model="signing_kid_aspsp"
@@ -372,9 +371,9 @@
             <b-form-group
               id="signature_trust_anchor_group_aspsp"
               v-if="use_non_ob_directory_aspsp"
-			  label="Signature Trust Anchor"
+			        label="Signature Trust Anchor"
               label-for="signature_trust_anchor_aspsp"
-			  description="The URL for the Trust Anchor where public certificate with the KID is available as a JSON Web Key Set entry.">
+			        description="The URL for the Trust Anchor where public certificate with the KID is available as a JSON Web Key Set entry.">
               <b-form-input
                 id="signature_trust_anchor_aspsp"
                 v-model="signature_trust_anchor_aspsp"
@@ -387,16 +386,16 @@
 
         <b-form-group
           id="use_non_ob_directory_group_tpp"
-          label="Use Non OB Directory for creating TPP signatures.">
+          label="Use Non OB Directory for TPP signatures.">
           <b-form-checkbox
             id="use_non_ob_directory_tpp"
             v-model="use_non_ob_directory_tpp"/>
             <b-form-group
               id="signing_kid_group_tpp"
               v-if="use_non_ob_directory_tpp"
-			  label="Signing Key ID (KID)"
+			        label="Signing Key ID (KID)"
               label-for="signing_kid_tpp"
-			  description="Key ID for the public certificate as stored by the Signature Trust Anchor.">	
+              description="Key ID for the public certificate as stored by the Signature Trust Anchor.">	
               <b-form-input
                 id="signing_kid_tpp"
                 v-model="signing_kid_tpp"
@@ -408,9 +407,9 @@
             <b-form-group
               id="signature_trust_anchor_group_tpp"
               v-if="use_non_ob_directory_tpp"
-			  label="Signature Trust Anchor"
+			        label="Signature Trust Anchor"
               label-for="signature_trust_anchor_tpp"
-			  description="The URL for the Trust Anchor where public certificate with the KID is available as a JSON Web Key Set entry.">
+			        description="The URL for the Trust Anchor where public certificate with the KID is available as a JSON Web Key Set entry.">
               <b-form-input
                 id="signature_trust_anchor_tpp"
                 v-model="signature_trust_anchor_tpp"
@@ -418,7 +417,7 @@
                 required
                 type="text"
               />
-          </b-form-group>
+          </b-form-group>        
         </b-form-group>
       </b-card>
 

@@ -47,8 +47,10 @@ const (
 	CtxPhase                               = "phase"
 	CtxNonOBDirectoryASPSP                 = "nonOBDirectoryASPSP"
 	CtxNonOBDirectoryTPP                   = "nonOBDirectoryTPP"
-	CtxSigningKid                          = "signingKid"
-	CtxSignatureTrustAnchor                = "signatureTrustAnchor"
+	CtxSigningKidASPSP                     = "signingKidASPSP"
+	CtxSigningKidTPP                       = "signingKidTPP"
+	CtxSignatureTrustAnchorASPSP           = "signatureTrustAnchorASPSP"
+	CtxSignatureTrustAnchorTPP             = "signatureTrustAnchorTPP"
 	CtxDynamicResourceIDs                  = "dynamicResourceIDs"
 	CtxAcrValuesSupported                  = "acrValuesSupported"
 )
@@ -92,8 +94,10 @@ func PutParametersToJourneyContext(config JourneyConfig, context model.Context) 
 	context.PutString(CtxTransactionToDate, config.transactionToDate)
 	context.Put(CtxNonOBDirectoryASPSP, config.useNonOBDirectoryASPSP)
 	context.Put(CtxNonOBDirectoryTPP, config.useNonOBDirectoryTPP)
-	context.PutString(CtxSigningKid, config.signingKid)
-	context.PutString(CtxSignatureTrustAnchor, config.signatureTrustAnchor)
+	context.PutString(CtxSigningKidASPSP, config.signingKidASPSP)
+	context.PutString(CtxSigningKidTPP, config.signingKidTPP)
+	context.PutString(CtxSignatureTrustAnchorASPSP, config.signatureTrustAnchorASPSP)
+	context.PutString(CtxSignatureTrustAnchorTPP, config.signatureTrustAnchorTPP)
 	context.Put(CtxDynamicResourceIDs, config.useDynamicResourceID)
 	context.PutStringSlice(CtxAcrValuesSupported, config.AcrValuesSupported)
 
