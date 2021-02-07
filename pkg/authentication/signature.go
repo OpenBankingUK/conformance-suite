@@ -13,15 +13,16 @@ import (
 	"github.com/dgrijalva/jwt-go"
 	"github.com/lestrrat-go/jwx/jwa"
 	"github.com/lestrrat-go/jwx/jws/verify"
-
 	"github.com/shopspring/decimal"
 	"github.com/sirupsen/logrus"
 )
 
+// JWKS is a JSON Web Key Set
 type JWKS struct {
 	Keys []JWK
 }
 
+// JWK is one entry in a JWKS
 type JWK struct {
 	Alg string   `json:"alg,omitempty"`
 	Kty string   `json:"kty,omitempty"`
@@ -34,13 +35,9 @@ type JWK struct {
 	Use string   `json:"use,omitempty"`
 }
 
-// ValidateSignature
-// take the signature JWT
-// extract the kid
-// used the kid to lookup the public key in the JWKS
-//
-func ValidateSignature(jwtToken, body, jwksUri string, b64 bool) (bool, error) {
-
+// ValidateSignature takes the signature JWT
+// and extracts the kid to lookup the public key in the JWKS
+func ValidateSignature(jwtToken, body, jwksURI string, b64 bool) (bool, error) {
 	err := ValidateSignatureHeader(jwtToken, b64)
 	if err != nil {
 		return false, err
@@ -51,8 +48,7 @@ func ValidateSignature(jwtToken, body, jwksUri string, b64 bool) (bool, error) {
 		return false, err
 	}
 
-	cert, err := getCertForKid(kid, jwksUri)
-
+	cert, err := getCertForKid(kid, jwksURI)
 	if err != nil {
 		return false, err
 	}
@@ -64,7 +60,7 @@ func ValidateSignature(jwtToken, body, jwksUri string, b64 bool) (bool, error) {
 	}
 	logrus.Trace("Signature with payload: " + signature)
 
-	verified, err := MyJwsVerify(signature, jwa.PS256, cert.PublicKey, b64)
+	verified, err := JWSVerify(signature, jwa.PS256, cert.PublicKey, b64)
 	if err != nil {
 		logrus.Errorf("failed to verify message: %v", err)
 		return false, err
@@ -136,7 +132,7 @@ func buildSignature(b64 bool, kid, issuer, trustAnchor, body string, alg jwt.Sig
 	return detachedJWS, nil
 }
 
-// Get Token with correct headers for v3.1.4 and above of the R/W Apis
+// GetSignatureToken314Plus returns the Token with correct headers for v3.1.4 and above of the R/W Apis
 func GetSignatureToken314Plus(kid, issuer, trustAnchor string, alg jwt.SigningMethod) jwt.Token {
 	token := jwt.Token{
 		Header: map[string]interface{}{
@@ -158,7 +154,7 @@ func GetSignatureToken314Plus(kid, issuer, trustAnchor string, alg jwt.SigningMe
 	return token
 }
 
-// Get Token with correct headers for v3.1.3 and previous versions of the R/W Apis
+// GetSignatureToken313Minus returns the Token with correct headers for v3.1.3 and previous versions of the R/W Apis
 func GetSignatureToken313Minus(kid, issuer, trustAnchor string, alg jwt.SigningMethod) jwt.Token {
 	token := jwt.Token{
 		Header: map[string]interface{}{
@@ -182,6 +178,7 @@ func GetSignatureToken313Minus(kid, issuer, trustAnchor string, alg jwt.SigningM
 	return token
 }
 
+// GetSignatureToken30 returns the Token for v3.0 versions of the R/W specification.
 // Read/Write Data API Specification - v3.0 Specification: https://openbanking.atlassian.net/wiki/spaces/DZ/pages/641992418/Read+Write+Data+API+Specification+-+v3.0.
 // According to the spec this field `http://openbanking.org.uk/tan` should not be sent in the `x-jws-signature` header.
 func GetSignatureToken30(kid, issuer, trustAnchor string, alg jwt.SigningMethod) jwt.Token {
@@ -217,6 +214,8 @@ type signatureHeader struct {
 	Critical    []string        `json:"crit,omitempty"`
 }
 
+// ValidateSignatureHeader takes a token and performs the header validation
+// taking the b64 parameter value in consideration.
 func ValidateSignatureHeader(token string, b64 bool) error {
 	var tokenHeader signatureHeader
 
@@ -342,10 +341,10 @@ func containsAllElements(source []string, elements ...string) bool {
 	return true
 }
 
-// Verify checks if the given JWS message is verifiable using `alg` and `key`.
+// JWSVerify checks if the given JWS message is verifiable using `alg` and `key`.
 // If the verification is successful, `err` is nil, and the content of the
 // payload that was signed is returned.
-func MyJwsVerify(buf string, alg jwa.SignatureAlgorithm, key interface{}, b64 bool) (ret []byte, err error) {
+func JWSVerify(buf string, alg jwa.SignatureAlgorithm, key interface{}, b64 bool) (ret []byte, err error) {
 	verifier, err := verify.New(alg)
 	if err != nil {
 		return nil, errors.New("failed to create verifier")

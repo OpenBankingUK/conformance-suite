@@ -602,11 +602,8 @@ type JourneyConfig struct {
 	requestObjectSigningAlgorithm string
 	signingPrivate                string
 	signingPublic                 string
-	useNonOBDirectoryASPSP        bool
 	useNonOBDirectoryTPP          bool
-	signingKidASPSP               string
 	signingKidTPP                 string
-	signatureTrustAnchorASPSP     string
 	signatureTrustAnchorTPP       string
 	useDynamicResourceID          bool
 	AcrValuesSupported            []string

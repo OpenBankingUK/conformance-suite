@@ -67,11 +67,8 @@ describe('web/src/store/modules/config', () => {
         x_fapi_customer_ip_address: '',
         issuer: '',
         redirect_url: 'https://127.0.0.1:8443/conformancesuite/callback',
-        use_non_ob_directory_aspsp: false,
         use_non_ob_directory_tpp: false,
-        signature_trust_anchor_aspsp: '',
         signature_trust_anchor_tpp: '',
-        signing_kid_aspsp: '',
         signing_kid_tpp: '',
         resource_ids: {
           account_ids: [{ account_id: '' }],

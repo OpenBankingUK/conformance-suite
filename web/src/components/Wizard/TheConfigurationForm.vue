@@ -347,46 +347,9 @@
             type="url"
           />
         </b-form-group>
-
-        <b-form-group
-          id="use_non_ob_directory_group_aspsp"
-          label="Use Non OB Directory for ASPSP signature verification.">
-          <b-form-checkbox
-            id="use_non_ob_directory_aspsp"
-            v-model="use_non_ob_directory_aspsp"/>
-            <b-form-group
-              id="signing_kid_group_aspsp"
-              v-if="use_non_ob_directory_aspsp"
-			        label="Signing Key ID (KID)"
-              label-for="signing_kid_aspsp"
-			        description="Key ID for the public certificate as stored by the Signature Trust Anchor.">	
-              <b-form-input
-                id="signing_kid_aspsp"
-                v-model="signing_kid_aspsp"
-                :state="isNotEmpty(signing_kid_aspsp)"
-                required
-                type="text"
-              />
-            </b-form-group>
-            <b-form-group
-              id="signature_trust_anchor_group_aspsp"
-              v-if="use_non_ob_directory_aspsp"
-			        label="Signature Trust Anchor"
-              label-for="signature_trust_anchor_aspsp"
-			        description="The URL for the Trust Anchor where public certificate with the KID is available as a JSON Web Key Set entry.">
-              <b-form-input
-                id="signature_trust_anchor_aspsp"
-                v-model="signature_trust_anchor_aspsp"
-                :state="isNotEmpty(signature_trust_anchor_aspsp)"
-                required
-                type="text"
-              />
-          </b-form-group>
-        </b-form-group>
-
         <b-form-group
           id="use_non_ob_directory_group_tpp"
-          label="Use Non OB Directory for TPP signatures.">
+          label="Use custom Trust Anchor (Non OB Directory) for signing TPP requests.">
           <b-form-checkbox
             id="use_non_ob_directory_tpp"
             v-model="use_non_ob_directory_tpp"/>
@@ -882,14 +845,6 @@ export default {
         this.$store.commit('config/SET_REDIRECT_URL', value);
       },
     },
-    use_non_ob_directory_aspsp: {
-      get() {
-        return this.$store.state.config.configuration.use_non_ob_directory_aspsp;
-      },
-      set(value) {
-        this.$store.commit('config/SET_USE_NON_OB_DIRECTORY_ASPSP', value);
-      },
-    },
     use_non_ob_directory_tpp: {
       get() {
         return this.$store.state.config.configuration.use_non_ob_directory_tpp;
@@ -898,28 +853,12 @@ export default {
         this.$store.commit('config/SET_USE_NON_OB_DIRECTORY_TPP', value);
       },
     },
-    signing_kid_aspsp: {
-      get() {
-        return this.$store.state.config.configuration.signing_kid_aspsp;
-      },
-      set(value) {
-        this.$store.commit('config/SET_SIGNING_KID_ASPSP', value);
-      },
-    },
     signing_kid_tpp: {
       get() {
         return this.$store.state.config.configuration.signing_kid_tpp;
       },
       set(value) {
         this.$store.commit('config/SET_SIGNING_KID_TPP', value);
-      },
-    },
-    signature_trust_anchor_aspsp: {
-      get() {
-        return this.$store.state.config.configuration.signature_trust_anchor_aspsp;
-      },
-      set(value) {
-        this.$store.commit('config/SET_SIGNATURE_TRUST_ANCHOR_ASPSP', value);
       },
     },
     signature_trust_anchor_tpp: {
