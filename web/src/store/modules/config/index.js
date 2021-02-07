@@ -112,9 +112,6 @@ export const mutations = {
   [mutationTypes.SET_SIGNING_KID_TPP](state, value) {
     state.configuration.signing_kid_tpp = value;
   },
-  [mutationTypes.SET_SIGNATURE_TRUST_ANCHOR_ASPSP](state, value) {
-    state.configuration.signature_trust_anchor_aspsp = value;
-  },
   [mutationTypes.SET_SIGNATURE_TRUST_ANCHOR_TPP](state, value) {
     state.configuration.signature_trust_anchor_tpp = value;
   },
@@ -279,11 +276,8 @@ export const state = {
     x_fapi_customer_ip_address: '',
     issuer: '',
     redirect_url: 'https://127.0.0.1:8443/conformancesuite/callback',
-    use_non_ob_directory_aspsp: false,
     use_non_ob_directory_tpp: false,
-    signing_kid_aspsp: '',
     signing_kid_tpp: '',
-    signature_trust_anchor_aspsp: '',
     signature_trust_anchor_tpp: '',
     resource_ids: {
       account_ids: [{ account_id: '' }],
@@ -310,8 +304,8 @@ export const state = {
     },
     currency_of_transfer: 'USD',
     payment_frequency: 'EvryDay',
-    first_payment_date_time: '2021-01-01T00:00:00+01:00',
-    requested_execution_date_time: '2021-01-01T00:00:00+01:00',
+    first_payment_date_time: '2022-01-01T00:00:00+01:00',
+    requested_execution_date_time: '2022-01-01T00:00:00+01:00',
     acr_values_supported: [],
     conditional_properties: [],
   },

@@ -84,11 +84,8 @@ type GlobalConfiguration struct {
 	FirstPaymentDateTime          string                               `json:"first_payment_date_time"`
 	RequestedExecutionDateTime    string                               `json:"requested_execution_date_time"`
 	CurrencyOfTransfer            string                               `json:"currency_of_transfer"`
-	UseNonOBDirectoryASPSP        bool                                 `json:"use_non_ob_directory_aspsp"`
 	UseNonOBDirectoryTPP          bool                                 `json:"use_non_ob_directory_tpp"`
-	SigningKidASPSP               string                               `json:"signing_kid_aspsp,omitempty"`
 	SigningKidTPP                 string                               `json:"signing_kid_tpp,omitempty"`
-	SignatureTrustAnchorASPSP     string                               `json:"signature_trust_anchor_asps,omitempty"`
 	SignatureTrustAnchorTPP       string                               `json:"signature_trust_anchor_tpp,omitempty"`
 	AcrValuesSupported            []string                             `json:"acr_values_supported,omitempty"`
 	ConditionalProperties         []discovery.ConditionalAPIProperties `json:"conditional_properties,omitempty"`
