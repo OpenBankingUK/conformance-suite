@@ -39,7 +39,7 @@ var ctx Context = Context{
 	"domestic_payment_template": "{\"Data\": {\"ConsentId\": \"$consent_id\",\"Initiation\":$initiation },\"Risk\":{}}",
 	"authorisation_endpoint":    "https://example.com/authorisation",
 	"api-version":               "v3.0",
-	"nonOBDirectory":            false,
+	"nonOBDirectoryTPP":         false,
 	"requestObjectSigningAlg":   "PS256",
 	"apiversions":               []interface{}{"payments_v3.1.3"},
 }

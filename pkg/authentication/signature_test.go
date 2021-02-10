@@ -119,7 +119,7 @@ func verifySig(t *testing.T, signingMethod jwt.SigningMethod, signingString, sig
 	certs, err := parseCertificateChain(jwk.X5c)
 	assert.Nil(t, err)
 	cert := certs[0]
-	verified, err := MyJwsVerify(signingString+signature, jwa.PS256, cert.PublicKey, b64)
+	verified, err := JWSVerify(signingString+signature, jwa.PS256, cert.PublicKey, b64)
 	if err != nil {
 		logrus.Errorf("failed to verify message: %v", err)
 		return false

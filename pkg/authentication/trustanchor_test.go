@@ -51,7 +51,7 @@ func TestHSBCTrustAnchor(t *testing.T) {
 func verifyHSBCSig(t *testing.T, signingMethod jwt.SigningMethod, signingString, signature string, b64 bool) bool {
 	cert, err := getCertForKid("external_2", hsbc_jwks_uri)
 	assert.Nil(t, err)
-	verified, err := MyJwsVerify(signingString+signature, jwa.PS256, cert.PublicKey, b64)
+	verified, err := JWSVerify(signingString+signature, jwa.PS256, cert.PublicKey, b64)
 	if err != nil {
 		logrus.Errorf("failed to verify message: %v", err)
 		return false

@@ -602,9 +602,9 @@ type JourneyConfig struct {
 	requestObjectSigningAlgorithm string
 	signingPrivate                string
 	signingPublic                 string
-	useNonOBDirectory             bool
-	signingKid                    string
-	signatureTrustAnchor          string
+	useNonOBDirectoryTPP          bool
+	signingKidTPP                 string
+	signatureTrustAnchorTPP       string
 	useDynamicResourceID          bool
 	AcrValuesSupported            []string
 	conditionalProperties         []discovery.ConditionalAPIProperties

@@ -176,7 +176,7 @@ func (t *TestCase) Validate(resp *resty.Response, ctx *Context) (bool, []error) 
 func validateSignature(signature, body string, ctx *Context) (bool, error) {
 	var pass bool
 	if signature != "" {
-		jwks_uri, err := ctx.GetString("jwks_uri")
+		jwksURI, err := ctx.GetString("jwks_uri")
 		if err != nil {
 			return false, errors.New("ValidateSignature - JWKS_URI not present ")
 		}
@@ -186,7 +186,7 @@ func validateSignature(signature, body string, ctx *Context) (bool, error) {
 			return false, errors.New("ValidationSignature cannot get B64Encoding: " + err.Error())
 		}
 
-		pass, err = authentication.ValidateSignature(signature, body, jwks_uri, b64encoding)
+		pass, err = authentication.ValidateSignature(signature, body, jwksURI, b64encoding)
 		if err != nil {
 			return false, errors.New("Invalid x-jws-signature found - unable to validate: " + err.Error())
 		}

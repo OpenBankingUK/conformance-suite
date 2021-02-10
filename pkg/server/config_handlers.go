@@ -84,9 +84,9 @@ type GlobalConfiguration struct {
 	FirstPaymentDateTime          string                               `json:"first_payment_date_time"`
 	RequestedExecutionDateTime    string                               `json:"requested_execution_date_time"`
 	CurrencyOfTransfer            string                               `json:"currency_of_transfer"`
-	UseNonOBDirectory             bool                                 `json:"use_non_ob_directory"`
-	SigningKid                    string                               `json:"signing_kid,omitempty"`
-	SignatureTrustAnchor          string                               `json:"signature_trust_anchor,omitempty"`
+	UseNonOBDirectoryTPP          bool                                 `json:"use_non_ob_directory_tpp"`
+	SigningKidTPP                 string                               `json:"signing_kid_tpp,omitempty"`
+	SignatureTrustAnchorTPP       string                               `json:"signature_trust_anchor_tpp,omitempty"`
 	AcrValuesSupported            []string                             `json:"acr_values_supported,omitempty"`
 	ConditionalProperties         []discovery.ConditionalAPIProperties `json:"conditional_properties,omitempty"`
 	CBPIIDebtorAccount            discovery.CBPIIDebtorAccount         `json:"cbpii_debtor_account"`
@@ -250,9 +250,9 @@ func MakeJourneyConfig(config *GlobalConfiguration) (JourneyConfig, error) {
 		requestObjectSigningAlgorithm: config.RequestObjectSigningAlgorithm,
 		signingPublic:                 config.SigningPublic,
 		signingPrivate:                config.SigningPrivate,
-		useNonOBDirectory:             config.UseNonOBDirectory,
-		signingKid:                    config.SigningKid,
-		signatureTrustAnchor:          config.SignatureTrustAnchor,
+		useNonOBDirectoryTPP:          config.UseNonOBDirectoryTPP,
+		signingKidTPP:                 config.SigningKidTPP,
+		signatureTrustAnchorTPP:       config.SignatureTrustAnchorTPP,
 		AcrValuesSupported:            config.AcrValuesSupported,
 		conditionalProperties:         config.ConditionalProperties,
 		cbpiiDebtorAccount:            config.CBPIIDebtorAccount,

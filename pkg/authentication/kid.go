@@ -33,7 +33,7 @@ func GetKID(ctx ContextInterface, modulus []byte) (string, error) {
 	if err != nil {
 		return "", errors.Wrap(err, "authentication.GetKID: CalcKid(modulusBase64) failed")
 	}
-	nonOBDirectory, exists := ctx.Get("nonOBDirectory")
+	nonOBDirectory, exists := ctx.Get("nonOBDirectoryTPP")
 	if !exists {
 		return "", errors.New("authentication.GetKID: unable get nonOBDirectory value from context")
 	}

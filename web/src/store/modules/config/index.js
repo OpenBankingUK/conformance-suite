@@ -100,14 +100,20 @@ export const mutations = {
   [mutationTypes.SET_REDIRECT_URL](state, value) {
     state.configuration.redirect_url = value;
   },
-  [mutationTypes.SET_USE_NON_OB_DIRECTORY](state, value) {
-    state.configuration.use_non_ob_directory = value;
+  [mutationTypes.SET_USE_NON_OB_DIRECTORY_ASPSP](state, value) {
+    state.configuration.use_non_ob_directory_aspsp = value;
   },
-  [mutationTypes.SET_SIGNING_KID](state, value) {
-    state.configuration.signing_kid = value;
+  [mutationTypes.SET_USE_NON_OB_DIRECTORY_TPP](state, value) {
+    state.configuration.use_non_ob_directory_tpp = value;
   },
-  [mutationTypes.SET_SIGNATURE_TRUST_ANCHOR](state, value) {
-    state.configuration.signature_trust_anchor = value;
+  [mutationTypes.SET_SIGNING_KID_ASPSP](state, value) {
+    state.configuration.signing_kid_aspsp = value;
+  },
+  [mutationTypes.SET_SIGNING_KID_TPP](state, value) {
+    state.configuration.signing_kid_tpp = value;
+  },
+  [mutationTypes.SET_SIGNATURE_TRUST_ANCHOR_TPP](state, value) {
+    state.configuration.signature_trust_anchor_tpp = value;
   },
   [mutationTypes.SET_RESOURCE_ACCOUNT_ID](state, { index, value }) {
     // Without the use of Vue.set the JSON editor tab view does not update on form input change.
@@ -270,9 +276,9 @@ export const state = {
     x_fapi_customer_ip_address: '',
     issuer: '',
     redirect_url: 'https://127.0.0.1:8443/conformancesuite/callback',
-    use_non_ob_directory: false,
-    signing_kid: '',
-    signature_trust_anchor: '',
+    use_non_ob_directory_tpp: false,
+    signing_kid_tpp: '',
+    signature_trust_anchor_tpp: '',
     resource_ids: {
       account_ids: [{ account_id: '' }],
       statement_ids: [{ statement_id: '' }],
@@ -298,8 +304,8 @@ export const state = {
     },
     currency_of_transfer: 'USD',
     payment_frequency: 'EvryDay',
-    first_payment_date_time: '2021-01-01T00:00:00+01:00',
-    requested_execution_date_time: '2021-01-01T00:00:00+01:00',
+    first_payment_date_time: '2022-01-01T00:00:00+01:00',
+    requested_execution_date_time: '2022-01-01T00:00:00+01:00',
     acr_values_supported: [],
     conditional_properties: [],
   },
