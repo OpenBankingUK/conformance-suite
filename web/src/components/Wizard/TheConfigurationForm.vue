@@ -46,7 +46,7 @@
         <b-form-group
           id="tpp_signature_issuer"
           label-for="tpp_signature_issuer"
-          label="Client (TPP) Singature Issuer">
+          label="Client (TPP) Signature Issuer">
           <b-form-input
             id="tpp_signature_issuer"
             v-model="tpp_signature_issuer"
@@ -59,7 +59,7 @@
         <b-form-group
           id="tpp_signature_tan"
           label-for="tpp_signature_tan"
-          label="Client (TPP) Singature Trust Anchor">
+          label="Client (TPP) Signature Trust Anchor">
           <b-form-input
             id="tpp_signature_tan"
             v-model="tpp_signature_tan"
