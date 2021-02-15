@@ -307,7 +307,7 @@ func exchangeCodeForToken(code string, ctx *model.Context, logger *logrus.Entry)
 
 		token := jwt.NewWithClaims(signingMethod, claims) // create new token
 
-		kid, err := authentication.GetKID(ctx, cert.PublicKey().N.Bytes())
+		kid, err := ctx.GetString("tpp_signature_kid")
 		if err != nil {
 			return nil, errors.Wrap(err, "executors.exchangeCodeForToken: cannot get KID")
 		}

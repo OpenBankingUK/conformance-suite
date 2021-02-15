@@ -29,39 +29,41 @@
           label="Public Transport Certificate (.pem):"
           validExtension=".pem"
         />
-        <b-form-group
-          id="use_eidas_cert"
-          label-for="use_eidas_cert"
-          label="Use EIDAS certificate">
-          <b-form-checkbox
-            id="use_eidas_certs"
-            v-model="use_eidas_cert"
-          />
-        </b-form-group>
 
         <b-form-group
-          v-if="use_eidas_cert"
-          id="eidas_signing_kid"
-          label-for="eidas_signing_kid"
-          label="EIDAS Signing KID">
+          id="tpp_signature_kid"
+          label-for="tpp_signature_kid"
+          label="Client (TPP) Signature KID">
           <b-form-input
-            id="eidas_signing_kid"
-            v-model="eidas_signing_kid"
-            :state="isNotEmpty(eidas_signing_kid)"
+            id="tpp_signature_kid"
+            v-model="tpp_signature_kid"
+            :state="isNotEmpty(tpp_signature_kid)"
             required
             type="text"
           />
         </b-form-group>
 
         <b-form-group
-          v-if="use_eidas_cert"
-          id="eidas_issuer"
-          label-for="eidas_issuer"
-          label="EIDAS Issuer">
+          id="tpp_signature_issuer"
+          label-for="tpp_signature_issuer"
+          label="Client (TPP) Singature Issuer">
           <b-form-input
-            id="eidas_issuer"
-            v-model="eidas_issuer"
-            :state="isNotEmpty(eidas_issuer)"
+            id="tpp_signature_issuer"
+            v-model="tpp_signature_issuer"
+            :state="isNotEmpty(tpp_signature_issuer)"
+            required
+            type="text"
+          />
+        </b-form-group>
+
+        <b-form-group
+          id="tpp_signature_tan"
+          label-for="tpp_signature_tan"
+          label="Client (TPP) Singature Trust Anchor">
+          <b-form-input
+            id="tpp_signature_tan"
+            v-model="tpp_signature_tan"
+            :state="isNotEmpty(tpp_signature_tan)"
             required
             type="text"
           />
@@ -347,41 +349,6 @@
             type="url"
           />
         </b-form-group>
-        <b-form-group
-          id="use_non_ob_directory_group_tpp"
-          label="Use custom Trust Anchor (Non OB Directory) for signing TPP requests.">
-          <b-form-checkbox
-            id="use_non_ob_directory_tpp"
-            v-model="use_non_ob_directory_tpp"/>
-          <b-form-group
-            v-if="use_non_ob_directory_tpp"
-            id="signing_kid_group_tpp"
-            label="Signing Key ID (KID)"
-            label-for="signing_kid_tpp"
-            description="Key ID for the public certificate as stored by the Signature Trust Anchor.">
-            <b-form-input
-              id="signing_kid_tpp"
-              v-model="signing_kid_tpp"
-              :state="isNotEmpty(signing_kid_tpp)"
-              required
-              type="text"
-            />
-          </b-form-group>
-          <b-form-group
-            v-if="use_non_ob_directory_tpp"
-            id="signature_trust_anchor_group_tpp"
-            label="Signature Trust Anchor"
-            label-for="signature_trust_anchor_tpp"
-            description="The URL for the Trust Anchor where public certificate with the KID is available as a JSON Web Key Set entry.">
-            <b-form-input
-              id="signature_trust_anchor_tpp"
-              v-model="signature_trust_anchor_tpp"
-              :state="isNotEmpty(signature_trust_anchor_tpp)"
-              required
-              type="text"
-            />
-          </b-form-group>
-        </b-form-group>
       </b-card>
 
       <br >
@@ -660,28 +627,28 @@ export default {
         this.$store.commit('config/SET_TRANSACTION_TO_DATE', value);
       },
     },
-    use_eidas_cert: {
+    tpp_signature_kid: {
       get() {
-        return this.$store.state.config.configuration.use_eidas_cert;
+        return this.$store.state.config.configuration.tpp_signature_kid;
       },
       set(value) {
-        this.$store.commit('config/SET_USE_EIDAS_CERT', value);
+        this.$store.commit('config/SET_TPP_SIGNATURE_KID', value);
       },
     },
-    eidas_signing_kid: {
+    tpp_signature_issuer: {
       get() {
-        return this.$store.state.config.configuration.eidas_signing_kid;
+        return this.$store.state.config.configuration.tpp_signature_issuer;
       },
       set(value) {
-        this.$store.commit('config/SET_EIDAS_SIGNING_KID', value);
+        this.$store.commit('config/SET_TPP_SIGNATURE_ISSUER', value);
       },
     },
-    eidas_issuer: {
+    tpp_signature_tan: {
       get() {
-        return this.$store.state.config.configuration.eidas_issuer;
+        return this.$store.state.config.configuration.tpp_signature_tan;
       },
       set(value) {
-        this.$store.commit('config/SET_EIDAS_ISSUER', value);
+        this.$store.commit('config/SET_TPP_SIGNATURE_TAN', value);
       },
     },
     // For an explanation on how these work. See:
@@ -843,30 +810,6 @@ export default {
       },
       set(value) {
         this.$store.commit('config/SET_REDIRECT_URL', value);
-      },
-    },
-    use_non_ob_directory_tpp: {
-      get() {
-        return this.$store.state.config.configuration.use_non_ob_directory_tpp;
-      },
-      set(value) {
-        this.$store.commit('config/SET_USE_NON_OB_DIRECTORY_TPP', value);
-      },
-    },
-    signing_kid_tpp: {
-      get() {
-        return this.$store.state.config.configuration.signing_kid_tpp;
-      },
-      set(value) {
-        this.$store.commit('config/SET_SIGNING_KID_TPP', value);
-      },
-    },
-    signature_trust_anchor_tpp: {
-      get() {
-        return this.$store.state.config.configuration.signature_trust_anchor_tpp;
-      },
-      set(value) {
-        this.$store.commit('config/SET_SIGNATURE_TRUST_ANCHOR_TPP', value);
       },
     },
     creditor_account: {

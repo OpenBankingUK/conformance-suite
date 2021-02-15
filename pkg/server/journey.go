@@ -577,6 +577,9 @@ func (wj *journey) makeRunDefinition() executors.RunDefinition {
 type JourneyConfig struct {
 	certificateSigning            authentication.Certificate
 	certificateTransport          authentication.Certificate
+	tppSignatureKID               string
+	tppSignatureIssuer            string
+	tppSignatureTAN               string
 	clientID                      string
 	clientSecret                  string
 	tokenEndpoint                 string
@@ -586,7 +589,6 @@ type JourneyConfig struct {
 	resourceBaseURL               string
 	xXFAPIFinancialID             string
 	xXFAPICustomerIPAddress       string
-	issuer                        string
 	redirectURL                   string
 	resourceIDs                   model.ResourceIDs
 	creditorAccount               models.Payment
@@ -602,13 +604,11 @@ type JourneyConfig struct {
 	requestObjectSigningAlgorithm string
 	signingPrivate                string
 	signingPublic                 string
-	useNonOBDirectoryTPP          bool
-	signingKidTPP                 string
-	signatureTrustAnchorTPP       string
 	useDynamicResourceID          bool
 	AcrValuesSupported            []string
 	conditionalProperties         []discovery.ConditionalAPIProperties
 	cbpiiDebtorAccount            discovery.CBPIIDebtorAccount
+	issuer                        string
 }
 
 func (wj *journey) SetConfig(config JourneyConfig) error {

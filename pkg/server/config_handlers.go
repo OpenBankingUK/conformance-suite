@@ -59,9 +59,9 @@ type GlobalConfiguration struct {
 	SigningPublic                 string                               `json:"signing_public" validate:"not_empty"`
 	TransportPrivate              string                               `json:"transport_private" validate:"not_empty"`
 	TransportPublic               string                               `json:"transport_public" validate:"not_empty"`
-	UseEIDASCert                  bool                                 `json:"use_eidas_cert"`
-	EIDASSigningKID               string                               `json:"eidas_signing_kid,omitempty"`
-	EIDASIssuer                   string                               `json:"eidas_issuer,omitempty"`
+	TPPSignatureKID               string                               `json:"tpp_signature_kid,omitempty"`
+	TPPSignatureIssuer            string                               `json:"tpp_signature_issuer,omitempty"`
+	TPPSignatureTAN               string                               `json:"tpp_signature_tan,omitempty"`
 	ClientID                      string                               `json:"client_id" validate:"not_empty"`
 	ClientSecret                  string                               `json:"client_secret" validate:"not_empty"`
 	TokenEndpoint                 string                               `json:"token_endpoint" validate:"valid_url"`
@@ -71,7 +71,6 @@ type GlobalConfiguration struct {
 	ResourceBaseURL               string                               `json:"resource_base_url" validate:"valid_url"`
 	XFAPIFinancialID              string                               `json:"x_fapi_financial_id" validate:"not_empty"`
 	XFAPICustomerIPAddress        string                               `json:"x_fapi_customer_ip_address,omitempty"`
-	Issuer                        string                               `json:"issuer" validate:"valid_url"`
 	RedirectURL                   string                               `json:"redirect_url" validate:"valid_url"`
 	ResourceIDs                   model.ResourceIDs                    `json:"resource_ids" validate:"not_empty"`
 	CreditorAccount               models.Payment                       `json:"creditor_account"`
@@ -84,12 +83,11 @@ type GlobalConfiguration struct {
 	FirstPaymentDateTime          string                               `json:"first_payment_date_time"`
 	RequestedExecutionDateTime    string                               `json:"requested_execution_date_time"`
 	CurrencyOfTransfer            string                               `json:"currency_of_transfer"`
-	UseNonOBDirectoryTPP          bool                                 `json:"use_non_ob_directory_tpp"`
-	SigningKidTPP                 string                               `json:"signing_kid_tpp,omitempty"`
-	SignatureTrustAnchorTPP       string                               `json:"signature_trust_anchor_tpp,omitempty"`
 	AcrValuesSupported            []string                             `json:"acr_values_supported,omitempty"`
 	ConditionalProperties         []discovery.ConditionalAPIProperties `json:"conditional_properties,omitempty"`
 	CBPIIDebtorAccount            discovery.CBPIIDebtorAccount         `json:"cbpii_debtor_account"`
+	// Should be taken from the well-known endpoint:
+	Issuer string `json:"issuer" validate:"valid_url"`
 }
 
 // Validate - used by https://github.com/go-ozzo/ozzo-validation to validate struct.
@@ -189,12 +187,12 @@ func (h configHandlers) configGlobalPostHandler(c echo.Context) error {
 	}
 
 	// Set EIDAS KID & Issuer
-	if config.UseEIDASCert {
-		err := authentication.SetEidasSigningParameters(config.EIDASIssuer, config.EIDASSigningKID)
-		if err != nil {
-			return c.JSON(http.StatusBadRequest, NewErrorResponse(err))
-		}
-	}
+	// if config.UseEIDASCert {
+	// 	err := authentication.SetEidasSigningParameters(config.EIDASIssuer, config.EIDASSigningKID)
+	// 	if err != nil {
+	// 		return c.JSON(http.StatusBadRequest, NewErrorResponse(err))
+	// 	}
+	// }
 
 	// Use the transport keys for MATLS as some endpoints require this
 	resty.SetCertificates(journeyConfig.certificateTransport.TLSCert())
@@ -226,6 +224,11 @@ func MakeJourneyConfig(config *GlobalConfiguration) (JourneyConfig, error) {
 	return JourneyConfig{
 		certificateSigning:            certificateSigning,
 		certificateTransport:          certificateTransport,
+		signingPublic:                 config.SigningPublic,
+		signingPrivate:                config.SigningPrivate,
+		tppSignatureKID:               config.TPPSignatureKID,
+		tppSignatureIssuer:            config.TPPSignatureIssuer,
+		tppSignatureTAN:               config.TPPSignatureTAN,
 		clientID:                      config.ClientID,
 		clientSecret:                  config.ClientSecret,
 		tokenEndpoint:                 config.TokenEndpoint,
@@ -235,7 +238,6 @@ func MakeJourneyConfig(config *GlobalConfiguration) (JourneyConfig, error) {
 		resourceBaseURL:               config.ResourceBaseURL,
 		xXFAPIFinancialID:             config.XFAPIFinancialID,
 		xXFAPICustomerIPAddress:       config.XFAPICustomerIPAddress,
-		issuer:                        config.Issuer,
 		redirectURL:                   config.RedirectURL,
 		resourceIDs:                   config.ResourceIDs,
 		creditorAccount:               config.CreditorAccount,
@@ -248,14 +250,10 @@ func MakeJourneyConfig(config *GlobalConfiguration) (JourneyConfig, error) {
 		transactionFromDate:           config.TransactionFromDate,
 		transactionToDate:             config.TransactionToDate,
 		requestObjectSigningAlgorithm: config.RequestObjectSigningAlgorithm,
-		signingPublic:                 config.SigningPublic,
-		signingPrivate:                config.SigningPrivate,
-		useNonOBDirectoryTPP:          config.UseNonOBDirectoryTPP,
-		signingKidTPP:                 config.SigningKidTPP,
-		signatureTrustAnchorTPP:       config.SignatureTrustAnchorTPP,
 		AcrValuesSupported:            config.AcrValuesSupported,
 		conditionalProperties:         config.ConditionalProperties,
 		cbpiiDebtorAccount:            config.CBPIIDebtorAccount,
+		issuer:                        config.Issuer, // TBD: available from well-known ?
 	}, nil
 }
 
