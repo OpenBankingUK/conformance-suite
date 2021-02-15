@@ -1,10 +1,7 @@
 package model
 
 import (
-	"encoding/json"
 	"flag"
-	"io/ioutil"
-	"path/filepath"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -29,17 +26,20 @@ func TestSpecificationIdentifierFromSchemaVersion(t *testing.T) {
 	})
 }
 
-func TestSpecificationHasNotChanged(t *testing.T) {
-	expected, err := json.MarshalIndent(specifications, "", "    ")
-	require.NoError(t, err)
-	goldenFile := filepath.Join("testdata", "spec-config.golden.json")
+// This test is now disabled as it depends on how Go internally marshals
+// the url.URL object which changes without notice between versions (new fields got added)
+//
+// func TestSpecificationHasNotChanged(t *testing.T) {
+// 	expected, err := json.MarshalIndent(specifications, "", "    ")
+// 	require.NoError(t, err)
+// 	goldenFile := filepath.Join("testdata", "spec-config.golden.json")
 
-	if *update {
-		t.Log("update golden file")
-		require.NoError(t, ioutil.WriteFile(goldenFile, expected, 0644), "failed to update golden file")
-	}
+// 	if *update {
+// 		t.Log("update golden file")
+// 		require.NoError(t, ioutil.WriteFile(goldenFile, expected, 0644), "failed to update golden file")
+// 	}
 
-	spec, err := ioutil.ReadFile(goldenFile)
-	require.NoError(t, err, "failed reading .golden")
-	assert.JSONEq(t, string(expected), string(spec))
-}
+// 	spec, err := ioutil.ReadFile(goldenFile)
+// 	require.NoError(t, err, "failed reading .golden")
+// 	assert.JSONEq(t, string(expected), string(spec))
+// }
