@@ -47,6 +47,9 @@ var ctx Context = Context{
 // Create and validate b64=false signature
 func TestSimpleb64falseSignature(t *testing.T) {
 	ctx.PutStringSlice("apiversions", []string{"payments_v3.1.3"})
+	ctx.PutString("tpp_signature_kid", "x")
+	ctx.PutString("tpp_signature_issuer", "x/x")
+	ctx.PutString("tpp_signature_tan", "openbanking.org.uk")
 	cert, _ := authentication.SigningCertFromContext(ctx)
 	pubKey := cert.PublicKey()
 	_ = pubKey
@@ -64,6 +67,9 @@ func TestSimpleb64falseSignature(t *testing.T) {
 // create and validate b64=true signature - apiversion 3.1.4
 func TestSimpleb64trueSignature(t *testing.T) {
 	ctx.PutStringSlice("apiversions", []string{"payments_v3.1.4"})
+	ctx.PutString("tpp_signature_kid", "x")
+	ctx.PutString("tpp_signature_issuer", "x/x")
+	ctx.PutString("tpp_signature_tan", "openbanking.org.uk")
 	cert, _ := authentication.SigningCertFromContext(ctx)
 	pubKey := cert.PublicKey()
 	_ = pubKey

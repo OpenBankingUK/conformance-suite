@@ -5,7 +5,6 @@ import (
 	"net/url"
 
 	"github.com/dgrijalva/jwt-go"
-	"github.com/pkg/errors"
 )
 
 type PSUConsentClaims struct {
@@ -23,12 +22,12 @@ type PSUConsentClaims struct {
 func PSUURLGenerate(claims PSUConsentClaims) (*url.URL, error) {
 	token, err := createAlgNoneJWT(claims)
 	if err != nil {
-		return nil, errors.Wrap(err, "generating psu consent URL")
+		return nil, fmt.Errorf("generating psu consent URL: %w", err)
 	}
 
 	consentUrl, err := url.Parse(claims.AuthorizationEndpoint)
 	if err != nil {
-		return nil, errors.Wrap(err, "generating psu consent URL")
+		return nil, fmt.Errorf("generating psu consent URL: %w", err)
 	}
 
 	consentUrlQuery := consentUrl.Query()

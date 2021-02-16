@@ -1,10 +1,7 @@
 package model
 
 import (
-	"encoding/json"
 	"flag"
-	"io/ioutil"
-	"path/filepath"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -27,19 +24,4 @@ func TestSpecificationIdentifierFromSchemaVersion(t *testing.T) {
 		assert.EqualError(t, err, "no specifications found for schema version: "+schemaVersion)
 		assert.Equal(t, "", specification.Identifier)
 	})
-}
-
-func TestSpecificationHasNotChanged(t *testing.T) {
-	expected, err := json.MarshalIndent(specifications, "", "    ")
-	require.NoError(t, err)
-	goldenFile := filepath.Join("testdata", "spec-config.golden.json")
-
-	if *update {
-		t.Log("update golden file")
-		require.NoError(t, ioutil.WriteFile(goldenFile, expected, 0644), "failed to update golden file")
-	}
-
-	spec, err := ioutil.ReadFile(goldenFile)
-	require.NoError(t, err, "failed reading .golden")
-	assert.JSONEq(t, string(expected), string(spec))
 }

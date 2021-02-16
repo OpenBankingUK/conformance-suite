@@ -439,7 +439,8 @@ func (i *Input) generateRequestJWT(ctx *Context, alg jwt.SigningMethod) (string,
 	if err != nil {
 		return "", i.AppErr(errors.Wrap(err, "Create certificate from context").Error())
 	}
-	kid, err := authentication.GetKID(ctx, cert.PublicKey().N.Bytes())
+
+	kid, err := ctx.GetString("tpp_signature_kid")
 	if err != nil {
 		return "", errors.Wrap(err, "generateRequestJWT failure: unable to get KID")
 	}

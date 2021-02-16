@@ -3,11 +3,10 @@ package authentication
 import (
 	"crypto/sha1"
 	"encoding/base64"
+	"errors"
 	"fmt"
 	"io"
 	"strings"
-
-	"github.com/pkg/errors"
 )
 
 func CalcKid(modulus string) (string, error) {
@@ -16,7 +15,7 @@ func CalcKid(modulus string) (string, error) {
 	sumer := sha1.New()
 	_, err := io.WriteString(sumer, canonicalInput)
 	if err != nil {
-		return "", errors.Wrap(err, "authentication.CalcKid: io.WriteString(sumer, canonicalInput) failed")
+		return "", fmt.Errorf("authentication.CalcKid: io.WriteString(sumer, canonicalInput) failed: %w", err)
 	}
 	sum := sumer.Sum(nil)
 
@@ -31,7 +30,7 @@ func GetKID(ctx ContextInterface, modulus []byte) (string, error) {
 	modulusBase64 := base64.RawURLEncoding.EncodeToString(modulus)
 	kid, err := CalcKid(modulusBase64)
 	if err != nil {
-		return "", errors.Wrap(err, "authentication.GetKID: CalcKid(modulusBase64) failed")
+		return "", fmt.Errorf("authentication.GetKID: CalcKid(modulusBase64) failed: %w", err)
 	}
 	nonOBDirectory, exists := ctx.Get("nonOBDirectoryTPP")
 	if !exists {
@@ -44,7 +43,7 @@ func GetKID(ctx ContextInterface, modulus []byte) (string, error) {
 	if nonOBDirectoryAsBool {
 		kid, err = ctx.GetString("signingKid")
 		if err != nil {
-			return "", errors.Wrap(err, "authentication.GetKID: unable to retrieve signingKid from context")
+			return "", fmt.Errorf("authentication.GetKID: unable to retrieve signingKid from context: %w", err)
 		}
 	}
 

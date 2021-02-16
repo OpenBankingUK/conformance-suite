@@ -9,6 +9,9 @@ import (
 )
 
 const (
+	CtxTPPSignatureKID                     = "tpp_signature_kid"
+	CtxTPPSignatureIssuer                  = "tpp_signature_issuer"
+	CtxTPPSignatureTAN                     = "tpp_signature_tan"
 	CtxConstClientID                       = "client_id"
 	CtxConstClientSecret                   = "client_secret"
 	CtxConstTokenEndpoint                  = "token_endpoint"
@@ -45,9 +48,6 @@ const (
 	CtxSigningPrivate                      = "signingPrivate"
 	CtxSigningPublic                       = "signingPublic"
 	CtxPhase                               = "phase"
-	CtxNonOBDirectoryTPP                   = "nonOBDirectoryTPP"
-	CtxSigningKidTPP                       = "signingKidTPP"
-	CtxSignatureTrustAnchorTPP             = "signatureTrustAnchorTPP"
 	CtxDynamicResourceIDs                  = "dynamicResourceIDs"
 	CtxAcrValuesSupported                  = "acrValuesSupported"
 )
@@ -58,6 +58,9 @@ func PutParametersToJourneyContext(config JourneyConfig, context model.Context) 
 
 	context.PutString(CtxConstClientID, config.clientID)
 	context.PutString(CtxConstClientSecret, config.clientSecret)
+	context.PutString(CtxTPPSignatureKID, config.tppSignatureKID)
+	context.PutString(CtxTPPSignatureIssuer, config.tppSignatureIssuer)
+	context.PutString(CtxTPPSignatureTAN, config.tppSignatureTAN)
 	context.PutString(CtxConstTokenEndpoint, config.tokenEndpoint)
 	context.PutString(CtxResponseType, config.ResponseType)
 	context.PutString(CtxConstTokenEndpointAuthMethod, config.tokenEndpointAuthMethod)
@@ -89,9 +92,6 @@ func PutParametersToJourneyContext(config JourneyConfig, context model.Context) 
 	context.PutString(CtxSigningPublic, config.signingPublic)
 	context.PutString(CtxTransactionFromDate, config.transactionFromDate)
 	context.PutString(CtxTransactionToDate, config.transactionToDate)
-	context.Put(CtxNonOBDirectoryTPP, config.useNonOBDirectoryTPP)
-	context.PutString(CtxSigningKidTPP, config.signingKidTPP)
-	context.PutString(CtxSignatureTrustAnchorTPP, config.signatureTrustAnchorTPP)
 	context.Put(CtxDynamicResourceIDs, config.useDynamicResourceID)
 	context.PutStringSlice(CtxAcrValuesSupported, config.AcrValuesSupported)
 

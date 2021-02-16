@@ -7,7 +7,6 @@ import (
 	"strings"
 	"time"
 
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/authentication"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/generation"
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/manifest"
@@ -89,8 +88,6 @@ func init() {
 	rootCmd.PersistentFlags().Bool("dynres", false, "Use Dynamic Resource IDs - accounts")
 	rootCmd.PersistentFlags().Bool("dumpcontexts", false, "Dump contexts when trace enabled")
 	rootCmd.PersistentFlags().Bool("tlscheck", true, "enable tls version checking - default enabled")
-	rootCmd.PersistentFlags().String("eidas_issuer", "", "Signing issuer when using EIDAS certificates")
-	rootCmd.PersistentFlags().String("eidas_signing_kid", "", "Signing Key Id when using EIDAS signing certification")
 	rootCmd.PersistentFlags().Bool("export_testcases", false, "Dump all testcases to console in CSV format")
 
 	if err := viper.BindPFlags(rootCmd.PersistentFlags()); err != nil {
@@ -172,16 +169,6 @@ func initConfig() {
 
 	resty.SetDebug(viper.GetBool("log_http_trace"))
 	resty.SetRedirectPolicy(resty.FlexibleRedirectPolicy(15))
-	eidasIssuer := viper.GetString("eidas_issuer")
-	eidasKID := viper.GetString("eidas_signing_kid")
-	if len(eidasIssuer) > 0 {
-		err = authentication.SetEidasSigningParameters(eidasIssuer, eidasKID)
-		if err != nil {
-			logrus.Errorf("problem with EIDAS issuer - aborting: %v", err)
-			os.Exit(1)
-		}
-	}
-
 	printConfigurationFlags()
 }
 
@@ -198,8 +185,6 @@ func printConfigurationFlags() {
 		"dynres":           viper.GetBool("dynres"),
 		"dumpcontexts":     viper.GetBool("dumpcontexts"),
 		"tlscheck":         viper.GetBool("tlscheck"),
-		"eidas_issuer":     viper.GetString("eidas_issuer"),
-		"eidas_keyid":      viper.GetString("eidas_kid"),
 		"export_testcases": viper.GetString("export_testcases"),
 	}).Info("configuration flags")
 }

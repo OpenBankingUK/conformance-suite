@@ -28,14 +28,14 @@ export const mutations = {
   [mutationTypes.SET_CONFIGURATION_TRANSPORT_PUBLIC](state, transportPublic) {
     state.configuration.transport_public = transportPublic;
   },
-  [mutationTypes.SET_USE_EIDAS_CERT](state, value) {
-    state.configuration.use_eidas_cert = value;
+  [mutationTypes.SET_TPP_SIGNATURE_KID](state, value) {
+    state.configuration.tpp_signature_kid = value;
   },
-  [mutationTypes.SET_EIDAS_SIGNING_KID](state, value) {
-    state.configuration.eidas_signing_kid = value;
+  [mutationTypes.SET_TPP_SIGNATURE_ISSUER](state, value) {
+    state.configuration.tpp_signature_issuer = value;
   },
-  [mutationTypes.SET_EIDAS_ISSUER](state, value) {
-    state.configuration.eidas_issuer = value;
+  [mutationTypes.SET_TPP_SIGNATURE_TAN](state, value) {
+    state.configuration.tpp_signature_tan = value;
   },
   [mutationTypes.SET_DISCOVERY_TEMPLATES](state, templates) {
     state.discoveryTemplates = templates;
@@ -99,21 +99,6 @@ export const mutations = {
   },
   [mutationTypes.SET_REDIRECT_URL](state, value) {
     state.configuration.redirect_url = value;
-  },
-  [mutationTypes.SET_USE_NON_OB_DIRECTORY_ASPSP](state, value) {
-    state.configuration.use_non_ob_directory_aspsp = value;
-  },
-  [mutationTypes.SET_USE_NON_OB_DIRECTORY_TPP](state, value) {
-    state.configuration.use_non_ob_directory_tpp = value;
-  },
-  [mutationTypes.SET_SIGNING_KID_ASPSP](state, value) {
-    state.configuration.signing_kid_aspsp = value;
-  },
-  [mutationTypes.SET_SIGNING_KID_TPP](state, value) {
-    state.configuration.signing_kid_tpp = value;
-  },
-  [mutationTypes.SET_SIGNATURE_TRUST_ANCHOR_TPP](state, value) {
-    state.configuration.signature_trust_anchor_tpp = value;
   },
   [mutationTypes.SET_RESOURCE_ACCOUNT_ID](state, { index, value }) {
     // Without the use of Vue.set the JSON editor tab view does not update on form input change.
@@ -258,9 +243,9 @@ export const state = {
     signing_public: '',
     transport_private: '',
     transport_public: '',
-    use_eidas_cert: false,
-    eidas_signing_kid: '',
-    eidas_issuer: '',
+    tpp_signature_kid: '',
+    tpp_signature_issuer: '',
+    tpp_signature_tan: 'openbanking.org.uk',
     transaction_from_date: '',
     transaction_to_date: '',
     client_id: '',
@@ -276,9 +261,6 @@ export const state = {
     x_fapi_customer_ip_address: '',
     issuer: '',
     redirect_url: 'https://127.0.0.1:8443/conformancesuite/callback',
-    use_non_ob_directory_tpp: false,
-    signing_kid_tpp: '',
-    signature_trust_anchor_tpp: '',
     resource_ids: {
       account_ids: [{ account_id: '' }],
       statement_ids: [{ statement_id: '' }],

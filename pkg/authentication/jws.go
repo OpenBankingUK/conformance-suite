@@ -5,18 +5,18 @@ import (
 	"crypto/rsa"
 	"encoding/base64"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"regexp"
 	"strings"
 
 	"github.com/dgrijalva/jwt-go"
-	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 	"github.com/tdewolff/minify/v2"
 	minjson "github.com/tdewolff/minify/v2/json"
 )
 
-// Workaround for default PS256 signing parameter issue
+// SigningMethodPS256 is a workaround for default PS256 signing parameter issue
 // https://github.com/dgrijalva/jwt-go/issues/285
 var SigningMethodPS256 = &jwt.SigningMethodRSAPSS{
 	SigningMethodRSA: jwt.SigningMethodPS256.SigningMethodRSA,
@@ -26,9 +26,7 @@ var SigningMethodPS256 = &jwt.SigningMethodRSAPSS{
 	},
 }
 
-var b64Status bool      // for report export
-var eidas_kid string    // key id when using eidas certificates
-var eidas_issuer string // issuer for jwt signing for eidas certificates
+var b64Status bool // for report export
 
 func GetSigningAlg(alg string) (jwt.SigningMethod, error) {
 	switch strings.ToUpper(alg) {
@@ -54,35 +52,9 @@ func SigningCertFromContext(ctx ContextInterface) (Certificate, error) {
 	}
 	cert, err := NewCertificate(pubKey, privKey)
 	if err != nil {
-		return nil, errors.Wrap(err, "authentication.SigningCertFromContext: couldn't create `certificate` from pub/priv keys")
+		return nil, fmt.Errorf("authentication.SigningCertFromContext: couldn't create `certificate` from pub/priv keys: %w", err)
 	}
 	return cert, nil
-}
-
-func GetJWSIssuerString(ctx ContextInterface, cert Certificate) (string, error) {
-	apiVersion, err := ctx.GetString("api-version")
-	if err != nil {
-		return "", errors.New("authentication.GetJWSIssuerString: cannot find api-version: " + err.Error())
-	}
-
-	var issuer string
-	switch apiVersion {
-	case "v3.1":
-		issuer, err = cert.SignatureIssuer(true)
-		if err != nil {
-			logrus.Warn("cannot Issuer for Signature: ", err.Error())
-			return "", errors.New("authentication.GetJWSIssuerString: cannot Issuer for Signature: " + err.Error())
-		}
-	case "v3.0":
-		issuer, _, _, err = cert.DN()
-		if err != nil {
-			logrus.Warn("cannot get certificate DN: ", err.Error())
-			return "", errors.New("authentication.GetJWSIssuerString: cert.DN() failed" + err.Error())
-		}
-	default:
-		return "", errors.New("authentication.GetJWSIssuerString: cannot get issuer for jws signature but api-version doesn't match 3.0.0 or 3.1.0")
-	}
-	return issuer, nil
 }
 
 func SplitJWSWithBody(token string) string {
@@ -100,11 +72,11 @@ func CreateSignature(t *jwt.Token, key interface{}, body string, b64encoded bool
 	var sig, sstr string
 	var err error
 	if sstr, err = SigningString(t, body, b64encoded); err != nil {
-		return "", errors.Wrap(err, "authentication.CreateSignature: SigningString(t, body) failed")
+		return "", fmt.Errorf("authentication.CreateSignature: SigningString(t, body) failed: %w", err)
 	}
 
 	if sig, err = t.Method.Sign(sstr, key); err != nil {
-		return "", errors.Wrap(err, "authentication.CreateSignature: t.Method.Sign(sstr, key failed")
+		return "", fmt.Errorf("authentication.CreateSignature: t.Method.Sign(sstr, key failed: %w", err)
 	}
 	return strings.Join([]string{sstr, sig}, "."), nil
 }
@@ -115,7 +87,7 @@ func CreateSignature(t *jwt.Token, key interface{}, body string, b64encoded bool
 func SigningString(t *jwt.Token, body string, b64encoded bool) (string, error) {
 	headersJSON, err := json.Marshal(t.Header)
 	if err != nil {
-		return "", errors.Wrap(err, "authentication.SigningString: json.Marshal(t.Header) failed")
+		return "", fmt.Errorf("authentication.SigningString: json.Marshal(t.Header) failed: %w", err)
 	}
 	headers := jwt.EncodeSegment(headersJSON)
 
@@ -176,7 +148,7 @@ func SetJWSHeader(entries map[string]interface{}) JWSHeaderOpt {
 // JWSHeaderOpt is a function signature which is used for altering JWS header when passed to ModifyJWSHeaders
 type JWSHeaderOpt func(map[string]interface{}) map[string]interface{}
 
-// ModifyJWSHeaders allows the caller to mutate an existing JWS, re-signed with the new contents
+// ModifyJWSHeaders allows the caller to mutate an existing JWS for testing purposes, re-signed with the new contents
 func ModifyJWSHeaders(jws string, ctx ContextInterface, opts ...JWSHeaderOpt) (string, error) {
 	if len(opts) == 0 {
 		return jws, nil
@@ -241,87 +213,72 @@ func ModifyJWSHeaders(jws string, ctx ContextInterface, opts ...JWSHeaderOpt) (s
 	return SplitJWSWithBody(tokenString), nil
 }
 
+// NewJWSSignature creates a signature to be used with TPP API calls
 func NewJWSSignature(requestBody string, ctx ContextInterface, alg jwt.SigningMethod) (string, error) {
-
 	minifiedBody, err := minifiyJSONBody(requestBody)
 	if err != nil {
-		return "", errors.Wrap(err, `NewJWSSignature: minifyBody failed`)
+		return "", fmt.Errorf("NewJWSSignature: minifyBody failed: %w", err)
 	}
 
 	cert, err := SigningCertFromContext(ctx)
 	if err != nil {
-		return "", errors.Wrap(err, "NewJWSSignature: unable to sign certificate from context")
+		return "", fmt.Errorf("NewJWSSignature: unable to sign certificate from context: %w", err)
 	}
 
-	var kid string
-	if eidas_kid != "" {
-		kid = eidas_kid
-		logrus.Debugf("using Kid for eidas cert : %s", kid)
-	} else {
-		kid, err = getKidFromCertificate(cert)
-		if err != nil {
-			return "", errors.Wrap(err, "NewJWSSignature: getKidFromCertificate failed")
-		}
+	tppSignatureKID, err := ctx.GetString("tpp_signature_kid")
+	if err != nil {
+		return "", fmt.Errorf("missing configuration for key 'tpp_signature_kid': %w", err)
 	}
 
-	var issuer string
-	if eidas_issuer != "" {
-		issuer = eidas_issuer
-		logrus.Debugf("using issuer for eidas cert : %s", issuer)
-	} else {
-		issuer, err = GetJWSIssuerString(ctx, cert)
-		if err != nil {
-			return "", errors.Wrap(err, "NewJWSSignature: unable to retrieve issuer from context")
-		}
+	tppSignatureTAN, err := ctx.GetString("tpp_signature_tan")
+	if err != nil {
+		return "", fmt.Errorf("failed to populate TPP signature Trust Anchor: '%w'", err)
 	}
 
-	trustAnchor := "openbanking.org.uk"
-	useNonOBDirectory, exists := ctx.Get("nonOBDirectoryTPP")
-	if !exists {
-		return "", errors.New("NewJWSSignature: unable to retrieve nonOBDirectory from context")
+	tppSignatureIssuer, err := ctx.GetString("tpp_signature_issuer")
+	if err != nil {
+		return "", fmt.Errorf("failed to populate TPP signature Issuer: '%w'", err)
 	}
-	useNonOBDirectoryAsBool, ok := useNonOBDirectory.(bool)
-	if !ok {
-		return "", errors.New("NewJWSSignature: unable to cast nonOBDirectory to bool")
-	}
-	if useNonOBDirectoryAsBool {
-		kid, err = ctx.GetString("signingKidTPP")
-		if err != nil {
-			return "", errors.Wrap(err, "NewJWSSignature: unable to retrieve singingKid from context")
-		}
-		issuer, err = ctx.GetString("issuer")
-		if err != nil {
-			return "", errors.Wrap(err, "NewJWSSignature: unable to retrieve issue from context")
-		}
-		trustAnchor, err = ctx.GetString("signatureTrustAnchorTPP")
-		if err != nil {
-			return "", errors.Wrap(err, "NewJWSSignature: unable to retrieve signatureTrustAnchor from context")
-		}
+
+	version, _ := ctx.GetString("api-version")
+	if version == "v3.0" {
+		tppSignatureIssuer, err = legacyIssuerFromCert(cert)
 	}
 
 	logrus.WithFields(logrus.Fields{
-		"kid":    kid,
-		"issuer": issuer,
+		"kid":    tppSignatureKID,
+		"issuer": tppSignatureIssuer,
 		"alg":    alg.Alg(),
 		"claims": minifiedBody,
-		"tan":    trustAnchor,
+		"tan":    tppSignatureTAN,
 	}).Trace("jws signature creation")
 
 	b64encoding, err := GetB64Encoding(ctx)
 	if err != nil {
-		return "", errors.New("NewJWSSignature: cannot GetB64Encoding " + err.Error())
+		return "", fmt.Errorf("NewJWSSignature: cannot GetB64Encoding: %w", err)
 	}
 
-	return buildSignature(b64encoding, kid, issuer, trustAnchor, minifiedBody, alg, cert.PrivateKey())
+	return buildSignature(b64encoding, tppSignatureKID, tppSignatureIssuer, tppSignatureTAN, minifiedBody, alg, cert.PrivateKey())
 }
 
+func legacyIssuerFromCert(cert Certificate) (string, error) {
+	issuer, _, _, err := cert.DN()
+	if err != nil {
+		logrus.Warn("cannot get certificate DN: ", err.Error())
+		return "", errors.New("authentication.GetJWSIssuerString: cert.DN() failed" + err.Error())
+	}
+
+	return issuer, nil
+}
+
+// GetB64Encoding returns - based on the API version - if the TPP signature should use base64 encoding for the payload
 func GetB64Encoding(ctx ContextInterface) (bool, error) {
-	paymentApiVersion, err := getPaymentApiVersion(ctx)
+	paymentAPIVersion, err := getPaymentAPIVersion(ctx)
 	if err != nil {
 		return false, errors.New("NewJWSSignature: cannot find payment apiversion: " + err.Error())
 	}
 
-	b64encoding, err := getB64Encoding(paymentApiVersion)
+	b64encoding, err := getB64Encoding(paymentAPIVersion)
 	if err != nil {
 		return false, errors.New("NewJWSSignature: cannot getB64Encoding " + err.Error())
 	}
@@ -376,7 +333,7 @@ func getKidFromCertificate(cert Certificate) (string, error) {
 // looks for the "apiversions" key
 // requires payment version to be in the form similar to "payments_v3.1.0"
 // apiversions is a string slice
-func getPaymentApiVersion(ctx ContextInterface) (string, error) {
+func getPaymentAPIVersion(ctx ContextInterface) (string, error) {
 	apiVersions, err := ctx.GetStringSlice("apiversions")
 	if err != nil {
 		return "", errors.New("NewJWSSignature: cannot find apiversions: " + err.Error())
@@ -410,17 +367,7 @@ func after(value string, a string) string {
 func setB64Status(status bool) {
 	b64Status = status
 }
+
 func GetB64Status() bool {
 	return b64Status
-}
-
-func SetEidasSigningParameters(issuer, kid string) error {
-	eidas_issuer = issuer
-	eidas_kid = kid
-	logrus.Debugf("Setting EIDAS Signing Parameters iss: %s, kid: %s", issuer, kid)
-	// Check relaxed to allow HSBC Trust Anchor issuers
-	// if !checkSignatureIssuerTPP(eidas_issuer) {
-	// 	return fmt.Errorf("Invalid EIDAS Issuer String (%s)", eidas_issuer)
-	// }
-	return nil
 }
