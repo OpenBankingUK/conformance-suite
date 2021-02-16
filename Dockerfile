@@ -1,5 +1,5 @@
 # Image to compile go binaries
-FROM golang:1.12-alpine as gobuilder
+FROM golang:1.15-alpine as gobuilder
 RUN apk add --no-cache --update --upgrade \
 	bash \
 	git \

@@ -71,7 +71,7 @@ func (g CachedOpenIdConfigGetter) Get(url string) (OpenIDConfiguration, error) {
 	defer resp.Body.Close()
 	config = OpenIDConfiguration{}
 	if err := json.NewDecoder(resp.Body).Decode(&config); err != nil {
-		return config, fmt.Errorf("Invalid OpenIDConfiguration: url=%+v :%w", url, err)
+		return config, fmt.Errorf("Invalid OpenIDConfiguration: url=%+v: %w", url, err)
 	}
 
 	logrus.Tracef("JWKS Uri = %s", config.JwksURI)
