@@ -7,7 +7,6 @@ import (
 	"net/http"
 
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/client"
-	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 )
 
@@ -51,14 +50,14 @@ func (g CachedOpenIdConfigGetter) Get(url string) (OpenIDConfiguration, error) {
 
 	resp, err := g.client.Get(url)
 	if err != nil {
-		return OpenIDConfiguration{}, errors.Wrapf(err, "Failed to GET OpenIDConfiguration: url=%+v", url)
+		return OpenIDConfiguration{}, fmt.Errorf("Failed to GET OpenIDConfiguration: url=%+v : %w", url, err)
 	}
 
 	if resp.StatusCode != http.StatusOK {
 		responseBody, err := ioutil.ReadAll(resp.Body)
 		defer resp.Body.Close()
 		if err != nil {
-			return OpenIDConfiguration{}, errors.Wrap(err, "error reading error response from GET OpenIDConfiguration")
+			return OpenIDConfiguration{}, fmt.Errorf("error reading error response from GET OpenIDConfiguration: %w", err)
 		}
 
 		return OpenIDConfiguration{}, fmt.Errorf(
@@ -72,7 +71,7 @@ func (g CachedOpenIdConfigGetter) Get(url string) (OpenIDConfiguration, error) {
 	defer resp.Body.Close()
 	config = OpenIDConfiguration{}
 	if err := json.NewDecoder(resp.Body).Decode(&config); err != nil {
-		return config, errors.Wrap(err, fmt.Sprintf("Invalid OpenIDConfiguration: url=%+v", url))
+		return config, fmt.Errorf("Invalid OpenIDConfiguration: url=%+v :%w", url, err)
 	}
 
 	logrus.Tracef("JWKS Uri = %s", config.JwksURI)

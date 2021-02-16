@@ -8,10 +8,10 @@ import (
 	"crypto/tls"
 	"crypto/x509"
 	"encoding/pem"
+	"errors"
 	"fmt"
 
 	"github.com/dgrijalva/jwt-go"
-	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 )
 
@@ -42,13 +42,13 @@ type certificate struct {
 func NewCertificate(publicKeyPem, privateKeyPem string) (Certificate, error) {
 	publicKey, err := jwt.ParseRSAPublicKeyFromPEM([]byte(publicKeyPem))
 	if err != nil {
-		return nil, errors.Wrap(err, "error with public key")
+		return nil, fmt.Errorf("error with public key: %w", err)
 	}
 	publicPem := []byte(publicKeyPem)
 
 	privateKey, err := jwt.ParseRSAPrivateKeyFromPEM([]byte(privateKeyPem))
 	if err != nil {
-		return nil, errors.Wrap(err, "error with private key")
+		return nil, fmt.Errorf("error with private key: %w", err)
 	}
 
 	tlsCert, err := tls.X509KeyPair([]byte(publicKeyPem), []byte(privateKeyPem))
@@ -72,7 +72,7 @@ func NewCertificate(publicKeyPem, privateKeyPem string) (Certificate, error) {
 func NewPublicCertificate(publicKeyPem string) (Certificate, error) {
 	publicKey, err := jwt.ParseRSAPublicKeyFromPEM([]byte(publicKeyPem))
 	if err != nil {
-		return nil, errors.Wrap(err, "error with public key")
+		return nil, fmt.Errorf("error with public key: %w", err)
 	}
 	publicPem := []byte(publicKeyPem)
 
@@ -104,11 +104,11 @@ func validateKeys(publicKey *rsa.PublicKey, privateKey *rsa.PrivateKey) error {
 	hashed := sha256.Sum256(plaintext)
 	signature, err := rsa.SignPKCS1v15(rand.Reader, privateKey, crypto.SHA256, hashed[:])
 	if err != nil {
-		return errors.Wrap(err, "error signing")
+		return fmt.Errorf("error signing: %w", err)
 	}
 
 	if err := rsa.VerifyPKCS1v15(publicKey, crypto.SHA256, hashed[:], signature); err != nil {
-		return errors.Wrap(err, "error verifying")
+		return fmt.Errorf("error verifying: %w", err)
 	}
 
 	return nil
