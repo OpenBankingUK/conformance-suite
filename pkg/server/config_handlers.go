@@ -186,14 +186,6 @@ func (h configHandlers) configGlobalPostHandler(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, NewErrorResponse(err))
 	}
 
-	// Set EIDAS KID & Issuer
-	// if config.UseEIDASCert {
-	// 	err := authentication.SetEidasSigningParameters(config.EIDASIssuer, config.EIDASSigningKID)
-	// 	if err != nil {
-	// 		return c.JSON(http.StatusBadRequest, NewErrorResponse(err))
-	// 	}
-	// }
-
 	// Use the transport keys for MATLS as some endpoints require this
 	resty.SetCertificates(journeyConfig.certificateTransport.TLSCert())
 
