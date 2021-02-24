@@ -17,6 +17,15 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
+var (
+	// ErrInvalidSignatureHeader is an error indicating that the signature being validated has errors in the header
+	ErrInvalidSignatureHeader = errors.New("invalid signature header")
+	// ErrInvalidSignatureKID is returned if a valid KID can not be retrieved from a signature during validation
+	ErrInvalidSignatureKID = errors.New("invalid signature KID")
+	// ErrSignatureCert is an error indicating a failure during the retrieval of a certificate for a given KID
+	ErrSignatureCert = errors.New("failed to retrieve certificate")
+)
+
 // JWKS is a JSON Web Key Set
 type JWKS struct {
 	Keys []JWK
@@ -251,67 +260,75 @@ func (s signatureHeader) validateSignatureHeader(b64 bool) error {
 
 	if s.Type != "" { // Optional must be "JOSE" if present
 		if s.Type != "JOSE" {
-			return errors.New("Validate Signature - typ MUST equal`JOSE` if present")
+			return errInvalidSignatureClaim("typ", s.Type, "must equal 'JOSE' if present")
 		}
 	}
 
 	if s.Alg != "PS256" { // Mandatory must be "PS256"
-		return errors.New("Validate Signature - alg claim MUST equal `PS256`")
+		return errInvalidSignatureClaim("alg", s.Alg, "PS256")
 	}
 
 	if s.Kid == "" { // Mandatory - must be present
-		return errors.New("Validate Signature - kid claim MUST be present")
+		return fmt.Errorf("%w: kid claim MUST be present", ErrInvalidSignatureHeader)
 	}
 
 	if s.Ctype != "" { // Optional - if present must be json or application/json
 		if s.Ctype != "json" && s.Ctype != "application/json" {
-			return errors.New("Validate Signature - cty must be 'json' or 'application/json'")
+			return errInvalidSignatureClaim("cty", s.Ctype, "'json' or 'application/json'")
 		}
 	}
 
 	if b64 { // version 3.1.4 and newer
 		if s.B64 != nil {
-			return errors.New("Validate Signature - b64 claim MUST not be present for v3.1.4 and above APIs")
+			return fmt.Errorf("%w: b64 claim is set - must not be present for v3.1.4 and newer APIs", ErrInvalidSignatureHeader)
 		}
 		if len(s.Critical) != 3 {
-			return errors.New("Validate Signature - `crit claim must contain 3 elements")
+			return errInvalidSignatureClaim("crit", s.Critical, "must contain 3 elements for v3.1.4 and newer APIs")
 		}
-		if !containsAllElements(s.Critical, "http://openbanking.org.uk/iss", "http://openbanking.org.uk/iat", "http://openbanking.org.uk/tan") {
-			return errors.New("Validate Signature - `crit claim does not contain 3 values matching the specification")
+
+		requiredElements := []string{"http://openbanking.org.uk/iss", "http://openbanking.org.uk/iat", "http://openbanking.org.uk/tan"}
+		if !containsAllElements(s.Critical, requiredElements) {
+			return errInvalidSignatureClaim("crit", s.Critical, requiredElements)
 		}
 
 	} else { // version 3.1.3 and older
 		if s.B64 == nil {
-			return errors.New("Validate Signature - b64 claim MUST be present for v3.1.3 and older APIs")
+			return fmt.Errorf("%w: b64 claim is not set - must be present for v3.1.3 and older APIs", ErrInvalidSignatureHeader)
 		}
 		if *s.B64 == true {
-			return errors.New("Validate Signature - b64 claim MUST not equal`true` for v3.1.3 and older APIs")
+			return errInvalidSignatureClaim("b64", *s.B64, "value must be false for v3.1.3 and older APIs")
 		}
 		if len(s.Critical) != 4 {
-			return errors.New("Validate Signature - `crit claim must contain 4 elements for v3.1.3 and older APIs")
+			return errInvalidSignatureClaim("crit", s.Critical, "must contain 4 elements for v3.1.3 and older APIs")
 		}
-		if !containsAllElements(s.Critical, "http://openbanking.org.uk/iss", "http://openbanking.org.uk/iat", "http://openbanking.org.uk/tan", "b64") {
-			return errors.New("Validate Signature - `crit claim does not contain 4 values matching the specification")
+
+		requiredElements := []string{"http://openbanking.org.uk/iss", "http://openbanking.org.uk/iat", "http://openbanking.org.uk/tan", "b64"}
+		if !containsAllElements(s.Critical, requiredElements) {
+			return errInvalidSignatureClaim("crit", s.Critical, requiredElements)
 		}
 	}
 
 	if s.IssuedAt == decimal.Zero {
-		return errors.New("Validate Signature - `http://openbanking.org.uk/iat` claim must be a JSON number representing time")
+		return errInvalidSignatureClaim("http://openbanking.org.uk/iat", s.IssuedAt.String(), "a JSON number representing time")
 	}
 	if s.TrustAnchor != "openbanking.org.uk" && !isHSBCTrustAnchor(s.TrustAnchor) { // allow trust anchors from OBIE HSBC
-		return errors.New("Validate Signature - `http://openbanking.org.uk/tan` claim MUST equal `openbanking.org.uk` or be ASPSP specific")
+		return errInvalidSignatureClaim("http://openbanking.org.uk/tan", s.TrustAnchor, "openbanking.org.uk or ASPSP specific value")
 	}
 
 	if len(s.Issuer) == 0 {
-		return errors.New("Validate Signature - `http://openbanking.org.uk/iss` claim MUST NOT be empty")
-	}
-	if s.TrustAnchor == "openbanking.org.uk" { // only check when trust anchor is OBIE
-		if !checkSignatureIssuerASPSP(s.Issuer) {
-			return fmt.Errorf("Validate Signature - `http://openbanking.org.uk/iss` claim in ASPSP response MUST be only the ORG-ID: %s", s.Issuer)
-		}
+		return errInvalidSignatureClaim("http://openbanking.org.uk/iss", s.Issuer, "non empty value")
 	}
 
+	if s.TrustAnchor == "openbanking.org.uk" { // only check when trust anchor is OBIE
+		if !checkSignatureIssuerASPSP(s.Issuer) {
+			return errInvalidSignatureClaim("http://openbanking.org.uk/iss", s.Issuer, "only the ORG-ID")
+		}
+	}
 	return nil
+}
+
+func errInvalidSignatureClaim(key string, currentValue, expectedValue interface{}) error {
+	return fmt.Errorf("%w: invalid '%s' claim: %v - expected: %v", ErrInvalidSignatureHeader, key, currentValue, expectedValue)
 }
 
 var isASPSPIssuer = regexp.MustCompile(`^[a-zA-Z0-9]{18}$`).MatchString
@@ -325,7 +342,7 @@ func checkSignatureIssuerTPP(iss string) bool {
 	return isTPPIssuer(iss)
 }
 
-func containsAllElements(source []string, elements ...string) bool {
+func containsAllElements(source, elements []string) bool {
 	for _, item := range elements {
 		match := false
 		for _, sourceElement := range source {
