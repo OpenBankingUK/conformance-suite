@@ -1,8 +1,14 @@
 # Release history
 
+## Release v1.6.7 (24th February 2021)
+
+The release is called **v1.6.7**, an update to support
+[additional roadmap tests](https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1564083551/OBIE+Functional+Conformance+Tool+Roadmap)
+and contains minor improvements.
+
 ## Release v1.6.6 (21st January 2021)
 
-The release is called **v1.6.5**, an update to support
+The release is called **v1.6.6**, an update to support
 [additional roadmap tests](https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1564083551/OBIE+Functional+Conformance+Tool+Roadmap)
 and contains minor fixes.
 

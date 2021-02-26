@@ -17,19 +17,19 @@ To provide feedback, please use the public [issue tracker](https://bitbucket.org
 ## Release Notes 
 * * *
 
-# Release v1.6.6 (21st January 2021)
+# Release v1.6.7 (24th February 2021)
 
-The release is called **v1.6.6**, an update to support [additional roadmap tests](https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1564083551/OBIE+Functional+Conformance+Tool+Roadmap) and contains minor fixes.
+The release is called **v1.6.7**, an update to support [additional roadmap tests](https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1564083551/OBIE+Functional+Conformance+Tool+Roadmap) and contains minor fixes.
 
-[Full Release Notes](https://bitbucket.org/openbankingteam/conformance-suite/src/v1.6.6/docs/releases/v1.6.6.md)
-(v1.6.6.md)
+[Full Release Notes](https://bitbucket.org/openbankingteam/conformance-suite/src/v1.6.7/docs/releases/v1.6.7.md)
+(v1.6.7.md)
 
 ## Quickstart
 * * *
 
 Pull and run the latest (stable) tagged Docker image:
 
-    > docker run --rm -it -p 8443:8443 "openbanking/conformance-suite:v1.6.6"
+    > docker run --rm -it -p 8443:8443 "openbanking/conformance-suite:v1.6.7"
 
 [See Setup Guide](https://bitbucket.org/openbankingteam/conformance-suite/src/develop/docs/setup-guide.md)
 
