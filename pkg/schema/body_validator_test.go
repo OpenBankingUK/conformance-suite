@@ -285,3 +285,114 @@ const badCbpiiResponse = `
 	},
 	"Meta": {}
 }`
+
+func TestSchemaBodyAPRChecks(t *testing.T) {
+	ais316, _ := loads.Spec("spec/v3.1.6/account-info-swagger-flattened.json")
+	ais317, _ := loads.Spec("spec/v3.1.7/account-info-swagger-flattened.json")
+	ais315, _ := loads.Spec("spec/v3.1.5/account-info-swagger-flattened.json")
+	ais314, _ := loads.Spec("spec/v3.1.4/account-info-swagger-flattened.json")
+
+	var tests = []struct {
+		name         string
+		doc          *loads.Document
+		path         string
+		responseBody string
+		want         int
+	}{
+		{"317-ais-good", ais317, "/products", productsAPRGoodResponse, 0},
+		{"316-ais-good", ais316, "/products", productsAPRGoodResponse, 0},
+		{"315-ais-good", ais315, "/products", productsAPRGoodResponse, 0},
+		{"314-ais-good", ais314, "/products", productsAPRGoodResponse, 0},
+		{"317-ais-bad", ais317, "/products", productsAPRBadResponse, 1},
+		{"316-ais-bad", ais316, "/products", productsAPRBadResponse, 1},
+		{"315-ais-bad", ais315, "/products", productsAPRBadResponse, 1},
+		{"314-ais-bad", ais314, "/products", productsAPRBadResponse, 1},
+	}
+
+	for _, tt := range tests {
+		testname := fmt.Sprintf("SchemaTest:%s", tt.name)
+		t.Run(testname, func(t *testing.T) {
+			f := newFinder(tt.doc)
+			validator := newBodyValidator(f)
+			body := strings.NewReader(tt.responseBody)
+			r := Response{
+				Method:     "GET",
+				Path:       tt.path,
+				StatusCode: http.StatusOK,
+				Body:       body,
+			}
+
+			failures, err := validator.Validate(r)
+			require.NoError(t, err)
+			numberFailures := len(failures)
+
+			if numberFailures != tt.want {
+				t.Errorf("got %d, want %d", numberFailures, tt.want)
+			}
+		})
+	}
+}
+
+const productsAPRGoodResponse = `
+	{
+		"Data": {
+			"Product": [
+				{
+					"AccountId": "22392",
+					"ProductType": "BusinessCurrentAccount",
+					"ProductName": "Barclays Business Current Account",
+					"BCA": {
+						"Overdraft": {
+							"OverdraftTierBandSet": [
+								{
+									"TierBandMethod": "Tiered",
+									"OverdraftTierBand": [
+										{
+											"TierValueMin": "1.0000",
+											"RepresentativeAPR": "242.3333"
+										}
+									]
+								}
+							]
+						}
+					}
+				}
+			]
+		},
+		"Links": {
+			 "Self": "https://ob19-rs1.o3bank.co.uk:4501/open-banking/v3.1/cbpii/funds-confirmation-consents/fcc-22a6e08c-d5fa-4159-9eed-c9f0c7398fff"
+		},
+		"Meta": {}		
+	}`
+
+const productsAPRBadResponse = `
+	{
+		"Data": {
+			"Product": [
+				{
+					"AccountId": "22392",
+					"ProductType": "BusinessCurrentAccount",
+					"ProductName": "Barclays Business Current Account",
+					"BCA": {
+						"Overdraft": {
+							"OverdraftTierBandSet": [
+								{
+									"TierBandMethod": "Tiered",
+									"OverdraftTierBand": [
+										{
+											"TierValueMin": "1.0000",
+											"RepresentativeAPR": "-4442.42"
+										}
+									]
+								}
+							]
+						}
+					}
+				}
+			]
+		},
+		"Links": {
+			 "Self": "https://ob19-rs1.o3bank.co.uk:4501/open-banking/v3.1/cbpii/funds-confirmation-consents/fcc-22a6e08c-d5fa-4159-9eed-c9f0c7398fff"
+		},
+		"Meta": {}		
+	}`
