@@ -13,6 +13,7 @@ type Matcher interface {
 
 type paramMatcher struct{}
 
+// NewMatcher -
 func NewMatcher() Matcher {
 	return paramMatcher{}
 }

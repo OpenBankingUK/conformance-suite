@@ -1,15 +1,19 @@
 package schema
 
-type nullValidator struct{}
+// NullValidator - type
+type NullValidator struct{}
 
-func NewNullValidator() nullValidator {
-	return nullValidator{}
+// NewNullValidator -
+func NewNullValidator() NullValidator {
+	return NullValidator{}
 }
 
-func (v nullValidator) Validate(r Response) ([]Failure, error) {
+// Validate - nop
+func (v NullValidator) Validate(r Response) ([]Failure, error) {
 	return nil, nil
 }
 
-func (v nullValidator) IsRequestProperty(method, path, propertpath string) (bool, string, error) {
+// IsRequestProperty - nop
+func (v NullValidator) IsRequestProperty(method, path, propertpath string) (bool, string, error) {
 	return false, "", nil
 }
