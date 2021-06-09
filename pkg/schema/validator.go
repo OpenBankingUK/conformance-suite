@@ -39,6 +39,7 @@ type Validator interface {
 	IsRequestProperty(method, path, propertpath string) (bool, string, error)
 }
 
+// NewSwaggerOBSpecValidator -
 func NewSwaggerOBSpecValidator(specName, version string) (Validator, error) {
 	var err error
 
@@ -49,6 +50,7 @@ func NewSwaggerOBSpecValidator(specName, version string) (Validator, error) {
 	dirnames := []string{prodDir, testDir}
 	files := []os.FileInfo{}
 	for index, dirname := range dirnames {
+		logrus.Traceln("Returning swagger validator filename: " + dirname)
 		filesReadDir, errReadDir := ioutil.ReadDir(dirname)
 		if errReadDir != nil {
 			wd, errGetwd := os.Getwd()
@@ -72,6 +74,7 @@ func NewSwaggerOBSpecValidator(specName, version string) (Validator, error) {
 	dirname := dirnames[dirnameIndex]
 	for _, f := range files {
 		filename := dirname + "/" + f.Name()
+		logrus.Traceln("Returning swagger validator filenameplus: " + filename)
 		doc, err := loads.Spec(filename)
 		if err != nil {
 			return nil, errors.Wrapf(err, "schema: opening spec file, filename=%q", filename)
@@ -125,6 +128,8 @@ func newValidator(doc *loads.Document) (Validator, error) {
 	case "v3.1.5":
 		fallthrough
 	case "v3.1.6":
+		fallthrough
+	case "v3.1.7":
 		return validators{
 			validators: []Validator{
 				newContentTypeValidator(f),

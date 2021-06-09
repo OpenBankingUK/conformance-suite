@@ -25,7 +25,7 @@
       "name": "open-licence",
       "url": "https://www.openbanking.org.uk/open-licence"
     },
-    "version": "3.1.7"
+    "version": "v3.1.7"
   },
   "basePath": "/open-banking/v3.1/pisp",
   "paths": {

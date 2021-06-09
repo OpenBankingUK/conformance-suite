@@ -11,10 +11,11 @@ import (
 )
 
 var (
+	accountSpecPath317 = flag.String("spec317", "../v3.1.7/account-info-swagger-flattened.json", "Path to the specification swagger file.")
 	accountSpecPath316 = flag.String("spec316", "../v3.1.6/account-info-swagger-flattened.json", "Path to the specification swagger file.")
 	accountSpecPath315 = flag.String("spec315", "../v3.1.5/account-info-swagger-flattened.json", "Path to the specification swagger file.")
 	accountSpecPath314 = flag.String("spec314", "../v3.1.4/account-info-swagger-flattened.json", "Path to the specification swagger file.")
-	accountSpecPath313 = flag.String("spec313", "../v3.1.5/account-info-swagger-flattened.json", "Path to the specification swagger file.")
+	accountSpecPath313 = flag.String("spec313", "../v3.1.3/account-info-swagger-flattened.json", "Path to the specification swagger file.")
 )
 
 // Tests to check for issues with Code and Subcode swagger field lengths
@@ -27,6 +28,20 @@ func TestBankTransactionCodeSubCode(t *testing.T) {
 	testCase := model.TestCase{
 		Input:  model.Input{Method: "GET", Endpoint: "/open-banking/v3.1/aisp/accounts/00000005/transactions"},
 		Expect: model.Expect{SchemaValidation: true}}
+
+	t.Run("Transaction with Codes and Subcodes more than 4 chars should PASS 3.1.7 accounts", func(t *testing.T) {
+		testCase.Validator, err = schema.NewSwaggerValidator(*accountSpecPath317)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		resp := test.CreateHTTPResponse(200, "OK", string(transactionData), "Content-Type", "application/json")
+		result, err := testCase.Validate(resp, emptyContext)
+		if len(err) != 0 {
+			t.Fatal(err)
+		}
+		assert.True(t, result, "expected: %v actual: %v", true, result)
+	})
 
 	t.Run("Transaction with Codes and Subcodes more than 4 chars should PASS 3.1.6 accounts", func(t *testing.T) {
 		testCase.Validator, err = schema.NewSwaggerValidator(*accountSpecPath316)
