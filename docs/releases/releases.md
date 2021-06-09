@@ -1,5 +1,11 @@
 # Release history
 
+## Release v1.6.8 (14th June 2021)
+
+The release is called **v1.6.8**, an update to support version 3.1.7 of the AIS, PIS and CBPII Open Banking Apis.
+[Full Release Notes](https://bitbucket.org/openbankingteam/conformance-suite/src/develop/docs/releases/v1.6.8.md)
+(v1.6.8.md)
+
 ## Release v1.6.7 (24th February 2021)
 
 The release is called **v1.6.7**, an update to support
