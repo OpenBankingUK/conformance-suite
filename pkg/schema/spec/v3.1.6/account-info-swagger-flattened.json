@@ -7031,7 +7031,7 @@
                                   "MonthlyMaximumCharge": {
                                     "description": "The maximum relevant charges that could accrue as defined fully in Part 7 of the CMA order",
                                     "type": "string",
-                                    "pattern": "^(-?\\\\d{1,14}){1}(\\\\.\\\\d{1,4}){0,1}$"
+                                    "pattern": "^(-?\\d{1,14}){1}(\\.\\d{1,4}){0,1}$"
                                   },
                                   "Notes": {
                                     "type": "array",
@@ -7052,7 +7052,7 @@
                                       "Code": {
                                         "description": "The four letter Mnemonic used within an XML file to identify a code",
                                         "type": "string",
-                                        "pattern": "^\\\\w{0,4}$"
+                                        "pattern": "^\\w{0,4}$"
                                       },
                                       "Name": {
                                         "description": "Long name associated with the code",
@@ -7135,7 +7135,7 @@
                                             "Code": {
                                               "description": "The four letter Mnemonic used within an XML file to identify a code",
                                               "type": "string",
-                                              "pattern": "^\\\\w{0,4}$"
+                                              "pattern": "^\\w{0,4}$"
                                             },
                                             "Name": {
                                               "description": "Long name associated with the code",
@@ -7162,7 +7162,7 @@
                                             "Code": {
                                               "description": "The four letter Mnemonic used within an XML file to identify a code",
                                               "type": "string",
-                                              "pattern": "^\\\\w{0,4}$"
+                                              "pattern": "^\\w{0,4}$"
                                             },
                                             "Name": {
                                               "description": "Long name associated with the code",
@@ -7200,12 +7200,12 @@
                                               "TierValueMinimum": {
                                                 "description": "Minimum deposit value for which the credit interest tier applies.",
                                                 "type": "string",
-                                                "pattern": "^(-?\\\\d{1,14}){1}(\\\\.\\\\d{1,4}){0,1}$"
+                                                "pattern": "^(-?\\d{1,14}){1}(\\.\\d{1,4}){0,1}$"
                                               },
                                               "TierValueMaximum": {
                                                 "description": "Maximum deposit value for which the credit interest tier applies.",
                                                 "type": "string",
-                                                "pattern": "^(-?\\\\d{1,14}){1}(\\\\.\\\\d{1,4}){0,1}$"
+                                                "pattern": "^(-?\\d{1,14}){1}(\\.\\d{1,4}){0,1}$"
                                               },
                                               "CalculationFrequency": {
                                                 "description": "How often is credit interest calculated for the account.",
@@ -7257,7 +7257,7 @@
                                               "AER": {
                                                 "description": "The annual equivalent rate (AER) is interest that is calculated under the assumption that any interest paid is combined with the original balance and the next interest payment will be based on the slightly higher account balance. Overall, this means that interest can be compounded several times in a year depending on the number of times that interest payments are made. \nRead more: Annual Equivalent Rate (AER) http://www.investopedia.com/terms/a/aer.asp#ixzz4gfR7IO1A",
                                                 "type": "string",
-                                                "pattern": "^(-?\\\\d{1,3}){1}(\\\\.\\\\d{1,4}){0,1}$"
+                                                "pattern": "^(-?\\d{1,3}){1}(\\.\\d{1,4}){0,1}$"
                                               },
                                               "BankInterestRateType": {
                                                 "description": "Interest rate types, other than AER, which financial institutions may use to describe the annual interest rate payable to the account holder's account.",
@@ -7274,7 +7274,7 @@
                                               "BankInterestRate": {
                                                 "description": "Bank Interest for the product",
                                                 "type": "string",
-                                                "pattern": "^(-?\\\\d{1,3}){1}(\\\\.\\\\d{1,4}){0,1}$"
+                                                "pattern": "^(-?\\d{1,3}){1}(\\.\\d{1,4}){0,1}$"
                                               },
                                               "Notes": {
                                                 "type": "array",
@@ -7296,7 +7296,7 @@
                                                   "Code": {
                                                     "description": "The four letter Mnemonic used within an XML file to identify a code",
                                                     "type": "string",
-                                                    "pattern": "^\\\\w{0,4}$"
+                                                    "pattern": "^\\w{0,4}$"
                                                   },
                                                   "Name": {
                                                     "description": "Long name associated with the code",
@@ -7323,7 +7323,7 @@
                                                   "Code": {
                                                     "description": "The four letter Mnemonic used within an XML file to identify a code",
                                                     "type": "string",
-                                                    "pattern": "^\\\\w{0,4}$"
+                                                    "pattern": "^\\w{0,4}$"
                                                   },
                                                   "Name": {
                                                     "description": "Long name associated with the code",
@@ -7351,7 +7351,7 @@
                                                   "Code": {
                                                     "description": "The four letter Mnemonic used within an XML file to identify a code",
                                                     "type": "string",
-                                                    "pattern": "^\\\\w{0,4}$"
+                                                    "pattern": "^\\w{0,4}$"
                                                   },
                                                   "Name": {
                                                     "description": "Long name associated with the code",
@@ -7435,7 +7435,7 @@
                                         "BufferAmount": {
                                           "description": "When a customer exceeds their credit limit, a financial institution will not charge the customer unauthorised overdraft charges if they do not exceed by more than the buffer amount. Note: Authorised overdraft charges may still apply.",
                                           "type": "string",
-                                          "pattern": "^(-?\\\\d{1,14}){1}(\\\\.\\\\d{1,4}){0,1}$"
+                                          "pattern": "^(-?\\d{1,14}){1}(\\.\\d{1,4}){0,1}$"
                                         },
                                         "Notes": {
                                           "type": "array",
@@ -7464,17 +7464,17 @@
                                               "TierValueMin": {
                                                 "description": "Minimum value of Overdraft Tier/Band",
                                                 "type": "string",
-                                                "pattern": "^(-?\\\\d{1,14}){1}(\\\\.\\\\d{1,4}){0,1}$"
+                                                "pattern": "^(-?\\d{1,14}){1}(\\.\\d{1,4}){0,1}$"
                                               },
                                               "TierValueMax": {
                                                 "description": "Maximum value of Overdraft Tier/Band",
                                                 "type": "string",
-                                                "pattern": "^(-?\\\\d{1,14}){1}(\\\\.\\\\d{1,4}){0,1}$"
+                                                "pattern": "^(-?\\d{1,14}){1}(\\.\\d{1,4}){0,1}$"
                                               },
                                               "EAR": {
                                                 "description": "EAR means Effective Annual Rate and/or Equivalent Annual Rate (frequently\nused interchangeably), being the actual annual interest rate of an Overdraft.",
                                                 "type": "string",
-                                                "pattern": "^(-?\\\\d{1,3}){1}(\\\\.\\\\d{1,4}){0,1}$"
+                                                "pattern": "^(-?\\d{1,3}){1}(\\.\\d{1,4}){0,1}$"
                                               },
                                               "AgreementLengthMin": {
                                                 "description": "Specifies the minimum length of a band for a fixed overdraft agreement",
@@ -7575,7 +7575,7 @@
                                                           "FeeCapAmount": {
                                                             "description": "Cap amount charged for a fee/charge",
                                                             "type": "string",
-                                                            "pattern": "^(-?\\\\d{1,14}){1}(\\\\.\\\\d{1,4}){0,1}$"
+                                                            "pattern": "^(-?\\d{1,14}){1}(\\.\\d{1,4}){0,1}$"
                                                           },
                                                           "CappingPeriod": {
                                                             "description": "Period e.g. day, week, month etc. for which the fee/charge is capped",
@@ -7612,7 +7612,7 @@
                                                                 "Code": {
                                                                   "description": "The four letter Mnemonic used within an XML file to identify a code",
                                                                   "type": "string",
-                                                                  "pattern": "^\\\\w{0,4}$"
+                                                                  "pattern": "^\\w{0,4}$"
                                                                 },
                                                                 "Name": {
                                                                   "description": "Long name associated with the code",
@@ -7671,17 +7671,17 @@
                                                           "IncrementalBorrowingAmount": {
                                                             "description": "Every additional tranche of an overdraft balance to which an overdraft fee is applied",
                                                             "type": "string",
-                                                            "pattern": "^(-?\\\\d{1,14}){1}(\\\\.\\\\d{1,4}){0,1}$"
+                                                            "pattern": "^(-?\\d{1,14}){1}(\\.\\d{1,4}){0,1}$"
                                                           },
                                                           "FeeAmount": {
                                                             "description": "Amount charged for an overdraft fee/charge (where it is charged in terms of an amount rather than a rate)",
                                                             "type": "string",
-                                                            "pattern": "^(-?\\\\d{1,14}){1}(\\\\.\\\\d{1,4}){0,1}$"
+                                                            "pattern": "^(-?\\d{1,14}){1}(\\.\\d{1,4}){0,1}$"
                                                           },
                                                           "FeeRate": {
                                                             "description": "Rate charged for overdraft fee/charge (where it is charged in terms of a rate rather than an amount)",
                                                             "type": "string",
-                                                            "pattern": "^(-?\\\\d{1,3}){1}(\\\\.\\\\d{1,4}){0,1}$"
+                                                            "pattern": "^(-?\\d{1,3}){1}(\\.\\d{1,4}){0,1}$"
                                                           },
                                                           "FeeRateType": {
                                                             "description": "Rate type for overdraft fee/charge (where it is charged in terms of a rate rather than an amount)",
@@ -7805,7 +7805,7 @@
                                                                 "FeeCapAmount": {
                                                                   "description": "Cap amount charged for a fee/charge",
                                                                   "type": "string",
-                                                                  "pattern": "^(-?\\\\d{1,14}){1}(\\\\.\\\\d{1,4}){0,1}$"
+                                                                  "pattern": "^(-?\\d{1,14}){1}(\\.\\d{1,4}){0,1}$"
                                                                 },
                                                                 "CappingPeriod": {
                                                                   "description": "Period e.g. day, week, month etc. for which the fee/charge is capped",
@@ -7842,7 +7842,7 @@
                                                                       "Code": {
                                                                         "description": "The four letter Mnemonic used within an XML file to identify a code",
                                                                         "type": "string",
-                                                                        "pattern": "^\\\\w{0,4}$"
+                                                                        "pattern": "^\\w{0,4}$"
                                                                       },
                                                                       "Name": {
                                                                         "description": "Long name associated with the code",
@@ -7873,7 +7873,7 @@
                                                               "Code": {
                                                                 "description": "The four letter Mnemonic used within an XML file to identify a code",
                                                                 "type": "string",
-                                                                "pattern": "^\\\\w{0,4}$"
+                                                                "pattern": "^\\w{0,4}$"
                                                               },
                                                               "Name": {
                                                                 "description": "Long name associated with the code",
@@ -7901,7 +7901,7 @@
                                                               "Code": {
                                                                 "description": "The four letter Mnemonic used within an XML file to identify a code",
                                                                 "type": "string",
-                                                                "pattern": "^\\\\w{0,4}$"
+                                                                "pattern": "^\\w{0,4}$"
                                                               },
                                                               "Name": {
                                                                 "description": "Long name associated with the code",
@@ -7929,7 +7929,7 @@
                                                               "Code": {
                                                                 "description": "The four letter Mnemonic used within an XML file to identify a code",
                                                                 "type": "string",
-                                                                "pattern": "^\\\\w{0,4}$"
+                                                                "pattern": "^\\w{0,4}$"
                                                               },
                                                               "Name": {
                                                                 "description": "Long name associated with the code",
@@ -7957,7 +7957,7 @@
                                                               "Code": {
                                                                 "description": "The four letter Mnemonic used within an XML file to identify a code",
                                                                 "type": "string",
-                                                                "pattern": "^\\\\w{0,4}$"
+                                                                "pattern": "^\\w{0,4}$"
                                                               },
                                                               "Name": {
                                                                 "description": "Long name associated with the code",
@@ -8041,7 +8041,7 @@
                                                     "FeeCapAmount": {
                                                       "description": "Cap amount charged for a fee/charge",
                                                       "type": "string",
-                                                      "pattern": "^(-?\\\\d{1,14}){1}(\\\\.\\\\d{1,4}){0,1}$"
+                                                      "pattern": "^(-?\\d{1,14}){1}(\\.\\d{1,4}){0,1}$"
                                                     },
                                                     "CappingPeriod": {
                                                       "description": "Period e.g. day, week, month etc. for which the fee/charge is capped",
@@ -8078,7 +8078,7 @@
                                                           "Code": {
                                                             "description": "The four letter Mnemonic used within an XML file to identify a code",
                                                             "type": "string",
-                                                            "pattern": "^\\\\w{0,4}$"
+                                                            "pattern": "^\\w{0,4}$"
                                                           },
                                                           "Name": {
                                                             "description": "Long name associated with the code",
@@ -8137,17 +8137,17 @@
                                                     "IncrementalBorrowingAmount": {
                                                       "description": "Every additional tranche of an overdraft balance to which an overdraft fee is applied",
                                                       "type": "string",
-                                                      "pattern": "^(-?\\\\d{1,14}){1}(\\\\.\\\\d{1,4}){0,1}$"
+                                                      "pattern": "^(-?\\d{1,14}){1}(\\.\\d{1,4}){0,1}$"
                                                     },
                                                     "FeeAmount": {
                                                       "description": "Amount charged for an overdraft fee/charge (where it is charged in terms of an amount rather than a rate)",
                                                       "type": "string",
-                                                      "pattern": "^(-?\\\\d{1,14}){1}(\\\\.\\\\d{1,4}){0,1}$"
+                                                      "pattern": "^(-?\\d{1,14}){1}(\\.\\d{1,4}){0,1}$"
                                                     },
                                                     "FeeRate": {
                                                       "description": "Rate charged for overdraft fee/charge (where it is charged in terms of a rate rather than an amount)",
                                                       "type": "string",
-                                                      "pattern": "^(-?\\\\d{1,3}){1}(\\\\.\\\\d{1,4}){0,1}$"
+                                                      "pattern": "^(-?\\d{1,3}){1}(\\.\\d{1,4}){0,1}$"
                                                     },
                                                     "FeeRateType": {
                                                       "description": "Rate type for overdraft fee/charge (where it is charged in terms of a rate rather than an amount)",
@@ -8271,7 +8271,7 @@
                                                           "FeeCapAmount": {
                                                             "description": "Cap amount charged for a fee/charge",
                                                             "type": "string",
-                                                            "pattern": "^(-?\\\\d{1,14}){1}(\\\\.\\\\d{1,4}){0,1}$"
+                                                            "pattern": "^(-?\\d{1,14}){1}(\\.\\d{1,4}){0,1}$"
                                                           },
                                                           "CappingPeriod": {
                                                             "description": "Period e.g. day, week, month etc. for which the fee/charge is capped",
@@ -8308,7 +8308,7 @@
                                                                 "Code": {
                                                                   "description": "The four letter Mnemonic used within an XML file to identify a code",
                                                                   "type": "string",
-                                                                  "pattern": "^\\\\w{0,4}$"
+                                                                  "pattern": "^\\w{0,4}$"
                                                                 },
                                                                 "Name": {
                                                                   "description": "Long name associated with the code",
@@ -8339,7 +8339,7 @@
                                                         "Code": {
                                                           "description": "The four letter Mnemonic used within an XML file to identify a code",
                                                           "type": "string",
-                                                          "pattern": "^\\\\w{0,4}$"
+                                                          "pattern": "^\\w{0,4}$"
                                                         },
                                                         "Name": {
                                                           "description": "Long name associated with the code",
@@ -8367,7 +8367,7 @@
                                                         "Code": {
                                                           "description": "The four letter Mnemonic used within an XML file to identify a code",
                                                           "type": "string",
-                                                          "pattern": "^\\\\w{0,4}$"
+                                                          "pattern": "^\\w{0,4}$"
                                                         },
                                                         "Name": {
                                                           "description": "Long name associated with the code",
@@ -8395,7 +8395,7 @@
                                                         "Code": {
                                                           "description": "The four letter Mnemonic used within an XML file to identify a code",
                                                           "type": "string",
-                                                          "pattern": "^\\\\w{0,4}$"
+                                                          "pattern": "^\\w{0,4}$"
                                                         },
                                                         "Name": {
                                                           "description": "Long name associated with the code",
@@ -8423,7 +8423,7 @@
                                                         "Code": {
                                                           "description": "The four letter Mnemonic used within an XML file to identify a code",
                                                           "type": "string",
-                                                          "pattern": "^\\\\w{0,4}$"
+                                                          "pattern": "^\\w{0,4}$"
                                                         },
                                                         "Name": {
                                                           "description": "Long name associated with the code",
@@ -8523,7 +8523,7 @@
                                             "Code": {
                                               "description": "The four letter Mnemonic used within an XML file to identify a code",
                                               "type": "string",
-                                              "pattern": "^\\\\w{0,4}$"
+                                              "pattern": "^\\w{0,4}$"
                                             },
                                             "Name": {
                                               "description": "Long name associated with the code",
@@ -8562,12 +8562,12 @@
                                               "TierValueMinimum": {
                                                 "description": "Minimum loan value for which the loan interest tier applies.",
                                                 "type": "string",
-                                                "pattern": "^(-?\\\\d{1,14}){1}(\\\\.\\\\d{1,4}){0,1}$"
+                                                "pattern": "^(-?\\d{1,14}){1}(\\.\\d{1,4}){0,1}$"
                                               },
                                               "TierValueMaximum": {
                                                 "description": "Maximum loan value for which the loan interest tier applies.",
                                                 "type": "string",
-                                                "pattern": "^(-?\\\\d{1,14}){1}(\\\\.\\\\d{1,4}){0,1}$"
+                                                "pattern": "^(-?\\d{1,14}){1}(\\.\\d{1,4}){0,1}$"
                                               },
                                               "TierValueMinTerm": {
                                                 "description": "Minimum loan term for which the loan interest tier applies.",
@@ -8614,7 +8614,7 @@
                                               "RepAPR": {
                                                 "description": "The annual equivalent rate (AER) is interest that is calculated under the assumption that any interest paid is combined with the original balance and the next interest payment will be based on the slightly higher account balance. Overall, this means that interest can be compounded several times in a year depending on the number of times that interest payments are made. \nFor SME Loan, this APR is the representative APR which includes any account fees.",
                                                 "type": "string",
-                                                "pattern": "^(-?\\\\d{1,3}){1}(\\\\.\\\\d{1,4}){0,1}$"
+                                                "pattern": "^(-?\\d{1,3}){1}(\\.\\d{1,4}){0,1}$"
                                               },
                                               "LoanProviderInterestRateType": {
                                                 "description": "Interest rate types, other than APR, which financial institutions may use to describe the annual interest rate payable for the SME Loan.",
@@ -8631,7 +8631,7 @@
                                               "LoanProviderInterestRate": {
                                                 "description": "Loan provider Interest for the SME Loan product",
                                                 "type": "string",
-                                                "pattern": "^(-?\\\\d{1,3}){1}(\\\\.\\\\d{1,4}){0,1}$"
+                                                "pattern": "^(-?\\d{1,3}){1}(\\.\\d{1,4}){0,1}$"
                                               },
                                               "Notes": {
                                                 "type": "array",
@@ -8653,7 +8653,7 @@
                                                   "Code": {
                                                     "description": "The four letter Mnemonic used within an XML file to identify a code",
                                                     "type": "string",
-                                                    "pattern": "^\\\\w{0,4}$"
+                                                    "pattern": "^\\w{0,4}$"
                                                   },
                                                   "Name": {
                                                     "description": "Long name associated with the code",
@@ -8711,12 +8711,12 @@
                                                           "FeeAmount": {
                                                             "description": "Fee Amount charged for a fee/charge (where it is charged in terms of an amount rather than a rate)",
                                                             "type": "string",
-                                                            "pattern": "^(-?\\\\d{1,14}){1}(\\\\.\\\\d{1,4}){0,1}$"
+                                                            "pattern": "^(-?\\d{1,14}){1}(\\.\\d{1,4}){0,1}$"
                                                           },
                                                           "FeeRate": {
                                                             "description": "Rate charged for Fee/Charge (where it is charged in terms of a rate rather than an amount)",
                                                             "type": "string",
-                                                            "pattern": "^(-?\\\\d{1,3}){1}(\\\\.\\\\d{1,4}){0,1}$"
+                                                            "pattern": "^(-?\\d{1,3}){1}(\\.\\d{1,4}){0,1}$"
                                                           },
                                                           "FeeRateType": {
                                                             "description": "Rate type for Fee/Charge (where it is charged in terms of a rate rather than an amount)",
@@ -8805,7 +8805,7 @@
                                                               "Code": {
                                                                 "description": "The four letter Mnemonic used within an XML file to identify a code",
                                                                 "type": "string",
-                                                                "pattern": "^\\\\w{0,4}$"
+                                                                "pattern": "^\\w{0,4}$"
                                                               },
                                                               "FeeCategory": {
                                                                 "description": "Categorisation of fees and charges into standard categories.",
@@ -8842,7 +8842,7 @@
                                                               "Code": {
                                                                 "description": "The four letter Mnemonic used within an XML file to identify a code",
                                                                 "type": "string",
-                                                                "pattern": "^\\\\w{0,4}$"
+                                                                "pattern": "^\\w{0,4}$"
                                                               },
                                                               "Name": {
                                                                 "description": "Long name associated with the code",
@@ -8870,7 +8870,7 @@
                                                               "Code": {
                                                                 "description": "The four letter Mnemonic used within an XML file to identify a code",
                                                                 "type": "string",
-                                                                "pattern": "^\\\\w{0,4}$"
+                                                                "pattern": "^\\w{0,4}$"
                                                               },
                                                               "Name": {
                                                                 "description": "Long name associated with the code",
@@ -8898,7 +8898,7 @@
                                                               "Code": {
                                                                 "description": "The four letter Mnemonic used within an XML file to identify a code",
                                                                 "type": "string",
-                                                                "pattern": "^\\\\w{0,4}$"
+                                                                "pattern": "^\\w{0,4}$"
                                                               },
                                                               "Name": {
                                                                 "description": "Long name associated with the code",
@@ -8963,7 +8963,7 @@
                                                           "FeeCapAmount": {
                                                             "description": "Cap amount charged for a fee/charge (where it is charged in terms of an amount rather than a rate)",
                                                             "type": "string",
-                                                            "pattern": "^(-?\\\\d{1,14}){1}(\\\\.\\\\d{1,4}){0,1}$"
+                                                            "pattern": "^(-?\\d{1,14}){1}(\\.\\d{1,4}){0,1}$"
                                                           },
                                                           "CappingPeriod": {
                                                             "description": "Period e.g. day, week, month etc. for which the fee/charge is capped",
@@ -9014,7 +9014,7 @@
                                                                 "Code": {
                                                                   "description": "The four letter Mnemonic used within an XML file to identify a code",
                                                                   "type": "string",
-                                                                  "pattern": "^\\\\w{0,4}$"
+                                                                  "pattern": "^\\w{0,4}$"
                                                                 },
                                                                 "Name": {
                                                                   "description": "Long name associated with the code",
@@ -9083,12 +9083,12 @@
                                                     "FeeAmount": {
                                                       "description": "Fee Amount charged for a fee/charge (where it is charged in terms of an amount rather than a rate)",
                                                       "type": "string",
-                                                      "pattern": "^(-?\\\\d{1,14}){1}(\\\\.\\\\d{1,4}){0,1}$"
+                                                      "pattern": "^(-?\\d{1,14}){1}(\\.\\d{1,4}){0,1}$"
                                                     },
                                                     "FeeRate": {
                                                       "description": "Rate charged for Fee/Charge (where it is charged in terms of a rate rather than an amount)",
                                                       "type": "string",
-                                                      "pattern": "^(-?\\\\d{1,3}){1}(\\\\.\\\\d{1,4}){0,1}$"
+                                                      "pattern": "^(-?\\d{1,3}){1}(\\.\\d{1,4}){0,1}$"
                                                     },
                                                     "FeeRateType": {
                                                       "description": "Rate type for Fee/Charge (where it is charged in terms of a rate rather than an amount)",
@@ -9177,7 +9177,7 @@
                                                         "Code": {
                                                           "description": "The four letter Mnemonic used within an XML file to identify a code",
                                                           "type": "string",
-                                                          "pattern": "^\\\\w{0,4}$"
+                                                          "pattern": "^\\w{0,4}$"
                                                         },
                                                         "FeeCategory": {
                                                           "description": "Categorisation of fees and charges into standard categories.",
@@ -9214,7 +9214,7 @@
                                                         "Code": {
                                                           "description": "The four letter Mnemonic used within an XML file to identify a code",
                                                           "type": "string",
-                                                          "pattern": "^\\\\w{0,4}$"
+                                                          "pattern": "^\\w{0,4}$"
                                                         },
                                                         "Name": {
                                                           "description": "Long name associated with the code",
@@ -9242,7 +9242,7 @@
                                                         "Code": {
                                                           "description": "The four letter Mnemonic used within an XML file to identify a code",
                                                           "type": "string",
-                                                          "pattern": "^\\\\w{0,4}$"
+                                                          "pattern": "^\\w{0,4}$"
                                                         },
                                                         "Name": {
                                                           "description": "Long name associated with the code",
@@ -9270,7 +9270,7 @@
                                                         "Code": {
                                                           "description": "The four letter Mnemonic used within an XML file to identify a code",
                                                           "type": "string",
-                                                          "pattern": "^\\\\w{0,4}$"
+                                                          "pattern": "^\\w{0,4}$"
                                                         },
                                                         "Name": {
                                                           "description": "Long name associated with the code",
@@ -9335,7 +9335,7 @@
                                                     "FeeCapAmount": {
                                                       "description": "Cap amount charged for a fee/charge (where it is charged in terms of an amount rather than a rate)",
                                                       "type": "string",
-                                                      "pattern": "^(-?\\\\d{1,14}){1}(\\\\.\\\\d{1,4}){0,1}$"
+                                                      "pattern": "^(-?\\d{1,14}){1}(\\.\\d{1,4}){0,1}$"
                                                     },
                                                     "CappingPeriod": {
                                                       "description": "Period e.g. day, week, month etc. for which the fee/charge is capped",
@@ -9386,7 +9386,7 @@
                                                           "Code": {
                                                             "description": "The four letter Mnemonic used within an XML file to identify a code",
                                                             "type": "string",
-                                                            "pattern": "^\\\\w{0,4}$"
+                                                            "pattern": "^\\w{0,4}$"
                                                           },
                                                           "Name": {
                                                             "description": "Long name associated with the code",
@@ -9486,7 +9486,7 @@
                                       "Code": {
                                         "description": "The four letter Mnemonic used within an XML file to identify a code",
                                         "type": "string",
-                                        "pattern": "^\\\\w{0,4}$"
+                                        "pattern": "^\\w{0,4}$"
                                       },
                                       "Name": {
                                         "description": "Long name associated with the code",
@@ -9513,7 +9513,7 @@
                                       "Code": {
                                         "description": "The four letter Mnemonic used within an XML file to identify a code",
                                         "type": "string",
-                                        "pattern": "^\\\\w{0,4}$"
+                                        "pattern": "^\\w{0,4}$"
                                       },
                                       "Name": {
                                         "description": "Long name associated with the code",
@@ -9540,7 +9540,7 @@
                                       "Code": {
                                         "description": "The four letter Mnemonic used within an XML file to identify a code",
                                         "type": "string",
-                                        "pattern": "^\\\\w{0,4}$"
+                                        "pattern": "^\\w{0,4}$"
                                       },
                                       "Name": {
                                         "description": "Long name associated with the code",
@@ -9596,12 +9596,12 @@
                                             "FeeAmount": {
                                               "description": "Fee Amount charged for a fee/charge (where it is charged in terms of an amount rather than a rate)",
                                               "type": "string",
-                                              "pattern": "^(-?\\\\d{1,14}){1}(\\\\.\\\\d{1,4}){0,1}$"
+                                              "pattern": "^(-?\\d{1,14}){1}(\\.\\d{1,4}){0,1}$"
                                             },
                                             "FeeRate": {
                                               "description": "Rate charged for Fee/Charge (where it is charged in terms of a rate rather than an amount)",
                                               "type": "string",
-                                              "pattern": "^(-?\\\\d{1,3}){1}(\\\\.\\\\d{1,4}){0,1}$"
+                                              "pattern": "^(-?\\d{1,3}){1}(\\.\\d{1,4}){0,1}$"
                                             },
                                             "FeeRateType": {
                                               "description": "Rate type for Fee/Charge (where it is charged in terms of a rate rather than an amount)",
@@ -9690,7 +9690,7 @@
                                                 "Code": {
                                                   "description": "The four letter Mnemonic used within an XML file to identify a code",
                                                   "type": "string",
-                                                  "pattern": "^\\\\w{0,4}$"
+                                                  "pattern": "^\\w{0,4}$"
                                                 },
                                                 "FeeCategory": {
                                                   "description": "Categorisation of fees and charges into standard categories.",
@@ -9727,7 +9727,7 @@
                                                 "Code": {
                                                   "description": "The four letter Mnemonic used within an XML file to identify a code",
                                                   "type": "string",
-                                                  "pattern": "^\\\\w{0,4}$"
+                                                  "pattern": "^\\w{0,4}$"
                                                 },
                                                 "Name": {
                                                   "description": "Long name associated with the code",
@@ -9755,7 +9755,7 @@
                                                 "Code": {
                                                   "description": "The four letter Mnemonic used within an XML file to identify a code",
                                                   "type": "string",
-                                                  "pattern": "^\\\\w{0,4}$"
+                                                  "pattern": "^\\w{0,4}$"
                                                 },
                                                 "Name": {
                                                   "description": "Long name associated with the code",
@@ -9783,7 +9783,7 @@
                                                 "Code": {
                                                   "description": "The four letter Mnemonic used within an XML file to identify a code",
                                                   "type": "string",
-                                                  "pattern": "^\\\\w{0,4}$"
+                                                  "pattern": "^\\w{0,4}$"
                                                 },
                                                 "Name": {
                                                   "description": "Long name associated with the code",
@@ -9848,7 +9848,7 @@
                                             "FeeCapAmount": {
                                               "description": "Cap amount charged for a fee/charge (where it is charged in terms of an amount rather than a rate)",
                                               "type": "string",
-                                              "pattern": "^(-?\\\\d{1,14}){1}(\\\\.\\\\d{1,4}){0,1}$"
+                                              "pattern": "^(-?\\d{1,14}){1}(\\.\\d{1,4}){0,1}$"
                                             },
                                             "CappingPeriod": {
                                               "description": "Period e.g. day, week, month etc. for which the fee/charge is capped",
@@ -9885,7 +9885,7 @@
                                                   "Code": {
                                                     "description": "The four letter Mnemonic used within an XML file to identify a code",
                                                     "type": "string",
-                                                    "pattern": "^\\\\w{0,4}$"
+                                                    "pattern": "^\\w{0,4}$"
                                                   },
                                                   "Name": {
                                                     "description": "Long name associated with the code",
@@ -9979,7 +9979,7 @@
                                         "Code": {
                                           "description": "The four letter Mnemonic used within an XML file to identify a code",
                                           "type": "string",
-                                          "pattern": "^\\\\w{0,4}$"
+                                          "pattern": "^\\w{0,4}$"
                                         },
                                         "Name": {
                                           "description": "Long name associated with the code",
@@ -10037,12 +10037,12 @@
                                           "FeeAmount": {
                                             "description": "Fee Amount charged for a fee/charge (where it is charged in terms of an amount rather than a rate)",
                                             "type": "string",
-                                            "pattern": "^(-?\\\\d{1,14}){1}(\\\\.\\\\d{1,4}){0,1}$"
+                                            "pattern": "^(-?\\d{1,14}){1}(\\.\\d{1,4}){0,1}$"
                                           },
                                           "FeeRate": {
                                             "description": "Rate charged for Fee/Charge (where it is charged in terms of a rate rather than an amount)",
                                             "type": "string",
-                                            "pattern": "^(-?\\\\d{1,3}){1}(\\\\.\\\\d{1,4}){0,1}$"
+                                            "pattern": "^(-?\\d{1,3}){1}(\\.\\d{1,4}){0,1}$"
                                           },
                                           "FeeRateType": {
                                             "description": "Rate type for Fee/Charge (where it is charged in terms of a rate rather than an amount)",
@@ -10163,7 +10163,7 @@
                                                 "FeeCapAmount": {
                                                   "description": "Cap amount charged for a fee/charge (where it is charged in terms of an amount rather than a rate)",
                                                   "type": "string",
-                                                  "pattern": "^(-?\\\\d{1,14}){1}(\\\\.\\\\d{1,4}){0,1}$"
+                                                  "pattern": "^(-?\\d{1,14}){1}(\\.\\d{1,4}){0,1}$"
                                                 },
                                                 "CappingPeriod": {
                                                   "description": "Period e.g. day, week, month etc. for which the fee/charge is capped",
@@ -10200,7 +10200,7 @@
                                                       "Code": {
                                                         "description": "The four letter Mnemonic used within an XML file to identify a code",
                                                         "type": "string",
-                                                        "pattern": "^\\\\w{0,4}$"
+                                                        "pattern": "^\\w{0,4}$"
                                                       },
                                                       "Name": {
                                                         "description": "Long name associated with the code",
@@ -10230,7 +10230,7 @@
                                               "Code": {
                                                 "description": "The four letter Mnemonic used within an XML file to identify a code",
                                                 "type": "string",
-                                                "pattern": "^\\\\w{0,4}$"
+                                                "pattern": "^\\w{0,4}$"
                                               },
                                               "Name": {
                                                 "description": "Long name associated with the code",
@@ -10259,7 +10259,7 @@
                                               "Code": {
                                                 "description": "The four letter Mnemonic used within an XML file to identify a code",
                                                 "type": "string",
-                                                "pattern": "^\\\\w{0,4}$"
+                                                "pattern": "^\\w{0,4}$"
                                               },
                                               "FeeCategory": {
                                                 "description": "Categorisation of fees and charges into standard categories.",
@@ -10296,7 +10296,7 @@
                                               "Code": {
                                                 "description": "The four letter Mnemonic used within an XML file to identify a code",
                                                 "type": "string",
-                                                "pattern": "^\\\\w{0,4}$"
+                                                "pattern": "^\\w{0,4}$"
                                               },
                                               "Name": {
                                                 "description": "Long name associated with the code",
@@ -10324,7 +10324,7 @@
                                               "Code": {
                                                 "description": "The four letter Mnemonic used within an XML file to identify a code",
                                                 "type": "string",
-                                                "pattern": "^\\\\w{0,4}$"
+                                                "pattern": "^\\w{0,4}$"
                                               },
                                               "Name": {
                                                 "description": "Long name associated with the code",
@@ -10352,7 +10352,7 @@
                                               "Code": {
                                                 "description": "The four letter Mnemonic used within an XML file to identify a code",
                                                 "type": "string",
-                                                "pattern": "^\\\\w{0,4}$"
+                                                "pattern": "^\\w{0,4}$"
                                               },
                                               "Name": {
                                                 "description": "Long name associated with the code",
@@ -10376,22 +10376,22 @@
                                               "MinimumAmount": {
                                                 "description": "Minimum Amount on which fee/charge is applicable (where it is expressed as an amount)",
                                                 "type": "string",
-                                                "pattern": "^(-?\\\\d{1,14}){1}(\\\\.\\\\d{1,4}){0,1}$"
+                                                "pattern": "^(-?\\d{1,14}){1}(\\.\\d{1,4}){0,1}$"
                                               },
                                               "MaximumAmount": {
                                                 "description": "Maximum Amount on which fee is applicable (where it is expressed as an amount)",
                                                 "type": "string",
-                                                "pattern": "^(-?\\\\d{1,14}){1}(\\\\.\\\\d{1,4}){0,1}$"
+                                                "pattern": "^(-?\\d{1,14}){1}(\\.\\d{1,4}){0,1}$"
                                               },
                                               "MinimumRate": {
                                                 "description": "Minimum rate on which fee/charge is applicable(where it is expressed as an rate)",
                                                 "type": "string",
-                                                "pattern": "^(-?\\\\d{1,3}){1}(\\\\.\\\\d{1,4}){0,1}$"
+                                                "pattern": "^(-?\\d{1,3}){1}(\\.\\d{1,4}){0,1}$"
                                               },
                                               "MaximumRate": {
                                                 "description": "Maximum rate on which fee/charge is applicable(where it is expressed as an rate)",
                                                 "type": "string",
-                                                "pattern": "^(-?\\\\d{1,3}){1}(\\\\.\\\\d{1,4}){0,1}$"
+                                                "pattern": "^(-?\\d{1,3}){1}(\\.\\d{1,4}){0,1}$"
                                               }
                                             }
                                           }
@@ -10443,7 +10443,7 @@
                                           "FeeCapAmount": {
                                             "description": "Cap amount charged for a fee/charge (where it is charged in terms of an amount rather than a rate)",
                                             "type": "string",
-                                            "pattern": "^(-?\\\\d{1,14}){1}(\\\\.\\\\d{1,4}){0,1}$"
+                                            "pattern": "^(-?\\d{1,14}){1}(\\.\\d{1,4}){0,1}$"
                                           },
                                           "CappingPeriod": {
                                             "description": "Period e.g. day, week, month etc. for which the fee/charge is capped",
@@ -10480,7 +10480,7 @@
                                                 "Code": {
                                                   "description": "The four letter Mnemonic used within an XML file to identify a code",
                                                   "type": "string",
-                                                  "pattern": "^\\\\w{0,4}$"
+                                                  "pattern": "^\\w{0,4}$"
                                                 },
                                                 "Name": {
                                                   "description": "Long name associated with the code",
@@ -24660,7 +24660,7 @@
                                   "MonthlyMaximumCharge": {
                                     "description": "The maximum relevant charges that could accrue as defined fully in Part 7 of the CMA order",
                                     "type": "string",
-                                    "pattern": "^(-?\\\\d{1,14}){1}(\\\\.\\\\d{1,4}){0,1}$"
+                                    "pattern": "^(-?\\d{1,14}){1}(\\.\\d{1,4}){0,1}$"
                                   },
                                   "Notes": {
                                     "type": "array",
@@ -24681,7 +24681,7 @@
                                       "Code": {
                                         "description": "The four letter Mnemonic used within an XML file to identify a code",
                                         "type": "string",
-                                        "pattern": "^\\\\w{0,4}$"
+                                        "pattern": "^\\w{0,4}$"
                                       },
                                       "Name": {
                                         "description": "Long name associated with the code",
@@ -24764,7 +24764,7 @@
                                             "Code": {
                                               "description": "The four letter Mnemonic used within an XML file to identify a code",
                                               "type": "string",
-                                              "pattern": "^\\\\w{0,4}$"
+                                              "pattern": "^\\w{0,4}$"
                                             },
                                             "Name": {
                                               "description": "Long name associated with the code",
@@ -24791,7 +24791,7 @@
                                             "Code": {
                                               "description": "The four letter Mnemonic used within an XML file to identify a code",
                                               "type": "string",
-                                              "pattern": "^\\\\w{0,4}$"
+                                              "pattern": "^\\w{0,4}$"
                                             },
                                             "Name": {
                                               "description": "Long name associated with the code",
@@ -24829,12 +24829,12 @@
                                               "TierValueMinimum": {
                                                 "description": "Minimum deposit value for which the credit interest tier applies.",
                                                 "type": "string",
-                                                "pattern": "^(-?\\\\d{1,14}){1}(\\\\.\\\\d{1,4}){0,1}$"
+                                                "pattern": "^(-?\\d{1,14}){1}(\\.\\d{1,4}){0,1}$"
                                               },
                                               "TierValueMaximum": {
                                                 "description": "Maximum deposit value for which the credit interest tier applies.",
                                                 "type": "string",
-                                                "pattern": "^(-?\\\\d{1,14}){1}(\\\\.\\\\d{1,4}){0,1}$"
+                                                "pattern": "^(-?\\d{1,14}){1}(\\.\\d{1,4}){0,1}$"
                                               },
                                               "CalculationFrequency": {
                                                 "description": "How often is credit interest calculated for the account.",
@@ -24886,7 +24886,7 @@
                                               "AER": {
                                                 "description": "The annual equivalent rate (AER) is interest that is calculated under the assumption that any interest paid is combined with the original balance and the next interest payment will be based on the slightly higher account balance. Overall, this means that interest can be compounded several times in a year depending on the number of times that interest payments are made. \nRead more: Annual Equivalent Rate (AER) http://www.investopedia.com/terms/a/aer.asp#ixzz4gfR7IO1A",
                                                 "type": "string",
-                                                "pattern": "^(-?\\\\d{1,3}){1}(\\\\.\\\\d{1,4}){0,1}$"
+                                                "pattern": "^(-?\\d{1,3}){1}(\\.\\d{1,4}){0,1}$"
                                               },
                                               "BankInterestRateType": {
                                                 "description": "Interest rate types, other than AER, which financial institutions may use to describe the annual interest rate payable to the account holder's account.",
@@ -24903,7 +24903,7 @@
                                               "BankInterestRate": {
                                                 "description": "Bank Interest for the product",
                                                 "type": "string",
-                                                "pattern": "^(-?\\\\d{1,3}){1}(\\\\.\\\\d{1,4}){0,1}$"
+                                                "pattern": "^(-?\\d{1,3}){1}(\\.\\d{1,4}){0,1}$"
                                               },
                                               "Notes": {
                                                 "type": "array",
@@ -24925,7 +24925,7 @@
                                                   "Code": {
                                                     "description": "The four letter Mnemonic used within an XML file to identify a code",
                                                     "type": "string",
-                                                    "pattern": "^\\\\w{0,4}$"
+                                                    "pattern": "^\\w{0,4}$"
                                                   },
                                                   "Name": {
                                                     "description": "Long name associated with the code",
@@ -24952,7 +24952,7 @@
                                                   "Code": {
                                                     "description": "The four letter Mnemonic used within an XML file to identify a code",
                                                     "type": "string",
-                                                    "pattern": "^\\\\w{0,4}$"
+                                                    "pattern": "^\\w{0,4}$"
                                                   },
                                                   "Name": {
                                                     "description": "Long name associated with the code",
@@ -24980,7 +24980,7 @@
                                                   "Code": {
                                                     "description": "The four letter Mnemonic used within an XML file to identify a code",
                                                     "type": "string",
-                                                    "pattern": "^\\\\w{0,4}$"
+                                                    "pattern": "^\\w{0,4}$"
                                                   },
                                                   "Name": {
                                                     "description": "Long name associated with the code",
@@ -25064,7 +25064,7 @@
                                         "BufferAmount": {
                                           "description": "When a customer exceeds their credit limit, a financial institution will not charge the customer unauthorised overdraft charges if they do not exceed by more than the buffer amount. Note: Authorised overdraft charges may still apply.",
                                           "type": "string",
-                                          "pattern": "^(-?\\\\d{1,14}){1}(\\\\.\\\\d{1,4}){0,1}$"
+                                          "pattern": "^(-?\\d{1,14}){1}(\\.\\d{1,4}){0,1}$"
                                         },
                                         "Notes": {
                                           "type": "array",
@@ -25093,17 +25093,17 @@
                                               "TierValueMin": {
                                                 "description": "Minimum value of Overdraft Tier/Band",
                                                 "type": "string",
-                                                "pattern": "^(-?\\\\d{1,14}){1}(\\\\.\\\\d{1,4}){0,1}$"
+                                                "pattern": "^(-?\\d{1,14}){1}(\\.\\d{1,4}){0,1}$"
                                               },
                                               "TierValueMax": {
                                                 "description": "Maximum value of Overdraft Tier/Band",
                                                 "type": "string",
-                                                "pattern": "^(-?\\\\d{1,14}){1}(\\\\.\\\\d{1,4}){0,1}$"
+                                                "pattern": "^(-?\\d{1,14}){1}(\\.\\d{1,4}){0,1}$"
                                               },
                                               "EAR": {
                                                 "description": "EAR means Effective Annual Rate and/or Equivalent Annual Rate (frequently\nused interchangeably), being the actual annual interest rate of an Overdraft.",
                                                 "type": "string",
-                                                "pattern": "^(-?\\\\d{1,3}){1}(\\\\.\\\\d{1,4}){0,1}$"
+                                                "pattern": "^(-?\\d{1,3}){1}(\\.\\d{1,4}){0,1}$"
                                               },
                                               "AgreementLengthMin": {
                                                 "description": "Specifies the minimum length of a band for a fixed overdraft agreement",
@@ -25204,7 +25204,7 @@
                                                           "FeeCapAmount": {
                                                             "description": "Cap amount charged for a fee/charge",
                                                             "type": "string",
-                                                            "pattern": "^(-?\\\\d{1,14}){1}(\\\\.\\\\d{1,4}){0,1}$"
+                                                            "pattern": "^(-?\\d{1,14}){1}(\\.\\d{1,4}){0,1}$"
                                                           },
                                                           "CappingPeriod": {
                                                             "description": "Period e.g. day, week, month etc. for which the fee/charge is capped",
@@ -25241,7 +25241,7 @@
                                                                 "Code": {
                                                                   "description": "The four letter Mnemonic used within an XML file to identify a code",
                                                                   "type": "string",
-                                                                  "pattern": "^\\\\w{0,4}$"
+                                                                  "pattern": "^\\w{0,4}$"
                                                                 },
                                                                 "Name": {
                                                                   "description": "Long name associated with the code",
@@ -25300,17 +25300,17 @@
                                                           "IncrementalBorrowingAmount": {
                                                             "description": "Every additional tranche of an overdraft balance to which an overdraft fee is applied",
                                                             "type": "string",
-                                                            "pattern": "^(-?\\\\d{1,14}){1}(\\\\.\\\\d{1,4}){0,1}$"
+                                                            "pattern": "^(-?\\d{1,14}){1}(\\.\\d{1,4}){0,1}$"
                                                           },
                                                           "FeeAmount": {
                                                             "description": "Amount charged for an overdraft fee/charge (where it is charged in terms of an amount rather than a rate)",
                                                             "type": "string",
-                                                            "pattern": "^(-?\\\\d{1,14}){1}(\\\\.\\\\d{1,4}){0,1}$"
+                                                            "pattern": "^(-?\\d{1,14}){1}(\\.\\d{1,4}){0,1}$"
                                                           },
                                                           "FeeRate": {
                                                             "description": "Rate charged for overdraft fee/charge (where it is charged in terms of a rate rather than an amount)",
                                                             "type": "string",
-                                                            "pattern": "^(-?\\\\d{1,3}){1}(\\\\.\\\\d{1,4}){0,1}$"
+                                                            "pattern": "^(-?\\d{1,3}){1}(\\.\\d{1,4}){0,1}$"
                                                           },
                                                           "FeeRateType": {
                                                             "description": "Rate type for overdraft fee/charge (where it is charged in terms of a rate rather than an amount)",
@@ -25434,7 +25434,7 @@
                                                                 "FeeCapAmount": {
                                                                   "description": "Cap amount charged for a fee/charge",
                                                                   "type": "string",
-                                                                  "pattern": "^(-?\\\\d{1,14}){1}(\\\\.\\\\d{1,4}){0,1}$"
+                                                                  "pattern": "^(-?\\d{1,14}){1}(\\.\\d{1,4}){0,1}$"
                                                                 },
                                                                 "CappingPeriod": {
                                                                   "description": "Period e.g. day, week, month etc. for which the fee/charge is capped",
@@ -25471,7 +25471,7 @@
                                                                       "Code": {
                                                                         "description": "The four letter Mnemonic used within an XML file to identify a code",
                                                                         "type": "string",
-                                                                        "pattern": "^\\\\w{0,4}$"
+                                                                        "pattern": "^\\w{0,4}$"
                                                                       },
                                                                       "Name": {
                                                                         "description": "Long name associated with the code",
@@ -25502,7 +25502,7 @@
                                                               "Code": {
                                                                 "description": "The four letter Mnemonic used within an XML file to identify a code",
                                                                 "type": "string",
-                                                                "pattern": "^\\\\w{0,4}$"
+                                                                "pattern": "^\\w{0,4}$"
                                                               },
                                                               "Name": {
                                                                 "description": "Long name associated with the code",
@@ -25530,7 +25530,7 @@
                                                               "Code": {
                                                                 "description": "The four letter Mnemonic used within an XML file to identify a code",
                                                                 "type": "string",
-                                                                "pattern": "^\\\\w{0,4}$"
+                                                                "pattern": "^\\w{0,4}$"
                                                               },
                                                               "Name": {
                                                                 "description": "Long name associated with the code",
@@ -25558,7 +25558,7 @@
                                                               "Code": {
                                                                 "description": "The four letter Mnemonic used within an XML file to identify a code",
                                                                 "type": "string",
-                                                                "pattern": "^\\\\w{0,4}$"
+                                                                "pattern": "^\\w{0,4}$"
                                                               },
                                                               "Name": {
                                                                 "description": "Long name associated with the code",
@@ -25586,7 +25586,7 @@
                                                               "Code": {
                                                                 "description": "The four letter Mnemonic used within an XML file to identify a code",
                                                                 "type": "string",
-                                                                "pattern": "^\\\\w{0,4}$"
+                                                                "pattern": "^\\w{0,4}$"
                                                               },
                                                               "Name": {
                                                                 "description": "Long name associated with the code",
@@ -25670,7 +25670,7 @@
                                                     "FeeCapAmount": {
                                                       "description": "Cap amount charged for a fee/charge",
                                                       "type": "string",
-                                                      "pattern": "^(-?\\\\d{1,14}){1}(\\\\.\\\\d{1,4}){0,1}$"
+                                                      "pattern": "^(-?\\d{1,14}){1}(\\.\\d{1,4}){0,1}$"
                                                     },
                                                     "CappingPeriod": {
                                                       "description": "Period e.g. day, week, month etc. for which the fee/charge is capped",
@@ -25707,7 +25707,7 @@
                                                           "Code": {
                                                             "description": "The four letter Mnemonic used within an XML file to identify a code",
                                                             "type": "string",
-                                                            "pattern": "^\\\\w{0,4}$"
+                                                            "pattern": "^\\w{0,4}$"
                                                           },
                                                           "Name": {
                                                             "description": "Long name associated with the code",
@@ -25766,17 +25766,17 @@
                                                     "IncrementalBorrowingAmount": {
                                                       "description": "Every additional tranche of an overdraft balance to which an overdraft fee is applied",
                                                       "type": "string",
-                                                      "pattern": "^(-?\\\\d{1,14}){1}(\\\\.\\\\d{1,4}){0,1}$"
+                                                      "pattern": "^(-?\\d{1,14}){1}(\\.\\d{1,4}){0,1}$"
                                                     },
                                                     "FeeAmount": {
                                                       "description": "Amount charged for an overdraft fee/charge (where it is charged in terms of an amount rather than a rate)",
                                                       "type": "string",
-                                                      "pattern": "^(-?\\\\d{1,14}){1}(\\\\.\\\\d{1,4}){0,1}$"
+                                                      "pattern": "^(-?\\d{1,14}){1}(\\.\\d{1,4}){0,1}$"
                                                     },
                                                     "FeeRate": {
                                                       "description": "Rate charged for overdraft fee/charge (where it is charged in terms of a rate rather than an amount)",
                                                       "type": "string",
-                                                      "pattern": "^(-?\\\\d{1,3}){1}(\\\\.\\\\d{1,4}){0,1}$"
+                                                      "pattern": "^(-?\\d{1,3}){1}(\\.\\d{1,4}){0,1}$"
                                                     },
                                                     "FeeRateType": {
                                                       "description": "Rate type for overdraft fee/charge (where it is charged in terms of a rate rather than an amount)",
@@ -25900,7 +25900,7 @@
                                                           "FeeCapAmount": {
                                                             "description": "Cap amount charged for a fee/charge",
                                                             "type": "string",
-                                                            "pattern": "^(-?\\\\d{1,14}){1}(\\\\.\\\\d{1,4}){0,1}$"
+                                                            "pattern": "^(-?\\d{1,14}){1}(\\.\\d{1,4}){0,1}$"
                                                           },
                                                           "CappingPeriod": {
                                                             "description": "Period e.g. day, week, month etc. for which the fee/charge is capped",
@@ -25937,7 +25937,7 @@
                                                                 "Code": {
                                                                   "description": "The four letter Mnemonic used within an XML file to identify a code",
                                                                   "type": "string",
-                                                                  "pattern": "^\\\\w{0,4}$"
+                                                                  "pattern": "^\\w{0,4}$"
                                                                 },
                                                                 "Name": {
                                                                   "description": "Long name associated with the code",
@@ -25968,7 +25968,7 @@
                                                         "Code": {
                                                           "description": "The four letter Mnemonic used within an XML file to identify a code",
                                                           "type": "string",
-                                                          "pattern": "^\\\\w{0,4}$"
+                                                          "pattern": "^\\w{0,4}$"
                                                         },
                                                         "Name": {
                                                           "description": "Long name associated with the code",
@@ -25996,7 +25996,7 @@
                                                         "Code": {
                                                           "description": "The four letter Mnemonic used within an XML file to identify a code",
                                                           "type": "string",
-                                                          "pattern": "^\\\\w{0,4}$"
+                                                          "pattern": "^\\w{0,4}$"
                                                         },
                                                         "Name": {
                                                           "description": "Long name associated with the code",
@@ -26024,7 +26024,7 @@
                                                         "Code": {
                                                           "description": "The four letter Mnemonic used within an XML file to identify a code",
                                                           "type": "string",
-                                                          "pattern": "^\\\\w{0,4}$"
+                                                          "pattern": "^\\w{0,4}$"
                                                         },
                                                         "Name": {
                                                           "description": "Long name associated with the code",
@@ -26052,7 +26052,7 @@
                                                         "Code": {
                                                           "description": "The four letter Mnemonic used within an XML file to identify a code",
                                                           "type": "string",
-                                                          "pattern": "^\\\\w{0,4}$"
+                                                          "pattern": "^\\w{0,4}$"
                                                         },
                                                         "Name": {
                                                           "description": "Long name associated with the code",
@@ -26152,7 +26152,7 @@
                                             "Code": {
                                               "description": "The four letter Mnemonic used within an XML file to identify a code",
                                               "type": "string",
-                                              "pattern": "^\\\\w{0,4}$"
+                                              "pattern": "^\\w{0,4}$"
                                             },
                                             "Name": {
                                               "description": "Long name associated with the code",
@@ -26191,12 +26191,12 @@
                                               "TierValueMinimum": {
                                                 "description": "Minimum loan value for which the loan interest tier applies.",
                                                 "type": "string",
-                                                "pattern": "^(-?\\\\d{1,14}){1}(\\\\.\\\\d{1,4}){0,1}$"
+                                                "pattern": "^(-?\\d{1,14}){1}(\\.\\d{1,4}){0,1}$"
                                               },
                                               "TierValueMaximum": {
                                                 "description": "Maximum loan value for which the loan interest tier applies.",
                                                 "type": "string",
-                                                "pattern": "^(-?\\\\d{1,14}){1}(\\\\.\\\\d{1,4}){0,1}$"
+                                                "pattern": "^(-?\\d{1,14}){1}(\\.\\d{1,4}){0,1}$"
                                               },
                                               "TierValueMinTerm": {
                                                 "description": "Minimum loan term for which the loan interest tier applies.",
@@ -26243,7 +26243,7 @@
                                               "RepAPR": {
                                                 "description": "The annual equivalent rate (AER) is interest that is calculated under the assumption that any interest paid is combined with the original balance and the next interest payment will be based on the slightly higher account balance. Overall, this means that interest can be compounded several times in a year depending on the number of times that interest payments are made. \nFor SME Loan, this APR is the representative APR which includes any account fees.",
                                                 "type": "string",
-                                                "pattern": "^(-?\\\\d{1,3}){1}(\\\\.\\\\d{1,4}){0,1}$"
+                                                "pattern": "^(-?\\d{1,3}){1}(\\.\\d{1,4}){0,1}$"
                                               },
                                               "LoanProviderInterestRateType": {
                                                 "description": "Interest rate types, other than APR, which financial institutions may use to describe the annual interest rate payable for the SME Loan.",
@@ -26260,7 +26260,7 @@
                                               "LoanProviderInterestRate": {
                                                 "description": "Loan provider Interest for the SME Loan product",
                                                 "type": "string",
-                                                "pattern": "^(-?\\\\d{1,3}){1}(\\\\.\\\\d{1,4}){0,1}$"
+                                                "pattern": "^(-?\\d{1,3}){1}(\\.\\d{1,4}){0,1}$"
                                               },
                                               "Notes": {
                                                 "type": "array",
@@ -26282,7 +26282,7 @@
                                                   "Code": {
                                                     "description": "The four letter Mnemonic used within an XML file to identify a code",
                                                     "type": "string",
-                                                    "pattern": "^\\\\w{0,4}$"
+                                                    "pattern": "^\\w{0,4}$"
                                                   },
                                                   "Name": {
                                                     "description": "Long name associated with the code",
@@ -26340,12 +26340,12 @@
                                                           "FeeAmount": {
                                                             "description": "Fee Amount charged for a fee/charge (where it is charged in terms of an amount rather than a rate)",
                                                             "type": "string",
-                                                            "pattern": "^(-?\\\\d{1,14}){1}(\\\\.\\\\d{1,4}){0,1}$"
+                                                            "pattern": "^(-?\\d{1,14}){1}(\\.\\d{1,4}){0,1}$"
                                                           },
                                                           "FeeRate": {
                                                             "description": "Rate charged for Fee/Charge (where it is charged in terms of a rate rather than an amount)",
                                                             "type": "string",
-                                                            "pattern": "^(-?\\\\d{1,3}){1}(\\\\.\\\\d{1,4}){0,1}$"
+                                                            "pattern": "^(-?\\d{1,3}){1}(\\.\\d{1,4}){0,1}$"
                                                           },
                                                           "FeeRateType": {
                                                             "description": "Rate type for Fee/Charge (where it is charged in terms of a rate rather than an amount)",
@@ -26434,7 +26434,7 @@
                                                               "Code": {
                                                                 "description": "The four letter Mnemonic used within an XML file to identify a code",
                                                                 "type": "string",
-                                                                "pattern": "^\\\\w{0,4}$"
+                                                                "pattern": "^\\w{0,4}$"
                                                               },
                                                               "FeeCategory": {
                                                                 "description": "Categorisation of fees and charges into standard categories.",
@@ -26471,7 +26471,7 @@
                                                               "Code": {
                                                                 "description": "The four letter Mnemonic used within an XML file to identify a code",
                                                                 "type": "string",
-                                                                "pattern": "^\\\\w{0,4}$"
+                                                                "pattern": "^\\w{0,4}$"
                                                               },
                                                               "Name": {
                                                                 "description": "Long name associated with the code",
@@ -26499,7 +26499,7 @@
                                                               "Code": {
                                                                 "description": "The four letter Mnemonic used within an XML file to identify a code",
                                                                 "type": "string",
-                                                                "pattern": "^\\\\w{0,4}$"
+                                                                "pattern": "^\\w{0,4}$"
                                                               },
                                                               "Name": {
                                                                 "description": "Long name associated with the code",
@@ -26527,7 +26527,7 @@
                                                               "Code": {
                                                                 "description": "The four letter Mnemonic used within an XML file to identify a code",
                                                                 "type": "string",
-                                                                "pattern": "^\\\\w{0,4}$"
+                                                                "pattern": "^\\w{0,4}$"
                                                               },
                                                               "Name": {
                                                                 "description": "Long name associated with the code",
@@ -26592,7 +26592,7 @@
                                                           "FeeCapAmount": {
                                                             "description": "Cap amount charged for a fee/charge (where it is charged in terms of an amount rather than a rate)",
                                                             "type": "string",
-                                                            "pattern": "^(-?\\\\d{1,14}){1}(\\\\.\\\\d{1,4}){0,1}$"
+                                                            "pattern": "^(-?\\d{1,14}){1}(\\.\\d{1,4}){0,1}$"
                                                           },
                                                           "CappingPeriod": {
                                                             "description": "Period e.g. day, week, month etc. for which the fee/charge is capped",
@@ -26643,7 +26643,7 @@
                                                                 "Code": {
                                                                   "description": "The four letter Mnemonic used within an XML file to identify a code",
                                                                   "type": "string",
-                                                                  "pattern": "^\\\\w{0,4}$"
+                                                                  "pattern": "^\\w{0,4}$"
                                                                 },
                                                                 "Name": {
                                                                   "description": "Long name associated with the code",
@@ -26712,12 +26712,12 @@
                                                     "FeeAmount": {
                                                       "description": "Fee Amount charged for a fee/charge (where it is charged in terms of an amount rather than a rate)",
                                                       "type": "string",
-                                                      "pattern": "^(-?\\\\d{1,14}){1}(\\\\.\\\\d{1,4}){0,1}$"
+                                                      "pattern": "^(-?\\d{1,14}){1}(\\.\\d{1,4}){0,1}$"
                                                     },
                                                     "FeeRate": {
                                                       "description": "Rate charged for Fee/Charge (where it is charged in terms of a rate rather than an amount)",
                                                       "type": "string",
-                                                      "pattern": "^(-?\\\\d{1,3}){1}(\\\\.\\\\d{1,4}){0,1}$"
+                                                      "pattern": "^(-?\\d{1,3}){1}(\\.\\d{1,4}){0,1}$"
                                                     },
                                                     "FeeRateType": {
                                                       "description": "Rate type for Fee/Charge (where it is charged in terms of a rate rather than an amount)",
@@ -26806,7 +26806,7 @@
                                                         "Code": {
                                                           "description": "The four letter Mnemonic used within an XML file to identify a code",
                                                           "type": "string",
-                                                          "pattern": "^\\\\w{0,4}$"
+                                                          "pattern": "^\\w{0,4}$"
                                                         },
                                                         "FeeCategory": {
                                                           "description": "Categorisation of fees and charges into standard categories.",
@@ -26843,7 +26843,7 @@
                                                         "Code": {
                                                           "description": "The four letter Mnemonic used within an XML file to identify a code",
                                                           "type": "string",
-                                                          "pattern": "^\\\\w{0,4}$"
+                                                          "pattern": "^\\w{0,4}$"
                                                         },
                                                         "Name": {
                                                           "description": "Long name associated with the code",
@@ -26871,7 +26871,7 @@
                                                         "Code": {
                                                           "description": "The four letter Mnemonic used within an XML file to identify a code",
                                                           "type": "string",
-                                                          "pattern": "^\\\\w{0,4}$"
+                                                          "pattern": "^\\w{0,4}$"
                                                         },
                                                         "Name": {
                                                           "description": "Long name associated with the code",
@@ -26899,7 +26899,7 @@
                                                         "Code": {
                                                           "description": "The four letter Mnemonic used within an XML file to identify a code",
                                                           "type": "string",
-                                                          "pattern": "^\\\\w{0,4}$"
+                                                          "pattern": "^\\w{0,4}$"
                                                         },
                                                         "Name": {
                                                           "description": "Long name associated with the code",
@@ -26964,7 +26964,7 @@
                                                     "FeeCapAmount": {
                                                       "description": "Cap amount charged for a fee/charge (where it is charged in terms of an amount rather than a rate)",
                                                       "type": "string",
-                                                      "pattern": "^(-?\\\\d{1,14}){1}(\\\\.\\\\d{1,4}){0,1}$"
+                                                      "pattern": "^(-?\\d{1,14}){1}(\\.\\d{1,4}){0,1}$"
                                                     },
                                                     "CappingPeriod": {
                                                       "description": "Period e.g. day, week, month etc. for which the fee/charge is capped",
@@ -27015,7 +27015,7 @@
                                                           "Code": {
                                                             "description": "The four letter Mnemonic used within an XML file to identify a code",
                                                             "type": "string",
-                                                            "pattern": "^\\\\w{0,4}$"
+                                                            "pattern": "^\\w{0,4}$"
                                                           },
                                                           "Name": {
                                                             "description": "Long name associated with the code",
@@ -27115,7 +27115,7 @@
                                       "Code": {
                                         "description": "The four letter Mnemonic used within an XML file to identify a code",
                                         "type": "string",
-                                        "pattern": "^\\\\w{0,4}$"
+                                        "pattern": "^\\w{0,4}$"
                                       },
                                       "Name": {
                                         "description": "Long name associated with the code",
@@ -27142,7 +27142,7 @@
                                       "Code": {
                                         "description": "The four letter Mnemonic used within an XML file to identify a code",
                                         "type": "string",
-                                        "pattern": "^\\\\w{0,4}$"
+                                        "pattern": "^\\w{0,4}$"
                                       },
                                       "Name": {
                                         "description": "Long name associated with the code",
@@ -27169,7 +27169,7 @@
                                       "Code": {
                                         "description": "The four letter Mnemonic used within an XML file to identify a code",
                                         "type": "string",
-                                        "pattern": "^\\\\w{0,4}$"
+                                        "pattern": "^\\w{0,4}$"
                                       },
                                       "Name": {
                                         "description": "Long name associated with the code",
@@ -27225,12 +27225,12 @@
                                             "FeeAmount": {
                                               "description": "Fee Amount charged for a fee/charge (where it is charged in terms of an amount rather than a rate)",
                                               "type": "string",
-                                              "pattern": "^(-?\\\\d{1,14}){1}(\\\\.\\\\d{1,4}){0,1}$"
+                                              "pattern": "^(-?\\d{1,14}){1}(\\.\\d{1,4}){0,1}$"
                                             },
                                             "FeeRate": {
                                               "description": "Rate charged for Fee/Charge (where it is charged in terms of a rate rather than an amount)",
                                               "type": "string",
-                                              "pattern": "^(-?\\\\d{1,3}){1}(\\\\.\\\\d{1,4}){0,1}$"
+                                              "pattern": "^(-?\\d{1,3}){1}(\\.\\d{1,4}){0,1}$"
                                             },
                                             "FeeRateType": {
                                               "description": "Rate type for Fee/Charge (where it is charged in terms of a rate rather than an amount)",
@@ -27319,7 +27319,7 @@
                                                 "Code": {
                                                   "description": "The four letter Mnemonic used within an XML file to identify a code",
                                                   "type": "string",
-                                                  "pattern": "^\\\\w{0,4}$"
+                                                  "pattern": "^\\w{0,4}$"
                                                 },
                                                 "FeeCategory": {
                                                   "description": "Categorisation of fees and charges into standard categories.",
@@ -27356,7 +27356,7 @@
                                                 "Code": {
                                                   "description": "The four letter Mnemonic used within an XML file to identify a code",
                                                   "type": "string",
-                                                  "pattern": "^\\\\w{0,4}$"
+                                                  "pattern": "^\\w{0,4}$"
                                                 },
                                                 "Name": {
                                                   "description": "Long name associated with the code",
@@ -27384,7 +27384,7 @@
                                                 "Code": {
                                                   "description": "The four letter Mnemonic used within an XML file to identify a code",
                                                   "type": "string",
-                                                  "pattern": "^\\\\w{0,4}$"
+                                                  "pattern": "^\\w{0,4}$"
                                                 },
                                                 "Name": {
                                                   "description": "Long name associated with the code",
@@ -27412,7 +27412,7 @@
                                                 "Code": {
                                                   "description": "The four letter Mnemonic used within an XML file to identify a code",
                                                   "type": "string",
-                                                  "pattern": "^\\\\w{0,4}$"
+                                                  "pattern": "^\\w{0,4}$"
                                                 },
                                                 "Name": {
                                                   "description": "Long name associated with the code",
@@ -27477,7 +27477,7 @@
                                             "FeeCapAmount": {
                                               "description": "Cap amount charged for a fee/charge (where it is charged in terms of an amount rather than a rate)",
                                               "type": "string",
-                                              "pattern": "^(-?\\\\d{1,14}){1}(\\\\.\\\\d{1,4}){0,1}$"
+                                              "pattern": "^(-?\\d{1,14}){1}(\\.\\d{1,4}){0,1}$"
                                             },
                                             "CappingPeriod": {
                                               "description": "Period e.g. day, week, month etc. for which the fee/charge is capped",
@@ -27514,7 +27514,7 @@
                                                   "Code": {
                                                     "description": "The four letter Mnemonic used within an XML file to identify a code",
                                                     "type": "string",
-                                                    "pattern": "^\\\\w{0,4}$"
+                                                    "pattern": "^\\w{0,4}$"
                                                   },
                                                   "Name": {
                                                     "description": "Long name associated with the code",
@@ -27608,7 +27608,7 @@
                                         "Code": {
                                           "description": "The four letter Mnemonic used within an XML file to identify a code",
                                           "type": "string",
-                                          "pattern": "^\\\\w{0,4}$"
+                                          "pattern": "^\\w{0,4}$"
                                         },
                                         "Name": {
                                           "description": "Long name associated with the code",
@@ -27666,12 +27666,12 @@
                                           "FeeAmount": {
                                             "description": "Fee Amount charged for a fee/charge (where it is charged in terms of an amount rather than a rate)",
                                             "type": "string",
-                                            "pattern": "^(-?\\\\d{1,14}){1}(\\\\.\\\\d{1,4}){0,1}$"
+                                            "pattern": "^(-?\\d{1,14}){1}(\\.\\d{1,4}){0,1}$"
                                           },
                                           "FeeRate": {
                                             "description": "Rate charged for Fee/Charge (where it is charged in terms of a rate rather than an amount)",
                                             "type": "string",
-                                            "pattern": "^(-?\\\\d{1,3}){1}(\\\\.\\\\d{1,4}){0,1}$"
+                                            "pattern": "^(-?\\d{1,3}){1}(\\.\\d{1,4}){0,1}$"
                                           },
                                           "FeeRateType": {
                                             "description": "Rate type for Fee/Charge (where it is charged in terms of a rate rather than an amount)",
@@ -27792,7 +27792,7 @@
                                                 "FeeCapAmount": {
                                                   "description": "Cap amount charged for a fee/charge (where it is charged in terms of an amount rather than a rate)",
                                                   "type": "string",
-                                                  "pattern": "^(-?\\\\d{1,14}){1}(\\\\.\\\\d{1,4}){0,1}$"
+                                                  "pattern": "^(-?\\d{1,14}){1}(\\.\\d{1,4}){0,1}$"
                                                 },
                                                 "CappingPeriod": {
                                                   "description": "Period e.g. day, week, month etc. for which the fee/charge is capped",
@@ -27829,7 +27829,7 @@
                                                       "Code": {
                                                         "description": "The four letter Mnemonic used within an XML file to identify a code",
                                                         "type": "string",
-                                                        "pattern": "^\\\\w{0,4}$"
+                                                        "pattern": "^\\w{0,4}$"
                                                       },
                                                       "Name": {
                                                         "description": "Long name associated with the code",
@@ -27859,7 +27859,7 @@
                                               "Code": {
                                                 "description": "The four letter Mnemonic used within an XML file to identify a code",
                                                 "type": "string",
-                                                "pattern": "^\\\\w{0,4}$"
+                                                "pattern": "^\\w{0,4}$"
                                               },
                                               "Name": {
                                                 "description": "Long name associated with the code",
@@ -27888,7 +27888,7 @@
                                               "Code": {
                                                 "description": "The four letter Mnemonic used within an XML file to identify a code",
                                                 "type": "string",
-                                                "pattern": "^\\\\w{0,4}$"
+                                                "pattern": "^\\w{0,4}$"
                                               },
                                               "FeeCategory": {
                                                 "description": "Categorisation of fees and charges into standard categories.",
@@ -27925,7 +27925,7 @@
                                               "Code": {
                                                 "description": "The four letter Mnemonic used within an XML file to identify a code",
                                                 "type": "string",
-                                                "pattern": "^\\\\w{0,4}$"
+                                                "pattern": "^\\w{0,4}$"
                                               },
                                               "Name": {
                                                 "description": "Long name associated with the code",
@@ -27953,7 +27953,7 @@
                                               "Code": {
                                                 "description": "The four letter Mnemonic used within an XML file to identify a code",
                                                 "type": "string",
-                                                "pattern": "^\\\\w{0,4}$"
+                                                "pattern": "^\\w{0,4}$"
                                               },
                                               "Name": {
                                                 "description": "Long name associated with the code",
@@ -27981,7 +27981,7 @@
                                               "Code": {
                                                 "description": "The four letter Mnemonic used within an XML file to identify a code",
                                                 "type": "string",
-                                                "pattern": "^\\\\w{0,4}$"
+                                                "pattern": "^\\w{0,4}$"
                                               },
                                               "Name": {
                                                 "description": "Long name associated with the code",
@@ -28005,22 +28005,22 @@
                                               "MinimumAmount": {
                                                 "description": "Minimum Amount on which fee/charge is applicable (where it is expressed as an amount)",
                                                 "type": "string",
-                                                "pattern": "^(-?\\\\d{1,14}){1}(\\\\.\\\\d{1,4}){0,1}$"
+                                                "pattern": "^(-?\\d{1,14}){1}(\\.\\d{1,4}){0,1}$"
                                               },
                                               "MaximumAmount": {
                                                 "description": "Maximum Amount on which fee is applicable (where it is expressed as an amount)",
                                                 "type": "string",
-                                                "pattern": "^(-?\\\\d{1,14}){1}(\\\\.\\\\d{1,4}){0,1}$"
+                                                "pattern": "^(-?\\d{1,14}){1}(\\.\\d{1,4}){0,1}$"
                                               },
                                               "MinimumRate": {
                                                 "description": "Minimum rate on which fee/charge is applicable(where it is expressed as an rate)",
                                                 "type": "string",
-                                                "pattern": "^(-?\\\\d{1,3}){1}(\\\\.\\\\d{1,4}){0,1}$"
+                                                "pattern": "^(-?\\d{1,3}){1}(\\.\\d{1,4}){0,1}$"
                                               },
                                               "MaximumRate": {
                                                 "description": "Maximum rate on which fee/charge is applicable(where it is expressed as an rate)",
                                                 "type": "string",
-                                                "pattern": "^(-?\\\\d{1,3}){1}(\\\\.\\\\d{1,4}){0,1}$"
+                                                "pattern": "^(-?\\d{1,3}){1}(\\.\\d{1,4}){0,1}$"
                                               }
                                             }
                                           }
@@ -28072,7 +28072,7 @@
                                           "FeeCapAmount": {
                                             "description": "Cap amount charged for a fee/charge (where it is charged in terms of an amount rather than a rate)",
                                             "type": "string",
-                                            "pattern": "^(-?\\\\d{1,14}){1}(\\\\.\\\\d{1,4}){0,1}$"
+                                            "pattern": "^(-?\\d{1,14}){1}(\\.\\d{1,4}){0,1}$"
                                           },
                                           "CappingPeriod": {
                                             "description": "Period e.g. day, week, month etc. for which the fee/charge is capped",
@@ -28109,7 +28109,7 @@
                                                 "Code": {
                                                   "description": "The four letter Mnemonic used within an XML file to identify a code",
                                                   "type": "string",
-                                                  "pattern": "^\\\\w{0,4}$"
+                                                  "pattern": "^\\w{0,4}$"
                                                 },
                                                 "Name": {
                                                   "description": "Long name associated with the code",

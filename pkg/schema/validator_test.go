@@ -220,6 +220,20 @@ func dumpSchema(t *testing.T, sc *spec.Schema, previousPath string) {
 	}
 }
 
+func TestTitleCheckLoader(t *testing.T) {
+	for _, spec := range []string{
+		"spec/v3.1.5/account-info-swagger-flattened.json",
+		"spec/v3.1.6/account-info-swagger-flattened.json",
+		"spec/v3.1.7/account-info-swagger-flattened.json",
+	} {
+		doc, err := loads.Spec(spec)
+		require.NoError(t, err)
+
+		fmt.Println(doc.Spec().Info.Version)
+		fmt.Println(doc.Spec().Info.Title)
+	}
+}
+
 func TestValidators_ValidateStandingOrderWithFreeformField(t *testing.T) {
 	for _, spec := range []string{
 		"spec/v3.1.0/account-info-swagger.flattened.json",

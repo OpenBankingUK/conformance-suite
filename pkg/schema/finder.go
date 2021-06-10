@@ -8,6 +8,7 @@ import (
 	"github.com/go-openapi/spec"
 )
 
+// ErrNotFound -
 var ErrNotFound = errors.New("operation for method/path not found")
 
 // finder is a helper to find schema and operation in a depp nested
