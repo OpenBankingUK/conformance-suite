@@ -78,7 +78,7 @@ func TestSchemaBodyChecks(t *testing.T) {
 		{"316-pis-good", pis316, "/domestic-payments/pv349a7", aGetDomesticPayment, 0},
 		{"317-pis-good", pis317, "/domestic-payments/pv349a7", aGetDomesticPayment, 0},
 		{"316-pis-bad", pis316, "/domestic-payments/pv349a7", aBadGetDomesticPayment, 5},
-		// domestic-payment Data.Debtor response does not contain addtionalProperties=false in 3.1.7 pis
+		// domestic-payment Data.Debtor response does not contain additionalProperties=false in 3.1.7 pis
 		{"317-pis-bad", pis317, "/domestic-payments/pv349a7", aBadGetDomesticPayment, 4},
 		{"316-cbpii-good", cbpii316, "/funds-confirmation-consents/fccx", cbpiiResponse, 0},
 		{"317-cbpii-good", cbpii317, "/funds-confirmation-consents/fccx", cbpiiResponse, 0},
