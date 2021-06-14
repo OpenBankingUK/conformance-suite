@@ -14,28 +14,27 @@ The supporting documentation assumes technical understanding of the Open Banking
 
 To provide feedback, please use the public [issue tracker](https://bitbucket.org/openbankingteam/conformance-suite/issues) or see the [CONTRIBUTING.md](CONTRIBUTING.md).
 
-## Release Notes 
+## Release Notes
 * * *
 
-# Release v1.6.7 (24th February 2021)
+# Release v1.6.8 (14th June 2021)
 
-The release is called **v1.6.7**, an update to support [additional roadmap tests](https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1564083551/OBIE+Functional+Conformance+Tool+Roadmap) and contains minor fixes.
-
-[Full Release Notes](https://bitbucket.org/openbankingteam/conformance-suite/src/v1.6.7/docs/releases/v1.6.7.md)
-(v1.6.7.md)
+The release is called **v1.6.8**, an update to support version 3.1.7 of the AIS, PIS and CBPII Open Banking Apis.
+[Full Release Notes](https://bitbucket.org/openbankingteam/conformance-suite/src/develop/docs/releases/v1.6.8.md)
+(v1.6.8.md)
 
 ## Quickstart
 * * *
 
 Pull and run the latest (stable) tagged Docker image:
 
-    > docker run --rm -it -p 8443:8443 "openbanking/conformance-suite:v1.6.7"
+    > docker run --rm -it -p 8443:8443 "openbanking/conformance-suite:v1.6.8"
 
 [See Setup Guide](https://bitbucket.org/openbankingteam/conformance-suite/src/develop/docs/setup-guide.md)
 
 ### Prerequisites
 
-The tool is compatible with the Open Banking UK R/W specification versions: 3.1.0, 3.1.1, 3.1.2, 3.1.3, 3.1.4, 3.1.5, 3.1.6.
+The tool is compatible with the Open Banking UK R/W specification versions: 3.1.0, 3.1.1, 3.1.2, 3.1.3, 3.1.4, 3.1.5, 3.1.6, 3.1.7.
 
 In order to run a container you'll need docker installed.
 
