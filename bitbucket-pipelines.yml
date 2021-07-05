@@ -15,7 +15,10 @@ pipelines:
         # build go app
         - step:
             name: go-test
-            image: golang:1.15-alpine
+            # As https://wiki.alpinelinux.org/wiki/Release_Notes_for_Alpine_3.14.0 potentially introduced an error
+            # when running make, we pin the version to the previous one until the issue is resolved
+            # @TODO: Monitor the progress on alpine and upgrade when necessary
+            image: golang:1.15-alpine3.13
             script:
               - |
                 export CGO_ENABLED=0
