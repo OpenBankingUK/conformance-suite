@@ -52,7 +52,7 @@ func swaggerHandlers(logger *logrus.Entry) map[string]echo.HandlerFunc {
 		// works internally.
 
 		// Somehow wrap https://github.com/labstack/echo/blob/master/echo.go#L276
-		var notFoundHandler http.Handler = nil // http.NotFoundHandler()
+		var notFoundHandler http.Handler // http.NotFoundHandler()
 		handler := openapi_middleware.Redoc(openapi_middleware.RedocOpts{
 			BasePath: basePath,
 			Path:     path,

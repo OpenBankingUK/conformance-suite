@@ -225,6 +225,7 @@ func (h runHandlers) processAcquiredAllAccessTokensEvent(ws *websocket.Conn, log
 	return nil
 }
 
+// StoppedEvent -
 type StoppedEvent struct {
 	Stopped bool `json:"stopped"`
 }
@@ -235,6 +236,7 @@ func newStoppedEvent() StoppedEvent {
 	}
 }
 
+// TestCaseResultWebSocketEvent -
 type TestCaseResultWebSocketEvent struct {
 	Type string           `json:"type"`
 	Test results.TestCase `json:"test"`
@@ -247,6 +249,7 @@ func newTestCaseResultWebSocketEvent(testCaseResult results.TestCase) TestCaseRe
 	}
 }
 
+// TestCasesCompletedWebSocketEvent -
 type TestCasesCompletedWebSocketEvent struct {
 	Type  string `json:"type"`
 	Value bool   `json:"value"`
@@ -259,6 +262,7 @@ func newTestCasesCompletedWebSocketEvent(isCompleted bool) TestCasesCompletedWeb
 	}
 }
 
+// AcquiredAccessTokenWebSocketEvent -
 type AcquiredAccessTokenWebSocketEvent struct {
 	Type  string                     `json:"type"`
 	Value events.AcquiredAccessToken `json:"value"`
@@ -271,6 +275,7 @@ func newAcquiredAccessTokenWebSocketEvent(event events.AcquiredAccessToken) Acqu
 	}
 }
 
+// AcquiredAllAccessTokensWebSocketEvent -
 type AcquiredAllAccessTokensWebSocketEvent struct {
 	Type  string                         `json:"type"`
 	Value events.AcquiredAllAccessTokens `json:"value"`

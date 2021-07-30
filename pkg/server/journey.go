@@ -1,4 +1,3 @@
-//go:generate mockery -name Journey -inpkg
 package server
 
 import (
@@ -59,7 +58,8 @@ type Journey interface {
 	TLSVersionResult() map[string]*discovery.TLSValidationResult
 }
 
-type journey struct {
+// AppJourney - application controlled by this class
+type AppJourney struct {
 	generator             generation.Generator
 	validator             discovery.Validator
 	daemonController      executors.DaemonController
@@ -82,8 +82,10 @@ type journey struct {
 }
 
 // NewJourney creates an instance for a user journey
-func NewJourney(logger *logrus.Entry, generator generation.Generator, validator discovery.Validator, tlsValidator discovery.TLSValidator, dynamicResourceIDs bool) *journey {
-	return &journey{
+func NewJourney(logger *logrus.Entry, generator generation.Generator,
+	validator discovery.Validator, tlsValidator discovery.TLSValidator,
+	dynamicResourceIDs bool) *AppJourney {
+	return &AppJourney{
 		generator:             generator,
 		validator:             validator,
 		daemonController:      executors.NewBufferedDaemonController(),
@@ -104,7 +106,7 @@ func NewJourney(logger *logrus.Entry, generator generation.Generator, validator 
 // and new events on journey.
 // This is a solution to prevent events being sent to a disconnected
 // websocket instead of new websocket after the client reconnects.
-func (wj *journey) NewDaemonController() {
+func (wj *AppJourney) NewDaemonController() {
 	wj.StopTestRun()
 
 	wj.journeyLock.Lock()
@@ -113,7 +115,8 @@ func (wj *journey) NewDaemonController() {
 	wj.events = events.NewEvents()
 }
 
-func (wj *journey) SetDiscoveryModel(discoveryModel *discovery.Model) (discovery.ValidationFailures, error) {
+// SetDiscoveryModel -
+func (wj *AppJourney) SetDiscoveryModel(discoveryModel *discovery.Model) (discovery.ValidationFailures, error) {
 	failures, err := wj.validator.Validate(discoveryModel)
 	if err != nil {
 		return nil, errors.Wrap(err, "journey.SetDiscoveryModel: error setting discovery model")
@@ -146,7 +149,8 @@ func (wj *journey) SetDiscoveryModel(discoveryModel *discovery.Model) (discovery
 	return discovery.NoValidationFailures(), nil
 }
 
-func (wj *journey) DiscoveryModel() (discovery.Model, error) {
+// DiscoveryModel -
+func (wj *AppJourney) DiscoveryModel() (discovery.Model, error) {
 	wj.journeyLock.Lock()
 	discoveryModel := wj.validDiscoveryModel
 	wj.journeyLock.Unlock()
@@ -157,7 +161,8 @@ func (wj *journey) DiscoveryModel() (discovery.Model, error) {
 	return *discoveryModel, nil
 }
 
-func (wj *journey) TLSVersionResult() map[string]*discovery.TLSValidationResult {
+// TLSVersionResult -
+func (wj *AppJourney) TLSVersionResult() map[string]*discovery.TLSValidationResult {
 	logger := wj.log.WithFields(logrus.Fields{
 		"package":  "server",
 		"module":   "journey",
@@ -190,15 +195,18 @@ func (wj *journey) TLSVersionResult() map[string]*discovery.TLSValidationResult 
 	return tlsValidationResult
 }
 
-func (wj *journey) SetFilteredManifests(fmfs manifest.Scripts) {
+// SetFilteredManifests -
+func (wj *AppJourney) SetFilteredManifests(fmfs manifest.Scripts) {
 	wj.filteredManifests = fmfs
 }
 
-func (wj *journey) FilteredManifests() (manifest.Scripts, error) {
+// FilteredManifests -
+func (wj *AppJourney) FilteredManifests() (manifest.Scripts, error) {
 	return wj.filteredManifests, nil
 }
 
-func (wj *journey) TestCases() (generation.SpecRun, error) {
+// TestCases -
+func (wj *AppJourney) TestCases() (generation.SpecRun, error) {
 	wj.journeyLock.Lock()
 	defer wj.journeyLock.Unlock()
 	logger := wj.log.WithFields(logrus.Fields{
@@ -387,15 +395,16 @@ func (wj *journey) TestCases() (generation.SpecRun, error) {
 	return wj.specRun, nil
 }
 
-func (wj *journey) tlsVersionCtxKey(discoveryItemName string) string {
+func (wj *AppJourney) tlsVersionCtxKey(discoveryItemName string) string {
 	return fmt.Sprintf("tlsVersionForDiscoveryItem-%s", strings.ReplaceAll(discoveryItemName, " ", "-"))
 }
 
-func (wj *journey) tlsValidCtxKey(discoveryItemName string) string {
+func (wj *AppJourney) tlsValidCtxKey(discoveryItemName string) string {
 	return fmt.Sprintf("tlsIsValidForDiscoveryItem-%s", strings.ReplaceAll(discoveryItemName, " ", "-"))
 }
 
-func (wj *journey) CollectToken(code, state, scope string) error {
+// CollectToken -
+func (wj *AppJourney) CollectToken(code, state, scope string) error {
 	wj.journeyLock.Lock()
 	defer wj.journeyLock.Unlock()
 	logger := wj.log.WithFields(logrus.Fields{
@@ -455,17 +464,19 @@ func (wj *journey) CollectToken(code, state, scope string) error {
 	return wj.collector.Collect(state, accessToken)
 }
 
-func (wj *journey) AllTokenCollected() bool {
+// AllTokenCollected -
+func (wj *AppJourney) AllTokenCollected() bool {
 	wj.log.Debugf("All tokens collected %t", wj.allCollected)
 	return wj.allCollected
 }
 
-func (wj *journey) doneCollectionCallback() {
+func (wj *AppJourney) doneCollectionCallback() {
 	wj.log.Debug("Setting wj.allCollection=true")
 	wj.allCollected = true
 }
 
-func (wj *journey) RunTests() error {
+// RunTests -
+func (wj *AppJourney) RunTests() error {
 	logger := wj.log.WithField("function", "RunTests")
 
 	if !wj.testCasesRunGenerated {
@@ -525,15 +536,17 @@ func (wj *journey) RunTests() error {
 	return err
 }
 
-func (wj *journey) Results() executors.DaemonController {
+// Results -
+func (wj *AppJourney) Results() executors.DaemonController {
 	return wj.daemonController
 }
 
-func (wj *journey) StopTestRun() {
+// StopTestRun -
+func (wj *AppJourney) StopTestRun() {
 	wj.daemonController.Stop()
 }
 
-func (wj *journey) createTokenCollector(consentIds executors.TokenConsentIDs) {
+func (wj *AppJourney) createTokenCollector(consentIds executors.TokenConsentIDs) {
 	if len(consentIds) > 0 {
 		wj.collector = executors.NewTokenCollector(wj.log, consentIds, wj.doneCollectionCallback, wj.events)
 		consentIdsToTestCaseRun(wj.log, consentIds, &wj.specRun)
@@ -552,7 +565,7 @@ func (wj *journey) createTokenCollector(consentIds executors.TokenConsentIDs) {
 	}).Debug("TokenCollector status ...")
 }
 
-func (wj *journey) makeGeneratorConfig() generation.GeneratorConfig {
+func (wj *AppJourney) makeGeneratorConfig() generation.GeneratorConfig {
 	return generation.GeneratorConfig{
 		ClientID:              wj.config.clientID,
 		Aud:                   wj.config.authorizationEndpoint,
@@ -564,7 +577,7 @@ func (wj *journey) makeGeneratorConfig() generation.GeneratorConfig {
 	}
 }
 
-func (wj *journey) makeRunDefinition() executors.RunDefinition {
+func (wj *AppJourney) makeRunDefinition() executors.RunDefinition {
 	return executors.RunDefinition{
 		DiscoModel:    wj.validDiscoveryModel,
 		SpecRun:       wj.specRun,
@@ -611,7 +624,8 @@ type JourneyConfig struct {
 	issuer                        string
 }
 
-func (wj *journey) SetConfig(config JourneyConfig) error {
+// SetConfig -
+func (wj *AppJourney) SetConfig(config JourneyConfig) error {
 	wj.journeyLock.Lock()
 	defer wj.journeyLock.Unlock()
 
@@ -628,15 +642,16 @@ func (wj *journey) SetConfig(config JourneyConfig) error {
 
 // ConditionalProperties retrieve conditional properties right after
 // they have been set from the discovery model to the webJourney.ConditionalProperties
-func (wj *journey) ConditionalProperties() []discovery.ConditionalAPIProperties {
+func (wj *AppJourney) ConditionalProperties() []discovery.ConditionalAPIProperties {
 	return wj.conditionalProperties
 }
 
-func (wj *journey) Events() events.Events {
+// Events -
+func (wj *AppJourney) Events() events.Events {
 	return wj.events
 }
 
-func (wj *journey) customTestParametersToJourneyContext() {
+func (wj *AppJourney) customTestParametersToJourneyContext() {
 	if wj.validDiscoveryModel == nil {
 		return
 	}
@@ -674,14 +689,14 @@ func consentIdsToTestCaseRun(log *logrus.Entry, consentIds []executors.TokenCons
 }
 
 // Utility to Dump Json
-func (wj *journey) dumpJSON(i interface{}) {
+func (wj *AppJourney) dumpJSON(i interface{}) {
 	var model []byte
 	model, _ = json.MarshalIndent(i, "", "    ")
 	wj.log.Traceln(string(model))
 }
 
 // EnableDynamicResourceIDs is triggered by and environment variable dynids=true
-func (wj *journey) EnableDynamicResourceIDs() {
+func (wj *AppJourney) EnableDynamicResourceIDs() {
 	wj.dynamicResourceIDs = true
 }
 

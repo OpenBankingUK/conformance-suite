@@ -11,7 +11,7 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-func expectedJsonHeaders() http.Header {
+func expectedJSONHeaders() http.Header {
 	return http.Header{
 		"Vary":         []string{"Accept-Encoding"},
 		"Content-Type": []string{"application/json; charset=UTF-8"},

@@ -36,7 +36,7 @@ func TestServerRunStartPost(t *testing.T) {
 	require.JSONEq(expected, actual)
 
 	require.Equal(http.StatusBadRequest, code)
-	require.Equal(expectedJsonHeaders(), headers)
+	require.Equal(expectedJSONHeaders(), headers)
 }
 
 func TestServerRunHandlersnewTestCaseResultWebSocketEvent(t *testing.T) {
@@ -52,9 +52,9 @@ func TestServerRunHandlersnewTestCaseResultWebSocketEvent(t *testing.T) {
 	}
 	wsEvent := newTestCaseResultWebSocketEvent(testCaseResult)
 
-	wsEventJson, err := json.MarshalIndent(wsEvent, prefix, indent)
+	wsEventJSON, err := json.MarshalIndent(wsEvent, prefix, indent)
 	require.NoError(err)
-	require.NotNil(wsEventJson)
+	require.NotNil(wsEventJSON)
 
 	expected := `
 {
@@ -73,7 +73,7 @@ func TestServerRunHandlersnewTestCaseResultWebSocketEvent(t *testing.T) {
     }
 }
 	`
-	actual := string(wsEventJson)
+	actual := string(wsEventJSON)
 
 	require.JSONEq(expected, actual)
 }
@@ -83,9 +83,9 @@ func TestServerRunHandlersnewTestCasesCompletedWebSocketEvent(t *testing.T) {
 
 	wsEvent := newTestCasesCompletedWebSocketEvent(true)
 
-	wsEventJson, err := json.MarshalIndent(wsEvent, prefix, indent)
+	wsEventJSON, err := json.MarshalIndent(wsEvent, prefix, indent)
 	require.NoError(err)
-	require.NotNil(wsEventJson)
+	require.NotNil(wsEventJSON)
 
 	expected := `
 {
@@ -93,7 +93,7 @@ func TestServerRunHandlersnewTestCasesCompletedWebSocketEvent(t *testing.T) {
     "value": true
 }
 	`
-	actual := string(wsEventJson)
+	actual := string(wsEventJSON)
 
 	require.JSONEq(expected, actual)
 }

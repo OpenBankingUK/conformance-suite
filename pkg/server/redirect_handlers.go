@@ -9,6 +9,7 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
+// RedirectFragment -
 type RedirectFragment struct {
 	Code    string `json:"code" form:"code" query:"code"`
 	Scope   string `json:"scope" form:"scope" query:"scope"`
@@ -16,6 +17,7 @@ type RedirectFragment struct {
 	State   string `json:"state" form:"state" query:"state"`
 }
 
+// RedirectQuery -
 type RedirectQuery struct {
 	Code    string `json:"code" form:"code" query:"code"`
 	Scope   string `json:"scope" form:"scope" query:"scope"`
@@ -23,6 +25,7 @@ type RedirectQuery struct {
 	State   string `json:"state" form:"state" query:"state"`
 }
 
+// RedirectError -
 type RedirectError struct {
 	ErrorDescription string `json:"error_description" form:"error_description" query:"error_description"`
 	Error            string `json:"error" form:"error" query:"error"`

@@ -303,7 +303,7 @@ func TestServerConfigGlobalPostValid(t *testing.T) {
 	require.JSONEq(bodyExpected, bodyActual)
 
 	require.Equal(http.StatusCreated, code)
-	require.Equal(expectedJsonHeaders(), headers)
+	require.Equal(expectedJSONHeaders(), headers)
 }
 
 // TestServerConfigGlobalPostInvalid - tests /api/config/global invalid cases.
@@ -885,7 +885,7 @@ func TestServerConfigGlobalPostInvalid(t *testing.T) {
 			require.JSONEq(testCase.expectedBody, bodyActual)
 
 			require.Equal(testCase.expectedStatusCode, code)
-			require.Equal(expectedJsonHeaders(), headers)
+			require.Equal(expectedJSONHeaders(), headers)
 		})
 	}
 }

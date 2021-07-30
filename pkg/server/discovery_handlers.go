@@ -18,6 +18,7 @@ const (
 	defaultTxnTo   = "2025-12-31T10:40:00+02:00"
 )
 
+// PostDiscoveryModelResponse -
 type PostDiscoveryModelResponse struct {
 	TokenEndpoints                                map[string]string   `json:"token_endpoints"`
 	TokenEndpointAuthMethods                      map[string][]string `json:"token_endpoint_auth_methods"`

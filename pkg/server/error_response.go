@@ -10,6 +10,7 @@ func NewErrorResponse(err error) *ErrorResponse {
 	return NewErrorMessageResponse(err.Error())
 }
 
+// NewErrorMessageResponse -
 func NewErrorMessageResponse(msg string) *ErrorResponse {
 	return &ErrorResponse{msg}
 }

@@ -46,7 +46,7 @@ func TestVersionCheckUpdateAvailable(t *testing.T) {
 	assert.JSONEq(body.String(), expected)
 
 	assert.Equal(http.StatusOK, code)
-	assert.Equal(expectedJsonHeaders(), headers)
+	assert.Equal(expectedJSONHeaders(), headers)
 }
 
 // TestVersionCheckNoUpdateAvailable provided a version that is greater than or equal to the available
@@ -69,7 +69,7 @@ func TestVersionCheckNoUpdateAvailable(t *testing.T) {
 	assert.JSONEq(body.String(), expected)
 
 	assert.Equal(http.StatusOK, code)
-	assert.Equal(expectedJsonHeaders(), headers)
+	assert.Equal(expectedJSONHeaders(), headers)
 }
 
 func TestVersionUpstreamUnavailableReturnsServerError(t *testing.T) {
@@ -92,5 +92,5 @@ func TestVersionUpstreamUnavailableReturnsServerError(t *testing.T) {
 
 	assert.NotNil(body)
 	assert.Equal(http.StatusInternalServerError, code)
-	assert.Equal(expectedJsonHeaders(), headers)
+	assert.Equal(expectedJSONHeaders(), headers)
 }
