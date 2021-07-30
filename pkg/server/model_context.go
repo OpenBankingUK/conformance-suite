@@ -8,6 +8,7 @@ import (
 	"gopkg.in/resty.v1"
 )
 
+// Context Variables
 const (
 	CtxTPPSignatureKID                     = "tpp_signature_kid"
 	CtxTPPSignatureIssuer                  = "tpp_signature_issuer"

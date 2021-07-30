@@ -131,12 +131,12 @@ func (wj *journey) SetDiscoveryModel(discoveryModel *discovery.Model) (discovery
 
 	if discoveryModel.DiscoveryModel.DiscoveryVersion == "v0.4.0" { // Conditional properties requires 0.4.0
 		//TODO: remove this constraint once support for v0.3.0 discovery model is dropped
-		conditionalApiProperties, hasProperties, err := discovery.GetConditionalProperties(discoveryModel)
+		conditionalAPIProperties, hasProperties, err := discovery.GetConditionalProperties(discoveryModel)
 		if err != nil {
 			return nil, errors.Wrap(err, "journey.SetDiscoveryModel: error processing conditional properties")
 		}
 		if hasProperties {
-			wj.conditionalProperties = conditionalApiProperties
+			wj.conditionalProperties = conditionalAPIProperties
 			logrus.Tracef("conditionalProperties from discovery model: %#v", wj.conditionalProperties)
 		} else {
 			logrus.Trace("No Conditional Properties found")
@@ -219,9 +219,9 @@ func (wj *journey) TestCases() (generation.SpecRun, error) {
 		return generation.SpecRun{}, errTestCasesGenerated
 	}
 
-	jwks_uri := authentication.GetJWKSUri()
-	if jwks_uri != "" { // STORE jwks_uri from well known endpoint in journey context
-		wj.context.PutString("jwks_uri", jwks_uri)
+	jwksURI := authentication.GetJWKSUri()
+	if jwksURI != "" { // STORE jwks_uri from well known endpoint in journey context
+		wj.context.PutString("jwks_uri", jwksURI)
 	} else {
 		logrus.Warn("JWKS URI is empty")
 	}
@@ -659,10 +659,10 @@ func consentIdsToTestCaseRun(log *logrus.Entry, consentIds []executors.TokenCons
 		for x, permission := range v.NamedPermissions {
 			for _, consentID := range consentIds {
 				if consentID.TokenName == permission.Name {
-					permission.ConsentUrl = consentID.ConsentURL
+					permission.ConsentURL = consentID.ConsentURL
 					log.WithFields(logrus.Fields{
 						"permission.Name":       permission.Name,
-						"permission.ConsentUrl": permission.ConsentUrl,
+						"permission.ConsentUrl": permission.ConsentURL,
 						"consentID":             consentID,
 					}).Debug("consentIdsToTestCaseRun ... Setting consent url for token")
 
@@ -685,7 +685,7 @@ func (wj *journey) EnableDynamicResourceIDs() {
 	wj.dynamicResourceIDs = true
 }
 
-// DetermineAPIVersions
+// DetermineAPIVersions -
 func DetermineAPIVersions(apis []discovery.ModelDiscoveryItem) []string {
 	apiversions := []string{}
 	for _, v := range apis {
@@ -698,6 +698,7 @@ func DetermineAPIVersions(apis []discovery.ModelDiscoveryItem) []string {
 
 var tlsCheck = true
 
+// EnableTLSCheck -
 func EnableTLSCheck(state bool) {
 	tlsCheck = state
 }

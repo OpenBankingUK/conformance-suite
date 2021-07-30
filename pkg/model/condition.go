@@ -56,19 +56,12 @@ type conditionalityChecker struct {
 
 // IsPresent - returns true if the method/endpoint mix exists for given specification
 func (checker conditionalityChecker) IsPresent(method, endpoint string, specification string) (bool, error) {
-	optional, err := isOptional(method, endpoint, specification)
+	_, err := findCondition(method, endpoint, specification)
 	if err != nil {
-		return false, nil
+		return false, err
 	}
-	mandatory, err := isMandatory(method, endpoint, specification)
-	if err != nil {
-		return false, nil
-	}
-	conditional, err := isConditional(method, endpoint, specification)
-	if err != nil {
-		return false, nil
-	}
-	return optional || mandatory || conditional, nil
+	return true, nil
+
 }
 
 // IsOptional - returns true if the method/endpoint mix is optional

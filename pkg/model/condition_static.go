@@ -3146,6 +3146,11 @@ func conditionalityStaticData() []byte {
 					  "endpoint": "/domestic-vrp-consents/{ConsentId}"
 				},
         {
+					"condition": "mandatory",
+					"method": "GET",
+					"endpoint": "/domestic-vrp-consents/{ConsentId}/funds-confirmation"
+				},				
+        {
             "condition": "mandatory",
             "method": "POST",
             "endpoint": "/domestic-vrps"

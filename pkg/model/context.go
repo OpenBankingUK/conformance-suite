@@ -19,6 +19,7 @@ func (c Context) Get(key string) (interface{}, bool) {
 	return value, exist
 }
 
+// ErrNotFound -
 var ErrNotFound = errors.New("error key not found")
 
 // GetString get the string value associated with key
@@ -115,6 +116,7 @@ func (c *Context) Delete(delKey string) {
 
 var dumpContexts bool
 
+// EnableContextDumps - send contents of context maps to debug stream
 func EnableContextDumps() {
 	dumpContexts = true
 }

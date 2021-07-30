@@ -192,9 +192,8 @@ func validateSignature(signature, body string, ctx *Context) (bool, error) {
 		}
 		if !pass {
 			return false, errors.New("Invalid x-jws-signature - fails validation")
-		} else {
-			logrus.Infoln("x-jws-signature validation succeded")
 		}
+		logrus.Infoln("x-jws-signature validation succeded")
 	} else {
 		return false, errors.New("x-jws-signature header not found for Validation")
 	}

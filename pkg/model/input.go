@@ -92,14 +92,19 @@ func (i *Input) CreateRequest(tc *TestCase, ctx *Context) (*resty.Request, error
 
 	if i.JwsSig {
 		// create jws detached signature - add to headers
-		if i.Method == "POST" {
-			err := i.createJWSDetachedSignature(ctx)
-			if err != nil {
-				logrus.Tracef("error creating detached signature: %s", err)
-				return nil, err
+		requestObjSigningAlg, _ := ctx.GetString("requestObjectSigningAlg")
+		if requestObjSigningAlg != "none" {
+			if i.Method == "POST" {
+				err := i.createJWSDetachedSignature(ctx)
+				if err != nil {
+					logrus.Tracef("error creating detached signature: %s", err)
+					return nil, err
+				}
+			} else {
+				return nil, errors.New("cannot apply jws signature to method that isn't POST")
 			}
 		} else {
-			return nil, errors.New("cannot apply jws signature to method that isn't POST")
+			logrus.Warn("requestObjSigningAlg == none - won't create JWSDetachedSignature")
 		}
 	}
 
@@ -161,6 +166,7 @@ func (i *Input) setClaims(tc *TestCase, ctx *Context) error {
 	return nil
 }
 
+// GenerateRequestToken -
 func (i *Input) GenerateRequestToken(ctx *Context) (string, error) {
 	alg, err := ctx.GetString("requestObjectSigningAlg")
 	if err != nil && err != ErrNotFound {
@@ -628,6 +634,7 @@ func DisableJWS() {
 	disableJws = true
 }
 
+// JWSStatus - return the status of the JWS file for X-JWS-Signature inclusion
 func JWSStatus() string {
 	if disableJws {
 		return "disabled"

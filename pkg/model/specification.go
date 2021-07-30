@@ -137,13 +137,6 @@ var (
 			Identifier:    "confirmation-funds-v3.1.8",
 			Name:          "Confirmation of Funds API Specification",
 			URL:           mustParseURL("https://openbankinguk.github.io/read-write-api-site3/v3.1.8/profiles/confirmation-of-funds-api-profile.html"),
-			Version:       "v3.1.7",
-			SchemaVersion: mustParseURL("https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.8/dist/swagger/confirmation-funds-swagger.json"),
-		},
-		{
-			Identifier:    "confirmation-funds-v3.1.8",
-			Name:          "Confirmation of Funds API Specification",
-			URL:           mustParseURL("https://openbankinguk.github.io/read-write-api-site3/v3.1.8/profiles/confirmation-of-funds-api-profile.html"),
 			Version:       "v3.1.8",
 			SchemaVersion: mustParseURL("https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.8/dist/swagger/confirmation-funds-swagger.json"),
 		},
@@ -282,7 +275,7 @@ var (
 			SchemaVersion: mustParseURL("https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.0.0/dist/event-notifications-swagger.yaml"),
 		},
 		{
-			Identifier:    "variable recurring payments-v3.1.8",
+			Identifier:    "variable-recurring-payments-v3.1.8",
 			Name:          "Variable Recurring Payments Specification",
 			URL:           mustParseURL("https://openbankinguk.github.io/read-write-api-site3/v3.1.8/profiles/vrp-profile.html"),
 			Version:       "v3.1.8",
