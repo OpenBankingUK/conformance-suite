@@ -48,16 +48,24 @@ const accountType = "account-info-swagger"
 const paymentType = "payment-initiation-swagger"
 const confirmFundsType = "confirmation-funds-swagger"
 
+const accountTypeOpenAPI = "account-info-openapi"
+const paymentTypeOpenAPI = "payment-initiation-openapi"
+const confirmFundsTypeOpenAPI = "confirmation-funds-openapi"
+const vrpType = "vrp-openapi"
+
 // GetSpecType - examines the
 func GetSpecType(spec string) (string, error) {
-	if strings.Contains(spec, accountType) {
+	if strings.Contains(spec, accountType) || strings.Contains(spec, accountTypeOpenAPI) {
 		return "accounts", nil
 	}
-	if strings.Contains(spec, paymentType) {
+	if strings.Contains(spec, paymentType) || strings.Contains(spec, paymentTypeOpenAPI) {
 		return "payments", nil
 	}
-	if strings.Contains(spec, confirmFundsType) {
+	if strings.Contains(spec, confirmFundsType) || strings.Contains(spec, confirmFundsTypeOpenAPI) {
 		return "cbpii", nil
+	}
+	if strings.Contains(spec, vrpType) {
+		return "vrps", nil
 	}
 	return "unknown", errors.New("Unknown specification:  `" + spec + "`")
 }
@@ -80,10 +88,13 @@ func GetRequiredTokensFromTests(tcs []model.TestCase, spec string) (rt []Require
 		rt, err = GetPaymentPermissions(tcs)
 	case "cbpii":
 		rt, err = GetCbpiiPermissions(tcs)
+	case "vrps":
+		rt, err = GetVrpsPermissions(tcs)
 	}
 	return rt, err
 }
 
+// GetCbpiiPermissions -
 func GetCbpiiPermissions(tests []model.TestCase) ([]RequiredTokens, error) {
 	rt := make([]RequiredTokens, 0)
 	ts := TokenStore{}
@@ -116,7 +127,19 @@ func GetCbpiiPermissions(tests []model.TestCase) ([]RequiredTokens, error) {
 
 // GetPaymentPermissions - and annotate test cases with token ids
 func GetPaymentPermissions(tests []model.TestCase) ([]RequiredTokens, error) {
-	requiredTokens := getPaymentPermissions(tests)
+	requiredTokens := getPaymentPermissions(tests, "payment")
+	requiredTokens, err := updateTokensFromConsent(requiredTokens, tests)
+	if err != nil {
+		return nil, err
+	}
+	updateTestAuthenticationFromToken(tests, requiredTokens)
+
+	return requiredTokens, nil
+}
+
+// GetVrpsPermissions - and annotate test cases with token ids
+func GetVrpsPermissions(tests []model.TestCase) ([]RequiredTokens, error) {
+	requiredTokens := getPaymentPermissions(tests, "vrps")
 	requiredTokens, err := updateTokensFromConsent(requiredTokens, tests)
 	if err != nil {
 		return nil, err
@@ -127,7 +150,7 @@ func GetPaymentPermissions(tests []model.TestCase) ([]RequiredTokens, error) {
 }
 
 // looks for post consent Tests that need to be run to get consentIds
-func getPaymentPermissions(tcs []model.TestCase) []RequiredTokens {
+func getPaymentPermissions(tcs []model.TestCase, tokenName string) []RequiredTokens {
 	rt := make([]RequiredTokens, 0)
 	ts := TokenStore{}
 	ts.store = rt
@@ -141,7 +164,7 @@ func getPaymentPermissions(tcs []model.TestCase) []RequiredTokens {
 		if consentRequired == "true" {
 			// get consentid
 			consentID := GetConsentIDFromMatches(tc)
-			rx := RequiredTokens{Name: ts.GetNextTokenName("payment"), ConsentParam: consentID, ConsentProvider: tc.ID}
+			rx := RequiredTokens{Name: ts.GetNextTokenName(tokenName), ConsentParam: consentID, ConsentProvider: tc.ID}
 			rt = append(rt, rx)
 			logrus.Tracef("adding %s to consentJobs : %s %s", tc.ID, tc.Input.Method, tc.Input.Endpoint)
 			consentJobs.Add(tc)

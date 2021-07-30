@@ -46,6 +46,11 @@ func NewSwaggerOBSpecValidator(specName, version string) (Validator, error) {
 	prodDir := "pkg/schema/spec/" + version
 	testDir := "../../pkg/schema/spec/" + version
 
+	// TODO: Implement proper openapi3 schema validator creation
+	if version == "v3.1.8" {
+		return NullValidator{}, nil
+	}
+
 	dirnameIndex := 0
 	dirnames := []string{prodDir, testDir}
 	files := []os.FileInfo{}

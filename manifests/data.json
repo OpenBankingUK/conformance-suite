@@ -1,5 +1,85 @@
 {
   "references": {
+    "minimalDomesticVRPConfirmation": {
+      "body": {
+        "Data": {
+          "ConsentId": "$consentId",
+          "Reference": "$uniqueVRPReference",
+          "InstructedAmount": {
+            "Amount": "$instructedAmountValue",
+            "Currency": "$instructedAmountCurrency"
+          }
+        }
+      }
+    },
+    "minimalDomesticVRPConsent": {
+      "body": {
+        "Data": {
+          "ReadRefundAccount": "Yes",
+          "ControlParameters": {
+            "PSUAuthenticationMethods": ["UK.OBIE.SCA"],
+            "VRPType": ["UK.OBIE.VRPType.Sweeping"],
+            "ValidFromDateTime": "2017-06-05T15:15:13+00:00",
+            "ValidToDateTime": "2020-06-05T15:15:13+00:00",
+            "MaximumIndividualAmount": {
+              "Amount": "$instructedAmountValue",
+              "Currency": "$instructedAmountCurrency"
+            },
+            "PeriodicLimits": [{
+              "Amount": "15.00",
+              "Currency": "GBP",
+              "PeriodAlignment": "Consent",
+              "PeriodType": "Week"
+            }]
+          },
+          "Initiation": {
+            "CreditorAccount": {
+              "SchemeName": "SortCodeAccountNumber",
+              "Identification": "30949330000010",
+              "SecondaryIdentification": "Roll 90210",
+              "Name": "Marcus Sweepimus"
+            },
+            "RemittanceInformation": {
+              "Reference": "Sweepco"
+            }
+          }
+        },
+        "Risk": {
+          "PaymentContextCode": "PartyToParty"
+        }
+      }
+    },
+    "minimalDomesticVRP": {
+      "body": {
+        "Data": {
+          "ConsentId": "$consentId",
+          "Initiation": {
+            "CreditorAccount": {
+              "SchemeName": "SortCodeAccountNumber",
+              "Identification": "30949330000010",
+              "SecondaryIdentification": "Roll 90210",
+              "Name": "Marcus Sweepimus"
+            },
+            "RemittanceInformation": {
+              "Reference": "Sweepco"
+            }
+          },
+          "PSUAuthenticationMethod": "UK.OBIE.SCA",
+          "Instruction": {
+            "InstructionIdentification": "identification",
+            "EndToEndIdentification": "e2eid",
+            "CreditorAccount": {
+              "SchemeName": "UK.SortCodeAccountNumber",
+              "Identification": "12345678901234",
+              "Name": "joe blow"
+            }
+          }
+        },
+        "Risk": {
+          "PaymentContextCode": "PartyToParty"
+        }
+      }
+    },
     "minimalDomesticPaymentConsent": {
       "body": {
         "Data": {
