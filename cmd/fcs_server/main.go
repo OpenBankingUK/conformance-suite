@@ -129,7 +129,7 @@ func initConfig() {
 
 	tracer.Silent = !viper.GetBool("log_tracer")
 	if viper.GetBool("log_to_file") {
-		f, err := os.OpenFile("suite.log", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0644)
+		f, err := os.OpenFile("suite.log", os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0644)
 		if err != nil {
 			// continue as normal
 		} else {
@@ -143,7 +143,7 @@ func initConfig() {
 				DisableTimestamp: false,
 				ForceFormatting:  true,
 			})
-
+			os.Remove("http-trace.log")
 		}
 	}
 	if viper.GetBool("log_http_file") {

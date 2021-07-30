@@ -341,6 +341,10 @@ func requiresAuthCodeToken(id, method, endpoint string) bool {
 		logrus.Tracef("%s %s %s requires auth code token", id, method, endpoint)
 		return true
 	}
+	if strings.ToUpper(method) == "POST" && strings.Contains(endpoint, "funds-confirmation") { // vrp
+		logrus.Tracef("%s %s %s requires auth code token", id, method, endpoint)
+		return true
+	}
 	if strings.ToUpper(method) == "POST" && !strings.Contains(endpoint, "consents") {
 		logrus.Tracef("%s %s %s requires auth code token", id, method, endpoint)
 		return true

@@ -132,7 +132,7 @@ func (g generator) GenerateManifestTests(log *logrus.Entry, config GeneratorConf
 			continue
 		}
 		scrSlice = append(scrSlice, specreq)
-		if spectype == "payments" || spectype == "cbpii" { //
+		if spectype == "payments" || spectype == "cbpii" || spectype == "vrps" { //
 			// three sets of test case. all, UI, consent (Non-ui)
 			tcs = getUITests(tcs)
 		}

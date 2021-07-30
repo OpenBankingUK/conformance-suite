@@ -318,6 +318,14 @@ func (wj *AppJourney) TestCases() (generation.SpecRun, error) {
 					}
 				}
 			}
+			if k == "vrps" {
+				vrpspermissions := wj.permissions["vrps"]
+				if len(vrpspermissions) > 0 {
+					for _, spec := range wj.specRun.SpecTestCases {
+						manifest.MapTokensToPaymentTestCases(vrpspermissions, spec.TestCases, &wj.context)
+					}
+				}
+			}
 			if k == "cbpii" {
 				cbpiiPerms := wj.permissions["cbpii"]
 				if len(cbpiiPerms) > 0 {

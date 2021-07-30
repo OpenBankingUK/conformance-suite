@@ -56,7 +56,7 @@ func GetPsuConsent(definition RunDefinition, ctx *model.Context, runTests *gener
 			consentIds, err := getPaymentConsents(definition, permissions["vrps"], ctx)
 			consentIdsToReturn = append(consentIdsToReturn, consentIds...)
 			if err != nil {
-				logrus.Error("GetPSUConsent - cbpii error: " + err.Error())
+				logrus.Error("GetPSUConsent - vrps error: " + err.Error())
 				return nil, nil, err
 			}
 
