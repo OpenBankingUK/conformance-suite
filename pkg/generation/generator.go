@@ -1,4 +1,3 @@
-//go:generate mockery -name Generator -inpkg
 package generation
 
 import (
@@ -18,6 +17,7 @@ type SpecificationTestCases struct {
 	TestCases     []model.TestCase                `json:"testCases"`
 }
 
+// GeneratorConfig -
 type GeneratorConfig struct {
 	ClientID              string
 	Aud                   string
