@@ -172,7 +172,7 @@ func (v OpenAPI3Validator) validateResponse(params validateParams) error {
 		Options: &openapi3filter.Options{
 			ExcludeRequestBody:    true,
 			IncludeResponseStatus: true,
-			MultiError:            true,
+			MultiError:            false,
 		},
 	}
 

@@ -129,7 +129,23 @@ func TestAcc10000TestResponse(t *testing.T) {
 	require.NoError(t, err)
 }
 
-const acc10000responseReqURL = string(`/open-banking/v3.1/aisp/accounts/100004000000000000000001`)
+func TestVrp100200Response(t *testing.T) {
+	validator, err := NewRawOpenAPI3Validator("OBIE VRP Profile", "v3.1.8")
+	require.NoError(t, err)
+
+	r := HTTPResponse{
+		Method:     "GET",
+		Path:       vrp100200ReqURL,
+		StatusCode: http.StatusOK,
+		Body:       strings.NewReader(vrp100200Response),
+		Header:     http.Header{"Content-Type": []string{"application/json; charset=utf-8"}},
+	}
+
+	_, err = validator.Validate(r)
+	require.NoError(t, err)
+}
+
+const acc10000responseReqURL = "/open-banking/v3.1/aisp/accounts/100004000000000000000001"
 const acc10000response = `{
 	"Data": {
 		 "Account": [{
@@ -155,4 +171,56 @@ const acc10000response = `{
 	"Meta": {
 		 "TotalPages": 1
 	}
+}`
+
+const vrp100200ReqURL = "/open-banking/v3.1/vrp/domestic-vrp-consents/vrp-8ba1c1a1-6ffd-43fa-aac0-c1d1f8524f5d"
+
+const vrp100200Response = `{
+	"Data": {
+		 "ControlParameters": {
+				"MaximumIndividualAmount": {
+					 "Amount": "1.00",
+					 "Currency": "GBP"
+				},
+				"PSUAuthenticationMethods": [
+					 "UK.OBIE.SCA"
+				],
+				"PeriodicLimits": [
+					 {
+							"Amount": "15.00",
+							"Currency": "GBP",
+							"PeriodAlignment": "Consent",
+							"PeriodType": "Week"
+					 }
+				],
+				"VRPType": [
+					 "UK.OBIE.VRPType.Sweeping"
+				],
+				"ValidFromDateTime": "2017-06-05T15:15:13+00:00",
+				"ValidToDateTime": "2020-06-05T15:15:13+00:00"
+		 },
+		 "Initiation": {
+				"CreditorAccount": {
+					 "Identification": "30949330000010",
+					 "Name": "Marcus Sweepimus",
+					 "SchemeName": "SortCodeAccountNumber",
+					 "SecondaryIdentification": "Roll 90210"
+				},
+				"RemittanceInformation": {
+					 "Reference": "Sweepco"
+				}
+		 },
+		 "ReadRefundAccount": "Yes",
+		 "ConsentId": "vrp-8ba1c1a1-6ffd-43fa-aac0-c1d1f8524f5d",
+		 "Status": "Authorised",
+		 "CreationDateTime": "2021-08-01T18:28:23.523Z",
+		 "StatusUpdateDateTime": "2021-08-01T18:28:33.252Z"
+	},
+	"Risk": {
+		 "PaymentContextCode": "PartyToParty"
+	},
+	"Links": {
+		 "Self": "http://localhost:4700/open-banking/v3.1/vrp/domestic-vrp-consents/vrp-8ba1c1a1-6ffd-43fa-aac0-c1d1f8524f5d"
+	},
+	"Meta": {}
 }`
