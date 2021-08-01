@@ -1982,6 +1982,7 @@
         "in": "header",
         "name": "x-customer-user-agent",
         "description": "Indicates the user-agent that the PSU is using.",
+        "required": false,
         "schema": {
           "type": "string"
         }
@@ -1989,6 +1990,7 @@
       "x-fapi-customer-ip-address": {
         "in": "header",
         "name": "x-fapi-customer-ip-address",
+        "required": false,
         "description": "The PSU's IP address if the PSU is currently logged in with the TPP.",
         "schema": {
           "type": "string"
@@ -1997,6 +1999,7 @@
       "x-fapi-auth-date": {
         "in": "header",
         "name": "x-fapi-auth-date",
+        "required": false,
         "description": "The time when the PSU last logged in with the TPP. \nAll dates in the HTTP headers are represented as RFC 7231 Full Dates. An example is below: \nSun, 10 Sep 2017 19:43:31 UTC",
         "schema": {
           "type": "string",
@@ -2006,6 +2009,7 @@
       "x-fapi-interaction-id": {
         "in": "header",
         "name": "x-fapi-interaction-id",
+        "required": false,
         "description": "An RFC4122 UID used as a correlation id.",
         "schema": {
           "type": "string"
@@ -2018,8 +2022,7 @@
         "required": true,
         "schema": {
           "type": "string",
-          "maxLength": 40,
-          "pattern": "^(?!\\s)(.*)(\\S)$"
+          "maxLength": 40
         }
       },
       "x-jws-signature": {
@@ -6491,7 +6494,8 @@
           "Loan",
           "Mortgage",
           "PrePaidCard",
-          "Savings"
+          "Savings",
+          "Other"
         ]
       },
       "OBExternalAccountType1Code": {
