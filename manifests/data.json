@@ -16,7 +16,20 @@
       "body": {
         "Data": {
           "ControlParameters": {
-            "VRPType": ["UK.OBIE.VRPType.Sweeping"]
+            "VRPType": ["UK.OBIE.VRPType.Sweeping"],
+            "PSUAuthenticationMethods": ["UK.OBIE.SCA"],
+            "ValidFromDateTime": "$transactionFromDate",
+            "ValidToDateTime": "$transactionToDate",
+            "MaximumIndividualAmount": {
+              "Amount": "$instructedAmountValue",
+              "Currency": "$instructedAmountCurrency"
+            },
+            "PeriodicLimits": [{
+              "Amount": "15.00",
+              "Currency": "GBP",
+              "PeriodAlignment": "Consent",
+              "PeriodType": "Week"
+            }]            
           },
           "Initiation": {
             "CreditorAccount": {
