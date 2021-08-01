@@ -69,7 +69,7 @@ func TestContentTypeValidator(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			header := &http.Header{}
 			header.Add("Content-type", tc.responseContentType)
-			r := Response{
+			r := HTTPResponse{
 				Method:     "POST",
 				Path:       "/funds-confirmation-consents",
 				StatusCode: http.StatusOK,

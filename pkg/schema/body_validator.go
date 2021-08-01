@@ -22,7 +22,7 @@ func newBodyValidator(finder finder) Validator {
 	}
 }
 
-func (v bodyValidator) Validate(r Response) ([]Failure, error) {
+func (v bodyValidator) Validate(r HTTPResponse) ([]Failure, error) {
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		return nil, err
@@ -35,7 +35,7 @@ func (v bodyValidator) IsRequestProperty(method, path, propertpath string) (bool
 	return false, "", nil
 }
 
-func (v bodyValidator) validate(r Response, body []byte) ([]Failure, error) {
+func (v bodyValidator) validate(r HTTPResponse, body []byte) ([]Failure, error) {
 	response, err := v.finder.Response(r.Method, r.Path, r.StatusCode)
 	if err == ErrNotFound {
 		message := fmt.Sprintf("could't find a schema to validate for status code %d", r.StatusCode)

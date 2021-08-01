@@ -17,7 +17,7 @@ func TestBodyValidator_Validate(t *testing.T) {
 	f := newFinder(doc)
 	validator := newBodyValidator(f)
 	body := strings.NewReader(getAccountsResponse)
-	r := Response{
+	r := HTTPResponse{
 		Method:     "GET",
 		Path:       "/accounts",
 		StatusCode: http.StatusOK,
@@ -36,7 +36,7 @@ func TestBodyValidator_Validate_ReturnsFailures(t *testing.T) {
 	f := newFinder(doc)
 	validator := newBodyValidator(f)
 	body := strings.NewReader(`{}`)
-	r := Response{
+	r := HTTPResponse{
 		Method:     "GET",
 		Path:       "/accounts",
 		StatusCode: http.StatusOK,
@@ -92,7 +92,7 @@ func TestSchemaBodyChecks(t *testing.T) {
 			f := newFinder(tt.doc)
 			validator := newBodyValidator(f)
 			body := strings.NewReader(tt.responseBody)
-			r := Response{
+			r := HTTPResponse{
 				Method:     "GET",
 				Path:       tt.path,
 				StatusCode: http.StatusOK,
@@ -315,7 +315,7 @@ func TestSchemaBodyAPRChecks(t *testing.T) {
 			f := newFinder(tt.doc)
 			validator := newBodyValidator(f)
 			body := strings.NewReader(tt.responseBody)
-			r := Response{
+			r := HTTPResponse{
 				Method:     "GET",
 				Path:       tt.path,
 				StatusCode: http.StatusOK,

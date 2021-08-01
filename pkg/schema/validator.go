@@ -13,8 +13,8 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-// Response represents a response object from a HTTP Call
-type Response struct {
+// HTTPResponse represents a response object from a HTTP Call
+type HTTPResponse struct {
 	Method     string
 	Path       string
 	Header     http.Header
@@ -35,7 +35,7 @@ func newFailure(message string) Failure {
 
 // Validator validates a HTTP response object against a schema
 type Validator interface {
-	Validate(Response) ([]Failure, error)
+	Validate(HTTPResponse) ([]Failure, error)
 	IsRequestProperty(method, path, propertpath string) (bool, string, error)
 }
 
@@ -46,9 +46,8 @@ func NewSwaggerOBSpecValidator(specName, version string) (Validator, error) {
 	prodDir := "pkg/schema/spec/" + version
 	testDir := "../../pkg/schema/spec/" + version
 
-	// TODO: Implement proper openapi3 schema validator creation
 	if version == "v3.1.8" {
-		return NullValidator{}, nil
+		return NewOpenAPI3Validator(specName, version)
 	}
 
 	dirnameIndex := 0
@@ -148,7 +147,7 @@ func newValidator(doc *loads.Document) (Validator, error) {
 	return nil, errors.New("unsupported spec version from newValidator")
 }
 
-func (v validators) Validate(r Response) ([]Failure, error) {
+func (v validators) Validate(r HTTPResponse) ([]Failure, error) {
 	allFailures := []Failure{}
 	for _, validator := range v.validators {
 		failures, err := validator.Validate(r)

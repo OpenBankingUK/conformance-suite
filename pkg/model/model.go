@@ -133,7 +133,7 @@ func (t *TestCase) Validate(resp *resty.Response, ctx *Context) (bool, []error) 
 		}
 
 		var err error
-		failures, err = t.Validator.Validate(schema.Response{
+		failures, err = t.Validator.Validate(schema.HTTPResponse{
 			Method:     t.Input.Method,
 			Path:       t.Input.Endpoint,
 			Header:     resp.Header(),

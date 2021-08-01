@@ -5,12 +5,12 @@ require (
 	github.com/blang/semver/v4 v4.0.0
 	github.com/davecgh/go-spew v1.1.1
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
+	github.com/getkin/kin-openapi v0.68.0
 	github.com/go-openapi/errors v0.17.2 // indirect
 	github.com/go-openapi/loads v0.17.2
 	github.com/go-openapi/runtime v0.0.0-20180920151709-4f900dc2ade9
 	github.com/go-openapi/spec v0.17.2
 	github.com/go-openapi/strfmt v0.17.2
-	github.com/go-openapi/swag v0.17.2 // indirect
 	github.com/go-openapi/validate v0.17.2
 	github.com/go-ozzo/ozzo-validation v3.5.0+incompatible
 	github.com/go-playground/locales v0.12.1 // indirect
