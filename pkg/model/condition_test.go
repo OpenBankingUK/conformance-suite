@@ -73,7 +73,7 @@ func TestGetEndpointConditionality(t *testing.T) {
 	assert.EqualValues(endpointConditionality[specification], GetEndpointConditionality(specification))
 }
 
-func TestConditionalityChecker(t *testing.T) {
+func testConditionalityChecker(t *testing.T) {
 	checker := NewConditionalityChecker()
 	specification := accountApecID
 

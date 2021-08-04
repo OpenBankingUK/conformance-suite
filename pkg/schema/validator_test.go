@@ -148,7 +148,7 @@ func TestTraverseSchemaLookingforNonRequiredProperties(t *testing.T) { // Exampl
 					t.Logf("%s %s %t %s\n", param.Name, param.In, param.Required, param.Type)
 					sc := param.ParamProps.Schema
 					if sc != nil {
-						dumpSchema(t, sc, "")
+						//dumpSchema(t, sc, "")
 					}
 				}
 			}

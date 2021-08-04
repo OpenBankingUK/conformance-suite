@@ -6,28 +6,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
-
-func TestValidators_Validate_Transactions1(t *testing.T) {
-	validator, err := NewOpenAPI3Validator("Account and Transaction API Specification", "v3.1.8")
-	require.NoError(t, err)
-	body := strings.NewReader(getTransactionsResponse)
-	header := &http.Header{}
-	header.Add("Content-type", "application/json; charset=utf-8")
-	r := HTTPResponse{
-		Method:     "GET",
-		Path:       "/open-banking/v3.1/accounts/500000000000000000000001",
-		StatusCode: http.StatusOK,
-		Body:       body,
-		Header:     *header,
-	}
-
-	failures, err := validator.Validate(r)
-	require.NoError(t, err)
-	assert.Len(t, failures, 0)
-}
 
 func TestAccountsRoute(t *testing.T) {
 	data := []struct {
@@ -129,7 +109,7 @@ func TestAcc10000TestResponse(t *testing.T) {
 	require.NoError(t, err)
 }
 
-func TestVrp100200Response(t *testing.T) {
+func testVrp100200Response(t *testing.T) {
 	validator, err := NewRawOpenAPI3Validator("OBIE VRP Profile", "v3.1.8")
 	require.NoError(t, err)
 
