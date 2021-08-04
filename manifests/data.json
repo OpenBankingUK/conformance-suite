@@ -17,26 +17,35 @@
         "Data": {
           "ControlParameters": {
             "VRPType": ["UK.OBIE.VRPType.Sweeping"],
-            "PSUAuthenticationMethods": ["UK.OBIE.SCA"],
             "ValidFromDateTime": "$transactionFromDate",
             "ValidToDateTime": "$transactionToDate",
             "MaximumIndividualAmount": {
-              "Amount": "$instructedAmountValue",
+              "Amount": "10.00",
               "Currency": "$instructedAmountCurrency"
             },
             "PeriodicLimits": [{
-              "Amount": "15.00",
+              "Amount": "1.00",
               "Currency": "GBP",
               "PeriodAlignment": "Consent",
               "PeriodType": "Week"
             }]            
           },
           "Initiation": {
+            "InstructionIdentification": "$instructionIdentification",
+            "EndToEndIdentification": "$endToEndIdentification",
+            "InstructedAmount": {
+              "Amount": "$instructedAmountValue",
+              "Currency": "GBP"
+            },             
             "CreditorAccount": {
               "SchemeName": "$creditorScheme",
               "Identification": "$creditorIdentification",
               "Name": "$creditorName"
-            }
+            }, 
+            "RemittanceInformation": {
+              "Reference": "$creditorIdentification",
+              "Unstructured": "Test Unstructured Data"
+            }     
           }
         },
         "Risk": {
@@ -47,9 +56,24 @@
       "body": {
         "Data": {
           "ConsentId": "$consentId",
-          "Initiation": {    
-          },
           "PSUAuthenticationMethod": "UK.OBIE.SCA",
+          "Initiation": { 
+            "InstructionIdentification": "$instructionIdentification",
+            "EndToEndIdentification": "$endToEndIdentification",
+            "InstructedAmount": {
+              "Amount": "$instructedAmountValue",
+              "Currency": "GBP"
+            },             
+            "CreditorAccount": {
+              "SchemeName": "$creditorScheme",
+              "Identification": "$creditorIdentification",
+              "Name": "$creditorName"
+            }, 
+            "RemittanceInformation": {
+              "Reference": "$creditorIdentification",
+              "Unstructured": "Test Unstructured Data"
+            }
+          },
           "Instruction": {
             "InstructionIdentification": "$instructionIdentification",
             "EndToEndIdentification": "$endToEndIdentification",
@@ -57,7 +81,7 @@
               "SchemeName": "$creditorScheme",
               "Identification": "$creditorIdentification",
               "Name": "$creditorName"
-            }
+            }            
           }
         },
         "Risk": {

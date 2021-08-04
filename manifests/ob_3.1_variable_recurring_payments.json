@@ -69,6 +69,203 @@
       "method": "post",
       "schemaCheck": true,
       "validateSignature": false
-    }
-  ]
+    },
+    {
+      "description": "Retrieves Authorised Variable Recurring Payments Consent",
+      "id": "OB-301-VRP-100610",
+      "refURI": "https://openbankinguk.github.io/read-write-api-site3/v3.1.8/resources-and-data-models/vrp/domestic-vrp-consents.html",
+      "detail": "Retrieves Variable Recurring Payments",
+      "uri": "/domestic-vrp-consents/$consentId",
+      "parameters": {
+        "consentId": "$OB-301-VRP-100100-ConsentId",
+        "requestConsent": "false"
+      },
+      "uriImplementation": "mandatory",
+      "method": "get",
+      "resource": "DomesticVRP",
+      "asserts": [
+        "OB3GLOAssertOn200",
+        "OB3GLOFAPIHeader",
+        "OB3GLOAssertContentType",
+        "OB3DOPAssertAuthorised"
+      ],
+      "schemaCheck": true
+    },   {
+      "description": "Check VRP Funds Confirmation ",
+      "id": "OB-301-VRP-100650",
+      "refURI": "https://openbankinguk.github.io/read-write-api-site3/v3.1.8/resources-and-data-models/vrp/domestic-vrps.html",
+      "detail": "Checks vrp funds confirmation",
+      "uri": "/domestic-vrp-consents/$consentId/funds-confirmation",
+      "uriImplementation": "mandatory",
+      "parameters": {
+          "tokenRequestScope": "payments",
+          "consentId": "$OB-301-VRP-100100-ConsentId",
+          "uniqueVRPReference": "$fn:instructionIdentificationID()",
+          "instructedAmountCurrency": "$instructedAmountCurrency",
+          "instructedAmountValue": "$instructedAmountValue",
+          "postData": "$minimalDomesticVRPConfirmation",
+          "requestConsent": "false"
+      },
+      "method": "post",
+      "body": "$postData",
+      "headers": {
+          "Content-Type": "application/json"
+      },
+      "resource": "DomesticVRP",
+      "asserts": [
+          "OB3GLOAssertOn200"
+      ],
+      "schemaCheck": true
+    },
+    {
+      "description": "Retrieves VRP-100600 VrpID",
+      "id": "OB-301-VRP-10670",
+      "refURI": "https://openbankinguk.github.io/read-write-api-site3/v3.1.8/resources-and-data-models/vrp/domestic-vrp-consents.html",
+      "detail": "Retrieves Variable Recurring Payments VrpID",
+      "uri": "/domestic-vrps/$vrpId",
+      "parameters": {
+        "vrpId": "$OB-301-VRP-100600-DomesticVRPId",
+        "requestConsent": "false"
+      },
+      "uriImplementation": "mandatory",
+      "method": "get",
+      "resource": "DomesticVRP",
+      "asserts": [
+        "OB3GLOAssertOn200",
+        "OB3GLOFAPIHeader",
+        "OB3GLOAssertContentType"
+      ],
+      "schemaCheck": true
+    },  {
+      "description": "Repeated Domestic Variable Recurring Payment",
+      "id": "OB-301-VRP-100700",
+      "refURI": "https://openbankinguk.github.io/read-write-api-site3/v3.1.8/resources-and-data-models/vrp/domestic-vrps.html",
+      "detail": "Check that once the domestic-payment-consent has been authorised by the PSU, the PISP can proceed to submitting the domestic-payment for processing.",
+      "parameters": {
+        "tokenRequestScope": "payments",
+        "consentId": "$OB-301-VRP-100100-ConsentId",
+        "thisSchemeName": "$creditorScheme",
+        "thisIdentification": "$creditorIdentification",
+        "instructionIdentification": "$OB-301-VRP-100100-instructionIdentification",
+        "endToEndIdentification": "e2e-domestic-pay",
+        "instructedAmountCurrency": "$instructedAmountCurrency",
+        "instructedAmountValue": "$instructedAmountValue",
+        "postData": "$minimalDomesticVRP"
+      },
+      "headers": {
+        "Content-Type": "application/json"
+      },
+      "body": "$postData",
+      "uri": "/domestic-vrps",
+      "uriImplementation": "mandatory",
+      "resource": "DomesticVRP",
+      "asserts": [
+        "OB3GLOAssertOn201"
+      ],
+      "keepContextOnSuccess": {
+        "name": "OB-301-VRP-100700-DomesticVRPId",
+        "value": "Data.DomesticVRPId"
+      },
+      "method": "post",
+      "schemaCheck": true,
+      "validateSignature": false
+    },
+    {
+      "description": "Retrieves VRP-100700 VrpID",
+      "id": "OB-301-VRP-101100",
+      "refURI": "https://openbankinguk.github.io/read-write-api-site3/v3.1.8/resources-and-data-models/vrp/domestic-vrp-consents.html",
+      "detail": "Retrieves Variable Recurring Payments VrpID" ,
+      "uri": "/domestic-vrps/$vrpId",
+      "parameters": {
+        "vrpId": "$OB-301-VRP-100700-DomesticVRPId",
+        "requestConsent": "false"
+      },
+      "uriImplementation": "mandatory",
+      "method": "get",
+      "resource": "DomesticVRP",
+      "asserts": [
+        "OB3GLOAssertOn200",
+        "OB3GLOFAPIHeader",
+        "OB3GLOAssertContentType"
+      ],
+      "schemaCheck": true
+    },
+    {
+      "description": "Retrieves Get Payment Details",
+      "id": "OB-301-VRP-101200",
+      "refURI": "https://openbankinguk.github.io/read-write-api-site3/v3.1.8/resources-and-data-models/vrp/domestic-vrp-consents.html",
+      "detail": "Retrieves Variable Recurring Payments VrpID" ,
+      "uri": "/domestic-vrps/$vrpId/payment-details",
+      "parameters": {
+        "vrpId": "$OB-301-VRP-100700-DomesticVRPId",
+        "requestConsent": "false"
+      },
+      "uriImplementation": "mandatory",
+      "method": "get",
+      "resource": "DomesticVRP",
+      "asserts": [
+        "OB3GLOAssertOn200",
+        "OB3GLOFAPIHeader",
+        "OB3GLOAssertContentType"
+      ],
+      "schemaCheck": true
+    },
+    {
+      "description": "Deletes VRP Consents",
+      "id": "OB-301-VRP-102100",
+      "refURI": "https://openbankinguk.github.io/read-write-api-site3/v3.1.8/resources-and-data-models/vrp/domestic-vrp-consents.html",
+      "detail": "Deletes VRP Consent",
+      "uri": "/domestic-vrp-consents/$consentId",
+      "uriImplementation": "mandatory",
+      "parameters": {
+        "consentId": "$OB-301-VRP-100100-ConsentId",
+        "requestConsent": "false"
+      },
+      "method": "delete",
+      "resource": "FundsConfirmation",
+      "asserts": [
+        "OB3GLOAssertOn204",
+        "OB3GLOFAPIHeader"
+      ],
+      "schemaCheck": true
+    },
+    {
+      "description": "Attempts to Retrieve Deleted Consent",
+      "id": "OB-301-VRP-102150",
+      "refURI": "https://openbankinguk.github.io/read-write-api-site3/v3.1.8/resources-and-data-models/vrp/domestic-vrp-consents.html",
+      "detail": "Retrieves Variable Recurring Payments",
+      "uri": "/domestic-vrp-consents/$consentId",
+      "parameters": {
+        "consentId": "$OB-301-VRP-100100-ConsentId",
+        "requestConsent": "false"
+      },
+      "uriImplementation": "mandatory",
+      "method": "get",
+      "resource": "DomesticVRP",
+      "asserts_one_of": [
+        "OB3GLOAssertOn400",
+        "OB3GLOAssertOn404"
+      ],
+      "schemaCheck": true
+    },             
+    {
+      "description": "Attempts to delete, already deleted consent",
+      "id": "OB-301-VRP-102200",
+      "refURI": "https://openbankinguk.github.io/read-write-api-site3/v3.1.8/resources-and-data-models/vrp/domestic-vrp-consents.html",
+      "detail": "Deletes VRP Consent",
+      "uri": "/domestic-vrp-consents/$consentId",
+      "uriImplementation": "mandatory",
+      "parameters": {
+        "consentId": "$OB-301-VRP-100100-ConsentId",
+        "requestConsent": "false"
+      },
+      "method": "delete",
+      "resource": "FundsConfirmation",
+      "asserts_one_of": [
+          "OB3GLOAssertOn400",
+          "OB3GLOAssertOn204"
+      ],        
+      "schemaCheck": true
+    }                          
+   ]
 }
