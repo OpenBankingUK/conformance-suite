@@ -15,7 +15,7 @@ pipelines:
         # build go app
         - step:
             name: go-test
-            image: golang:1.15-alpine
+            image: golang:1.15-alpine3.13
             script:
               - |
                 export CGO_ENABLED=0
