@@ -109,7 +109,7 @@ func TestAcc10000TestResponse(t *testing.T) {
 	require.NoError(t, err)
 }
 
-func testVrp100200Response(t *testing.T) {
+func TestVrp100200Response(t *testing.T) {
 	validator, err := NewRawOpenAPI3Validator("OBIE VRP Profile", "v3.1.8")
 	require.NoError(t, err)
 
@@ -189,6 +189,11 @@ const vrp100200Response = `{
 				"RemittanceInformation": {
 					 "Reference": "Sweepco"
 				}
+		 },
+		 "DebtorAccount": {
+			 "SchemeName": "SortCodeAccountNumber",
+			 "Identification": "Identification",
+			 "Name": "Joe Smoe"
 		 },
 		 "ReadRefundAccount": "Yes",
 		 "ConsentId": "vrp-8ba1c1a1-6ffd-43fa-aac0-c1d1f8524f5d",

@@ -157,7 +157,6 @@ func (v OpenAPI3Validator) Validate(r HTTPResponse) ([]Failure, error) {
 	return failures, nil
 }
 
-// TODO include all httpResponse headers!!!
 func (v OpenAPI3Validator) validateResponse(params validateParams) error {
 	requestValidationInput := &openapi3filter.RequestValidationInput{
 		Request:    params.httpReq,
