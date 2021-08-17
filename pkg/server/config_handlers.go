@@ -21,7 +21,7 @@ import (
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
 )
 
-// Needs to be a interface{} slice, see the official test for an example
+// ResponseType - Needs to be a interface{} slice, see the official test for an example
 // https://github.com/go-ozzo/ozzo-validation/blob/master/in_test.go
 type ResponseType = interface{}
 
@@ -39,10 +39,12 @@ type configHandlers struct {
 	journey Journey
 }
 
+// SupportedRequestSignAlg -
 // Needs to be a interface{} slice, see the official test for an example
 // https://github.com/go-ozzo/ozzo-validation/blob/master/in_test.go
 type SupportedRequestSignAlg interface{}
 
+// SupportedRequestSignAlgValues -
 func SupportedRequestSignAlgValues() []interface{} {
 	return []interface{}{"PS256", "RS256", "NONE"}
 }
@@ -54,6 +56,7 @@ func SupportedAcrValues() []string {
 	return []string{"urn:openbanking:psd2:sca", "urn:openbanking:psd2:ca"}
 }
 
+// GlobalConfiguration -
 type GlobalConfiguration struct {
 	SigningPrivate                string                               `json:"signing_private" validate:"not_empty"`
 	SigningPublic                 string                               `json:"signing_public" validate:"not_empty"`
@@ -197,6 +200,7 @@ func (h configHandlers) configGlobalPostHandler(c echo.Context) error {
 	return c.JSON(http.StatusCreated, config)
 }
 
+// MakeJourneyConfig -
 func MakeJourneyConfig(config *GlobalConfiguration) (JourneyConfig, error) {
 	ok, message := validateConfig(config)
 	if !ok {

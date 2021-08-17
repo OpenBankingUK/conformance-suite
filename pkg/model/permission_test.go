@@ -1,9 +1,6 @@
 package model
 
 import (
-	"encoding/json"
-	"io/ioutil"
-	"path/filepath"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -171,22 +168,6 @@ func TestPermissionsForEndpointMultipleEndpointsURL(t *testing.T) {
 	assert.Len(t, search, 2)
 	assert.Equal(t, Code("a"), search[0].Code)
 	assert.Equal(t, Code("b"), search[1].Code)
-}
-
-func TestStaticPermissionsHaveNotChanged(t *testing.T) {
-	expected, err := json.MarshalIndent(staticApiPermissions, "", "    ")
-	require.NoError(t, err)
-
-	goldenFile := filepath.Join("testdata", "permissions.golden")
-	if *update {
-		t.Log("update golden file")
-		require.NoError(t, ioutil.WriteFile(goldenFile, expected, 0644), "failed to update golden file")
-	}
-
-	perms, err := ioutil.ReadFile(goldenFile)
-	require.NoError(t, err, "failed reading .golden")
-
-	assert.JSONEq(t, string(expected), string(perms))
 }
 
 // This is a test of our matching function logic operating

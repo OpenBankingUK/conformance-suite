@@ -1,5 +1,93 @@
 {
   "references": {
+    "minimalDomesticVRPConfirmation": {
+      "body": {
+        "Data": {
+          "ConsentId": "$consentId",
+          "Reference": "$uniqueVRPReference",
+          "InstructedAmount": {
+            "Amount": "$instructedAmountValue",
+            "Currency": "$instructedAmountCurrency"
+          }
+        }
+      }
+    },
+    "minimalDomesticVRPConsent": {
+      "body": {
+        "Data": {
+          "ControlParameters": {
+            "VRPType": ["UK.OBIE.VRPType.Sweeping"],
+            "ValidFromDateTime": "$transactionFromDate",
+            "ValidToDateTime": "$transactionToDate",
+            "MaximumIndividualAmount": {
+              "Amount": "10.00",
+              "Currency": "$instructedAmountCurrency"
+            },
+            "PeriodicLimits": [{
+              "Amount": "1.00",
+              "Currency": "GBP",
+              "PeriodAlignment": "Consent",
+              "PeriodType": "Week"
+            }]            
+          },
+          "Initiation": {
+            "InstructionIdentification": "$instructionIdentification",
+            "EndToEndIdentification": "$endToEndIdentification",
+            "InstructedAmount": {
+              "Amount": "$instructedAmountValue",
+              "Currency": "GBP"
+            },             
+            "CreditorAccount": {
+              "SchemeName": "$creditorScheme",
+              "Identification": "$creditorIdentification",
+              "Name": "$creditorName"
+            }, 
+            "RemittanceInformation": {
+              "Reference": "$creditorIdentification",
+              "Unstructured": "Test Unstructured Data"
+            }     
+          }
+        },
+        "Risk": {
+        }
+      }
+    },
+    "minimalDomesticVRP": {
+      "body": {
+        "Data": {
+          "ConsentId": "$consentId",
+          "PSUAuthenticationMethod": "UK.OBIE.SCA",
+          "Initiation": { 
+            "InstructionIdentification": "$instructionIdentification",
+            "EndToEndIdentification": "$endToEndIdentification",
+            "InstructedAmount": {
+              "Amount": "$instructedAmountValue",
+              "Currency": "GBP"
+            },             
+            "CreditorAccount": {
+              "SchemeName": "$creditorScheme",
+              "Identification": "$creditorIdentification",
+              "Name": "$creditorName"
+            }, 
+            "RemittanceInformation": {
+              "Reference": "$creditorIdentification",
+              "Unstructured": "Test Unstructured Data"
+            }
+          },
+          "Instruction": {
+            "InstructionIdentification": "$instructionIdentification",
+            "EndToEndIdentification": "$endToEndIdentification",
+            "CreditorAccount": {
+              "SchemeName": "$creditorScheme",
+              "Identification": "$creditorIdentification",
+              "Name": "$creditorName"
+            }            
+          }
+        },
+        "Risk": {
+        }
+      }
+    },
     "minimalDomesticPaymentConsent": {
       "body": {
         "Data": {

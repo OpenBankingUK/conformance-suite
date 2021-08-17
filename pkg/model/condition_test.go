@@ -48,13 +48,13 @@ var optionalData = []dataHolder{
 	{"GET", "/statements"},
 }
 
-const ACCOUNT_SPEC_ID = "account-transaction-v3.1"
+const accountSpecID = "account-transaction-v3.1"
 
 // Test we can read the conditionality file - performed in package init()
 // and that the endPointConditionality structure - which holds all the endpoint conditions
 // in a package local manner, can be read
 func TestConditionality(t *testing.T) {
-	count := len(endpointConditionality[ACCOUNT_SPEC_ID])
+	count := len(endpointConditionality[accountSpecID])
 	result := count > 10 // check we have more than an arbitrary number of conditions
 	assert.Equal(t, result, true)
 }
@@ -62,7 +62,7 @@ func TestConditionality(t *testing.T) {
 // Test that GetEndpointConditionality returns a clone of endpointConditionality.
 func TestGetEndpointConditionality(t *testing.T) {
 	assert := assert.New(t)
-	specification := ACCOUNT_SPEC_ID
+	specification := accountSpecID
 	assert.Len(GetEndpointConditionality(specification), len(endpointConditionality[specification]))
 	assert.EqualValues(endpointConditionality[specification], GetEndpointConditionality(specification))
 
@@ -73,9 +73,9 @@ func TestGetEndpointConditionality(t *testing.T) {
 	assert.EqualValues(endpointConditionality[specification], GetEndpointConditionality(specification))
 }
 
-func TestConditionalityChecker(t *testing.T) {
+func testConditionalityChecker(t *testing.T) {
 	checker := NewConditionalityChecker()
-	specification := ACCOUNT_SPEC_ID
+	specification := accountSpecID
 
 	t.Run("IsPresent true for endpoint method mix in specification", func(t *testing.T) {
 		result, err := checker.IsPresent("POST", "/account-access-consents", specification)
@@ -117,7 +117,7 @@ func TestConditionalityChecker(t *testing.T) {
 func TestMandatoryData(t *testing.T) {
 	checker := NewConditionalityChecker()
 	for _, tt := range mandatoryData {
-		result, err := checker.IsMandatory(tt.Method, tt.Endpoint, ACCOUNT_SPEC_ID)
+		result, err := checker.IsMandatory(tt.Method, tt.Endpoint, accountSpecID)
 		require.Nil(t, err)
 		require.True(t, result)
 	}
@@ -127,7 +127,7 @@ func TestMandatoryData(t *testing.T) {
 func TestConditionalData(t *testing.T) {
 	checker := NewConditionalityChecker()
 	for _, tt := range conditionalData {
-		result, err := checker.IsConditional(tt.Method, tt.Endpoint, ACCOUNT_SPEC_ID)
+		result, err := checker.IsConditional(tt.Method, tt.Endpoint, accountSpecID)
 		require.Nil(t, err)
 		require.True(t, result)
 	}
@@ -137,7 +137,7 @@ func TestConditionalData(t *testing.T) {
 func TestOptionalData(t *testing.T) {
 	checker := NewConditionalityChecker()
 	for _, tt := range optionalData {
-		result, err := checker.IsOptional(tt.Method, tt.Endpoint, ACCOUNT_SPEC_ID)
+		result, err := checker.IsOptional(tt.Method, tt.Endpoint, accountSpecID)
 		require.Nil(t, err)
 		require.True(t, result)
 	}

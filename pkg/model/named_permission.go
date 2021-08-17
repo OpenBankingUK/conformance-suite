@@ -5,14 +5,17 @@ import (
 	"bitbucket.org/openbankingteam/conformance-suite/pkg/permissions"
 )
 
+// NamedPermission - permission structure
 type NamedPermission struct {
 	Name       string                    `json:"name"`
 	CodeSet    permissions.CodeSetResult `json:"codeSet"`
-	ConsentUrl string                    `json:"consentUrl"`
+	ConsentURL string                    `json:"consentUrl"`
 }
 
+// NamedPermissions - permission structure
 type NamedPermissions []NamedPermission
 
+// Add - to named permissions
 func (t *NamedPermissions) Add(token NamedPermission) {
 	*t = append(*t, token)
 }
@@ -26,19 +29,21 @@ func newNamedPermission(name string, codeSet permissions.CodeSetResult) NamedPer
 	}
 }
 
+// SpecConsentRequirements -
 type SpecConsentRequirements struct {
 	Identifier       string           `json:"specIdentifier"`
 	NamedPermissions NamedPermissions `json:"namedPermissions"`
 }
 
-func NewSpecConsentRequirements(nameGenerator names.Generator, result permissions.CodeSetResultSet, specId string) SpecConsentRequirements {
+// NewSpecConsentRequirements - create a new SpecConsentRequirements
+func NewSpecConsentRequirements(nameGenerator names.Generator, result permissions.CodeSetResultSet, specID string) SpecConsentRequirements {
 	namedPermissions := NamedPermissions{}
 	for _, resultSet := range result {
 		namedPermission := newNamedPermission(nameGenerator.Generate(), resultSet)
 		namedPermissions = append(namedPermissions, namedPermission)
 	}
 	return SpecConsentRequirements{
-		Identifier:       specId,
+		Identifier:       specID,
 		NamedPermissions: namedPermissions,
 	}
 }

@@ -20,7 +20,7 @@ func TestValidators_Validate_Transactions(t *testing.T) {
 	body := strings.NewReader(getTransactionsResponse)
 	header := &http.Header{}
 	header.Add("Content-type", "application/json; charset=utf-8")
-	r := Response{
+	r := HTTPResponse{
 		Method:     "GET",
 		Path:       "/accounts/500000000000000000000001/transactions",
 		StatusCode: http.StatusOK,
@@ -67,7 +67,7 @@ func TestValidators_Validate_FailureEmptyOptionalProperty(t *testing.T) {
 	body := strings.NewReader(getTransactionsResponseEmptyTransactionReference)
 	header := &http.Header{}
 	header.Add("Content-type", "application/json; charset=utf-8")
-	r := Response{
+	r := HTTPResponse{
 		Method:     "GET",
 		Path:       "/accounts/500000000000000000000001/transactions",
 		StatusCode: http.StatusOK,
@@ -148,7 +148,7 @@ func TestTraverseSchemaLookingforNonRequiredProperties(t *testing.T) { // Exampl
 					t.Logf("%s %s %t %s\n", param.Name, param.In, param.Required, param.Type)
 					sc := param.ParamProps.Schema
 					if sc != nil {
-						dumpSchema(t, sc, "")
+						//dumpSchema(t, sc, "")
 					}
 				}
 			}
@@ -248,7 +248,7 @@ func TestValidators_ValidateStandingOrderWithFreeformField(t *testing.T) {
 			body := strings.NewReader(testCase)
 			header := &http.Header{}
 			header.Add("Content-type", "application/json; charset=utf-8")
-			r := Response{
+			r := HTTPResponse{
 				Method:     "GET",
 				Path:       "/accounts/500000000000000000000001/standing-orders",
 				StatusCode: http.StatusOK,

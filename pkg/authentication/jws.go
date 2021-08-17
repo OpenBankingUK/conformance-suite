@@ -288,6 +288,8 @@ func GetB64Encoding(ctx ContextInterface) (bool, error) {
 
 func getB64Encoding(paymentVersion string) (bool, error) {
 	switch paymentVersion {
+	case "v3.1.8":
+		fallthrough
 	case "v3.1.7":
 		fallthrough
 	case "v3.1.6":

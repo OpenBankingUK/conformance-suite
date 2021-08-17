@@ -21,11 +21,11 @@ func setHeader(consentRequirements []model.SpecConsentRequirements, tc model.Tes
 }
 
 // authorizationNamedSet find named set in consent requirements for a testId
-func authorizationNamedSet(consentRequirements []model.SpecConsentRequirements, testId string) (string, bool) {
+func authorizationNamedSet(consentRequirements []model.SpecConsentRequirements, testID string) (string, bool) {
 	for _, consentRequirement := range consentRequirements {
 		for _, namedPermissions := range consentRequirement.NamedPermissions {
-			for _, namedTestId := range namedPermissions.CodeSet.TestIds {
-				if permissions.TestId(testId) == namedTestId {
+			for _, namedTestID := range namedPermissions.CodeSet.TestIds {
+				if permissions.TestId(testID) == namedTestID {
 					return namedPermissions.Name, true
 				}
 			}

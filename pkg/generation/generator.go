@@ -1,4 +1,3 @@
-//go:generate mockery -name Generator -inpkg
 package generation
 
 import (
@@ -18,6 +17,7 @@ type SpecificationTestCases struct {
 	TestCases     []model.TestCase                `json:"testCases"`
 }
 
+// GeneratorConfig -
 type GeneratorConfig struct {
 	ClientID              string
 	Aud                   string
@@ -132,7 +132,7 @@ func (g generator) GenerateManifestTests(log *logrus.Entry, config GeneratorConf
 			continue
 		}
 		scrSlice = append(scrSlice, specreq)
-		if spectype == "payments" || spectype == "cbpii" { //
+		if spectype == "payments" || spectype == "cbpii" || spectype == "vrps" { //
 			// three sets of test case. all, UI, consent (Non-ui)
 			tcs = getUITests(tcs)
 		}

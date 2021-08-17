@@ -16,7 +16,7 @@ func newStatusCodeValidator(finder finder) Validator {
 	}
 }
 
-func (v statusCodeValidator) Validate(r Response) ([]Failure, error) {
+func (v statusCodeValidator) Validate(r HTTPResponse) ([]Failure, error) {
 	_, err := v.finder.Response(r.Method, r.Path, r.StatusCode)
 	if err == ErrNotFound {
 		message := fmt.Sprintf("server Status %d not defined by the spec", r.StatusCode)

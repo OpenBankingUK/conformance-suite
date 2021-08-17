@@ -16,7 +16,7 @@ func TestStatusCodeValidator_Validate(t *testing.T) {
 	f := newFinder(doc)
 	validator := newStatusCodeValidator(f)
 	body := strings.NewReader(getAccountsResponse)
-	r := Response{
+	r := HTTPResponse{
 		Method:     "POST",
 		Path:       "/event-notifications",
 		StatusCode: http.StatusAccepted,
@@ -35,7 +35,7 @@ func TestStatusCodeValidator_Validate_UnexpectedStatusCode(t *testing.T) {
 	f := newFinder(doc)
 	validator := newStatusCodeValidator(f)
 	body := strings.NewReader(getAccountsResponse)
-	r := Response{
+	r := HTTPResponse{
 		Method:     "POST",
 		Path:       "/event-notifications",
 		StatusCode: http.StatusOK,

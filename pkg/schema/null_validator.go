@@ -9,7 +9,7 @@ func NewNullValidator() NullValidator {
 }
 
 // Validate - nop
-func (v NullValidator) Validate(r Response) ([]Failure, error) {
+func (v NullValidator) Validate(r HTTPResponse) ([]Failure, error) {
 	return nil, nil
 }
 
