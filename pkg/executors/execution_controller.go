@@ -371,8 +371,9 @@ func (r *TestCaseRunner) executeTest(tc model.TestCase, ruleCtx *model.Context, 
 }
 
 type DetailError struct {
-	EndpointResponse string `json:"endpointResponse"`
-	TestCaseMessage  string `json:"testCaseMessage"`
+	EndpointResponseCode int    `json:"endpointResponseCode"`
+	EndpointResponse     string `json:"endpointResponse"`
+	TestCaseMessage      string `json:"testCaseMessage"`
 }
 
 func (de DetailError) Error() string {
@@ -385,8 +386,9 @@ func detailedErrors(errs []error, resp *resty.Response) []error {
 	detailedErrors := []error{}
 	for _, err := range errs {
 		detailedError := DetailError{
-			EndpointResponse: string(resp.Body()),
-			TestCaseMessage:  err.Error(),
+			EndpointResponseCode: resp.StatusCode(),
+			EndpointResponse:     string(resp.Body()),
+			TestCaseMessage:      err.Error(),
 		}
 		detailedErrors = append(detailedErrors, detailedError)
 	}
