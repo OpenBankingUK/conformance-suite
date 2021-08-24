@@ -17,11 +17,12 @@ To provide feedback, please use the public [issue tracker](https://bitbucket.org
 ## Release Notes
 * * *
 
-# Release v1.6.8 (14th June 2021)
+# Release v1.6.9 (24th August 2021)
 
-The release is called **v1.6.8**, an update to support version 3.1.7 of the AIS, PIS and CBPII Open Banking Apis.
-[Full Release Notes](https://bitbucket.org/openbankingteam/conformance-suite/src/develop/docs/releases/v1.6.8.md)
-(v1.6.8.md)
+The release is called **v1.6.9**, an update to support version 3.1.8 of the AIS, PIS, and CBPII Open Banking APIs 
+and includes support of 3.1.8 of the Variable Recurring Payment (VRP) standard.
+[Full Release Notes](https://bitbucket.org/openbankingteam/conformance-suite/src/develop/docs/releases/v1.6.9.md)
+(v1.6.9.md)
 
 ## Quickstart
 * * *
@@ -34,7 +35,7 @@ Pull and run the latest (stable) tagged Docker image:
 
 ### Prerequisites
 
-The tool is compatible with the Open Banking UK R/W specification versions: 3.1.0, 3.1.1, 3.1.2, 3.1.3, 3.1.4, 3.1.5, 3.1.6, 3.1.7.
+The tool is compatible with the Open Banking UK R/W specification versions: 3.1.0, 3.1.1, 3.1.2, 3.1.3, 3.1.4, 3.1.5, 3.1.6, 3.1.7, 3.1.8.
 
 In order to run a container you'll need docker installed.
 

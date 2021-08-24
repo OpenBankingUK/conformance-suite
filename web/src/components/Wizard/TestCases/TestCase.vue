@@ -67,7 +67,7 @@
                 :key="error">
                 <ul>
                   <li><strong>Test Case message:</strong> {{ JSON.parse(error).testCaseMessage }}</li>
-                  <li><strong>Endpoint response:</strong> {{ JSON.parse(error).endpointResponse }}</li>
+                  <li><strong>Endpoint response (<code>{{ JSON.parse(error).endpointResponseCode }}</code>):</strong> {{ JSON.parse(error).endpointResponse }}</li>
                 </ul>
               </li>
             </ol>
