@@ -29,7 +29,11 @@ and includes support of 3.1.8 of the Variable Recurring Payment (VRP) standard.
 
 Pull and run the latest (stable) tagged Docker image:
 
-    > docker run --rm -it -p 8443:8443 "openbanking/conformance-suite:v1.6.8"
+    > docker run --rm -it -p 127.0.0.1:8443:8443 "openbanking/conformance-suite:v1.6.9"
+
+or
+
+    > docker run --rm -it -p 8443:8443 "openbanking/conformance-suite:v1.6.9"
 
 [See Setup Guide](https://bitbucket.org/openbankingteam/conformance-suite/src/develop/docs/setup-guide.md)
 
