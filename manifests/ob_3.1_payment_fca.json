@@ -40,7 +40,7 @@
       "id": "OB-301-DOP-100110",
       "refURI": "https://openbankinguk.github.io/read-write-api-site3/v3.1.6/resources-and-data-models/pisp/domestic-payment-consents.html#post-domestic-payment-consents",
       "detail": "correct error on missing claim",
-      "apiVersion":">=3.1.6",
+      "apiVersion": ">=3.1.6",
       "parameters": {
         "tokenRequestScope": "payments",
         "instructedAmountCurrency": "$instructedAmountCurrency",
@@ -57,7 +57,9 @@
       "uri": "/domestic-payment-consents",
       "uriImplementation": "mandatory",
       "resource": "DomesticPayment",
-      "removeSignatureClaims": ["iss"],    
+      "removeSignatureClaims": [
+        "iss"
+      ],
       "asserts": [
         "OB3GLOAssertOn400"
       ],
@@ -111,7 +113,7 @@
       "id": "OB-316-DOP-100310",
       "refURI": "https://openbankinguk.github.io/read-write-api-site3/v3.1.5/resources-and-data-models/pisp/domestic-payment-consents.html#post-domestic-payment-consents",
       "detail": "Check that the ASPSP returns the error code 400 and correct error in the response 'UK.OBIE.Signature.Missing' when the request doesn't contain the header 'x-jws-signature'.",
-      "apiVersion":">=3.1.5",
+      "apiVersion": ">=3.1.5",
       "parameters": {
         "tokenRequestScope": "payments",
         "instructedAmountCurrency": "$instructedAmountCurrency",
@@ -128,7 +130,9 @@
       "uri": "/domestic-payment-consents",
       "uriImplementation": "mandatory",
       "resource": "DomesticPayment",
-      "removeHeaders": ["x-jws-signature"],    
+      "removeHeaders": [
+        "x-jws-signature"
+      ],
       "asserts": [
         "OB3GLOAssertOn400",
         "OB3DOPAssertSignatureMissingOBErrorCode"
@@ -267,7 +271,7 @@
       "id": "OB-301-DOP-100810",
       "refURI": "https://openbankinguk.github.io/read-write-api-site3/v3.1.5/resources-and-data-models/pisp/domestic-scheduled-payment-consents.html#post-domestic-scheduled-payment-consents",
       "detail": "Checks that the resource succeeds for a PISP posting a Domestic Scheduled Payment consent with a minimal data set where RequestedExecutionDateTime is an ISO8601 datetime (2006-01-02T15:04:05-07:00).",
-      "apiVersion":">=3.1.5",
+      "apiVersion": ">=3.1.5",
       "parameters": {
         "tokenRequestScope": "payments",
         "instructedAmountValue": "$instructedAmountValue",
@@ -299,7 +303,7 @@
       "id": "OB-301-DOP-100820",
       "refURI": "https://openbankinguk.github.io/read-write-api-site3/v3.1.5/resources-and-data-models/pisp/domestic-scheduled-payment-consents.html#post-domestic-scheduled-payment-consents",
       "detail": "Checks that the resource succeeds for a PISP posting a Domestic Scheduled Payment consent with a minimal data set where RequestedExecutionDateTime is an ISO8601 datetime (2006-01-02T15:04:05Z07:00).",
-      "apiVersion":">=3.1.5",
+      "apiVersion": ">=3.1.5",
       "parameters": {
         "tokenRequestScope": "payments",
         "instructedAmountValue": "$instructedAmountValue",
@@ -482,40 +486,8 @@
       "validateSignature": true
     },
     {
-      "description": "Domestic Standing Order succeeds with minimal data set with additional schema checks.",
-      "id": "OB-301-DOP-101400",
-      "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1000670131/Domestic+Standing+Orders+v3.1.1#DomesticStandingOrdersv3.1.1-POST/domestic-standing-orders",
-      "detail": "Checks that the resource succeeds posting a Domestic Standing Order with a minimal data set and checks additional schema.",
-      "parameters": {
-        "tokenRequestScope": "payments",
-        "instructedAmountValue": "$instructedAmountValue",
-        "instructedAmountCurrency": "$instructedAmountCurrency",
-        "frequency": "$payment_frequency",
-        "firstPaymentDateTime": "$firstPaymentDateTime",
-        "postData": "$minimalDomesticStandingOrder",
-        "consentId": "$OB-301-DOP-101200-ConsentId"
-      },
-      "headers": {
-        "Content-Type": "application/json"
-      },
-      "body": "$postData",
-      "uri": "/domestic-standing-orders",
-      "uriImplementation": "conditional",
-      "resource": "DomesticStandingOrder",
-      "asserts": [
-        "OB3GLOAssertOn201"
-      ],
-      "keepContextOnSuccess": {
-        "name": "OB-301-DOP-101400-DomesticStandingOrderID",
-        "value": "Data.DomesticStandingOrderId"
-      },
-      "method": "post",
-      "schemaCheck": true,
-      "validateSignature": true
-    },
-    {
       "description": "Domestic Standing Order fails with invalid frequency provided.",
-      "id": "OB-301-DOP-101401",
+      "id": "OB-301-DOP-101400",
       "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1000670131/Domestic+Standing+Orders+v3.1.1#DomesticStandingOrdersv3.1.1-POST/domestic-standing-orders",
       "detail": "Checks that the resource fails posting a Domestic Standing Order with an invalid frequency value provided.",
       "parameters": {
@@ -541,13 +513,45 @@
       "validateSignature": true
     },
     {
+      "description": "Domestic Standing Order succeeds with minimal data set with additional schema checks.",
+      "id": "OB-301-DOP-101401",
+      "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1000670131/Domestic+Standing+Orders+v3.1.1#DomesticStandingOrdersv3.1.1-POST/domestic-standing-orders",
+      "detail": "Checks that the resource succeeds posting a Domestic Standing Order with a minimal data set and checks additional schema.",
+      "parameters": {
+        "tokenRequestScope": "payments",
+        "instructedAmountValue": "$instructedAmountValue",
+        "instructedAmountCurrency": "$instructedAmountCurrency",
+        "frequency": "$payment_frequency",
+        "firstPaymentDateTime": "$firstPaymentDateTime",
+        "postData": "$minimalDomesticStandingOrder",
+        "consentId": "$OB-301-DOP-101200-ConsentId"
+      },
+      "headers": {
+        "Content-Type": "application/json"
+      },
+      "body": "$postData",
+      "uri": "/domestic-standing-orders",
+      "uriImplementation": "conditional",
+      "resource": "DomesticStandingOrder",
+      "asserts": [
+        "OB3GLOAssertOn201"
+      ],
+      "keepContextOnSuccess": {
+        "name": "OB-301-DOP-101401-DomesticStandingOrderID",
+        "value": "Data.DomesticStandingOrderId"
+      },
+      "method": "post",
+      "schemaCheck": true,
+      "validateSignature": true
+    },
+    {
       "description": "PISP can retrieve the Domestic Standing Order, status checks and response.",
       "id": "OB-301-DOP-101500",
       "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1000670131/Domestic+Standing+Orders+v3.1.1#DomesticStandingOrdersv3.1.1-GET/domestic-standing-orders/{DomesticStandingOrderId}",
       "detail": "Check PISP can retrieve the Domestic Standing Order with additional schema checks.",
       "parameters": {
         "tokenRequestScope": "payments",
-        "paymentID": "$OB-301-DOP-101400-DomesticStandingOrderID"
+        "paymentID": "$OB-301-DOP-101401-DomesticStandingOrderID"
       },
       "uri": "/domestic-standing-orders/$paymentID",
       "uriImplementation": "conditional",
@@ -768,36 +772,38 @@
       "validateSignature": true
     },
     {
-        "description": "3.1.3 Payments - x-fapi-financial-id no longer required",
-        "id": "OB-313-DOP-100100",
-        "refURI": "https://openbankinguk.github.io/read-write-api-site3/v3.1.3/resources-and-data-models/pisp/domestic-payment-consents.html#post-domestic-payment-consents",
-        "detail": "check that removal of x-fapi-financial-id succeeds for Check Domestic Payment consents for 3.1.3 and above",
-        "apiVersion":">=3.1.3",
-        "parameters": {
-          "tokenRequestScope": "payments",
-          "instructedAmountCurrency": "$instructedAmountCurrency",
-          "instructedAmountValue": "$instructedAmountValue",
-          "instructionIdentification": "$fn:instructionIdentificationID()",
-          "endToEndIdentification": "e2e-domestic-pay",
-          "postData": "$minimalDomesticPaymentConsent",
-          "requestConsent": "false"
-        },
-        "headers": {
-          "Content-Type": "application/json"
-        },
-        "body": "$postData",
-        "uri": "/domestic-payment-consents",
-        "uriImplementation": "mandatory",
-        "resource": "DomesticPayment",
-        "removeHeaders": ["x-fapi-financial-id"],    
-        "asserts": [
-          "OB3GLOAssertOn201",
-          "OB3GLOFAPIHeader",
-          "OB3DOPAssertAwaitingAuthorisation",
-          "OB3GLOAAssertConsentId"
-        ],
-        "method": "post",
-        "schemaCheck": true
-      }            
+      "description": "3.1.3 Payments - x-fapi-financial-id no longer required",
+      "id": "OB-313-DOP-100100",
+      "refURI": "https://openbankinguk.github.io/read-write-api-site3/v3.1.3/resources-and-data-models/pisp/domestic-payment-consents.html#post-domestic-payment-consents",
+      "detail": "check that removal of x-fapi-financial-id succeeds for Check Domestic Payment consents for 3.1.3 and above",
+      "apiVersion": ">=3.1.3",
+      "parameters": {
+        "tokenRequestScope": "payments",
+        "instructedAmountCurrency": "$instructedAmountCurrency",
+        "instructedAmountValue": "$instructedAmountValue",
+        "instructionIdentification": "$fn:instructionIdentificationID()",
+        "endToEndIdentification": "e2e-domestic-pay",
+        "postData": "$minimalDomesticPaymentConsent",
+        "requestConsent": "false"
+      },
+      "headers": {
+        "Content-Type": "application/json"
+      },
+      "body": "$postData",
+      "uri": "/domestic-payment-consents",
+      "uriImplementation": "mandatory",
+      "resource": "DomesticPayment",
+      "removeHeaders": [
+        "x-fapi-financial-id"
+      ],
+      "asserts": [
+        "OB3GLOAssertOn201",
+        "OB3GLOFAPIHeader",
+        "OB3DOPAssertAwaitingAuthorisation",
+        "OB3GLOAAssertConsentId"
+      ],
+      "method": "post",
+      "schemaCheck": true
+    }
   ]
 }
