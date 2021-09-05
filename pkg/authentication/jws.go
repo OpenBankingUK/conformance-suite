@@ -351,8 +351,15 @@ func getPaymentAPIVersion(ctx ContextInterface) (string, error) {
 			}
 			return paymentVersion, nil
 		}
+		if strings.HasPrefix(str, "vrps_") {
+			vrpVersion := after(str, "vrps_")
+			if vrpVersion == "" {
+				return "", errors.New("Cannot find vrp api version: " + str)
+			}
+			return vrpVersion, nil
+		}
 	}
-	return "", errors.New("Payment API version not found: " + strings.Join(apiVersions, ","))
+	return "", errors.New("API version for JWS handling not found: " + strings.Join(apiVersions, ","))
 }
 
 // Get a string after the given string

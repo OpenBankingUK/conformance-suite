@@ -397,6 +397,15 @@ func buildTestCase(s Script, refs map[string]Reference, ctx *model.Context, base
 		tc.Input.JwsSig = true
 		tc.Input.IdempotencyKey = true
 	}
+	if specType == "vrps" && tc.Input.Method == "POST" {
+		tc.Input.JwsSig = true
+		if strings.Contains(tc.Input.Method, "funds-confirmation") {
+			tc.Input.IdempotencyKey = false
+		} else {
+			tc.Input.IdempotencyKey = true
+		}
+	}
+
 	return tc, nil
 }
 
