@@ -34,7 +34,7 @@
       },
       "method": "post",
       "schemaCheck": true,
-      "validateSignature": false
+      "validateSignature": true
     },       
     {
       "description": "Domestic Variable Recurring Payment for processing succeeds with minimal data.",
@@ -68,7 +68,7 @@
       },
       "method": "post",
       "schemaCheck": true,
-      "validateSignature": false
+      "validateSignature": true
     },
     {
       "description": "Retrieves Authorised Variable Recurring Payments Consent",
@@ -89,8 +89,10 @@
         "OB3GLOAssertContentType",
         "OB3DOPAssertAuthorised"
       ],
-      "schemaCheck": true
-    },   {
+      "schemaCheck": true,
+      "validateSignature": true
+    },   
+    {
       "description": "Check VRP Funds Confirmation ",
       "id": "OB-301-VRP-100650",
       "refURI": "https://openbankinguk.github.io/read-write-api-site3/v3.1.8/resources-and-data-models/vrp/domestic-vrps.html",
@@ -115,7 +117,8 @@
       "asserts": [
           "OB3GLOAssertOn200"
       ],
-      "schemaCheck": true
+      "schemaCheck": true,
+      "validateSignature": true
     },
     {
       "description": "Retrieves VRP-100600 VrpID",
@@ -135,8 +138,10 @@
         "OB3GLOFAPIHeader",
         "OB3GLOAssertContentType"
       ],
-      "schemaCheck": true
-    },  {
+      "schemaCheck": true,
+      "validateSignature": true
+    },  
+    {
       "description": "Repeated Domestic Variable Recurring Payment",
       "id": "OB-301-VRP-100700",
       "refURI": "https://openbankinguk.github.io/read-write-api-site3/v3.1.8/resources-and-data-models/vrp/domestic-vrps.html",
@@ -168,7 +173,7 @@
       },
       "method": "post",
       "schemaCheck": true,
-      "validateSignature": false
+      "validateSignature": true
     },
     {
       "description": "Retrieves VRP-100700 VrpID",
@@ -188,7 +193,8 @@
         "OB3GLOFAPIHeader",
         "OB3GLOAssertContentType"
       ],
-      "schemaCheck": true
+      "schemaCheck": true,
+      "validateSignature": true
     },
     {
       "description": "Retrieves Get Payment Details",
@@ -208,7 +214,8 @@
         "OB3GLOFAPIHeader",
         "OB3GLOAssertContentType"
       ],
-      "schemaCheck": true
+      "schemaCheck": true,
+      "validateSignature": true
     },
     {
       "description": "Deletes VRP Consents",
