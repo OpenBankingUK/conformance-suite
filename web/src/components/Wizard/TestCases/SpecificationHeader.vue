@@ -49,6 +49,7 @@
 
 <script>
 import { createNamespacedHelpers } from 'vuex';
+import axios from 'axios';
 
 const {
   mapGetters,
@@ -129,8 +130,80 @@ export default {
       return null;
     },
     startPsuConsent(url, targetElement) {
-      this.openPopup(url, 'PSU Consent', 1074 * 0.75, 800 * 0.75);
-      targetElement.innerHTML = 'PSU Consent (Started)'; // eslint-disable-line
+      // this.openPopup(url, 'PSU Consent', 1074 * 0.75, 800 * 0.75);
+      // targetElement.innerHTML = shortURL; // eslint-disable-line
+
+      const shortUrl = this.getShortUrl(url);
+      shortUrl.then(function(res) {
+        console.log(res);
+      }, function(err) {
+        console.log(err);
+      });
+
+      // const nonce = this.getNonce('eyJhbGciOiJQUzI1NiIsImtpZCI6ImZhb0JPSGI1bV9EZFBqZ1JCTG9mX2hQMU52dyJ9.eyJzdWIiOiJ2cnAtMS1mNjlhOWM4ZS04MjFhLTQxZjktYTdkMy05NGNlYThhYzNjNjEiLCJvcGVuYmFua2luZ19pbnRlbnRfaWQiOiJ2cnAtMS1mNjlhOWM4ZS04MjFhLTQxZjktYTdkMy05NGNlYThhYzNjNjEiLCJwc3VfaWRlbnRpZmllcnMiOnsidXNlcklkIjoiNzAwMDAxMDAwMDAwMDAwMDAwMDAwMDAyIiwiY29tcGFueUlkIjoiMTIzNDUifSwiaXNzIjoiaHR0cHM6Ly9vYjE5LWF1dGgxLXVpLm8zYmFuay5jby51ayIsImF1ZCI6ImFlOTRmMzNkLTBlNTctNDVjYS1hMmZhLWQzMTEwMjVjODViNSIsImlhdCI6MTYzMTYxMTgwNywiZXhwIjoxNjMxNjE1NDA3LCJub25jZSI6ImMxYTA2MjFkLWFjMjQtNDM2My05ZmI0LTcxYmIxMTA5YzY4ZiIsImF1dGhfdGltZSI6MTYzMTYxMTgwNywiYXpwIjoiYWU5NGYzM2QtMGU1Ny00NWNhLWEyZmEtZDMxMTAyNWM4NWI1IiwicmVmcmVzaF90b2tlbl9leHBpcmVzX2F0IjoxNjMyMDAwNjA3LCJjX2hhc2giOiJDMERVODBvMkFydVNDeTVqeUwtWXFRIiwic19oYXNoIjoiY00xdVR1OE5zdWk4MGVZVTVXb0hMUSIsImFjciI6InVybjpvcGVuYmFua2luZzpwc2QyOnNjYSJ9.tfpKCJlN9ZE99BHEF0UGekISnvFEe26OmGNSlz2S1SmWXmkTuKD1RYQeK3u2FryY7_d9sWWdWdBwtFd_NU_N8mB1UfvV_7cd33jTvBU_MgiaRSRx0wIFCu7ILiuJQaUWQ7cW79rSvRZlGtFRcDdrZHze7wT076uPBzK08Aq8rjNTMcxMR4cb56MKrzMpCtEawthKjHwlk8liiPTK8ELq9Pb67XINv8hJAXBKDxPW0aTFaOyQQV4DIHFSjzVh1PufbphvGklb5viG5_gLICO5qWDWjC2v-REvMCxYMjeoE4Wa7yhEhgg1q9m5WCgGYCvQYfu8uakqFhgLs2_AoyV6wQ');
+      // nonce.then(function(res) {
+      //   console.log(res);
+      //   const callback = this.getCallback(nonce);
+      //   console.log(callback);
+      // }, function(err) {
+      //   console.log(err);
+      // });
+      const jwt = 'eyJhbGciOiJQUzI1NiIsImtpZCI6ImZhb0JPSGI1bV9EZFBqZ1JCTG9mX2hQMU52dyJ9.eyJzdWIiOiJ2cnAtMS1mNjlhOWM4ZS04MjFhLTQxZjktYTdkMy05NGNlYThhYzNjNjEiLCJvcGVuYmFua2luZ19pbnRlbnRfaWQiOiJ2cnAtMS1mNjlhOWM4ZS04MjFhLTQxZjktYTdkMy05NGNlYThhYzNjNjEiLCJwc3VfaWRlbnRpZmllcnMiOnsidXNlcklkIjoiNzAwMDAxMDAwMDAwMDAwMDAwMDAwMDAyIiwiY29tcGFueUlkIjoiMTIzNDUifSwiaXNzIjoiaHR0cHM6Ly9vYjE5LWF1dGgxLXVpLm8zYmFuay5jby51ayIsImF1ZCI6ImFlOTRmMzNkLTBlNTctNDVjYS1hMmZhLWQzMTEwMjVjODViNSIsImlhdCI6MTYzMTYxMTgwNywiZXhwIjoxNjMxNjE1NDA3LCJub25jZSI6ImMxYTA2MjFkLWFjMjQtNDM2My05ZmI0LTcxYmIxMTA5YzY4ZiIsImF1dGhfdGltZSI6MTYzMTYxMTgwNywiYXpwIjoiYWU5NGYzM2QtMGU1Ny00NWNhLWEyZmEtZDMxMTAyNWM4NWI1IiwicmVmcmVzaF90b2tlbl9leHBpcmVzX2F0IjoxNjMyMDAwNjA3LCJjX2hhc2giOiJDMERVODBvMkFydVNDeTVqeUwtWXFRIiwic19oYXNoIjoiY00xdVR1OE5zdWk4MGVZVTVXb0hMUSIsImFjciI6InVybjpvcGVuYmFua2luZzpwc2QyOnNjYSJ9.tfpKCJlN9ZE99BHEF0UGekISnvFEe26OmGNSlz2S1SmWXmkTuKD1RYQeK3u2FryY7_d9sWWdWdBwtFd_NU_N8mB1UfvV_7cd33jTvBU_MgiaRSRx0wIFCu7ILiuJQaUWQ7cW79rSvRZlGtFRcDdrZHze7wT076uPBzK08Aq8rjNTMcxMR4cb56MKrzMpCtEawthKjHwlk8liiPTK8ELq9Pb67XINv8hJAXBKDxPW0aTFaOyQQV4DIHFSjzVh1PufbphvGklb5viG5_gLICO5qWDWjC2v-REvMCxYMjeoE4Wa7yhEhgg1q9m5WCgGYCvQYfu8uakqFhgLs2_AoyV6wQ'
+      const nonce = this.getNonce(jwt);
+      nonce.then((res) => {
+        console.log(res);
+        const callback = this.getCallback(res);
+        callback.then((res2) => {
+          console.log(res2);
+        })
+      }, function(err) {
+        console.log(err);
+      });
+    },
+    async getShortUrl(url) {
+      const req = await axios.post('https://ok3hqencc6.execute-api.eu-west-1.amazonaws.com/staging', {'url': url})
+      if (req.status === 200) {
+        return req.data
+      }
+      return false
+      // .then(function (response) {
+      //   console.log(response);
+      //   })
+      //   .catch(function (error) {
+      //     console.log(error);
+      //     });
+    },
+    async getNonce(id_token) {
+      const params = new URLSearchParams([['id_token', id_token]]);
+      const req = await axios.get('https://ok3hqencc6.execute-api.eu-west-1.amazonaws.com/staging', { params });
+      if (req.status === 200) {
+        return req.data
+      }
+      return false
+      // const params = new URLSearchParams([['id_token', id_token]]);
+      // const res = await axios.get('https://ok3hqencc6.execute-api.eu-west-1.amazonaws.com/staging', { params });
+      // if (res.status === 200) {
+      //   return res.data
+      // }
+      // return false
+    },
+    getNonce2(id_token) {
+      const params = new URLSearchParams([['id_token', id_token]]);
+      axios.get('https://ok3hqencc6.execute-api.eu-west-1.amazonaws.com/staging', { params })
+      .then(function (response) {
+        console.log(response);
+        })
+        .catch(function (error) {
+          console.log(error);
+          });
+    },
+    async getCallback(nonce) {
+      const params = new URLSearchParams([['nonce', nonce]]);
+      const req = await axios.get('https://ok3hqencc6.execute-api.eu-west-1.amazonaws.com/staging', { params });
+      if (req.status === 200) {
+        return req.data
+      }
+      return false
     },
     openPopup(url, title, w, h) {
       // Open a window popup via Javascript and supports single/dual displays
