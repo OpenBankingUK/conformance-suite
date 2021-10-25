@@ -38,7 +38,8 @@ discoveryModel   | 1..1       | discoveryModel |
 name             | 1..1       | discoveryModel.name | Name of the model, e.g. "ob-v3.0-ozone".
 description      | 1..1       | discoveryModel.description | Description of the model, e.g. "An Open Banking UK discovery template for v3.0 of Accounts and Payments with pre-populated model Bank (Ozone) data."
 discoveryVersion | 1..1       | discoveryModel.discoveryVersion | Version of the discovery model format, e.g. "v0.4.0"
-tokenAcquisition | 1..1       | discoveryModel.tokenAcquisition | Define how access tokens will be acquired, e.g. "headless", "psu", "store"
+tokenAcquisition | 1..1       | discoveryModel.tokenAcquisition | Define how access tokens will be acquired, e.g. "headless", "psu", "store", "mobile"
+callbackProxyUrl | 0..1       | discoveryModel.callbackProxyUrl | Define Proxy URL to handle callbacks in a mobile flow.
 discoveryItems   | 1..n       | discoveryModel.discoveryItems.* | List of items. Each item contains information related to a particular specification version.
 apiSpecification | 1..1       | discoveryModel.discoveryItems.*.apiSpecification | Details of API specification
 name             | 1..1       | discoveryModel.discoveryItems.*.apiSpecification.name | The `info.title` field from the Swagger/OpenAPI specification file

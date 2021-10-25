@@ -34,7 +34,7 @@ func SupportedVersions() map[string]bool {
 
 // SupportedTokenAcquisitions returns a collection of supported token acquisition methods
 func SupportedTokenAcquisitions() []string {
-	return []string{"psu", "headless", "store"}
+	return []string{"psu", "headless", "store", "mobile"}
 }
 
 const (

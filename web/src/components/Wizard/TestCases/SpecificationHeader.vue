@@ -2,62 +2,80 @@
   <div>
     <h6>API Specification</h6>
     <b-table
-      :items="[ apiSpecificationWithConsentUrls ]"
-      :fields="tableFields"
-      small
-      fixed
-      stacked
+        :items="[ apiSpecificationWithConsentUrls ]"
+        :fields="tableFields"
+        small
+        fixed
+        stacked
     >
       <template
-        slot="name"
-        slot-scope="data">
+          slot="name"
+          slot-scope="data">
         <a
-          :href="data.item.url"
-          target="_blank">
+            :href="data.item.url"
+            target="_blank">
           {{ data.item.name }}
         </a>
       </template>
       <template
-        slot="schema"
-        slot-scope="data"
+          slot="schema"
+          slot-scope="data"
       >
         <a
-          :href="data.item.schemaVersion"
-          target="_blank">
+            :href="data.item.schemaVersion"
+            target="_blank">
           {{ data.item.version }}
         </a>
       </template>
       <template
-        slot="consentUrls"
-        slot-scope="data">
+          slot="consentUrls"
+          slot-scope="data">
         <template v-for="(url, index) in data.value">
           <a
-            :key="url"
-            :title="url"
-            class="psu-consent-link"
-            href="#"
-            @click="startPsuConsent(url, $event.target)">
+              :key="url"
+              :title="url"
+              class="psu-consent-link"
+              href="#"
+              @click="startPsuConsent(url, $event.target)">
             PSU Consent
           </a>
-          <span :key="'s' + index">{{ acquired(tokenName(url)) }}</span>
+          <span :key="'s' + index">
+          <span><b-badge variant="primary">{{ acquired(tokenName(url)) }}</b-badge> </span>
+          <small> <a @click="openPopup(localCallbackUrls[tokenName(url)])"
+                     v-show="mobileConsent && localCallbackUrls[tokenName(url)] != null && !acquired(tokenName(url))"
+                     href="#"
+                     title="Use when popup blocker cause the callback handling to stop."> Open local callback url</a></small>
+          </span>
           <br :key="index">
         </template>
       </template>
     </b-table>
+    <div>
+      <b-modal v-model="modalShow">
+        <div style="text-align: center"><img :src=qrCodeUrl alt="QR code"></div>
+      </b-modal>
+    </div>
   </div>
 </template>
 
 <script>
-import { createNamespacedHelpers } from 'vuex';
+import {createNamespacedHelpers, mapGetters} from 'vuex';
 import axios from 'axios';
 
 const {
-  mapGetters,
   mapState,
 } = createNamespacedHelpers('testcases');
 
 export default {
   name: 'SpecificationHeader',
+  data: function () {
+    return {
+      modalShow: false,
+      qrCodeUrl: undefined,
+      shortConsentUrls: {},
+      localCallbackUrls: {},
+    }
+  },
   props: {
     // Example value for `apiSpecification`.
     // {
@@ -72,9 +90,16 @@ export default {
     },
   },
   computed: {
+    ...mapGetters('config', [
+      'tokenAcquisition',
+      'callbackProxyUrl',
+    ]),
     ...mapState([
       'consentUrls',
     ]),
+    mobileConsent() {
+      return this.tokenAcquisition === 'mobile';
+    },
     specConsentUrls() {
       return this.consentUrls[this.apiSpecification.name];
       // Uncomment below and comment line above to test before backend consent URL changes finished:
@@ -82,7 +107,7 @@ export default {
     },
     apiSpecificationWithConsentUrls() {
       const consentUrls = this.specConsentUrls;
-      return Object.assign({ consentUrls }, this.apiSpecification);
+      return Object.assign({consentUrls}, this.apiSpecification);
     },
     hasConsentUrls() {
       return this.specConsentUrls && this.specConsentUrls.length > 0;
@@ -111,7 +136,7 @@ export default {
     },
   },
   methods: {
-    ...mapGetters([
+    ...mapGetters('testcases', [
       'tokenAcquired',
     ]),
     acquired(tokenName) {
@@ -123,85 +148,171 @@ export default {
     tokenName(url) {
       const u = new URL(url);
       const state = u.searchParams.get('state');
-      if (state) {
-        // returns state value, e.g. 'Token0001' or 'Token0002'
-        return state;
+
+      return state ? state : null;
+    },
+    getCallbackProxyUrl() {
+      return this.callbackProxyUrl;
+    },
+    getUrlShortenerUrl() {
+      //seems redundant but provides clear contract and allows replacing without changing code below
+      return this.callbackProxyUrl;
+    },
+    getIdTokenParserUrl() {
+      //seems redundant but provides clear contract and allows replacing without changing code below
+      return this.callbackProxyUrl;
+    },
+    getNonceExtractorUrl() {
+      //seems redundant but provides clear contract and allows replacing without changing code below
+      return this.callbackProxyUrl;
+    },
+    showQrCode(consentUrl) {
+      const tokenName = this.tokenName(consentUrl);
+      this.modalShow = true;
+    },
+    async startPsuConsent(consentUrl, targetElement) {
+      const tokenName = this.tokenName(consentUrl);
+
+      if (!this.mobileConsent) {
+        this.openPopup(consentUrl, 'PSU Consent', 1074 * 0.75, 800 * 0.75);
+        return;
       }
-      return null;
-    },
-    startPsuConsent(url, targetElement) {
-      // this.openPopup(url, 'PSU Consent', 1074 * 0.75, 800 * 0.75);
-      // targetElement.innerHTML = shortURL; // eslint-disable-line
 
-      const shortUrl = this.getShortUrl(url);
-      shortUrl.then(function(res) {
-        console.log(res);
-      }, function(err) {
-        console.log(err);
-      });
+      /**
+       * Utility to poll for callback consent
+       *
+       * @param {function} fn
+       * @param {function} validate
+       * @param {?number} interval
+       * @param {?number} maxAttempts
+       */
+      async function createPoller(fn, validate, interval = 1000, maxAttempts = null) {
+        let attempts = 0;
 
-      // const nonce = this.getNonce('eyJhbGciOiJQUzI1NiIsImtpZCI6ImZhb0JPSGI1bV9EZFBqZ1JCTG9mX2hQMU52dyJ9.eyJzdWIiOiJ2cnAtMS1mNjlhOWM4ZS04MjFhLTQxZjktYTdkMy05NGNlYThhYzNjNjEiLCJvcGVuYmFua2luZ19pbnRlbnRfaWQiOiJ2cnAtMS1mNjlhOWM4ZS04MjFhLTQxZjktYTdkMy05NGNlYThhYzNjNjEiLCJwc3VfaWRlbnRpZmllcnMiOnsidXNlcklkIjoiNzAwMDAxMDAwMDAwMDAwMDAwMDAwMDAyIiwiY29tcGFueUlkIjoiMTIzNDUifSwiaXNzIjoiaHR0cHM6Ly9vYjE5LWF1dGgxLXVpLm8zYmFuay5jby51ayIsImF1ZCI6ImFlOTRmMzNkLTBlNTctNDVjYS1hMmZhLWQzMTEwMjVjODViNSIsImlhdCI6MTYzMTYxMTgwNywiZXhwIjoxNjMxNjE1NDA3LCJub25jZSI6ImMxYTA2MjFkLWFjMjQtNDM2My05ZmI0LTcxYmIxMTA5YzY4ZiIsImF1dGhfdGltZSI6MTYzMTYxMTgwNywiYXpwIjoiYWU5NGYzM2QtMGU1Ny00NWNhLWEyZmEtZDMxMTAyNWM4NWI1IiwicmVmcmVzaF90b2tlbl9leHBpcmVzX2F0IjoxNjMyMDAwNjA3LCJjX2hhc2giOiJDMERVODBvMkFydVNDeTVqeUwtWXFRIiwic19oYXNoIjoiY00xdVR1OE5zdWk4MGVZVTVXb0hMUSIsImFjciI6InVybjpvcGVuYmFua2luZzpwc2QyOnNjYSJ9.tfpKCJlN9ZE99BHEF0UGekISnvFEe26OmGNSlz2S1SmWXmkTuKD1RYQeK3u2FryY7_d9sWWdWdBwtFd_NU_N8mB1UfvV_7cd33jTvBU_MgiaRSRx0wIFCu7ILiuJQaUWQ7cW79rSvRZlGtFRcDdrZHze7wT076uPBzK08Aq8rjNTMcxMR4cb56MKrzMpCtEawthKjHwlk8liiPTK8ELq9Pb67XINv8hJAXBKDxPW0aTFaOyQQV4DIHFSjzVh1PufbphvGklb5viG5_gLICO5qWDWjC2v-REvMCxYMjeoE4Wa7yhEhgg1q9m5WCgGYCvQYfu8uakqFhgLs2_AoyV6wQ');
-      // nonce.then(function(res) {
-      //   console.log(res);
-      //   const callback = this.getCallback(nonce);
-      //   console.log(callback);
-      // }, function(err) {
-      //   console.log(err);
-      // });
-      const jwt = 'eyJhbGciOiJQUzI1NiIsImtpZCI6ImZhb0JPSGI1bV9EZFBqZ1JCTG9mX2hQMU52dyJ9.eyJzdWIiOiJ2cnAtMS1mNjlhOWM4ZS04MjFhLTQxZjktYTdkMy05NGNlYThhYzNjNjEiLCJvcGVuYmFua2luZ19pbnRlbnRfaWQiOiJ2cnAtMS1mNjlhOWM4ZS04MjFhLTQxZjktYTdkMy05NGNlYThhYzNjNjEiLCJwc3VfaWRlbnRpZmllcnMiOnsidXNlcklkIjoiNzAwMDAxMDAwMDAwMDAwMDAwMDAwMDAyIiwiY29tcGFueUlkIjoiMTIzNDUifSwiaXNzIjoiaHR0cHM6Ly9vYjE5LWF1dGgxLXVpLm8zYmFuay5jby51ayIsImF1ZCI6ImFlOTRmMzNkLTBlNTctNDVjYS1hMmZhLWQzMTEwMjVjODViNSIsImlhdCI6MTYzMTYxMTgwNywiZXhwIjoxNjMxNjE1NDA3LCJub25jZSI6ImMxYTA2MjFkLWFjMjQtNDM2My05ZmI0LTcxYmIxMTA5YzY4ZiIsImF1dGhfdGltZSI6MTYzMTYxMTgwNywiYXpwIjoiYWU5NGYzM2QtMGU1Ny00NWNhLWEyZmEtZDMxMTAyNWM4NWI1IiwicmVmcmVzaF90b2tlbl9leHBpcmVzX2F0IjoxNjMyMDAwNjA3LCJjX2hhc2giOiJDMERVODBvMkFydVNDeTVqeUwtWXFRIiwic19oYXNoIjoiY00xdVR1OE5zdWk4MGVZVTVXb0hMUSIsImFjciI6InVybjpvcGVuYmFua2luZzpwc2QyOnNjYSJ9.tfpKCJlN9ZE99BHEF0UGekISnvFEe26OmGNSlz2S1SmWXmkTuKD1RYQeK3u2FryY7_d9sWWdWdBwtFd_NU_N8mB1UfvV_7cd33jTvBU_MgiaRSRx0wIFCu7ILiuJQaUWQ7cW79rSvRZlGtFRcDdrZHze7wT076uPBzK08Aq8rjNTMcxMR4cb56MKrzMpCtEawthKjHwlk8liiPTK8ELq9Pb67XINv8hJAXBKDxPW0aTFaOyQQV4DIHFSjzVh1PufbphvGklb5viG5_gLICO5qWDWjC2v-REvMCxYMjeoE4Wa7yhEhgg1q9m5WCgGYCvQYfu8uakqFhgLs2_AoyV6wQ'
-      const nonce = this.getNonce(jwt);
-      nonce.then((res) => {
-        console.log(res);
-        const callback = this.getCallback(res);
-        callback.then((res2) => {
-          console.log(res2);
-        })
-      }, function(err) {
-        console.log(err);
-      });
+        const executePoll = async (resolve, reject) => {
+          const result = await fn();
+          attempts++;
+
+          if (validate(result)) {
+            return resolve(result);
+          }
+
+          if (maxAttempts != null && attempts === maxAttempts) {
+            return reject(new Error(`'Max polling attempts (${maxAttempts}) exceeded!`));
+          }
+
+          setTimeout(executePoll, interval, resolve, reject);
+        };
+
+        return new Promise(executePoll);
+      }
+
+      console.debug(consentUrl)
+      const idToken = (new URL(consentUrl)).searchParams.get('request')
+      console.debug('idToken', idToken)
+
+      const nonce = await this.getNonceFromToken(idToken);
+      console.debug('nonce', nonce)
+
+      const shortUrl = await this.getShortUrl(consentUrl);
+      this.shortConsentUrls[tokenName] = shortUrl;
+      this.modalShow = true;
+      console.debug('Short url', shortUrl);
+
+      //TODO: Replace with an internal service
+      const qrCodeUrl = new URL("http://api.qrserver.com/v1/create-qr-code/?size=400x400");
+      qrCodeUrl.searchParams.set('data', shortUrl.toString());
+      this.qrCodeUrl = qrCodeUrl.toString();
+
+      const pollForCallback = createPoller(
+          async () => this.getCallbackPayload(nonce),
+          payload => payload && payload.code, // assumes that if we have a code parameter returned, the rest is ok as well
+          2000,
+          1000
+      )
+          .then(cbPayload => {
+            console.debug(cbPayload);
+            const localCallbackUrl = new URL(window.location);
+            localCallbackUrl.pathname = '/conformancesuite/callback';
+            for (const cbField in cbPayload) {
+              if (cbPayload.hasOwnProperty(cbField)) {
+                localCallbackUrl.searchParams.set(cbField, cbPayload[cbField]);
+              }
+            }
+            console.debug(localCallbackUrl.toString())
+
+            // We currently reuse existing callback handling logic, routing etc.
+            // so we build an URL from received callback params and "redirecting"
+            this.localCallbackUrls[tokenName] = localCallbackUrl.toString();
+            this.modalShow = false;
+
+            this.openPopup(localCallbackUrl.toString());
+          })
+          .catch(err => console.error(err));
     },
+
+    /**
+     * Executes a requests to internal URL shortening service and returns shortened url
+     * The reason we do shortening is to generate easy to scan and not excessively large QR codes
+     * @param {string} url
+     */
     async getShortUrl(url) {
-      const req = await axios.post('https://ok3hqencc6.execute-api.eu-west-1.amazonaws.com/staging', {'url': url})
-      if (req.status === 200) {
-        return req.data
-      }
-      return false
-      // .then(function (response) {
-      //   console.log(response);
-      //   })
-      //   .catch(function (error) {
-      //     console.log(error);
-      //     });
+      const req = await axios.post(this.getUrlShortenerUrl(), {'url': url})
+
+      return req && req.status === 200 ? req.data : false;
     },
-    async getNonce(id_token) {
+
+    /**
+     * Nonce is used as a matching key between consent request and consent callback
+     * We currently use an external service to process the JWT and extract nonce string
+     *
+     * TODO: Replace with either
+     * - pure JS implementation
+     * - a local call to FCS server
+     *
+     * @param {string} id_token
+     * @return {Promise<string>}
+     */
+    async getNonceFromToken(id_token) {
       const params = new URLSearchParams([['id_token', id_token]]);
-      const req = await axios.get('https://ok3hqencc6.execute-api.eu-west-1.amazonaws.com/staging', { params });
-      if (req.status === 200) {
-        return req.data
-      }
-      return false
-      // const params = new URLSearchParams([['id_token', id_token]]);
-      // const res = await axios.get('https://ok3hqencc6.execute-api.eu-west-1.amazonaws.com/staging', { params });
-      // if (res.status === 200) {
-      //   return res.data
-      // }
-      // return false
+      const req = await axios.get(this.getNonceExtractorUrl(), {params});
+
+      return req.status === 200 ? req.data : undefined;
     },
-    getNonce2(id_token) {
+
+    getParsedJwt(id_token) {
+      /**
+       * TODO: Replace with either
+       * - pure JS implementation
+       * - a local call to FCS server
+       *
+       * This will parse the id_token JWT to extract the nonce that is used to match callback contents to consent
+       *
+       * @type {URLSearchParams}
+       */
       const params = new URLSearchParams([['id_token', id_token]]);
-      axios.get('https://ok3hqencc6.execute-api.eu-west-1.amazonaws.com/staging', { params })
-      .then(function (response) {
-        console.log(response);
-        })
-        .catch(function (error) {
-          console.log(error);
+      axios.get(this.getIdTokenParserUrl(), {params})
+          .then(function (response) {
+            console.log(response);
+          })
+          .catch(function (error) {
+            console.log(error);
           });
     },
-    async getCallback(nonce) {
+
+    /**
+     * Executes a requests to internal URL shortening service and returns shortened url
+     * @param {string} nonce
+     */
+    async getCallbackPayload(nonce) {
       const params = new URLSearchParams([['nonce', nonce]]);
-      const req = await axios.get('https://ok3hqencc6.execute-api.eu-west-1.amazonaws.com/staging', { params });
-      if (req.status === 200) {
-        return req.data
+      try {
+        const req = await axios.get(this.getCallbackProxyUrl(), {params});
+        if (req.status === 200) {
+          return req.data
+        }
+      } catch (e) {
+        console.log(e)
       }
       return false
     },
