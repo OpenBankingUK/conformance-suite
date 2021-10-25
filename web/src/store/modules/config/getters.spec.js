@@ -73,6 +73,7 @@ describe('Config', () => {
       discoveryModel: {
         discoveryModel: {
           tokenAcquisition: 'headless',
+          callbackProxyUrl: 'https://callback-proxy.io',
         },
       },
     };
@@ -87,6 +88,9 @@ describe('Config', () => {
     });
     it('tokenAcquisition', () => {
       expect(getters.tokenAcquisition(state)).toEqual('headless');
+    });
+    it('callbackProxyUrl', () => {
+      expect(getters.tokenAcquisition(state)).toEqual('https://callback-proxy.io');
     });
   });
 });

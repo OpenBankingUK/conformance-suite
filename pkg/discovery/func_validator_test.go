@@ -226,8 +226,8 @@ func TestValidate(t *testing.T) {
 			}})
 	})
 
-	t.Run("ensure that `psu`, `headless`, `store` are supported tokenAcquisition values", func(t *testing.T) {
-		methods := []string{"psu", "headless", "store"}
+	t.Run("ensure that `psu`, `headless`, `store, `mobile` are supported tokenAcquisition values", func(t *testing.T) {
+		methods := []string{"psu", "headless", "store", "mobile"}
 		for _, method := range methods {
 			testValidateFailures(t, conditionalityCheckerMock{isPresent: true}, &invalidTest{
 				discoveryJSON: discoveryStub("tokenAcquisition", method),

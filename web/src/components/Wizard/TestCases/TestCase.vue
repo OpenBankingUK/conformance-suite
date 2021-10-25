@@ -1,70 +1,70 @@
 <template>
   <div class="test-case border p-2 mt-2">
     <b-table
-      :items="testGroup.testCases"
-      :fields="tableFields"
-      head-variant="dark"
-      caption-top
-      hover
-      small
-      responsive
+        :items="testGroup.testCases"
+        :fields="tableFields"
+        head-variant="dark"
+        caption-top
+        hover
+        small
+        responsive
     >
       <template slot="table-caption">
         <SpecificationHeader
-          :apiSpecification="apiSpecification"
+            :apiSpecification="apiSpecification"
         />
       </template>
       <template
-        slot="name"
-        slot-scope="row">
+          slot="name"
+          slot-scope="row">
         <truncate
-          :text="row.value"
-          :length="60"
-          clamp="..."
-          less="Show Less" />
+            :text="row.value"
+            :length="60"
+            clamp="..."
+            less="Show Less" />
       </template>
 
       <template
-        slot="input.endpoint"
-        slot-scope="row">
+          slot="input.endpoint"
+          slot-scope="row">
         <truncate
-          :text="row.value"
-          :length="30"
-          clamp="..."
-          less="Show Less" />
+            :text="row.value"
+            :length="30"
+            clamp="..."
+            less="Show Less" />
       </template>
 
       <!-- format status column as Bootstrap badge. -->
       <template
-        slot="meta.status"
-        slot-scope="row">
+          slot="meta.status"
+          slot-scope="row">
         <b-badge
-          v-if="row.value !== ''"
-          :variant="row.value === 'PASSED' ? 'success' : (row.value === 'FAILED' ? 'danger' : (row.value === 'PENDING' ? 'info' : 'secondary'))"
-          :class="row.value === 'FAILED' ? 'clickable' : ''"
-          :id="statusIdSelector(row)"
-          tag="h6"
-          @click.stop="toggleError(row)"
+            v-if="row.value !== ''"
+            :variant="row.value === 'PASSED' ? 'success' : (row.value === 'FAILED' ? 'danger' : (row.value === 'PENDING' ? 'info' : 'secondary'))"
+            :class="row.value === 'FAILED' ? 'clickable' : ''"
+            :id="statusIdSelector(row)"
+            tag="h6"
+            @click.stop="toggleError(row)"
         >{{ row.value }} <i
-          v-if="row.value === 'FAILED'"
-          class="arrow down"/></b-badge>
+            v-if="row.value === 'FAILED'"
+            class="arrow down"/></b-badge>
       </template>
 
       <template
-        slot="row-details"
-        slot-scope="row">
+          slot="row-details"
+          slot-scope="row">
         <b-card>
           <b-card-text><strong>Test ID:</strong> {{ row.item.id }}</b-card-text>
           <b-card-text><strong>Ref URI:</strong> <a
-            ref="noreferrer"
-            :href="row.item.refURI"
-            target="_blank"> {{ row.item.refURI }}</a></b-card-text>
+              ref="noreferrer"
+              :href="row.item.refURI"
+              target="_blank"> {{ row.item.refURI }}</a></b-card-text>
           <b-card-text><strong>Detail:</strong> {{ row.item.detail }}</b-card-text>
           <b-card-text><strong>Errors:</strong>
             <ol>
               <li
-                v-for="error in row.item.error"
-                :key="error">
+                  v-for="error in row.item.error"
+                  :key="error">
                 <ul>
                   <li><strong>Test Case message:</strong> {{ JSON.parse(error).testCaseMessage }}</li>
                   <li><strong>Endpoint response (<code>{{ JSON.parse(error).endpointResponseCode }}</code>):</strong> {{ JSON.parse(error).endpointResponse }}</li>
@@ -152,10 +152,10 @@ export default {
             }
 
             return item
-              .expect_one_of
-              .map(expect => expect['status-code'])
-              .filter(statusCode => statusCode > 0)
-              .join(' or ');
+                .expect_one_of
+                .map(expect => expect['status-code'])
+                .filter(statusCode => statusCode > 0)
+                .join(' or ');
           },
         },
         'meta.status': {

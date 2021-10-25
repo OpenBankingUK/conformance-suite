@@ -26,6 +26,9 @@
             >
               <template slot="table-caption">
                 <div>
+                  <b>Token Acquisition mode:</b> {{ tokenAcquisition }}
+                </div>
+                <div>
                   <b>Test Cases Completed:</b> {{ test_cases_completed }}
                 </div>
                 <div>
