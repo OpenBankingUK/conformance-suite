@@ -21,15 +21,15 @@ module.exports = {
       errors: true,
     },
     proxy: {
-      "/api/*": {
-        target: "https://localhost:8443",
+      '/api/*': {
+        target: 'https://localhost:8443',
         ws: true,
         secure: false,
         debug: true,
         logLevel: 'debug',
         changeOrigin: false,
-        xfwd: true
-      }
+        xfwd: true,
+      },
     },
     open: 'Google Chrome',
   },
