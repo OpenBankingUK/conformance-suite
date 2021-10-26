@@ -209,3 +209,36 @@ const vrp100200Response = `{
 	},
 	"Meta": {}
 }`
+
+func TestIsRequestProperty(t *testing.T) {
+	validator, err := buildValidator("Payment Initiation API")
+	require.NoError(t, err)
+
+	/*
+		"name": "Payment Initiation API",
+		"endpoints": [
+		  {
+		    "method": "POST",
+		    "path": "/international-payment-consents",
+		    "conditionalProperties": [
+		      {
+		        "schema": "OBCreditor1Name",
+		        "name": "Name",
+		        "path": "Data.Initiation.Creditor.Name",
+		        "request": true,
+		        "value": "Will B. Wealthy"
+		      },
+	*/
+	isRequestProperty, objType, err := validator.IsRequestProperty("POST", "/international-payment-consents", "Data.Initiation.Creditor.Name")
+	require.NoError(t, err)
+	require.True(t, isRequestProperty)
+	require.Equal(t, "string", objType)
+
+	isRequestProperty, objType, err = validator.IsRequestProperty("POST", "/international-payment-consents", "Data.Initiation.Creditor.FakeProperty")
+	require.NoError(t, err)
+	require.False(t, isRequestProperty)
+
+	isRequestProperty, objType, err = validator.IsRequestProperty("GET", "/international-payment-consents/{ConsentId}/funds-confirmation", "Data.Initiation.Creditor.Name")
+	require.NoError(t, err)
+	require.False(t, isRequestProperty)
+}
