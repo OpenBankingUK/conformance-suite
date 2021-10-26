@@ -15,6 +15,7 @@ var ErrInsecure = errors.New("this client connection is insecure")
 
 func NewConnection() (*Connection, error) {
 	tr := &http.Transport{
+		Proxy:           http.ProxyFromEnvironment,
 		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
 	}
 	return &Connection{

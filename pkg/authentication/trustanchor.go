@@ -87,6 +87,7 @@ func getJwkFromJwks(kid, jwks string) (JWK, error) {
 // download the JWKS key store from the given url
 func getJwks(url string) (JWKS, error) {
 	tr := &http.Transport{
+		Proxy:           http.ProxyFromEnvironment,
 		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
 	}
 	client := &http.Client{Transport: tr}
