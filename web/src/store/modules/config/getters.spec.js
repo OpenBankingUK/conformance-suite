@@ -90,7 +90,7 @@ describe('Config', () => {
       expect(getters.tokenAcquisition(state)).toEqual('headless');
     });
     it('callbackProxyUrl', () => {
-      expect(getters.tokenAcquisition(state)).toEqual('https://callback-proxy.io');
+      expect(getters.callbackProxyUrl(state)).toEqual('https://callback-proxy.io');
     });
   });
 });
