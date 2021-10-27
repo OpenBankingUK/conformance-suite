@@ -46,6 +46,7 @@ func NewSwaggerOBSpecValidator(specName, version string) (Validator, error) {
 	prodDir := "pkg/schema/spec/" + version
 	testDir := "../../pkg/schema/spec/" + version
 
+	// TODO: @Release - update to use version compare instead of magic number
 	if version == "v3.1.8" {
 		return NewOpenAPI3Validator(specName, version)
 	}

@@ -48,8 +48,9 @@ type validateParams struct {
 var headerCT = http.CanonicalHeaderKey("Content-Type")
 
 // NewOpenAPI3Validator - Create a router current just for v3.1.8 of the specifications
-// prefering yaml for the spec file
+// preferring yaml for the spec file
 func NewOpenAPI3Validator(specName, version string) (Validator, error) {
+	// TODO: @Release - update to use version compare instead of magic number
 	if version != "v3.1.8" {
 		return nil, fmt.Errorf("NewOpenAPI3Validator - unsupported version: %s", version)
 	}
@@ -58,6 +59,7 @@ func NewOpenAPI3Validator(specName, version string) (Validator, error) {
 
 // NewRawOpenAPI3Validator -
 func NewRawOpenAPI3Validator(specName, version string) (OpenAPI3Validator, error) {
+	// TODO: @Release - update to use version compare instead of magic number
 	if version != "v3.1.8" {
 		return OpenAPI3Validator{}, fmt.Errorf("NewOpenAPI3Validator - unsupported version: %s", version)
 	}
@@ -69,14 +71,30 @@ func buildValidator(specName string) (OpenAPI3Validator, error) {
 	return OpenAPI3Validator{router: router, doc: doc}, err
 }
 
-// IsRequestProperty - not used so defaults to false
-func (v OpenAPI3Validator) IsRequestProperty(method, path, propertpath string) (bool, string, error) {
+// IsRequestProperty -
+func (v OpenAPI3Validator) IsRequestProperty(checkmethod, checkpath, propertyPath string) (bool, string, error) {
+	spec := v.doc
+	for path, props := range spec.Paths {
+		for method, op := range getOas3Operations(props) {
+			if path == checkpath && method == checkmethod && op.RequestBody != nil {
+				for _, param := range op.RequestBody.Value.Content {
+					schema := param.Schema.Value
+					found, objType := findPropertyInOas3Schema(schema, propertyPath, "")
+					if found {
+						return true, objType, nil
+					}
+				}
+			}
+		}
+	}
+
 	return false, "", nil
 }
 
 func getRouterForSpec(spec string) (routers.Router, *openapi3.T, error) {
 	var filename string
 	switch spec {
+	// TODO: @Release - update to use version compare instead of magic number
 	case "Account and Transaction API Specification":
 		filename = "spec/v3.1.8/account-info-openapi.json"
 	case "Payment Initiation API":
@@ -89,12 +107,16 @@ func getRouterForSpec(spec string) (routers.Router, *openapi3.T, error) {
 		return nil, nil, errors.New("Cannot get router for spec: " + spec)
 	}
 
+	// TODO: @Release - update to a pattern similar to Swagger handling
 	loader := openapi3.NewLoader()
 	doc, err := loader.LoadFromFile(filename)
 	if err != nil {
 		doc, err = loader.LoadFromFile("pkg/schema/" + filename)
 		if err != nil {
-			return nil, nil, fmt.Errorf("Cannot Load OpenApi Spec from file %s, %s", filename, err)
+			doc, err = loader.LoadFromFile("../../pkg/schema/" + filename)
+			if err != nil {
+				return nil, nil, fmt.Errorf("Cannot Load OpenApi Spec from file %s, %s", filename, err)
+			}
 		}
 	}
 	err = doc.Validate(context.Background())
@@ -194,4 +216,46 @@ func createHTTPReq(method, path string) (*http.Request, error) {
 	req, err := http.NewRequest(method, path, strings.NewReader(""))
 	req.Header = http.Header{"Content-type": []string{"application/json; charset=utf-8"}}
 	return req, err
+}
+
+// getOperations returns a mapping of HTTP Verb name to "spec operation name"
+func getOas3Operations(props *openapi3.PathItem) map[string]*openapi3.Operation {
+	ops := map[string]*openapi3.Operation{
+		"DELETE":  props.Delete,
+		"GET":     props.Get,
+		"HEAD":    props.Head,
+		"OPTIONS": props.Options,
+		"PATCH":   props.Patch,
+		"POST":    props.Post,
+		"PUT":     props.Put,
+	}
+
+	// Keep those != nil
+	for key, op := range ops {
+		if op == nil {
+			delete(ops, key)
+		}
+	}
+	return ops
+}
+
+func findPropertyInOas3Schema(sc *openapi3.Schema, propertyPath, previousPath string) (bool, string) {
+	for k, j := range sc.Properties {
+		var element string
+		if len(previousPath) == 0 {
+			element = k
+		} else {
+			element = previousPath + "." + k
+		}
+
+		if element == propertyPath {
+			return true, fmt.Sprintf("%s", j.Value.Type)
+		}
+
+		ret, propType := findPropertyInOas3Schema(j.Value, propertyPath, element)
+		if ret {
+			return true, propType
+		}
+	}
+	return false, ""
 }
