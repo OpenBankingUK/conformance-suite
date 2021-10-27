@@ -138,6 +138,7 @@ func TestServerHTTPS(t *testing.T) {
 	certFile := "../../certs/conformancesuite_cert.pem"
 	keyFile := "../../certs/conformancesuite_key.pem"
 	transport := &http.Transport{
+		Proxy: http.ProxyFromEnvironment,
 		TLSClientConfig: &tls.Config{
 			InsecureSkipVerify: true,
 		},
