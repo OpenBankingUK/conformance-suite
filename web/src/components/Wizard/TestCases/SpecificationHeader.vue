@@ -276,7 +276,7 @@ export default {
     },
 
     /**
-     * Executes a requests to internal URL shortening service and returns shortened url
+     * Executes a requests to Callback Proxy to fetch Callback data
      * @param {string} nonce
      */
     async getCallbackPayload(nonce) {
@@ -287,7 +287,7 @@ export default {
           return req.data;
         }
       } catch (e) {
-        this.setErrors(['Error getting Callback payload.']);
+        // this.setErrors(['Error getting Callback payload.']);
       }
       return false;
     },
