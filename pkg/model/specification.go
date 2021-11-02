@@ -82,7 +82,7 @@ var (
 			Name:          "Payment Initiation API",
 			URL:           mustParseURL("https://openbankinguk.github.io/read-write-api-site3/v3.1.8/profiles/payment-initiation-api-profile.html"),
 			Version:       "v3.1.8",
-			SchemaVersion: mustParseURL("https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.8/dist/swagger/payment-initiation-swagger.json"),
+			SchemaVersion: mustParseURL("https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.8/dist/openapi/payment-initiation-openapi.json"),
 		},
 		{
 			Identifier:    "payment-initiation-v3.1.7",
@@ -138,7 +138,7 @@ var (
 			Name:          "Confirmation of Funds API Specification",
 			URL:           mustParseURL("https://openbankinguk.github.io/read-write-api-site3/v3.1.8/profiles/confirmation-of-funds-api-profile.html"),
 			Version:       "v3.1.8",
-			SchemaVersion: mustParseURL("https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.8/dist/swagger/confirmation-funds-swagger.json"),
+			SchemaVersion: mustParseURL("https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.8/dist/openapi/confirmation-funds-openapi.json"),
 		},
 		{
 			Identifier:    "confirmation-funds-v3.1.7",

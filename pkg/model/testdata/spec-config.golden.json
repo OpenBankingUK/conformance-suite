@@ -1,839 +1,1001 @@
 [
   {
-      "Identifier": "account-transaction-v3.1.7",
-      "Name": "Account and Transaction API Specification",
-      "URL": {
-          "Scheme": "https",
-          "Opaque": "",
-          "User": null,
-          "Host": "openbankinguk.github.io",
-          "Path": "/read-write-api-site3/v3.1.7/profiles/account-and-transaction-api-profile.html",
-          "RawPath": "",
-          "ForceQuery": false,
-          "RawQuery": "",
-          "Fragment": ""
-      },
-      "Version": "v3.1.7",
-      "SchemaVersion": {
-          "Scheme": "https",
-          "Opaque": "",
-          "User": null,
-          "Host": "raw.githubusercontent.com",
-          "Path": "/OpenBankingUK/read-write-api-specs/v3.1.7/dist/swagger/account-info-swagger.json",
-          "RawPath": "",
-          "ForceQuery": false,
-          "RawQuery": "",
-          "Fragment": ""
-      }
+    "Identifier": "account-transaction-v3.1.8",
+    "Name": "Account and Transaction API Specification",
+    "URL": {
+      "Scheme": "https",
+      "Opaque": "",
+      "User": null,
+      "Host": "openbankinguk.github.io",
+      "Path": "/read-write-api-site3/v3.1.8/profiles/account-and-transaction-api-profile.html",
+      "RawPath": "",
+      "ForceQuery": false,
+      "RawQuery": "",
+      "Fragment": ""
+    },
+    "Version": "v3.1.8",
+    "SchemaVersion": {
+      "Scheme": "https",
+      "Opaque": "",
+      "User": null,
+      "Host": "raw.githubusercontent.com",
+      "Path": "/OpenBankingUK/read-write-api-specs/v3.1.8/dist/openapi/account-info-openapi.json",
+      "RawPath": "",
+      "ForceQuery": false,
+      "RawQuery": "",
+      "Fragment": ""
+    }
   },
   {
-      "Identifier": "account-transaction-v3.1.6",
-      "Name": "Account and Transaction API Specification",
-      "URL": {
-          "Scheme": "https",
-          "Opaque": "",
-          "User": null,
-          "Host": "openbankinguk.github.io",
-          "Path": "/read-write-api-site3/v3.1.6/profiles/account-and-transaction-api-profile.html",
-          "RawPath": "",
-          "ForceQuery": false,
-          "RawQuery": "",
-          "Fragment": ""
-      },
-      "Version": "v3.1.6",
-      "SchemaVersion": {
-          "Scheme": "https",
-          "Opaque": "",
-          "User": null,
-          "Host": "raw.githubusercontent.com",
-          "Path": "/OpenBankingUK/read-write-api-specs/v3.1.6/dist/swagger/account-info-swagger.json",
-          "RawPath": "",
-          "ForceQuery": false,
-          "RawQuery": "",
-          "Fragment": ""
-      }
+    "Identifier": "account-transaction-v3.1.7",
+    "Name": "Account and Transaction API Specification",
+    "URL": {
+      "Scheme": "https",
+      "Opaque": "",
+      "User": null,
+      "Host": "openbankinguk.github.io",
+      "Path": "/read-write-api-site3/v3.1.7/profiles/account-and-transaction-api-profile.html",
+      "RawPath": "",
+      "ForceQuery": false,
+      "RawQuery": "",
+      "Fragment": ""
+    },
+    "Version": "v3.1.7",
+    "SchemaVersion": {
+      "Scheme": "https",
+      "Opaque": "",
+      "User": null,
+      "Host": "raw.githubusercontent.com",
+      "Path": "/OpenBankingUK/read-write-api-specs/v3.1.7/dist/swagger/account-info-swagger.json",
+      "RawPath": "",
+      "ForceQuery": false,
+      "RawQuery": "",
+      "Fragment": ""
+    }
   },
   {
-      "Identifier": "account-transaction-v3.1.5",
-      "Name": "Account and Transaction API Specification",
-      "URL": {
-          "Scheme": "https",
-          "Opaque": "",
-          "User": null,
-          "Host": "openbankinguk.github.io",
-          "Path": "/read-write-api-site3/v3.1.5/profiles/account-and-transaction-api-profile.html",
-          "RawPath": "",
-          "ForceQuery": false,
-          "RawQuery": "",
-          "Fragment": ""
-      },
-      "Version": "v3.1.5",
-      "SchemaVersion": {
-          "Scheme": "https",
-          "Opaque": "",
-          "User": null,
-          "Host": "raw.githubusercontent.com",
-          "Path": "/OpenBankingUK/read-write-api-specs/v3.1.5/dist/swagger/account-info-swagger.json",
-          "RawPath": "",
-          "ForceQuery": false,
-          "RawQuery": "",
-          "Fragment": ""
-      }
+    "Identifier": "account-transaction-v3.1.6",
+    "Name": "Account and Transaction API Specification",
+    "URL": {
+      "Scheme": "https",
+      "Opaque": "",
+      "User": null,
+      "Host": "openbankinguk.github.io",
+      "Path": "/read-write-api-site3/v3.1.6/profiles/account-and-transaction-api-profile.html",
+      "RawPath": "",
+      "ForceQuery": false,
+      "RawQuery": "",
+      "Fragment": ""
+    },
+    "Version": "v3.1.6",
+    "SchemaVersion": {
+      "Scheme": "https",
+      "Opaque": "",
+      "User": null,
+      "Host": "raw.githubusercontent.com",
+      "Path": "/OpenBankingUK/read-write-api-specs/v3.1.6/dist/swagger/account-info-swagger.json",
+      "RawPath": "",
+      "ForceQuery": false,
+      "RawQuery": "",
+      "Fragment": ""
+    }
   },
   {
-      "Identifier": "account-transaction-v3.1.4",
-      "Name": "Account and Transaction API Specification",
-      "URL": {
-          "Scheme": "https",
-          "Opaque": "",
-          "User": null,
-          "Host": "openbankinguk.github.io",
-          "Path": "/read-write-api-site3/v3.1.4/profiles/account-and-transaction-api-profile.html",
-          "RawPath": "",
-          "ForceQuery": false,
-          "RawQuery": "",
-          "Fragment": ""
-      },
-      "Version": "v3.1.4",
-      "SchemaVersion": {
-          "Scheme": "https",
-          "Opaque": "",
-          "User": null,
-          "Host": "raw.githubusercontent.com",
-          "Path": "/OpenBankingUK/read-write-api-specs/v3.1.4/dist/swagger/account-info-swagger.json",
-          "RawPath": "",
-          "ForceQuery": false,
-          "RawQuery": "",
-          "Fragment": ""
-      }
+    "Identifier": "account-transaction-v3.1.5",
+    "Name": "Account and Transaction API Specification",
+    "URL": {
+      "Scheme": "https",
+      "Opaque": "",
+      "User": null,
+      "Host": "openbankinguk.github.io",
+      "Path": "/read-write-api-site3/v3.1.5/profiles/account-and-transaction-api-profile.html",
+      "RawPath": "",
+      "ForceQuery": false,
+      "RawQuery": "",
+      "Fragment": ""
+    },
+    "Version": "v3.1.5",
+    "SchemaVersion": {
+      "Scheme": "https",
+      "Opaque": "",
+      "User": null,
+      "Host": "raw.githubusercontent.com",
+      "Path": "/OpenBankingUK/read-write-api-specs/v3.1.5/dist/swagger/account-info-swagger.json",
+      "RawPath": "",
+      "ForceQuery": false,
+      "RawQuery": "",
+      "Fragment": ""
+    }
   },
   {
-      "Identifier": "account-transaction-v3.1.3",
-      "Name": "Account and Transaction API Specification",
-      "URL": {
-          "Scheme": "https",
-          "Opaque": "",
-          "User": null,
-          "Host": "openbankinguk.github.io",
-          "Path": "/read-write-api-site3/v3.1.3/profiles/account-and-transaction-api-profile.html",
-          "RawPath": "",
-          "ForceQuery": false,
-          "RawQuery": "",
-          "Fragment": ""
-      },
-      "Version": "v3.1.3",
-      "SchemaVersion": {
-          "Scheme": "https",
-          "Opaque": "",
-          "User": null,
-          "Host": "raw.githubusercontent.com",
-          "Path": "/OpenBankingUK/read-write-api-specs/v3.1.3/dist/account-info-swagger.json",
-          "RawPath": "",
-          "ForceQuery": false,
-          "RawQuery": "",
-          "Fragment": ""
-      }
+    "Identifier": "account-transaction-v3.1.4",
+    "Name": "Account and Transaction API Specification",
+    "URL": {
+      "Scheme": "https",
+      "Opaque": "",
+      "User": null,
+      "Host": "openbankinguk.github.io",
+      "Path": "/read-write-api-site3/v3.1.4/profiles/account-and-transaction-api-profile.html",
+      "RawPath": "",
+      "ForceQuery": false,
+      "RawQuery": "",
+      "Fragment": ""
+    },
+    "Version": "v3.1.4",
+    "SchemaVersion": {
+      "Scheme": "https",
+      "Opaque": "",
+      "User": null,
+      "Host": "raw.githubusercontent.com",
+      "Path": "/OpenBankingUK/read-write-api-specs/v3.1.4/dist/swagger/account-info-swagger.json",
+      "RawPath": "",
+      "ForceQuery": false,
+      "RawQuery": "",
+      "Fragment": ""
+    }
   },
   {
-      "Identifier": "account-transaction-v3.1.2",
-      "Name": "Account and Transaction API Specification",
-      "URL": {
-          "Scheme": "https",
-          "Opaque": "",
-          "User": null,
-          "Host": "openbanking.atlassian.net",
-          "Path": "/wiki/spaces/DZ/pages/1077805296/Account+and+Transaction+API+Specification+-+v3.1.2",
-          "RawPath": "",
-          "ForceQuery": false,
-          "RawQuery": "",
-          "Fragment": ""
-      },
-      "Version": "v3.1.2",
-      "SchemaVersion": {
-          "Scheme": "https",
-          "Opaque": "",
-          "User": null,
-          "Host": "raw.githubusercontent.com",
-          "Path": "/OpenBankingUK/read-write-api-specs/v3.1.2/dist/account-info-swagger.json",
-          "RawPath": "",
-          "ForceQuery": false,
-          "RawQuery": "",
-          "Fragment": ""
-      }
+    "Identifier": "account-transaction-v3.1.3",
+    "Name": "Account and Transaction API Specification",
+    "URL": {
+      "Scheme": "https",
+      "Opaque": "",
+      "User": null,
+      "Host": "openbankinguk.github.io",
+      "Path": "/read-write-api-site3/v3.1.3/profiles/account-and-transaction-api-profile.html",
+      "RawPath": "",
+      "ForceQuery": false,
+      "RawQuery": "",
+      "Fragment": ""
+    },
+    "Version": "v3.1.3",
+    "SchemaVersion": {
+      "Scheme": "https",
+      "Opaque": "",
+      "User": null,
+      "Host": "raw.githubusercontent.com",
+      "Path": "/OpenBankingUK/read-write-api-specs/v3.1.3/dist/account-info-swagger.json",
+      "RawPath": "",
+      "ForceQuery": false,
+      "RawQuery": "",
+      "Fragment": ""
+    }
   },
   {
-      "Identifier": "account-transaction-v3.1.1",
-      "Name": "Account and Transaction API Specification",
-      "URL": {
-          "Scheme": "https",
-          "Opaque": "",
-          "User": null,
-          "Host": "openbanking.atlassian.net",
-          "Path": "/wiki/spaces/DZ/pages/999622968/Account+and+Transaction+API+Specification+-+v3.1.1",
-          "RawPath": "",
-          "ForceQuery": false,
-          "RawQuery": "",
-          "Fragment": ""
-      },
-      "Version": "v3.1.1",
-      "SchemaVersion": {
-          "Scheme": "https",
-          "Opaque": "",
-          "User": null,
-          "Host": "raw.githubusercontent.com",
-          "Path": "/OpenBankingUK/read-write-api-specs/v3.1.1/dist/account-info-swagger.json",
-          "RawPath": "",
-          "ForceQuery": false,
-          "RawQuery": "",
-          "Fragment": ""
-      }
+    "Identifier": "account-transaction-v3.1.2",
+    "Name": "Account and Transaction API Specification",
+    "URL": {
+      "Scheme": "https",
+      "Opaque": "",
+      "User": null,
+      "Host": "openbanking.atlassian.net",
+      "Path": "/wiki/spaces/DZ/pages/1077805296/Account+and+Transaction+API+Specification+-+v3.1.2",
+      "RawPath": "",
+      "ForceQuery": false,
+      "RawQuery": "",
+      "Fragment": ""
+    },
+    "Version": "v3.1.2",
+    "SchemaVersion": {
+      "Scheme": "https",
+      "Opaque": "",
+      "User": null,
+      "Host": "raw.githubusercontent.com",
+      "Path": "/OpenBankingUK/read-write-api-specs/v3.1.2/dist/account-info-swagger.json",
+      "RawPath": "",
+      "ForceQuery": false,
+      "RawQuery": "",
+      "Fragment": ""
+    }
   },
   {
-      "Identifier": "payment-initiation-v3.1.6",
-      "Name": "Payment Initiation API",
-      "URL": {
-          "Scheme": "https",
-          "Opaque": "",
-          "User": null,
-          "Host": "openbankinguk.github.io",
-          "Path": "/read-write-api-site3/v3.1.6/profiles/payment-initiation-api-profile.html",
-          "RawPath": "",
-          "ForceQuery": false,
-          "RawQuery": "",
-          "Fragment": ""
-      },
-      "Version": "v3.1.6",
-      "SchemaVersion": {
-          "Scheme": "https",
-          "Opaque": "",
-          "User": null,
-          "Host": "raw.githubusercontent.com",
-          "Path": "/OpenBankingUK/read-write-api-specs/v3.1.6/dist/swagger/payment-initiation-swagger.json",
-          "RawPath": "",
-          "ForceQuery": false,
-          "RawQuery": "",
-          "Fragment": ""
-      }
+    "Identifier": "account-transaction-v3.1.1",
+    "Name": "Account and Transaction API Specification",
+    "URL": {
+      "Scheme": "https",
+      "Opaque": "",
+      "User": null,
+      "Host": "openbanking.atlassian.net",
+      "Path": "/wiki/spaces/DZ/pages/999622968/Account+and+Transaction+API+Specification+-+v3.1.1",
+      "RawPath": "",
+      "ForceQuery": false,
+      "RawQuery": "",
+      "Fragment": ""
+    },
+    "Version": "v3.1.1",
+    "SchemaVersion": {
+      "Scheme": "https",
+      "Opaque": "",
+      "User": null,
+      "Host": "raw.githubusercontent.com",
+      "Path": "/OpenBankingUK/read-write-api-specs/v3.1.1/dist/account-info-swagger.json",
+      "RawPath": "",
+      "ForceQuery": false,
+      "RawQuery": "",
+      "Fragment": ""
+    }
   },
   {
-      "Identifier": "payment-initiation-v3.1.5",
-      "Name": "Payment Initiation API",
-      "URL": {
-          "Scheme": "https",
-          "Opaque": "",
-          "User": null,
-          "Host": "openbankinguk.github.io",
-          "Path": "/read-write-api-site3/v3.1.5/profiles/payment-initiation-api-profile.html",
-          "RawPath": "",
-          "ForceQuery": false,
-          "RawQuery": "",
-          "Fragment": ""
-      },
-      "Version": "v3.1.5",
-      "SchemaVersion": {
-          "Scheme": "https",
-          "Opaque": "",
-          "User": null,
-          "Host": "raw.githubusercontent.com",
-          "Path": "/OpenBankingUK/read-write-api-specs/v3.1.5/dist/swagger/payment-initiation-swagger.json",
-          "RawPath": "",
-          "ForceQuery": false,
-          "RawQuery": "",
-          "Fragment": ""
-      }
+    "Identifier": "payment-initiation-v3.1.8",
+    "Name": "Payment Initiation API",
+    "URL": {
+      "Scheme": "https",
+      "Opaque": "",
+      "User": null,
+      "Host": "openbankinguk.github.io",
+      "Path": "/read-write-api-site3/v3.1.8/profiles/payment-initiation-api-profile.html",
+      "RawPath": "",
+      "ForceQuery": false,
+      "RawQuery": "",
+      "Fragment": ""
+    },
+    "Version": "v3.1.8",
+    "SchemaVersion": {
+      "Scheme": "https",
+      "Opaque": "",
+      "User": null,
+      "Host": "raw.githubusercontent.com",
+      "Path": "/OpenBankingUK/read-write-api-specs/v3.1.8/dist/openapi/payment-initiation-openapi.json",
+      "RawPath": "",
+      "ForceQuery": false,
+      "RawQuery": "",
+      "Fragment": ""
+    }
   },
   {
-      "Identifier": "payment-initiation-v3.1.4",
-      "Name": "Payment Initiation API",
-      "URL": {
-          "Scheme": "https",
-          "Opaque": "",
-          "User": null,
-          "Host": "openbankinguk.github.io",
-          "Path": "/read-write-api-site3/v3.1.4/profiles/payment-initiation-api-profile.html",
-          "RawPath": "",
-          "ForceQuery": false,
-          "RawQuery": "",
-          "Fragment": ""
-      },
-      "Version": "v3.1.4",
-      "SchemaVersion": {
-          "Scheme": "https",
-          "Opaque": "",
-          "User": null,
-          "Host": "raw.githubusercontent.com",
-          "Path": "/OpenBankingUK/read-write-api-specs/v3.1.4/dist/swagger/payment-initiation-swagger.json",
-          "RawPath": "",
-          "ForceQuery": false,
-          "RawQuery": "",
-          "Fragment": ""
-      }
+    "Identifier": "payment-initiation-v3.1.7",
+    "Name": "Payment Initiation API",
+    "URL": {
+      "Scheme": "https",
+      "Opaque": "",
+      "User": null,
+      "Host": "openbankinguk.github.io",
+      "Path": "/read-write-api-site3/v3.1.7/profiles/payment-initiation-api-profile.html",
+      "RawPath": "",
+      "ForceQuery": false,
+      "RawQuery": "",
+      "Fragment": ""
+    },
+    "Version": "v3.1.7",
+    "SchemaVersion": {
+      "Scheme": "https",
+      "Opaque": "",
+      "User": null,
+      "Host": "raw.githubusercontent.com",
+      "Path": "/OpenBankingUK/read-write-api-specs/v3.1.7/dist/swagger/payment-initiation-swagger.json",
+      "RawPath": "",
+      "ForceQuery": false,
+      "RawQuery": "",
+      "Fragment": ""
+    }
   },
   {
-      "Identifier": "payment-initiation-v3.1.3",
-      "Name": "Payment Initiation API",
-      "URL": {
-          "Scheme": "https",
-          "Opaque": "",
-          "User": null,
-          "Host": "openbankinguk.github.io",
-          "Path": "/read-write-api-site3/v3.1.3/profiles/payment-initiation-api-profile.html",
-          "RawPath": "",
-          "ForceQuery": false,
-          "RawQuery": "",
-          "Fragment": ""
-      },
-      "Version": "v3.1.3",
-      "SchemaVersion": {
-          "Scheme": "https",
-          "Opaque": "",
-          "User": null,
-          "Host": "raw.githubusercontent.com",
-          "Path": "/OpenBankingUK/read-write-api-specs/v3.1.3/dist/payment-initiation-swagger.json",
-          "RawPath": "",
-          "ForceQuery": false,
-          "RawQuery": "",
-          "Fragment": ""
-      }
+    "Identifier": "payment-initiation-v3.1.6",
+    "Name": "Payment Initiation API",
+    "URL": {
+      "Scheme": "https",
+      "Opaque": "",
+      "User": null,
+      "Host": "openbankinguk.github.io",
+      "Path": "/read-write-api-site3/v3.1.6/profiles/payment-initiation-api-profile.html",
+      "RawPath": "",
+      "ForceQuery": false,
+      "RawQuery": "",
+      "Fragment": ""
+    },
+    "Version": "v3.1.6",
+    "SchemaVersion": {
+      "Scheme": "https",
+      "Opaque": "",
+      "User": null,
+      "Host": "raw.githubusercontent.com",
+      "Path": "/OpenBankingUK/read-write-api-specs/v3.1.6/dist/swagger/payment-initiation-swagger.json",
+      "RawPath": "",
+      "ForceQuery": false,
+      "RawQuery": "",
+      "Fragment": ""
+    }
   },
   {
-      "Identifier": "payment-initiation-v3.1.2",
-      "Name": "Payment Initiation API",
-      "URL": {
-          "Scheme": "https",
-          "Opaque": "",
-          "User": null,
-          "Host": "openbanking.atlassian.net",
-          "Path": "/wiki/spaces/DZ/pages/1077805743/Payment+Initiation+API+Specification+-+v3.1.2",
-          "RawPath": "",
-          "ForceQuery": false,
-          "RawQuery": "",
-          "Fragment": ""
-      },
-      "Version": "v3.1.2",
-      "SchemaVersion": {
-          "Scheme": "https",
-          "Opaque": "",
-          "User": null,
-          "Host": "raw.githubusercontent.com",
-          "Path": "/OpenBankingUK/read-write-api-specs/v3.1.2/dist/payment-initiation-swagger.json",
-          "RawPath": "",
-          "ForceQuery": false,
-          "RawQuery": "",
-          "Fragment": ""
-      }
+    "Identifier": "payment-initiation-v3.1.5",
+    "Name": "Payment Initiation API",
+    "URL": {
+      "Scheme": "https",
+      "Opaque": "",
+      "User": null,
+      "Host": "openbankinguk.github.io",
+      "Path": "/read-write-api-site3/v3.1.5/profiles/payment-initiation-api-profile.html",
+      "RawPath": "",
+      "ForceQuery": false,
+      "RawQuery": "",
+      "Fragment": ""
+    },
+    "Version": "v3.1.5",
+    "SchemaVersion": {
+      "Scheme": "https",
+      "Opaque": "",
+      "User": null,
+      "Host": "raw.githubusercontent.com",
+      "Path": "/OpenBankingUK/read-write-api-specs/v3.1.5/dist/swagger/payment-initiation-swagger.json",
+      "RawPath": "",
+      "ForceQuery": false,
+      "RawQuery": "",
+      "Fragment": ""
+    }
   },
   {
-      "Identifier": "payment-initiation-v3.1.1",
-      "Name": "Payment Initiation API",
-      "URL": {
-          "Scheme": "https",
-          "Opaque": "",
-          "User": null,
-          "Host": "openbanking.atlassian.net",
-          "Path": "/wiki/spaces/DZ/pages/999426309/Payment+Initiation+API+Specification+-+v3.1.1",
-          "RawPath": "",
-          "ForceQuery": false,
-          "RawQuery": "",
-          "Fragment": ""
-      },
-      "Version": "v3.1.1",
-      "SchemaVersion": {
-          "Scheme": "https",
-          "Opaque": "",
-          "User": null,
-          "Host": "raw.githubusercontent.com",
-          "Path": "/OpenBankingUK/read-write-api-specs/v3.1.1/dist/payment-initiation-swagger.json",
-          "RawPath": "",
-          "ForceQuery": false,
-          "RawQuery": "",
-          "Fragment": ""
-      }
+    "Identifier": "payment-initiation-v3.1.4",
+    "Name": "Payment Initiation API",
+    "URL": {
+      "Scheme": "https",
+      "Opaque": "",
+      "User": null,
+      "Host": "openbankinguk.github.io",
+      "Path": "/read-write-api-site3/v3.1.4/profiles/payment-initiation-api-profile.html",
+      "RawPath": "",
+      "ForceQuery": false,
+      "RawQuery": "",
+      "Fragment": ""
+    },
+    "Version": "v3.1.4",
+    "SchemaVersion": {
+      "Scheme": "https",
+      "Opaque": "",
+      "User": null,
+      "Host": "raw.githubusercontent.com",
+      "Path": "/OpenBankingUK/read-write-api-specs/v3.1.4/dist/swagger/payment-initiation-swagger.json",
+      "RawPath": "",
+      "ForceQuery": false,
+      "RawQuery": "",
+      "Fragment": ""
+    }
   },
   {
-      "Identifier": "confirmation-funds-v3.1.6",
-      "Name": "Confirmation of Funds API Specification",
-      "URL": {
-          "Scheme": "https",
-          "Opaque": "",
-          "User": null,
-          "Host": "openbankinguk.github.io",
-          "Path": "/read-write-api-site3/v3.1.6/profiles/confirmation-of-funds-api-profile.html",
-          "RawPath": "",
-          "ForceQuery": false,
-          "RawQuery": "",
-          "Fragment": ""
-      },
-      "Version": "v3.1.6",
-      "SchemaVersion": {
-          "Scheme": "https",
-          "Opaque": "",
-          "User": null,
-          "Host": "raw.githubusercontent.com",
-          "Path": "/OpenBankingUK/read-write-api-specs/v3.1.6/dist/swagger/confirmation-funds-swagger.json",
-          "RawPath": "",
-          "ForceQuery": false,
-          "RawQuery": "",
-          "Fragment": ""
-      }
+    "Identifier": "payment-initiation-v3.1.3",
+    "Name": "Payment Initiation API",
+    "URL": {
+      "Scheme": "https",
+      "Opaque": "",
+      "User": null,
+      "Host": "openbankinguk.github.io",
+      "Path": "/read-write-api-site3/v3.1.3/profiles/payment-initiation-api-profile.html",
+      "RawPath": "",
+      "ForceQuery": false,
+      "RawQuery": "",
+      "Fragment": ""
+    },
+    "Version": "v3.1.3",
+    "SchemaVersion": {
+      "Scheme": "https",
+      "Opaque": "",
+      "User": null,
+      "Host": "raw.githubusercontent.com",
+      "Path": "/OpenBankingUK/read-write-api-specs/v3.1.3/dist/payment-initiation-swagger.json",
+      "RawPath": "",
+      "ForceQuery": false,
+      "RawQuery": "",
+      "Fragment": ""
+    }
   },
   {
-      "Identifier": "confirmation-funds-v3.1.5",
-      "Name": "Confirmation of Funds API Specification",
-      "URL": {
-          "Scheme": "https",
-          "Opaque": "",
-          "User": null,
-          "Host": "openbankinguk.github.io",
-          "Path": "/read-write-api-site3/v3.1.5/profiles/confirmation-of-funds-api-profile.html",
-          "RawPath": "",
-          "ForceQuery": false,
-          "RawQuery": "",
-          "Fragment": ""
-      },
-      "Version": "v3.1.5",
-      "SchemaVersion": {
-          "Scheme": "https",
-          "Opaque": "",
-          "User": null,
-          "Host": "raw.githubusercontent.com",
-          "Path": "/OpenBankingUK/read-write-api-specs/v3.1.5/dist/swagger/confirmation-funds-swagger.json",
-          "RawPath": "",
-          "ForceQuery": false,
-          "RawQuery": "",
-          "Fragment": ""
-      }
+    "Identifier": "payment-initiation-v3.1.2",
+    "Name": "Payment Initiation API",
+    "URL": {
+      "Scheme": "https",
+      "Opaque": "",
+      "User": null,
+      "Host": "openbanking.atlassian.net",
+      "Path": "/wiki/spaces/DZ/pages/1077805743/Payment+Initiation+API+Specification+-+v3.1.2",
+      "RawPath": "",
+      "ForceQuery": false,
+      "RawQuery": "",
+      "Fragment": ""
+    },
+    "Version": "v3.1.2",
+    "SchemaVersion": {
+      "Scheme": "https",
+      "Opaque": "",
+      "User": null,
+      "Host": "raw.githubusercontent.com",
+      "Path": "/OpenBankingUK/read-write-api-specs/v3.1.2/dist/payment-initiation-swagger.json",
+      "RawPath": "",
+      "ForceQuery": false,
+      "RawQuery": "",
+      "Fragment": ""
+    }
   },
   {
-      "Identifier": "confirmation-funds-v3.1.4",
-      "Name": "Confirmation of Funds API Specification",
-      "URL": {
-          "Scheme": "https",
-          "Opaque": "",
-          "User": null,
-          "Host": "openbankinguk.github.io",
-          "Path": "/read-write-api-site3/v3.1.4/profiles/confirmation-of-funds-api-profile.html",
-          "RawPath": "",
-          "ForceQuery": false,
-          "RawQuery": "",
-          "Fragment": ""
-      },
-      "Version": "v3.1.4",
-      "SchemaVersion": {
-          "Scheme": "https",
-          "Opaque": "",
-          "User": null,
-          "Host": "raw.githubusercontent.com",
-          "Path": "/OpenBankingUK/read-write-api-specs/v3.1.4/dist/swagger/confirmation-funds-swagger.json",
-          "RawPath": "",
-          "ForceQuery": false,
-          "RawQuery": "",
-          "Fragment": ""
-      }
+    "Identifier": "payment-initiation-v3.1.1",
+    "Name": "Payment Initiation API",
+    "URL": {
+      "Scheme": "https",
+      "Opaque": "",
+      "User": null,
+      "Host": "openbanking.atlassian.net",
+      "Path": "/wiki/spaces/DZ/pages/999426309/Payment+Initiation+API+Specification+-+v3.1.1",
+      "RawPath": "",
+      "ForceQuery": false,
+      "RawQuery": "",
+      "Fragment": ""
+    },
+    "Version": "v3.1.1",
+    "SchemaVersion": {
+      "Scheme": "https",
+      "Opaque": "",
+      "User": null,
+      "Host": "raw.githubusercontent.com",
+      "Path": "/OpenBankingUK/read-write-api-specs/v3.1.1/dist/payment-initiation-swagger.json",
+      "RawPath": "",
+      "ForceQuery": false,
+      "RawQuery": "",
+      "Fragment": ""
+    }
   },
   {
-      "Identifier": "confirmation-funds-v3.1.3",
-      "Name": "Confirmation of Funds API Specification",
-      "URL": {
-          "Scheme": "https",
-          "Opaque": "",
-          "User": null,
-          "Host": "openbankinguk.github.io",
-          "Path": "/read-write-api-site3/v3.1.3/profiles/confirmation-of-funds-api-profile.html",
-          "RawPath": "",
-          "ForceQuery": false,
-          "RawQuery": "",
-          "Fragment": ""
-      },
-      "Version": "v3.1.3",
-      "SchemaVersion": {
-          "Scheme": "https",
-          "Opaque": "",
-          "User": null,
-          "Host": "raw.githubusercontent.com",
-          "Path": "/OpenBankingUK/read-write-api-specs/v3.1.3/dist/confirmation-funds-swagger.json",
-          "RawPath": "",
-          "ForceQuery": false,
-          "RawQuery": "",
-          "Fragment": ""
-      }
+    "Identifier": "confirmation-funds-v3.1.8",
+    "Name": "Confirmation of Funds API Specification",
+    "URL": {
+      "Scheme": "https",
+      "Opaque": "",
+      "User": null,
+      "Host": "openbankinguk.github.io",
+      "Path": "/read-write-api-site3/v3.1.8/profiles/confirmation-of-funds-api-profile.html",
+      "RawPath": "",
+      "ForceQuery": false,
+      "RawQuery": "",
+      "Fragment": ""
+    },
+    "Version": "v3.1.8",
+    "SchemaVersion": {
+      "Scheme": "https",
+      "Opaque": "",
+      "User": null,
+      "Host": "raw.githubusercontent.com",
+      "Path": "/OpenBankingUK/read-write-api-specs/v3.1.8/dist/openapi/confirmation-funds-openapi.json",
+      "RawPath": "",
+      "ForceQuery": false,
+      "RawQuery": "",
+      "Fragment": ""
+    }
   },
   {
-      "Identifier": "confirmation-funds-v3.1.2",
-      "Name": "Confirmation of Funds API Specification",
-      "URL": {
-          "Scheme": "https",
-          "Opaque": "",
-          "User": null,
-          "Host": "openbanking.atlassian.net",
-          "Path": "/wiki/spaces/DZ/pages/1077806537/Confirmation+of+Funds+API+Specification+-+v3.1.2",
-          "RawPath": "",
-          "ForceQuery": false,
-          "RawQuery": "",
-          "Fragment": ""
-      },
-      "Version": "v3.1.2",
-      "SchemaVersion": {
-          "Scheme": "https",
-          "Opaque": "",
-          "User": null,
-          "Host": "raw.githubusercontent.com",
-          "Path": "/OpenBankingUK/read-write-api-specs/v3.1.2/dist/confirmation-funds-swagger.json",
-          "RawPath": "",
-          "ForceQuery": false,
-          "RawQuery": "",
-          "Fragment": ""
-      }
+    "Identifier": "confirmation-funds-v3.1.7",
+    "Name": "Confirmation of Funds API Specification",
+    "URL": {
+      "Scheme": "https",
+      "Opaque": "",
+      "User": null,
+      "Host": "openbankinguk.github.io",
+      "Path": "/read-write-api-site3/v3.1.7/profiles/confirmation-of-funds-api-profile.html",
+      "RawPath": "",
+      "ForceQuery": false,
+      "RawQuery": "",
+      "Fragment": ""
+    },
+    "Version": "v3.1.7",
+    "SchemaVersion": {
+      "Scheme": "https",
+      "Opaque": "",
+      "User": null,
+      "Host": "raw.githubusercontent.com",
+      "Path": "/OpenBankingUK/read-write-api-specs/v3.1.7/dist/swagger/confirmation-funds-swagger.json",
+      "RawPath": "",
+      "ForceQuery": false,
+      "RawQuery": "",
+      "Fragment": ""
+    }
   },
   {
-      "Identifier": "confirmation-funds-v3.1.1",
-      "Name": "Confirmation of Funds API Specification",
-      "URL": {
-          "Scheme": "https",
-          "Opaque": "",
-          "User": null,
-          "Host": "openbanking.atlassian.net",
-          "Path": "/wiki/spaces/DZ/pages/1000015607/Confirmation+of+Funds+API+Specification+-+v3.1.1",
-          "RawPath": "",
-          "ForceQuery": false,
-          "RawQuery": "",
-          "Fragment": ""
-      },
-      "Version": "v3.1.1",
-      "SchemaVersion": {
-          "Scheme": "https",
-          "Opaque": "",
-          "User": null,
-          "Host": "raw.githubusercontent.com",
-          "Path": "/OpenBankingUK/read-write-api-specs/v3.1.1/dist/confirmation-funds-swagger.json",
-          "RawPath": "",
-          "ForceQuery": false,
-          "RawQuery": "",
-          "Fragment": ""
-      }
+    "Identifier": "confirmation-funds-v3.1.6",
+    "Name": "Confirmation of Funds API Specification",
+    "URL": {
+      "Scheme": "https",
+      "Opaque": "",
+      "User": null,
+      "Host": "openbankinguk.github.io",
+      "Path": "/read-write-api-site3/v3.1.6/profiles/confirmation-of-funds-api-profile.html",
+      "RawPath": "",
+      "ForceQuery": false,
+      "RawQuery": "",
+      "Fragment": ""
+    },
+    "Version": "v3.1.6",
+    "SchemaVersion": {
+      "Scheme": "https",
+      "Opaque": "",
+      "User": null,
+      "Host": "raw.githubusercontent.com",
+      "Path": "/OpenBankingUK/read-write-api-specs/v3.1.6/dist/swagger/confirmation-funds-swagger.json",
+      "RawPath": "",
+      "ForceQuery": false,
+      "RawQuery": "",
+      "Fragment": ""
+    }
   },
   {
-      "Identifier": "event-notification-aspsp-v3.1.2",
-      "Name": "Event Notification API Specification - ASPSP Endpoints",
-      "URL": {
-          "Scheme": "https",
-          "Opaque": "",
-          "User": null,
-          "Host": "openbanking.atlassian.net",
-          "Path": "/wiki/spaces/DZ/pages/1077806617/Event+Notification+API+Specification+-+v3.1.2",
-          "RawPath": "",
-          "ForceQuery": false,
-          "RawQuery": "",
-          "Fragment": ""
-      },
-      "Version": "v3.1.2",
-      "SchemaVersion": {
-          "Scheme": "https",
-          "Opaque": "",
-          "User": null,
-          "Host": "raw.githubusercontent.com",
-          "Path": "/OpenBankingUK/read-write-api-specs/v3.1.2/dist/event-subscriptions-swagger.json",
-          "RawPath": "",
-          "ForceQuery": false,
-          "RawQuery": "",
-          "Fragment": ""
-      }
+    "Identifier": "confirmation-funds-v3.1.5",
+    "Name": "Confirmation of Funds API Specification",
+    "URL": {
+      "Scheme": "https",
+      "Opaque": "",
+      "User": null,
+      "Host": "openbankinguk.github.io",
+      "Path": "/read-write-api-site3/v3.1.5/profiles/confirmation-of-funds-api-profile.html",
+      "RawPath": "",
+      "ForceQuery": false,
+      "RawQuery": "",
+      "Fragment": ""
+    },
+    "Version": "v3.1.5",
+    "SchemaVersion": {
+      "Scheme": "https",
+      "Opaque": "",
+      "User": null,
+      "Host": "raw.githubusercontent.com",
+      "Path": "/OpenBankingUK/read-write-api-specs/v3.1.5/dist/swagger/confirmation-funds-swagger.json",
+      "RawPath": "",
+      "ForceQuery": false,
+      "RawQuery": "",
+      "Fragment": ""
+    }
   },
   {
-      "Identifier": "event-notification-aspsp-v3.1",
-      "Name": "Event Notification API Specification - ASPSP Endpoints",
-      "URL": {
-          "Scheme": "https",
-          "Opaque": "",
-          "User": null,
-          "Host": "openbanking.atlassian.net",
-          "Path": "/wiki/spaces/DZ/pages/1000114043/Event+Notification+API+Specification+-+v3.1.1",
-          "RawPath": "",
-          "ForceQuery": false,
-          "RawQuery": "",
-          "Fragment": ""
-      },
-      "Version": "v3.1.1",
-      "SchemaVersion": {
-          "Scheme": "https",
-          "Opaque": "",
-          "User": null,
-          "Host": "raw.githubusercontent.com",
-          "Path": "/OpenBankingUK/read-write-api-specs/v3.1.1/dist/callback-urls-swagger.yaml",
-          "RawPath": "",
-          "ForceQuery": false,
-          "RawQuery": "",
-          "Fragment": ""
-      }
+    "Identifier": "confirmation-funds-v3.1.4",
+    "Name": "Confirmation of Funds API Specification",
+    "URL": {
+      "Scheme": "https",
+      "Opaque": "",
+      "User": null,
+      "Host": "openbankinguk.github.io",
+      "Path": "/read-write-api-site3/v3.1.4/profiles/confirmation-of-funds-api-profile.html",
+      "RawPath": "",
+      "ForceQuery": false,
+      "RawQuery": "",
+      "Fragment": ""
+    },
+    "Version": "v3.1.4",
+    "SchemaVersion": {
+      "Scheme": "https",
+      "Opaque": "",
+      "User": null,
+      "Host": "raw.githubusercontent.com",
+      "Path": "/OpenBankingUK/read-write-api-specs/v3.1.4/dist/swagger/confirmation-funds-swagger.json",
+      "RawPath": "",
+      "ForceQuery": false,
+      "RawQuery": "",
+      "Fragment": ""
+    }
   },
   {
-      "Identifier": "account-transaction-v3.1",
-      "Name": "Account and Transaction API Specification",
-      "URL": {
-          "Scheme": "https",
-          "Opaque": "",
-          "User": null,
-          "Host": "openbanking.atlassian.net",
-          "Path": "/wiki/spaces/DZ/pages/937820271/Account+and+Transaction+API+Specification+-+v3.1",
-          "RawPath": "",
-          "ForceQuery": false,
-          "RawQuery": "",
-          "Fragment": ""
-      },
-      "Version": "v3.1.0",
-      "SchemaVersion": {
-          "Scheme": "https",
-          "Opaque": "",
-          "User": null,
-          "Host": "raw.githubusercontent.com",
-          "Path": "/OpenBankingUK/read-write-api-specs/v3.1.0/dist/account-info-swagger.json",
-          "RawPath": "",
-          "ForceQuery": false,
-          "RawQuery": "",
-          "Fragment": ""
-      }
+    "Identifier": "confirmation-funds-v3.1.3",
+    "Name": "Confirmation of Funds API Specification",
+    "URL": {
+      "Scheme": "https",
+      "Opaque": "",
+      "User": null,
+      "Host": "openbankinguk.github.io",
+      "Path": "/read-write-api-site3/v3.1.3/profiles/confirmation-of-funds-api-profile.html",
+      "RawPath": "",
+      "ForceQuery": false,
+      "RawQuery": "",
+      "Fragment": ""
+    },
+    "Version": "v3.1.3",
+    "SchemaVersion": {
+      "Scheme": "https",
+      "Opaque": "",
+      "User": null,
+      "Host": "raw.githubusercontent.com",
+      "Path": "/OpenBankingUK/read-write-api-specs/v3.1.3/dist/confirmation-funds-swagger.json",
+      "RawPath": "",
+      "ForceQuery": false,
+      "RawQuery": "",
+      "Fragment": ""
+    }
   },
   {
-      "Identifier": "payment-initiation-v3.1",
-      "Name": "Payment Initiation API",
-      "URL": {
-          "Scheme": "https",
-          "Opaque": "",
-          "User": null,
-          "Host": "openbanking.atlassian.net",
-          "Path": "/wiki/spaces/DZ/pages/937754701/Payment+Initiation+API+Specification+-+v3.1",
-          "RawPath": "",
-          "ForceQuery": false,
-          "RawQuery": "",
-          "Fragment": ""
-      },
-      "Version": "v3.1.0",
-      "SchemaVersion": {
-          "Scheme": "https",
-          "Opaque": "",
-          "User": null,
-          "Host": "raw.githubusercontent.com",
-          "Path": "/OpenBankingUK/read-write-api-specs/v3.1.0/dist/payment-initiation-swagger.json",
-          "RawPath": "",
-          "ForceQuery": false,
-          "RawQuery": "",
-          "Fragment": ""
-      }
+    "Identifier": "confirmation-funds-v3.1.2",
+    "Name": "Confirmation of Funds API Specification",
+    "URL": {
+      "Scheme": "https",
+      "Opaque": "",
+      "User": null,
+      "Host": "openbanking.atlassian.net",
+      "Path": "/wiki/spaces/DZ/pages/1077806537/Confirmation+of+Funds+API+Specification+-+v3.1.2",
+      "RawPath": "",
+      "ForceQuery": false,
+      "RawQuery": "",
+      "Fragment": ""
+    },
+    "Version": "v3.1.2",
+    "SchemaVersion": {
+      "Scheme": "https",
+      "Opaque": "",
+      "User": null,
+      "Host": "raw.githubusercontent.com",
+      "Path": "/OpenBankingUK/read-write-api-specs/v3.1.2/dist/confirmation-funds-swagger.json",
+      "RawPath": "",
+      "ForceQuery": false,
+      "RawQuery": "",
+      "Fragment": ""
+    }
   },
   {
-      "Identifier": "confirmation-funds-v3.1",
-      "Name": "Confirmation of Funds API Specification",
-      "URL": {
-          "Scheme": "https",
-          "Opaque": "",
-          "User": null,
-          "Host": "openbanking.atlassian.net",
-          "Path": "/wiki/spaces/DZ/pages/937951380/Confirmation+of+Funds+API+Specification+-+v3.1",
-          "RawPath": "",
-          "ForceQuery": false,
-          "RawQuery": "",
-          "Fragment": ""
-      },
-      "Version": "v3.1.0",
-      "SchemaVersion": {
-          "Scheme": "https",
-          "Opaque": "",
-          "User": null,
-          "Host": "raw.githubusercontent.com",
-          "Path": "/OpenBankingUK/read-write-api-specs/v3.1.0/dist/confirmation-funds-swagger.json",
-          "RawPath": "",
-          "ForceQuery": false,
-          "RawQuery": "",
-          "Fragment": ""
-      }
+    "Identifier": "confirmation-funds-v3.1.1",
+    "Name": "Confirmation of Funds API Specification",
+    "URL": {
+      "Scheme": "https",
+      "Opaque": "",
+      "User": null,
+      "Host": "openbanking.atlassian.net",
+      "Path": "/wiki/spaces/DZ/pages/1000015607/Confirmation+of+Funds+API+Specification+-+v3.1.1",
+      "RawPath": "",
+      "ForceQuery": false,
+      "RawQuery": "",
+      "Fragment": ""
+    },
+    "Version": "v3.1.1",
+    "SchemaVersion": {
+      "Scheme": "https",
+      "Opaque": "",
+      "User": null,
+      "Host": "raw.githubusercontent.com",
+      "Path": "/OpenBankingUK/read-write-api-specs/v3.1.1/dist/confirmation-funds-swagger.json",
+      "RawPath": "",
+      "ForceQuery": false,
+      "RawQuery": "",
+      "Fragment": ""
+    }
   },
   {
-      "Identifier": "event-notification-aspsp-v3.1",
-      "Name": "Event Notification API Specification - ASPSP Endpoints",
-      "URL": {
-          "Scheme": "https",
-          "Opaque": "",
-          "User": null,
-          "Host": "openbanking.atlassian.net",
-          "Path": "/wiki/spaces/DZ/pages/937951397/Event+Notification+API+Specification+-+v3.1",
-          "RawPath": "",
-          "ForceQuery": false,
-          "RawQuery": "",
-          "Fragment": ""
-      },
-      "Version": "v3.1.0",
-      "SchemaVersion": {
-          "Scheme": "https",
-          "Opaque": "",
-          "User": null,
-          "Host": "raw.githubusercontent.com",
-          "Path": "/OpenBankingUK/read-write-api-specs/v3.1.0/dist/callback-urls-swagger.yaml",
-          "RawPath": "",
-          "ForceQuery": false,
-          "RawQuery": "",
-          "Fragment": ""
-      }
+    "Identifier": "variable-recurring-payments-v3.1.8",
+    "Name": "Variable Recurring Payments API Specification",
+    "URL": {
+      "Scheme": "https",
+      "Opaque": "",
+      "User": null,
+      "Host": "openbankinguk.github.io",
+      "Path": "/read-write-api-site3/v3.1.8/profiles/vrp-profile.html",
+      "RawPath": "",
+      "ForceQuery": false,
+      "RawQuery": "",
+      "Fragment": ""
+    },
+    "Version": "v3.1.8",
+    "SchemaVersion": {
+      "Scheme": "https",
+      "Opaque": "",
+      "User": null,
+      "Host": "raw.githubusercontent.com",
+      "Path": "/OpenBankingUK/read-write-api-specs/v3.1.8/dist/openapi/vrp-openapi.json",
+      "RawPath": "",
+      "ForceQuery": false,
+      "RawQuery": "",
+      "Fragment": ""
+    }
   },
   {
-      "Identifier": "event-notification-tpp-v3.1",
-      "Name": "Event Notification API Specification - TPP Endpoints",
-      "URL": {
-          "Scheme": "https",
-          "Opaque": "",
-          "User": null,
-          "Host": "openbanking.atlassian.net",
-          "Path": "/wiki/spaces/DZ/pages/937951397/Event+Notification+API+Specification+-+v3.1",
-          "RawPath": "",
-          "ForceQuery": false,
-          "RawQuery": "",
-          "Fragment": ""
-      },
-      "Version": "v3.1.0",
-      "SchemaVersion": {
-          "Scheme": "https",
-          "Opaque": "",
-          "User": null,
-          "Host": "raw.githubusercontent.com",
-          "Path": "/OpenBankingUK/read-write-api-specs/v3.1.0/dist/event-notifications-swagger.json",
-          "RawPath": "",
-          "ForceQuery": false,
-          "RawQuery": "",
-          "Fragment": ""
-      }
+    "Identifier": "event-notification-aspsp-v3.1.2",
+    "Name": "Event Notification API Specification - ASPSP Endpoints",
+    "URL": {
+      "Scheme": "https",
+      "Opaque": "",
+      "User": null,
+      "Host": "openbanking.atlassian.net",
+      "Path": "/wiki/spaces/DZ/pages/1077806617/Event+Notification+API+Specification+-+v3.1.2",
+      "RawPath": "",
+      "ForceQuery": false,
+      "RawQuery": "",
+      "Fragment": ""
+    },
+    "Version": "v3.1.2",
+    "SchemaVersion": {
+      "Scheme": "https",
+      "Opaque": "",
+      "User": null,
+      "Host": "raw.githubusercontent.com",
+      "Path": "/OpenBankingUK/read-write-api-specs/v3.1.2/dist/event-subscriptions-swagger.json",
+      "RawPath": "",
+      "ForceQuery": false,
+      "RawQuery": "",
+      "Fragment": ""
+    }
   },
   {
-      "Identifier": "account-transaction-v3.0",
-      "Name": "Account and Transaction API Specification",
-      "URL": {
-          "Scheme": "https",
-          "Opaque": "",
-          "User": null,
-          "Host": "openbanking.atlassian.net",
-          "Path": "/wiki/spaces/DZ/pages/642090641/Account+and+Transaction+API+Specification+-+v3.0",
-          "RawPath": "",
-          "ForceQuery": false,
-          "RawQuery": "",
-          "Fragment": ""
-      },
-      "Version": "v3.0.0",
-      "SchemaVersion": {
-          "Scheme": "https",
-          "Opaque": "",
-          "User": null,
-          "Host": "raw.githubusercontent.com",
-          "Path": "/OpenBankingUK/read-write-api-specs/v3.0.0/dist/account-info-swagger.json",
-          "RawPath": "",
-          "ForceQuery": false,
-          "RawQuery": "",
-          "Fragment": ""
-      }
+    "Identifier": "event-notification-aspsp-v3.1",
+    "Name": "Event Notification API Specification - ASPSP Endpoints",
+    "URL": {
+      "Scheme": "https",
+      "Opaque": "",
+      "User": null,
+      "Host": "openbanking.atlassian.net",
+      "Path": "/wiki/spaces/DZ/pages/1000114043/Event+Notification+API+Specification+-+v3.1.1",
+      "RawPath": "",
+      "ForceQuery": false,
+      "RawQuery": "",
+      "Fragment": ""
+    },
+    "Version": "v3.1.1",
+    "SchemaVersion": {
+      "Scheme": "https",
+      "Opaque": "",
+      "User": null,
+      "Host": "raw.githubusercontent.com",
+      "Path": "/OpenBankingUK/read-write-api-specs/v3.1.1/dist/callback-urls-swagger.yaml",
+      "RawPath": "",
+      "ForceQuery": false,
+      "RawQuery": "",
+      "Fragment": ""
+    }
   },
   {
-      "Identifier": "payment-initiation-v3.0",
-      "Name": "Payment Initiation API",
-      "URL": {
-          "Scheme": "https",
-          "Opaque": "",
-          "User": null,
-          "Host": "openbanking.atlassian.net",
-          "Path": "/wiki/spaces/DZ/pages/645367011/Payment+Initiation+API+Specification+-+v3.0",
-          "RawPath": "",
-          "ForceQuery": false,
-          "RawQuery": "",
-          "Fragment": ""
-      },
-      "Version": "v3.0.0",
-      "SchemaVersion": {
-          "Scheme": "https",
-          "Opaque": "",
-          "User": null,
-          "Host": "raw.githubusercontent.com",
-          "Path": "/OpenBankingUK/read-write-api-specs/v3.0.0/dist/payment-initiation-swagger.json",
-          "RawPath": "",
-          "ForceQuery": false,
-          "RawQuery": "",
-          "Fragment": ""
-      }
+    "Identifier": "account-transaction-v3.1",
+    "Name": "Account and Transaction API Specification",
+    "URL": {
+      "Scheme": "https",
+      "Opaque": "",
+      "User": null,
+      "Host": "openbanking.atlassian.net",
+      "Path": "/wiki/spaces/DZ/pages/937820271/Account+and+Transaction+API+Specification+-+v3.1",
+      "RawPath": "",
+      "ForceQuery": false,
+      "RawQuery": "",
+      "Fragment": ""
+    },
+    "Version": "v3.1.0",
+    "SchemaVersion": {
+      "Scheme": "https",
+      "Opaque": "",
+      "User": null,
+      "Host": "raw.githubusercontent.com",
+      "Path": "/OpenBankingUK/read-write-api-specs/v3.1.0/dist/account-info-swagger.json",
+      "RawPath": "",
+      "ForceQuery": false,
+      "RawQuery": "",
+      "Fragment": ""
+    }
   },
   {
-      "Identifier": "confirmation-funds-v3.0",
-      "Name": "Confirmation of Funds API Specification",
-      "URL": {
-          "Scheme": "https",
-          "Opaque": "",
-          "User": null,
-          "Host": "openbanking.atlassian.net",
-          "Path": "/wiki/spaces/DZ/pages/645203467/Confirmation+of+Funds+API+Specification+-+v3.0",
-          "RawPath": "",
-          "ForceQuery": false,
-          "RawQuery": "",
-          "Fragment": ""
-      },
-      "Version": "v3.0.0",
-      "SchemaVersion": {
-          "Scheme": "https",
-          "Opaque": "",
-          "User": null,
-          "Host": "raw.githubusercontent.com",
-          "Path": "/OpenBankingUK/read-write-api-specs/v3.0.0/dist/confirmation-funds-swagger.json",
-          "RawPath": "",
-          "ForceQuery": false,
-          "RawQuery": "",
-          "Fragment": ""
-      }
+    "Identifier": "payment-initiation-v3.1",
+    "Name": "Payment Initiation API",
+    "URL": {
+      "Scheme": "https",
+      "Opaque": "",
+      "User": null,
+      "Host": "openbanking.atlassian.net",
+      "Path": "/wiki/spaces/DZ/pages/937754701/Payment+Initiation+API+Specification+-+v3.1",
+      "RawPath": "",
+      "ForceQuery": false,
+      "RawQuery": "",
+      "Fragment": ""
+    },
+    "Version": "v3.1.0",
+    "SchemaVersion": {
+      "Scheme": "https",
+      "Opaque": "",
+      "User": null,
+      "Host": "raw.githubusercontent.com",
+      "Path": "/OpenBankingUK/read-write-api-specs/v3.1.0/dist/payment-initiation-swagger.json",
+      "RawPath": "",
+      "ForceQuery": false,
+      "RawQuery": "",
+      "Fragment": ""
+    }
   },
   {
-      "Identifier": "event-notification-aspsp-v3.0",
-      "Name": "Event Notification API Specification - ASPSP Endpoints",
-      "URL": {
-          "Scheme": "https",
-          "Opaque": "",
-          "User": null,
-          "Host": "openbanking.atlassian.net",
-          "Path": "/wiki/spaces/DZ/pages/645367055/Event+Notification+API+Specification+-+v3.0",
-          "RawPath": "",
-          "ForceQuery": false,
-          "RawQuery": "",
-          "Fragment": ""
-      },
-      "Version": "v3.0.0",
-      "SchemaVersion": {
-          "Scheme": "https",
-          "Opaque": "",
-          "User": null,
-          "Host": "raw.githubusercontent.com",
-          "Path": "/OpenBankingUK/read-write-api-specs/v3.0.0/dist/callback-urls-swagger.yaml",
-          "RawPath": "",
-          "ForceQuery": false,
-          "RawQuery": "",
-          "Fragment": ""
-      }
+    "Identifier": "confirmation-funds-v3.1",
+    "Name": "Confirmation of Funds API Specification",
+    "URL": {
+      "Scheme": "https",
+      "Opaque": "",
+      "User": null,
+      "Host": "openbanking.atlassian.net",
+      "Path": "/wiki/spaces/DZ/pages/937951380/Confirmation+of+Funds+API+Specification+-+v3.1",
+      "RawPath": "",
+      "ForceQuery": false,
+      "RawQuery": "",
+      "Fragment": ""
+    },
+    "Version": "v3.1.0",
+    "SchemaVersion": {
+      "Scheme": "https",
+      "Opaque": "",
+      "User": null,
+      "Host": "raw.githubusercontent.com",
+      "Path": "/OpenBankingUK/read-write-api-specs/v3.1.0/dist/confirmation-funds-swagger.json",
+      "RawPath": "",
+      "ForceQuery": false,
+      "RawQuery": "",
+      "Fragment": ""
+    }
   },
   {
-      "Identifier": "event-notification-tpp-v3.0",
-      "Name": "Event Notification API Specification - TPP Endpoints",
-      "URL": {
-          "Scheme": "https",
-          "Opaque": "",
-          "User": null,
-          "Host": "openbanking.atlassian.net",
-          "Path": "/wiki/spaces/DZ/pages/645367055/Event+Notification+API+Specification+-+v3.0",
-          "RawPath": "",
-          "ForceQuery": false,
-          "RawQuery": "",
-          "Fragment": ""
-      },
-      "Version": "v3.0.0",
-      "SchemaVersion": {
-          "Scheme": "https",
-          "Opaque": "",
-          "User": null,
-          "Host": "raw.githubusercontent.com",
-          "Path": "/OpenBankingUK/read-write-api-specs/v3.0.0/dist/event-notifications-swagger.yaml",
-          "RawPath": "",
-          "ForceQuery": false,
-          "RawQuery": "",
-          "Fragment": ""
-      }
+    "Identifier": "event-notification-aspsp-v3.1",
+    "Name": "Event Notification API Specification - ASPSP Endpoints",
+    "URL": {
+      "Scheme": "https",
+      "Opaque": "",
+      "User": null,
+      "Host": "openbanking.atlassian.net",
+      "Path": "/wiki/spaces/DZ/pages/937951397/Event+Notification+API+Specification+-+v3.1",
+      "RawPath": "",
+      "ForceQuery": false,
+      "RawQuery": "",
+      "Fragment": ""
+    },
+    "Version": "v3.1.0",
+    "SchemaVersion": {
+      "Scheme": "https",
+      "Opaque": "",
+      "User": null,
+      "Host": "raw.githubusercontent.com",
+      "Path": "/OpenBankingUK/read-write-api-specs/v3.1.0/dist/callback-urls-swagger.yaml",
+      "RawPath": "",
+      "ForceQuery": false,
+      "RawQuery": "",
+      "Fragment": ""
+    }
+  },
+  {
+    "Identifier": "event-notification-tpp-v3.1",
+    "Name": "Event Notification API Specification - TPP Endpoints",
+    "URL": {
+      "Scheme": "https",
+      "Opaque": "",
+      "User": null,
+      "Host": "openbanking.atlassian.net",
+      "Path": "/wiki/spaces/DZ/pages/937951397/Event+Notification+API+Specification+-+v3.1",
+      "RawPath": "",
+      "ForceQuery": false,
+      "RawQuery": "",
+      "Fragment": ""
+    },
+    "Version": "v3.1.0",
+    "SchemaVersion": {
+      "Scheme": "https",
+      "Opaque": "",
+      "User": null,
+      "Host": "raw.githubusercontent.com",
+      "Path": "/OpenBankingUK/read-write-api-specs/v3.1.0/dist/event-notifications-swagger.json",
+      "RawPath": "",
+      "ForceQuery": false,
+      "RawQuery": "",
+      "Fragment": ""
+    }
+  },
+  {
+    "Identifier": "account-transaction-v3.0",
+    "Name": "Account and Transaction API Specification",
+    "URL": {
+      "Scheme": "https",
+      "Opaque": "",
+      "User": null,
+      "Host": "openbanking.atlassian.net",
+      "Path": "/wiki/spaces/DZ/pages/642090641/Account+and+Transaction+API+Specification+-+v3.0",
+      "RawPath": "",
+      "ForceQuery": false,
+      "RawQuery": "",
+      "Fragment": ""
+    },
+    "Version": "v3.0.0",
+    "SchemaVersion": {
+      "Scheme": "https",
+      "Opaque": "",
+      "User": null,
+      "Host": "raw.githubusercontent.com",
+      "Path": "/OpenBankingUK/read-write-api-specs/v3.0.0/dist/account-info-swagger.json",
+      "RawPath": "",
+      "ForceQuery": false,
+      "RawQuery": "",
+      "Fragment": ""
+    }
+  },
+  {
+    "Identifier": "payment-initiation-v3.0",
+    "Name": "Payment Initiation API",
+    "URL": {
+      "Scheme": "https",
+      "Opaque": "",
+      "User": null,
+      "Host": "openbanking.atlassian.net",
+      "Path": "/wiki/spaces/DZ/pages/645367011/Payment+Initiation+API+Specification+-+v3.0",
+      "RawPath": "",
+      "ForceQuery": false,
+      "RawQuery": "",
+      "Fragment": ""
+    },
+    "Version": "v3.0.0",
+    "SchemaVersion": {
+      "Scheme": "https",
+      "Opaque": "",
+      "User": null,
+      "Host": "raw.githubusercontent.com",
+      "Path": "/OpenBankingUK/read-write-api-specs/v3.0.0/dist/payment-initiation-swagger.json",
+      "RawPath": "",
+      "ForceQuery": false,
+      "RawQuery": "",
+      "Fragment": ""
+    }
+  },
+  {
+    "Identifier": "confirmation-funds-v3.0",
+    "Name": "Confirmation of Funds API Specification",
+    "URL": {
+      "Scheme": "https",
+      "Opaque": "",
+      "User": null,
+      "Host": "openbanking.atlassian.net",
+      "Path": "/wiki/spaces/DZ/pages/645203467/Confirmation+of+Funds+API+Specification+-+v3.0",
+      "RawPath": "",
+      "ForceQuery": false,
+      "RawQuery": "",
+      "Fragment": ""
+    },
+    "Version": "v3.0.0",
+    "SchemaVersion": {
+      "Scheme": "https",
+      "Opaque": "",
+      "User": null,
+      "Host": "raw.githubusercontent.com",
+      "Path": "/OpenBankingUK/read-write-api-specs/v3.0.0/dist/confirmation-funds-swagger.json",
+      "RawPath": "",
+      "ForceQuery": false,
+      "RawQuery": "",
+      "Fragment": ""
+    }
+  },
+  {
+    "Identifier": "event-notification-aspsp-v3.0",
+    "Name": "Event Notification API Specification - ASPSP Endpoints",
+    "URL": {
+      "Scheme": "https",
+      "Opaque": "",
+      "User": null,
+      "Host": "openbanking.atlassian.net",
+      "Path": "/wiki/spaces/DZ/pages/645367055/Event+Notification+API+Specification+-+v3.0",
+      "RawPath": "",
+      "ForceQuery": false,
+      "RawQuery": "",
+      "Fragment": ""
+    },
+    "Version": "v3.0.0",
+    "SchemaVersion": {
+      "Scheme": "https",
+      "Opaque": "",
+      "User": null,
+      "Host": "raw.githubusercontent.com",
+      "Path": "/OpenBankingUK/read-write-api-specs/v3.0.0/dist/callback-urls-swagger.yaml",
+      "RawPath": "",
+      "ForceQuery": false,
+      "RawQuery": "",
+      "Fragment": ""
+    }
+  },
+  {
+    "Identifier": "event-notification-tpp-v3.0",
+    "Name": "Event Notification API Specification - TPP Endpoints",
+    "URL": {
+      "Scheme": "https",
+      "Opaque": "",
+      "User": null,
+      "Host": "openbanking.atlassian.net",
+      "Path": "/wiki/spaces/DZ/pages/645367055/Event+Notification+API+Specification+-+v3.0",
+      "RawPath": "",
+      "ForceQuery": false,
+      "RawQuery": "",
+      "Fragment": ""
+    },
+    "Version": "v3.0.0",
+    "SchemaVersion": {
+      "Scheme": "https",
+      "Opaque": "",
+      "User": null,
+      "Host": "raw.githubusercontent.com",
+      "Path": "/OpenBankingUK/read-write-api-specs/v3.0.0/dist/event-notifications-swagger.yaml",
+      "RawPath": "",
+      "ForceQuery": false,
+      "RawQuery": "",
+      "Fragment": ""
+    }
   }
 ]
