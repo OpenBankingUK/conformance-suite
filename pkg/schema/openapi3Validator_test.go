@@ -109,6 +109,22 @@ func TestAcc10000TestResponse(t *testing.T) {
 	require.NoError(t, err)
 }
 
+func TestAcc10000TestResponseCapitalUtfNoSpace(t *testing.T) {
+	validator, err := NewRawOpenAPI3Validator("Account and Transaction API Specification", "v3.1.8")
+	require.NoError(t, err)
+
+	r := HTTPResponse{
+		Method:     "GET",
+		Path:       acc10000responseReqURL,
+		StatusCode: http.StatusOK,
+		Body:       strings.NewReader(acc10000response),
+		Header:     http.Header{"Content-Type": []string{"application/json;charset=UTF-8"}},
+	}
+
+	_, err = validator.Validate(r)
+	require.NoError(t, err)
+}
+
 func TestVrp100200Response(t *testing.T) {
 	validator, err := NewRawOpenAPI3Validator("OBIE VRP Profile", "v3.1.8")
 	require.NoError(t, err)
