@@ -125,6 +125,22 @@ func TestAcc10000TestResponseCapitalUtfNoSpace(t *testing.T) {
 	require.NoError(t, err)
 }
 
+func TestCbpIITestResponseCapitalUtfNoSpace(t *testing.T) {
+	validator, err := NewRawOpenAPI3Validator("Confirmation of Funds API Specification", "v3.1.8")
+	require.NoError(t, err)
+
+	r := HTTPResponse{
+		Method:     "GET",
+		Path:       cbpiiGoodResponseUrl,
+		StatusCode: http.StatusOK,
+		Body:       strings.NewReader(cbpiiGoodResponse),
+		Header:     http.Header{"Content-Type": []string{"application/json;charset=UTF-8"}},
+	}
+
+	_, err = validator.Validate(r)
+	require.NoError(t, err)
+}
+
 func TestVrp100200Response(t *testing.T) {
 	validator, err := NewRawOpenAPI3Validator("OBIE VRP Profile", "v3.1.8")
 	require.NoError(t, err)
@@ -222,6 +238,26 @@ const vrp100200Response = `{
 	},
 	"Links": {
 		 "Self": "http://localhost:4700/open-banking/v3.1/vrp/domestic-vrp-consents/vrp-8ba1c1a1-6ffd-43fa-aac0-c1d1f8524f5d"
+	},
+	"Meta": {}
+}`
+const cbpiiGoodResponseUrl = "/open-banking/v3.1/cbpii/funds-confirmation-consents/fcc-22a6e08c-d5fa-4159-9eed-c9f0c7398fff"
+const cbpiiGoodResponse = `
+{
+	"Data": {
+		 "DebtorAccount": {
+				"Identification": "70000170000002",
+				"Name": "Mr. Roberto Rastapopoulos & Ivan Sakharine & mits",
+				"SchemeName": "UK.OBIE.SortCodeAccountNumber"
+		 },
+		 "ExpirationDateTime": "2021-01-01T00:00:00+01:00",
+		 "ConsentId": "fcc-22a6e08c-d5fa-4159-9eed-c9f0c7398fff",
+		 "CreationDateTime": "2020-05-21T12:13:22.269Z",
+		 "Status": "Authorised",
+		 "StatusUpdateDateTime": "2020-05-21T12:13:37.323Z"
+	},
+	"Links": {
+		 "Self": "https://ob19-rs1.o3bank.co.uk:4501/open-banking/v3.1/cbpii/funds-confirmation-consents/fcc-22a6e08c-d5fa-4159-9eed-c9f0c7398fff"
 	},
 	"Meta": {}
 }`
