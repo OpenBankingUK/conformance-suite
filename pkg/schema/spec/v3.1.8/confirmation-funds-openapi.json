@@ -383,6 +383,16 @@
             "schema": {
               "$ref": "#/components/schemas/OBFundsConfirmationConsentResponse1"
             }
+          },
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/OBFundsConfirmationConsentResponse1"
+            }
+          },
+          "application/jose+jwe": {
+            "schema": {
+              "$ref": "#/components/schemas/OBFundsConfirmationConsentResponse1"
+            }
           }
         }
       },
@@ -399,6 +409,16 @@
         },
         "content": {
           "application/json; charset=utf-8": {
+            "schema": {
+              "$ref": "#/components/schemas/OBFundsConfirmationConsentResponse1"
+            }
+          },
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/OBFundsConfirmationConsentResponse1"
+            }
+          },
+          "application/jose+jwe": {
             "schema": {
               "$ref": "#/components/schemas/OBFundsConfirmationConsentResponse1"
             }
@@ -433,6 +453,16 @@
             "schema": {
               "$ref": "#/components/schemas/OBFundsConfirmationResponse1"
             }
+          },
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/OBFundsConfirmationResponse1"
+            }
+          },
+          "application/jose+jwe": {
+            "schema": {
+              "$ref": "#/components/schemas/OBFundsConfirmationResponse1"
+            }
           }
         }
       },
@@ -449,6 +479,16 @@
         },
         "content": {
           "application/json; charset=utf-8": {
+            "schema": {
+              "$ref": "#/components/schemas/OBErrorResponse1"
+            }
+          },
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/OBErrorResponse1"
+            }
+          },
+          "application/jose+jwe": {
             "schema": {
               "$ref": "#/components/schemas/OBErrorResponse1"
             }
@@ -480,6 +520,16 @@
         },
         "content": {
           "application/json; charset=utf-8": {
+            "schema": {
+              "$ref": "#/components/schemas/OBErrorResponse1"
+            }
+          },
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/OBErrorResponse1"
+            }
+          },
+          "application/jose+jwe": {
             "schema": {
               "$ref": "#/components/schemas/OBErrorResponse1"
             }
@@ -564,6 +614,16 @@
         },
         "content": {
           "application/json; charset=utf-8": {
+            "schema": {
+              "$ref": "#/components/schemas/OBErrorResponse1"
+            }
+          },
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/OBErrorResponse1"
+            }
+          },
+          "application/jose+jwe": {
             "schema": {
               "$ref": "#/components/schemas/OBErrorResponse1"
             }
