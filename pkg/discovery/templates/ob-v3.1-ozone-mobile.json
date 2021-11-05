@@ -4,7 +4,7 @@
     "description": "O3 Mobile PSU consent flow. An Open Banking UK discovery template for v3.1 of Accounts and Payments with pre-populated model Bank (Ozone) data.",
     "discoveryVersion": "v0.4.0",
     "tokenAcquisition": "mobile",
-    "consentCallbackUrl": "https://fcs-callback-proxy.openbanking.xyz",
+    "consentCallbackUrl": "https://fcs-callback-proxy.openbanking.rocks",
     "discoveryItems": [
       {
         "apiSpecification": {

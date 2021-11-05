@@ -2,50 +2,50 @@
   <div>
     <h6>API Specification</h6>
     <b-table
-      :items="[ apiSpecificationWithConsentUrls ]"
-      :fields="tableFields"
-      small
-      fixed
-      stacked
+        :items="[ apiSpecificationWithConsentUrls ]"
+        :fields="tableFields"
+        small
+        fixed
+        stacked
     >
       <template
-        slot="name"
-        slot-scope="data">
+          slot="name"
+          slot-scope="data">
         <a
-          :href="data.item.url"
-          target="_blank">
+            :href="data.item.url"
+            target="_blank">
           {{ data.item.name }}
         </a>
       </template>
       <template
-        slot="schema"
-        slot-scope="data"
+          slot="schema"
+          slot-scope="data"
       >
         <a
-          :href="data.item.schemaVersion"
-          target="_blank">
+            :href="data.item.schemaVersion"
+            target="_blank">
           {{ data.item.version }}
         </a>
       </template>
       <template
-        slot="consentUrls"
-        slot-scope="data">
+          slot="consentUrls"
+          slot-scope="data">
         <template v-for="(url, index) in data.value">
           <a
-            :key="url"
-            :title="url"
-            class="psu-consent-link"
-            href="#"
-            @click="startPsuConsent(url)">
+              :key="url"
+              :title="url"
+              class="psu-consent-link"
+              href="#"
+              @click="startPsuConsent(url)">
             PSU Consent
           </a>
           <span :key="'s' + index">
             <span><b-badge variant="primary">{{ acquired(tokenName(url)) }}</b-badge> </span>
             <small> <a
-              v-show="mobileConsent && localCallbackUrls[tokenName(url)] != null && !acquired(tokenName(url))"
-              href="#"
-              title="Use when popup blocker cause the callback handling to stop."
-              @click="openPopup(localCallbackUrls[tokenName(url)])"> Open local callback url</a></small>
+                v-show="mobileConsent && localCallbackUrls[tokenName(url)] != null && !acquired(tokenName(url))"
+                href="#"
+                title="Use when popup blocker cause the callback handling to stop."
+                @click="openPopup(localCallbackUrls[tokenName(url)])"> Open local callback url</a></small>
           </span>
           <br :key="index">
         </template>
@@ -54,15 +54,15 @@
     <div>
       <b-modal v-model="modalShow">
         <div style="text-align: center"><img
-          :src="qrCodeUrl"
-          alt="QR code"></div>
+            :src="qrCodeUrl"
+            alt="QR code"></div>
       </b-modal>
     </div>
   </div>
 </template>
 
 <script>
-import { createNamespacedHelpers, mapGetters, mapActions } from 'vuex';
+import {createNamespacedHelpers, mapActions, mapGetters} from 'vuex';
 import axios from 'axios';
 
 const {
@@ -110,7 +110,7 @@ export default {
     },
     apiSpecificationWithConsentUrls() {
       const consentUrls = this.specConsentUrls;
-      return Object.assign({ consentUrls }, this.apiSpecification);
+      return Object.assign({consentUrls}, this.apiSpecification);
     },
     hasConsentUrls() {
       return this.specConsentUrls && this.specConsentUrls.length > 0;
@@ -158,19 +158,16 @@ export default {
       return state || null;
     },
     getCallbackProxyUrl() {
-      return this.callbackProxyUrl;
+      return `${this.callbackProxyUrl}/callbacks`;
     },
     getUrlShortenerUrl() {
-      // seems redundant but provides clear contract and allows replacing without changing code below
-      return this.callbackProxyUrl;
+      return `${this.callbackProxyUrl}/short-urls`;
     },
-    getIdTokenParserUrl() {
-      // seems redundant but provides clear contract and allows replacing without changing code below
-      return this.callbackProxyUrl;
+    getQrCodeGeneratorUrl() {
+      return `${this.callbackProxyUrl}/qr-codes`;
     },
     getNonceExtractorUrl() {
-      // seems redundant but provides clear contract and allows replacing without changing code below
-      return this.callbackProxyUrl;
+      return `${this.callbackProxyUrl}/id-tokens`;
     },
     async startPsuConsent(consentUrl) {
       const tokenName = this.tokenName(consentUrl);
@@ -218,32 +215,33 @@ export default {
       this.modalShow = true;
 
       // TODO: Replace with an internal service
-      const qrCodeUrl = new URL('http://api.qrserver.com/v1/create-qr-code/?size=400x400');
-      qrCodeUrl.searchParams.set('data', shortUrl.toString());
+      const qrCodeUrl = new URL(this.getQrCodeGeneratorUrl());
+      qrCodeUrl.searchParams.set('size', "400");
+      qrCodeUrl.searchParams.set('url', shortUrl.toString());
       this.qrCodeUrl = qrCodeUrl.toString();
 
       createPoller(
-        async () => this.getCallbackPayload(nonce),
-        payload => payload && payload.code, // assumes that if we have a code parameter returned, the rest is ok as well
-        2000,
-        1000,
+          async () => this.getCallbackPayload(nonce),
+          payload => payload && payload.code, // assumes that if we have a code parameter returned, the rest is ok as well
+          2000,
+          1000,
       )
-        .then((cbPayload) => {
-          const localCallbackUrl = new URL(window.location);
-          localCallbackUrl.pathname = '/conformancesuite/callback';
+          .then((cbPayload) => {
+            const localCallbackUrl = new URL(window.location);
+            localCallbackUrl.pathname = '/conformancesuite/callback';
 
-          Object.entries(cbPayload).forEach(e => localCallbackUrl.searchParams.set(e[0], e[1]));
+            Object.entries(cbPayload).forEach(e => localCallbackUrl.searchParams.set(e[0], e[1]));
 
-          // We currently reuse existing callback handling logic, routing etc.
-          // so we build an URL from received callback params and "redirecting"
-          this.localCallbackUrls[tokenName] = localCallbackUrl.toString();
-          this.modalShow = false;
+            // We currently reuse existing callback handling logic, routing etc.
+            // so we build an URL from received callback params and "redirecting"
+            this.localCallbackUrls[tokenName] = localCallbackUrl.toString();
+            this.modalShow = false;
 
-          this.openPopup(localCallbackUrl.toString());
-        })
-        .catch(() => {
-          this.setErrors(['Error polling for callback payload.']);
-        });
+            this.openPopup(localCallbackUrl.toString());
+          })
+          .catch(() => {
+            this.setErrors(['Error polling for callback payload.']);
+          });
     },
 
     /**
@@ -252,7 +250,7 @@ export default {
      * @param {string} url
      */
     async getShortUrl(url) {
-      const req = await axios.post(this.getUrlShortenerUrl(), { url });
+      const req = await axios.post(this.getUrlShortenerUrl(), {url});
 
       return req && req.status === 200 ? req.data : false;
     },
@@ -269,8 +267,7 @@ export default {
      * @return {Promise<string>}
      */
     async getNonceFromToken(id_token) {
-      const params = new URLSearchParams([['id_token', id_token]]);
-      const req = await axios.get(this.getNonceExtractorUrl(), { params });
+      const req = await axios.get(`${this.getNonceExtractorUrl()}/${id_token}`);
 
       return req.status === 200 ? req.data : undefined;
     },
@@ -280,9 +277,8 @@ export default {
      * @param {string} nonce
      */
     async getCallbackPayload(nonce) {
-      const params = new URLSearchParams([['nonce', nonce]]);
       try {
-        const req = await axios.get(this.getCallbackProxyUrl(), { params });
+        const req = await axios.get(`${this.getCallbackProxyUrl()}/${nonce}`);
         if (req.status === 200) {
           return req.data;
         }
