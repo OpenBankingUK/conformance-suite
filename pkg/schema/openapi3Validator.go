@@ -239,6 +239,11 @@ func getOas3Operations(props *openapi3.PathItem) map[string]*openapi3.Operation 
 	return ops
 }
 
+//normalizePropertyType - Workaround to provide similar context to the one used in Swagger schema
+func normalizePropertyType(propertyType string) string {
+	return fmt.Sprintf("[%s]", propertyType)
+}
+
 func findPropertyInOas3Schema(sc *openapi3.Schema, propertyPath, previousPath string) (bool, string) {
 	for k, j := range sc.Properties {
 		var element string
@@ -249,7 +254,7 @@ func findPropertyInOas3Schema(sc *openapi3.Schema, propertyPath, previousPath st
 		}
 
 		if element == propertyPath {
-			return true, fmt.Sprintf("%s", j.Value.Type)
+			return true, fmt.Sprintf("%s", normalizePropertyType(j.Value.Type))
 		}
 
 		ret, propType := findPropertyInOas3Schema(j.Value, propertyPath, element)
