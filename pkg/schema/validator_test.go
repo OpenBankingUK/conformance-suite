@@ -264,6 +264,15 @@ func TestValidators_ValidateStandingOrderWithFreeformField(t *testing.T) {
 	}
 }
 
+func TestIsRequestProperty(t *testing.T) {
+	doc, err := loads.Spec("spec/v3.1.7/payment-initiation-swagger-flattened.json")
+	require.NoError(t, err)
+	validator, err := newValidator(doc)
+
+	_, objType, err := validator.IsRequestProperty("POST", "/international-payment-consents", "Data.Initiation.Creditor.Name")
+	require.Equal(t, "[string]", objType)
+}
+
 var getStandingOrdersWithFreeformFields = []string{`{
   "Data": {
     "StandingOrder": [

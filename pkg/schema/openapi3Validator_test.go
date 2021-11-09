@@ -262,7 +262,7 @@ const cbpiiGoodResponse = `
 	"Meta": {}
 }`
 
-func TestIsRequestProperty(t *testing.T) {
+func TestIsRequestPropertyOas3(t *testing.T) {
 	validator, err := buildValidator("Payment Initiation API")
 	require.NoError(t, err)
 
@@ -284,7 +284,15 @@ func TestIsRequestProperty(t *testing.T) {
 	isRequestProperty, objType, err := validator.IsRequestProperty("POST", "/international-payment-consents", "Data.Initiation.Creditor.Name")
 	require.NoError(t, err)
 	require.True(t, isRequestProperty)
-	require.Equal(t, "string", objType)
+	require.Equal(t, "[string]", objType)
+
+	isRequestProperty, objType, err = validator.IsRequestProperty("POST", "/international-payment-consents", "Data.Initiation.Creditor.PostalAddress.AddressLine")
+	require.Equal(t, "[array]", objType)
+	require.NoError(t, err)
+	require.True(t, isRequestProperty)
+
+	isRequestProperty, objType, err = validator.IsRequestProperty("POST", "/international-payment-consents", "Data.Initiation.Creditor.PostalAddress")
+	require.Equal(t, "[object]", objType)
 
 	isRequestProperty, objType, err = validator.IsRequestProperty("POST", "/international-payment-consents", "Data.Initiation.Creditor.FakeProperty")
 	require.NoError(t, err)
