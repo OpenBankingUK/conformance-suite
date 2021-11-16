@@ -1,5 +1,8 @@
 # Release history
 
+## Release v1.6.10 (16th November 2021)
+
+The release is called **v1.6.10**, an update to resolve minor issues with version 3.1.8 Open Banking APIs support.
 
 ## Release v1.6.9 (12th June 2021)
 

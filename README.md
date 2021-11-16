@@ -17,23 +17,21 @@ To provide feedback, please use the public [issue tracker](https://bitbucket.org
 ## Release Notes
 * * *
 
-# Release v1.6.9 (24th August 2021)
+# Release v1.6.10 (16th November 2021)
 
-The release is called **v1.6.9**, an update to support version 3.1.8 of the AIS, PIS, and CBPII Open Banking APIs 
-and includes support of 3.1.8 of the Variable Recurring Payment (VRP) standard.
-[Full Release Notes](https://bitbucket.org/openbankingteam/conformance-suite/src/develop/docs/releases/v1.6.9.md)
-(v1.6.9.md)
+The release is called **v1.6.10**, an update to resolve minor issues with version 3.1.8 Open Banking APIs support.
+
 
 ## Quickstart
 * * *
 
 Pull and run the latest (stable) tagged Docker image:
 
-    > docker run --rm -it -p 127.0.0.1:8443:8443 "openbanking/conformance-suite:v1.6.9"
+    > docker run --rm -it -p 127.0.0.1:8443:8443 "openbanking/conformance-suite:v1.6.10"
 
 or
 
-    > docker run --rm -it -p 8443:8443 "openbanking/conformance-suite:v1.6.9"
+    > docker run --rm -it -p 8443:8443 "openbanking/conformance-suite:v1.6.10"
 
 [See Setup Guide](https://bitbucket.org/openbankingteam/conformance-suite/src/develop/docs/setup-guide.md)
 

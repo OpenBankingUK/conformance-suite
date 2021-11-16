@@ -19,12 +19,15 @@ import (
 //  Checker returns the semantic version (see http://semver.org).
 const (
 	// Checker must conform to the format expected, major, minor and patch.
+	//v1.6.10 - this comment allows searching
 	major = "1"
 	minor = "6"
-	patch = "9"
-	// Checker is the full string version of Conformance Suite.
+	patch = "10"
+
+	//FullVersion -  Checker is the full string version of Conformance Suite.
 	FullVersion = major + "." + minor + "." + patch
-	// VersionPrerelease is pre-release marker for the version. If this is "" (empty string)
+
+	// Prerelease - is pre-release marker for the version. If this is "" (empty string)
 	// then it means that it is a final release. Otherwise, this is a pre-release
 	// such as "alpha", "beta", "rc1", etc.
 	Prerelease             = ""
