@@ -38,7 +38,9 @@
         vertical
         class="mb-2">
         <div class="nav-section px-1">
-          <b-form-select v-model="selectedVersion" :options="specificationVersions" />
+          <b-form-select
+            v-model="selectedVersion"
+            :options="specificationVersions" />
         </div>
         <b-nav-item
           v-for="(specification, index) in specifications"
@@ -105,16 +107,14 @@ export default {
     PlusCircleIcon,
     FileTextIcon,
   },
-  data : () => {
-    return {
-      //@NEW-SPEC-VERSION - Update this when new version comes out or add sorting...
-      selectedVersion: "v3.1.9",
-      specificationVersions: [...(new Set(Specifications.map(spec => spec.Version)))].map(specVer => ({value: specVer, text: specVer}))
-    }
-  },
+  data: () => ({
+    // @NEW-SPEC-VERSION - Update this when new version comes out or add sorting...
+    selectedVersion: 'v3.1.9',
+    specificationVersions: [...(new Set(Specifications.map(spec => spec.Version)))].map(specVer => ({ value: specVer, text: specVer })),
+  }),
   computed: {
     ...mapGetters('status', ['suiteVersion']),
-    specifications: function () {
+    specifications() {
       return Specifications
         .filter(specification => specification.Version === this.selectedVersion)
         .map(specification => ({
