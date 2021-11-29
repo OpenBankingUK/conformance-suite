@@ -273,6 +273,36 @@ func TestIsRequestProperty(t *testing.T) {
 	require.Equal(t, "[string]", objType)
 }
 
+func TestShouldUseOpenApi3(t *testing.T) {
+
+	tests := []struct {
+		version      string
+		shouldBeOas3 bool
+	}{
+		{
+			version:      "v3.1.7",
+			shouldBeOas3: false,
+		},
+		{
+			version:      "v3.1.8",
+			shouldBeOas3: true,
+		},
+		{
+			version:      "v3.1.10",
+			shouldBeOas3: true,
+		},
+		{
+			version:      "v3.2.10",
+			shouldBeOas3: true,
+		},
+	}
+	for _, tt := range tests {
+		should, err := ShouldUseOpenApi3(tt.version)
+		require.NoError(t, err)
+		require.Equal(t, tt.shouldBeOas3, should)
+	}
+}
+
 var getStandingOrdersWithFreeformFields = []string{`{
   "Data": {
     "StandingOrder": [

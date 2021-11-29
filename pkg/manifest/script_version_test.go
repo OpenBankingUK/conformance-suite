@@ -29,7 +29,7 @@ func TestAPIVersionsSimple(t *testing.T) {
 	singleRange, err := semver.ParseRange("3.1.4")
 	assert.True(t, singleRange(v314))
 
-	multiRange, err := semver.ParseRange(">=3.1.4 <=3.1.8")
+	multiRange, err := semver.ParseRange(">=3.1.4 <=3.1.9")
 	assert.True(t, multiRange(v317))
 	assert.False(t, multiRange(v312))
 	assert.False(t, multiRange(v400))
