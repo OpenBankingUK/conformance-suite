@@ -19,6 +19,8 @@ import (
 //  Checker returns the semantic version (see http://semver.org).
 const (
 	// Checker must conform to the format expected, major, minor and patch.
+	// @NEW-SPEC-RELEASE - make sure new version is accounted for
+	// @NEW-RELEASE - make sure new version is accounted for
 	//v1.6.10 - this comment allows searching
 	major = "1"
 	minor = "6"

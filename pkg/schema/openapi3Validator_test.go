@@ -263,10 +263,12 @@ const cbpiiGoodResponse = `
 }`
 
 func TestIsRequestPropertyOas3(t *testing.T) {
-	validator, err := buildValidator("Payment Initiation API")
+	validator, err := buildValidator("Payment Initiation API", "v3.1.8")
 	require.NoError(t, err)
 
 	/*
+		Context:
+
 		"name": "Payment Initiation API",
 		"endpoints": [
 		  {

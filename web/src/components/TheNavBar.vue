@@ -37,6 +37,11 @@
       <b-nav
         vertical
         class="mb-2">
+        <div class="nav-section px-1">
+          <b-form-select
+            v-model="selectedVersion"
+            :options="specificationVersions" />
+        </div>
         <b-nav-item
           v-for="(specification, index) in specifications"
           :key="index"
@@ -102,23 +107,24 @@ export default {
     PlusCircleIcon,
     FileTextIcon,
   },
-  data() {
-    const specifications = Specifications
-      .filter(specification => specification.Version === 'v3.1.6')
-      .map(specification => ({
-        label: `${specification.Name} (${specification.Version})`,
-        swaggerUIURL: `/swagger/${specification.Identifier}/${specification.Version}/docs`,
-        wikiURL: `${specification.URL.Scheme}://${specification.URL.Host}${specification.URL.Path}`,
-        specificationURL: `${specification.SchemaVersion.Scheme}://${specification.SchemaVersion.Host}${specification.SchemaVersion.Path}`,
-        _specification: specification,
-      }));
-
-    return {
-      specifications,
-    };
-  },
+  data: () => ({
+    // @NEW-SPEC-VERSION - Update this when new version comes out or add sorting...
+    selectedVersion: 'v3.1.9',
+    specificationVersions: [...(new Set(Specifications.map(spec => spec.Version)))].map(specVer => ({ value: specVer, text: specVer })),
+  }),
   computed: {
     ...mapGetters('status', ['suiteVersion']),
+    specifications() {
+      return Specifications
+        .filter(specification => specification.Version === this.selectedVersion)
+        .map(specification => ({
+          label: `${specification.Name} (${specification.Version})`,
+          swaggerUIURL: `/swagger/${specification.Identifier}/${specification.Version}/docs`,
+          wikiURL: `${specification.URL.Scheme}://${specification.URL.Host}${specification.URL.Path}`,
+          specificationURL: `${specification.SchemaVersion.Scheme}://${specification.SchemaVersion.Host}${specification.SchemaVersion.Path}`,
+          _specification: specification,
+        }));
+    },
   },
   methods: {
   },

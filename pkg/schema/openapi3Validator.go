@@ -47,31 +47,23 @@ type validateParams struct {
 
 var headerCT = http.CanonicalHeaderKey("Content-Type")
 
-// NewOpenAPI3Validator - Create a router current just for v3.1.8 of the specifications
+// NewOpenAPI3Validator - Create a router for OPenAPI3 based specifications
 // preferring yaml for the spec file
 func NewOpenAPI3Validator(specName, version string) (Validator, error) {
-	// TODO: @Release - update to use version compare instead of magic number
-	if version != "v3.1.8" {
-		return nil, fmt.Errorf("NewOpenAPI3Validator - unsupported version: %s", version)
-	}
-	return buildValidator(specName)
+	return buildValidator(specName, version)
 }
 
 // NewRawOpenAPI3Validator -
 func NewRawOpenAPI3Validator(specName, version string) (OpenAPI3Validator, error) {
-	// TODO: @Release - update to use version compare instead of magic number
-	if version != "v3.1.8" {
-		return OpenAPI3Validator{}, fmt.Errorf("NewOpenAPI3Validator - unsupported version: %s", version)
-	}
-	return buildValidator(specName)
+	return buildValidator(specName, version)
 }
 
-func buildValidator(specName string) (OpenAPI3Validator, error) {
-	router, doc, err := getRouterForSpec(specName)
+func buildValidator(specName, version string) (OpenAPI3Validator, error) {
+	router, doc, err := getRouterForSpec(specName, version)
 	return OpenAPI3Validator{router: router, doc: doc}, err
 }
 
-// IsRequestProperty -
+// IsRequestProperty - Find param in schema and determines if it's part of request body
 func (v OpenAPI3Validator) IsRequestProperty(checkmethod, checkpath, propertyPath string) (bool, string, error) {
 	spec := v.doc
 	for path, props := range spec.Paths {
@@ -91,45 +83,73 @@ func (v OpenAPI3Validator) IsRequestProperty(checkmethod, checkpath, propertyPat
 	return false, "", nil
 }
 
-func getRouterForSpec(spec string) (routers.Router, *openapi3.T, error) {
-	var filename string
-	switch spec {
-	// TODO: @Release - update to use version compare instead of magic number
-	case "Account and Transaction API Specification":
-		filename = "spec/v3.1.8/account-info-openapi.json"
-	case "Payment Initiation API":
-		filename = "spec/v3.1.8/payment-initiation-openapi.json"
-	case "Confirmation of Funds API Specification":
-		filename = "spec/v3.1.8/confirmation-funds-openapi.json"
-	case "OBIE VRP Profile":
-		filename = "spec/v3.1.8/variable-recurring-payments-openapi.json"
-	default:
-		return nil, nil, errors.New("Cannot get router for spec: " + spec)
+func getRouterForSpec(specName, version string) (routers.Router, *openapi3.T, error) {
+
+	filenamePattern := getSpecFilePathPattern(specName)
+	if filenamePattern == "" {
+		return nil, nil, errors.New("cannot get router for spec: " + specName)
 	}
 
-	// TODO: @Release - update to a pattern similar to Swagger handling
-	loader := openapi3.NewLoader()
-	doc, err := loader.LoadFromFile(filename)
+	filename := fmt.Sprintf(filenamePattern, version)
+
+	doc, err := loadSpecFromFile(filename)
+
 	if err != nil {
-		doc, err = loader.LoadFromFile("pkg/schema/" + filename)
-		if err != nil {
-			doc, err = loader.LoadFromFile("../../pkg/schema/" + filename)
-			if err != nil {
-				return nil, nil, fmt.Errorf("Cannot Load OpenApi Spec from file %s, %s", filename, err)
-			}
-		}
+		return nil, nil, fmt.Errorf("cannot Load OpenApi Spec from file %s, %s", filename, err)
 	}
+
 	err = doc.Validate(context.Background())
 	if err != nil {
-		return nil, nil, fmt.Errorf("Cannot Load OpenApi Spec from file %s, %s", filename, err)
+		return nil, nil, fmt.Errorf("cannot Load OpenApi Spec from file %s, %s", filename, err)
 	}
 
 	router, err := legacyrouter.NewRouter(doc)
 	if err != nil {
-		return nil, nil, fmt.Errorf("Cannot Load OpenApi Router for %s file %s", spec, filename)
+		return nil, nil, fmt.Errorf("cannot Load OpenApi Router for %s file %s", specName, filename)
 	}
 
 	return router, doc, nil
+}
+
+func loadSpecFromFile(filename string) (*openapi3.T, error) {
+	prodDir := "pkg/schema/" + filename
+	testDir := "../../pkg/schema/" + filename
+	specPaths := []string{filename, prodDir, testDir}
+
+	var doc *openapi3.T
+	var err error
+	loader := openapi3.NewLoader()
+
+	for _, specPath := range specPaths {
+		doc, err = loader.LoadFromFile(specPath)
+		if err == nil {
+			break
+		}
+	}
+	return doc, err
+}
+
+func getSpecFilePathPattern(specName string) string {
+	var filename string
+
+	switch specName {
+	case "Account and Transaction API Specification":
+		filename = "spec/%s/account-info-openapi.json"
+
+	case "Payment Initiation API":
+		filename = "spec/%s/payment-initiation-openapi.json"
+
+	case "Confirmation of Funds API Specification":
+		filename = "spec/%s/confirmation-funds-openapi.json"
+
+	case "OBIE VRP Profile":
+		filename = "spec/%s/variable-recurring-payments-openapi.json"
+
+	default:
+		filename = ""
+	}
+
+	return filename
 }
 
 // Validate - validates the response
@@ -262,5 +282,6 @@ func findPropertyInOas3Schema(sc *openapi3.Schema, propertyPath, previousPath st
 			return true, propType
 		}
 	}
+
 	return false, ""
 }

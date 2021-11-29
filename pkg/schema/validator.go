@@ -2,6 +2,7 @@ package schema
 
 import (
 	"fmt"
+	"github.com/blang/semver/v4"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -41,20 +42,26 @@ type Validator interface {
 
 // NewSwaggerOBSpecValidator -
 func NewSwaggerOBSpecValidator(specName, version string) (Validator, error) {
+
+	shouldUseOpenApi3, errVersion := ShouldUseOpenApi3(version)
+	if errVersion != nil {
+		return nil, errors.Wrapf(errVersion, "schema: parsing version number failed, version=%q", version)
+	}
+
+	if shouldUseOpenApi3 {
+		return NewOpenAPI3Validator(specName, version)
+	}
+
 	var err error
 
 	prodDir := "pkg/schema/spec/" + version
 	testDir := "../../pkg/schema/spec/" + version
 
-	// TODO: @Release - update to use version compare instead of magic number
-	if version == "v3.1.8" {
-		return NewOpenAPI3Validator(specName, version)
-	}
-
 	dirnameIndex := 0
-	dirnames := []string{prodDir, testDir}
+	dirNames := []string{prodDir, testDir}
+
 	files := []os.FileInfo{}
-	for index, dirname := range dirnames {
+	for index, dirname := range dirNames {
 		logrus.Traceln("Returning swagger validator filename: " + dirname)
 		filesReadDir, errReadDir := ioutil.ReadDir(dirname)
 		if errReadDir != nil {
@@ -76,7 +83,7 @@ func NewSwaggerOBSpecValidator(specName, version string) (Validator, error) {
 		return nil, err
 	}
 
-	dirname := dirnames[dirnameIndex]
+	dirname := dirNames[dirnameIndex]
 	for _, f := range files {
 		filename := dirname + "/" + f.Name()
 		logrus.Traceln("Returning swagger validator filenameplus: " + filename)
@@ -92,6 +99,20 @@ func NewSwaggerOBSpecValidator(specName, version string) (Validator, error) {
 	}
 
 	return nil, fmt.Errorf("schema: could not find spec file for spec %s version %s", specName, version)
+}
+
+func ShouldUseOpenApi3(version string) (bool, error) {
+	// since 3.1.8 only OpenAPI specs are published, and they are handled using a different validator
+	const firstOas3OnlyVersion = "3.1.8"
+	openApiVersion, _ := semver.Make(firstOas3OnlyVersion)
+
+	// we do not really care about the v in v.3.1.x
+	currentVersion, err := semver.Make(version[1:])
+	if err != nil {
+		return false, errors.Wrapf(err, "cannot parse provided version, version=%q", version)
+	}
+
+	return currentVersion.GTE(openApiVersion), nil
 }
 
 // NewSwaggerValidator returns a swagger validator implementation
