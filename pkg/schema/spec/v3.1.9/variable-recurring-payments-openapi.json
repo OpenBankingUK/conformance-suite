@@ -1550,9 +1550,6 @@
         "properties": {
           "Data": {
             "type": "object",
-            "required": [
-              "PaymentTransactionId"
-            ],
             "properties": {
               "PaymentStatus": {
                 "type": "array",
