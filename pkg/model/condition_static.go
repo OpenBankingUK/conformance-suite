@@ -3454,7 +3454,7 @@ func conditionalityStaticData() []byte {
 			},
 			{
 			  "condition": "mandatory",
-			  "method": "GET",
+			  "method": "POST",
 			  "endpoint": "/domestic-vrp-consents/{ConsentId}/funds-confirmation"
 			},
 			{
@@ -3491,7 +3491,7 @@ func conditionalityStaticData() []byte {
 			},
 			{
 			  "condition": "mandatory",
-			  "method": "GET",
+			  "method": "POST",
 			  "endpoint": "/domestic-vrp-consents/{ConsentId}/funds-confirmation"
 			},
 			{
