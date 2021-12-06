@@ -17,9 +17,16 @@ To provide feedback, please use the public [issue tracker](https://bitbucket.org
 ## Release Notes
 * * *
 
-# Release v1.6.10 (16th November 2021)
+# Release v1.6.11 (6th December 2021)
 
-The release is called **v1.6.10**, an update to resolve minor issues with version 3.1.8 Open Banking APIs support.
+The release is called **v1.6.11**, an update to support version 3.1.9 of the AIS, PIS, CBPII and VRP Open Banking APIs.
+
+---
+**Download**:
+`docker run --rm -it -p 127.0.0.1:8443:8443 "openbanking/conformance-suite:v1.6.11"` |
+[DockerHub](https://hub.docker.com/r/openbanking/conformance-suite) |
+[Setup Guide](https://bitbucket.org/openbankingteam/conformance-suite/src/develop/docs/setup-guide.md)
+---
 
 
 ## Quickstart
@@ -27,17 +34,17 @@ The release is called **v1.6.10**, an update to resolve minor issues with versio
 
 Pull and run the latest (stable) tagged Docker image:
 
-    > docker run --rm -it -p 127.0.0.1:8443:8443 "openbanking/conformance-suite:v1.6.10"
+    > docker run --rm -it -p 127.0.0.1:8443:8443 "openbanking/conformance-suite:v1.6.11"
 
 or
 
-    > docker run --rm -it -p 8443:8443 "openbanking/conformance-suite:v1.6.10"
+    > docker run --rm -it -p 8443:8443 "openbanking/conformance-suite:v1.6.11"
 
 [See Setup Guide](https://bitbucket.org/openbankingteam/conformance-suite/src/develop/docs/setup-guide.md)
 
 ### Prerequisites
 
-The tool is compatible with the Open Banking UK R/W specification versions: 3.1.0, 3.1.1, 3.1.2, 3.1.3, 3.1.4, 3.1.5, 3.1.6, 3.1.7, 3.1.8.
+The tool is compatible with the Open Banking UK R/W specification versions: 3.1.0, 3.1.1, 3.1.2, 3.1.3, 3.1.4, 3.1.5, 3.1.6, 3.1.7, 3.1.8, 3.1.9.
 
 In order to run a container you'll need docker installed.
 
