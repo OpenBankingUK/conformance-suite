@@ -1,0 +1,66 @@
+name: build project
+
+on: 
+  [push, pull_request]
+  
+jobs:
+
+  build-go:
+    name: build-go
+    runs-on: ubuntu-latest
+    container: golang:1.15-alpine3.13
+    env:
+      CGO_ENABLED: 0
+      GOOS: linux
+      GOARCH: amd64
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Install packages
+        run: apk update && apk add git make bash curl
+      - name: Setup Ozone config
+        run:  echo "${{ secrets.OZONE_CONFIG }}" | base64 -d  > config/config-ozone-run_test.json
+      - name: make init
+        run: make init
+      - name: Install dev tools
+        run: make devtools
+      - name: Build
+        run: make build
+      - name: Test
+        run: make test
+        
+  build-web:      
+    name: build-web
+    runs-on: ubuntu-latest
+    container: node:dubnium-alpine
+    env:
+      FORCE_COLOR: 1
+      NODE_DISABLE_COLORS: 0
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Install packages
+        run: apk update && apk add git make bash curl
+      - name: Install node dependencies
+        run: |
+             cd web/
+             yarn install --frozen-lockfile --non-interactive
+      - name: Lint code
+        run: |
+             cd web/
+             yarn lint --no-fix
+      - name: Run tests with coverage
+        run: |
+             cd web/
+             yarn test:unit:coverage
+             
+  build-image:
+     name: build-image
+     runs-on: ubuntu-latest
+     steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Build docker image
+        run: make build_image
+      - name: Show top level docker images
+        run: docker images
