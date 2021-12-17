@@ -2,7 +2,7 @@
 package discovery
 
 import (
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
+	"github.com/OpenBankingUK/conformance-suite/pkg/model"
 )
 
 // Validator defines a generic validation engine

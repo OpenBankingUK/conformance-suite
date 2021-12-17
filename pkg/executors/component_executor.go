@@ -9,9 +9,9 @@ import (
 	"github.com/tidwall/gjson"
 	resty "gopkg.in/resty.v1"
 
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/generation"
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/manifest"
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
+	"github.com/OpenBankingUK/conformance-suite/pkg/generation"
+	"github.com/OpenBankingUK/conformance-suite/pkg/manifest"
+	"github.com/OpenBankingUK/conformance-suite/pkg/model"
 	"github.com/sirupsen/logrus"
 )
 

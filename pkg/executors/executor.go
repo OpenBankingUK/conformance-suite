@@ -8,11 +8,11 @@ import (
 	"io/ioutil"
 	"net/http"
 
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/authentication"
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/authentication/certificates"
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/executors/results"
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/tracer"
+	"github.com/OpenBankingUK/conformance-suite/pkg/authentication"
+	"github.com/OpenBankingUK/conformance-suite/pkg/authentication/certificates"
+	"github.com/OpenBankingUK/conformance-suite/pkg/executors/results"
+	"github.com/OpenBankingUK/conformance-suite/pkg/model"
+	"github.com/OpenBankingUK/conformance-suite/pkg/tracer"
 
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"

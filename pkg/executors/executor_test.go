@@ -3,7 +3,7 @@ package executors
 import (
 	"testing"
 
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/authentication"
+	"github.com/OpenBankingUK/conformance-suite/pkg/authentication"
 
 	"github.com/stretchr/testify/require"
 	resty "gopkg.in/resty.v1"

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
+	"github.com/OpenBankingUK/conformance-suite/pkg/model"
 )
 
 const accountsPath = "file://manifests/ob_3.1_accounts_transactions_fca.json"

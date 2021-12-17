@@ -1,14 +1,14 @@
 package generation
 
 import (
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/schema"
+	"github.com/OpenBankingUK/conformance-suite/pkg/schema"
 	"github.com/sirupsen/logrus"
 
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/manifest"
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/names"
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/permissions"
+	"github.com/OpenBankingUK/conformance-suite/pkg/discovery"
+	"github.com/OpenBankingUK/conformance-suite/pkg/manifest"
+	"github.com/OpenBankingUK/conformance-suite/pkg/model"
+	"github.com/OpenBankingUK/conformance-suite/pkg/names"
+	"github.com/OpenBankingUK/conformance-suite/pkg/permissions"
 )
 
 // SpecificationTestCases - test cases generated for a specification

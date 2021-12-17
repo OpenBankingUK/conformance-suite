@@ -1,7 +1,7 @@
 package discovery
 
 import (
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
+	"github.com/OpenBankingUK/conformance-suite/pkg/model"
 )
 
 // CustomTest used to read and make sense of the custom test json

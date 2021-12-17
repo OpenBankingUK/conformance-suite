@@ -3,9 +3,9 @@ package executors
 import (
 	"fmt"
 
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/authentication"
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/manifest"
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
+	"github.com/OpenBankingUK/conformance-suite/pkg/authentication"
+	"github.com/OpenBankingUK/conformance-suite/pkg/manifest"
+	"github.com/OpenBankingUK/conformance-suite/pkg/model"
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 )

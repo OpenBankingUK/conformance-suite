@@ -1,6 +1,6 @@
 // This is still WORK IN PROGRESS. The handlers just return either an empty
-// `bitbucket.org/openbankingteam/conformance-suite/pkg/server/models.ImportReviewResponse` or
-//  `bitbucket.org/openbankingteam/conformance-suite/pkg/server/models.ImportRerunResponse` and do not do the
+// `github.com/OpenBankingUK/conformance-suite/pkg/server/models.ImportReviewResponse` or
+//  `github.com/OpenBankingUK/conformance-suite/pkg/server/models.ImportRerunResponse` and do not do the
 // importing or review functionality. This will be implemented as we go along.
 
 package server
@@ -11,7 +11,7 @@ import (
 	"github.com/labstack/echo"
 	"github.com/sirupsen/logrus"
 
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/server/models"
+	"github.com/OpenBankingUK/conformance-suite/pkg/server/models"
 )
 
 type importHandlers struct {

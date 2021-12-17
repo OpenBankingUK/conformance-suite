@@ -8,12 +8,12 @@ import (
 	"strings"
 	"testing"
 
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/schema"
+	"github.com/OpenBankingUK/conformance-suite/pkg/schema"
 
 	"github.com/stretchr/testify/assert"
 
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
+	"github.com/OpenBankingUK/conformance-suite/pkg/discovery"
+	"github.com/OpenBankingUK/conformance-suite/pkg/model"
 )
 
 func TestGenerateTestCases(t *testing.T) {
