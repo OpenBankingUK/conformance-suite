@@ -1,11 +1,11 @@
 package executors
 
 import (
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/authentication"
+	"github.com/OpenBankingUK/conformance-suite/pkg/authentication"
 	"github.com/pkg/errors"
 
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/manifest"
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
+	"github.com/OpenBankingUK/conformance-suite/pkg/manifest"
+	"github.com/OpenBankingUK/conformance-suite/pkg/model"
 	"github.com/sirupsen/logrus"
 )
 

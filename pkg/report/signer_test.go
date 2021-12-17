@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"testing"
 
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/test"
+	"github.com/OpenBankingUK/conformance-suite/pkg/test"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/pkg/errors"
 )

@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"time"
 
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
+	"github.com/OpenBankingUK/conformance-suite/pkg/model"
 	"gopkg.in/resty.v1"
 )
 

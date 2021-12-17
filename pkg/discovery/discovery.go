@@ -3,7 +3,7 @@ package discovery
 import (
 	"encoding/json"
 
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/schema"
+	"github.com/OpenBankingUK/conformance-suite/pkg/schema"
 	validation "github.com/go-ozzo/ozzo-validation"
 	"github.com/sirupsen/logrus"
 )

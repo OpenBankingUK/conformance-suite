@@ -4,15 +4,15 @@ import (
 	"fmt"
 	"testing"
 
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/authentication"
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery/mocks"
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/generation"
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/server/models"
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/test"
+	"github.com/OpenBankingUK/conformance-suite/pkg/authentication"
+	"github.com/OpenBankingUK/conformance-suite/pkg/discovery"
+	"github.com/OpenBankingUK/conformance-suite/pkg/discovery/mocks"
+	"github.com/OpenBankingUK/conformance-suite/pkg/generation"
+	"github.com/OpenBankingUK/conformance-suite/pkg/model"
+	"github.com/OpenBankingUK/conformance-suite/pkg/server/models"
+	"github.com/OpenBankingUK/conformance-suite/pkg/test"
 
-	gmocks "bitbucket.org/openbankingteam/conformance-suite/pkg/generation"
+	gmocks "github.com/OpenBankingUK/conformance-suite/pkg/generation"
 	"github.com/pkg/errors"
 	"github.com/stretchr/testify/require"
 )

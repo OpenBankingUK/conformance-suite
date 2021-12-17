@@ -10,10 +10,10 @@ import (
 	"io/ioutil"
 	"strings"
 
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/names"
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/version"
+	"github.com/OpenBankingUK/conformance-suite/pkg/discovery"
+	"github.com/OpenBankingUK/conformance-suite/pkg/model"
+	"github.com/OpenBankingUK/conformance-suite/pkg/names"
+	"github.com/OpenBankingUK/conformance-suite/pkg/version"
 	"github.com/go-openapi/loads"
 	"github.com/go-openapi/spec"
 	"github.com/sirupsen/logrus"
@@ -22,7 +22,7 @@ import (
 var httpUserAgent string
 
 func init() {
-	humanVersion := version.NewBitBucket("").GetHumanVersion()
+	humanVersion := version.NewGitHub("").GetHumanVersion()
 	httpUserAgent = fmt.Sprintf("Open Banking Conformance Suite %s", humanVersion)
 }
 

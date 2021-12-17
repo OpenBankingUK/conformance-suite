@@ -4,7 +4,7 @@ package executors
 import (
 	"sync"
 
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/executors/results"
+	"github.com/OpenBankingUK/conformance-suite/pkg/executors/results"
 )
 
 type DaemonController interface {

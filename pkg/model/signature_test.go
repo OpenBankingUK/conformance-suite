@@ -10,7 +10,7 @@ import (
 	"strings"
 	"testing"
 
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/authentication"
+	"github.com/OpenBankingUK/conformance-suite/pkg/authentication"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/dgrijalva/jwt-go/test"
 	"github.com/sirupsen/logrus"

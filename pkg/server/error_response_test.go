@@ -3,7 +3,7 @@ package server
 import (
 	"testing"
 
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/test"
+	"github.com/OpenBankingUK/conformance-suite/pkg/test"
 	"github.com/pkg/errors"
 )
 

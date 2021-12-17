@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"testing"
 
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/test"
+	"github.com/OpenBankingUK/conformance-suite/pkg/test"
 	"github.com/stretchr/testify/require"
 
 	"github.com/stretchr/testify/assert"
@@ -13,13 +13,11 @@ import (
 
 const (
 	versionTestMockResponse = `
-{
-	"values": [{
-		"name": "0.0.2",
-		"date": "2019-01-11T13:56:34+0000",
-		"message": "mocked response"
-	}]
-}`
+	[
+		{
+			"name": "0.0.2"
+		}
+	]`
 )
 
 // TestOutOfDateUpdateWarningVersion asserts that given an outdated version of
@@ -30,7 +28,7 @@ func TestOutOfDateUpdateWarningVersion(t *testing.T) {
 	defer mockedServer.Close()
 
 	// Checker helper
-	v := NewBitBucket(serverURL)
+	v := NewGitHub(serverURL)
 
 	// Use an old version to test.
 	version := "v0.0.0"
@@ -50,7 +48,7 @@ func TestNoUpdateUpdateWarningVersion(t *testing.T) {
 	defer mockedServer.Close()
 
 	// Checker helper
-	v := NewBitBucket(serverURL)
+	v := NewGitHub(serverURL)
 
 	version := "v1000.0.0"
 	message, flag, err := v.UpdateWarningVersion(version)
@@ -72,7 +70,7 @@ func TestBadStatusUpdateWarningVersionFail(t *testing.T) {
 	defer mockedServer.Close()
 
 	// Checker helper
-	v := NewBitBucket(serverURL)
+	v := NewGitHub(serverURL)
 
 	message := ""
 	// Check we get the appropriate error message.
@@ -87,7 +85,7 @@ func TestBadStatusUpdateWarningVersionFail(t *testing.T) {
 func TestHTTPErrorUpdateWarningVersion(t *testing.T) {
 	// Checker helper
 	// Update BitBucketAPIRepository to produce a no such host.
-	v := NewBitBucket("https://.com")
+	v := NewGitHub("https://.com")
 	message, flag, err := v.UpdateWarningVersion(FullVersion)
 	// Assert that update fag is false.
 	assert.Equal(t, flag, false)
@@ -105,7 +103,7 @@ func TestHaveVersionUpdateWarningVersion(t *testing.T) {
 
 	// Checker helper
 	// Update BitBucketAPIRepository to produce a no such host.
-	v := NewBitBucket("https://api.bitbucket.org/2.0/repositories/openbankingteam/conformance-suite/refs/tags")
+	v := NewGitHub("https://api.bitbucket.org/2.0/repositories/openbankingteam/conformance-suite/refs/tags")
 
 	message, flag, err := v.UpdateWarningVersion(version)
 	// Assert that update fag is false.

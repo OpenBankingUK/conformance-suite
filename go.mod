@@ -1,4 +1,4 @@
-module bitbucket.org/openbankingteam/conformance-suite
+module github.com/OpenBankingUK/conformance-suite
 
 require (
 	github.com/BurntSushi/toml v0.3.1 // indirect

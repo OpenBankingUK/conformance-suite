@@ -3,7 +3,7 @@ package report
 import (
 	"testing"
 
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/test"
+	"github.com/OpenBankingUK/conformance-suite/pkg/test"
 )
 
 func TestReportCertifiedByEnvironment_String(t *testing.T) {

@@ -4,7 +4,7 @@ import (
 	"errors"
 	"testing"
 
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
+	"github.com/OpenBankingUK/conformance-suite/pkg/model"
 
 	"github.com/stretchr/testify/assert"
 )

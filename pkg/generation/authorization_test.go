@@ -3,9 +3,9 @@ package generation
 import (
 	"testing"
 
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/permissions"
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/test"
+	"github.com/OpenBankingUK/conformance-suite/pkg/model"
+	"github.com/OpenBankingUK/conformance-suite/pkg/permissions"
+	"github.com/OpenBankingUK/conformance-suite/pkg/test"
 )
 
 func TestSetHeaderDoesNothingOnAccountAccessConsent(t *testing.T) {

@@ -1,7 +1,7 @@
 package model
 
 import (
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/permissions"
+	"github.com/OpenBankingUK/conformance-suite/pkg/permissions"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )

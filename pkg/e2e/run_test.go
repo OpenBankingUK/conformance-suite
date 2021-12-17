@@ -20,12 +20,12 @@ import (
 	prefixed "github.com/x-cray/logrus-prefixed-formatter"
 	"gopkg.in/resty.v1"
 
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/client"
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/generation"
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/server"
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/version"
+	"github.com/OpenBankingUK/conformance-suite/pkg/client"
+	"github.com/OpenBankingUK/conformance-suite/pkg/discovery"
+	"github.com/OpenBankingUK/conformance-suite/pkg/generation"
+	"github.com/OpenBankingUK/conformance-suite/pkg/model"
+	"github.com/OpenBankingUK/conformance-suite/pkg/server"
+	"github.com/OpenBankingUK/conformance-suite/pkg/version"
 
 	"github.com/google/go-cmp/cmp"
 )
@@ -76,7 +76,7 @@ func disableTestRun(t *testing.T) {
 	resty.SetDebug(debug)
 
 	logger := logger.WithFields(logrus.Fields{"test": "TestRun"})
-	ver := version.NewBitBucket(version.BitBucketAPIRepository)
+	ver := version.NewGitHub(version.GitHubAPIRepository)
 	validatorEngine := discovery.NewFuncValidator(model.NewConditionalityChecker())
 	testGenerator := generation.NewGenerator()
 	tlsValidator := discovery.NewStdTLSValidator(tls.VersionTLS11)
