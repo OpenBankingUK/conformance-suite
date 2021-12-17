@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"testing"
 
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/test"
+	"github.com/OpenBankingUK/conformance-suite/pkg/discovery"
+	"github.com/OpenBankingUK/conformance-suite/pkg/test"
 )
 
 func TestDiscoveryEndpointsMapToManifestCorrectly(t *testing.T) {

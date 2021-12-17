@@ -6,9 +6,9 @@ import (
 	"io/ioutil"
 	"testing"
 
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/schema"
+	"github.com/OpenBankingUK/conformance-suite/pkg/schema"
 
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/test"
+	"github.com/OpenBankingUK/conformance-suite/pkg/test"
 
 	"github.com/go-openapi/loads"
 	"github.com/go-openapi/spec"

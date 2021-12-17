@@ -6,8 +6,8 @@ import (
 	"strings"
 	"testing"
 
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/test"
-	versionmock "bitbucket.org/openbankingteam/conformance-suite/pkg/version/mocks"
+	"github.com/OpenBankingUK/conformance-suite/pkg/test"
+	versionmock "github.com/OpenBankingUK/conformance-suite/pkg/version/mocks"
 )
 
 // /api/discovery-model/validate - POST - When invalid JSON returns error message

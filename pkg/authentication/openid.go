@@ -6,7 +6,7 @@ import (
 	"io/ioutil"
 	"net/http"
 
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/client"
+	"github.com/OpenBankingUK/conformance-suite/pkg/client"
 	"github.com/sirupsen/logrus"
 )
 

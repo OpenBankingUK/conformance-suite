@@ -6,9 +6,9 @@ import (
 	"net/http"
 	"testing"
 
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/test"
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/version/mocks"
+	"github.com/OpenBankingUK/conformance-suite/pkg/model"
+	"github.com/OpenBankingUK/conformance-suite/pkg/test"
+	"github.com/OpenBankingUK/conformance-suite/pkg/version/mocks"
 	"github.com/stretchr/testify/require"
 )
 

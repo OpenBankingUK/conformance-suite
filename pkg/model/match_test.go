@@ -4,10 +4,10 @@ import (
 	"encoding/json"
 	"testing"
 
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/schema"
+	"github.com/OpenBankingUK/conformance-suite/pkg/schema"
 	"github.com/stretchr/testify/require"
 
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/test"
+	"github.com/OpenBankingUK/conformance-suite/pkg/test"
 
 	"github.com/stretchr/testify/assert"
 )

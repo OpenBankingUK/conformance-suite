@@ -1,7 +1,7 @@
 package main
 
 import (
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery/templates"
+	"github.com/OpenBankingUK/conformance-suite/pkg/discovery/templates"
 	"fmt"
 	"os"
 )

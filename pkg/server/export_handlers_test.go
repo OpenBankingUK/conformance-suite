@@ -8,14 +8,14 @@ import (
 	"testing"
 	"time"
 
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
-	discovery_mocks "bitbucket.org/openbankingteam/conformance-suite/pkg/discovery/mocks"
-	gmocks "bitbucket.org/openbankingteam/conformance-suite/pkg/generation"
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/report"
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/server/models"
-	"bitbucket.org/openbankingteam/conformance-suite/pkg/test"
-	internal_time "bitbucket.org/openbankingteam/conformance-suite/pkg/time"
-	version_mocks "bitbucket.org/openbankingteam/conformance-suite/pkg/version/mocks"
+	"github.com/OpenBankingUK/conformance-suite/pkg/discovery"
+	discovery_mocks "github.com/OpenBankingUK/conformance-suite/pkg/discovery/mocks"
+	gmocks "github.com/OpenBankingUK/conformance-suite/pkg/generation"
+	"github.com/OpenBankingUK/conformance-suite/pkg/report"
+	"github.com/OpenBankingUK/conformance-suite/pkg/server/models"
+	"github.com/OpenBankingUK/conformance-suite/pkg/test"
+	internal_time "github.com/OpenBankingUK/conformance-suite/pkg/time"
+	version_mocks "github.com/OpenBankingUK/conformance-suite/pkg/version/mocks"
 
 	"github.com/google/uuid"
 	"github.com/labstack/echo"
@@ -59,7 +59,7 @@ func TestServerPostExport(t *testing.T) {
 
 	// make the request and record time the export operation was started
 	exportTime := time.Now()
-	// we can remove this sleep if we change `bitbucket.org/openbankingteam/conformance-suite/pkg/time`.Layout to `time.RFC3339Nano`.
+	// we can remove this sleep if we change `github.com/OpenBankingUK/conformance-suite/pkg/time`.Layout to `time.RFC3339Nano`.
 	time.Sleep(1 * time.Second)
 	code, body, headers := request(http.MethodPost, "/api/export", bytes.NewReader(requestJSON), server)
 
@@ -208,7 +208,7 @@ func TestServerPostExport_InvalidRequest(t *testing.T) {
 		require.NoError(err)
 		require.NotNil(requestJSON)
 
-		// we can remove this sleep if we change `bitbucket.org/openbankingteam/conformance-suite/pkg/time`.Layout to `time.RFC3339Nano`.
+		// we can remove this sleep if we change `github.com/OpenBankingUK/conformance-suite/pkg/time`.Layout to `time.RFC3339Nano`.
 		time.Sleep(1 * time.Second)
 		code, body, headers := request(http.MethodPost, "/api/export", bytes.NewReader(requestJSON), server)
 
