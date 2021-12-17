@@ -8,7 +8,7 @@ import (
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 
-	"github.com/OpenBankingUK/conformance-suite/pkg/model"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
 
 	validation "gopkg.in/go-playground/validator.v9"
 )

@@ -13,10 +13,10 @@ import (
 	"github.com/stretchr/testify/assert"
 	"gopkg.in/resty.v1"
 
-	"github.com/OpenBankingUK/conformance-suite/pkg/manifest"
-	"github.com/OpenBankingUK/conformance-suite/pkg/model"
-	"github.com/OpenBankingUK/conformance-suite/pkg/schema"
-	"github.com/OpenBankingUK/conformance-suite/pkg/test"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/manifest"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/schema"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/test"
 )
 
 var (

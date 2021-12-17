@@ -7,7 +7,7 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/OpenBankingUK/conformance-suite/pkg/tracer"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/tracer"
 	"github.com/tidwall/gjson"
 )
 

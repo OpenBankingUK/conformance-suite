@@ -8,8 +8,8 @@ import (
 	"regexp"
 	"time"
 
-	"github.com/OpenBankingUK/conformance-suite/pkg/discovery"
-	"github.com/OpenBankingUK/conformance-suite/pkg/server/models"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/server/models"
 	"gopkg.in/resty.v1"
 
 	validation "github.com/go-ozzo/ozzo-validation"
@@ -17,8 +17,8 @@ import (
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 
-	"github.com/OpenBankingUK/conformance-suite/pkg/authentication"
-	"github.com/OpenBankingUK/conformance-suite/pkg/model"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/authentication"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
 )
 
 // ResponseType - Needs to be a interface{} slice, see the official test for an example

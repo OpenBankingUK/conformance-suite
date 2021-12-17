@@ -4,7 +4,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/OpenBankingUK/conformance-suite/pkg/model"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
 	"github.com/stretchr/testify/assert"
 	"gopkg.in/resty.v1"
 )

@@ -11,9 +11,9 @@ import (
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 
-	"github.com/OpenBankingUK/conformance-suite/pkg/executors"
-	"github.com/OpenBankingUK/conformance-suite/pkg/executors/events"
-	"github.com/OpenBankingUK/conformance-suite/pkg/executors/results"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/executors"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/executors/events"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/executors/results"
 )
 
 const (

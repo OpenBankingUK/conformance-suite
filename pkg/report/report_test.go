@@ -5,13 +5,13 @@ import (
 	"testing"
 	"time"
 
-	"github.com/OpenBankingUK/conformance-suite/pkg/discovery"
-	"github.com/OpenBankingUK/conformance-suite/pkg/executors/events"
-	"github.com/OpenBankingUK/conformance-suite/pkg/executors/results"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/executors/events"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/executors/results"
 	"github.com/stretchr/testify/assert"
 
-	"github.com/OpenBankingUK/conformance-suite/pkg/server/models"
-	"github.com/OpenBankingUK/conformance-suite/pkg/test"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/server/models"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/test"
 )
 
 func TestReport_Validate(t *testing.T) {

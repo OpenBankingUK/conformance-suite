@@ -9,9 +9,9 @@ import (
 	"github.com/labstack/echo"
 	"github.com/sirupsen/logrus"
 
-	"github.com/OpenBankingUK/conformance-suite/pkg/model"
-	"github.com/OpenBankingUK/conformance-suite/pkg/report"
-	"github.com/OpenBankingUK/conformance-suite/pkg/server/models"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/report"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/server/models"
 )
 
 // MIME types

@@ -15,8 +15,8 @@ import (
 	"github.com/google/uuid"
 	"github.com/sirupsen/logrus"
 
-	"github.com/OpenBankingUK/conformance-suite/pkg/authentication"
-	"github.com/OpenBankingUK/conformance-suite/pkg/tracer"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/authentication"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/tracer"
 	"github.com/dgrijalva/jwt-go"
 	"gopkg.in/resty.v1"
 )

@@ -5,13 +5,13 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/OpenBankingUK/conformance-suite/pkg/discovery"
-	"github.com/OpenBankingUK/conformance-suite/pkg/schema"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/schema"
 
 	"github.com/blang/semver/v4"
 	"github.com/stretchr/testify/assert"
 
-	"github.com/OpenBankingUK/conformance-suite/pkg/model"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
 )
 
 const manifestPath = "file://manifests/ob_3.1_payment_fca.json"

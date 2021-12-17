@@ -4,8 +4,8 @@ import (
 	"errors"
 	"sync"
 
-	"github.com/OpenBankingUK/conformance-suite/pkg/executors/events"
-	"github.com/OpenBankingUK/conformance-suite/pkg/model"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/executors/events"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
 
 	"github.com/sirupsen/logrus"
 )

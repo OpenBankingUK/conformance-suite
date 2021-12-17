@@ -3,8 +3,8 @@ package executors
 import (
 	"strings"
 
-	"github.com/OpenBankingUK/conformance-suite/pkg/manifest"
-	"github.com/OpenBankingUK/conformance-suite/pkg/model"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/manifest"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 	"github.com/tidwall/gjson"

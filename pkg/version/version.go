@@ -10,7 +10,7 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/OpenBankingUK/conformance-suite/pkg/client"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/client"
 	hashiVer "github.com/hashicorp/go-version"
 
 	"github.com/pkg/errors"

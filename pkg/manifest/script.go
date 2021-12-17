@@ -9,14 +9,14 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/OpenBankingUK/conformance-suite/pkg/schema"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/schema"
 	"github.com/blang/semver/v4"
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 	"github.com/tidwall/sjson"
 
-	"github.com/OpenBankingUK/conformance-suite/pkg/discovery"
-	"github.com/OpenBankingUK/conformance-suite/pkg/model"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
 )
 
 // Scripts -

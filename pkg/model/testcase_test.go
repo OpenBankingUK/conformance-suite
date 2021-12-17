@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/OpenBankingUK/conformance-suite/pkg/schema"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/schema"
 
-	"github.com/OpenBankingUK/conformance-suite/pkg/test"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/test"
 
 	"github.com/stretchr/testify/assert"
 )

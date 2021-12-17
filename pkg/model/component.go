@@ -1,7 +1,7 @@
 package model
 
 import (
-	"github.com/OpenBankingUK/conformance-suite/pkg/schema"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/schema"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"

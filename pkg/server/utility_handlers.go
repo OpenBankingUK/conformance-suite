@@ -3,7 +3,7 @@ package server
 import (
 	"net/http"
 
-	"github.com/OpenBankingUK/conformance-suite/pkg/version"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/version"
 	"github.com/pkg/errors"
 
 	"github.com/labstack/echo"

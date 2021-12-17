@@ -5,7 +5,7 @@ import (
 
 	"math"
 
-	"github.com/OpenBankingUK/conformance-suite/pkg/version"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/version"
 
 	"github.com/gorilla/websocket"
 	"github.com/labstack/echo"

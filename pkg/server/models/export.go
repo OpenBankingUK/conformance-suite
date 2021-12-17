@@ -3,9 +3,9 @@ package models
 import (
 	"fmt"
 
-	"github.com/OpenBankingUK/conformance-suite/pkg/discovery"
-	"github.com/OpenBankingUK/conformance-suite/pkg/executors/events"
-	"github.com/OpenBankingUK/conformance-suite/pkg/executors/results"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/executors/events"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/executors/results"
 	validation "github.com/go-ozzo/ozzo-validation"
 )
 

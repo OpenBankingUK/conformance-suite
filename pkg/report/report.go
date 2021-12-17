@@ -5,12 +5,12 @@ import (
 	"strings"
 	"time"
 
-	"github.com/OpenBankingUK/conformance-suite/pkg/version"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/version"
 
-	"github.com/OpenBankingUK/conformance-suite/pkg/discovery"
-	"github.com/OpenBankingUK/conformance-suite/pkg/executors/results"
-	"github.com/OpenBankingUK/conformance-suite/pkg/server/models"
-	internal_time "github.com/OpenBankingUK/conformance-suite/pkg/time"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/executors/results"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/server/models"
+	internal_time "bitbucket.org/openbankingteam/conformance-suite/pkg/time"
 	validation "github.com/go-ozzo/ozzo-validation"
 	"github.com/go-ozzo/ozzo-validation/is"
 	"github.com/google/uuid"

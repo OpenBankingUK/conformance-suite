@@ -1,8 +1,8 @@
 package generation
 
 import (
-	"github.com/OpenBankingUK/conformance-suite/pkg/model"
-	"github.com/OpenBankingUK/conformance-suite/pkg/permissions"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/permissions"
 )
 
 func setHeader(consentRequirements []model.SpecConsentRequirements, tc model.TestCase) model.TestCase {

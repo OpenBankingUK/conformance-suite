@@ -10,15 +10,15 @@ import (
 	"testing"
 	"time"
 
-	"github.com/OpenBankingUK/conformance-suite/pkg/discovery"
-	"github.com/OpenBankingUK/conformance-suite/pkg/generation"
-	"github.com/OpenBankingUK/conformance-suite/pkg/model"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/generation"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
 	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
 
-	"github.com/OpenBankingUK/conformance-suite/pkg/server/models"
-	"github.com/OpenBankingUK/conformance-suite/pkg/test"
-	"github.com/OpenBankingUK/conformance-suite/pkg/version/mocks"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/server/models"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/test"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/version/mocks"
 )
 
 const (

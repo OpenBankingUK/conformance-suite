@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/OpenBankingUK/conformance-suite/pkg/schema"
-	"github.com/OpenBankingUK/conformance-suite/pkg/schemaprops"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/schema"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/schemaprops"
 
 	"gopkg.in/resty.v1"
 
@@ -14,12 +14,12 @@ import (
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 
-	"github.com/OpenBankingUK/conformance-suite/pkg/authentication"
-	"github.com/OpenBankingUK/conformance-suite/pkg/discovery"
-	"github.com/OpenBankingUK/conformance-suite/pkg/executors/results"
-	"github.com/OpenBankingUK/conformance-suite/pkg/generation"
-	"github.com/OpenBankingUK/conformance-suite/pkg/model"
-	"github.com/OpenBankingUK/conformance-suite/pkg/tracer"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/authentication"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/executors/results"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/generation"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/tracer"
 )
 
 // RunDefinition captures all the information required to run the test cases

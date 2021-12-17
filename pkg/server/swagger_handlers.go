@@ -9,7 +9,7 @@ import (
 	"github.com/labstack/echo"
 	"github.com/sirupsen/logrus"
 
-	"github.com/OpenBankingUK/conformance-suite/pkg/model"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
 )
 
 // swaggerHandlers - maps paths (e.g., /swagger/account-transaction-v3.0/v3.0/docs) below to handlers.

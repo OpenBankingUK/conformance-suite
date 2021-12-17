@@ -5,8 +5,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/OpenBankingUK/conformance-suite/pkg/executors/results"
-	"github.com/OpenBankingUK/conformance-suite/pkg/test"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/executors/results"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/test"
 )
 
 const (

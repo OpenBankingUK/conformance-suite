@@ -3,9 +3,9 @@ package executors
 import (
 	"testing"
 
-	"github.com/OpenBankingUK/conformance-suite/pkg/test"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/test"
 
-	"github.com/OpenBankingUK/conformance-suite/pkg/executors/mocks"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/executors/mocks"
 	"github.com/stretchr/testify/assert"
 )
 

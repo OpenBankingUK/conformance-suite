@@ -1,8 +1,8 @@
 package model
 
 import (
-	"github.com/OpenBankingUK/conformance-suite/pkg/names"
-	"github.com/OpenBankingUK/conformance-suite/pkg/permissions"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/names"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/permissions"
 )
 
 // NamedPermission - permission structure

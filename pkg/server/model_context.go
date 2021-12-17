@@ -1,9 +1,9 @@
 package server
 
 import (
-	"github.com/OpenBankingUK/conformance-suite/pkg/authentication"
-	"github.com/OpenBankingUK/conformance-suite/pkg/model"
-	"github.com/OpenBankingUK/conformance-suite/pkg/version"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/authentication"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/version"
 	"github.com/sirupsen/logrus"
 	"gopkg.in/resty.v1"
 )

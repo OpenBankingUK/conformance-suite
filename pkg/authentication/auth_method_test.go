@@ -3,7 +3,7 @@ package authentication
 import (
 	"testing"
 
-	"github.com/OpenBankingUK/conformance-suite/pkg/test"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/test"
 )
 
 func TestDefaultAuthMethodReturnsFirstSuiteSupportedMethodWhenOneMatch(t *testing.T) {

@@ -3,7 +3,7 @@ package events
 import (
 	"encoding/json"
 
-	"github.com/OpenBankingUK/conformance-suite/pkg/test"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/test"
 
 	"testing"
 )

@@ -3,7 +3,7 @@
 package mocks
 
 import (
-	results "github.com/OpenBankingUK/conformance-suite/pkg/executors/results"
+	results "bitbucket.org/openbankingteam/conformance-suite/pkg/executors/results"
 	mock "github.com/stretchr/testify/mock"
 )
 

@@ -1,13 +1,13 @@
 package generation
 
 import (
-	"github.com/OpenBankingUK/conformance-suite/pkg/model"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
 	"fmt"
 	"sort"
 	"testing"
 
-	"github.com/OpenBankingUK/conformance-suite/pkg/discovery"
-	"github.com/OpenBankingUK/conformance-suite/pkg/test"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/test"
 	"github.com/go-openapi/spec"
 	"github.com/pkg/errors"
 )

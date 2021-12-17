@@ -9,13 +9,13 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/OpenBankingUK/conformance-suite/pkg/authentication"
-	"github.com/OpenBankingUK/conformance-suite/pkg/schema"
-	"github.com/OpenBankingUK/conformance-suite/pkg/schemaprops"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/authentication"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/schema"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/schemaprops"
 
 	"github.com/sirupsen/logrus"
 
-	"github.com/OpenBankingUK/conformance-suite/pkg/tracer"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/tracer"
 	"gopkg.in/resty.v1"
 )
 

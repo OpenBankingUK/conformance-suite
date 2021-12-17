@@ -1,6 +1,6 @@
 package model
 
-import "github.com/OpenBankingUK/conformance-suite/pkg/permissions"
+import "bitbucket.org/openbankingteam/conformance-suite/pkg/permissions"
 
 // NewPermissionGroup returns a list of Code objects associated with a testcase
 func NewPermissionGroup(tc TestCase) permissions.Group {

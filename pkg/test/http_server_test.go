@@ -1,7 +1,7 @@
 package test
 
 import (
-	"github.com/OpenBankingUK/conformance-suite/pkg/client"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/client"
 	"io/ioutil"
 	"net/http"
 	"testing"

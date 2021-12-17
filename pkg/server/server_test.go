@@ -13,10 +13,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/OpenBankingUK/conformance-suite/pkg/client"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/client"
 
-	"github.com/OpenBankingUK/conformance-suite/pkg/test"
-	"github.com/OpenBankingUK/conformance-suite/pkg/version/mocks"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/test"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/version/mocks"
 	"github.com/labstack/echo"
 	"github.com/stretchr/testify/require"
 )

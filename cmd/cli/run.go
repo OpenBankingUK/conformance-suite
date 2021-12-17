@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/OpenBankingUK/conformance-suite/pkg/client"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/client"
 	"fmt"
 	"github.com/spf13/cobra"
 	"os"

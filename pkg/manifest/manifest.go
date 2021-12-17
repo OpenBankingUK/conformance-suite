@@ -8,7 +8,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/OpenBankingUK/conformance-suite/pkg/discovery"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
 )
 
 // LoadScripts loads the scripts from JSON encoded contents of filename

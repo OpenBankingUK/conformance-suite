@@ -7,14 +7,14 @@ import (
 	"strings"
 	"time"
 
-	"github.com/OpenBankingUK/conformance-suite/pkg/discovery"
-	"github.com/OpenBankingUK/conformance-suite/pkg/generation"
-	"github.com/OpenBankingUK/conformance-suite/pkg/manifest"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/discovery"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/generation"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/manifest"
 
-	"github.com/OpenBankingUK/conformance-suite/pkg/model"
-	"github.com/OpenBankingUK/conformance-suite/pkg/server"
-	"github.com/OpenBankingUK/conformance-suite/pkg/tracer"
-	"github.com/OpenBankingUK/conformance-suite/pkg/version"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/model"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/server"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/tracer"
+	"bitbucket.org/openbankingteam/conformance-suite/pkg/version"
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
@@ -37,7 +37,7 @@ var (
 interfaces and data endpoints against the Functional API
 standard built with love by Open Banking and friends in Go.
 
-Complete documentation is available at https://github.com/OpenBankingUK/conformance-suite`,
+Complete documentation is available at https://bitbucket.org/openbankingteam/conformance-suite`,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			logger := logger.WithField("app", "server")
 			ver := version.NewBitBucket(version.BitBucketAPIRepository)
