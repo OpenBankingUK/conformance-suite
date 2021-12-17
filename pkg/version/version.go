@@ -32,8 +32,8 @@ const (
 	// Prerelease - is pre-release marker for the version. If this is "" (empty string)
 	// then it means that it is a final release. Otherwise, this is a pre-release
 	// such as "alpha", "beta", "rc1", etc.
-	Prerelease             = ""
-	BitBucketAPIRepository = "https://api.bitbucket.org/2.0/repositories/openbankingteam/conformance-suite/refs/tags"
+	Prerelease          = ""
+	GitHubAPIRepository = "https://api.github.com/repos/OpenBankingUK/conformance-suite/tags"
 )
 
 // Checker defines functionality to reason about the current version of the software and if updates are available
@@ -43,29 +43,27 @@ type Checker interface {
 	UpdateWarningVersion(version string) (string, bool, error)
 }
 
-// BitBucket helper with capability to get release versions from source control repository
-type BitBucket struct {
+// GitHub helper with capability to get release versions from source control repository
+type GitHub struct {
 	// bitBucketAPIRepository full URL of the TAG API 2.0 for the Conformance Suite.
 	bitBucketAPIRepository string
 }
 
-// NewBitBucket returns a new instance of Checker.
-func NewBitBucket(bitBucketAPIRepository string) BitBucket {
-	return BitBucket{
+// NewGitHub returns a new instance of Checker.
+func NewGitHub(bitBucketAPIRepository string) GitHub {
+	return GitHub{
 		bitBucketAPIRepository: bitBucketAPIRepository,
 	}
 }
 
 // Tag structure used map response of tags.
 type Tag struct {
-	Name          string `json:"name"`
-	Date          string `json:"date"`
-	CommitMessage string `json:"message"`
+	Name string `json:"name"`
 }
 
 // TagsAPIResponse structure to map response.
 type TagsAPIResponse struct {
-	TagList []Tag `json:"values"`
+	TagList []Tag
 }
 
 func (t Tag) LessThan(subject string) bool {
@@ -96,14 +94,17 @@ func (t tagList) Swap(i, j int) {
 }
 
 func getTags(body []byte) (*TagsAPIResponse, error) {
-	var s = new(TagsAPIResponse)
-	err := json.Unmarshal(body, &s)
+	var tags = new([]Tag)
+	err := json.Unmarshal(body, &tags)
+	s := &TagsAPIResponse{
+		*tags,
+	}
 	return s, err
 }
 
 // GetHumanVersion composes the parts of the version in a way that's suitable
 // for displaying to humans.
-func (v BitBucket) GetHumanVersion() string {
+func (v GitHub) GetHumanVersion() string {
 	version := "v" + FullVersion
 	release := Prerelease
 
@@ -119,7 +120,7 @@ func (v BitBucket) GetHumanVersion() string {
 // VersionFormatter takes a string version number and returns just the numeric parts.
 // This function is used when trying to compare two string versions that 'could'
 // have non numerical properties.
-func (v BitBucket) VersionFormatter(version string) (string, error) {
+func (v GitHub) VersionFormatter(version string) (string, error) {
 	const maxByte = 1<<8 - 1
 	vo := make([]byte, 0, len(version)+8)
 	j := -1
@@ -155,7 +156,7 @@ func (v BitBucket) VersionFormatter(version string) (string, error) {
 // latest tag version on Bitbucket, if a newer version is found it
 // returns a message and bool value that can be used to inform a user
 // a newer version is available for download.
-func (v BitBucket) UpdateWarningVersion(version string) (string, bool, error) {
+func (v GitHub) UpdateWarningVersion(version string) (string, bool, error) {
 	// A default message that can be presented to an end user.
 	errorMessageUI := "Version check is unavailable at this time."
 

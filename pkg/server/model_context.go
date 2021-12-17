@@ -111,9 +111,9 @@ func PutParametersToJourneyContext(config JourneyConfig, context model.Context) 
 
 	_, ou, cn, err := config.certificateTransport.DN()
 	if err == nil && cn != "" && ou != "" {
-		resty.SetHeader("User-Agent", "OpenBankingFCS/"+version.NewBitBucket("").GetHumanVersion()+"/"+ou+"/"+cn)
+		resty.SetHeader("User-Agent", "OpenBankingFCS/"+version.NewGitHub("").GetHumanVersion()+"/"+ou+"/"+cn)
 	} else {
-		resty.SetHeader("User-Agent", "OpenBankingFCS/"+version.NewBitBucket("").GetHumanVersion())
+		resty.SetHeader("User-Agent", "OpenBankingFCS/"+version.NewGitHub("").GetHumanVersion())
 	}
 
 	logrus.Tracef("TokenEndpoint auth method %s", config.tokenEndpointAuthMethod)

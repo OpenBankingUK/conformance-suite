@@ -22,7 +22,7 @@ import (
 var httpUserAgent string
 
 func init() {
-	humanVersion := version.NewBitBucket("").GetHumanVersion()
+	humanVersion := version.NewGitHub("").GetHumanVersion()
 	httpUserAgent = fmt.Sprintf("Open Banking Conformance Suite %s", humanVersion)
 }
 

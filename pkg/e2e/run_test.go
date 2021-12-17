@@ -76,7 +76,7 @@ func disableTestRun(t *testing.T) {
 	resty.SetDebug(debug)
 
 	logger := logger.WithFields(logrus.Fields{"test": "TestRun"})
-	ver := version.NewBitBucket(version.BitBucketAPIRepository)
+	ver := version.NewGitHub(version.GitHubAPIRepository)
 	validatorEngine := discovery.NewFuncValidator(model.NewConditionalityChecker())
 	testGenerator := generation.NewGenerator()
 	tlsValidator := discovery.NewStdTLSValidator(tls.VersionTLS11)

@@ -40,7 +40,7 @@ standard built with love by Open Banking and friends in Go.
 Complete documentation is available at https://github.com/OpenBankingUK/conformance-suite`,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			logger := logger.WithField("app", "server")
-			ver := version.NewBitBucket(version.BitBucketAPIRepository)
+			ver := version.NewGitHub(version.GitHubAPIRepository)
 
 			printVersionInfo(ver, logger)
 
@@ -57,7 +57,7 @@ Complete documentation is available at https://github.com/OpenBankingUK/conforma
 	}
 )
 
-func printVersionInfo(ver version.BitBucket, logger *logrus.Entry) {
+func printVersionInfo(ver version.GitHub, logger *logrus.Entry) {
 	v, err := ver.VersionFormatter(version.FullVersion)
 	if err != nil {
 		logger.Error(errors.Wrap(err, "version.VersionFormatter()"))
