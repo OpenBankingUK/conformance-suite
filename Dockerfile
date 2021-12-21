@@ -68,7 +68,7 @@ FROM alpine:latest as certs
 RUN apk add --no-cache --update --upgrade ca-certificates
 
 # Final image to run the binary
-FROM alpine:3.9.4
+FROM alpine:3.14
 RUN apk add --no-cache --update --upgrade \
 	bash \
 	coreutils \
