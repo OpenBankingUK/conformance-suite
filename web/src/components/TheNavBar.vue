@@ -63,7 +63,7 @@
         vertical
         class="mb-2">
         <b-nav-item
-          href="https://bitbucket.org/openbankingteam/conformance-suite/src/develop/README.md"
+          href="https://github.com/OpenBankingUK/conformance-suite/blob/develop/README.md"
           target="_blank"
         >
           <file-text-icon class="icon-class"/>Documentation
@@ -75,7 +75,7 @@
           <file-text-icon class="icon-class"/>Bug Tracker
         </b-nav-item>
         <b-nav-item
-          href="https://bitbucket.org/openbankingteam/conformance-suite"
+          href="https://github.com/OpenBankingUK/conformance-suite"
           target="_blank">
           <file-text-icon class="icon-class"/>Website
         </b-nav-item>
@@ -85,7 +85,7 @@
           <file-text-icon class="icon-class"/>Integrations
         </b-nav-item>
         <b-nav-item
-          href="https://bitbucket.org/openbankingteam/conformance-suite/src/develop/README.md"
+          href="https://github.com/OpenBankingUK/conformance-suite/blob/develop/README.md"
           target="_blank">
           {{ suiteVersion }}
         </b-nav-item>

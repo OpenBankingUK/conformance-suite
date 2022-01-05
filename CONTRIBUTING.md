@@ -1,6 +1,6 @@
 # Contributing
 
-When contributing to the conformance suite please first discuss the change you wish to make via the [issue tracker](https://bitbucket.org/openbankingteam/conformance-suite/issues) or via email.
+When contributing to the conformance suite please first discuss the change you wish to make via email.
 
 # Questions
 

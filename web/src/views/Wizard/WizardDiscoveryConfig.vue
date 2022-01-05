@@ -9,7 +9,7 @@
           <div>
             When authoring your own discovery file, more information about the Discovery Model can be found
             <a
-              href="https://bitbucket.org/openbankingteam/conformance-suite/src/develop/docs/discovery.md"
+              href="https://github.com/OpenBankingUK/conformance-suite/blob/develop/docs/discovery.md"
               target="_blank">here.
             </a>
           </div>
