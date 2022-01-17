@@ -83,7 +83,7 @@ under the Certificates tab:
 
 The suite runs on https using localhost, you can trust the certificate or add as an exception.
 
-Certificates and be downloaded [https://bitbucket.org/openbankingteam/conformance-suite/src/develop/certs/](here).
+Certificates and be downloaded [https://github.com/OpenBankingUK/conformance-suite/tree/develop/certs](here).
 
 ## Step 3: Download the Functional Conformance Suite
 

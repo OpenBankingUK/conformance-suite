@@ -94,7 +94,7 @@ export default {
 
           if (data.update) {
             const note = {
-              extURL: 'https://bitbucket.org/openbankingteam/conformance-suite/src/develop/README.md',
+              extURL: 'github.com/OpenBankingUK/conformance-suite/blob/develop/README.md',
               message: data.message,
             };
             this.pushNotification(note);
