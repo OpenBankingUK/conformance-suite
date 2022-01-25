@@ -153,7 +153,7 @@ describe('WizardExport', () => {
       has_agreed, job_title, authorised_by, implementer,
     }));
 
-    // set value on has_agreed checkbox, then assert value has been updated in the store
+    // set value on add_digital_signature checkbox, then assert value has been updated in the store
     const add_digital_signature = true;
     wrapper.find('#add_digital_signature').setChecked(add_digital_signature);
     expect(store.state.exporter).toEqual(merge(state, {
