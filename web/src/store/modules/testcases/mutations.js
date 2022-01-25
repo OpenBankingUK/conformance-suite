@@ -39,9 +39,9 @@ export default {
 
     testCase.id = id;
     testCase.meta.status = pass ? 'PASSED' : 'FAILED';
-    const responseSeconds = moment.duration(metrics.response_time).asMilliseconds().toFixed(3);
+    const responseSeconds = moment.duration(metrics ? metrics.response_time : 0).asMilliseconds().toFixed(3);
     testCase.meta.metrics.responseTime = `${responseSeconds.toLocaleString()}ms`;
-    testCase.meta.metrics.responseSize = `${metrics.response_size.toLocaleString()}`;
+    testCase.meta.metrics.responseSize = `${metrics ? metrics.response_size.toLocaleString() : 0}`;
     testCase.error = fail;
     testCase.detail = detail;
     testCase.refURI = refURI;

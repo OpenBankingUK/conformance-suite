@@ -81,7 +81,7 @@ RUN apk add --no-cache --update --upgrade \
 	wget \
 	vim
 
-LABEL MAINTAINER Open Banking
+LABEL MAINTAINER="Open Banking"
 COPY --from=certs /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
 
 WORKDIR /app
