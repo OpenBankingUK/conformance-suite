@@ -457,11 +457,8 @@ func TestVrpFilterTestsBasedOnDiscoveryEndpoints(t *testing.T) {
 		{
 			Path: "/domestic-vrp-consents/2345678987DFGHJGH/funds-confirmation",
 		},
-		{
-			Path: "/domestic-vrps/2345678987DFGHJGH/payment-details",
-		},
 	}
-	filtered, err := FilterTestsBasedOnDiscoveryEndpoints(scripts, endpoints, paymentsRegex)
+	filtered, err := FilterTestsBasedOnDiscoveryEndpoints(scripts, endpoints, vrpRegex)
 	assert.NoError(t, err)
 
 	// As a simple check validate the lengths match
@@ -472,9 +469,6 @@ func TestVrpFilterTestsBasedOnDiscoveryEndpoints(t *testing.T) {
 	assert.True(t, contains(filtered.Scripts, scripts.Scripts[0]))
 	assert.True(t, contains(filtered.Scripts, scripts.Scripts[1]))
 	assert.True(t, contains(filtered.Scripts, scripts.Scripts[2]))
-	assert.True(t, contains(filtered.Scripts, scripts.Scripts[12]))
-	assert.True(t, contains(filtered.Scripts, scripts.Scripts[15]))
-	assert.True(t, contains(filtered.Scripts, scripts.Scripts[19]))
 }
 
 func TestContains(t *testing.T) {
