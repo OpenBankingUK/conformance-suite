@@ -8,8 +8,9 @@ import (
 )
 
 var (
-	acctPay  = append(accountsRegex, paymentsRegex...)
-	allregex = append(acctPay, cbpiiRegex...)
+	acctPay    = append(accountsRegex, paymentsRegex...)
+	acctPayVrp = append(acctPay, vrpRegex...)
+	allregex   = append(acctPayVrp, cbpiiRegex...)
 )
 
 func pathToSwagger(path string) (string, error) {
@@ -405,5 +406,38 @@ var cbpiiRegex = []PathRegex{
 		Method:  "POST",
 		Name:    "Create Funds Confirmation",
 		Mapping: "",
+	},
+}
+
+var vrpRegex = []PathRegex{
+	{
+		Regex:   ".*/domestic-vrp-consents$",
+		Method:  "POST",
+		Name:    "Create a domestic VRP consent",
+		Mapping: "/domestic-vrp-consents",
+	},
+	{
+		Regex:   ".*/domestic-vrp-consents/" + subPathx + "$",
+		Method:  "GET",
+		Name:    "Get domestic VRP consent by consent ID",
+		Mapping: "/domestic-vrp-consents/{ConsentId}",
+	},
+	{
+		Regex:   ".*/domestic-vrp-consents/" + subPathx + "/funds-confirmation$",
+		Method:  "POST",
+		Name:    "Get VRP consents funds confirmation, by consentID",
+		Mapping: "/domestic-vrp-consents/{ConsentId}/funds-confirmation",
+	},
+	{
+		Regex:   ".*/domestic-vrps",
+		Method:  "POST",
+		Name:    "Create a domestic VRP",
+		Mapping: "/domestic-vrps",
+	},
+	{
+		Regex:   ".*/domestic-vrps/" + subPathx + "$",
+		Method:  "GET",
+		Name:    "Get VRP by VrpId",
+		Mapping: "/domestic-vrps/{DomesticVRPId}",
 	},
 }

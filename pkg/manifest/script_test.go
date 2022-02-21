@@ -422,6 +422,61 @@ func TestFilterTestsBasedOnDiscoveryEndpoints(t *testing.T) {
 	assert.True(t, contains(filtered.Scripts, scripts.Scripts[19]))
 }
 
+// TestFilterTestsBasedOnDiscoveryEndpoints with this test we want to test filtering of Scripts.
+// Given a collection of `Scripts` and a collection of `endpoints`, we want the tested function return
+// a subset of `Scripts`, where the URI of each returned script matches an endpoint (via regex) of at least one of
+// the paths in the collection of `endpoints`.
+func TestVrpFilterTestsBasedOnDiscoveryEndpoints(t *testing.T) {
+	scripts := Scripts{
+		Scripts: []Script{
+			{
+				ID:  "0000",
+				URI: "/domestic-vrp-consents/ConsentID-Here1234",
+			},
+			{
+				ID:  "1000",
+				URI: "/domestic-vrp-consents",
+			},
+			{
+				ID:  "2000",
+				URI: "/domestic-vrp-consents/ConsentID-Here1234/funds-confirmation",
+			},
+			{
+				ID:  "3000",
+				URI: "/domestic-vrps/VRPId-Here1234/payment-details",
+			},
+		},
+	}
+	endpoints := []discovery.ModelEndpoint{
+		{
+			Path: "/domestic-vrp-consents/1234",
+		},
+		{
+			Path: "/domestic-vrp-consents",
+		},
+		{
+			Path: "/domestic-vrp-consents/2345678987DFGHJGH/funds-confirmation",
+		},
+		{
+			Path: "/domestic-vrps/2345678987DFGHJGH/payment-details",
+		},
+	}
+	filtered, err := FilterTestsBasedOnDiscoveryEndpoints(scripts, endpoints, paymentsRegex)
+	assert.NoError(t, err)
+
+	// As a simple check validate the lengths match
+	assert.Equal(t, len(endpoints), len(filtered.Scripts))
+
+	// Now, we need to check that the scripts we expect are actually in the result set
+	// We know what to check for by manually matching the paths in `endpoints` to paths in `scripts`
+	assert.True(t, contains(filtered.Scripts, scripts.Scripts[0]))
+	assert.True(t, contains(filtered.Scripts, scripts.Scripts[1]))
+	assert.True(t, contains(filtered.Scripts, scripts.Scripts[2]))
+	assert.True(t, contains(filtered.Scripts, scripts.Scripts[12]))
+	assert.True(t, contains(filtered.Scripts, scripts.Scripts[15]))
+	assert.True(t, contains(filtered.Scripts, scripts.Scripts[19]))
+}
+
 func TestContains(t *testing.T) {
 	collection := []Script{
 		{
