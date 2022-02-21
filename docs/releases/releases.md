@@ -11,13 +11,13 @@ The release is called **v1.6.10**, an update to resolve minor issues with versio
 ## Release v1.6.9 (12th June 2021)
 
 The release is called **v1.6.9**, an update to support version 3.1.8 of the AIS, PIS and CBPII Open Banking Apis, and includes support of 3.1.8 of the Variable Recurring Payment (VRP) standard.
-[Full Release Notes](https://bitbucket.org/openbankingteam/conformance-suite/src/develop/docs/releases/v1.6.9.md)
+[Full Release Notes](https://github.com/OpenBankingUK/conformance-suite/blob/develop/docs/releases/v1.6.9.md)
 (v1.6.9.md)
 
 ## Release v1.6.8 (14th June 2021)
 
 The release is called **v1.6.8**, an update to support version 3.1.7 of the AIS, PIS and CBPII Open Banking Apis.
-[Full Release Notes](https://bitbucket.org/openbankingteam/conformance-suite/src/develop/docs/releases/v1.6.8.md)
+[Full Release Notes](https://github.com/OpenBankingUK/conformance-suite/blob/develop/docs/releases/v1.6.8.md)
 (v1.6.8.md)
 
 ## Release v1.6.7 (24th February 2021)
@@ -66,7 +66,7 @@ Read/Write Data API Specification 3.1.6 including swagger validation for account
 payments and CBPII. This release is backwards compatible with older versions of
 the standard.
 
-[Full Release Notes](https://bitbucket.org/openbankingteam/conformance-suite/src/develop/docs/releases/v1.6.0.md)
+[Full Release Notes](https://github.com/OpenBankingUK/conformance-suite/blob/develop/docs/releases/v1.6.0.md)
 (v1.6.0.md)
 
 ## Release v1.5.3 (3rd August 2020)
@@ -75,7 +75,7 @@ The release is called **v1.5.3**, a minor update that includes new UI support fo
 SSA & KID for EIDAS certificates, 403 error status code fixes and updates to the
 report export.
 
-[Full Release Notes](https://bitbucket.org/openbankingteam/conformance-suite/src/develop/docs/releases/v1.5.3.md)
+[Full Release Notes](https://github.com/OpenBankingUK/conformance-suite/blob/develop/docs/releases/v1.5.3.md)
 (v1.5.3.md)
 
 ## Release v1.5.2 (7th July 2020)
@@ -84,7 +84,7 @@ The release is called **v1.5.2**, a minor update that allows the provision of
 two new command line parameters "eidas_issuer" and "eidas_kid" for EIDAS signing
 certificates (QSeals and OBseals) that are registered with the Open Banking Directory.
 
-[Full Release Notes](https://bitbucket.org/openbankingteam/conformance-suite/src/develop/docs/releases/v1.5.2.md)
+[Full Release Notes](https://github.com/OpenBankingUK/conformance-suite/blob/develop/docs/releases/v1.5.2.md)
 (v1.5.2.md)
 
 ## Release v1.5.1 (1st June 2020)
@@ -101,7 +101,7 @@ The release is called **v1.5.0**, a minor update that adds support for the
 including swagger validation for accounts, payments and CBPII. This release is
 backwards compatible with older versions of the standard.
 
-[Full Release Notes](https://bitbucket.org/openbankingteam/conformance-suite/src/develop/docs/releases/v1.5.0.md)
+[Full Release Notes](https://github.com/OpenBankingUK/conformance-suite/blob/develop/docs/releases/v1.5.0.md)
 (v1.5.0.md)
 
 ## Release v1.4.0 (20th April 2020)
@@ -111,7 +111,7 @@ The release is called **v1.4.0**, a minor update that adds support for the
 including swagger validation for accounts, payments and CBPII. This release is
 backwards compatible with older versions of the standard.
 
-[Full Release Notes](https://bitbucket.org/openbankingteam/conformance-suite/src/develop/docs/releases/v1.4.0.md)
+[Full Release Notes](https://github.com/OpenBankingUK/conformance-suite/blob/develop/docs/releases/v1.4.0.md)
 (v1.4.0.md)
 
 ## Release v1.3.1 (7th of April 2020)
@@ -128,7 +128,7 @@ including swagger validation for accounts, payments and CBPII. Also, this releas
 adds new tests for 3.1.3 Read/Write standards and is backwards compatible with
 older versions of the standard.
 
-[Full Release Notes](https://bitbucket.org/openbankingteam/conformance-suite/src/develop/docs/releases/v1.3.0.md)
+[Full Release Notes](https://github.com/OpenBankingUK/conformance-suite/blob/develop/docs/releases/v1.3.0.md)
 (v1.3.0.md)
 
 ## Release v1.2.6 (25th Feb 2020)
@@ -137,7 +137,7 @@ The release is called **v1.2.6** it adds one minor fix that prevents the psudumm
 url from being called, which simplifies the suites interactionn with implements
 and prevents a 404 and/or redirect issues.
 
-[Full Release Notes](https://bitbucket.org/openbankingteam/conformance-suite/src/develop/docs/releases/v1.2.6.md)
+[Full Release Notes](https://github.com/OpenBankingUK/conformance-suite/blob/develop/docs/releases/v1.2.6.md)
 (v1.2.6.md)
 
 ## Release v1.2.5 (28th Jan 2020)
@@ -145,7 +145,7 @@ and prevents a 404 and/or redirect issues.
 The release is called **v1.2.5** it adds conditional response properties to the
 exported report and fixes invalid 401 body checking.
 
-[Full Release Notes](https://bitbucket.org/openbankingteam/conformance-suite/src/develop/docs/releases/v1.2.5.md)
+[Full Release Notes](https://github.com/OpenBankingUK/conformance-suite/blob/develop/docs/releases/v1.2.5.md)
 (v1.2.5.md)
 
 ## Release v1.2.4 (21st Jan 2020)
@@ -153,7 +153,7 @@ exported report and fixes invalid 401 body checking.
 The release is called **v1.2.4** it fixes an incorrect expiry time/date field for
 CBPII and allows supplementary data input.
 
-[Full Release Notes](https://bitbucket.org/openbankingteam/conformance-suite/src/develop/docs/releases/v1.2.4.md)
+[Full Release Notes](https://github.com/OpenBankingUK/conformance-suite/blob/develop/docs/releases/v1.2.4.md)
 (v1.24.md)
 
 ## Release v1.2.3 (11th Dec 2019)
@@ -172,7 +172,7 @@ to be rendered as a string array.
 The release is called **v1.2.1**, it fixes a regex issue with the OBIE CBPII and
 removes \*.\* as a accept value in Payment requests.
 
-[Full Release Notes](https://bitbucket.org/openbankingteam/conformance-suite/src/develop/docs/releases/v1.2.1.md)
+[Full Release Notes](https://github.com/OpenBankingUK/conformance-suite/blob/develop/docs/releases/v1.2.1.md)
 (v1.2.1.md)
 
 ## Release v1.2.0 (16th Oct 2019)
@@ -181,7 +181,7 @@ The release is called **v1.2.0**, it updates the tool to support the
 [OBIE CBPII](https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1077806537/Confirmation+of+Funds+API+Specification+-+v3.1.2)
 endpoints and read write v3.1.2 specifications.
 
-[Full Release Notes](https://bitbucket.org/openbankingteam/conformance-suite/src/develop/docs/releases/v1.2.0.md)
+[Full Release Notes](https://github.com/OpenBankingUK/conformance-suite/blob/develop/docs/releases/v1.2.0.md)
 (v1.2.0.md)
 
 ## Release v1.1.19 (28th Aug 2019)
@@ -190,7 +190,7 @@ The release is called **v1.1.19**, it allows the collection and use of condition
 properties given a discovery file with the conditional properties definitions and
 config file with the conditional properties data.
 
-[Full Release Notes](https://bitbucket.org/openbankingteam/conformance-suite/src/develop/docs/releases/v1.1.19.md)
+[Full Release Notes](https://github.com/OpenBankingUK/conformance-suite/blob/develop/docs/releases/v1.1.19.md)
 (v1.1.19.md)
 
 ## Release v1.1.18 (9th Aug 2019)
@@ -199,7 +199,7 @@ Release is called **v1.1.18**, it extends scheme names for creditorScheme and
 internationalCreditorScheme to allow custom names, updates the UI and other general
 fixes.
 
-[Full Release Notes](https://bitbucket.org/openbankingteam/conformance-suite/src/develop/docs/releases/v1.1.18.md)
+[Full Release Notes](https://github.com/OpenBankingUK/conformance-suite/blob/develop/docs/releases/v1.1.18.md)
 (v1.1.17.md)
 
 ## Release v1.1.17 (24th July 2019)
@@ -208,7 +208,7 @@ The release is called **v1.1.17**, it disables JSON Web Signatures (JWS) by defa
 in line with [Waiver 007](https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1112670669/W007),
 adds a new user agent string and other general updates/fixes.
 
-[Full Release Notes](https://bitbucket.org/openbankingteam/conformance-suite/src/develop/docs/releases/v1.1.17.md)
+[Full Release Notes](https://github.com/OpenBankingUK/conformance-suite/blob/develop/docs/releases/v1.1.17.md)
 (v1.1.17.md)
 
 ### v1.1.16 (16th July 2019)
@@ -216,7 +216,7 @@ adds a new user agent string and other general updates/fixes.
 Release **v1.1.16**, it adds support for unique transaction IDs for each payment
 and fixes the headless mode for model banks.
 
-[Full Release Notes](https://bitbucket.org/openbankingteam/conformance-suite/src/develop/docs/releases/v1.1.16.md)
+[Full Release Notes](https://github.com/OpenBankingUK/conformance-suite/blob/develop/docs/releases/v1.1.16.md)
 (v1.1.16.md)
 
 ### v1.1.15 (5th July 2019)
@@ -224,7 +224,7 @@ and fixes the headless mode for model banks.
 Release **v1.1.15**, adds support for dynamically allocated resource ids in the
 accounts and transactions api.
 
-[Full Release Notes](https://bitbucket.org/openbankingteam/conformance-suite/src/develop/docs/releases/v1.1.15.md)
+[Full Release Notes](https://github.com/OpenBankingUK/conformance-suite/blob/develop/docs/releases/v1.1.15.md)
 (v1.1.15.md)
 
 ### v1.1.14 (3rd July 2019)

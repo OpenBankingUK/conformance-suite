@@ -16,6 +16,7 @@
       "body": {
         "Data": {
           "ControlParameters": {
+            "PSUAuthenticationMethods": [ "UK.OBIE.SCA" ],
             "VRPType": ["UK.OBIE.VRPType.Sweeping"],
             "ValidFromDateTime": "$transactionFromDate",
             "ValidToDateTime": "$transactionToDate",
