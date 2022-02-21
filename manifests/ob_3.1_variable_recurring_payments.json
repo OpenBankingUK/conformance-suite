@@ -206,7 +206,7 @@
         "vrpId": "$OB-301-VRP-100700-DomesticVRPId",
         "requestConsent": "false"
       },
-      "uriImplementation": "mandatory",
+      "uriImplementation": "optional",
       "method": "get",
       "resource": "DomesticVRP",
       "asserts": [
@@ -249,9 +249,8 @@
       "uriImplementation": "mandatory",
       "method": "get",
       "resource": "DomesticVRP",
-      "asserts_one_of": [
-        "OB3GLOAssertOn400",
-        "OB3GLOAssertOn404"
+      "asserts": [
+        "OB3GLOAssertOn400"
       ],
       "schemaCheck": true
     },             
@@ -268,9 +267,8 @@
       },
       "method": "delete",
       "resource": "FundsConfirmation",
-      "asserts_one_of": [
-          "OB3GLOAssertOn400",
-          "OB3GLOAssertOn204"
+      "asserts": [
+          "OB3GLOAssertOn400"
       ],        
       "schemaCheck": true
     }                          

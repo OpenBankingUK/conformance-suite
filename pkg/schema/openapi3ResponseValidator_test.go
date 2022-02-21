@@ -84,7 +84,7 @@ func TestVRPPost(t *testing.T) {
 
 	req := RequestWrapper{
 		Method: "POST",
-		URL:    "/open-banking/v3.1/vrp/domestic-vrp-consents",
+		URL:    "/open-banking/v3.1/pisp/domestic-vrp-consents",
 	}
 
 	router, _ = legacyrouter.NewRouter(doc)
@@ -199,7 +199,7 @@ const goodVrpConsents = `{
         "PaymentContextCode": "PartyToParty"
     },
     "Links": {
-        "Self": "http://localhost:4700/open-banking/v3.1/vrp/domestic-vrp-consents/vrp-7c55935d-3ff9-4210-a695-b4e7646afd0c"
+        "Self": "http://localhost:4700/open-banking/v3.1/pisp/domestic-vrp-consents/vrp-7c55935d-3ff9-4210-a695-b4e7646afd0c"
     },
     "Meta": {}
 }`
@@ -254,7 +254,7 @@ const badVrpConsents = `{
         "PaymentContextCode": "PartyToParty"
     },
     "Links": {
-        "Self": "http://localhost:4700/open-banking/v3.1/vrp/domestic-vrp-consents/vrp-7c55935d-3ff9-4210-a695-b4e7646afd0c"
+        "Self": "http://localhost:4700/open-banking/v3.1/pisp/domestic-vrp-consents/vrp-7c55935d-3ff9-4210-a695-b4e7646afd0c"
     },
     "Meta": {}
 }`

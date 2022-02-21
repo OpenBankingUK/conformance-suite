@@ -141,6 +141,11 @@ func GenerateTestCases(params *GenerationParameters) ([]model.TestCase, Scripts,
 		if err != nil {
 			logger.WithFields(logrus.Fields{"err": err}).Error("error filter scripts based on cbpii discovery")
 		}
+	} else if specType == "vrp" {
+		filteredScripts, err = FilterTestsBasedOnDiscoveryEndpoints(scripts, params.Endpoints, vrpRegex)
+		if err != nil {
+			logger.WithFields(logrus.Fields{"err": err}).Error("error filter scripts based on vrp discovery")
+		}
 	} else {
 		filteredScripts = scripts // normal processing
 	}
@@ -1006,5 +1011,38 @@ var cbpiiRegex = []PathRegex{
 		Regex:  "^/funds-confirmations$",
 		Method: "POST",
 		Name:   "Create Funds Confirmation",
+	},
+}
+
+var vrpRegex = []PathRegex{
+	{
+		Regex:  "^/domestic-vrp-consents$",
+		Method: "POST",
+		Name:   "Create a domestic VRP consent",
+	},
+	{
+		Regex:  "^/domestic-vrp-consents/" + subPathx + "$",
+		Method: "GET",
+		Name:   "Get domestic VRP consent by consent ID",
+	},
+	{
+		Regex:  "^/domestic-vrp-consents/" + subPathx + "/funds-confirmation$",
+		Method: "GET",
+		Name:   "Get domestic VRP consents funds confirmation, by consentID",
+	},
+	{
+		Regex:  "^/domestic-vrps$",
+		Method: "POST",
+		Name:   "Create a domestic VRP",
+	},
+	{
+		Regex:  "^/domestic-vrps/" + subPathx + "$",
+		Method: "GET",
+		Name:   "Get domestic vrp by domesticVRPId",
+	},
+	{
+		Regex:  "^/domestic-vrps/" + subPathx + "/payment-details$",
+		Method: "POST",
+		Name:   "Get domestic VRP payment details by domesticVRPId",
 	},
 }
