@@ -17,13 +17,17 @@ To provide feedback, please see the [CONTRIBUTING.md](CONTRIBUTING.md).
 ## Release Notes
 * * *
 
-# Release v1.6.11 (6th December 2021)
+# Release v1.6.12 (21st February 2022)
 
-The release is called **v1.6.11**, an update to support version 3.1.9 of the AIS, PIS, CBPII and VRP Open Banking APIs.
+The release is called **v1.6.12**, an update to change VRP `resource-group` from `vrp` to `pisp` and resolve minor
+issues.
+
+[Full Release Notes](./docs/releases/v1.6.12.md)
+
 
 ---
 **Download**:
-`docker run --rm -it -p 127.0.0.1:8443:8443 "openbanking/conformance-suite:v1.6.11"` |
+`docker run --rm -it -p 127.0.0.1:8443:8443 "openbanking/conformance-suite:v1.6.12"` |
 [DockerHub](https://hub.docker.com/r/openbanking/conformance-suite) |
 [Setup Guide](https://github.com/OpenBankingUK/conformance-suite/blob/develop/docs/setup-guide.md)
 ---
@@ -34,11 +38,11 @@ The release is called **v1.6.11**, an update to support version 3.1.9 of the AIS
 
 Pull and run the latest (stable) tagged Docker image:
 
-    > docker run --rm -it -p 127.0.0.1:8443:8443 "openbanking/conformance-suite:v1.6.11"
+    > docker run --rm -it -p 127.0.0.1:8443:8443 "openbanking/conformance-suite:v1.6.12"
 
 or
 
-    > docker run --rm -it -p 8443:8443 "openbanking/conformance-suite:v1.6.11"
+    > docker run --rm -it -p 8443:8443 "openbanking/conformance-suite:v1.6.12"
 
 [See Setup Guide](https://github.com/OpenBankingUK/conformance-suite/blob/develop/docs/setup-guide.md)
 
