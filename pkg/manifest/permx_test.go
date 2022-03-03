@@ -7,6 +7,7 @@ import (
 
 	"github.com/OpenBankingUK/conformance-suite/pkg/discovery"
 	"github.com/OpenBankingUK/conformance-suite/pkg/schema"
+	"github.com/google/uuid"
 
 	"github.com/blang/semver/v4"
 	"github.com/stretchr/testify/assert"
@@ -15,6 +16,10 @@ import (
 )
 
 const manifestPath = "file://manifests/ob_3.1_payment_fca.json"
+
+var (
+	interactionId = uuid.New().String()
+)
 
 func TestPermx(t *testing.T) {
 	apiSpec := discovery.ModelAPISpecification{
@@ -40,7 +45,7 @@ func TestPermx(t *testing.T) {
 		ManifestPath: manifestPath,
 		Validator:    schema.NewNullValidator(),
 	}
-	tests, _, err := GenerateTestCases(&params)
+	tests, _, err := GenerateTestCases(&params, interactionId)
 
 	assert.Nil(t, err)
 
@@ -73,7 +78,7 @@ func TestGetScriptConsentTokens(t *testing.T) {
 		ManifestPath: manifestPath,
 		Validator:    schema.NewNullValidator(),
 	}
-	tests, _, err := GenerateTestCases(&params)
+	tests, _, err := GenerateTestCases(&params, interactionId)
 	assert.Nil(t, err)
 
 	testcasePermissions, err := getTestCasePermissions(tests)

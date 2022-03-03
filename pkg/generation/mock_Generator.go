@@ -14,7 +14,7 @@ type MockGenerator struct {
 }
 
 // GenerateManifestTests provides a mock function with given fields: log, config, _a2, ctx
-func (_m *MockGenerator) GenerateManifestTests(log *logrus.Entry, config GeneratorConfig, _a2 discovery.ModelDiscovery, ctx *model.Context, cond []discovery.ConditionalAPIProperties) (SpecRun, manifest.Scripts, map[string][]manifest.RequiredTokens) {
+func (_m *MockGenerator) GenerateManifestTests(log *logrus.Entry, config GeneratorConfig, _a2 discovery.ModelDiscovery, ctx *model.Context, cond []discovery.ConditionalAPIProperties, interactionId string) (SpecRun, manifest.Scripts, map[string][]manifest.RequiredTokens) {
 	ret := _m.Called(log, config, _a2, ctx)
 
 	var r0 SpecRun

@@ -7,6 +7,7 @@ import (
 	"sync"
 
 	"github.com/blang/semver/v4"
+	"github.com/google/uuid"
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 
@@ -29,6 +30,7 @@ var (
 	errConsentIDAcquisitionFailed      = errors.New("ConsentId acquistion failed")
 	errDynamicResourceAllocationFailed = errors.New("Dynamic Resource allocation failed")
 	errNoTestCases                     = errors.New("No testcases were generated - please select a wider set of endpoints to test")
+	interactionId                      = uuid.New().String()
 )
 
 // Journey represents all possible steps for a user test conformance journey
@@ -272,7 +274,7 @@ func (wj *AppJourney) TestCases() (generation.SpecRun, error) {
 
 	logger.Debug("generator.GenerateManifestTests ...")
 	logrus.Tracef("conditionalProperties from journey config: %#v", wj.config.conditionalProperties)
-	wj.specRun, wj.filteredManifests, wj.permissions = wj.generator.GenerateManifestTests(wj.log, config, discovery, &wj.context, wj.config.conditionalProperties)
+	wj.specRun, wj.filteredManifests, wj.permissions = wj.generator.GenerateManifestTests(wj.log, config, discovery, &wj.context, wj.config.conditionalProperties, interactionId)
 
 	tests := 0
 	for _, sp := range wj.specRun.SpecTestCases {
@@ -456,7 +458,7 @@ func (wj *AppJourney) CollectToken(code, state, scope string) error {
 	}
 
 	if wj.config.useDynamicResourceID {
-		err := executors.GetDynamicResourceIds(state, accessToken, &wj.context, wj.permissions["accounts"])
+		err := executors.GetDynamicResourceIds(state, accessToken, &wj.context, wj.permissions["accounts"], interactionId)
 		if err != nil {
 			logger.WithFields(logrus.Fields{
 				"err": err,

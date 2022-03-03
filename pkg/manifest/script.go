@@ -11,7 +11,6 @@ import (
 
 	"github.com/OpenBankingUK/conformance-suite/pkg/schema"
 	"github.com/blang/semver/v4"
-	"github.com/google/uuid"
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 	"github.com/tidwall/sjson"
@@ -108,7 +107,7 @@ type GenerationParameters struct {
 }
 
 // GenerateTestCases examines a manifest file, asserts file and resources definition, then builds the associated test cases
-func GenerateTestCases(params *GenerationParameters) ([]model.TestCase, Scripts, error) {
+func GenerateTestCases(params *GenerationParameters, interactionId string) ([]model.TestCase, Scripts, error) {
 	logger := logrus.WithFields(logrus.Fields{
 		"function": "GenerateTestCases",
 	})
@@ -162,7 +161,7 @@ func GenerateTestCases(params *GenerationParameters) ([]model.TestCase, Scripts,
 			return nil, Scripts{}, err
 		}
 
-		tc, err := buildTestCase(script, refs.References, localCtx, params.Baseurl, specType, params.Validator, params.Spec)
+		tc, err := buildTestCase(script, refs.References, localCtx, params.Baseurl, specType, params.Validator, params.Spec, interactionId)
 		if err != nil {
 			logger.WithError(err).Error("Error on testCaseBuilder")
 		}
@@ -331,7 +330,7 @@ func updateTestAuthenticationFromToken(tcs []model.TestCase, rts []RequiredToken
 	return tcs
 }
 
-func buildTestCase(s Script, refs map[string]Reference, ctx *model.Context, baseurl string, specType string, validator schema.Validator, apiSpec discovery.ModelAPISpecification) (model.TestCase, error) {
+func buildTestCase(s Script, refs map[string]Reference, ctx *model.Context, baseurl string, specType string, validator schema.Validator, apiSpec discovery.ModelAPISpecification, interactionId string) (model.TestCase, error) {
 	tc := model.MakeTestCase()
 	tc.ID = s.ID
 	tc.Name = s.Description
@@ -345,7 +344,7 @@ func buildTestCase(s Script, refs map[string]Reference, ctx *model.Context, base
 	//TODO: make these more configurable - header also get set in buildInput Section
 	tc.Input.Headers["x-fapi-financial-id"] = "$x-fapi-financial-id"
 	// TODO: use automated interaction-id generation - one id per run - injected into context at journey
-	tc.Input.Headers["x-fapi-interaction-id"] = uuid.New().String()
+	tc.Input.Headers["x-fapi-interaction-id"] = interactionId
 	tc.Input.Headers["x-fcs-testcase-id"] = tc.ID
 	tc.Input.Headers["x-fapi-customer-ip-address"] = "$x-fapi-customer-ip-address"
 	buildInputSection(s, &tc.Input)

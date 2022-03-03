@@ -12,14 +12,14 @@ import (
 )
 
 // GetDynamicResourceIds retrieves the accounts and statements resource ids for the current token
-func GetDynamicResourceIds(tokenName, token string, ctx *model.Context, requiredTokens []manifest.RequiredTokens) error {
+func GetDynamicResourceIds(tokenName, token string, ctx *model.Context, requiredTokens []manifest.RequiredTokens, interactionId string) error {
 	logger := logrus.WithFields(logrus.Fields{
 		"module":    "GetDynamicResourceIds",
 		"tokenName": tokenName,
 		"token":     token,
 	})
 
-	err := getDynamicResourceIds(tokenName, token, ctx, logger, requiredTokens)
+	err := getDynamicResourceIds(tokenName, token, ctx, logger, requiredTokens, interactionId)
 	if err != nil {
 		logger.WithFields(logrus.Fields{
 			"err": err,
@@ -29,7 +29,7 @@ func GetDynamicResourceIds(tokenName, token string, ctx *model.Context, required
 	return nil
 }
 
-func getDynamicResourceIds(tokenName, token string, ctx *model.Context, logger *logrus.Entry, requiredTokens []manifest.RequiredTokens) error {
+func getDynamicResourceIds(tokenName, token string, ctx *model.Context, logger *logrus.Entry, requiredTokens []manifest.RequiredTokens, interactionId string) error {
 
 	if !strings.HasPrefix(tokenName, "account") {
 		return nil
@@ -53,7 +53,7 @@ func getDynamicResourceIds(tokenName, token string, ctx *model.Context, logger *
 	resp, err = resty.R().
 		SetHeader("Authorization", "Bearer "+token).
 		SetHeader("X-Fapi-Financial-Id", xFapiFinancialID).
-		SetHeader("X-Fapi-Interaction-Id", "c4405450-febe-11e8-80a5-0fcebb157400").
+		SetHeader("X-Fapi-Interaction-Id", interactionId).
 		SetHeader("X-Fcs-Testcase-Id", "GetDynamicResourceIdsAccounts").
 		Get(accountsEndpoint)
 

@@ -16,6 +16,7 @@ import (
 	"github.com/OpenBankingUK/conformance-suite/pkg/version"
 	"github.com/go-openapi/loads"
 	"github.com/go-openapi/spec"
+	"github.com/google/uuid"
 	"github.com/sirupsen/logrus"
 )
 
@@ -44,6 +45,7 @@ func GetImplementedTestCases(disco *discovery.ModelDiscoveryItem, nameGenerator 
 		var responseCodes []int
 		var goodResponseCode int
 		newpath := getResourceIds(disco, v.Path, genConfig)
+		interactionId := uuid.New().String()
 
 		for path, props := range doc.Spec().Paths.Paths {
 			for meth, op := range getOperations(&props) {
@@ -63,7 +65,7 @@ func GetImplementedTestCases(disco *discovery.ModelDiscoveryItem, nameGenerator 
 					headers := map[string]string{
 						"Authorization":         "Bearer $access_token",
 						"X-Fapi-Financial-Id":   "$fapi_financial_id",
-						"X-Fapi-Interaction-Id": "b4405450-febe-11e8-80a5-0fcebb1574e1",
+						"X-Fapi-Interaction-Id": interactionId,
 						"Content-Type":          "application/json",
 						"User-Agent":            httpUserAgent,
 						"Accept":                "*/*",

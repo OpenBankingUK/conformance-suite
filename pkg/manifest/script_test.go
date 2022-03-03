@@ -38,7 +38,7 @@ func TestGenerateTestCases(t *testing.T) {
 		ManifestPath: manifestPath,
 		Validator:    schema.NewNullValidator(),
 	}
-	tests, _, err := GenerateTestCases(&params)
+	tests, _, err := GenerateTestCases(&params, interactionId)
 	assert.Nil(t, err)
 
 	perms := getAccountPermissions(tests)
@@ -74,7 +74,7 @@ func TestPaymentPermissions(t *testing.T) {
 		ManifestPath: manifestPath,
 		Validator:    schema.NewNullValidator(),
 	}
-	tests, _, err := GenerateTestCases(&params)
+	tests, _, err := GenerateTestCases(&params, interactionId)
 	assert.NoError(t, err)
 
 	fmt.Printf("we have %d tests\n", len(tests))
@@ -157,7 +157,7 @@ func TestPermissionFiteringAccounts(t *testing.T) {
 		ManifestPath: manifestPath,
 		Validator:    schema.NewNullValidator(),
 	}
-	tests, _, err := GenerateTestCases(&params)
+	tests, _, err := GenerateTestCases(&params, interactionId)
 	assert.NoError(t, err)
 
 	fmt.Printf("%d tests loaded", len(tests))
@@ -287,7 +287,7 @@ func TestPaymentTestCaseCreation(t *testing.T) {
 		ManifestPath: manifestPath,
 		Validator:    schema.NewNullValidator(),
 	}
-	tests, _, err := GenerateTestCases(&params)
+	tests, _, err := GenerateTestCases(&params, interactionId)
 	assert.Nil(t, err)
 
 	fmt.Printf("we have %d tests\n", len(tests))

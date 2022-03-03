@@ -31,7 +31,7 @@ type GeneratorConfig struct {
 // Generator - generates test cases from discovery model
 type Generator interface {
 	GenerateManifestTests(log *logrus.Entry, config GeneratorConfig, discovery discovery.ModelDiscovery,
-		ctx *model.Context, conditional []discovery.ConditionalAPIProperties) (SpecRun, manifest.Scripts, map[string][]manifest.RequiredTokens)
+		ctx *model.Context, conditional []discovery.ConditionalAPIProperties, interactionId string) (SpecRun, manifest.Scripts, map[string][]manifest.RequiredTokens)
 }
 
 // NewGenerator - returns implementation of Generator interface
@@ -71,7 +71,7 @@ func shouldIgnoreDiscoveryItem(apiSpecification discovery.ModelAPISpecification)
 
 // Work in progress to integrate Manifest Test
 func (g generator) GenerateManifestTests(log *logrus.Entry, config GeneratorConfig, discovery discovery.ModelDiscovery,
-	ctx *model.Context, conditionalProperties []discovery.ConditionalAPIProperties) (SpecRun, manifest.Scripts, map[string][]manifest.RequiredTokens) {
+	ctx *model.Context, conditionalProperties []discovery.ConditionalAPIProperties, interactionId string) (SpecRun, manifest.Scripts, map[string][]manifest.RequiredTokens) {
 	log = log.WithField("module", "GenerateManifestTests")
 	for k, item := range discovery.DiscoveryItems {
 		spectype, err := manifest.GetSpecType(item.APISpecification.SchemaVersion)
@@ -111,7 +111,7 @@ func (g generator) GenerateManifestTests(log *logrus.Entry, config GeneratorConf
 			Validator:    validator,
 			Conditional:  conditionalProperties,
 		}
-		tcs, fsc, err := manifest.GenerateTestCases(&params)
+		tcs, fsc, err := manifest.GenerateTestCases(&params, interactionId)
 
 		filteredScripts = fsc
 		if err != nil {
