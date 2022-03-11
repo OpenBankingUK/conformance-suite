@@ -31,13 +31,7 @@
               "PeriodType": "Week"
             }]            
           },
-          "Initiation": {
-            "InstructionIdentification": "$instructionIdentification",
-            "EndToEndIdentification": "$endToEndIdentification",
-            "InstructedAmount": {
-              "Amount": "$instructedAmountValue",
-              "Currency": "GBP"
-            },             
+          "Initiation": {           
             "CreditorAccount": {
               "SchemeName": "$creditorScheme",
               "Identification": "$creditorIdentification",
@@ -58,13 +52,7 @@
         "Data": {
           "ConsentId": "$consentId",
           "PSUAuthenticationMethod": "UK.OBIE.SCA",
-          "Initiation": { 
-            "InstructionIdentification": "$instructionIdentification",
-            "EndToEndIdentification": "$endToEndIdentification",
-            "InstructedAmount": {
-              "Amount": "$instructedAmountValue",
-              "Currency": "GBP"
-            },             
+          "Initiation": {           
             "CreditorAccount": {
               "SchemeName": "$creditorScheme",
               "Identification": "$creditorIdentification",
@@ -82,6 +70,10 @@
               "SchemeName": "$creditorScheme",
               "Identification": "$creditorIdentification",
               "Name": "$creditorName"
+            },
+            "InstructedAmount": {
+              "Amount": "$instructedAmountValue",
+              "Currency": "$instructedAmountCurrency"
             }            
           }
         },
