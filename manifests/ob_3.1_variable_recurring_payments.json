@@ -102,7 +102,6 @@
       "parameters": {
           "tokenRequestScope": "payments",
           "consentId": "$OB-301-VRP-100100-ConsentId",
-          "uniqueVRPReference": "$fn:instructionIdentificationID()",
           "instructedAmountCurrency": "$instructedAmountCurrency",
           "instructedAmountValue": "$instructedAmountValue",
           "postData": "$minimalDomesticVRPConfirmation",
