@@ -141,7 +141,7 @@ func GenerateTestCases(params *GenerationParameters) ([]model.TestCase, Scripts,
 		if err != nil {
 			logger.WithFields(logrus.Fields{"err": err}).Error("error filter scripts based on cbpii discovery")
 		}
-	} else if specType == "vrp" {
+	} else if specType == "vrps" {
 		filteredScripts, err = FilterTestsBasedOnDiscoveryEndpoints(scripts, params.Endpoints, vrpRegex)
 		if err != nil {
 			logger.WithFields(logrus.Fields{"err": err}).Error("error filter scripts based on vrp discovery")
