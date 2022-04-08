@@ -24,7 +24,7 @@ const (
 	//v1.6.11 - this comment allows searching
 	major = "1"
 	minor = "6"
-	patch = "12"
+	patch = "13"
 
 	//FullVersion -  Checker is the full string version of Conformance Suite.
 	FullVersion = major + "." + minor + "." + patch
