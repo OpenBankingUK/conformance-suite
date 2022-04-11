@@ -17,7 +17,7 @@ To provide feedback, please see the [CONTRIBUTING.md](CONTRIBUTING.md).
 ## Release Notes
 * * *
 
-# Release v1.6.13 (8th April 2022)
+# Release v1.6.13 (11th April 2022)
 
 The release is called **v1.6.13**, an update to support version 3.1.10 of the AIS, PIS, CBPII and VRP Open Banking APIs.
 
