@@ -16,7 +16,7 @@ import (
 	"github.com/OpenBankingUK/conformance-suite/pkg/model"
 )
 
-func TestSmallPlay(t *testing.T) {
+func TestIsRequestProperty(t *testing.T) {
 	val, _ := schema.NewRawOpenAPI3Validator("OBIE VRP Profile", "v3.1.9")
 	exists, _, err := val.IsRequestProperty("POST", "/domestic-vrp-consents", "Data.ControlParameters.PeriodicLimits.0.Amount")
 	assert.Nil(t, err)
