@@ -16,13 +16,6 @@ import (
 	"github.com/OpenBankingUK/conformance-suite/pkg/model"
 )
 
-func TestIsRequestProperty(t *testing.T) {
-	val, _ := schema.NewRawOpenAPI3Validator("OBIE VRP Profile", "v3.1.9")
-	exists, _, err := val.IsRequestProperty("POST", "/domestic-vrp-consents", "Data.ControlParameters.PeriodicLimits.0")
-	assert.Nil(t, err)
-	assert.True(t, exists)
-}
-
 func readVrpDiscoveryEndpoints() ([]discovery.ModelEndpoint, error) {
 	discoveryJSON := []byte(`{
 		"discoveryModel": {
