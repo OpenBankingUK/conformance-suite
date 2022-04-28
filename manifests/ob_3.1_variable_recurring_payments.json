@@ -266,9 +266,10 @@
       },
       "method": "delete",
       "resource": "FundsConfirmation",
-      "asserts": [
-          "OB3GLOAssertOn400"
-      ],        
+      "asserts_one_of": [
+        "OB3GLOAssertOn400",
+        "OB3GLOAssertOn204"
+    ],       
       "schemaCheck": true
     }                          
    ]
