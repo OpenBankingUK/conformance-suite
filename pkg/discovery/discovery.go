@@ -20,6 +20,7 @@ type ModelDiscovery struct {
 	Description      string               `json:"description" validate:"required"`
 	DiscoveryVersion string               `json:"discoveryVersion" validate:"required"`
 	TokenAcquisition string               `json:"tokenAcquisition" validate:"required"`
+	callbackProxyUrl string               `json:"callbackProxyUrl" validate:"-"`
 	DiscoveryItems   []ModelDiscoveryItem `json:"discoveryItems" validate:"required,dive"`
 	CustomTests      []CustomTest         `json:"customTests" validate:"-"`
 }

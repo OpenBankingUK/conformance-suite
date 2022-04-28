@@ -207,6 +207,7 @@ export const getters = {
   discoveryModelString: state => JSON.stringify(state.discoveryModel, null, 2),
   discoveryTemplates: state => state.discoveryTemplates,
   tokenAcquisition: state => (state.discoveryModel ? state.discoveryModel.discoveryModel.tokenAcquisition : null),
+  callbackProxyUrl: state => (state.discoveryModel ? state.discoveryModel.discoveryModel.callbackProxyUrl : null),
   problems: state => state.problems,
   discoveryProblems: state => (state.problems ? state.problems.map(p => parseProblem(p)) : null),
   configuration: state => state.configuration,

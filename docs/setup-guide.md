@@ -212,3 +212,4 @@ The following hosts are required to be accessible for the Functional Conformance
 | TCP, HTTPS | production.cloudflare.docker.com | 443 | Access to Docker repository.
 | TCP, HTTPS | registry-1.docker.io | 443 | Access to Docker repository.
 | TCP, HTTPS | auth.docker.io | 443 | Authenticating with Docker Hub.
+| TCP, HTTPS | `$callbackProxyUrl` | 443 | When using `mobile` tokenAcquisition method, call url indicated in the variable must be accessible from the browser.
