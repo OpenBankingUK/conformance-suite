@@ -144,7 +144,7 @@ func (r *TestCaseRunner) runConsentAcquisitionAsync(item TokenConsentIDItem, ctx
 		authMethod = authentication.ClientSecretBasic
 	}
 
-	if consentType == "psu" {
+	if consentType == "psu" || consentType == "mobile" {
 		comp, err = model.LoadComponent("PSUConsentProviderComponent.json")
 		if err != nil {
 			r.AppMsg("Load PSU Component Failed: " + err.Error())
