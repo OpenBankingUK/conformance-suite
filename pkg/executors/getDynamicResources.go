@@ -5,6 +5,7 @@ import (
 
 	"github.com/OpenBankingUK/conformance-suite/pkg/manifest"
 	"github.com/OpenBankingUK/conformance-suite/pkg/model"
+	"github.com/google/uuid"
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 	"github.com/tidwall/gjson"
@@ -48,12 +49,14 @@ func getDynamicResourceIds(tokenName, token string, ctx *model.Context, logger *
 		return errors.New("cannot get X-Fapi_Financial for code for dynamic_resource_id call")
 	}
 
+	interactionId := uuid.New().String()
+
 	accountsEndpoint := resourceBaseURL + "/open-banking/" + apiVersion + "/aisp/accounts"
 	var resp *resty.Response
 	resp, err = resty.R().
 		SetHeader("Authorization", "Bearer "+token).
 		SetHeader("X-Fapi-Financial-Id", xFapiFinancialID).
-		SetHeader("X-Fapi-Interaction-Id", "c4405450-febe-11e8-80a5-0fcebb157400").
+		SetHeader("X-Fapi-Interaction-Id", interactionId).
 		SetHeader("X-Fcs-Testcase-Id", "GetDynamicResourceIdsAccounts").
 		Get(accountsEndpoint)
 
