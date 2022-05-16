@@ -73,7 +73,7 @@ func readVrpDiscoveryEndpoints() ([]discovery.ModelEndpoint, error) {
 					  "schema": "OBDomesticVRPControlParameters",
 					  "name": "Amount1",
 					  "path": "Data.ControlParameters.PeriodicLimits.0.Amount",
-					  "value": "10.00"
+					  "value": "20.00"
 					}
 				  ]
 				},

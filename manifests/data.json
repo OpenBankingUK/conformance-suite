@@ -16,7 +16,7 @@
       "body": {
         "Data": {
           "ControlParameters": {
-            "PSUAuthenticationMethods": [ "UK.OBIE.SCA" ],
+            "PSUAuthenticationMethods": [ "UK.OBIE.SCANotRequired" ],
             "VRPType": ["UK.OBIE.VRPType.Sweeping"],
             "ValidFromDateTime": "$transactionFromDate",
             "ValidToDateTime": "$transactionToDate",
@@ -25,7 +25,7 @@
               "Currency": "$instructedAmountCurrency"
             },
             "PeriodicLimits": [{
-              "Amount": "1.00",
+              "Amount": "10.00",
               "Currency": "GBP",
               "PeriodAlignment": "Consent",
               "PeriodType": "Week"
