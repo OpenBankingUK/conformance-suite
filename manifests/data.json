@@ -51,7 +51,7 @@
       "body": {
         "Data": {
           "ConsentId": "$consentId",
-          "PSUAuthenticationMethod": "UK.OBIE.SCA",
+          "PSUAuthenticationMethod": "UK.OBIE.SCANotRequired",
           "Initiation": {           
             "CreditorAccount": {
               "SchemeName": "$creditorScheme",
