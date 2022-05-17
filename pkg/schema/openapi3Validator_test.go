@@ -196,7 +196,7 @@ const vrp100200Response = `{
 					 "Currency": "GBP"
 				},
 				"PSUAuthenticationMethods": [
-					 "UK.OBIE.SCA"
+					 "UK.OBIE.SCANotRequired"
 				],
 				"PeriodicLimits": [
 					 {
