@@ -89,36 +89,51 @@ func completeBodyFields(body string) string {
 	return body
 }
 
+func getValidatorManifestScriptsSpec(manifest spec) (schema.OpenAPI3Validator, Scripts, References, discovery.ModelAPISpecification, error) {
+	validator, err := schema.NewRawOpenAPI3Validator(manifest.Name, manifest.Version)
+	if err != nil {
+		return validator, Scripts{}, References{}, discovery.ModelAPISpecification{}, err
+	}
+
+	specType, err := GetSpecType(manifest.SchemaVersion)
+	if err != nil {
+		return validator, Scripts{}, References{}, discovery.ModelAPISpecification{}, err
+	}
+
+	var values []interface{}
+	values = append(values, "accounts_v3.1.1", "payments_v3.1.1", "cbpii_v3.1.1", "vrps_v3.1.1")
+	ctx := model.Context{"apiversions": values}
+
+	manifestScripts, refs, err := LoadGenerationResources(specType, manifest.Manifest, &ctx)
+	refs = completeReferences(refs)
+
+	spec := discovery.ModelAPISpecification{
+		Name:          manifest.Name,
+		URL:           manifest.URL,
+		Version:       manifest.Version,
+		SchemaVersion: manifest.SchemaVersion,
+		Manifest:      manifest.Manifest,
+		SpecType:      specType,
+	}
+
+	return validator, manifestScripts, refs, spec, err
+}
+
 // TestValidateRequest - Test manfest files against sqaggers(validators)
 func TestValidateRequest(t *testing.T) {
 	for _, manifest := range specs {
-		validator, err := schema.NewRawOpenAPI3Validator(manifest.Name, manifest.Version)
+		validator, manifestScripts, refs, spec, err := getValidatorManifestScriptsSpec(manifest)
 		assert.NoError(t, err)
-
-		specType, err := GetSpecType(manifest.SchemaVersion)
 
 		var values []interface{}
 		values = append(values, "accounts_v3.1.1", "payments_v3.1.1", "cbpii_v3.1.1", "vrps_v3.1.1")
 		ctx := model.Context{"apiversions": values}
 
-		manifestScripts, refs, err := LoadGenerationResources(specType, manifest.Manifest, &ctx)
-		refs = completeReferences(refs)
-		assert.NoError(t, err)
-
-		spec := discovery.ModelAPISpecification{
-			Name:          manifest.Name,
-			URL:           manifest.URL,
-			Version:       manifest.Version,
-			SchemaVersion: manifest.SchemaVersion,
-			Manifest:      manifest.Manifest,
-			SpecType:      specType,
-		}
-
 		for _, script := range manifestScripts.Scripts {
 			localCtx, err := script.processParameters(&refs, &ctx)
 			assert.NoError(t, err)
 
-			tc, err := buildTestCase(script, refs.References, localCtx, baseurl, specType, validator, spec)
+			tc, err := buildTestCase(script, refs.References, localCtx, baseurl, spec.SpecType, validator, spec)
 			assert.NoError(t, err)
 			localCtx.PutContext(&ctx)
 
@@ -146,4 +161,127 @@ func TestValidateRequest(t *testing.T) {
 			assert.NoError(t, err)
 		}
 	}
+}
+
+func getManifestEndpoints(manifestScripts Scripts) map[string]map[string]bool {
+	endpoints := make(map[string]map[string]bool)
+	for _, s := range manifestScripts.Scripts {
+		if endpoints[s.URI] == nil {
+			endpoints[s.URI] = make(map[string]bool)
+		}
+		endpoints[s.URI][s.Method] = true
+	}
+	return endpoints
+}
+
+// simplifyUri - replace "{id}" and "$id" with "#"
+func simplifyUri(uri, start, end string) string {
+	stardIdx := strings.Index(uri, start)
+	if stardIdx < 0 {
+		return uri
+	}
+	endIdx := strings.Index(uri[stardIdx:], end)
+	// if id field is the last one it doesn't contain / at the end
+	if endIdx < 0 {
+		endIdx = len(uri) - 1
+	} else {
+		if end == "/" {
+			endIdx -= 1
+		}
+		endIdx += stardIdx
+	}
+	subStr := uri[stardIdx : endIdx+1]
+	return simplifyUri(strings.Replace(uri, subStr, "#", 1), start, end)
+}
+
+func TestSsimplifyUri(t *testing.T) {
+	simplifyUri("/accounts/$accountId/party", "$", "/")
+	simplifyUri("/accounts", "$", "/")
+	simplifyUri("/accounts/$accountId", "$", "/")
+}
+
+func simplifyEndpoints(endpoints map[string]map[string]bool, start, end string) map[string]map[string]bool {
+	simplifiedEndpoints := make(map[string]map[string]bool)
+	for uri, methods := range endpoints {
+		newUri := simplifyUri(uri, start, end)
+		simplifiedEndpoints[newUri] = methods
+	}
+	return simplifiedEndpoints
+}
+
+func findMatchingEndpoint(key string, manifestEndpoints map[string]map[string]bool) (map[string]bool, error) {
+	methods := manifestEndpoints[key]
+	if methods == nil {
+		return nil, fmt.Errorf("%s not found in manifest", key)
+	}
+	return methods, nil
+}
+
+// validateMethods - validate Validator Methods against Manifest Methods. It detects missing methods in the Manifest.
+func validateMethods(validatorMethods, manifestMethods map[string]bool) map[string]bool {
+	missingMethods := make(map[string]bool)
+
+	for validatorMethod, _ := range validatorMethods {
+		if !manifestMethods[validatorMethod] {
+			missingMethods[validatorMethod] = true
+		}
+	}
+
+	return missingMethods
+}
+
+// validateEndpoints - validate Validator Endpoints against Manifest Endpoints. It detects missing tests in the Manifest.
+func validateEndpoints(validatorEndpoints, manifestEndpoints map[string]map[string]bool) map[string]map[string]bool {
+	simplifiedManifestEndpoints := simplifyEndpoints(manifestEndpoints, "$", "/")
+	missingEndpoints := make(map[string]map[string]bool)
+
+	for uri, methods := range validatorEndpoints {
+		newUri := simplifyUri(uri, "{", "}")
+		manifestMethods, err := findMatchingEndpoint(newUri, simplifiedManifestEndpoints)
+		if err != nil {
+			missingEndpoints[uri] = methods
+		}
+		missingMethods := validateMethods(methods, manifestMethods)
+		if len(missingMethods) > 0 {
+			missingEndpoints[uri] = missingMethods
+		}
+	}
+	return missingEndpoints
+}
+
+func mapToSlice(boolMap map[string]bool) []string {
+	slice := []string{}
+	for k, _ := range boolMap {
+		slice = append(slice, k)
+	}
+	return slice
+}
+
+func prepareMissingTestsMsg(missingTests map[string]map[string]map[string]bool) string {
+	var msg strings.Builder
+	for name, endpoints := range missingTests {
+		if len(endpoints) > 0 {
+			msg.WriteString(name)
+			msg.WriteString("/n")
+			for enpoint, methods := range endpoints {
+				methodSlice := mapToSlice(methods)
+				msg.WriteString(fmt.Sprintf("%s - %s/n", enpoint, strings.Join(methodSlice, ", ")))
+			}
+		}
+	}
+	return msg.String()
+}
+
+func TestValidateEndpointsAmount(t *testing.T) {
+	missingTests := make(map[string]map[string]map[string]bool)
+	for _, manifest := range specs {
+		validator, manifestScripts, _, _, err := getValidatorManifestScriptsSpec(manifest)
+		assert.NoError(t, err)
+		validatorEndpoints := validator.GetEndpoints()
+		manifestEndpoints := getManifestEndpoints(manifestScripts)
+		missingTests[manifest.Name] = validateEndpoints(validatorEndpoints, manifestEndpoints)
+	}
+	msg := prepareMissingTestsMsg(missingTests)
+	t.Log(msg)
+
 }

@@ -326,6 +326,41 @@ func (v OpenAPI3Validator) findSchemaRequestBody(req HTTPRequest) (*openapi3.Req
 	return op.RequestBody.Value, nil
 }
 
+func (v OpenAPI3Validator) GetEndpoints() map[string]map[string]bool {
+	endpoints := make(map[string]map[string]bool)
+	for path, endpoint := range v.doc.Paths {
+		endpoints[path] = make(map[string]bool)
+		if endpoint.Get != nil {
+			endpoints[path]["get"] = true
+		}
+		if endpoint.Head != nil {
+			endpoints[path]["head"] = true
+		}
+		if endpoint.Post != nil {
+			endpoints[path]["post"] = true
+		}
+		if endpoint.Put != nil {
+			endpoints[path]["put"] = true
+		}
+		if endpoint.Delete != nil {
+			endpoints[path]["delete"] = true
+		}
+		if endpoint.Connect != nil {
+			endpoints[path]["connect"] = true
+		}
+		if endpoint.Options != nil {
+			endpoints[path]["options"] = true
+		}
+		if endpoint.Trace != nil {
+			endpoints[path]["trace"] = true
+		}
+		if endpoint.Patch != nil {
+			endpoints[path]["patch"] = true
+		}
+	}
+	return endpoints
+}
+
 func (v OpenAPI3Validator) validateResponse(params validateParams) error {
 	requestValidationInput := &openapi3filter.RequestValidationInput{
 		Request:    params.httpReq,
