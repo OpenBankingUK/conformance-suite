@@ -1353,31 +1353,6 @@
       "schemaCheck": false
     },
     {
-      "description": "The x-fapi-interaction-id is played-black for Product.",
-      "id": "OB-301-PRO-103403",
-      "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1000604814/Products+v3.1.1",
-      "detail": "Checks that the value in the x-fapi-interaction-id response header is played-back for Product.",
-      "parameters": {
-        "tokenRequestScope": "accounts",
-        "x-fapi-interaction-id": "f5a10e5e-0c46-41c5-a7b7-c8f560205200"
-      },
-      "permissions": [
-        "ReadAccountsBasic",
-        "ReadProducts"
-      ],
-      "headers": {
-        "x-fapi-interaction-id": "$x-fapi-interaction-id"
-      },
-      "uri": "/product",
-      "uriImplementation": "optional",
-      "resource": "Product",
-      "method": "get",
-      "asserts": [
-        "OB3GLOAssertFAPIPlayBack"
-      ],
-      "schemaCheck": false
-    },
-    {
       "description": "Detailed level data returned for a given account using the ReadScheduledPaymentsDetail permission.",
       "id": "OB-301-SCP-103500",
       "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937066541/Scheduled+Payments+v3.1#ScheduledPaymentsv3.1-Endpoints",
