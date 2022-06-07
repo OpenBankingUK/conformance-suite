@@ -283,5 +283,4 @@ func TestValidateEndpointsAmount(t *testing.T) {
 	}
 	msg := prepareMissingTestsMsg(missingTests)
 	t.Log(msg)
-
 }
