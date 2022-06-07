@@ -249,6 +249,9 @@
         "endToEndIdentification": "e2e-domestic-sched-pay",
         "requestConsent": "true"
       },
+      "headers": {
+        "Content-Type": "application/json"
+      },
       "body": "$postData",
       "uri": "/domestic-scheduled-payment-consents",
       "uriImplementation": "conditional",
@@ -447,6 +450,9 @@
         "postData": "$minimalDomesticStandingOrderConsent",
         "requestConsent": "true"
       },
+      "headers": {
+        "Content-Type": "application/json"
+      },
       "body": "$postData",
       "uri": "/domestic-standing-order-consents",
       "uriImplementation": "conditional",
@@ -576,6 +582,9 @@
         "postData": "$minimalInternationalPaymentConsent",
         "requestConsent": "true"
       },
+      "headers": {
+        "Content-Type": "application/json"
+      },
       "body": "$postData",
       "uri": "/international-payment-consents",
       "uriImplementation": "conditional",
@@ -680,6 +689,9 @@
         "endToEndIdentification": "e2e-internat-sched-pay",
         "postData": "$minimalInternationalScheduledPaymentConsent",
         "requestConsent": "true"
+      },
+      "headers": {
+        "Content-Type": "application/json"
       },
       "body": "$postData",
       "uri": "/international-scheduled-payment-consents",
