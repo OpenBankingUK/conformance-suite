@@ -1,6 +1,6 @@
 # Release history
 
-## Release v1.6.10 (6th December 2021)
+## Release v1.6.11 (6th December 2021)
 
 The release is called **v1.6.11**, an update to support version 3.1.9 of the AIS, PIS, CBPII and VRP Open Banking APIs.
 
