@@ -17,17 +17,16 @@ To provide feedback, please see the [CONTRIBUTING.md](CONTRIBUTING.md).
 ## Release Notes
 * * *
 
-# Release v1.6.12 (21st February 2022)
+# Release v1.7.0 (14th June 2022)
 
-The release is called **v1.6.12**, an update to change VRP `resource-group` from `vrp` to `pisp` and resolve minor
-issues.
+The release is called **v1.7.0**, an update to provide linter fixes, add changes to manifests, generate interaction-id for every test, add support for overwriting variables under paths containing numbers (discovery file), add v3.1.10 support, mobile app support fix.
 
-[Full Release Notes](./docs/releases/v1.6.12.md)
+[Full Release Notes](./docs/releases/v1.7.0.md)
 
 
 ---
 **Download**:
-`docker run --rm -it -p 127.0.0.1:8443:8443 "openbanking/conformance-suite:v1.6.12"` |
+`docker run --rm -it -p 127.0.0.1:8443:8443 "openbanking/conformance-suite:v1.7.0"` |
 [DockerHub](https://hub.docker.com/r/openbanking/conformance-suite) |
 [Setup Guide](https://github.com/OpenBankingUK/conformance-suite/blob/develop/docs/setup-guide.md)
 ---
@@ -38,17 +37,17 @@ issues.
 
 Pull and run the latest (stable) tagged Docker image:
 
-    > docker run --rm -it -p 127.0.0.1:8443:8443 "openbanking/conformance-suite:v1.6.12"
+    > docker run --rm -it -p 127.0.0.1:8443:8443 "openbanking/conformance-suite:v1.7.0"
 
 or
 
-    > docker run --rm -it -p 8443:8443 "openbanking/conformance-suite:v1.6.12"
+    > docker run --rm -it -p 8443:8443 "openbanking/conformance-suite:v1.7.0"
 
 [See Setup Guide](https://github.com/OpenBankingUK/conformance-suite/blob/develop/docs/setup-guide.md)
 
 ### Prerequisites
 
-The tool is compatible with the Open Banking UK R/W specification versions: 3.1.0, 3.1.1, 3.1.2, 3.1.3, 3.1.4, 3.1.5, 3.1.6, 3.1.7, 3.1.8, 3.1.9.
+The tool is compatible with the Open Banking UK R/W specification versions: 3.1.0, 3.1.1, 3.1.2, 3.1.3, 3.1.4, 3.1.5, 3.1.6, 3.1.7, 3.1.8, 3.1.9, 3.1.10.
 
 In order to run a container you'll need docker installed.
 
