@@ -36,11 +36,11 @@
               "SchemeName": "$creditorScheme",
               "Identification": "$creditorIdentification",
               "Name": "$creditorName"
-            }, 
+            },
             "RemittanceInformation": {
               "Reference": "$creditorIdentification",
               "Unstructured": "Test Unstructured Data"
-            }     
+            }
           }
         },
         "Risk": {
@@ -57,7 +57,7 @@
               "SchemeName": "$creditorScheme",
               "Identification": "$creditorIdentification",
               "Name": "$creditorName"
-            }, 
+            },
             "RemittanceInformation": {
               "Reference": "$creditorIdentification",
               "Unstructured": "Test Unstructured Data"
@@ -74,7 +74,11 @@
             "InstructedAmount": {
               "Amount": "$instructedAmountValue",
               "Currency": "$instructedAmountCurrency"
-            }            
+            },
+            "RemittanceInformation": {
+              "Reference": "$creditorIdentification",
+              "Unstructured": "Test Unstructured Data"
+            }
           }
         },
         "Risk": {
