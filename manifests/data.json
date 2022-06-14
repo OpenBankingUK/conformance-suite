@@ -4,7 +4,7 @@
       "body": {
         "Data": {
           "ConsentId": "$consentId",
-          "Reference": "$uniqueVRPReference",
+          "Reference": "$creditorIdentification",
           "InstructedAmount": {
             "Amount": "$instructedAmountValue",
             "Currency": "$instructedAmountCurrency"
@@ -16,7 +16,7 @@
       "body": {
         "Data": {
           "ControlParameters": {
-            "PSUAuthenticationMethods": [ "UK.OBIE.SCA" ],
+            "PSUAuthenticationMethods": [ "UK.OBIE.SCANotRequired" ],
             "VRPType": ["UK.OBIE.VRPType.Sweeping"],
             "ValidFromDateTime": "$transactionFromDate",
             "ValidToDateTime": "$transactionToDate",
@@ -25,28 +25,22 @@
               "Currency": "$instructedAmountCurrency"
             },
             "PeriodicLimits": [{
-              "Amount": "1.00",
+              "Amount": "10.00",
               "Currency": "GBP",
               "PeriodAlignment": "Consent",
               "PeriodType": "Week"
             }]            
           },
-          "Initiation": {
-            "InstructionIdentification": "$instructionIdentification",
-            "EndToEndIdentification": "$endToEndIdentification",
-            "InstructedAmount": {
-              "Amount": "$instructedAmountValue",
-              "Currency": "GBP"
-            },             
+          "Initiation": {           
             "CreditorAccount": {
               "SchemeName": "$creditorScheme",
               "Identification": "$creditorIdentification",
               "Name": "$creditorName"
-            }, 
+            },
             "RemittanceInformation": {
               "Reference": "$creditorIdentification",
               "Unstructured": "Test Unstructured Data"
-            }     
+            }
           }
         },
         "Risk": {
@@ -57,19 +51,13 @@
       "body": {
         "Data": {
           "ConsentId": "$consentId",
-          "PSUAuthenticationMethod": "UK.OBIE.SCA",
-          "Initiation": { 
-            "InstructionIdentification": "$instructionIdentification",
-            "EndToEndIdentification": "$endToEndIdentification",
-            "InstructedAmount": {
-              "Amount": "$instructedAmountValue",
-              "Currency": "GBP"
-            },             
+          "PSUAuthenticationMethod": "UK.OBIE.SCANotRequired",
+          "Initiation": {           
             "CreditorAccount": {
               "SchemeName": "$creditorScheme",
               "Identification": "$creditorIdentification",
               "Name": "$creditorName"
-            }, 
+            },
             "RemittanceInformation": {
               "Reference": "$creditorIdentification",
               "Unstructured": "Test Unstructured Data"
@@ -82,7 +70,15 @@
               "SchemeName": "$creditorScheme",
               "Identification": "$creditorIdentification",
               "Name": "$creditorName"
-            }            
+            },
+            "InstructedAmount": {
+              "Amount": "$instructedAmountValue",
+              "Currency": "$instructedAmountCurrency"
+            },
+            "RemittanceInformation": {
+              "Reference": "$creditorIdentification",
+              "Unstructured": "Test Unstructured Data"
+            }
           }
         },
         "Risk": {

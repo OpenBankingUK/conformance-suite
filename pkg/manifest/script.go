@@ -11,6 +11,7 @@ import (
 
 	"github.com/OpenBankingUK/conformance-suite/pkg/schema"
 	"github.com/blang/semver/v4"
+	"github.com/google/uuid"
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 	"github.com/tidwall/sjson"
@@ -141,7 +142,7 @@ func GenerateTestCases(params *GenerationParameters) ([]model.TestCase, Scripts,
 		if err != nil {
 			logger.WithFields(logrus.Fields{"err": err}).Error("error filter scripts based on cbpii discovery")
 		}
-	} else if specType == "vrp" {
+	} else if specType == "vrps" {
 		filteredScripts, err = FilterTestsBasedOnDiscoveryEndpoints(scripts, params.Endpoints, vrpRegex)
 		if err != nil {
 			logger.WithFields(logrus.Fields{"err": err}).Error("error filter scripts based on vrp discovery")
@@ -161,7 +162,8 @@ func GenerateTestCases(params *GenerationParameters) ([]model.TestCase, Scripts,
 			return nil, Scripts{}, err
 		}
 
-		tc, err := buildTestCase(script, refs.References, localCtx, params.Baseurl, specType, params.Validator, params.Spec)
+		interactionId := uuid.New().String()
+		tc, err := buildTestCase(script, refs.References, localCtx, params.Baseurl, specType, params.Validator, params.Spec, interactionId)
 		if err != nil {
 			logger.WithError(err).Error("Error on testCaseBuilder")
 		}
@@ -330,7 +332,7 @@ func updateTestAuthenticationFromToken(tcs []model.TestCase, rts []RequiredToken
 	return tcs
 }
 
-func buildTestCase(s Script, refs map[string]Reference, ctx *model.Context, baseurl string, specType string, validator schema.Validator, apiSpec discovery.ModelAPISpecification) (model.TestCase, error) {
+func buildTestCase(s Script, refs map[string]Reference, ctx *model.Context, baseurl string, specType string, validator schema.Validator, apiSpec discovery.ModelAPISpecification, interactionId string) (model.TestCase, error) {
 	tc := model.MakeTestCase()
 	tc.ID = s.ID
 	tc.Name = s.Description
@@ -344,7 +346,7 @@ func buildTestCase(s Script, refs map[string]Reference, ctx *model.Context, base
 	//TODO: make these more configurable - header also get set in buildInput Section
 	tc.Input.Headers["x-fapi-financial-id"] = "$x-fapi-financial-id"
 	// TODO: use automated interaction-id generation - one id per run - injected into context at journey
-	tc.Input.Headers["x-fapi-interaction-id"] = "c4405450-febe-11e8-80a5-0fcebb157400"
+	tc.Input.Headers["x-fapi-interaction-id"] = interactionId
 	tc.Input.Headers["x-fcs-testcase-id"] = tc.ID
 	tc.Input.Headers["x-fapi-customer-ip-address"] = "$x-fapi-customer-ip-address"
 	buildInputSection(s, &tc.Input)

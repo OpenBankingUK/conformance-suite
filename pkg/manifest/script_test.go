@@ -16,6 +16,163 @@ import (
 	"github.com/OpenBankingUK/conformance-suite/pkg/model"
 )
 
+func readVrpDiscoveryEndpoints() ([]discovery.ModelEndpoint, error) {
+	discoveryJSON := []byte(`{
+		"discoveryModel": {
+		  "name": "ob-v3.1-ozone",
+		  "description": "An Open Banking UK discovery template for v3.1.9 of VRP, pre-populated for model Bank (OzoneApi).",
+		  "discoveryVersion": "v0.4.0",
+		  "tokenAcquisition": "psu",
+		  "discoveryItems": [
+			{
+			  "apiSpecification": {
+				"name": "OBIE VRP Profile",
+				"url": "https://openbankinguk.github.io/read-write-api-site3/v3.1.9/profiles/vrp-profile.html",
+				"version": "v3.1.9",
+				"schemaVersion": "https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.9/dist/openapi/vrp-openapi.json",
+				"manifest": "file://manifests/ob_3.1_variable_recurring_payments.json"
+			  },
+			  "openidConfigurationUri": "https://ob19-auth1-ui.o3bank.co.uk/.well-known/openid-configuration",
+			  "resourceBaseUri": "https://ob19-rs1.o3bank.co.uk:4501/open-banking/v3.1/pisp",
+			  "endpoints": [
+				{
+				  "method": "POST",
+				  "path": "/domestic-vrp-consents",
+				  "conditionalProperties": [
+					{
+					  "schema": "OBDomesticVRPControlParameters",
+					  "name": "PSUAuthenticationMethods",
+					  "path": "Data.ControlParameters.PSUAuthenticationMethods",
+					  "value": "UK.OBIE.SCANotRequired"
+					},
+					{
+					  "schema": "OBRisk1",
+					  "name": "PaymentContextCode",
+					  "path": "Risk.PaymentContextCode",
+					  "value": "PartyToParty"
+					},
+					{
+					  "schema": "OBDomesticVRPControlParameters",
+					  "name": "ValidFromDateTime",
+					  "path": "Data.ControlParameters.ValidFromDateTime",
+					  "value": "2022-04-07T10:40:00+02:00"
+					},
+					{
+					  "schema": "OBDomesticVRPControlParameters",
+					  "name": "ValidToDateTime",
+					  "path": "Data.ControlParameters.ValidToDateTime",
+					  "value": "2022-05-15T10:40:00+02:00"
+					},
+					{
+					  "schema": "OBDomesticVRPControlParameters",
+					  "name": "Amount",
+					  "path": "Data.ControlParameters.MaximumIndividualAmount.Amount",
+					  "value": "20.00"
+					},
+					{
+					  "schema": "OBDomesticVRPControlParameters",
+					  "name": "Amount1",
+					  "path": "Data.ControlParameters.PeriodicLimits.0.Amount",
+					  "value": "20.00"
+					}
+				  ]
+				},
+				{
+				  "method": "POST",
+				  "path": "/domestic-vrps",
+				  "conditionalProperties": [
+					{
+					  "schema": "OBDomesticVRPControlParameters",
+					  "name": "PSUAuthenticationMethods",
+					  "path": "Data.PSUAuthenticationMethod",
+					  "value": "UK.OBIE.SCANotRequired"
+					},
+					{
+					  "schema": "OBRisk1",
+					  "name": "PaymentContextCode",
+					  "path": "Risk.PaymentContextCode",
+					  "value": "PartyToParty"
+					},
+					{
+					  "schema": "Unstructured2",
+					  "name": "Unstructured",
+					  "path": "Data.Instruction.RemittanceInformation.Unstructured",
+					  "value": "Test Unstructured Data"
+					},
+					{
+					  "schema": "Reference2",
+					  "name": "Reference",
+					  "path": "Data.Instruction.RemittanceInformation.Reference",
+					  "value": "77040162099360"
+					}
+				  ]
+				},
+				{
+				  "method": "GET",
+				  "path": "/domestic-vrp-consents/{ConsentId}"
+				},
+				{
+				  "method": "DELETE",
+				  "path": "/domestic-vrp-consents/{ConsentId}"
+				},
+				{
+				  "method": "POST",
+				  "path": "/domestic-vrp-consents/{ConsentId}/funds-confirmation"
+				}
+			  ]
+			}
+		  ]
+		}
+	  }
+	`)
+
+	disco := &discovery.Model{}
+
+	err := json.Unmarshal(discoveryJSON, &disco)
+
+	return disco.DiscoveryModel.DiscoveryItems[0].Endpoints, err
+
+}
+
+func TestVrpGenerateTestCases(t *testing.T) {
+	apiSpec := discovery.ModelAPISpecification{
+		SchemaVersion: "https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.9/dist/openapi/vrp-openapi.json",
+	}
+	specType, err := GetSpecType(apiSpec.SchemaVersion)
+	assert.Nil(t, err)
+
+	var values []interface{}
+	values = append(values, "vrps_v3.1.1")
+	context := model.Context{"apiversions": values}
+
+	scripts, _, err := LoadGenerationResources(specType, manifestPath, &context)
+	assert.Nil(t, err)
+
+	val, err := schema.NewRawOpenAPI3Validator("OBIE VRP Profile", "v3.1.9")
+	assert.Nil(t, err)
+
+	endpoints, err := readVrpDiscoveryEndpoints()
+	assert.Nil(t, err)
+
+	params := GenerationParameters{Scripts: scripts,
+		Spec:         apiSpec,
+		Baseurl:      "http://mybaseurl",
+		Ctx:          &context,
+		Endpoints:    endpoints,
+		ManifestPath: "file://manifests/ob_3.1_variable_recurring_payments.json",
+		Validator:    val,
+	}
+
+	params.Conditional = []discovery.ConditionalAPIProperties{
+		{
+			Name:      "OBIE VRP Profile",
+			Endpoints: endpoints,
+		},
+	}
+	_, _, err = GenerateTestCases(&params)
+	assert.Nil(t, err)
+}
+
 func TestGenerateTestCases(t *testing.T) {
 	apiSpec := discovery.ModelAPISpecification{
 		SchemaVersion: accountSwaggerLocation31,

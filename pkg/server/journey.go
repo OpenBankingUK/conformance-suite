@@ -295,7 +295,7 @@ func (wj *AppJourney) TestCases() (generation.SpecRun, error) {
 	collector := schemaprops.GetPropertyCollector()
 	collector.SetCollectorAPIDetails(schemaprops.ConsentGathering, "")
 
-	if discovery.TokenAcquisition == "psu" { // Handle  PSU Consent
+	if discovery.TokenAcquisition == "psu" || discovery.TokenAcquisition == "mobile" { // Handle  PSU Consent
 		logger.WithFields(logrus.Fields{
 			"discovery.TokenAcquisition": discovery.TokenAcquisition,
 		}).Debug("AcquirePSUTokens ...")

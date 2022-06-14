@@ -154,7 +154,7 @@ const goodVrpConsents = `{
         "ReadRefundAccount": "Yes",
         "ControlParameters": {
             "PSUAuthenticationMethods": [
-                "UK.OBIE.SCA"
+                "UK.OBIE.SCANotRequired"
             ],
             "VRPType": [
                 "UK.OBIE.VRPType.Sweeping"
@@ -209,7 +209,7 @@ const badVrpConsents = `{
         "ReadRefundAccount": "Yes2",
         "ControlParameters": {
             "PSUAuthenticationMethods": [
-                "UK.OBIE.SCA"
+                "UK.OBIE.SCANotRequired"
             ],
             "VRPType": [
                 "UK.OBIE.VRPType.Sweeping"

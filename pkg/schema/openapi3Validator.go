@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"strconv"
 	"strings"
 
 	"github.com/getkin/kin-openapi/openapi3"
@@ -280,6 +281,26 @@ func findPropertyInOas3Schema(sc *openapi3.Schema, propertyPath, previousPath st
 		ret, propType := findPropertyInOas3Schema(j.Value, propertyPath, element)
 		if ret {
 			return true, propType
+		}
+	}
+
+	return findItemInOas3Schema(sc, propertyPath, previousPath)
+}
+
+func findItemInOas3Schema(sc *openapi3.Schema, propertyPath, previousPath string) (bool, string) {
+	if len(sc.Properties) == 0 {
+		notFoundPath := strings.Replace(propertyPath, previousPath+".", "", 1)
+		SplitedNotFoundPath := strings.Split(notFoundPath, ".")
+		idx := SplitedNotFoundPath[0]
+		if _, err := strconv.Atoi(idx); err == nil {
+			if len(SplitedNotFoundPath) == 1 {
+				return true, normalizePropertyType(sc.Items.Value.Type)
+			}
+			element := previousPath + "." + idx
+			ret, propType := findPropertyInOas3Schema(sc.Items.Value, propertyPath, element)
+			if ret {
+				return true, propType
+			}
 		}
 	}
 

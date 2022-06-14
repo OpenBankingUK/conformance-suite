@@ -6,6 +6,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
@@ -195,7 +196,7 @@ const vrp100200Response = `{
 					 "Currency": "GBP"
 				},
 				"PSUAuthenticationMethods": [
-					 "UK.OBIE.SCA"
+					 "UK.OBIE.SCANotRequired"
 				],
 				"PeriodicLimits": [
 					 {
@@ -303,4 +304,11 @@ func TestIsRequestPropertyOas3(t *testing.T) {
 	isRequestProperty, objType, err = validator.IsRequestProperty("GET", "/international-payment-consents/{ConsentId}/funds-confirmation", "Data.Initiation.Creditor.Name")
 	require.NoError(t, err)
 	require.False(t, isRequestProperty)
+}
+
+func TestVrpIsRequestPropertyOas3(t *testing.T) {
+	val, _ := NewRawOpenAPI3Validator("OBIE VRP Profile", "v3.1.9")
+	exists, _, err := val.IsRequestProperty("POST", "/domestic-vrp-consents", "Data.ControlParameters.PeriodicLimits.0")
+	assert.Nil(t, err)
+	assert.True(t, exists)
 }
