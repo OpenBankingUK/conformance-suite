@@ -1,5 +1,9 @@
 # Release history
 
+# Release v1.7.0 (14th June 2022)
+
+The release is called **v1.7.0**, an update to provide linter fixes, add changes to manifests, generate interaction-id for every test, add support for overwriting variables under paths containing numbers (discovery file), add v3.1.10 support, mobile app support fix.
+
 ## Release v1.6.11 (6th December 2021)
 
 The release is called **v1.6.11**, an update to support version 3.1.9 of the AIS, PIS, CBPII and VRP Open Banking APIs.
