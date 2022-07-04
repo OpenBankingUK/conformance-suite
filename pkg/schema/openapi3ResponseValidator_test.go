@@ -84,7 +84,7 @@ func TestVRPPost(t *testing.T) {
 
 	req := RequestWrapper{
 		Method: "POST",
-		URL:    "/open-banking/v3.1/vrp/domestic-vrp-consents",
+		URL:    "/open-banking/v3.1/pisp/domestic-vrp-consents",
 	}
 
 	router, _ = legacyrouter.NewRouter(doc)
