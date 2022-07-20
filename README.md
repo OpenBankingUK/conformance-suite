@@ -32,6 +32,15 @@ The release is called **v1.7.0**, an update to provide linter fixes, add changes
 ---
 
 
+## Version table
+
+| Release       | Standard version  |
+| ------------- |:-----------------:|
+| v1.7.0        | v3.1.10           |
+| v1.6.12       | v3.1.9            |
+| v1.6.10       | v3.1.8            |
+
+
 ## Quickstart
 * * *
 
