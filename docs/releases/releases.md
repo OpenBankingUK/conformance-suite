@@ -1,5 +1,9 @@
 # Release history
 
+# Release v1.7.1 (4th October 2022)
+
+The release is called **v1.7.1**, an update to provide a unit test fix, add a change to VRP manifest.
+
 # Release v1.7.0 (14th June 2022)
 
 The release is called **v1.7.0**, an update to provide linter fixes, add changes to manifests, generate interaction-id for every test, add support for overwriting variables under paths containing numbers (discovery file), add v3.1.10 support, mobile app support fix.
