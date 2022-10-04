@@ -17,16 +17,16 @@ To provide feedback, please see the [CONTRIBUTING.md](CONTRIBUTING.md).
 ## Release Notes
 * * *
 
-# Release v1.7.0 (14th June 2022)
+# Release v1.7.1 (4th October 2022)
 
-The release is called **v1.7.0**, an update to provide linter fixes, add changes to manifests, generate interaction-id for every test, add support for overwriting variables under paths containing numbers (discovery file), add v3.1.10 support, mobile app support fix.
+The release is called **v1.7.1**, an update to provide a unit test fix, add a change to VRP manifest.
 
-[Full Release Notes](./docs/releases/v1.7.0.md)
+[Full Release Notes](./docs/releases/v1.7.1.md)
 
 
 ---
 **Download**:
-`docker run --rm -it -p 127.0.0.1:8443:8443 "openbanking/conformance-suite:v1.7.0"` |
+`docker run --rm -it -p 127.0.0.1:8443:8443 "openbanking/conformance-suite:v1.7.1"` |
 [DockerHub](https://hub.docker.com/r/openbanking/conformance-suite) |
 [Setup Guide](https://github.com/OpenBankingUK/conformance-suite/blob/develop/docs/setup-guide.md)
 ---
@@ -46,11 +46,11 @@ The release is called **v1.7.0**, an update to provide linter fixes, add changes
 
 Pull and run the latest (stable) tagged Docker image:
 
-    > docker run --rm -it -p 127.0.0.1:8443:8443 "openbanking/conformance-suite:v1.7.0"
+    > docker run --rm -it -p 127.0.0.1:8443:8443 "openbanking/conformance-suite:v1.7.1"
 
 or
 
-    > docker run --rm -it -p 8443:8443 "openbanking/conformance-suite:v1.7.0"
+    > docker run --rm -it -p 8443:8443 "openbanking/conformance-suite:v1.7.1"
 
 [See Setup Guide](https://github.com/OpenBankingUK/conformance-suite/blob/develop/docs/setup-guide.md)
 
