@@ -113,8 +113,9 @@
           "Content-Type": "application/json"
       },
       "resource": "DomesticVRP",
-      "asserts": [
-          "OB3GLOAssertOn200"
+      "asserts_one_of": [
+          "OB3GLOAssertOn200",
+          "OB3GLOAssertOn201"
       ],
       "schemaCheck": true,
       "validateSignature": true
