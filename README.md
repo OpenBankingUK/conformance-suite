@@ -19,7 +19,7 @@ To provide feedback, please see the [CONTRIBUTING.md](CONTRIBUTING.md).
 
 # Release v1.7.1 (4th October 2022)
 
-The release is called **v1.7.1**, an update to provide a unit test fix, add a change to VRP manifest.
+The release is called **v1.7.1**, an update to provide a unit test fix, add a change to VRP manifest and swagger.
 
 [Full Release Notes](./docs/releases/v1.7.1.md)
 
