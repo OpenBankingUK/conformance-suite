@@ -1243,7 +1243,7 @@
       "description": "Fails when account is invalid for Parties.",
       "id": "OB-301-PAR-103106",
       "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1000702294/Read+Write+Data+API+Specification+-+v3.1.1#Read/WriteDataAPISpecification-v3.1.1-400(BadRequest)v/s404(NotFound)",
-      "detail": "Checks the correct response is returned when given an invalid account for an Party.",
+      "detail": "Checks the correct response is returned when given an invalid account for Parties.",
       "parameters": {
         "tokenRequestScope": "accounts",
         "accountId": "foobar"
@@ -1285,10 +1285,10 @@
       "schemaCheck": false
     },
     {
-      "description": "The x-fapi-interaction-id is played-black for account Party.",
+      "description": "The x-fapi-interaction-id is played-black for account Parties.",
       "id": "OB-301-PAR-103108",
       "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1000015561/Parties+v3.1.1",
-      "detail": "Checks that the value in the x-fapi-interaction-id response header is played-back for account Party.",
+      "detail": "Checks that the value in the x-fapi-interaction-id response header is played-back for account Parties.",
       "parameters": {
         "tokenRequestScope": "accounts",
         "accountId": "$consentedAccountId",

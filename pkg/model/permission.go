@@ -282,6 +282,7 @@ var staticApiPermissions = []permission{
 		Code: "ReadParty",
 		Endpoints: []string{
 			"/accounts/{AccountId}/party",
+			"/accounts/{AccountId}/parties",
 		},
 		Default:           true,
 		RequiredOneOrMore: []Code{},
