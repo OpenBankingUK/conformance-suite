@@ -86,6 +86,7 @@ var staticApiPermissions = []permission{
 			"/accounts/{AccountId}/direct-debits",
 			"/accounts/{AccountId}/offers",
 			"/accounts/{AccountId}/party",
+			"/accounts/{AccountId}/parties",
 			"/accounts/{AccountId}/product",
 			"/accounts/{AccountId}/scheduled-payments",
 			"/accounts/{AccountId}/standing-orders",

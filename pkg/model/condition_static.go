@@ -247,6 +247,11 @@ func conditionalityStaticData() []byte {
 			{
 			  "condition": "conditional",
 			  "method": "GET",
+			  "endpoint": "/accounts/{AccountId}/parties"
+			},
+			{
+			  "condition": "conditional",
+			  "method": "GET",
 			  "endpoint": "/accounts/{AccountId}/party"
 			},
 			{
@@ -385,6 +390,11 @@ func conditionalityStaticData() []byte {
 			  "condition": "optional",
 			  "method": "GET",
 			  "endpoint": "/offers"
+			},
+			{
+			  "condition": "conditional",
+			  "method": "GET",
+			  "endpoint": "/accounts/{AccountId}/parties"
 			},
 			{
 			  "condition": "conditional",
@@ -531,6 +541,11 @@ func conditionalityStaticData() []byte {
 			{
 			  "condition": "conditional",
 			  "method": "GET",
+			  "endpoint": "/accounts/{AccountId}/parties"
+			},
+			{
+			  "condition": "conditional",
+			  "method": "GET",
 			  "endpoint": "/accounts/{AccountId}/party"
 			},
 			{
@@ -669,6 +684,11 @@ func conditionalityStaticData() []byte {
 			  "condition": "optional",
 			  "method": "GET",
 			  "endpoint": "/offers"
+			},
+			{
+			  "condition": "conditional",
+			  "method": "GET",
+			  "endpoint": "/accounts/{AccountId}/parties"
 			},
 			{
 			  "condition": "conditional",
@@ -815,6 +835,11 @@ func conditionalityStaticData() []byte {
 			{
 			  "condition": "conditional",
 			  "method": "GET",
+			  "endpoint": "/accounts/{AccountId}/parties"
+			},
+			{
+			  "condition": "conditional",
+			  "method": "GET",
 			  "endpoint": "/accounts/{AccountId}/party"
 			},
 			{
@@ -953,6 +978,11 @@ func conditionalityStaticData() []byte {
 			  "condition": "optional",
 			  "method": "GET",
 			  "endpoint": "/offers"
+			},
+			{
+			  "condition": "conditional",
+			  "method": "GET",
+			  "endpoint": "/accounts/{AccountId}/parties"
 			},
 			{
 			  "condition": "conditional",
@@ -1099,6 +1129,11 @@ func conditionalityStaticData() []byte {
 			{
 			  "condition": "conditional",
 			  "method": "GET",
+			  "endpoint": "/accounts/{AccountId}/parties"
+			},
+			{
+			  "condition": "conditional",
+			  "method": "GET",
 			  "endpoint": "/accounts/{AccountId}/party"
 			},
 			{
@@ -1237,6 +1272,11 @@ func conditionalityStaticData() []byte {
 			  "condition": "optional",
 			  "method": "GET",
 			  "endpoint": "/offers"
+			},
+			{
+			  "condition": "conditional",
+			  "method": "GET",
+			  "endpoint": "/accounts/{AccountId}/parties"
 			},
 			{
 			  "condition": "conditional",
@@ -1383,6 +1423,11 @@ func conditionalityStaticData() []byte {
 			{
 			  "condition": "conditional",
 			  "method": "GET",
+			  "endpoint": "/accounts/{AccountId}/parties"
+			},
+			{
+			  "condition": "conditional",
+			  "method": "GET",
 			  "endpoint": "/accounts/{AccountId}/party"
 			},
 			{
@@ -1521,6 +1566,11 @@ func conditionalityStaticData() []byte {
 			  "condition": "optional",
 			  "method": "GET",
 			  "endpoint": "/offers"
+			},
+			{
+			  "condition": "conditional",
+			  "method": "GET",
+			  "endpoint": "/accounts/{AccountId}/parties"
 			},
 			{
 			  "condition": "conditional",

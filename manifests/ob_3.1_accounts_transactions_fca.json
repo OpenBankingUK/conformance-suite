@@ -1057,6 +1057,29 @@
       "schemaCheck": true
     },
     {
+      "description": "All data returned for a given Account with ReadParty permission with additional schema checks, status and headers.",
+      "id": "OB-301-PAR-102902",
+      "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937984104/Party+v3.1#Partyv3.1-PermissionCodes",
+      "detail": "Checks that the resource returns the correct data depending permission ReadParty with additional schema checks on status and headers.",
+      "parameters": {
+        "tokenRequestScope": "accounts",
+        "accountId": "$consentedAccountId"
+      },
+      "permissions": [
+        "ReadAccountsBasic",
+        "ReadParty"
+      ],
+      "uri": "/accounts/$accountId/parties",
+      "uriImplementation": "conditional",
+      "resource": "Party",
+      "asserts": [
+        "OB3GLOAssertOn200",
+        "OB3GLOFAPIHeader"
+      ],
+      "method": "get",
+      "schemaCheck": true
+    },
+    {
       "description": "All data returned for ReadParty permission with additional schema checks, status and headers.",
       "id": "OB-301-PAR-103000",
       "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937984104/Party+v3.1#Partyv3.1-PermissionCodes",
@@ -1209,6 +1232,77 @@
       ],
       "uri": "/party",
       "uriImplementation": "optional",
+      "resource": "Party",
+      "method": "get",
+      "asserts": [
+        "OB3GLOAssertFAPIPlayBack"
+      ],
+      "schemaCheck": false
+    },
+    {
+      "description": "Fails when account is invalid for Parties.",
+      "id": "OB-301-PAR-103106",
+      "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1000702294/Read+Write+Data+API+Specification+-+v3.1.1#Read/WriteDataAPISpecification-v3.1.1-400(BadRequest)v/s404(NotFound)",
+      "detail": "Checks the correct response is returned when given an invalid account for an Party.",
+      "parameters": {
+        "tokenRequestScope": "accounts",
+        "accountId": "foobar"
+      },
+      "permissions": [
+        "ReadAccountsBasic",
+        "ReadParty"
+      ],
+      "uri": "/accounts/$accountId/parties",
+      "uriImplementation": "conditional",
+      "resource": "Party",
+      "method": "get",
+      "asserts_one_of": [
+        "OB3GLOAssertOn400",
+        "OB3GLOAssertOn403"
+      ],
+      "schemaCheck": false
+    },
+    {
+      "description": "Fails 404 on an invalid Party resource.",
+      "id": "OB-301-PAR-103107",
+      "refURI": "",
+      "detail": "Validates that the party resource returns the correct status code (404 Not Found) given an invalid endpoint.",
+      "parameters": {
+        "tokenRequestScope": "accounts",
+        "accountId": "$consentedAccountId"
+      },
+      "permissions": [
+        "ReadAccountsBasic",
+        "ReadParty"
+      ],
+      "uri": "/accounts/$accountId/parties/foobar",
+      "uriImplementation": "conditional",
+      "resource": "Party",
+      "asserts": [
+        "OB3GLOAssertOn404"
+      ],
+      "method": "get",
+      "schemaCheck": false
+    },
+    {
+      "description": "The x-fapi-interaction-id is played-black for account Party.",
+      "id": "OB-301-PAR-103108",
+      "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1000015561/Parties+v3.1.1",
+      "detail": "Checks that the value in the x-fapi-interaction-id response header is played-back for account Party.",
+      "parameters": {
+        "tokenRequestScope": "accounts",
+        "accountId": "$consentedAccountId",
+        "x-fapi-interaction-id": "93bac548-d2de-4546-b106-880a5018460d"
+      },
+      "headers": {
+        "x-fapi-interaction-id": "$x-fapi-interaction-id"
+      },
+      "permissions": [
+        "ReadAccountsBasic",
+        "ReadParty"
+      ],
+      "uri": "/accounts/$accountId/parties",
+      "uriImplementation": "conditional",
       "resource": "Party",
       "method": "get",
       "asserts": [
@@ -1565,6 +1659,28 @@
     {
       "description": "All data returned for a given account using the ReadStandingOrdersDetail permission.",
       "id": "OB-301-STO-103900",
+      "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937721918/Standing+Orders+v3.1#StandingOrdersv3.1-PermissionCodes",
+      "detail": "Checks that all data for bulk resource with permission ReadStandingOrdersDetail to access the resource with additional schema checks on status and headers.",
+      "parameters": {
+        "tokenRequestScope": "accounts"
+      },
+      "permissions": [
+        "ReadAccountsBasic",
+        "ReadStandingOrdersDetail"
+      ],
+      "uri": "/standing-orders",
+      "uriImplementation": "optional",
+      "resource": "StandingOrder",
+      "asserts": [
+        "OB3GLOAssertOn200",
+        "OB3GLOFAPIHeader"
+      ],
+      "method": "get",
+      "schemaCheck": true
+    },
+    {
+      "description": "Test",
+      "id": "OB-301-STO-103901",
       "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937721918/Standing+Orders+v3.1#StandingOrdersv3.1-PermissionCodes",
       "detail": "Checks that all data for bulk resource with permission ReadStandingOrdersDetail to access the resource with additional schema checks on status and headers.",
       "parameters": {
