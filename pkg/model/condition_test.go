@@ -30,6 +30,7 @@ var conditionalData = []dataHolder{
 	{"GET", "/accounts/{AccountId}/offers"},
 	{"GET", "/accounts/{AccountId}/statements"},
 	{"GET", "/accounts/{AccountId}/statements/{StatementId}"},
+	{"GET", "/party"},
 	{"GET", "/accounts/{AccountId}/party"},
 	{"GET", "/accounts/{AccountId}/beneficiaries"},
 	{"GET", "/accounts/{AccountId}/statements/{StatementId}/transactions"},
@@ -37,7 +38,6 @@ var conditionalData = []dataHolder{
 
 var optionalData = []dataHolder{
 	{"GET", "/scheduled-payments"},
-	{"GET", "/party"},
 	{"GET", "/offers"},
 	{"GET", "/standing-orders"},
 	{"GET", "/direct-debits"},
