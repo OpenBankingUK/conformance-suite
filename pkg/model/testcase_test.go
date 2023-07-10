@@ -151,6 +151,209 @@ var (
         }
     }
 	`)
+
+	// they do not represent valid standing orders responses, so they would not pass validation.
+	// matchNumberOfPayments && matchFinalPaymentDateTime && 403
+	okTestCasesStandingOrders = []string{
+		`{
+			"Data": {
+			  "StandingOrder": [
+				{
+					"NumberOfPayments": "0"
+				}
+			  ]
+			}
+		}`,
+		`{
+			"Data": {
+			  "StandingOrder": [
+				{
+					"FinalPaymentDateTime": "2027-08-12T00:00:00+00:00"
+				}
+			  ]
+			}
+		}`,
+		`{
+			"Data": {
+			  "StandingOrder": [
+				{
+					"Test": "0"
+				}
+			  ]
+			}
+		}`,
+		`{
+			"Data": {
+			  "StandingOrder": [
+				{
+					"NumberOfPayments": "0"
+				},
+				{
+					"FinalPaymentDateTime": "2027-08-12T00:00:00+00:00"
+				},
+				{
+					"Test": "0"
+				}
+			  ]
+			}
+		}`,
+	}
+	badTestCasesStandingOrders = []string{
+		`{
+			"Data": {
+			  "StandingOrder": [
+				{
+					"NumberOfPayments": "5",
+					"FinalPaymentDateTime": "2027-08-12T00:00:00+00:00"
+				}
+			  ]
+			}
+		}`,
+		`{
+			"Data": {
+			  "StandingOrder": [
+				{
+					"FinalPaymentDateTime": "2027-08-12T00:00:00+00:00"
+				},
+				{
+					"NumberOfPayments": "5",
+					"FinalPaymentDateTime": "2027-08-12T00:00:00+00:00"
+				},
+				{
+					"NumberOfPayments": "6"
+				}
+			  ]
+			}
+		}`,
+		`{
+			"Data": {
+			  "StandingOrder": [
+				{
+					"NumberOfPayments": "5",
+					"FinalPaymentDateTime": "2027-08-12T00:00:00+00:00"
+				},
+				{
+					"FinalPaymentDateTime": "2027-08-12T00:00:00+00:00"
+				},
+				{
+					"NumberOfPayments": "6"
+				}
+			  ]
+			}
+		}`,
+	}
+
+	okTestCasesStandingOrders2 = []string{
+		`{
+			"Data": {
+			  "StandingOrder": [
+				{
+					"NumberOfPayments": "5",
+					"FinalPaymentDateTime": "2027-08-12T00:00:00+00:00",
+					"FinalPaymentAmount": "1"
+				}
+			  ]
+			}
+		}`,
+		`{
+			"Data": {
+			  "StandingOrder": [
+				{
+					"FinalPaymentDateTime": "2027-08-12T00:00:00+00:00",
+					"FinalPaymentAmount": "1"
+				}
+			  ]
+			}
+		}`,
+		`{
+			"Data": {
+			  "StandingOrder": [
+				{
+					"FinalPaymentDateTime": "2027-08-12T00:00:00+00:00",
+				}
+			  ]
+			}
+		}`,
+	}
+
+	badTestCasesStandingOrders2 = []string{
+		`{
+			"Data": {
+			  "StandingOrder": [
+				{
+					"FinalPaymentAmount": "1"
+				}
+			  ]
+			}
+		}`,
+		`{
+			"Data": {
+			  "StandingOrder": [
+				{
+					"FinalPaymentDateTime": "2027-08-12T00:00:00+00:00"
+				},
+				{
+					"FinalPaymentAmount": "1"
+				}
+			  ]
+			}
+		}`,
+		`{
+			"Data": {
+			  "StandingOrder": [
+				{
+					"FinalPaymentAmount": "1"
+				},
+				{
+					"NumberOfPayments": "0"
+				}
+			  ]
+			}
+		}`,
+		`{
+			"Data": {
+			  "StandingOrder": [
+				{
+					"NumberOfPayments": "5",
+					"FinalPaymentDateTime": "2027-08-12T00:00:00+00:00"
+				},
+				{
+					"FinalPaymentAmount": "1"
+				}
+			  ]
+			}
+		}`,
+		`{
+			"Data": {
+			  "StandingOrder": [
+				{
+					"FinalPaymentAmount": "1"
+				},
+				{
+					"NumberOfPayments": "5",
+					"FinalPaymentDateTime": "2027-08-12T00:00:00+00:00"
+				}
+			  ]
+			}
+		}`,
+		`{
+			"Data": {
+			  "StandingOrder": [
+				{
+					"NumberOfPayments": "5",
+					"FinalPaymentDateTime": "2027-08-12T00:00:00+00:00"
+				},
+				{
+					"FinalPaymentAmount": "1"
+				},
+				{
+					"NumberOfPayments": "5",
+					"FinalPaymentDateTime": "2027-08-12T00:00:00+00:00"
+				}
+			  ]
+			}
+		}`,
+	}
 )
 
 // Reads a single testcase from json bytes

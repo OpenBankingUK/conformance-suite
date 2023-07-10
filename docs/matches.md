@@ -16,6 +16,9 @@ The following methods are available for checking a API HTTP response and its con
 - HTTP Header present
 - HTTP Body regex
 - HTTP Body - Json field present
+- HTTP Body - Json fields present
+- HTTP Body - Json field not present
+- HTTP Body - Json fields not present
 - HTTP Body - Json specific number of particular fields present
 - HTTP Body - Json field content
 - HTTP Body - Json field with Regex applied
@@ -98,6 +101,19 @@ Check that the JSON field specified exists in the response body
         "matches": [{
             "description": "A json field present",
             "json": "Data.Account.Accountid",
+        }],
+    }
+```
+
+#### Body JSON Present
+
+Check that the JSON field specified does not exist in the response body
+
+```json
+    "expect": {
+        "matches": [{
+            "description": "A json field not present",
+            "json-not-present": "Data.Account.Accountid",
         }],
     }
 ```

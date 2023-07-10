@@ -268,6 +268,164 @@ func TestCheckBodyJsonMisMatch(t *testing.T) {
 	assert.False(t, result)
 }
 
+// check BodyJSONPresences match is detected
+func TestCheckBodyJsonPresencesMatch(t *testing.T) {
+	t.Run("Test finding json for the response with array containing the json path", func(t *testing.T) {
+		m := Match{Description: "test", JSON: "tourist-attractions.#.bridge"}
+		tc := TestCase{Expect: Expect{Matches: []Match{m}, StatusCode: 200}, Validator: schema.NewNullValidator(), ExpectArrayResults: true}
+		resp := test.CreateHTTPResponse(200, "OK", "{\"status\":\"OK\",\"tourist-attractions\":[{\"bridge\":\"Tower Bridge\"}]}")
+		result, err := tc.Validate(resp, emptyContext)
+		assert.Nil(t, err)
+		assert.True(t, result)
+		assert.Equal(t, []bool{true}, tc.ResultPresenceArray)
+		assert.Equal(t, []string{"Tower Bridge"}, tc.ResultArray)
+	})
+
+	t.Run("Test finding json for the response with array - not containing and containing the json paths", func(t *testing.T) {
+		m := Match{Description: "test", JSON: "tourist-attractions.#.bridge"}
+		tc := TestCase{Expect: Expect{Matches: []Match{m}, StatusCode: 200}, Validator: schema.NewNullValidator(), ExpectArrayResults: true}
+		resp := test.CreateHTTPResponse(200, "OK", "{\"status\":\"OK\",\"tourist-attractions\":[{\"building\":\"Big Ben\"},{\"bridge\":\"Tower Bridge\"}]}")
+		result, err := tc.Validate(resp, emptyContext)
+		assert.Nil(t, err)
+		assert.True(t, result)
+		assert.Equal(t, []bool{false, true}, tc.ResultPresenceArray)
+		assert.Equal(t, []string{"", "Tower Bridge"}, tc.ResultArray)
+	})
+
+	t.Run("Test finding json for the response with array - containing and not containing the json paths", func(t *testing.T) {
+		m := Match{Description: "test", JSON: "tourist-attractions.#.bridge"}
+		tc := TestCase{Expect: Expect{Matches: []Match{m}, StatusCode: 200}, Validator: schema.NewNullValidator(), ExpectArrayResults: true}
+		resp := test.CreateHTTPResponse(200, "OK", "{\"status\":\"OK\",\"tourist-attractions\":[{\"bridge\":\"Tower Bridge\"},{\"building\":\"Big Ben\"}]}")
+		result, err := tc.Validate(resp, emptyContext)
+		assert.Nil(t, err)
+		assert.True(t, result)
+		assert.Equal(t, []bool{true, false}, tc.ResultPresenceArray)
+		assert.Equal(t, []string{"Tower Bridge", ""}, tc.ResultArray)
+	})
+}
+
+// check BodyJSONPresences mismatch is detected
+func TestCheckBodyJsonPresencesMisMatch(t *testing.T) {
+	t.Run("Not matching JSON pattern", func(t *testing.T) {
+		m := Match{Description: "test", JSON: "tourist.#.bridge"}
+		tc := TestCase{Expect: Expect{Matches: []Match{m}, StatusCode: 200}, Validator: schema.NewNullValidator(), ExpectArrayResults: true}
+		resp := test.CreateHTTPResponse(200, "OK", "{\"status\":\"OK\",\"tourist-attractions\":[{\"bridge\":\"Tower Bridge\"}]}")
+		result, err := tc.Validate(resp, emptyContext)
+		assert.NotNil(t, err)
+		assert.False(t, result)
+		assert.Nil(t, tc.ResultPresenceArray)
+		assert.Nil(t, tc.ResultArray)
+	})
+
+	t.Run("Test finding json for the response with array not containing the json path", func(t *testing.T) {
+		m := Match{Description: "test", JSON: "tourist-attractions.#.bridge"}
+		tc := TestCase{Expect: Expect{Matches: []Match{m}, StatusCode: 200}, Validator: schema.NewNullValidator(), ExpectArrayResults: true}
+		resp := test.CreateHTTPResponse(200, "OK", "{\"status\":\"OK\",\"tourist-attractions\":[{\"building\":\"Big Ben\"}]}")
+		result, err := tc.Validate(resp, emptyContext)
+		assert.Nil(t, err)
+		assert.True(t, result)
+		assert.Equal(t, []bool{false}, tc.ResultPresenceArray)
+		assert.Equal(t, []string{""}, tc.ResultArray)
+	})
+
+	t.Run("Test finding json for the response with array not containing the json paths", func(t *testing.T) {
+		m := Match{Description: "test", JSON: "tourist-attractions.#.bridge"}
+		tc := TestCase{Expect: Expect{Matches: []Match{m}, StatusCode: 200}, Validator: schema.NewNullValidator(), ExpectArrayResults: true}
+		resp := test.CreateHTTPResponse(200, "OK", "{\"status\":\"OK\",\"tourist-attractions\":[{\"building\":\"Big Ben\"},{\"building\":\"Big Ben\"}]}")
+		result, err := tc.Validate(resp, emptyContext)
+		assert.Nil(t, err)
+		assert.True(t, result)
+		assert.Equal(t, []bool{false, false}, tc.ResultPresenceArray)
+		assert.Equal(t, []string{"", ""}, tc.ResultArray)
+	})
+}
+
+// check BodyJSONNotPresent match is detected
+func TestCheckNotBodyJsonMatch(t *testing.T) {
+	m := Match{Description: "test", JSONNotPresent: "tourist-attractions.bridge"}
+	tc := TestCase{Expect: Expect{Matches: []Match{m}, StatusCode: 200}, Validator: schema.NewNullValidator()}
+	resp := test.CreateHTTPResponse(200, "OK", "{\"status\":\"OK\",\"tourist-attractions\":{\"building\":\"Big Ben\"}}")
+	result, err := tc.Validate(resp, emptyContext)
+	assert.Nil(t, err)
+	assert.True(t, result)
+}
+
+// check BodyJSONNotPresent mismatch is detected
+func TestCheckNotBodyJsonMisMatch(t *testing.T) {
+	m := Match{Description: "test", JSONNotPresent: "tourist-attractions.bridge"}
+	tc := TestCase{Expect: Expect{Matches: []Match{m}, StatusCode: 200}, Validator: schema.NewNullValidator()}
+	resp := test.CreateHTTPResponse(200, "OK", "{\"status\":\"OK\",\"tourist-attractions\":{\"bridge\":\"Tower Bridge\"}}")
+	result, err := tc.Validate(resp, emptyContext)
+	assert.NotNil(t, err)
+	assert.False(t, result)
+}
+
+// check BodyJSONNotPresences match is detected
+func TestCheckBodyJsonNotPresencesMatch(t *testing.T) {
+	t.Run("Test finding json-not-present for the response with array not containing the json path", func(t *testing.T) {
+		m := Match{Description: "test", JSONNotPresent: "tourist-attractions.#.bridge"}
+		tc := TestCase{Expect: Expect{Matches: []Match{m}, StatusCode: 200}, Validator: schema.NewNullValidator(), ExpectArrayResults: true}
+		resp := test.CreateHTTPResponse(200, "OK", "{\"status\":\"OK\",\"tourist-attractions\":[{\"building\":\"Big Ben\"}]}")
+		result, err := tc.Validate(resp, emptyContext)
+		assert.Nil(t, err)
+		assert.True(t, result)
+		assert.Equal(t, tc.ResultPresenceArray, []bool{true})
+	})
+
+	t.Run("Test finding json-not-present for the response with array not containing the json paths", func(t *testing.T) {
+		m := Match{Description: "test", JSONNotPresent: "tourist-attractions.#.bridge"}
+		tc := TestCase{Expect: Expect{Matches: []Match{m}, StatusCode: 200}, Validator: schema.NewNullValidator(), ExpectArrayResults: true}
+		resp := test.CreateHTTPResponse(200, "OK", "{\"status\":\"OK\",\"tourist-attractions\":[{\"building\":\"Big Ben\"},{\"building\":\"Big Ben\"}]}")
+		result, err := tc.Validate(resp, emptyContext)
+		assert.Nil(t, err)
+		assert.True(t, result)
+		assert.Equal(t, tc.ResultPresenceArray, []bool{true, true})
+	})
+
+	t.Run("Test finding json-not-present for the response with array - not containing and containing the json paths", func(t *testing.T) {
+		m := Match{Description: "test", JSONNotPresent: "tourist-attractions.#.bridge"}
+		tc := TestCase{Expect: Expect{Matches: []Match{m}, StatusCode: 200}, Validator: schema.NewNullValidator(), ExpectArrayResults: true}
+		resp := test.CreateHTTPResponse(200, "OK", "{\"status\":\"OK\",\"tourist-attractions\":[{\"building\":\"Big Ben\"},{\"bridge\":\"Tower Bridge\"}]}")
+		result, err := tc.Validate(resp, emptyContext)
+		assert.Nil(t, err)
+		assert.True(t, result)
+		assert.Equal(t, tc.ResultPresenceArray, []bool{true, false})
+	})
+
+	t.Run("Test finding json-not-present for the response with array - containing and not containing the json paths", func(t *testing.T) {
+		m := Match{Description: "test", JSONNotPresent: "tourist-attractions.#.bridge"}
+		tc := TestCase{Expect: Expect{Matches: []Match{m}, StatusCode: 200}, Validator: schema.NewNullValidator(), ExpectArrayResults: true}
+		resp := test.CreateHTTPResponse(200, "OK", "{\"status\":\"OK\",\"tourist-attractions\":[{\"bridge\":\"Tower Bridge\"},{\"building\":\"Big Ben\"}]}")
+		result, err := tc.Validate(resp, emptyContext)
+		assert.Nil(t, err)
+		assert.True(t, result)
+		assert.Equal(t, tc.ResultPresenceArray, []bool{false, true})
+	})
+}
+
+// check BodyJSONNotPresences mismatch is detected
+func TestCheckBodyJsonNotPresencesMisMatch(t *testing.T) {
+	t.Run("Test finding json-not-present for the response with array containing the json path", func(t *testing.T) {
+		m := Match{Description: "test", JSONNotPresent: "tourist-attractions.#.bridge"}
+		tc := TestCase{Expect: Expect{Matches: []Match{m}, StatusCode: 200}, Validator: schema.NewNullValidator(), ExpectArrayResults: true}
+		resp := test.CreateHTTPResponse(200, "OK", "{\"status\":\"OK\",\"tourist-attractions\":[{\"bridge\":\"Tower Bridge\"}]}")
+		result, err := tc.Validate(resp, emptyContext)
+		assert.Nil(t, err)
+		assert.True(t, result)
+		assert.Equal(t, tc.ResultPresenceArray, []bool{false})
+	})
+
+	t.Run("Test finding json-not-present for the response with array containing the json paths", func(t *testing.T) {
+		m := Match{Description: "test", JSONNotPresent: "tourist-attractions.#.bridge"}
+		tc := TestCase{Expect: Expect{Matches: []Match{m}, StatusCode: 200}, Validator: schema.NewNullValidator(), ExpectArrayResults: true}
+		resp := test.CreateHTTPResponse(200, "OK", "{\"status\":\"OK\",\"tourist-attractions\":[{\"bridge\":\"Tower Bridge\"},{\"bridge\":\"Tower Bridge\"}]}")
+		result, err := tc.Validate(resp, emptyContext)
+		assert.Nil(t, err)
+		assert.True(t, result)
+		assert.Equal(t, tc.ResultPresenceArray, []bool{false, false})
+	})
+}
+
 const testbankjson = `{"banks": [{"name": "Barclays" },{"name": "HSBC"},{"name": "Lloyds" }]}`
 
 func TestCheckJsonBodyCount(t *testing.T) {
@@ -523,3 +681,7 @@ func TestContextPutAuthorisationFail(t *testing.T) {
 	assert.False(t, exist)
 	assert.Equal(t, nil, ctxToken)
 }
+
+// func TestParseResults(t *testing.T) {
+// 	results := []gjson.Result{{}}
+// }
