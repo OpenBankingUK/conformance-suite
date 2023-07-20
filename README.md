@@ -56,7 +56,7 @@ or
 
 ### Prerequisites
 
-The tool is compatible with the Open Banking UK R/W specification versions: 3.1.0, 3.1.1, 3.1.2, 3.1.3, 3.1.4, 3.1.5, 3.1.6, 3.1.7, 3.1.8, 3.1.9, 3.1.10.
+The tool is compatible with the Open Banking UK R/W specification versions: 3.1.0, 3.1.1, 3.1.2, 3.1.3, 3.1.4, 3.1.5, 3.1.6, 3.1.7, 3.1.8, 3.1.9, 3.1.10, 3.1.11.
 
 In order to run a container you'll need docker installed.
 
