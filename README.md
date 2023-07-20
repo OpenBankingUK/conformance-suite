@@ -1,4 +1,4 @@
-![Open Banking Logo](./docs/static_files/OBIE_logotype_blue_RGB.PNG)
+![Open Banking Logo](https://raw.githubusercontent.com/OpenBankingUK/conformance-suite/develop/docs/static_files/OBIE_logotype_blue_RGB.PNG)
 
 [![made-with-go](https://img.shields.io/badge/Made%20with-Go-1f425Ff.svg)](https://www.golang.org/)
 [![made-with-vue-js](https://img.shields.io/badge/Made%20with-Vue.JS-1f425Ff.svg)](https://vuejs.org/)
@@ -21,7 +21,7 @@ To provide feedback, please see the [CONTRIBUTING.md](CONTRIBUTING.md).
 
 The release is called **v1.7.2**, an update to add changes to manifests, add v3.1.11 support, add new assertion type - last_if_all.
 
-[Full Release Notes](./docs/releases/v1.7.2.md)
+[Full Release Notes](https://github.com/OpenBankingUK/conformance-suite/blob/develop/docs/releases/v1.7.2.md)
 
 
 ---
