@@ -1047,7 +1047,7 @@
         "ReadPartyPSU"
       ],
       "uri": "/party",
-      "uriImplementation": "optional",
+      "uriImplementation": "conditional",
       "resource": "Party",
       "asserts": [
         "OB3GLOAssertOn200",
@@ -1136,7 +1136,7 @@
         "Authorization": "Bearer $client_access_token"
       },
       "uri": "/party",
-      "uriImplementation": "optional",
+      "uriImplementation": "conditional",
       "resource": "Party",
       "method": "get",
       "asserts": [
@@ -1208,7 +1208,7 @@
         "ReadParty"
       ],
       "uri": "/party",
-      "uriImplementation": "optional",
+      "uriImplementation": "conditional",
       "resource": "Party",
       "method": "get",
       "asserts": [
