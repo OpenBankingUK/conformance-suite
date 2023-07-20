@@ -114,7 +114,6 @@
       },
       "resource": "DomesticVRP",
       "asserts_one_of": [
-          "OB3GLOAssertOn200",
           "OB3GLOAssertOn201"
       ],
       "schemaCheck": true,
