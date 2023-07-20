@@ -151,6 +151,14 @@ export default {
               return item.expect['status-code'];
             }
 
+            if (item.expect_last_if_all !== undefined) {
+              return item
+                .expect_last_if_all
+                .map(expect => expect['status-code'])
+                .filter(statusCode => statusCode > 0)
+                .join(' or ');
+            }
+
             return item
               .expect_one_of
               .map(expect => expect['status-code'])

@@ -44,6 +44,7 @@ type Script struct {
 	Resource              string            `json:"resource,omitempty"`
 	Asserts               []string          `json:"asserts,omitempty"`
 	AssertsOneOf          []string          `json:"asserts_one_of,omitempty"`
+	AssertsLastIfAll      []string          `json:"asserts_last_if_all,omitempty"`
 	Method                string            `json:"method,omitempty"`
 	URI                   string            `json:"uri,omitempty"`
 	URIImplemenation      string            `json:"uriImplementation,omitempty"`
@@ -51,6 +52,7 @@ type Script struct {
 	ContextPut            map[string]string `json:"keepContextOnSuccess,omitempty"`
 	UseCCGToken           bool              `json:"useCCGToken,omitempty"`
 	ValidateSignature     bool              `json:"validateSignature,omitempty"`
+	ExpectArrayResults    bool              `json:"expect_array_results,omitempty"`
 }
 
 // References - reference collection
@@ -342,6 +344,7 @@ func buildTestCase(s Script, refs map[string]Reference, ctx *model.Context, base
 	tc.APIVersion = apiSpec.Version
 	tc.Validator = validator
 	tc.ValidateSignature = s.ValidateSignature
+	tc.ExpectArrayResults = s.ExpectArrayResults
 
 	//TODO: make these more configurable - header also get set in buildInput Section
 	tc.Input.Headers["x-fapi-financial-id"] = "$x-fapi-financial-id"
@@ -383,6 +386,16 @@ func buildTestCase(s Script, refs map[string]Reference, ctx *model.Context, base
 			return tc, errors.New(msg)
 		}
 		tc.ExpectOneOf = append(tc.ExpectOneOf, ref.Expect.Clone())
+	}
+
+	for _, a := range s.AssertsLastIfAll {
+		ref, exists := refs[a]
+		if !exists {
+			msg := fmt.Sprintf("assertion %s do not exist in reference data", a)
+			logrus.Error(msg)
+			return tc, errors.New(msg)
+		}
+		tc.ExpectLastIfAll = append(tc.ExpectLastIfAll, ref.Expect.Clone())
 	}
 
 	tc.Expect.SchemaValidation = s.SchemaCheck

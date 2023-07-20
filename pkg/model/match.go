@@ -29,6 +29,10 @@ const (
 	BodyLength
 	Authorisation
 	CustomCheck
+	BodyJSONNotPresent
+	BodyJSONPresences
+	BodyJSONNotPresences
+	arrayJSONSeparator = ".#."
 )
 
 // Match defines various types of response payload pattern and field checking.
@@ -50,21 +54,25 @@ const (
 // - Authorization: allow for manipulation of Bearer tokens in http headers
 // - Result: allow for capturing of match values for further processing - like putting into a context
 type Match struct {
-	MatchType       MatchType `json:"match_type,omitempty"`        // Type of Match we're doing
-	Description     string    `json:"description,omitempty"`       // Description of the purpose of the match
-	ContextName     string    `json:"name,omitempty"`              // Context variable name
-	Header          string    `json:"header,omitempty"`            // Header value to examine
-	HeaderPresent   string    `json:"header-present,omitempty"`    // Header existence check
-	Regex           string    `json:"regex,omitempty"`             // Regular expression to be used
-	JSON            string    `json:"json,omitempty"`              // Json expression to be used
-	Value           string    `json:"value,omitempty"`             // Value to match against (string)
-	Numeric         int64     `json:"numeric,omitempty"`           // Value to match against - numeric
-	Count           int64     `json:"count,omitempty"`             // Cont for JSON array match purposes
-	BodyLength      *int64    `json:"body-length,omitempty"`       // Body payload length for matching
-	ReplaceEndpoint string    `json:"replaceInEndpoint,omitempty"` // allows substitution of resourceIds
-	Authorisation   string    `json:"authorisation,omitempty"`     // allows capturing of bearer tokens
-	Result          string    `json:"result,omitempty"`            // capturing match values
-	Custom          string    `json:"custom,omitempty"`            // specifies custom matching routine
+	MatchType           MatchType `json:"match_type,omitempty"`         // Type of Match we're doing
+	Description         string    `json:"description,omitempty"`        // Description of the purpose of the match
+	ContextName         string    `json:"name,omitempty"`               // Context variable name
+	Header              string    `json:"header,omitempty"`             // Header value to examine
+	HeaderPresent       string    `json:"header-present,omitempty"`     // Header existence check
+	Regex               string    `json:"regex,omitempty"`              // Regular expression to be used
+	JSON                string    `json:"json,omitempty"`               // Json expression to be used
+	JSONNotPresent      string    `json:"json-not-present,omitempty"`   // Json expression to be checked if
+	Value               string    `json:"value,omitempty"`              // Value to match against (string)
+	Numeric             int64     `json:"numeric,omitempty"`            // Value to match against - numeric
+	Count               int64     `json:"count,omitempty"`              // Cont for JSON array match purposes
+	BodyLength          *int64    `json:"body-length,omitempty"`        // Body payload length for matching
+	ReplaceEndpoint     string    `json:"replaceInEndpoint,omitempty"`  // allows substitution of resourceIds
+	Authorisation       string    `json:"authorisation,omitempty"`      // allows capturing of bearer tokens
+	Result              string    `json:"result,omitempty"`             // capturing match values
+	Custom              string    `json:"custom,omitempty"`             // specifies custom matching routine
+	ExpectResults       bool      `json:"check-result-count,omitempty"` // specifies if to collect Results (useful for expecting arrays of Results)
+	ResultArray         []string  `json:"-"`                            // represents Result's array
+	ResultPresenceArray []bool    `json:"-"`                            // represents Result's bool array with information if the fields were found based on JSON query in the Result's array
 }
 
 // ContextAccessor - Manages access to matches for Put and Get value operations on a context
@@ -243,6 +251,11 @@ func (m *Match) GetType() MatchType {
 	}
 
 	if fieldsPresent(m.JSON) {
+		if m.ExpectResults {
+			m.MatchType = BodyJSONPresences
+			return BodyJSONPresences
+		}
+
 		if m.Count > 0 {
 			m.MatchType = BodyJSONCount
 			return BodyJSONCount
@@ -257,6 +270,15 @@ func (m *Match) GetType() MatchType {
 	if m.BodyLength != nil {
 		m.MatchType = BodyLength
 		return BodyLength
+	}
+
+	if fieldsPresent(m.JSONNotPresent) {
+		if m.ExpectResults {
+			m.MatchType = BodyJSONNotPresences
+			return BodyJSONNotPresences
+		}
+		m.MatchType = BodyJSONNotPresent
+		return BodyJSONNotPresent
 	}
 
 	return UnknownMatchType
@@ -304,19 +326,22 @@ func fieldsPresent(str ...string) bool {
 }
 
 var matchFuncs = map[MatchType]func(*Match, *TestCase) (bool, error){
-	UnknownMatchType:   defaultMatch,
-	HeaderValue:        checkHeaderValue,
-	HeaderRegexContext: checkHeaderRegexContext,
-	HeaderRegex:        checkHeaderRegex,
-	HeaderPresent:      checkHeaderPresent,
-	BodyRegex:          checkBodyRegex,
-	BodyJSONPresent:    checkBodyJSONPresent,
-	BodyJSONCount:      checkBodyJSONCount,
-	BodyJSONValue:      checkBodyJSONValue,
-	BodyJSONRegex:      checkBodyJSONRegex,
-	BodyLength:         checkBodyLength,
-	Authorisation:      checkAuthorisation,
-	CustomCheck:        checkCustom,
+	UnknownMatchType:     defaultMatch,
+	HeaderValue:          checkHeaderValue,
+	HeaderRegexContext:   checkHeaderRegexContext,
+	HeaderRegex:          checkHeaderRegex,
+	HeaderPresent:        checkHeaderPresent,
+	BodyRegex:            checkBodyRegex,
+	BodyJSONPresent:      checkBodyJSONPresent,
+	BodyJSONNotPresent:   checkBodyJSONNotPresent,
+	BodyJSONPresences:    checkBodyJSONPresences,
+	BodyJSONNotPresences: checkBodyJSONNotPresences,
+	BodyJSONCount:        checkBodyJSONCount,
+	BodyJSONValue:        checkBodyJSONValue,
+	BodyJSONRegex:        checkBodyJSONRegex,
+	BodyLength:           checkBodyLength,
+	Authorisation:        checkAuthorisation,
+	CustomCheck:          checkCustom,
 }
 
 var matchTypeString = map[MatchType]string{
@@ -467,6 +492,68 @@ func checkBodyJSONPresent(m *Match, tc *TestCase) (bool, error) {
 	return success, nil
 }
 
+// checkBodyJSONPresences checks JSON presences based on defined pattern
+func checkBodyJSONPresences(m *Match, tc *TestCase) (bool, error) {
+	jsonPaths, err := getJSONPaths(tc.Body, m.JSON)
+	if err != nil {
+		return false, err
+	}
+
+	for _, path := range jsonPaths {
+		result := gjson.Get(tc.Body, path)
+		if success := result.Exists(); success {
+			m.ResultPresenceArray = append(m.ResultPresenceArray, true)
+			m.ResultArray = append(m.ResultArray, result.String())
+		} else {
+			m.ResultPresenceArray = append(m.ResultPresenceArray, false)
+			m.ResultArray = append(m.ResultArray, "")
+		}
+	}
+
+	result := gjson.Get(tc.Body, m.JSON)
+	if !result.Exists() {
+		return false, m.AppErr(fmt.Sprintf("JSON Field Match Failed - no fields present for pattern (%s)", m.JSON))
+	}
+
+	m.Result = result.String()
+
+	return true, nil
+}
+
+func checkBodyJSONNotPresent(m *Match, tc *TestCase) (bool, error) {
+	result := gjson.Get(tc.Body, m.JSONNotPresent)
+	if success := result.Exists(); success {
+		return false, m.AppErr(fmt.Sprintf("JSON Field Match Failed - field present for pattern (%s)", m.JSONNotPresent))
+	}
+
+	return true, nil
+}
+
+func checkBodyJSONNotPresences(m *Match, tc *TestCase) (bool, error) {
+	jsonPaths, err := getJSONPaths(tc.Body, m.JSONNotPresent)
+	if err != nil {
+		return false, err
+	}
+
+	for _, path := range jsonPaths {
+		result := gjson.Get(tc.Body, path)
+		if success := result.Exists(); success {
+			m.ResultPresenceArray = append(m.ResultPresenceArray, false)
+			m.ResultArray = append(m.ResultArray, result.String())
+		} else {
+			m.ResultPresenceArray = append(m.ResultPresenceArray, true)
+			m.ResultArray = append(m.ResultArray, "")
+		}
+	}
+
+	result := gjson.Get(tc.Body, m.JSONNotPresent)
+	if success := result.Exists(); success {
+		m.Result = result.String()
+	}
+
+	return true, nil
+}
+
 func checkBodyJSONCount(m *Match, tc *TestCase) (bool, error) {
 	result := gjson.Get(tc.Body, m.JSON)
 	if result.Int() != m.Count {
@@ -534,6 +621,53 @@ func checkAuthorisation(m *Match, tc *TestCase) (bool, error) {
 
 func checkCustom(m *Match, tc *TestCase) (bool, error) {
 	return true, nil //TODO: implement custom checks
+}
+
+func getJSONPaths(body, pattern string) ([]string, error) {
+	rootPattern, err := getRootPattern(pattern)
+	if err != nil {
+		return nil, err
+	}
+
+	rootResult := gjson.Get(body, rootPattern)
+	rootCount := rootResult.Int()
+
+	subPatterns := strings.Split(pattern, arrayJSONSeparator)
+	lenSubPatterns := len(subPatterns)
+	if lenSubPatterns != 2 {
+		return nil, fmt.Errorf("sub: unsupported amount of sub-patterns: %d", lenSubPatterns)
+	}
+
+	jsonPaths := make([]string, rootCount)
+	for i := 0; i < int(rootCount); i++ {
+		jsonPaths[i] = fmt.Sprintf("%s.%d.%s", subPatterns[0], i, subPatterns[1])
+	}
+
+	return jsonPaths, nil
+}
+
+func getRootPattern(pattern string) (string, error) {
+	subPatterns := strings.Split(pattern, arrayJSONSeparator)
+	lenSubPatterns := len(subPatterns)
+
+	switch lenSubPatterns {
+	case 0:
+		return "", fmt.Errorf("there is no sub-pattern: %s", pattern)
+	case 2:
+		var rootPattern strings.Builder
+
+		if _, err := rootPattern.WriteString(subPatterns[0]); err != nil {
+			return "", fmt.Errorf("cannot include root sub-pattern (%s) into the root pattern", subPatterns[0])
+		}
+
+		if _, err := rootPattern.WriteString(".#"); err != nil {
+			return "", errors.New("cannot add sign many into the root pattern")
+		}
+
+		return rootPattern.String(), nil
+	default:
+		return "", fmt.Errorf("root: unsupported amount of sub-patterns: %d", lenSubPatterns)
+	}
 }
 
 // ProcessReplacementFields allows parameter replacement within match string fields

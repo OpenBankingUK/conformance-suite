@@ -17,23 +17,25 @@ This document is a specification (alpha) for describing a Manifest as a JSON doc
 
 TABLE A:
 
-| Name              | Occurrence | Description                                             | Type             | Value(s)    |
-|-------------------|------------|---------------------------------------------------------|------------------|-------------|
-| id                | 1..1       | A unique identifier used to identify a test.            | UUID             |             |
-| description       | 1..1       | A short description describing the and expected result. | String (max 256) |             |
-| refURI            | 0..1       | A URI to identify regulatory or specification.          | String (max 256) |             |
-| detail            | 0..1       | Long description describing the and expected result     | String (max 256) |             |
-| parameters        | 1..1       | Maps context                                            | json             | see example |
-| uri               | 1..1       | A resource to test.                                     | String           |             |
-| asserts           | 1..1       | List of linked asserts all of which must be true.       | List             |             |
-| asserts_one_of    | 0..1       | List of linked asserts one of which must be true.       | List             |             |
-| uriImplementation | 1..1       |                                                         |                  |             |
-| resource          | 1..1       |                                                         |                  |             |
-| keepContext       | 1..1       |                                                         |                  |             |
-| method            | 1..1       |                                                         |                  |             |
-| schemaCheck       | 1..1       |                                                         |                  |             |
-| headers           | 0..1       |                                                         |                  |             |
-| body              | 0..1       |                                                         |                  |             |
+| Name                 | Occurrence | Description                                                                                           | Type             | Value(s)    |
+|----------------------|------------|-------------------------------------------------------------------------------------------------------|------------------|-------------|
+| id                   | 1..1       | A unique identifier used to identify a test.                                                          | UUID             |             |
+| description          | 1..1       | A short description describing the and expected result.                                               | String (max 256) |             |
+| refURI               | 0..1       | A URI to identify regulatory or specification.                                                        | String (max 256) |             |
+| detail               | 0..1       | Long description describing the and expected result                                                   | String (max 256) |             |
+| parameters           | 1..1       | Maps context                                                                                          | json             | see example |
+| uri                  | 1..1       | A resource to test.                                                                                   | String           |             |
+| asserts              | 1..1       | List of linked asserts all of which must be true.                                                     | List             |             |
+| asserts_one_of       | 0..1       | List of linked asserts one of which must be true.                                                     | List             |             |
+| asserts_last_if_all  | 0..1       | List of linked asserts where the last one with status code needs to pass when all asserts before did. | List             |             |
+| uriImplementation    | 1..1       |                                                                                                       |                  |             |
+| resource             | 1..1       |                                                                                                       |                  |             |
+| keepContext          | 1..1       |                                                                                                       |                  |             |
+| method               | 1..1       |                                                                                                       |                  |             |
+| schemaCheck          | 1..1       |                                                                                                       |                  |             |
+| headers              | 0..1       |                                                                                                       |                  |             |
+| body                 | 0..1       |                                                                                                       |                  |             |
+| expect_array_results | 0..1       | Defines if the test cases should expect matches with JSON array queries.                              | boolean          |             |
 
 ### Example Test in a Manifest
 

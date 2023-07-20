@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"regexp"
+	"strconv"
 	"strings"
 
 	"github.com/OpenBankingUK/conformance-suite/pkg/authentication"
@@ -59,27 +60,31 @@ type Rule struct {
 //     and therefore the testcase has passed
 //
 type TestCase struct {
-	ID                string           `json:"@id,omitempty"`                  // JSONLD ID Reference
-	Type              []string         `json:"@type,omitempty"`                // JSONLD type array
-	Name              string           `json:"name,omitempty"`                 // Name
-	Detail            string           `json:"detail,omitempty"`               // Detailed description of the test case
-	RefURI            string           `json:"refURI,omitempty"`               // Reference URI for the test case
-	Purpose           string           `json:"purpose,omitempty"`              // Purpose of the testcase in simple words
-	Input             Input            `json:"input,omitempty"`                // Input Object
-	Context           Context          `json:"context,omitempty"`              // Local Context Object
-	Expect            Expect           `json:"expect,omitempty"`               // Expected object
-	ExpectOneOf       []Expect         `json:"expect_one_of,omitempty"`        // Slice of possible expected objects
-	ParentRule        *Rule            `json:"-"`                              // Allows accessing parent Rule
-	Request           *resty.Request   `json:"-"`                              // The request that's been generated in order to call the endpoint
-	Header            http.Header      `json:"-"`                              // ResponseHeader
-	Body              string           `json:"-"`                              // ResponseBody
-	Bearer            string           `json:"bearer,omitempty"`               // Bear token if presented
-	DoNotCallEndpoint bool             `json:"do_not_call_endpoint,omitempty"` // If we should not call the endpoint, see `components/PSUConsentProviderComponent.json`
-	APIName           string           `json:"apiName"`
-	APIVersion        string           `json:"apiVersion"`
-	Validator         schema.Validator `json:"-"` // Swagger schema validator
-	ValidateSignature bool             `json:"validateSignature,omitempty"`
-	StatusCode        string           `json:"statusCode,omitempty"`
+	ID                  string           `json:"@id,omitempty"`                  // JSONLD ID Reference
+	Type                []string         `json:"@type,omitempty"`                // JSONLD type array
+	Name                string           `json:"name,omitempty"`                 // Name
+	Detail              string           `json:"detail,omitempty"`               // Detailed description of the test case
+	RefURI              string           `json:"refURI,omitempty"`               // Reference URI for the test case
+	Purpose             string           `json:"purpose,omitempty"`              // Purpose of the testcase in simple words
+	Input               Input            `json:"input,omitempty"`                // Input Object
+	Context             Context          `json:"context,omitempty"`              // Local Context Object
+	Expect              Expect           `json:"expect,omitempty"`               // Expected object
+	ExpectOneOf         []Expect         `json:"expect_one_of,omitempty"`        // Slice of possible expected objects
+	ExpectLastIfAll     []Expect         `json:"expect_last_if_all,omitempty"`   // Slice of expected objects if all before last one passed the last one needs too
+	ParentRule          *Rule            `json:"-"`                              // Allows accessing parent Rule
+	Request             *resty.Request   `json:"-"`                              // The request that's been generated in order to call the endpoint
+	Header              http.Header      `json:"-"`                              // ResponseHeader
+	Body                string           `json:"-"`                              // ResponseBody
+	Bearer              string           `json:"bearer,omitempty"`               // Bear token if presented
+	DoNotCallEndpoint   bool             `json:"do_not_call_endpoint,omitempty"` // If we should not call the endpoint, see `components/PSUConsentProviderComponent.json`
+	ExpectArrayResults  bool             `json:"expect_array_results,omitempty"` // Compare response body lengths between each expect (currently used by ExpectLastIfAll)
+	APIName             string           `json:"apiName"`
+	APIVersion          string           `json:"apiVersion"`
+	Validator           schema.Validator `json:"-"` // Swagger schema validator
+	ValidateSignature   bool             `json:"validateSignature,omitempty"`
+	StatusCode          string           `json:"statusCode,omitempty"`
+	ResultArray         []string         `json:"-"` // represents Result array
+	ResultPresenceArray []bool           `json:"-"` // represents Result bool array with information if the fields were found based on JSON query in the Results
 }
 
 // MakeTestCase builds an empty testcase
@@ -334,21 +339,15 @@ func (t *TestCase) ApplyExpects(res *resty.Response, rulectx *Context) (bool, []
 	if !ok {
 		return ok, []error{err}
 	}
-	failedExpects := make([]error, 0, len(t.ExpectOneOf))
-	for _, expect := range t.ExpectOneOf {
-		ok, err := t.validateExpect(expect, res)
-		if !ok {
-			failedExpects = append(failedExpects, err)
-			continue
-		}
+
+	if result, failedExpects := t.validateExpectsOneOf(res); !result && failedExpects != nil {
+		return result, failedExpects
 	}
-	// t.ExpectOneOf represents an optional list of []Expect one of which must be met
-	// since the usage of t.ExpectOneOf is optional, t.ExpectOneOf can be empty
-	// in this case the validation is skipped.
-	// When t.ExpectOneOf is not empty, at least one of the Expect must be successful
-	if len(t.ExpectOneOf) > 0 && len(failedExpects) == len(t.ExpectOneOf) {
-		return false, failedExpects
+
+	if result, failedExpects := t.validateExpectsLastIfAll(res); !result && failedExpects != nil {
+		return result, failedExpects
 	}
+
 	if err := t.Expect.ContextPut.PutValues(t, rulectx); err != nil {
 		return false, []error{t.AppErr("ApplyExpects Returns FALSE " + err.Error())}
 	}
@@ -363,13 +362,132 @@ func (t *TestCase) validateExpect(expect Expect, res *resty.Response) (bool, err
 
 	t.AppMsg(fmt.Sprintf("Status check isReplacement: expected [%d] got [%d]", expect.StatusCode, res.StatusCode()))
 	for k, match := range expect.Matches {
+		match.ExpectResults = t.ExpectArrayResults
 		checkResult, got := match.Check(t)
 		if !checkResult {
 			return false, t.AppErr(fmt.Sprintf("ApplyExpects Returns False on match %s : %s", match.String(), got.Error()))
 		}
 
 		expect.Matches[k].Result = match.Result
+		t.ResultPresenceArray = match.ResultPresenceArray
+		t.ResultArray = match.ResultArray
+
 		t.AppMsg(fmt.Sprintf("Checked Match: %s: result: %s", match.Description, expect.Matches[k].Result))
+	}
+
+	return true, nil
+}
+
+// validateExpectsOneOf - validates the slice of expects. It is OK when at least one of has passed.
+func (t *TestCase) validateExpectsOneOf(res *resty.Response) (bool, []error) {
+	failedExpects := make([]error, 0, len(t.ExpectOneOf))
+	for _, expect := range t.ExpectOneOf {
+		ok, err := t.validateExpect(expect, res)
+		if !ok {
+			failedExpects = append(failedExpects, err)
+		}
+	}
+
+	// t.ExpectOneOf represents an optional list of []Expect one of which must be met
+	// since the usage of t.ExpectOneOf is optional, t.ExpectOneOf can be empty
+	// in this case the validation is skipped.
+	// When t.ExpectOneOf is not empty, at least one of the Expect must be successful
+	if len(t.ExpectOneOf) > 0 && len(failedExpects) == len(t.ExpectOneOf) {
+		return false, failedExpects
+	}
+
+	return true, nil
+}
+
+// validateExpectsLastIfAll - validates the last expect when all beofre have passed.
+func (t *TestCase) validateExpectsLastIfAll(res *resty.Response) (bool, []error) {
+	if t.ExpectArrayResults {
+		return t.validateExpectsLastIfAllArrayResults(res)
+	}
+
+	failedExpects := make([]error, 0, len(t.ExpectLastIfAll))
+
+	for i, expect := range t.ExpectLastIfAll {
+		ok, err := t.validateExpect(expect, res)
+
+		switch i {
+		case len(t.ExpectLastIfAll) - 1:
+			if expect.StatusCode <= 0 {
+				failedExpects = append(failedExpects, t.AppErr(fmt.Sprintf("(%s):%s: Missing Status code in the last expect", t.ID, t.Name)))
+				return false, failedExpects
+			}
+
+			if !ok && len(failedExpects) == 0 {
+				failedExpects = append(failedExpects, err)
+				return false, failedExpects
+			}
+		default:
+			if !ok {
+				failedExpects = append(failedExpects, err)
+			}
+		}
+	}
+
+	return true, nil
+}
+
+func (t *TestCase) validateExpectsLastIfAllArrayResults(res *resty.Response) (bool, []error) {
+	failedExpects := make([]error, 0, len(t.ExpectLastIfAll))
+
+	var previoustMatch Match
+	var currentMatch Match
+	var conditionChecks []bool
+
+	for i, expect := range t.ExpectLastIfAll {
+		//
+		if len(expect.Matches) > 1 {
+			failedExpects = append(failedExpects, fmt.Errorf("ApplyExpects Returns False on expect %d : %d unsupported amount of matches", i, len(expect.Matches)))
+			return false, failedExpects
+		}
+
+		ok, err := t.validateExpect(expect, res)
+
+		if len(expect.Matches) == 1 {
+			currentMatch = expect.Matches[0]
+			currentMatch.ResultPresenceArray = t.ResultPresenceArray
+		}
+
+		switch i {
+		case 0:
+			conditionChecks = currentMatch.ResultPresenceArray
+		case len(t.ExpectLastIfAll) - 1:
+			// the last expect should include Status Code
+			if expect.StatusCode <= 0 {
+				failedExpects = append(failedExpects, t.AppErr(fmt.Sprintf("(%s):%s: Missing Status code in the last expect", t.ID, t.Name)))
+				return false, failedExpects
+			}
+
+			finds := make([]string, 0, len(conditionChecks))
+			for i, conditionCheck := range conditionChecks {
+				if !conditionCheck {
+					finds = append(finds, strconv.Itoa(i))
+				}
+			}
+
+			if !ok && len(finds) != len(conditionChecks) {
+				failedExpects = append(failedExpects, err)
+				if len(finds) > 0 {
+					failedExpects = append(failedExpects, t.AppErr(fmt.Sprintf("Matches returned False on array elements: %s", strings.Join(finds, ", "))))
+				}
+				return false, failedExpects
+			}
+		default:
+			if len(previoustMatch.ResultPresenceArray) != len(currentMatch.ResultPresenceArray) {
+				return true, nil
+			}
+
+			for j, presence := range currentMatch.ResultPresenceArray {
+				conditionChecks[j] = presence && previoustMatch.ResultPresenceArray[j]
+			}
+
+		}
+
+		previoustMatch = currentMatch
 	}
 
 	return true, nil

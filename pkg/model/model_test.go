@@ -7,7 +7,6 @@ import (
 	"testing"
 
 	"github.com/OpenBankingUK/conformance-suite/pkg/schema"
-
 	"github.com/OpenBankingUK/conformance-suite/pkg/test"
 
 	"github.com/go-openapi/loads"
@@ -15,6 +14,65 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"gopkg.in/resty.v1"
+)
+
+var (
+	// standingOrder JSON queries
+	bulkNumberOfPaymentsJSON = "Data.StandingOrder.#.NumberOfPayments"
+	bulkFinalPaymentDateTime = "Data.StandingOrder.#.FinalPaymentDateTime"
+	bulkFinalPaymentAmount   = "Data.StandingOrder.#.FinalPaymentAmount"
+	numberOfPaymentsJSON     = "Data.Initiation.NumberOfPayments"
+	finalPaymentDateTime     = "Data.Initiation.FinalPaymentDateTime"
+	finalPaymentAmount       = "Data.Initiation.FinalPaymentAmount"
+
+	matchBulkNumberOfPayments   = Match{Description: "test", JSON: bulkNumberOfPaymentsJSON}
+	matchBulkNoNumberOfPayments = Match{Description: "test", JSONNotPresent: bulkNumberOfPaymentsJSON}
+	matchNumberOfPayments       = Match{Description: "test", JSON: numberOfPaymentsJSON}
+	matchNoNumberOfPayments     = Match{Description: "test", JSONNotPresent: numberOfPaymentsJSON}
+
+	matchBulkFinalPaymentDateTime   = Match{Description: "test", JSON: bulkFinalPaymentDateTime}
+	matchBulkNoFinalPaymentDateTime = Match{Description: "test", JSONNotPresent: bulkFinalPaymentDateTime}
+	matchFinalPaymentDateTime       = Match{Description: "test", JSON: finalPaymentDateTime}
+	matchNoFinalPaymentDateTime     = Match{Description: "test", JSONNotPresent: finalPaymentDateTime}
+
+	matchBulkFinalPaymentAmount = Match{Description: "test", JSON: bulkFinalPaymentAmount}
+	matchFinalPaymentAmount     = Match{Description: "test", JSON: finalPaymentAmount}
+
+	tc1 = TestCase{ExpectLastIfAll: []Expect{
+		{Matches: []Match{matchBulkNumberOfPayments}},
+		{Matches: []Match{matchBulkFinalPaymentDateTime}},
+		{StatusCode: 403},
+	},
+		Validator:          schema.NewNullValidator(),
+		ExpectArrayResults: true,
+	}
+
+	tc2 = TestCase{ExpectLastIfAll: []Expect{
+		{Matches: []Match{matchBulkNoNumberOfPayments}},
+		{Matches: []Match{matchBulkNoFinalPaymentDateTime}},
+		{Matches: []Match{matchBulkFinalPaymentAmount}},
+		{StatusCode: 403},
+	},
+		Validator:          schema.NewNullValidator(),
+		ExpectArrayResults: true,
+	}
+
+	tc3 = TestCase{ExpectLastIfAll: []Expect{
+		{Matches: []Match{matchNumberOfPayments}},
+		{Matches: []Match{matchFinalPaymentDateTime}},
+		{StatusCode: 403},
+	},
+		Validator: schema.NewNullValidator(),
+	}
+
+	tc4 = TestCase{ExpectLastIfAll: []Expect{
+		{Matches: []Match{matchNoNumberOfPayments}},
+		{Matches: []Match{matchNoFinalPaymentDateTime}},
+		{Matches: []Match{matchFinalPaymentAmount}},
+		{StatusCode: 403},
+	},
+		Validator: schema.NewNullValidator(),
+	}
 )
 
 func TestLoadModel(t *testing.T) {
@@ -129,36 +187,34 @@ I want the results of one test case being used as input to the other testcase
 I want to use json pattern matching to extract the first returned AccountId from the first testcase and
 use that value as the accountid parameter for the second testcase
 */
+// TestChainedTestCases - tests passing test scenarios which do match the responses.
 func TestChainedTestCases(t *testing.T) {
 	manifest, err := loadManifest("testdata/passAccountId.json")
 	require.NoError(t, err)
 
-	rule := manifest.Rules[0] // get the first rule
-	executor := &executor{}   // Allows rule testcase execution strategies to be dynamically added to rules
-	rulectx := Context{}      // create a context to hold the passed parameters
-	tc01 := rule.Tests[0][0]  // get the first testcase of the first rule
-	tc01.Validator = schema.NewNullValidator()
-	req, err := tc01.Prepare(&rulectx) // Prepare calls ApplyInput and ApplyContext on testcase
-	require.NoError(t, err)
-	resp, err := executor.ExecuteTestCase(req, &tc01, &rulectx) // send the request to be executed resulting in a response
-	assert.NoError(t, err)
-	result, errs := tc01.Validate(resp, &rulectx) // Validate checks response against the match rules and processes any contextPuts present
-	assert.Nil(t, errs)
-	assert.True(t, result)
+	expectedEndpoints := []string{
+		"http://myaspsp/accounts/",
+		"http://myaspsp/accounts/500000000000000000000007",
+	}
 
-	tc02 := rule.Tests[0][1] // get the second testcase of the first rule
-	tc02.Validator = schema.NewNullValidator()
-	req, err = tc02.Prepare(&rulectx) // Prepare
-	assert.NoError(t, err)
-	resp, err = executor.ExecuteTestCase(req, &tc02, &rulectx) // Execute
-	assert.NoError(t, err)
-	result, errs = tc02.Validate(resp, &rulectx) // Validate checks the match rules and processes any contextPuts present
-	assert.Nil(t, errs)
-	assert.True(t, result)
+	executor := &executor{} // Allows rule testcase execution strategies to be dynamically added to rules
+	rulectx := Context{}    // create a context to hold the passed parameters
+
+	for i, tc := range manifest.Rules[0].Tests[0] { // get testcases of the first rule
+		tc.Validator = schema.NewNullValidator()
+		req, err := tc.Prepare(&rulectx) // Prepare calls ApplyInput and ApplyContext on testcase
+		require.NoError(t, err)
+		assert.Equal(t, expectedEndpoints[i], tc.Input.Endpoint)
+		resp, err := executor.ExecuteTestCase(req, &tc, &rulectx) // send the request to be executed resulting in a response
+		assert.NoError(t, err)
+		result, errs := tc.Validate(resp, &rulectx) // Validate checks response against the match rules and processes any contextPuts present
+		assert.Nil(t, errs)
+		assert.True(t, result)
+	}
+
 	acctid, exist := rulectx.Get("AccountId")
 	assert.True(t, exist)
 	assert.Equal(t, "500000000000000000000007", acctid)
-	assert.Equal(t, "http://myaspsp/accounts/500000000000000000000007", tc02.Input.Endpoint)
 }
 
 type executor struct {
@@ -225,4 +281,116 @@ func TestGetReplacementField(t *testing.T) {
 		})
 	}
 
+}
+
+func TestPassingExpectsLastIfAll(t *testing.T) {
+	for i, body := range okTestCasesStandingOrders {
+		t.Run(fmt.Sprintf("Standing Orders - OK test case Fails when NumberOfPayments, FinalPaymentDateTime are not specified and FinalPaymentAmount is specified.: %d", i), func(t *testing.T) {
+			resp := test.CreateHTTPResponse(200, "OK", body)
+			result, errs := tc1.Validate(resp, emptyContext)
+			assert.True(t, result)
+			assert.Empty(t, errs)
+		})
+	}
+
+	for i, body := range badTestCasesStandingOrders {
+		t.Run(fmt.Sprintf("Standing Orders - Bad test case Fails when NumberOfPayments, FinalPaymentDateTime are not specified and FinalPaymentAmount is specified.: %d with the expected status code", i), func(t *testing.T) {
+			resp := test.CreateHTTPResponse(403, "Forbidden", body)
+			result, errs := tc1.Validate(resp, emptyContext)
+			assert.True(t, result)
+			assert.Empty(t, errs)
+		})
+	}
+
+	for i, body := range okTestCasesStandingOrders2 {
+		t.Run(fmt.Sprintf("Standing Orders - OK test case Fails when NumberOfPayments, FinalPaymentDateTime are not specified and FinalPaymentAmount is specified.: %d", i), func(t *testing.T) {
+			resp := test.CreateHTTPResponse(200, "OK", body)
+			result, errs := tc2.Validate(resp, emptyContext)
+			assert.True(t, result)
+			assert.Empty(t, errs)
+		})
+	}
+
+	for i, body := range badTestCasesStandingOrders2 {
+		t.Run(fmt.Sprintf("Standing Orders - Bad test case Fails when NumberOfPayments, FinalPaymentDateTime are not specified and FinalPaymentAmount is specified.: %d with the expected status code", i), func(t *testing.T) {
+			resp := test.CreateHTTPResponse(403, "Forbidden", body)
+			result, errs := tc2.Validate(resp, emptyContext)
+			assert.True(t, result)
+			assert.Empty(t, errs)
+		})
+	}
+
+	for i, body := range okTestCaseDomesticStandingOrders1 {
+		t.Run(fmt.Sprintf("Domestic Standing Orders - OK test case Fails when NumberOfPayments, FinalPaymentDateTime are specified at the time.: %d", i), func(t *testing.T) {
+			resp := test.CreateHTTPResponse(200, "OK", body)
+			result, errs := tc3.Validate(resp, emptyContext)
+			assert.True(t, result)
+			assert.Empty(t, errs)
+		})
+	}
+
+	for i, body := range badTestCaseDomesticStandingOrders1 {
+		t.Run(fmt.Sprintf("Domestic Standing Orders - Bad test case Fails when NumberOfPayments, FinalPaymentDateTime are specified at the time.: %d with the expected status code", i), func(t *testing.T) {
+			resp := test.CreateHTTPResponse(403, "Forbidden", body)
+			result, errs := tc3.Validate(resp, emptyContext)
+			assert.True(t, result)
+			assert.Empty(t, errs)
+		})
+	}
+
+	for i, body := range okTestCaseDomesticStandingOrders2 {
+		t.Run(fmt.Sprintf("Domestic Standing Orders - OK test case Fails when NumberOfPayments, FinalPaymentDateTime are not specified and FinalPaymentAmount is specified.: %d", i), func(t *testing.T) {
+			resp := test.CreateHTTPResponse(200, "OK", body)
+			result, errs := tc4.Validate(resp, emptyContext)
+			assert.True(t, result)
+			assert.Empty(t, errs)
+		})
+	}
+
+	for i, body := range badTestCaseDomesticStandingOrders2 {
+		t.Run(fmt.Sprintf("Domestic Standing Orders - Bad test case Fails when NumberOfPayments, FinalPaymentDateTime are not specified and FinalPaymentAmount is specified.: %d with the expected status code", i), func(t *testing.T) {
+			resp := test.CreateHTTPResponse(403, "Forbidden", body)
+			result, errs := tc4.Validate(resp, emptyContext)
+			assert.True(t, result)
+			assert.Empty(t, errs)
+		})
+	}
+}
+
+func TestFailingExpectsLastIfAll(t *testing.T) {
+	for i, body := range badTestCasesStandingOrders {
+		t.Run(fmt.Sprintf("Standing Orders - Bad test case %d with the unexpected status code", i), func(t *testing.T) {
+			resp := test.CreateHTTPResponse(200, "OK", body)
+			result, errs := tc1.Validate(resp, emptyContext)
+			assert.False(t, result)
+			assert.NotEmpty(t, errs)
+		})
+	}
+
+	for i, body := range badTestCasesStandingOrders2 {
+		t.Run(fmt.Sprintf("Standing Orders - Bad test case %d with the unexpected status code", i), func(t *testing.T) {
+			resp := test.CreateHTTPResponse(200, "OK", body)
+			result, errs := tc2.Validate(resp, emptyContext)
+			assert.False(t, result)
+			assert.NotEmpty(t, errs)
+		})
+	}
+
+	for i, body := range badTestCaseDomesticStandingOrders1 {
+		t.Run(fmt.Sprintf("Domestic Standing Orders - Bad test case Fails when NumberOfPayments, FinalPaymentDateTime are specified at the time.: %d with the unexpected status code", i), func(t *testing.T) {
+			resp := test.CreateHTTPResponse(200, "Forbidden", body)
+			result, errs := tc3.Validate(resp, emptyContext)
+			assert.False(t, result)
+			assert.NotEmpty(t, errs)
+		})
+	}
+
+	for i, body := range badTestCaseDomesticStandingOrders2 {
+		t.Run(fmt.Sprintf("Domestic Standing Orders - Bad test case Fails when NumberOfPayments, FinalPaymentDateTime are not specified and FinalPaymentAmount is specified.: %d with the unexpected status code", i), func(t *testing.T) {
+			resp := test.CreateHTTPResponse(200, "Forbidden", body)
+			result, errs := tc4.Validate(resp, emptyContext)
+			assert.False(t, result)
+			assert.NotEmpty(t, errs)
+		})
+	}
 }
