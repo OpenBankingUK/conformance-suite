@@ -2130,7 +2130,7 @@
         "x-fapi-interaction-id": "93bac548-d2de-4546-b106-880a5018460d"
       },
       "queryParameters":{
-        "fromStatementDateTime": "2016-01-01T104012.345Z"
+        "fromStatementDateTime": "20160101T104012.345Z"
       },
       "headers": {
         "x-fapi-interaction-id": "$x-fapi-interaction-id"
