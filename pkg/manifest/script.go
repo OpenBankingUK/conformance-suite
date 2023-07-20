@@ -746,6 +746,10 @@ var accountsRegex = []PathRegex{
 		Name:  "Get Offers Resource",
 	},
 	{
+		Regex: "^/accounts/" + subPathx + "/parties$",
+		Name:  "Get Parties Resource",
+	},
+	{
 		Regex: "^/accounts/" + subPathx + "/party$",
 		Name:  "Get Party Resource",
 	},

@@ -89,6 +89,11 @@ var accountsRegex = []PathRegex{
 		Mapping: "/accounts/{AccountId}/party",
 	},
 	{
+		Regex:   ".*/accounts/" + subPathx + "/parties$",
+		Name:    "Get Parties Resource",
+		Mapping: "/accounts/{AccountId}/parties",
+	},
+	{
 		Regex:   ".*/accounts/" + subPathx + "/product$",
 		Name:    "Get Product Resource",
 		Mapping: "/accounts/{AccountId}/products",
