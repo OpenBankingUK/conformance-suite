@@ -1717,6 +1717,11 @@ func conditionalityStaticData() []byte {
 			{
 			  "condition": "conditional",
 			  "method": "GET",
+			  "endpoint": "/accounts/{AccountId}/parties"
+			},
+			{
+			  "condition": "conditional",
+			  "method": "GET",
 			  "endpoint": "/accounts/{AccountId}/party"
 			},
 			{
