@@ -2161,7 +2161,7 @@
         "x-fapi-interaction-id": "93bac548-d2de-4546-b106-880a5018460d"
       },
       "queryParameters":{
-        "fromStatementDateTime": "2016-01-01T10:40:12.34.567Z"
+        "fromStatementDateTime": "2016-01-01T10:40:12.34567Z"
       },
       "headers": {
         "x-fapi-interaction-id": "$x-fapi-interaction-id"
@@ -2192,7 +2192,7 @@
         "x-fapi-interaction-id": "93bac548-d2de-4546-b106-880a5018460d"
       },
       "queryParameters":{
-        "fromStatementDateTime": "2016-01-01T10:40:12.34.567+01"
+        "fromStatementDateTime": "2016-01-01T10:40:12.34567+01"
       },
       "headers": {
         "x-fapi-interaction-id": "$x-fapi-interaction-id"
