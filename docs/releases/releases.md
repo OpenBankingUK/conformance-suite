@@ -1,5 +1,9 @@
 # Release history
 
+# Release v1.7.1 (20th July 2023)
+
+The release is called **v1.7.2**, an update to add changes to manifests, add v3.1.11 support, add new assertion type - last_if_all.
+
 # Release v1.7.1 (4th October 2022)
 
 The release is called **v1.7.1**, an update to provide a unit test fix, add a change to VRP manifest.

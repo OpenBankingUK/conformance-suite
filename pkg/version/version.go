@@ -21,10 +21,10 @@ const (
 	// Checker must conform to the format expected, major, minor and patch.
 	// @NEW-SPEC-RELEASE - make sure new version is accounted for
 	// @NEW-RELEASE - make sure new version is accounted for
-	//v1.7.1 - this comment allows searching
+	//v1.7.2 - this comment allows searching
 	major = "1"
 	minor = "7"
-	patch = "1"
+	patch = "2"
 
 	//FullVersion -  Checker is the full string version of Conformance Suite.
 	FullVersion = major + "." + minor + "." + patch

@@ -17,16 +17,16 @@ To provide feedback, please see the [CONTRIBUTING.md](CONTRIBUTING.md).
 ## Release Notes
 * * *
 
-# Release v1.7.1 (4th October 2022)
+# Release v1.7.2 (20th July 2023)
 
-The release is called **v1.7.1**, an update to provide a unit test fix, add a change to VRP manifest and swagger.
+The release is called **v1.7.2**, an update to add changes to manifests, add v3.1.11 support, add new assertion type - last_if_all.
 
-[Full Release Notes](./docs/releases/v1.7.1.md)
+[Full Release Notes](./docs/releases/v1.7.2.md)
 
 
 ---
 **Download**:
-`docker run --rm -it -p 127.0.0.1:8443:8443 "openbanking/conformance-suite:v1.7.1"` |
+`docker run --rm -it -p 127.0.0.1:8443:8443 "openbanking/conformance-suite:v1.7.2"` |
 [DockerHub](https://hub.docker.com/r/openbanking/conformance-suite) |
 [Setup Guide](https://github.com/OpenBankingUK/conformance-suite/blob/develop/docs/setup-guide.md)
 ---
@@ -36,9 +36,9 @@ The release is called **v1.7.1**, an update to provide a unit test fix, add a ch
 
 | Release       | Standard version  |
 | ------------- |:-----------------:|
+| v1.7.2        | v3.1.11           |
 | v1.7.0        | v3.1.10           |
 | v1.6.12       | v3.1.9            |
-| v1.6.10       | v3.1.8            |
 
 
 ## Quickstart
@@ -46,11 +46,11 @@ The release is called **v1.7.1**, an update to provide a unit test fix, add a ch
 
 Pull and run the latest (stable) tagged Docker image:
 
-    > docker run --rm -it -p 127.0.0.1:8443:8443 "openbanking/conformance-suite:v1.7.1"
+    > docker run --rm -it -p 127.0.0.1:8443:8443 "openbanking/conformance-suite:v1.7.2"
 
 or
 
-    > docker run --rm -it -p 8443:8443 "openbanking/conformance-suite:v1.7.1"
+    > docker run --rm -it -p 8443:8443 "openbanking/conformance-suite:v1.7.2"
 
 [See Setup Guide](https://github.com/OpenBankingUK/conformance-suite/blob/develop/docs/setup-guide.md)
 
