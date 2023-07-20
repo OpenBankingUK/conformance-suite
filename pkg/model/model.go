@@ -405,8 +405,9 @@ func (t *TestCase) validateExpectsLastIfAll(res *resty.Response) (bool, []error)
 		return t.validateExpectsLastIfAllArrayResults(res)
 	}
 
+	failedExpects := make([]error, 0, len(t.ExpectLastIfAll))
+
 	for i, expect := range t.ExpectLastIfAll {
-		failedExpects := make([]error, 0, len(t.ExpectLastIfAll))
 		ok, err := t.validateExpect(expect, res)
 
 		switch i {

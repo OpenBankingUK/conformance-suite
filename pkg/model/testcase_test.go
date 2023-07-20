@@ -354,6 +354,112 @@ var (
 			}
 		}`,
 	}
+
+	okTestCaseDomesticStandingOrders1 = []string{
+		`{
+			"Data": {
+				"Initiation": {
+					"NumberOfPayments": "5"
+				}
+			}
+		}`,
+		`{
+			"Data": {
+				"Initiation": {
+					"FinalPaymentDateTime": "1981-03-20T06:06:06+00:00"
+				}
+			}
+		}`,
+		`{
+			"Data": {
+				"Initiation": {
+					"Frequency": "EvryDay"
+				}
+			}
+		}`,
+	}
+
+	badTestCaseDomesticStandingOrders1 = []string{
+		`{
+			"Data": {
+				"Initiation": {
+					"NumberOfPayments": "5",
+					"FinalPaymentDateTime": "1981-03-20T06:06:06+00:00"
+				}
+			}
+		}`,
+	}
+
+	okTestCaseDomesticStandingOrders2 = []string{
+		`{
+			"Data": {
+				"Initiation": {
+					"Frequency": "EvryDay"
+				}
+			}
+		}`,
+		`{
+			"Data": {
+				"Initiation": {
+					"FinalPaymentDateTime": "1981-03-20T06:06:06+00:00",
+					"FinalPaymentAmount": {
+						"Amount": "7.00",
+						"Currency": "GBP"
+					}
+				}
+			}
+		}`,
+		`{
+			"Data": {
+				"Initiation": {
+					"NumberOfPayments": "5",
+					"FinalPaymentDateTime": "1981-03-20T06:06:06+00:00",
+					"FinalPaymentAmount": {
+						"Amount": "7.00",
+						"Currency": "GBP"
+					}
+				}
+			}
+		}`,
+		`{
+			"Data": {
+				"Initiation": {
+					"NumberOfPayments": "5",
+					"FinalPaymentAmount": {
+						"Amount": "7.00",
+						"Currency": "GBP"
+					}
+				}
+			}
+		}`,
+		`{
+			"Data": {
+				"Initiation": {
+					"NumberOfPayments": "5"
+				}
+			}
+		}`,
+		`{
+			"Data": {
+				"Initiation": {
+					"FinalPaymentDateTime": "1981-03-20T06:06:06+00:00"
+				}
+			}
+		}`,
+	}
+
+	badTestCaseDomesticStandingOrders2 = []string{
+		`{
+			"Data": {
+				"Initiation": {
+					"FinalPaymentAmount": {
+						"Amount": "7.00",
+						"Currency": "GBP"
+					}
+				}
+			}
+		}`,
+	}
 )
 
 // Reads a single testcase from json bytes
