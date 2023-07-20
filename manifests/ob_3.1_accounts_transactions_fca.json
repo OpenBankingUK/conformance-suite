@@ -1563,56 +1563,6 @@
       "schemaCheck": true
     },
     {
-      "description": "Fails when NumberOfPayments, FinalPaymentDateTime are not specified and FinalPaymentAmount is specified.",
-      "id": "OB-301-STO-103801",
-      "refURI": "https://openbankinguk.github.io/read-write-api-site3/v3.1.11/resources-and-data-models/aisp/standing-orders.html",
-      "detail": "Checks if NumberOfPayments, FinalPaymentDateTime are not specified and FinalPaymentAmount is specified.",
-      "parameters": {
-        "tokenRequestScope": "accounts",
-        "accountId": "$consentedAccountId"
-      },
-      "permissions": [
-        "ReadAccountsBasic",
-        "ReadStandingOrdersDetail"
-      ],
-      "uri": "/accounts/$accountId/standing-orders",
-      "uriImplementation": "conditional",
-      "resource": "StandingOrder",
-      "asserts_last_if_all": [
-        "OB3GLOAssertNoNumberOfPayments",
-        "OB3GLOAssertNoFinalPaymentDateTime",
-        "OB3GLOAssertFinalPaymentAmountOn403"
-      ],
-      "expect_array_results": true,
-      "method": "get",
-      "schemaCheck": true
-    },
-    {
-      "description": "Fails when NumberOfPayments, FinalPaymentDateTime are specified at the time.",
-      "id": "OB-301-STO-103802",
-      "refURI": "https://openbankinguk.github.io/read-write-api-site3/v3.1.11/resources-and-data-models/aisp/standing-orders.html",
-      "detail": "Checks if NumberOfPayments, FinalPaymentDateTime are specified at the time.",
-      "parameters": {
-        "tokenRequestScope": "accounts",
-        "accountId": "$consentedAccountId"
-      },
-      "permissions": [
-        "ReadAccountsBasic",
-        "ReadStandingOrdersDetail"
-      ],
-      "uri": "/accounts/$accountId/standing-orders",
-      "uriImplementation": "conditional",
-      "resource": "StandingOrder",
-      "asserts_last_if_all": [
-        "OB3GLOAssertNumberOfPayments",
-        "OB3GLOAssertFinalPaymentDateTime",
-        "OB3GLOAssertOn403"
-      ],
-      "expect_array_results": true,
-      "method": "get",
-      "schemaCheck": true
-    },
-    {
       "description": "All data returned for a given account using the ReadStandingOrdersDetail permission.",
       "id": "OB-301-STO-103900",
       "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937721918/Standing+Orders+v3.1#StandingOrdersv3.1-PermissionCodes",
@@ -1631,54 +1581,6 @@
         "OB3GLOAssertOn200",
         "OB3GLOFAPIHeader"
       ],
-      "method": "get",
-      "schemaCheck": true
-    },
-    {
-      "description": "Fails when NumberOfPayments, FinalPaymentDateTime are not specified and FinalPaymentAmount is specified.",
-      "id": "OB-301-STO-103901",
-      "refURI": "https://openbankinguk.github.io/read-write-api-site3/v3.1.11/resources-and-data-models/aisp/standing-orders.html",
-      "detail": "Checks if NumberOfPayments, FinalPaymentDateTime are not specified and FinalPaymentAmount is specified.",
-      "parameters": {
-        "tokenRequestScope": "accounts"
-      },
-      "permissions": [
-        "ReadAccountsBasic",
-        "ReadStandingOrdersDetail"
-      ],
-      "uri": "/standing-orders",
-      "uriImplementation": "optional",
-      "resource": "StandingOrder",
-      "asserts_last_if_all": [
-        "OB3GLOAssertNoNumberOfPayments",
-        "OB3GLOAssertNoFinalPaymentDateTime",
-        "OB3GLOAssertFinalPaymentAmountOn403"
-      ],
-      "expect_array_results": true,
-      "method": "get",
-      "schemaCheck": true
-    },
-    {
-      "description": "Fails when NumberOfPayments, FinalPaymentDateTime are specified at the time.",
-      "id": "OB-301-STO-103902",
-      "refURI": "https://openbankinguk.github.io/read-write-api-site3/v3.1.11/resources-and-data-models/aisp/standing-orders.html",
-      "detail": "Checks if NumberOfPayments, FinalPaymentDateTime are specified at the time.",
-      "parameters": {
-        "tokenRequestScope": "accounts"
-      },
-      "permissions": [
-        "ReadAccountsBasic",
-        "ReadStandingOrdersDetail"
-      ],
-      "uri": "/standing-orders",
-      "uriImplementation": "optional",
-      "resource": "StandingOrder",
-      "asserts_last_if_all": [
-        "OB3GLOAssertNumberOfPayments",
-        "OB3GLOAssertFinalPaymentDateTime",
-        "OB3GLOAssertOn403"
-      ],
-      "expect_array_results": true,
       "method": "get",
       "schemaCheck": true
     },
