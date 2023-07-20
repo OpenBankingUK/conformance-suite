@@ -1,4 +1,4 @@
-![Open Banking Logo](https://github.com/OpenBankingUK/conformance-suite/blob/develop/docs/static_files/OBIE_logotype_blue_RGB.PNG)
+![Open Banking Logo](https://raw.githubusercontent.com/OpenBankingUK/conformance-suite/develop/docs/static_files/OBIE_logotype_blue_RGB.PNG)
 
 [![made-with-go](https://img.shields.io/badge/Made%20with-Go-1f425Ff.svg)](https://www.golang.org/)
 [![made-with-vue-js](https://img.shields.io/badge/Made%20with-Vue.JS-1f425Ff.svg)](https://vuejs.org/)
