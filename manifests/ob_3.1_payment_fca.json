@@ -564,6 +564,49 @@
       "validateSignature": true
     },
     {
+      "description": "Fails when NumberOfPayments, FinalPaymentDateTime are specified at the time.",
+      "id": "OB-301-DOP-1015001",
+      "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1000670131/Domestic+Standing+Orders+v3.1.1#DomesticStandingOrdersv3.1.1-GET/domestic-standing-orders/{DomesticStandingOrderId}",
+      "detail": "Checks if NumberOfPayments, FinalPaymentDateTime are specified at the time.",
+      "parameters": {
+        "tokenRequestScope": "payments",
+        "paymentID": "$OB-301-DOP-101401-DomesticStandingOrderID"
+      },
+      "uri": "/domestic-standing-orders/$paymentID",
+      "uriImplementation": "conditional",
+      "resource": "DomesticScheduledPayment",
+      "asserts_last_if_all": [
+        "OB3GLOAssertNumberOfPayments",
+        "OB3GLOAssertFinalPaymentDateTime",
+        "OB3GLOAssertOn403"
+      ],
+      "method": "get",
+      "schemaCheck": true,
+      "validateSignature": true
+    },
+    {
+      "description": "Fails when NumberOfPayments, FinalPaymentDateTime are not specified and FinalPaymentAmount is specified.",
+      "id": "OB-301-DOP-1015002",
+      "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1000670131/Domestic+Standing+Orders+v3.1.1#DomesticStandingOrdersv3.1.1-GET/domestic-standing-orders/{DomesticStandingOrderId}",
+      "detail": "Checks if NumberOfPayments, FinalPaymentDateTime are not specified and FinalPaymentAmount is specified.",
+      "parameters": {
+        "tokenRequestScope": "payments",
+        "paymentID": "$OB-301-DOP-101401-DomesticStandingOrderID"
+      },
+      "uri": "/domestic-standing-orders/$paymentID",
+      "uriImplementation": "conditional",
+      "resource": "DomesticScheduledPayment",
+      "asserts_last_if_all": [
+        "OB3GLOAssertNoNumberOfPayments",
+        "OB3GLOAssertNoFinalPaymentDateTime",
+        "OB3GLOAssertFinalPaymentAmount",
+        "OB3GLOAssertOn403"
+      ],
+      "method": "get",
+      "schemaCheck": true,
+      "validateSignature": true
+    },
+    {
       "description": "International Payment consent succeeds with minimal data set with additional schema checks.",
       "id": "OB-301-DOP-101600",
       "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1000015587/International+Payments+v3.1.1#InternationalPaymentsv3.1.1-POST/international-payment-consents",
