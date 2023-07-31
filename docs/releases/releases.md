@@ -1,6 +1,10 @@
 # Release history
 
-# Release v1.7.1 (20th July 2023)
+# Release v1.7.3 (24th July 2023)
+
+The release is called **v1.7.3**, an update to add additional fixes to support Wallets.
+
+# Release v1.7.2 (20th July 2023)
 
 The release is called **v1.7.2**, an update to add changes to manifests, add v3.1.11 support, add new assertion type - last_if_all.
 
