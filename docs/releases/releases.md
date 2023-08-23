@@ -1,5 +1,9 @@
 # Release history
 
+# Release v1.7.4 (23th August 2023)
+
+The release is called **v1.7.4**, an update to revert typo fix.
+
 # Release v1.7.3 (24th July 2023)
 
 The release is called **v1.7.3**, an update to add additional fixes to support Wallets.
