@@ -17,16 +17,16 @@ To provide feedback, please see the [CONTRIBUTING.md](CONTRIBUTING.md).
 ## Release Notes
 * * *
 
-# Release v1.7.3 (24th July 2023)
+# Release v1.7.4 (23th August 2023)
 
-The release is called **v1.7.3**, an update to add additional fixes to support Wallets.
+The release is called **v1.7.4**, an update to revert typo fix.
 
-[Full Release Notes](https://github.com/OpenBankingUK/conformance-suite/blob/develop/docs/releases/v1.7.3.md)
+[Full Release Notes](https://github.com/OpenBankingUK/conformance-suite/blob/develop/docs/releases/v1.7.4.md)
 
 
 ---
 **Download**:
-`docker run --rm -it -p 127.0.0.1:8443:8443 "openbanking/conformance-suite:v1.7.3"` |
+`docker run --rm -it -p 127.0.0.1:8443:8443 "openbanking/conformance-suite:v1.7.4"` |
 [DockerHub](https://hub.docker.com/r/openbanking/conformance-suite) |
 [Setup Guide](https://github.com/OpenBankingUK/conformance-suite/blob/develop/docs/setup-guide.md)
 ---
@@ -46,11 +46,11 @@ The release is called **v1.7.3**, an update to add additional fixes to support W
 
 Pull and run the latest (stable) tagged Docker image:
 
-    > docker run --rm -it -p 127.0.0.1:8443:8443 "openbanking/conformance-suite:v1.7.3"
+    > docker run --rm -it -p 127.0.0.1:8443:8443 "openbanking/conformance-suite:v1.7.4"
 
 or
 
-    > docker run --rm -it -p 8443:8443 "openbanking/conformance-suite:v1.7.3"
+    > docker run --rm -it -p 8443:8443 "openbanking/conformance-suite:v1.7.4"
 
 [See Setup Guide](https://github.com/OpenBankingUK/conformance-suite/blob/develop/docs/setup-guide.md)
 
