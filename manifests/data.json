@@ -79,7 +79,8 @@
               "Reference": "$creditorIdentification",
               "Unstructured": "Test Unstructured Data"
             }
-          }
+          },
+          "VRPType": "UK.OBIE.VRPType.Sweeping"
         },
         "Risk": {
         }
