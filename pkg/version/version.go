@@ -16,15 +16,15 @@ import (
 	"github.com/pkg/errors"
 )
 
-//  Checker returns the semantic version (see http://semver.org).
+// Checker returns the semantic version (see http://semver.org).
 const (
 	// Checker must conform to the format expected, major, minor and patch.
 	// @NEW-SPEC-RELEASE - make sure new version is accounted for
 	// @NEW-RELEASE - make sure new version is accounted for
-	//v1.7.4 - this comment allows searching
+	//v1.7.5 - this comment allows searching
 	major = "1"
 	minor = "7"
-	patch = "4"
+	patch = "5"
 
 	//FullVersion -  Checker is the full string version of Conformance Suite.
 	FullVersion = major + "." + minor + "." + patch
