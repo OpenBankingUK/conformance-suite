@@ -3,6 +3,8 @@ package main
 import (
 	"crypto/tls"
 	"fmt"
+	"net/http"
+	"net/url"
 	"os"
 	"strings"
 	"time"
@@ -10,6 +12,7 @@ import (
 	"github.com/OpenBankingUK/conformance-suite/pkg/discovery"
 	"github.com/OpenBankingUK/conformance-suite/pkg/generation"
 	"github.com/OpenBankingUK/conformance-suite/pkg/manifest"
+	"golang.org/x/net/http/httpproxy"
 
 	"github.com/OpenBankingUK/conformance-suite/pkg/model"
 	"github.com/OpenBankingUK/conformance-suite/pkg/server"
@@ -41,6 +44,8 @@ Complete documentation is available at https://github.com/OpenBankingUK/conforma
 		RunE: func(cmd *cobra.Command, args []string) error {
 			logger := logger.WithField("app", "server")
 			ver := version.NewGitHub(version.GitHubAPIRepository)
+
+			logger.Println("Rzeka")
 
 			printVersionInfo(ver, logger)
 
@@ -99,6 +104,8 @@ func init() {
 	viper.SetEnvPrefix("")
 	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
 	viper.AutomaticEnv()
+
+	setProxy()
 
 	cobra.OnInitialize(initConfig)
 }
@@ -187,4 +194,25 @@ func printConfigurationFlags() {
 		"tlscheck":         viper.GetBool("tlscheck"),
 		"export_testcases": viper.GetString("export_testcases"),
 	}).Info("configuration flags")
+}
+
+func setProxy() {
+	if proxy := httpproxy.FromEnvironment().HTTPSProxy; proxy != "" {
+
+		uri, err := url.Parse(proxy)
+		if err != nil {
+			logger.Fatalf("cannot parse secure proxy from environment: %s", err.Error())
+		}
+
+		transport := &http.Transport{
+			Proxy: http.ProxyURL(uri),
+		}
+
+		resty.SetProxy(proxy)
+		http.DefaultTransport = transport
+
+		if resty.IsProxySet() {
+			logger.Info("resty proxy set", proxy)
+		}
+	}
 }

@@ -6,7 +6,11 @@ import (
 	"net/url"
 	"strings"
 
+	"github.com/magisterquis/connectproxy"
 	"github.com/pkg/errors"
+	utls "github.com/refraction-networking/utls"
+	"golang.org/x/net/http/httpproxy"
+	"golang.org/x/net/proxy"
 )
 
 type TLSValidator interface {
@@ -41,6 +45,8 @@ func NewStdTLSValidator(minSupportedTLSVersion uint16) StdTLSValidator {
 }
 
 func (v StdTLSValidator) ValidateTLSVersion(uri string) (TLSValidationResult, error) {
+	proxyStr := httpproxy.FromEnvironment().HTTPSProxy
+	uris, err := url.Parse(proxyStr)
 	parsedURI, err := url.Parse(uri)
 	if err != nil {
 		return TLSValidationResult{}, errors.Wrapf(err, "unable to parse the provided uri %s", uri)
@@ -54,12 +60,22 @@ func (v StdTLSValidator) ValidateTLSVersion(uri string) (TLSValidationResult, er
 	if !strings.Contains(parsedURI.Host, ":") {
 		addr = fmt.Sprintf("%s:%d", parsedURI.Host, 443)
 	}
-	conn, err := tls.Dial("tcp", addr, v.tlsConfig)
+
+	proxyDialer, err := connectproxy.New(uris, proxy.Direct)
+	conn, err := proxyDialer.Dial("tcp", addr)
+
 	if err != nil {
 		return TLSValidationResult{}, errors.Wrapf(err, "unable to detect tls version for hostname %s", parsedURI.Host)
 	}
 	defer conn.Close()
-	state := conn.ConnectionState()
+
+	config := utls.Config{InsecureSkipVerify: true, Renegotiation: utls.RenegotiateFreelyAsClient}
+	uconn := utls.UClient(conn, &config, utls.HelloRandomizedALPN)
+	err = uconn.Handshake()
+	if err != nil {
+		return TLSValidationResult{}, errors.Wrapf(err, "unable to Handshake tls")
+	}
+	state := uconn.ConnectionState()
 	strVersion, err := tlsVersionToString(state.Version)
 	if err != nil {
 		return TLSValidationResult{}, errors.Wrapf(err, "unable to parse tls version `%d` to string", state.Version)
