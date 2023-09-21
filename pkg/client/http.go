@@ -4,7 +4,11 @@ import (
 	"crypto/tls"
 	"net"
 	"net/http"
+	"net/url"
 	"time"
+
+	"github.com/sirupsen/logrus"
+	"golang.org/x/net/http/httpproxy"
 )
 
 const (
@@ -32,6 +36,13 @@ func NewHTTPClient(timeout time.Duration) *http.Client {
 	// Golang 1.4
 	// transport := http.DefaultTransport.(*http.Transport).Clone()
 	// transport.TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
+	if proxy := httpproxy.FromEnvironment().HTTPSProxy; proxy != "" {
+		uri, err := url.Parse(proxy)
+		if err != nil {
+			logrus.Fatalf("cannot parse secure proxy from environment: %s", err.Error())
+		}
+		defaultInsecureTransport.Proxy = http.ProxyURL(uri)
+	}
 
 	return NewHTTPClientWithTransport(timeout, defaultInsecureTransport)
 }
