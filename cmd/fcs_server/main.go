@@ -45,8 +45,6 @@ Complete documentation is available at https://github.com/OpenBankingUK/conforma
 			logger := logger.WithField("app", "server")
 			ver := version.NewGitHub(version.GitHubAPIRepository)
 
-			logger.Println("Rzeka")
-
 			printVersionInfo(ver, logger)
 
 			validatorEngine := discovery.NewFuncValidator(model.NewConditionalityChecker())
