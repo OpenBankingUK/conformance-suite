@@ -1,6 +1,7 @@
 module github.com/OpenBankingUK/conformance-suite
 
 require (
+	github.com/BurntSushi/toml v0.3.1 // indirect
 	github.com/blang/semver/v4 v4.0.0
 	github.com/davecgh/go-spew v1.1.1
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
@@ -26,9 +27,9 @@ require (
 	github.com/mattn/go-colorable v0.0.9 // indirect
 	github.com/mattn/go-isatty v0.0.4 // indirect
 	github.com/mgutz/ansi v0.0.0-20170206155736-9520e82c474b // indirect
+	github.com/onsi/ginkgo/v2 v2.9.5 // indirect
 	github.com/pkg/errors v0.9.1
-	github.com/quic-go/quic-go v0.38.1 // indirect
-	github.com/refraction-networking/utls v1.5.3
+	github.com/refraction-networking/utls v1.1.5
 	github.com/shopspring/decimal v1.2.0
 	github.com/sirupsen/logrus v1.4.0
 	github.com/spf13/cobra v0.0.3
