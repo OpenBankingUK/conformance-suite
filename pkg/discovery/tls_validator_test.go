@@ -40,7 +40,7 @@ func TestValidateTLSVersionFailsOnLowerVersion(t *testing.T) {
 	assert.False(t, r.Valid)
 	assert.Empty(t, r.TLSVersion)
 	assert.Contains(t, err.Error(), "unable to detect tls version for hostname 127.0.0.1")
-	assert.Contains(t, err.Error(), "remote error: tls: protocol version not supporte")
+	assert.Contains(t, err.Error(), "remote error: tls: protocol version not supported")
 }
 
 func TestValidateTLSVersionSucceeds(t *testing.T) {
