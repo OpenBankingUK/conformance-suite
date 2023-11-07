@@ -38,7 +38,7 @@ jobs:
       NODE_DISABLE_COLORS: 0
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Install packages
         run: apk update && apk add git make bash curl
       - name: Install node dependencies
