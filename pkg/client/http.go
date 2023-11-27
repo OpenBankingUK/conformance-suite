@@ -36,8 +36,18 @@ func NewHTTPClient(timeout time.Duration) *http.Client {
 	// Golang 1.4
 	// transport := http.DefaultTransport.(*http.Transport).Clone()
 	// transport.TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
-	if proxy := httpproxy.FromEnvironment().HTTPSProxy; proxy != "" {
-		uri, err := url.Parse(proxy)
+	var proxyStr string
+
+	if httpsProxy := httpproxy.FromEnvironment().HTTPSProxy; httpsProxy != "" {
+		proxyStr = httpsProxy
+	}
+
+	if httpProxy := httpproxy.FromEnvironment().HTTPProxy; httpProxy != "" {
+		proxyStr = httpProxy
+	}
+
+	if proxyStr != "" {
+		uri, err := url.Parse(proxyStr)
 		if err != nil {
 			logrus.Fatalf("cannot parse secure proxy from environment: %s", err.Error())
 		}

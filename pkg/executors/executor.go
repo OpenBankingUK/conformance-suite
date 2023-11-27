@@ -7,12 +7,14 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"net/url"
 
 	"github.com/OpenBankingUK/conformance-suite/pkg/authentication"
 	"github.com/OpenBankingUK/conformance-suite/pkg/authentication/certificates"
 	"github.com/OpenBankingUK/conformance-suite/pkg/executors/results"
 	"github.com/OpenBankingUK/conformance-suite/pkg/model"
 	"github.com/OpenBankingUK/conformance-suite/pkg/tracer"
+	"golang.org/x/net/http/httpproxy"
 
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
@@ -53,6 +55,32 @@ func (e *Executor) ExecuteTestCase(r *resty.Request, t *model.TestCase, ctx *mod
 
 	e.appMsg(fmt.Sprintf("Execute Testcase: %s: %s", t.ID, t.Name))
 	e.appMsg(fmt.Sprintf("attempting %s %s", r.Method, r.URL))
+
+	var proxyStr string
+
+	if httpsProxy := httpproxy.FromEnvironment().HTTPSProxy; httpsProxy != "" {
+		proxyStr = httpsProxy
+	}
+
+	if httpProxy := httpproxy.FromEnvironment().HTTPProxy; httpProxy != "" {
+		proxyStr = httpProxy
+	}
+
+	if proxyStr != "" {
+
+		uri, err := url.Parse(proxyStr)
+		if err != nil {
+			e.appMsg(fmt.Sprintf("cannot parse secure proxy from environment: %s", err.Error()))
+		}
+
+		transport := &http.Transport{
+			Proxy: http.ProxyURL(uri),
+		}
+
+		resty.SetProxy(proxyStr)
+		http.DefaultTransport = transport
+	}
+
 	resp, err := r.Execute(r.Method, r.URL)
 	if err != nil {
 		if resp.StatusCode() == http.StatusFound { // catch status code 302 redirects and pass back as good response
