@@ -32,7 +32,7 @@ jobs:
   build-web:      
     name: build-web
     runs-on: ubuntu-latest
-    container: node:dubnium-alpine
+    container: node:14-alpine
     env:
       FORCE_COLOR: 1
       NODE_DISABLE_COLORS: 0
