@@ -13,7 +13,9 @@
     "test:unit": "vue-cli-service test:unit --detectOpenHandles",
     "test:watch": "vue-cli-service test:unit --watch",
     "test:unit:coverage": "vue-cli-service test:unit --coverage --runInBand --ci --detectOpenHandles",
-    "dev": "vue-cli-service build --mode development --watch"
+    "dev": "vue-cli-service build --mode development --watch",
+    "prepare": "yarn run snyk-protect",
+    "snyk-protect": "snyk-protect"
   },
   "dependencies": {
     "axios": "^0.23.0",
@@ -34,24 +36,25 @@
     "vue-truncate-collapsed": "^2.1.0",
     "vue2-brace-editor": "^2.0.2",
     "vuex": "^3.0.1",
-    "whatwg-fetch": "^3.0.0"
+    "whatwg-fetch": "^3.0.0",
+    "@snyk/protect": "latest"
   },
   "devDependencies": {
     "@babel/runtime": "7.3.1",
     "@types/lodash": "^4.14.119",
     "@types/urijs": "^1.15.38",
-    "@vue/cli-plugin-babel": "^3.0.5",
-    "@vue/cli-plugin-eslint": "^3.0.5",
-    "@vue/cli-plugin-unit-jest": "^3.0.5",
-    "@vue/cli-service": "^3.0.5",
+    "@vue/cli-plugin-babel": "^4.0.0",
+    "@vue/cli-plugin-eslint": "^5.0.0",
+    "@vue/cli-plugin-unit-jest": "^5.0.0",
+    "@vue/cli-service": "^5.0.1",
     "@vue/eslint-config-airbnb": "^4.0.0",
-    "@vue/test-utils": "^1.0.0-beta.20",
+    "@vue/test-utils": "^1.0.0",
     "babel-core": "7.0.0-bridge.0",
     "babel-eslint": "^10.0.1",
-    "babel-jest": "^24.1.0",
+    "babel-jest": "^27.0.0",
     "flush-promises": "^1.0.2",
     "jest-fetch-mock": "^2.0.1",
-    "lint-staged": "^8.1.4",
+    "lint-staged": "^10.2.0",
     "mock-socket": "^8.0.5",
     "vue-cli-plugin-build-watch": "^1.0.0",
     "vue-template-compiler": "^2.5.17"
@@ -68,5 +71,6 @@
       "vue-cli-service lint",
       "git add"
     ]
-  }
+  },
+  "snyk": true
 }

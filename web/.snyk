@@ -1,0 +1,182 @@
+# Snyk (https://snyk.io) policy file, patches or ignores known vulnerabilities.
+version: v1.25.1
+ignore: {}
+# patches apply the minimum changes required to fix a vulnerability
+patch:
+  SNYK-JS-LODASH-567746:
+    - lint-staged > lodash:
+        patched: '2023-12-12T15:05:54.464Z'
+        id: SNYK-JS-LODASH-567746
+        path: lint-staged > lodash
+    - babel-eslint > @babel/traverse > lodash:
+        patched: '2023-12-12T15:05:54.464Z'
+        id: SNYK-JS-LODASH-567746
+        path: babel-eslint > @babel/traverse > lodash
+    - '@vue/cli-plugin-babel > @babel/core > lodash':
+        patched: '2023-12-12T15:05:54.464Z'
+        id: SNYK-JS-LODASH-567746
+        path: '@vue/cli-plugin-babel > @babel/core > lodash'
+    - '@vue/cli-plugin-eslint > eslint > lodash':
+        patched: '2023-12-12T15:05:54.464Z'
+        id: SNYK-JS-LODASH-567746
+        path: '@vue/cli-plugin-eslint > eslint > lodash'
+    - '@vue/cli-service > css-loader > lodash':
+        patched: '2023-12-12T15:05:54.464Z'
+        id: SNYK-JS-LODASH-567746
+        path: '@vue/cli-service > css-loader > lodash'
+    - '@vue/cli-service > html-webpack-plugin > lodash':
+        patched: '2023-12-12T15:05:54.464Z'
+        id: SNYK-JS-LODASH-567746
+        path: '@vue/cli-service > html-webpack-plugin > lodash'
+    - '@vue/cli-service > webpack-bundle-analyzer > lodash':
+        patched: '2023-12-12T15:05:54.464Z'
+        id: SNYK-JS-LODASH-567746
+        path: '@vue/cli-service > webpack-bundle-analyzer > lodash'
+    - '@vue/cli-service > webpack-merge > lodash':
+        patched: '2023-12-12T15:05:54.464Z'
+        id: SNYK-JS-LODASH-567746
+        path: '@vue/cli-service > webpack-merge > lodash'
+    - '@vue/eslint-config-airbnb > eslint-plugin-import > lodash':
+        patched: '2023-12-12T15:05:54.464Z'
+        id: SNYK-JS-LODASH-567746
+        path: '@vue/eslint-config-airbnb > eslint-plugin-import > lodash'
+    - lint-staged > yup > lodash:
+        patched: '2023-12-12T15:05:54.464Z'
+        id: SNYK-JS-LODASH-567746
+        path: lint-staged > yup > lodash
+    - '@vue/eslint-config-airbnb > eslint-import-resolver-webpack > lodash':
+        patched: '2023-12-12T15:05:54.464Z'
+        id: SNYK-JS-LODASH-567746
+        path: '@vue/eslint-config-airbnb > eslint-import-resolver-webpack > lodash'
+    - babel-eslint > @babel/traverse > @babel/generator > lodash:
+        patched: '2023-12-12T15:05:54.464Z'
+        id: SNYK-JS-LODASH-567746
+        path: babel-eslint > @babel/traverse > @babel/generator > lodash
+    - '@vue/cli-plugin-babel > @babel/core > @babel/generator > lodash':
+        patched: '2023-12-12T15:05:54.464Z'
+        id: SNYK-JS-LODASH-567746
+        path: '@vue/cli-plugin-babel > @babel/core > @babel/generator > lodash'
+    - '@vue/cli-plugin-eslint > babel-eslint > @babel/traverse > lodash':
+        patched: '2023-12-12T15:05:54.464Z'
+        id: SNYK-JS-LODASH-567746
+        path: '@vue/cli-plugin-eslint > babel-eslint > @babel/traverse > lodash'
+    - babel-jest > @jest/transform > @babel/core > lodash:
+        patched: '2023-12-12T15:05:54.464Z'
+        id: SNYK-JS-LODASH-567746
+        path: babel-jest > @jest/transform > @babel/core > lodash
+    - '@vue/cli-plugin-eslint > eslint > inquirer > lodash':
+        patched: '2023-12-12T15:05:54.464Z'
+        id: SNYK-JS-LODASH-567746
+        path: '@vue/cli-plugin-eslint > eslint > inquirer > lodash'
+    - '@vue/cli-plugin-eslint > eslint > table > lodash':
+        patched: '2023-12-12T15:05:54.464Z'
+        id: SNYK-JS-LODASH-567746
+        path: '@vue/cli-plugin-eslint > eslint > table > lodash'
+    - '@vue/cli-plugin-eslint > eslint-plugin-vue > vue-eslint-parser > lodash':
+        patched: '2023-12-12T15:05:54.464Z'
+        id: SNYK-JS-LODASH-567746
+        path: >-
+          @vue/cli-plugin-eslint > eslint-plugin-vue > vue-eslint-parser >
+          lodash
+    - '@vue/cli-plugin-unit-jest > vue-jest > node-cache > lodash':
+        patched: '2023-12-12T15:05:54.464Z'
+        id: SNYK-JS-LODASH-567746
+        path: '@vue/cli-plugin-unit-jest > vue-jest > node-cache > lodash'
+    - '@vue/cli-service > webpack-dev-server > http-proxy-middleware > lodash':
+        patched: '2023-12-12T15:05:54.464Z'
+        id: SNYK-JS-LODASH-567746
+        path: '@vue/cli-service > webpack-dev-server > http-proxy-middleware > lodash'
+    - babel-eslint > @babel/traverse > @babel/generator > @babel/types > lodash:
+        patched: '2023-12-12T15:05:54.464Z'
+        id: SNYK-JS-LODASH-567746
+        path: >-
+          babel-eslint > @babel/traverse > @babel/generator > @babel/types >
+          lodash
+    - '@vue/cli-plugin-eslint > babel-eslint > @babel/traverse > @babel/generator > lodash':
+        patched: '2023-12-12T15:05:54.464Z'
+        id: SNYK-JS-LODASH-567746
+        path: >-
+          @vue/cli-plugin-eslint > babel-eslint > @babel/traverse >
+          @babel/generator > lodash
+    - babel-jest > @jest/transform > @babel/core > @babel/generator > lodash:
+        patched: '2023-12-12T15:05:54.464Z'
+        id: SNYK-JS-LODASH-567746
+        path: babel-jest > @jest/transform > @babel/core > @babel/generator > lodash
+    - '@vue/cli-service > @vue/cli-shared-utils > request-promise-native > request-promise-core > lodash':
+        patched: '2023-12-12T15:05:54.464Z'
+        id: SNYK-JS-LODASH-567746
+        path: >-
+          @vue/cli-service > @vue/cli-shared-utils > request-promise-native >
+          request-promise-core > lodash
+    - '@vue/cli-plugin-eslint > babel-eslint > @babel/traverse > @babel/generator > @babel/types > lodash':
+        patched: '2023-12-12T15:05:54.464Z'
+        id: SNYK-JS-LODASH-567746
+        path: >-
+          @vue/cli-plugin-eslint > babel-eslint > @babel/traverse >
+          @babel/generator > @babel/types > lodash
+    - babel-jest > @jest/transform > @babel/core > @babel/helpers > @babel/traverse > lodash:
+        patched: '2023-12-12T15:05:54.464Z'
+        id: SNYK-JS-LODASH-567746
+        path: >-
+          babel-jest > @jest/transform > @babel/core > @babel/helpers >
+          @babel/traverse > lodash
+    - '@vue/cli-plugin-unit-jest > babel-jest > babel-plugin-istanbul > istanbul-lib-instrument > babel-generator > lodash':
+        patched: '2023-12-12T15:05:54.464Z'
+        id: SNYK-JS-LODASH-567746
+        path: >-
+          @vue/cli-plugin-unit-jest > babel-jest > babel-plugin-istanbul >
+          istanbul-lib-instrument > babel-generator > lodash
+    - '@vue/cli-plugin-unit-jest > babel-jest > babel-plugin-istanbul > istanbul-lib-instrument > babel-template > lodash':
+        patched: '2023-12-12T15:05:54.464Z'
+        id: SNYK-JS-LODASH-567746
+        path: >-
+          @vue/cli-plugin-unit-jest > babel-jest > babel-plugin-istanbul >
+          istanbul-lib-instrument > babel-template > lodash
+    - '@vue/cli-plugin-unit-jest > jest > jest-cli > istanbul-api > async > lodash':
+        patched: '2023-12-12T15:05:54.464Z'
+        id: SNYK-JS-LODASH-567746
+        path: >-
+          @vue/cli-plugin-unit-jest > jest > jest-cli > istanbul-api > async >
+          lodash
+    - '@vue/cli-plugin-unit-jest > jest > jest-cli > jest-config > babel-core > lodash':
+        patched: '2023-12-12T15:05:54.464Z'
+        id: SNYK-JS-LODASH-567746
+        path: >-
+          @vue/cli-plugin-unit-jest > jest > jest-cli > jest-config > babel-core
+          > lodash
+    - '@vue/cli-plugin-babel > @babel/core > @babel/helpers > @babel/traverse > @babel/generator > @babel/types > lodash':
+        patched: '2023-12-12T15:05:54.464Z'
+        id: SNYK-JS-LODASH-567746
+        path: >-
+          @vue/cli-plugin-babel > @babel/core > @babel/helpers > @babel/traverse
+          > @babel/generator > @babel/types > lodash
+    - babel-jest > @jest/transform > @babel/core > @babel/helpers > @babel/traverse > @babel/generator > lodash:
+        patched: '2023-12-12T15:05:54.464Z'
+        id: SNYK-JS-LODASH-567746
+        path: >-
+          babel-jest > @jest/transform > @babel/core > @babel/helpers >
+          @babel/traverse > @babel/generator > lodash
+    - '@vue/cli-plugin-unit-jest > babel-jest > babel-plugin-istanbul > istanbul-lib-instrument > babel-generator > babel-types > lodash':
+        patched: '2023-12-12T15:05:54.464Z'
+        id: SNYK-JS-LODASH-567746
+        path: >-
+          @vue/cli-plugin-unit-jest > babel-jest > babel-plugin-istanbul >
+          istanbul-lib-instrument > babel-generator > babel-types > lodash
+    - '@vue/cli-plugin-unit-jest > babel-jest > babel-plugin-istanbul > istanbul-lib-instrument > babel-template > babel-traverse > lodash':
+        patched: '2023-12-12T15:05:54.464Z'
+        id: SNYK-JS-LODASH-567746
+        path: >-
+          @vue/cli-plugin-unit-jest > babel-jest > babel-plugin-istanbul >
+          istanbul-lib-instrument > babel-template > babel-traverse > lodash
+    - '@vue/cli-plugin-unit-jest > jest > jest-cli > jest-config > babel-core > babel-register > lodash':
+        patched: '2023-12-12T15:05:54.464Z'
+        id: SNYK-JS-LODASH-567746
+        path: >-
+          @vue/cli-plugin-unit-jest > jest > jest-cli > jest-config > babel-core
+          > babel-register > lodash
+    - babel-jest > @jest/transform > @babel/core > @babel/helpers > @babel/traverse > @babel/generator > @babel/types > lodash:
+        patched: '2023-12-12T15:05:54.464Z'
+        id: SNYK-JS-LODASH-567746
+        path: >-
+          babel-jest > @jest/transform > @babel/core > @babel/helpers >
+          @babel/traverse > @babel/generator > @babel/types > lodash
