@@ -39,6 +39,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+      - name: node version
+        run: node -v
       - name: Install packages
         run: apk update && apk add git make bash curl
       - name: node version
