@@ -41,6 +41,8 @@ jobs:
         uses: actions/checkout@v2
       - name: Install packages
         run: apk update && apk add git make bash curl
+      - name: node version
+        run: node -v
       - name: Install node dependencies
         run: |
              cd web/
