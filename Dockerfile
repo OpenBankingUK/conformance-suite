@@ -35,7 +35,7 @@ RUN make build
 RUN make build_cli
 
 # Image to compile Single Page Application of the Vue.js site
-FROM node:dubnium-alpine as nodebuilder
+FROM node:14-alpine as nodebuilder
 WORKDIR /app
 
 # This is to that JavaScript code can import code defined in the Go side, e.g.,
