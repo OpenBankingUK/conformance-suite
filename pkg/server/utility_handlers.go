@@ -6,7 +6,7 @@ import (
 	"github.com/OpenBankingUK/conformance-suite/pkg/version"
 	"github.com/pkg/errors"
 
-	"github.com/labstack/echo"
+	"github.com/labstack/echo/v4"
 )
 
 // utilityEndpoints contains various endpoints that provide utility but don't warrant the

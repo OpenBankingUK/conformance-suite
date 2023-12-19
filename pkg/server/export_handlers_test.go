@@ -18,7 +18,7 @@ import (
 	version_mocks "github.com/OpenBankingUK/conformance-suite/pkg/version/mocks"
 
 	"github.com/google/uuid"
-	"github.com/labstack/echo"
+	"github.com/labstack/echo/v4"
 )
 
 func TestServerPostExport(t *testing.T) {

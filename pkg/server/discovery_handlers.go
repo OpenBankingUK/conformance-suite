@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	"github.com/OpenBankingUK/conformance-suite/pkg/sets"
-	"github.com/labstack/echo"
+	"github.com/labstack/echo/v4"
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 
