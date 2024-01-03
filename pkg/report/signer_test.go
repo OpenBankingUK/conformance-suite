@@ -3,11 +3,11 @@ package report
 import (
 	"crypto/x509"
 	"encoding/pem"
-	"fmt"
 	"testing"
+	"time"
 
 	"github.com/OpenBankingUK/conformance-suite/pkg/test"
-	"github.com/dgrijalva/jwt-go"
+	"github.com/golang-jwt/jwt/v5"
 	"github.com/pkg/errors"
 )
 
@@ -67,12 +67,12 @@ func TestReportSigning(t *testing.T) {
 		ReportDigest:    "report-hash-sum",
 		DiscoveryDigest: "discovery-hash-sum",
 		ManifestDigest:  "manifest-hash-sum",
-		StandardClaims: jwt.StandardClaims{
+		RegisteredClaims: jwt.RegisteredClaims{
 			Issuer:    "https://openbanking.org.uk/fcs/reporting",
 			Subject:   "openbanking.org.uk",
-			Id:        "unique-jwt-id",
-			ExpiresAt: 4077614132,
-			NotBefore: 90000,
+			ID:        "unique-jwt-id",
+			ExpiresAt: jwt.NewNumericDate(time.Unix(4077614132, 0)),
+			NotBefore: jwt.NewNumericDate(time.Unix(90000, 0)),
 		},
 	}
 
@@ -82,14 +82,12 @@ func TestReportSigning(t *testing.T) {
 	tk, err := jwt.ParseWithClaims(signed, &calcClaims, keyFunc)
 	require.NoError(err, "jwt.Parse")
 
-	signedString, err := tk.SigningString()
-	require.NoError(err, "tk.SigningString()")
-	expectedString := fmt.Sprintf("%s.%s", signedString, tk.Signature)
+	expectedString := tk.Raw
 
 	require.Equal(signed, expectedString)
 	require.Equal(knownClaims.Issuer, calcClaims.Issuer, "claim Issuer")
 	require.Equal(knownClaims.Subject, calcClaims.Subject, "claim Subject")
-	require.Equal(knownClaims.Id, calcClaims.Id, "claim Id")
+	require.Equal(knownClaims.ID, calcClaims.ID, "claim ID")
 	require.Equal(knownClaims.NotBefore, calcClaims.NotBefore, "claim NotBefore")
 	require.Equal(knownClaims.ExpiresAt, calcClaims.ExpiresAt, "claim ExpiresAt")
 	require.Equal(knownClaims.ReportDigest, calcClaims.ReportDigest, "claim ReportDigest")

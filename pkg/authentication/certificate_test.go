@@ -156,7 +156,7 @@ func TestCertificateValidateInvalidPublicAndPrivateKeyEmpty(t *testing.T) {
 	cert, err := NewCertificate(publicCert, privateCert)
 
 	require.Nil(cert)
-	require.EqualError(err, `error with public key: Invalid Key: Key must be PEM encoded PKCS1 or PKCS8 private key`)
+	require.EqualError(err, `error with public key: invalid key: Key must be a PEM encoded PKCS1 or PKCS8 key`)
 }
 
 func TestCertificateValidateInvalidPublicKeyEmpty(t *testing.T) {
@@ -167,7 +167,7 @@ func TestCertificateValidateInvalidPublicKeyEmpty(t *testing.T) {
 	cert, err := NewCertificate(publicCert, privateCert)
 
 	require.Nil(cert)
-	require.EqualError(err, `error with public key: Invalid Key: Key must be PEM encoded PKCS1 or PKCS8 private key`)
+	require.EqualError(err, `error with public key: invalid key: Key must be a PEM encoded PKCS1 or PKCS8 key`)
 }
 
 func TestCertificateValidateInvalidPrivateKeyEmpty(t *testing.T) {
@@ -178,7 +178,7 @@ func TestCertificateValidateInvalidPrivateKeyEmpty(t *testing.T) {
 	cert, err := NewCertificate(publicCert, privateCert)
 
 	require.Nil(cert)
-	require.EqualError(err, `error with private key: Invalid Key: Key must be PEM encoded PKCS1 or PKCS8 private key`)
+	require.EqualError(err, `error with private key: invalid key: Key must be a PEM encoded PKCS1 or PKCS8 key`)
 }
 
 func TestCertificateValidateInvalidPublicKeyRSA(t *testing.T) {
@@ -192,7 +192,7 @@ yEh6Szz2in47Tv5n52m9dLYyPCbqZkOB5nTSqtscpkQD/HpykCggvx09iQ==
 	cert, err := NewCertificate(publicCert, privateCert)
 
 	require.Nil(cert)
-	require.EqualError(err, `error with public key: Key is not a valid RSA public key`)
+	require.EqualError(err, `error with public key: key is not a valid RSA public key`)
 }
 
 func TestCertificateValidateInvalidPrivateKeyRSA(t *testing.T) {
@@ -207,5 +207,5 @@ VZ4E4JhiGX3fT07ucdN8nDXufQ8WplCX0nWFPh3P3Z7snLq2E3m8yqIQ
 	cert, err := NewCertificate(publicCert, privateCert)
 
 	require.Nil(cert)
-	require.EqualError(err, `error with private key: Key is not a valid RSA private key`)
+	require.EqualError(err, `error with private key: key is not a valid RSA private key`)
 }

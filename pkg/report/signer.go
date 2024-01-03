@@ -4,7 +4,9 @@ import (
 	"crypto/rsa"
 	"crypto/sha256"
 	"encoding/hex"
-	"github.com/dgrijalva/jwt-go"
+	"time"
+
+	"github.com/golang-jwt/jwt/v5"
 	"github.com/pkg/errors"
 )
 
@@ -23,8 +25,13 @@ import (
 	Note: The digests are represented as hex strings.
 */
 
+var validator = jwt.NewValidator([]jwt.ParserOption{
+	jwt.WithIssuedAt(),
+	jwt.WithExpirationRequired(),
+	jwt.WithLeeway(time.Duration(time.Now().Unix()))}...)
+
 type reportClaims struct {
-	jwt.StandardClaims
+	jwt.RegisteredClaims
 	ReportDigest    string `json:"reportDigest,omitempty"`
 	DiscoveryDigest string `json:"discoveryDigest,omitempty"`
 	ManifestDigest  string `json:"manifestDigest,omitempty"`
@@ -32,7 +39,7 @@ type reportClaims struct {
 
 // Validate reportClaims
 func (sc reportClaims) Valid() error {
-	if err := sc.StandardClaims.Valid(); err != nil {
+	if err := validator.Validate(sc.RegisteredClaims); err != nil {
 		return err
 	}
 	return nil
@@ -76,7 +83,7 @@ func verifySignature(rawJwt string, publicKey *rsa.PublicKey, claims reportClaim
 	if !t.Valid {
 		return errors.New("Token not invalid - unspecified")
 	}
-	if err := t.Claims.Valid(); err != nil {
+	if err := validator.Validate(t.Claims); err != nil {
 		return errors.New("Token claims invalid - unspecified")
 	}
 	if parsedClaims.ReportDigest != claims.ReportDigest {

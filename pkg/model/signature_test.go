@@ -11,8 +11,8 @@ import (
 	"testing"
 
 	"github.com/OpenBankingUK/conformance-suite/pkg/authentication"
-	"github.com/dgrijalva/jwt-go"
-	"github.com/dgrijalva/jwt-go/test"
+	"github.com/golang-jwt/jwt/v5"
+	"github.com/golang-jwt/jwt/v5/test"
 	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
 	"gopkg.in/resty.v1"
@@ -80,7 +80,8 @@ func TestSimpleb64trueSignature(t *testing.T) {
 	sig := req.Header.Get("x-jws-signature")
 	assert.NotEmpty(t, sig)
 	logrus.Infoln(sig)
-	encodedBody := jwt.EncodeSegment([]byte(domesticPayBody))
+	token := jwt.New(jwt.SigningMethodHS256)
+	encodedBody := token.EncodeSegment([]byte(domesticPayBody))
 	validatedOK, err := validateSignatureTest(sig, encodedBody, authentication.SigningMethodPS256, pubKey)
 	assert.True(t, validatedOK)
 }
@@ -90,7 +91,8 @@ func TestOzone314SignatureString(t *testing.T) {
 	signingMethod := jwt.SigningMethodPS256.SigningMethodRSA
 
 	segments := strings.Split(OzoneTestSignature, ".")
-	segments[1] = jwt.EncodeSegment([]byte(OzoneResponseBody))
+	token := jwt.New(jwt.SigningMethodHS256)
+	segments[1] = token.EncodeSegment([]byte(OzoneResponseBody))
 	logrus.Printf(strings.Join(segments, "."))
 
 	pubkey, err := LoadRSAPublicKeyFromDisk("../../../certs/waiver007/DKePOLAOiXLwYhMfLS8aS6YU-d0.pem")
@@ -103,7 +105,7 @@ func TestOzone314SignatureString(t *testing.T) {
 	modulusBase64 := base64.RawURLEncoding.EncodeToString(modulus)
 	kid, err := authentication.CalcKid(modulusBase64)
 	logrus.Infof("kid: " + kid)
-	err = signingMethod.Verify(strings.Join(segments[:2], "."), segments[2], pubkey)
+	err = signingMethod.Verify(strings.Join(segments[:2], "."), []byte(segments[2]), pubkey)
 	logrus.Error(err)
 }
 
@@ -147,7 +149,12 @@ func GetPem(url string) (*x509.Certificate, error) {
 func validateSignatureTest(token, body string, signingMethod jwt.SigningMethod, pubKey *rsa.PublicKey) (bool, error) {
 	segments := strings.Split(token, ".")
 	segments[1] = body
-	err := signingMethod.Verify(strings.Join(segments[:2], "."), segments[2], pubKey)
+	sig, err := jwt.NewParser().DecodeSegment(segments[2])
+	if err != nil {
+		logrus.Errorln("failed to decode signature" + err.Error())
+		return false, err
+	}
+	err = signingMethod.Verify(strings.Join(segments[:2], "."), sig, pubKey)
 	if err != nil {
 		logrus.Errorln("failed to validate signature" + err.Error())
 		return false, err
@@ -165,7 +172,7 @@ var fixedSigningMethodPS256 = &jwt.SigningMethodRSAPSS{
 
 func verify(signingMethod jwt.SigningMethod, token string) bool {
 	segments := strings.Split(token, ".")
-	err := signingMethod.Verify(strings.Join(segments[:2], "."), segments[2], test.LoadRSAPublicKeyFromDisk("test/sample_key.pub"))
+	err := signingMethod.Verify(strings.Join(segments[:2], "."), []byte(segments[2]), test.LoadRSAPublicKeyFromDisk("test/sample_key.pub"))
 	return err == nil
 }
 

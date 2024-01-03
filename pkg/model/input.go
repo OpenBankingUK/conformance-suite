@@ -17,7 +17,7 @@ import (
 
 	"github.com/OpenBankingUK/conformance-suite/pkg/authentication"
 	"github.com/OpenBankingUK/conformance-suite/pkg/tracer"
-	"github.com/dgrijalva/jwt-go"
+	"github.com/golang-jwt/jwt/v5"
 	"gopkg.in/resty.v1"
 )
 
