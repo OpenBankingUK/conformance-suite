@@ -15,7 +15,7 @@ jobs:
       GOARCH: amd64
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Install packages
         run: apk update && apk add git make bash curl
       - name: Setup Ozone config
@@ -38,7 +38,7 @@ jobs:
       NODE_DISABLE_COLORS: 0
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Install packages
         run: apk update && apk add git make bash curl
       - name: Install node dependencies
@@ -59,7 +59,7 @@ jobs:
      runs-on: ubuntu-latest
      steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Build docker image
         run: make build_image
       - name: Show top level docker images
