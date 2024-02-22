@@ -8,7 +8,7 @@ jobs:
   build-go:
     name: build-go
     runs-on: ubuntu-latest
-    container: golang:1.15-alpine3.13
+    container: golang:1.21-alpine
     env:
       CGO_ENABLED: 0
       GOOS: linux
