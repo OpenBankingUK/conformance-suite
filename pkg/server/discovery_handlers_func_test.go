@@ -20,7 +20,7 @@ func TestServerDiscoveryModelPOSTValidateReturnsErrorsWhenInvalidJSON(t *testing
 	}()
 
 	discoveryModel := `{ "bad-json" }`
-	expected := `{"error": "code=400, message=Syntax error: offset=14, error=invalid character '}' after object key"}`
+	expected := `{"error": "code=400, message=Syntax error: offset=14, error=invalid character '}' after object key, internal=invalid character '}' after object key"}`
 
 	code, body, headers := request(http.MethodPost, "/api/discovery-model",
 		strings.NewReader(discoveryModel), server)
