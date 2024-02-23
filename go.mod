@@ -3,7 +3,7 @@ module github.com/OpenBankingUK/conformance-suite
 require (
 	github.com/blang/semver/v4 v4.0.0
 	github.com/davecgh/go-spew v1.1.1
-	github.com/dgrijalva/jwt-go v3.2.0+incompatible
+	github.com/dgrijalva/jwt-go v3.2.0+incompatible // indirect
 	github.com/getkin/kin-openapi v0.68.0
 	github.com/go-openapi/loads v0.17.2
 	github.com/go-openapi/runtime v0.0.0-20180920151709-4f900dc2ade9
@@ -11,6 +11,9 @@ require (
 	github.com/go-openapi/strfmt v0.17.2
 	github.com/go-openapi/validate v0.17.2
 	github.com/go-ozzo/ozzo-validation v3.5.0+incompatible
+	github.com/go-playground/locales v0.12.1 // indirect
+	github.com/go-playground/universal-translator v0.16.0 // indirect
+	github.com/golang-jwt/jwt/v5 v5.2.0
 	github.com/google/go-cmp v0.4.0
 	github.com/google/uuid v1.0.0
 	github.com/gorilla/websocket v1.4.1
@@ -44,8 +47,6 @@ require (
 	github.com/go-openapi/jsonpointer v0.19.5 // indirect
 	github.com/go-openapi/jsonreference v0.17.0 // indirect
 	github.com/go-openapi/swag v0.19.5 // indirect
-	github.com/go-playground/locales v0.12.1 // indirect
-	github.com/go-playground/universal-translator v0.16.0 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/inconshreveable/mousetrap v1.0.0 // indirect
 	github.com/konsorten/go-windows-terminal-sequences v1.0.1 // indirect
