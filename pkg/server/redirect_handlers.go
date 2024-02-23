@@ -3,7 +3,7 @@ package server
 import (
 	"net/http"
 
-	"github.com/dgrijalva/jwt-go"
+	"github.com/golang-jwt/jwt/v5"
 	"github.com/labstack/echo/v4"
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
@@ -36,7 +36,7 @@ type RedirectError struct {
 // process during `Hybrid Flow Authentication`
 // https://openid.net/specs/openid-connect-core-1_0.html#HybridFlowAuth
 type AuthClaim struct {
-	jwt.StandardClaims
+	jwt.RegisteredClaims
 	AuditTrackingID     string `json:"auditTrackingId"`
 	TokenName           string `json:"tokenName"`
 	Nonce               string `json:"nonce"`

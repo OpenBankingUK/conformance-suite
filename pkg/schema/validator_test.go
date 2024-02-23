@@ -78,8 +78,8 @@ func TestValidators_Validate_FailureEmptyOptionalProperty(t *testing.T) {
 	failures, err := validator.Validate(r)
 
 	require.NoError(t, err)
-	assert.Len(t, failures, 1)
-	assert.Equal(t, []Failure{{"Data.Transaction.TransactionReference in body should be at least 1 chars long"}}, failures)
+	assert.Len(t, failures, 2)
+	assert.Equal(t, []Failure{{"Data.Transaction.TransactionReference in body must be of type string: \"null\""}, {"Data.Transaction.TransactionReference in body should be at least 1 chars long"}}, failures)
 }
 
 const getTransactionsResponseEmptyTransactionReference = `

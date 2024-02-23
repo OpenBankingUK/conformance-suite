@@ -316,7 +316,7 @@ func TestServerConfigGlobalPostInvalid(t *testing.T) {
 	}{
 		{
 			name:               `InvalidSigning`,
-			expectedBody:       `{"error": "error with signing certificate: error with public key: Invalid Key: Key must be PEM encoded PKCS1 or PKCS8 private key"}`,
+			expectedBody:       `{"error": "error with signing certificate: error with public key: invalid key: Key must be a PEM encoded PKCS1 or PKCS8 key"}`,
 			expectedStatusCode: http.StatusBadRequest,
 			config: GlobalConfiguration{
 				SigningPrivate:                "------------",
@@ -364,7 +364,7 @@ func TestServerConfigGlobalPostInvalid(t *testing.T) {
 		},
 		{
 			name:               `InvalidTransport`,
-			expectedBody:       `{"error": "error with transport certificate: error with public key: Invalid Key: Key must be PEM encoded PKCS1 or PKCS8 private key"}`,
+			expectedBody:       `{"error": "error with transport certificate: error with public key: invalid key: Key must be a PEM encoded PKCS1 or PKCS8 key"}`,
 			expectedStatusCode: http.StatusBadRequest,
 			config: GlobalConfiguration{
 				SigningPrivate:                privateKey,

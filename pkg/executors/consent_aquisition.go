@@ -10,7 +10,7 @@ import (
 	"github.com/OpenBankingUK/conformance-suite/pkg/manifest"
 	"github.com/OpenBankingUK/conformance-suite/pkg/model"
 
-	"github.com/dgrijalva/jwt-go"
+	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
