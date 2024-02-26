@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"net/http"
+	"strings"
 	"testing"
 	"time"
 
@@ -114,7 +115,7 @@ func TestServerPostExport(t *testing.T) {
 	require.Equal(expected.JobTitle, actual.CertifiedBy.JobTitle)
 }
 
-func TestServerPostExport_InvalidRequest(t *testing.T) {
+func TestServerPostExportInvalidRequest(t *testing.T) {
 	require := test.NewRequire(t)
 
 	server := NewServer(testJourney(), nullLogger(), &version_mocks.Version{})
@@ -213,7 +214,7 @@ func TestServerPostExport_InvalidRequest(t *testing.T) {
 		code, body, headers := request(http.MethodPost, "/api/export", bytes.NewReader(requestJSON), server)
 
 		// Body contains error, so it cannot be nil.
-		require.Equal(testCase.err, body.String(), body.String())
+		require.Equal(testCase.err, strings.TrimSpace(body.String()))
 		require.Equal(http.StatusBadRequest, code, body.String())
 		require.Equal(http.Header{
 			echo.HeaderContentType: []string{
