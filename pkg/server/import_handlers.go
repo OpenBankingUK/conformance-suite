@@ -8,7 +8,7 @@ package server
 import (
 	"net/http"
 
-	"github.com/labstack/echo"
+	"github.com/labstack/echo/v4"
 	"github.com/sirupsen/logrus"
 
 	"github.com/OpenBankingUK/conformance-suite/pkg/server/models"

@@ -17,7 +17,7 @@ import (
 
 	"github.com/OpenBankingUK/conformance-suite/pkg/test"
 	"github.com/OpenBankingUK/conformance-suite/pkg/version/mocks"
-	"github.com/labstack/echo"
+	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/require"
 )
 
