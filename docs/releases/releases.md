@@ -1,5 +1,9 @@
 # Release history
 
+# Release v1.7.5 (20th September 2023)
+
+The release is called **v1.7.5**, an update to fix bug in minimalDomesticVRP (`POST` /domestic-vrps).
+
 # Release v1.7.4 (23th August 2023)
 
 The release is called **v1.7.4**, an update to revert typo fix.

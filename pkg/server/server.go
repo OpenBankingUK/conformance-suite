@@ -8,8 +8,8 @@ import (
 	"github.com/OpenBankingUK/conformance-suite/pkg/version"
 
 	"github.com/gorilla/websocket"
-	"github.com/labstack/echo"
-	"github.com/labstack/echo/middleware"
+	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 	"github.com/sirupsen/logrus"
 )
 
@@ -32,6 +32,7 @@ func NewServer(journey Journey, logger *logrus.Entry, version version.Checker) *
 	}
 	server.Validator = newEchoValidatorAdapter()
 	server.HideBanner = true
+	server.HidePort = true
 
 	// Use custom logger config so that we can control where log lines like below get sent to - either /dev/null or stdout.
 	// {"time":"2018-12-18T13:00:40.291032Z","id":"","remote_ip":"192.0.2.1","host":"example.com","method":"POST","uri":"/api/config/global?pretty","status":400, "latency":627320,"latency_human":"627.32µs","bytes_in":0,"bytes_out":137}

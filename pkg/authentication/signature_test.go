@@ -10,7 +10,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/dgrijalva/jwt-go"
+	"github.com/golang-jwt/jwt/v5"
 	"github.com/lestrrat-go/jwx/jwa"
 	"github.com/lestrrat-go/jwx/jws"
 
@@ -76,7 +76,7 @@ func TestSigningStringB64True(t *testing.T) {
 	assert.Nil(t, err)
 	sig, err := tokenb64true.Method.Sign(signingString, key)
 	assert.Nil(t, err)
-	fullSig := strings.Join([]string{signingString, sig}, ".")
+	fullSig := strings.Join([]string{signingString, string(sig)}, ".")
 	fmt.Println("fullsig: " + fullSig)
 	detachedJwt := SplitJWSWithBody(fullSig)
 	fmt.Println("detached JWT: " + detachedJwt)
@@ -99,7 +99,7 @@ func TestSigningStringB64False(t *testing.T) {
 	assert.Nil(t, err)
 	sig, err := tokenb64false.Method.Sign(signingString, key)
 	assert.Nil(t, err)
-	fullSig := strings.Join([]string{signingString, sig}, ".")
+	fullSig := strings.Join([]string{signingString, string(sig)}, ".")
 	fmt.Println("fullsig: " + fullSig)
 	detachedJwt := SplitJWSWithBody(fullSig)
 	fmt.Println("detached JWT: " + detachedJwt)

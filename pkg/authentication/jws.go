@@ -10,7 +10,7 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/dgrijalva/jwt-go"
+	"github.com/golang-jwt/jwt/v5"
 	"github.com/sirupsen/logrus"
 	"github.com/tdewolff/minify/v2"
 	minjson "github.com/tdewolff/minify/v2/json"
@@ -69,7 +69,8 @@ func SplitJWSWithBody(token string) string {
 // Create the signing string which includes the token header and payload body
 // Then signs this string using the key provided - the signing algorithm is part of the jwt.Token object
 func CreateSignature(t *jwt.Token, key interface{}, body string, b64encoded bool) (string, error) {
-	var sig, sstr string
+	var sig []byte
+	var sstr string
 	var err error
 	if sstr, err = SigningString(t, body, b64encoded); err != nil {
 		return "", fmt.Errorf("authentication.CreateSignature: SigningString(t, body) failed: %w", err)
@@ -78,7 +79,9 @@ func CreateSignature(t *jwt.Token, key interface{}, body string, b64encoded bool
 	if sig, err = t.Method.Sign(sstr, key); err != nil {
 		return "", fmt.Errorf("authentication.CreateSignature: t.Method.Sign(sstr, key failed: %w", err)
 	}
-	return strings.Join([]string{sstr, sig}, "."), nil
+
+	strSig := t.EncodeSegment(sig)
+	return strings.Join([]string{sstr, strSig}, "."), nil
 }
 
 // SigningString takes the token, body string and b64 indicator
@@ -89,11 +92,11 @@ func SigningString(t *jwt.Token, body string, b64encoded bool) (string, error) {
 	if err != nil {
 		return "", fmt.Errorf("authentication.SigningString: json.Marshal(t.Header) failed: %w", err)
 	}
-	headers := jwt.EncodeSegment(headersJSON)
+	headers := t.EncodeSegment(headersJSON)
 
 	var payload string
 	if b64encoded {
-		payload = jwt.EncodeSegment([]byte(body))
+		payload = t.EncodeSegment([]byte(body))
 	} else {
 		payload = body
 	}
