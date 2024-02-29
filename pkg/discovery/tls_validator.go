@@ -63,7 +63,7 @@ func (v StdTLSValidator) ValidateTLSVersion(uri string) (TLSValidationResult, er
 
 	proxyState, err := v.getProxyConnectionState(addr)
 	if err != nil {
-		return TLSValidationResult{}, fmt.Errorf("unable to get the proxy connection state for %s", addr)
+		return TLSValidationResult{}, errors.Wrapf(err, "unable to get the proxy connection state for %s", addr)
 	}
 
 	if proxyState.Version != 0 {
@@ -76,7 +76,8 @@ func (v StdTLSValidator) ValidateTLSVersion(uri string) (TLSValidationResult, er
 
 	state, err := v.getConnectionState(addr)
 	if err != nil {
-		return TLSValidationResult{}, fmt.Errorf("unable to get the connection state for %s", addr)
+		return TLSValidationResult{}, errors.Wrapf(err, "unable to get the connection state for %s", addr)
+
 	}
 
 	version = state.Version
