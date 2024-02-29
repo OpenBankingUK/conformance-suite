@@ -72,18 +72,17 @@ func (v StdTLSValidator) ValidateTLSVersion(uri string) (TLSValidationResult, er
 		if err != nil {
 			return TLSValidationResult{}, errors.Wrapf(err, "unable to parse proxy proxy tls version `%d` to string", proxyState.Version)
 		}
-	}
+	} else {
+		state, err := v.getConnectionState(addr)
+		if err != nil {
+			return TLSValidationResult{}, errors.Wrapf(err, "unable to get the connection state for %s", addr)
+		}
 
-	state, err := v.getConnectionState(addr)
-	if err != nil {
-		return TLSValidationResult{}, errors.Wrapf(err, "unable to get the connection state for %s", addr)
-
-	}
-
-	version = state.Version
-	strVersion, err = tlsVersionToString(state.Version)
-	if err != nil {
-		return TLSValidationResult{}, errors.Wrapf(err, "unable to parse tls version `%d` to string", state.Version)
+		version = state.Version
+		strVersion, err = tlsVersionToString(state.Version)
+		if err != nil {
+			return TLSValidationResult{}, errors.Wrapf(err, "unable to parse tls version `%d` to string", state.Version)
+		}
 	}
 
 	return TLSValidationResult{
