@@ -61,7 +61,7 @@ func (v StdTLSValidator) ValidateTLSVersion(uri string) (TLSValidationResult, er
 		addr = fmt.Sprintf("%s:%d", parsedURI.Host, 443)
 	}
 
-	proxyState, err := v.getProxyConnectionState(addr)
+	proxyState, err := getProxyConnectionState(addr, v.tlsConfig.InsecureSkipVerify)
 	if err != nil {
 		return TLSValidationResult{}, errors.Wrapf(err, "unable to get the proxy connection state for %s", addr)
 	}
@@ -107,7 +107,7 @@ func (v StdTLSValidator) getConnectionState(addr string) (tls.ConnectionState, e
 	return state, nil
 }
 
-func (v StdTLSValidator) getProxyConnectionState(addr string) (utls.ConnectionState, error) {
+func getProxyConnectionState(addr string, InsecureSkipVerify bool) (utls.ConnectionState, error) {
 	var proxyStr string
 
 	if httpsProxy := httpproxy.FromEnvironment().HTTPSProxy; httpsProxy != "" {
@@ -125,7 +125,7 @@ func (v StdTLSValidator) getProxyConnectionState(addr string) (utls.ConnectionSt
 		}
 
 		proxyTLSConfig := &connectproxy.Config{
-			InsecureSkipVerify: v.tlsConfig.InsecureSkipVerify,
+			InsecureSkipVerify: InsecureSkipVerify,
 		}
 
 		proxyDialer, err := connectproxy.NewWithConfig(uris, proxy.Direct, proxyTLSConfig)
