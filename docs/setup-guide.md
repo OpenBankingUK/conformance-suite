@@ -119,8 +119,7 @@ Supported environment variables: `HTTPS_PROXY`, `HTTP_PROXY`
 docker run --env HTTPS_PROXY="http://{username}:{password}@{URL}" --rm -it -p 8443:8443 openbanking/conformance-suite:latest
 ```
 
-The above example uses proxy for validating FCS version by making GitHub request.
-If you would like to use non-proxy transport for this check, please use this flag: `-e PROXY_VERSION_CHECK=false`
+The FCS performs a version update check when starting by making a HTPP request to GitHub. By default, when specifying a proxy this request is also proxied. If you would like to use a non-proxied (e.g. direct) connection for this check, please use this flag: `-e PROXY_VERSION_CHECK=false`
 
 ```sh
 docker run --env HTTPS_PROXY="http://{username}:{password}@{URL}" -e PROXY_VERSION_CHECK=false --rm -it -p 8443:8443 openbanking/conformance-suite:latest
