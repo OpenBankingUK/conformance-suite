@@ -89,6 +89,7 @@ func init() {
 	rootCmd.PersistentFlags().Bool("dumpcontexts", false, "Dump contexts when trace enabled")
 	rootCmd.PersistentFlags().Bool("tlscheck", true, "enable tls version checking - default enabled")
 	rootCmd.PersistentFlags().Bool("export_testcases", false, "Dump all testcases to console in CSV format")
+	rootCmd.PersistentFlags().Bool("proxy_version_check", true, "Use proxy for version checks")
 
 	if err := viper.BindPFlags(rootCmd.PersistentFlags()); err != nil {
 		fmt.Fprint(os.Stderr, err)

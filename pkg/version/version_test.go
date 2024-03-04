@@ -63,7 +63,7 @@ func TestNoUpdateUpdateWarningVersion(t *testing.T) {
 }
 
 // TestBadStatusUpdateWarningVersionFail asserts that an appropriate/correct
-// error message is return if BitBucket 40x status code is given.
+// error message is return if GitHub 40x status code is given.
 func TestBadStatusUpdateWarningVersionFail(t *testing.T) {
 	mockResponse := versionTestMockResponse
 	mockedServer, serverURL := test.HTTPServer(http.StatusBadRequest, mockResponse, nil)
@@ -81,10 +81,10 @@ func TestBadStatusUpdateWarningVersionFail(t *testing.T) {
 }
 
 // TestHTTPErrorUpdateWarningVersion asserts the correct error message
-// is returned if BitBucket cannot return tags.
+// is returned if GitHub cannot return tags.
 func TestHTTPErrorUpdateWarningVersion(t *testing.T) {
 	// Checker helper
-	// Update BitBucketAPIRepository to produce a no such host.
+	// Update GitHubAPIRepository to produce a no such host.
 	v := NewGitHub("https://.com")
 	message, flag, err := v.UpdateWarningVersion(FullVersion)
 	// Assert that update fag is false.
@@ -92,7 +92,7 @@ func TestHTTPErrorUpdateWarningVersion(t *testing.T) {
 	// Assert the default UI/Human error message is returned.
 	assert.Equal(t, message, "Version check is unavailable at this time.")
 	// Assert that an error() is actually returned.
-	assert.EqualError(t, err, "HTTP on GET to BitBucket API: Get \"https://.com\": dial tcp: lookup .com: no such host")
+	assert.EqualError(t, err, "HTTP on GET to GitHub API: Get \"https://.com\": dial tcp: lookup .com: no such host")
 
 }
 
@@ -102,7 +102,7 @@ func TestHaveVersionUpdateWarningVersion(t *testing.T) {
 	version := ""
 
 	// Checker helper
-	// Update BitBucketAPIRepository to produce a no such host.
+	// Update GitHubAPIRepository to produce a no such host.
 	v := NewGitHub("https://api.bitbucket.org/2.0/repositories/openbankingteam/conformance-suite/refs/tags")
 
 	message, flag, err := v.UpdateWarningVersion(version)

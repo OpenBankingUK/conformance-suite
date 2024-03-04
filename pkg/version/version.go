@@ -12,6 +12,7 @@ import (
 
 	"github.com/OpenBankingUK/conformance-suite/pkg/client"
 	hashiVer "github.com/hashicorp/go-version"
+	"github.com/spf13/viper"
 
 	"github.com/pkg/errors"
 )
@@ -45,14 +46,14 @@ type Checker interface {
 
 // GitHub helper with capability to get release versions from source control repository
 type GitHub struct {
-	// bitBucketAPIRepository full URL of the TAG API 2.0 for the Conformance Suite.
-	bitBucketAPIRepository string
+	// gitHubAPIRepository full URL of the TAG API 2.0 for the Conformance Suite.
+	gitHubAPIRepository string
 }
 
 // NewGitHub returns a new instance of Checker.
 func NewGitHub(bitBucketAPIRepository string) GitHub {
 	return GitHub{
-		bitBucketAPIRepository: bitBucketAPIRepository,
+		gitHubAPIRepository: bitBucketAPIRepository,
 	}
 }
 
@@ -153,7 +154,7 @@ func (v GitHub) VersionFormatter(version string) (string, error) {
 }
 
 // UpdateWarningVersion takes a version number and checks it against the
-// latest tag version on Bitbucket, if a newer version is found it
+// latest tag version on GitHub, if a newer version is found it
 // returns a message and bool value that can be used to inform a user
 // a newer version is available for download.
 func (v GitHub) UpdateWarningVersion(version string) (string, bool, error) {
@@ -164,11 +165,20 @@ func (v GitHub) UpdateWarningVersion(version string) (string, bool, error) {
 	if len(version) == 0 {
 		return errorMessageUI, false, fmt.Errorf("no version found")
 	}
-	// Try to get the latest tag using the BitBucket API.
-	resp, err := client.NewHTTPClient(client.DefaultTimeout).Get(v.bitBucketAPIRepository)
+
+	// Try to get the latest tag using the GitHub API.
+	var resp *http.Response
+	var err error
+
+	if viper.GetBool("proxy_version_check") {
+		resp, err = client.NewHTTPClient(client.DefaultTimeout).Get(v.gitHubAPIRepository)
+	} else {
+		resp, err = client.NewHTTPClientWithoutProxy(client.DefaultTimeout).Get(v.gitHubAPIRepository)
+	}
+
 	if err != nil {
 		// If network error then return message, flag to NOT update and actual error.
-		return errorMessageUI, false, errors.Wrap(err, "HTTP on GET to BitBucket API")
+		return errorMessageUI, false, errors.Wrap(err, "HTTP on GET to GitHub API")
 	}
 
 	if resp.StatusCode == http.StatusOK {
