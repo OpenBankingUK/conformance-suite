@@ -110,6 +110,23 @@ docker run --rm -it -p 8443:8443 -e LOG_LEVEL=debug -e LOG_TRACER=true -e LOG_HT
 docker run --rm -it -p 8443:8443 -e LOG_LEVEL=debug -e LOG_TRACER=true -e LOG_HTTP_TRACE=true -e DISABLE_JWS=TRUE "openbanking/conformance-suite:latest"
 ```
 
+### Proxy usage
+
+Since 1.7.6 FCS allows setting up proxy via environment variables which can be set in the docker command.
+Supported environment variables: `HTTPS_PROXY`, `HTTP_PROXY`
+
+```sh
+docker run --env HTTPS_PROXY="http://{username}:{password}@{URL}" --rm -it -p 8443:8443 openbanking/conformance-suite:latest
+```
+
+The above example uses proxy for validating FCS version by making GitHub request.
+If you would like to use non-proxy transport for this check, please use this flag: `-e PROXY_VERSION_CHECK=false`
+
+```sh
+docker run --env HTTPS_PROXY="http://{username}:{password}@{URL}" -e PROXY_VERSION_CHECK=false --rm -it -p 8443:8443 openbanking/conformance-suite:latest
+```
+
+
 If all goes well you should be able to launch the FCS UI from you browser via `https://0.0.0.0:8443`
 
 ### Dynamic Resource Allocation
