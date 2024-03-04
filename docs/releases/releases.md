@@ -1,5 +1,9 @@
 # Release history
 
+# Release v1.7.6 (4th March 2024)
+
+The release is called **v1.7.6**, an update to add proxy support, package and environment upgrades, add changes to manifests.
+
 # Release v1.7.5 (20th September 2023)
 
 The release is called **v1.7.5**, an update to fix bug in minimalDomesticVRP (`POST` /domestic-vrps).
