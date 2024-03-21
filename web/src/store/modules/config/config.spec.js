@@ -1053,7 +1053,7 @@ describe('web/src/store/modules/config', () => {
           x_fapi_financial_id: '',
           send_x_fapi_customer_ip_address: false,
           x_fapi_customer_ip_address: '',
-          issuer: 'https://auth1.obie.uk.ozoneapi.io_1',
+          issuer: 'https://auth1.obie.uk.ozoneapi.io',
           redirect_url: 'https://127.0.0.1:8443/conformancesuite/callback',
           resource_ids: {
             account_ids: [{ account_id: '' }],
