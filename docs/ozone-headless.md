@@ -27,7 +27,7 @@ The exchange code is retrieved from the location header url parameter `code`. An
 ```httptrace
 ---------------------- REQUEST LOG -----------------------
 GET  /auth?client_id=72b79ddd-4674-43bb-96c2-992f79cd6e62&redirect_uri=https%3A%2F%2F127.0.0.1%3A8443%2Fconformancesuite%2Fcallback&request=eyJhbGciOiJub25lIn0.eyJhdWQiOiJodHRwczovL21vZGVsb2JhbmthdXRoMjAxOC5vM2JhbmsuY28udWs6NDEwMSIsImNsYWltcyI6eyJpZF90b2tlbiI6eyJvcGVuYmFua2luZ19pbnRlbnRfaWQiOnsiZXNzZW50aWFsIjp0cnVlLCJ2YWx1ZSI6ImFhYy1mNGJmY2VlNi1hNmZkLTRhNTktOWUxYS1mOTdhNTczMTNiYzgifX19LCJpc3MiOiI3MmI3OWRkZC00Njc0LTQzYmItOTZjMi05OTJmNzljZDZlNjIiLCJyZWRpcmVjdF91cmkiOiJodHRwczovLzEyNy4wLjAuMTo4NDQzL2NvbmZvcm1hbmNlc3VpdGUvY2FsbGJhY2siLCJzY29wZSI6Im9wZW5pZCBhY2NvdW50cyJ9.&response_type=code&scope=openid+accounts&state=  HTTP/1.1
-HOST   : modelobankauth2018.o3bank.co.uk:4101
+HOST   : https://auth1.obie.uk.ozoneapi.io
 HEADERS:
                User-Agent: go-resty/1.10.3 (https://github.com/go-resty/resty)
 BODY   :
@@ -51,7 +51,7 @@ The `code` url query parameter is extracted from the location header above. It h
 
 ---------------------- REQUEST LOG -----------------------
 POST  /token  HTTP/1.1
-HOST   : modelobank2018.o3bank.co.uk:4201
+HOST   : as1.obie.uk.ozoneapi.io
 HEADERS:
                    Accept: */*
             Authorization: Basic NzJiNzlkZGQtNDY3NC00M2JiLTk2YzItOTkyZjc5Y2Q2ZTYyOjM1ZjBkZTliLWFhYTYtNGJmZi1hZDg0LTNlNjUyODU3NDcyMw==

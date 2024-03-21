@@ -168,7 +168,7 @@ var transactionData = []byte(`{
 	   ]
 	},
 	"Links": {
-	   "Self": "https://ob19-rs1.o3bank.co.uk:4501/open-banking/v3.1/aisp/transactions"
+	   "Self": "https://rs1.obie.uk.ozoneapi.io/open-banking/v3.1/aisp/transactions"
 	},
 	"Meta": {
 	   "TotalPages": 1,

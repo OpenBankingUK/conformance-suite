@@ -497,7 +497,7 @@ func setAdditonalClaims(jwtClaims jwt.MapClaims, inputClaims map[string]string) 
 	//
 	// ---------------------- REQUEST LOG -----------------------
 	// GET  /auth?client_id=081756dd-17f5-4543-a221-012e7ec8694e&redirect_uri=https%3A%2F%2F127.0.0.1%3A8443%2Fconformancesuite%2Fcallback&request=eyJhbGciOiJub25lIn0.eyJhdWQiOiJodHRwczovL29iMTktYXV0aDEtdWkubzNiYW5rLmNvLnVrIiwiY2xhaW1zIjp7ImlkX3Rva2VuIjp7Im9wZW5iYW5raW5nX2ludGVudF9pZCI6eyJlc3NlbnRpYWwiOnRydWUsInZhbHVlIjoiYWFjLTdlNDE5ZTY3LWNiYTMtNGNlOS1iMzRkLTM3YjdmYjY4MDYzNyJ9fX0sImlzcyI6IjA4MTc1NmRkLTE3ZjUtNDU0My1hMjIxLTAxMmU3ZWM4Njk0ZSIsInJlZGlyZWN0X3VyaSI6Imh0dHBzOi8vMTI3LjAuMC4xOjg0NDMvY29uZm9ybWFuY2VzdWl0ZS9jYWxsYmFjayIsInNjb3BlIjoib3BlbmlkIGFjY291bnRzIn0.&response_type=code&scope=openid+accounts&state=  HTTP/1.1
-	// HOST   : ob19-auth1-ui.o3bank.co.uk
+	// HOST   : auth1.obie.uk.ozoneapi.io
 	// HEADERS:
 	// 				User-Agent: go-resty/1.10.3 (https://github.com/go-resty/resty)
 	// BODY   :

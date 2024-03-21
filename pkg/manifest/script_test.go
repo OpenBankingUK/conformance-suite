@@ -32,8 +32,8 @@ func readVrpDiscoveryEndpoints() ([]discovery.ModelEndpoint, error) {
 				"schemaVersion": "https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.9/dist/openapi/vrp-openapi.json",
 				"manifest": "file://manifests/ob_3.1_variable_recurring_payments.json"
 			  },
-			  "openidConfigurationUri": "https://ob19-auth1-ui.o3bank.co.uk/.well-known/openid-configuration",
-			  "resourceBaseUri": "https://ob19-rs1.o3bank.co.uk:4501/open-banking/v3.1/pisp",
+			  "openidConfigurationUri": "https://auth1.obie.uk.ozoneapi.io/.well-known/openid-configuration",
+			  "resourceBaseUri": "https://rs1.obie.uk.ozoneapi.io/open-banking/v3.1/pisp",
 			  "endpoints": [
 				{
 				  "method": "POST",

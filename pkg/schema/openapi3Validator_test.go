@@ -258,7 +258,7 @@ const cbpiiGoodResponse = `
 		 "StatusUpdateDateTime": "2020-05-21T12:13:37.323Z"
 	},
 	"Links": {
-		 "Self": "https://ob19-rs1.o3bank.co.uk:4501/open-banking/v3.1/cbpii/funds-confirmation-consents/fcc-22a6e08c-d5fa-4159-9eed-c9f0c7398fff"
+		 "Self": "https://rs1.obie.uk.ozoneapi.io/open-banking/v3.1/cbpii/funds-confirmation-consents/fcc-22a6e08c-d5fa-4159-9eed-c9f0c7398fff"
 	},
 	"Meta": {}
 }`

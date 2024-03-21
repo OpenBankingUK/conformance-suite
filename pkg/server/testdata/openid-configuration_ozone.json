@@ -1,5 +1,5 @@
 {
-  "issuer": "https://ob19-auth1-ui.o3bank.co.uk",
+  "issuer": "https://auth1.obie.uk.ozoneapi.io",
   "claims_parameter_supported": true,
   "claims_supported": [
     "openbanking_intent_id",
@@ -70,9 +70,11 @@
     "PS256"
   ],
   "backchannel_user_code_parameter_supported": false,
-  "token_endpoint": "https://ob19-auth1.o3bank.co.uk:4201/token",
-  "authorization_endpoint": "https://ob19-auth1-ui.o3bank.co.uk/auth",
-  "registration_endpoint": "https://ob19-rs1.o3bank.co.uk:4501/dynamic-client-registration/v3.1/register",
+  "token_endpoint": "as1.obie.uk.ozoneapi.io/token",
+  "authorization_endpoint": "https://auth1.obie.uk.ozoneapi.io/auth",
+  // TODO:
+  "registration_endpoint": "https://rs1.obie.uk.ozoneapi.io/dynamic-client-registration/v3.1/register",
   "jwks_uri": "https://keystore.openbankingtest.org.uk/0015800001041RHAAY/0015800001041RHAAY.jwks",
-  "backchannel_authentication_endpoint": "https://ob19-auth1.o3bank.co.uk:4201/bc-authorize"
+  // TODO:
+  "backchannel_authentication_endpoint": "https://as1.obie.uk.ozoneapi.io:4201/bc-authorize"
 }

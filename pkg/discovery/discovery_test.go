@@ -55,8 +55,8 @@ var testDiscoveryPayload = []byte(`
 		  "schemaVersion": "https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.0/dist/account-info-swagger.json",
 		  "manifest": "file://manifests/ob_3.1_accounts_transactions_fca.json"
 		},
-		"openidConfigurationUri": "https://ob19-auth1-ui.o3bank.co.uk/.well-known/openid-configuration",
-		"resourceBaseUri": "https://ob19-rs1.o3bank.co.uk:4501/open-banking/v3.1/aisp",
+		"openidConfigurationUri": "https://auth1.obie.uk.ozoneapi.io/.well-known/openid-configuration",
+		"resourceBaseUri": "https://rs1.obie.uk.ozoneapi.io/open-banking/v3.1/aisp",
 		"endpoints": [
 		  {
 			"method": "POST",
@@ -91,8 +91,8 @@ var testDiscoveryPayload = []byte(`
 		  "schemaVersion": "https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.0/dist/payment-initiation-swagger.json",
 		  "manifest": "file://manifests/ob_3.1_payment_fca.json"
 		},
-		"openidConfigurationUri": "https://ob19-auth1-ui.o3bank.co.uk/.well-known/openid-configuration",
-		"resourceBaseUri": "https://ob19-rs1.o3bank.co.uk:4501/open-banking/v3.1/pisp",
+		"openidConfigurationUri": "https://auth1.obie.uk.ozoneapi.io/.well-known/openid-configuration",
+		"resourceBaseUri": "https://rs1.obie.uk.ozoneapi.io/open-banking/v3.1/pisp",
 		"endpoints": [{
 			"method": "POST",
 			"path": "/domestic-payment-consents",
@@ -197,8 +197,8 @@ var testDiscoveryPayloadOAS3 = []byte(`
 		  "schemaVersion": "https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.8/dist/account-info-swagger.json",
 		  "manifest": "file://manifests/ob_3.1_accounts_transactions_fca.json"
 		},
-		"openidConfigurationUri": "https://ob19-auth1-ui.o3bank.co.uk/.well-known/openid-configuration",
-		"resourceBaseUri": "https://ob19-rs1.o3bank.co.uk:4501/open-banking/v3.1/aisp",
+		"openidConfigurationUri": "https://auth1.obie.uk.ozoneapi.io/.well-known/openid-configuration",
+		"resourceBaseUri": "https://rs1.obie.uk.ozoneapi.io/open-banking/v3.1/aisp",
 		"endpoints": [
 		  {
 			"method": "POST",
@@ -233,8 +233,8 @@ var testDiscoveryPayloadOAS3 = []byte(`
 		  "schemaVersion": "https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.0/dist/payment-initiation-swagger.json",
 		  "manifest": "file://manifests/ob_3.1_payment_fca.json"
 		},
-		"openidConfigurationUri": "https://ob19-auth1-ui.o3bank.co.uk/.well-known/openid-configuration",
-		"resourceBaseUri": "https://ob19-rs1.o3bank.co.uk:4501/open-banking/v3.1/pisp",
+		"openidConfigurationUri": "https://auth1.obie.uk.ozoneapi.io/.well-known/openid-configuration",
+		"resourceBaseUri": "https://rs1.obie.uk.ozoneapi.io/open-banking/v3.1/pisp",
 		"endpoints": [{
 			"method": "POST",
 			"path": "/domestic-payment-consents",

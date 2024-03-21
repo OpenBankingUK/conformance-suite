@@ -24,7 +24,7 @@
             }
           },
           "context": {
-            "baseurl": "https://modelobank2018.o3bank.co.uk:4201"
+            "baseurl": "https://as1.obie.uk.ozoneapi.io"
           },
           "expect": {
             "status-code": 200,
@@ -59,7 +59,7 @@
             }
           },
           "context": {
-            "baseurl": "https://ob19-rs1.o3bank.co.uk:4501"
+            "baseurl": "https://rs1.obie.uk.ozoneapi.io"
           },
           "expect": {
             "status-code": 201,
@@ -102,7 +102,7 @@
             }
           },
           "context": {
-            "baseurl": "https://modelobankauth2018.o3bank.co.uk:4101"
+            "baseurl": "https://auth1.obie.uk.ozoneapi.io"
           },
           "expect": {
             "status-code": 302,
@@ -135,7 +135,7 @@
             }
           },
           "context": {
-            "baseurl": "https://modelobank2018.o3bank.co.uk:4201"
+            "baseurl": "https://as1.obie.uk.ozoneapi.io"
           },
           "expect": {
             "status-code": 200,
@@ -169,7 +169,7 @@
             }
           },
           "context": {
-            "baseurl": "https://ob19-rs1.o3bank.co.uk:4501"
+            "baseurl": "https://rs1.obie.uk.ozoneapi.io"
           },
           "expect": {
             "status-code": 200,

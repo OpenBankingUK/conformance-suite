@@ -5,11 +5,11 @@
   "transport_public": "-----BEGIN CERTIFICATE-----",
   "client_id": "",
   "client_secret": "",
-  "token_endpoint": "https://modelobank2018.o3bank.co.uk:4201/token",
+  "token_endpoint": "https://as1.obie.uk.ozoneapi.io/token",
   "token_endpoint_auth_method": "client_secret_basic",
-  "authorization_endpoint": "https://modelobankauth2018.o3bank.co.uk:4101/auth",
-  "resource_base_url": "https://ob19-rs1.o3bank.co.uk:4501",
+  "authorization_endpoint": "https://auth1.obie.uk.ozoneapi.io/auth",
+  "resource_base_url": "https://rs1.obie.uk.ozoneapi.io",
   "x_fapi_financial_id": "0015800001041RHAAY",
-  "issuer": "https://modelobankauth2018.o3bank.co.uk:4101",
+  "issuer": "https://auth1.obie.uk.ozoneapi.io",
   "redirect_url": "https://0.0.0.0:8443/conformancesuite/callback"
 }

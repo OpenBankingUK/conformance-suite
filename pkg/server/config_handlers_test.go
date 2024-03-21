@@ -96,7 +96,7 @@ func TestValidateConfig(t *testing.T) {
 		ResourceBaseURL:               "https://server",
 		XFAPIFinancialID:              "2cfb31a3-5443-4e65-b2bc-ef8e00266a77",
 		RedirectURL:                   "https://localhost",
-		Issuer:                        "https://modelobankauth2018.o3bank.co.uk:4101",
+		Issuer:                        "https://auth1.obie.uk.ozoneapi.io",
 		ClientID:                      "8672384e-9a33-439f-8924-67bb14340d71",
 		RequestObjectSigningAlgorithm: "PS256",
 		ResourceIDs: model.ResourceIDs{
@@ -133,7 +133,7 @@ func configStubMissing(missingField string) GlobalConfiguration {
 		RedirectURL:                   "http://server",
 		XFAPIFinancialID:              "123",
 		RequestObjectSigningAlgorithm: "PS256",
-		Issuer:                        "https://modelobankauth2018.o3bank.co.uk:4101",
+		Issuer:                        "https://auth1.obie.uk.ozoneapi.io",
 		CreditorAccount:               creditorAccount,
 		InternationalCreditorAccount:  creditorAccount,
 		ResourceIDs: model.ResourceIDs{
@@ -253,16 +253,16 @@ func TestServerConfigGlobalPostValid(t *testing.T) {
 		TransportPublic:               publicKey,
 		ClientID:                      `8672384e-9a33-439f-8924-67bb14340d71`,
 		ClientSecret:                  `2cfb31a3-5443-4e65-b2bc-ef8e00266a77`,
-		TokenEndpoint:                 `https://modelobank2018.o3bank.co.uk:4201/token`,
+		TokenEndpoint:                 `https://as1.obie.uk.ozoneapi.io/token`,
 		TokenEndpointAuthMethod:       "client_secret_basic",
 		TransactionFromDate:           defaultTxnFrom,
 		TransactionToDate:             defaultTxnTo,
 		ResponseType:                  "code id_token",
 		XFAPIFinancialID:              `0015800001041RHAAY`,
 		RedirectURL:                   fmt.Sprintf(`https://%s:8443/conformancesuite/callback`, ListenHost),
-		AuthorizationEndpoint:         `https://modelobank2018.o3bank.co.uk:4201/token`,
-		ResourceBaseURL:               `https://ob19-rs1.o3bank.co.uk:4501`,
-		Issuer:                        "https://modelobankauth2018.o3bank.co.uk:4101",
+		AuthorizationEndpoint:         `https://auth1.obie.uk.ozoneapi.io/auth`,
+		ResourceBaseURL:               `https://rs1.obie.uk.ozoneapi.io`,
+		Issuer:                        "https://auth1.obie.uk.ozoneapi.io",
 		RequestObjectSigningAlgorithm: "PS256",
 		ResourceIDs: model.ResourceIDs{
 			AccountIDs:   []model.ResourceAccountID{{AccountID: "account-id"}},
@@ -334,7 +334,7 @@ func TestServerConfigGlobalPostInvalid(t *testing.T) {
 				ResourceBaseURL:               "http://server",
 				RedirectURL:                   "http://server",
 				XFAPIFinancialID:              "123",
-				Issuer:                        "https://modelobankauth2018.o3bank.co.uk:4101",
+				Issuer:                        "https://auth1.obie.uk.ozoneapi.io",
 				RequestObjectSigningAlgorithm: "PS256",
 				ResourceIDs: model.ResourceIDs{
 					AccountIDs: []model.ResourceAccountID{
@@ -382,7 +382,7 @@ func TestServerConfigGlobalPostInvalid(t *testing.T) {
 				ResourceBaseURL:               "https://server",
 				RedirectURL:                   "http://server",
 				XFAPIFinancialID:              "123",
-				Issuer:                        "https://modelobankauth2018.o3bank.co.uk:4101",
+				Issuer:                        "https://auth1.obie.uk.ozoneapi.io",
 				RequestObjectSigningAlgorithm: "PS256",
 				ResourceIDs: model.ResourceIDs{
 					AccountIDs: []model.ResourceAccountID{
@@ -431,7 +431,7 @@ func TestServerConfigGlobalPostInvalid(t *testing.T) {
 				RedirectURL:                   "http://server",
 				XFAPIFinancialID:              "123",
 				RequestObjectSigningAlgorithm: "PS256",
-				Issuer:                        "https://modelobankauth2018.o3bank.co.uk:4101",
+				Issuer:                        "https://auth1.obie.uk.ozoneapi.io",
 				CreditorAccount: models.Payment{
 					SchemeName:     "UK.OBIE.SortCodeAccountNumber",
 					Identification: "20202010981789",
@@ -471,7 +471,7 @@ func TestServerConfigGlobalPostInvalid(t *testing.T) {
 				RedirectURL:                   "http://server",
 				XFAPIFinancialID:              "123",
 				RequestObjectSigningAlgorithm: "PS256",
-				Issuer:                        "https://modelobankauth2018.o3bank.co.uk:4101",
+				Issuer:                        "https://auth1.obie.uk.ozoneapi.io",
 				ResourceIDs: model.ResourceIDs{
 					StatementIDs: []model.ResourceStatementID{
 						{StatementID: "statement-id"},
@@ -516,7 +516,7 @@ func TestServerConfigGlobalPostInvalid(t *testing.T) {
 				RedirectURL:                   "http://server",
 				XFAPIFinancialID:              "123",
 				RequestObjectSigningAlgorithm: "PS256",
-				Issuer:                        "https://modelobankauth2018.o3bank.co.uk:4101",
+				Issuer:                        "https://auth1.obie.uk.ozoneapi.io",
 				ResourceIDs: model.ResourceIDs{
 					AccountIDs: []model.ResourceAccountID{
 						{AccountID: "account-id"},
@@ -564,7 +564,7 @@ func TestServerConfigGlobalPostInvalid(t *testing.T) {
 				ResourceBaseURL:               "https://server",
 				RedirectURL:                   "http://server",
 				XFAPIFinancialID:              "123",
-				Issuer:                        "https://modelobankauth2018.o3bank.co.uk:4101",
+				Issuer:                        "https://auth1.obie.uk.ozoneapi.io",
 				RequestObjectSigningAlgorithm: "PS256",
 				ResourceIDs: model.ResourceIDs{
 					AccountIDs: []model.ResourceAccountID{
@@ -609,7 +609,7 @@ func TestServerConfigGlobalPostInvalid(t *testing.T) {
 				ResourceBaseURL:               "https://server",
 				RedirectURL:                   "http://server",
 				XFAPIFinancialID:              "123",
-				Issuer:                        "https://modelobankauth2018.o3bank.co.uk:4101",
+				Issuer:                        "https://auth1.obie.uk.ozoneapi.io",
 				RequestObjectSigningAlgorithm: "PS256",
 				ResourceIDs: model.ResourceIDs{
 					AccountIDs: []model.ResourceAccountID{
@@ -659,7 +659,7 @@ func TestServerConfigGlobalPostInvalid(t *testing.T) {
 				RedirectURL:                   "http://server",
 				XFAPIFinancialID:              "123",
 				RequestObjectSigningAlgorithm: "PS256",
-				Issuer:                        "https://modelobankauth2018.o3bank.co.uk:4101",
+				Issuer:                        "https://auth1.obie.uk.ozoneapi.io",
 				ResourceIDs: model.ResourceIDs{
 					AccountIDs: []model.ResourceAccountID{
 						{AccountID: "account-id"},
@@ -699,7 +699,7 @@ func TestServerConfigGlobalPostInvalid(t *testing.T) {
 				ResourceBaseURL:               "https://server",
 				RedirectURL:                   "http://server",
 				XFAPIFinancialID:              "123",
-				Issuer:                        "https://modelobankauth2018.o3bank.co.uk:4101",
+				Issuer:                        "https://auth1.obie.uk.ozoneapi.io",
 				RequestObjectSigningAlgorithm: "PS256",
 				ResourceIDs: model.ResourceIDs{
 					AccountIDs: []model.ResourceAccountID{
@@ -744,7 +744,7 @@ func TestServerConfigGlobalPostInvalid(t *testing.T) {
 				ResourceBaseURL:         "https://server",
 				RedirectURL:             "http://server",
 				XFAPIFinancialID:        "123",
-				Issuer:                  "https://modelobankauth2018.o3bank.co.uk:4101",
+				Issuer:                  "https://auth1.obie.uk.ozoneapi.io",
 				ResourceIDs: model.ResourceIDs{
 					AccountIDs: []model.ResourceAccountID{
 						{AccountID: "account-id"},
@@ -789,7 +789,7 @@ func TestServerConfigGlobalPostInvalid(t *testing.T) {
 				ResourceBaseURL:         "https://server",
 				RedirectURL:             "http://server",
 				XFAPIFinancialID:        "123",
-				Issuer:                  "https://modelobankauth2018.o3bank.co.uk:4101",
+				Issuer:                  "https://auth1.obie.uk.ozoneapi.io",
 				ResourceIDs: model.ResourceIDs{
 					AccountIDs: []model.ResourceAccountID{
 						{AccountID: "account-id"},
@@ -834,7 +834,7 @@ func TestServerConfigGlobalPostInvalid(t *testing.T) {
 				ResourceBaseURL:         "https://server",
 				RedirectURL:             "http://server",
 				XFAPIFinancialID:        "123",
-				Issuer:                  "https://modelobankauth2018.o3bank.co.uk:4101",
+				Issuer:                  "https://auth1.obie.uk.ozoneapi.io",
 				ResourceIDs: model.ResourceIDs{
 					AccountIDs: []model.ResourceAccountID{
 						{AccountID: "account-id"},

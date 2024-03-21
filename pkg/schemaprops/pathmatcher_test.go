@@ -98,7 +98,7 @@ var sourcepaths = []string{
 	"/open-banking/v3.1/pisp/international-payments/pv3-60fbf2f7-440d-45a0-bbb9-24756be4c744",
 	"/open-banking/v3.1/pisp/international-scheduled-payment-consents/sdp-5-00beaf93-bac1-43af-9c18-3398e758ec6f",
 	"/open-banking/v3.1/pisp/international-scheduled-payments/pv3-09aa13bc-5e9a-46c4-bb72-83c28f4515ed",
-	"/open-banking/https://ob19-auth1.o3bank.co.uk:4201/token",
+	"/open-banking/https://as1.obie.uk.ozoneapi.io/token",
 	"/open-banking/v3.1/aisp/account-access-consents",
 	"/open-banking/v3.1/cbpii/funds-confirmation-consents",
 	"/open-banking/v3.1/cbpii/funds-confirmation-consents",

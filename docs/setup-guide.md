@@ -184,7 +184,7 @@ Select the Ozone PSU template.
 	* Token Endpoint Auth Method: `client_secret_basic`
 	* Request object signing algorithm: `PS256`
 	* Authorization Endpoint: _pre-populated value ok_
-	* Resource Base URL: `https://ob19-rs1.o3bank.co.uk:4501`
+	* Resource Base URL: `https://rs1.obie.uk.ozoneapi.io`
 	* Issuer: _pre-populated value ok_
 	* Redirect URL: `https://0.0.0.0:8443/conformancesuite/callback`
 	* Use NON OB Directory: false (not checked)
@@ -221,10 +221,11 @@ The following hosts are required to be accessible for the Functional Conformance
 
 | Protocol   | Host | Ports | Comment |
 | ---------- | ---- | ----- | ------- |
-| TCP, HTTPS | modelobankauth2018.o3bank.co.uk | 4101 | Only required when testing against Ozone Model Bank.
-| TCP, HTTPS | modelo2018.o3bank.co.uk | 4201,4501 | Only required when testing against Ozone Model Bank.
+| TCP, HTTPS | auth1.obie.uk.ozoneapi.io | 443 | Only required when testing against Ozone Model Bank.
+| TCP, HTTPS | as1.obie.uk.ozoneapi.io | 443 | Only required when testing against Ozone Model Bank.
+| TCP, HTTPS | rs1.obie.uk.ozoneapi.io | 443 | Only required when testing against Ozone Model Bank.
 | TCP, HTTPS | github.map.fastly.net | 443 | DNS Alias for `raw.githubusercontent.com` - CDN to access OBIE Swagger spec files.
-| TCP, HTTPS | api.bitbucket.org | 443 | Used to get version information for Conformance Suite - Update available check.
+| TCP, HTTPS | api.github.com | 443 | Used to get version information for Conformance Suite - Update available check.
 | TCP, HTTPS | production.cloudflare.docker.com | 443 | Access to Docker repository.
 | TCP, HTTPS | registry-1.docker.io | 443 | Access to Docker repository.
 | TCP, HTTPS | auth.docker.io | 443 | Authenticating with Docker Hub.

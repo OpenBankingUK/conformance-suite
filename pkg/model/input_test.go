@@ -236,7 +236,7 @@ func TestInputClaimsWithContextReplacementParameters(t *testing.T) {
 }
 
 func TestInputClaimsConsentId(t *testing.T) {
-	ctx := Context{"consent_id": "aac-fee2b8eb-ce1b-48f1-af7f-dc8f576d53dc", "xchange_code": "10e9d80b-10d4-4abd-9fe0-15789cc512b5", "baseurl": "https://modelobankauth2018.o3bank.co.uk:4101", "access_token": "18d5a754-0b76-4a8f-9c68-dc5caaf812e2", "authorisation_endpoint": "https://example.com/authorisation"}
+	ctx := Context{"consent_id": "aac-fee2b8eb-ce1b-48f1-af7f-dc8f576d53dc", "xchange_code": "10e9d80b-10d4-4abd-9fe0-15789cc512b5", "baseurl": "https://auth1.obie.uk.ozoneapi.io/auth", "access_token": "18d5a754-0b76-4a8f-9c68-dc5caaf812e2", "authorisation_endpoint": "https://example.com/authorisation"}
 	i := Input{Endpoint: "/accounts", Method: "POST",
 		Generation: map[string]string{
 			"strategy": "consenturl",

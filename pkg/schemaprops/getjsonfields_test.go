@@ -226,7 +226,7 @@ var (
 		   ]
 		},
 		"Links": {
-		   "Self": "https://ob19-rs1.o3bank.co.uk:4501/open-banking/v3.1/aisp/accounts"
+		   "Self": "https://rs1.obie.uk.ozoneapi.io/open-banking/v3.1/aisp/accounts"
 		},
 		"Meta": {
 		   "TotalPages": 1
@@ -314,7 +314,7 @@ var (
 			   ]
 			},
 			"Links": {
-			   "Self": "https://ob19-rs1.o3bank.co.uk:4501/open-banking/v3.1/aisp/accounts"
+			   "Self": "https://rs1.obie.uk.ozoneapi.io/open-banking/v3.1/aisp/accounts"
 			},
 			"Meta": {
 			   "TotalPages": 1
@@ -352,7 +352,7 @@ var (
 		   ]
 		},
 		"Links": {
-		   "Self": "https://ob19-rs1.o3bank.co.uk:4501/open-banking/v3.1/aisp/accounts/700004000000000000000005/transactions"
+		   "Self": "https://rs1.obie.uk.ozoneapi.io/open-banking/v3.1/aisp/accounts/700004000000000000000005/transactions"
 		},
 		"Meta": {
 		   "TotalPages": 1,
@@ -520,7 +520,7 @@ var (
 		  ]
 	   },
 	   "Links": {
-		  "Self": "https://ob19-rs1.o3bank.co.uk:4501/open-banking/v3.1/aisp/products"
+		  "Self": "https://rs1.obie.uk.ozoneapi.io/open-banking/v3.1/aisp/products"
 	   },
 	   "Meta": {
 		  "TotalPages": 1
@@ -594,7 +594,7 @@ var (
 		   ]
 		},
 		"Links": {
-		   "Self": "https://ob19-rs1.o3bank.co.uk:4501/open-banking/v3.1/aisp/transactions"
+		   "Self": "https://rs1.obie.uk.ozoneapi.io/open-banking/v3.1/aisp/transactions"
 		},
 		"Meta": {
 		   "TotalPages": 1,
@@ -5372,7 +5372,7 @@ var (
 	   ]
 	},
 	"Links": {
-	   "Self": "https://ob19-rs1.o3bank.co.uk:4501/open-banking/v3.1/aisp/transactions"
+	   "Self": "https://rs1.obie.uk.ozoneapi.io/open-banking/v3.1/aisp/transactions"
 	},
 	"Meta": {
 	   "TotalPages": 1,

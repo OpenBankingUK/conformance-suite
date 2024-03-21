@@ -108,8 +108,8 @@ Non-normative example
           "schemaVersion": "https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.0.0/dist/account-info-swagger.json",
           "manifest": "file://../pkg/discovery/templates/ob_3.1_accounts_fca.json"
         },
-        "openidConfigurationUri": "https://ob19-auth1-ui.o3bank.co.uk/.well-known/openid-configuration",
-        "resourceBaseUri": "https://ob19-rs1.o3bank.co.uk:4501/open-banking/v3.1/aisp",
+        "openidConfigurationUri": "https://auth1.obie.uk.ozoneapi.io/.well-known/openid-configuration",
+        "resourceBaseUri": "https://rs1.obie.uk.ozoneapi.io:4501/open-banking/v3.1/aisp",
         "endpoints": []
       }
     ]

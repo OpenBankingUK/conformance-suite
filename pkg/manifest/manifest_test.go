@@ -24,8 +24,8 @@ func TestDiscoveryEndpointsMapToManifestCorrectly(t *testing.T) {
 				"schemaVersion": "https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.0/dist/account-info-swagger.json",
 				"manifest": "file://manifests/ob_3.1__accounts_fca.json"
 			},
-			"openidConfigurationUri": "https://ob19-auth1-ui.o3bank.co.uk/.well-known/openid-configuration",
-			"resourceBaseUri": "https://ob19-rs1.o3bank.co.uk:4501/open-banking/v3.1/aisp",
+			"openidConfigurationUri": "https://auth1.obie.uk.ozoneapi.io/.well-known/openid-configuration",
+			"resourceBaseUri": "https://rs1.obie.uk.ozoneapi.io/open-banking/v3.1/aisp",
 			"resourceIds": {
 				"ConsentId": "$consent_id"
 			},
@@ -50,8 +50,8 @@ func TestDiscoveryEndpointsMapToManifestCorrectly(t *testing.T) {
 				"schemaVersion": "https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.0/dist/payment-initiation-swagger.json",
 				"manifest": "file://manifests/ob_3.1__payment_fca.json"
 			},
-			"openidConfigurationUri": "https://ob19-auth1-ui.o3bank.co.uk/.well-known/openid-configuration",
-			"resourceBaseUri": "https://modelobank2018.o3bank.co.uk:4501/open-banking/v3.1/",
+			"openidConfigurationUri": "https://auth1.obie.uk.ozoneapi.io/.well-known/openid-configuration",
+			"resourceBaseUri": "https://rs1.obie.uk.ozoneapi.io",
 			"endpoints": [{
 					"method": "GET",
 					"path": "/domestic-payment-consents"
@@ -192,8 +192,8 @@ func TestUnMappedManifestItemsReportedCorrectly(t *testing.T) {
 				"schemaVersion": "https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.0/dist/account-info-swagger.json",
 				"manifest": "file://manifests/ob_3.1__accounts_fca.json"
 			},
-			"openidConfigurationUri": "https://ob19-auth1-ui.o3bank.co.uk/.well-known/openid-configuration",
-			"resourceBaseUri": "https://ob19-rs1.o3bank.co.uk:4501/open-banking/v3.1/aisp",
+			"openidConfigurationUri": "https://auth1.obie.uk.ozoneapi.io/.well-known/openid-configuration",
+			"resourceBaseUri": "https://rs1.obie.uk.ozoneapi.io/open-banking/v3.1/aisp",
 			"resourceIds": {
 				"ConsentId": "$consent_id"
 			},
@@ -214,8 +214,8 @@ func TestUnMappedManifestItemsReportedCorrectly(t *testing.T) {
 				"schemaVersion": "https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.0/dist/payment-initiation-swagger.json",
 				"manifest": "file://manifests/ob_3.1__payment_fca.json"
 			},
-			"openidConfigurationUri": "https://ob19-auth1-ui.o3bank.co.uk/.well-known/openid-configuration",
-			"resourceBaseUri": "https://ob19-rs1.o3bank.co.uk:4501/open-banking/v3.1/",
+			"openidConfigurationUri": "https://auth1.obie.uk.ozoneapi.io/.well-known/openid-configuration",
+			"resourceBaseUri": "https://rs1.obie.uk.ozoneapi.io/open-banking/v3.1/",
 			"endpoints": [{
 					"method": "GET",
 					"path": "/domestic-payment-consents/{ConsentId}/funds-confirmation"

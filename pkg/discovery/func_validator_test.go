@@ -141,8 +141,8 @@ func discoveryItemsStub(apiSpecification string, endpoints string, field string,
 	discoveryItems := `, "discoveryItems": [
 			{
 				` + apiSpecification + `
-				"openidConfigurationUri": "https://ob19-auth1-ui.o3bank.co.uk/.well-known/openid-configuration",
-				"resourceBaseUri": "https://ob19-rs1.o3bank.co.uk:4501/open-banking/v3.1/aisp"` + endpoints + `
+				"openidConfigurationUri": "https://auth1.obie.uk.ozoneapi.io/.well-known/openid-configuration",
+				"resourceBaseUri": "https://rs1.obie.uk.ozoneapi.io/open-banking/v3.1/aisp"` + endpoints + `
 			}
 		]`
 	if field == "discoveryItems" {

@@ -83,7 +83,7 @@ TDB
            "response_time": 17.000526,
            "response_size": 168
          },
-         "endpoint": "https://ob19-rs1.o3bank.co.uk:4501/open-banking/v3.1/aisp/foobar"
+         "endpoint": "https://rs1.obie.uk.ozoneapi.io/open-banking/v3.1/aisp/foobar"
        }
      ]
     }

@@ -11,8 +11,8 @@
           "version": "v3.0",
           "schemaVersion": "https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.0.0/dist/account-info-swagger.json"
         },
-        "openidConfigurationUri": "https://ob19-auth1-ui.o3bank.co.uk/.well-known/openid-configuration",
-        "resourceBaseUri": "https://ob19-rs1.o3bank.co.uk:4501/open-banking/v3.0/",
+        "openidConfigurationUri": "https://auth1.obie.uk.ozoneapi.io/.well-known/openid-configuration",
+        "resourceBaseUri": "https://rs1.obie.uk.ozoneapi.io/open-banking/v3.0/",
         "resourceIds": {
           "AccountId": "500000000000000000000001",
           "ConsentId": "$consent_id"

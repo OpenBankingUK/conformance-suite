@@ -305,7 +305,7 @@ describe('web/src/store/modules/config', () => {
         conditional_properties: [],
       });
 
-      store.commit(types.SET_TOKEN_ENDPOINT, 'https://modelobank2018.o3bank.co.uk:4201/token');
+      store.commit(types.SET_TOKEN_ENDPOINT, 'https://as1.obie.uk.ozoneapi.io/token');
       expect(store.state.configuration).toEqual({
         signing_private: '',
         signing_public: '',
@@ -318,7 +318,7 @@ describe('web/src/store/modules/config', () => {
         transaction_to_date: '',
         client_id: '8672384e-9a33-439f-8924-67bb14340d71',
         client_secret: '2cfb31a3-5443-4e65-b2bc-ef8e00266a77',
-        token_endpoint: 'https://modelobank2018.o3bank.co.uk:4201/token',
+        token_endpoint: 'https://as1.obie.uk.ozoneapi.io/token',
         response_type: '',
         token_endpoint_auth_method: 'client_secret_basic',
         request_object_signing_alg: '',
@@ -363,7 +363,7 @@ describe('web/src/store/modules/config', () => {
       store.commit(types.SET_TOKEN_ENDPOINT_AUTH_METHOD, 'client_secret_basic');
       expect(store.state.configuration.token_endpoint_auth_method).toEqual('client_secret_basic');
 
-      store.commit(types.SET_AUTHORIZATION_ENDPOINT, 'https://modelobankauth2018.o3bank.co.uk:4101/auth');
+      store.commit(types.SET_AUTHORIZATION_ENDPOINT, 'https://auth1.obie.uk.ozoneapi.io/auth');
       expect(store.state.configuration).toEqual({
         signing_private: '',
         signing_public: '',
@@ -376,11 +376,11 @@ describe('web/src/store/modules/config', () => {
         transaction_to_date: '',
         client_id: '8672384e-9a33-439f-8924-67bb14340d71',
         client_secret: '2cfb31a3-5443-4e65-b2bc-ef8e00266a77',
-        token_endpoint: 'https://modelobank2018.o3bank.co.uk:4201/token',
+        token_endpoint: 'https://as1.obie.uk.ozoneapi.io/token',
         response_type: '',
         token_endpoint_auth_method: 'client_secret_basic',
         request_object_signing_alg: '',
-        authorization_endpoint: 'https://modelobankauth2018.o3bank.co.uk:4101/auth',
+        authorization_endpoint: 'https://auth1.obie.uk.ozoneapi.io/auth',
         resource_base_url: '',
         x_fapi_financial_id: '',
         send_x_fapi_customer_ip_address: false,
@@ -418,7 +418,7 @@ describe('web/src/store/modules/config', () => {
         conditional_properties: [],
       });
 
-      store.commit(types.SET_RESOURCE_BASE_URL, 'https://ob19-rs1.o3bank.co.uk:4501');
+      store.commit(types.SET_RESOURCE_BASE_URL, 'https://rs1.obie.uk.ozoneapi.io');
       expect(store.state.configuration).toEqual({
         signing_private: '',
         signing_public: '',
@@ -431,12 +431,12 @@ describe('web/src/store/modules/config', () => {
         transaction_to_date: '',
         client_id: '8672384e-9a33-439f-8924-67bb14340d71',
         client_secret: '2cfb31a3-5443-4e65-b2bc-ef8e00266a77',
-        token_endpoint: 'https://modelobank2018.o3bank.co.uk:4201/token',
+        token_endpoint: 'https://as1.obie.uk.ozoneapi.io/token',
         response_type: '',
         token_endpoint_auth_method: 'client_secret_basic',
         request_object_signing_alg: '',
-        authorization_endpoint: 'https://modelobankauth2018.o3bank.co.uk:4101/auth',
-        resource_base_url: 'https://ob19-rs1.o3bank.co.uk:4501',
+        authorization_endpoint: 'https://auth1.obie.uk.ozoneapi.io/auth',
+        resource_base_url: 'https://rs1.obie.uk.ozoneapi.io',
         x_fapi_financial_id: '',
         send_x_fapi_customer_ip_address: false,
         x_fapi_customer_ip_address: '',
@@ -486,12 +486,12 @@ describe('web/src/store/modules/config', () => {
         transaction_to_date: '',
         client_id: '8672384e-9a33-439f-8924-67bb14340d71',
         client_secret: '2cfb31a3-5443-4e65-b2bc-ef8e00266a77',
-        token_endpoint: 'https://modelobank2018.o3bank.co.uk:4201/token',
+        token_endpoint: 'https://as1.obie.uk.ozoneapi.io/token',
         response_type: '',
         token_endpoint_auth_method: 'client_secret_basic',
         request_object_signing_alg: '',
-        authorization_endpoint: 'https://modelobankauth2018.o3bank.co.uk:4101/auth',
-        resource_base_url: 'https://ob19-rs1.o3bank.co.uk:4501',
+        authorization_endpoint: 'https://auth1.obie.uk.ozoneapi.io/auth',
+        resource_base_url: 'https://rs1.obie.uk.ozoneapi.io',
         x_fapi_financial_id: '0015800001041RHAAY',
         send_x_fapi_customer_ip_address: false,
         x_fapi_customer_ip_address: '',
@@ -528,7 +528,7 @@ describe('web/src/store/modules/config', () => {
         conditional_properties: [],
       });
 
-      store.commit(types.SET_ISSUER, 'https://modelobankauth2018.o3bank.co.uk:4101');
+      store.commit(types.SET_ISSUER, 'https://auth1.obie.uk.ozoneapi.io');
       expect(store.state.configuration).toEqual({
         signing_private: '',
         signing_public: '',
@@ -541,16 +541,16 @@ describe('web/src/store/modules/config', () => {
         transaction_to_date: '',
         client_id: '8672384e-9a33-439f-8924-67bb14340d71',
         client_secret: '2cfb31a3-5443-4e65-b2bc-ef8e00266a77',
-        token_endpoint: 'https://modelobank2018.o3bank.co.uk:4201/token',
+        token_endpoint: 'https://as1.obie.uk.ozoneapi.io/token',
         response_type: '',
         token_endpoint_auth_method: 'client_secret_basic',
         request_object_signing_alg: '',
-        authorization_endpoint: 'https://modelobankauth2018.o3bank.co.uk:4101/auth',
-        resource_base_url: 'https://ob19-rs1.o3bank.co.uk:4501',
+        authorization_endpoint: 'https://auth1.obie.uk.ozoneapi.io/auth',
+        resource_base_url: 'https://rs1.obie.uk.ozoneapi.io',
         x_fapi_financial_id: '0015800001041RHAAY',
         send_x_fapi_customer_ip_address: false,
         x_fapi_customer_ip_address: '',
-        issuer: 'https://modelobankauth2018.o3bank.co.uk:4101',
+        issuer: 'https://auth1.obie.uk.ozoneapi.io',
         redirect_url: 'https://127.0.0.1:8443/conformancesuite/callback',
         resource_ids: {
           account_ids: [{ account_id: '' }],
@@ -596,16 +596,16 @@ describe('web/src/store/modules/config', () => {
         transaction_to_date: '',
         client_id: '8672384e-9a33-439f-8924-67bb14340d71',
         client_secret: '2cfb31a3-5443-4e65-b2bc-ef8e00266a77',
-        token_endpoint: 'https://modelobank2018.o3bank.co.uk:4201/token',
+        token_endpoint: 'https://as1.obie.uk.ozoneapi.io/token',
         response_type: '',
         token_endpoint_auth_method: 'client_secret_basic',
         request_object_signing_alg: '',
-        authorization_endpoint: 'https://modelobankauth2018.o3bank.co.uk:4101/auth',
-        resource_base_url: 'https://ob19-rs1.o3bank.co.uk:4501',
+        authorization_endpoint: 'https://auth1.obie.uk.ozoneapi.io/auth',
+        resource_base_url: 'https://rs1.obie.uk.ozoneapi.io',
         x_fapi_financial_id: '0015800001041RHAAY',
         send_x_fapi_customer_ip_address: false,
         x_fapi_customer_ip_address: '',
-        issuer: 'https://modelobankauth2018.o3bank.co.uk:4101',
+        issuer: 'https://auth1.obie.uk.ozoneapi.io',
         redirect_url: 'https://127.0.0.1:8443/conformancesuite/callback',
         resource_ids: {
           account_ids: [{ account_id: '' }, { account_id: 'account-id' }],
@@ -651,16 +651,16 @@ describe('web/src/store/modules/config', () => {
         transaction_to_date: '',
         client_id: '8672384e-9a33-439f-8924-67bb14340d71',
         client_secret: '2cfb31a3-5443-4e65-b2bc-ef8e00266a77',
-        token_endpoint: 'https://modelobank2018.o3bank.co.uk:4201/token',
+        token_endpoint: 'https://as1.obie.uk.ozoneapi.io/token',
         response_type: '',
         token_endpoint_auth_method: 'client_secret_basic',
         request_object_signing_alg: '',
-        authorization_endpoint: 'https://modelobankauth2018.o3bank.co.uk:4101/auth',
-        resource_base_url: 'https://ob19-rs1.o3bank.co.uk:4501',
+        authorization_endpoint: 'https://auth1.obie.uk.ozoneapi.io/auth',
+        resource_base_url: 'https://rs1.obie.uk.ozoneapi.io',
         x_fapi_financial_id: '0015800001041RHAAY',
         send_x_fapi_customer_ip_address: false,
         x_fapi_customer_ip_address: '',
-        issuer: 'https://modelobankauth2018.o3bank.co.uk:4101',
+        issuer: 'https://auth1.obie.uk.ozoneapi.io',
         redirect_url: 'https://127.0.0.1:8443/conformancesuite/callback',
         resource_ids: {
           account_ids: [{ account_id: '' }, { account_id: 'account-id' }],
@@ -1005,12 +1005,12 @@ describe('web/src/store/modules/config', () => {
               ['tls_client_auth', 'client_secret_basic'],
             },
             authorization_endpoints: {
-              'schema_version=https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.0.0/dist/account-info-swagger.json': 'https://modelobankauth2018.o3bank.co.uk:4101/auth_1',
-              'schema_version=https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.0.0/dist/payment-initiation-swagger.json': 'https://modelobankauth2018.o3bank.co.uk:4101/auth_2',
+              'schema_version=https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.0.0/dist/account-info-swagger.json': 'https://auth1.obie.uk.ozoneapi.io/auth_1',
+              'schema_version=https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.0.0/dist/payment-initiation-swagger.json': 'https://auth1.obie.uk.ozoneapi.io/auth_2',
             },
             issuers: {
-              'schema_version=https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.0/dist/account-info-swagger.json': 'https://modelobankauth2018.o3bank.co.uk:4101_1',
-              'schema_version=https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.0/dist/payment-initiation-swagger.json': 'https://modelobankauth2018.o3bank.co.uk:4101_2',
+              'schema_version=https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.0/dist/account-info-swagger.json': 'https://auth1.obie.uk.ozoneapi.io',
+              'schema_version=https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.0/dist/payment-initiation-swagger.json': 'https://auth1.obie.uk.ozoneapi.io',
             },
             request_object_signing_alg_values_supported: {
               'schema_version=https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.0.0/dist/account-info-swagger.json':
@@ -1048,12 +1048,12 @@ describe('web/src/store/modules/config', () => {
           response_type: '',
           token_endpoint_auth_method: 'client_secret_basic',
           request_object_signing_alg: '',
-          authorization_endpoint: 'https://modelobankauth2018.o3bank.co.uk:4101/auth_1',
+          authorization_endpoint: 'https://auth1.obie.uk.ozoneapi.io/auth_1',
           resource_base_url: '',
           x_fapi_financial_id: '',
           send_x_fapi_customer_ip_address: false,
           x_fapi_customer_ip_address: '',
-          issuer: 'https://modelobankauth2018.o3bank.co.uk:4101_1',
+          issuer: 'https://auth1.obie.uk.ozoneapi.io_1',
           redirect_url: 'https://127.0.0.1:8443/conformancesuite/callback',
           resource_ids: {
             account_ids: [{ account_id: '' }],
@@ -1250,12 +1250,12 @@ describe('web/src/store/modules/config', () => {
         store.commit(types.SET_TRANSACTION_TO_DATE, '2016-01-01T10:40:00+02:00');
         store.commit(types.SET_CLIENT_ID, '8672384e-9a33-439f-8924-67bb14340d71');
         store.commit(types.SET_CLIENT_SECRET, '2cfb31a3-5443-4e65-b2bc-ef8e00266a77');
-        store.commit(types.SET_TOKEN_ENDPOINT, 'https://modelobank2018.o3bank.co.uk:4201/token');
+        store.commit(types.SET_TOKEN_ENDPOINT, 'https://as1.obie.uk.ozoneapi.io/token');
         store.commit(types.SET_RESPONSE_TYPE, 'code id_token');
-        store.commit(types.SET_AUTHORIZATION_ENDPOINT, 'https://modelobankauth2018.o3bank.co.uk:4101/auth');
-        store.commit(types.SET_RESOURCE_BASE_URL, 'https://ob19-rs1.o3bank.co.uk:4501');
+        store.commit(types.SET_AUTHORIZATION_ENDPOINT, 'https://auth1.obie.uk.ozoneapi.io/auth');
+        store.commit(types.SET_RESOURCE_BASE_URL, 'https://rs1.obie.uk.ozoneapi.io');
         store.commit(types.SET_X_FAPI_FINANCIAL_ID, '0015800001041RHAAY');
-        store.commit(types.SET_ISSUER, 'https://modelobankauth2018.o3bank.co.uk:4101');
+        store.commit(types.SET_ISSUER, 'https://auth1.obie.uk.ozoneapi.io');
         store.commit(types.SET_REQUEST_OBJECT_SIGNING_ALG, 'PS256');
 
         await actions.setConfigurationSigningPublic(store, 'setConfigurationSigningPublic');
@@ -1285,12 +1285,12 @@ describe('web/src/store/modules/config', () => {
         store.commit(types.SET_TRANSACTION_TO_DATE, '2016-01-01T10:40:00+02:00');
         store.commit(types.SET_CLIENT_ID, '8672384e-9a33-439f-8924-67bb14340d71');
         store.commit(types.SET_CLIENT_SECRET, '2cfb31a3-5443-4e65-b2bc-ef8e00266a77');
-        store.commit(types.SET_TOKEN_ENDPOINT, 'https://modelobank2018.o3bank.co.uk:4201/token');
+        store.commit(types.SET_TOKEN_ENDPOINT, 'https://as1.obie.uk.ozoneapi.io/token');
         store.commit(types.SET_RESPONSE_TYPE, 'code id_token');
-        store.commit(types.SET_AUTHORIZATION_ENDPOINT, 'https://modelobankauth2018.o3bank.co.uk:4101/auth');
-        store.commit(types.SET_RESOURCE_BASE_URL, 'https://ob19-rs1.o3bank.co.uk:4501');
+        store.commit(types.SET_AUTHORIZATION_ENDPOINT, 'https://auth1.obie.uk.ozoneapi.io/auth');
+        store.commit(types.SET_RESOURCE_BASE_URL, 'https://rs1.obie.uk.ozoneapi.io');
         store.commit(types.SET_X_FAPI_FINANCIAL_ID, '0015800001041RHAAY');
-        store.commit(types.SET_ISSUER, 'https://modelobankauth2018.o3bank.co.uk:4101');
+        store.commit(types.SET_ISSUER, 'https://auth1.obie.uk.ozoneapi.io');
         store.commit(types.SET_REQUEST_OBJECT_SIGNING_ALG, 'PS256');
 
         await actions.setConfigurationSigningPublic(store, 'not_a_certificate');
@@ -1360,12 +1360,12 @@ describe('web/src/store/modules/config', () => {
         store.commit(types.SET_TRANSACTION_TO_DATE, '2016-01-01T10:40:00+02:00');
         store.commit(types.SET_CLIENT_ID, '8672384e-9a33-439f-8924-67bb14340d71');
         store.commit(types.SET_CLIENT_SECRET, '2cfb31a3-5443-4e65-b2bc-ef8e00266a77');
-        store.commit(types.SET_TOKEN_ENDPOINT, 'https://modelobank2018.o3bank.co.uk:4201/token');
+        store.commit(types.SET_TOKEN_ENDPOINT, 'https://as1.obie.uk.ozoneapi.io/token');
         store.commit(types.SET_RESPONSE_TYPE, 'code id_token');
-        store.commit(types.SET_AUTHORIZATION_ENDPOINT, 'https://modelobankauth2018.o3bank.co.uk:4101/auth');
-        store.commit(types.SET_RESOURCE_BASE_URL, 'https://ob19-rs1.o3bank.co.uk:4501');
+        store.commit(types.SET_AUTHORIZATION_ENDPOINT, 'https://auth1.obie.uk.ozoneapi.io/auth');
+        store.commit(types.SET_RESOURCE_BASE_URL, 'https://rs1.obie.uk.ozoneapi.io');
         store.commit(types.SET_X_FAPI_FINANCIAL_ID, '0015800001041RHAAY');
-        store.commit(types.SET_ISSUER, 'https://modelobankauth2018.o3bank.co.uk:4101');
+        store.commit(types.SET_ISSUER, 'https://auth1.obie.uk.ozoneapi.io');
         store.commit(types.SET_REQUEST_OBJECT_SIGNING_ALG, 'PS256');
         await store.commit(types.SET_TRANSACTION_FROM_DATE, '2016-01-01T10:40:00+02:00');
         await store.commit(types.SET_TRANSACTION_TO_DATE, '2025-12-31T10:40:00+02:00');
@@ -1393,11 +1393,11 @@ describe('web/src/store/modules/config', () => {
         store.commit(types.SET_TRANSACTION_TO_DATE, '');
         store.commit(types.SET_CLIENT_ID, '8672384e-9a33-439f-8924-67bb14340d71');
         store.commit(types.SET_CLIENT_SECRET, '2cfb31a3-5443-4e65-b2bc-ef8e00266a77');
-        store.commit(types.SET_TOKEN_ENDPOINT, 'https://modelobank2018.o3bank.co.uk:4201/token');
-        store.commit(types.SET_AUTHORIZATION_ENDPOINT, 'https://modelobankauth2018.o3bank.co.uk:4101/auth');
-        store.commit(types.SET_RESOURCE_BASE_URL, 'https://ob19-rs1.o3bank.co.uk:4501');
+        store.commit(types.SET_TOKEN_ENDPOINT, 'https://as1.obie.uk.ozoneapi.io/token');
+        store.commit(types.SET_AUTHORIZATION_ENDPOINT, 'https://auth1.obie.uk.ozoneapi.io/auth');
+        store.commit(types.SET_RESOURCE_BASE_URL, 'https://rs1.obie.uk.ozoneapi.io');
         store.commit(types.SET_X_FAPI_FINANCIAL_ID, '0015800001041RHAAY');
-        store.commit(types.SET_ISSUER, 'https://modelobankauth2018.o3bank.co.uk:4101');
+        store.commit(types.SET_ISSUER, 'https://auth1.obie.uk.ozoneapi.io');
         store.commit(types.SET_REQUEST_OBJECT_SIGNING_ALG, 'PS256');
 
         // This will clear out the previous errors, and will result in configurationErrors

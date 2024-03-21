@@ -131,7 +131,7 @@ const getAccountsResponse = `
 				]
 			},
 			"Links": {
-				"Self": "http://modelobank2018.o3bank.co.uk/open-banking/v3.1/aisp/accounts"
+				"Self": "https://rs1.obie.uk.ozoneapi.io/open-banking/v3.1/aisp/accounts"
 			},
 			"Meta": {
 				"TotalPages": 1
@@ -160,7 +160,7 @@ const getBadAccountsResponse = `
 			]
 		},
 		"Links": {
-			"Self": "http://modelobank2018.o3bank.co.uk/open-banking/v3.1/aisp/accounts"
+			"Self": "https://rs1.obie.uk.ozoneapi.io/open-banking/v3.1/aisp/accounts"
 		},
 		"Meta": {
 			"TotalPages": 1
@@ -201,7 +201,7 @@ const aGetDomesticPayment = `
 		 }
 	},
 	"Links": {
-		 "Self": "https://ob19-rs1.o3bank.co.uk:4501/open-banking/v3.1/pisp/domestic-payments/pv3-49a7a93a-1d54-4b78-bf14-a5e12cb2b78d"
+		 "Self": "https://rs1.obie.uk.ozoneapi.io/open-banking/v3.1/pisp/domestic-payments/pv3-49a7a93a-1d54-4b78-bf14-a5e12cb2b78d"
 	},
 	"Meta": {}
 }
@@ -241,7 +241,7 @@ const aBadGetDomesticPayment = `
 		 }
 	},
 	"Links": {
-		 "Self": "https://ob19-rs1.o3bank.co.uk:4501/open-banking/v3.1/pisp/domestic-payments/pv3-49a7a93a-1d54-4b78-bf14-a5e12cb2b78d"
+		 "Self": "https://rs1.obie.uk.ozoneapi.io/open-banking/v3.1/pisp/domestic-payments/pv3-49a7a93a-1d54-4b78-bf14-a5e12cb2b78d"
 	},
 	"Meta": {}
 }
@@ -261,7 +261,7 @@ const cbpiiResponse = `
 		 "StatusUpdateDateTime": "2020-05-21T12:13:37.323Z"
 	},
 	"Links": {
-		 "Self": "https://ob19-rs1.o3bank.co.uk:4501/open-banking/v3.1/cbpii/funds-confirmation-consents/fcc-22a6e08c-d5fa-4159-9eed-c9f0c7398fff"
+		 "Self": "https://rs1.obie.uk.ozoneapi.io/open-banking/v3.1/cbpii/funds-confirmation-consents/fcc-22a6e08c-d5fa-4159-9eed-c9f0c7398fff"
 	},
 	"Meta": {}
 }`
@@ -281,7 +281,7 @@ const badCbpiiResponse = `
 		 "StatusUpdateDateTime": "2020-05-21T12:13:37.323Z"
 	},
 	"Links": {
-		 "Self": "https://ob19-rs1.o3bank.co.uk:4501/open-banking/v3.1/cbpii/funds-confirmation-consents/fcc-22a6e08c-d5fa-4159-9eed-c9f0c7398fff"
+		 "Self": "https://rs1.obie.uk.ozoneapi.io/open-banking/v3.1/cbpii/funds-confirmation-consents/fcc-22a6e08c-d5fa-4159-9eed-c9f0c7398fff"
 	},
 	"Meta": {}
 }`
@@ -360,7 +360,7 @@ const productsAPRGoodResponse = `
 			]
 		},
 		"Links": {
-			 "Self": "https://ob19-rs1.o3bank.co.uk:4501/open-banking/v3.1/cbpii/funds-confirmation-consents/fcc-22a6e08c-d5fa-4159-9eed-c9f0c7398fff"
+			 "Self": "https://rs1.obie.uk.ozoneapi.io/open-banking/v3.1/cbpii/funds-confirmation-consents/fcc-22a6e08c-d5fa-4159-9eed-c9f0c7398fff"
 		},
 		"Meta": {}		
 	}`
@@ -392,7 +392,7 @@ const productsAPRBadResponse = `
 			]
 		},
 		"Links": {
-			 "Self": "https://ob19-rs1.o3bank.co.uk:4501/open-banking/v3.1/cbpii/funds-confirmation-consents/fcc-22a6e08c-d5fa-4159-9eed-c9f0c7398fff"
+			 "Self": "https://rs1.obie.uk.ozoneapi.io/open-banking/v3.1/cbpii/funds-confirmation-consents/fcc-22a6e08c-d5fa-4159-9eed-c9f0c7398fff"
 		},
 		"Meta": {}		
 	}`

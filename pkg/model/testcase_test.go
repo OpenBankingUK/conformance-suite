@@ -43,7 +43,7 @@ var (
 	        }]
 	    },
 	    "Links": {
-	        "Self": "http://modelobank2018.o3bank.co.uk/open-banking/v2.0/accounts/"
+	        "Self": "https://rs1.obie.uk.ozoneapi.io/open-banking/v3.1/aisp/accounts/"
 	    },
 	    "Meta": {
 	        "TotalPages": 1
@@ -76,7 +76,7 @@ var (
 			]
 		},
 		"Links": {
-			"Self": "http://modelobank2018.o3bank.co.uk/open-banking/v2.0/accounts/500000000000000000000007"
+			"Self": "https://rs1.obie.uk.ozoneapi.io/open-banking/v3.1/aisp/accounts/500000000000000000000007"
 		},
 		"Meta": {
 			"TotalPages": 1
