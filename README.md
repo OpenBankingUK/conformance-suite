@@ -67,7 +67,7 @@ In order to run a container you'll need docker installed.
 ## Support
 * * *
 
-For support on using the suite use the [Open Banking Help Centre](https://openbanking.atlassian.net/servicedesk/customer/portals).
+For support on using the suite use [The OBIE Service Desk Portal](https://directory.openbanking.org.uk/obieservicedesk/s/).
 
 ## Licensing
 * * *

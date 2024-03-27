@@ -4,9 +4,8 @@ When contributing to the conformance suite please first discuss the change you w
 
 # Questions
 
-Our bug tracker is for reports and feature requests. Please do not use it to ask questions about Open Banking, 
-which are addressed generally via the [Open Banking Help Centre](https://openbanking.atlassian.net/servicedesk/customer/portals) and answered 
-specifically via the [Open Banking Service Desk](https://openbanking.atlassian.net/servicedesk/customer/portal/1).
+Our bug tracker is for reports and feature requests. Please do not use it to ask questions about Open Banking.
+[The OBIE Service Desk Portal](https://directory.openbanking.org.uk/obieservicedesk/s/)
 
 ## Pull Request Process
 

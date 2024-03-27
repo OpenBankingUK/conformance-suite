@@ -11,6 +11,7 @@ import (
 // List of valid algorithms https://openid.net/specs/openid-financial-api-part-2.html#jws-algorithm-considerations
 // At the time of writing, the list shows "PS256", "ES256"
 // https://openbanking.atlassian.net/wiki/spaces/DZ/pages/83919096/Open+Banking+Security+Profile+-+Implementer+s+Draft+v1.1.2#OpenBankingSecurityProfile-Implementer'sDraftv1.1.2-Step2:FormtheJOSEHeader
+// https://openbankinguk.github.io/read-write-api-site3/v3.1.10/profiles/read-write-data-api-profile.html#step-2-form-the-jose-header
 func CalculateCHash(alg string, code string) (string, error) {
 	var digest []byte
 

@@ -188,7 +188,8 @@ func GetSignatureToken313Minus(kid, issuer, trustAnchor string, alg jwt.SigningM
 }
 
 // GetSignatureToken30 returns the Token for v3.0 versions of the R/W specification.
-// Read/Write Data API Specification - v3.0 Specification: https://openbanking.atlassian.net/wiki/spaces/DZ/pages/641992418/Read+Write+Data+API+Specification+-+v3.0.
+// Read/Write Data API Specification - v3.0 Specification: https://openbankinguk.github.io/read-write-api-site3/v3.1.11/profiles/read-write-data-api-profile.html#step-2-form-the-jose-header
+// https://openbanking.atlassian.net/wiki/spaces/DZ/pages/641992418/Read+Write+Data+API+Specification+-+v3.0.
 // According to the spec this field `http://openbanking.org.uk/tan` should not be sent in the `x-jws-signature` header.
 func GetSignatureToken30(kid, issuer, trustAnchor string, alg jwt.SigningMethod) jwt.Token {
 	token := jwt.Token{
