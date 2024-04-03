@@ -12,7 +12,7 @@ import (
 // Account and Transaction API Specification - v3.1 - Section 4 Endpoints
 // https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937820271/Account+and+Transaction+API+Specification+-+v3.1#AccountandTransactionAPISpecification-v3.1-Endpoints
 // Also see "Categorisation of Implementation Requirements" section of the following document
-// https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937656404/Read+Write+Data+API+Specification+-+v3.1#Read/WriteDataAPISpecification-v3.1-CategorisationofImplementationRequirements
+// https://openbankinguk.github.io/read-write-api-site3/v3.1.11/profiles/read-write-data-api-profile.html#categorisation-of-implementation-requirements
 type ConditionEnum int
 
 const (

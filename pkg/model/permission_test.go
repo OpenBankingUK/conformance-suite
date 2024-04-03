@@ -176,7 +176,7 @@ func TestPermissionsForEndpointMultipleEndpointsURL(t *testing.T) {
 // The examples below are intended to be realistic examples
 // returning permissions based on the rules defined in the
 // Accounts API specification. See:
-// https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937820271/Account+and+Transaction+API+Specification+-+v3.1#AccountandTransactionAPISpecification-v3.1-Permissions
+// https://openbankinguk.github.io/read-write-api-site3/v3.1.11/profiles/account-and-transaction-api-profile.html#permissions
 func TestStaticPermissionsDefaultEnpointMatchingIntegration(t *testing.T) {
 	config := newStandardPermissions()
 

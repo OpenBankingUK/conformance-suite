@@ -169,7 +169,7 @@ func TestPaymentFrequency(t *testing.T) {
 	require := test.NewRequire(t)
 
 	// Taken from
-	// https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937623689/Domestic+Standing+Orders+v3.1#DomesticStandingOrdersv3.1-FrequencyExamples
+	// https://openbankinguk.github.io/read-write-api-site3/v3.1.11/resources-and-data-models/pisp/domestic-standing-order-consents.html#frequency-examples
 	tests := []struct {
 		Value         string
 		ExpectedError bool

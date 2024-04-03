@@ -27,7 +27,7 @@ on Pro or Enterprise versions. Please refer to [this guide](https://techcommunit
 
 Ozone Bank is an Mock Account Servicing Payment Service Provider (ASPSP), which the FCS will connect to as a TPP.
 
-In order to register a new client you need to use [Dynamic Client Registration Protocol](https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1078034771/Dynamic+Client+Registration+-+v3.2). Please follow the steps described in this page to register a new client with Ozone [https://openbanking.atlassian.net/wiki/spaces/DZ/pages/313918598/Integrating+a+TPP+with+Ozone+Model+Banks+Using+Postman+on+Directory+Sandbox](https://openbanking.atlassian.net/wiki/spaces/DZ/pages/313918598/Integrating+a+TPP+with+Ozone+Model+Banks+Using+Postman+on+Directory+Sandbox) 
+In order to register a new client you need to use [Dynamic Client Registration Protocol](https://openbankinguk.github.io/dcr-docs-pub/). Please follow the steps described in this page to register a new client with Ozone [https://github.com/OpenBankingUK/OBL-ModelBank-Integration](https://github.com/OpenBankingUK/OBL-ModelBank-Integration) 
 
 Once completed, make a note of the certificates and the `CLIENT ID` and `CLIENT SECRET` values.
 
@@ -107,7 +107,7 @@ docker run --rm -it -p 8443:8443 -e LOG_LEVEL=debug -e LOG_TRACER=true -e LOG_HT
 ### Non-production run
 
 ```sh
-docker run --rm -it -p 8443:8443 -e LOG_LEVEL=debug -e LOG_TRACER=true -e LOG_HTTP_TRACE=true -e DISABLE_JWS=TRUE "openbanking/conformance-suite:latest"
+docker run --rm -it -p 8443:8443 -e LOG_LEVEL=debug -e LOG_TRACER=true -e LOG_HTTP_TRACE=true -e DISABLE_JWS=TRUE "openbanking/conformance-suite:v1.6.3"
 ```
 
 ### Proxy usage
@@ -116,13 +116,13 @@ Since 1.7.6 FCS allows setting up proxy via environment variables which can be s
 Supported environment variables: `HTTPS_PROXY`, `HTTP_PROXY`
 
 ```sh
-docker run --env HTTPS_PROXY="http://{username}:{password}@{URL}" --rm -it -p 8443:8443 openbanking/conformance-suite:latest
+docker run --env HTTPS_PROXY="http://{username}:{password}@{URL}" --rm -it -p 8443:8443 openbanking/conformance-suite:v1.7.6
 ```
 
 The FCS performs a version update check when starting by making a HTPP request to GitHub. By default, when specifying a proxy this request is also proxied. If you would like to use a non-proxied (e.g. direct) connection for this check, please use this flag: `-e PROXY_VERSION_CHECK=false`
 
 ```sh
-docker run --env HTTPS_PROXY="http://{username}:{password}@{URL}" -e PROXY_VERSION_CHECK=false --rm -it -p 8443:8443 openbanking/conformance-suite:latest
+docker run --env HTTPS_PROXY="http://{username}:{password}@{URL}" -e PROXY_VERSION_CHECK=false --rm -it -p 8443:8443 openbanking/conformance-suite:v1.7.6
 ```
 
 

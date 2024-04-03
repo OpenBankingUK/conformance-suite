@@ -12,15 +12,14 @@ The Functional Conformance Suite generates a set of tests that can be used to ve
 
 Currently, the suite supports the following standards:
 
-* [Open Banking UK](https://www.openbanking.org.uk/customers/what-is-open-banking/)- Read/Write Data API Specifications v3.0/3.1 (alpha)
+* [Open Banking UK](https://www.openbanking.org.uk/what-is-open-banking/)- Read/Write Data API Specifications v3.0/3.1 (alpha)
 
 ## Discovery Templates
 
 The Functional Conformance Suite provides several discovery templates that can be used to help implementers describe a system.
 
 The following discovery templates are available:
-
-* [Open Banking](https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937656404/Read+Write+Data+API+Specification+-+v3.1) - Read/Write Data API Specifications v3.0/v3.1 templates:
+* [Open Banking](https://standards.openbanking.org.uk/api-specifications/) - Read/Write Data API Specifications v3.0/v3.1 templates:
  * Generic - a customizable template for implementers of the Open Banking v3.0/v3.1 to describe their API endpoints.
  * Ozone -  a customizable template that is pre-populated with Ozone endpoints and data.
 
@@ -70,7 +69,8 @@ has been modified from one version to the next. For details see: https://semver.
 The Token Acquisition field informs the application how it shall acquire access tokens to access endpoints under test.
 The following values are valid `psu`, `headless`, `store`
 
-* `psu` - tokens are acquired following the "[Hybrid Flow](https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937656404/Read+Write+Data+API+Specification+-+v3.1#Read/WriteDataAPISpecification-v3.1-GrantTypesforidentifyingtheTPPandPSU)" authorisation method.
+<!-- * `psu` - tokens are acquired following the "[Hybrid Flow](https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937656404/Read+Write+Data+API+Specification+-+v3.1#Read/WriteDataAPISpecification-v3.1-GrantTypesforidentifyingtheTPPandPSU)" authorisation method. -->
+* `psu` - tokens are acquired following the "[Hybrid Flow](https://openbankinguk.github.io/read-write-api-site3/v3.1.10/profiles/read-write-data-api-profile.html#grant-types-for-identifying-the-tpp-and-psu)" authorisation method.
 This process involves directing the PSU to the ASPSP's authorisation pages, requiring manual effort from the PSU.
 * `headless` - Similar to `psu`, except the PSU is not required to intervene and perform any actions. This mode of operation enables developers to integrate
 the operation of this suite into their build tooling e.g. continuous integration/deployment (CI/CD), thus removing the manual element from `psu`.
@@ -106,6 +106,7 @@ Non-normative example
           "url": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/642090641/Account+and+Transaction+API+Specification+-+v3.0",
           "version": "v3.0",
           "schemaVersion": "https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.0.0/dist/account-info-swagger.json",
+          // looks like old way
           "manifest": "file://../pkg/discovery/templates/ob_3.1_accounts_fca.json"
         },
         "openidConfigurationUri": "https://auth1.obie.uk.ozoneapi.io/.well-known/openid-configuration",
