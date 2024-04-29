@@ -3,10 +3,12 @@ package manifest
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/pkg/errors"
 	"io/ioutil"
 	"os"
 	"strings"
+
+	"github.com/pkg/errors"
+	"github.com/sirupsen/logrus"
 
 	"github.com/OpenBankingUK/conformance-suite/pkg/discovery"
 )
@@ -45,16 +47,17 @@ type DiscoveryPathsTestIDs map[string][]string
 // where the keys in the second map are the http methods.
 // Example output:
 // 3 tests for "GET" method on the "/accounts" endpoint and 1 test for "HEAD" method.
-//"/accounts": {
-//	"GET": [
-//		"OB-301-ACC-811741",
-//		"OB-301-ACC-431102",
-//		"OB-301-ACC-880736"
-//	],
-//	"HEAD": [
-//		"HEAD-OB-301-ACC-431102"
-//	]
-//}
+//
+//	"/accounts": {
+//		"GET": [
+//			"OB-301-ACC-811741",
+//			"OB-301-ACC-431102",
+//			"OB-301-ACC-880736"
+//		],
+//		"HEAD": [
+//			"HEAD-OB-301-ACC-431102"
+//		]
+//	}
 func MapDiscoveryEndpointsToManifestTestIDs(disco *discovery.Model, mf Scripts) DiscoveryPathsTestIDs {
 	mapURLTests := make(DiscoveryPathsTestIDs)
 
@@ -104,4 +107,15 @@ func isInArray(s string, arr []string) bool {
 		}
 	}
 	return false
+}
+
+// DetermineAPIVersions -
+func DetermineAPIVersions(apis []discovery.ModelDiscoveryItem) []string {
+	apiversions := []string{}
+	for _, v := range apis {
+		v.APISpecification.SpecType, _ = GetSpecType(v.APISpecification.SchemaVersion)
+		apiversions = append(apiversions, v.APISpecification.SpecType+"_"+v.APISpecification.Version)
+		logrus.Warnf("spectype %s, specversion %s", v.APISpecification.SpecType, v.APISpecification.Version)
+	}
+	return apiversions
 }

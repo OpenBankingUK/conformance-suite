@@ -1,0 +1,52 @@
+{
+  "discoveryModel": {
+    "name": "ob-v3.1-ozone",
+    "description": "An Open Banking UK discovery template for v3.1.11 of VRP, pre-populated for model Bank (OzoneApi).",
+    "discoveryVersion": "v0.4.0",
+    "tokenAcquisition": "psu",
+    "discoveryItems": [
+      {
+        "apiSpecification": {
+          "name": "OBIE VRP Profile",
+          "url": "https://openbankinguk.github.io/read-write-api-site3/v3.1.11/profiles/vrp-profile.html",
+          "version": "v3.1.11",
+          "schemaVersion": "https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.11/dist/openapi/vrp-openapi.json",
+          "manifest": "file://manifests/ob_3.1_variable_recurring_payments.json"
+        },
+        "openidConfigurationUri": "https://auth1.obie.uk.ozoneapi.io/.well-known/openid-configuration",
+        "resourceBaseUri": "https://rs1.obie.uk.ozoneapi.io/open-banking/v3.1/pisp",
+        "endpoints": [
+          {
+            "method": "POST",
+            "path": "/domestic-vrp-consents"
+          },
+          {
+            "method": "GET",
+            "path": "/domestic-vrp-consents/{ConsentId}"
+          },
+          {
+            "method": "POST",
+            "path": "/domestic-vrp-consents/{ConsentId}/funds-confirmation"
+          },
+          {
+            "method": "DELETE",
+            "path": "/domestic-vrp-consents/{ConsentId}"
+          },
+          {
+            "method": "POST",
+            "path": "/domestic-vrps"
+            
+          },
+          {
+            "method": "GET",
+            "path": "/domestic-vrps/{DomesticVRPId}"
+          },
+          {
+            "method": "GET",
+            "path": "/domestic-vrps/{DomesticVRPId}/payment-details"
+          }
+        ]
+      }
+    ]
+  }
+}

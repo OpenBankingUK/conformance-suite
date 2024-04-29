@@ -1,0 +1,115 @@
+{
+  "discoveryModel": {
+    "name": "ob-v3.1-ozone",
+    "description": "An Open Banking UK discovery template (with optional fields: conditionalProperties) for v3.1.11 of VRP, pre-populated for model Bank (OzoneApi).",
+    "discoveryVersion": "v0.4.0",
+    "tokenAcquisition": "psu",
+    "discoveryItems": [
+      {
+        "apiSpecification": {
+          "name": "OBIE VRP Profile",
+          "url": "https://openbankinguk.github.io/read-write-api-site3/v3.1.11/profiles/vrp-profile.html",
+          "version": "v3.1.11",
+          "schemaVersion": "https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.11/dist/openapi/vrp-openapi.json",
+          "manifest": "file://manifests/ob_3.1_variable_recurring_payments.json"
+        },
+        "openidConfigurationUri": "https://auth1.obie.uk.ozoneapi.io/.well-known/openid-configuration",
+        "resourceBaseUri": "https://rs1.obie.uk.ozoneapi.io/open-banking/v3.1/pisp",
+        "endpoints": [
+          {
+            "method": "POST",
+            "path": "/domestic-vrp-consents",
+            "conditionalProperties": [
+              {
+                "schema": "OBDomesticVRPControlParameters",
+                "name": "PSUAuthenticationMethods",
+                "path": "Data.ControlParameters.PSUAuthenticationMethods",
+                "value": "UK.OBIE.SCANotRequired"
+              },
+              {
+                "schema": "OBRisk1",
+                "name": "PaymentContextCode",
+                "path": "Risk.PaymentContextCode",
+                "value": "PartyToParty"
+              },
+              {
+                "schema": "OBDomesticVRPControlParameters",
+                "name": "ValidFromDateTime",
+                "path": "Data.ControlParameters.ValidFromDateTime",
+                "value": "2022-04-07T10:40:00+02:00"
+              },
+              {
+                "schema": "OBDomesticVRPControlParameters",
+                "name": "ValidToDateTime",
+                "path": "Data.ControlParameters.ValidToDateTime",
+                "value": "2022-05-15T10:40:00+02:00"
+              },
+              {
+                "schema": "OBDomesticVRPControlParameters",
+                "name": "Amount",
+                "path": "Data.ControlParameters.MaximumIndividualAmount.Amount",
+                "value": "20.00"
+              },
+              {
+                "schema": "OBDomesticVRPControlParameters",
+                "name": "Amount1",
+                "path": "Data.ControlParameters.PeriodicLimits.0.Amount",
+                "value": "20.00"
+              }
+              ]
+          },
+          {
+            "method": "GET",
+            "path": "/domestic-vrp-consents/{ConsentId}"
+          },
+          {
+            "method": "POST",
+            "path": "/domestic-vrp-consents/{ConsentId}/funds-confirmation"
+          },
+          {
+            "method": "DELETE",
+            "path": "/domestic-vrp-consents/{ConsentId}"
+          },
+          {
+            "method": "POST",
+            "path": "/domestic-vrps",
+            "conditionalProperties": [
+              {
+                "schema": "OBDomesticVRPControlParameters",
+                "name": "PSUAuthenticationMethods",
+                "path": "Data.PSUAuthenticationMethod",
+                "value": "UK.OBIE.SCANotRequired"
+              },
+              {
+                "schema": "OBRisk1",
+                "name": "PaymentContextCode",
+                "path": "Risk.PaymentContextCode",
+                "value": "PartyToParty"
+              },
+              {
+                "schema": "Unstructured2",
+                "name": "Unstructured",
+                "path": "Data.Instruction.RemittanceInformation.Unstructured",
+                "value": "Test Unstructured Data"
+              },
+              {
+                "schema": "Reference2",
+                "name": "Reference",
+                "path": "Data.Instruction.RemittanceInformation.Reference",
+                "value": "77040162099360"
+              }
+              ]
+          },
+          {
+            "method": "GET",
+            "path": "/domestic-vrps/{DomesticVRPId}"
+          },
+          {
+            "method": "GET",
+            "path": "/domestic-vrps/{DomesticVRPId}/payment-details"
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -14,7 +14,23 @@ import (
 	"github.com/OpenBankingUK/conformance-suite/pkg/model"
 )
 
-const manifestPath = "file://manifests/ob_3.1_payment_fca.json"
+// const (
+// manifestPath = "file://manifests/ob_3.1_payment_fca.json"
+// manifestPaths = struct
+//
+//	map[string]string{
+//		"payments": "file://manifests/ob_3.1_payment_fca.json",
+//	}
+// )
+
+func getManifestPaths() map[string]string {
+	return map[string]string{
+		"accounts": "file://manifests/ob_3.1_accounts_transactions_fca.json",
+		"payments": "file://manifests/ob_3.1_payment_fca.json",
+		"cbpii":    "file://manifests/ob_3.1_cbpii_fca.json",
+		"vrps":     "file://manifests/ob_3.1_variable_recurring_payments.json",
+	}
+}
 
 func TestPermx(t *testing.T) {
 	apiSpec := discovery.ModelAPISpecification{
@@ -26,6 +42,7 @@ func TestPermx(t *testing.T) {
 	var values []interface{}
 	values = append(values, "accounts_v3.1.1", "payments_v3.1.1")
 	context := model.Context{"apiversions": values}
+	manifestPath := getManifestPaths()[specType]
 
 	scripts, _, err := LoadGenerationResources(specType, manifestPath, &context)
 
@@ -36,7 +53,7 @@ func TestPermx(t *testing.T) {
 		Spec:         apiSpec,
 		Baseurl:      "http://mybaseurl",
 		Ctx:          &context,
-		Endpoints:    readDiscovery(),
+		Endpoints:    readDiscovery2(specType),
 		ManifestPath: manifestPath,
 		Validator:    schema.NewNullValidator(),
 	}
@@ -61,6 +78,7 @@ func TestGetScriptConsentTokens(t *testing.T) {
 	context := model.Context{"apiversions": values}
 
 	specType, err := GetSpecType(apiSpec.SchemaVersion)
+	manifestPath := getManifestPaths()[specType]
 	scripts, _, err := LoadGenerationResources(specType, manifestPath, &context)
 	assert.Nil(t, err)
 
@@ -69,7 +87,7 @@ func TestGetScriptConsentTokens(t *testing.T) {
 		Spec:         apiSpec,
 		Baseurl:      "http://mybaseurl",
 		Ctx:          &context,
-		Endpoints:    readDiscovery(),
+		Endpoints:    readDiscovery2(specType),
 		ManifestPath: manifestPath,
 		Validator:    schema.NewNullValidator(),
 	}
