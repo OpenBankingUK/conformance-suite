@@ -1,10 +1,10 @@
 # `CONFIG`
 
-The admin configuration is available at: <https://ob19-admin.o3bank.co.uk/>.
+The admin configuration is available at: <https://admin.obie.uk.ozoneapi.io/>.
 
 ## TPP - `conformance-suite`
 
-<https://ob19-admin.o3bank.co.uk/perry/tpp/view_tpp?id=5d3055cd5bb9d65d12b9cc91>:
+<https://admin.obie.uk.ozoneapi.io/perry/tpp/view_tpp?id=5d3055cd5bb9d65d12b9cc91>:
 
 | TPP Name          | Organization Id    | Roles             | JWKS URL                                                                               |
 |-------------------|--------------------|-------------------|----------------------------------------------------------------------------------------|
@@ -14,7 +14,7 @@ The admin configuration is available at: <https://ob19-admin.o3bank.co.uk/>.
 
 ## Software Statements - `conformance-suite`
 
-<https://ob19-admin.o3bank.co.uk/perry/software-statement/view_software-statement?id=5d3065e25bb9d65d12b9cc97>:
+<https://admin.obie.uk.ozoneapi.io/perry/software-statement/view_software-statement?id=5d3065e25bb9d65d12b9cc97>:
 
 | Software Statement Name | Software Statement ID  | TPP               | Roles             | Redirect Urls                                    | JWKS Uri                                                                               | Subject DN                                                         |
 |-------------------------|------------------------|-------------------|-------------------|--------------------------------------------------|----------------------------------------------------------------------------------------|--------------------------------------------------------------------|
@@ -24,7 +24,7 @@ The admin configuration is available at: <https://ob19-admin.o3bank.co.uk/>.
 
 ### `conformance-suite_Open Banking - Strict, No CIBA, Not Headless`
 
-<https://ob19-admin.o3bank.co.uk/perry/client/view_client?id=5d3066225bb9d65d12b9cc98>:
+<https://admin.obie.uk.ozoneapi.io/perry/client/view_client?id=5d3066225bb9d65d12b9cc98>:
 
 | Client Name                                                    | Client ID                            | Client Secret                        | TPP               | Software Statement Name | Software Statement Id  | Bank          | Bearer Token                 | Resource Server | OIDC SERVER CONFIG |   | Authorization End-point:                | Token Server Config                        | OIDC CLIENT CONFIG |   | Scopes:                                     | Redirect URIs                                    | Certificate DN                                                     | Token Endpoint Auth Method      | Response Types | ID token signed response alg | Request Object Signing Alg | Token Endpoint Signing Alg | JWKS URI (From Software Statement)                                                     |
 |----------------------------------------------------------------|--------------------------------------|--------------------------------------|-------------------|-------------------------|------------------------|---------------|------------------------------|-----------------|--------------------|---|-----------------------------------------|--------------------------------------------|--------------------|---|---------------------------------------------|--------------------------------------------------|--------------------------------------------------------------------|---------------------------------|----------------|------------------------------|----------------------------|----------------------------|----------------------------------------------------------------------------------------|
@@ -32,7 +32,7 @@ The admin configuration is available at: <https://ob19-admin.o3bank.co.uk/>.
 
 ### `conformance-suite_Open Banking - Permissive, CIBA, Headless`
 
-<https://ob19-admin.o3bank.co.uk/perry/client/view_client?id=5d3180095bb9d65d12b9cc99>:
+<https://admin.obie.uk.ozoneapi.io/perry/client/view_client?id=5d3180095bb9d65d12b9cc99>:
 
 | Client Name                                                 | Client ID                            | Client Secret                        | TPP               | Software Statement Name | Software Statement Id  | Bank          | Bearer Token                 | Resource Server | OIDC SERVER CONFIG |   | Authorization End-point:                | Token Server Config                        | OIDC CLIENT CONFIG |   | Scopes:                                     | Redirect URIs                                    | Certificate DN                                                     | Token Endpoint Auth Method                                            | Response Types     | ID token signed response alg | Request Object Signing Alg | Token Endpoint Signing Alg | JWKS URI (From Software Statement)                                                     |
 |-------------------------------------------------------------|--------------------------------------|--------------------------------------|-------------------|-------------------------|------------------------|---------------|------------------------------|-----------------|--------------------|---|-----------------------------------------|--------------------------------------------|--------------------|---|---------------------------------------------|--------------------------------------------------|--------------------------------------------------------------------|-----------------------------------------------------------------------|--------------------|------------------------------|----------------------------|----------------------------|----------------------------------------------------------------------------------------|
