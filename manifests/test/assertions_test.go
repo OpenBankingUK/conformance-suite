@@ -105,7 +105,7 @@ func TestAssertions(t *testing.T) {
 		// 	ExpectValidationErrorContains: "????????????????",
 		// },
 		{
-			name:       "OB-301-DOP-100110 pass if ASPSP returns missing claim error with code 400",
+			name:       "OB-301-DOP-100110 pass if ASPSP returns missing claim error (long-form) with code 400",
 			manifestID: "OB-301-DOP-100110",
 			response: mockResponse{
 				400,
@@ -116,7 +116,18 @@ func TestAssertions(t *testing.T) {
 			ExpectValidationPass: true,
 		},
 		{
-			name:       "OB-301-DOP-100110 pass if ASPSP returns invalid claim error with code 400",
+			name:       "OB-301-DOP-100110 pass if ASPSP returns missing claim error (short-form) with code 400",
+			manifestID: "OB-301-DOP-100110",
+			response: mockResponse{
+				400,
+				map[string]string{},
+				`{"Errors":[{"ErrorCode":"U017"}]}`,
+			},
+			schemaSpec:           *paymentSpecPath,
+			ExpectValidationPass: true,
+		},
+		{
+			name:       "OB-301-DOP-100110 pass if ASPSP returns invalid claim error (long-form) with code 400",
 			manifestID: "OB-301-DOP-100110",
 			response: mockResponse{
 				400,
@@ -127,7 +138,18 @@ func TestAssertions(t *testing.T) {
 			ExpectValidationPass: true,
 		},
 		{
-			name:       "OB-301-DOP-100110 pass if ASPSP returns malformed signature error with code 400",
+			name:       "OB-301-DOP-100110 pass if ASPSP returns invalid claim error (short-form) with code 400",
+			manifestID: "OB-301-DOP-100110",
+			response: mockResponse{
+				400,
+				map[string]string{},
+				`{"Errors":[{"ErrorCode":"U016"}]}`,
+			},
+			schemaSpec:           *paymentSpecPath,
+			ExpectValidationPass: true,
+		},
+		{
+			name:       "OB-301-DOP-100110 pass if ASPSP returns malformed signature error (long-form) with code 400",
 			manifestID: "OB-301-DOP-100110",
 			response: mockResponse{
 				400,
@@ -138,12 +160,23 @@ func TestAssertions(t *testing.T) {
 			ExpectValidationPass: true,
 		},
 		{
+			name:       "OB-301-DOP-100110 pass if ASPSP returns malformed signature error (short-form) with code 400",
+			manifestID: "OB-301-DOP-100110",
+			response: mockResponse{
+				400,
+				map[string]string{},
+				`{"Errors":[{"ErrorCode":"U018"}]}`,
+			},
+			schemaSpec:           *paymentSpecPath,
+			ExpectValidationPass: true,
+		},
+		{
 			name:       "OB-301-DOP-100110 does not pass if ASPSP returns any error with code other than 400",
 			manifestID: "OB-301-DOP-100110",
 			response: mockResponse{
 				401,
 				map[string]string{},
-				`{"Errors":[{"ErrorCode":"UK.OBIE.Signature.Malformed"}]}`,
+				`{"Errors":[{"ErrorCode":"U018"}]}`,
 			},
 			schemaSpec:           *paymentSpecPath,
 			ExpectValidationPass: false,
@@ -160,7 +193,7 @@ func TestAssertions(t *testing.T) {
 			ExpectValidationPass: false,
 		},
 		{
-			name:       "OB-316-DOP-100310 pass if ASPSP returns correct error code and message",
+			name:       "OB-316-DOP-100310 pass if ASPSP returns correct error code (long-form) and message",
 			manifestID: "OB-316-DOP-100310",
 			response: mockResponse{
 				400,
@@ -171,7 +204,18 @@ func TestAssertions(t *testing.T) {
 			ExpectValidationPass: true,
 		},
 		{
-			name:       "OB-316-DOP-100310 fails if ASPSP returns incorrect error code",
+			name:       "OB-316-DOP-100310 pass if ASPSP returns correct error code (short-form) and message",
+			manifestID: "OB-316-DOP-100310",
+			response: mockResponse{
+				400,
+				map[string]string{},
+				`{"Errors":[{"ErrorCode":"U019"}]}`,
+			},
+			schemaSpec:           *paymentSpecPath,
+			ExpectValidationPass: true,
+		},
+		{
+			name:       "OB-316-DOP-100310 fails if ASPSP returns incorrect error status code",
 			manifestID: "OB-316-DOP-100310",
 			response: mockResponse{
 				401,
@@ -183,7 +227,7 @@ func TestAssertions(t *testing.T) {
 			ExpectValidationErrorContains: "HTTP Status code does not match: expected 400 got 401",
 		},
 		{
-			name:       "OB-316-DOP-100310 fails if ASPSP returns incorrect error message",
+			name:       "OB-316-DOP-100310 fails if ASPSP returns incorrect error message (long-form)",
 			manifestID: "OB-316-DOP-100310",
 			response: mockResponse{
 				400,
@@ -192,7 +236,19 @@ func TestAssertions(t *testing.T) {
 			},
 			schemaSpec:                    *paymentSpecPath,
 			ExpectValidationPass:          false,
-			ExpectValidationErrorContains: "JSON Match Failed - expected (UK.OBIE.Signature.Missing)",
+			ExpectValidationErrorContains: `JSON Regex Match Failed - selected field (["UK.OBIE.Incorrect"]) does not match regex (^\["UK\.OBIE\.Signature\.Missing"\]|\["U019"\]$)`,
+		},
+		{
+			name:       "OB-316-DOP-100310 fails if ASPSP returns incorrect error message (short-form)",
+			manifestID: "OB-316-DOP-100310",
+			response: mockResponse{
+				400,
+				map[string]string{},
+				`{"Errors":[{"ErrorCode":"Uo01"}]}`,
+			},
+			schemaSpec:                    *paymentSpecPath,
+			ExpectValidationPass:          false,
+			ExpectValidationErrorContains: `JSON Regex Match Failed - selected field (["Uo01"]) does not match regex (^\["UK\.OBIE\.Signature\.Missing"\]|\["U019"\]$)`,
 		},
 	}
 
@@ -267,9 +323,19 @@ func TestAccountTransactions(t *testing.T) {
 		assert.True(t, result, "expected: %v actual: %v", true, result)
 	})
 
-	t.Run("Returning 400 with correct body should PASS", func(t *testing.T) {
+	t.Run("Returning 400 with correct long-form error code body should PASS", func(t *testing.T) {
 		headers := map[string]string{}
 		resp := createHTTPResponse(400, `{"Errors":[{"ErrorCode":"UK.OBIE.Field.Invalid"}]}`, headers)
+		result, err := testCase.Validate(resp, emptyContext)
+		if len(err) != 0 {
+			t.Fatal(err)
+		}
+		assert.True(t, result, "expected: %v actual: %v", true, result)
+	})
+
+	t.Run("Returning 400 with correct short-form error code in body should PASS", func(t *testing.T) {
+		headers := map[string]string{}
+		resp := createHTTPResponse(400, `{"Errors":[{"ErrorCode":"U002"}]}`, headers)
 		result, err := testCase.Validate(resp, emptyContext)
 		if len(err) != 0 {
 			t.Fatal(err)
@@ -280,8 +346,8 @@ func TestAccountTransactions(t *testing.T) {
 	t.Run("Returning 400 with incorrect body should FAIL", func(t *testing.T) {
 		headers := map[string]string{}
 		resp := createHTTPResponse(400, `{"Errors":[]}`, headers)
-		result, err := testCase.Validate(resp, emptyContext)
-		assert.True(t, errorsContain(err, "JSON Match Failed"))
+		result, errs:= testCase.Validate(resp, emptyContext)
+		assert.True(t, errorsContain(errs, `JSON Regex Match Failed - selected field ([]) does not match regex (^\["UK\.OBIE\.Field\.Invalid"\]|\["U002"\]$)`))
 		assert.False(t, result, "expected: %v actual: %v", false, result)
 	})
 

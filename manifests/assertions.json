@@ -161,8 +161,8 @@
     "OB3GLOAssertSignatureInvalidClaimErrorCode": {
       "expect": {
         "matches": [{
-          "JSON": "Errors.#[ErrorCode=\"UK.OBIE.Signature.InvalidClaim\"].ErrorCode",
-          "Value": "UK.OBIE.Signature.InvalidClaim",
+          "JSON": "Errors.#.ErrorCode",
+          "regex": "^\\[\"UK\\.OBIE\\.Signature\\.InvalidClaim\"\\]|\\[\"U016\"\\]$",
           "detail": "Expected a specific error code for invalid claim in signature error."
         }]
       }
@@ -170,8 +170,8 @@
     "OB3GLOAssertSignatureMissingClaimErrorCode": {
       "expect": {
         "matches": [{
-          "JSON": "Errors.#[ErrorCode=\"UK.OBIE.Signature.MissingClaim\"].ErrorCode",
-          "Value": "UK.OBIE.Signature.MissingClaim",
+          "JSON": "Errors.#.ErrorCode",
+          "regex": "^\\[\"UK\\.OBIE\\.Signature\\.MissingClaim\"\\]|\\[\"U017\"\\]$",
           "detail": "Expected a specific error code for missing claim in signature error."
         }]
       }
@@ -179,8 +179,8 @@
     "OB3GLOAssertSignatureMalformedErrorCode": {
       "expect": {
         "matches": [{
-          "JSON": "Errors.#[ErrorCode=\"UK.OBIE.Signature.Malformed\"].ErrorCode",
-          "Value": "UK.OBIE.Signature.Malformed",
+          "JSON": "Errors.#.ErrorCode",
+          "regex": "^\\[\"UK\\.OBIE\\.Signature\\.Malformed\"\\]|\\[\"U018\"\\]$",
           "detail": "Expected a specific error code for malformed signature error."
         }]
       }
@@ -198,7 +198,7 @@
       "expect": {
         "matches": [{
           "JSON": "Code",
-          "Value": "UK.OBIE.Resource.InvalidConsentStatus",
+          "regex": "^\\[\"UK\\.OBIE\\.Resource\\.InvalidConsentStatus\"\\]|\\[\"U009\"\\]$",
           "detail": "Expected error UK.OBIE.Resource.InvalidConsentStatus error code if the status is not Authorised"
         }]
       }
@@ -233,8 +233,8 @@
     "OB3DOPAssertSignatureMissingOBErrorCode": {
       "expect": {
         "matches": [{
-          "JSON": "Errors.#[ErrorCode=\"UK.OBIE.Signature.Missing\"].ErrorCode",
-          "Value": "UK.OBIE.Signature.Missing",
+          "JSON": "Errors.#.ErrorCode",
+          "regex": "^\\[\"UK\\.OBIE\\.Signature\\.Missing\"\\]|\\[\"U019\"\\]$",
           "detail": "Expected a specific error code for missing signature."
         }]
       }
@@ -274,8 +274,8 @@
     "OB3IPAssertUnexpectedErrorOBErrorCode": {
       "expect": {
         "matches": [{
-          "JSON": "Errors.#[ErrorCode=\"UK.OBIE.UnexpectedError\"].ErrorCode",
-          "Value": "UK.OBIE.UnexpectedError",
+          "JSON": "Errors.#.ErrorCode",
+          "regex": "^\\[\"UK\\.OBIE\\.UnexpectedError\"\\]|\\[\"U000\"\\]$",
           "detail": "Expected a specific error code for unexpected error."
         }]
       }
@@ -283,8 +283,8 @@
     "OB3IPAssertHeaderMissingOBErrorCode": {
       "expect": {
         "matches": [{
-          "JSON": "Errors.#[ErrorCode=\"UK.OBIE.Header.Missing\"].ErrorCode",
-          "Value": "UK.OBIE.Header.Missing",
+          "JSON": "Errors.#.ErrorCode",
+          "regex": "^\\[\"UK\\.OBIE\\.Header\\.Missing\"\\]|\\[\"U007\"\\]$",
           "detail": "Expected a specific error code for missing header."
         }]
       }
@@ -292,7 +292,8 @@
     "OB3IPAssertHeaderInvalidOBErrorCode": {
       "expect": {
         "matches": [{
-          "JSON": "Errors.#[ErrorCode=\"UK.OBIE.Header.Invalid\"].ErrorCode",
+          "JSON": "Errors.#.ErrorCode",
+          "regex": "^\\[\"UK\\.OBIE\\.Header\\.Invalid\"\\]|\\[\"U006\"\\]$",
           "Value": "UK.OBIE.Header.Invalid",
           "detail": "Expected a specific error code for invalid header."
         }]
@@ -301,7 +302,8 @@
     "OB3IPAssertResourceInvalidConsentStatusOBErrorCode": {
       "expect": {
         "matches": [{
-          "JSON": "Errors.#[ErrorCode=\"UK.OBIE.Resource.InvalidConsentStatus\"].ErrorCode",
+          "JSON": "Errors.#.ErrorCode",
+          "regex": "^\\[\"UK\\.OBIE\\.Resource\\.InvalidConsentStatus\"\\]|\\[\"U009\"\\]$",
           "Value": "UK.OBIE.Resource.InvalidConsentStatus",
           "detail": "Expected a specific error code for consent status."
         }]
@@ -311,8 +313,8 @@
       "expect": {
         "status-code": 400,
         "matches": [{
-          "JSON": "Errors.#[ErrorCode=\"UK.OBIE.Field.Invalid\"].ErrorCode",
-          "Value": "UK.OBIE.Field.Invalid",
+          "JSON": "Errors.#.ErrorCode",
+          "regex": "^\\[\"UK\\.OBIE\\.Field\\.Invalid\"\\]|\\[\"U002\"\\]$",
           "detail": "Expected a specific error code for an invalid field."
         }]
       }
@@ -321,8 +323,8 @@
       "expect": {
         "status-code": 400,
         "matches": [{
-          "JSON": "Errors.#[ErrorCode=\"UK.OBIE.Resource.NotFound\"].ErrorCode",
-          "Value": "UK.OBIE.Resource.NotFound",
+          "JSON": "Errors.#.ErrorCode",
+          "regex": "^\\[\"UK\\.OBIE\\.Resource\\.NotFound\"\\]|\\[\"U011\"\\]$",
           "detail": "Expected a specific error code for resource not found."
         }]
       }
