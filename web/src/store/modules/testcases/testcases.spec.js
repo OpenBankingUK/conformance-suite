@@ -283,8 +283,8 @@ describe('store/modules/testcases', () => {
         expect(store.state.testCases).toEqual(EXPECTED_TESTCASES_STATE_NOT_STARTED);
         expect(store.state.hasRunStarted).toEqual(false);
 
-        // expect(dispatch).toHaveBeenCalledWith('status/setErrors', [ERROR_RESPONSE], { root: true });
-        // expect(dispatch).toHaveBeenCalledWith('config/setWizardStep', constants.WIZARD.STEP_FIVE, { root: true });
+        expect(dispatch).toHaveBeenCalledWith('status/setErrors', [ERROR_RESPONSE], { root: true });
+        expect(dispatch).toHaveBeenCalledWith('config/setWizardStep', constants.WIZARD.STEP_FIVE, { root: true });
 
         socket.close();
         mockServer.stop(() => {
@@ -295,7 +295,7 @@ describe('store/modules/testcases', () => {
       api.computeTestCases.mockResolvedValueOnce(OK_RESPONSE);
       await actions.computeTestCases(store);
 
-      expect(dispatch).toHaveBeenCalledWith('config/setWizardStep', constants.WIZARD.STEP_FIVE, { root: true });
+      expect(dispatch).toHaveBeenCalledWith('config/setWizardStep', constants.WIZARD.STEP_FOUR, { root: true });
     });
 
     it('testcases/state.testsCases are updated when update arrives on the WebSocket', async () => {

@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "engines": {
-    "node": ">9.0.0 <11.0.0"
+    "node": ">9.0.0 <15.0.0"
   },
   "scripts": {
     "serve": "vue-cli-service serve",
@@ -28,7 +28,7 @@
     "lodash": "4.17.21",
     "moment": "^2.24.0",
     "property-expr": "2.0.3",
-    "redoc": "^2.0.0-rc.2",
+    "redoc": "2.0.0",
     "register-service-worker": "^1.0.0",
     "urijs": "1.19.7",
     "vue": "^2.5.17",
@@ -52,11 +52,11 @@
     "@vue/eslint-config-airbnb": "^4.0.0",
     "@vue/test-utils": "^1.0.0-beta.20",
     "babel-core": "7.0.0-bridge.0",
-    "babel-eslint": "^10.0.1",
+    "babel-eslint": "10.1.0",
     "babel-jest": "^24.1.0",
     "flush-promises": "^1.0.2",
     "jest-fetch-mock": "^2.0.1",
-    "lint-staged": "^8.1.4",
+    "lint-staged": "9.0.0",
     "mock-socket": "^8.0.5",
     "vue-cli-plugin-build-watch": "^1.0.0",
     "vue-template-compiler": "^2.5.17"
