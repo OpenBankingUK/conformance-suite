@@ -138,6 +138,7 @@ func (t *TestCase) Validate(resp *resty.Response, ctx *Context) (bool, []error) 
 		}
 
 		var err error
+		fmt.Printf("\n\n validator: %+v \n\n", t.Validator)
 		failures, err = t.Validator.Validate(schema.HTTPResponse{
 			Method:     t.Input.Method,
 			Path:       t.Input.Endpoint,

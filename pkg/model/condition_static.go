@@ -4310,6 +4310,43 @@ func conditionalityStaticData() []byte {
 			  "method": "GET",
 			  "endpoint": "/domestic-vrps/{DomesticVRPId}/payment-details"
 			}
+		  ], 
+		  "variable-recurring-payments-v4.0.0-draft1": [
+			{
+			  "condition": "mandatory",
+			  "method": "POST",
+			  "endpoint": "/domestic-vrp-consents"
+			},
+			{
+			  "condition": "mandatory",
+			  "method": "GET",
+			  "endpoint": "/domestic-vrp-consents/{ConsentId}"
+			},
+			{
+			  "condition": "mandatory",
+			  "method": "DELETE",
+			  "endpoint": "/domestic-vrp-consents/{ConsentId}"
+			},
+			{
+			  "condition": "mandatory",
+			  "method": "POST",
+			  "endpoint": "/domestic-vrp-consents/{ConsentId}/funds-confirmation"
+			},
+			{
+			  "condition": "conditional",
+			  "method": "POST",
+			  "endpoint": "/domestic-vrps"
+			},
+			{
+			  "condition": "conditional",
+			  "method": "GET",
+			  "endpoint": "/domestic-vrps/{DomesticVRPId}"
+			},
+			{
+			  "condition": "optional",
+			  "method": "GET",
+			  "endpoint": "/domestic-vrps/{DomesticVRPId}/payment-details"
+			}
 		  ]
 		}
     `)
