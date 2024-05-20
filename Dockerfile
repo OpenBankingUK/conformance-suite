@@ -35,7 +35,7 @@ RUN make build
 RUN make build_cli
 
 # Image to compile Single Page Application of the Vue.js site
-FROM node:dubnium-alpine as nodebuilder
+FROM node:14-alpine as nodebuilder
 WORKDIR /app
 
 # This is to that JavaScript code can import code defined in the Go side, e.g.,
@@ -70,7 +70,7 @@ FROM alpine:latest as certs
 RUN apk add --no-cache --update --upgrade ca-certificates
 
 # Final image to run the binary
-FROM alpine:3.18.4
+FROM alpine:3.18.6
 RUN apk add --no-cache --update --upgrade \
 	bash \
 	coreutils \
