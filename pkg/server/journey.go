@@ -260,6 +260,7 @@ func (wj *AppJourney) TestCases() (generation.SpecRun, error) {
 			wj.context.PutStringSlice("apiversions", apiversions)
 		}
 		// version string gets replaced in URLS like  "endpoint": "/open-banking/$api-version/aisp/account-access-consents",
+		// TODO why is this not required by VRP 
 		version, err := semver.ParseTolerant(discovery.DiscoveryItems[0].APISpecification.Version)
 		if err != nil {
 			logger.WithError(err).Error("parsing spec version")

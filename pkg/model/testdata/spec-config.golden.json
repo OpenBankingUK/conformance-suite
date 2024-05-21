@@ -1,5 +1,32 @@
 [
   {
+    "Identifier": "account-transaction-v4.0.0-draft1",
+    "Name": "Account and Transaction API Specification",
+    "URL": {
+      "Scheme": "https",
+      "Opaque": "",
+      "User": null,
+      "Host": "openbankinguk.github.io",
+      "Path": "/spec-pages-preview/v4.0.0-draft1/profiles/account-and-transaction-api-profile.html",
+      "RawPath": "",
+      "ForceQuery": false,
+      "RawQuery": "",
+      "Fragment": ""
+    },
+    "Version": "v4.0.0-draft1",
+    "SchemaVersion": {
+      "Scheme": "https",
+      "Opaque": "",
+      "User": null,
+      "Host": "raw.githubusercontent.com",
+      "Path": "/OpenBankingUK/read-write-api-specs/v4.0.0-draft1/dist/openapi/account-info-openapi.json",
+      "RawPath": "",
+      "ForceQuery": false,
+      "RawQuery": "",
+      "Fragment": ""
+    }
+  },
+  {
     "Identifier": "account-transaction-v3.1.11",
     "Name": "Account and Transaction API Specification",
     "URL": {
@@ -290,6 +317,33 @@
       "User": null,
       "Host": "raw.githubusercontent.com",
       "Path": "/OpenBankingUK/read-write-api-specs/v3.1.1/dist/account-info-swagger.json",
+      "RawPath": "",
+      "ForceQuery": false,
+      "RawQuery": "",
+      "Fragment": ""
+    }
+  },
+  {
+    "Identifier": "payment-initiation-v4.0.0-draft1",
+    "Name": "Payment Initiation API",
+    "URL": {
+      "Scheme": "https",
+      "Opaque": "",
+      "User": null,
+      "Host": "openbankinguk.github.io",
+      "Path": "/spec-pages-preview/v4.0.0-draft1/profiles/payment-initiation-api-profile.html",
+      "RawPath": "",
+      "ForceQuery": false,
+      "RawQuery": "",
+      "Fragment": ""
+    },
+    "Version": "v4.0.0-draft1",
+    "SchemaVersion": {
+      "Scheme": "https",
+      "Opaque": "",
+      "User": null,
+      "Host": "raw.githubusercontent.com",
+      "Path": "/OpenBankingUK/read-write-api-specs/v4.0.0-draft1/dist/openapi/payment-initiation-openapi.json",
       "RawPath": "",
       "ForceQuery": false,
       "RawQuery": "",
@@ -594,6 +648,33 @@
     }
   },
   {
+    "Identifier": "confirmation-funds-v4.0.0-draft1",
+    "Name": "Confirmation of Funds API Specification",
+    "URL": {
+      "Scheme": "https",
+      "Opaque": "",
+      "User": null,
+      "Host": "openbankinguk.github.io",
+      "Path": "/spec-pages-preview/v4.0.0-draft1/profiles/confirmation-of-funds-api-profile.html",
+      "RawPath": "",
+      "ForceQuery": false,
+      "RawQuery": "",
+      "Fragment": ""
+    },
+    "Version": "v4.0.0-draft1",
+    "SchemaVersion": {
+      "Scheme": "https",
+      "Opaque": "",
+      "User": null,
+      "Host": "raw.githubusercontent.com",
+      "Path": "/OpenBankingUK/read-write-api-specs/v4.0.0-draft1/dist/openapi/confirmation-funds-openapi.json",
+      "RawPath": "",
+      "ForceQuery": false,
+      "RawQuery": "",
+      "Fragment": ""
+    }
+  },
+  {
     "Identifier": "confirmation-funds-v3.1.11",
     "Name": "Confirmation of Funds API Specification",
     "URL": {
@@ -884,6 +965,33 @@
       "User": null,
       "Host": "raw.githubusercontent.com",
       "Path": "/OpenBankingUK/read-write-api-specs/v3.1.1/dist/confirmation-funds-swagger.json",
+      "RawPath": "",
+      "ForceQuery": false,
+      "RawQuery": "",
+      "Fragment": ""
+    }
+  },
+  {
+    "Identifier": "variable-recurring-payments-v4.0.0-draft1",
+    "Name": "Variable Recurring Payments API Specification",
+    "URL": {
+      "Scheme": "https",
+      "Opaque": "",
+      "User": null,
+      "Host": "openbankinguk.github.io",
+      "Path": "/spec-pages-preview/v4.0-draft1/profiles/vrp-profile.html",
+      "RawPath": "",
+      "ForceQuery": false,
+      "RawQuery": "",
+      "Fragment": ""
+    },
+    "Version": "v4.0.0-draft1",
+    "SchemaVersion": {
+      "Scheme": "https",
+      "Opaque": "",
+      "User": null,
+      "Host": "raw.githubusercontent.com",
+      "Path": "/OpenBankingUK/read-write-api-specs/v4.0.0-draft1/dist/openapi/vrp-openapi.json",
       "RawPath": "",
       "ForceQuery": false,
       "RawQuery": "",

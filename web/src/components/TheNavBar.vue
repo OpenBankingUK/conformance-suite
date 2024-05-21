@@ -103,7 +103,7 @@ export default {
   },
   data: () => ({
     // @NEW-SPEC-VERSION - Update this when new version comes out or add sorting...
-    selectedVersion: 'v3.1.11',
+    selectedVersion: 'v4.0.0-draft1',
     specificationVersions: [...(new Set(Specifications.map(spec => spec.Version)))].map(specVer => ({ value: specVer, text: specVer })),
   }),
   computed: {

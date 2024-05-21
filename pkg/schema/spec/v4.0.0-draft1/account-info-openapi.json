@@ -1901,7 +1901,7 @@
   },
   "servers": [
     {
-      "url": "/open-banking/v4.0/aisp"
+      "url": "/open-banking/v3.1/aisp"
     }
   ],
   "components": {
@@ -2023,7 +2023,7 @@
         "schema": {
           "type": "string",
           "maxLength": 40,
-          "pattern": "^(?!\\s)(.*)(\\S)$"
+          "pattern": "^\\S+$"
         }
       },
       "x-jws-signature": {
