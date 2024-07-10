@@ -24,11 +24,11 @@ var (
 
 	specifications = []Specification{
 		{
-			Identifier:    "account-transaction-v4.0.0-draft1",
+			Identifier:    "account-transaction-v4.0.0",
 			Name:          "Account and Transaction API Specification",
-			URL:           mustParseURL("https://openbankinguk.github.io/spec-pages-preview/v4.0.0-draft1/profiles/account-and-transaction-api-profile.html"),
-			Version:       "v4.0.0-draft1",
-			SchemaVersion: mustParseURL("https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v4.0.0-draft1/dist/openapi/account-info-openapi.json"),
+			URL:           mustParseURL("https://openbankinguk.github.io/spec-pages-preview/v4.0/profiles/account-and-transaction-api-profile.html"),
+			Version:       "v4.0.0",
+			SchemaVersion: mustParseURL("https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v4.0.0/dist/openapi/account-info-openapi.json"),
 		},
 		{
 			Identifier:    "account-transaction-v3.1.11",
@@ -108,11 +108,11 @@ var (
 			SchemaVersion: mustParseURL("https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.1/dist/account-info-swagger.json"),
 		},
 		{
-			Identifier:    "payment-initiation-v4.0.0-draft1",
+			Identifier:    "payment-initiation-v4.0.0",
 			Name:          "Payment Initiation API",
-			URL:           mustParseURL("https://openbankinguk.github.io/spec-pages-preview/v4.0.0-draft1/profiles/payment-initiation-api-profile.html"),
-			Version:       "v4.0.0-draft1",
-			SchemaVersion: mustParseURL("https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v4.0.0-draft1/dist/openapi/payment-initiation-openapi.json"),
+			URL:           mustParseURL("https://openbankinguk.github.io/spec-pages-preview/v4.0/profiles/payment-initiation-api-profile.html"),
+			Version:       "v4.0.0",
+			SchemaVersion: mustParseURL("https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v4.0.0/dist/openapi/payment-initiation-openapi.json"),
 		},
 		{
 			Identifier:    "payment-initiation-v3.1.11",
@@ -192,11 +192,11 @@ var (
 			SchemaVersion: mustParseURL("https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.1/dist/payment-initiation-swagger.json"),
 		},
 		{
-			Identifier:    "confirmation-funds-v4.0.0-draft1",
+			Identifier:    "confirmation-funds-v4.0.0",
 			Name:          "Confirmation of Funds API Specification",
-			URL:           mustParseURL("https://openbankinguk.github.io/spec-pages-preview/v4.0.0-draft1/profiles/confirmation-of-funds-api-profile.html"),
-			Version:       "v4.0.0-draft1",
-			SchemaVersion: mustParseURL("https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v4.0.0-draft1/dist/openapi/confirmation-funds-openapi.json"),
+			URL:           mustParseURL("https://openbankinguk.github.io/spec-pages-preview/v4.0/profiles/confirmation-of-funds-api-profile.html"),
+			Version:       "v4.0.0",
+			SchemaVersion: mustParseURL("https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v4.0.0/dist/openapi/confirmation-funds-openapi.json"),
 		},
 		{
 			Identifier:    "confirmation-funds-v3.1.11",
@@ -389,11 +389,11 @@ var (
 			SchemaVersion: mustParseURL("https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.8/dist/openapi/vrp-openapi.json"),
 		},
 		{
-			Identifier:    "variable-recurring-payments-v4.0.0-draft1",
+			Identifier:    "variable-recurring-payments-v4.0.0",
 			Name:          "OBIE VRP Profile",
-			URL:           mustParseURL("https://openbankinguk.github.io/read-write-api-site3/v4.0-draft1/profiles/vrp-profile.html"),
-			Version:       "v4.0.0-draft1",
-			SchemaVersion: mustParseURL("https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v4.0.0-draft1/dist/openapi/vrp-openapi.json"),
+			URL:           mustParseURL("https://openbankinguk.github.io/read-write-api-site3/v4.0/profiles/vrp-profile.html"),
+			Version:       "v4.0.0",
+			SchemaVersion: mustParseURL("https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v4.0.0/dist/openapi/vrp-openapi.json"),
 		},
 	}
 )

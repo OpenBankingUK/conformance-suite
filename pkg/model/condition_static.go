@@ -1765,7 +1765,7 @@ func conditionalityStaticData() []byte {
 			  "endpoint": "/statements"
 			}
 		  ],
-		  "account-transaction-v4.0.0-draft1": [
+		  "account-transaction-v4.0.0": [
 			{
 			  "condition": "mandatory",
 			  "method": "POST",
@@ -3976,7 +3976,7 @@ func conditionalityStaticData() []byte {
 			  "condition": "conditional"
 			}
 		  ],
-		  "payment-initiation-v4.0.0-draft1": [
+		  "payment-initiation-v4.0.0": [
 			{
 			  "endpoint": "/domestic-payment-consents",
 			  "method": "POST",
@@ -4412,7 +4412,7 @@ func conditionalityStaticData() []byte {
 			  "endpoint": "/funds-confirmations"
 			}
 		  ],
-		  "confirmation-funds-v4.0.0-draft1": [
+		  "confirmation-funds-v4.0.0": [
 			{
 			  "condition": "mandatory",
 			  "method": "POST",
@@ -4650,7 +4650,7 @@ func conditionalityStaticData() []byte {
 			  "endpoint": "/domestic-vrps/{DomesticVRPId}/payment-details"
 			}
 		  ], 
-		  "variable-recurring-payments-v4.0.0-draft1": [
+		  "variable-recurring-payments-v4.0.0": [
 			{
 			  "condition": "mandatory",
 			  "method": "POST",

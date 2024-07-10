@@ -2,13 +2,13 @@
   "openapi": "3.0.0",
   "servers": [
     {
-      "url": "/open-banking/v3.1/pisp"
+      "url": "/open-banking/v4.0/pisp"
     }
   ],
   "info": {
-    "title": "OBIE VRP Profile",
+    "title": "OBL VRP Profile",
     "description": "VRP OpenAPI Specification",
-    "version": "4.0-DRAFT1",
+    "version": "4.0.0",
     "termsOfService": "https://www.openbanking.org.uk/terms",
     "contact": {
       "name": "Service Desk",
@@ -284,7 +284,7 @@
           }
         ],
         "responses": {
-          "201": {
+          "200": {
             "$ref": "#/components/responses/20xOBDomesticVRPConsentResponse"
           },
           "400": {
@@ -350,7 +350,7 @@
           "Domestic VRP Consents"
         ],
         "summary": "Update a domestic VRP consent - only to be used for version migrations",
-        "description": "Update a domestic VRP consent by submitting a partial consent resource body - only to be used for version migrations",
+        "description": "Update a domestic VRP consent by submitting a JSON Patch payload - only to be used for version migrations",
         "parameters": [
           {
             "$ref": "#/components/parameters/ConsentId"
@@ -378,7 +378,7 @@
           }
         ],
         "responses": {
-          "201": {
+          "200": {
             "$ref": "#/components/responses/20xOBDomesticVRPConsentResponse"
           },
           "400": {
@@ -411,34 +411,9 @@
         },
         "requestBody": {
           "content": {
-            "application/json; charset=utf-8": {
+            "application/json-patch+json": {
               "schema": {
-                "type": "string",
-                "example": {
-                  "Risk": {
-                    "ContractPresentIndicator": true
-                  }
-                }
-              }
-            },
-            "application/json": {
-              "schema": {
-                "type": "string",
-                "example": {
-                  "Risk": {
-                    "ContractPresentIndicator": true
-                  }
-                }
-              }
-            },
-            "application/jose+jwe": {
-              "schema": {
-                "type": "string",
-                "example": {
-                  "Risk": {
-                    "ContractPresentIndicator": true
-                  }
-                }
+                "type": "string"
               }
             }
           },
@@ -1245,12 +1220,66 @@
       }
     },
     "schemas": {
+      "OBUltimateCreditor1": {
+        "description": "Ultimate party to which an amount of money is due.",
+        "type": "object",
+        "properties": {
+          "Name": {
+            "description": "Name by which a party is known and which is usually used to identify that party.",
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 140
+          },
+          "Identification": {
+            "description": "Identification assigned by an institution.",
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "LEI": {
+            "$ref": "#/components/schemas/LEI"
+          },
+          "SchemeName": {
+            "$ref": "#/components/schemas/OBInternalAccountIdentification4Code"
+          },
+          "PostalAddress": {
+            "$ref": "#/components/schemas/OBPostalAddress7"
+          }
+        }
+      },
+      "OBUltimateDebtor1": {
+        "description": "Ultimate party that owes an amount of money to the (ultimate) creditor.",
+        "type": "object",
+        "properties": {
+          "Name": {
+            "description": "Name by which a party is known and which is usually used to identify that party.",
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 140
+          },
+          "Identification": {
+            "description": "Identification assigned by an institution.",
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "LEI": {
+            "$ref": "#/components/schemas/LEI"
+          },
+          "SchemeName": {
+            "$ref": "#/components/schemas/OBInternalAccountIdentification4Code"
+          },
+          "PostalAddress": {
+            "$ref": "#/components/schemas/OBPostalAddress7"
+          }
+        }
+      },
       "OBBranchAndFinancialInstitutionIdentification6_0": {
         "type": "object",
         "description": "Party that manages the account on behalf of the account owner, that is manages the registration and booking of entries on the account, calculates balances on the account and provides information about the account. This is the servicer of the beneficiary account.",
         "properties": {
           "SchemeName": {
-            "$ref": "#/components/schemas/OBExternalFinancialInstitutionIdentification4Code"
+            "$ref": "#/components/schemas/OBInternalFinancialInstitutionIdentification4Code"
           },
           "Identification": {
             "$ref": "#/components/schemas/Identification_1"
@@ -1259,7 +1288,7 @@
             "$ref": "#/components/schemas/Name_1"
           },
           "PostalAddress": {
-            "$ref": "#/components/schemas/OBPostalAddress6"
+            "$ref": "#/components/schemas/OBPostalAddress7"
           },
           "LEI": {
             "$ref": "#/components/schemas/LEI"
@@ -1305,7 +1334,7 @@
             "maxLength": 2048
           },
           "Code": {
-            "$ref": "#/components/schemas/OBExternalProxyAccountType1Code"
+            "$ref": "#/components/schemas/ExternalProxyAccountType1Code"
           },
           "Type": {
             "type": "string",
@@ -1315,7 +1344,7 @@
           }
         }
       },
-      "OBExternalProxyAccountType1Code": {
+      "ExternalProxyAccountType1Code": {
         "description": "Specifies the external proxy account type code, as published in the proxy account type external code set.<br> For more information and a full list of values see `ExternalProxyAccountType1Code` [here](https://github.com/OpenBankingUK/External_Internal_CodeSets)",
         "type": "string",
         "enum": [
@@ -1346,7 +1375,7 @@
         "type": "object",
         "properties": {
           "ErrorCode": {
-            "$ref": "#/components/schemas/OBInternalErrorResponseError1Code"
+            "$ref": "#/components/schemas/OBExternalStatusReason1Code"
           },
           "Message": {
             "description": "A description of the error that occurred. e.g., 'A mandatory field isn't supplied' or 'RequestedExecutionDateTime must be in future'\nOBL doesn't standardise this field",
@@ -1382,6 +1411,20 @@
             "minLength": 1,
             "maxLength": 40
           },
+          "Code": {
+            "description": "Deprecated <br>High level textual error code, to help categorise the errors.",
+            "type": "string",
+            "minLength": 1,
+            "example": "400 BadRequest",
+            "maxLength": 40
+          },
+          "Message": {
+            "description": "Deprecated <br>Brief Error message",
+            "type": "string",
+            "minLength": 1,
+            "example": "There is something wrong with the request parameters provided",
+            "maxLength": 500
+          },
           "Errors": {
             "items": {
               "$ref": "#/components/schemas/OBError1"
@@ -1394,12 +1437,12 @@
           "Errors"
         ]
       },
-      "OBInternalErrorResponseError1Code": {
+      "OBExternalStatusReason1Code": {
         "description": "Low level textual error code, for all enum values see `ExternalReturnReason1Code` [here](https://github.com/OpenBankingUK/External_Internal_CodeSets)",
         "type": "string",
         "minLength": 4,
         "maxLength": 4,
-        "example": "AC17"
+        "example": "U001"
       },
       "OBDomesticVRPConsentResponse": {
         "type": "object",
@@ -1415,7 +1458,7 @@
             "required": [
               "ConsentId",
               "CreationDateTime",
-              "StatusCode",
+              "Status",
               "StatusUpdateDateTime",
               "ControlParameters",
               "Initiation"
@@ -1440,21 +1483,21 @@
                 "format": "date-time",
                 "description": "Date and time at which the resource was created.\n"
               },
-              "StatusCode": {
+              "Status": {
                 "description": "Specifies the status of consent resource in code form. AWAU and RJCT only can returned on initial submission",
                 "type": "string",
                 "enum": [
                   "AWAU",
                   "RJCT",
                   "AUTH",
-                  "COND"
+                  "CANC",
+                  "EXPD"
                 ]
               },
               "StatusReason": {
                 "type": "array",
                 "items": {
-                  "$ref": "#/components/schemas/OBStatusReason",
-                  "description": "Specifies the status reason."
+                  "$ref": "#/components/schemas/OBStatusReason"
                 }
               },
               "StatusUpdateDateTime": {
@@ -1471,7 +1514,7 @@
               "DebtorAccount": {
                 "allOf": [
                   {
-                    "$ref": "#/components/schemas/OBCashAccountDebtorWithName"
+                    "$ref": "#/components/schemas/OBCashAccountDebtor3"
                   },
                   {
                     "description": "The value must be populated for GET responses once the consent is approved."
@@ -1481,7 +1524,7 @@
             }
           },
           "Risk": {
-            "$ref": "#/components/schemas/OBRisk2"
+            "$ref": "#/components/schemas/OBRisk1"
           },
           "Links": {
             "$ref": "#/components/schemas/Links"
@@ -1522,7 +1565,7 @@
             }
           },
           "Risk": {
-            "$ref": "#/components/schemas/OBRisk2"
+            "$ref": "#/components/schemas/OBRisk1"
           }
         }
       },
@@ -1622,22 +1665,25 @@
         "type": "object",
         "properties": {
           "DebtorAccount": {
-            "$ref": "#/components/schemas/OBCashAccountDebtorWithName"
+            "$ref": "#/components/schemas/OBCashAccountDebtor3"
           },
           "CreditorAccount": {
             "$ref": "#/components/schemas/OBCashAccountCreditor3"
           },
           "CreditorPostalAddress": {
-            "$ref": "#/components/schemas/OBPostalAddress6"
+            "$ref": "#/components/schemas/OBPostalAddress7"
           },
           "UltimateCreditor": {
+            "$ref": "#/components/schemas/OBUltimateCreditor1"
+          },
+          "CreditorAgent": {
             "$ref": "#/components/schemas/OBBranchAndFinancialInstitutionIdentification6_0"
           },
           "UltimateDebtor": {
-            "$ref": "#/components/schemas/OBBranchAndFinancialInstitutionIdentification6_0"
+            "$ref": "#/components/schemas/OBUltimateDebtor1"
           },
           "RemittanceInformation": {
-            "$ref": "#/components/schemas/OBRemittanceInformation1"
+            "$ref": "#/components/schemas/OBRemittanceInformation2"
           },
           "RegulatoryReporting": {
             "type": "array",
@@ -1657,7 +1703,7 @@
         ],
         "properties": {
           "SchemeName": {
-            "$ref": "#/components/schemas/OBExternalAccountIdentification4Code"
+            "$ref": "#/components/schemas/OBInternalAccountIdentification4Code"
           },
           "Identification": {
             "type": "string",
@@ -1677,6 +1723,40 @@
             "maxLength": 34,
             "description": "^ This is secondary identification of the account, as assigned by the account servicing institution.  This can be used by building societies to additionally identify accounts with a roll number (in addition to a sort code and account number combination)"
           },
+          "LEI": {
+            "$ref": "#/components/schemas/LEI"
+          }
+        }
+      },
+      "OBCashAccountDebtor3": {
+        "type": "object",
+        "required": [
+          "SchemeName",
+          "Identification",
+          "Name"
+        ],
+        "properties": {
+          "SchemeName": {
+            "$ref": "#/components/schemas/OBInternalAccountIdentification4Code"
+          },
+          "Identification": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256,
+            "description": "Identification assigned by an institution to identify an account. This identification is known by the account owner."
+          },
+          "Name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 350,
+            "description": "Name of the account, as assigned by the account servicing institution.\nUsage: the account name is the name or names of the account owner(s) represented at an account level.\nThe account name is not the product name or the nickname of the account."
+          },
+          "SecondaryIdentification": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 34,
+            "description": "This is secondary identification of the account, as assigned by the account servicing institution.\nThis can be used by building societies to additionally identify accounts with a roll number (in addition to a sort code and account number combination)"
+          },
           "Proxy": {
             "$ref": "#/components/schemas/OBProxy1"
           }
@@ -1691,8 +1771,7 @@
         ],
         "properties": {
           "SchemeName": {
-            "$ref": "#/components/schemas/OBExternalAccountIdentification4Code",
-            "description": "Name of the identification scheme, in a coded form as published in an external list."
+            "$ref": "#/components/schemas/OBInternalAccountIdentification4Code"
           },
           "Identification": {
             "type": "string",
@@ -1721,7 +1800,7 @@
         "type": "object",
         "properties": {
           "SchemeName": {
-            "$ref": "#/components/schemas/OBExternalFinancialInstitutionIdentification4Code"
+            "$ref": "#/components/schemas/OBInternalFinancialInstitutionIdentification4Code"
           },
           "Identification": {
             "type": "string",
@@ -1736,7 +1815,7 @@
             "description": "^ Name by which an agent is known and which is usually used to identify that agent."
           },
           "PostalAddress": {
-            "$ref": "#/components/schemas/OBPostalAddress6"
+            "$ref": "#/components/schemas/OBPostalAddress7"
           }
         }
       },
@@ -1795,7 +1874,7 @@
             }
           },
           "Risk": {
-            "$ref": "#/components/schemas/OBRisk2"
+            "$ref": "#/components/schemas/OBRisk1"
           }
         }
       },
@@ -1814,11 +1893,10 @@
               "DomesticVRPId",
               "ConsentId",
               "CreationDateTime",
-              "StatusCode",
+              "Status",
               "StatusUpdateDateTime",
               "Initiation",
-              "Instruction",
-              "DebtorAccount"
+              "Instruction"
             ],
             "description": "`Data.Refund` only included in the response if `Data.ReadRefundAccount` is set to `Yes` in the consent.\n",
             "properties": {
@@ -1839,7 +1917,7 @@
                 "format": "date-time",
                 "description": "Date and time at which the resource was created.\n"
               },
-              "StatusCode": {
+              "Status": {
                 "type": "string",
                 "description": "Specifies the status of the payment information group.",
                 "enum": [
@@ -1861,8 +1939,7 @@
               "StatusReason": {
                 "type": "array",
                 "items": {
-                  "$ref": "#/components/schemas/OBStatusReason",
-                  "description": "Specifies the status reason"
+                  "$ref": "#/components/schemas/OBStatusReason"
                 }
               },
               "StatusUpdateDateTime": {
@@ -1894,10 +1971,10 @@
                   "type": "object",
                   "properties": {
                     "ChargeBearer": {
-                      "$ref": "#/components/schemas/OBChargeBearerType1Code"
+                      "$ref": "#/components/schemas/OBInternalChargeBearerType1Code"
                     },
                     "Type": {
-                      "$ref": "#/components/schemas/OBExternalPaymentChargeType1Code"
+                      "$ref": "#/components/schemas/OBInternalPaymentChargeType1Code"
                     },
                     "Amount": {
                       "$ref": "#/components/schemas/OBActiveOrHistoricCurrencyAndAmount"
@@ -1913,12 +1990,12 @@
                 "$ref": "#/components/schemas/OBDomesticVRPInstruction"
               },
               "DebtorAccount": {
-                "$ref": "#/components/schemas/OBCashAccountDebtorWithName"
+                "$ref": "#/components/schemas/OBCashAccountDebtor3"
               }
             }
           },
           "Risk": {
-            "$ref": "#/components/schemas/OBRisk2"
+            "$ref": "#/components/schemas/OBRisk1"
           },
           "Links": {
             "$ref": "#/components/schemas/Links"
@@ -1938,7 +2015,7 @@
             "type": "object",
             "required": [
               "PaymentTransactionId",
-              "StatusCode",
+              "Status",
               "StatusUpdateDateTime"
             ],
             "properties": {
@@ -1948,7 +2025,7 @@
                 "maxLength": 210,
                 "description": "Unique identifier for the transaction within an servicing\n      institution. This identifier is both unique and immutable."
               },
-              "StatusCode": {
+              "Status": {
                 "type": "string",
                 "description": "Status of a transfer, as assigned by the transaction\n      administrator.",
                 "enum": [
@@ -1973,17 +2050,17 @@
                 "description": "Date and time at which the status was assigned to the\n      transfer.\n"
               },
               "LocalInstrument": {
-                "$ref": "#/components/schemas/OBExternalLocalInstrument1Code"
+                "$ref": "#/components/schemas/OBInternalLocalInstrument1Code"
               },
               "StausDetail": {
                 "type": "array",
                 "items": {
                   "type": "object",
                   "required": [
-                    "StatusCode"
+                    "Status"
                   ],
                   "properties": {
-                    "StatusCode": {
+                    "Status": {
                       "description": "Status of a transfer, as assigned by the transaction\n    administrator.",
                       "type": "string",
                       "minLength": 1,
@@ -2005,7 +2082,7 @@
                       ]
                     },
                     "StatusReasonCode": {
-                      "description": "Reason Code provided for the status of a transfer. For a full description see `ExternalStatusReason1Code` [here](https://github.com/OpenBankingUK/External_Internal_CodeSets)",
+                      "description": "Reason Code provided for the status of a transfer. For a full description see `OBExternalStatusReason1Code` [here](https://github.com/OpenBankingUK/External_Internal_CodeSets)",
                       "type": "string",
                       "minLength": 1,
                       "maxLength": 4
@@ -2134,7 +2211,7 @@
           }
         }
       },
-      "OBCategoryPurposeCode": {
+      "ExternalCategoryPurpose1Code": {
         "description": "Enumeration of codes that outlines the type of purpose behind a transaction, payment or risk.",
         "type": "string",
         "enum": [
@@ -2193,7 +2270,7 @@
         ],
         "properties": {
           "ChargeBearer": {
-            "$ref": "#/components/schemas/OBChargeBearerType1Code"
+            "$ref": "#/components/schemas/OBInternalChargeBearerType1Code"
           }
         }
       },
@@ -2205,7 +2282,7 @@
           "RJCT"
         ]
       },
-      "OBChargeBearerType1Code": {
+      "OBInternalChargeBearerType1Code": {
         "type": "string",
         "description": "Specifies which party/parties will bear the charges associated with the processing of the payment transaction.",
         "enum": [
@@ -2237,22 +2314,22 @@
             "description": "Unique identification assigned by the initiating party to unambiguously identify the transaction.\nThis identification is passed on, unchanged, throughout the entire end-to-end chain.\nUsage: The end-to-end identification can be used for reconciliation or to link tasks relating to the transaction.\nIt can be included in several messages related to the transaction.\nOB: The Faster Payments Scheme can only access 31 characters for the EndToEndIdentification field"
           },
           "RemittanceInformation": {
-            "$ref": "#/components/schemas/OBRemittanceInformation1"
+            "$ref": "#/components/schemas/OBRemittanceInformation2"
           },
           "LocalInstrument": {
-            "$ref": "#/components/schemas/OBExternalLocalInstrument1Code"
+            "$ref": "#/components/schemas/OBInternalLocalInstrument1Code"
           },
           "InstructedAmount": {
             "$ref": "#/components/schemas/OBActiveOrHistoricCurrencyAndAmount"
           },
           "CreditorPostalAddress": {
-            "$ref": "#/components/schemas/OBPostalAddress6"
+            "$ref": "#/components/schemas/OBPostalAddress7"
           },
           "CreditorAccount": {
             "$ref": "#/components/schemas/OBCashAccountCreditor3"
           },
           "UltimateCreditor": {
-            "$ref": "#/components/schemas/OBBranchAndFinancialInstitutionIdentification6_0"
+            "$ref": "#/components/schemas/OBUltimateCreditor1"
           },
           "SupplementaryData": {
             "type": "object",
@@ -2362,7 +2439,7 @@
           }
         }
       },
-      "OBRemittanceInformation1": {
+      "OBRemittanceInformation2": {
         "type": "object",
         "description": "Information supplied to enable the matching of an entry with the items that the transfer is intended to settle, such as commercial invoices in an accounts' receivable system",
         "properties": {
@@ -2450,23 +2527,23 @@
           "SCOR"
         ]
       },
-      "OBExternalAccountIdentification4Code": {
+      "OBInternalAccountIdentification4Code": {
         "type": "string",
         "description": "Name of the identification scheme, in a coded form as published in an external list.",
         "x-namespaced-enum": [
-          "UK.OB.BBAN",
-          "UK.OB.IBAN",
-          "UK.OB.PAN",
-          "UK.OB.Paym",
-          "UK.OB.SortCodeAccountNumber",
-          "UK.OB.Wallet"
+          "UK.OBIE.BBAN",
+          "UK.OBIE.IBAN",
+          "UK.OBIE.PAN",
+          "UK.OBIE.Paym",
+          "UK.OBIE.SortCodeAccountNumber",
+          "UK.OBIE.Wallet"
         ]
       },
-      "OBExternalFinancialInstitutionIdentification4Code": {
+      "OBInternalFinancialInstitutionIdentification4Code": {
         "description": "Name of the identification scheme, in a coded form as published in an external list.",
         "type": "string",
         "x-namespaced-enum": [
-          "UK.OB.BICFI"
+          "UK.OBIE.BICFI"
         ]
       },
       "OBExternalAccountType1Code": {
@@ -2477,7 +2554,7 @@
           "Personal"
         ]
       },
-      "OBExternalExtendedAccountType1Code": {
+      "OBInternalExtendedAccountType1Code": {
         "description": "Specifies the extended type of account.",
         "type": "string",
         "enum": [
@@ -2498,22 +2575,22 @@
           "Wealth"
         ]
       },
-      "OBExternalLocalInstrument1Code": {
+      "OBInternalLocalInstrument1Code": {
         "type": "string",
         "description": "User community specific instrument.\nUsage: This element is used to specify a local instrument, local clearing option and/or further qualify the service or service level.",
         "x-namespaced-enum": [
-          "UK.OB.BACS",
-          "UK.OB.BalanceTransfer",
-          "UK.OB.CHAPS",
-          "UK.OB.Euro1",
-          "UK.OB.FPS",
-          "UK.OB.Link",
-          "UK.OB.MoneyTransfer",
-          "UK.OB.Paym",
-          "UK.OB.SEPACreditTransfer",
-          "UK.OB.SEPAInstantCreditTransfer",
-          "UK.OB.SWIFT",
-          "UK.OB.Target2"
+          "UK.OBIE.BACS",
+          "UK.OBIE.BalanceTransfer",
+          "UK.OBIE.CHAPS",
+          "UK.OBIE.Euro1",
+          "UK.OBIE.FPS",
+          "UK.OBIE.Link",
+          "UK.OBIE.MoneyTransfer",
+          "UK.OBIE.Paym",
+          "UK.OBIE.SEPACreditTransfer",
+          "UK.OBIE.SEPAInstantCreditTransfer",
+          "UK.OBIE.SWIFT",
+          "UK.OBIE.Target2"
         ]
       },
       "OBActiveOrHistoricCurrencyAndAmount": {
@@ -2543,12 +2620,12 @@
         "type": "string",
         "description": "A number of monetary units specified in an active currency where the unit of currency is explicit and compliant with ISO 4217."
       },
-      "OBExternalPaymentChargeType1Code": {
+      "OBInternalPaymentChargeType1Code": {
         "type": "string",
         "enum": [
-          "UK.OB.CHAPSOut",
-          "UK.OB.BalanceTransferOut",
-          "UK.OB.MoneyTransferOut"
+          "UK.OBIE.CHAPSOut",
+          "UK.OBIE.BalanceTransferOut",
+          "UK.OBIE.MoneyTransferOut"
         ]
       },
       "OBExternalPurpose1Code": {
@@ -2897,7 +2974,7 @@
         "properties": {
           "StatusReasonCode": {
             "type": "string",
-            "description": "Specifies the status reason in a code form \n For more information and enum values see `ExternalStatusReason1Code [here](https://github.com/OpenBankingUK/External_Internal_CodeSets)",
+            "description": "Specifies the status reason in a code form \n For more information and enum values see `OBExternalStatusReason1Code [here](https://github.com/OpenBankingUK/External_Internal_CodeSets)",
             "minLength": 1,
             "maxLength": 4,
             "example": "ERIN"
@@ -2910,7 +2987,7 @@
           }
         }
       },
-      "OBPostalAddress6": {
+      "OBPostalAddress7": {
         "type": "object",
         "additionalProperties": false,
         "description": "Information that locates and identifies a specific address, as defined by postal services.",
@@ -3051,7 +3128,7 @@
         "properties": {
           "StatusReasonCode": {
             "type": "string",
-            "description": "Specifies the status reason in a code form. \n For a full description see `ExternalStatusReason1Code` [here](https://github.com/OpenBankingUK/External_Internal_CodeSets)",
+            "description": "Specifies the status reason in a code form. \n For a full description see `OBExternalStatusReason1Code` [here](https://github.com/OpenBankingUK/External_Internal_CodeSets)",
             "minLength": 1,
             "maxLength": 4,
             "example": "ERIN"
@@ -3192,33 +3269,34 @@
       "OBVRPStatusReasonCode": {
         "type": "string",
         "x-namespaced-enum": [
-          "UK.OB.ExemptionNotApplied",
-          "UK.OB.OtherReason"
+          "UK.OBIE.ExemptionNotApplied",
+          "UK.OBIE.OtherReason"
         ],
         "description": "Reason Code provided for the status of a VRP. To be documented in the Developer Portal.\n"
       },
       "OBVRPConsentType": {
         "type": "string",
         "x-namespaced-enum": [
-          "UK.OB.VRPType.Sweeping",
-          "UK.OB.VRPType.Other"
+          "UK.OBIE.VRPType.Sweeping",
+          "UK.OBIE.VRPType.Other"
         ]
       },
       "OBVRPAuthenticationMethods": {
         "type": "string",
         "x-namespaced-enum": [
-          "UK.OB.SCA",
-          "UK.OB.SCANotRequired"
+          "UK.OBIE.SCA",
+          "UK.OBIE.SCANotRequired"
         ]
       },
       "OBVRPInteractionTypes": {
         "type": "string",
         "enum": [
-          "UK.OB.InSession",
-          "UK.OB.OffSession"
-        ]
+          "InSession",
+          "OffSession"
+        ],
+        "description": "Indicates interaction type, currently if customer is present or not present. If not provided the default is `'OffSession'` (customer is not present) when the individual VRP payment is made. "
       },
-      "OBRisk2": {
+      "OBRisk1": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
@@ -3258,18 +3336,13 @@
             "$ref": "#/components/schemas/OBExternalPurpose1Code"
           },
           "CategoryPurposeCode": {
-            "$ref": "#/components/schemas/OBCategoryPurposeCode"
+            "$ref": "#/components/schemas/ExternalCategoryPurpose1Code"
           },
           "BeneficiaryAccountType": {
-            "$ref": "#/components/schemas/OBExternalExtendedAccountType1Code"
+            "$ref": "#/components/schemas/OBInternalExtendedAccountType1Code"
           },
           "DeliveryAddress": {
-            "required": [
-              "Country",
-              "TownName"
-            ],
-            "$ref": "#/components/schemas/OBPostalAddress6",
-            "description": "Information that locates and identifies a specific address,\nas defined by postal services or in free format text."
+            "$ref": "#/components/schemas/OBPostalAddress7"
           }
         },
         "description": "The Risk section is sent by the initiating party to the ASPSP.\nIt is used to specify additional details for risk scoring for Payments."
