@@ -86,6 +86,53 @@
         }
       }
     },
+    "minimalDomesticVRPV4": {
+      "body": {
+        "Data": {
+          "ConsentId": "$consentId",
+          "PSUAuthenticationMethod": "UK.OBIE.SCANotRequired",
+          "Initiation": {           
+            "CreditorAccount": {
+              "SchemeName": "$creditorScheme",
+              "Identification": "$creditorIdentification",
+              "Name": "$creditorName"
+            },
+            "RemittanceInformation": {
+              "Structured": {
+                "CreditorReferenceInformation": {
+                  "Reference": "$creditorIdentification"
+                }
+              },
+              "Unstructured": "Test Unstructured Data"
+            }
+          },
+          "Instruction": {
+            "InstructionIdentification": "$instructionIdentification",
+            "EndToEndIdentification": "$endToEndIdentification",
+            "CreditorAccount": {
+              "SchemeName": "$creditorScheme",
+              "Identification": "$creditorIdentification",
+              "Name": "$creditorName"
+            },
+            "InstructedAmount": {
+              "Amount": "$instructedAmountValue",
+              "Currency": "$instructedAmountCurrency"
+            },
+            "RemittanceInformation": {
+              "Structured": {
+                "CreditorReferenceInformation": {
+                  "Reference": "$creditorIdentification"
+                }
+              },
+              "Unstructured": "Test Unstructured Data"
+            }
+          },
+          "VRPType": "UK.OBIE.VRPType.Sweeping"
+        },
+        "Risk": {
+        }
+      }
+    },
     "minimalDomesticPaymentConsent": {
       "body": {
         "Data": {
