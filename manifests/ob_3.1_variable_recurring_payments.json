@@ -12,7 +12,7 @@
         "OB-301-VRP-100100-instructionIdentification": "$instructionIdentification",
         "instructionIdentification": "$fn:instructionIdentificationID()",
         "endToEndIdentification": "e2e-domestic-pay",
-        "postData": "$minimalDomesticVRPConsent",
+        "postData": "$minimalDomesticVRPConsentV4",
         "requestConsent": "true"
       },
       "headers": {

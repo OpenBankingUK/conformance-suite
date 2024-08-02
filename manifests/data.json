@@ -47,6 +47,45 @@
         }
       }
     },
+    "minimalDomesticVRPConsentV4": {
+      "body": {
+        "Data": {
+          "ControlParameters": {
+            "PSUAuthenticationMethods": [ "UK.OBIE.SCANotRequired" ],
+            "VRPType": ["UK.OBIE.VRPType.Sweeping"],
+            "ValidFromDateTime": "$transactionFromDate",
+            "ValidToDateTime": "$transactionToDate",
+            "MaximumIndividualAmount": {
+              "Amount": "10.00",
+              "Currency": "$instructedAmountCurrency"
+            },
+            "PeriodicLimits": [{
+              "Amount": "10.00",
+              "Currency": "GBP",
+              "PeriodAlignment": "Consent",
+              "PeriodType": "Week"
+            }]            
+          },
+          "Initiation": {           
+            "CreditorAccount": {
+              "SchemeName": "$creditorScheme",
+              "Identification": "$creditorIdentification",
+              "Name": "$creditorName"
+            },
+            "RemittanceInformation": {
+              "Structured": {
+                "CreditorReferenceInformation": {
+                  "Reference": "$creditorIdentification"
+                }
+              },
+              "Unstructured": "Test Unstructured Data"
+            }
+          }
+        },
+        "Risk": {
+        }
+      }
+    },
     "minimalDomesticVRP": {
       "body": {
         "Data": {
