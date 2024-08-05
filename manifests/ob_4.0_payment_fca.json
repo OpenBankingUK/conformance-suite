@@ -523,7 +523,7 @@
           "instructedAmountCurrency": "$instructedAmountCurrency",
           "frequency": "$payment_frequency",
           "firstPaymentDateTime": "$firstPaymentDateTime",
-          "postData": "$minimalDomesticStandingOrder",
+          "postData": "$minimalDomesticStandingOrderV4",
           "consentId": "$OB-301-DOP-101200-ConsentId"
         },
         "headers": {
