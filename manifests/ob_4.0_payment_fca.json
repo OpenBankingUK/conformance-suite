@@ -495,7 +495,7 @@
           "instructedAmountValue": "$instructedAmountValue",
           "instructedAmountCurrency": "$instructedAmountCurrency",
           "firstPaymentDateTime": "$firstPaymentDateTime",
-          "postData": "$minimalDomesticStandingOrderInvalid",
+          "postData": "$minimalDomesticStandingOrderInvalidV4",
           "consentId": "$OB-301-DOP-101200-ConsentId"
         },
         "headers": {
