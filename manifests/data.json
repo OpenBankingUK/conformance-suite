@@ -214,6 +214,31 @@
         "Risk": {}
       }
     },
+    "minimalDomesticStandingOrderConsentV4": {
+      "body": {
+        "Data": {
+          "Permission": "Create",
+          "Initiation": {
+            "MandateRelatedInformation": {
+              "FirstPaymentDateTime": "$firstPaymentDateTime",
+              "Frequency": {
+                "Type": "$frequency"
+              }
+            },
+            "FirstPaymentAmount": {
+              "Amount": "$instructedAmountValue",
+              "Currency": "$instructedAmountCurrency"
+            },
+            "CreditorAccount": {
+              "SchemeName": "$creditorScheme",
+              "Identification": "$creditorIdentification",
+              "Name": "$creditorName"
+            }
+          }
+        },
+        "Risk": {}
+      }
+    },
     "minimalDomesticStandingOrder": {
       "body": {
         "Data": {

@@ -444,7 +444,7 @@
           "instructedAmountCurrency": "$instructedAmountCurrency",
           "frequency": "$payment_frequency",
           "firstPaymentDateTime": "$firstPaymentDateTime",
-          "postData": "$minimalDomesticStandingOrderConsent",
+          "postData": "$minimalDomesticStandingOrderConsentV4",
           "requestConsent": "true"
         },
         "body": "$postData",
