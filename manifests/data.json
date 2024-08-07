@@ -321,6 +321,31 @@
         "Risk": {}
       }
     },
+    "minimalDomesticStandingOrderV4": {
+      "body": {
+        "Data": {
+          "ConsentId": "$consentId",
+          "Initiation": {
+            "MandateRelatedInformation": {
+              "FirstPaymentDateTime": "$firstPaymentDateTime",
+              "Frequency": {
+                "Type": "$frequency"
+              }
+            },
+            "FirstPaymentAmount": {
+              "Amount": "$instructedAmountValue",
+              "Currency": "$instructedAmountCurrency"
+            },
+            "CreditorAccount": {
+              "SchemeName": "$creditorScheme",
+              "Identification": "$creditorIdentification",
+              "Name": "$creditorName"
+            }
+          }
+        },
+        "Risk": {}
+      }
+    },
     "minimalDomesticStandingOrderInvalid": {
       "body": {
         "Data": {
