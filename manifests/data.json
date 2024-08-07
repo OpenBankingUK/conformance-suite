@@ -367,6 +367,31 @@
         "Risk": {}
       }
     },
+    "minimalDomesticStandingOrderInvalidV4": {
+      "body": {
+        "Data": {
+          "ConsentId": "$consentId",
+          "Initiation": {
+            "MandateRelatedInformation": {
+              "FirstPaymentDateTime": "$firstPaymentDateTime",
+              "Frequency": {
+                "Type": "foobar"
+              }
+            },
+            "FirstPaymentAmount": {
+              "Amount": "$instructedAmountValue",
+              "Currency": "$instructedAmountCurrency"
+            },
+            "CreditorAccount": {
+              "SchemeName": "$creditorScheme",
+              "Identification": "$creditorIdentification",
+              "Name": "$creditorName"
+            }
+          }
+        },
+        "Risk": {}
+      }
+    },
     "minimalInternationalPaymentConsent": {
       "body": {
         "Data": {
