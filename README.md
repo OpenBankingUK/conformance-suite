@@ -17,11 +17,11 @@ To provide feedback, please see the [CONTRIBUTING.md](CONTRIBUTING.md).
 ## Release Notes
 * * *
 
-# Release v1.8.0 (12th August 2024)
+# Release v1.8.1 (12th August 2024)
 
-The release is called **v1.8.0**, an update to add preliminary support to Open Banking Read/Write APIs v4.0.0 specification, including some UX/UI improvements for new default manifests compatible with v4.0.0 and new swagger.
+The release is called **v1.8.1**, an update to add preliminary support to Open Banking Read/Write APIs v4.0.0 specification, including some UX/UI improvements for new default manifests compatible with v4.0.0, new swagger and minor bugfixes.
 
-[Full Release Notes](https://github.com/OpenBankingUK/conformance-suite/blob/develop/docs/releases/v1.8.0.md)
+[Full Release Notes](https://github.com/OpenBankingUK/conformance-suite/blob/develop/docs/releases/v1.8.1.md)
 
 
 ---
@@ -36,6 +36,7 @@ The release is called **v1.8.0**, an update to add preliminary support to Open B
 
 | Release       | Standard version  |
 | ------------- |:-----------------:|
+| v1.8.1        | v4.0.0            |
 | v1.8.0        | v4.0.0            |
 | v1.7.2        | v3.1.11           |
 | v1.7.0        | v3.1.10           |
