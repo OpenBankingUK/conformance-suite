@@ -8,7 +8,7 @@
       {
         "apiSpecification": {
           "name": "Account and Transaction API Specification",
-          "url": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937820271/Account+and+Transaction+API+Specification+-+v3.1",
+          "url": "https://openbankinguk.github.io/read-write-api-site3/v4.0/profiles/account-and-transaction-api-profile.html",
           "version": "v4.0.0",
           "schemaVersion": "https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v4.0.0/dist/openapi/account-info-openapi.json",
           "manifest": "file://manifests/ob_4.0_accounts_transactions_fca.json"
@@ -133,7 +133,7 @@
       {
         "apiSpecification": {
           "name": "Payment Initiation API",
-          "url": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937754701/Payment+Initiation+API+Specification+-+v3.1",
+          "url": "https://openbankinguk.github.io/read-write-api-site3/v4.0/profiles/payment-initiation-api-profile.html",
           "version": "v4.0.0",
           "schemaVersion": "https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v4.0.0/dist/openapi/payment-initiation-openapi.json",
           "manifest": "file://manifests/ob_4.0_payment_fca.json"
