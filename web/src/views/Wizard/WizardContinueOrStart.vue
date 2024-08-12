@@ -35,13 +35,32 @@
     <div class="d-flex align-items-end">
       <div class="panel w-100">
         <div class="panel-heading">
-          <h5>Or choose from a selection of discovery templates to begin.</h5>
+          <h5>V4.0 Discovery Templates</h5>
         </div>
 
         <div class="panel-body">
           <b-card-group deck>
             <DiscoveryTemplateCard
-              v-for="(template, index) in discoveryTemplates"
+              v-for="(template, index) in discoveryTemplates.filter(template => template.model.discoveryModel.V4)"
+              :key="index"
+              :discovery-model="template.model.discoveryModel"
+              :image="template.image"
+            />
+          </b-card-group>
+        </div>
+      </div>
+    </div>
+
+    <div class="d-flex align-items-end">
+      <div class="panel w-100">
+        <div class="panel-heading">
+          <h5>V3.0 Discovery Templates</h5>
+        </div>
+
+        <div class="panel-body">
+          <b-card-group deck>
+            <DiscoveryTemplateCard
+              v-for="(template, index) in discoveryTemplates.filter(template => template.model.discoveryModel.V3)"
               :key="index"
               :discovery-model="template.model.discoveryModel"
               :image="template.image"
