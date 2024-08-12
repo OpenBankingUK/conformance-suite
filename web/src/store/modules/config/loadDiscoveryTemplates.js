@@ -49,11 +49,20 @@ const requireImages = require.context('./images/', false, /.+\.png$/);
 const discoveryImages = {};
 requireImages.keys().forEach(file => discoveryImages[file] = requireImages(file)); // eslint-disable-line
 
-discoveryTemplates.forEach((file) => {
-  file.discoveryModel.V4 = /v4/.test(file.discoveryModel.name);
-});
-discoveryTemplates.forEach((file) => {
-  file.discoveryModel.V3 = /v3/.test(file.discoveryModel.name);
-});
+discoveryTemplates = discoveryTemplates.map(file => ({
+  ...file,
+  discoveryModel: {
+    ...file.discoveryModel,
+    V3: /v3/.test(file.discoveryModel.name),
+  },
+}));
+
+discoveryTemplates = discoveryTemplates.map(file => ({
+  ...file,
+  discoveryModel: {
+    ...file.discoveryModel,
+    V4: /v4/.test(file.discoveryModel.name),
+  },
+}));
 
 export default () => ({ discoveryTemplates, discoveryImages });
