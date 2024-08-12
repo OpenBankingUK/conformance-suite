@@ -8,9 +8,9 @@
       {
         "apiSpecification": {
           "name": "Account and Transaction API Specification",
-          "url": "https://openbankinguk.github.io/read-write-api-site3/v4.0.0/profiles/account-and-transaction-api-profile.html",
-          "version": "v4.0.0",
-          "schemaVersion": "https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v4.0.0/dist/swagger/account-info-swagger.json",
+          "url": "https://openbankinguk.github.io/read-write-api-site3/v3.1.6/profiles/account-and-transaction-api-profile.html",
+          "version": "v3.1.6",
+          "schemaVersion": "https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.6/dist/swagger/account-info-swagger.json",
           "manifest": "file://manifests/ob_4.0_accounts_transactions_fca.json"
         },
         "openidConfigurationUri": "https://auth1.obie.uk.ozoneapi.io/.well-known/openid-configuration",
@@ -133,9 +133,9 @@
       {
         "apiSpecification": {
           "name": "Payment Initiation API",
-          "url": "https://openbankinguk.github.io/read-write-api-site3/v4.0.0/profiles/payment-initiation-api-profile.html",
-          "version": "v4.0.0",
-          "schemaVersion": "https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v4.0.0/dist/swagger/payment-initiation-swagger.json",
+          "url": "https://openbankinguk.github.io/read-write-api-site3/v3.1.6/profiles/payment-initiation-api-profile.html",
+          "version": "v3.1.6",
+          "schemaVersion": "https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.6/dist/swagger/payment-initiation-swagger.json",
           "manifest": "file://manifests/ob_4.0_payment_fca.json"
         },
         "openidConfigurationUri": "https://auth1.obie.uk.ozoneapi.io/.well-known/openid-configuration",
@@ -282,9 +282,9 @@
       {
         "apiSpecification": {
           "name": "Confirmation of Funds API Specification",
-          "url": "https://openbankinguk.github.io/read-write-api-site3/v4.0.0/profiles/confirmation-of-funds-api-profile.html",
-          "version": "v4.0.0",
-          "schemaVersion": "https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v4.0.0/dist/swagger/confirmation-funds-swagger.json",
+          "url": "https://openbankinguk.github.io/read-write-api-site3/v3.1.6/profiles/confirmation-of-funds-api-profile.html",
+          "version": "v3.1.6",
+          "schemaVersion": "https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.6/dist/swagger/confirmation-funds-swagger.json",
           "manifest": "file://manifests/ob_4.0_cbpii_fca.json"
         },
         "openidConfigurationUri": "https://auth1.obie.uk.ozoneapi.io/.well-known/openid-configuration",
