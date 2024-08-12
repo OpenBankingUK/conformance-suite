@@ -43,26 +43,20 @@ if (process.env.NODE_ENV === 'test') {
 // See: https://webpack.js.org/guides/dependency-management/#require-context
 //      https://vuejs.org/v2/guide/components-registration.html#Automatic-Global-Registration-of-Base-Components
 const requireTemplates = require.context('../../../../../pkg/discovery/templates/', false, /.+\.json$/);
-const discoveryTemplates = requireTemplates.keys().map(file => requireTemplates(file));
+const discoveryTemplatesWithoutVersions = requireTemplates.keys().map(file => requireTemplates(file));
 
 const requireImages = require.context('./images/', false, /.+\.png$/);
 const discoveryImages = {};
 requireImages.keys().forEach(file => discoveryImages[file] = requireImages(file)); // eslint-disable-line
 
-discoveryTemplates = discoveryTemplates.map(file => ({
+const discoveryTemplates = discoveryTemplatesWithoutVersions.map(file => ({
   ...file,
   discoveryModel: {
     ...file.discoveryModel,
     V3: /v3/.test(file.discoveryModel.name),
-  },
-}));
-
-discoveryTemplates = discoveryTemplates.map(file => ({
-  ...file,
-  discoveryModel: {
-    ...file.discoveryModel,
     V4: /v4/.test(file.discoveryModel.name),
   },
 }));
+
 
 export default () => ({ discoveryTemplates, discoveryImages });
