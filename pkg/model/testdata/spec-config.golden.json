@@ -1,32 +1,5 @@
 [
   {
-    "Identifier": "account-transaction-v3.1.11",
-    "Name": "Account and Transaction API Specification",
-    "URL": {
-      "Scheme": "https",
-      "Opaque": "",
-      "User": null,
-      "Host": "openbankinguk.github.io",
-      "Path": "/read-write-api-site3/v3.1.11/profiles/account-and-transaction-api-profile.html",
-      "RawPath": "",
-      "ForceQuery": false,
-      "RawQuery": "",
-      "Fragment": ""
-    },
-    "Version": "v3.1.11",
-    "SchemaVersion": {
-      "Scheme": "https",
-      "Opaque": "",
-      "User": null,
-      "Host": "raw.githubusercontent.com",
-      "Path": "/OpenBankingUK/read-write-api-specs/v3.1.11/dist/openapi/account-info-openapi.json",
-      "RawPath": "",
-      "ForceQuery": false,
-      "RawQuery": "",
-      "Fragment": ""
-    }
-  },
-  {
     "Identifier": "account-transaction-v4.0",
     "Name": "Account and Transaction API Specification",
     "URL": {
@@ -47,6 +20,33 @@
       "User": null,
       "Host": "raw.githubusercontent.com",
       "Path": "/OpenBankingUK/read-write-api-specs/v4.0.0/dist/openapi/account-info-openapi.json",
+      "RawPath": "",
+      "ForceQuery": false,
+      "RawQuery": "",
+      "Fragment": ""
+    }
+  },
+  {
+    "Identifier": "account-transaction-v3.1.11",
+    "Name": "Account and Transaction API Specification",
+    "URL": {
+      "Scheme": "https",
+      "Opaque": "",
+      "User": null,
+      "Host": "openbankinguk.github.io",
+      "Path": "/read-write-api-site3/v3.1.11/profiles/account-and-transaction-api-profile.html",
+      "RawPath": "",
+      "ForceQuery": false,
+      "RawQuery": "",
+      "Fragment": ""
+    },
+    "Version": "v3.1.11",
+    "SchemaVersion": {
+      "Scheme": "https",
+      "Opaque": "",
+      "User": null,
+      "Host": "raw.githubusercontent.com",
+      "Path": "/OpenBankingUK/read-write-api-specs/v3.1.11/dist/openapi/account-info-openapi.json",
       "RawPath": "",
       "ForceQuery": false,
       "RawQuery": "",
