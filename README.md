@@ -17,16 +17,16 @@ To provide feedback, please see the [CONTRIBUTING.md](CONTRIBUTING.md).
 ## Release Notes
 * * *
 
-# Release v1.7.6 (4th March 2024)
+# Release v1.8.0 (12th August 2024)
 
-The release is called **v1.7.6**, an update to add proxy support, package and environment upgrades, add changes to manifests.
+The release is called **v1.8.0**, an update to add preliminary support to Open Banking Read/Write APIs v4.0.0 specification, including some UX/UI improvements for new default manifests compatible with v4.0.0 and new swagger.
 
-[Full Release Notes](https://github.com/OpenBankingUK/conformance-suite/blob/develop/docs/releases/v1.7.6.md)
+[Full Release Notes](https://github.com/OpenBankingUK/conformance-suite/blob/develop/docs/releases/v1.8.0.md)
 
 
 ---
 **Download**:
-`docker run --rm -it -p 127.0.0.1:8443:8443 "openbanking/conformance-suite:v1.7.6"` |
+`docker run --rm -it -p 127.0.0.1:8443:8443 "openbanking/conformance-suite:v1.8.0"` |
 [DockerHub](https://hub.docker.com/r/openbanking/conformance-suite) |
 [Setup Guide](https://github.com/OpenBankingUK/conformance-suite/blob/develop/docs/setup-guide.md)
 ---
@@ -36,6 +36,7 @@ The release is called **v1.7.6**, an update to add proxy support, package and en
 
 | Release       | Standard version  |
 | ------------- |:-----------------:|
+| v1.8.0        | v4.0.0            |
 | v1.7.2        | v3.1.11           |
 | v1.7.0        | v3.1.10           |
 | v1.6.12       | v3.1.9            |
@@ -46,17 +47,17 @@ The release is called **v1.7.6**, an update to add proxy support, package and en
 
 Pull and run the latest (stable) tagged Docker image:
 
-    > docker run --rm -it -p 127.0.0.1:8443:8443 "openbanking/conformance-suite:v1.7.6"
+    > docker run --rm -it -p 127.0.0.1:8443:8443 "openbanking/conformance-suite:v1.8.0"
 
 or
 
-    > docker run --rm -it -p 8443:8443 "openbanking/conformance-suite:v1.7.6"
+    > docker run --rm -it -p 8443:8443 "openbanking/conformance-suite:v1.8.0"
 
 [See Setup Guide](https://github.com/OpenBankingUK/conformance-suite/blob/develop/docs/setup-guide.md)
 
 ### Prerequisites
 
-The tool is compatible with the Open Banking UK R/W specification versions: 3.1.0, 3.1.1, 3.1.2, 3.1.3, 3.1.4, 3.1.5, 3.1.6, 3.1.7, 3.1.8, 3.1.9, 3.1.10, 3.1.11.
+The tool is compatible with the Open Banking UK R/W specification versions: 3.1.0, 3.1.1, 3.1.2, 3.1.3, 3.1.4, 3.1.5, 3.1.6, 3.1.7, 3.1.8, 3.1.9, 3.1.10, 3.1.11, 4.0.0.
 
 In order to run a container you'll need docker installed.
 
