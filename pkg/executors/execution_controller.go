@@ -144,8 +144,17 @@ func (r *TestCaseRunner) runConsentAcquisitionAsync(item TokenConsentIDItem, ctx
 		authMethod = authentication.ClientSecretBasic
 	}
 
+	version, err := ctx.GetString("api-version")
+	if err != nil {
+		r.logger.WithError(err).Error("running consent acquisition async")
+	}
+	consentProviderVersionSuffix := "V3"
+	if version == "v4.0" {
+		consentProviderVersionSuffix = "V4"
+	}
+
 	if consentType == "psu" || consentType == "mobile" {
-		comp, err = model.LoadComponent("PSUConsentProviderComponent.json")
+		comp, err = model.LoadComponent(fmt.Sprintf("PSUConsentProviderComponent%s.json", consentProviderVersionSuffix))
 		if err != nil {
 			r.AppMsg("Load PSU Component Failed: " + err.Error())
 			r.setNotRunning()
@@ -153,7 +162,7 @@ func (r *TestCaseRunner) runConsentAcquisitionAsync(item TokenConsentIDItem, ctx
 		}
 
 	} else {
-		comp, err = model.LoadComponent("headlessTokenProviderProviderComponent.json")
+		comp, err = model.LoadComponent(fmt.Sprintf("headlessTokenProviderProviderComponent%s.json", consentProviderVersionSuffix))
 		if err != nil {
 			r.AppMsg("Load HeadlessConsent Component Failed: " + err.Error())
 			r.setNotRunning()

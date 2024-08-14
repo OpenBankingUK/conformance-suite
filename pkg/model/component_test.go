@@ -94,7 +94,7 @@ func TestComponentGetTests(t *testing.T) {
 }
 
 func TestComponentHeadlessLoad(t *testing.T) {
-	c, err := LoadComponent("../../components/headlessTokenProviderComponent.json")
+	c, err := LoadComponent("../../components/headlessTokenProviderComponentV3.json")
 	require.Nil(t, err)
 	ctx := Context{
 		"client_id":              "myid",

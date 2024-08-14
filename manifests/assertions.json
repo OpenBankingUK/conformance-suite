@@ -221,6 +221,15 @@
         }]
       }
     },
+    "OB3DOPAssertAuthorisedV4": {
+      "expect": {
+        "matches": [{
+          "JSON": "Data.Status",
+          "Value": "AUTH",
+          "detail": "Expected that the consent resource has been successfully authorised."
+        }]
+      }
+    },
     "OB3DOPFundsAvailable": {
       "expect": {
         "matches": [{

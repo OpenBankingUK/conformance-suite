@@ -1,0 +1,153 @@
+{
+    "id": "comacctp01",
+    "name": "accounts.HeadlessTokenProvider",
+    "description": "Provides Access Tokens for Accounts API",
+    "documentation":"The TestTokenProvider takes eight input parameters, one output parameter. The input paramters define credential, endpoints and consent permssions, the output parameter names the the key under which the resulting token will be placed in the context ",
+    "inputParameters": {
+      "client_id": "",
+      "x-fapi-financial-id": "$x-fapi-financial-id",
+      "basic_authentication": "",
+      "token_endpoint": "",
+      "authorisation_endpoint": "",
+      "resource_server": "",
+      "redirect_url": "",
+      "permission_payload": ""
+    },
+    "outputParameters": {
+      "result_token":""
+    },
+    "testcases": [{
+        "@id": "#ct0001",
+        "name": "ClientCredential Grant",
+        "input": {
+          "method": "POST",
+          "endpoint": "$token_endpoint",
+          "headers": {
+            "content-type": "application/x-www-form-urlencoded",
+            "accept": "application/json",
+            "authorization": "Basic $basic_authentication"
+          },
+          "formData": {
+            "grant_type": "client_credentials",
+            "scope": "accounts openid"
+          }
+        },
+        "context": {
+          "baseurl": ""
+        },
+        "expect": {
+          "status-code": 200,
+          "contextPut": {
+            "matches": [{
+              "name": "client_access_token",
+              "description": "Access Token",
+              "json": "access_token"
+            }]
+          }
+        }
+      },
+      {
+        "@id": "#ct0002",
+        "name": "PostAccount Request",
+        "input": {
+          "method": "POST",
+          "endpoint": "/open-banking/v3.1/aisp/account-access-consents",
+          "headers": {
+            "content-type": "application/json",
+            "accept": "application/json",
+            "x-fapi-interaction-id": "c4405450-febe-11e8-80a5-0fcebb157400",
+            "x-fapi-financial-id": "$x-fapi-financial-id",
+            "authorization": "Bearer $client_access_token"
+          },
+          "bodyData": "$permission_payload"
+        },
+        "context": {
+          "baseurl": "$resource_server"
+        },
+        "expect": {
+          "status-code": 201,
+          "matches": [{
+            "description": "Check we get Status:AWAU",
+            "json": "Data.Status",
+            "value": "AWAU"
+          }],
+          "contextPut": {
+            "matches": [{
+              "name": "consent_id",
+              "description": "gets the consentid from PostAccountRequest ",
+              "json": "Data.ConsentId"
+            }]
+          }
+        }
+      },
+      {
+        "@id": "#ct0003",
+        "name": "Ozone Headless Consent Flow",
+        "input": {
+          "method": "GET",
+          "endpoint": "?clientid",
+          "generation": {
+            "strategy": "consenturl"
+          },
+          "claims": {
+            "aud": "$issuer",
+            "iss": "$client_id",
+            "scope": "openid accounts",
+            "redirect_url": "$redirect_url",
+            "consentId": "$consent_id",
+            "responseType": "code",
+            "state": "<state_should_not_empty>",
+            "nonce": "true",
+            "exp": "true"
+          }
+        },
+        "context": {
+          "baseurl": "$authorisation_endpoint"
+        },
+        "expect": {
+          "status-code": 302,
+          "contextPut": {
+            "matches": [{
+              "name": "xchange_code",
+              "description": "Get the xchange code from the location redirect header on hitting consent url for headless",
+              "header": "Location",
+              "regex": "code=(.*)&"
+            }]
+          }
+        }
+      },
+      {
+        "@id": "#ct0004",
+        "name": "Code Exchange",
+        "input": {
+          "method": "POST",
+          "endpoint": "$token_endpoint",
+          "headers": {
+            "content-type": "application/x-www-form-urlencoded",
+            "authorization": "Basic $basic_authentication",
+            "accept": "application/json"
+          },
+          "formData": {
+            "code": "$xchange_code",
+            "grant_type": "authorization_code",
+            "redirect_uri": "$redirect_url",
+            "scope": "accounts"
+          }
+        },
+        "context": {
+          "baseurl": ""
+        },
+        "expect": {
+          "status-code": 200,
+          "contextPut": {
+            "matches": [{
+              "name": "$result_token",
+              "description": "The accounts access token",
+              "json": "access_token"
+            }]
+          }
+        }
+      }
+    ],
+    "components": []
+  }
