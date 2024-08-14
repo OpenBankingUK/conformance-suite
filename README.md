@@ -26,7 +26,7 @@ The release is called **v1.8.1**, an update to add preliminary support to Open B
 
 ---
 **Download**:
-`docker run --rm -it -p 127.0.0.1:8443:8443 "openbanking/conformance-suite:v1.8.0"` |
+`docker run --rm -it -p 127.0.0.1:8443:8443 "openbanking/conformance-suite:v1.8.1"` |
 [DockerHub](https://hub.docker.com/r/openbanking/conformance-suite) |
 [Setup Guide](https://github.com/OpenBankingUK/conformance-suite/blob/develop/docs/setup-guide.md)
 ---
@@ -37,7 +37,6 @@ The release is called **v1.8.1**, an update to add preliminary support to Open B
 | Release       | Standard version  |
 | ------------- |:-----------------:|
 | v1.8.1        | v4.0.0            |
-| v1.8.0        | v4.0.0            |
 | v1.7.2        | v3.1.11           |
 | v1.7.0        | v3.1.10           |
 | v1.6.12       | v3.1.9            |
