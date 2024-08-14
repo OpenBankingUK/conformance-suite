@@ -155,7 +155,7 @@
         "asserts": [
           "OB3GLOFAPIHeader",
           "OB3GLOAssertOn200",
-          "OB3DOPAssertAuthorised"
+          "OB3DOPAssertAuthorisedV4"
         ],
         "method": "get",
         "schemaCheck": true,
@@ -344,7 +344,7 @@
         "resource": "DomesticScheduledPayment",
         "asserts": [
           "OB3GLOAssertOn200",
-          "OB3DOPAssertAuthorised"
+          "OB3DOPAssertAuthorisedV4"
         ],
         "method": "get",
         "schemaCheck": true,
@@ -479,7 +479,7 @@
         "resource": "DomesticStandingOrder",
         "asserts": [
           "OB3GLOAssertOn200",
-          "OB3DOPAssertAuthorised"
+          "OB3DOPAssertAuthorisedV4"
         ],
         "method": "get",
         "schemaCheck": true,
@@ -650,7 +650,7 @@
         "resource": "InternationalPayment",
         "asserts": [
           "OB3GLOAssertOn200",
-          "OB3DOPAssertAuthorised"
+          "OB3DOPAssertAuthorisedV4"
         ],
         "method": "get",
         "schemaCheck": true,
@@ -755,7 +755,7 @@
         "resource": "InternationalScheduledPayment",
         "asserts": [
           "OB3GLOAssertOn200",
-          "OB3DOPAssertAuthorised"
+          "OB3DOPAssertAuthorisedV4"
         ],
         "method": "get",
         "schemaCheck": true,

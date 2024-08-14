@@ -87,7 +87,7 @@
           "OB3GLOAssertOn200",
           "OB3GLOFAPIHeader",
           "OB3GLOAssertContentType",
-          "OB3DOPAssertAuthorised"
+          "OB3DOPAssertAuthorisedV4"
         ],
         "schemaCheck": true,
         "validateSignature": true

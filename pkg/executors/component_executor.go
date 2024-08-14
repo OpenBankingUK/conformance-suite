@@ -240,18 +240,27 @@ func getAccountsHeadlessTokens(tests []model.TestCase, ctx *model.Context, defin
 	return requiredTokens, nil
 }
 
-func getHeadlessTokenComponent() (*model.Component, error) {
-	comp, err := model.LoadComponent("headlessTokenProviderComponent.json")
+func getHeadlessTokenComponent(ctx *model.Context) (*model.Component, error) {
+	version, err := ctx.GetString("api-version")
+	if err != nil {
+		return nil, err
+	}
+	consentProviderVersionSuffix := "V3"
+	if version == "v4.0" {
+		consentProviderVersionSuffix = "V4"
+	}
+	comp, err := model.LoadComponent(fmt.Sprintf("headlessTokenProviderComponent%s.json", consentProviderVersionSuffix))
 	if err != nil {
 		return &comp, fmt.Errorf("error loading headlessTokenProvider component:" + err.Error())
 	}
+	
 	return &comp, nil
 
 }
 
 // ExecuteComponent -
 func executeComponent(ctx *model.Context, executor TestCaseExecutor) (*model.Context, error) {
-	comp, err := getHeadlessTokenComponent()
+	comp, err := getHeadlessTokenComponent(ctx)
 	if err != nil {
 		return nil, err
 	}
