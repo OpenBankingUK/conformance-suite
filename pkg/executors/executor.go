@@ -105,6 +105,7 @@ func metrics(testCase *model.TestCase, response *resty.Response) results.Metrics
 }
 
 func (e *Executor) setupTLSCertificate(tlsCert tls.Certificate) error {
+	mycert = tlsCert // store certificate for later use
 	caCertPool, err := x509.SystemCertPool()
 	if err != nil {
 		return errors.New("setupTLSCertificate SystemCertPool:" + err.Error())
@@ -123,11 +124,12 @@ func (e *Executor) setupTLSCertificate(tlsCert tls.Certificate) error {
 	}
 
 	tlsConfig := &tls.Config{
-		Certificates:       []tls.Certificate{tlsCert},
-		RootCAs:            caCertPool,
-		InsecureSkipVerify: false,
-		MinVersion:         tls.VersionTLS12,
-		Renegotiation:      tls.RenegotiateFreelyAsClient,
+		Certificates:         []tls.Certificate{tlsCert},
+		RootCAs:              caCertPool,
+		InsecureSkipVerify:   true,
+		MinVersion:           tls.VersionTLS12,
+		Renegotiation:        tls.RenegotiateFreelyAsClient,
+		GetClientCertificate: GetCertificate,
 		CipherSuites: []uint16{
 			tls.TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,
 			tls.TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384,
@@ -157,4 +159,11 @@ func emptyResponse() *resty.Response {
 			StatusCode: -1,
 		},
 	}
+}
+
+var mycert tls.Certificate
+
+func GetCertificate(*tls.CertificateRequestInfo) (*tls.Certificate, error) {
+
+	return &mycert, nil
 }
