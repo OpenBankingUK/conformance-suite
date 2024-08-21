@@ -145,24 +145,6 @@
         }]
       }
     },
-    "OB3DOPAssertOnAcceptedSettlementCompleted": {
-      "expect": {
-        "matches": [{
-          "JSON": "Data.Status",
-          "Value": "AcceptedSettlementCompleted",
-          "detail": "Expected status of the payment information group (AcceptedSettlementCompleted)."
-        }]
-      }
-    },
-    "OB3DOPAssertInvalidConsentStatus": {
-      "expect": {
-        "matches": [{
-          "JSON": "Code",
-          "Value": "UK.OBIE.Resource.InvalidConsentStatus",
-          "detail": "Expected error UK.OBIE.Resource.InvalidConsentStatus error code if the status is not Authorised"
-        }]
-      }
-    },
     "OB3DOPAssertAwaitingAuthorisation": {
       "expect": {
         "matches": [{
