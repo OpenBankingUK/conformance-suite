@@ -86,27 +86,11 @@
         }]
       }
     },
-    "OB3GLOAssertBulkNumberOfPayments": {
-      "expect": {
-        "matches": [{
-          "JSON": "Data.StandingOrder.#.NumberOfPayments",
-          "detail": "Expected NumberOfPayments (array) to be present."
-        }]
-      }
-    },
     "OB3GLOAssertNoNumberOfPayments": {
       "expect": {
         "matches": [{
           "JSON-NOT-PRESENT": "Data.Initiation.NumberOfPayments",
           "detail": "Expected NumberOfPayments to be not present."
-        }]
-      }
-    },
-    "OB3GLOAssertBulkNoNumberOfPayments": {
-      "expect": {
-        "matches": [{
-          "JSON-NOT-PRESENT": "Data.StandingOrder.#.NumberOfPayments",
-          "detail": "Expected NumberOfPayments (array) to be not present."
         }]
       }
     },
@@ -118,14 +102,6 @@
         }]
       }
     },
-    "OB3GLOAssertBulkFinalPaymentDateTime": {
-      "expect": {
-        "matches": [{
-          "JSON": "Data.StandingOrder.#.FinalPaymentDateTime",
-          "detail": "Expected FinalPaymentDateTime (array) to be present."
-        }]
-      }
-    },
     "OB3GLOAssertNoFinalPaymentDateTime": {
       "expect": {
         "matches": [{
@@ -134,27 +110,11 @@
         }]
       }
     },
-    "OB3GLOAssertBulkNoFinalPaymentDateTime": {
-      "expect": {
-        "matches": [{
-          "JSON-NOT-PRESENT": "Data.StandingOrder.#.FinalPaymentDateTime",
-          "detail": "Expected FinalPaymentDateTime (array) to be not present."
-        }]
-      }
-    },
     "OB3GLOAssertFinalPaymentAmount": {
       "expect": {
         "matches": [{
           "JSON": "Data.Initiation.FirstPaymentAmount",
           "detail": "Expected FinalPaymentAmount to be present."
-        }]
-      }
-    },
-    "OB3GLOAssertBulkFinalPaymentAmount": {
-      "expect": {
-        "matches": [{
-          "JSON": "Data.StandingOrder.#.FirstPaymentAmount",
-          "detail": "Expected FinalPaymentAmount (array) to be present."
         }]
       }
     },
