@@ -86,27 +86,11 @@
         }]
       }
     },
-    "OB3GLOAssertBulkNumberOfPayments": {
-      "expect": {
-        "matches": [{
-          "JSON": "Data.StandingOrder.#.NumberOfPayments",
-          "detail": "Expected NumberOfPayments (array) to be present."
-        }]
-      }
-    },
     "OB3GLOAssertNoNumberOfPayments": {
       "expect": {
         "matches": [{
           "JSON-NOT-PRESENT": "Data.Initiation.NumberOfPayments",
           "detail": "Expected NumberOfPayments to be not present."
-        }]
-      }
-    },
-    "OB3GLOAssertBulkNoNumberOfPayments": {
-      "expect": {
-        "matches": [{
-          "JSON-NOT-PRESENT": "Data.StandingOrder.#.NumberOfPayments",
-          "detail": "Expected NumberOfPayments (array) to be not present."
         }]
       }
     },
@@ -118,14 +102,6 @@
         }]
       }
     },
-    "OB3GLOAssertBulkFinalPaymentDateTime": {
-      "expect": {
-        "matches": [{
-          "JSON": "Data.StandingOrder.#.FinalPaymentDateTime",
-          "detail": "Expected FinalPaymentDateTime (array) to be present."
-        }]
-      }
-    },
     "OB3GLOAssertNoFinalPaymentDateTime": {
       "expect": {
         "matches": [{
@@ -134,27 +110,11 @@
         }]
       }
     },
-    "OB3GLOAssertBulkNoFinalPaymentDateTime": {
-      "expect": {
-        "matches": [{
-          "JSON-NOT-PRESENT": "Data.StandingOrder.#.FinalPaymentDateTime",
-          "detail": "Expected FinalPaymentDateTime (array) to be not present."
-        }]
-      }
-    },
     "OB3GLOAssertFinalPaymentAmount": {
       "expect": {
         "matches": [{
           "JSON": "Data.Initiation.FirstPaymentAmount",
           "detail": "Expected FinalPaymentAmount to be present."
-        }]
-      }
-    },
-    "OB3GLOAssertBulkFinalPaymentAmount": {
-      "expect": {
-        "matches": [{
-          "JSON": "Data.StandingOrder.#.FirstPaymentAmount",
-          "detail": "Expected FinalPaymentAmount (array) to be present."
         }]
       }
     },
@@ -182,24 +142,6 @@
           "JSON": "Errors.#[ErrorCode=\"UK.OBIE.Signature.Malformed\"].ErrorCode",
           "Value": "UK.OBIE.Signature.Malformed",
           "detail": "Expected a specific error code for malformed signature error."
-        }]
-      }
-    },
-    "OB3DOPAssertOnAcceptedSettlementCompleted": {
-      "expect": {
-        "matches": [{
-          "JSON": "Data.Status",
-          "Value": "AcceptedSettlementCompleted",
-          "detail": "Expected status of the payment information group (AcceptedSettlementCompleted)."
-        }]
-      }
-    },
-    "OB3DOPAssertInvalidConsentStatus": {
-      "expect": {
-        "matches": [{
-          "JSON": "Code",
-          "Value": "UK.OBIE.Resource.InvalidConsentStatus",
-          "detail": "Expected error UK.OBIE.Resource.InvalidConsentStatus error code if the status is not Authorised"
         }]
       }
     },
