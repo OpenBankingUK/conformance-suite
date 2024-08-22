@@ -135,7 +135,7 @@
         ],
         "asserts": [
           "OB3GLOAssertOn400",
-          "OB3DOPAssertSignatureMissingOBErrorCode"
+          "OB3DOPAssertSignatureMissingOBErrorCodeV4"
         ],
         "method": "post",
         "schemaCheck": true

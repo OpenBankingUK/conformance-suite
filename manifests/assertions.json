@@ -226,6 +226,15 @@
         }]
       }
     },
+    "OB3DOPAssertSignatureMissingOBErrorCodeV4": {
+      "expect": {
+        "matches": [{
+          "JSON": "Errors.#[ErrorCode=\"U019\"].ErrorCode",
+          "Value": "U019",
+          "detail": "Expected a specific error code for missing signature."
+        }]
+      }
+    },
     "OB3IPAssertInternationalPaymentId": {
       "expect": {
         "matches": [{
@@ -242,58 +251,6 @@
         }]
       }
     },
-    "OB3IPAssertInternationalStandingOrderPaymentId": {
-      "expect": {
-        "matches": [{
-          "JSON": "Data.InternationalStandingOrderPaymentId",
-          "detail": "Expected a unique identification as assigned by the ASPSP to uniquely identify the international payment resource."
-        }]
-      }
-    },
-    "OB3IPAssertInternationalStandingOrderId": {
-      "expect": {
-        "matches": [{
-          "JSON": "Data.InternationalStandingOrderId",
-          "detail": "Expected a unique identification as assigned by the ASPSP to uniquely identify the international standing order resource."
-        }]
-      }
-    },
-    "OB3IPAssertUnexpectedErrorOBErrorCode": {
-      "expect": {
-        "matches": [{
-          "JSON": "Errors.#[ErrorCode=\"UK.OBIE.UnexpectedError\"].ErrorCode",
-          "Value": "UK.OBIE.UnexpectedError",
-          "detail": "Expected a specific error code for unexpected error."
-        }]
-      }
-    },
-    "OB3IPAssertHeaderMissingOBErrorCode": {
-      "expect": {
-        "matches": [{
-          "JSON": "Errors.#[ErrorCode=\"UK.OBIE.Header.Missing\"].ErrorCode",
-          "Value": "UK.OBIE.Header.Missing",
-          "detail": "Expected a specific error code for missing header."
-        }]
-      }
-    },
-    "OB3IPAssertHeaderInvalidOBErrorCode": {
-      "expect": {
-        "matches": [{
-          "JSON": "Errors.#[ErrorCode=\"UK.OBIE.Header.Invalid\"].ErrorCode",
-          "Value": "UK.OBIE.Header.Invalid",
-          "detail": "Expected a specific error code for invalid header."
-        }]
-      }
-    },
-    "OB3IPAssertResourceInvalidConsentStatusOBErrorCode": {
-      "expect": {
-        "matches": [{
-          "JSON": "Errors.#[ErrorCode=\"UK.OBIE.Resource.InvalidConsentStatus\"].ErrorCode",
-          "Value": "UK.OBIE.Resource.InvalidConsentStatus",
-          "detail": "Expected a specific error code for consent status."
-        }]
-      }
-    },
     "OB3IPAssertResourceFieldInvalidOBErrorCode400": {
       "expect": {
         "status-code": 400,
@@ -304,12 +261,32 @@
         }]
       }
     },
+    "OB3IPAssertResourceFieldInvalidOBErrorCode400V4": {
+      "expect": {
+        "status-code": 400,
+        "matches": [{
+          "JSON": "Errors.#[ErrorCode=\"U002\"].ErrorCode",
+          "Value": "U002",
+          "detail": "Expected a specific error code for an invalid field."
+        }]
+      }
+    },
     "OB3IPAssertResourceNotFoundOBErrorCode400": {
       "expect": {
         "status-code": 400,
         "matches": [{
           "JSON": "Errors.#[ErrorCode=\"UK.OBIE.Resource.NotFound\"].ErrorCode",
           "Value": "UK.OBIE.Resource.NotFound",
+          "detail": "Expected a specific error code for resource not found."
+        }]
+      }
+    },
+    "OB3IPAssertResourceNotFoundOBErrorCode400V4": {
+      "expect": {
+        "status-code": 400,
+        "matches": [{
+          "JSON": "Errors.#[ErrorCode=\"U011\"].ErrorCode",
+          "Value": "U011",
           "detail": "Expected a specific error code for resource not found."
         }]
       }
