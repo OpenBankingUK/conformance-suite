@@ -64,9 +64,9 @@
           "OB3GLOAssertOn400"
         ],
         "asserts_one_of": [
-          "OB3GLOAssertSignatureInvalidClaimErrorCode",
-          "OB3GLOAssertSignatureMissingClaimErrorCode",
-          "OB3GLOAssertSignatureMalformedErrorCode"
+          "OB3GLOAssertSignatureInvalidClaimErrorCodeV4",
+          "OB3GLOAssertSignatureMissingClaimErrorCodeV4",
+          "OB3GLOAssertSignatureMalformedErrorCodeV4"
         ],
         "method": "post"
       },

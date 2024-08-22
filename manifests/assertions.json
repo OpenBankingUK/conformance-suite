@@ -167,6 +167,15 @@
         }]
       }
     },
+    "OB3GLOAssertSignatureInvalidClaimErrorCodeV4": {
+      "expect": {
+        "matches": [{
+          "JSON": "Errors.#[ErrorCode=\"U016\"].ErrorCode",
+          "Value": "U016",
+          "detail": "Expected a specific error code for invalid claim in signature error."
+        }]
+      }
+    },
     "OB3GLOAssertSignatureMissingClaimErrorCode": {
       "expect": {
         "matches": [{
@@ -176,11 +185,29 @@
         }]
       }
     },
+    "OB3GLOAssertSignatureMissingClaimErrorCodeV4": {
+      "expect": {
+        "matches": [{
+          "JSON": "Errors.#[ErrorCode=\"U017\"].ErrorCode",
+          "Value": "U017",
+          "detail": "Expected a specific error code for missing claim in signature error."
+        }]
+      }
+    },
     "OB3GLOAssertSignatureMalformedErrorCode": {
       "expect": {
         "matches": [{
           "JSON": "Errors.#[ErrorCode=\"UK.OBIE.Signature.Malformed\"].ErrorCode",
           "Value": "UK.OBIE.Signature.Malformed",
+          "detail": "Expected a specific error code for malformed signature error."
+        }]
+      }
+    },
+    "OB3GLOAssertSignatureMalformedErrorCodeV4": {
+      "expect": {
+        "matches": [{
+          "JSON": "Errors.#[ErrorCode=\"U018\"].ErrorCode",
+          "Value": "U018",
           "detail": "Expected a specific error code for malformed signature error."
         }]
       }
