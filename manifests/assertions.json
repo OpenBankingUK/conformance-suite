@@ -226,6 +226,15 @@
         }]
       }
     },
+    "OB3DOPAssertSignatureMissingOBErrorCodeV4": {
+      "expect": {
+        "matches": [{
+          "JSON": "Errors.#[ErrorCode=\"U019\"].ErrorCode",
+          "Value": "U019",
+          "detail": "Expected a specific error code for missing signature."
+        }]
+      }
+    },
     "OB3IPAssertInternationalPaymentId": {
       "expect": {
         "matches": [{
