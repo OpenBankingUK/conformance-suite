@@ -25,7 +25,7 @@
           "OB3GLOAssertOn201",
           "OB3GLOFAPIHeader",
           "OB3GLOAAssertConsentId",
-          "OB3DOPAssertAwaitingAuthorisation",
+          "OB3DOPAssertAwaitingAuthorisationV4",
           "OB3GLOAssertContentType"
         ],
         "schemaCheck": true
@@ -59,7 +59,7 @@
           "OB3GLOAssertOn201",
           "OB3GLOFAPIHeader",
           "OB3GLOAAssertConsentId",
-          "OB3DOPAssertAwaitingAuthorisation",
+          "OB3DOPAssertAwaitingAuthorisationV4",
           "OB3GLOAssertContentType"
         ],
         "schemaCheck": true
@@ -363,7 +363,7 @@
           "OB3GLOAssertOn201",
           "OB3GLOFAPIHeader",
           "OB3GLOAAssertConsentId",
-          "OB3DOPAssertAwaitingAuthorisation",
+          "OB3DOPAssertAwaitingAuthorisationV4",
           "OB3GLOAssertContentType"
         ],
         "schemaCheck": true
