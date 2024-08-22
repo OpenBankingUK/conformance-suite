@@ -239,6 +239,15 @@
         }]
       }
     },
+    "OB3DOPAssertAwaitingAuthorisationV4": {
+      "expect": {
+        "matches": [{
+          "JSON": "Data.Status",
+          "Value": "AWAU",
+          "detail": "Expected AWAU, consent resource awaiting PSU authorisation."
+        }]
+      }
+    },
     "OB3DOPAssertAuthorised": {
       "expect": {
         "matches": [{

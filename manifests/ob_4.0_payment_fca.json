@@ -24,7 +24,7 @@
         "asserts": [
           "OB3GLOAssertOn201",
           "OB3GLOFAPIHeader",
-          "OB3DOPAssertAwaitingAuthorisation",
+          "OB3DOPAssertAwaitingAuthorisationV4",
           "OB3GLOAAssertConsentId"
         ],
         "keepContextOnSuccess": {
@@ -97,7 +97,7 @@
         "asserts": [
           "OB3GLOAssertOn201",
           "OB3GLOFAPIHeader",
-          "OB3DOPAssertAwaitingAuthorisation",
+          "OB3DOPAssertAwaitingAuthorisationV4",
           "OB3GLOAAssertConsentId"
         ],
         "keepContextOnSuccess": {
@@ -256,7 +256,7 @@
         "asserts": [
           "OB3GLOAssertOn201",
           "OB3GLOFAPIHeader",
-          "OB3DOPAssertAwaitingAuthorisation",
+          "OB3DOPAssertAwaitingAuthorisationV4",
           "OB3GLOAAssertConsentId"
         ],
         "keepContextOnSuccess": {
@@ -292,7 +292,7 @@
         "asserts": [
           "OB3GLOAssertOn201",
           "OB3GLOFAPIHeader",
-          "OB3DOPAssertAwaitingAuthorisation",
+          "OB3DOPAssertAwaitingAuthorisationV4",
           "OB3GLOAAssertConsentId"
         ],
         "method": "post",
@@ -324,7 +324,7 @@
         "asserts": [
           "OB3GLOAssertOn201",
           "OB3GLOFAPIHeader",
-          "OB3DOPAssertAwaitingAuthorisation",
+          "OB3DOPAssertAwaitingAuthorisationV4",
           "OB3GLOAAssertConsentId"
         ],
         "method": "post",
@@ -454,7 +454,7 @@
         "asserts": [
           "OB3GLOAssertOn201",
           "OB3GLOFAPIHeader",
-          "OB3DOPAssertAwaitingAuthorisation",
+          "OB3DOPAssertAwaitingAuthorisationV4",
           "OB3GLOAAssertConsentId"
         ],
         "keepContextOnSuccess": {
@@ -626,7 +626,7 @@
         "asserts": [
           "OB3GLOAssertOn201",
           "OB3GLOFAPIHeader",
-          "OB3DOPAssertAwaitingAuthorisation",
+          "OB3DOPAssertAwaitingAuthorisationV4",
           "OB3GLOAAssertConsentId"
         ],
         "keepContextOnSuccess": {
@@ -731,7 +731,7 @@
         "asserts": [
           "OB3GLOAssertOn201",
           "OB3GLOFAPIHeader",
-          "OB3DOPAssertAwaitingAuthorisation",
+          "OB3DOPAssertAwaitingAuthorisationV4",
           "OB3GLOAAssertConsentId"
         ],
         "keepContextOnSuccess": {
@@ -842,7 +842,7 @@
         "asserts": [
           "OB3GLOAssertOn201",
           "OB3GLOFAPIHeader",
-          "OB3DOPAssertAwaitingAuthorisation",
+          "OB3DOPAssertAwaitingAuthorisationV4",
           "OB3GLOAAssertConsentId"
         ],
         "method": "post",
