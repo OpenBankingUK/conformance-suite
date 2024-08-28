@@ -391,10 +391,10 @@ var (
 		},
 		{
 			Identifier:    "variable-recurring-payments-v4.0",
-			Name:          "OBIE VRP Profile",
+			Name:          "Variable Recurring Payments API Specification",
 			URL:           mustParseURL("https://openbankinguk.github.io/read-write-api-site3/v4.0/profiles/vrp-profile.html"),
 			Version:       "v4.0.0",
-			SchemaVersion: mustParseURL("https://github.com/OpenBankingUK/read-write-api-specs/blob/v4.0.0/dist/openapi/vrp-openapi.json"),
+			SchemaVersion: mustParseURL("https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v4.0.0/dist/openapi/vrp-openapi.json"),
 		},
 	}
 )
