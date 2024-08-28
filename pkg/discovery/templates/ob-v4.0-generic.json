@@ -307,6 +307,47 @@
             "path": "/funds-confirmations"
           }
         ]
+      },
+      {
+        "apiSpecification": {
+          "name": "Variable Recurring Payments API Specification",
+          "url": "https://openbankinguk.github.io/read-write-api-site3/v4.0/profiles/vrp-profile.html",
+          "version": "v4.0.0",
+          "schemaVersion": "https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v4.0.0/dist/openapi/vrp-openapi.json",
+          "manifest": "file://manifests/ob_4.0_variable_recurring_payments_fca.json"
+        },
+        "openidConfigurationUri": "",
+        "resourceBaseUri": "",
+        "endpoints": [
+          {
+            "method": "POST",
+            "path": "/domestic-vrp-consents"
+          },
+          {
+            "method": "POST",
+            "path": "/domestic-vrps"
+          },
+          {
+            "method": "GET",
+            "path": "/domestic-vrp-consents/{ConsentId}"
+          },
+          {
+            "method": "DELETE",
+            "path": "/domestic-vrp-consents/{ConsentId}"
+          },
+          {
+            "method": "POST",
+            "path": "/domestic-vrp-consents/{ConsentId}/funds-confirmation"
+          },
+          {
+            "method": "GET",
+            "path": "/domestic-vrps/{VrpId}"
+          },
+          {
+            "method": "GET",
+            "path": "/domestic-vrps/{VrpId}/payment-details"
+          }
+        ]
       }
     ]
   }
