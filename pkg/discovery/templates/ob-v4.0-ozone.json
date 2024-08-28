@@ -341,11 +341,11 @@
           },
           {
             "method": "GET",
-            "path": "/domestic-vrps/{VrpId}"
+            "path": "/domestic-vrps/{DomesticVRPId}"
           },
           {
             "method": "GET",
-            "path": "/domestic-vrps/{VrpId}/payment-details"
+            "path": "/domestic-vrps/{DomesticVRPId}/payment-details"
           }
         ]
       }
