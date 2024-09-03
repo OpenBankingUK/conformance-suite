@@ -41,7 +41,7 @@
         <div class="panel-body">
           <b-card-group deck>
             <DiscoveryTemplateCard
-              v-for="(template, index) in discoveryTemplates.filter(template => template.model.discoveryModel.V4)"
+              v-for="(template, index) in filteredDiscoveryTemplates"
               :key="index"
               :discovery-model="template.model.discoveryModel"
               :image="template.image"
@@ -69,6 +69,11 @@ export default {
   computed: {
     ...mapGetters('config', ['discoveryTemplates']),
     ...mapState('navbar', ['selectedVersion']),
+    filteredDiscoveryTemplates() {
+      const versionPrefix = this.selectedVersion.slice(0, 4).toLowerCase();
+      return this.discoveryTemplates.filter(template => template.model.discoveryModel.name
+        && template.model.discoveryModel.name.toLowerCase().includes(versionPrefix));
+    },
   },
   mounted() {
     this.checkUpdates();
