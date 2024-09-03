@@ -70,9 +70,27 @@ export default {
     ...mapGetters('config', ['discoveryTemplates']),
     ...mapState('navbar', ['selectedVersion']),
     filteredDiscoveryTemplates() {
-      const versionPrefix = this.selectedVersion.slice(0, 4).toLowerCase();
+      const versionMap = {
+        'v4.0.0': ['ob-v4.0-generic', 'ob-v4.0-ozone-headless', 'ob-v4.0-ozone-mobile', 'ob-v4.0-ozone'],
+        'v3.1.11': ['ob-v3.1-generic', 'ob-v3.1-ozone-headless', 'ob-v3.1-ozone-mobile', 'ob-v3.1-ozone'],
+        'v3.1.10': ['ob-v3.1-generic', 'ob-v3.1-ozone-headless', 'ob-v3.1-ozone-mobile', 'ob-v3.1-ozone'],
+        'v3.1.9': ['ob-v3.1-generic', 'ob-v3.1-ozone-headless', 'ob-v3.1-ozone-mobile', 'ob-v3.1-ozone'],
+        'v3.1.8': ['ob-v3.1-generic', 'ob-v3.1-ozone-headless', 'ob-v3.1-ozone-mobile', 'ob-v3.1-ozone'],
+        'v3.1.7': ['ob-v3.1-generic', 'ob-v3.1-ozone-headless', 'ob-v3.1-ozone-mobile', 'ob-v3.1-ozone'],
+        'v3.1.6': ['ob-v3.1-generic', 'ob-v3.1-ozone-headless', 'ob-v3.1-ozone-mobile', 'ob-v3.1-ozone'],
+        'v3.1.5': ['ob-v3.1-generic', 'ob-v3.1-ozone-headless', 'ob-v3.1-ozone-mobile', 'ob-v3.1-ozone'],
+        'v3.1.4': ['ob-v3.1-generic', 'ob-v3.1-ozone-headless', 'ob-v3.1-ozone-mobile', 'ob-v3.1-ozone'],
+        'v3.1.3': ['ob-v3.1-generic', 'ob-v3.1-ozone-headless', 'ob-v3.1-ozone-mobile', 'ob-v3.1-ozone'],
+        'v3.1.2': ['ob-v3.1-generic', 'ob-v3.1-ozone-headless', 'ob-v3.1-ozone-mobile', 'ob-v3.1-ozone'],
+        'v3.1.1': ['ob-v3.1-generic', 'ob-v3.1-ozone-headless', 'ob-v3.1-ozone-mobile', 'ob-v3.1-ozone'],
+        'v3.1.0': ['ob-v3.1-generic', 'ob-v3.1-ozone-headless', 'ob-v3.1-ozone-mobile', 'ob-v3.1-ozone'],
+        'v3.0.0': ['ob-v3.1-generic', 'ob-v3.1-ozone-headless', 'ob-v3.1-ozone-mobile', 'ob-v3.1-ozone'],
+      };
+
+      const allowedFiles = versionMap[this.selectedVersion] || [];
+
       return this.discoveryTemplates.filter(template => template.model.discoveryModel.name
-        && template.model.discoveryModel.name.toLowerCase().includes(versionPrefix));
+        && allowedFiles.some(file => template.model.discoveryModel.name.toLowerCase().includes(file.toLowerCase())));
     },
   },
   mounted() {
