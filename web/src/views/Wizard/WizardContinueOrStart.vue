@@ -70,6 +70,8 @@ export default {
     ...mapGetters('config', ['discoveryTemplates']),
     ...mapState('navbar', ['selectedVersion']),
     filteredDiscoveryTemplates() {
+      // @NEW-SPEC-RELEASE - create new version mapping for default discovery templates
+      // create new discovery templates if needed otherwise use latest major version
       const versionMap = {
         'v4.0.0': ['ob-v4.0-generic', 'ob-v4.0-ozone-headless', 'ob-v4.0-ozone-mobile', 'ob-v4.0-ozone'],
         'v3.1.11': ['ob-v3.1-generic', 'ob-v3.1-ozone-headless', 'ob-v3.1-ozone-mobile', 'ob-v3.1-ozone'],
