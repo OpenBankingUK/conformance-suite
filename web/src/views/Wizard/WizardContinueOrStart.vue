@@ -35,32 +35,13 @@
     <div class="d-flex align-items-end">
       <div class="panel w-100">
         <div class="panel-heading">
-          <h5>V4.0 Discovery Templates</h5>
+          <h5>{{ selectedVersion }} Discovery Templates</h5>
         </div>
 
         <div class="panel-body">
           <b-card-group deck>
             <DiscoveryTemplateCard
-              v-for="(template, index) in discoveryTemplates.filter(template => template.model.discoveryModel.V4)"
-              :key="index"
-              :discovery-model="template.model.discoveryModel"
-              :image="template.image"
-            />
-          </b-card-group>
-        </div>
-      </div>
-    </div>
-
-    <div class="d-flex align-items-end">
-      <div class="panel w-100">
-        <div class="panel-heading">
-          <h5>V3.0 Discovery Templates</h5>
-        </div>
-
-        <div class="panel-body">
-          <b-card-group deck>
-            <DiscoveryTemplateCard
-              v-for="(template, index) in discoveryTemplates.filter(template => template.model.discoveryModel.V3)"
+              v-for="(template, index) in filteredDiscoveryTemplates"
               :key="index"
               :discovery-model="template.model.discoveryModel"
               :image="template.image"
@@ -73,7 +54,7 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex';
+import { mapActions, mapGetters, mapState } from 'vuex';
 import DiscoveryTemplateCard from '../../components/Wizard/DiscoveryTemplateCard.vue';
 import TheErrorStatus from '../../components/TheErrorStatus.vue';
 
@@ -87,6 +68,32 @@ export default {
   },
   computed: {
     ...mapGetters('config', ['discoveryTemplates']),
+    ...mapState('navbar', ['selectedVersion']),
+    filteredDiscoveryTemplates() {
+      // @NEW-SPEC-RELEASE - create new version mapping for default discovery templates
+      // create new discovery templates if needed otherwise use latest major version
+      const versionMap = {
+        'v4.0.0': ['ob-v4.0-generic', 'ob-v4.0-ozone-headless', 'ob-v4.0-ozone-mobile', 'ob-v4.0-ozone'],
+        'v3.1.11': ['ob-v3.1-generic', 'ob-v3.1-ozone-headless', 'ob-v3.1-ozone-mobile', 'ob-v3.1-ozone'],
+        'v3.1.10': ['ob-v3.1-generic', 'ob-v3.1-ozone-headless', 'ob-v3.1-ozone-mobile', 'ob-v3.1-ozone'],
+        'v3.1.9': ['ob-v3.1-generic', 'ob-v3.1-ozone-headless', 'ob-v3.1-ozone-mobile', 'ob-v3.1-ozone'],
+        'v3.1.8': ['ob-v3.1-generic', 'ob-v3.1-ozone-headless', 'ob-v3.1-ozone-mobile', 'ob-v3.1-ozone'],
+        'v3.1.7': ['ob-v3.1-generic', 'ob-v3.1-ozone-headless', 'ob-v3.1-ozone-mobile', 'ob-v3.1-ozone'],
+        'v3.1.6': ['ob-v3.1-generic', 'ob-v3.1-ozone-headless', 'ob-v3.1-ozone-mobile', 'ob-v3.1-ozone'],
+        'v3.1.5': ['ob-v3.1-generic', 'ob-v3.1-ozone-headless', 'ob-v3.1-ozone-mobile', 'ob-v3.1-ozone'],
+        'v3.1.4': ['ob-v3.1-generic', 'ob-v3.1-ozone-headless', 'ob-v3.1-ozone-mobile', 'ob-v3.1-ozone'],
+        'v3.1.3': ['ob-v3.1-generic', 'ob-v3.1-ozone-headless', 'ob-v3.1-ozone-mobile', 'ob-v3.1-ozone'],
+        'v3.1.2': ['ob-v3.1-generic', 'ob-v3.1-ozone-headless', 'ob-v3.1-ozone-mobile', 'ob-v3.1-ozone'],
+        'v3.1.1': ['ob-v3.1-generic', 'ob-v3.1-ozone-headless', 'ob-v3.1-ozone-mobile', 'ob-v3.1-ozone'],
+        'v3.1.0': ['ob-v3.1-generic', 'ob-v3.1-ozone-headless', 'ob-v3.1-ozone-mobile', 'ob-v3.1-ozone'],
+        'v3.0.0': ['ob-v3.1-generic', 'ob-v3.1-ozone-headless', 'ob-v3.1-ozone-mobile', 'ob-v3.1-ozone'],
+      };
+
+      const allowedFiles = versionMap[this.selectedVersion] || [];
+
+      return this.discoveryTemplates.filter(template => template.model.discoveryModel.name
+        && allowedFiles.some(file => template.model.discoveryModel.name.toLowerCase().includes(file.toLowerCase())));
+    },
   },
   mounted() {
     this.checkUpdates();
