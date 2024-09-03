@@ -35,7 +35,7 @@
     <div class="d-flex align-items-end">
       <div class="panel w-100">
         <div class="panel-heading">
-          <h5>V4.0 Discovery Templates</h5>
+          <h5>{{ selectedVersion }} Discovery Templates</h5>
         </div>
 
         <div class="panel-body">
@@ -50,30 +50,11 @@
         </div>
       </div>
     </div>
-
-    <div class="d-flex align-items-end">
-      <div class="panel w-100">
-        <div class="panel-heading">
-          <h5>V3.0 Discovery Templates</h5>
-        </div>
-
-        <div class="panel-body">
-          <b-card-group deck>
-            <DiscoveryTemplateCard
-              v-for="(template, index) in discoveryTemplates.filter(template => template.model.discoveryModel.V3)"
-              :key="index"
-              :discovery-model="template.model.discoveryModel"
-              :image="template.image"
-            />
-          </b-card-group>
-        </div>
-      </div>
-    </div>
   </div>
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex';
+import { mapActions, mapGetters, mapState } from 'vuex';
 import DiscoveryTemplateCard from '../../components/Wizard/DiscoveryTemplateCard.vue';
 import TheErrorStatus from '../../components/TheErrorStatus.vue';
 
@@ -87,6 +68,7 @@ export default {
   },
   computed: {
     ...mapGetters('config', ['discoveryTemplates']),
+    ...mapState('navbar', ['selectedVersion']),
   },
   mounted() {
     this.checkUpdates();

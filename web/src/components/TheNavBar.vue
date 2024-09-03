@@ -39,8 +39,9 @@
         class="mb-2">
         <div class="nav-section px-1">
           <b-form-select
-            v-model="selectedVersion"
-            :options="specificationVersions" />
+            v-model="localSelectedVersion"
+            :options="specificationVersions"
+            @change="handleVersionChange" />
         </div>
         <b-nav-item
           v-for="(specification, index) in specifications"
@@ -90,7 +91,7 @@
 
 <script>
 import { PlusCircleIcon, FileTextIcon } from 'vue-feather-icons';
-import { mapGetters } from 'vuex';
+import { mapGetters, mapActions } from 'vuex';
 import TheNavBarItem from './TheNavBarItem.vue';
 import Specifications from '../../../pkg/model/testdata/spec-config.golden.json';
 
@@ -103,14 +104,14 @@ export default {
   },
   data: () => ({
     // @NEW-SPEC-VERSION - Update this when new version comes out or add sorting...
-    selectedVersion: 'v4.0.0',
+    localSelectedVersion: 'v4.0.0',
     specificationVersions: [...(new Set(Specifications.map(spec => spec.Version)))].map(specVer => ({ value: specVer, text: specVer })),
   }),
   computed: {
     ...mapGetters('status', ['suiteVersion']),
     specifications() {
       return Specifications
-        .filter(specification => specification.Version === this.selectedVersion)
+        .filter(specification => specification.Version === this.localSelectedVersion)
         .map(specification => ({
           label: `${specification.Name} (${specification.Version})`,
           swaggerUIURL: `/swagger/${specification.Identifier}/${specification.Version}/docs`,
@@ -120,7 +121,16 @@ export default {
         }));
     },
   },
+  created() {
+    // Initialize the selectedVersion in the store
+    this.updateSelectedVersion(this.localSelectedVersion);
+  },
   methods: {
+    ...mapActions('navbar', ['updateSelectedVersion']),
+    handleVersionChange(newVersion) {
+      this.localSelectedVersion = newVersion;
+      this.updateSelectedVersion(newVersion);
+    },
   },
 };
 </script>
