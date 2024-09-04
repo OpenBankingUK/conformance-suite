@@ -3,7 +3,7 @@
       {
         "description": "Variable Recurring Payments consents is AwaitingAuthorisation",
         "id": "OB-301-VRP-100100",
-        "refURI": "https://openbankinguk.github.io/read-write-api-site3/v3.1.8/resources-and-data-models/vrp/domestic-vrp-consents.html",
+        "refURI": "https://openbankinguk.github.io/read-write-api-site3/v4.0/resources-and-data-models/vrp/domestic-vrp-consents.html",
         "detail": "Check Domestic Variable Recurring Payment consents returns in AwaitingAuthorisation.",
         "parameters": {
           "tokenRequestScope": "payments",
@@ -39,7 +39,7 @@
       {
         "description": "Domestic Variable Recurring Payment for processing succeeds with minimal data.",
         "id": "OB-301-VRP-100600",
-        "refURI": "https://openbankinguk.github.io/read-write-api-site3/v3.1.8/resources-and-data-models/vrp/domestic-vrps.html",
+        "refURI": "https://openbankinguk.github.io/read-write-api-site3/v4.0/resources-and-data-models/vrp/domestic-vrps.html",
         "detail": "Check that once the domestic-payment-consent has been authorised by the PSU, the PISP can proceed to submitting the domestic-payment for processing.",
         "parameters": {
           "tokenRequestScope": "payments",
@@ -73,7 +73,7 @@
       {
         "description": "Retrieves Authorised Variable Recurring Payments Consent",
         "id": "OB-301-VRP-100610",
-        "refURI": "https://openbankinguk.github.io/read-write-api-site3/v3.1.8/resources-and-data-models/vrp/domestic-vrp-consents.html",
+        "refURI": "https://openbankinguk.github.io/read-write-api-site3/v4.0/resources-and-data-models/vrp/domestic-vrp-consents.html",
         "detail": "Retrieves Variable Recurring Payments",
         "uri": "/domestic-vrp-consents/$consentId",
         "parameters": {
@@ -95,7 +95,7 @@
       {
         "description": "Check VRP Funds Confirmation ",
         "id": "OB-301-VRP-100650",
-        "refURI": "https://openbankinguk.github.io/read-write-api-site3/v3.1.8/resources-and-data-models/vrp/domestic-vrps.html",
+        "refURI": "https://openbankinguk.github.io/read-write-api-site3/v4.0/resources-and-data-models/vrp/domestic-vrps.html",
         "detail": "Checks vrp funds confirmation",
         "uri": "/domestic-vrp-consents/$consentId/funds-confirmation",
         "uriImplementation": "mandatory",
@@ -122,7 +122,7 @@
       {
         "description": "Retrieves VRP-100600 VrpID",
         "id": "OB-301-VRP-10670",
-        "refURI": "https://openbankinguk.github.io/read-write-api-site3/v3.1.8/resources-and-data-models/vrp/domestic-vrp-consents.html",
+        "refURI": "https://openbankinguk.github.io/read-write-api-site3/v4.0/resources-and-data-models/vrp/domestic-vrp-consents.html",
         "detail": "Retrieves Variable Recurring Payments VrpID",
         "uri": "/domestic-vrps/$vrpId",
         "parameters": {
@@ -143,7 +143,7 @@
       {
         "description": "Repeated Domestic Variable Recurring Payment",
         "id": "OB-301-VRP-100700",
-        "refURI": "https://openbankinguk.github.io/read-write-api-site3/v3.1.8/resources-and-data-models/vrp/domestic-vrps.html",
+        "refURI": "https://openbankinguk.github.io/read-write-api-site3/v4.0/resources-and-data-models/vrp/domestic-vrps.html",
         "detail": "Check that once the domestic-payment-consent has been authorised by the PSU, the PISP can proceed to submitting the domestic-payment for processing.",
         "parameters": {
           "tokenRequestScope": "payments",
@@ -177,7 +177,7 @@
       {
         "description": "Retrieves VRP-100700 VrpID",
         "id": "OB-301-VRP-101100",
-        "refURI": "https://openbankinguk.github.io/read-write-api-site3/v3.1.8/resources-and-data-models/vrp/domestic-vrp-consents.html",
+        "refURI": "https://openbankinguk.github.io/read-write-api-site3/v4.0/resources-and-data-models/vrp/domestic-vrp-consents.html",
         "detail": "Retrieves Variable Recurring Payments VrpID" ,
         "uri": "/domestic-vrps/$vrpId",
         "parameters": {
@@ -198,7 +198,7 @@
       {
         "description": "Retrieves Get Payment Details",
         "id": "OB-301-VRP-101200",
-        "refURI": "https://openbankinguk.github.io/read-write-api-site3/v3.1.8/resources-and-data-models/vrp/domestic-vrp-consents.html",
+        "refURI": "https://openbankinguk.github.io/read-write-api-site3/v4.0/resources-and-data-models/vrp/domestic-vrp-consents.html",
         "detail": "Retrieves Variable Recurring Payments VrpID" ,
         "uri": "/domestic-vrps/$vrpId/payment-details",
         "parameters": {
@@ -219,7 +219,7 @@
       {
         "description": "Deletes VRP Consents",
         "id": "OB-301-VRP-102100",
-        "refURI": "https://openbankinguk.github.io/read-write-api-site3/v3.1.8/resources-and-data-models/vrp/domestic-vrp-consents.html",
+        "refURI": "https://openbankinguk.github.io/read-write-api-site3/v4.0/resources-and-data-models/vrp/domestic-vrp-consents.html",
         "detail": "Deletes VRP Consent",
         "uri": "/domestic-vrp-consents/$consentId",
         "uriImplementation": "mandatory",
@@ -238,7 +238,7 @@
       {
         "description": "Attempts to Retrieve Deleted Consent",
         "id": "OB-301-VRP-102150",
-        "refURI": "https://openbankinguk.github.io/read-write-api-site3/v3.1.8/resources-and-data-models/vrp/domestic-vrp-consents.html",
+        "refURI": "https://openbankinguk.github.io/read-write-api-site3/v4.0/resources-and-data-models/vrp/domestic-vrp-consents.html",
         "detail": "Retrieves Variable Recurring Payments",
         "uri": "/domestic-vrp-consents/$consentId",
         "parameters": {
@@ -256,7 +256,7 @@
       {
         "description": "Attempts to delete, already deleted consent",
         "id": "OB-301-VRP-102200",
-        "refURI": "https://openbankinguk.github.io/read-write-api-site3/v3.1.8/resources-and-data-models/vrp/domestic-vrp-consents.html",
+        "refURI": "https://openbankinguk.github.io/read-write-api-site3/v4.0/resources-and-data-models/vrp/domestic-vrp-consents.html",
         "detail": "Deletes VRP Consent",
         "uri": "/domestic-vrp-consents/$consentId",
         "uriImplementation": "mandatory",

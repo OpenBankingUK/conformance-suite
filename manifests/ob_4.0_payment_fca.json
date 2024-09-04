@@ -3,7 +3,7 @@
       {
         "description": "Domestic Payment consents is AwaitingAuthorisation",
         "id": "OB-301-DOP-100100",
-        "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937984109/Domestic+Payments+v3.1#DomesticPaymentsv3.1-POST/domestic-payment-consents",
+        "refURI": "https://openbankinguk.github.io/read-write-api-site3/v4.0/profiles/payment-initiation-api-profile.html",
         "detail": "Check Domestic Payment consents returns in AwaitingAuthorisation.",
         "parameters": {
           "tokenRequestScope": "payments",
@@ -73,7 +73,7 @@
       {
         "description": "Domestic Payment consents succeeds with minimal data set with additional schema checks and default status is AwaitingAuthorisation.",
         "id": "OB-301-DOP-100300",
-        "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937984109/Domestic+Payments+v3.1#DomesticPaymentsv3.1-POST/domestic-payment-consents",
+        "refURI": "https://openbankinguk.github.io/read-write-api-site3/v4.0/profiles/payment-initiation-api-profile.html",
         "detail": "Check that the resource succeeds posting a domestic payment consents with a minimal data set and checks additional schema, and default status is AwaitingAuthorisation immediately after the domestic-payment-consent has been created.",
         "parameters": {
           "tokenRequestScope": "payments",
@@ -111,7 +111,7 @@
       {
         "description": "Domestic Payment Consent without signature fails with the correct error message.",
         "id": "OB-316-DOP-100310",
-        "refURI": "https://openbankinguk.github.io/read-write-api-site3/v3.1.5/resources-and-data-models/pisp/domestic-payment-consents.html#post-domestic-payment-consents",
+        "refURI": "https://openbankinguk.github.io/read-write-api-site3/v4.0/profiles/payment-initiation-api-profile.html",
         "detail": "Check that the ASPSP returns the error code 400 and correct error in the response 'UK.OBIE.Signature.Missing' when the request doesn't contain the header 'x-jws-signature'.",
         "apiVersion": ">=3.1.5",
         "parameters": {
@@ -143,7 +143,7 @@
       {
         "description": "Domestic Payment status is Authorised.",
         "id": "OB-301-DOP-100400",
-        "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937984109/Domestic+Payments+v3.1#DomesticPaymentsv3.1-POST/domestic-payments",
+        "refURI": "https://openbankinguk.github.io/read-write-api-site3/v4.0/profiles/payment-initiation-api-profile.html",
         "detail": "Check Domestic Payment status is Authorised after calling /domestic-payment-consents.",
         "parameters": {
           "tokenRequestScope": "payments",
@@ -164,7 +164,7 @@
       {
         "description": "PISP Domestic Payment funds-confirmation for authorised status and consent status",
         "id": "OB-301-DOP-100500",
-        "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937984109/Domestic+Payments+v3.1#DomesticPaymentsv3.1-GET/domestic-payment-consents/{ConsentId}/funds-confirmation",
+        "refURI": "https://openbankinguk.github.io/read-write-api-site3/v4.0/profiles/payment-initiation-api-profile.html",
         "detail": "Check PISP Domestic Payment funds-confirmation is Authorised, responds with a 200 (Status OK) and funds available.",
         "parameters": {
           "tokenRequestScope": "payments",
@@ -185,7 +185,7 @@
       {
         "description": "Domestic Payment for processing succeeds with minimal data.",
         "id": "OB-301-DOP-100600",
-        "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/999623013/Domestic+Payments+v3.1.1#DomesticPaymentsv3.1.1-POST/domestic-payments",
+        "refURI": "https://openbankinguk.github.io/read-write-api-site3/v4.0/profiles/payment-initiation-api-profile.html",
         "detail": "Check that once the domestic-payment-consent has been authorised by the PSU, the PISP can proceed to submitting the domestic-payment for processing.",
         "parameters": {
           "tokenRequestScope": "payments",
@@ -219,7 +219,7 @@
       {
         "description": "PISP can retrieve the Domestic Payment status.",
         "id": "OB-301-DOP-100700",
-        "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/999623013/Domestic+Payments+v3.1.1#DomesticPaymentsv3.1.1-GET/domestic-payments/{DomesticPaymentId}",
+        "refURI": "https://openbankinguk.github.io/read-write-api-site3/v4.0/profiles/payment-initiation-api-profile.html",
         "detail": "Check PISP can retrieve the domestic-payment to check its status.",
         "parameters": {
           "tokenRequestScope": "payments",
@@ -238,7 +238,7 @@
       {
         "description": "Domestic Scheduled Payment consents succeeds with minimal data set with additional schema checks.",
         "id": "OB-301-DOP-100800",
-        "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/999786587/Domestic+Scheduled+Payment+v3.1.1#DomesticScheduledPaymentv3.1.1-POST/domestic-scheduled-payment-consents",
+        "refURI": "https://openbankinguk.github.io/read-write-api-site3/v4.0/profiles/payment-initiation-api-profile.html",
         "detail": "Checks that the resource succeeds for a PISP posting a Domestic Scheduled Payment consent with a minimal data set and checks additional schema.",
         "parameters": {
           "tokenRequestScope": "payments",
@@ -269,7 +269,7 @@
       {
         "description": "Domestic Scheduled Payment consents accepts 'RequestedExecutionDateTime' formatted as ISO8601 datetime (2006-01-02T15:04:05-07:00).",
         "id": "OB-301-DOP-100810",
-        "refURI": "https://openbankinguk.github.io/read-write-api-site3/v3.1.5/resources-and-data-models/pisp/domestic-scheduled-payment-consents.html#post-domestic-scheduled-payment-consents",
+        "refURI": "https://openbankinguk.github.io/read-write-api-site3/v4.0/profiles/payment-initiation-api-profile.html",
         "detail": "Checks that the resource succeeds for a PISP posting a Domestic Scheduled Payment consent with a minimal data set where RequestedExecutionDateTime is an ISO8601 datetime (2006-01-02T15:04:05-07:00).",
         "apiVersion": ">=3.1.5",
         "parameters": {
@@ -301,7 +301,7 @@
       {
         "description": "Domestic Scheduled Payment consents accepts 'RequestedExecutionDateTime' formatted as ISO8601 datetime (2006-01-02T15:04:05Z07:00).",
         "id": "OB-301-DOP-100820",
-        "refURI": "https://openbankinguk.github.io/read-write-api-site3/v3.1.5/resources-and-data-models/pisp/domestic-scheduled-payment-consents.html#post-domestic-scheduled-payment-consents",
+        "refURI": "https://openbankinguk.github.io/read-write-api-site3/v4.0/profiles/payment-initiation-api-profile.html",
         "detail": "Checks that the resource succeeds for a PISP posting a Domestic Scheduled Payment consent with a minimal data set where RequestedExecutionDateTime is an ISO8601 datetime (2006-01-02T15:04:05Z07:00).",
         "apiVersion": ">=3.1.5",
         "parameters": {
@@ -333,7 +333,7 @@
       {
         "description": "PISP can retrieve Domestic Scheduled Payment consent resource status.",
         "id": "OB-301-DOP-100900",
-        "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/999786587/Domestic+Scheduled+Payment+v3.1.1#DomesticScheduledPaymentv3.1.1-GET/domestic-scheduled-payment-consents/{ConsentId}",
+        "refURI": "https://openbankinguk.github.io/read-write-api-site3/v4.0/profiles/payment-initiation-api-profile.html",
         "detail": "Check PISP can retrieve Domestic Scheduled Payment consent resource status is Authorised.",
         "parameters": {
           "tokenRequestScope": "payments",
@@ -353,7 +353,7 @@
       {
         "description": "Domestic Scheduled Payment succeeds with minimal data set with additional schema checks.",
         "id": "OB-301-DOP-101000",
-        "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/999786587/Domestic+Scheduled+Payment+v3.1.1#DomesticScheduledPaymentv3.1.1-POST/domestic-scheduled-payments",
+        "refURI": "https://openbankinguk.github.io/read-write-api-site3/v4.0/profiles/payment-initiation-api-profile.html",
         "detail": "Checks that the resource succeeds posting a domestic scheduled payment with a minimal data set and checks additional schema.",
         "parameters": {
           "tokenRequestScope": "payments",
@@ -386,7 +386,7 @@
       {
         "description": "PISP can retrieve the Domestic Scheduled Payment status.",
         "id": "OB-301-DOP-101100",
-        "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/999786587/Domestic+Scheduled+Payment+v3.1.1#DomesticScheduledPaymentv3.1.1-GET/domestic-scheduled-payments/{DomesticScheduledPaymentId}",
+        "refURI": "https://openbankinguk.github.io/read-write-api-site3/v4.0/profiles/payment-initiation-api-profile.html",
         "detail": "Check a PISP can retrieve the Domestic Scheduled Payment status InitiationPending or InitiationCompleted.",
         "parameters": {
           "tokenRequestScope": "payments",
@@ -406,7 +406,7 @@
       {
         "description": "Once the consent has been authorised, PISP can submit the Domestic Scheduled Payment for processing.",
         "id": "OB-301-DOP-101101",
-        "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937558149/Domestic+Scheduled+Payment+v3.1#DomesticScheduledPaymentv3.1-POST/domestic-scheduled-payments",
+        "refURI": "https://openbankinguk.github.io/read-write-api-site3/v4.0/profiles/payment-initiation-api-profile.html",
         "detail": "PISP can post a Domestic Scheduled Payment for processing and get a response of InitiationPending or InitiationCompleted.",
         "parameters": {
           "tokenRequestScope": "payments",
@@ -436,7 +436,7 @@
       {
         "description": "Domestic standing order consents succeeds with minimal data set with additional schema checks.",
         "id": "OB-301-DOP-101200",
-        "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1000670131/Domestic+Standing+Orders+v3.1.1#DomesticStandingOrdersv3.1.1-POST/domestic-standing-order-consents",
+        "refURI": "https://openbankinguk.github.io/read-write-api-site3/v4.0/profiles/payment-initiation-api-profile.html",
         "detail": "Checks that the resource succeeds for a PISP posting a Domestic Standing Order consent with a minimal data set and checks additional schema.",
         "parameters": {
           "tokenRequestScope": "payments",
@@ -468,7 +468,7 @@
       {
         "description": "PISP can retrieve Domestic Standing Order consent resource status.",
         "id": "OB-301-DOP-101300",
-        "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/999786587/Domestic+Scheduled+Payment+v3.1.1#DomesticScheduledPaymentv3.1.1-GET/domestic-scheduled-payment-consents/{ConsentId}",
+        "refURI": "https://openbankinguk.github.io/read-write-api-site3/v4.0/profiles/payment-initiation-api-profile.html",
         "detail": "Check PISP can retrieve Domestic Standing Order consent resource and status is Authorised.",
         "parameters": {
           "tokenRequestScope": "payments",
@@ -488,7 +488,7 @@
       {
         "description": "Domestic Standing Order fails with invalid frequency provided.",
         "id": "OB-301-DOP-101400",
-        "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1000670131/Domestic+Standing+Orders+v3.1.1#DomesticStandingOrdersv3.1.1-POST/domestic-standing-orders",
+        "refURI": "https://openbankinguk.github.io/read-write-api-site3/v4.0/profiles/payment-initiation-api-profile.html",
         "detail": "Checks that the resource fails posting a Domestic Standing Order with an invalid frequency value provided.",
         "parameters": {
           "tokenRequestScope": "payments",
@@ -515,7 +515,7 @@
       {
         "description": "Domestic Standing Order succeeds with minimal data set with additional schema checks.",
         "id": "OB-301-DOP-101401",
-        "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1000670131/Domestic+Standing+Orders+v3.1.1#DomesticStandingOrdersv3.1.1-POST/domestic-standing-orders",
+        "refURI": "https://openbankinguk.github.io/read-write-api-site3/v4.0/profiles/payment-initiation-api-profile.html",
         "detail": "Checks that the resource succeeds posting a Domestic Standing Order with a minimal data set and checks additional schema.",
         "parameters": {
           "tokenRequestScope": "payments",
@@ -547,7 +547,7 @@
       {
         "description": "PISP can retrieve the Domestic Standing Order, status checks and response.",
         "id": "OB-301-DOP-101500",
-        "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1000670131/Domestic+Standing+Orders+v3.1.1#DomesticStandingOrdersv3.1.1-GET/domestic-standing-orders/{DomesticStandingOrderId}",
+        "refURI": "https://openbankinguk.github.io/read-write-api-site3/v4.0/profiles/payment-initiation-api-profile.html",
         "detail": "Check PISP can retrieve the Domestic Standing Order with additional schema checks.",
         "parameters": {
           "tokenRequestScope": "payments",
@@ -566,7 +566,7 @@
       {
         "description": "Fails when NumberOfPayments, FinalPaymentDateTime are specified at the time.",
         "id": "OB-301-DOP-1015001",
-        "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1000670131/Domestic+Standing+Orders+v3.1.1#DomesticStandingOrdersv3.1.1-GET/domestic-standing-orders/{DomesticStandingOrderId}",
+        "refURI": "https://openbankinguk.github.io/read-write-api-site3/v4.0/profiles/payment-initiation-api-profile.html",
         "detail": "Checks if NumberOfPayments, FinalPaymentDateTime are specified at the time.",
         "parameters": {
           "tokenRequestScope": "payments",
@@ -587,7 +587,7 @@
       {
         "description": "Fails when NumberOfPayments, FinalPaymentDateTime are not specified and FinalPaymentAmount is specified.",
         "id": "OB-301-DOP-1015002",
-        "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1000670131/Domestic+Standing+Orders+v3.1.1#DomesticStandingOrdersv3.1.1-GET/domestic-standing-orders/{DomesticStandingOrderId}",
+        "refURI": "https://openbankinguk.github.io/read-write-api-site3/v4.0/profiles/payment-initiation-api-profile.html",
         "detail": "Checks if NumberOfPayments, FinalPaymentDateTime are not specified and FinalPaymentAmount is specified.",
         "parameters": {
           "tokenRequestScope": "payments",
@@ -609,7 +609,7 @@
       {
         "description": "International Payment consent succeeds with minimal data set with additional schema checks.",
         "id": "OB-301-DOP-101600",
-        "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1000015587/International+Payments+v3.1.1#InternationalPaymentsv3.1.1-POST/international-payment-consents",
+        "refURI": "https://openbankinguk.github.io/read-write-api-site3/v4.0/profiles/payment-initiation-api-profile.html",
         "detail": "Checks that the resource succeeds for a PISP asking for a International Payment consent with a minimal data set and checks additional schema.",
         "parameters": {
           "tokenRequestScope": "payments",
@@ -639,7 +639,7 @@
       {
         "description": "PISP can retrieve International Payment consent resource status.",
         "id": "OB-301-DOP-101700",
-        "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1000015587/International+Payments+v3.1.1#InternationalPaymentsv3.1.1-GET/international-payment-consents/{ConsentId}",
+        "refURI": "https://openbankinguk.github.io/read-write-api-site3/v4.0/profiles/payment-initiation-api-profile.html",
         "detail": "Check PISP can retrieve International Payment consent resource and status is Authorised.",
         "parameters": {
           "tokenRequestScope": "payments",
@@ -659,7 +659,7 @@
       {
         "description": "International Payment succeeds with minimal data set with additional schema checks.",
         "id": "OB-301-DOP-101800",
-        "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1000015587/International+Payments+v3.1.1#InternationalPaymentsv3.1.1-POST/international-payments",
+        "refURI": "https://openbankinguk.github.io/read-write-api-site3/v4.0/profiles/payment-initiation-api-profile.html",
         "detail": "Checks that the resource succeeds posting a  International Payment with a minimal data set and checks additional schema.",
         "parameters": {
           "tokenRequestScope": "payments",
@@ -692,7 +692,7 @@
       {
         "description": "PISP can retrieve the International Payment, status checks and response.",
         "id": "OB-301-DOP-101900",
-        "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1000015587/International+Payments+v3.1.1#InternationalPaymentsv3.1.1-Status.2",
+        "refURI": "https://openbankinguk.github.io/read-write-api-site3/v4.0/profiles/payment-initiation-api-profile.html",
         "detail": "Check PISP can retrieve the International Payment.",
         "parameters": {
           "tokenRequestScope": "payments",
@@ -711,7 +711,7 @@
       {
         "description": "International Scheduled Payment consent succeeds with minimal data set with additional schema checks.",
         "id": "OB-301-DOP-102000",
-        "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1000670152/International+Scheduled+Payments+v3.1.1#InternationalScheduledPaymentsv3.1.1-POST/international-scheduled-payment-consents",
+        "refURI": "https://openbankinguk.github.io/read-write-api-site3/v4.0/profiles/payment-initiation-api-profile.html",
         "detail": "Checks that the resource succeeds for a PISP asking for a International Scheduled Payment consent with a minimal data set and checks additional schema.",
         "parameters": {
           "tokenRequestScope": "payments",
@@ -744,7 +744,7 @@
       {
         "description": "PISP can retrieve International Scheduled Payment consent resource status.",
         "id": "OB-301-DOP-102100",
-        "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1000670152/International+Scheduled+Payments+v3.1.1#InternationalScheduledPaymentsv3.1.1-GET/international-scheduled-payment-consents/{ConsentId}",
+        "refURI": "https://openbankinguk.github.io/read-write-api-site3/v4.0/profiles/payment-initiation-api-profile.html",
         "detail": "Check PISP can retrieve International Scheduled Payment consent resource and status is Authorised.",
         "parameters": {
           "tokenRequestScope": "payments",
@@ -764,7 +764,7 @@
       {
         "description": "International Scheduled Payment succeeds with minimal data set with additional schema checks.",
         "id": "OB-301-DOP-102200",
-        "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1000670152/International+Scheduled+Payments+v3.1.1#InternationalScheduledPaymentsv3.1.1-POST/international-scheduled-payments",
+        "refURI": "https://openbankinguk.github.io/read-write-api-site3/v4.0/profiles/payment-initiation-api-profile.html",
         "detail": "Checks that the resource succeeds posting an International Scheduled Payment with a minimal data set and checks additional schema.",
         "parameters": {
           "tokenRequestScope": "payments",
@@ -798,7 +798,7 @@
       {
         "description": "PISP can retrieve the International Scheduled Payment, status checks and response.",
         "id": "OB-301-DOP-102300",
-        "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1000015587/International+Payments+v3.1.1#InternationalPaymentsv3.1.1-Status.2",
+        "refURI": "https://openbankinguk.github.io/read-write-api-site3/v4.0/profiles/payment-initiation-api-profile.html",
         "detail": "Check PISP can retrieve the International Scheduled Payment.",
         "parameters": {
           "tokenRequestScope": "payments",
@@ -817,7 +817,7 @@
       {
         "description": "3.1.3 Payments - x-fapi-financial-id no longer required",
         "id": "OB-313-DOP-100100",
-        "refURI": "https://openbankinguk.github.io/read-write-api-site3/v3.1.3/resources-and-data-models/pisp/domestic-payment-consents.html#post-domestic-payment-consents",
+        "refURI": "https://openbankinguk.github.io/read-write-api-site3/v4.0/profiles/payment-initiation-api-profile.html",
         "detail": "check that removal of x-fapi-financial-id succeeds for Check Domestic Payment consents for 3.1.3 and above",
         "apiVersion": ">=3.1.3",
         "parameters": {
