@@ -9,6 +9,7 @@ import testcases from './modules/testcases';
 import status from './modules/status';
 import exporter from './modules/exporter';
 import importer from './modules/importer';
+import navbar from './modules/navbar';
 
 Vue.use(Vuex);
 
@@ -21,6 +22,7 @@ const store = new Vuex.Store({
     status,
     exporter,
     importer,
+    navbar,
   },
   strict,
   plugins,
