@@ -1,7 +1,7 @@
 {
     "scripts": [{
         "description": "Fails 404 on an invalid endpoint.",
-        "id": "OB-301-ACC-001000",
+        "id": "OB-400-ACC-001000",
         "refURI": "https://openbankinguk.github.io/read-write-api-site3/v4.0/profiles/account-and-transaction-api-profile.html",
         "detail": "Validates that the base resource returns the correct status code (404 Not Found) given an invalid endpoint.",
         "parameters": {
@@ -21,7 +21,7 @@
       },
       {
         "description": "Minimal data returned for a given Account using the ReadAccountsBasic permission, status and headers.",
-        "id": "OB-301-ACC-100000",
+        "id": "OB-400-ACC-100000",
         "refURI": "https://openbankinguk.github.io/read-write-api-site3/v4.0/profiles/account-and-transaction-api-profile.html",
         "detail": "Checks that the resource differs depending on the permissions (ReadAccountsBasic and ReadAccountsDetail) used to access the resource with additional schema checks on status and headers.",
         "parameters": {
@@ -46,7 +46,7 @@
       },
       {
         "description": "All data returned for a given Account with ReadAccountsDetail permission, status and headers.",
-        "id": "OB-301-ACC-100200",
+        "id": "OB-400-ACC-100200",
         "refURI": "https://openbankinguk.github.io/read-write-api-site3/v4.0/profiles/account-and-transaction-api-profile.html",
         "detail": "Checks that the resource returns the correct data depending on the permissions ReadAccountsDetail with additional additional schema checks on status and headers.",
         "parameters": {
@@ -68,7 +68,7 @@
       },
       {
         "description": "Minimal data returned for bulk Accounts using the ReadAccountsBasic permission, status and headers.",
-        "id": "OB-301-ACC-100300",
+        "id": "OB-400-ACC-100300",
         "refURI": "https://openbankinguk.github.io/read-write-api-site3/v4.0/profiles/account-and-transaction-api-profile.html",
         "detail": "Checks that the resource differs depending on the permissions (ReadAccountsBasic and ReadAccountsDetail) used to access the resource with additional additional schema checks on status and headers.",
         "parameters": {
@@ -92,7 +92,7 @@
       },
       {
         "description": "All data returned for bulk Accounts with ReadAccountsDetail permission, status and headers.",
-        "id": "OB-301-ACC-100400",
+        "id": "OB-400-ACC-100400",
         "refURI": "https://openbankinguk.github.io/read-write-api-site3/v4.0/profiles/account-and-transaction-api-profile.html",
         "detail": "Checks that the resource returns the correct data depending on the permissions ReadAccountsDetail with additional additional schema checks on status and headers.",
         "parameters": {
@@ -113,7 +113,7 @@
       },
       {
         "description": "Fails using incorrect permissions for a given Account.",
-        "id": "OB-301-ACC-100500",
+        "id": "OB-400-ACC-100500",
         "refURI": "https://openbankinguk.github.io/read-write-api-site3/v4.0/profiles/account-and-transaction-api-profile.html",
         "detail": "Validates that the account resource fails correctly given an invalid or incorrect token.",
         "parameters": {
@@ -135,7 +135,7 @@
       },
       {
         "description": "Fails using incorrect permissions for Bulk Account.",
-        "id": "OB-301-ACC-100600",
+        "id": "OB-400-ACC-100600",
         "refURI": "https://openbankinguk.github.io/read-write-api-site3/v4.0/profiles/account-and-transaction-api-profile.html",
         "detail": "Validates that the account list resource fails correctly given an invalid or incorrect token.",
         "parameters": {
@@ -152,7 +152,7 @@
       },
       {
         "description": "The x-fapi-interaction-id is replayed for an Account.",
-        "id": "OB-301-ACC-100700",
+        "id": "OB-400-ACC-100700",
         "refURI": "https://openbankinguk.github.io/read-write-api-site3/v4.0/profiles/account-and-transaction-api-profile.html",
         "detail": "Checks that the x-fapi-interaction-id value is played-back for an Account.",
         "parameters": {
@@ -177,7 +177,7 @@
       },
       {
         "description": "The x-fapi-interaction-id is replayed for bulk accounts if given.",
-        "id": "OB-301-ACC-100800",
+        "id": "OB-400-ACC-100800",
         "refURI": "https://openbankinguk.github.io/read-write-api-site3/v4.0/profiles/account-and-transaction-api-profile.html",
         "detail": "Checks that the x-fapi-interaction-id value is played-back for bulk Account.",
         "parameters": {
@@ -202,7 +202,7 @@
       },
       {
         "description": "Fails using 401 unauthorized given no token for Accounts.",
-        "id": "OB-301-ACC-101000",
+        "id": "OB-400-ACC-101000",
         "refURI": "https://openbankinguk.github.io/read-write-api-site3/v4.0/profiles/account-and-transaction-api-profile.html",
         "detail": "Checks the correct response is returned 401 if no token is used on an Account.",
         "parameters": {
@@ -220,7 +220,7 @@
       },
       {
         "description": "Fails using 401 unauthorized given no token for Bulk Accounts.",
-        "id": "OB-301-ACC-101100",
+        "id": "OB-400-ACC-101100",
         "refURI": "https://openbankinguk.github.io/read-write-api-site3/v4.0/profiles/account-and-transaction-api-profile.html",
         "detail": "Checks the correct response is returned 401 given if no token is used on a bulk account.",
         "parameters": {
@@ -237,7 +237,7 @@
       },
       {
         "description": "Fails 404 on an invalid Account resource.",
-        "id": "OB-301-ACC-101101",
+        "id": "OB-400-ACC-101101",
         "refURI": "https://openbankinguk.github.io/read-write-api-site3/v4.0/profiles/account-and-transaction-api-profile.html",
         "detail": "Validates that the Account resource returns the correct status code (404 Not Found) given an invalid endpoint.",
         "parameters": {
@@ -258,7 +258,7 @@
       },
       {
         "description": "All data returned for an Account with ReadBalances permission, status and headers.",
-        "id": "OB-301-BAL-101200",
+        "id": "OB-400-BAL-101200",
         "refURI": "https://openbankinguk.github.io/read-write-api-site3/v4.0/profiles/account-and-transaction-api-profile.html",
         "detail": "Checks that the resource returns the correct data with additional schema checks status and headers for a given account. The resource response payload does not differ depending on the permissions granted.",
         "parameters": {
@@ -281,7 +281,7 @@
       },
       {
         "description": "All data returned for Bulk Accounts with ReadBalances permission, status and headers.",
-        "id": "OB-301-BAL-101300",
+        "id": "OB-400-BAL-101300",
         "refURI": "https://openbankinguk.github.io/read-write-api-site3/v4.0/profiles/account-and-transaction-api-profile.html",
         "detail": "Checks that the bulk balances resource returns the correct data with additional schema checks, status and headers for a given account.",
         "parameters": {
@@ -305,7 +305,7 @@
       },
       {
         "description": "Fails on incorrect permissions are provided for balance.",
-        "id": "OB-301-BAL-101400",
+        "id": "OB-400-BAL-101400",
         "refURI": "https://openbankinguk.github.io/read-write-api-site3/v4.0/profiles/account-and-transaction-api-profile.html",
         "detail": "Validates that the balance resource fails correctly given an invalid permissions",
         "parameters": {
@@ -331,7 +331,7 @@
       },
       {
         "description": "Fails on incorrect permissions for Bulk Balances.",
-        "id": "OB-301-BAL-101500",
+        "id": "OB-400-BAL-101500",
         "refURI": "https://openbankinguk.github.io/read-write-api-site3/v4.0/profiles/account-and-transaction-api-profile.html",
         "detail": "Validates that the bulk balances resource fails correctly given an invalid permissions",
         "parameters": {
@@ -352,7 +352,7 @@
       },
       {
         "description": "Fails when account is invalid for Balances.",
-        "id": "OB-301-BAL-101600",
+        "id": "OB-400-BAL-101600",
         "refURI": "https://openbankinguk.github.io/read-write-api-site3/v4.0/profiles/account-and-transaction-api-profile.html",
         "detail": "Checks the correct response is returned when given an invalid Account for a Balance.",
         "parameters": {
@@ -375,7 +375,7 @@
       },
       {
         "description": "Fails when token is from client grant.",
-        "id": "OB-301-BAL-101700",
+        "id": "OB-400-BAL-101700",
         "refURI": "https://openbankinguk.github.io/read-write-api-site3/v4.0/profiles/account-and-transaction-api-profile.html",
         "detail": "Checks the correct response is returned 401 using a CCG token",
         "parameters": {
@@ -395,7 +395,7 @@
       },
       {
         "description": "Fails 404 on an invalid Balance resource.",
-        "id": "OB-301-BAL-101701",
+        "id": "OB-400-BAL-101701",
         "refURI": "https://openbankinguk.github.io/read-write-api-site3/v4.0/profiles/account-and-transaction-api-profile.html",
         "detail": "Validates that the balance resource returns the correct status code (404 Not Found) given an invalid endpoint.",
         "parameters": {
@@ -417,7 +417,7 @@
       },
       {
         "description": "The x-fapi-interaction-id is played-black for account Balances.",
-        "id": "OB-301-BAL-101702",
+        "id": "OB-400-BAL-101702",
         "refURI": "https://openbankinguk.github.io/read-write-api-site3/v4.0/profiles/account-and-transaction-api-profile.html",
         "detail": "Checks that the value in the x-fapi-interaction-id response header is played-back for account Balances.",
         "parameters": {
@@ -443,7 +443,7 @@
       },
       {
         "description": "The x-fapi-interaction-id is played-black for Balances.",
-        "id": "OB-301-BAL-101703",
+        "id": "OB-400-BAL-101703",
         "refURI": "https://openbankinguk.github.io/read-write-api-site3/v4.0/profiles/account-and-transaction-api-profile.html",
         "detail": "Checks that the value in the x-fapi-interaction-id response header is played-back for Balances.",
         "parameters": {
@@ -469,7 +469,7 @@
       },
       {
         "description": "Minimal data returned for a given Beneficiary using the ReadBeneficiariesBasic permission, status and headers.",
-        "id": "OB-301-BEN-101800",
+        "id": "OB-400-BEN-101800",
         "refURI": "https://openbankinguk.github.io/read-write-api-site3/v4.0/profiles/account-and-transaction-api-profile.html",
         "detail": "Checks that the resource differs depending on the permission ReadBeneficiariesBasic used to access the resource with additional schema checks on status and headers.",
         "parameters": {
@@ -492,7 +492,7 @@
       },
       {
         "description": "Minimal data returned for a given Bulk Beneficiaries using the ReadBeneficiariesBasic permission, status and headers.",
-        "id": "OB-301-BEN-101900",
+        "id": "OB-400-BEN-101900",
         "refURI": "https://openbankinguk.github.io/read-write-api-site3/v4.0/profiles/account-and-transaction-api-profile.html",
         "detail": "Checks that the resource differs depending on the permissions (ReadBeneficiariesBasic and ReadBeneficiariesDetail) used to access the resource with additional schema checks, status and headers.",
         "parameters": {
@@ -514,7 +514,7 @@
       },
       {
         "description": "Fails when incorrect permissions are provided for Bulk Beneficiaries.",
-        "id": "OB-301-BEN-102000",
+        "id": "OB-400-BEN-102000",
         "refURI": "https://openbankinguk.github.io/read-write-api-site3/v4.0/profiles/account-and-transaction-api-profile.html",
         "detail": "Validates that the bulk Beneficiaries resource fails correctly given an invalid permission.",
         "parameters": {
@@ -535,7 +535,7 @@
       },
       {
         "description": "Fails given incorrect permission is provided for a Beneficiary.",
-        "id": "OB-301-BEN-102100",
+        "id": "OB-400-BEN-102100",
         "refURI": "https://openbankinguk.github.io/read-write-api-site3/v4.0/profiles/account-and-transaction-api-profile.html",
         "detail": "Validates that the beneficiary resource fails correctly given an invalid permission.",
         "parameters": {
@@ -557,7 +557,7 @@
       },
       {
         "description": "Fails when account is invalid for Beneficiary.",
-        "id": "OB-301-BEN-102200",
+        "id": "OB-400-BEN-102200",
         "refURI": "https://openbankinguk.github.io/read-write-api-site3/v4.0/profiles/account-and-transaction-api-profile.html",
         "detail": "Checks the correct response is returned when given an invalid account for a Beneficiary.",
         "parameters": {
@@ -581,7 +581,7 @@
       },
       {
         "description": "Fails 404 on an invalid Beneficiary resource.",
-        "id": "OB-301-BEN-102201",
+        "id": "OB-400-BEN-102201",
         "refURI": "https://openbankinguk.github.io/read-write-api-site3/v4.0/profiles/account-and-transaction-api-profile.html",
         "detail": "Validates that the beneficiary resource returns the correct status code (404 Not Found) given an invalid endpoint.",
         "parameters": {
@@ -603,7 +603,7 @@
       },
       {
         "description": "Fails using client grant token on Beneficiaries.",
-        "id": "OB-301-BEN-102203",
+        "id": "OB-400-BEN-102203",
         "refURI": "https://openbankinguk.github.io/read-write-api-site3/v4.0/profiles/account-and-transaction-api-profile.html",
         "detail": "Checks the correct response is returned 401 using a CCG token on Beneficiaries",
         "parameters": {
@@ -623,7 +623,7 @@
       },
       {
         "description": "The x-fapi-interaction-id is played-black for account Beneficiary.",
-        "id": "OB-301-BEN-102204",
+        "id": "OB-400-BEN-102204",
         "refURI": "https://openbankinguk.github.io/read-write-api-site3/v4.0/profiles/account-and-transaction-api-profile.html",
         "detail": "Checks that the value in the x-fapi-interaction-id response header is played-back for account Beneficiary.",
         "parameters": {
@@ -649,7 +649,7 @@
       },
       {
         "description": "The x-fapi-interaction-id is played-black for Beneficiary.",
-        "id": "OB-301-BEN-102205",
+        "id": "OB-400-BEN-102205",
         "refURI": "https://openbankinguk.github.io/read-write-api-site3/v4.0/profiles/account-and-transaction-api-profile.html",
         "detail": "Checks that the value in the x-fapi-interaction-id response header is played-back for Beneficiary.",
         "parameters": {
@@ -675,7 +675,7 @@
       },
       {
         "description": "All data returned for a given account with ReadDirectDebits permission, status and headers.",
-        "id": "OB-301-DIR-102300",
+        "id": "OB-400-DIR-102300",
         "refURI": "https://openbankinguk.github.io/read-write-api-site3/v4.0/profiles/account-and-transaction-api-profile.html",
         "detail": "Checks that the resource returns the correct data depending permission ReadDirectDebits with additional schema checks on status and headers.",
         "parameters": {
@@ -698,7 +698,7 @@
       },
       {
         "description": "All data returned for a given account with ReadDirectDebits permission, status and headers.",
-        "id": "OB-301-DIR-102400",
+        "id": "OB-400-DIR-102400",
         "refURI": "https://openbankinguk.github.io/read-write-api-site3/v4.0/profiles/account-and-transaction-api-profile.html",
         "detail": "Checks that the resource returns the correct data for the permission ReadDirectDebits bulk with additional schema checks on status and headers.",
         "parameters": {
@@ -720,7 +720,7 @@
       },
       {
         "description": "Fails when account is invalid for Direct Debit.",
-        "id": "OB-301-DIR-102500",
+        "id": "OB-400-DIR-102500",
         "refURI": "https://openbankinguk.github.io/read-write-api-site3/v4.0/profiles/account-and-transaction-api-profile.html",
         "detail": "Checks the correct response is returned when given an invalid account for Direct Debit.",
         "parameters": {
@@ -743,7 +743,7 @@
       },
       {
         "description": "Fails 404 on an invalid Direct Debit resource.",
-        "id": "OB-301-DIR-102501",
+        "id": "OB-400-DIR-102501",
         "refURI": "https://openbankinguk.github.io/read-write-api-site3/v4.0/profiles/account-and-transaction-api-profile.html",
         "detail": "Validates that the Direct Debit resource returns the correct status code (404 Not Found) given an invalid endpoint.",
         "parameters": {
@@ -765,7 +765,7 @@
       },
       {
         "description": "Fails when token using on Direct Debit is from client grant.",
-        "id": "OB-301-DIR-102502",
+        "id": "OB-400-DIR-102502",
         "refURI": "https://openbankinguk.github.io/read-write-api-site3/v4.0/profiles/account-and-transaction-api-profile.html",
         "detail": "Checks the correct response is returned 401 using a CCG token",
         "parameters": {
@@ -785,7 +785,7 @@
       },
       {
         "description": "The x-fapi-interaction-id is played-black for account Direct Debit.",
-        "id": "OB-301-DIR-102503",
+        "id": "OB-400-DIR-102503",
         "refURI": "https://openbankinguk.github.io/read-write-api-site3/v4.0/profiles/account-and-transaction-api-profile.html",
         "detail": "Checks that the value in the x-fapi-interaction-id response header is played-back for account Direct Debit.",
         "parameters": {
@@ -811,7 +811,7 @@
       },
       {
         "description": "The x-fapi-interaction-id is played-black for Direct Debit.",
-        "id": "OB-301-DIR-102504",
+        "id": "OB-400-DIR-102504",
         "refURI": "https://openbankinguk.github.io/read-write-api-site3/v4.0/profiles/account-and-transaction-api-profile.html",
         "detail": "Checks that the value in the x-fapi-interaction-id response header is played-back for Direct Debit.",
         "parameters": {
@@ -836,7 +836,7 @@
       },
       {
         "description": "All data returned for a given Account with ReadOffers permission with additional schema checks, status and headers.",
-        "id": "OB-301-OFF-102600",
+        "id": "OB-400-OFF-102600",
         "refURI": "https://openbankinguk.github.io/read-write-api-site3/v4.0/profiles/account-and-transaction-api-profile.html",
         "detail": "Checks that the resource returns the correct data depending permission ReadOffers with additional schema checks on status and headers.",
         "parameters": {
@@ -859,7 +859,7 @@
       },
       {
         "description": "All data returned for Offers with ReadOffers permission with additional schema checks, status and headers.",
-        "id": "OB-301-OFF-102700",
+        "id": "OB-400-OFF-102700",
         "refURI": "https://openbankinguk.github.io/read-write-api-site3/v4.0/profiles/account-and-transaction-api-profile.html",
         "detail": "Checks that the resource returns the correct data depending permission ReadOffers with additional schema checks on status and headers.",
         "parameters": {
@@ -885,7 +885,7 @@
       },
       {
         "description": "Fails when account is invalid for Offer.",
-        "id": "OB-301-OFF-102800",
+        "id": "OB-400-OFF-102800",
         "refURI": "https://openbankinguk.github.io/read-write-api-site3/v4.0/profiles/account-and-transaction-api-profile.html",
         "detail": "Checks the correct response is returned when given an invalid account for an Offer.",
         "parameters": {
@@ -913,7 +913,7 @@
       },
       {
         "description": "Fails 404 on an invalid Offer resource.",
-        "id": "OB-301-OFF-102801",
+        "id": "OB-400-OFF-102801",
         "refURI": "https://openbankinguk.github.io/read-write-api-site3/v4.0/profiles/account-and-transaction-api-profile.html",
         "detail": "Validates that the offer resource returns the correct status code (404 Not Found) given an invalid endpoint.",
         "parameters": {
@@ -939,7 +939,7 @@
       },
       {
         "description": "Fails when token using on Offers is from client grant.",
-        "id": "OB-301-OFF-102802",
+        "id": "OB-400-OFF-102802",
         "refURI": "https://openbankinguk.github.io/read-write-api-site3/v4.0/profiles/account-and-transaction-api-profile.html",
         "detail": "Checks the correct response is returned 401 using a CCG token",
         "parameters": {
@@ -961,7 +961,7 @@
       },
       {
         "description": "The x-fapi-interaction-id is played-black for account Offer.",
-        "id": "OB-301-OFF-102803",
+        "id": "OB-400-OFF-102803",
         "refURI": "https://openbankinguk.github.io/read-write-api-site3/v4.0/profiles/account-and-transaction-api-profile.html",
         "detail": "Checks that the value in the x-fapi-interaction-id response header is played-back for account Offer.",
         "parameters": {
@@ -988,7 +988,7 @@
       },
       {
         "description": "The x-fapi-interaction-id is played-black for Offer.",
-        "id": "OB-301-OFF-102804",
+        "id": "OB-400-OFF-102804",
         "refURI": "https://openbankinguk.github.io/read-write-api-site3/v4.0/profiles/account-and-transaction-api-profile.html",
         "detail": "Checks that the value in the x-fapi-interaction-id response header is played-back for Offer.",
         "parameters": {
@@ -1013,7 +1013,7 @@
       },
       {
         "description": "All data returned for a given Account with ReadParty permission with additional schema checks, status and headers.",
-        "id": "OB-301-PAR-102900",
+        "id": "OB-400-PAR-102900",
         "refURI": "https://openbankinguk.github.io/read-write-api-site3/v4.0/profiles/account-and-transaction-api-profile.html",
         "detail": "Checks that the resource returns the correct data depending permission ReadParty with additional schema checks on status and headers.",
         "parameters": {
@@ -1036,7 +1036,7 @@
       },
       {
         "description": "Data returned for a given Bulk Party using ReadPartyPSU permission, status and headers.",
-        "id": "OB-301-PAR-102901",
+        "id": "OB-400-PAR-102901",
         "refURI": "https://openbankinguk.github.io/read-write-api-site3/v4.0/profiles/account-and-transaction-api-profile.html",
         "detail": "Checks that data is returned for ReadPartyPSU with additional schema checks, status and headers.",
         "parameters": {
@@ -1058,7 +1058,7 @@
       },
       {
         "description": "All data returned for a given Account with ReadParty permission with additional schema checks, status and headers.",
-        "id": "OB-301-PAR-102902",
+        "id": "OB-400-PAR-102902",
         "refURI": "https://openbankinguk.github.io/read-write-api-site3/v4.0/profiles/account-and-transaction-api-profile.html",
         "detail": "Checks that the resource returns the correct data depending permission ReadParty with additional schema checks on status and headers.",
         "parameters": {
@@ -1081,7 +1081,7 @@
       },
       {
         "description": "All data returned for ReadParty permission with additional schema checks, status and headers.",
-        "id": "OB-301-PAR-103000",
+        "id": "OB-400-PAR-103000",
         "refURI": "https://openbankinguk.github.io/read-write-api-site3/v4.0/profiles/account-and-transaction-api-profile.html",
         "detail": "Checks that the resource returns the correct data depending permission ReadParty with additional schema checks on status and headers.",
         "parameters": {
@@ -1104,7 +1104,7 @@
       },
       {
         "description": "Fails when account is invalid for an Party.",
-        "id": "OB-301-PAR-103100",
+        "id": "OB-400-PAR-103100",
         "refURI": "https://openbankinguk.github.io/read-write-api-site3/v4.0/profiles/account-and-transaction-api-profile.html",
         "detail": "Checks the correct response is returned when given an invalid account for an Party.",
         "parameters": {
@@ -1127,7 +1127,7 @@
       },
       {
         "description": "Fails 404 on an invalid Party resource.",
-        "id": "OB-301-PAR-103101",
+        "id": "OB-400-PAR-103101",
         "refURI": "https://openbankinguk.github.io/read-write-api-site3/v4.0/profiles/account-and-transaction-api-profile.html",
         "detail": "Validates that the party resource returns the correct status code (404 Not Found) given an invalid endpoint.",
         "parameters": {
@@ -1149,7 +1149,7 @@
       },
       {
         "description": "Fails when token using on Party is from client grant.",
-        "id": "OB-301-PAR-103102",
+        "id": "OB-400-PAR-103102",
         "refURI": "https://openbankinguk.github.io/read-write-api-site3/v4.0/profiles/account-and-transaction-api-profile.html",
         "detail": "Checks the correct response is returned 401 using a CCG token",
         "parameters": {
@@ -1169,7 +1169,7 @@
       },
       {
         "description": "Fails when incorrect permissions are provided for Bulk Party.",
-        "id": "OB-301-PAR-103103",
+        "id": "OB-400-PAR-103103",
         "refURI": "https://openbankinguk.github.io/read-write-api-site3/v4.0/profiles/account-and-transaction-api-profile.html",
         "detail": "Validates that the Bulk Party resource fails correctly given an invalid permission.",
         "parameters": {
@@ -1190,7 +1190,7 @@
       },
       {
         "description": "The x-fapi-interaction-id is played-black for account Party.",
-        "id": "OB-301-PAR-103104",
+        "id": "OB-400-PAR-103104",
         "refURI": "https://openbankinguk.github.io/read-write-api-site3/v4.0/profiles/account-and-transaction-api-profile.html",
         "detail": "Checks that the value in the x-fapi-interaction-id response header is played-back for account Party.",
         "parameters": {
@@ -1216,7 +1216,7 @@
       },
       {
         "description": "The x-fapi-interaction-id is played-black for Party.",
-        "id": "OB-301-PAR-103105",
+        "id": "OB-400-PAR-103105",
         "refURI": "https://openbankinguk.github.io/read-write-api-site3/v4.0/profiles/account-and-transaction-api-profile.html",
         "detail": "Checks that the value in the x-fapi-interaction-id response header is played-back for Party.",
         "parameters": {
@@ -1241,7 +1241,7 @@
       },
       {
         "description": "Fails when account is invalid for Parties.",
-        "id": "OB-301-PAR-103106",
+        "id": "OB-400-PAR-103106",
         "refURI": "https://openbankinguk.github.io/read-write-api-site3/v4.0/profiles/account-and-transaction-api-profile.html",
         "detail": "Checks the correct response is returned when given an invalid account for Parties.",
         "parameters": {
@@ -1264,7 +1264,7 @@
       },
       {
         "description": "Fails 404 on an invalid Party resource.",
-        "id": "OB-301-PAR-103107",
+        "id": "OB-400-PAR-103107",
         "refURI": "https://openbankinguk.github.io/read-write-api-site3/v4.0/profiles/account-and-transaction-api-profile.html",
         "detail": "Validates that the party resource returns the correct status code (404 Not Found) given an invalid endpoint.",
         "parameters": {
@@ -1286,7 +1286,7 @@
       },
       {
         "description": "The x-fapi-interaction-id is played-black for account Parties.",
-        "id": "OB-301-PAR-103108",
+        "id": "OB-400-PAR-103108",
         "refURI": "https://openbankinguk.github.io/read-write-api-site3/v4.0/profiles/account-and-transaction-api-profile.html",
         "detail": "Checks that the value in the x-fapi-interaction-id response header is played-back for account Parties.",
         "parameters": {
@@ -1312,7 +1312,7 @@
       },
       {
         "description": "All data returned for a given account with ReadProducts permission with additional schema checks, status and headers.",
-        "id": "OB-301-PRO-103200",
+        "id": "OB-400-PRO-103200",
         "refURI": "https://openbankinguk.github.io/read-write-api-site3/v4.0/profiles/account-and-transaction-api-profile.html",
         "detail": "Checks that the resource returns the correct data depending permission ReadProducts with additional schema checks on status and headers.",
         "parameters": {
@@ -1335,7 +1335,7 @@
       },
       {
         "description": "All data returned for ReadProducts permission with additional schema checks, status and headers.",
-        "id": "OB-301-PRO-103300",
+        "id": "OB-400-PRO-103300",
         "refURI": "https://openbankinguk.github.io/read-write-api-site3/v4.0/profiles/account-and-transaction-api-profile.html",
         "detail": "Checks that the bulk resource returns the correct data depending permission ReadProducts with additional schema checks on status and headers.",
         "parameters": {
@@ -1357,7 +1357,7 @@
       },
       {
         "description": "Fails when account is invalid for a Product.",
-        "id": "OB-301-PRO-103400",
+        "id": "OB-400-PRO-103400",
         "refURI": "https://openbankinguk.github.io/read-write-api-site3/v4.0/profiles/account-and-transaction-api-profile.html",
         "detail": "Checks the correct response is returned when given an invalid account for a Product.",
         "parameters": {
@@ -1380,7 +1380,7 @@
       },
       {
         "description": "Fails 404 on an invalid Product resource.",
-        "id": "OB-301-PRO-103401",
+        "id": "OB-400-PRO-103401",
         "refURI": "https://openbankinguk.github.io/read-write-api-site3/v4.0/profiles/account-and-transaction-api-profile.html",
         "detail": "Validates that the product resource returns the correct status code (404 Not Found) given an invalid endpoint.",
         "parameters": {
@@ -1402,7 +1402,7 @@
       },
       {
         "description": "Fails when token using on Product is from client grant.",
-        "id": "OB-301-PRO-102802",
+        "id": "OB-400-PRO-102802",
         "refURI": "https://openbankinguk.github.io/read-write-api-site3/v4.0/profiles/account-and-transaction-api-profile.html",
         "detail": "Checks the correct response is returned 401 using a CCG token.",
         "parameters": {
@@ -1422,7 +1422,7 @@
       },
       {
         "description": "The x-fapi-interaction-id is played-black for account Product.",
-        "id": "OB-301-PRO-103402",
+        "id": "OB-400-PRO-103402",
         "refURI": "https://openbankinguk.github.io/read-write-api-site3/v4.0/profiles/account-and-transaction-api-profile.html",
         "detail": "Checks that the value in the x-fapi-interaction-id response header is played-back for account Product.",
         "parameters": {
@@ -1448,7 +1448,7 @@
       },
       {
         "description": "The x-fapi-interaction-id is played-black for Product.",
-        "id": "OB-301-PRO-103403",
+        "id": "OB-400-PRO-103403",
         "refURI": "https://openbankinguk.github.io/read-write-api-site3/v4.0/profiles/account-and-transaction-api-profile.html",
         "detail": "Checks that the value in the x-fapi-interaction-id response header is played-back for Product.",
         "parameters": {
@@ -1473,7 +1473,7 @@
       },
       {
         "description": "Detailed level data returned for a given account using the ReadScheduledPaymentsDetail permission.",
-        "id": "OB-301-SCP-103500",
+        "id": "OB-400-SCP-103500",
         "refURI": "https://openbankinguk.github.io/read-write-api-site3/v4.0/profiles/account-and-transaction-api-profile.html",
         "detail": "Checks that detail level is returned resource with permission ReadScheduledPaymentsDetail to access the resource with additional schema checks on status and headers.",
         "parameters": {
@@ -1496,7 +1496,7 @@
       },
       {
         "description": "All data returned for ReadScheduledPaymentsDetail permission with additional schema checks, status and headers.",
-        "id": "OB-301-SCP-103600",
+        "id": "OB-400-SCP-103600",
         "refURI": "https://openbankinguk.github.io/read-write-api-site3/v4.0/profiles/account-and-transaction-api-profile.html",
         "detail": "Checks that the bulk resource returns the correct data depending permission ReadScheduledPaymentsDetail with additional schema checks on status and headers.",
         "parameters": {
@@ -1518,7 +1518,7 @@
       },
       {
         "description": "Fails when account is invalid for Scheduled Payment.",
-        "id": "OB-301-SCP-103700",
+        "id": "OB-400-SCP-103700",
         "refURI": "https://openbankinguk.github.io/read-write-api-site3/v4.0/profiles/account-and-transaction-api-profile.html",
         "detail": "Checks the correct response is returned when given an invalid account for a Scheduled Payment.",
         "parameters": {
@@ -1542,7 +1542,7 @@
       },
       {
         "description": "Fails 404 on an invalid Scheduled Payment resource.",
-        "id": "OB-301-SCP-103701",
+        "id": "OB-400-SCP-103701",
         "refURI": "https://openbankinguk.github.io/read-write-api-site3/v4.0/profiles/account-and-transaction-api-profile.html",
         "detail": "Validates that the Scheduled Payment resource returns the correct status code (404 Not Found) given an invalid endpoint.",
         "parameters": {
@@ -1564,7 +1564,7 @@
       },
       {
         "description": "Fails when token is from client grant.",
-        "id": "OB-301-SCP-103702",
+        "id": "OB-400-SCP-103702",
         "refURI": "https://openbankinguk.github.io/read-write-api-site3/v4.0/profiles/account-and-transaction-api-profile.html",
         "detail": "Checks the correct response is returned 401 using a CCG token",
         "parameters": {
@@ -1584,7 +1584,7 @@
       },
       {
         "description": "The x-fapi-interaction-id is played-black for account Scheduled Payments.",
-        "id": "OB-301-SCP-103703",
+        "id": "OB-400-SCP-103703",
         "refURI": "https://openbankinguk.github.io/read-write-api-site3/v4.0/profiles/account-and-transaction-api-profile.html",
         "detail": "Checks that the value in the x-fapi-interaction-id response header is played-back for account Product.",
         "parameters": {
@@ -1610,7 +1610,7 @@
       },
       {
         "description": "The x-fapi-interaction-id is played-black for Scheduled Payments.",
-        "id": "OB-301-SCP-103704",
+        "id": "OB-400-SCP-103704",
         "refURI": "https://openbankinguk.github.io/read-write-api-site3/v4.0/profiles/account-and-transaction-api-profile.html",
         "detail": "Checks that the value in the x-fapi-interaction-id response header is played-back for Product.",
         "parameters": {
@@ -1635,7 +1635,7 @@
       },
       {
         "description": "Detailed level data returned for a given account using the ReadStandingOrdersDetail permission.",
-        "id": "OB-301-STO-103800",
+        "id": "OB-400-STO-103800",
         "refURI": "https://openbankinguk.github.io/read-write-api-site3/v4.0/profiles/account-and-transaction-api-profile.html",
         "detail": "Checks that detail level is returned resource with permission ReadStandingOrdersDetail to access the resource with additional schema checks on status and headers.",
         "parameters": {
@@ -1658,7 +1658,7 @@
       },
       {
         "description": "All data returned for a given account using the ReadStandingOrdersDetail permission.",
-        "id": "OB-301-STO-103900",
+        "id": "OB-400-STO-103900",
         "refURI": "https://openbankinguk.github.io/read-write-api-site3/v4.0/profiles/account-and-transaction-api-profile.html",
         "detail": "Checks that all data for bulk resource with permission ReadStandingOrdersDetail to access the resource with additional schema checks on status and headers.",
         "parameters": {
@@ -1680,7 +1680,7 @@
       },
       {
         "description": "Test",
-        "id": "OB-301-STO-103901",
+        "id": "OB-400-STO-103901",
         "refURI": "https://openbankinguk.github.io/read-write-api-site3/v4.0/profiles/account-and-transaction-api-profile.html",
         "detail": "Checks that all data for bulk resource with permission ReadStandingOrdersDetail to access the resource with additional schema checks on status and headers.",
         "parameters": {
@@ -1702,7 +1702,7 @@
       },
       {
         "description": "Fails when account is invalid for a Standing Order.",
-        "id": "OB-301-STO-104000",
+        "id": "OB-400-STO-104000",
         "refURI": "https://openbankinguk.github.io/read-write-api-site3/v4.0/profiles/account-and-transaction-api-profile.html",
         "detail": "Checks the correct response is returned when given an invalid account for a Standing Order.",
         "parameters": {
@@ -1726,7 +1726,7 @@
       },
       {
         "description": "Fails 404 on an invalid Standing Order resource.",
-        "id": "OB-301-STO-104100",
+        "id": "OB-400-STO-104100",
         "refURI": "https://openbankinguk.github.io/read-write-api-site3/v4.0/profiles/account-and-transaction-api-profile.html",
         "detail": "Validates that the Standing Order resource returns the correct status code (404 Not Found) given an invalid endpoint.",
         "parameters": {
@@ -1748,7 +1748,7 @@
       },
       {
         "description": "Fails when token is from client grant.",
-        "id": "OB-301-STO-104101",
+        "id": "OB-400-STO-104101",
         "refURI": "https://openbankinguk.github.io/read-write-api-site3/v4.0/profiles/account-and-transaction-api-profile.html",
         "detail": "Checks the correct response is returned 401 using a CCG token",
         "parameters": {
@@ -1768,7 +1768,7 @@
       },
       {
         "description": "The x-fapi-interaction-id is played-black for account Standing Orders.",
-        "id": "OB-301-STO-104102",
+        "id": "OB-400-STO-104102",
         "refURI": "https://openbankinguk.github.io/read-write-api-site3/v4.0/profiles/account-and-transaction-api-profile.html",
         "detail": "Checks that the value in the x-fapi-interaction-id response header is played-back for account Product.",
         "parameters": {
@@ -1794,7 +1794,7 @@
       },
       {
         "description": "The x-fapi-interaction-id is played-black for Standing Orders.",
-        "id": "OB-301-STO-104103",
+        "id": "OB-400-STO-104103",
         "refURI": "https://openbankinguk.github.io/read-write-api-site3/v4.0/profiles/account-and-transaction-api-profile.html",
         "detail": "Checks that the value in the x-fapi-interaction-id response header is played-back for Product.",
         "parameters": {
@@ -1819,7 +1819,7 @@
       },
       {
         "description": "Minimal data returned for a given Transactions using the ReadTransactionsBasic permission, status and headers.",
-        "id": "OB-301-TRA-105000",
+        "id": "OB-400-TRA-105000",
         "refURI": "https://openbankinguk.github.io/read-write-api-site3/v4.0/profiles/account-and-transaction-api-profile.html",
         "detail": "Checks that the resource differs depending on the permissions (ReadTransactionsBasic and ReadTransactionsDetail) used to access the resource with additional schema checks on status and headers.",
         "parameters": {
@@ -1850,7 +1850,7 @@
       },
       {
         "description": "All data returned for a given Account with ReadTransactionsBasic permission, status and headers.",
-        "id": "OB-301-TRA-105100",
+        "id": "OB-400-TRA-105100",
         "refURI": "https://openbankinguk.github.io/read-write-api-site3/v4.0/profiles/account-and-transaction-api-profile.html",
         "detail": "Checks that the resource returns the correct data depending on the permissions ReadTransactionsBasic with additional additional schema checks on status and headers.",
         "parameters": {
@@ -1876,7 +1876,7 @@
       },
       {
         "description": "Query parameters (fromBookingTime & toBookingTime) are accepted in ISO8601 format 2006-01-02T15:04:05",
-        "id": "OB-301-TRA-105110",
+        "id": "OB-400-TRA-105110",
         "refURI": "https://openbankinguk.github.io/read-write-api-site3/v4.0/profiles/account-and-transaction-api-profile.html",
         "detail": "Checks that the endpoint processed the query parameters and returns the expected resource format.",
         "apiVersion":">=3.1.5",
@@ -1907,7 +1907,7 @@
       },
       {
         "description": "Query parameters (fromBookingTime & toBookingTime) are accepted in ISO8601 format 2006-01-02T15:04:05.999",
-        "id": "OB-301-TRA-105120",
+        "id": "OB-400-TRA-105120",
         "refURI": "https://openbankinguk.github.io/read-write-api-site3/v4.0/profiles/account-and-transaction-api-profile.html",
         "detail": "Checks that the endpoint processed the query parameters and returns the expected resource format.",
         "apiVersion":">=3.1.5",
@@ -1938,7 +1938,7 @@
       },
       {
         "description": "Minimal data returned for bulk Transaction using the ReadTransactionsBasic permission, status and headers.",
-        "id": "OB-301-TRA-105200",
+        "id": "OB-400-TRA-105200",
         "refURI": "https://openbankinguk.github.io/read-write-api-site3/v4.0/profiles/account-and-transaction-api-profile.html",
         "detail": "Checks that the resource differs depending on the permissions (ReadTransactionsBasic and ReadTransactionsDetail) used to access the resource with additional additional schema checks on status and headers.",
         "parameters": {
@@ -1965,7 +1965,7 @@
       },
       {
         "description": "Fails using incorrect permissions for a given Transaction.",
-        "id": "OB-301-TRA-105300",
+        "id": "OB-400-TRA-105300",
         "refURI": "https://openbankinguk.github.io/read-write-api-site3/v4.0/profiles/account-and-transaction-api-profile.html",
         "detail": "Validates that the Transaction resource fails correctly given an invalid or incorrect token.",
         "parameters": {
@@ -1989,7 +1989,7 @@
       },
       {
         "description": "Fails using incorrect permissions for Bulk Transaction.",
-        "id": "OB-301-TRA-105400",
+        "id": "OB-400-TRA-105400",
         "refURI": "https://openbankinguk.github.io/read-write-api-site3/v4.0/profiles/account-and-transaction-api-profile.html",
         "detail": "Validates that the Transaction list resource fails correctly given an invalid or incorrect token.",
         "parameters": {
@@ -2008,7 +2008,7 @@
   
       {
         "description": "The x-fapi-interaction-id is replayed for an Transaction.",
-        "id": "OB-301-TRA-105500",
+        "id": "OB-400-TRA-105500",
         "refURI": "https://openbankinguk.github.io/read-write-api-site3/v4.0/profiles/account-and-transaction-api-profile.html",
         "detail": "Checks that the x-fapi-interaction-id value is played-back for an Transaction.",
         "parameters": {
@@ -2036,7 +2036,7 @@
       },
       {
         "description": "The x-fapi-interaction-id is replayed for bulk Transaction if given.",
-        "id": "OB-301-TRA-105600",
+        "id": "OB-400-TRA-105600",
         "refURI": "https://openbankinguk.github.io/read-write-api-site3/v4.0/profiles/account-and-transaction-api-profile.html",
         "detail": "Checks that the x-fapi-interaction-id value is played-back for bulk Transaction.",
         "parameters": {
@@ -2063,7 +2063,7 @@
       },
       {
         "description": "Fails when account is invalid for a Transaction.",
-        "id": "OB-301-TRA-105700",
+        "id": "OB-400-TRA-105700",
         "refURI": "https://openbankinguk.github.io/read-write-api-site3/v4.0/profiles/account-and-transaction-api-profile.html",
         "detail": "Checks the correct response is returned when given an invalid account for a Transaction.",
         "parameters": {
@@ -2089,7 +2089,7 @@
       },
       {
         "description": "Succeeds when fromStatementDateTime is a valid ISO8601 formatted date variant 1.",
-        "id": "OB-301-STA-105900",
+        "id": "OB-400-STA-105900",
         "refURI": "https://openbankinguk.github.io/read-write-api-site3/v4.0/profiles/account-and-transaction-api-profile.html",
         "detail": "Checks that the x-fapi-interaction-id value is played-back for bulk Transaction.",
         "apiVersion":">=3.1.5",
@@ -2120,7 +2120,7 @@
       },
       {
         "description": "Succeeds when fromStatementDateTime is a valid ISO8601 formatted date variant 2.",
-        "id": "OB-301-STA-106000",
+        "id": "OB-400-STA-106000",
         "refURI": "https://openbankinguk.github.io/read-write-api-site3/v4.0/profiles/account-and-transaction-api-profile.html",
         "detail": "Checks that the x-fapi-interaction-id value is played-back for bulk Transaction.",
         "apiVersion":">=3.1.5",
@@ -2151,7 +2151,7 @@
       },
       {
         "description": "Succeeds when fromStatementDateTime is a valid ISO8601 formatted date variant 3.",
-        "id": "OB-301-STA-106100",
+        "id": "OB-400-STA-106100",
         "refURI": "https://openbankinguk.github.io/read-write-api-site3/v4.0/profiles/account-and-transaction-api-profile.html",
         "detail": "Checks that the x-fapi-interaction-id value is played-back for bulk Transaction.",
         "apiVersion":">=3.1.5",
@@ -2182,7 +2182,7 @@
       },
       {
         "description": "Succeeds when fromStatementDateTime is a valid ISO8601 formatted date variant 4.",
-        "id": "OB-301-STA-106200",
+        "id": "OB-400-STA-106200",
         "refURI": "https://openbankinguk.github.io/read-write-api-site3/v4.0/profiles/account-and-transaction-api-profile.html",
         "detail": "Checks that the x-fapi-interaction-id value is played-back for bulk Transaction.",
         "apiVersion":">=3.1.5",
@@ -2213,7 +2213,7 @@
       },
       {
         "description": "Succeeds when fromStatementDateTime is a valid ISO8601 formatted date variant 5.",
-        "id": "OB-301-STA-106300",
+        "id": "OB-400-STA-106300",
         "refURI": "https://openbankinguk.github.io/read-write-api-site3/v4.0/profiles/account-and-transaction-api-profile.html",
         "detail": "Checks that the x-fapi-interaction-id value is played-back for bulk Transaction.",
         "apiVersion":">=3.1.5",
