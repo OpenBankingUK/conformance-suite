@@ -1,0 +1,81 @@
+[{
+    "@id": "#co0001",
+    "name": "Post Account Consent",
+    "input": {
+      "method": "POST",
+      "endpoint": "/open-banking/v4.0/aisp/account-access-consents",
+      "headers": {
+        "content-type": "application/json",
+        "accept": "application/json",
+        "x-fapi-interaction-id": "b4405450-febe-11e8-80a5-0fcebb1574e5",
+        "x-fapi-financial-id": "$fapi_financial_id",
+        "authorization": "Bearer $client_access_token"
+      },
+      "bodyData": "$permission_payload"
+    },
+    "context": {
+      "baseurl": "$resource_server"
+    },
+    "expect": {
+      "status-code": 201,
+      "matches": [{
+        "description": "Check we get Status:AwaitingAuthorisation",
+        "json": "Data.Status",
+        "value": "AwaitingAuthorisation"
+      }],
+      "contextPut": {
+        "matches": [{
+          "name": "test_consent_id",
+          "description": "gets the consentid from PostAccountRequest ",
+          "json": "Data.ConsentId"
+        }]
+      }
+    }
+  },
+  {
+    "@id": "#co0002",
+    "name": "Get Account Consent",
+    "input": {
+      "method": "GET",
+      "endpoint": "/open-banking/v4.0/aisp/account-access-consents/$test_consent_id",
+      "headers": {
+        "content-type": "application/json",
+        "accept": "application/json",
+        "x-fapi-interaction-id": "b4405450-febe-11e8-80a5-0fcebb1574e5",
+        "x-fapi-financial-id": "$fapi_financial_id",
+        "authorization": "Bearer $client_access_token"
+      }
+    },
+    "context": {
+      "baseurl": "$resource_server"
+    },
+    "expect": {
+      "status-code": 200,
+      "matches": [{
+        "description": "Check we get Status:AwaitingAuthorisation",
+        "json": "Data.Status",
+        "value": "AWAU"
+      }]
+    }
+  }, {
+    "@id": "#co0003",
+    "name": "Delete Account Request",
+    "input": {
+      "method": "DELETE",
+      "endpoint": "/open-banking/v4.0/aisp/account-access-consents/$test_consent_id",
+      "headers": {
+        "content-type": "application/json",
+        "accept": "*/*",
+        "x-fapi-interaction-id": "b4405450-febe-11e8-80a5-0fcebb1574e5",
+        "x-fapi-financial-id": "$fapi_financial_id",
+        "authorization": "Bearer $client_access_token"
+      }
+    },
+    "context": {
+      "baseurl": "$resource_server"
+    },
+    "expect": {
+      "status-code": 204
+    }
+  }
+]
