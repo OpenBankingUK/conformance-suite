@@ -40,6 +40,8 @@ const (
 	CtxInstructedAmountCurrency            = "instructedAmountCurrency"
 	CtxInstructedAmountValue               = "instructedAmountValue"
 	CtxPaymentFrequency                    = "payment_frequency" // CtxPaymentFrequency - for example `EvryDay`.
+	CtxPaymentFrequencyCountPerPeriod      = "payment_frequency_count_per_period"
+	CtxPaymentFrequencyPointInTime         = "payment_frequency_point_in_time"
 	CtxFirstPaymentDateTime                = "firstPaymentDateTime"
 	CtxRequestedExecutionDateTime          = "requestedExecutionDateTime"
 	CtxCurrencyOfTransfer                  = "currencyOfTransfer"
@@ -85,6 +87,8 @@ func PutParametersToJourneyContext(config JourneyConfig, context model.Context) 
 	context.PutString(CtxInstructedAmountCurrency, config.instructedAmount.Currency)
 	context.PutString(CtxInstructedAmountValue, config.instructedAmount.Value)
 	context.PutString(CtxPaymentFrequency, string(config.paymentFrequency))
+	context.Put(CtxPaymentFrequencyCountPerPeriod, config.paymentFrequencyCountPerPeriod)
+	context.Put(CtxPaymentFrequencyPointInTime, config.paymentFrequencyPointInTime)
 	context.PutString(CtxFirstPaymentDateTime, config.firstPaymentDateTime)
 	context.PutString(CtxRequestedExecutionDateTime, config.requestedExecutionDateTime)
 	context.PutString(CtxCurrencyOfTransfer, config.currencyOfTransfer)
