@@ -48,7 +48,7 @@ import * as _ from 'lodash';
 const isNotEmpty = value => !_.isEmpty(value);
 
 const validator = {
-  regex: /^(EvryDay)$|^(EvryWorkgDay)$|^(IntrvlWkDay:0[1-9]:0[1-7])$|^(WkInMnthDay:0[1-5]:0[1-7])$|^(IntrvlMnthDay:(0[1-6]|12|24):(-0[1-5]|0[1-9]|[12][0-9]|3[01]))$|^(QtrDay:(ENGLISH|SCOTTISH|RECEIVED))$/,
+  regex: /^(EvryDay)$|^(EvryWorkgDay)$|^(IntrvlWkDay:0[1-9]:0[1-7])$|^(WkInMnthDay:0[1-5]:0[1-7])$|^(IntrvlMnthDay:(0[1-6]|12|24):(-0[1-5]|0[1-9]|[12][0-9]|3[01]))$|^(QtrDay:(ENGLISH|SCOTTISH|RECEIVED))$|^(ADHO)$|^(YEAR)$|^(DAIL)$|^(FRTN)$|^(INDA)$|^(MNTH)$|^(QURT)$|^(MIAN)$|^(WEEK)$/,
   frequencies: {
     EvryDay: /^$/,
     EvryWorkgDay: /^$/,
@@ -56,6 +56,15 @@ const validator = {
     WkInMnthDay: /^0[1-5]:0[1-7]$/,
     IntrvlMnthDay: /^(0[1-6]|12|24):(-0[1-5]|0[1-9]|[12][0-9]|3[01])$/,
     QtrDay: /^(ENGLISH|SCOTTISH|RECEIVED)$/,
+    ADHO: /^$/,
+    YEAR: /^$/,
+    DAIL: /^$/,
+    FRTN: /^$/,
+    INDA: /^$/,
+    MNTH: /^$/,
+    QURT: /^$/,
+    MIAN: /^$/,
+    WEEK: /^$/,
   },
 };
 
