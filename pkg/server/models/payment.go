@@ -79,12 +79,12 @@ func (a InstructedAmount) Validate() error {
 }
 
 const (
-	regexPaymentFrequencyErr = `must be in a valid format (^(EvryDay)$|^(EvryWorkgDay)$|^(IntrvlWkDay:0[1-9]:0[1-7])$|^(WkInMnthDay:0[1-5]:0[1-7])$|^(IntrvlMnthDay:(0[1-6]|12|24):(-0[1-5]|0[1-9]|[12][0-9]|3[01]))$|^(QtrDay:(ENGLISH|SCOTTISH|RECEIVED))$)`
+	regexPaymentFrequencyErr = `must be in a valid format (^(EvryDay)$|^(EvryWorkgDay)$|^(IntrvlWkDay:0[1-9]:0[1-7])$|^(WkInMnthDay:0[1-5]:0[1-7])$|^(IntrvlMnthDay:(0[1-6]|12|24):(-0[1-5]|0[1-9]|[12][0-9]|3[01]))$|^(QtrDay:(ENGLISH|SCOTTISH|RECEIVED))$|^(ADHO)$|^(YEAR)$|^(DAIL)$|^(FRTN)$|^(INDA)$|^(MNTH)$|^(QURT)$|^(MIAN)$|^(WEEK)$)`
 )
 
 var (
 	// nolint:gochecknoglobals
-	regexPaymentFrequency = regexp.MustCompile(`^(EvryDay)$|^(EvryWorkgDay)$|^(IntrvlWkDay:0[1-9]:0[1-7])$|^(WkInMnthDay:0[1-5]:0[1-7])$|^(IntrvlMnthDay:(0[1-6]|12|24):(-0[1-5]|0[1-9]|[12][0-9]|3[01]))$|^(QtrDay:(ENGLISH|SCOTTISH|RECEIVED))$`)
+	regexPaymentFrequency = regexp.MustCompile(`^(EvryDay)$|^(EvryWorkgDay)$|^(IntrvlWkDay:0[1-9]:0[1-7])$|^(WkInMnthDay:0[1-5]:0[1-7])$|^(IntrvlMnthDay:(0[1-6]|12|24):(-0[1-5]|0[1-9]|[12][0-9]|3[01]))$|^(QtrDay:(ENGLISH|SCOTTISH|RECEIVED))$|^(ADHO)$|^(YEAR)$|^(DAIL)$|^(FRTN)$|^(INDA)$|^(MNTH)$|^(QURT)$|^(MIAN)$|^(WEEK)$`)
 )
 
 type PaymentFrequency string
