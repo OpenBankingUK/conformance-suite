@@ -143,7 +143,7 @@ func getSpecFilePathPattern(specName string) string {
 	case "Confirmation of Funds API Specification":
 		filename = "spec/%s/confirmation-funds-openapi.json"
 
-	case "OBIE VRP Profile":
+	case "Variable Recurring Payments API Specification":
 		filename = "spec/%s/variable-recurring-payments-openapi.json"
 
 	default:
@@ -260,7 +260,7 @@ func getOas3Operations(props *openapi3.PathItem) map[string]*openapi3.Operation 
 	return ops
 }
 
-//normalizePropertyType - Workaround to provide similar context to the one used in Swagger schema
+// normalizePropertyType - Workaround to provide similar context to the one used in Swagger schema
 func normalizePropertyType(propertyType string) string {
 	return fmt.Sprintf("[%s]", propertyType)
 }
