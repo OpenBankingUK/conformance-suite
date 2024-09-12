@@ -26,7 +26,7 @@ func readVrpDiscoveryEndpoints() ([]discovery.ModelEndpoint, error) {
 		  "discoveryItems": [
 			{
 			  "apiSpecification": {
-				"name": "OBIE VRP Profile",
+				"name": "Variable Recurring Payments API Specification",
 				"url": "https://openbankinguk.github.io/read-write-api-site3/v3.1.9/profiles/vrp-profile.html",
 				"version": "v3.1.9",
 				"schemaVersion": "https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v3.1.9/dist/openapi/vrp-openapi.json",
@@ -148,7 +148,7 @@ func TestVrpGenerateTestCases(t *testing.T) {
 	scripts, _, err := LoadGenerationResources(specType, manifestPath, &context)
 	assert.Nil(t, err)
 
-	val, err := schema.NewRawOpenAPI3Validator("OBIE VRP Profile", "v3.1.9")
+	val, err := schema.NewRawOpenAPI3Validator("Variable Recurring Payments API Specification", "v3.1.9")
 	assert.Nil(t, err)
 
 	endpoints, err := readVrpDiscoveryEndpoints()
@@ -165,7 +165,7 @@ func TestVrpGenerateTestCases(t *testing.T) {
 
 	params.Conditional = []discovery.ConditionalAPIProperties{
 		{
-			Name:      "OBIE VRP Profile",
+			Name:      "Variable Recurring Payments API Specification",
 			Endpoints: endpoints,
 		},
 	}
