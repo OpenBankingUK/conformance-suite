@@ -73,12 +73,12 @@
               "Name": "$creditorName"
             },
             "RemittanceInformation": {
-              "Structured": {
+              "Structured": [{
                 "CreditorReferenceInformation": {
                   "Reference": "$creditorIdentification"
                 }
-              },
-              "Unstructured": "Test Unstructured Data"
+              }],
+              "Unstructured": []
             }
           }
         },
