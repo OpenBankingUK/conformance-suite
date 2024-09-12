@@ -6,7 +6,7 @@
     }
   ],
   "info": {
-    "title": "OBIE VRP Profile",
+    "title": "Variable Recurring Payments API Specification",
     "description": "VRP OpenAPI Specification",
     "version": "3.1.10",
     "termsOfService": "https://www.openbanking.org.uk/terms",

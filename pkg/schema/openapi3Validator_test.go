@@ -73,7 +73,7 @@ func TestVrpRoutes(t *testing.T) {
 		{"GET", "/open-banking/v3.1/pisp/domestic-vrps/10005/payment-details"},
 	}
 
-	validator, err := NewRawOpenAPI3Validator("OBIE VRP Profile", "v3.1.8")
+	validator, err := NewRawOpenAPI3Validator("Variable Recurring Payments API Specification", "v3.1.8")
 	require.NoError(t, err)
 
 	for _, row := range data {
@@ -143,7 +143,7 @@ func TestCbpIITestResponseCapitalUtfNoSpace(t *testing.T) {
 }
 
 func TestVrp100200Response(t *testing.T) {
-	validator, err := NewRawOpenAPI3Validator("OBIE VRP Profile", "v3.1.8")
+	validator, err := NewRawOpenAPI3Validator("Variable Recurring Payments API Specification", "v3.1.8")
 	require.NoError(t, err)
 
 	r := HTTPResponse{
@@ -307,7 +307,7 @@ func TestIsRequestPropertyOas3(t *testing.T) {
 }
 
 func TestVrpIsRequestPropertyOas3(t *testing.T) {
-	val, _ := NewRawOpenAPI3Validator("OBIE VRP Profile", "v3.1.9")
+	val, _ := NewRawOpenAPI3Validator("Variable Recurring Payments API Specification", "v3.1.9")
 	exists, _, err := val.IsRequestProperty("POST", "/domestic-vrp-consents", "Data.ControlParameters.PeriodicLimits.0")
 	assert.Nil(t, err)
 	assert.True(t, exists)
