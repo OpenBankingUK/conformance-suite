@@ -121,7 +121,7 @@
       },
       {
         "description": "Retrieves VRP-100600 VrpID",
-        "id": "OB-400-VRP-10670",
+        "id": "OB-400-VRP-10170",
         "refURI": "https://openbankinguk.github.io/read-write-api-site3/v4.0/resources-and-data-models/vrp/domestic-vrp-consents.html",
         "detail": "Retrieves Variable Recurring Payments VrpID",
         "uri": "/domestic-vrps/$vrpId",
