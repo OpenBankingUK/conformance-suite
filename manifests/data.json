@@ -438,10 +438,53 @@
         "Risk": {}
       }
     },
+    "minimalInternationalPaymentConsentV4": {
+      "body": {
+        "Data": {
+          "Initiation": {
+            "InstructionIdentification": "$instructionIdentification",
+            "EndToEndIdentification": "$endToEndIdentification",
+            "CurrencyOfTransfer": "$currencyOfTransfer",
+            "InstructedAmount": {
+              "Amount": "$instructedAmountValue",
+              "Currency": "$instructedAmountCurrency"
+            },
+            "CreditorAccount": {
+              "SchemeName": "$internationalCreditorScheme",
+              "Identification": "$internationalCreditorIdentification",
+              "Name": "$internationalCreditorName"
+            }
+          }
+        },
+        "Risk": {}
+      }
+    },
     "minimalInternationalPayment": {
       "body": {
         "Data": {
           "ConsentId": "$OB-301-DOP-101600-ConsentId",
+          "Initiation": {
+            "InstructionIdentification": "$instructionIdentification",
+            "EndToEndIdentification": "$endToEndIdentification",
+            "CurrencyOfTransfer": "$currencyOfTransfer",
+            "InstructedAmount": {
+              "Amount": "$instructedAmountValue",
+              "Currency": "$instructedAmountCurrency"
+            },
+            "CreditorAccount": {
+              "SchemeName": "$internationalCreditorScheme",
+              "Identification": "$internationalCreditorIdentification",
+              "Name": "$internationalCreditorName"
+            }
+          }
+        },
+        "Risk": {}
+      }
+    },
+    "minimalInternationalPaymentV4": {
+      "body": {
+        "Data": {
+          "ConsentId": "$OB-400-DOP-101600-ConsentId",
           "Initiation": {
             "InstructionIdentification": "$instructionIdentification",
             "EndToEndIdentification": "$endToEndIdentification",
@@ -483,10 +526,56 @@
         "Risk": {}
       }
     },
+    "minimalInternationalScheduledPaymentConsentV4": {
+      "body": {
+        "Data": {
+          "Permission": "Create",
+          "Initiation": {
+            "RequestedExecutionDateTime": "$requestedExecutionDateTime",
+            "InstructionIdentification": "$instructionIdentification",
+            "EndToEndIdentification": "$endToEndIdentification",
+            "CurrencyOfTransfer": "$currencyOfTransfer",
+            "InstructedAmount": {
+              "Amount": "$instructedAmountValue",
+              "Currency": "$instructedAmountCurrency"
+            },
+            "CreditorAccount": {
+              "SchemeName": "$internationalCreditorScheme",
+              "Identification": "$internationalCreditorIdentification",
+              "Name": "$internationalCreditorName"
+            }
+          }
+        },
+        "Risk": {}
+      }
+    },
     "minimalInternationalScheduledPayment": {
       "body": {
         "Data": {
           "ConsentId": "$OB-301-DOP-102000-ConsentId",
+          "Initiation": {
+            "RequestedExecutionDateTime": "$requestedExecutionDateTime",
+            "InstructionIdentification": "$instructionIdentification",
+            "EndToEndIdentification": "$endToEndIdentification",
+            "CurrencyOfTransfer": "$currencyOfTransfer",
+            "InstructedAmount": {
+              "Amount": "$instructedAmountValue",
+              "Currency": "$instructedAmountCurrency"
+            },
+            "CreditorAccount": {
+              "SchemeName": "$internationalCreditorScheme",
+              "Identification": "$internationalCreditorIdentification",
+              "Name": "$internationalCreditorName"
+            }
+          }
+        },
+        "Risk": {}
+      }
+    },
+    "minimalInternationalScheduledPaymentV4": {
+      "body": {
+        "Data": {
+          "ConsentId": "$OB-400-DOP-102000-ConsentId",
           "Initiation": {
             "RequestedExecutionDateTime": "$requestedExecutionDateTime",
             "InstructionIdentification": "$instructionIdentification",
