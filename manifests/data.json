@@ -137,12 +137,12 @@
               "Name": "$creditorName"
             },
             "RemittanceInformation": {
-              "Structured": {
+              "Structured": [{
                 "CreditorReferenceInformation": {
                   "Reference": "$creditorIdentification"
                 }
-              },
-              "Unstructured": "Test Unstructured Data"
+              }],
+              "Unstructured": ["Test Unstructured Data"]
             }
           },
           "Instruction": {
@@ -158,12 +158,12 @@
               "Currency": "$instructedAmountCurrency"
             },
             "RemittanceInformation": {
-              "Structured": {
+              "Structured": [{
                 "CreditorReferenceInformation": {
                   "Reference": "$creditorIdentification"
                 }
-              },
-              "Unstructured": "Test Unstructured Data"
+              }],
+              "Unstructured": ["Test Unstructured Data"]
             }
           },
           "VRPType": "UK.OBIE.VRPType.Sweeping"
