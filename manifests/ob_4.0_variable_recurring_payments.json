@@ -154,7 +154,7 @@
           "endToEndIdentification": "e2e-domestic-pay",
           "instructedAmountCurrency": "$instructedAmountCurrency",
           "instructedAmountValue": "$instructedAmountValue",
-          "postData": "$minimalDomesticVRP"
+          "postData": "$minimalDomesticVRPV4"
         },
         "headers": {
           "Content-Type": "application/json"
