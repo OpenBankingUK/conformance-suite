@@ -568,27 +568,6 @@
         "validateSignature": true
       },
       {
-        "description": "Fails when NumberOfPayments, FinalPaymentDateTime are specified at the time.",
-        "id": "OB-400-DOP-1015001",
-        "refURI": "https://openbankinguk.github.io/read-write-api-site3/v4.0/profiles/payment-initiation-api-profile.html",
-        "detail": "Checks if NumberOfPayments, FinalPaymentDateTime are specified at the time.",
-        "parameters": {
-          "tokenRequestScope": "payments",
-          "paymentID": "$OB-400-DOP-101401-DomesticStandingOrderID"
-        },
-        "uri": "/domestic-standing-orders/$paymentID",
-        "uriImplementation": "conditional",
-        "resource": "DomesticScheduledPayment",
-        "asserts_last_if_all": [
-          "OB3GLOAssertNumberOfPayments",
-          "OB3GLOAssertFinalPaymentDateTime",
-          "OB3GLOAssertOn403"
-        ],
-        "method": "get",
-        "schemaCheck": true,
-        "validateSignature": true
-      },
-      {
         "description": "Fails when NumberOfPayments, FinalPaymentDateTime are not specified and FinalPaymentAmount is specified.",
         "id": "OB-400-DOP-1015002",
         "refURI": "https://openbankinguk.github.io/read-write-api-site3/v4.0/profiles/payment-initiation-api-profile.html",
@@ -620,7 +599,7 @@
           "OB-400-DOP-101600-instructionIdentification": "$instructionIdentification",
           "instructionIdentification": "$fn:instructionIdentificationID()",
           "endToEndIdentification": "e2e-internat-pay",
-          "postData": "$minimalInternationalPaymentConsent",
+          "postData": "$minimalInternationalPaymentConsentV4",
           "requestConsent": "true"
         },
         "body": "$postData",
@@ -672,7 +651,7 @@
           "currencyOfTransfer": "$currencyOfTransfer",
           "instructionIdentification": "$OB-400-DOP-101600-instructionIdentification",
           "endToEndIdentification": "e2e-internat-pay",
-          "postData": "$minimalInternationalPayment",
+          "postData": "$minimalInternationalPaymentV4",
           "consentId": "$OB-400-DOP-101600-ConsentId"
         },
         "headers": {
@@ -725,7 +704,7 @@
           "OB-400-DOP-102000-instructionIdentification": "$instructionIdentification",
           "instructionIdentification": "$fn:instructionIdentificationID()",
           "endToEndIdentification": "e2e-internat-sched-pay",
-          "postData": "$minimalInternationalScheduledPaymentConsent",
+          "postData": "$minimalInternationalScheduledPaymentConsentV4",
           "requestConsent": "true"
         },
         "body": "$postData",
@@ -777,7 +756,7 @@
           "currencyOfTransfer": "$currencyOfTransfer",
           "instructionIdentification": "$OB-400-DOP-102000-instructionIdentification",
           "endToEndIdentification": "e2e-internat-sched-pay",
-          "postData": "$minimalInternationalScheduledPayment",
+          "postData": "$minimalInternationalScheduledPaymentV4",
           "consentId": "$OB-400-DOP-102000-ConsentId"
         },
         "headers": {
