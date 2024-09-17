@@ -17,16 +17,16 @@ To provide feedback, please see the [CONTRIBUTING.md](CONTRIBUTING.md).
 ## Release Notes
 * * *
 
-# Release v1.8.1 (12th August 2024)
+# Release v1.9.0 (17th September 2024)
 
-The release is called **v1.8.1**, an update to add preliminary support to Open Banking Read/Write APIs v4.0.0 specification, including some UX/UI improvements for new default manifests compatible with v4.0.0, new swagger and minor bugfixes.
+The release is called **v1.9.0**, an update to add full support to Open Banking Read/Write APIs v4.0.0 specification, including some UX/UI improvements for new default manifests compatible with v4.0.0, new swagger changes and bugfixes.
 
-[Full Release Notes](https://github.com/OpenBankingUK/conformance-suite/blob/develop/docs/releases/v1.8.1.md)
+[Full Release Notes](https://github.com/OpenBankingUK/conformance-suite/blob/develop/docs/releases/v1.9.0.md)
 
 
 ---
 **Download**:
-`docker run --rm -it -p 127.0.0.1:8443:8443 "openbanking/conformance-suite:v1.8.1"` |
+`docker run --rm -it -p 127.0.0.1:8443:8443 "openbanking/conformance-suite:v1.9.0"` |
 [DockerHub](https://hub.docker.com/r/openbanking/conformance-suite) |
 [Setup Guide](https://github.com/OpenBankingUK/conformance-suite/blob/develop/docs/setup-guide.md)
 ---
@@ -36,7 +36,7 @@ The release is called **v1.8.1**, an update to add preliminary support to Open B
 
 | Release       | Standard version  |
 | ------------- |:-----------------:|
-| v1.8.1        | v4.0.0            |
+| v1.9.0        | v4.0.0            |
 | v1.7.2        | v3.1.11           |
 | v1.7.0        | v3.1.10           |
 | v1.6.12       | v3.1.9            |
@@ -47,11 +47,11 @@ The release is called **v1.8.1**, an update to add preliminary support to Open B
 
 Pull and run the latest (stable) tagged Docker image:
 
-    > docker run --rm -it -p 127.0.0.1:8443:8443 "openbanking/conformance-suite:v1.8.0"
+    > docker run --rm -it -p 127.0.0.1:8443:8443 "openbanking/conformance-suite:v1.9.0"
 
 or
 
-    > docker run --rm -it -p 8443:8443 "openbanking/conformance-suite:v1.8.0"
+    > docker run --rm -it -p 8443:8443 "openbanking/conformance-suite:v1.9.0"
 
 [See Setup Guide](https://github.com/OpenBankingUK/conformance-suite/blob/develop/docs/setup-guide.md)
 
