@@ -37,7 +37,7 @@ The release is called **v1.9.0**, an update to add full support to Open Banking 
 | Release       | Standard version  |
 | ------------- |:-----------------:|
 | v1.9.0        | v4.0.0            |
-| v1.7.2        | v3.1.11           |
+| v1.7.6        | v3.1.11           |
 | v1.7.0        | v3.1.10           |
 | v1.6.12       | v3.1.9            |
 
