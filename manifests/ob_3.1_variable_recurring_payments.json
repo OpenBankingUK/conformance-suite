@@ -219,6 +219,7 @@
       "id": "OB-301-VRP-100700",
       "refURI": "https://openbankinguk.github.io/read-write-api-site3/v3.1.8/resources-and-data-models/vrp/domestic-vrps.html",
       "detail": "Check that once the domestic-payment-consent has been authorised by the PSU, the PISP can proceed to submitting the domestic-payment for processing.",
+      "apiVersion": "<3.1.11",
       "parameters": {
         "tokenRequestScope": "payments",
         "consentId": "$OB-301-VRP-100100-ConsentId",
@@ -229,6 +230,41 @@
         "instructedAmountCurrency": "$instructedAmountCurrency",
         "instructedAmountValue": "$instructedAmountValue",
         "postData": "$minimalDomesticVRP"
+      },
+      "headers": {
+        "Content-Type": "application/json"
+      },
+      "body": "$postData",
+      "uri": "/domestic-vrps",
+      "uriImplementation": "mandatory",
+      "resource": "DomesticVRP",
+      "asserts": [
+        "OB3GLOAssertOn201"
+      ],
+      "keepContextOnSuccess": {
+        "name": "OB-301-VRP-100700-DomesticVRPId",
+        "value": "Data.DomesticVRPId"
+      },
+      "method": "post",
+      "schemaCheck": true,
+      "validateSignature": true
+    },
+    {
+      "description": "Repeated Domestic Variable Recurring Payment",
+      "id": "OB-301-VRP-100701",
+      "refURI": "https://openbankinguk.github.io/read-write-api-site3/v3.1.8/resources-and-data-models/vrp/domestic-vrps.html",
+      "detail": "Check that once the domestic-payment-consent has been authorised by the PSU, the PISP can proceed to submitting the domestic-payment for processing.",
+      "apiVersion": ">=3.1.11",
+      "parameters": {
+        "tokenRequestScope": "payments",
+        "consentId": "$OB-301-VRP-100100-ConsentId",
+        "thisSchemeName": "$creditorScheme",
+        "thisIdentification": "$creditorIdentification",
+        "instructionIdentification": "$OB-301-VRP-100100-instructionIdentification",
+        "endToEndIdentification": "e2e-domestic-pay",
+        "instructedAmountCurrency": "$instructedAmountCurrency",
+        "instructedAmountValue": "$instructedAmountValue",
+        "postData": "$minimalDomesticVRPV3111"
       },
       "headers": {
         "Content-Type": "application/json"
