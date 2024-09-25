@@ -6,11 +6,17 @@
 package server
 
 import (
+	"archive/zip"
+	"bytes"
+	"encoding/json"
+	"fmt"
+	"io"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
 	"github.com/sirupsen/logrus"
 
+	"github.com/OpenBankingUK/conformance-suite/pkg/discovery"
 	"github.com/OpenBankingUK/conformance-suite/pkg/server/models"
 )
 
@@ -74,8 +80,49 @@ func (h importHandlers) postImportRerun(c echo.Context) error {
 
 // nolint:unparam
 func (h importHandlers) doImport(request models.ImportRequest, logger *logrus.Entry) error {
-	// logger.WithField("request", request).Info("Importing ...")
 	logger.WithField("len(request.Report)", len(request.Report)).Info("Importing ...")
-	// TODO(mbana): Do something with `report.zip`
+
+	// Create a reader for the zip file
+	zipReader, err := zip.NewReader(bytes.NewReader([]byte(request.Report)), int64(len(request.Report)))
+	if err != nil {
+		return fmt.Errorf("failed to create zip reader: %w", err)
+	}
+
+	// Search for discovery.json file
+	var discoveryFile *zip.File
+	for _, file := range zipReader.File {
+		if file.Name == "discovery.json" {
+			discoveryFile = file
+			break
+		}
+	}
+
+	if discoveryFile == nil {
+		return fmt.Errorf("discovery.json not found in the zip file")
+	}
+
+	// Open the discovery.json file
+	rc, err := discoveryFile.Open()
+	if err != nil {
+		return fmt.Errorf("failed to open discovery.json: %w", err)
+	}
+	defer rc.Close()
+
+	// Read the content of discovery.json
+	content, err := io.ReadAll(rc)
+	if err != nil {
+		return fmt.Errorf("failed to read discovery.json: %w", err)
+	}
+
+	// Parse the JSON content
+	var discoveryModel discovery.ModelDiscovery
+	err = json.Unmarshal(content, &discoveryModel)
+	if err != nil {
+		return fmt.Errorf("failed to parse discovery.json: %w", err)
+	}
+
+	// Log the parsed data
+	logger.WithField("discovery", discoveryModel).Info("Discovery data parsed successfully")
+
 	return nil
 }
