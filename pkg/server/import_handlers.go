@@ -68,24 +68,28 @@ func (h importHandlers) postImportRerun(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, NewErrorResponse(err))
 	}
 
-	if err := h.doImport(request, logger); err != nil {
+	discovery, err := h.doImport(request, logger);
+	if err != nil {
 		return c.JSON(http.StatusBadRequest, NewErrorResponse(err))
 	}
 
-	response := models.ImportRerunResponse{}
+	response := models.ImportRerunResponse{
+		Discovery: discovery,
+	}
 	logger.Info("Imported")
 
 	return c.JSON(http.StatusOK, response)
 }
 
 // nolint:unparam
-func (h importHandlers) doImport(request models.ImportRequest, logger *logrus.Entry) error {
+func (h importHandlers) doImport(request models.ImportRequest, logger *logrus.Entry) (discovery.ModelDiscovery, error) {
+	var discoveryModel discovery.ModelDiscovery
 	logger.WithField("len(request.Report)", len(request.Report)).Info("Importing ...")
 
 	// Create a reader for the zip file
 	zipReader, err := zip.NewReader(bytes.NewReader([]byte(request.Report)), int64(len(request.Report)))
 	if err != nil {
-		return fmt.Errorf("failed to create zip reader: %w", err)
+		return discoveryModel, fmt.Errorf("failed to create zip reader: %w", err)
 	}
 
 	// Search for discovery.json file
@@ -98,31 +102,30 @@ func (h importHandlers) doImport(request models.ImportRequest, logger *logrus.En
 	}
 
 	if discoveryFile == nil {
-		return fmt.Errorf("discovery.json not found in the zip file")
+		return discoveryModel, fmt.Errorf("discovery.json not found in the zip file")
 	}
 
 	// Open the discovery.json file
 	rc, err := discoveryFile.Open()
 	if err != nil {
-		return fmt.Errorf("failed to open discovery.json: %w", err)
+		return discoveryModel, fmt.Errorf("failed to open discovery.json: %w", err)
 	}
 	defer rc.Close()
 
 	// Read the content of discovery.json
 	content, err := io.ReadAll(rc)
 	if err != nil {
-		return fmt.Errorf("failed to read discovery.json: %w", err)
+		return discoveryModel, fmt.Errorf("failed to read discovery.json: %w", err)
 	}
 
 	// Parse the JSON content
-	var discoveryModel discovery.ModelDiscovery
 	err = json.Unmarshal(content, &discoveryModel)
 	if err != nil {
-		return fmt.Errorf("failed to parse discovery.json: %w", err)
+		return discoveryModel, fmt.Errorf("failed to parse discovery.json: %w", err)
 	}
 
 	// Log the parsed data
 	logger.WithField("discovery", discoveryModel).Info("Discovery data parsed successfully")
 
-	return nil
+	return discoveryModel, nil
 }

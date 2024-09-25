@@ -1,6 +1,9 @@
 package models
 
-import validation "github.com/go-ozzo/ozzo-validation"
+import (
+	"github.com/OpenBankingUK/conformance-suite/pkg/discovery"
+	validation "github.com/go-ozzo/ozzo-validation"
+)
 
 // ImportRequest - Request to `/api/import/review` or `/api/import/rerun` POST.
 // TODO(mbana): Needs more work.
@@ -21,4 +24,5 @@ type ImportReviewResponse struct {
 
 // ImportRerunResponse - Response to `/api/import/rerun` POST.
 type ImportRerunResponse struct {
+	Discovery discovery.ModelDiscovery
 }
