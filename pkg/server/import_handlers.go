@@ -45,7 +45,7 @@ func (h importHandlers) postImportReview(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, NewErrorResponse(err))
 	}
 
-	if err := h.doImport(request, logger); err != nil {
+	if _, err := h.doImport(request, logger); err != nil {
 		return c.JSON(http.StatusBadRequest, NewErrorResponse(err))
 	}
 
@@ -68,7 +68,7 @@ func (h importHandlers) postImportRerun(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, NewErrorResponse(err))
 	}
 
-	discovery, err := h.doImport(request, logger);
+	discovery, err := h.doImport(request, logger)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, NewErrorResponse(err))
 	}
