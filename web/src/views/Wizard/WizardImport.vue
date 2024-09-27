@@ -3,7 +3,7 @@
     <div class="d-flex align-items-start">
       <div class="d-flex flex-column panel w-100 wizard-step">
         <div class="panel-heading">
-          <h5>{{ componentHeading }} <b-badge variant="danger">WIP</b-badge></h5>
+          <h5>{{ componentHeading }}</h5>
         </div>
         <div class="panel-body">
           <b-form @submit="onSubmit">
