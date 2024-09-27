@@ -1,7 +1,6 @@
 package models
 
 import (
-	"github.com/OpenBankingUK/conformance-suite/pkg/discovery"
 	validation "github.com/go-ozzo/ozzo-validation"
 )
 
@@ -16,14 +15,4 @@ func (r ImportRequest) Validate() error {
 	return validation.ValidateStruct(&r,
 		validation.Field(&r.Report, validation.Required),
 	)
-}
-
-// ImportReviewResponse - Response to `/api/import/review` POST.
-type ImportReviewResponse struct {
-	Discovery discovery.ModelDiscovery
-}
-
-// ImportRerunResponse - Response to `/api/import/rerun` POST.
-type ImportRerunResponse struct {
-	Discovery discovery.ModelDiscovery
 }
