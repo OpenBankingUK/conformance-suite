@@ -56,12 +56,12 @@ export default {
    */
   async importReview(base64Content) {
     const jsonPayload = {
-      report: base64Content
+      report: base64Content,
     };
-    
+
     const headers = {
       [apiUtil.Headers.HeaderAccept]: 'application/json',
-      'Content-Type': 'application/json'
+      'Content-Type': 'application/json',
     };
 
     const response = await apiUtil.post(IMPORT_REVIEW, jsonPayload, null, headers);
@@ -79,12 +79,12 @@ export default {
    */
   async importRerun(base64Content) {
     const jsonPayload = {
-      report: base64Content
+      report: base64Content,
     };
-    
+
     const headers = {
       [apiUtil.Headers.HeaderAccept]: 'application/json',
-      'Content-Type': 'application/json'
+      'Content-Type': 'application/json',
     };
 
     const response = await apiUtil.post(IMPORT_RERUN, jsonPayload, null, headers);

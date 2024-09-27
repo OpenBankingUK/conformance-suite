@@ -31,7 +31,9 @@
             >Import</b-button>
           </b-form>
         </div>
-        <div v-if="error" class="panel-body text-danger">
+        <div
+          v-if="error"
+          class="panel-body text-danger">
           Error: {{ error }}
         </div>
       </div>
