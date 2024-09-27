@@ -22,9 +22,6 @@
           <p>Upload a signed and compatible report to view the results or to rerun.</p>
           <div class="d-flex flex-row justify-content-around">
             <b-btn
-              variant="primary"
-              @click="onReview()">Review</b-btn>
-            <b-btn
               variant="success"
               @click="onRerun()">Rerun</b-btn>
           </div>

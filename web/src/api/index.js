@@ -54,12 +54,19 @@ export default {
    * Call POST `/api/import/review`.
    * @param {*} payload See `ImportRequest` in `pkg/server/models/import.go`.
    */
-  async importReview(payload) {
-    const response = await apiUtil.post(IMPORT_REVIEW, payload);
+  async importReview(base64Content) {
+    const jsonPayload = {
+      report: base64Content,
+    };
+
+    const headers = {
+      [apiUtil.Headers.HeaderAccept]: 'application/json',
+      'Content-Type': 'application/json',
+    };
+
+    const response = await apiUtil.post(IMPORT_REVIEW, jsonPayload, null, headers);
     const data = await response.json();
 
-    // `fetch` does not throw an error even when status is not 200.
-    // See: https://github.com/whatwg/fetch/issues/18
     if (response.status !== 200) {
       throw data;
     }
@@ -70,12 +77,19 @@ export default {
    * Call POST `/api/import/rerun`.
    * @param {*} payload See `ImportRequest` in `pkg/server/models/import.go`.
    */
-  async importRerun(payload) {
-    const response = await apiUtil.post(IMPORT_RERUN, payload);
+  async importRerun(base64Content) {
+    const jsonPayload = {
+      report: base64Content,
+    };
+
+    const headers = {
+      [apiUtil.Headers.HeaderAccept]: 'application/json',
+      'Content-Type': 'application/json',
+    };
+
+    const response = await apiUtil.post(IMPORT_RERUN, jsonPayload, null, headers);
     const data = await response.json();
 
-    // `fetch` does not throw an error even when status is not 200.
-    // See: https://github.com/whatwg/fetch/issues/18
     if (response.status !== 200) {
       throw data;
     }

@@ -3,7 +3,7 @@
     <div class="d-flex align-items-start">
       <div class="d-flex flex-column panel w-100 wizard-step">
         <div class="panel-heading">
-          <h5>{{ componentHeading }} <b-badge variant="danger">WIP</b-badge></h5>
+          <h5>{{ componentHeading }}</h5>
         </div>
         <div class="panel-body">
           <b-form @submit="onSubmit">
@@ -31,11 +31,10 @@
             >Import</b-button>
           </b-form>
         </div>
-        <div class="panel-heading">
-          <h5>Import Response</h5>
-        </div>
-        <div class="panel-body breakable">
-          {{ import_response }}
+        <div
+          v-if="error"
+          class="panel-body text-danger">
+          Error: {{ error }}
         </div>
       </div>
     </div>
@@ -64,6 +63,7 @@ export default {
   data() {
     return {
       file: null,
+      error: null,
     };
   },
   computed: {
@@ -112,6 +112,7 @@ export default {
     ...mapActions('importer', [
       'doImport',
     ]),
+    ...mapActions('config', ['setDiscoveryModel']),
     isNotEmpty(value) {
       return !isEmpty(value);
     },
@@ -125,8 +126,8 @@ export default {
         const reader = new FileReader();
         reader.onload = evt => resolve(evt.target.result);
         reader.onerror = evt => reject(new Error(`reading ${file.name}: ${evt.target.result}`));
-
-        reader.readAsText(file);
+        reader.onloadend = () => resolve(reader.result);
+        reader.readAsDataURL(file);
       });
     },
     /**
@@ -153,7 +154,13 @@ export default {
      */
     async onSubmit(evt) {
       evt.preventDefault();
-      await this.doImport();
+      try {
+        const results = await this.doImport();
+        this.setDiscoveryModel(JSON.stringify({ discoveryModel: results.discoveryModel }));
+        this.$router.push('/wizard/discovery-config');
+      } catch (err) {
+        this.error = err.error || 'An error occurred during import';
+      }
     },
   },
   /**
