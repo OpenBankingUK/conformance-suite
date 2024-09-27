@@ -155,7 +155,6 @@ export default {
     async onSubmit(evt) {
       evt.preventDefault();
       const results = await this.doImport();
-      console.log('results=', results);
       this.setDiscoveryModel(JSON.stringify({ discoveryModel: results.discoveryModel }));
       this.$router.push('/wizard/discovery-config');
     },
