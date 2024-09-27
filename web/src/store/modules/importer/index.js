@@ -48,6 +48,8 @@ export default {
       if (state.is_rerun) {
         const results = await api.importRerun(state.report_zip_archive);
         commit(mutationTypes.SET_IMPORT_RESPONSE, results);
+        // eslint-disable-next-line no-console
+        console.log('results=', results);
         return Promise.resolve(results);
       }
 

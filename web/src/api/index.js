@@ -93,5 +93,7 @@ export default {
     if (response.status !== 200) {
       throw data;
     }
+
+    return data;
   },
 };

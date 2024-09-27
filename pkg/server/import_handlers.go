@@ -47,13 +47,9 @@ func (h importHandlers) postImportReview(c echo.Context) error {
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, NewErrorResponse(err))
 	}
-
-	response := models.ImportReviewResponse{
-		Discovery: model.DiscoveryModel,
-	}
 	logger.Info("Imported")
 
-	return c.JSON(http.StatusOK, response)
+	return c.JSON(http.StatusOK, model)
 }
 
 // postImportRerun - `/api/import/rerun` POST.
@@ -76,13 +72,9 @@ func (h importHandlers) postImportRerun(c echo.Context) error {
 		logger.WithField("error", err).Error("Failed to do import")
 		return c.JSON(http.StatusBadRequest, NewErrorResponse(err))
 	}
-
-	response := models.ImportRerunResponse{
-		Discovery: model.DiscoveryModel,
-	}
 	logger.Info("Imported")
 
-	return c.JSON(http.StatusOK, response)
+	return c.JSON(http.StatusOK, model)
 }
 
 // nolint:unparam

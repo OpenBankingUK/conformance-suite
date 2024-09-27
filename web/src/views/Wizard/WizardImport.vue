@@ -112,6 +112,7 @@ export default {
     ...mapActions('importer', [
       'doImport',
     ]),
+    ...mapActions('config', ['setDiscoveryModel']),
     isNotEmpty(value) {
       return !isEmpty(value);
     },
@@ -138,7 +139,6 @@ export default {
         // If file is set, read the file then set the value in the store.
         try {
           this.report_zip_archive = await this.readFile(this.file);
-          console.log('report_zip_archive=', this.report_zip_archive);
         } catch (err) {
           // TODO(mbana): ignoring errors for now just clear out the previously
           // selected file so that they have to re-upload.
@@ -154,7 +154,10 @@ export default {
      */
     async onSubmit(evt) {
       evt.preventDefault();
-      await this.doImport();
+      const results = await this.doImport();
+      console.log('results=', results);
+      this.setDiscoveryModel(JSON.stringify({ discoveryModel: results.discoveryModel }));
+      this.$router.push('/wizard/discovery-config');
     },
   },
   /**
