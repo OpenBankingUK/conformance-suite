@@ -36,23 +36,19 @@ export default {
       console.log('state.is_review=', state.is_review);
       // eslint-disable-next-line no-console
       console.log('state.is_rerun=', state.is_rerun);
+      // eslint-disable-next-line no-console
+      console.log('state.report_zip_archive=', state.report_zip_archive);
 
       if (state.is_review) {
-        const payload = {
-          report: state.report_zip_archive,
-        };
-        const results = await api.importReview(payload);
+        const results = await api.importReview(state.report_zip_archive);
         commit(mutationTypes.SET_IMPORT_RESPONSE, results);
-        return Promise.resolve({});
+        return Promise.resolve(results);
       }
 
       if (state.is_rerun) {
-        const payload = {
-          report: state.report_zip_archive,
-        };
-        const results = await api.importRerun(payload);
+        const results = await api.importRerun(state.report_zip_archive);
         commit(mutationTypes.SET_IMPORT_RESPONSE, results);
-        return Promise.resolve({});
+        return Promise.resolve(results);
       }
 
       return Promise.resolve({});

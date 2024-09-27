@@ -8,10 +8,12 @@ package server
 import (
 	"archive/zip"
 	"bytes"
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
+	"strings"
 
 	"github.com/labstack/echo/v4"
 	"github.com/sirupsen/logrus"
@@ -41,15 +43,14 @@ func (h importHandlers) postImportReview(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, NewErrorResponse(err))
 	}
 
-	if err := request.Validate(); err != nil {
+	model, err := h.doImport(request, logger)
+	if err != nil {
 		return c.JSON(http.StatusBadRequest, NewErrorResponse(err))
 	}
 
-	if _, err := h.doImport(request, logger); err != nil {
-		return c.JSON(http.StatusBadRequest, NewErrorResponse(err))
+	response := models.ImportReviewResponse{
+		Discovery: model.DiscoveryModel,
 	}
-
-	response := models.ImportReviewResponse{}
 	logger.Info("Imported")
 
 	return c.JSON(http.StatusOK, response)
@@ -61,20 +62,23 @@ func (h importHandlers) postImportRerun(c echo.Context) error {
 
 	request := models.ImportRequest{}
 	if err := c.Bind(&request); err != nil {
+		logger.WithField("error", err).Error("Failed to bind request")
 		return c.JSON(http.StatusBadRequest, NewErrorResponse(err))
 	}
 
 	if err := request.Validate(); err != nil {
+		logger.WithField("error", err).Error("Request validation failed")
 		return c.JSON(http.StatusBadRequest, NewErrorResponse(err))
 	}
 
-	discovery, err := h.doImport(request, logger)
+	model, err := h.doImport(request, logger)
 	if err != nil {
+		logger.WithField("error", err).Error("Failed to do import")
 		return c.JSON(http.StatusBadRequest, NewErrorResponse(err))
 	}
 
 	response := models.ImportRerunResponse{
-		Discovery: discovery,
+		Discovery: model.DiscoveryModel,
 	}
 	logger.Info("Imported")
 
@@ -82,13 +86,30 @@ func (h importHandlers) postImportRerun(c echo.Context) error {
 }
 
 // nolint:unparam
-func (h importHandlers) doImport(request models.ImportRequest, logger *logrus.Entry) (discovery.ModelDiscovery, error) {
-	var discoveryModel discovery.ModelDiscovery
+func (h importHandlers) doImport(request models.ImportRequest, logger *logrus.Entry) (discovery.Model, error) {
+	var discoveryModel discovery.Model
 	logger.WithField("len(request.Report)", len(request.Report)).Info("Importing ...")
 
-	// Create a reader for the zip file
-	zipReader, err := zip.NewReader(bytes.NewReader([]byte(request.Report)), int64(len(request.Report)))
+	// Decode the base64 string
+	// Split the string to get only the base64 part
+	parts := strings.SplitN(request.Report, ",", 2)
+	if len(parts) != 2 {
+		logger.Error("Invalid report format")
+		return discoveryModel, fmt.Errorf("invalid report format")
+	}
+	base64Data := parts[1]
+
+	// Decode the base64 string
+	reportBytes, err := base64.StdEncoding.DecodeString(base64Data)
 	if err != nil {
+		logger.WithField("error", err).Error("Failed to decode base64 string")
+		return discoveryModel, fmt.Errorf("failed to decode report: %w", err)
+	}
+
+	// Create a reader for the zip file
+	zipReader, err := zip.NewReader(bytes.NewReader(reportBytes), int64(len(request.Report)))
+	if err != nil {
+		logger.WithField("error", err).Error("Failed to create zip reader")
 		return discoveryModel, fmt.Errorf("failed to create zip reader: %w", err)
 	}
 

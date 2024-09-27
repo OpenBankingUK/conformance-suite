@@ -125,8 +125,8 @@ export default {
         const reader = new FileReader();
         reader.onload = evt => resolve(evt.target.result);
         reader.onerror = evt => reject(new Error(`reading ${file.name}: ${evt.target.result}`));
-
-        reader.readAsText(file);
+        reader.onloadend = () => resolve(reader.result);
+        reader.readAsDataURL(file);
       });
     },
     /**
@@ -138,6 +138,7 @@ export default {
         // If file is set, read the file then set the value in the store.
         try {
           this.report_zip_archive = await this.readFile(this.file);
+          console.log('report_zip_archive=', this.report_zip_archive);
         } catch (err) {
           // TODO(mbana): ignoring errors for now just clear out the previously
           // selected file so that they have to re-upload.
