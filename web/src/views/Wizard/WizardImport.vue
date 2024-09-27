@@ -31,11 +31,8 @@
             >Import</b-button>
           </b-form>
         </div>
-        <div class="panel-heading">
-          <h5>Import Response</h5>
-        </div>
-        <div class="panel-body breakable">
-          {{ import_response }}
+        <div v-if="error" class="panel-body text-danger">
+          Error: {{ error }}
         </div>
       </div>
     </div>
@@ -64,6 +61,7 @@ export default {
   data() {
     return {
       file: null,
+      error: null,
     };
   },
   computed: {
@@ -154,9 +152,13 @@ export default {
      */
     async onSubmit(evt) {
       evt.preventDefault();
-      const results = await this.doImport();
-      this.setDiscoveryModel(JSON.stringify({ discoveryModel: results.discoveryModel }));
-      this.$router.push('/wizard/discovery-config');
+      try {
+        const results = await this.doImport();
+        this.setDiscoveryModel(JSON.stringify({ discoveryModel: results.discoveryModel }));
+        this.$router.push('/wizard/discovery-config');
+      } catch (err) {
+        this.error = err.error || 'An error occurred during import';
+      }
     },
   },
   /**
