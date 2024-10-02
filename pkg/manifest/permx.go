@@ -112,6 +112,9 @@ func GetCbpiiPermissions(tests []model.TestCase) ([]RequiredTokens, error) {
 			rx := RequiredTokens{Name: ts.GetNextTokenName("cbpii"), ConsentParam: consentID, ConsentProvider: tc.ID}
 			rt = append(rt, rx)
 			logrus.Tracef("adding %s to consentJobs for cbpii: %s %s", tc.ID, tc.Input.Method, tc.Input.Endpoint)
+			if tc.ID == "" {
+				return []RequiredTokens{}, errors.New("testcase id cannot be emtpy")
+			}
 			consentJobs.Add(tc)
 		} else {
 			tests[k].InjectBearerToken("$cbpii_ccg_token")
@@ -127,8 +130,11 @@ func GetCbpiiPermissions(tests []model.TestCase) ([]RequiredTokens, error) {
 
 // GetPaymentPermissions - and annotate test cases with token ids
 func GetPaymentPermissions(tests []model.TestCase) ([]RequiredTokens, error) {
-	requiredTokens := getPaymentPermissions(tests, "payment")
-	requiredTokens, err := updateTokensFromConsent(requiredTokens, tests)
+	requiredTokens, err := getPaymentPermissions(tests, "payment")
+	if err != nil {
+		return nil, err
+	}
+	requiredTokens, err = updateTokensFromConsent(requiredTokens, tests)
 	if err != nil {
 		return nil, err
 	}
@@ -139,8 +145,11 @@ func GetPaymentPermissions(tests []model.TestCase) ([]RequiredTokens, error) {
 
 // GetVrpsPermissions - and annotate test cases with token ids
 func GetVrpsPermissions(tests []model.TestCase) ([]RequiredTokens, error) {
-	requiredTokens := getPaymentPermissions(tests, "vrps")
-	requiredTokens, err := updateTokensFromConsent(requiredTokens, tests)
+	requiredTokens, err := getPaymentPermissions(tests, "vrps")
+	if err != nil {
+		return nil, err
+	}
+	requiredTokens, err = updateTokensFromConsent(requiredTokens, tests)
 	if err != nil {
 		return nil, err
 	}
@@ -150,7 +159,7 @@ func GetVrpsPermissions(tests []model.TestCase) ([]RequiredTokens, error) {
 }
 
 // looks for post consent Tests that need to be run to get consentIds
-func getPaymentPermissions(tcs []model.TestCase, tokenName string) []RequiredTokens {
+func getPaymentPermissions(tcs []model.TestCase, tokenName string) ([]RequiredTokens, error) {
 	rt := make([]RequiredTokens, 0)
 	ts := TokenStore{}
 	ts.store = rt
@@ -167,13 +176,16 @@ func getPaymentPermissions(tcs []model.TestCase, tokenName string) []RequiredTok
 			rx := RequiredTokens{Name: ts.GetNextTokenName(tokenName), ConsentParam: consentID, ConsentProvider: tc.ID}
 			rt = append(rt, rx)
 			logrus.Tracef("adding %s to consentJobs : %s %s", tc.ID, tc.Input.Method, tc.Input.Endpoint)
+			if tc.ID == "" {
+				return []RequiredTokens{}, errors.New("testcase id cannot be emtpy")
+			}
 			consentJobs.Add(tc)
 		} else {
 			tcs[k].InjectBearerToken("$payment_ccg_token")
 		}
 	}
 
-	return rt
+	return rt, nil
 }
 
 // scans all payment test to make test against consent provider
