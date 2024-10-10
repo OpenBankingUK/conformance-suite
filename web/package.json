@@ -23,7 +23,7 @@
     "brace": "^0.11.1",
     "dompurify": "2.2.3",
     "esprima": "^4.0.1",
-    "handlebars": "4.5.3",
+    "handlebars": "4.7.7",
     "jsonpointer": "4.1.0",
     "lodash": "4.17.21",
     "moment": "^2.29.4",
