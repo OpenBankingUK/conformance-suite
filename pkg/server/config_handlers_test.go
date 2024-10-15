@@ -294,7 +294,6 @@ func TestServerConfigGlobalPostValid(t *testing.T) {
 	// `?pretty` makes the JSON more readable in the event of a failure
 	// see the example: https://echo.labstack.com/guide/response#json-pretty
 	code, body, headers := request(http.MethodPost, "/api/config/global?pretty", bytes.NewReader(globalConfigurationJSON), server)
-	t.Log(headers)
 
 	// do assertions
 	require.NotNil(body)
