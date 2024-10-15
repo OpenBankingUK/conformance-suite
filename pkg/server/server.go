@@ -64,15 +64,6 @@ func NewServer(journey Journey, logger *logrus.Entry, version version.Checker) *
 		ContentSecurityPolicy: `default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; connect-src 'self' ws: wss:;`,
 	}))
 
-	server.Use(middleware.SecureWithConfig(middleware.SecureConfig{
-		XSSProtection:         "1; mode=block",
-		ContentTypeNosniff:    "nosniff",
-		XFrameOptions:         "SAMEORIGIN",
-		HSTSMaxAge:            31536000,
-		HSTSExcludeSubdomains: false,
-		HSTSPreloadEnabled:    true,
-	}))
-
 	registerRoutes(journey, server, logger, version)
 
 	return server

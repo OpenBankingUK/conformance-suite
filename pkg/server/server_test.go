@@ -71,7 +71,7 @@ func TestServerConformanceSuiteCallback(t *testing.T) {
 
 	// do assertions.
 	require.Equal(http.StatusOK, code)
-	require.Len(headers, 5)
+	require.Len(headers, 6)
 	require.Equal("text/html; charset=utf-8", headers["Content-Type"][0])
 	require.NotNil(body)
 
