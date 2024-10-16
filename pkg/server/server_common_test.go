@@ -13,8 +13,9 @@ import (
 
 func expectedJSONHeaders() http.Header {
 	return http.Header{
-		"Vary":         []string{"Accept-Encoding"},
-		"Content-Type": []string{"application/json; charset=UTF-8"},
+		"Vary":                    []string{"Accept-Encoding"},
+		"Content-Type":            []string{"application/json; charset=UTF-8"},
+		"Content-Security-Policy": []string{"default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; connect-src 'self' ws: wss:;"},
 	}
 }
 
