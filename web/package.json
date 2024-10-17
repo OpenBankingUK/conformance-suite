@@ -31,7 +31,7 @@
     "redoc": "2.0.0",
     "register-service-worker": "^1.0.0",
     "urijs": "1.19.11",
-    "vue": "^2.5.17",
+    "vue": "^3.0.0",
     "vue-feather-icons": "^4.7.1",
     "vue-functional-data-merge": "^2.0.7",
     "vue-notification-bell": "^0.8.11",
