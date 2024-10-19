@@ -302,6 +302,7 @@ func TestServerConfigGlobalPostValid(t *testing.T) {
 	require.JSONEq(bodyExpected, bodyActual)
 
 	require.Equal(http.StatusCreated, code)
+	require.Equal(len(expectedJSONHeaders()), len(headers))
 	require.Equal(expectedJSONHeaders(), headers)
 }
 
