@@ -51,7 +51,7 @@ func TestServerSwaggerHandlersServesUI(t *testing.T) {
 			require.Equal(bodyExpected, bodyActual)
 
 			require.Equal(http.StatusOK, code)
-			require.Len(headers, 3)
+			require.Len(headers, 6)
 			require.Equal("text/html; charset=utf-8", headers["Content-Type"][0])
 		})
 	}
