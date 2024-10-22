@@ -195,6 +195,7 @@ func TestInputClaims(t *testing.T) {
 		},
 		Claims: map[string]string{
 			"iss":          "8672384e-9a33-439f-8924-67bb14340d71",
+			"nbf":          "1234567890",
 			"scope":        "openid accounts",
 			"redirect_url": "https://test.example.co.uk/redir",
 			"responseType": "code",
@@ -207,7 +208,7 @@ func TestInputClaims(t *testing.T) {
 
 	m, err := url.ParseQuery(req.URL)
 	require.NoError(t, err)
-	assert.Equal(t, m["request"][0], "eyJhbGciOiJub25lIn0.eyJhdWQiOiIiLCJjbGFpbXMiOnsiaWRfdG9rZW4iOnsib3BlbmJhbmtpbmdfaW50ZW50X2lkIjp7ImVzc2VudGlhbCI6dHJ1ZSwidmFsdWUiOiIifX19LCJpc3MiOiI4NjcyMzg0ZS05YTMzLTQzOWYtODkyNC02N2JiMTQzNDBkNzEiLCJyZWRpcmVjdF91cmkiOiJodHRwczovL3Rlc3QuZXhhbXBsZS5jby51ay9yZWRpciIsInNjb3BlIjoib3BlbmlkIGFjY291bnRzIn0.")
+	assert.Equal(t, m["request"][0], "eyJhbGciOiJub25lIn0.eyJhdWQiOiIiLCJjbGFpbXMiOnsiaWRfdG9rZW4iOnsib3BlbmJhbmtpbmdfaW50ZW50X2lkIjp7ImVzc2VudGlhbCI6dHJ1ZSwidmFsdWUiOiIifX19LCJpc3MiOiI4NjcyMzg0ZS05YTMzLTQzOWYtODkyNC02N2JiMTQzNDBkNzEiLCJuYmYiOiIxMjM0NTY3ODkwIiwicmVkaXJlY3RfdXJpIjoiaHR0cHM6Ly90ZXN0LmV4YW1wbGUuY28udWsvcmVkaXIiLCJzY29wZSI6Im9wZW5pZCBhY2NvdW50cyJ9.")
 }
 
 func TestInputClaimsWithContextReplacementParameters(t *testing.T) {
@@ -219,6 +220,7 @@ func TestInputClaimsWithContextReplacementParameters(t *testing.T) {
 			"aud":          "$baseurl",
 			"iss":          "8672384e-9a33-439f-8924-67bb14340d71",
 			"scope":        "openid accounts",
+			"nbf":          "1234567890",
 			"redirect_url": "https://test.example.co.uk/redir",
 			"consentId":    "$consent_id",
 			"responseType": "code",
@@ -231,7 +233,7 @@ func TestInputClaimsWithContextReplacementParameters(t *testing.T) {
 
 	m, err := url.ParseQuery(req.URL)
 	require.NoError(t, err)
-	assert.Equal(t, m["request"][0], "eyJhbGciOiJub25lIn0.eyJhdWQiOiJodHRwOi8vbXliYXNldXJsIiwiY2xhaW1zIjp7ImlkX3Rva2VuIjp7Im9wZW5iYW5raW5nX2ludGVudF9pZCI6eyJlc3NlbnRpYWwiOnRydWUsInZhbHVlIjoibXljb25zZW50aWQifX19LCJpc3MiOiI4NjcyMzg0ZS05YTMzLTQzOWYtODkyNC02N2JiMTQzNDBkNzEiLCJyZWRpcmVjdF91cmkiOiJodHRwczovL3Rlc3QuZXhhbXBsZS5jby51ay9yZWRpciIsInNjb3BlIjoib3BlbmlkIGFjY291bnRzIn0.")
+	assert.Equal(t, m["request"][0], "eyJhbGciOiJub25lIn0.eyJhdWQiOiJodHRwOi8vbXliYXNldXJsIiwiY2xhaW1zIjp7ImlkX3Rva2VuIjp7Im9wZW5iYW5raW5nX2ludGVudF9pZCI6eyJlc3NlbnRpYWwiOnRydWUsInZhbHVlIjoibXljb25zZW50aWQifX19LCJpc3MiOiI4NjcyMzg0ZS05YTMzLTQzOWYtODkyNC02N2JiMTQzNDBkNzEiLCJuYmYiOiIxMjM0NTY3ODkwIiwicmVkaXJlY3RfdXJpIjoiaHR0cHM6Ly90ZXN0LmV4YW1wbGUuY28udWsvcmVkaXIiLCJzY29wZSI6Im9wZW5pZCBhY2NvdW50cyJ9.")
 
 }
 
