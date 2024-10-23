@@ -119,22 +119,28 @@ export default {
      * Fields to display in API Specification Table.
      * See documentation: https://bootstrap-vue.js.org/docs/components/table#fields-column-definitions-
      */
-    tableFields() {
-      const fields = {
-        name: {
+     tableFields() {
+      const fields = [
+        { 
+          key: 'name', 
+          label: 'Name',
           tdClass: 'table-data-breakable api-specification-table',
         },
-        schema: {
+        {
+          key: 'schema',
+          label: 'Schema',
           tdClass: 'table-data-breakable api-specification-table',
         },
-      };
+      ];
+
       if (this.hasConsentUrls) {
-        Object.assign(fields, {
-          consentUrls: {
-            tdClass: 'table-data-breakable api-specification-table',
-          },
+        fields.push({
+          key: 'consentUrls',
+          label: 'Consent URLs',
+          tdClass: 'table-data-breakable api-specification-table',
         });
       }
+
       return fields;
     },
   },

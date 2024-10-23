@@ -123,63 +123,38 @@ export default {
      * Fields to display in the table.
      * See documentation: https://bootstrap-vue.js.org/docs/components/table#fields-column-definitions-
      */
-    tableFields: {
-      type: Object,
-      default: () => ({
-        show_details: {
-          label: '',
-          tdClass: 'table-data-breakable',
-          fixed: true,
-        },
-        '@id': {},
-        name: {
-          tdClass: 'table-data-breakable',
-        },
-        'input.method': {
-          tdClass: 'table-data-breakable',
-          label: 'Method',
-        },
-        'input.endpoint': {
-          tdClass: 'table-data-breakable',
-          label: 'Endpoint',
-        },
-        'expect.status-code': {
+     tableFields: {
+      type: Array,
+      default: () => [
+        { key: 'show_details', label: '', tdClass: 'table-data-breakable', fixed: true },
+        { key: '@id' },
+        { key: 'name', tdClass: 'table-data-breakable' },
+        { key: 'input.method', label: 'Method', tdClass: 'table-data-breakable' },
+        { key: 'input.endpoint', label: 'Endpoint', tdClass: 'table-data-breakable' },
+        { 
+          key: 'expect.status-code', 
+          label: 'Expect', 
           sortable: true,
-          label: 'Expect',
-          formatter(value, key, item) {
+          formatter: (value, key, item) => {
             if (item.expect['status-code'] > 0) {
               return item.expect['status-code'];
             }
-
             if (item.expect_last_if_all !== undefined) {
-              return item
-                .expect_last_if_all
+              return item.expect_last_if_all
                 .map(expect => expect['status-code'])
                 .filter(statusCode => statusCode > 0)
                 .join(' or ');
             }
-
-            return item
-              .expect_one_of
+            return item.expect_one_of
               .map(expect => expect['status-code'])
               .filter(statusCode => statusCode > 0)
               .join(' or ');
-          },
+          }
         },
-        'meta.status': {
-          label: 'Status',
-        },
-        'meta.metrics.responseTime': {
-          tdClass: 'response-time',
-          sortable: true,
-          label: 'Time',
-        },
-        'meta.metrics.responseSize': {
-          tdClass: 'response-size',
-          sortable: true,
-          label: 'Bytes',
-        },
-      }),
+        { key: 'meta.status', label: 'Status' },
+        { key: 'meta.metrics.responseTime', label: 'Time', tdClass: 'response-time', sortable: true },
+        { key: 'meta.metrics.responseSize', label: 'Bytes', tdClass: 'response-size', sortable: true },
+      ]
     },
   },
   computed: {
