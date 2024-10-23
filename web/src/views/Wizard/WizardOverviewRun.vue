@@ -69,14 +69,10 @@ export default {
   },
   data() {
     return {
-      tokenTableFields: {
-        type: {
-          label: 'Type',
-        },
-        'value.token_name': {
-          label: 'Token Name',
-        },
-      },
+      tokenTableFields: [
+        { key: 'type', label: 'Type' },
+        { key: 'value.token_name', label: 'Token Name' },
+      ],
     };
   },
   computed: {

@@ -410,6 +410,7 @@ func (i *Input) generateRequestJWT(ctx *Context, alg jwt.SigningMethod) (string,
 	}
 
 	claims["iat"] = time.Now().Unix()
+	claims["nbf"] = time.Now().Unix()
 	claims["exp"] = time.Now().Add(time.Minute * time.Duration(30)).Unix()
 	claims["jti"] = uuid
 	claims["nonce"] = uuid
@@ -572,6 +573,7 @@ func (i *Input) generateUnsignedJWT(ctx *Context) (string, error) {
 	claims["iss"] = i.Claims["iss"]
 	claims["scope"] = i.Claims["scope"]
 	claims["aud"] = i.Claims["aud"]
+	claims["nbf"] = i.Claims["nbf"]
 	claims["redirect_uri"] = i.Claims["redirect_url"]
 	setAdditonalClaims(claims, i.Claims)
 

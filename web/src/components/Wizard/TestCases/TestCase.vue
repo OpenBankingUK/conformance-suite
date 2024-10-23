@@ -124,62 +124,68 @@ export default {
      * See documentation: https://bootstrap-vue.js.org/docs/components/table#fields-column-definitions-
      */
     tableFields: {
-      type: Object,
-      default: () => ({
-        show_details: {
+      type: Array,
+      default: () => [
+        {
+          key: 'show_details',
           label: '',
           tdClass: 'table-data-breakable',
           fixed: true,
         },
-        '@id': {},
-        name: {
+        {
+          key: '@id',
+        },
+        {
+          key: 'name',
           tdClass: 'table-data-breakable',
         },
-        'input.method': {
-          tdClass: 'table-data-breakable',
+        {
+          key: 'input.method',
           label: 'Method',
-        },
-        'input.endpoint': {
           tdClass: 'table-data-breakable',
-          label: 'Endpoint',
         },
-        'expect.status-code': {
-          sortable: true,
+        {
+          key: 'input.endpoint',
+          label: 'Endpoint',
+          tdClass: 'table-data-breakable',
+        },
+        {
+          key: 'expect.status-code',
           label: 'Expect',
-          formatter(value, key, item) {
+          sortable: true,
+          formatter: (value, key, item) => {
             if (item.expect['status-code'] > 0) {
               return item.expect['status-code'];
             }
-
             if (item.expect_last_if_all !== undefined) {
-              return item
-                .expect_last_if_all
+              return item.expect_last_if_all
                 .map(expect => expect['status-code'])
                 .filter(statusCode => statusCode > 0)
                 .join(' or ');
             }
-
-            return item
-              .expect_one_of
+            return item.expect_one_of
               .map(expect => expect['status-code'])
               .filter(statusCode => statusCode > 0)
               .join(' or ');
           },
         },
-        'meta.status': {
+        {
+          key: 'meta.status',
           label: 'Status',
         },
-        'meta.metrics.responseTime': {
+        {
+          key: 'meta.metrics.responseTime',
+          label: 'Time',
           tdClass: 'response-time',
           sortable: true,
-          label: 'Time',
         },
-        'meta.metrics.responseSize': {
+        {
+          key: 'meta.metrics.responseSize',
+          label: 'Bytes',
           tdClass: 'response-size',
           sortable: true,
-          label: 'Bytes',
         },
-      }),
+      ],
     },
   },
   computed: {
