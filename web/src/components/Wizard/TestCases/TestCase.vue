@@ -149,9 +149,9 @@ export default {
           label: 'Endpoint',
           tdClass: 'table-data-breakable',
         },
-        { 
-          key: 'expect.status-code', 
-          label: 'Expect', 
+        {
+          key: 'expect.status-code',
+          label: 'Expect',
           sortable: true,
           formatter: (value, key, item) => {
             if (item.expect['status-code'] > 0) {
@@ -167,7 +167,7 @@ export default {
               .map(expect => expect['status-code'])
               .filter(statusCode => statusCode > 0)
               .join(' or ');
-          }
+          },
         },
         {
           key: 'meta.status',
@@ -185,7 +185,7 @@ export default {
           tdClass: 'response-size',
           sortable: true,
         },
-      ]
+      ],
     },
   },
   computed: {
