@@ -123,14 +123,32 @@ export default {
      * Fields to display in the table.
      * See documentation: https://bootstrap-vue.js.org/docs/components/table#fields-column-definitions-
      */
-     tableFields: {
+    tableFields: {
       type: Array,
       default: () => [
-        { key: 'show_details', label: '', tdClass: 'table-data-breakable', fixed: true },
-        { key: '@id' },
-        { key: 'name', tdClass: 'table-data-breakable' },
-        { key: 'input.method', label: 'Method', tdClass: 'table-data-breakable' },
-        { key: 'input.endpoint', label: 'Endpoint', tdClass: 'table-data-breakable' },
+        {
+          key: 'show_details',
+          label: '',
+          tdClass: 'table-data-breakable',
+          fixed: true,
+        },
+        {
+          key: '@id',
+        },
+        {
+          key: 'name',
+          tdClass: 'table-data-breakable',
+        },
+        {
+          key: 'input.method',
+          label: 'Method',
+          tdClass: 'table-data-breakable',
+        },
+        {
+          key: 'input.endpoint',
+          label: 'Endpoint',
+          tdClass: 'table-data-breakable',
+        },
         { 
           key: 'expect.status-code', 
           label: 'Expect', 
@@ -151,9 +169,22 @@ export default {
               .join(' or ');
           }
         },
-        { key: 'meta.status', label: 'Status' },
-        { key: 'meta.metrics.responseTime', label: 'Time', tdClass: 'response-time', sortable: true },
-        { key: 'meta.metrics.responseSize', label: 'Bytes', tdClass: 'response-size', sortable: true },
+        {
+          key: 'meta.status',
+          label: 'Status',
+        },
+        {
+          key: 'meta.metrics.responseTime',
+          label: 'Time',
+          tdClass: 'response-time',
+          sortable: true,
+        },
+        {
+          key: 'meta.metrics.responseSize',
+          label: 'Bytes',
+          tdClass: 'response-size',
+          sortable: true,
+        },
       ]
     },
   },

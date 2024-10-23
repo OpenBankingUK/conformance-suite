@@ -119,10 +119,10 @@ export default {
      * Fields to display in API Specification Table.
      * See documentation: https://bootstrap-vue.js.org/docs/components/table#fields-column-definitions-
      */
-     tableFields() {
+    tableFields() {
       const fields = [
-        { 
-          key: 'name', 
+        {
+          key: 'name',
           label: 'Name',
           tdClass: 'table-data-breakable api-specification-table',
         },
