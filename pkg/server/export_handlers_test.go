@@ -69,7 +69,7 @@ func TestServerPostExport(t *testing.T) {
 		echo.HeaderContentType: []string{
 			MIMEApplicationZIP,
 		},
-		"Content-Security-Policy": []string{"default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; connect-src 'self' ws: wss:;"},
+		"Content-Security-Policy": []string{"default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' blob:; worker-src blob:; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; connect-src 'self' ws: wss:;"},
 		"X-Xss-Protection":        []string{"1; mode=block"},
 		"X-Content-Type-Options":  []string{"nosniff"},
 		"X-Frame-Options":         []string{"SAMEORIGIN"},
@@ -224,7 +224,7 @@ func TestServerPostExportInvalidRequest(t *testing.T) {
 			echo.HeaderContentType: []string{
 				echo.MIMEApplicationJSONCharsetUTF8,
 			},
-			"Content-Security-Policy": []string{"default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; connect-src 'self' ws: wss:;"},
+			"Content-Security-Policy": []string{"default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' blob:; worker-src blob:; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; connect-src 'self' ws: wss:;"},
 			"X-Xss-Protection":        []string{"1; mode=block"},
 			"X-Content-Type-Options":  []string{"nosniff"},
 			"X-Frame-Options":         []string{"SAMEORIGIN"},
