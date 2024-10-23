@@ -5,6 +5,7 @@ import (
 
 	"math"
 
+	"github.com/OpenBankingUK/conformance-suite/pkg/repository"
 	"github.com/OpenBankingUK/conformance-suite/pkg/version"
 
 	"github.com/gorilla/websocket"
@@ -21,14 +22,25 @@ type Server struct {
 	*echo.Echo // Wrap (using composition) *echo.Echo, allows us to pretend Server is echo.Echo.
 	logger     *logrus.Entry
 	version    version.Checker
+
+	userRepo    repository.UserRepository
+	testRunRepo repository.TestRunRepository
 }
 
 // NewServer returns new echo.Echo server.
-func NewServer(journey Journey, logger *logrus.Entry, version version.Checker) *Server {
+func NewServer(
+	journey Journey,
+	logger *logrus.Entry,
+	version version.Checker,
+	userRepo repository.UserRepository,
+	testRunRepo repository.TestRunRepository,
+) *Server {
 	server := &Server{
-		Echo:    echo.New(),
-		logger:  logger,
-		version: version,
+		Echo:        echo.New(),
+		logger:      logger,
+		version:     version,
+		userRepo:    userRepo,
+		testRunRepo: testRunRepo,
 	}
 	server.Validator = newEchoValidatorAdapter()
 	server.HideBanner = true
