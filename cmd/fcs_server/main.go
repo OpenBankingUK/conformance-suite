@@ -2,7 +2,9 @@ package main
 
 import (
 	"crypto/tls"
+	"database/sql"
 	"fmt"
+	"log"
 	"os"
 	"strings"
 	"time"
@@ -10,11 +12,13 @@ import (
 	"github.com/OpenBankingUK/conformance-suite/pkg/discovery"
 	"github.com/OpenBankingUK/conformance-suite/pkg/generation"
 	"github.com/OpenBankingUK/conformance-suite/pkg/manifest"
+	"github.com/OpenBankingUK/conformance-suite/pkg/repository"
 
 	"github.com/OpenBankingUK/conformance-suite/pkg/model"
 	"github.com/OpenBankingUK/conformance-suite/pkg/server"
 	"github.com/OpenBankingUK/conformance-suite/pkg/tracer"
 	"github.com/OpenBankingUK/conformance-suite/pkg/version"
+	_ "github.com/lib/pq"
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
@@ -48,8 +52,18 @@ Complete documentation is available at https://github.com/OpenBankingUK/conforma
 			testGenerator := generation.NewGenerator()
 			tlsValidator := discovery.NewStdTLSValidator(tls.VersionTLS11)
 			journey := server.NewJourney(logger, testGenerator, validatorEngine, tlsValidator, viper.GetBool("dynres"))
+			db, err := sql.Open("postgres", viper.GetString("database_url"))
+			if err != nil {
+				log.Fatal(err)
+			}
 
-			echoServer := server.NewServer(journey, logger, ver)
+			echoServer := server.NewServer(
+				journey,
+				logger,
+				ver,
+				repository.NewUserRepository(db),
+				repository.NewTestRunRepository(db),
+			)
 			address := fmt.Sprintf("%s:%d", server.ListenHost, viper.GetInt("port"))
 			logger.Infof("listening on https://%s", address)
 			return echoServer.StartTLS(address, certFile, keyFile)
