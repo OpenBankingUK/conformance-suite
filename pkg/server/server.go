@@ -85,12 +85,12 @@ func NewServer(
 		HSTSPreloadEnabled:    true,
 	}))
 
-	registerRoutes(journey, server, logger, version)
+	server.registerRoutes(journey, server, logger, version)
 
 	return server
 }
 
-func registerRoutes(journey Journey, server *Server, logger *logrus.Entry, version version.Checker) {
+func (s *Server) registerRoutes(journey Journey, server *Server, logger *logrus.Entry, version version.Checker) {
 	// swagger ui endpoints
 	for path, handler := range swaggerHandlers(logger) {
 		server.GET(path, handler)
@@ -119,7 +119,13 @@ func registerRoutes(journey Journey, server *Server, logger *logrus.Entry, versi
 	api.GET("/test-cases", testCaseHandlers.testCasesHandler)
 
 	// endpoints for test runner
-	runHandlers := newRunHandlers(journey, NewWebSocketUpgrader(), logger)
+	runHandlers := newRunHandlers(
+		journey,
+		NewWebSocketUpgrader(),
+		logger,
+		s.userRepo,
+		s.testRunRepo,
+	)
 	api.POST("/run", runHandlers.runStartPostHandler)
 	api.GET("/run/ws", runHandlers.listenResultWebSocket)
 	api.DELETE("/run", runHandlers.stopRunHandler)
