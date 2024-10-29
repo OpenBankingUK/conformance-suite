@@ -20,7 +20,7 @@ const (
 func TestServerRunStartPost(t *testing.T) {
 	require := test.NewRequire(t)
 
-	server := NewServer(testJourney(), nullLogger(), &versionmock.Version{})
+	server := NewServer(testJourney(), nullLogger(), &versionmock.Version{}, mockUserRepository{}, mockTestRunRepository{})
 	defer func() {
 		require.NoError(server.Shutdown(context.TODO()))
 	}()

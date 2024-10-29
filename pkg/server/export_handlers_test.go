@@ -13,6 +13,7 @@ import (
 	discovery_mocks "github.com/OpenBankingUK/conformance-suite/pkg/discovery/mocks"
 	gmocks "github.com/OpenBankingUK/conformance-suite/pkg/generation"
 	"github.com/OpenBankingUK/conformance-suite/pkg/report"
+	"github.com/OpenBankingUK/conformance-suite/pkg/repository"
 	"github.com/OpenBankingUK/conformance-suite/pkg/server/models"
 	"github.com/OpenBankingUK/conformance-suite/pkg/test"
 	internal_time "github.com/OpenBankingUK/conformance-suite/pkg/time"
@@ -21,6 +22,18 @@ import (
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 )
+
+type mockUserRepository struct{}
+
+func (r mockUserRepository) GetByID(ctx context.Context, userID string) (repository.User, error) {
+	return repository.User{}, nil
+}
+
+type mockTestRunRepository struct{}
+
+func (r mockTestRunRepository) Create(ctx context.Context, testRun repository.TestRun) error {
+	return nil
+}
 
 func TestServerPostExport(t *testing.T) {
 	require := test.NewRequire(t)
@@ -35,7 +48,7 @@ func TestServerPostExport(t *testing.T) {
 	require.NoError(err)
 	require.Equal(discovery.NoValidationFailures(), failures)
 
-	server := NewServer(journey, nullLogger(), &version_mocks.Version{})
+	server := NewServer(journey, nullLogger(), &version_mocks.Version{}, mockUserRepository{}, mockTestRunRepository{})
 	defer func() {
 		require.NoError(server.Shutdown(context.TODO()))
 	}()
@@ -122,7 +135,7 @@ func TestServerPostExport(t *testing.T) {
 func TestServerPostExportInvalidRequest(t *testing.T) {
 	require := test.NewRequire(t)
 
-	server := NewServer(testJourney(), nullLogger(), &version_mocks.Version{})
+	server := NewServer(testJourney(), nullLogger(), &version_mocks.Version{}, mockUserRepository{}, mockTestRunRepository{})
 	defer func() {
 		require.NoError(server.Shutdown(context.TODO()))
 	}()

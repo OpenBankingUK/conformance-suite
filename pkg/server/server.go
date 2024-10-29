@@ -1,6 +1,7 @@
 package server
 
 import (
+	"context"
 	"strings"
 
 	"math"
@@ -23,8 +24,15 @@ type Server struct {
 	logger     *logrus.Entry
 	version    version.Checker
 
-	userRepo    repository.UserRepository
-	testRunRepo repository.TestRunRepository
+	userRepo    UserRepository
+	testRunRepo TestRunRepository
+}
+
+type UserRepository interface {
+	GetByID(ctx context.Context, userID string) (repository.User, error)
+}
+type TestRunRepository interface {
+	Create(ctx context.Context, testRun repository.TestRun) error
 }
 
 // NewServer returns new echo.Echo server.
@@ -32,8 +40,8 @@ func NewServer(
 	journey Journey,
 	logger *logrus.Entry,
 	version version.Checker,
-	userRepo repository.UserRepository,
-	testRunRepo repository.TestRunRepository,
+	userRepo UserRepository,
+	testRunRepo TestRunRepository,
 ) *Server {
 	server := &Server{
 		Echo:        echo.New(),

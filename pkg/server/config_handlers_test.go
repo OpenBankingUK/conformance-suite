@@ -240,7 +240,7 @@ func TestValidateConfigTestsEmpty(t *testing.T) {
 func TestServerConfigGlobalPostValid(t *testing.T) {
 	require := test.NewRequire(t)
 	logger := logrus.New()
-	server := NewServer(testJourney(), logger.WithField("component", "test-server"), &mocks.Version{})
+	server := NewServer(testJourney(), logger.WithField("component", "test-server"), &mocks.Version{}, mockUserRepository{}, mockTestRunRepository{})
 	defer func() {
 		require.NoError(server.Shutdown(context.TODO()))
 	}()
@@ -867,7 +867,7 @@ func TestServerConfigGlobalPostInvalid(t *testing.T) {
 		t.Run(testCase.name, func(t *testing.T) {
 			require := test.NewRequire(t)
 
-			server := NewServer(testJourney(), nullLogger(), &mocks.Version{})
+			server := NewServer(testJourney(), nullLogger(), &mocks.Version{}, mockUserRepository{}, mockTestRunRepository{})
 			defer func() {
 				require.NoError(server.Shutdown(context.TODO()))
 			}()

@@ -29,16 +29,16 @@ type runHandlers struct {
 	journey     Journey
 	upgrader    *websocket.Upgrader
 	logger      *logrus.Entry
-	userRepo    repository.UserRepository
-	testRunRepo repository.TestRunRepository
+	userRepo    UserRepository
+	testRunRepo TestRunRepository
 }
 
 func newRunHandlers(
 	journey Journey,
 	upgrader *websocket.Upgrader,
 	logger *logrus.Entry,
-	userRepo repository.UserRepository,
-	testRunRepo repository.TestRunRepository,
+	userRepo UserRepository,
+	testRunRepo TestRunRepository,
 ) runHandlers {
 	return runHandlers{
 		journey:     journey,

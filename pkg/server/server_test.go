@@ -22,7 +22,7 @@ import (
 )
 
 func TestServer(t *testing.T) {
-	server := NewServer(testJourney(), nullLogger(), &mocks.Version{})
+	server := NewServer(testJourney(), nullLogger(), &mocks.Version{}, mockUserRepository{}, mockTestRunRepository{})
 
 	t.Run("NewServer() returns non-nil value", func(t *testing.T) {
 		assert := test.NewAssert(t)
@@ -52,7 +52,7 @@ func TestServer(t *testing.T) {
 func TestServerConformanceSuiteCallback(t *testing.T) {
 	require := test.NewRequire(t)
 
-	server := NewServer(testJourney(), nullLogger(), &mocks.Version{})
+	server := NewServer(testJourney(), nullLogger(), &mocks.Version{}, mockUserRepository{}, mockTestRunRepository{})
 	defer func() {
 		require.NoError(server.Shutdown(context.TODO()))
 	}()
@@ -145,7 +145,7 @@ func TestServerHTTPS(t *testing.T) {
 	}
 	httpClient := client.NewHTTPClientWithTransport(client.DefaultTimeout, transport)
 
-	server := NewServer(testJourney(), nullLogger(), &mocks.Version{})
+	server := NewServer(testJourney(), nullLogger(), &mocks.Version{}, mockUserRepository{}, mockTestRunRepository{})
 	defer func() {
 		require.NoError(server.Shutdown(context.TODO()))
 	}()

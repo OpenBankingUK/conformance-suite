@@ -27,7 +27,7 @@ func TestRedirectHandlersFragmentOK(t *testing.T) {
 	journey := &MockJourney{}
 	journey.On("CollectToken", mock.Anything, mock.Anything, mock.Anything).Return(nil)
 
-	server := NewServer(journey, nullLogger(), &mocks.Version{})
+	server := NewServer(journey, nullLogger(), &mocks.Version{}, mockUserRepository{}, mockTestRunRepository{})
 	defer func() {
 		require.NoError(server.Shutdown(context.TODO()))
 	}()
@@ -116,7 +116,7 @@ func TestRedirectHandlersQueryOK(t *testing.T) {
 	journey := &MockJourney{}
 	journey.On("CollectToken", mock.Anything, mock.Anything, mock.Anything).Return(nil)
 
-	server := NewServer(journey, nullLogger(), &mocks.Version{})
+	server := NewServer(journey, nullLogger(), &mocks.Version{}, mockUserRepository{}, mockTestRunRepository{})
 	defer func() {
 		require.NoError(t, server.Shutdown(context.TODO()))
 	}()
@@ -208,7 +208,7 @@ func TestRedirectHandlersQueryOK(t *testing.T) {
 func TestRedirectHandlersError(t *testing.T) {
 	require := test.NewRequire(t)
 
-	server := NewServer(testJourney(), nullLogger(), &mocks.Version{})
+	server := NewServer(testJourney(), nullLogger(), &mocks.Version{}, mockUserRepository{}, mockTestRunRepository{})
 	defer func() {
 		require.NoError(server.Shutdown(context.TODO()))
 	}()

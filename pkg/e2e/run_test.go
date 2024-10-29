@@ -24,6 +24,7 @@ import (
 	"github.com/OpenBankingUK/conformance-suite/pkg/discovery"
 	"github.com/OpenBankingUK/conformance-suite/pkg/generation"
 	"github.com/OpenBankingUK/conformance-suite/pkg/model"
+	"github.com/OpenBankingUK/conformance-suite/pkg/repository"
 	"github.com/OpenBankingUK/conformance-suite/pkg/server"
 	"github.com/OpenBankingUK/conformance-suite/pkg/version"
 
@@ -39,6 +40,18 @@ const (
 	certFile = "../../certs/conformancesuite_cert.pem"
 	keyFile  = "../../certs/conformancesuite_key.pem"
 )
+
+type mockUserRepository struct{}
+
+func (r mockUserRepository) GetByID(ctx context.Context, userID string) (repository.User, error) {
+	return repository.User{}, nil
+}
+
+type mockTestRunRepository struct{}
+
+func (r mockTestRunRepository) Create(ctx context.Context, testRun repository.TestRun) error {
+	return nil
+}
 
 // init - this allows running the tests in debug mode, e.g.,:
 //
@@ -82,7 +95,7 @@ func disableTestRun(t *testing.T) {
 	tlsValidator := discovery.NewStdTLSValidator(tls.VersionTLS11)
 	journey := server.NewJourney(logger, testGenerator, validatorEngine, tlsValidator, false)
 
-	echoServer := server.NewServer(journey, logger, ver)
+	echoServer := server.NewServer(journey, logger, ver, mockUserRepository{}, mockTestRunRepository{})
 
 	go func() {
 		require.EqualError(t, echoServer.StartTLS(":0", certFile, keyFile), "http: Server closed")
