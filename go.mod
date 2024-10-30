@@ -21,6 +21,7 @@ require (
 	github.com/labstack/echo/v4 v4.11.3
 	github.com/labstack/gommon v0.4.1 // indirect
 	github.com/lestrrat-go/jwx v1.0.2
+	github.com/lib/pq v1.10.9
 	github.com/magisterquis/connectproxy v0.0.0-20200725203833-3582e84f0c9b
 	github.com/mgutz/ansi v0.0.0-20170206155736-9520e82c474b // indirect
 	github.com/onsi/gomega v1.27.6 // indirect
@@ -39,8 +40,6 @@ require (
 	gopkg.in/go-playground/validator.v9 v9.21.1
 	gopkg.in/resty.v1 v1.10.3
 )
-
-require github.com/lib/pq v1.10.9
 
 require (
 	github.com/PuerkitoBio/purell v1.1.0 // indirect
