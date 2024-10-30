@@ -14,7 +14,7 @@ func TestNewTestCaseResult123(t *testing.T) {
 	assert := test.NewAssert(t)
 
 	err := errors.New("some error")
-	result := NewTestCaseResult("123", true, NoMetrics(), []error{err}, "endpoint", "api-name", "api-version", "detailed description", "https://openbanking.org.uk/ref/uri", "200")
+	result := NewTestCaseResult("123", true, NoMetrics(), []error{err}, "endpoint", "api-name", "api-version", "detailed description", "https://openbanking.org.uk/ref/uri", "200", "12345")
 
 	assert.Equal("123", result.Id)
 	assert.True(result.Pass)
@@ -27,7 +27,7 @@ func TestNewTestCaseResult321(t *testing.T) {
 
 	err := errors.New("some error")
 
-	result := NewTestCaseResult("321", true, NoMetrics(), []error{err}, "endpoint", "api-name", "api-version", "detailed description", "https://openbanking.org.uk/ref/uri", "200")
+	result := NewTestCaseResult("321", true, NoMetrics(), []error{err}, "endpoint", "api-name", "api-version", "detailed description", "https://openbanking.org.uk/ref/uri", "200", "12345")
 	assert.Equal("321", result.Id)
 	assert.True(result.Pass)
 	assert.Equal(NoMetrics(), result.Metrics)
@@ -38,7 +38,7 @@ func TestNewTestCaseFailResult(t *testing.T) {
 	assert := test.NewAssert(t)
 	err := errors.New("some error")
 
-	result := NewTestCaseFail("id", NoMetrics(), []error{err}, "endpoint", "api-name", "api-version", "detailed description", "https://openbanking.org.uk/ref/uri", "200")
+	result := NewTestCaseFail("id", NoMetrics(), []error{err}, "endpoint", "api-name", "api-version", "detailed description", "https://openbanking.org.uk/ref/uri", "200", "12345")
 
 	assert.Equal("id", result.Id)
 	assert.False(result.Pass)
@@ -47,7 +47,7 @@ func TestNewTestCaseFailResult(t *testing.T) {
 }
 
 func TestTestCaseResultJsonMarshal(t *testing.T) {
-	result := NewTestCaseResult("123", true, NoMetrics(), nil, "endpoint", "api-name", "api-version", "detailed description", "https://openbanking.org.uk/ref/uri", "200")
+	result := NewTestCaseResult("123", true, NoMetrics(), nil, "endpoint", "api-name", "api-version", "detailed description", "https://openbanking.org.uk/ref/uri", "200", "12345")
 
 	expected := `
 {

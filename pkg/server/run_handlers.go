@@ -176,6 +176,10 @@ func (h runHandlers) processTestCaseResult(ws *websocket.Conn, logger *logrus.En
 		return err
 	}
 
+	if err := h.journey.SaveTestCaseResult(result); err != nil {
+		logger.WithError(err).Error("saving test case result")
+	}
+
 	wsEvent := newTestCaseResultWebSocketEvent(result)
 	logger.WithFields(logrus.Fields{
 		"wsEvent.Type": wsEvent.Type,

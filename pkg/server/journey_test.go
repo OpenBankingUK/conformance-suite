@@ -51,7 +51,11 @@ func (r mockUserRepository) GetByID(ctx context.Context, userID string) (reposit
 
 type mockTestRunRepository struct{}
 
-func (r mockTestRunRepository) Create(ctx context.Context, testRun repository.TestRun) error {
+func (r mockTestRunRepository) CreateTestRun(ctx context.Context, testRun repository.TestRun) error {
+	return nil
+}
+
+func (r mockTestRunRepository) CreateTestCaseResult(ctx context.Context, testCaseResult repository.TestCaseResult) error {
 	return nil
 }
 

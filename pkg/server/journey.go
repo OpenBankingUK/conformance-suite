@@ -16,6 +16,7 @@ import (
 	"github.com/OpenBankingUK/conformance-suite/pkg/discovery"
 	"github.com/OpenBankingUK/conformance-suite/pkg/executors"
 	"github.com/OpenBankingUK/conformance-suite/pkg/executors/events"
+	"github.com/OpenBankingUK/conformance-suite/pkg/executors/results"
 	"github.com/OpenBankingUK/conformance-suite/pkg/generation"
 	"github.com/OpenBankingUK/conformance-suite/pkg/manifest"
 	"github.com/OpenBankingUK/conformance-suite/pkg/model"
@@ -59,13 +60,15 @@ type Journey interface {
 	ConditionalProperties() []discovery.ConditionalAPIProperties
 	Events() events.Events
 	TLSVersionResult() map[string]*discovery.TLSValidationResult
+	SaveTestCaseResult(result results.TestCase) error
 }
 
 type UserRepository interface {
 	GetByID(ctx context.Context, userID string) (repository.User, error)
 }
 type TestRunRepository interface {
-	Create(ctx context.Context, testRun repository.TestRun) error
+	CreateTestRun(ctx context.Context, testRun repository.TestRun) error
+	CreateTestCaseResult(ctx context.Context, testCaseResult repository.TestCaseResult) error
 }
 
 // AppJourney - application controlled by this class
@@ -133,6 +136,21 @@ func (wj *AppJourney) NewDaemonController() {
 	defer wj.journeyLock.Unlock()
 	wj.daemonController = executors.NewBufferedDaemonController()
 	wj.events = events.NewEvents()
+}
+
+func (wj *AppJourney) SaveTestCaseResult(result results.TestCase) error {
+	testCaseResult := repository.TestCaseResult{
+		ID:         uuid.New().String(),
+		TestCaseID: result.Id,
+		Pass:       result.Pass,
+		Fail:       result.Fail,
+		Detail:     result.Detail,
+		TestRunID:  result.TestRunTrackingID,
+	}
+	if err := wj.testRunRepo.CreateTestCaseResult(context.Background(), testCaseResult); err != nil {
+		return err
+	}
+	return nil
 }
 
 // SetDiscoveryModel -
@@ -573,7 +591,7 @@ func (wj *AppJourney) RunTests() error {
 			"err":       err.Error(),
 		}).Error("unable to encode discovery model for database storage")
 	}
-	if err := wj.testRunRepo.Create(context.Background(), repository.TestRun{
+	if err := wj.testRunRepo.CreateTestRun(context.Background(), repository.TestRun{
 		ID:             testRunID,
 		DiscoveryModel: json.RawMessage(discoveryJSON),
 		UserID:         DefaultUserID,

@@ -17,4 +17,20 @@ CREATE TABLE test_runs (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 
+CREATE TABLE IF NOT EXISTS test_test_case_results (
+    test_case_id CHAR(36) PRIMARY KEY,
+    test_run_id CHAR(36) NOT NULL REFERENCES test_runs (id),
+    pass BOOLEAN NOT NULL,
+    fail TEXT[] NOT NULL,
+    detail TEXT NOT NULL,
+    ref_uri VARCHAR(255) NOT NULL,
+    endpoint TEXT NOT NULL,
+    api TEXT NOT NULL,
+    api_version VARCHAR(255) NOT NULL,
+    http_status TEXT NOT NULL,
+    test_run_tracking_id TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL
+);
+
+
 

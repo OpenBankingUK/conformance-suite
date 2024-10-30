@@ -355,6 +355,10 @@ func (r *TestCaseRunner) executeSpecTests(spec generation.SpecificationTestCases
 
 func (r *TestCaseRunner) executeTest(tc model.TestCase, ruleCtx *model.Context, logger *logrus.Entry) results.TestCase {
 	ctxLogger := logWithTestCase(logger, tc)
+	testRunTrackingID, err := ruleCtx.GetString("testRunTrackingID")
+	if err != nil {
+		ctxLogger.WithError(err).Error("retrieving test run tracking id")
+	}
 	req, err := tc.Prepare(ruleCtx)
 	if err != nil {
 		ctxLogger.WithError(err).Error("preparing executing test")
@@ -368,6 +372,7 @@ func (r *TestCaseRunner) executeTest(tc model.TestCase, ruleCtx *model.Context, 
 			tc.Detail,
 			tc.RefURI,
 			tc.StatusCode,
+			testRunTrackingID,
 		)
 	}
 	resp, metrics, err := r.executor.ExecuteTestCase(req, &tc, ruleCtx)
@@ -384,6 +389,7 @@ func (r *TestCaseRunner) executeTest(tc model.TestCase, ruleCtx *model.Context, 
 			tc.Detail,
 			tc.RefURI,
 			tc.StatusCode,
+			testRunTrackingID,
 		)
 	}
 	tc.StatusCode = resp.Status()
@@ -401,6 +407,7 @@ func (r *TestCaseRunner) executeTest(tc model.TestCase, ruleCtx *model.Context, 
 			tc.Detail,
 			tc.RefURI,
 			tc.StatusCode,
+			testRunTrackingID,
 		)
 	}
 
@@ -410,7 +417,19 @@ func (r *TestCaseRunner) executeTest(tc model.TestCase, ruleCtx *model.Context, 
 		ctxLogger.WithError(err).WithFields(logrus.Fields{"result": passText()[result], "ID": tc.ID}).Info("test result")
 	}
 
-	return results.NewTestCaseResult(tc.ID, result, metrics, []error{}, tc.Input.Endpoint, tc.APIName, tc.APIVersion, tc.Detail, tc.RefURI, tc.StatusCode)
+	return results.NewTestCaseResult(
+		tc.ID,
+		result,
+		metrics,
+		[]error{},
+		tc.Input.Endpoint,
+		tc.APIName,
+		tc.APIVersion,
+		tc.Detail,
+		tc.RefURI,
+		tc.StatusCode,
+		testRunTrackingID,
+	)
 }
 
 type DetailError struct {

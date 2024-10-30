@@ -23,5 +23,30 @@ func NewUserRepository(db *sql.DB) UserRepository {
 }
 
 func (r UserRepository) GetByID(ctx context.Context, userID string) (User, error) {
-	return User{}, nil
+	query := `
+		SELECT id, first_name, last_name, company_name, created_at
+		FROM users
+		WHERE id = $1
+	`
+	row := r.db.QueryRowContext(ctx, query, userID)
+
+	var user User
+	err := row.Scan(&user.ID, &user.FirstName, &user.LastName, &user.CompanyName, &user.CreatedAt)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return User{}, nil // or return a custom error indicating user not found
+		}
+		return User{}, err
+	}
+
+	return user, nil
+}
+
+func (r UserRepository) Create(ctx context.Context, user User) error {
+	query := `
+		INSERT INTO users (id, first_name, last_name, company_name, created_at)
+		VALUES ($1, $2, $3, $4, $5)
+	`
+	_, err := r.db.ExecContext(ctx, query, user.ID, user.FirstName, user.LastName, user.CompanyName, user.CreatedAt)
+	return err
 }
