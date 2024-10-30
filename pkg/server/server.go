@@ -15,7 +15,7 @@ import (
 
 // ListenHost defines the name/address by which the service can be accessed.
 const ListenHost = "0.0.0.0"
-const DefaultUserID = "4dccdba8-11e5-40d0-a2b7-bace614ade62"
+const DefaultUserID = "550e8400-e29b-41d4-a716-446655440000"
 
 // Server - wraps *echo.Echo.
 type Server struct {
