@@ -111,7 +111,11 @@ func (r *TestCaseRunner) runTestCasesAsync(ctx *model.Context) {
 
 	ruleCtx := r.makeRuleCtx(ctx)
 
-	ctxLogger := r.logger.WithField("id", uuid.New())
+	testRunTrackingID, err := ctx.GetString("testRunTrackingID")
+	if err != nil {
+		r.logger.WithError(err).Error("running test cases async")
+	}
+	ctxLogger := r.logger.WithField("id", testRunTrackingID)
 	for _, spec := range r.definition.SpecRun.SpecTestCases {
 		r.executeSpecTests(spec, ruleCtx, ctxLogger) // Run Tests for each spec
 	}

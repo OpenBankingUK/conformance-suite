@@ -53,6 +53,7 @@ const (
 	CtxPhase                               = "phase"
 	CtxDynamicResourceIDs                  = "dynamicResourceIDs"
 	CtxAcrValuesSupported                  = "acrValuesSupported"
+	CtxTestRunTrackingID                   = "testRunTrackingID"
 )
 
 // PutParametersToJourneyContext populates a JourneyContext with values from the config screen

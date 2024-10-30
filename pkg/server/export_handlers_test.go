@@ -13,7 +13,6 @@ import (
 	discovery_mocks "github.com/OpenBankingUK/conformance-suite/pkg/discovery/mocks"
 	gmocks "github.com/OpenBankingUK/conformance-suite/pkg/generation"
 	"github.com/OpenBankingUK/conformance-suite/pkg/report"
-	"github.com/OpenBankingUK/conformance-suite/pkg/repository"
 	"github.com/OpenBankingUK/conformance-suite/pkg/server/models"
 	"github.com/OpenBankingUK/conformance-suite/pkg/test"
 	internal_time "github.com/OpenBankingUK/conformance-suite/pkg/time"
@@ -23,18 +22,6 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-type mockUserRepository struct{}
-
-func (r mockUserRepository) GetByID(ctx context.Context, userID string) (repository.User, error) {
-	return repository.User{}, nil
-}
-
-type mockTestRunRepository struct{}
-
-func (r mockTestRunRepository) Create(ctx context.Context, testRun repository.TestRun) error {
-	return nil
-}
-
 func TestServerPostExport(t *testing.T) {
 	require := test.NewRequire(t)
 
@@ -42,13 +29,13 @@ func TestServerPostExport(t *testing.T) {
 	validator := &discovery_mocks.Validator{}
 	validator.On("Validate", discoveryModel).Return(discovery.NoValidationFailures(), nil)
 	generator := &gmocks.MockGenerator{}
-	journey := NewJourney(nullLogger(), generator, validator, discovery.NewNullTLSValidator(), false)
+	journey := NewJourney(nullLogger(), generator, validator, discovery.NewNullTLSValidator(), false, mockUserRepository{}, mockTestRunRepository{})
 
 	failures, err := journey.SetDiscoveryModel(discoveryModel)
 	require.NoError(err)
 	require.Equal(discovery.NoValidationFailures(), failures)
 
-	server := NewServer(journey, nullLogger(), &version_mocks.Version{}, mockUserRepository{}, mockTestRunRepository{})
+	server := NewServer(journey, nullLogger(), &version_mocks.Version{})
 	defer func() {
 		require.NoError(server.Shutdown(context.TODO()))
 	}()
@@ -135,7 +122,7 @@ func TestServerPostExport(t *testing.T) {
 func TestServerPostExportInvalidRequest(t *testing.T) {
 	require := test.NewRequire(t)
 
-	server := NewServer(testJourney(), nullLogger(), &version_mocks.Version{}, mockUserRepository{}, mockTestRunRepository{})
+	server := NewServer(testJourney(), nullLogger(), &version_mocks.Version{})
 	defer func() {
 		require.NoError(server.Shutdown(context.TODO()))
 	}()

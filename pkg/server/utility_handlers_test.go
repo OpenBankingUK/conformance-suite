@@ -34,7 +34,7 @@ func TestVersionCheckUpdateAvailable(t *testing.T) {
 	warningMsg := "Version v0.1.2 of the Conformance Suite is out-of-date, please update to v0.1.3"
 	updateAvaiable := true
 	v := makeVersionMock(warningMsg, updateAvaiable)
-	server := NewServer(testJourney(), nullLogger(), v, mockUserRepository{}, mockTestRunRepository{})
+	server := NewServer(testJourney(), nullLogger(), v)
 	defer func() {
 		require.NoError(t, server.Shutdown(context.TODO()))
 	}()
@@ -57,7 +57,7 @@ func TestVersionCheckNoUpdateAvailable(t *testing.T) {
 	warningMsg := "Conformance Suite is running the latest version 0.1.2-RC1"
 	updateAvaiable := false
 	v := makeVersionMock(warningMsg, updateAvaiable)
-	server := NewServer(testJourney(), nullLogger(), v, mockUserRepository{}, mockTestRunRepository{})
+	server := NewServer(testJourney(), nullLogger(), v)
 	defer func() {
 		require.NoError(t, server.Shutdown(context.TODO()))
 	}()
@@ -83,7 +83,7 @@ func TestVersionUpstreamUnavailableReturnsServerError(t *testing.T) {
 	v.On("UpdateWarningVersion", mock.AnythingOfType("string")).Return(warningMsg, false, errors.New("service error"))
 	v.On("VersionFormatter", mock.AnythingOfType("string")).Return(formatted, nil)
 
-	server := NewServer(testJourney(), nullLogger(), v, mockUserRepository{}, mockTestRunRepository{})
+	server := NewServer(testJourney(), nullLogger(), v)
 	defer func() {
 		require.NoError(t, server.Shutdown(context.TODO()))
 	}()

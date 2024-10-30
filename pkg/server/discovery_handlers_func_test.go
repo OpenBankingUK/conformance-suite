@@ -14,7 +14,7 @@ import (
 func TestServerDiscoveryModelPOSTValidateReturnsErrorsWhenInvalidJSON(t *testing.T) {
 	assert := test.NewAssert(t)
 
-	server := NewServer(testJourney(), nullLogger(), &versionmock.Version{}, mockUserRepository{}, mockTestRunRepository{})
+	server := NewServer(testJourney(), nullLogger(), &versionmock.Version{})
 	defer func() {
 		assert.NoError(server.Shutdown(context.TODO()))
 	}()
@@ -35,7 +35,7 @@ func TestServerDiscoveryModelPOSTValidateReturnsErrorsWhenInvalidJSON(t *testing
 func TestServerDiscoveryModelPOSTValidateReturnsErrorsWhenIncomplete(t *testing.T) {
 	assert := test.NewAssert(t)
 
-	server := NewServer(testJourney(), nullLogger(), &versionmock.Version{}, mockUserRepository{}, mockTestRunRepository{})
+	server := NewServer(testJourney(), nullLogger(), &versionmock.Version{})
 	defer func() {
 		assert.NoError(server.Shutdown(context.TODO()))
 	}()

@@ -51,18 +51,24 @@ Complete documentation is available at https://github.com/OpenBankingUK/conforma
 			validatorEngine := discovery.NewFuncValidator(model.NewConditionalityChecker())
 			testGenerator := generation.NewGenerator()
 			tlsValidator := discovery.NewStdTLSValidator(tls.VersionTLS11)
-			journey := server.NewJourney(logger, testGenerator, validatorEngine, tlsValidator, viper.GetBool("dynres"))
 			db, err := sql.Open("postgres", viper.GetString("database_url"))
 			if err != nil {
 				log.Fatal(err)
 			}
+			journey := server.NewJourney(
+				logger,
+				testGenerator,
+				validatorEngine,
+				tlsValidator,
+				viper.GetBool("dynres"),
+				repository.NewUserRepository(db),
+				repository.NewTestRunRepository(db),
+			)
 
 			echoServer := server.NewServer(
 				journey,
 				logger,
 				ver,
-				repository.NewUserRepository(db),
-				repository.NewTestRunRepository(db),
 			)
 			address := fmt.Sprintf("%s:%d", server.ListenHost, viper.GetInt("port"))
 			logger.Infof("listening on https://%s", address)

@@ -1,12 +1,10 @@
 package server
 
 import (
-	"context"
 	"strings"
 
 	"math"
 
-	"github.com/OpenBankingUK/conformance-suite/pkg/repository"
 	"github.com/OpenBankingUK/conformance-suite/pkg/version"
 
 	"github.com/gorilla/websocket"
@@ -17,22 +15,13 @@ import (
 
 // ListenHost defines the name/address by which the service can be accessed.
 const ListenHost = "0.0.0.0"
+const DefaultUserID = "4dccdba8-11e5-40d0-a2b7-bace614ade62"
 
 // Server - wraps *echo.Echo.
 type Server struct {
 	*echo.Echo // Wrap (using composition) *echo.Echo, allows us to pretend Server is echo.Echo.
 	logger     *logrus.Entry
 	version    version.Checker
-
-	userRepo    UserRepository
-	testRunRepo TestRunRepository
-}
-
-type UserRepository interface {
-	GetByID(ctx context.Context, userID string) (repository.User, error)
-}
-type TestRunRepository interface {
-	Create(ctx context.Context, testRun repository.TestRun) error
 }
 
 // NewServer returns new echo.Echo server.
@@ -40,15 +29,11 @@ func NewServer(
 	journey Journey,
 	logger *logrus.Entry,
 	version version.Checker,
-	userRepo UserRepository,
-	testRunRepo TestRunRepository,
 ) *Server {
 	server := &Server{
-		Echo:        echo.New(),
-		logger:      logger,
-		version:     version,
-		userRepo:    userRepo,
-		testRunRepo: testRunRepo,
+		Echo:    echo.New(),
+		logger:  logger,
+		version: version,
 	}
 	server.Validator = newEchoValidatorAdapter()
 	server.HideBanner = true
@@ -131,8 +116,6 @@ func (s *Server) registerRoutes(journey Journey, server *Server, logger *logrus.
 		journey,
 		NewWebSocketUpgrader(),
 		logger,
-		s.userRepo,
-		s.testRunRepo,
 	)
 	api.POST("/run", runHandlers.runStartPostHandler)
 	api.GET("/run/ws", runHandlers.listenResultWebSocket)

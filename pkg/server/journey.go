@@ -1,12 +1,14 @@
 package server
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"strings"
 	"sync"
 
 	"github.com/blang/semver/v4"
+	"github.com/google/uuid"
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 
@@ -17,6 +19,7 @@ import (
 	"github.com/OpenBankingUK/conformance-suite/pkg/generation"
 	"github.com/OpenBankingUK/conformance-suite/pkg/manifest"
 	"github.com/OpenBankingUK/conformance-suite/pkg/model"
+	"github.com/OpenBankingUK/conformance-suite/pkg/repository"
 	"github.com/OpenBankingUK/conformance-suite/pkg/schemaprops"
 	"github.com/OpenBankingUK/conformance-suite/pkg/server/models"
 )
@@ -58,6 +61,13 @@ type Journey interface {
 	TLSVersionResult() map[string]*discovery.TLSValidationResult
 }
 
+type UserRepository interface {
+	GetByID(ctx context.Context, userID string) (repository.User, error)
+}
+type TestRunRepository interface {
+	Create(ctx context.Context, testRun repository.TestRun) error
+}
+
 // AppJourney - application controlled by this class
 type AppJourney struct {
 	generator             generation.Generator
@@ -79,12 +89,20 @@ type AppJourney struct {
 	tlsValidator          discovery.TLSValidator
 	conditionalProperties []discovery.ConditionalAPIProperties
 	dynamicResourceIDs    bool
+	userRepo              UserRepository
+	testRunRepo           TestRunRepository
 }
 
 // NewJourney creates an instance for a user journey
-func NewJourney(logger *logrus.Entry, generator generation.Generator,
-	validator discovery.Validator, tlsValidator discovery.TLSValidator,
-	dynamicResourceIDs bool) *AppJourney {
+func NewJourney(
+	logger *logrus.Entry,
+	generator generation.Generator,
+	validator discovery.Validator,
+	tlsValidator discovery.TLSValidator,
+	dynamicResourceIDs bool,
+	userRepo UserRepository,
+	testRunRepo TestRunRepository,
+) *AppJourney {
 	return &AppJourney{
 		generator:             generator,
 		validator:             validator,
@@ -99,6 +117,8 @@ func NewJourney(logger *logrus.Entry, generator generation.Generator,
 		manifests:             make([]manifest.Scripts, 0),
 		tlsValidator:          tlsValidator,
 		dynamicResourceIDs:    dynamicResourceIDs,
+		userRepo:              userRepo,
+		testRunRepo:           testRunRepo,
 	}
 }
 
@@ -539,9 +559,45 @@ func (wj *AppJourney) RunTests() error {
 
 	runDefinition := wj.makeRunDefinition()
 	runner := executors.NewTestCaseRunner(wj.log, runDefinition, wj.daemonController)
+	testRunID := uuid.New().String()
 	wj.context.PutString(CtxPhase, "run")
-	err := runner.RunTestCases(&wj.context)
-	return err
+	wj.context.PutString(CtxTestRunTrackingID, testRunID)
+
+	discoveryJSON, err := json.Marshal(wj.validDiscoveryModel)
+	if err != nil {
+		wj.log.WithFields(logrus.Fields{
+			"package":   "server",
+			"module":    "journey",
+			"function":  "RunTests",
+			"testRunID": testRunID,
+			"err":       err.Error(),
+		}).Error("unable to encode discovery model for database storage")
+	}
+	if err := wj.testRunRepo.Create(context.Background(), repository.TestRun{
+		ID:             testRunID,
+		DiscoveryModel: json.RawMessage(discoveryJSON),
+		UserID:         DefaultUserID,
+	}); err != nil {
+		wj.log.WithFields(logrus.Fields{
+			"package":   "server",
+			"module":    "journey",
+			"function":  "RunTests",
+			"testRunID": testRunID,
+			"err":       err.Error(),
+		}).Error("unable to save test run to database")
+	}
+	if err := runner.RunTestCases(&wj.context); err != nil {
+		wj.log.WithFields(logrus.Fields{
+			"package":   "server",
+			"module":    "journey",
+			"function":  "RunTests",
+			"testRunID": testRunID,
+			"err":       err.Error(),
+		}).Error("unable to run test cases")
+		return err
+	}
+
+	return nil
 }
 
 // Results -

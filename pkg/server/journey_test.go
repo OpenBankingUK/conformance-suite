@@ -1,6 +1,7 @@
 package server
 
 import (
+	"context"
 	"fmt"
 	"testing"
 
@@ -9,6 +10,7 @@ import (
 	"github.com/OpenBankingUK/conformance-suite/pkg/discovery/mocks"
 	"github.com/OpenBankingUK/conformance-suite/pkg/generation"
 	"github.com/OpenBankingUK/conformance-suite/pkg/model"
+	"github.com/OpenBankingUK/conformance-suite/pkg/repository"
 	"github.com/OpenBankingUK/conformance-suite/pkg/server/models"
 	"github.com/OpenBankingUK/conformance-suite/pkg/test"
 
@@ -41,6 +43,18 @@ G6aFKaqQfOXKCyWoUiVknQJAXrlgySFci/2ueKlIE1QqIiLSZ8V8OlpFLRnb1pzI
 -----END RSA PRIVATE KEY-----`
 )
 
+type mockUserRepository struct{}
+
+func (r mockUserRepository) GetByID(ctx context.Context, userID string) (repository.User, error) {
+	return repository.User{}, nil
+}
+
+type mockTestRunRepository struct{}
+
+func (r mockTestRunRepository) Create(ctx context.Context, testRun repository.TestRun) error {
+	return nil
+}
+
 func TestJourneySetDiscoveryModelValidatesModel(t *testing.T) {
 	assert := test.NewAssert(t)
 
@@ -48,7 +62,7 @@ func TestJourneySetDiscoveryModelValidatesModel(t *testing.T) {
 	validator := &mocks.Validator{}
 	validator.On("Validate", discoveryModel).Return(discovery.NoValidationFailures(), nil)
 	generator := &gmocks.MockGenerator{}
-	journey := NewJourney(nullLogger(), generator, validator, discovery.NewNullTLSValidator(), false)
+	journey := NewJourney(nullLogger(), generator, validator, discovery.NewNullTLSValidator(), false, mockUserRepository{}, mockTestRunRepository{})
 
 	failures, err := journey.SetDiscoveryModel(discoveryModel)
 
@@ -66,7 +80,7 @@ func TestJourneySetDiscoveryModelHandlesErrorFromValidator(t *testing.T) {
 	expectedFailures := discovery.ValidationFailures{}
 	validator.On("Validate", discoveryModel).Return(expectedFailures, errors.New("validator error"))
 	generator := &gmocks.MockGenerator{}
-	journey := NewJourney(nullLogger(), generator, validator, discovery.NewNullTLSValidator(), false)
+	journey := NewJourney(nullLogger(), generator, validator, discovery.NewNullTLSValidator(), false, mockUserRepository{}, mockTestRunRepository{})
 
 	failures, err := journey.SetDiscoveryModel(discoveryModel)
 
@@ -87,7 +101,7 @@ func TestJourneySetDiscoveryModelReturnsFailuresFromValidator(t *testing.T) {
 	expectedFailures := discovery.ValidationFailures{failure}
 	validator.On("Validate", discoveryModel).Return(expectedFailures, nil)
 	generator := &gmocks.MockGenerator{}
-	journey := NewJourney(nullLogger(), generator, validator, discovery.NewNullTLSValidator(), false)
+	journey := NewJourney(nullLogger(), generator, validator, discovery.NewNullTLSValidator(), false, mockUserRepository{}, mockTestRunRepository{})
 
 	failures, err := journey.SetDiscoveryModel(discoveryModel)
 
@@ -100,7 +114,7 @@ func TestJourneyTestCasesCantGenerateIfDiscoveryNotSet(t *testing.T) {
 
 	validator := &mocks.Validator{}
 	generator := &gmocks.MockGenerator{}
-	journey := NewJourney(nullLogger(), generator, validator, discovery.NewNullTLSValidator(), false)
+	journey := NewJourney(nullLogger(), generator, validator, discovery.NewNullTLSValidator(), false, mockUserRepository{}, mockTestRunRepository{})
 
 	testCases, err := journey.TestCases()
 
@@ -113,7 +127,7 @@ func TestJourneyRunTestCasesCantRunIfNoTestCases(t *testing.T) {
 
 	validator := &mocks.Validator{}
 	generator := &gmocks.MockGenerator{}
-	journey := NewJourney(nullLogger(), generator, validator, discovery.NewNullTLSValidator(), false)
+	journey := NewJourney(nullLogger(), generator, validator, discovery.NewNullTLSValidator(), false, mockUserRepository{}, mockTestRunRepository{})
 
 	err := journey.RunTests()
 
@@ -125,7 +139,7 @@ func TestJourneySetConfig(t *testing.T) {
 
 	validator := &mocks.Validator{}
 	generator := &gmocks.MockGenerator{}
-	journey := NewJourney(nullLogger(), generator, validator, discovery.NewNullTLSValidator(), false)
+	journey := NewJourney(nullLogger(), generator, validator, discovery.NewNullTLSValidator(), false, mockUserRepository{}, mockTestRunRepository{})
 
 	require.Equal(JourneyConfig{}, journey.config)
 

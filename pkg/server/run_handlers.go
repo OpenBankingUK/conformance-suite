@@ -6,7 +6,6 @@ import (
 
 	"time"
 
-	"github.com/google/uuid"
 	"github.com/gorilla/websocket"
 	"github.com/labstack/echo/v4"
 	"github.com/pkg/errors"
@@ -15,7 +14,6 @@ import (
 	"github.com/OpenBankingUK/conformance-suite/pkg/executors"
 	"github.com/OpenBankingUK/conformance-suite/pkg/executors/events"
 	"github.com/OpenBankingUK/conformance-suite/pkg/executors/results"
-	"github.com/OpenBankingUK/conformance-suite/pkg/repository"
 )
 
 const (
@@ -26,26 +24,20 @@ const (
 )
 
 type runHandlers struct {
-	journey     Journey
-	upgrader    *websocket.Upgrader
-	logger      *logrus.Entry
-	userRepo    UserRepository
-	testRunRepo TestRunRepository
+	journey  Journey
+	upgrader *websocket.Upgrader
+	logger   *logrus.Entry
 }
 
 func newRunHandlers(
 	journey Journey,
 	upgrader *websocket.Upgrader,
 	logger *logrus.Entry,
-	userRepo UserRepository,
-	testRunRepo TestRunRepository,
 ) runHandlers {
 	return runHandlers{
-		journey:     journey,
-		upgrader:    upgrader,
-		logger:      logger,
-		userRepo:    userRepo,
-		testRunRepo: testRunRepo,
+		journey:  journey,
+		upgrader: upgrader,
+		logger:   logger,
 	}
 }
 
@@ -54,13 +46,6 @@ func (h runHandlers) runStartPostHandler(c echo.Context) error {
 	err := h.journey.RunTests()
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, NewErrorResponse(err))
-	}
-	if err := h.testRunRepo.Create(c.Request().Context(), repository.TestRun{
-		ID:        uuid.New().String(),
-		UserID:    "",
-		CreatedAt: time.Now().UTC(),
-	}); err != nil {
-		return c.JSON(http.StatusInternalServerError, NewErrorResponse(err))
 	}
 	return c.NoContent(http.StatusCreated)
 }

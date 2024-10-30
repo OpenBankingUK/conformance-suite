@@ -31,16 +31,6 @@ import (
 	"github.com/google/go-cmp/cmp"
 )
 
-var (
-	logger = logrus.StandardLogger()
-	update = flag.Bool("update", false, "update .golden files")
-)
-
-const (
-	certFile = "../../certs/conformancesuite_cert.pem"
-	keyFile  = "../../certs/conformancesuite_key.pem"
-)
-
 type mockUserRepository struct{}
 
 func (r mockUserRepository) GetByID(ctx context.Context, userID string) (repository.User, error) {
@@ -52,6 +42,16 @@ type mockTestRunRepository struct{}
 func (r mockTestRunRepository) Create(ctx context.Context, testRun repository.TestRun) error {
 	return nil
 }
+
+var (
+	logger = logrus.StandardLogger()
+	update = flag.Bool("update", false, "update .golden files")
+)
+
+const (
+	certFile = "../../certs/conformancesuite_cert.pem"
+	keyFile  = "../../certs/conformancesuite_key.pem"
+)
 
 // init - this allows running the tests in debug mode, e.g.,:
 //
@@ -93,9 +93,9 @@ func disableTestRun(t *testing.T) {
 	validatorEngine := discovery.NewFuncValidator(model.NewConditionalityChecker())
 	testGenerator := generation.NewGenerator()
 	tlsValidator := discovery.NewStdTLSValidator(tls.VersionTLS11)
-	journey := server.NewJourney(logger, testGenerator, validatorEngine, tlsValidator, false)
+	journey := server.NewJourney(logger, testGenerator, validatorEngine, tlsValidator, false, mockUserRepository{}, mockTestRunRepository{})
 
-	echoServer := server.NewServer(journey, logger, ver, mockUserRepository{}, mockTestRunRepository{})
+	echoServer := server.NewServer(journey, logger, ver)
 
 	go func() {
 		require.EqualError(t, echoServer.StartTLS(":0", certFile, keyFile), "http: Server closed")

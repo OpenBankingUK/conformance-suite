@@ -30,7 +30,7 @@ func TestServerSwaggerHandlers(t *testing.T) {
 
 // TestServerSwaggerHandlers - paths (e.g., /swagger/account-transaction-v3.0/v3.0/docs) serve the swagger ui.
 func TestServerSwaggerHandlersServesUI(t *testing.T) {
-	server := NewServer(testJourney(), nullLogger(), &mocks.Version{}, mockUserRepository{}, mockTestRunRepository{})
+	server := NewServer(testJourney(), nullLogger(), &mocks.Version{})
 	defer func() {
 		require.NoError(t, server.Shutdown(context.TODO()))
 	}()
