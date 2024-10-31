@@ -22,6 +22,26 @@ func NewUserRepository(db *sql.DB) UserRepository {
 	return UserRepository{db: db}
 }
 
+func (r UserRepository) GetByEmail(ctx context.Context, email string) (*User, error) {
+	query := `
+		SELECT id, first_name, last_name, company_name, created_at
+		FROM users
+		WHERE email = $1
+	`
+	row := r.db.QueryRowContext(ctx, query, email)
+
+	var user User
+	err := row.Scan(&user.ID, &user.FirstName, &user.LastName, &user.CompanyName, &user.CreatedAt)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil
+		}
+		return nil, err
+	}
+
+	return &user, nil
+}
+
 func (r UserRepository) GetByID(ctx context.Context, userID string) (User, error) {
 	query := `
 		SELECT id, first_name, last_name, company_name, created_at

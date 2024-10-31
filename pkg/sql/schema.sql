@@ -31,6 +31,3 @@ CREATE TABLE IF NOT EXISTS test_test_case_results (
     test_run_tracking_id TEXT,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
-
-
-
