@@ -5,6 +5,7 @@ package server
 import discovery "github.com/OpenBankingUK/conformance-suite/pkg/discovery"
 import events "github.com/OpenBankingUK/conformance-suite/pkg/executors/events"
 import executors "github.com/OpenBankingUK/conformance-suite/pkg/executors"
+import results "github.com/OpenBankingUK/conformance-suite/pkg/executors/results"
 import generation "github.com/OpenBankingUK/conformance-suite/pkg/generation"
 import manifest "github.com/OpenBankingUK/conformance-suite/pkg/manifest"
 import mock "github.com/stretchr/testify/mock"
@@ -23,6 +24,19 @@ func (_m *MockJourney) AllTokenCollected() bool {
 		r0 = rf()
 	} else {
 		r0 = ret.Get(0).(bool)
+	}
+
+	return r0
+}
+
+func (_m *MockJourney) SaveTestCaseResult(result results.TestCase) error {
+	ret := _m.Called(result)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(results.TestCase) error); ok {
+		r0 = rf(result)
+	} else {
+		r0 = ret.Error(0)
 	}
 
 	return r0
