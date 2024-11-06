@@ -3,6 +3,7 @@ import VueRouter from 'vue-router';
 import has from 'lodash/has';
 import store from './store';
 import routes from './routes';
+import { isAuthenticated } from './auth';
 
 Vue.use(VueRouter);
 
@@ -14,6 +15,14 @@ const router = new VueRouter(routes);
  * is `1` we redirect to landing page (`/`). This tends to happen when the User refreshes the page.
  */
 router.beforeEach((to, from, next) => {
+  const publicPages = ['/login', '/404'];
+  const authRequired = !publicPages.includes(to.path);
+  const loggedIn = isAuthenticated();
+
+  if (authRequired && !loggedIn) {
+    return next('/login');
+  }
+
   const { path } = to;
   const navigation = store.getters['config/navigation'];
 

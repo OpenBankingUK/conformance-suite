@@ -1,4 +1,6 @@
+import Vue from 'vue';
 import TheWizard from './views/TheWizard.vue';
+import Login from './views/Login.vue';
 import WizardContinueOrStart from './views/Wizard/WizardContinueOrStart.vue';
 import WizardImport, { MODES as WizardImportModes } from './views/Wizard/WizardImport.vue';
 import WizardDiscoveryConfig from './views/Wizard/WizardDiscoveryConfig.vue';
@@ -8,12 +10,16 @@ import WizardExport from './views/Wizard/WizardExport.vue';
 import NotFound from './views/NotFound.vue';
 import ConformanceSuiteCallback from './views/ConformanceSuiteCallback/ConformanceSuiteCallback.vue';
 
+
 export default {
-  // Use the HTML5 history API, so that routes look normal
-  // (e.g. `/about`) instead of using a hash (e.g. `/#/about`).
   mode: 'history',
   base: process.env.BASE_URL,
   routes: [
+    {
+      path: '/login',
+      name: 'Login',
+      component: Login,
+    },
     {
       path: '/',
       name: 'TheWizard',
@@ -68,9 +74,6 @@ export default {
       name: 'ConformanceSuiteCallback',
       component: ConformanceSuiteCallback,
     },
-    // ---
-    // Handle 404s
-    // ---
     {
       path: '/404',
       name: 'NotFound',
@@ -82,3 +85,4 @@ export default {
     },
   ],
 };
+
