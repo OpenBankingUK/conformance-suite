@@ -94,6 +94,9 @@ func (s *Server) registerRoutes(journey Journey, server *Server, logger *logrus.
 
 	api.GET("/ping", func(c echo.Context) error { return nil })
 
+	authHandlers := newAuthHandlers(logger)
+	api.POST("/login", authHandlers.postLogin)
+
 	importHandlers := newImportHandlers(journey, logger)
 	api.POST("/import/review", importHandlers.postImportReview)
 	api.POST("/import/rerun", importHandlers.postImportRerun)
