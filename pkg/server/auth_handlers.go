@@ -17,12 +17,14 @@ import (
 )
 
 type authHandlers struct {
-	logger *logrus.Entry
+	logger       *logrus.Entry
+	secretJWTKey string
 }
 
 func newAuthHandlers(logger *logrus.Entry) authHandlers {
 	return authHandlers{
-		logger: logger.WithField("handler", "authHandlers"),
+		secretJWTKey: "todo_secret_key_for_jwt_signing",
+		logger:       logger.WithField("handler", "authHandlers"),
 	}
 }
 
@@ -39,7 +41,9 @@ func (h authHandlers) postLogin(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, NewErrorResponse(err))
 	}
 
-	var jwtKey = []byte("your_secret_key")
+	// check credentials
+
+	var jwtKey = []byte(h.secretJWTKey)
 
 	claims := &authClaims{
 		Email: request.Email,
