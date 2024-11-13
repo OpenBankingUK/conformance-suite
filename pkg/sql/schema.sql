@@ -10,7 +10,6 @@ CREATE TABLE users (
 
 CREATE TABLE test_runs (
     id CHAR(36) PRIMARY KEY,
-    discovery_model_id CHAR(36) NOT NULL REFERENCES discovery_models(id),
     user_id CHAR(36) NOT NULL REFERENCES users(id),
     configuration JSONB NOT NULL,
     discovery_model JSONB NOT NULL,

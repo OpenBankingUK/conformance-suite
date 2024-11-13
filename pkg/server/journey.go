@@ -264,6 +264,32 @@ func (wj *AppJourney) TestCases() (generation.SpecRun, error) {
 		}).Error("Error getting generation.TestCasesRun ...")
 		return generation.SpecRun{}, errTestCasesGenerated
 	}
+	testRunID := uuid.New().String()
+	wj.context.PutString(CtxTestRunTrackingID, testRunID)
+
+	discoveryJSON, err := json.Marshal(wj.validDiscoveryModel)
+	if err != nil {
+		wj.log.WithFields(logrus.Fields{
+			"package":   "server",
+			"module":    "journey",
+			"function":  "RunTests",
+			"testRunID": testRunID,
+			"err":       err.Error(),
+		}).Error("unable to encode discovery model for database storage")
+	}
+	if err := wj.testRunRepo.CreateTestRun(context.Background(), repository.TestRun{
+		ID:             testRunID,
+		DiscoveryModel: json.RawMessage(discoveryJSON),
+		UserID:         DefaultUserID,
+	}); err != nil {
+		wj.log.WithFields(logrus.Fields{
+			"package":   "server",
+			"module":    "journey",
+			"function":  "RunTests",
+			"testRunID": testRunID,
+			"err":       err.Error(),
+		}).Error("unable to save test run to database")
+	}
 
 	jwksURI := authentication.GetJWKSUri()
 	if jwksURI != "" { // STORE jwks_uri from well known endpoint in journey context
@@ -577,32 +603,13 @@ func (wj *AppJourney) RunTests() error {
 
 	runDefinition := wj.makeRunDefinition()
 	runner := executors.NewTestCaseRunner(wj.log, runDefinition, wj.daemonController)
-	testRunID := uuid.New().String()
 	wj.context.PutString(CtxPhase, "run")
-	wj.context.PutString(CtxTestRunTrackingID, testRunID)
-
-	discoveryJSON, err := json.Marshal(wj.validDiscoveryModel)
+	
+	testRunID, err := wj.context.GetString(CtxTestRunTrackingID)
 	if err != nil {
-		wj.log.WithFields(logrus.Fields{
-			"package":   "server",
-			"module":    "journey",
-			"function":  "RunTests",
-			"testRunID": testRunID,
-			"err":       err.Error(),
-		}).Error("unable to encode discovery model for database storage")
-	}
-	if err := wj.testRunRepo.CreateTestRun(context.Background(), repository.TestRun{
-		ID:             testRunID,
-		DiscoveryModel: json.RawMessage(discoveryJSON),
-		UserID:         DefaultUserID,
-	}); err != nil {
-		wj.log.WithFields(logrus.Fields{
-			"package":   "server",
-			"module":    "journey",
-			"function":  "RunTests",
-			"testRunID": testRunID,
-			"err":       err.Error(),
-		}).Error("unable to save test run to database")
+		logger.WithFields(logrus.Fields{
+			"err": err,
+		}).Error("Error getting test run tracking ID from context")
 	}
 	if err := runner.RunTestCases(&wj.context); err != nil {
 		wj.log.WithFields(logrus.Fields{
