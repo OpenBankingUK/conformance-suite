@@ -1,4 +1,3 @@
-import Vue from 'vue';
 import TheWizard from './views/TheWizard.vue';
 import Login from './views/Login.vue';
 import WizardContinueOrStart from './views/Wizard/WizardContinueOrStart.vue';
@@ -85,4 +84,3 @@ export default {
     },
   ],
 };
-

@@ -24,6 +24,7 @@
     "dompurify": "2.5.0",
     "esprima": "^4.0.1",
     "handlebars": "4.7.7",
+    "js-cookie": "^3.0.5",
     "jsonpointer": "4.1.0",
     "lodash": "4.17.21",
     "moment": "^2.29.4",

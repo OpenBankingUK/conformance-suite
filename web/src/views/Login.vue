@@ -1,38 +1,48 @@
 <template>
-    <div class="login-container">
-        <form @submit.prevent="login" class="login-form">
-            <input type="email" v-model="email" placeholder="Email" required />
-            <input type="password" v-model="password" placeholder="Password" required />
-            <button type="submit">Login</button>
-        </form>
-    </div>
+  <div class="login-container">
+    <form
+      class="login-form"
+      @submit.prevent="login">
+      <input
+        v-model="email"
+        type="email"
+        placeholder="Email"
+        required >
+      <input
+        v-model="password"
+        type="password"
+        placeholder="Password"
+        required >
+      <button type="submit">Login</button>
+    </form>
+  </div>
 </template>
 
 <script>
 import Cookies from 'js-cookie';
 
 export default {
-    data() {
-        return {
-            email: '',
-            password: '',
-        };
+  data() {
+    return {
+      email: '',
+      password: '',
+    };
+  },
+  methods: {
+    async login() {
+      try {
+        // const response = await axios.post('/api/login', {
+        //   email: this.email,
+        //   password: this.password,
+        // });
+        // const jwt = response.data.jwt;
+        Cookies.set('ob_jwt', this.email, { expires: 7 });
+        this.$router.push('/');
+      } catch (error) {
+        alert('Invalid credentials');
+      }
     },
-    methods: {
-        async login() {
-            try {
-                // const response = await axios.post('/api/login', {
-                //   email: this.email,
-                //   password: this.password,
-                // });
-                // const jwt = response.data.jwt;
-                Cookies.set('ob_jwt', this.email, { expires: 7 });
-                this.$router.push('/');
-            } catch (error) {
-                alert('Invalid credentials');
-            }
-        },
-    },
+  },
 };
 </script>
 
