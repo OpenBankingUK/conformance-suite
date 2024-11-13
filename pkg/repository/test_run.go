@@ -29,6 +29,10 @@ type TestCaseResult struct {
 	Detail     string
 	TestRunID  string
 	RefURI     string
+	Endpoint   string
+	API        string
+	APIVersion string
+	HTTPStatus string
 	CreatedAt  time.Time
 }
 
@@ -57,7 +61,7 @@ func (r TestRunRepository) CreateTestRun(ctx context.Context, testRun TestRun) e
 }
 
 func (r TestRunRepository) CreateTestCaseResult(ctx context.Context, testCaseResult TestCaseResult) error {
-	query := `INSERT INTO test_test_case_results (id, test_case_id, test_run_id, pass, fail, detail, ref_uri, created_at) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`
-	_, err := r.db.ExecContext(ctx, query, testCaseResult.ID, testCaseResult.TestCaseID, testCaseResult.TestRunID, testCaseResult.Pass, pq.Array(testCaseResult.Fail), testCaseResult.Detail, testCaseResult.RefURI, testCaseResult.CreatedAt)
+	query := `INSERT INTO test_test_case_results (id, test_case_id, test_run_id, pass, fail, detail, ref_uri, endpoint, api, api_version, http_status, created_at) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)`
+	_, err := r.db.ExecContext(ctx, query, testCaseResult.ID, testCaseResult.TestCaseID, testCaseResult.TestRunID, testCaseResult.Pass, pq.Array(testCaseResult.Fail), testCaseResult.Detail, testCaseResult.RefURI, testCaseResult.Endpoint, testCaseResult.API, testCaseResult.APIVersion, testCaseResult.HTTPStatus, testCaseResult.CreatedAt)
 	return err
 }

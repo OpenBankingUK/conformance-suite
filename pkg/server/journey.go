@@ -148,6 +148,10 @@ func (wj *AppJourney) SaveTestCaseResult(result results.TestCase) error {
 		Detail:     result.Detail,
 		TestRunID:  result.TestRunTrackingID,
 		RefURI:     result.RefURI,
+		Endpoint:   result.Endpoint,
+		API:        result.API,
+		APIVersion: result.APIVersion,
+		HTTPStatus: result.HttpStatus,
 		CreatedAt:  time.Now(),
 	}
 	if err := wj.testRunRepo.CreateTestCaseResult(context.Background(), testCaseResult); err != nil {
