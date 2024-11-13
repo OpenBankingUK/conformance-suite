@@ -28,6 +28,8 @@ type TestCaseResult struct {
 	Fail       []string
 	Detail     string
 	TestRunID  string
+	RefURI     string
+	CreatedAt  time.Time
 }
 
 func NewTestRunRepository(db *sql.DB) TestRunRepository {
@@ -55,7 +57,7 @@ func (r TestRunRepository) CreateTestRun(ctx context.Context, testRun TestRun) e
 }
 
 func (r TestRunRepository) CreateTestCaseResult(ctx context.Context, testCaseResult TestCaseResult) error {
-	query := `INSERT INTO test_test_case_results (id, test_case_id, test_run_id, pass, fail, detail) VALUES ($1, $2, $3, $4, $5, $6)`
-	_, err := r.db.ExecContext(ctx, query, testCaseResult.ID, testCaseResult.TestCaseID, testCaseResult.TestRunID, testCaseResult.Pass, pq.Array(testCaseResult.Fail), testCaseResult.Detail)
+	query := `INSERT INTO test_test_case_results (id, test_case_id, test_run_id, pass, fail, detail, ref_uri, created_at) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`
+	_, err := r.db.ExecContext(ctx, query, testCaseResult.ID, testCaseResult.TestCaseID, testCaseResult.TestRunID, testCaseResult.Pass, pq.Array(testCaseResult.Fail), testCaseResult.Detail, testCaseResult.RefURI, testCaseResult.CreatedAt)
 	return err
 }

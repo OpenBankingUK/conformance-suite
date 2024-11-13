@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"strings"
 	"sync"
+	"time"
 
 	"github.com/blang/semver/v4"
 	"github.com/google/uuid"
@@ -146,6 +147,8 @@ func (wj *AppJourney) SaveTestCaseResult(result results.TestCase) error {
 		Fail:       result.Fail,
 		Detail:     result.Detail,
 		TestRunID:  result.TestRunTrackingID,
+		RefURI:     result.RefURI,
+		CreatedAt:  time.Now(),
 	}
 	if err := wj.testRunRepo.CreateTestCaseResult(context.Background(), testCaseResult); err != nil {
 		return err
@@ -277,10 +280,22 @@ func (wj *AppJourney) TestCases() (generation.SpecRun, error) {
 			"err":       err.Error(),
 		}).Error("unable to encode discovery model for database storage")
 	}
+	testRunConfig, err := json.Marshal(wj.config)
+	if err != nil {
+		wj.log.WithFields(logrus.Fields{
+			"package":   "server",
+			"module":    "journey",
+			"function":  "RunTests",
+			"testRunID": testRunID,
+			"err":       err.Error(),
+		}).Error("unable to encode config for database storage")
+	}
 	if err := wj.testRunRepo.CreateTestRun(context.Background(), repository.TestRun{
 		ID:             testRunID,
 		DiscoveryModel: json.RawMessage(discoveryJSON),
+		Configuration:  json.RawMessage(testRunConfig),
 		UserID:         DefaultUserID,
+		CreatedAt:      time.Now(),
 	}); err != nil {
 		wj.log.WithFields(logrus.Fields{
 			"package":   "server",
@@ -604,7 +619,7 @@ func (wj *AppJourney) RunTests() error {
 	runDefinition := wj.makeRunDefinition()
 	runner := executors.NewTestCaseRunner(wj.log, runDefinition, wj.daemonController)
 	wj.context.PutString(CtxPhase, "run")
-	
+
 	testRunID, err := wj.context.GetString(CtxTestRunTrackingID)
 	if err != nil {
 		logger.WithFields(logrus.Fields{

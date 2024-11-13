@@ -17,7 +17,8 @@ CREATE TABLE test_runs (
 );
 
 CREATE TABLE IF NOT EXISTS test_test_case_results (
-    test_case_id CHAR(36) PRIMARY KEY,
+    id CHAR(36) PRIMARY KEY,
+    test_case_id CHAR(36),
     test_run_id CHAR(36) NOT NULL REFERENCES test_runs (id),
     pass BOOLEAN NOT NULL,
     fail TEXT[] NOT NULL,
