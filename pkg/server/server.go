@@ -84,6 +84,8 @@ func NewServer(
 }
 
 func (s *Server) registerRoutes(journey Journey, server *Server, logger *logrus.Entry, version version.Checker) {
+	authHandlers := newAuthHandlers(logger)
+	server.Use(authHandlers.JWTFromCookie())
 	// swagger ui endpoints
 	for path, handler := range swaggerHandlers(logger) {
 		server.GET(path, handler)
@@ -94,7 +96,6 @@ func (s *Server) registerRoutes(journey Journey, server *Server, logger *logrus.
 
 	api.GET("/ping", func(c echo.Context) error { return nil })
 
-	authHandlers := newAuthHandlers(logger)
 	api.POST("/login", authHandlers.postLogin)
 
 	importHandlers := newImportHandlers(journey, logger)
@@ -123,6 +124,8 @@ func (s *Server) registerRoutes(journey Journey, server *Server, logger *logrus.
 	api.POST("/run", runHandlers.runStartPostHandler)
 	api.GET("/run/ws", runHandlers.listenResultWebSocket)
 	api.DELETE("/run", runHandlers.stopRunHandler)
+
+	api.GET("/runs/historical", runHandlers.historicalRunsHandler)
 
 	// endpoints for validating and storing the token retrieved in `/conformancesuite/callback`
 	// `pkg/server/assets/main.js` calls into this endpoint.

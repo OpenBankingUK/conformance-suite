@@ -20,6 +20,7 @@
 
 <script>
 import Cookies from 'js-cookie';
+import axios from 'axios';
 
 export default {
   data() {
@@ -31,14 +32,17 @@ export default {
   methods: {
     async login() {
       try {
-        // const response = await axios.post('/api/login', {
-        //   email: this.email,
-        //   password: this.password,
-        // });
-        // const jwt = response.data.jwt;
-        Cookies.set('ob_jwt', this.email, { expires: 7 });
+        const response = await axios.post('/api/login', {
+          email: this.email,
+          password: this.password,
+        });
+        console.log(response.status);
+        console.log(response.data);
+        const jwt = response.data.token;
+        Cookies.set('ob_jwt', jwt, { expires: 7 });
         this.$router.push('/');
       } catch (error) {
+        console.error(error);
         alert('Invalid credentials');
       }
     },

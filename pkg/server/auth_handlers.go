@@ -6,6 +6,7 @@
 package server
 
 import (
+	"log"
 	"net/http"
 	"time"
 
@@ -71,4 +72,30 @@ type authClaims struct {
 
 func (c *authClaims) Valid() error {
 	return nil
+}
+
+func (h authHandlers) JWTFromCookie() echo.MiddlewareFunc {
+	return func(next echo.HandlerFunc) echo.HandlerFunc {
+		return func(c echo.Context) error {
+			cookie, err := c.Cookie("ob_jwt")
+			if err != nil {
+				return next(c)
+			}
+
+			token, err := jwt.Parse(cookie.Value, func(token *jwt.Token) (interface{}, error) {
+				return []byte(h.secretJWTKey), nil
+			})
+
+			if err != nil || !token.Valid {
+				return next(c)
+			}
+			if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
+				if email, ok := claims["email"].(string); ok {
+					c.Set("user_email", email)
+				}
+			}
+
+			return next(c)
+		}
+	}
 }

@@ -62,6 +62,9 @@ type Journey interface {
 	Events() events.Events
 	TLSVersionResult() map[string]*discovery.TLSValidationResult
 	SaveTestCaseResult(result results.TestCase) error
+	RegisterUser(userEmail string) (repository.User, error)
+	GetUserByEmail(userEmail string) (repository.User, error)
+	HistoricalRunsForUser(ctx context.Context, userEmail string) ([]repository.TestRun, error)
 }
 
 type UserRepository interface {
@@ -70,6 +73,7 @@ type UserRepository interface {
 type TestRunRepository interface {
 	CreateTestRun(ctx context.Context, testRun repository.TestRun) error
 	CreateTestCaseResult(ctx context.Context, testCaseResult repository.TestCaseResult) error
+	GetAllByUserID(ctx context.Context, userEmail string) ([]repository.TestRun, error)
 }
 
 // AppJourney - application controlled by this class
@@ -564,6 +568,10 @@ func (wj *AppJourney) AllTokenCollected() bool {
 func (wj *AppJourney) doneCollectionCallback() {
 	wj.log.Debug("Setting wj.allCollection=true")
 	wj.allCollected = true
+}
+
+func (wj *AppJourney) HistoricalRunsForUser(ctx context.Context, userEmail string) ([]repository.TestRun, error) {
+	return wj.testRunRepo.GetAllByUserID(ctx, userEmail)
 }
 
 // RunTests -

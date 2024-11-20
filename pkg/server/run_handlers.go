@@ -2,6 +2,7 @@ package server
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 
 	"time"
@@ -48,6 +49,17 @@ func (h runHandlers) runStartPostHandler(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, NewErrorResponse(err))
 	}
 	return c.NoContent(http.StatusCreated)
+}
+
+// historicalRunsHandler - /api/runs/historical
+// returns historical test runs for user
+func (h runHandlers) historicalRunsHandler(c echo.Context) error {
+	userEmail := c.Get("user_email")
+	ret, err := h.journey.HistoricalRunsForUser(c.Request().Context(), "")
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, NewErrorResponse(err))
+	}
+	return c.JSON(http.StatusOK, ret)
 }
 
 // listenResultWebSocket - /api/run/ws

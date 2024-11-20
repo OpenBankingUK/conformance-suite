@@ -54,6 +54,34 @@ func (r TestRunRepository) GetByID(ctx context.Context, testRunID string) (TestR
 	return testRun, nil
 }
 
+func (r TestRunRepository) GetAllByUserID(ctx context.Context, userEmail string) ([]TestRun, error) {
+	var ret []TestRun
+	rows, err := r.db.QueryContext(ctx, `SELECT
+	id,
+	discovery_model,
+	configuration,
+	user_id,
+	created_at
+	FROM
+	test_runs
+	JOIN users ON test_runs.user_id = users.id
+	WHERE users.email = $1`,
+		userEmail,
+	)
+	if err != nil {
+		return ret, err
+	}
+	for rows.Next() {
+		var testRun TestRun
+		if err := rows.Scan(&testRun.ID, &testRun.DiscoveryModel, &testRun.Configuration, &testRun.UserID, &testRun.CreatedAt); err != nil {
+			return ret, nil
+		}
+		ret = append(ret, testRun)
+	}
+
+	return ret, nil
+}
+
 func (r TestRunRepository) CreateTestRun(ctx context.Context, testRun TestRun) error {
 	query := `INSERT INTO test_runs (id, discovery_model, configuration, user_id, created_at) VALUES ($1, $2, $3, $4, $5)`
 	_, err := r.db.ExecContext(ctx, query, testRun.ID, testRun.DiscoveryModel, testRun.Configuration, testRun.UserID, testRun.CreatedAt)
