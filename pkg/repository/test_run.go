@@ -54,7 +54,7 @@ func (r TestRunRepository) GetByID(ctx context.Context, testRunID string) (TestR
 	return testRun, nil
 }
 
-func (r TestRunRepository) GetAllByUserID(ctx context.Context, userEmail string) ([]TestRun, error) {
+func (r TestRunRepository) GetAllByUserID(ctx context.Context, userID string) ([]TestRun, error) {
 	var ret []TestRun
 	rows, err := r.db.QueryContext(ctx, `SELECT
 	test_runs.id,
@@ -65,8 +65,8 @@ func (r TestRunRepository) GetAllByUserID(ctx context.Context, userEmail string)
 	FROM
 	test_runs
 	JOIN users ON test_runs.user_id = users.id
-	WHERE users.email = $1`,
-		userEmail,
+	WHERE users.id = $1`,
+		userID,
 	)
 	if err != nil {
 		return ret, err
