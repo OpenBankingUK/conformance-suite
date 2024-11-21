@@ -50,7 +50,7 @@ type Journey interface {
 	DiscoveryModel() (discovery.Model, error)
 	SetFilteredManifests(manifest.Scripts)
 	FilteredManifests() (manifest.Scripts, error)
-	TestCases() (generation.SpecRun, error)
+	TestCases(userID string) (generation.SpecRun, error)
 	CollectToken(code, state, scope string) error
 	AllTokenCollected() bool
 	RunTests() error
@@ -62,13 +62,15 @@ type Journey interface {
 	Events() events.Events
 	TLSVersionResult() map[string]*discovery.TLSValidationResult
 	SaveTestCaseResult(result results.TestCase) error
-	RegisterUser(userEmail string) (repository.User, error)
-	GetUserByEmail(userEmail string) (repository.User, error)
-	HistoricalRunsForUser(ctx context.Context, userEmail string) ([]repository.TestRun, error)
+	RegisterUser(user repository.User) error
+	GetUserByEmail(userEmail string) (*repository.User, error)
+	HistoricalRunsForUser(ctx context.Context, userID string) ([]repository.TestRun, error)
 }
 
 type UserRepository interface {
 	GetByID(ctx context.Context, userID string) (repository.User, error)
+	GetByEmail(ctx context.Context, email string) (*repository.User, error)
+	Create(ctx context.Context, user repository.User) error
 }
 type TestRunRepository interface {
 	CreateTestRun(ctx context.Context, testRun repository.TestRun) error
@@ -128,6 +130,14 @@ func NewJourney(
 		userRepo:              userRepo,
 		testRunRepo:           testRunRepo,
 	}
+}
+
+func (wj *AppJourney) GetUserByEmail(userEmail string) (*repository.User, error) {
+	return wj.userRepo.GetByEmail(context.Background(), userEmail)
+}
+
+func (wj *AppJourney) RegisterUser(user repository.User) error {
+	return wj.userRepo.Create(context.Background(), user)
 }
 
 // NewDaemonController - calls StopTestRun and then sets new daemonController
@@ -255,7 +265,7 @@ func (wj *AppJourney) FilteredManifests() (manifest.Scripts, error) {
 }
 
 // TestCases -
-func (wj *AppJourney) TestCases() (generation.SpecRun, error) {
+func (wj *AppJourney) TestCases(userID string) (generation.SpecRun, error) {
 	wj.journeyLock.Lock()
 	defer wj.journeyLock.Unlock()
 	logger := wj.log.WithFields(logrus.Fields{
@@ -302,7 +312,7 @@ func (wj *AppJourney) TestCases() (generation.SpecRun, error) {
 		ID:             testRunID,
 		DiscoveryModel: json.RawMessage(discoveryJSON),
 		Configuration:  json.RawMessage(testRunConfig),
-		UserID:         DefaultUserID,
+		UserID:         userID,
 		CreatedAt:      time.Now(),
 	}); err != nil {
 		wj.log.WithFields(logrus.Fields{

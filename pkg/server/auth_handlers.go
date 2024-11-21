@@ -6,7 +6,6 @@
 package server
 
 import (
-	"log"
 	"net/http"
 	"time"
 
@@ -20,11 +19,13 @@ import (
 type authHandlers struct {
 	logger       *logrus.Entry
 	secretJWTKey string
+	journey      Journey
 }
 
-func newAuthHandlers(logger *logrus.Entry) authHandlers {
+func newAuthHandlers(logger *logrus.Entry, journey Journey) authHandlers {
 	return authHandlers{
 		secretJWTKey: "todo_secret_key_for_jwt_signing",
+		journey:      journey,
 		logger:       logger.WithField("handler", "authHandlers"),
 	}
 }
@@ -42,12 +43,16 @@ func (h authHandlers) postLogin(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, NewErrorResponse(err))
 	}
 
-	// check credentials
+	user, err := h.journey.GetUserByEmail(request.Email)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, NewErrorResponse(err))
+	}
 
 	var jwtKey = []byte(h.secretJWTKey)
 
 	claims := &authClaims{
-		Email: request.Email,
+		Email:  user.Email,
+		UserID: user.ID,
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(7 * 24 * time.Hour)),
 		},
@@ -66,7 +71,8 @@ func (h authHandlers) postLogin(c echo.Context) error {
 }
 
 type authClaims struct {
-	Email string `json:"email"`
+	Email  string `json:"email"`
+	UserID string `json:"user_id"`
 	jwt.RegisteredClaims
 }
 
@@ -91,7 +97,7 @@ func (h authHandlers) JWTFromCookie() echo.MiddlewareFunc {
 			}
 			if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
 				if email, ok := claims["email"].(string); ok {
-					c.Set("user_email", email)
+					c.Set("user_id", email)
 				}
 			}
 

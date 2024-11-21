@@ -84,7 +84,7 @@ func NewServer(
 }
 
 func (s *Server) registerRoutes(journey Journey, server *Server, logger *logrus.Entry, version version.Checker) {
-	authHandlers := newAuthHandlers(logger)
+	authHandlers := newAuthHandlers(logger, journey)
 	server.Use(authHandlers.JWTFromCookie())
 	// swagger ui endpoints
 	for path, handler := range swaggerHandlers(logger) {

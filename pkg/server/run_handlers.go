@@ -54,8 +54,12 @@ func (h runHandlers) runStartPostHandler(c echo.Context) error {
 // historicalRunsHandler - /api/runs/historical
 // returns historical test runs for user
 func (h runHandlers) historicalRunsHandler(c echo.Context) error {
-	userEmail := c.Get("user_email")
-	ret, err := h.journey.HistoricalRunsForUser(c.Request().Context(), "")
+	userID, ok := c.Get("user_id").(string)
+	if !ok || userID == "" {
+		log.Println("user_id not found in context")
+		return c.JSON(http.StatusBadRequest, NewErrorResponse(errors.New("user_id not found in context")))
+	}
+	ret, err := h.journey.HistoricalRunsForUser(c.Request().Context(), userID)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, NewErrorResponse(err))
 	}
