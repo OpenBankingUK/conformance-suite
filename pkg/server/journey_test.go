@@ -49,6 +49,14 @@ func (r mockUserRepository) GetByID(ctx context.Context, userID string) (reposit
 	return repository.User{}, nil
 }
 
+func (r mockUserRepository) GetByEmail(ctx context.Context, email string) (*repository.User, error) {
+	return &repository.User{}, nil
+}
+
+func (r mockUserRepository) Create(ctx context.Context, user repository.User) error {
+	return nil
+}
+
 type mockTestRunRepository struct{}
 
 func (r mockTestRunRepository) CreateTestRun(ctx context.Context, testRun repository.TestRun) error {
@@ -57,6 +65,10 @@ func (r mockTestRunRepository) CreateTestRun(ctx context.Context, testRun reposi
 
 func (r mockTestRunRepository) CreateTestCaseResult(ctx context.Context, testCaseResult repository.TestCaseResult) error {
 	return nil
+}
+
+func (r mockTestRunRepository) GetAllByUserID(ctx context.Context, userID string) ([]repository.TestRun, error) {
+	return []repository.TestRun{}, nil
 }
 
 func TestJourneySetDiscoveryModelValidatesModel(t *testing.T) {
@@ -120,7 +132,7 @@ func TestJourneyTestCasesCantGenerateIfDiscoveryNotSet(t *testing.T) {
 	generator := &gmocks.MockGenerator{}
 	journey := NewJourney(nullLogger(), generator, validator, discovery.NewNullTLSValidator(), false, mockUserRepository{}, mockTestRunRepository{})
 
-	testCases, err := journey.TestCases()
+	testCases, err := journey.TestCases("user-id")
 
 	assert.Error(err)
 	assert.Equal(generation.SpecRun{}, testCases)
