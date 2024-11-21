@@ -96,8 +96,8 @@ func (h authHandlers) JWTFromCookie() echo.MiddlewareFunc {
 				return next(c)
 			}
 			if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
-				if email, ok := claims["email"].(string); ok {
-					c.Set("user_id", email)
+				if userID, ok := claims["user_id"].(string); ok {
+					c.Set("user_id", userID)
 				}
 			}
 

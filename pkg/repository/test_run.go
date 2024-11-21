@@ -57,11 +57,11 @@ func (r TestRunRepository) GetByID(ctx context.Context, testRunID string) (TestR
 func (r TestRunRepository) GetAllByUserID(ctx context.Context, userEmail string) ([]TestRun, error) {
 	var ret []TestRun
 	rows, err := r.db.QueryContext(ctx, `SELECT
-	id,
-	discovery_model,
-	configuration,
-	user_id,
-	created_at
+	test_runs.id,
+	test_runs.discovery_model,
+	test_runs.configuration,
+	test_runs.user_id,
+	test_runs.created_at
 	FROM
 	test_runs
 	JOIN users ON test_runs.user_id = users.id
