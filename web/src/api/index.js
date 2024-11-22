@@ -6,7 +6,7 @@ import apiUtil from './apiUtil';
 
 const REPORT_URL = '/api/report';
 const EXPORT_URL = '/api/export';
-const IMPORT_REVIEW = '/api/import/review';
+const IMPORT_REVIEW = '/api/import/historical';
 const IMPORT_RERUN = '/api/import/rerun';
 
 export default {
@@ -51,7 +51,7 @@ export default {
     return data;
   },
   /**
-   * Call POST `/api/import/review`.
+   * Call POST `/api/import/historical`.
    * @param {*} payload See `ImportRequest` in `pkg/server/models/import.go`.
    */
   async importReview(base64Content) {

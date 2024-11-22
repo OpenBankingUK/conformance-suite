@@ -20,10 +20,15 @@
         </div>
         <div class="panel-body">
           <p>Upload a signed and compatible report to view the results or to rerun.</p>
-          <div class="d-flex flex-row justify-content-around">
+          <div class="d-flex flex-row justify-content-center">
             <b-btn
               variant="success"
-              @click="onRerun()">Rerun</b-btn>
+              class="mx-2"
+              @click="onRerun()">Import From ZIP</b-btn>
+            <b-btn
+              variant="success"
+              class="mx-2"
+              @click="onHistorical()">Historical Runs</b-btn>
           </div>
         </div>
       </div>
@@ -128,8 +133,8 @@ export default {
         this.setErrors([updateError]);
       }
     },
-    async onReview() {
-      this.$router.push('/wizard/import/review');
+    async onHistorical() {
+      this.$router.push('/wizard/import/historical');
     },
     async onRerun() {
       this.$router.push('/wizard/import/rerun');

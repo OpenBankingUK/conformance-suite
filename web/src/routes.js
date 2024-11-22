@@ -2,6 +2,7 @@ import TheWizard from './views/TheWizard.vue';
 import Login from './views/Login.vue';
 import WizardContinueOrStart from './views/Wizard/WizardContinueOrStart.vue';
 import WizardImport, { MODES as WizardImportModes } from './views/Wizard/WizardImport.vue';
+import WizardHistorical from './views/Wizard/WizardHistorical.vue';
 import WizardDiscoveryConfig from './views/Wizard/WizardDiscoveryConfig.vue';
 import WizardConfigurationTabs from './views/Wizard/WizardConfigurationTabs.vue';
 import WizardOverviewRun from './views/Wizard/WizardOverviewRun.vue';
@@ -31,9 +32,9 @@ export default {
           component: WizardContinueOrStart,
         },
         {
-          path: '/wizard/import/review',
-          name: 'WizardImportReview',
-          component: WizardImport,
+          path: '/wizard/import/historical',
+          name: 'WizardHistorical',
+          component: WizardHistorical,
           props: {
             mode: WizardImportModes.REVIEW,
           },
