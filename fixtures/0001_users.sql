@@ -1,0 +1,2 @@
+INSERT INTO users (id, email, first_name, last_name, company_name) VALUES ('fc8114f8-6bf1-4138-9afe-44630f11469d', 'diego.mariani@openbanking.org.uk', 'Diego', 'Mariani', 'Open Banking');
+INSERT INTO users (id, email, first_name, last_name, company_name) VALUES ('55a6d9e6-b369-49bb-82b8-f42c87ca8594', 'peter.stanley@openbanking.org.uk', 'Peter', 'Stanley', 'Open Banking');

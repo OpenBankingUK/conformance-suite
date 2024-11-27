@@ -1,4 +1,4 @@
-CREATE TABLE users (
+CREATE TABLE IF NOT EXISTS users (
     id CHAR(36) PRIMARY KEY,
     first_name VARCHAR(255) NOT NULL,
     last_name VARCHAR(255) NOT NULL,
@@ -9,7 +9,7 @@ CREATE TABLE users (
 );
 
 
-CREATE TABLE test_runs (
+CREATE TABLE IF NOT EXISTS test_runs (
     id CHAR(36) PRIMARY KEY,
     user_id CHAR(36) NOT NULL REFERENCES users(id),
     configuration JSONB NOT NULL,

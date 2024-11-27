@@ -24,10 +24,4 @@ echo 'Waiting for database to be ready...';
 
 sleep 10
 
-echo 'Setting up database schema...';
-docker cp ./pkg/sql/schema.sql conformance-suite:/tmp/schema.sql
-docker exec -u "${DB_USER}" conformance-suite psql "${DB_NAME}" "${DB_USER}" -f /tmp/schema.sql
-
-echo 'Setting up database fixtures...';
-docker cp ./pkg/sql/fixtures.sql conformance-suite:/tmp/fixtures.sql
-docker exec -u "${DB_USER}" conformance-suite psql "${DB_NAME}" "${DB_USER}" -f /tmp/fixtures.sql
+echo 'Done';
