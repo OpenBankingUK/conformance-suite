@@ -41,7 +41,7 @@ require (
 	gopkg.in/resty.v1 v1.10.3
 )
 
-require github.com/golang-migrate/migrate/v4 v4.18.1
+require github.com/golang-migrate/migrate/v4 v4.16.2
 
 require (
 	github.com/PuerkitoBio/purell v1.1.0 // indirect
