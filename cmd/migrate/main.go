@@ -82,7 +82,13 @@ func loadFixtures(db *sql.DB, fixturesDir string) {
             log.Fatal(err)
         }
 
-        _, err = db.Exec(string(content))
+        stmt, err := db.Prepare(string(content))
+        if err != nil {
+            log.Fatalf("Invalid SQL in %s: %v", file.Name(), err)
+        }
+        defer stmt.Close()
+
+        _, err = stmt.Exec()
         if err != nil {
             log.Fatalf("Error executing fixture %s: %v", file.Name(), err)
         }
