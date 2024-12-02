@@ -1,9 +1,8 @@
 package server
 
 import (
+	"net/http"
 	"strings"
-
-	"math"
 
 	"github.com/OpenBankingUK/conformance-suite/pkg/version"
 
@@ -180,9 +179,17 @@ func skipperGzip(c echo.Context) bool {
 
 // NewWebSocketUpgrader creates a new websocket.Ugprader.
 func NewWebSocketUpgrader() *websocket.Upgrader {
-	maxMessageSize := math.MaxInt32
+	const (
+		defaultBufferSize = 256 * 1024  // 256KB for initial buffer
+		maxMessageSize    = 1024 * 1024 // 1MB max message size
+	)
+
 	return &websocket.Upgrader{
-		ReadBufferSize:  maxMessageSize,
-		WriteBufferSize: maxMessageSize,
+		ReadBufferSize:    defaultBufferSize,
+		WriteBufferSize:   defaultBufferSize,
+		EnableCompression: false, // Disable compression to reduce memory usage
+		CheckOrigin: func(r *http.Request) bool {
+			return true // Or implement your origin check logic
+		},
 	}
 }
