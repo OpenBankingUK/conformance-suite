@@ -298,7 +298,42 @@ func (wj *AppJourney) TestCases(userID string) (generation.SpecRun, error) {
 			"err":       err.Error(),
 		}).Error("unable to encode discovery model for database storage")
 	}
-	testRunConfig, err := json.Marshal(wj.config)
+	testRunConfig, err := json.Marshal(JourneyConfig{
+		tppSignatureKID:                wj.config.tppSignatureKID,
+		tppSignatureIssuer:             wj.config.tppSignatureIssuer,
+		tppSignatureTAN:                "redacted",
+		clientID:                       "redacted",
+		clientSecret:                   "redacted",
+		tokenEndpoint:                  wj.config.tokenEndpoint,
+		ResponseType:                   wj.config.ResponseType,
+		tokenEndpointAuthMethod:        wj.config.tokenEndpointAuthMethod,
+		authorizationEndpoint:          wj.config.authorizationEndpoint,
+		resourceBaseURL:                wj.config.resourceBaseURL,
+		xXFAPIFinancialID:              wj.config.xXFAPIFinancialID,
+		xXFAPICustomerIPAddress:        wj.config.xXFAPICustomerIPAddress,
+		redirectURL:                    wj.config.redirectURL,
+		resourceIDs:                    wj.config.resourceIDs,
+		creditorAccount:                wj.config.creditorAccount,
+		internationalCreditorAccount:   wj.config.internationalCreditorAccount,
+		instructedAmount:               wj.config.instructedAmount,
+		paymentFrequency:               wj.config.paymentFrequency,
+		paymentFrequencyCountPerPeriod: wj.config.paymentFrequencyCountPerPeriod,
+		paymentFrequencyPointInTime:    wj.config.paymentFrequencyPointInTime,
+		firstPaymentDateTime:           wj.config.firstPaymentDateTime,
+		requestedExecutionDateTime:     wj.config.requestedExecutionDateTime,
+		currencyOfTransfer:             wj.config.currencyOfTransfer,
+		apiVersion:                     wj.config.apiVersion,
+		transactionFromDate:            wj.config.transactionFromDate,
+		transactionToDate:              wj.config.transactionToDate,
+		requestObjectSigningAlgorithm:  wj.config.requestObjectSigningAlgorithm,
+		signingPrivate:                 "redacted",
+		signingPublic:                  "redacted",
+		useDynamicResourceID:           wj.config.useDynamicResourceID,
+		AcrValuesSupported:             wj.config.AcrValuesSupported,
+		conditionalProperties:          wj.conditionalProperties,
+		cbpiiDebtorAccount:             wj.config.cbpiiDebtorAccount,
+		issuer:                         wj.config.issuer,
+	})
 	if err != nil {
 		wj.log.WithFields(logrus.Fields{
 			"package":   "server",
