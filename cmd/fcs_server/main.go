@@ -71,8 +71,9 @@ Complete documentation is available at https://github.com/OpenBankingUK/conforma
 				ver,
 			)
 			address := fmt.Sprintf("%s:%d", server.ListenHost, viper.GetInt("port"))
-			logger.Infof("listening on https://%s", address)
-			return echoServer.StartTLS(address, certFile, keyFile)
+			logger.Infof("listening on http://%s", address)
+			return echoServer.Start(address)
+			// return echoServer.StartTLS(address, certFile, keyFile)
 		},
 	}
 )
