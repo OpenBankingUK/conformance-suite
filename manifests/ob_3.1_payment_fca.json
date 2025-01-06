@@ -184,7 +184,7 @@
     },
     {
       "description": "Domestic Payment for processing fails due to content mismatch.",
-      "id": "OB-301-DOP-100600",
+      "id": "OB-301-DOP-100550",
       "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/999623013/Domestic+Payments+v3.1.1#DomesticPaymentsv3.1.1-POST/domestic-payments",
       "detail": "Check that once the domestic-payment-consent has been authorised by the PSU, the PISP can proceed to submitting the domestic-payment for processing.",
       "parameters": {
@@ -205,10 +205,8 @@
       "uri": "/domestic-payments",
       "uriImplementation": "mandatory",
       "resource": "DomesticPayment",
-      "asserts": [],
-      "asserts_one_of": [
-        "OB3GLOAssertOn401",
-        "OB3GLOAssertOn403"
+      "asserts": [
+        "OB3GLOAssertOn400"
       ],
       "method": "post",
       "schemaCheck": true,
