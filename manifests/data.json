@@ -285,6 +285,29 @@
         "Risk": {}
       }
     },
+    "minimalDomesticPaymentMismatchPost": {
+      "body": {
+        "Data": {
+          "ConsentId": "$consentId",
+          "Initiation": {
+            "InstructionIdentification": "$instructionIdentification",
+            "EndToEndIdentification": "$endToEndIdentification",
+            "InstructedAmount": {
+              "Amount": "$instructedAmountValue",
+              "Currency": "$instructedAmountCurrency"
+            },
+            "CreditorAccount": {
+              "SchemeName": "$creditorScheme",
+              "Identification": "$creditorIdentification",
+              "Name": "$creditorName"
+            }
+          }
+        },
+        "Risk": {
+          "PaymentContextCode": "BillPayment"
+        }
+      }
+    },
     "minimalDomesticScheduledPaymentPost": {
       "body": {
         "Data": {
