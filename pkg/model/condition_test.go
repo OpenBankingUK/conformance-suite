@@ -54,7 +54,8 @@ const accountSpecID = "account-transaction-v3.1"
 // and that the endPointConditionality structure - which holds all the endpoint conditions
 // in a package local manner, can be read
 func TestConditionality(t *testing.T) {
-	count := len(endpointConditionality[accountSpecID])
+	checker := NewConditionalityChecker().(*conditionalityChecker)
+	count := len(checker.data[accountSpecID])
 	result := count > 10 // check we have more than an arbitrary number of conditions
 	assert.Equal(t, result, true)
 }
@@ -63,14 +64,15 @@ func TestConditionality(t *testing.T) {
 func TestGetEndpointConditionality(t *testing.T) {
 	assert := assert.New(t)
 	specification := accountSpecID
-	assert.Len(GetEndpointConditionality(specification), len(endpointConditionality[specification]))
-	assert.EqualValues(endpointConditionality[specification], GetEndpointConditionality(specification))
+	checker := NewConditionalityChecker().(*conditionalityChecker)
+	assert.Len(GetEndpointConditionality(specification), len(checker.data[specification]))
+	assert.EqualValues(checker.data[specification], GetEndpointConditionality(specification))
 
 	// modify returned clone and ensure the original wasn't modified - just being pedantic
 	clone := GetEndpointConditionality(specification)
 	clone[0].Endpoint = ""
 
-	assert.EqualValues(endpointConditionality[specification], GetEndpointConditionality(specification))
+	assert.EqualValues(checker.data[specification], GetEndpointConditionality(specification))
 }
 
 func testConditionalityChecker(t *testing.T) {

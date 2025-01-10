@@ -20,6 +20,7 @@ const (
 	marshalIndentPrefix    = ""
 	marshalIndent          = "  "
 	reportFilename         = "report.json"
+	logFilename            = "log-export.txt"
 	discoveryFilename      = "discovery.json"
 	responseFieldsFilename = "responseFields.json"
 )
@@ -47,10 +48,11 @@ type zipExporter struct {
 // The caller should close `writer` after calling `Export`.
 //
 // For example:
-//     writer, err := os.Create("report.zip")
-//     defer writer.Close()
-//     exporter := NewZipExporter(Report{}, writer)
-//     exporter.Export()
+//
+//	writer, err := os.Create("report.zip")
+//	defer writer.Close()
+//	exporter := NewZipExporter(Report{}, writer)
+//	exporter.Export()
 func NewZipExporter(report Report, writer io.Writer) Exporter {
 	return &zipExporter{
 		report: report,
@@ -77,6 +79,16 @@ func (e *zipExporter) Export() error {
 	discoveryJSON, err := json.MarshalIndent(e.report.Discovery, marshalIndentPrefix, marshalIndent)
 	if err != nil {
 		return fmt.Errorf("%w: json.MarshalIndent failed: %s, discovery=%+v", ErrExportFailure, err.Error(), e.report.Discovery)
+	}
+	if os.Getenv("EXPORT_LOG_FILE") == "true" {
+		logBytes, err := os.ReadFile(logFilename)
+		if err != nil {
+			return fmt.Errorf("%w: failed to read log file: %s", ErrExportFailure, err.Error())
+		}
+		if err := os.WriteFile(logFilename, []byte{}, 0644); err != nil {
+			return fmt.Errorf("%w: failed to clean log file: %s", ErrExportFailure, err.Error())
+		}
+		toExport[logFilename] = logBytes
 	}
 
 	toExport[reportFilename] = reportJSON

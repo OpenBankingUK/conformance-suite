@@ -20,7 +20,7 @@
 
 <script>
 import invert from 'lodash/invert';
-import { createNamespacedHelpers } from 'vuex';
+import { createNamespacedHelpers, mapActions } from 'vuex';
 import BSpinner from '../BSpinner';
 
 const { mapGetters } = createNamespacedHelpers('status');
@@ -63,6 +63,7 @@ export default {
       type: Function,
       required: false,
       default() {
+        this.setShowLoading(false);
         this.$router.push(this.previousRoute());
       },
     },
@@ -123,6 +124,9 @@ export default {
     },
   },
   methods: {
+    ...mapActions('status', [
+      'setShowLoading',
+    ]),
   },
 };
 </script>

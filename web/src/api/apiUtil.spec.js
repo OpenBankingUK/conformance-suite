@@ -40,7 +40,7 @@ describe('api.get', () => {
     } catch (err) {
       expect(err).toBeFalsy();
     }
-    expect(setShowLoading.mock.calls.length).toEqual(2);
+    expect(setShowLoading.mock.calls.length).toEqual(3);
     expect(setShowLoading.mock.calls[0][0]).toEqual(true);
     expect(setShowLoading.mock.calls[1][0]).toEqual(false);
   });
@@ -96,7 +96,7 @@ describe('api.post', () => {
     } catch (err) {
       expect(err).toBeFalsy();
     }
-    expect(setShowLoading.mock.calls.length).toEqual(2);
+    expect(setShowLoading.mock.calls.length).toEqual(3);
     expect(setShowLoading.mock.calls[0][0]).toEqual(true);
     expect(setShowLoading.mock.calls[1][0]).toEqual(false);
   });

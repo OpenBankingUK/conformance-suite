@@ -16,6 +16,7 @@ module.exports = {
   devServer: {
     clientLogLevel: 'info',
     compress: true,
+    port: 8080,
     overlay: {
       warnings: false,
       errors: true,

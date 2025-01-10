@@ -3,7 +3,6 @@ package model
 import (
 	"encoding/json"
 	"errors"
-	"os"
 
 	"github.com/sirupsen/logrus"
 )
@@ -52,37 +51,44 @@ type ConditionalityChecker interface {
 
 // conditionalityChecker - implements ConditionalityChecker - for checking endpoint conditionality
 type conditionalityChecker struct {
+	data map[string][]Conditionality
 }
 
 // IsPresent - returns true if the method/endpoint mix exists for given specification
-func (checker conditionalityChecker) IsPresent(method, endpoint string, specification string) (bool, error) {
-	_, err := findCondition(method, endpoint, specification)
-	if err != nil {
-		return false, err
-	}
-	return true, nil
-
+func (c *conditionalityChecker) IsPresent(method, endpoint string, specification string) (bool, error) {
+	_, err := c.findCondition(method, endpoint, specification)
+	return err == nil, nil
 }
 
 // IsOptional - returns true if the method/endpoint mix is optional
-func (checker conditionalityChecker) IsOptional(method, endpoint string, specification string) (bool, error) {
-	flag, err := isOptional(method, endpoint, specification)
-	return flag, err
+func (c *conditionalityChecker) IsOptional(method, endpoint string, specification string) (bool, error) {
+	condition, err := c.findCondition(method, endpoint, specification)
+	if err != nil {
+		return false, err
+	}
+	return condition.Condition == Optional, nil
 }
 
 // IsMandatory - returns true if the method/endpoint mix is mandatory in given specification
-func (checker conditionalityChecker) IsMandatory(method, endpoint string, specification string) (bool, error) {
-	flag, err := isMandatory(method, endpoint, specification)
-	return flag, err
+func (c *conditionalityChecker) IsMandatory(method, endpoint string, specification string) (bool, error) {
+	condition, err := c.findCondition(method, endpoint, specification)
+	if err != nil {
+		return false, err
+	}
+	return condition.Condition == Mandatory, nil
 }
 
-func (checker conditionalityChecker) IsConditional(method, endpoint string, specification string) (bool, error) {
-	flag, err := isConditional(method, endpoint, specification)
-	return flag, err
+// IsConditional - returns true if the method/endpoint mix is conditional
+func (c *conditionalityChecker) IsConditional(method, endpoint string, specification string) (bool, error) {
+	condition, err := c.findCondition(method, endpoint, specification)
+	if err != nil {
+		return false, err
+	}
+	return condition.Condition == Conditional, nil
 }
 
 // MissingMandatory - returns array of mandatory endpoint Inputs that are missing from given endpoints parameter
-func (checker conditionalityChecker) MissingMandatory(endpoints []Input, specification string) ([]Input, error) {
+func (c *conditionalityChecker) MissingMandatory(endpoints []Input, specification string) ([]Input, error) {
 	missingMandatoryEndpoints := []Input{}
 
 	for _, condition := range GetEndpointConditionality(specification) {
@@ -108,71 +114,34 @@ func (checker conditionalityChecker) MissingMandatory(endpoints []Input, specifi
 // NewConditionalityChecker - returns implementation of ConditionalityChecker interface
 // for checking endpoint conditionality
 func NewConditionalityChecker() ConditionalityChecker {
-	checker := conditionalityChecker{}
+	checker := &conditionalityChecker{
+		data: make(map[string][]Conditionality),
+	}
+	
+	if err := checker.loadConditions(); err != nil {
+		logrus.Fatal(err)
+	}
+	
 	return checker
 }
 
-// EndpointConditionality - Store of endpoint conditionality by specification key
-var endpointConditionality map[string][]Conditionality
-
-func init() {
-	err := loadConditions()
-	if err != nil {
-		logrus.StandardLogger().Error(err)
-		os.Exit(1) // Abort if we can't read the config correctly
-	}
-}
-
-// GetEndpointConditionality - get a clone of `endpointConditionality` array for given specification identifier
+// GetEndpointConditionality - get a clone of conditions array for given specification identifier
 func GetEndpointConditionality(specification string) []Conditionality {
-	clone := make([]Conditionality, len(endpointConditionality[specification]))
-	copy(clone, endpointConditionality[specification])
+	checker := NewConditionalityChecker()
+	data := checker.(*conditionalityChecker).data
+	clone := make([]Conditionality, len(data[specification]))
+	copy(clone, data[specification])
 	return clone
 }
 
-// isOptional - returns true if the method/endpoint mix is optional
-func isOptional(method, endpoint string, specification string) (bool, error) {
-	condition, err := findCondition(method, endpoint, specification)
-	if err != nil {
-		return false, err
-	}
-	if condition.Condition == Optional {
-		return true, nil
-	}
-	return false, nil
-}
-
-// isMandatory - returns true if the method/endpoint mix is mandatory
-func isMandatory(method, endpoint string, specification string) (bool, error) {
-	condition, err := findCondition(method, endpoint, specification)
-	if err != nil {
-		return false, err
-	}
-	if condition.Condition == Mandatory {
-		return true, nil
-	}
-	return false, nil
-}
-
-// isConditional - returns true if the method/endpoint mix is conditional
-func isConditional(method, endpoint string, specification string) (bool, error) {
-	condition, err := findCondition(method, endpoint, specification)
-	if err != nil {
-		return false, err
-	}
-	if condition.Condition == Conditional {
-		return true, nil
-	}
-	return false, nil
-}
-
-// GetConditionality - returns and indicator in the following for of the method/endpoint conditionality
+// GetConditionality - returns an indicator of the method/endpoint conditionality
 // model.Mandatory - endpoint is Mandatory
 // model.Conditional - endpoint is conditional
 // model.Optional - endpoint is optional
 // model.UndefineCondition - we don't recognise the endpoint
 func GetConditionality(method, endpoint, specification string) (ConditionEnum, error) {
-	condition, err := findCondition(method, endpoint, specification)
+	checker := NewConditionalityChecker()
+	condition, err := checker.(*conditionalityChecker).findCondition(method, endpoint, specification)
 	if err != nil {
 		return UndefinedCondition, err
 	}
@@ -181,8 +150,8 @@ func GetConditionality(method, endpoint, specification string) (ConditionEnum, e
 
 // findCondition - find a condition given the method and endpoint
 // the condition can then be queried for optionality
-func findCondition(method, endpoint string, specification string) (Conditionality, error) {
-	for _, cond := range endpointConditionality[specification] {
+func (c *conditionalityChecker) findCondition(method, endpoint string, specification string) (Conditionality, error) {
+	for _, cond := range c.data[specification] {
 		if cond.Method == method && cond.Endpoint == endpoint {
 			return cond, nil
 		}
@@ -191,13 +160,11 @@ func findCondition(method, endpoint string, specification string) (Conditionalit
 }
 
 // loadConditions - get Mandatory/Conditional/Optional data from json file
-func loadConditions() error {
+func (c *conditionalityChecker) loadConditions() error {
 	var loader map[string][]conditionLoader
 	if err := json.Unmarshal(conditionalityStaticData(), &loader); err != nil {
 		return err
 	}
-
-	endpointConditionality = make(map[string][]Conditionality)
 
 	for specification, items := range loader {
 		var list []Conditionality
@@ -221,7 +188,7 @@ func loadConditions() error {
 			}
 			list = append(list, condition)
 		}
-		endpointConditionality[specification] = list
+		c.data[specification] = list
 	}
 
 	return nil

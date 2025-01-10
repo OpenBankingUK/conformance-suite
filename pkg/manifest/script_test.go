@@ -216,17 +216,16 @@ func TestPaymentPermissions(t *testing.T) {
 	}
 	specType, err := GetSpecType(apiSpec.SchemaVersion)
 	assert.Nil(t, err)
-	scripts, _, err := LoadGenerationResources(specType, manifestPath, nil)
-	if err != nil {
-		fmt.Println("Error on loadGenerationResources")
-		return
-	}
+	ctx := &model.Context{}
+	ctx.PutStringSlice("apiversions", []string{"accounts_v3.1.1", "payments_v3.1.1"})
+	scripts, _, err := LoadGenerationResources(specType, manifestPath, ctx)
+	assert.NoError(t, err)
 
 	params := GenerationParameters{
 		Scripts:      scripts,
 		Spec:         apiSpec,
 		Baseurl:      "http://mybaseurl",
-		Ctx:          &model.Context{},
+		Ctx:          ctx,
 		Endpoints:    readDiscovery(),
 		ManifestPath: manifestPath,
 		Validator:    schema.NewNullValidator(),

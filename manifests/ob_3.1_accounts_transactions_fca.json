@@ -128,8 +128,10 @@
       "uriImplementation": "mandatory",
       "resource": "Account",
       "method": "get",
-      "asserts": [
-        "OB3GLOAssertOn401"
+      "asserts": [],
+      "asserts_one_of": [
+        "OB3GLOAssertOn401",
+        "OB3GLOAssertOn403"
       ],
       "schemaCheck": false
     },
@@ -145,8 +147,10 @@
       "uriImplementation": "mandatory",
       "resource": "Account",
       "method": "get",
-      "asserts": [
-        "OB3GLOAssertOn401"
+      "asserts": [],
+      "asserts_one_of": [
+        "OB3GLOAssertOn401",
+        "OB3GLOAssertOn403"
       ],
       "schemaCheck": false
     },
@@ -213,8 +217,10 @@
       "uriImplementation": "mandatory",
       "resource": "Account",
       "method": "get",
-      "asserts": [
-        "OB3GLOAssertOn401"
+      "asserts": [],
+      "asserts_one_of": [
+        "OB3GLOAssertOn401",
+        "OB3GLOAssertOn403"
       ],
       "schemaCheck": false
     },
@@ -230,8 +236,10 @@
       "uriImplementation": "mandatory",
       "resource": "Account",
       "method": "get",
-      "asserts": [
-        "OB3GLOAssertOn401"
+      "asserts": [],
+      "asserts_one_of": [
+        "OB3GLOAssertOn401",
+        "OB3GLOAssertOn403"
       ],
       "schemaCheck": false
     },
@@ -388,8 +396,10 @@
       "uriImplementation": "optional",
       "resource": "Balance",
       "method": "get",
-      "asserts": [
-        "OB3GLOAssertOn401"
+      "asserts": [],
+      "asserts_one_of": [
+        "OB3GLOAssertOn401",
+        "OB3GLOAssertOn403"
       ],
       "schemaCheck": false
     },
@@ -616,8 +626,10 @@
       "uriImplementation": "optional",
       "resource": "Beneficiary",
       "method": "get",
-      "asserts": [
-        "OB3GLOAssertOn401"
+      "asserts": [],
+      "asserts_one_of": [
+        "OB3GLOAssertOn401",
+        "OB3GLOAssertOn403"
       ],
       "schemaCheck": false
     },
@@ -778,8 +790,10 @@
       "uriImplementation": "optional",
       "resource": "DirectDebit",
       "method": "get",
-      "asserts": [
-        "OB3GLOAssertOn401"
+      "asserts": [],
+      "asserts_one_of": [
+        "OB3GLOAssertOn401",
+        "OB3GLOAssertOn403"
       ],
       "schemaCheck": false
     },
@@ -954,8 +968,10 @@
       "uriImplementation": "optional",
       "resource": "Offer",
       "method": "get",
-      "asserts": [
-        "OB3GLOAssertOn401"
+      "asserts": [],
+      "asserts_one_of": [
+        "OB3GLOAssertOn401",
+        "OB3GLOAssertOn403"
       ],
       "schemaCheck": false
     },
@@ -1162,8 +1178,10 @@
       "uriImplementation": "conditional",
       "resource": "Party",
       "method": "get",
-      "asserts": [
-        "OB3GLOAssertOn401"
+      "asserts": [],
+      "asserts_one_of": [
+        "OB3GLOAssertOn401",
+        "OB3GLOAssertOn403"
       ],
       "schemaCheck": false
     },
@@ -1415,8 +1433,10 @@
       "uriImplementation": "optional",
       "resource": "Product",
       "method": "get",
-      "asserts": [
-        "OB3GLOAssertOn401"
+      "asserts": [],
+      "asserts_one_of": [
+        "OB3GLOAssertOn401",
+        "OB3GLOAssertOn403"
       ],
       "schemaCheck": false
     },
@@ -1577,8 +1597,10 @@
       "uriImplementation": "optional",
       "resource": "ScheduledPayment",
       "method": "get",
-      "asserts": [
-        "OB3GLOAssertOn401"
+      "asserts": [],
+      "asserts_one_of": [
+        "OB3GLOAssertOn401",
+        "OB3GLOAssertOn403"
       ],
       "schemaCheck": false
     },
@@ -1761,8 +1783,10 @@
       "uriImplementation": "optional",
       "resource": "StandingOrder",
       "method": "get",
-      "asserts": [
-        "OB3GLOAssertOn401"
+      "asserts": [],
+      "asserts_one_of": [
+        "OB3GLOAssertOn401",
+        "OB3GLOAssertOn403"
       ],
       "schemaCheck": false
     },
