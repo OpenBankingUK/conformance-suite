@@ -161,6 +161,7 @@ func newValidator(doc *loads.Document) (Validator, error) {
 				newContentTypeValidator(f),
 				newStatusCodeValidator(f),
 				newBodyValidator(f),
+				newQueryParamValidator(f),
 			},
 			document: doc,
 		}, nil
