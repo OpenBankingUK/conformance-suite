@@ -64,17 +64,17 @@ export default {
           component: WizardOverviewRun,
         },
         {
-          path: '/wizard/overview-run/:runId',
-          name: 'PublicOverviewRun',
-          component: PublicOverviewRun,
-          props: true,
-        },
-        {
           path: '/wizard/export',
           name: 'WizardExport',
           component: WizardExport,
         },
       ],
+    },
+    {
+      path: '/public/overview-run/:runId',
+      name: 'PublicOverviewRun',
+      component: PublicOverviewRun,
+      props: true,
     },
     {
       path: '/conformancesuite/callback',

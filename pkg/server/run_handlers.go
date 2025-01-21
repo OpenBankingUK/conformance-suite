@@ -51,6 +51,16 @@ func (h runHandlers) runStartPostHandler(c echo.Context) error {
 	return c.NoContent(http.StatusCreated)
 }
 
+// retrieveRunResultsHandler retrieves run results from a specified test_run_id
+func (h runHandlers) retrieveRunResultsHandler(c echo.Context) error {
+	testRunID := c.Param("test_run_id")
+	results, err := h.journey.RetrieveRunResults(testRunID)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, NewErrorResponse(err))
+	}
+	return c.JSON(http.StatusOK, results)
+}
+
 // historicalRunsHandler - /api/runs/historical
 // returns historical test runs for user
 func (h runHandlers) historicalRunsHandler(c echo.Context) error {

@@ -65,6 +65,7 @@ type Journey interface {
 	RegisterUser(user repository.User) error
 	GetUserByEmail(userEmail string) (*repository.User, error)
 	HistoricalRunsForUser(ctx context.Context, userID string) ([]repository.TestRun, error)
+	RetrieveRunResults(testRunID string) ([]repository.TestCaseResult, error)
 }
 
 type UserRepository interface {
@@ -76,6 +77,7 @@ type TestRunRepository interface {
 	CreateTestRun(ctx context.Context, testRun repository.TestRun) error
 	CreateTestCaseResult(ctx context.Context, testCaseResult repository.TestCaseResult) error
 	GetAllByUserID(ctx context.Context, userEmail string) ([]repository.TestRun, error)
+	RetrieveRunResults(ctx context.Context, testRunID string) ([]repository.TestCaseResult, error)
 }
 
 // AppJourney - application controlled by this class
@@ -617,6 +619,10 @@ func (wj *AppJourney) doneCollectionCallback() {
 
 func (wj *AppJourney) HistoricalRunsForUser(ctx context.Context, userEmail string) ([]repository.TestRun, error) {
 	return wj.testRunRepo.GetAllByUserID(ctx, userEmail)
+}
+
+func (wj *AppJourney) RetrieveRunResults(testRunID string) ([]repository.TestCaseResult, error) {
+	return wj.testRunRepo.RetrieveRunResults(context.Background(), testRunID)
 }
 
 // RunTests -

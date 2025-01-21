@@ -124,6 +124,7 @@ func (s *Server) registerRoutes(journey Journey, server *Server, logger *logrus.
 	api.GET("/run/ws", runHandlers.listenResultWebSocket)
 	api.DELETE("/run", runHandlers.stopRunHandler)
 
+	api.GET("/public/run/:test_run_id", runHandlers.retrieveRunResultsHandler)
 	api.GET("/runs/historical", runHandlers.historicalRunsHandler)
 
 	// endpoints for validating and storing the token retrieved in `/conformancesuite/callback`

@@ -15,10 +15,20 @@ const router = new VueRouter(routes);
  * is `1` we redirect to landing page (`/`). This tends to happen when the User refreshes the page.
  */
 router.beforeEach((to, from, next) => {
-  const publicPages = ['/login', '/404', '/conformancesuite/callback', '/wizard/overview-run/:runId'];
-  const authRequired = !publicPages.includes(to.path);
+  const publicPages = ['/login', '/404', '/conformancesuite/callback'];
+  const publicPathPatterns = [
+    ...publicPages,
+    /^\/public\/overview-run\/[^/]+$/
+  ];
+  
+  const authRequired = !publicPathPatterns.some(pattern => {
+    if (typeof pattern === 'string') {
+      return pattern === to.path;
+    }
+    return pattern.test(to.path);
+  });
+  
   const loggedIn = isAuthenticated();
-
   if (authRequired && !loggedIn) {
     return next('/login');
   }

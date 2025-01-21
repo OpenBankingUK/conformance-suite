@@ -82,6 +82,29 @@ func (r TestRunRepository) GetAllByUserID(ctx context.Context, userID string) ([
 	return ret, nil
 }
 
+func (r TestRunRepository) RetrieveRunResults(ctx context.Context, testRunID string) ([]TestCaseResult, error) {
+	var ret []TestCaseResult
+	rows, err := r.db.QueryContext(ctx, `SELECT
+	test_test_case_results.id,
+	FROM
+	test_test_case_results
+	WHERE test_case_results.id = $1`,
+		testRunID,
+	)
+	if err != nil {
+		return ret, err
+	}
+	for rows.Next() {
+		var testCaseResult TestCaseResult
+		if err := rows.Scan(&testCaseResult.ID); err != nil {
+			return ret, nil
+		}
+		ret = append(ret, testCaseResult)
+	}
+
+	return ret, nil
+}
+
 func (r TestRunRepository) CreateTestRun(ctx context.Context, testRun TestRun) error {
 	query := `INSERT INTO test_runs (id, discovery_model, configuration, user_id, created_at) VALUES ($1, $2, $3, $4, $5)`
 	_, err := r.db.ExecContext(ctx, query, testRun.ID, testRun.DiscoveryModel, testRun.Configuration, testRun.UserID, testRun.CreatedAt)
