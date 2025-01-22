@@ -119,7 +119,11 @@
      */
     beforeRouteEnter(to, from, next) {
       next(async (vm) => {
-        await vm.computePublicTestCases();
+        try {
+            await vm.computePublicTestCases();
+        } catch (err) {
+            console.error('Failed to load test cases:', err);
+        }
       });
     },
   };

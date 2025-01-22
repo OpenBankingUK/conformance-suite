@@ -131,22 +131,29 @@ export default {
    */
   async computePublicTestCases({ commit, dispatch, state }) {
     try {
+      const setShowLoading = flag => dispatch('status/setShowLoading', flag, { root: true });
+      setShowLoading(true);
+      
       const runID = window.location.pathname.split('/').pop();
       const testCases = await api.computePublicTestCases(runID);
-      if (_.isEqual(testCases.specCases, state.testCases)) {
-        return;
-      }
-
+      
       commit(types.SET_PUBLIC_TEST_CASES, testCases);
-
+      
       if (testCases.specTokens) {
-        commit(types.SET_CONSENT_URLS, consentUrls(testCases.specTokens));
+        const urls = {};
+        testCases.specTokens.forEach((item) => {
+          urls[item.specIdentifier] = item.namedPermissions
+            .map(p => p.consentUrl)
+            .filter(Boolean);
+        });
+        commit(types.SET_CONSENT_URLS, urls);
       }
     } catch (err) {
       commit(types.SET_PUBLIC_TEST_CASES, []);
       dispatch('status/setErrors', [err], { root: true });
+    } finally {
+      dispatch('status/setShowLoading', false, { root: true });
     }
-    dispatch('config/setWizardStep', constants.WIZARD.STEP_FOUR, { root: true });
   },
   /**
    * Step 5: Calls POST `/api/run` then setups WebSocket connection to `/api/run/ws`.
