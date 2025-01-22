@@ -132,7 +132,7 @@ export default {
   async computePublicTestCases({ commit, dispatch, state }) {
     try {
       const runID = window.location.pathname.split('/').pop();
-      const testCases = await api.computeTestCases(runID);
+      const testCases = await api.computePublicTestCases(runID);
       if (_.isEqual(testCases.specCases, state.testCases)) {
         return;
       }

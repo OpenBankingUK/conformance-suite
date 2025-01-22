@@ -43,7 +43,6 @@
             <hr>
             <TheErrorStatus/>
           </div>
-          <TheWizardFooter :next-label="computeNextLabel"/>
         </div>
       </div>
     </div>
@@ -88,31 +87,10 @@
       ]),
       ...mapState([
         'consentUrls',
-        'testCases',
-        'hasRunStarted',
+        'publicTestCases',
       ]),
       headlessConsent() {
         return this.tokenAcquisition === 'headless';
-      },
-      pendingPsuConsent() {
-        if (this.headlessConsent) {
-          return false;
-        }
-        return !this.tokens_all_acquired;
-      },
-      computeNextLabel() {
-        if (!this.hasRunStarted || !this.test_cases_completed) {
-          if (this.pendingPsuConsent) {
-            return 'Pending PSU Consent';
-          }
-          if (this.showLoading) {
-            this.setShowLoading(false);
-            return 'Pending';
-          }
-          return 'Run';
-        }
-  
-        return 'Next Export';
       },
       tokens_acquired: {
         get() {
