@@ -38,7 +38,7 @@
               </b-table>
             </div>
             <TestCases
-              :test-cases="testCases"
+              :test-cases="publicTestCases"
               if="!hasErrors"/>
             <hr>
             <TheErrorStatus/>
@@ -132,12 +132,7 @@
     },
     methods: {
       ...mapActions('testcases', [
-        'computeTestCases',
-        'executeTestCases',
-      ]),
-      ...mapActions('status', [
-        'clearErrors',
-        'setShowLoading',
+        'computePublicTestCases',
       ]),
     },
     /**
@@ -146,42 +141,8 @@
      */
     beforeRouteEnter(to, from, next) {
       next(async (vm) => {
-        await vm.computeTestCases();
+        await vm.computePublicTestCases();
       });
-    },
-    /**
-     * Prevent user from going forward if there is an error with test case generation, and
-     * execute the test cases if the route being navigated to is `/wizard/export`.
-     * Docs: https://router.vuejs.org/guide/advanced/navigation-guards.html#in-component-guards
-     */
-    async beforeRouteLeave(to, from, next) {
-      const isNext = to.path === '/wizard/export' && from.path === '/wizard/overview-run';
-  
-      if (isNext) {
-        // prevent going forward if there is an error
-        if (this.hasErrors) {
-          return next(false);
-        }
-  
-        // Execute and compute results once.
-        if (!this.hasRunStarted) {
-          await this.executeTestCases(this.setShowLoading);
-  
-          return next(false);
-        }
-  
-        // If tests have not completed, prevent navigation.
-        if (!this.test_cases_completed) {
-          return next(false);
-        }
-  
-        // We have executed and computed the results and we have results.
-        return next();
-      }
-  
-      // Clear errors before going to a prior step
-      this.clearErrors();
-      return next();
     },
   };
   </script>
