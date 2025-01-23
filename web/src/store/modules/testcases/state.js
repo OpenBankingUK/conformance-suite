@@ -1,6 +1,6 @@
 export default {
   testCases: [],
-  publicTestCases: null,
+  publicTestCases: [],
   consentUrls: {},
   hasRunStarted: false,
   test_cases_completed: false,
