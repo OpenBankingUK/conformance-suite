@@ -13,6 +13,7 @@
                 <th scope="col">Created Date</th>
                 <th scope="col">API Version</th>
                 <th scope="col"/>
+                <th scope="col"/>
               </tr>
             </thead>
             <tbody>
@@ -27,6 +28,13 @@
                     variant="success"
                     @click="handleRerun(test.DiscoveryModel.discoveryModel)">
                     Re-Run
+                  </b-btn>
+                </td>
+                <td>
+                  <b-btn
+                  variant="primary"
+                  @click="$router.push(`/public/overview-run/${test.ID}`)">
+                  Public Page
                   </b-btn>
                 </td>
               </tr>

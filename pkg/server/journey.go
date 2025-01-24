@@ -65,7 +65,7 @@ type Journey interface {
 	RegisterUser(user repository.User) error
 	GetUserByEmail(userEmail string) (*repository.User, error)
 	HistoricalRunsForUser(ctx context.Context, userID string) ([]repository.TestRun, error)
-	RetrieveRunResults(testRunID string) ([]PublicTestCaseResult, error)
+	RetrieveRunResults(testRunID string) ([]repository.PublicTestCaseResult, error)
 }
 
 type UserRepository interface {
@@ -77,7 +77,7 @@ type TestRunRepository interface {
 	CreateTestRun(ctx context.Context, testRun repository.TestRun) error
 	CreateTestCaseResult(ctx context.Context, testCaseResult repository.TestCaseResult) error
 	GetAllByUserID(ctx context.Context, userEmail string) ([]repository.TestRun, error)
-	RetrieveRunResults(ctx context.Context, testRunID string) ([]repository.TestCaseResult, error)
+	RetrieveRunResults(ctx context.Context, testRunID string) (repository.PublicTestCaseResult, error)
 }
 
 // AppJourney - application controlled by this class
@@ -621,117 +621,13 @@ func (wj *AppJourney) HistoricalRunsForUser(ctx context.Context, userEmail strin
 	return wj.testRunRepo.GetAllByUserID(ctx, userEmail)
 }
 
-type PublicTestCaseResult struct {
-	APISpecification discovery.ModelAPISpecification `json:"apiSpecification"`
-	TestCases        []PublicTestCase                `json:"testCases"`
-}
+func (wj *AppJourney) RetrieveRunResults(testRunID string) ([]repository.PublicTestCaseResult, error) {
+	ret, err := wj.testRunRepo.RetrieveRunResults(context.Background(), testRunID)
+	if err != nil {
+		return []repository.PublicTestCaseResult{ret}, err
+	}
 
-type PublicTestCase struct {
-	Id    string `json:"@id"`
-	Name  string `json:"name"`
-	Input struct {
-		Method   string `json:"method"`
-		Endpoint string `json:"endpoint"`
-	} `json:"input"`
-	Expect struct {
-		StatusCode int `json:"status-code"`
-	} `json:"expect"`
-	Meta struct {
-		Status  string `json:"status"`
-		Metrics struct {
-			ResponseTime string `json:"responseTime"`
-			ResponseSize string `json:"responseSize"`
-		} `json:"metrics"`
-	} `json:"meta"`
-	Pass       bool            `json:"pass"`
-	Metrics    results.Metrics `json:"metrics,omitempty"`
-	Fail       []string        `json:"fail,omitempty"`
-	Detail     string          `json:"detail"`
-	RefURI     string          `json:"refURI"`
-	API        string          `json:"-"`
-	APIVersion string          `json:"-"`
-}
-
-func (wj *AppJourney) RetrieveRunResults(testRunID string) ([]PublicTestCaseResult, error) {
-	return []PublicTestCaseResult{{
-		APISpecification: discovery.ModelAPISpecification{
-			Name:    "Accounts",
-			Version: "v3.1",
-		},
-		TestCases: []PublicTestCase{
-			{
-				Id:   "#tc1",
-				Name: "Test Account Access",
-				Input: struct {
-					Method   string `json:"method"`
-					Endpoint string `json:"endpoint"`
-				}{
-					Method:   "GET",
-					Endpoint: "/accounts/v3.1/accounts",
-				},
-				Expect: struct {
-					StatusCode int `json:"status-code"`
-				}{
-					StatusCode: 200,
-				},
-				Meta: struct {
-					Status  string `json:"status"`
-					Metrics struct {
-						ResponseTime string `json:"responseTime"`
-						ResponseSize string `json:"responseSize"`
-					} `json:"metrics"`
-				}{
-					Status: "PASSED",
-					Metrics: struct {
-						ResponseTime string `json:"responseTime"`
-						ResponseSize string `json:"responseSize"`
-					}{
-						ResponseTime: "150ms",
-						ResponseSize: "1024",
-					},
-				},
-				Pass:   true,
-				Detail: "Successfully retrieved accounts",
-				RefURI: "/test-case/1",
-			},
-			{
-				Id:   "#tc3",
-				Name: "Test Account Access2",
-				Input: struct {
-					Method   string `json:"method"`
-					Endpoint string `json:"endpoint"`
-				}{
-					Method:   "GET",
-					Endpoint: "/accounts/v3.1/accounts/access",
-				},
-				Expect: struct {
-					StatusCode int `json:"status-code"`
-				}{
-					StatusCode: 200,
-				},
-				Meta: struct {
-					Status  string `json:"status"`
-					Metrics struct {
-						ResponseTime string `json:"responseTime"`
-						ResponseSize string `json:"responseSize"`
-					} `json:"metrics"`
-				}{
-					Status: "PASSED",
-					Metrics: struct {
-						ResponseTime string `json:"responseTime"`
-						ResponseSize string `json:"responseSize"`
-					}{
-						ResponseTime: "150ms",
-						ResponseSize: "1024",
-					},
-				},
-				Pass:   true,
-				Detail: "Successfully retrieved accounts",
-				RefURI: "/test-case/1",
-			},
-		},
-	}}, nil
-	//return wj.testRunRepo.RetrieveRunResults(context.Background(), testRunID)
+	return []repository.PublicTestCaseResult{ret}, nil
 }
 
 // RunTests -
