@@ -25,18 +25,22 @@ type TestRun struct {
 }
 
 type TestCaseResult struct {
-	ID         string
-	TestCaseID string
-	Pass       bool
-	Fail       []string
-	Detail     string
-	TestRunID  string
-	RefURI     string
-	Endpoint   string
-	API        string
-	APIVersion string
-	HTTPStatus string
-	CreatedAt  time.Time
+	ID                 string
+	TestCaseID         string
+	Pass               bool
+	Fail               []string
+	Detail             string
+	TestRunID          string
+	RefURI             string
+	Endpoint           string
+	API                string
+	APIVersion         string
+	HTTPStatus         string
+	CreatedAt          time.Time
+	ExpectedStatusCode int
+	Method             string
+	ResponseTime       string
+	ResponseSizeBytes  int
 }
 
 type PublicTestCaseResult struct {
@@ -117,10 +121,10 @@ func (r TestRunRepository) GetAllByUserID(ctx context.Context, userID string) ([
 }
 
 func (r TestRunRepository) RetrieveRunResults(ctx context.Context, testRunID string) (PublicTestCaseResult, error) {
-    var ret PublicTestCaseResult
+	var ret PublicTestCaseResult
 
-    // Get all test case results
-    rows, err := r.db.QueryContext(ctx, `
+	// Get all test case results
+	rows, err := r.db.QueryContext(ctx, `
         SELECT 
             test_case_id,
             detail,
@@ -134,36 +138,36 @@ func (r TestRunRepository) RetrieveRunResults(ctx context.Context, testRunID str
             http_status
         FROM test_test_case_results 
         WHERE test_run_id = $1`, testRunID)
-    if err != nil {
-        return ret, fmt.Errorf("fetching test results: %w", err)
-    }
-    defer rows.Close()
+	if err != nil {
+		return ret, fmt.Errorf("fetching test results: %w", err)
+	}
+	defer rows.Close()
 
-    for rows.Next() {
-        var tc PublicTestCase
-        var httpStatus string
-        if err := rows.Scan(
-            &tc.Id,
-            &tc.Name, 
-            &tc.Pass,
-            pq.Array(&tc.Fail),
-            &tc.Detail,
-            &tc.RefURI,
-            &tc.Input.Endpoint,
-            &ret.APISpecification.Name,
+	for rows.Next() {
+		var tc PublicTestCase
+		var httpStatus string
+		if err := rows.Scan(
+			&tc.Id,
+			&tc.Name,
+			&tc.Pass,
+			pq.Array(&tc.Fail),
+			&tc.Detail,
+			&tc.RefURI,
+			&tc.Input.Endpoint,
+			&ret.APISpecification.Name,
 			&ret.APISpecification.Version,
-            &httpStatus,
-        ); err != nil {
-            return ret, fmt.Errorf("scanning test case: %w", err)
-        }
+			&httpStatus,
+		); err != nil {
+			return ret, fmt.Errorf("scanning test case: %w", err)
+		}
 
-        // Set meta status from http_status
+		// Set meta status from http_status
 		tc.Expect.StatusCode = 200
-        tc.Meta.Status = httpStatus
-        ret.TestCases = append(ret.TestCases, tc)
-    }
+		tc.Meta.Status = httpStatus
+		ret.TestCases = append(ret.TestCases, tc)
+	}
 
-    return ret, nil
+	return ret, nil
 }
 
 func (r TestRunRepository) CreateTestRun(ctx context.Context, testRun TestRun) error {
@@ -173,7 +177,46 @@ func (r TestRunRepository) CreateTestRun(ctx context.Context, testRun TestRun) e
 }
 
 func (r TestRunRepository) CreateTestCaseResult(ctx context.Context, testCaseResult TestCaseResult) error {
-	query := `INSERT INTO test_test_case_results (id, test_case_id, test_run_id, pass, fail, detail, ref_uri, endpoint, api, api_version, http_status, created_at) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)`
-	_, err := r.db.ExecContext(ctx, query, testCaseResult.ID, testCaseResult.TestCaseID, testCaseResult.TestRunID, testCaseResult.Pass, pq.Array(testCaseResult.Fail), testCaseResult.Detail, testCaseResult.RefURI, testCaseResult.Endpoint, testCaseResult.API, testCaseResult.APIVersion, testCaseResult.HTTPStatus, testCaseResult.CreatedAt)
+	query := `
+		INSERT INTO test_test_case_results (
+			id, 
+			test_case_id, 
+			test_run_id, 
+			pass, 
+			fail, 
+			detail, 
+			ref_uri, 
+			endpoint, 
+			api, 
+			api_version, 
+			http_status, 
+			method, 
+			expected_status_code, 
+			response_time, 
+			response_size_bytes, 
+			created_at
+		) VALUES (
+			$1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16
+		)`
+	_, err := r.db.ExecContext(
+		ctx,
+		query,
+		testCaseResult.ID,
+		testCaseResult.TestCaseID,
+		testCaseResult.TestRunID,
+		testCaseResult.Pass,
+		pq.Array(testCaseResult.Fail),
+		testCaseResult.Detail,
+		testCaseResult.RefURI,
+		testCaseResult.Endpoint,
+		testCaseResult.API,
+		testCaseResult.APIVersion,
+		testCaseResult.HTTPStatus,
+		testCaseResult.Method,
+		testCaseResult.ExpectedStatusCode,
+		testCaseResult.ResponseTime,
+		testCaseResult.ResponseSizeBytes,
+		testCaseResult.CreatedAt,
+	)
 	return err
 }

@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"log"
 	"strings"
 	"sync"
 	"time"
@@ -156,19 +157,28 @@ func (wj *AppJourney) NewDaemonController() {
 }
 
 func (wj *AppJourney) SaveTestCaseResult(result results.TestCase) error {
+	out, err := json.Marshal(result)
+	if err != nil {
+		log.Println(err)
+	}
+	log.Println(string(out))
 	testCaseResult := repository.TestCaseResult{
-		ID:         uuid.New().String(),
-		TestCaseID: result.Id,
-		Pass:       result.Pass,
-		Fail:       result.Fail,
-		Detail:     result.Detail,
-		TestRunID:  result.TestRunTrackingID,
-		RefURI:     result.RefURI,
-		Endpoint:   result.Endpoint,
-		API:        result.API,
-		APIVersion: result.APIVersion,
-		HTTPStatus: result.HttpStatus,
-		CreatedAt:  time.Now(),
+		ID:                 uuid.New().String(),
+		TestCaseID:         result.Id,
+		Pass:               result.Pass,
+		Fail:               result.Fail,
+		Detail:             result.Detail,
+		TestRunID:          result.TestRunTrackingID,
+		RefURI:             result.RefURI,
+		Endpoint:           result.Endpoint,
+		API:                result.API,
+		APIVersion:         result.APIVersion,
+		HTTPStatus:         result.HttpStatus,
+		CreatedAt:          time.Now(),
+		ExpectedStatusCode: result.Metrics.TestCase.Expect.StatusCode,
+		Method:             result.Metrics.TestCase.Request.Method,
+		ResponseTime:       result.Metrics.ResponseTime.String(),
+		ResponseSizeBytes:  result.Metrics.ResponseSize,
 	}
 	if err := wj.testRunRepo.CreateTestCaseResult(context.Background(), testCaseResult); err != nil {
 		return err
