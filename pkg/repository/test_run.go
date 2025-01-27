@@ -135,7 +135,10 @@ func (r TestRunRepository) RetrieveRunResults(ctx context.Context, testRunID str
             endpoint,
             api,
             api_version,
-            http_status
+            http_status,
+			method,
+			response_time,
+			response_size_bytes
         FROM test_test_case_results 
         WHERE test_run_id = $1`, testRunID)
 	if err != nil {
@@ -157,6 +160,9 @@ func (r TestRunRepository) RetrieveRunResults(ctx context.Context, testRunID str
 			&ret.APISpecification.Name,
 			&ret.APISpecification.Version,
 			&httpStatus,
+			&tc.Input.Method,
+			&tc.Meta.Metrics.ResponseTime,
+			&tc.Meta.Metrics.ResponseSize,
 		); err != nil {
 			return ret, fmt.Errorf("scanning test case: %w", err)
 		}

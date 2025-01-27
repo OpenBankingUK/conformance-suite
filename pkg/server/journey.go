@@ -176,7 +176,7 @@ func (wj *AppJourney) SaveTestCaseResult(result results.TestCase) error {
 		HTTPStatus:         result.HttpStatus,
 		CreatedAt:          time.Now(),
 		ExpectedStatusCode: result.Metrics.TestCase.Expect.StatusCode,
-		Method:             result.Metrics.TestCase.Request.Method,
+		Method:             result.Metrics.TestCase.Input.Method,
 		ResponseTime:       result.Metrics.ResponseTime.String(),
 		ResponseSizeBytes:  result.Metrics.ResponseSize,
 	}
