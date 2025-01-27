@@ -60,6 +60,10 @@ func (r mockTestRunRepository) CreateTestCaseResult(ctx context.Context, testCas
 	return nil
 }
 
+func (r mockTestRunRepository) RetrieveRunResults(ctx context.Context, testRunID string) (repository.PublicTestCaseResult, error) {
+	return repository.PublicTestCaseResult{}, nil
+}
+
 var (
 	logger = logrus.StandardLogger()
 	update = flag.Bool("update", false, "update .golden files")

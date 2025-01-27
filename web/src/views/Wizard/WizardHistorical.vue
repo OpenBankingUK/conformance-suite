@@ -32,9 +32,9 @@
                 </td>
                 <td>
                   <b-btn
-                  variant="primary"
-                  @click="$router.push(`/public/overview-run/${test.ID}`)">
-                  Public Page
+                    variant="primary"
+                    @click="$router.push(`/public/overview-run/${test.ID}`)">
+                    Public Page
                   </b-btn>
                 </td>
               </tr>

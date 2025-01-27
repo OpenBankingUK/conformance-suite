@@ -133,12 +133,12 @@ export default {
     try {
       const setShowLoading = flag => dispatch('status/setShowLoading', flag, { root: true });
       setShowLoading(true);
-      
+
       const runID = window.location.pathname.split('/').pop();
       const testCases = await api.computePublicTestCases(runID);
-      
+
       commit(types.SET_PUBLIC_TEST_CASES, testCases);
-      
+
       if (testCases.specTokens) {
         const urls = {};
         testCases.specTokens.forEach((item) => {
