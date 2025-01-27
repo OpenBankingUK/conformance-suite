@@ -71,6 +71,10 @@ func (r mockTestRunRepository) GetAllByUserID(ctx context.Context, userID string
 	return []repository.TestRun{}, nil
 }
 
+func (r mockTestRunRepository) RetrieveRunResults(ctx context.Context, testRunID string) (repository.PublicTestCaseResult, error) {
+	return repository.PublicTestCaseResult{}, nil
+}
+
 func TestJourneySetDiscoveryModelValidatesModel(t *testing.T) {
 	assert := test.NewAssert(t)
 
