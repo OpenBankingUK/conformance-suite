@@ -7,36 +7,6 @@
         </div>
         <div class="flex-fill panel-body">
           <TheErrorStatus/>
-          <div
-            v-if="!headlessConsent"
-            class="test-case border p-2 mt-2 mb-2">
-            <span
-              v-if="wsConnected"
-              id="ws-connected"
-            />
-            <h5>Tokens</h5>
-            <b-table
-              :items="tokens_acquired"
-              :fields="tokenTableFields"
-              head-variant="dark"
-              caption-top
-              hover
-              small
-              responsive
-            >
-              <template slot="table-caption">
-                <div>
-                  <b>Token Acquisition mode:</b> {{ tokenAcquisition }}
-                </div>
-                <div>
-                  <b>Test Cases Completed:</b> {{ test_cases_completed }}
-                </div>
-                <div>
-                  <b>All Token Acquired:</b> {{ tokens_all_acquired }}
-                </div>
-              </template>
-            </b-table>
-          </div>
           <TestCases
             :test-cases="publicTestCases"
             if="!hasErrors"/>

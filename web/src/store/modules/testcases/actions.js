@@ -129,7 +129,7 @@ export default {
    * retrieved test cases in the store.
    * Route: `/wizard/overview-run`.
    */
-  async computePublicTestCases({ commit, dispatch, state }) {
+  async computePublicTestCases({ commit, dispatch }) {
     try {
       const setShowLoading = flag => dispatch('status/setShowLoading', flag, { root: true });
       setShowLoading(true);
