@@ -6,6 +6,7 @@ import WizardHistorical from './views/Wizard/WizardHistorical.vue';
 import WizardDiscoveryConfig from './views/Wizard/WizardDiscoveryConfig.vue';
 import WizardConfigurationTabs from './views/Wizard/WizardConfigurationTabs.vue';
 import WizardOverviewRun from './views/Wizard/WizardOverviewRun.vue';
+import PublicOverviewRun from './views/Wizard/PublicOverviewRun.vue';
 import WizardExport from './views/Wizard/WizardExport.vue';
 import NotFound from './views/NotFound.vue';
 import ConformanceSuiteCallback from './views/ConformanceSuiteCallback/ConformanceSuiteCallback.vue';
@@ -68,6 +69,12 @@ export default {
           component: WizardExport,
         },
       ],
+    },
+    {
+      path: '/public/overview-run/:runId',
+      name: 'PublicOverviewRun',
+      component: PublicOverviewRun,
+      props: true,
     },
     {
       path: '/conformancesuite/callback',

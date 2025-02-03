@@ -16,9 +16,19 @@ const router = new VueRouter(routes);
  */
 router.beforeEach((to, from, next) => {
   const publicPages = ['/login', '/404', '/conformancesuite/callback'];
-  const authRequired = !publicPages.includes(to.path);
-  const loggedIn = isAuthenticated();
+  const publicPathPatterns = [
+    ...publicPages,
+    /^\/public\/overview-run\/[^/]+$/,
+  ];
 
+  const authRequired = !publicPathPatterns.some((pattern) => {
+    if (typeof pattern === 'string') {
+      return pattern === to.path;
+    }
+    return pattern.test(to.path);
+  });
+
+  const loggedIn = isAuthenticated();
   if (authRequired && !loggedIn) {
     return next('/login');
   }

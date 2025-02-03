@@ -6,6 +6,9 @@ export default {
   [types.SET_TEST_CASES](state, testCases) {
     state.testCases = testCases;
   },
+  [types.SET_PUBLIC_TEST_CASES](state, testCases) {
+    state.publicTestCases = testCases;
+  },
   [types.SET_TEST_CASES_COMPLETED](state, value) {
     state.test_cases_completed = value;
   },

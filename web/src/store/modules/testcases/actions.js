@@ -125,6 +125,37 @@ export default {
     dispatch('config/setWizardStep', constants.WIZARD.STEP_FOUR, { root: true });
   },
   /**
+   * Step 4: Calls /api/test-cases to get all the test cases, then sets the
+   * retrieved test cases in the store.
+   * Route: `/wizard/overview-run`.
+   */
+  async computePublicTestCases({ commit, dispatch }) {
+    try {
+      const setShowLoading = flag => dispatch('status/setShowLoading', flag, { root: true });
+      setShowLoading(true);
+
+      const runID = window.location.pathname.split('/').pop();
+      const testCases = await api.computePublicTestCases(runID);
+
+      commit(types.SET_PUBLIC_TEST_CASES, testCases);
+
+      if (testCases.specTokens) {
+        const urls = {};
+        testCases.specTokens.forEach((item) => {
+          urls[item.specIdentifier] = item.namedPermissions
+            .map(p => p.consentUrl)
+            .filter(Boolean);
+        });
+        commit(types.SET_CONSENT_URLS, urls);
+      }
+    } catch (err) {
+      commit(types.SET_PUBLIC_TEST_CASES, []);
+      dispatch('status/setErrors', [err], { root: true });
+    } finally {
+      dispatch('status/setShowLoading', false, { root: true });
+    }
+  },
+  /**
    * Step 5: Calls POST `/api/run` then setups WebSocket connection to `/api/run/ws`.
    * Route: `/wizard/overview-run`.
    */

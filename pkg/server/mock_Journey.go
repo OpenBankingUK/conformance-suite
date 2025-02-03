@@ -221,6 +221,32 @@ func (_m *MockJourney) Results() executors.DaemonController {
 	return r0
 }
 
+// RetrieveRunResults provides a mock function with given fields: testRunID
+func (_m *MockJourney) RetrieveRunResults(testRunID string) ([]repository.PublicTestCaseResult, error) {
+	ret := _m.Called(testRunID)
+
+	var r0 []repository.PublicTestCaseResult
+	var r1 error
+	if rf, ok := ret.Get(0).(func(string) ([]repository.PublicTestCaseResult, error)); ok {
+		return rf(testRunID)
+	}
+	if rf, ok := ret.Get(0).(func(string) []repository.PublicTestCaseResult); ok {
+		r0 = rf(testRunID)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).([]repository.PublicTestCaseResult)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(string) error); ok {
+		r1 = rf(testRunID)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // RunTests provides a mock function with given fields:
 func (_m *MockJourney) RunTests() error {
 	ret := _m.Called()
