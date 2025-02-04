@@ -153,8 +153,11 @@
             key: 'expect.status-code',
             label: 'Expect',
             sortable: true,
-            formatter: (item) => {
+            formatter: (value, key, item) => {
+              if (item.expect['status-code'] > 0) {
                 return item.expect['status-code'];
+              }
+              return '';
             },
           },
           {
