@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"regexp"
 	"strings"
 	"sync"
 	"time"
@@ -180,10 +181,23 @@ func (wj *AppJourney) SaveTestCaseResult(result results.TestCase) error {
 		ResponseTime:       result.Metrics.ResponseTime.String(),
 		ResponseSizeBytes:  result.Metrics.ResponseSize,
 	}
+	testCaseResult.HTTPStatus, err = wj.parseStatusCode(result.HttpStatus)
+	if err != nil {
+		log.Println(err)
+	}
 	if err := wj.testRunRepo.CreateTestCaseResult(context.Background(), testCaseResult); err != nil {
 		return err
 	}
 	return nil
+}
+
+func (wj *AppJourney) parseStatusCode(status string) (string, error) {
+	re := regexp.MustCompile(`^(\d+)`)
+	match := re.FindString(status)
+	if match == "" {
+		return "", fmt.Errorf("no status code found")
+	}
+	return match, nil
 }
 
 // SetDiscoveryModel -
