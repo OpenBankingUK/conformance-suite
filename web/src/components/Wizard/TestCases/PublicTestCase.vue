@@ -34,20 +34,19 @@
             less="Show Less" />
         </template>
   
-        <!-- format status column as Bootstrap badge. -->
+        <!-- format pass column as Bootstrap badge. -->
         <template
-          slot="meta.status"
+          slot="pass"
           slot-scope="row">
           <b-badge
             v-if="row.value !== ''"
-            :variant="row.value === 'PASSED' ? 'success' : (row.value === 'FAILED' ? 'danger' : (row.value === 'PENDING' ? 'info' : 'secondary'))"
-            :class="row.value === 'FAILED' ? 'clickable' : ''"
+            :variant="row.value == true ? 'success' :  'danger'"
+            class="clickable"
             :id="statusIdSelector(row)"
             tag="h6"
             @click.stop="toggleError(row)"
-          >{{ row.value }} <i
-            v-if="row.value === 'FAILED'"
-            class="arrow down"/></b-badge>
+          >{{ row.value == true ? 'PASS' : 'FAIL' }} <i class="arrow down"/>
+          </b-badge>
         </template>
   
         <template
@@ -161,7 +160,7 @@
             },
           },
           {
-            key: 'meta.status',
+            key: 'pass',
             label: 'Status',
           },
           {
