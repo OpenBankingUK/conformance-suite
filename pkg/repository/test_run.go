@@ -138,7 +138,8 @@ func (r TestRunRepository) RetrieveRunResults(ctx context.Context, testRunID str
             http_status,
 			method,
 			response_time,
-			response_size_bytes
+			response_size_bytes,
+			expected_status_code
         FROM test_test_case_results 
         WHERE test_run_id = $1`, testRunID)
 	if err != nil {
@@ -163,12 +164,11 @@ func (r TestRunRepository) RetrieveRunResults(ctx context.Context, testRunID str
 			&tc.Input.Method,
 			&tc.Meta.Metrics.ResponseTime,
 			&tc.Meta.Metrics.ResponseSize,
+			&tc.Expect.StatusCode,
 		); err != nil {
 			return ret, fmt.Errorf("scanning test case: %w", err)
 		}
 
-		// Set meta status from http_status
-		tc.Expect.StatusCode = 200
 		tc.Meta.Status = httpStatus
 		ret.TestCases = append(ret.TestCases, tc)
 	}

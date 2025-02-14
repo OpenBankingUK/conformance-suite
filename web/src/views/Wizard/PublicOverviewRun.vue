@@ -7,7 +7,7 @@
         </div>
         <div class="flex-fill panel-body">
           <TheErrorStatus/>
-          <TestCases
+          <PublicTestCases
             :test-cases="publicTestCases"
             if="!hasErrors"/>
           <hr>
@@ -22,7 +22,7 @@
 import { createNamespacedHelpers, mapGetters, mapActions } from 'vuex';
 
 import TheErrorStatus from '../../components/TheErrorStatus.vue';
-import TestCases from '../../components/Wizard/TestCases/TestCases.vue';
+import PublicTestCases from '../../components/Wizard/TestCases/PublicTestCases.vue';
 import TheWizardFooter from '../../components/Wizard/TheWizardFooter.vue';
 
 const {
@@ -33,7 +33,7 @@ export default {
   name: 'PublicOverviewRun',
   components: {
     TheErrorStatus,
-    TestCases,
+    PublicTestCases,
     TheWizardFooter,
   },
   data() {
