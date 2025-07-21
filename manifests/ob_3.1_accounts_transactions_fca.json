@@ -1988,6 +1988,33 @@
       "schemaCheck": true
     },
     {
+      "description": "Test for BankTransactionCode or ProductBankTransactionCode",
+      "id": "OB-301-TRA-101200",
+      "refURI": "https://openbankinguk.github.io/read-write-api-site3/v3.1.11/profiles/read-write-data-api-profile.html",
+      "detail": "Check that that either BankTransactionCode or ProductBankTransactionCode is returned when using the ReadTransactionsBasic permission.",
+      "parameters": {
+        "tokenRequestScope": "accounts"
+      },
+      "permissions": [
+        "ReadTransactionsCredits",
+        "ReadTransactionsDebits",
+        "ReadAccountsBasic",
+        "ReadTransactionsBasic"
+      ],
+      "uri": "/transactions",
+      "uriImplementation": "mandatory",
+      "resource": "Transaction",
+      "asserts": [
+        "OB3GLOAssertOn200"
+      ],
+      "asserts_one_of": [
+        "OBACCAssertBankTransactionCode",
+        "OBACCAssertProprietaryBankTransactionCode"
+      ],
+      "method": "get",
+      "schemaCheck": true
+    },
+    {
       "description": "Fails using incorrect permissions for a given Transaction.",
       "id": "OB-301-TRA-105300",
       "refURI": "",
@@ -2028,8 +2055,6 @@
       ],
       "schemaCheck": false
     },
-
-
     {
       "description": "The x-fapi-interaction-id is replayed for an Transaction.",
       "id": "OB-301-TRA-105500",

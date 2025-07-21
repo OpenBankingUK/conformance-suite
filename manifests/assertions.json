@@ -290,6 +290,22 @@
           "detail": "Expected a specific error code for resource not found."
         }]
       }
+    },
+    "OBACCAssertBankTransactionCode": {
+      "expect": {
+        "matches": [{
+          "JSON": "Data.Transaction.#(BankTransactionCode)",
+          "detail": "Expected BankTransactionCode to be present in the transaction data."
+        }]
+      }
+    },
+    "OBACCAssertProprietaryBankTransactionCode": {
+      "expect": {
+        "matches": [{
+          "JSON": "Data.Transaction.#(ProprietaryBankTransactionCode)",
+          "detail": "Expected ProprietaryBankTransactionCode to be present in the transaction data."
+        }]
+      }
     }
   }
 }

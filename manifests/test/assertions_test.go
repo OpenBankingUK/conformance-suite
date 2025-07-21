@@ -27,11 +27,12 @@ var (
 	accountsManifestPath          = flag.String("acc_man", "../ob_3.1_accounts_transactions_fca.json", "Path to accounts tests json file.")
 	paymentsManifestPath          = flag.String("pay_man", "../ob_3.1_payment_fca.json", "Path to payments tests json file.")
 	fundsConfirmationManifestPath = flag.String("cbpii_man", "../ob_3.1_cbpii_fca.json", "Path to funds confirmations tests json file.")
+	accountsManifestPathV4        = flag.String("acc_man_v4", "../ob_4.0_accounts_transactions_fca.json", "Path to v4 accounts tests json file.")
 
 	// Load scripts from all the paths above. They contain the assertion 'sets' tested here.
 	scripts = func() []manifest.Script {
 		s := []manifest.Script{}
-		for _, path := range []string{*accountsManifestPath, *paymentsManifestPath, *fundsConfirmationManifestPath} {
+		for _, path := range []string{*accountsManifestPath, *paymentsManifestPath, *fundsConfirmationManifestPath, *accountsManifestPathV4} {
 			scripts := &manifest.Scripts{}
 			b, err := ioutil.ReadFile(path)
 			if err != nil {
@@ -193,6 +194,94 @@ func TestAssertions(t *testing.T) {
 			schemaSpec:                    *paymentSpecPath,
 			ExpectValidationPass:          false,
 			ExpectValidationErrorContains: "JSON Match Failed - expected (UK.OBIE.Signature.Missing)",
+		},
+		{
+			name:       "OB-400-TRA-101200 fails if ASPSP doesn't return BankTransactionCode or ProprietaryBankTransactionCode",
+			manifestID: "OB-400-TRA-101200",
+			response: mockResponse{
+				200,
+				map[string]string{},
+				`{"Data":{"Transaction": [{"SomeRandomThing": {}}]}}`,
+			},
+			schemaSpec:           *accountSpecPath,
+			ExpectValidationPass: false,
+		},
+		{
+			name:       "OB-400-TRA-101200 passes if ASPSP returns at least BankTransactionCode",
+			manifestID: "OB-400-TRA-101200",
+			response: mockResponse{
+				200,
+				map[string]string{},
+				`{"Data":{"Transaction": [{"BankTransactionCode": {}, "SomeRandomThing": {}}]}}`,
+			},
+			schemaSpec:           *accountSpecPath,
+			ExpectValidationPass: true,
+		},
+		{
+			name:       "OB-400-TRA-101200 passes if ASPSP returns at least ProprietaryBankTransactionCode",
+			manifestID: "OB-400-TRA-101200",
+			response: mockResponse{
+				200,
+				map[string]string{},
+				`{"Data":{"Transaction": [{"ProprietaryBankTransactionCode": {}, "SomeRandomThing": {}}]}}`,
+			},
+			schemaSpec:           *accountSpecPath,
+			ExpectValidationPass: true,
+		},
+		{
+			name:       "OB-400-TRA-101200 passes if ASPSP returns both BankTransactionCode and ProprietaryBankTransactionCode",
+			manifestID: "OB-400-TRA-101200",
+			response: mockResponse{
+				200,
+				map[string]string{},
+				`{"Data":{"Transaction": [{"BankTransactionCode": {}, "ProprietaryBankTransactionCode": {}, "SomeRandomThing": {}}]}}`,
+			},
+			schemaSpec:           *accountSpecPath,
+			ExpectValidationPass: true,
+		},
+		{
+			name:       "OB-301-TRA-101200 fails if ASPSP doesn't return BankTransactionCode or ProprietaryBankTransactionCode",
+			manifestID: "OB-301-TRA-101200",
+			response: mockResponse{
+				200,
+				map[string]string{},
+				`{"Data":{"Transaction": [{"SomeRandomThing": {}}]}}`,
+			},
+			schemaSpec:           *accountSpecPath,
+			ExpectValidationPass: false,
+		},
+		{
+			name:       "OB-301-TRA-101200 passes if ASPSP returns at least BankTransactionCode",
+			manifestID: "OB-301-TRA-101200",
+			response: mockResponse{
+				200,
+				map[string]string{},
+				`{"Data":{"Transaction": [{"BankTransactionCode": {}, "SomeRandomThing": {}}]}}`,
+			},
+			schemaSpec:           *accountSpecPath,
+			ExpectValidationPass: true,
+		},
+		{
+			name:       "OB-301-TRA-101200 passes if ASPSP returns at least ProprietaryBankTransactionCode",
+			manifestID: "OB-301-TRA-101200",
+			response: mockResponse{
+				200,
+				map[string]string{},
+				`{"Data":{"Transaction": [{"ProprietaryBankTransactionCode": {}, "SomeRandomThing": {}}]}}`,
+			},
+			schemaSpec:           *accountSpecPath,
+			ExpectValidationPass: true,
+		},
+		{
+			name:       "OB-301-TRA-101200 passes if ASPSP returns both BankTransactionCode and ProprietaryBankTransactionCode",
+			manifestID: "OB-301-TRA-101200",
+			response: mockResponse{
+				200,
+				map[string]string{},
+				`{"Data":{"Transaction": [{"BankTransactionCode": {}, "ProprietaryBankTransactionCode": {}, "SomeRandomThing": {}}]}}`,
+			},
+			schemaSpec:           *accountSpecPath,
+			ExpectValidationPass: true,
 		},
 	}
 
