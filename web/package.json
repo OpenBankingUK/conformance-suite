@@ -59,6 +59,7 @@
     "lint-staged": "9.0.0",
     "mock-socket": "^8.0.5",
     "vue-cli-plugin-build-watch": "^1.0.0",
+    "vue-jest": "^3.0.7",
     "vue-template-compiler": "^2.5.17"
   },
   "gitHooks": {
