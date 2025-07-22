@@ -52,13 +52,17 @@ type Rule struct {
 // in order to determine implementation conformance to a specification.
 // Testcase have three major sections
 // Input:
-//     Defines the inputs that are required by the testcase. This effectively involves preparing the http request object
-// Context:
-//     Provides a link between Discovery information and the testcase
-// Expects:
-//     Examines the http response to the testcase Input in order to determine if the expected conditions existing in the response
-//     and therefore the testcase has passed
 //
+//	Defines the inputs that are required by the testcase. This effectively involves preparing the http request object
+//
+// Context:
+//
+//	Provides a link between Discovery information and the testcase
+//
+// Expects:
+//
+//	Examines the http response to the testcase Input in order to determine if the expected conditions existing in the response
+//	and therefore the testcase has passed
 type TestCase struct {
 	ID                  string           `json:"@id,omitempty"`                  // JSONLD ID Reference
 	Type                []string         `json:"@type,omitempty"`                // JSONLD type array
@@ -85,6 +89,7 @@ type TestCase struct {
 	StatusCode          string           `json:"statusCode,omitempty"`
 	ResultArray         []string         `json:"-"` // represents Result array
 	ResultPresenceArray []bool           `json:"-"` // represents Result bool array with information if the fields were found based on JSON query in the Results
+	IsWarningTest       bool             `json:"-"`
 }
 
 // MakeTestCase builds an empty testcase
@@ -116,10 +121,12 @@ func (t *TestCase) Prepare(ctx *Context) (*resty.Request, error) {
 // The context object is passed as part of the validation as its allows the match clauses to
 // examine the request object and 'push' response variables into the context object for use
 // in downstream test cases which are potentially part of this testcase sequence
-// returns true - validation successful
-//         false - validation unsuccessful
-//         error - adds detail to validation failure
-//         NOTE: Validate will only return false if a check fails - no checks = true
+// returns:
+//
+//	true - validation successful
+//	false - validation unsuccessful
+//	error - adds detail to validation failure
+//	NOTE: Validate will only return false if a check fails - no checks = true
 func (t *TestCase) Validate(resp *resty.Response, ctx *Context) (bool, []error) {
 	if ctx == nil {
 		return false, []error{t.AppErr("error Valdate:rulectx == nil")}
@@ -277,13 +284,14 @@ type Expect struct {
 // It produces an http.Request - which can be sent to a server
 // It consumes an http.Response - which it uses to validate the response against "Expects"
 // TestCase lifecycle:
-//     Create a Testcase Object
-//     Create / retrieve the http request object
-//     Apply context information to the request object
-//     Rule - manages passing the request object from the testcase to an appropriate endpoint handler (like the proxy)
-//     Rule - receives http response from endpoint and provides it back to testcase
-//     Testcase evaluates the http response object using its 'Expects' clause
-//     Testcase passes or fails depending on the 'Expects' outcome
+//
+//	Create a Testcase Object
+//	Create / retrieve the http request object
+//	Apply context information to the request object
+//	Rule - manages passing the request object from the testcase to an appropriate endpoint handler (like the proxy)
+//	Rule - receives http response from endpoint and provides it back to testcase
+//	Testcase evaluates the http response object using its 'Expects' clause
+//	Testcase passes or fails depending on the 'Expects' outcome
 func (t *TestCase) ApplyInput(rulectx *Context) (*resty.Request, error) {
 	if t.Input.Method == "" {
 		return nil, t.AppErr("error: TestCase input cannot have empty input.Method")
