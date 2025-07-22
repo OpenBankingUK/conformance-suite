@@ -10,6 +10,7 @@ import (
 	"testing"
 )
 
+// TestNewTestCaseResult123 verifies the creation of a TestCaseResult and its properties using given parameters and assertions.
 func TestNewTestCaseResult123(t *testing.T) {
 	assert := test.NewAssert(t)
 
@@ -22,6 +23,7 @@ func TestNewTestCaseResult123(t *testing.T) {
 	assert.Equal(err.Error(), result.Fail[0])
 }
 
+// TestNewTestCaseResult321 tests the creation of a TestCaseResult with predefined parameters and validates the expected attributes.
 func TestNewTestCaseResult321(t *testing.T) {
 	assert := test.NewAssert(t)
 
@@ -34,11 +36,12 @@ func TestNewTestCaseResult321(t *testing.T) {
 	assert.Equal(err.Error(), result.Fail[0])
 }
 
+// TestNewTestCaseFailResult verifies that NewTestCaseFail creates a TestCase with expected failure details and properties.
 func TestNewTestCaseFailResult(t *testing.T) {
 	assert := test.NewAssert(t)
 	err := errors.New("some error")
 
-	result := NewTestCaseFail("id", NoMetrics(), []error{err}, "endpoint", "api-name", "api-version", "detailed description", "https://openbanking.org.uk/ref/uri", "200")
+	result := NewTestCaseFail("id", NoMetrics(), []error{err}, "endpoint", "api-name", "api-version", "detailed description", "https://openbanking.org.uk/ref/uri", "200", false)
 
 	assert.Equal("id", result.Id)
 	assert.False(result.Pass)
@@ -46,6 +49,7 @@ func TestNewTestCaseFailResult(t *testing.T) {
 	assert.Equal(err.Error(), result.Fail[0])
 }
 
+// TestTestCaseResultJsonMarshal tests the JSON marshalling of a TestCaseResult to ensure expected structure and content.
 func TestTestCaseResultJsonMarshal(t *testing.T) {
 	result := NewTestCaseResult("123", true, NoMetrics(), nil, "endpoint", "api-name", "api-version", "detailed description", "https://openbanking.org.uk/ref/uri", "200")
 
@@ -68,4 +72,17 @@ func TestTestCaseResultJsonMarshal(t *testing.T) {
 	require.NotEmpty(t, actual)
 
 	require.JSONEq(t, expected, string(actual))
+}
+
+// TestNewTestCaseWarningFail verifies the behaviour of NewTestCaseFail function for a warning test case scenario.
+func TestNewTestCaseWarningFail(t *testing.T) {
+	assert := test.NewAssert(t)
+	err := errors.New("some error")
+
+	result := NewTestCaseFail("id", NoMetrics(), []error{err}, "endpoint", "api-name", "api-version", "detailed description", "https://openbanking.org.uk/ref/uri", "200", true)
+
+	assert.Equal("id", result.Id)
+	assert.True(result.Pass) // Should pass test even if fail.
+	assert.Equal(NoMetrics(), result.Metrics)
+	assert.Equal(err.Error(), result.Warnings[0])
 }
