@@ -364,6 +364,7 @@ func (r *TestCaseRunner) executeTest(tc model.TestCase, ruleCtx *model.Context, 
 			tc.Detail,
 			tc.RefURI,
 			tc.StatusCode,
+			tc.IsWarningTest,
 		)
 	}
 	resp, metrics, err := r.executor.ExecuteTestCase(req, &tc, ruleCtx)
@@ -380,6 +381,7 @@ func (r *TestCaseRunner) executeTest(tc model.TestCase, ruleCtx *model.Context, 
 			tc.Detail,
 			tc.RefURI,
 			tc.StatusCode,
+			tc.IsWarningTest,
 		)
 	}
 	tc.StatusCode = resp.Status()
@@ -397,6 +399,7 @@ func (r *TestCaseRunner) executeTest(tc model.TestCase, ruleCtx *model.Context, 
 			tc.Detail,
 			tc.RefURI,
 			tc.StatusCode,
+			tc.IsWarningTest,
 		)
 	}
 
