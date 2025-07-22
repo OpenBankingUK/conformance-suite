@@ -53,6 +53,7 @@ type Script struct {
 	UseCCGToken           bool              `json:"useCCGToken,omitempty"`
 	ValidateSignature     bool              `json:"validateSignature,omitempty"`
 	ExpectArrayResults    bool              `json:"expect_array_results,omitempty"`
+	IsWarningTest         bool              `json:"warning,omitempty"`
 }
 
 // References - reference collection
@@ -345,6 +346,7 @@ func buildTestCase(s Script, refs map[string]Reference, ctx *model.Context, base
 	tc.Validator = validator
 	tc.ValidateSignature = s.ValidateSignature
 	tc.ExpectArrayResults = s.ExpectArrayResults
+	tc.IsWarningTest = s.IsWarningTest
 
 	//TODO: make these more configurable - header also get set in buildInput Section
 	tc.Input.Headers["x-fapi-financial-id"] = "$x-fapi-financial-id"
