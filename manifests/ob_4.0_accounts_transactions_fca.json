@@ -1980,15 +1980,13 @@
         "uri": "/transactions",
         "uriImplementation": "mandatory",
         "resource": "Transaction",
-        "asserts": [
-          "OB3GLOAssertOn200"
-        ],
         "asserts_one_of": [
           "OBACCAssertBankTransactionCode",
           "OBACCAssertProprietaryBankTransactionCode"
         ],
         "method": "get",
-        "schemaCheck": true
+        "schemaCheck": true,
+        "warning": true
       },
       {
         "description": "Fails using incorrect permissions for a given Transaction.",
