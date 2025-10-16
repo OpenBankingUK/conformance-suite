@@ -20,7 +20,6 @@ To provide feedback, please see the [CONTRIBUTING.md](CONTRIBUTING.md).
 
 [Full Release Notes](https://github.com/OpenBankingUK/conformance-suite/blob/develop/docs/releases.md)
 
-
 ---
 **Download**:
 `docker run --rm -it -p 127.0.0.1:8443:8443 "openbanking/conformance-suite:v1.9.4"` |
