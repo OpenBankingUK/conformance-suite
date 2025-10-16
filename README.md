@@ -28,7 +28,6 @@ To provide feedback, please see the [CONTRIBUTING.md](CONTRIBUTING.md).
 [Setup Guide](https://github.com/OpenBankingUK/conformance-suite/blob/develop/docs/setup-guide.md)
 ---
 
-
 ## Version table
 
 | Release |    Standard version     |
