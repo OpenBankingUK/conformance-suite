@@ -111,3 +111,13 @@ test_coverage: ## run the go tests then open up coverage report.
 		./...
 	go tool cover \
 		-html=$(shell pwd)/coverage.out
+
+##@ Debugging:
+
+.PHONY: debug
+debug: WEB_LOG_FILE:=$(shell pwd)/web/web.log
+debug: init_web ## run binary directly without docker.
+	@if [[ -f "${WEB_LOG_FILE}" ]]; then rm "${WEB_LOG_FILE}"; fi
+	@./scripts/web &> "${WEB_LOG_FILE}" &
+	dlv debug "./cmd/fcs_server" \
+		--headless --listen=:2345 --api-version=2 --accept-multiclient
