@@ -428,6 +428,44 @@
           }
         ]
       }
+    },
+    "AssertAllStandingOrderDetailsNotPresent": {
+      "expect": {
+        "matches": [
+          {
+            "JSON-NOT-PRESENT": "Data.StandingOrder.#(CreditorAgent)",
+            "description": "Expect CreditorAgent to be not present in the StandingOrder data."
+          },
+          {
+            "JSON-NOT-PRESENT": "Data.StandingOrder.#(CreditorAccount)",
+            "description": "Expect CreditorAccount to be not present in the StandingOrder data."
+          }
+        ]
+      }
+    },
+    "AssertAllStatementDetailsNotPresent": {
+      "expect": {
+        "matches": [
+          {
+            "JSON-NOT-PRESENT": "Data.Statement.#(StatementAmount)",
+            "description": "Expect StatementAmount to be not present in the Statement data."
+          }
+        ]
+      }
+    },
+    "AssertAllScheduledPaymentDetailsNotPresent": {
+      "expect": {
+        "matches": [
+          {
+            "JSON-NOT-PRESENT": "Data.ScheduledPayment.#(CreditorAccount)",
+            "description": "Expect CreditorAgent to be not present in the ScheduledPayment data."
+          },
+          {
+            "JSON-NOT-PRESENT": "Data.ScheduledPayment.#(CreditorAgent)",
+            "description": "Expect CreditorAccount to be not present in the ScheduledPayment data."
+          }
+        ]
+      }
     }
   }
 }
