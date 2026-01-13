@@ -1525,6 +1525,33 @@
       "schemaCheck": true
     },
     {
+      "description": "Minimal level data returned for a given account using the ReadAccountsBasic permission.",
+      "id": "OB-301-SCP-103501",
+      "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937066541/Scheduled+Payments+v3.1#ScheduledPaymentsv3.1-Endpoints",
+      "detail": "Check that basic level is returned resource with permission ReadAccountsBasic to access the resource with additional schema checks on status and headers.",
+      "parameters": {
+        "tokenRequestScope": "accounts",
+        "accountId": "$consentedAccountId"
+      },
+      "permissions": [
+        "ReadAccountsBasic",
+        "ReadScheduledPaymentsBasic"
+      ],
+      "permissions-excluded": [
+        "ReadScheduledPaymentsDetail"
+      ],
+      "uri": "/accounts/$accountId/scheduled-payments",
+      "uriImplementation": "conditional",
+      "resource": "ScheduledPayment",
+      "asserts": [
+        "OB3GLOAssertOn200",
+        "OB3GLOFAPIHeader",
+        "AssertAllScheduledPaymentDetailsNotPresent"
+      ],
+      "method": "get",
+      "schemaCheck": true
+    },
+    {
       "description": "All data returned for ReadScheduledPaymentsDetail permission with additional schema checks, status and headers.",
       "id": "OB-301-SCP-103600",
       "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937066541/Scheduled+Payments+v3.1#ScheduledPaymentsv3.1-Endpoints",
@@ -1542,6 +1569,32 @@
       "asserts": [
         "OB3GLOAssertOn200",
         "OB3GLOFAPIHeader"
+      ],
+      "method": "get",
+      "schemaCheck": true
+    },
+    {
+      "description": "Minimal data returned for ReadScheduledPaymentsBasic permission with additional schema checks, status and headers.",
+      "id": "OB-301-SCP-103601",
+      "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937066541/Scheduled+Payments+v3.1#ScheduledPaymentsv3.1-Endpoints",
+      "detail": "Checks that the bulk resource returns the correct data depending permission ReadScheduledPaymentsBasic with additional schema checks on status and headers.",
+      "parameters": {
+        "tokenRequestScope": "accounts"
+      },
+      "permissions": [
+        "ReadAccountsBasic",
+        "ReadScheduledPaymentsBasic"
+      ],
+      "permissions-excluded": [
+        "ReadScheduledPaymentsDetail"
+      ],
+      "uri": "/scheduled-payments",
+      "uriImplementation": "optional",
+      "resource": "ScheduledPayment",
+      "asserts": [
+        "OB3GLOAssertOn200",
+        "OB3GLOFAPIHeader",
+        "AssertAllScheduledPaymentDetailsNotPresent"
       ],
       "method": "get",
       "schemaCheck": true
@@ -1689,6 +1742,33 @@
       "schemaCheck": true
     },
     {
+      "description": "Minimal data returned for a given account only using the ReadAccountsBasic permission.",
+      "id": "OB-301-STO-103801",
+      "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937721918/Standing+Orders+v3.1#StandingOrdersv3.1-PermissionCodes",
+      "detail": "Checks that basic level is returned resource with permission ReadAccountsBasic to access the resource with additional schema checks on status and headers.",
+      "parameters": {
+        "tokenRequestScope": "accounts",
+        "accountId": "$consentedAccountId"
+      },
+      "permissions": [
+        "ReadAccountsBasic"
+      ],
+      "permissions-excluded": [
+        "ReadStandingOrdersDetail"
+      ],
+      "uri": "/accounts/$accountId/standing-orders",
+      "uriImplementation": "conditional",
+      "resource": "StandingOrder",
+      "asserts": [
+        "OB3GLOAssertOn200",
+        "OB3GLOFAPIHeader",
+        "AssertAllStandingOrderDetailsNotPresent"
+
+      ],
+      "method": "get",
+      "schemaCheck": true
+    },
+    {
       "description": "All data returned for a given account using the ReadStandingOrdersDetail permission.",
       "id": "OB-301-STO-103900",
       "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937721918/Standing+Orders+v3.1#StandingOrdersv3.1-PermissionCodes",
@@ -1706,6 +1786,31 @@
       "asserts": [
         "OB3GLOAssertOn200",
         "OB3GLOFAPIHeader"
+      ],
+      "method": "get",
+      "schemaCheck": true
+    },
+    {
+      "description": "Minimal data returned for a given account using the ReadAccountsBasic permission.",
+      "id": "OB-301-STO-103902",
+      "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937721918/Standing+Orders+v3.1#StandingOrdersv3.1-PermissionCodes",
+      "detail": "Checks that all data for bulk resource with permission ReadStandingOrdersDetail to access the resource with additional schema checks on status and headers.",
+      "parameters": {
+        "tokenRequestScope": "accounts"
+      },
+      "permissions": [
+        "ReadAccountsBasic"
+      ],
+      "permissions-excluded": [
+        "ReadStandingOrdersDetail"
+      ],
+      "uri": "/standing-orders",
+      "uriImplementation": "optional",
+      "resource": "StandingOrder",
+      "asserts": [
+        "OB3GLOAssertOn200",
+        "OB3GLOFAPIHeader",
+        "AssertAllStandingOrderDetailsNotPresent"
       ],
       "method": "get",
       "schemaCheck": true
@@ -2300,6 +2405,70 @@
       "asserts": [
         "OB3GLOAssertOn200",
         "OB3GLOAssertFAPIPlayBack"
+      ],
+      "schemaCheck": true
+    },
+    {
+      "description": "Minimal data returned for bulk Statement using the ReadStatementsBasic permission, status and headers.",
+      "id": "OB-301-STA-106400",
+      "refURI": "https://openbankinguk.github.io/read-write-api-site3/v3.1.5/resources-and-data-models/aisp/Statements.html#data-dictionary",
+      "detail": "Minimal data returned for bulk Statement using the ReadStatementsBasic permission, status and headers.",
+      "apiVersion":">=3.1.5",
+      "parameters": {
+        "tokenRequestScope": "accounts",
+        "accountId": "$consentedAccountId",
+        "x-fapi-interaction-id": "93bac548-d2de-4546-b106-880a5018460d"
+      },
+      "headers": {
+        "x-fapi-interaction-id": "$x-fapi-interaction-id"
+      },
+      "permissions": [
+        "ReadAccountsBasic",
+        "ReadStatementsBasic"
+      ],
+      "permissions-excluded": [
+        "ReadStatementsDetail"
+      ],
+      "uri": "/statements",
+      "uriImplementation": "optional",
+      "resource": "Statement",
+      "method": "get",
+      "asserts": [
+        "OB3GLOAssertOn200",
+        "OB3GLOAssertFAPIPlayBack",
+        "AssertAllStatementDetailsNotPresent"
+      ],
+      "schemaCheck": true
+    },
+    {
+      "description": "Minimal data returned for specific Statement using the ReadStatementsBasic permission, status and headers.",
+      "id": "OB-301-STA-106500",
+      "refURI": "https://openbankinguk.github.io/read-write-api-site3/v3.1.5/resources-and-data-models/aisp/Statements.html#data-dictionary",
+      "detail": "Minimal data returned for specific Statement using the ReadStatementsBasic permission, status and headers.",
+      "apiVersion":">=3.1.5",
+      "parameters": {
+        "tokenRequestScope": "accounts",
+        "accountId": "$consentedAccountId",
+        "x-fapi-interaction-id": "93bac548-d2de-4546-b106-880a5018460d"
+      },
+      "headers": {
+        "x-fapi-interaction-id": "$x-fapi-interaction-id"
+      },
+      "permissions": [
+        "ReadAccountsBasic",
+        "ReadStatementsBasic"
+      ],
+      "permissions-excluded": [
+        "ReadStatementsDetail"
+      ],
+      "uri": "/accounts/$accountId/statements",
+      "uriImplementation": "optional",
+      "resource": "Statement",
+      "method": "get",
+      "asserts": [
+        "OB3GLOAssertOn200",
+        "OB3GLOAssertFAPIPlayBack",
+        "AssertAllStatementDetailsNotPresent"
       ],
       "schemaCheck": true
     },
