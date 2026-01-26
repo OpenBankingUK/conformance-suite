@@ -21,7 +21,6 @@ import (
 
 var (
 	accountSpecPath               = flag.String("acc_spec", "../../pkg/schema/spec/v3.1.6/account-info-swagger-flattened.json", "Path to the accounts specification swagger file.")
-	accountSpecPathV4             = flag.String("acc_specV4", "../../pkg/schema/spec/v4.0.0/account-info-openapi.json", "Path to the v4 accounts specification swagger file.")
 	paymentSpecPath               = flag.String("pay_spec", "../../pkg/schema/spec/v3.1.6/payment-initiation-swagger-flattened.json", "Path to the payments specification swagger file.")
 	cbpiiSpecPath                 = flag.String("cbpii_spec", "../../pkg/schema/spec/v3.1.6/confirmation-funds-flattened.json", "Path to the funds confirmations specification swagger file.")
 	assertionsPath                = flag.String("assertions", "../assertions.json", "Path to the JSON file containing the assertion rules.")

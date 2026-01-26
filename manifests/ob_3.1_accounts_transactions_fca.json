@@ -2255,7 +2255,7 @@
     },
     {
       "description": "Succeeds when fromStatementDateTime is a valid ISO8601 formatted date variant 1.",
-        "id": "OB-301-STA-105900",
+      "id": "OB-301-STA-105900",
       "refURI": "https://openbankinguk.github.io/read-write-api-site3/v3.1.5/resources-and-data-models/aisp/Statements.html#data-dictionary",
       "detail": "Checks that the x-fapi-interaction-id value is played-back for bulk Transaction.",
       "apiVersion":">=3.1.5",

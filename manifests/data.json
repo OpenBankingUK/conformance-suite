@@ -12,6 +12,18 @@
         }
       }
     },
+    "minimalDomesticCVRPConfirmation": {
+      "body": {
+        "Data": {
+          "ConsentId": "$consentId",
+          "Reference": "$creditorIdentification",
+          "InstructedAmount": {
+            "Amount": "$instructedAmountValue",
+            "Currency": "$instructedAmountCurrency"
+          }
+        }
+      }
+    },
     "minimalDomesticVRPConsent": {
       "body": {
         "Data": {

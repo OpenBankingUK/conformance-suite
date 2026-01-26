@@ -2,6 +2,13 @@
 
 ## [Unreleased]
 
+## [1.9.6-beta6] - 29/01/2026
+
+### Added
+
+- Added support for testing JSON objects not present
+- Added extra assertion checks for `ReadAccountsDetail`, `ReadBeneficiariesDetail`, and `ReadTransactionsDetail` tests for v3 and v4
+
 ## [1.9.6-beta5] - 30/12/2025
 
 ### Fixed
@@ -429,7 +436,8 @@ v3.1 of the OBIE Accounts and Transactions specifications and Payments.
 
 [More Releases](docs/releases)
 
-[Unreleased]: https://github.com/OpenBankingUK/conformance-suite/compare/v1.9.6-beta5...HEAD
+[Unreleased]: https://github.com/OpenBankingUK/conformance-suite/compare/v1.9.6-beta6...HEAD
+[1.9.6-beta6]: https://github.com/OpenBankingUK/conformance-suite/compare/v1.9.6-beta5...v1.9.6-beta6
 [1.9.6-beta5]: https://github.com/OpenBankingUK/conformance-suite/compare/v1.9.6-beta4...v1.9.6-beta5
 [1.9.6-beta4]: https://github.com/OpenBankingUK/conformance-suite/compare/v1.9.6-beta3...v1.9.6-beta4
 [1.9.6-beta3]: https://github.com/OpenBankingUK/conformance-suite/compare/v1.9.5...v1.9.6-beta3
