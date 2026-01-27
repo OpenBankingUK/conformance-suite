@@ -1791,7 +1791,7 @@
       "schemaCheck": true
     },
     {
-      "description": "Minimal data returned for a given account using the ReadAccountsBasic permission.",
+      "description": "Minimal data returned for a given account using the ReadStandingOrdersBasic permission.",
       "id": "OB-301-STO-103902",
       "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937721918/Standing+Orders+v3.1#StandingOrdersv3.1-PermissionCodes",
       "detail": "Checks that all data for bulk resource with permission ReadStandingOrdersDetail to access the resource with additional schema checks on status and headers.",
@@ -1799,7 +1799,8 @@
         "tokenRequestScope": "accounts"
       },
       "permissions": [
-        "ReadAccountsBasic"
+        "ReadAccountsBasic",
+        "ReadStandingOrdersBasic"
       ],
       "permissions-excluded": [
         "ReadStandingOrdersDetail"
