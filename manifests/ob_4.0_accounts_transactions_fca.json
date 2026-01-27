@@ -1730,7 +1730,8 @@
           "accountId": "$consentedAccountId"
         },
         "permissions": [
-          "ReadAccountsBasic"
+          "ReadAccountsBasic",
+          "ReadStandingOrdersBasic"
         ],
         "permissions-excluded": [
           "ReadStandingOrdersDetail"
@@ -1769,7 +1770,7 @@
         "schemaCheck": true
       },
       {
-        "description": "Test",
+        "description": "Test bulk resource with permission ReadStandingOrdersDetail",
         "id": "OB-400-STO-103901",
         "refURI": "https://openbankinguk.github.io/read-write-api-site3/v4.0/profiles/account-and-transaction-api-profile.html",
         "detail": "Checks that all data for bulk resource with permission ReadStandingOrdersDetail to access the resource with additional schema checks on status and headers.",
@@ -1791,7 +1792,7 @@
         "schemaCheck": true
       },
       {
-        "description": "Minimal data returned for a given account using the ReadAccountsBasic permission.",
+        "description": "Minimal data returned for a given account using the ReadStandingOrdersBasic permission.",
         "id": "OB-400-STO-103902",
         "refURI": "https://openbankinguk.github.io/read-write-api-site3/v4.0/profiles/account-and-transaction-api-profile.html",
         "detail": "Checks that all data for bulk resource with permission ReadStandingOrdersDetail to access the resource with additional schema checks on status and headers.",
@@ -1800,6 +1801,9 @@
         },
         "permissions": [
           "ReadAccountsBasic",
+          "ReadStandingOrdersBasic"
+        ],
+        "permissions-excluded": [
           "ReadStandingOrdersDetail"
         ],
         "uri": "/standing-orders",
@@ -2383,10 +2387,10 @@
         "schemaCheck": true
       },
       {
-        "description": "Succeeds when fromStatementDateTime is a valid ISO8601 formatted date variant 5.",
+        "description": "Check only minimal data returned for statement (bulk) when using ReadStatementsBasic permission.",
         "id": "OB-400-STA-106400",
         "refURI": "https://openbankinguk.github.io/read-write-api-site3/v4.0/profiles/account-and-transaction-api-profile.html",
-        "detail": "Checks that the x-fapi-interaction-id value is played-back for bulk Transaction.",
+        "detail": "Check only minimal data returned for statement (bulk) when using ReadStatementsBasic permission.",
         "apiVersion":">=3.1.5",
         "parameters": {
           "tokenRequestScope": "accounts",
@@ -2418,10 +2422,10 @@
         "schemaCheck": true
       },
       {
-        "description": "Succeeds when fromStatementDateTime is a valid ISO8601 formatted date variant 5.",
+        "description": "Check only minimal data returned for statement when using ReadStatementsBasic permission.",
         "id": "OB-400-STA-106500",
         "refURI": "https://openbankinguk.github.io/read-write-api-site3/v4.0/profiles/account-and-transaction-api-profile.html",
-        "detail": "Checks that the x-fapi-interaction-id value is played-back for bulk Transaction.",
+        "detail": "Check only minimal data returned for statement when using ReadStatementsBasic permission.",
         "apiVersion":">=3.1.5",
         "parameters": {
           "tokenRequestScope": "accounts",
