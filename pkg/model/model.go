@@ -6,13 +6,13 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
-	"regexp"
 	"strconv"
 	"strings"
 
 	"github.com/OpenBankingUK/conformance-suite/pkg/authentication"
 	"github.com/OpenBankingUK/conformance-suite/pkg/schema"
 	"github.com/OpenBankingUK/conformance-suite/pkg/schemaprops"
+	"github.com/dlclark/regexp2"
 
 	"github.com/sirupsen/logrus"
 
@@ -621,7 +621,7 @@ func replaceContextField(source string, ctx *Context) (string, error) {
 	return result, nil
 }
 
-var singleDollarRegex = regexp.MustCompile(`[^\$]?\$([\w|\-|_]*)`)
+var singleDollarRegex = regexp2.MustCompile(`(?<!\$)\$([\w\-_]*)`, regexp2.None)
 
 // GetReplacementField examines the input string and returns the first character
 // sequence beginning with '$' and ending with whitespace. '$$' sequence acts as an escape value
@@ -632,11 +632,15 @@ func getReplacementField(value string) (string, bool) {
 	if !isReplacement {
 		return value, false
 	}
-	result := singleDollarRegex.FindStringSubmatch(value)
-	if result == nil {
+	match, err := singleDollarRegex.FindStringMatch(value)
+	if err != nil || match == nil {
 		return "", false
 	}
-	return result[len(result)-1], true
+	groups := match.Groups()
+	if len(groups) < 2 {
+		return "", false
+	}
+	return groups[1].String(), true
 }
 
 func isReplacementField(value string) bool {

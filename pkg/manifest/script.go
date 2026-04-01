@@ -11,6 +11,7 @@ import (
 
 	"github.com/OpenBankingUK/conformance-suite/pkg/schema"
 	"github.com/blang/semver/v4"
+	"github.com/dlclark/regexp2"
 	"github.com/google/uuid"
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
@@ -252,7 +253,7 @@ func convertInputStringToArray(value string) []string {
 	return strings.Split(value, ",")
 }
 
-var fnReplacementRegex = regexp.MustCompile(`[^\$fn:]?\$fn:([\w|_]*)\(([\w,\s-,:,\.]*)\)`)
+var fnReplacementRegex = regexp2.MustCompile(`(?<!\$)\$fn:([\w_]*)\(([\w,\s\-:,\.]*)\)`, regexp2.None)
 
 func (s *Script) processParameters(refs *References, resources *model.Context) (*model.Context, error) {
 	localCtx := model.Context{}
@@ -317,17 +318,18 @@ func isFunction(param string) bool {
 }
 
 func fnNameAndArgs(param string) (string, []string, error) {
-	fnNameAndArgs := fnReplacementRegex.FindStringSubmatch(param)
-	if fnNameAndArgs == nil {
+	match, err := fnReplacementRegex.FindStringMatch(param)
+	if err != nil || match == nil {
 		return "", nil, errors.New("function name format error processing " + param)
 	}
+	groups := match.Groups()
 	fnArgs := []string{}
-	// fn has some parameters
-	if len(fnNameAndArgs) > 2 && fnNameAndArgs[2] != "" {
-		fnArgs = strings.Split(fnNameAndArgs[2], ",")
+	// fn has some parameters (groups[0]=full match, groups[1]=name, groups[2]=args)
+	if len(groups) > 2 && groups[2].String() != "" {
+		fnArgs = strings.Split(groups[2].String(), ",")
 	}
 
-	return fnNameAndArgs[1], fnArgs, nil
+	return groups[1].String(), fnArgs, nil
 }
 
 func (r *Reference) getValue() string {
