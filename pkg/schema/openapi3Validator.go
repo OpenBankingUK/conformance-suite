@@ -8,12 +8,31 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/dlclark/regexp2"
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/getkin/kin-openapi/openapi3filter"
 	"github.com/getkin/kin-openapi/routers"
 	legacyrouter "github.com/getkin/kin-openapi/routers/legacy"
 	"github.com/pkg/errors"
 )
+
+// regexp2Compiler is a RegexCompilerFunc that uses dlclark/regexp2 so that
+// OpenAPI spec patterns using PCRE features (e.g. lookahead/lookbehind) are
+// handled correctly instead of crashing Go's RE2-based stdlib regexp.
+func regexp2Compiler(expr string) (openapi3.RegexMatcher, error) {
+	re, err := regexp2.Compile(expr, 0)
+	if err != nil {
+		return nil, err
+	}
+	return &regexp2Matcher{re: re}, nil
+}
+
+type regexp2Matcher struct{ re *regexp2.Regexp }
+
+func (m *regexp2Matcher) MatchString(s string) bool {
+	ok, _ := m.re.MatchString(s)
+	return ok
+}
 
 // OpenAPI3Validator - type
 type OpenAPI3Validator struct {
@@ -67,7 +86,7 @@ func buildValidator(specName, version string) (OpenAPI3Validator, error) {
 // IsRequestProperty - Find param in schema and determines if it's part of request body
 func (v OpenAPI3Validator) IsRequestProperty(checkmethod, checkpath, propertyPath string) (bool, string, error) {
 	spec := v.doc
-	for path, props := range spec.Paths {
+	for path, props := range spec.Paths.Map() {
 		for method, op := range getOas3Operations(props) {
 			if path == checkpath && method == checkmethod && op.RequestBody != nil {
 				for _, param := range op.RequestBody.Value.Content {
@@ -99,12 +118,12 @@ func getRouterForSpec(specName, version string) (routers.Router, *openapi3.T, er
 		return nil, nil, fmt.Errorf("cannot Load OpenApi Spec from file %s, %s", filename, err)
 	}
 
-	err = doc.Validate(context.Background())
+	err = doc.Validate(context.Background(), openapi3.SetRegexCompiler(regexp2Compiler))
 	if err != nil {
 		return nil, nil, fmt.Errorf("cannot Load OpenApi Spec from file %s, %s", filename, err)
 	}
 
-	router, err := legacyrouter.NewRouter(doc)
+	router, err := legacyrouter.NewRouter(doc, openapi3.SetRegexCompiler(regexp2Compiler))
 	if err != nil {
 		return nil, nil, fmt.Errorf("cannot Load OpenApi Router for %s file %s", specName, filename)
 	}
@@ -218,6 +237,7 @@ func (v OpenAPI3Validator) validateResponse(params validateParams) error {
 			ExcludeRequestBody:    true,
 			IncludeResponseStatus: true,
 			MultiError:            false,
+			RegexCompiler:         regexp2Compiler,
 		},
 	}
 
@@ -263,6 +283,15 @@ func getOas3Operations(props *openapi3.PathItem) map[string]*openapi3.Operation 
 	return ops
 }
 
+// typesToString converts an *openapi3.Types ([]string in v0.134.0+) to a
+// single string, joining multiple types with "/" for display purposes.
+func typesToString(t *openapi3.Types) string {
+	if t == nil {
+		return ""
+	}
+	return strings.Join(t.Slice(), "/")
+}
+
 // normalizePropertyType - Workaround to provide similar context to the one used in Swagger schema
 func normalizePropertyType(propertyType string) string {
 	return fmt.Sprintf("[%s]", propertyType)
@@ -278,7 +307,7 @@ func findPropertyInOas3Schema(sc *openapi3.Schema, propertyPath, previousPath st
 		}
 
 		if element == propertyPath {
-			return true, fmt.Sprintf("%s", normalizePropertyType(j.Value.Type))
+			return true, normalizePropertyType(typesToString(j.Value.Type))
 		}
 
 		ret, propType := findPropertyInOas3Schema(j.Value, propertyPath, element)
@@ -296,8 +325,8 @@ func findItemInOas3Schema(sc *openapi3.Schema, propertyPath, previousPath string
 		SplitedNotFoundPath := strings.Split(notFoundPath, ".")
 		idx := SplitedNotFoundPath[0]
 		if _, err := strconv.Atoi(idx); err == nil {
-			if len(SplitedNotFoundPath) == 1 {
-				return true, normalizePropertyType(sc.Items.Value.Type)
+				if len(SplitedNotFoundPath) == 1 {
+				return true, normalizePropertyType(typesToString(sc.Items.Value.Type))
 			}
 			element := previousPath + "." + idx
 			ret, propType := findPropertyInOas3Schema(sc.Items.Value, propertyPath, element)

@@ -103,7 +103,7 @@ func TestAcc10000TestResponse(t *testing.T) {
 		Path:       acc10000responseReqURL,
 		StatusCode: http.StatusOK,
 		Body:       strings.NewReader(acc10000response),
-		Header:     http.Header{"Content-Type": []string{"application/json; charset=utf-8"}},
+		Header:     http.Header{"Content-Type": []string{"application/json; charset=utf-8"}, "X-Fapi-Interaction-Id": []string{"00000000-0000-0000-0000-000000000000"}},
 	}
 
 	_, err = validator.Validate(r)
@@ -119,7 +119,7 @@ func TestAcc10000TestResponseCapitalUtfNoSpace(t *testing.T) {
 		Path:       acc10000responseReqURL,
 		StatusCode: http.StatusOK,
 		Body:       strings.NewReader(acc10000response),
-		Header:     http.Header{"Content-Type": []string{"application/json;charset=UTF-8"}},
+		Header:     http.Header{"Content-Type": []string{"application/json;charset=UTF-8"}, "X-Fapi-Interaction-Id": []string{"00000000-0000-0000-0000-000000000000"}},
 	}
 
 	_, err = validator.Validate(r)
@@ -135,7 +135,7 @@ func TestCbpIITestResponseCapitalUtfNoSpace(t *testing.T) {
 		Path:       cbpiiGoodResponseUrl,
 		StatusCode: http.StatusOK,
 		Body:       strings.NewReader(cbpiiGoodResponse),
-		Header:     http.Header{"Content-Type": []string{"application/json;charset=UTF-8"}},
+		Header:     http.Header{"Content-Type": []string{"application/json;charset=UTF-8"}, "X-Fapi-Interaction-Id": []string{"00000000-0000-0000-0000-000000000000"}},
 	}
 
 	_, err = validator.Validate(r)
@@ -151,7 +151,7 @@ func TestVrp100200Response(t *testing.T) {
 		Path:       vrp100200ReqURL,
 		StatusCode: http.StatusOK,
 		Body:       strings.NewReader(vrp100200Response),
-		Header:     http.Header{"Content-Type": []string{"application/json; charset=utf-8"}},
+		Header:     http.Header{"Content-Type": []string{"application/json; charset=utf-8"}, "X-Fapi-Interaction-Id": []string{"00000000-0000-0000-0000-000000000000"}, "X-Jws-Signature": []string{"test-jws-signature"}},
 	}
 
 	_, err = validator.Validate(r)
@@ -311,4 +311,13 @@ func TestVrpIsRequestPropertyOas3(t *testing.T) {
 	exists, _, err := val.IsRequestProperty("POST", "/domestic-vrp-consents", "Data.ControlParameters.PeriodicLimits.0")
 	assert.Nil(t, err)
 	assert.True(t, exists)
+}
+// TestV4AccountsSpecLoadsWithPCREPattern is a regression test for the crash
+// caused by the x-idempotency-key parameter's schema pattern "^(?!\\s)(.*)(\\S)$"
+// which uses a PCRE lookahead unsupported by Go's RE2 stdlib regexp engine.
+// The fix replaces the regex engine with dlclark/regexp2 via kin-openapi's
+// RegexCompilerFunc hook, so this spec must now load without error.
+func TestV4AccountsSpecLoadsWithPCREPattern(t *testing.T) {
+	_, err := NewRawOpenAPI3Validator("Account and Transaction API Specification", "v4.0.0")
+	require.NoError(t, err, "v4.0.0 account-info spec must load without crashing on PCRE lookahead patterns")
 }

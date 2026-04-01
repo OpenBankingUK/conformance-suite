@@ -119,9 +119,9 @@ func validateTestResponse(t *testing.T, req RequestWrapper, resp ResponseWrapper
 		RequestValidationInput: requestValidationInput,
 		Status:                 resp.Status,
 		Header: http.Header{
-			headerCT: []string{
-				resp.ContentType,
-			},
+			headerCT:                  []string{resp.ContentType},
+			"X-Fapi-Interaction-Id": []string{"00000000-0000-0000-0000-000000000000"},
+			"X-Jws-Signature":       []string{"test-jws-signature"},
 		},
 		Options: &openapi3filter.Options{
 			ExcludeRequestBody:    true,
