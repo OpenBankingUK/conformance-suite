@@ -129,6 +129,11 @@ func validateTestResponse(t *testing.T, req RequestWrapper, resp ResponseWrapper
 			MultiError:            true,
 		},
 	}
+	// x-fapi-interaction-id is a required response header in OB specs.
+	// x-jws-signature is additionally required on VRP endpoints.
+	// v0.128.0 correctly enforces required response headers; add them to all test fixtures.
+	responseValidationInput.Header.Set("x-fapi-interaction-id", "test-interaction-id")
+	responseValidationInput.Header.Set("x-jws-signature", "test-jws-signature")
 
 	if resp.Body != "" {
 		responseValidationInput.SetBodyBytes([]byte(resp.Body))

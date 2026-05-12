@@ -6,6 +6,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -103,7 +104,7 @@ func TestAcc10000TestResponse(t *testing.T) {
 		Path:       acc10000responseReqURL,
 		StatusCode: http.StatusOK,
 		Body:       strings.NewReader(acc10000response),
-		Header:     http.Header{"Content-Type": []string{"application/json; charset=utf-8"}},
+		Header:     http.Header{"Content-Type": []string{"application/json; charset=utf-8"}, "X-Fapi-Interaction-Id": []string{"test-interaction-id"}},
 	}
 
 	_, err = validator.Validate(r)
@@ -119,7 +120,7 @@ func TestAcc10000TestResponseCapitalUtfNoSpace(t *testing.T) {
 		Path:       acc10000responseReqURL,
 		StatusCode: http.StatusOK,
 		Body:       strings.NewReader(acc10000response),
-		Header:     http.Header{"Content-Type": []string{"application/json;charset=UTF-8"}},
+		Header:     http.Header{"Content-Type": []string{"application/json;charset=UTF-8"}, "X-Fapi-Interaction-Id": []string{"test-interaction-id"}},
 	}
 
 	_, err = validator.Validate(r)
@@ -135,7 +136,7 @@ func TestCbpIITestResponseCapitalUtfNoSpace(t *testing.T) {
 		Path:       cbpiiGoodResponseUrl,
 		StatusCode: http.StatusOK,
 		Body:       strings.NewReader(cbpiiGoodResponse),
-		Header:     http.Header{"Content-Type": []string{"application/json;charset=UTF-8"}},
+		Header:     http.Header{"Content-Type": []string{"application/json;charset=UTF-8"}, "X-Fapi-Interaction-Id": []string{"test-interaction-id"}},
 	}
 
 	_, err = validator.Validate(r)
@@ -151,7 +152,7 @@ func TestVrp100200Response(t *testing.T) {
 		Path:       vrp100200ReqURL,
 		StatusCode: http.StatusOK,
 		Body:       strings.NewReader(vrp100200Response),
-		Header:     http.Header{"Content-Type": []string{"application/json; charset=utf-8"}},
+		Header:     http.Header{"Content-Type": []string{"application/json; charset=utf-8"}, "X-Fapi-Interaction-Id": []string{"test-interaction-id"}, "X-Jws-Signature": []string{"test-jws-signature"}},
 	}
 
 	_, err = validator.Validate(r)
@@ -311,4 +312,26 @@ func TestVrpIsRequestPropertyOas3(t *testing.T) {
 	exists, _, err := val.IsRequestProperty("POST", "/domestic-vrp-consents", "Data.ControlParameters.PeriodicLimits.0")
 	assert.Nil(t, err)
 	assert.True(t, exists)
+}
+
+// TestFindItemInOas3SchemaNilItems verifies that findItemInOas3Schema returns
+// false, "" without panicking when sc.Items is nil and the path looks like an
+// array index. This guards against a nil dereference on sc.Items.Value.Type.
+func TestFindItemInOas3SchemaNilItems(t *testing.T) {
+	sc := &openapi3.Schema{} // Items is nil
+	found, propType := findItemInOas3Schema(sc, "0", "")
+	assert.False(t, found)
+	assert.Empty(t, propType)
+}
+
+// TestFindItemInOas3SchemaNilItemsValue verifies that findItemInOas3Schema
+// returns false, "" without panicking when sc.Items is set but sc.Items.Value
+// is nil (e.g., an unresolved $ref).
+func TestFindItemInOas3SchemaNilItemsValue(t *testing.T) {
+	sc := &openapi3.Schema{
+		Items: &openapi3.SchemaRef{}, // Value is nil
+	}
+	found, propType := findItemInOas3Schema(sc, "0", "")
+	assert.False(t, found)
+	assert.Empty(t, propType)
 }

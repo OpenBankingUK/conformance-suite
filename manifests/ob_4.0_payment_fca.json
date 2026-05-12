@@ -583,6 +583,9 @@
           "postData": "$failingMinimalDomesticStandingOrderConsentV4",
           "requestConsent": "false"
         },
+        "headers": {
+          "Content-Type": "application/json"
+        },
         "body": "$postData",
         "uri": "/domestic-standing-order-consents",
         "uriImplementation": "conditional",

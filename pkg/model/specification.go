@@ -403,6 +403,34 @@ var (
 			Version:       "v4.0.0",
 			SchemaVersion: mustParseURL("https://raw.githubusercontent.com/OpenBankingUK/Commercial-VRP-API-Spec/refs/heads/main/OpenAPI/cvrp-openapi.json"),
 		},
+		{
+			Identifier:    "account-transaction-v4.0.1",
+			Name:          "Account and Transaction API Specification",
+			URL:           mustParseURL("https://openbankinguk.github.io/read-write-api-site3/v4.0.1/profiles/account-and-transaction-api-profile.html"),
+			Version:       "v4.0.1",
+			SchemaVersion: mustParseURL("https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v4.0.1/dist/openapi/account-info-openapi.json"),
+		},
+		{
+			Identifier:    "payment-initiation-v4.0.1",
+			Name:          "Payment Initiation API",
+			URL:           mustParseURL("https://openbankinguk.github.io/read-write-api-site3/v4.0.1/profiles/payment-initiation-api-profile.html"),
+			Version:       "v4.0.1",
+			SchemaVersion: mustParseURL("https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v4.0.1/dist/openapi/payment-initiation-openapi.json"),
+		},
+		{
+			Identifier:    "confirmation-funds-v4.0.1",
+			Name:          "Confirmation of Funds API Specification",
+			URL:           mustParseURL("https://openbankinguk.github.io/read-write-api-site3/v4.0.1/profiles/confirmation-of-funds-api-profile.html"),
+			Version:       "v4.0.1",
+			SchemaVersion: mustParseURL("https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v4.0.1/dist/openapi/confirmation-funds-openapi.json"),
+		},
+		{
+			Identifier:    "variable-recurring-payments-v4.0.1",
+			Name:          "Variable Recurring Payments API Specification",
+			URL:           mustParseURL("https://openbankinguk.github.io/read-write-api-site3/v4.0.1/profiles/vrp-profile.html"),
+			Version:       "v4.0.1",
+			SchemaVersion: mustParseURL("https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v4.0.1/dist/openapi/vrp-openapi.json"),
+		},
 	}
 )
 

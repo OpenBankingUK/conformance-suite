@@ -67,7 +67,7 @@ func buildValidator(specName, version string) (OpenAPI3Validator, error) {
 // IsRequestProperty - Find param in schema and determines if it's part of request body
 func (v OpenAPI3Validator) IsRequestProperty(checkmethod, checkpath, propertyPath string) (bool, string, error) {
 	spec := v.doc
-	for path, props := range spec.Paths {
+	for path, props := range spec.Paths.Map() {
 		for method, op := range getOas3Operations(props) {
 			if path == checkpath && method == checkmethod && op.RequestBody != nil {
 				for _, param := range op.RequestBody.Value.Content {
@@ -99,12 +99,12 @@ func getRouterForSpec(specName, version string) (routers.Router, *openapi3.T, er
 		return nil, nil, fmt.Errorf("cannot Load OpenApi Spec from file %s, %s", filename, err)
 	}
 
-	err = doc.Validate(context.Background())
+	err = doc.Validate(context.Background(), openapi3.SetRegexCompiler(regexp2Compiler))
 	if err != nil {
 		return nil, nil, fmt.Errorf("cannot Load OpenApi Spec from file %s, %s", filename, err)
 	}
 
-	router, err := legacyrouter.NewRouter(doc)
+	router, err := legacyrouter.NewRouter(doc, openapi3.SetRegexCompiler(regexp2Compiler))
 	if err != nil {
 		return nil, nil, fmt.Errorf("cannot Load OpenApi Router for %s file %s", specName, filename)
 	}
@@ -218,6 +218,7 @@ func (v OpenAPI3Validator) validateResponse(params validateParams) error {
 			ExcludeRequestBody:    true,
 			IncludeResponseStatus: true,
 			MultiError:            false,
+			RegexCompiler:         regexp2Compiler,
 		},
 	}
 
@@ -278,7 +279,7 @@ func findPropertyInOas3Schema(sc *openapi3.Schema, propertyPath, previousPath st
 		}
 
 		if element == propertyPath {
-			return true, fmt.Sprintf("%s", normalizePropertyType(j.Value.Type))
+			return true, fmt.Sprintf("%s", normalizePropertyType(schemaTypeString(j.Value.Type)))
 		}
 
 		ret, propType := findPropertyInOas3Schema(j.Value, propertyPath, element)
@@ -296,8 +297,11 @@ func findItemInOas3Schema(sc *openapi3.Schema, propertyPath, previousPath string
 		SplitedNotFoundPath := strings.Split(notFoundPath, ".")
 		idx := SplitedNotFoundPath[0]
 		if _, err := strconv.Atoi(idx); err == nil {
+			if sc.Items == nil || sc.Items.Value == nil {
+				return false, ""
+			}
 			if len(SplitedNotFoundPath) == 1 {
-				return true, normalizePropertyType(sc.Items.Value.Type)
+				return true, normalizePropertyType(schemaTypeString(sc.Items.Value.Type))
 			}
 			element := previousPath + "." + idx
 			ret, propType := findPropertyInOas3Schema(sc.Items.Value, propertyPath, element)
@@ -308,4 +312,13 @@ func findItemInOas3Schema(sc *openapi3.Schema, propertyPath, previousPath string
 	}
 
 	return false, ""
+}
+
+// schemaTypeString returns the first type in an openapi3.Types slice, or empty string if nil/empty.
+// openapi3.Types changed from string to []string in kin-openapi v0.128.0.
+func schemaTypeString(t *openapi3.Types) string {
+	if t == nil || len(*t) == 0 {
+		return ""
+	}
+	return (*t)[0]
 }
