@@ -12,7 +12,7 @@
 
 - Added support for Open Banking UK v4.0.1 OpenAPI schema files
 
-## Fixed
+### Fixed
 
 - Fixed `OB-400-DOP-101503` (v4.0) and `OB-301-DOP-1015003` (v3.1) sending `Content-Type: text/plain` instead of `application/json` when posting the negative standing order consent payload, causing ASPSPs to respond with HTTP 415 instead of the expected HTTP 400.
 - Fixed incorrect test case ID references in v1.9.6 release notes from `OB-400-DOP-1015003` to `OB-400-DOP-101503`
@@ -40,7 +40,7 @@
 - Add enhanced logging for test case authorization and execution
 - Added tests `OB-301-DOP-1015003` and `OB-400-DOP-101503` which validate the following:
   - OB-301-DOP-1015003 (v3): validates that `NumberOfPayments` and `FinalPaymentDateTime` are correctly rejected when included in a consent payload at the same time.
-  - OB-400-DOP-101500 (v4): validates that `CountPerPeriod` and `FinalPaymentDateTime` are correctly rejected when included in a consent payload at the same time.
+  - OB-400-DOP-101503 (v4): validates that `CountPerPeriod` and `FinalPaymentDateTime` are correctly rejected when included in a consent payload at the same time.
 
 ### Fixed
 
