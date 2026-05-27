@@ -13,7 +13,7 @@ import (
 // lookahead) compiles without error. This is the pattern used by the OB v4.0.0
 // x-idempotency-key header and the root cause of the original bug.
 func TestRegexp2CompilerPCREPattern(t *testing.T) {
-	_, err := regexp2Compiler(`^(?!\s)(.*)(\\S)$`)
+	_, err := regexp2Compiler(`^(?!\s)(.*)(\S)$`)
 	require.NoError(t, err)
 }
 
@@ -22,7 +22,7 @@ func TestRegexp2CompilerPCREPattern(t *testing.T) {
 // This is a security property, so white-box inspection of the internal field is
 // acceptable.
 func TestRegexp2CompilerSetsMatchTimeout(t *testing.T) {
-	m, err := regexp2Compiler(`^(?!\s)(.*)(\\S)$`)
+	m, err := regexp2Compiler(`^(?!\s)(.*)(\S)$`)
 	require.NoError(t, err)
 	matcher, ok := m.(*regexp2Matcher)
 	require.True(t, ok, "expected *regexp2Matcher")
