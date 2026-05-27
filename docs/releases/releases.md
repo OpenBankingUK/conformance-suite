@@ -19,7 +19,7 @@
 
 ## [1.9.7] - 05/03/2026
 
-## Changed
+### Changed
 
 - Official release, incorporating the Conditional Properties change from 1.9.7 Beta 1
 
