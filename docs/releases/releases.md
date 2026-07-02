@@ -1,6 +1,14 @@
 # Release history
 
-## [Unreleased]
+## [1.9.8] - 02/07/2026
+
+### Added
+
+- Added support for Open Banking UK v4.0.1 OpenAPI schema files
+
+### Changed
+
+- Updated regex engine as per 1.9.8 - Beta 1
 
 ## [1.9.8-beta1] - 21/04/2026
 

@@ -33,7 +33,7 @@ const (
 	// Prerelease - is pre-release marker for the version. If this is "" (empty string)
 	// then it means that it is a final release. Otherwise, this is a pre-release
 	// such as "alpha", "beta", "rc1", etc.
-	Prerelease          = "beta1"
+	Prerelease          = ""
 	GitHubAPIRepository = "https://api.github.com/repos/OpenBankingUK/conformance-suite/tags"
 )
 
