@@ -111,6 +111,7 @@ COPY pkg/schema/spec/v3.1.9/*.json /app/pkg/schema/spec/v3.1.9/
 COPY pkg/schema/spec/v3.1.10/*.json /app/pkg/schema/spec/v3.1.10/
 COPY pkg/schema/spec/v3.1.11/*.json /app/pkg/schema/spec/v3.1.11/
 COPY pkg/schema/spec/v4.0.0/*.json /app/pkg/schema/spec/v4.0.0/
+COPY pkg/schema/spec/v4.0.1/*.json /app/pkg/schema/spec/v4.0.1/
 
 EXPOSE 8443
 
