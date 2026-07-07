@@ -24,7 +24,7 @@ func TestDiscoverySamples_Examples_Parse_Correctly(t *testing.T) {
 			t.Logf("discoveryFile=%s", discoveryFile)
 			// Skip for now as we get this error:
 			// [{DiscoveryModel.DiscoveryItems[0].OpenidConfigurationURI Field 'DiscoveryModel.DiscoveryItems[0].OpenidConfigurationURI' is required} {DiscoveryModel.DiscoveryItems[0].ResourceBaseURI Field 'DiscoveryModel.DiscoveryItems[0].ResourceBaseURI' is required}]
-			if discoveryFile == "ob-v3.1-generic.json" || discoveryFile == "ob-v4.0-generic.json" || discoveryFile == "cVRP-v4.0-generic-discovery.json" {
+			if discoveryFile == "ob-v3.1-generic.json" || discoveryFile == "ob-v4.0-generic.json" || discoveryFile == "ob-v4.0.1-generic.json" || discoveryFile == "cVRP-v4.0-generic-discovery.json" {
 				t.Skip()
 			}
 			assert := test.NewAssert(t)
@@ -56,7 +56,7 @@ func TestDiscoverySamplesIfManifestIsURLHTTPSOnly(t *testing.T) {
 		t.Run("Parses_Without_Error_"+discoveryFile, func(t *testing.T) {
 			// Skip for now as get this error:
 			// [{DiscoveryModel.DiscoveryItems[0].OpenidConfigurationURI Field 'DiscoveryModel.DiscoveryItems[0].OpenidConfigurationURI' is required} {DiscoveryModel.DiscoveryItems[0].ResourceBaseURI Field 'DiscoveryModel.DiscoveryItems[0].ResourceBaseURI' is required}]
-			if discoveryFile == "ob-v3.1-generic.json" || discoveryFile == "ob-v4.0-generic.json" || discoveryFile == "cVRP-v4.0-generic-discovery.json" {
+			if discoveryFile == "ob-v3.1-generic.json" || discoveryFile == "ob-v4.0-generic.json" || discoveryFile == "ob-v4.0.1-generic.json" || discoveryFile == "cVRP-v4.0-generic-discovery.json" {
 				t.Skip()
 			}
 			assert := test.NewAssert(t)

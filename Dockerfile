@@ -58,6 +58,7 @@ COPY pkg/schema/spec/v3.1.9/*.json /pkg/schema/spec/v3.1.9/
 COPY pkg/schema/spec/v3.1.10/*.json /pkg/schema/spec/v3.1.10/
 COPY pkg/schema/spec/v3.1.11/*.json /pkg/schema/spec/v3.1.11/
 COPY pkg/schema/spec/v4.0.0/*.json /pkg/schema/spec/v4.0.0/
+COPY pkg/schema/spec/v4.0.1/*.json /pkg/schema/spec/v4.0.1/
 COPY web .
 
 ENV FORCE_COLOR=1
