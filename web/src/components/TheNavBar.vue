@@ -103,9 +103,25 @@ export default {
     FileTextIcon,
   },
   data: () => ({
-    // @NEW-SPEC-VERSION - Update this when new version comes out or add sorting...
-    localSelectedVersion: 'v4.0.0',
-    specificationVersions: [...(new Set(Specifications.map(spec => spec.Version)))].map(specVer => ({ value: specVer, text: specVer })),
+    localSelectedVersion: 'v4.0.1',
+    specificationVersions: [...(new Set(Specifications.map(spec => spec.Version)))]
+      .sort((left, right) => {
+        const leftParts = left.replace(/^v/, '').split('.').map(Number);
+        const rightParts = right.replace(/^v/, '').split('.').map(Number);
+        const maxLength = Math.max(leftParts.length, rightParts.length);
+
+        for (let index = 0; index < maxLength; index += 1) {
+          const leftPart = leftParts[index] || 0;
+          const rightPart = rightParts[index] || 0;
+
+          if (leftPart !== rightPart) {
+            return rightPart - leftPart;
+          }
+        }
+
+        return 0;
+      })
+      .map(specVer => ({ value: specVer, text: specVer })),
   }),
   computed: {
     ...mapGetters('status', ['suiteVersion']),

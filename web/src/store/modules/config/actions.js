@@ -7,7 +7,22 @@ import * as types from './mutation-types.js';
 const findImageData = (model, images) => {
   const { name } = model.discoveryModel;
   const customImage = `./${name}.png`;
-  return images[customImage] || images['./no-image-discovery-icon.png'];
+  if (images[customImage]) {
+    return images[customImage];
+  }
+
+  if (name.startsWith('ob-v4.0.1-')) {
+    const v4FallbackImage = `./${name.replace('ob-v4.0.1-', 'ob-v4.0-')}.png`;
+    if (images[v4FallbackImage]) {
+      return images[v4FallbackImage];
+    }
+
+    if (name === 'ob-v4.0.1-ozone-mobile' && images['./ob-v4.0-ozone.png']) {
+      return images['./ob-v4.0-ozone.png'];
+    }
+  }
+
+  return images['./no-image-discovery-icon.png'];
 };
 
 export default {
