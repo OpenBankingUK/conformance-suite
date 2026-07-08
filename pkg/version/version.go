@@ -22,7 +22,7 @@ const (
 	// Checker must conform to the format expected, major, minor and patch.
 	// @NEW-SPEC-RELEASE - make sure new version is accounted for
 	// @NEW-RELEASE - make sure new version is accounted for
-	//v1.9.9-beta1 - this comment allows searching
+	//v1.9.9 - this comment allows searching
 	major = "1"
 	minor = "9"
 	patch = "9"
@@ -33,7 +33,7 @@ const (
 	// Prerelease - is pre-release marker for the version. If this is "" (empty string)
 	// then it means that it is a final release. Otherwise, this is a pre-release
 	// such as "alpha", "beta", "rc1", etc.
-	Prerelease          = "beta1"
+	Prerelease          = ""
 	GitHubAPIRepository = "https://api.github.com/repos/OpenBankingUK/conformance-suite/tags"
 )
 
