@@ -84,6 +84,56 @@ Please note, the sample file requires the following fields to be updated before 
 * `openidConfigurationUri`
 * `resourceBaseUri`
 
+## Discovery file info for v4.0.1
+
+### AIS
+
+```json
+"apiSpecification": {
+          "name": "Account and Transaction API Specification",
+          "url": "https://openbankinguk.github.io/read-write-api-site3/v4.0.1/profiles/account-and-transaction-api-profile.html",
+          "version": "v4.0.1",
+          "schemaVersion": "https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v4.0.1/dist/openapi/account-info-openapi.json",
+          "manifest": "file://manifests/ob_4.0_accounts_transactions_fca.json"
+        },
+```
+
+### PIS
+
+```json
+"apiSpecification": {
+          "name": "Payment Initiation API",
+          "url": "https://openbankinguk.github.io/read-write-api-site3/v4.0.1/profiles/payment-initiation-api-profile.html",
+          "version": "v4.0.1",
+          "schemaVersion": "https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v4.0.1/dist/openapi/payment-initiation-openapi.json",
+          "manifest": "file://manifests/ob_4.0_payment_fca.json"
+        },
+```
+
+### CBPII
+
+```json
+"apiSpecification": {
+          "name": "Confirmation of Funds API Specification",
+          "url": "https://openbankinguk.github.io/read-write-api-site3/v4.0.1/profiles/confirmation-of-funds-api-profile.html",
+          "version": "v4.0.1",
+          "schemaVersion": "https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v4.0.1/dist/openapi/confirmation-funds-openapi.json",
+          "manifest": "file://manifests/ob_4.0_cbpii_fca.json"
+        },
+```
+
+### VRP
+
+```json
+"apiSpecification": {
+          "name": "Variable Recurring Payments API Specification",
+          "url": "https://openbankinguk.github.io/read-write-api-site3/v4.0.1/profiles/vrp-profile.html",
+          "version": "v4.0.1",
+          "schemaVersion": "https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v4.0.1/dist/openapi/vrp-openapi.json",
+          "manifest": "file://manifests/ob_4.0_variable_recurring_payments.json"
+        },
+```
+
 ## Advanced Logging
 
 There is the ability to enhance logging by setting any of the following env variables
