@@ -41,23 +41,10 @@ WORKDIR /app
 # This is to that JavaScript code can import code defined in the Go side, e.g.,
 # '../../../../../pkg/discovery/templates/ob-v3.1-generic.json'
 # '../../../pkg/model/testdata/spec-config.golden.json'
-# // @NEW-SPEC-RELEASE - make sure new version fiels are copied
 COPY pkg/discovery/templates/*.json /pkg/discovery/templates/
 COPY pkg/model/testdata/*.json /pkg/model/testdata/
-COPY pkg/schema/spec/v3.0.0/*.json /pkg/schema/spec/v3.0.0/
-COPY pkg/schema/spec/v3.1.0/*.json /pkg/schema/spec/v3.1.0/
-COPY pkg/schema/spec/v3.1.1/*.json /pkg/schema/spec/v3.1.1/
-COPY pkg/schema/spec/v3.1.2/*.json /pkg/schema/spec/v3.1.2/
-COPY pkg/schema/spec/v3.1.3/*.json /pkg/schema/spec/v3.1.3/
-COPY pkg/schema/spec/v3.1.4/*.json /pkg/schema/spec/v3.1.4/
-COPY pkg/schema/spec/v3.1.5/*.json /pkg/schema/spec/v3.1.5/
-COPY pkg/schema/spec/v3.1.6/*.json /pkg/schema/spec/v3.1.6/
-COPY pkg/schema/spec/v3.1.7/*.json /pkg/schema/spec/v3.1.7/
-COPY pkg/schema/spec/v3.1.8/*.json /pkg/schema/spec/v3.1.8/
-COPY pkg/schema/spec/v3.1.9/*.json /pkg/schema/spec/v3.1.9/
-COPY pkg/schema/spec/v3.1.10/*.json /pkg/schema/spec/v3.1.10/
-COPY pkg/schema/spec/v3.1.11/*.json /pkg/schema/spec/v3.1.11/
-COPY pkg/schema/spec/v4.0.0/*.json /pkg/schema/spec/v4.0.0/
+# Copy all spec version folders in one shot - no manual update needed when new versions are added.
+COPY pkg/schema/spec/ /pkg/schema/spec/
 COPY web .
 
 ENV FORCE_COLOR=1
@@ -96,22 +83,8 @@ COPY --from=gobuilder /app/components /app/components
 COPY --from=gobuilder /app/manifests /app/manifests
 COPY --from=nodebuilder /app/dist /app/web/dist
 
-# // @NEW-SPEC-RELEASE - make sure new version fiels are copied
-COPY pkg/schema/spec/v3.0.0/*.json /app/pkg/schema/spec/v3.0.0/
-COPY pkg/schema/spec/v3.1.0/*.json /app/pkg/schema/spec/v3.1.0/
-COPY pkg/schema/spec/v3.1.1/*.json /app/pkg/schema/spec/v3.1.1/
-COPY pkg/schema/spec/v3.1.2/*.json /app/pkg/schema/spec/v3.1.2/
-COPY pkg/schema/spec/v3.1.3/*.json /app/pkg/schema/spec/v3.1.3/
-COPY pkg/schema/spec/v3.1.4/*.json /app/pkg/schema/spec/v3.1.4/
-COPY pkg/schema/spec/v3.1.5/*.json /app/pkg/schema/spec/v3.1.5/
-COPY pkg/schema/spec/v3.1.6/*.json /app/pkg/schema/spec/v3.1.6/
-COPY pkg/schema/spec/v3.1.7/*.json /app/pkg/schema/spec/v3.1.7/
-COPY pkg/schema/spec/v3.1.8/*.json /app/pkg/schema/spec/v3.1.8/
-COPY pkg/schema/spec/v3.1.9/*.json /app/pkg/schema/spec/v3.1.9/
-COPY pkg/schema/spec/v3.1.10/*.json /app/pkg/schema/spec/v3.1.10/
-COPY pkg/schema/spec/v3.1.11/*.json /app/pkg/schema/spec/v3.1.11/
-COPY pkg/schema/spec/v4.0.0/*.json /app/pkg/schema/spec/v4.0.0/
-COPY pkg/schema/spec/v4.0.1/*.json /app/pkg/schema/spec/v4.0.1/
+# Copy all spec version folders in one shot - no manual update needed when new versions are added.
+COPY pkg/schema/spec/ /app/pkg/schema/spec/
 
 EXPOSE 8443
 

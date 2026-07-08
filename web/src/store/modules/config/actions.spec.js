@@ -46,6 +46,40 @@ describe('setDiscoveryTemplates', () => {
       },
     ]);
   });
+
+  it('commits discovery template with v4.0 fallback image for v4.0.1 template', async () => {
+    const fallbackImage = './ob-v4.0-generic.png';
+    const discoveryImages = {};
+    discoveryImages[fallbackImage] = 'v4FallbackImage';
+    discoveryImages['./no-image-discovery-icon.png'] = 'defaultImage';
+    const discoveryTemplates = [{ discoveryModel: { name: 'ob-v4.0.1-generic' } }];
+
+    const data = { discoveryTemplates, discoveryImages };
+    await actions.setDiscoveryTemplates({ commit }, data);
+    expect(commit).toHaveBeenCalledWith(types.SET_DISCOVERY_TEMPLATES, [
+      {
+        model: discoveryTemplates[0],
+        image: 'v4FallbackImage',
+      },
+    ]);
+  });
+
+  it('commits discovery template with ozone fallback image for v4.0.1 mobile template', async () => {
+    const fallbackImage = './ob-v4.0-ozone.png';
+    const discoveryImages = {};
+    discoveryImages[fallbackImage] = 'v4OzoneFallbackImage';
+    discoveryImages['./no-image-discovery-icon.png'] = 'defaultImage';
+    const discoveryTemplates = [{ discoveryModel: { name: 'ob-v4.0.1-ozone-mobile' } }];
+
+    const data = { discoveryTemplates, discoveryImages };
+    await actions.setDiscoveryTemplates({ commit }, data);
+    expect(commit).toHaveBeenCalledWith(types.SET_DISCOVERY_TEMPLATES, [
+      {
+        model: discoveryTemplates[0],
+        image: 'v4OzoneFallbackImage',
+      },
+    ]);
+  });
 });
 
 describe('validateDiscoveryConfig', () => {

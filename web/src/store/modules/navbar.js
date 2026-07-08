@@ -1,7 +1,7 @@
 export default {
   namespaced: true,
   state: {
-    selectedVersion: 'v4.0.0',
+    selectedVersion: 'v4.0.1',
   },
   mutations: {
     SET_SELECTED_VERSION(state, version) {

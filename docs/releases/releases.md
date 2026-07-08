@@ -1,5 +1,11 @@
 # Release history
 
+## [1.9.9] - 08/07/2026
+
+### Added
+
+- Full v4.0.1 support in the UI sidebar and discovery templates. The sidebar version selector now defaults to v4.0.1 and lists versions newest-first. Discovery template cards for v4.0.1 (generic, Ozone PSU, Ozone headless, Ozone mobile) are available when v4.0.1 is selected.
+
 ## [1.9.8] - 02/07/2026
 
 ### Added

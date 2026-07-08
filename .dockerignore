@@ -74,3 +74,8 @@ web/coverage
 **/pkg/server/web
 **/pkg/server/web/**
 **/pkg/server/web/**/*
+
+# Exclude non-version files from the spec directory (readme, test fixtures)
+pkg/schema/spec/readme.md
+pkg/schema/spec/test
+pkg/schema/spec/test/**
