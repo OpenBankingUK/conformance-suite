@@ -32,7 +32,6 @@ To provide feedback, please see the [CONTRIBUTING.md](CONTRIBUTING.md).
 | Release      | Standard version                                                                               |
 | ------------ | ---------------------------------------------------------------------------------------------- |
 | v1.9.9       | v4.0.1                                                                                         |
-| v1.9.8       | v4.0.1                                                                                         |
 | v1.9.7       | <ul><li>v4.0.0 - Swagger Update 5</li><li>cVRP (based on OBL 4.0.0 Swagger Update 4)</li></ul> |
 | v1.9.6       | <ul><li>v4.0.0 - Swagger Update 5</li><li>cVRP (based on OBL 4.0.0 Swagger Update 4)</li></ul> |
 | v1.9.5       | v4.0.0 - Swagger Update 4                                                                      |
