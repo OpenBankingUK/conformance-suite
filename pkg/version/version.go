@@ -217,12 +217,21 @@ func (v GitHub) UpdateWarningVersion(version string) (string, bool, error) {
 			return errorMessageUI, false, errors.Wrap(err, "error on update warning version")
 		}
 
-		if versionLocal < versionRemote {
+		localVersion, err := hashiVer.NewVersion(versionLocal)
+		if err != nil {
+			return errorMessageUI, false, errors.Wrap(err, "error on update warning version")
+		}
+		remoteVersion, err := hashiVer.NewVersion(versionRemote)
+		if err != nil {
+			return errorMessageUI, false, errors.Wrap(err, "error on update warning version")
+		}
+
+		if localVersion.LessThan(remoteVersion) {
 			errorMessageUI = fmt.Sprintf("Version v%s of the Conformance Suite is out-of-date, please update to v%s", versionLocal, versionRemote)
 			return errorMessageUI, true, nil
 		}
 		// If local and remote version match or is higher then return false update flag.
-		if versionLocal >= versionRemote {
+		if !localVersion.LessThan(remoteVersion) {
 			errorMessageUI = fmt.Sprintf("Conformance Suite is running the latest version %s", v.GetHumanVersion())
 			return errorMessageUI, false, nil
 		}
