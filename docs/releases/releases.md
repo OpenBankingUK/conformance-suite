@@ -1,5 +1,12 @@
 # Release history
 
+## [1.9.10] - TBD
+
+### Fixed
+
+- Updated v4.0 standing order consent test `OB-400-DOP-101503` to reject `Frequency.CountPerPeriod` with `Frequency.PointInTime`, rather than rejecting valid bounded schedules that use `Frequency.CountPerPeriod` with `FinalPaymentDateTime`.
+- Removed unused `frequencyCountPerPeriod` and `frequencyPointInTime` parameters from positive v4.0 standing order consent/order tests `OB-400-DOP-101200` and `OB-400-DOP-101401`.
+
 ## [1.9.9] - 08/07/2026
 
 ### Added
@@ -532,4 +539,3 @@ As seen on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/#how).
 * `Removed` for now removed features.
 * `Fixed` for any bug fixes.
 * `Security` in case of vulnerabilities.
-
