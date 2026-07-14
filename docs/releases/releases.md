@@ -1,6 +1,6 @@
 # Release history
 
-## [1.9.10] - TBD
+## [1.10.0] - 14/07/2026
 
 ### Fixed
 
