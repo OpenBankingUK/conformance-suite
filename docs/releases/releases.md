@@ -1,5 +1,11 @@
 # Release history
 
+## [1.9.10] - 14/07/2026
+
+### Fixed
+
+- Corrected the Beneficiary Basic permission assertion descriptions for `OB-400-BEN-101800` and `OB-400-BEN-101900` so failures for `CreditorAgent` and `CreditorAccount` identify the matching fields accurately.
+
 ## [1.9.9] - 08/07/2026
 
 ### Added
@@ -532,4 +538,3 @@ As seen on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/#how).
 * `Removed` for now removed features.
 * `Fixed` for any bug fixes.
 * `Security` in case of vulnerabilities.
-
