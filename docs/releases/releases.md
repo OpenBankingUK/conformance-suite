@@ -1,10 +1,12 @@
 # Release history
 
-## [1.9.10] - 14/07/2026
+## [1.10.0] - 14/07/2026
 
 ### Fixed
 
 - Corrected the Beneficiary Basic permission assertion descriptions for `OB-400-BEN-101800` and `OB-400-BEN-101900` so failures for `CreditorAgent` and `CreditorAccount` identify the matching fields accurately.
+- Updated v4.0 standing order consent test `OB-400-DOP-101503` to reject `Frequency.CountPerPeriod` with `Frequency.PointInTime`, rather than rejecting valid bounded schedules that use `Frequency.CountPerPeriod` with `FinalPaymentDateTime`.
+- Reinstated v3.1 standing order response guard `OB-301-DOP-1015002`, which fails when `FinalPaymentAmount` is present without either `NumberOfPayments` or `FinalPaymentDateTime`.
 
 ## [1.9.9] - 08/07/2026
 

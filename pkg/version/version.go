@@ -22,10 +22,10 @@ const (
 	// Checker must conform to the format expected, major, minor and patch.
 	// @NEW-SPEC-RELEASE - make sure new version is accounted for
 	// @NEW-RELEASE - make sure new version is accounted for
-	//v1.9.9 - this comment allows searching
+	//v1.10.0 - this comment allows searching
 	major = "1"
-	minor = "9"
-	patch = "9"
+	minor = "10"
+	patch = "0"
 
 	//FullVersion - Checker is the full string version of Conformance Suite.
 	FullVersion = major + "." + minor + "." + patch
@@ -217,12 +217,21 @@ func (v GitHub) UpdateWarningVersion(version string) (string, bool, error) {
 			return errorMessageUI, false, errors.Wrap(err, "error on update warning version")
 		}
 
-		if versionLocal < versionRemote {
+		localVersion, err := hashiVer.NewVersion(versionLocal)
+		if err != nil {
+			return errorMessageUI, false, errors.Wrap(err, "error on update warning version")
+		}
+		remoteVersion, err := hashiVer.NewVersion(versionRemote)
+		if err != nil {
+			return errorMessageUI, false, errors.Wrap(err, "error on update warning version")
+		}
+
+		if localVersion.LessThan(remoteVersion) {
 			errorMessageUI = fmt.Sprintf("Version v%s of the Conformance Suite is out-of-date, please update to v%s", versionLocal, versionRemote)
 			return errorMessageUI, true, nil
 		}
 		// If local and remote version match or is higher then return false update flag.
-		if versionLocal >= versionRemote {
+		if !localVersion.LessThan(remoteVersion) {
 			errorMessageUI = fmt.Sprintf("Conformance Suite is running the latest version %s", v.GetHumanVersion())
 			return errorMessageUI, false, nil
 		}
