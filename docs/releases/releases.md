@@ -9,6 +9,10 @@
 - Updated v4.0 standing order consent test `OB-400-DOP-101503` to reject `Frequency.CountPerPeriod` with `Frequency.PointInTime`, rather than rejecting valid bounded schedules that use `Frequency.CountPerPeriod` with `FinalPaymentDateTime`.
 - Reinstated v3.1 standing order response guard `OB-301-DOP-1015002`, which fails when `FinalPaymentAmount` is present without either `NumberOfPayments` or `FinalPaymentDateTime`.
 
+### Changed
+
+- Increased the desktop PSU consent authorization popup to a larger 900px by 900px target size, with screen-size clamping, to improve Ozone model bank viewing during consent flows.
+
 ### Added
 
 - Added optional `v4_standing_order_frequency` config/UI support for v4 standing-order success payloads. It defaults to `Type` `WEEK` and `PointInTime` `03`, remains separate from v3 `payment_frequency`, and discovery conditional properties still override matching request-body paths after defaults are applied.

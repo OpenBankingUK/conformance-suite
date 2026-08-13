@@ -69,6 +69,10 @@ const {
   mapState,
 } = createNamespacedHelpers('testcases');
 
+const PSU_CONSENT_POPUP_WIDTH = 900;
+const PSU_CONSENT_POPUP_HEIGHT = 900;
+const POPUP_SCREEN_MARGIN = 40;
+
 export default {
   name: 'SpecificationHeader',
   props: {
@@ -179,7 +183,7 @@ export default {
       const tokenName = this.tokenName(consentUrl);
 
       if (!this.mobileConsent) {
-        this.openPopup(consentUrl, 'PSU Consent', 1074 * 0.75, 800 * 0.75);
+        this.openPopup(consentUrl, 'PSU Consent', PSU_CONSENT_POPUP_WIDTH, PSU_CONSENT_POPUP_HEIGHT);
         return;
       }
 
@@ -306,10 +310,12 @@ export default {
       const height = (window.innerHeight ? window.innerHeight : clientHeight) + 15;
 
       const systemZoom = width / window.screen.availWidth;
-      const left = (width - w) / 2 / (systemZoom + dualScreenLeft);
-      const top = (height - h) / 2 / (systemZoom + dualScreenTop);
+      const popupWidth = Math.min(w, (window.screen.availWidth * systemZoom) - POPUP_SCREEN_MARGIN);
+      const popupHeight = Math.min(h, (window.screen.availHeight * systemZoom) - POPUP_SCREEN_MARGIN);
+      const left = (width - popupWidth) / 2 / (systemZoom + dualScreenLeft);
+      const top = (height - popupHeight) / 2 / (systemZoom + dualScreenTop);
 
-      const wLocation = `width=${w / systemZoom}, height=${h / systemZoom}, top=${top}, left=${left}`;
+      const wLocation = `width=${popupWidth / systemZoom}, height=${popupHeight / systemZoom}, top=${top}, left=${left}`;
       const wParams = `scrollbars=yes, ${wLocation}`;
       const newWindow = window.open(url, title, wParams);
 
