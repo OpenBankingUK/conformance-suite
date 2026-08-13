@@ -2,6 +2,8 @@ package authentication
 
 import (
 	"bytes"
+	"net/http"
+	"net/http/httptest"
 	"strings"
 	"testing"
 
@@ -133,34 +135,22 @@ func TestGetJwksErrors(t *testing.T) {
 func TestGetJwksContentTypeLogs(t *testing.T) {
 	tests := []struct {
 		name        string
-		url         string
+		contentType string
 		expectedLog string
 	}{
-		// Cannot find a suitable test url that returns the application/jwk-set+json content type
-		//{
-		//	"application/jwk-set+json",
-		//	"",
-		//	"",
-		//},
 		{
 			"application/jwk+json",
-			"https://keystore.openbankingtest.org.uk/0015800001041RbAAI/0015800001041RbAAI.jwks",
+			"application/jwk+json",
 			"Acceptable JWKS content type found: application/jwk+json",
 		},
-		// Cannot find a suitable test url that returns the application/json content type
-		//{
-		//	"application/json",
-		//	"",
-		//	"Acceptable JWKS content type found: application/json",
-		//},
 		{
 			"text/plain",
-			"https://ob.hsbc.co.uk/jwks/public.jwks",
+			"text/plain",
 			"Unexpected JWKS content type found: text/plain",
 		},
 		{
 			"text/html",
-			"https://www.google.com",
+			"text/html",
 			"Unexpected JWKS content type found: text/html",
 		},
 	}
@@ -177,9 +167,15 @@ func TestGetJwksContentTypeLogs(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				w.Header().Set("Content-Type", tt.contentType)
+				_, _ = w.Write([]byte(`{"Keys":[]}`))
+			}))
+			t.Cleanup(server.Close)
+
 			logBuffer.Reset()
 
-			_, _ = getJwks(tt.url)
+			_, _ = getJwks(server.URL)
 
 			got := logBuffer.String()
 			if !strings.Contains(got, tt.expectedLog) {
