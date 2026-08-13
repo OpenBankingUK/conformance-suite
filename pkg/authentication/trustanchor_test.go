@@ -134,24 +134,40 @@ func TestGetJwksErrors(t *testing.T) {
 // performs unit tests for the getJwksContentType function to verify the content type returned from the JWKS url.
 func TestGetJwksContentTypeLogs(t *testing.T) {
 	tests := []struct {
-		name        string
-		contentType string
-		expectedLog string
+		name                 string
+		contentType          string
+		expectedLog          string
+		expectRecommendation bool
 	}{
 		{
 			"application/jwk+json",
 			"application/jwk+json",
 			"Acceptable JWKS content type found: application/jwk+json",
+			true,
+		},
+		{
+			"application/jwk-set+json",
+			"application/jwk-set+json",
+			"",
+			false,
+		},
+		{
+			"application/json",
+			"application/json",
+			"Acceptable JWKS content type found: application/json",
+			true,
 		},
 		{
 			"text/plain",
 			"text/plain",
 			"Unexpected JWKS content type found: text/plain",
+			true,
 		},
 		{
 			"text/html",
 			"text/html",
 			"Unexpected JWKS content type found: text/html",
+			true,
 		},
 	}
 
@@ -178,8 +194,15 @@ func TestGetJwksContentTypeLogs(t *testing.T) {
 			_, _ = getJwks(server.URL)
 
 			got := logBuffer.String()
-			if !strings.Contains(got, tt.expectedLog) {
+			if tt.expectedLog != "" && !strings.Contains(got, tt.expectedLog) {
 				t.Fatalf("expected %q in logs, got:\n%s", tt.expectedLog, got)
+			}
+			if tt.expectedLog == "" && strings.Contains(got, "JWKS content type found") {
+				t.Fatalf("expected no content type classification log, got:\n%s", got)
+			}
+			recommendationLogFound := strings.Contains(got, "The recommended JWKS content type is")
+			if tt.expectRecommendation != recommendationLogFound {
+				t.Fatalf("expected recommendation log found to be %t, got logs:\n%s", tt.expectRecommendation, got)
 			}
 		})
 	}
