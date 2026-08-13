@@ -1043,11 +1043,11 @@ describe('web/src/store/modules/config', () => {
             value: '1.00',
           },
           payment_frequency: 'EvryDay',
-        v4_standing_order_frequency: {
-          Type: 'WEEK',
-          PointInTime: '03',
-        },
-        first_payment_date_time: '2022-01-01T00:00:00+01:00',
+          v4_standing_order_frequency: {
+            Type: 'WEEK',
+            PointInTime: '03',
+          },
+          first_payment_date_time: '2022-01-01T00:00:00+01:00',
           requested_execution_date_time: '2022-01-01T00:00:00+01:00',
           acr_values_supported: [],
           conditional_properties: [],
@@ -1144,11 +1144,11 @@ describe('web/src/store/modules/config', () => {
             value: '1.00',
           },
           payment_frequency: 'EvryDay',
-        v4_standing_order_frequency: {
-          Type: 'WEEK',
-          PointInTime: '03',
-        },
-        first_payment_date_time: '2022-01-01T00:00:00+01:00',
+          v4_standing_order_frequency: {
+            Type: 'WEEK',
+            PointInTime: '03',
+          },
+          first_payment_date_time: '2022-01-01T00:00:00+01:00',
           requested_execution_date_time: '2022-01-01T00:00:00+01:00',
           acr_values_supported: [],
           conditional_properties: [],
