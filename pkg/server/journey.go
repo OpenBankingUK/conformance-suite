@@ -616,6 +616,7 @@ type JourneyConfig struct {
 	internationalCreditorAccount   models.Payment
 	instructedAmount               models.InstructedAmount
 	paymentFrequency               models.PaymentFrequency
+	v4StandingOrderFrequency       models.V4StandingOrderFrequency
 	paymentFrequencyCountPerPeriod int
 	paymentFrequencyPointInTime    int
 	firstPaymentDateTime           string

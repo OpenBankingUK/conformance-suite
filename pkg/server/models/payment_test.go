@@ -183,6 +183,18 @@ func TestPaymentFrequency(t *testing.T) {
 			ExpectedError: false,
 		},
 		{
+			Value:         "NotKnown",
+			ExpectedError: false,
+		},
+		{
+			Value:         "IntrvlDay:02",
+			ExpectedError: false,
+		},
+		{
+			Value:         "IntrvlDay:31",
+			ExpectedError: false,
+		},
+		{
 			Value:         "IntrvlWkDay:01:03",
 			ExpectedError: false,
 		},
@@ -214,6 +226,18 @@ func TestPaymentFrequency(t *testing.T) {
 			Value:         "BadValue",
 			ExpectedError: true,
 		},
+		{
+			Value:         "IntrvlDay:01",
+			ExpectedError: true,
+		},
+		{
+			Value:         "IntrvlDay:32",
+			ExpectedError: true,
+		},
+		{
+			Value:         "WEEK",
+			ExpectedError: true,
+		},
 	}
 
 	for _, test := range tests {
@@ -224,5 +248,193 @@ func TestPaymentFrequency(t *testing.T) {
 		} else {
 			require.NoError(err, fmt.Sprintf("Value=%+v", test.Value))
 		}
+	}
+}
+
+func TestV4StandingOrderFrequency(t *testing.T) {
+	require := test.NewRequire(t)
+	one := 1
+	zero := 0
+	maxInt32 := 2147483647
+	aboveMaxInt32 := 2147483648
+
+	tests := []struct {
+		name          string
+		frequency     V4StandingOrderFrequency
+		expectedError string
+	}{
+		{
+			name:      "default",
+			frequency: DefaultV4StandingOrderFrequency(),
+		},
+		{
+			name: "type only",
+			frequency: V4StandingOrderFrequency{
+				Type: "MNTH",
+			},
+		},
+		{
+			name: "two digit point in time",
+			frequency: V4StandingOrderFrequency{
+				Type:        "MNTH",
+				PointInTime: "01",
+			},
+		},
+		{
+			name: "single digit point in time",
+			frequency: V4StandingOrderFrequency{
+				Type:        "MNTH",
+				PointInTime: "1",
+			},
+		},
+		{
+			name: "negative point in time",
+			frequency: V4StandingOrderFrequency{
+				Type:        "MNTH",
+				PointInTime: "-1",
+			},
+		},
+		{
+			name: "maximum positive point in time",
+			frequency: V4StandingOrderFrequency{
+				Type:        "MNTH",
+				PointInTime: "99",
+			},
+		},
+		{
+			name: "count per period",
+			frequency: V4StandingOrderFrequency{
+				Type:           "WEEK",
+				CountPerPeriod: &one,
+			},
+		},
+		{
+			name: "maximum count per period",
+			frequency: V4StandingOrderFrequency{
+				Type:           "WEEK",
+				CountPerPeriod: &maxInt32,
+			},
+		},
+		{
+			name: "missing type",
+			frequency: V4StandingOrderFrequency{
+				PointInTime: "03",
+			},
+			expectedError: "Type: cannot be blank",
+		},
+		{
+			name: "new code list value LWMH",
+			frequency: V4StandingOrderFrequency{
+				Type: "LWMH",
+			},
+		},
+		{
+			name: "new code list value LXMH",
+			frequency: V4StandingOrderFrequency{
+				Type: "LXMH",
+			},
+		},
+		{
+			name: "new code list value TWYR",
+			frequency: V4StandingOrderFrequency{
+				Type: "TWYR",
+			},
+		},
+		{
+			name: "legacy type only",
+			frequency: V4StandingOrderFrequency{
+				Type: "EvryDay",
+			},
+		},
+		{
+			name: "legacy interval type only",
+			frequency: V4StandingOrderFrequency{
+				Type: "IntrvlWkDay:01:03",
+			},
+		},
+		{
+			name: "invalid type",
+			frequency: V4StandingOrderFrequency{
+				Type: "BadValue",
+			},
+			expectedError: "Type: must be an OBFrequency6Code or Frequency_1 value",
+		},
+		{
+			name: "legacy type with point in time",
+			frequency: V4StandingOrderFrequency{
+				Type:        "EvryDay",
+				PointInTime: "03",
+			},
+			expectedError: "legacy Frequency_1 Type cannot be combined with PointInTime or CountPerPeriod",
+		},
+		{
+			name: "legacy type with count per period",
+			frequency: V4StandingOrderFrequency{
+				Type:           "IntrvlWkDay:01:03",
+				CountPerPeriod: &one,
+			},
+			expectedError: "legacy Frequency_1 Type cannot be combined with PointInTime or CountPerPeriod",
+		},
+		{
+			name: "invalid point in time too long",
+			frequency: V4StandingOrderFrequency{
+				Type:        "WEEK",
+				PointInTime: "100",
+			},
+			expectedError: "PointInTime: must be numeric text up to two characters, including negative single-digit values",
+		},
+		{
+			name: "invalid negative point in time too long",
+			frequency: V4StandingOrderFrequency{
+				Type:        "WEEK",
+				PointInTime: "-10",
+			},
+			expectedError: "PointInTime: must be numeric text up to two characters, including negative single-digit values",
+		},
+		{
+			name: "invalid point in time non numeric",
+			frequency: V4StandingOrderFrequency{
+				Type:        "WEEK",
+				PointInTime: "AA",
+			},
+			expectedError: "PointInTime: must be numeric text up to two characters, including negative single-digit values",
+		},
+		{
+			name: "invalid count per period zero",
+			frequency: V4StandingOrderFrequency{
+				Type:           "WEEK",
+				CountPerPeriod: &zero,
+			},
+			expectedError: "CountPerPeriod: must be a positive Int32",
+		},
+		{
+			name: "invalid count per period above Int32",
+			frequency: V4StandingOrderFrequency{
+				Type:           "WEEK",
+				CountPerPeriod: &aboveMaxInt32,
+			},
+			expectedError: "CountPerPeriod: must be a positive Int32",
+		},
+		{
+			name: "mutually exclusive point and count",
+			frequency: V4StandingOrderFrequency{
+				Type:           "WEEK",
+				PointInTime:    "03",
+				CountPerPeriod: &one,
+			},
+			expectedError: "PointInTime and CountPerPeriod are mutually exclusive",
+		},
+	}
+
+	for _, tc := range tests {
+		tc := tc
+		t.Run(tc.name, func(t *testing.T) {
+			err := tc.frequency.Validate()
+			if tc.expectedError != "" {
+				require.EqualError(err, tc.expectedError)
+				return
+			}
+			require.NoError(err)
+		})
 	}
 }
