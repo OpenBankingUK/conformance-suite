@@ -83,6 +83,7 @@ type GlobalConfiguration struct {
 	RequestObjectSigningAlgorithm string                               `json:"request_object_signing_alg"`
 	InstructedAmount              models.InstructedAmount              `json:"instructed_amount"`
 	PaymentFrequency              models.PaymentFrequency              `json:"payment_frequency"`
+	V4StandingOrderFrequency      *models.V4StandingOrderFrequency     `json:"v4_standing_order_frequency,omitempty"`
 	FirstPaymentDateTime          string                               `json:"first_payment_date_time"`
 	RequestedExecutionDateTime    string                               `json:"requested_execution_date_time"`
 	CurrencyOfTransfer            string                               `json:"currency_of_transfer"`
@@ -96,7 +97,7 @@ type GlobalConfiguration struct {
 // Validate - used by https://github.com/go-ozzo/ozzo-validation to validate struct.
 func (c GlobalConfiguration) Validate() error {
 	values := responseTypesSupported()
-	return validation.ValidateStruct(&c,
+	if err := validation.ValidateStruct(&c,
 		validation.Field(&c.CreditorAccount, validation.Required),
 		validation.Field(&c.InternationalCreditorAccount, validation.Required),
 		validation.Field(&c.ResponseType, validation.Required, validation.In(values[:]...)),
@@ -105,9 +106,21 @@ func (c GlobalConfiguration) Validate() error {
 		validation.Field(&c.AcrValuesSupported, validation.By(acrValuesValidator)),
 		validation.Field(&c.FirstPaymentDateTime, validation.By(futureDateTimeValidator)),
 		validation.Field(&c.RequestedExecutionDateTime, validation.By(futureDateTimeValidator)),
-		validation.Field(&c.PaymentFrequency, validation.Required),
 		validation.Field(&c.CBPIIDebtorAccount, validation.Required),
-	)
+	); err != nil {
+		return err
+	}
+	if c.PaymentFrequency != "" {
+		if err := c.PaymentFrequency.Validate(); err != nil {
+			return fmt.Errorf("payment_frequency: %w", err)
+		}
+	}
+	if c.V4StandingOrderFrequency != nil {
+		if err := c.V4StandingOrderFrequency.Validate(); err != nil {
+			return fmt.Errorf("v4_standing_order_frequency: %w", err)
+		}
+	}
+	return nil
 }
 
 func futureDateTimeValidator(value interface{}) error {
@@ -217,6 +230,15 @@ func MakeJourneyConfig(config *GlobalConfiguration) (JourneyConfig, error) {
 		return JourneyConfig{}, errors.Wrap(err, "error with transport certificate")
 	}
 
+	v4StandingOrderFrequency := models.DefaultV4StandingOrderFrequency()
+	if config.V4StandingOrderFrequency != nil {
+		v4StandingOrderFrequency = *config.V4StandingOrderFrequency
+	}
+	paymentFrequency := config.PaymentFrequency
+	if paymentFrequency == "" {
+		paymentFrequency = models.PaymentFrequency("EvryDay")
+	}
+
 	return JourneyConfig{
 		certificateSigning:            certificateSigning,
 		certificateTransport:          certificateTransport,
@@ -239,7 +261,8 @@ func MakeJourneyConfig(config *GlobalConfiguration) (JourneyConfig, error) {
 		creditorAccount:               config.CreditorAccount,
 		internationalCreditorAccount:  config.InternationalCreditorAccount,
 		instructedAmount:              config.InstructedAmount,
-		paymentFrequency:              config.PaymentFrequency,
+		paymentFrequency:              paymentFrequency,
+		v4StandingOrderFrequency:      v4StandingOrderFrequency,
 		firstPaymentDateTime:          config.FirstPaymentDateTime,
 		requestedExecutionDateTime:    config.RequestedExecutionDateTime,
 		currencyOfTransfer:            config.CurrencyOfTransfer,

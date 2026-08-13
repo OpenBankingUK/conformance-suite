@@ -110,6 +110,21 @@ func TestEnumerateOpenApiTestcases(t *testing.T) {
 	}
 }
 
+func TestProcessReplacementFieldsReplacesRawJSONObject(t *testing.T) {
+	ctx := Context{}
+	ctx.PutString("frequency", `{"Type":"WEEK","PointInTime":"03"}`)
+	ctx.PutString("amount", "1.00")
+	tc := TestCase{
+		Input: Input{
+			RequestBody: `{"Frequency":"$frequency","Amount":"$amount"}`,
+		},
+	}
+
+	tc.ProcessReplacementFields(&ctx, true)
+
+	assert.JSONEq(t, `{"Frequency":{"Type":"WEEK","PointInTime":"03"},"Amount":"1.00"}`, tc.Input.RequestBody)
+}
+
 // Utility to load Manifest Data Model containing all Rules, Tests and Conditions
 func loadManifest(filename string) (Manifest, error) {
 	plan, err := ioutil.ReadFile(filename)

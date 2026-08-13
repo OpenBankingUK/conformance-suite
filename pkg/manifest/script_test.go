@@ -9,8 +9,10 @@ import (
 	"testing"
 
 	"github.com/OpenBankingUK/conformance-suite/pkg/schema"
+	"github.com/sirupsen/logrus"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/tidwall/gjson"
 
 	"github.com/OpenBankingUK/conformance-suite/pkg/discovery"
 	"github.com/OpenBankingUK/conformance-suite/pkg/model"
@@ -132,6 +134,156 @@ func readVrpDiscoveryEndpoints() ([]discovery.ModelEndpoint, error) {
 
 	return disco.DiscoveryModel.DiscoveryItems[0].Endpoints, err
 
+}
+
+func TestAddConditionalPropertiesToRequestOverridesExistingFields(t *testing.T) {
+	validator, err := schema.NewSwaggerOBSpecValidator("Payment Initiation API", "v4.0.1")
+	if !assert.NoError(t, err) {
+		return
+	}
+
+	tc := model.TestCase{
+		Input: model.Input{
+			Method:   "POST",
+			Endpoint: "/domestic-standing-order-consents",
+			RequestBody: `{
+				"Data": {
+					"Permission": "Create",
+					"Initiation": {
+						"MandateRelatedInformation": {
+							"FirstPaymentDateTime": "2026-08-13T00:00:00+01:00",
+							"Frequency": {
+								"Type": "WEEK",
+								"PointInTime": "03"
+							}
+						}
+					}
+				},
+				"Risk": {}
+			}`,
+		},
+		Validator: validator,
+	}
+
+	conditional := []discovery.ConditionalAPIProperties{
+		{
+			Name: "Payment Initiation API",
+			Endpoints: []discovery.ModelEndpoint{
+				{
+					Method: "POST",
+					Path:   "/domestic-standing-order-consents",
+					ConditionalProperties: []discovery.ConditionalProperty{
+						{
+							Schema:   "OBMandateRelatedInformation1",
+							Name:     "Custom Frequency Type",
+							Path:     "Data.Initiation.MandateRelatedInformation.Frequency.Type",
+							Required: true,
+							Value:    "MNTH",
+						},
+						{
+							Schema:   "OBMandateRelatedInformation1",
+							Name:     "Custom Frequency Point In Time",
+							Path:     "Data.Initiation.MandateRelatedInformation.Frequency.PointInTime",
+							Required: true,
+							Value:    "01",
+						},
+					},
+				},
+			},
+		},
+	}
+
+	err = addConditionalPropertiesToRequest(&tc, conditional, logrus.NewEntry(logrus.New()))
+	if !assert.NoError(t, err) {
+		return
+	}
+
+	assert.Equal(t, "MNTH", gjson.Get(tc.Input.RequestBody, "Data.Initiation.MandateRelatedInformation.Frequency.Type").String())
+	assert.Equal(t, "01", gjson.Get(tc.Input.RequestBody, "Data.Initiation.MandateRelatedInformation.Frequency.PointInTime").String())
+}
+
+func TestGenerateV4StandingOrderUsesConfiguredFrequencyPointInTime(t *testing.T) {
+	tests := generateV4DomesticStandingOrderTests(t, `{"Type":"MNTH","PointInTime":"01"}`)
+
+	consent := findTestCaseByID(t, tests, "OB-400-DOP-101200")
+	submission := findTestCaseByID(t, tests, "OB-400-DOP-101401")
+
+	assert.Equal(t, "MNTH", gjson.Get(consent.Input.RequestBody, "Data.Initiation.MandateRelatedInformation.Frequency.Type").String())
+	assert.Equal(t, "01", gjson.Get(consent.Input.RequestBody, "Data.Initiation.MandateRelatedInformation.Frequency.PointInTime").String())
+	assert.False(t, gjson.Get(consent.Input.RequestBody, "Data.Initiation.MandateRelatedInformation.Frequency.CountPerPeriod").Exists())
+	assert.Equal(t, "MNTH", gjson.Get(submission.Input.RequestBody, "Data.Initiation.MandateRelatedInformation.Frequency.Type").String())
+	assert.Equal(t, "01", gjson.Get(submission.Input.RequestBody, "Data.Initiation.MandateRelatedInformation.Frequency.PointInTime").String())
+	assert.False(t, gjson.Get(submission.Input.RequestBody, "Data.Initiation.MandateRelatedInformation.Frequency.CountPerPeriod").Exists())
+}
+
+func TestGenerateV4StandingOrderUsesConfiguredFrequencyCountPerPeriod(t *testing.T) {
+	tests := generateV4DomesticStandingOrderTests(t, `{"Type":"WEEK","CountPerPeriod":2}`)
+
+	consent := findTestCaseByID(t, tests, "OB-400-DOP-101200")
+	submission := findTestCaseByID(t, tests, "OB-400-DOP-101401")
+	negative := findTestCaseByID(t, tests, "OB-400-DOP-101503")
+
+	assert.Equal(t, "WEEK", gjson.Get(consent.Input.RequestBody, "Data.Initiation.MandateRelatedInformation.Frequency.Type").String())
+	assert.Equal(t, int64(2), gjson.Get(consent.Input.RequestBody, "Data.Initiation.MandateRelatedInformation.Frequency.CountPerPeriod").Int())
+	assert.False(t, gjson.Get(consent.Input.RequestBody, "Data.Initiation.MandateRelatedInformation.Frequency.PointInTime").Exists())
+	assert.Equal(t, "WEEK", gjson.Get(submission.Input.RequestBody, "Data.Initiation.MandateRelatedInformation.Frequency.Type").String())
+	assert.Equal(t, int64(2), gjson.Get(submission.Input.RequestBody, "Data.Initiation.MandateRelatedInformation.Frequency.CountPerPeriod").Int())
+	assert.False(t, gjson.Get(submission.Input.RequestBody, "Data.Initiation.MandateRelatedInformation.Frequency.PointInTime").Exists())
+
+	assert.Equal(t, "WEEK", gjson.Get(negative.Input.RequestBody, "Data.Initiation.MandateRelatedInformation.Frequency.Type").String())
+	assert.Equal(t, int64(1), gjson.Get(negative.Input.RequestBody, "Data.Initiation.MandateRelatedInformation.Frequency.CountPerPeriod").Int())
+	assert.Equal(t, "03", gjson.Get(negative.Input.RequestBody, "Data.Initiation.MandateRelatedInformation.Frequency.PointInTime").String())
+}
+
+func generateV4DomesticStandingOrderTests(t *testing.T, frequency string) []model.TestCase {
+	t.Helper()
+
+	apiSpec := discovery.ModelAPISpecification{
+		Name:          "Payment Initiation API",
+		Version:       "v4.0.1",
+		SchemaVersion: "https://raw.githubusercontent.com/OpenBankingUK/read-write-api-specs/v4.0.1/dist/openapi/payment-initiation-openapi.json",
+	}
+	ctx := &model.Context{}
+	ctx.PutStringSlice("apiversions", []string{"payments_v4.0.1"})
+	ctx.PutString("instructedAmountValue", "1.00")
+	ctx.PutString("instructedAmountCurrency", "GBP")
+	ctx.PutString("firstPaymentDateTime", "2026-08-13T00:00:00+01:00")
+	ctx.PutString("creditorScheme", "UK.OBIE.SortCodeAccountNumber")
+	ctx.PutString("creditorIdentification", "20202010981789")
+	ctx.PutString("creditorName", "Dr Foo")
+	ctx.PutString("v4_standing_order_frequency", frequency)
+
+	scripts, _, err := LoadGenerationResources("payments", "file://manifests/ob_4.0_payment_fca.json", ctx)
+	assert.NoError(t, err)
+
+	tests, _, err := GenerateTestCases(&GenerationParameters{
+		Scripts: scripts,
+		Spec:    apiSpec,
+		Baseurl: "http://mybaseurl",
+		Ctx:     ctx,
+		Endpoints: []discovery.ModelEndpoint{
+			{Method: "POST", Path: "/domestic-standing-order-consents"},
+			{Method: "GET", Path: "/domestic-standing-order-consents/{ConsentId}"},
+			{Method: "POST", Path: "/domestic-standing-orders"},
+			{Method: "GET", Path: "/domestic-standing-orders/{DomesticStandingOrderId}"},
+		},
+		ManifestPath: "file://manifests/ob_4.0_payment_fca.json",
+		Validator:    schema.NewNullValidator(),
+	})
+	assert.NoError(t, err)
+	return tests
+}
+
+func findTestCaseByID(t *testing.T, tests []model.TestCase, id string) model.TestCase {
+	t.Helper()
+
+	for _, tc := range tests {
+		if tc.ID == id {
+			return tc
+		}
+	}
+	t.Fatalf("test case %s not found", id)
+	return model.TestCase{}
 }
 
 func TestVrpGenerateTestCases(t *testing.T) {

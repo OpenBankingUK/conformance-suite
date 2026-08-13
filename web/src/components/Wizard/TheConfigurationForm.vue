@@ -476,7 +476,12 @@
           </b-form-group>
         </b-form-group>
 
-        <PaymentFrequency />
+        <PaymentFrequency
+          v-if="showPaymentFrequency"
+          :compatibility-label="showFrequencyCompatibilityLabels" />
+        <V4StandingOrderFrequency
+          v-if="showV4StandingOrderFrequency"
+          :compatibility-label="showFrequencyCompatibilityLabels" />
       </b-card>
 
       <br >
@@ -580,6 +585,7 @@ import { createNamespacedHelpers, mapActions } from 'vuex';
 import isEmpty from 'lodash/isEmpty';
 import ConfigurationFormFile from './ConfigurationFormFile.vue';
 import PaymentFrequency from '../config/PaymentFrequency.vue';
+import V4StandingOrderFrequency from '../config/V4StandingOrderFrequency.vue';
 import SchemeName from '../config/SchemeName.vue';
 import DateTimeISO8601 from '../config/DateTimeISO8601.vue';
 import api from '../../api/apiUtil';
@@ -591,6 +597,7 @@ export default {
   components: {
     ConfigurationFormFile,
     PaymentFrequency,
+    V4StandingOrderFrequency,
     SchemeName,
     DateTimeISO8601,
   },
@@ -606,7 +613,13 @@ export default {
     return {};
   },
   computed: {
-    ...mapGetters(['resourceAccountIds', 'resourceStatementIds']),
+    ...mapGetters([
+      'resourceAccountIds',
+      'resourceStatementIds',
+      'showPaymentFrequency',
+      'showV4StandingOrderFrequency',
+      'showFrequencyCompatibilityLabels',
+    ]),
     token_endpoint_auth_methods() {
       const authMethods = this.$store.state.config.token_endpoint_auth_methods;
       return authMethods.map(m => ({

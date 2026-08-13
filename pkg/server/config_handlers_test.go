@@ -822,7 +822,7 @@ func TestServerConfigGlobalPostInvalid(t *testing.T) {
 		},
 		{
 			name:               `payment_frequency_invalid`,
-			expectedBody:       `{"error":"payment_frequency: must be in a valid format (^(EvryDay)$|^(EvryWorkgDay)$|^(IntrvlWkDay:0[1-9]:0[1-7])$|^(WkInMnthDay:0[1-5]:0[1-7])$|^(IntrvlMnthDay:(0[1-6]|12|24):(-0[1-5]|0[1-9]|[12][0-9]|3[01]))$|^(QtrDay:(ENGLISH|SCOTTISH|RECEIVED))$|^(ADHO)$|^(YEAR)$|^(DAIL)$|^(FRTN)$|^(INDA)$|^(MNTH)$|^(QURT)$|^(MIAN)$|^(WEEK)$|^(WODL)$|^(FOWK)$|^(TWMH)$|^(FOMH)$|^(FIMH)$|^(ALMH)$|^(NONE)$)."}`,
+			expectedBody:       `{"error":"payment_frequency: must be in a valid Frequency_1 format (^(NotKnown)$|^(EvryDay)$|^(EvryWorkgDay)$|^(IntrvlDay:((0[2-9])|([1-2][0-9])|3[0-1]))$|^(IntrvlWkDay:0[1-9]:0[1-7])$|^(WkInMnthDay:0[1-5]:0[1-7])$|^(IntrvlMnthDay:(0[1-6]|12|24):(-0[1-5]|0[1-9]|[12][0-9]|3[01]))$|^(QtrDay:(ENGLISH|SCOTTISH|RECEIVED))$)"}`,
 			expectedStatusCode: http.StatusBadRequest,
 			config: GlobalConfiguration{
 				SigningPrivate:          privateKey,
@@ -899,4 +899,108 @@ func testJourney() Journey {
 	validatorEngine := discovery.NewFuncValidator(model.NewConditionalityChecker())
 	testGenerator := generation.NewGenerator()
 	return NewJourney(logger, testGenerator, validatorEngine, discovery.NewNullTLSValidator(), false)
+}
+
+func TestMakeJourneyConfigDefaultsV4StandingOrderFrequency(t *testing.T) {
+	require := test.NewRequire(t)
+	config := validGlobalConfigurationForV4Frequency()
+
+	journeyConfig, err := MakeJourneyConfig(config)
+
+	require.NoError(err)
+	require.Equal(models.DefaultV4StandingOrderFrequency(), journeyConfig.v4StandingOrderFrequency)
+}
+
+func TestMakeJourneyConfigDefaultsPaymentFrequency(t *testing.T) {
+	config := validGlobalConfigurationForV4Frequency()
+	config.PaymentFrequency = ""
+
+	journeyConfig, err := MakeJourneyConfig(config)
+
+	assert.NoError(t, err)
+	assert.Equal(t, models.PaymentFrequency("EvryDay"), journeyConfig.paymentFrequency)
+}
+
+func TestGlobalConfigurationValidatePaymentFrequencyWhenProvided(t *testing.T) {
+	config := validGlobalConfigurationForV4Frequency()
+	config.PaymentFrequency = models.PaymentFrequency("INVALID")
+
+	err := config.Validate()
+
+	assert.EqualError(t, err, "payment_frequency: must be in a valid Frequency_1 format (^(NotKnown)$|^(EvryDay)$|^(EvryWorkgDay)$|^(IntrvlDay:((0[2-9])|([1-2][0-9])|3[0-1]))$|^(IntrvlWkDay:0[1-9]:0[1-7])$|^(WkInMnthDay:0[1-5]:0[1-7])$|^(IntrvlMnthDay:(0[1-6]|12|24):(-0[1-5]|0[1-9]|[12][0-9]|3[01]))$|^(QtrDay:(ENGLISH|SCOTTISH|RECEIVED))$)")
+}
+
+func TestMakeJourneyConfigUsesConfiguredV4StandingOrderFrequency(t *testing.T) {
+	require := test.NewRequire(t)
+	countPerPeriod := 2
+	config := validGlobalConfigurationForV4Frequency()
+	config.V4StandingOrderFrequency = &models.V4StandingOrderFrequency{
+		Type:           "WEEK",
+		CountPerPeriod: &countPerPeriod,
+	}
+
+	journeyConfig, err := MakeJourneyConfig(config)
+
+	require.NoError(err)
+	require.Equal(*config.V4StandingOrderFrequency, journeyConfig.v4StandingOrderFrequency)
+}
+
+func TestGlobalConfigurationValidateV4StandingOrderFrequency(t *testing.T) {
+	require := test.NewRequire(t)
+	countPerPeriod := 1
+	config := validGlobalConfigurationForV4Frequency()
+	config.V4StandingOrderFrequency = &models.V4StandingOrderFrequency{
+		Type:           "WEEK",
+		PointInTime:    "03",
+		CountPerPeriod: &countPerPeriod,
+	}
+
+	err := config.Validate()
+
+	require.EqualError(err, "v4_standing_order_frequency: PointInTime and CountPerPeriod are mutually exclusive")
+}
+
+func validGlobalConfigurationForV4Frequency() *GlobalConfiguration {
+	creditorAccount := models.Payment{
+		SchemeName:     "UK.OBIE.SortCodeAccountNumber",
+		Identification: "20202010981789",
+	}
+	return &GlobalConfiguration{
+		SigningPrivate:                privateKey,
+		SigningPublic:                 publicKey,
+		TransportPrivate:              privateKey,
+		TransportPublic:               publicKey,
+		ClientID:                      "client_id",
+		ClientSecret:                  "client_secret",
+		TokenEndpoint:                 "https://server/token",
+		TokenEndpointAuthMethod:       "client_secret_basic",
+		TransactionFromDate:           defaultTxnFrom,
+		TransactionToDate:             defaultTxnTo,
+		ResponseType:                  "code id_token",
+		AuthorizationEndpoint:         "https://server/auth",
+		ResourceBaseURL:               "https://server",
+		RedirectURL:                   "https://server/callback",
+		XFAPIFinancialID:              "123",
+		RequestObjectSigningAlgorithm: "PS256",
+		Issuer:                        "https://server/issuer",
+		ResourceIDs: model.ResourceIDs{
+			AccountIDs:   []model.ResourceAccountID{{AccountID: "account-id"}},
+			StatementIDs: []model.ResourceStatementID{{StatementID: "statement-id"}},
+		},
+		CreditorAccount:              creditorAccount,
+		InternationalCreditorAccount: creditorAccount,
+		InstructedAmount: models.InstructedAmount{
+			Currency: "GBP",
+			Value:    "1.00",
+		},
+		CurrencyOfTransfer:         "USD",
+		RequestedExecutionDateTime: executionDateTime,
+		FirstPaymentDateTime:       paymentDateTime,
+		PaymentFrequency:           models.PaymentFrequency("EvryDay"),
+		CBPIIDebtorAccount: discovery.CBPIIDebtorAccount{
+			SchemeName:     "UK.OBIE.SortCodeAccountNumber",
+			Identification: "20202010981789",
+			Name:           "Bob Stone",
+		},
+	}
 }

@@ -442,9 +442,6 @@
           "tokenRequestScope": "payments",
           "instructedAmountValue": "$instructedAmountValue",
           "instructedAmountCurrency": "$instructedAmountCurrency",
-          "frequency": "$payment_frequency",
-          "frequencyCountPerPeriod": "$payment_frequency_count_per_period",
-          "frequencyPointInTime": "$payment_frequency_point_in_time",
           "firstPaymentDateTime": "$firstPaymentDateTime",
           "postData": "$minimalDomesticStandingOrderConsentV4",
           "requestConsent": "true"
@@ -523,9 +520,6 @@
           "tokenRequestScope": "payments",
           "instructedAmountValue": "$instructedAmountValue",
           "instructedAmountCurrency": "$instructedAmountCurrency",
-          "frequency": "$payment_frequency",
-          "frequencyCountPerPeriod": "$payment_frequency_count_per_period",
-          "frequencyPointInTime": "$payment_frequency_point_in_time",
           "firstPaymentDateTime": "$firstPaymentDateTime",
           "postData": "$minimalDomesticStandingOrderV4",
           "consentId": "$OB-400-DOP-101200-ConsentId"
@@ -576,7 +570,6 @@
           "tokenRequestScope": "payments",
           "instructedAmountValue": "$instructedAmountValue",
           "instructedAmountCurrency": "$instructedAmountCurrency",
-          "frequency": "$payment_frequency",
           "firstPaymentDateTime": "$firstPaymentDateTime",
           "postData": "$failingDomesticStandingOrderConsentWithCountPerPeriodAndPointInTimeV4",
           "requestConsent": "false"

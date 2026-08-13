@@ -500,9 +500,7 @@
           "Initiation": {
             "MandateRelatedInformation": {
               "FirstPaymentDateTime": "$firstPaymentDateTime",
-              "Frequency": {
-                "Type": "$frequency"
-              }
+              "Frequency": "$v4_standing_order_frequency"
             },
             "FirstPaymentAmount": {
               "Amount": "$instructedAmountValue",
@@ -526,9 +524,9 @@
             "MandateRelatedInformation": {
               "FirstPaymentDateTime": "$firstPaymentDateTime",
               "Frequency": {
-                "Type": "$frequency",
+                "Type": "WEEK",
                 "CountPerPeriod": 1,
-                "PointInTime": "00"
+                "PointInTime": "03"
               }
             },
             "FirstPaymentAmount": {
@@ -573,9 +571,7 @@
           "Initiation": {
             "MandateRelatedInformation": {
               "FirstPaymentDateTime": "$firstPaymentDateTime",
-              "Frequency": {
-                "Type": "$frequency"
-              }
+              "Frequency": "$v4_standing_order_frequency"
             },
             "FirstPaymentAmount": {
               "Amount": "$instructedAmountValue",

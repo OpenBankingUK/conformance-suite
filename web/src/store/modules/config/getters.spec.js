@@ -65,6 +65,64 @@ describe('discoveryProblems', () => {
   });
 });
 
+describe('paymentVersionState', () => {
+  const discoveryModel = version => ({
+    discoveryModel: {
+      discoveryItems: [
+        {
+          apiSpecification: {
+            name: 'Payment Initiation API',
+            version,
+            schemaVersion: `https://example.com/${version}/payment-initiation-openapi.json`,
+          },
+        },
+      ],
+    },
+  });
+
+  it('classifies v3-only payment discovery', () => {
+    const state = { discoveryModel: discoveryModel('v3.1.6') };
+
+    expect(getters.paymentVersionState(state)).toEqual('v3');
+    expect(getters.showPaymentFrequency(state, getters)).toEqual(true);
+    expect(getters.showV4StandingOrderFrequency(state, getters)).toEqual(false);
+  });
+
+  it('classifies v4-only payment discovery', () => {
+    const state = { discoveryModel: discoveryModel('v4.0.1') };
+
+    expect(getters.paymentVersionState(state)).toEqual('v4');
+    expect(getters.showPaymentFrequency(state, getters)).toEqual(false);
+    expect(getters.showV4StandingOrderFrequency(state, getters)).toEqual(true);
+  });
+
+  it('classifies mixed payment discovery', () => {
+    const state = {
+      discoveryModel: {
+        discoveryModel: {
+          discoveryItems: [
+            discoveryModel('v3.1.6').discoveryModel.discoveryItems[0],
+            discoveryModel('v4.0.1').discoveryModel.discoveryItems[0],
+          ],
+        },
+      },
+    };
+
+    expect(getters.paymentVersionState(state)).toEqual('mixed');
+    expect(getters.showPaymentFrequency(state, getters)).toEqual(true);
+    expect(getters.showV4StandingOrderFrequency(state, getters)).toEqual(true);
+    expect(getters.showFrequencyCompatibilityLabels(state, getters)).toEqual(true);
+  });
+
+  it('shows both controls when discovery is unavailable', () => {
+    const state = { discoveryModel: null };
+
+    expect(getters.paymentVersionState(state)).toEqual('unknown');
+    expect(getters.showPaymentFrequency(state, getters)).toEqual(true);
+    expect(getters.showV4StandingOrderFrequency(state, getters)).toEqual(true);
+  });
+});
+
 describe('Config', () => {
   let state;
 
