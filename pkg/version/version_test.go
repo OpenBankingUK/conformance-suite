@@ -62,6 +62,25 @@ func TestNoUpdateUpdateWarningVersion(t *testing.T) {
 	assert.Equal(t, false, flag)
 }
 
+func TestNoUpdateUpdateWarningVersionForDoubleDigitMinor(t *testing.T) {
+	mockResponse := `
+	[
+		{
+			"name": "v1.9.9"
+		}
+	]`
+	mockedServer, serverURL := test.HTTPServer(http.StatusOK, mockResponse, nil)
+	defer mockedServer.Close()
+
+	v := NewGitHub(serverURL)
+
+	message, flag, err := v.UpdateWarningVersion("v1.10.0")
+
+	require.NoError(t, err)
+	assert.Equal(t, false, flag)
+	assert.Equal(t, "Conformance Suite is running the latest version "+v.GetHumanVersion(), message)
+}
+
 // TestBadStatusUpdateWarningVersionFail asserts that an appropriate/correct
 // error message is return if GitHub 40x status code is given.
 func TestBadStatusUpdateWarningVersionFail(t *testing.T) {

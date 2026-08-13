@@ -161,6 +161,9 @@ export const mutations = {
   [mutationTypes.SET_PAYMENT_FREQUENCY](state, value) {
     state.configuration.payment_frequency = value;
   },
+  [mutationTypes.SET_V4_STANDING_ORDER_FREQUENCY](state, value) {
+    Vue.set(state.configuration, 'v4_standing_order_frequency', value);
+  },
   [mutationTypes.SET_FIRST_PAYMENT_DATE_TIME](state, value) {
     state.configuration.first_payment_date_time = value;
   },
@@ -202,6 +205,46 @@ const parseProblem = ({ key, error }) => {
   };
 };
 
+const paymentInitiationItems = (discoveryModel) => {
+  const items = _.get(discoveryModel, 'discoveryModel.discoveryItems', []);
+  return items.filter((item) => {
+    const apiSpecification = item.apiSpecification || item.APISpecification || {};
+    const name = _.toLower(apiSpecification.name || apiSpecification.Name || '');
+    const schemaVersion = _.toLower(apiSpecification.schemaVersion || apiSpecification.SchemaVersion || '');
+    const manifest = _.toLower(apiSpecification.manifest || apiSpecification.Manifest || '');
+
+    return name.includes('payment initiation')
+      || schemaVersion.includes('payment-initiation')
+      || manifest.includes('payment');
+  });
+};
+
+const paymentVersionState = (discoveryModel) => {
+  const versions = paymentInitiationItems(discoveryModel)
+    .map((item) => {
+      const apiSpecification = item.apiSpecification || item.APISpecification || {};
+      return apiSpecification.version || apiSpecification.Version || '';
+    })
+    .filter(version => version !== '');
+
+  if (versions.length === 0) {
+    return 'unknown';
+  }
+
+  const hasV4 = versions.some(version => version.startsWith('v4.') || version.startsWith('4.'));
+  const hasV3 = versions.some(version => version.startsWith('v3.') || version.startsWith('3.'));
+  if (hasV3 && hasV4) {
+    return 'mixed';
+  }
+  if (hasV4) {
+    return 'v4';
+  }
+  if (hasV3) {
+    return 'v3';
+  }
+  return 'unknown';
+};
+
 export const getters = {
   discoveryModel: state => state.discoveryModel,
   discoveryModelString: state => JSON.stringify(state.discoveryModel, null, 2),
@@ -212,6 +255,10 @@ export const getters = {
   discoveryProblems: state => (state.problems ? state.problems.map(p => parseProblem(p)) : null),
   configuration: state => state.configuration,
   configurationString: state => JSON.stringify(state.configuration, null, 2),
+  paymentVersionState: state => paymentVersionState(state.discoveryModel),
+  showPaymentFrequency: state => ['v3', 'mixed', 'unknown'].includes(paymentVersionState(state.discoveryModel)),
+  showV4StandingOrderFrequency: state => ['v4', 'mixed', 'unknown'].includes(paymentVersionState(state.discoveryModel)),
+  showFrequencyCompatibilityLabels: state => ['mixed', 'unknown'].includes(paymentVersionState(state.discoveryModel)),
   resourceAccountIds: state => state.configuration.resource_ids.account_ids,
   resourceStatementIds: state => state.configuration.resource_ids.statement_ids,
   /**
@@ -287,6 +334,10 @@ export const state = {
     },
     currency_of_transfer: 'USD',
     payment_frequency: 'EvryDay',
+    v4_standing_order_frequency: {
+      Type: 'WEEK',
+      PointInTime: '03',
+    },
     first_payment_date_time: '2022-01-01T00:00:00+01:00',
     requested_execution_date_time: '2022-01-01T00:00:00+01:00',
     acr_values_supported: [],

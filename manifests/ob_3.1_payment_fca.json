@@ -585,10 +585,32 @@
       "validateSignature": true
     },
     {
+      "description": "Fails when NumberOfPayments and FinalPaymentDateTime are not specified and FinalPaymentAmount is specified.",
+      "id": "OB-301-DOP-1015002",
+      "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1000670131/Domestic+Standing+Orders+v3.1.1#DomesticStandingOrdersv3.1.1-GET/domestic-standing-orders/{DomesticStandingOrderId}",
+      "detail": "Checks if NumberOfPayments and FinalPaymentDateTime are not specified and FinalPaymentAmount is specified.",
+      "parameters": {
+        "tokenRequestScope": "payments",
+        "paymentID": "$OB-301-DOP-101401-DomesticStandingOrderID"
+      },
+      "uri": "/domestic-standing-orders/$paymentID",
+      "uriImplementation": "conditional",
+      "resource": "DomesticScheduledPayment",
+      "asserts_last_if_all": [
+        "OB3GLOAssertNoNumberOfPayments",
+        "OB3GLOAssertNoFinalPaymentDateTime",
+        "OB3GLOAssertFinalPaymentAmount",
+        "OB3GLOAssertOn403"
+      ],
+      "method": "get",
+      "schemaCheck": true,
+      "validateSignature": true
+    },
+    {
       "description": "Tests that domestic standing order consent is rejected with HTTP 400 when both FinalPaymentDateTime and NumberOfPayments are present.",
       "id": "OB-301-DOP-1015003",
       "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1000670131/Domestic+Standing+Orders+v3.1.1#DomesticStandingOrdersv3.1.1-POST/domestic-standing-order-consents",
-      "detail": "Sends a consent payload containing both FinalPaymentDateTime and NumberOfPayments. This should be rejected with a HTPP 400 and appropriate error code in the response body, aligned to the error schema. Only the HTTP status code is validated.",
+      "detail": "Sends a consent payload containing both FinalPaymentDateTime and NumberOfPayments. This should be rejected with an HTTP 400 and appropriate error code in the response body, aligned to the error schema. Only the HTTP status code is validated.",
       "parameters": {
         "tokenRequestScope": "payments",
         "instructedAmountValue": "$instructedAmountValue",

@@ -1,12 +1,14 @@
 package main
 
 import (
-	"github.com/OpenBankingUK/conformance-suite/pkg/client"
 	"fmt"
+
+	"github.com/OpenBankingUK/conformance-suite/pkg/client"
+	suiteVersion "github.com/OpenBankingUK/conformance-suite/pkg/version"
 	"github.com/spf13/cobra"
 )
 
-const cliVersion = "0.0.1"
+const cliVersion = suiteVersion.FullVersion
 
 func versionCmd(service client.Service) *cobra.Command {
 	return &cobra.Command{

@@ -184,6 +184,205 @@ describe('validateDiscoveryConfig', () => {
   });
 });
 
+describe('v4 standing order frequency configuration', () => {
+  let commit;
+  let dispatch;
+
+  beforeEach(() => {
+    commit = jest.fn();
+    dispatch = jest.fn();
+    api.validateConfiguration.mockReset();
+  });
+
+  const validConfigurationState = overrides => ({
+    configuration: {
+      signing_private: 'signing-private',
+      signing_public: 'signing-public',
+      transport_private: 'transport-private',
+      transport_public: 'transport-public',
+      resource_ids: {
+        account_ids: [{ account_id: 'account-id' }],
+        statement_ids: [{ statement_id: 'statement-id' }],
+      },
+      transaction_from_date: '2022-01-01T00:00:00+01:00',
+      transaction_to_date: '2022-01-01T00:00:00+01:00',
+      client_id: 'client-id',
+      client_secret: 'client-secret',
+      token_endpoint: 'https://server/token',
+      response_type: 'code id_token',
+      token_endpoint_auth_method: 'client_secret_basic',
+      request_object_signing_alg: 'PS256',
+      authorization_endpoint: 'https://server/auth',
+      resource_base_url: 'https://server',
+      x_fapi_financial_id: 'financial-id',
+      issuer: 'https://server/issuer',
+      redirect_url: 'https://server/callback',
+      payment_frequency: 'EvryDay',
+      v4_standing_order_frequency: {
+        Type: 'WEEK',
+        PointInTime: '03',
+      },
+      ...overrides,
+    },
+  });
+
+  it('imports a Type-only v4 standing order frequency without merging the default PointInTime', () => {
+    const state = {
+      configuration: {
+        payment_frequency: 'EvryDay',
+        v4_standing_order_frequency: {
+          Type: 'WEEK',
+          PointInTime: '03',
+        },
+      },
+    };
+
+    actions.setConfigurationJSON({ commit, dispatch, state }, '{"v4_standing_order_frequency":{"Type":"MNTH"}}');
+
+    expect(commit).toHaveBeenCalledWith(types.SET_CONFIGURATION, {
+      payment_frequency: 'EvryDay',
+      v4_standing_order_frequency: {
+        Type: 'MNTH',
+      },
+    });
+    expect(commit).toHaveBeenCalledWith(types.SET_V4_STANDING_ORDER_FREQUENCY, {
+      Type: 'MNTH',
+    });
+  });
+
+  it('rejects v4 standing order frequency with PointInTime and CountPerPeriod together', async () => {
+    const state = validConfigurationState({
+      v4_standing_order_frequency: {
+        Type: 'WEEK',
+        PointInTime: '03',
+        CountPerPeriod: 1,
+      },
+    });
+
+    const valid = await actions.validateConfiguration({ commit, dispatch, state });
+
+    expect(valid).toEqual(false);
+    expect(dispatch).toHaveBeenCalledWith('status/setErrors', [
+      'v4_standing_order_frequency.PointInTime and CountPerPeriod are mutually exclusive',
+    ], { root: true });
+  });
+
+  it.each(['1', '03', '99', '-1'])('accepts spec-aligned PointInTime value %s', async (pointInTime) => {
+    const state = validConfigurationState({
+      v4_standing_order_frequency: {
+        Type: 'WEEK',
+        PointInTime: pointInTime,
+      },
+    });
+    api.validateConfiguration.mockResolvedValueOnce({});
+
+    const valid = await actions.validateConfiguration({ commit, dispatch, state });
+
+    expect(valid).toEqual(true);
+  });
+
+  it.each(['100', '-10', 'AA'])('rejects invalid PointInTime value %s', async (pointInTime) => {
+    const state = validConfigurationState({
+      v4_standing_order_frequency: {
+        Type: 'WEEK',
+        PointInTime: pointInTime,
+      },
+    });
+
+    const valid = await actions.validateConfiguration({ commit, dispatch, state });
+
+    expect(valid).toEqual(false);
+    expect(dispatch).toHaveBeenCalledWith('status/setErrors', [
+      'v4_standing_order_frequency.PointInTime must be numeric text up to two characters, including negative single-digit values',
+    ], { root: true });
+  });
+
+  it.each([1, 2147483647])('accepts positive Int32 CountPerPeriod value %d', async (countPerPeriod) => {
+    const state = validConfigurationState({
+      v4_standing_order_frequency: {
+        Type: 'WEEK',
+        CountPerPeriod: countPerPeriod,
+      },
+    });
+    api.validateConfiguration.mockResolvedValueOnce({});
+
+    const valid = await actions.validateConfiguration({ commit, dispatch, state });
+
+    expect(valid).toEqual(true);
+  });
+
+  it.each([0, -1, 1.5, 2147483648])('rejects invalid CountPerPeriod value %d', async (countPerPeriod) => {
+    const state = validConfigurationState({
+      v4_standing_order_frequency: {
+        Type: 'WEEK',
+        CountPerPeriod: countPerPeriod,
+      },
+    });
+
+    const valid = await actions.validateConfiguration({ commit, dispatch, state });
+
+    expect(valid).toEqual(false);
+    expect(dispatch).toHaveBeenCalledWith('status/setErrors', [
+      'v4_standing_order_frequency.CountPerPeriod must be a positive Int32',
+    ], { root: true });
+  });
+
+  it('rejects invalid payment_frequency values', async () => {
+    const state = validConfigurationState({
+      payment_frequency: 'WEEK',
+    });
+
+    const valid = await actions.validateConfiguration({ commit, dispatch, state });
+
+    expect(valid).toEqual(false);
+    expect(dispatch).toHaveBeenCalledWith('status/setErrors', [
+      'Payment frequency must be a valid Frequency_1 value',
+    ], { root: true });
+  });
+
+  it('rejects legacy v4 Frequency_1 Type combined with structured fields', async () => {
+    const state = validConfigurationState({
+      v4_standing_order_frequency: {
+        Type: 'IntrvlWkDay:01:03',
+        PointInTime: '03',
+      },
+    });
+
+    const valid = await actions.validateConfiguration({ commit, dispatch, state });
+
+    expect(valid).toEqual(false);
+    expect(dispatch).toHaveBeenCalledWith('status/setErrors', [
+      'v4_standing_order_frequency legacy Frequency_1 Type cannot be combined with PointInTime or CountPerPeriod',
+    ], { root: true });
+  });
+
+  it('accepts legacy v4 Frequency_1 Type without structured fields', async () => {
+    const state = validConfigurationState({
+      v4_standing_order_frequency: {
+        Type: 'IntrvlWkDay:01:03',
+      },
+    });
+    api.validateConfiguration.mockResolvedValueOnce({});
+
+    const valid = await actions.validateConfiguration({ commit, dispatch, state });
+
+    expect(valid).toEqual(true);
+  });
+
+  it('accepts new OBFrequency6Code values', async () => {
+    const state = validConfigurationState({
+      v4_standing_order_frequency: {
+        Type: 'LXMH',
+      },
+    });
+    api.validateConfiguration.mockResolvedValueOnce({});
+
+    const valid = await actions.validateConfiguration({ commit, dispatch, state });
+
+    expect(valid).toEqual(true);
+  });
+});
+
 [
   {
     action: 'setDiscoveryModel',

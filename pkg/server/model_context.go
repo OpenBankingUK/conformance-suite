@@ -42,6 +42,7 @@ const (
 	CtxPaymentFrequency                    = "payment_frequency" // CtxPaymentFrequency - for example `EvryDay`.
 	CtxPaymentFrequencyCountPerPeriod      = "payment_frequency_count_per_period"
 	CtxPaymentFrequencyPointInTime         = "payment_frequency_point_in_time"
+	CtxV4StandingOrderFrequency            = "v4_standing_order_frequency"
 	CtxFirstPaymentDateTime                = "firstPaymentDateTime"
 	CtxRequestedExecutionDateTime          = "requestedExecutionDateTime"
 	CtxCurrencyOfTransfer                  = "currencyOfTransfer"
@@ -89,6 +90,11 @@ func PutParametersToJourneyContext(config JourneyConfig, context model.Context) 
 	context.PutString(CtxPaymentFrequency, string(config.paymentFrequency))
 	context.Put(CtxPaymentFrequencyCountPerPeriod, config.paymentFrequencyCountPerPeriod)
 	context.Put(CtxPaymentFrequencyPointInTime, config.paymentFrequencyPointInTime)
+	v4StandingOrderFrequency, err := config.v4StandingOrderFrequency.JSON()
+	if err != nil {
+		return err
+	}
+	context.PutString(CtxV4StandingOrderFrequency, v4StandingOrderFrequency)
 	context.PutString(CtxFirstPaymentDateTime, config.firstPaymentDateTime)
 	context.PutString(CtxRequestedExecutionDateTime, config.requestedExecutionDateTime)
 	context.PutString(CtxCurrencyOfTransfer, config.currencyOfTransfer)

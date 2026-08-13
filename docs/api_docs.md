@@ -606,7 +606,37 @@ POST /config/global
     },
     "payment_frequency": {
       "type": "string",
-      "enum": ["EvryDay"]
+      "description": "Legacy/v3 standing-order scalar Frequency_1 value. If omitted, the server defaults it to EvryDay for backwards compatibility. The configuration UI uses a regex text input, hides this control for v4-only payment discovery, and shows it for v3, mixed, or unknown discovery.",
+      "pattern": "^(NotKnown)$|^(EvryDay)$|^(EvryWorkgDay)$|^(IntrvlDay:((0[2-9])|([1-2][0-9])|3[0-1]))$|^(IntrvlWkDay:0[1-9]:0[1-7])$|^(WkInMnthDay:0[1-5]:0[1-7])$|^(IntrvlMnthDay:(0[1-6]|12|24):(-0[1-5]|0[1-9]|[12][0-9]|3[01]))$|^(QtrDay:(ENGLISH|SCOTTISH|RECEIVED))$"
+    },
+    "v4_standing_order_frequency": {
+      "type": "object",
+      "description": "Optional OBFrequency6 defaults for v4 standing-order success payloads. If omitted, defaults to Type WEEK and PointInTime 03. Type can be either an OBFrequency6Code or a legacy Frequency_1 value. Legacy Frequency_1 Type values must not be combined with PointInTime or CountPerPeriod; structured OBFrequency6Code Type values can use either optional PointInTime or CountPerPeriod, but not both. Structured Type-only values remain allowed. PointInTime is numeric text up to two characters, including negative single-digit values such as -1. CountPerPeriod is a positive Int32. For LXMH, PointInTime indicates weekday guidance such as 1 = Monday through 7 = Sunday, but this configuration does not enforce LXMH specially. This is separate from the v3 payment_frequency scalar, and discovery conditional properties still override matching request-body paths after these defaults are applied. The configuration UI shows this control for v4, mixed, or unknown payment discovery and hides it for v3-only payment discovery.",
+      "required": ["Type"],
+      "properties": {
+        "Type": {
+          "type": "string",
+          "oneOf": [
+            {
+              "enum": ["ADHO", "YEAR", "DAIL", "FRTN", "INDA", "MNTH", "QURT", "MIAN", "WEEK", "WODL", "FOWK", "TWMH", "FOMH", "FIMH", "ALMH", "NONE", "LWMH", "LXMH", "TWYR"]
+            },
+            {
+              "pattern": "^(NotKnown)$|^(EvryDay)$|^(EvryWorkgDay)$|^(IntrvlDay:((0[2-9])|([1-2][0-9])|3[0-1]))$|^(IntrvlWkDay:0[1-9]:0[1-7])$|^(WkInMnthDay:0[1-5]:0[1-7])$|^(IntrvlMnthDay:(0[1-6]|12|24):(-0[1-5]|0[1-9]|[12][0-9]|3[01]))$|^(QtrDay:(ENGLISH|SCOTTISH|RECEIVED))$"
+            }
+          ]
+        },
+        "PointInTime": {
+          "type": "string",
+          "maxLength": 2,
+          "pattern": "^(-[0-9]|[0-9]{1,2})$"
+        },
+        "CountPerPeriod": {
+          "type": "integer",
+          "format": "int32",
+          "minimum": 1,
+          "maximum": 2147483647
+        }
+      }
     },
     "first_payment_date_time": {
       "type": "string",
@@ -1763,8 +1793,8 @@ _EMPTY BODY_
   },
   "examples": [
     {
-      "version": "v1.9.1",
-      "message": "Conformance Suite is running the latest version v1.9.1",
+      "version": "v1.10.0",
+      "message": "Conformance Suite is running the latest version v1.10.0",
       "update": false
     }
   ]

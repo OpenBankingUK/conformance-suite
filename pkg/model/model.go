@@ -592,33 +592,76 @@ func replaceContextField(source string, ctx *Context) (string, error) {
 	if !exist || phase == "generation" {
 		ignoreErrors = true
 	}
+	unresolved := map[string]string{}
+	unresolvedIndex := 0
+	restoreUnresolved := func(value string) string {
+		for marker, placeholder := range unresolved {
+			value = strings.ReplaceAll(value, marker, placeholder)
+		}
+		return value
+	}
+	markUnresolved := func(value, placeholder string) string {
+		marker := fmt.Sprintf("__unresolved_replacement_%d__", unresolvedIndex)
+		unresolvedIndex++
+		unresolved[marker] = placeholder
+		return strings.Replace(value, placeholder, marker, 1)
+	}
 
-	field, isReplacement := getReplacementField(source)
-	if !isReplacement {
-		return source, nil
-	}
-	if len(field) == 0 {
-		if ignoreErrors {
+	for {
+		field, isReplacement := getReplacementField(source)
+		if !isReplacement {
+			return restoreUnresolved(source), nil
+		}
+		if len(field) == 0 {
+			if ignoreErrors {
+				return restoreUnresolved(source), nil
+			}
+			return source, errors.New("field not found in context " + field)
+		}
+		placeholder := "$" + field
+		replacement, exist := ctx.Get(field)
+		if !exist {
+			if ignoreErrors {
+				source = markUnresolved(source, placeholder)
+				continue
+			}
+			return source, errors.New("replacement not found in context: " + source)
+		}
+		contextField, ok := replacement.(string)
+		if !ok {
+			if ignoreErrors {
+				source = markUnresolved(source, placeholder)
+				continue
+			}
+			return source, errors.New("replacement is not of type string: " + source)
+		}
+
+		quotedPlaceholder := `"` + placeholder + `"`
+		previousSource := source
+		if strings.Contains(source, quotedPlaceholder) && isRawJSONObjectOrArray(contextField) {
+			source = strings.Replace(source, quotedPlaceholder, contextField, 1)
+		} else {
+			source = strings.Replace(source, placeholder, contextField, 1)
+		}
+		if source == previousSource {
+			if ignoreErrors {
+				source = markUnresolved(source, placeholder)
+				continue
+			}
 			return source, nil
 		}
-		return source, errors.New("field not found in context " + field)
 	}
-	replacement, exist := ctx.Get(field)
-	if !exist {
-		if ignoreErrors {
-			return source, nil
-		}
-		return source, errors.New("replacement not found in context: " + source)
+}
+
+func isRawJSONObjectOrArray(value string) bool {
+	value = strings.TrimSpace(value)
+	if len(value) == 0 {
+		return false
 	}
-	contextField, ok := replacement.(string)
-	if !ok {
-		if ignoreErrors {
-			return source, nil
-		}
-		return source, errors.New("replacement is not of type string: " + source)
+	if value[0] != '{' && value[0] != '[' {
+		return false
 	}
-	result := strings.Replace(source, "$"+field, contextField, 1)
-	return result, nil
+	return json.Valid([]byte(value))
 }
 
 var singleDollarRegex = regexp.MustCompile(`[^\$]?\$([\w|\-|_]*)`)

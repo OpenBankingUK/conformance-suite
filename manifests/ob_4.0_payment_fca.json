@@ -442,9 +442,6 @@
           "tokenRequestScope": "payments",
           "instructedAmountValue": "$instructedAmountValue",
           "instructedAmountCurrency": "$instructedAmountCurrency",
-          "frequency": "$payment_frequency",
-          "frequencyCountPerPeriod": "$payment_frequency_count_per_period",
-          "frequencyPointInTime": "$payment_frequency_point_in_time",
           "firstPaymentDateTime": "$firstPaymentDateTime",
           "postData": "$minimalDomesticStandingOrderConsentV4",
           "requestConsent": "true"
@@ -523,9 +520,6 @@
           "tokenRequestScope": "payments",
           "instructedAmountValue": "$instructedAmountValue",
           "instructedAmountCurrency": "$instructedAmountCurrency",
-          "frequency": "$payment_frequency",
-          "frequencyCountPerPeriod": "$payment_frequency_count_per_period",
-          "frequencyPointInTime": "$payment_frequency_point_in_time",
           "firstPaymentDateTime": "$firstPaymentDateTime",
           "postData": "$minimalDomesticStandingOrderV4",
           "consentId": "$OB-400-DOP-101200-ConsentId"
@@ -568,19 +562,16 @@
         "validateSignature": true
       },
       {
-        "description": "Tests that domestic standing order consent is rejected with HTTP 400 when both FinalPaymentDateTime and CountPerPeriod are present.",
+        "description": "Tests that domestic standing order consent is rejected with HTTP 400 when both CountPerPeriod and PointInTime are present.",
         "id": "OB-400-DOP-101503",
         "refURI": "https://openbankinguk.github.io/read-write-api-site3/v4.0/profiles/payment-initiation-api-profile.html",
-        "detail": "Sends a consent payload containing both FinalPaymentDateTime and CountPerPeriod . This should be rejected with a HTPP 400 and appropriate error code in the response body, aligned to the error schema. Only the HTTP status code is validated.",
+        "detail": "Sends a consent payload containing both CountPerPeriod and PointInTime. This should be rejected with an HTTP 400 and appropriate error code in the response body, aligned to the error schema. Only the HTTP status code is validated.",
         "parameters": {
           "tokenRequestScope": "payments",
           "instructedAmountValue": "$instructedAmountValue",
           "instructedAmountCurrency": "$instructedAmountCurrency",
-          "frequency": "$payment_frequency",
-          "frequencyCountPerPeriod": "$payment_frequency_count_per_period",
-          "frequencyPointInTime": "$payment_frequency_point_in_time",
           "firstPaymentDateTime": "$firstPaymentDateTime",
-          "postData": "$failingMinimalDomesticStandingOrderConsentV4",
+          "postData": "$failingDomesticStandingOrderConsentWithCountPerPeriodAndPointInTimeV4",
           "requestConsent": "false"
         },
         "headers": {
