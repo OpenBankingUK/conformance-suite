@@ -1492,7 +1492,7 @@
       "headers": {
         "x-fapi-interaction-id": "$x-fapi-interaction-id"
       },
-      "uri": "/product",
+      "uri": "/products",
       "uriImplementation": "optional",
       "resource": "Product",
       "method": "get",
