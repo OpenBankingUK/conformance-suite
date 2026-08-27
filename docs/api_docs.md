@@ -1793,8 +1793,8 @@ _EMPTY BODY_
   },
   "examples": [
     {
-      "version": "v1.10.0",
-      "message": "Conformance Suite is running the latest version v1.10.0",
+      "version": "v1.11.0",
+      "message": "Conformance Suite is running the latest version v1.11.0",
       "update": false
     }
   ]

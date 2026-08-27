@@ -1,5 +1,11 @@
 # Release history
 
+## [1.11.0] - TBD
+
+### Fixed
+
+- Corrected Product playback tests `OB-301-PRO-103403` and `OB-400-PRO-103403` to target the valid bulk Products endpoint `/products` instead of `/product`. This may cause the x-fapi-interaction-id playback check to run where it was previously skipped by discovery filtering.
+
 ## [1.10.0] - 13/08/2026
 
 ### Fixed
@@ -511,7 +517,8 @@ v3.1 of the OBIE Accounts and Transactions specifications and Payments.
 ---
 
 [More Releases](docs/releases)
-[Unreleased]: https://github.com/OpenBankingUK/conformance-suite/compare/v1.10.0...HEAD
+[Unreleased]: https://github.com/OpenBankingUK/conformance-suite/compare/v1.11.0...HEAD
+[1.11.0]: https://github.com/OpenBankingUK/conformance-suite/compare/v1.10.0...v1.11.0
 [1.10.0]: https://github.com/OpenBankingUK/conformance-suite/compare/v1.9.9...v1.10.0
 [1.9.9]: https://github.com/OpenBankingUK/conformance-suite/compare/v1.9.8...v1.9.9
 [1.9.8]: https://github.com/OpenBankingUK/conformance-suite/compare/v1.9.8-beta1...v1.9.8
