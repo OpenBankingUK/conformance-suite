@@ -183,6 +183,36 @@
         "validateSignature": true
       },
       {
+        "description": "Domestic Payment for processing fails due to content mismatch.",
+        "id": "OB-400-DOP-100550",
+        "refURI": "https://openbankinguk.github.io/read-write-api-site3/v4.0/profiles/payment-initiation-api-profile.html",
+        "detail": "Check that once the domestic-payment-consent has been authorised by the PSU, the PISP can proceed to submitting the domestic-payment for processing.",
+        "parameters": {
+          "tokenRequestScope": "payments",
+          "consentId": "$OB-400-DOP-100300-ConsentId",
+          "thisSchemeName": "$creditorScheme",
+          "thisIdentification": "$creditorIdentification",
+          "instructionIdentification": "$OB-400-DOP-100300-instructionIdentification",
+          "endToEndIdentification": "e2e-domestic-pay",
+          "instructedAmountCurrency": "$instructedAmountCurrency",
+          "instructedAmountValue": "$instructedAmountValue",
+          "postData": "$minimalDomesticPaymentMismatchPost"
+        },
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": "$postData",
+        "uri": "/domestic-payments",
+        "uriImplementation": "mandatory",
+        "resource": "DomesticPayment",
+        "asserts": [
+          "OB3GLOAssertOn400"
+        ],
+        "method": "post",
+        "schemaCheck": true,
+        "validateSignature": true
+      },
+      {
         "description": "Domestic Payment for processing succeeds with minimal data.",
         "id": "OB-400-DOP-100600",
         "refURI": "https://openbankinguk.github.io/read-write-api-site3/v4.0/profiles/payment-initiation-api-profile.html",
