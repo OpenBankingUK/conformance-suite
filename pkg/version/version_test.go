@@ -74,7 +74,7 @@ func TestNoUpdateUpdateWarningVersionForDoubleDigitMinor(t *testing.T) {
 
 	v := NewGitHub(serverURL)
 
-	message, flag, err := v.UpdateWarningVersion("v1.10.0")
+	message, flag, err := v.UpdateWarningVersion("v1.11.0")
 
 	require.NoError(t, err)
 	assert.Equal(t, false, flag)
