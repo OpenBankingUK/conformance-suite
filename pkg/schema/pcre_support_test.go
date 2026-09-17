@@ -154,3 +154,8 @@ func TestV4_0_1_VariableRecurringPaymentsSpecLoads(t *testing.T) {
 	_, err := NewRawOpenAPI3Validator("Variable Recurring Payments API Specification", "v4.0.1")
 	require.NoError(t, err)
 }
+
+func TestV4_0_1_CommercialVariableRecurringPaymentsSpecLoads(t *testing.T) {
+	_, err := NewRawOpenAPI3Validator("Commercial Variable Recurring Payments API Specification", "v4.0.1")
+	require.NoError(t, err)
+}

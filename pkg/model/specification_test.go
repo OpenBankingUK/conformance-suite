@@ -17,6 +17,13 @@ func TestSpecificationIdentifierFromSchemaVersion(t *testing.T) {
 		assert.Equal(t, "account-transaction-v3.1", specification.Identifier)
 	})
 
+	t.Run("returns cVRP v4.0.1 specification for tagged schema URL", func(t *testing.T) {
+		schemaVersion := "https://raw.githubusercontent.com/OpenBankingUK/Commercial-VRP-API-Spec/refs/tags/v4.0.1/OpenAPI/cvrp-openapi.json"
+		specification, err := SpecificationFromSchemaVersion(schemaVersion)
+		require.NoError(t, err)
+		assert.Equal(t, "commercial-variable-recurring-payments-v4.0.1", specification.Identifier)
+	})
+
 	t.Run("returns error when given invalid schema version URL", func(t *testing.T) {
 		schemaVersion := "https://example.com/invalid"
 		specification, err := SpecificationFromSchemaVersion(schemaVersion)
