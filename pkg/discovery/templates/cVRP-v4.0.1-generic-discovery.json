@@ -1,0 +1,51 @@
+{
+  "discoveryModel": {
+    "name": "cVRP v4.0.1",
+    "description": "An Open Banking UK discovery template for cVRP v4.0.1 with pre-populated data.",
+    "discoveryVersion": "v0.4.0",
+    "tokenAcquisition": "psu",
+    "discoveryItems": [
+      {
+        "apiSpecification": {
+          "name": "Commercial Variable Recurring Payments API Specification",
+          "url": "https://openbankinguk.github.io/read-write-api-site3/v4.0.1/profiles/vrp-profile.html",
+          "version": "v4.0.1",
+          "schemaVersion": "https://raw.githubusercontent.com/OpenBankingUK/Commercial-VRP-API-Spec/refs/tags/v4.0.1/OpenAPI/cvrp-openapi.json",
+          "manifest": "file://manifests/cVRP_4.0_variable_recurring_payments.json"
+        },
+        "openidConfigurationUri": "https://YOUR URL HERE/.well-known/openid-configuration",
+        "resourceBaseUri": "https://YOUR URL HERE/open-banking/v4.0/pisp",
+        "endpoints": [
+          {
+            "method": "POST",
+            "path": "/domestic-vrp-consents"
+          },
+          {
+            "method": "POST",
+            "path": "/domestic-vrps"
+          },
+          {
+            "method": "GET",
+            "path": "/domestic-vrp-consents/{ConsentId}"
+          },
+          {
+            "method": "DELETE",
+            "path": "/domestic-vrp-consents/{ConsentId}"
+          },
+          {
+            "method": "POST",
+            "path": "/domestic-vrp-consents/{ConsentId}/funds-confirmation"
+          },
+          {
+            "method": "GET",
+            "path": "/domestic-vrps/{DomesticVRPId}"
+          },
+          {
+            "method": "GET",
+            "path": "/domestic-vrps/{DomesticVRPId}/payment-details"
+          }
+        ]
+      }
+    ]
+  }
+}

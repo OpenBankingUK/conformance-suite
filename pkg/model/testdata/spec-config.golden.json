@@ -27,6 +27,33 @@
     }
   },
   {
+    "Identifier": "commercial-variable-recurring-payments-v4.0.1",
+    "Name": "Commercial Variable Recurring Payments API Specification",
+    "URL": {
+      "Scheme": "https",
+      "Opaque": "",
+      "User": null,
+      "Host": "openbankinguk.github.io",
+      "Path": "/read-write-api-site3/v4.0.1/profiles/vrp-profile.html",
+      "RawPath": "",
+      "ForceQuery": false,
+      "RawQuery": "",
+      "Fragment": ""
+    },
+    "Version": "v4.0.1",
+    "SchemaVersion": {
+      "Scheme": "https",
+      "Opaque": "",
+      "User": null,
+      "Host": "raw.githubusercontent.com",
+      "Path": "/OpenBankingUK/Commercial-VRP-API-Spec/refs/tags/v4.0.1/OpenAPI/cvrp-openapi.json",
+      "RawPath": "",
+      "ForceQuery": false,
+      "RawQuery": "",
+      "Fragment": ""
+    }
+  },
+  {
     "Identifier": "confirmation-funds-v4.0.1",
     "Name": "Confirmation of Funds API Specification",
     "URL": {

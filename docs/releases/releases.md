@@ -1,5 +1,13 @@
 # Release history
 
+## Release [v1.11.0] 18/09/2026
+
+This release incorporates the following changes:
+
+### Added
+
+- support for cVRP 4.0.1
+
 ## [1.10.0] - 13/08/2026
 
 ### Fixed

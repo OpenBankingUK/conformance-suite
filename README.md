@@ -16,13 +16,13 @@ To provide feedback, please see the [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Release Notes
 
-### v1.10.0 - 2026-08-13
+### v1.11.0 - 2026-09-18
 
 [Full Release Notes](https://github.com/OpenBankingUK/conformance-suite/blob/develop/docs/releases/releases.md)
 
 ---
 **Download**:
-`docker run --rm -it -p 127.0.0.1:8443:8443 "openbanking/conformance-suite:v1.10.0"` |
+`docker run --rm -it -p 127.0.0.1:8443:8443 "openbanking/conformance-suite:v1.11.0"` |
 [DockerHub](https://hub.docker.com/r/openbanking/conformance-suite) |
 [Setup Guide](https://github.com/OpenBankingUK/conformance-suite/blob/develop/docs/setup-guide.md)
 ---
@@ -46,11 +46,11 @@ To provide feedback, please see the [CONTRIBUTING.md](CONTRIBUTING.md).
 
 Pull and run the latest (stable) tagged Docker image:
 
-    > docker run --rm -it -p 127.0.0.1:8443:8443 "openbanking/conformance-suite:v1.10.0"
+    > docker run --rm -it -p 127.0.0.1:8443:8443 "openbanking/conformance-suite:v1.11.0"
 
 or
 
-    > docker run --rm -it -p 8443:8443 "openbanking/conformance-suite:v1.10.0"
+    > docker run --rm -it -p 8443:8443 "openbanking/conformance-suite:v1.11.0"
 [See Setup Guide](https://github.com/OpenBankingUK/conformance-suite/blob/develop/docs/setup-guide.md)
 
 ### Prerequisites
@@ -65,7 +65,21 @@ In order to run a container you'll need docker installed.
 
 ## Commercial VRP (cVRP) support
 
-cVRP implementations can be tested by using the following `apiSpecification` values in the discovery file:
+cVRP v4.0 and v4.0.1 implementations are supported. The v4.0.1 discovery configuration is:
+
+```json
+"apiSpecification": {
+          "name": "Commercial Variable Recurring Payments API Specification",
+          "url": "https://openbankinguk.github.io/read-write-api-site3/v4.0.1/profiles/vrp-profile.html",
+          "version": "v4.0.1",
+          "schemaVersion": "https://raw.githubusercontent.com/OpenBankingUK/Commercial-VRP-API-Spec/refs/tags/v4.0.1/OpenAPI/cvrp-openapi.json",
+          "manifest": "file://manifests/cVRP_4.0_variable_recurring_payments.json"
+        },
+```
+
+The cVRP v4.0.1 test flow reuses the v4.0 manifest because its requests and assertions are unaffected by the v4.0.1 schema changes. A full sample file named `cVRP-v4.0.1-generic-discovery.json` is included in the `/pkg/discovery/templates` directory.
+
+For cVRP v4.0, use:
 
 ```json
 "apiSpecification": {
@@ -77,7 +91,7 @@ cVRP implementations can be tested by using the following `apiSpecification` val
         },
 ```
 
-A full sample file named `cVRP-v4.0-generic-discovery.json` has been included in the `/pkg/discovery/templates` directory.  
+A full sample file named `cVRP-v4.0-generic-discovery.json` has been included in the `/pkg/discovery/templates` directory.
 
 Please note, the sample file requires the following fields to be updated before use:
 

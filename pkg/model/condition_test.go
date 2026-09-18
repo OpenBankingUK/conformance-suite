@@ -75,6 +75,15 @@ func TestGetEndpointConditionality(t *testing.T) {
 	assert.EqualValues(checker.data[specification], GetEndpointConditionality(specification))
 }
 
+func TestCommercialVRPV4_0_1Conditionality(t *testing.T) {
+	const specification = "commercial-variable-recurring-payments-v4.0.1"
+
+	assert.Equal(t,
+		GetEndpointConditionality("commercial-variable-recurring-payments-v4.0"),
+		GetEndpointConditionality(specification),
+	)
+}
+
 func testConditionalityChecker(t *testing.T) {
 	checker := NewConditionalityChecker()
 	specification := accountSpecID
