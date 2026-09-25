@@ -66,28 +66,52 @@ export default {
       const { success, problems, response } = await api.validateDiscoveryConfig(state.discoveryModel, setShowLoading);
       if (success) {
         commit(types.DISCOVERY_MODEL_PROBLEMS, null);
+        const configuration = state.configuration || {};
+        const previousDefaults = state.discoveryDefaults || {};
+        const appliedDefaults = {};
+        // Discovery supplies defaults for some config fields. On re-validation only apply a new default
+        // when the user has not changed the field, so their full configuration is kept across runs.
+        const applyDefault = (field, mutation, value) => {
+          appliedDefaults[field] = value;
+          const current = configuration[field];
+          const isFirstDefault = !_.has(previousDefaults, field);
+          if (isFirstDefault || _.isEmpty(current) || _.isEqual(current, previousDefaults[field])) {
+            commit(mutation, value);
+          }
+        };
+
         const tokenEndpoint = _.first(_.values(response.token_endpoints));
-        commit(types.SET_TOKEN_ENDPOINT, tokenEndpoint);
-
-        const defaultAuthMethod = _.first(_.values(response.default_token_endpoint_auth_method));
-        commit(types.SET_TOKEN_ENDPOINT_AUTH_METHOD, defaultAuthMethod);
-
-        commit(types.SET_RESPONSE_TYPES_SUPPORTED, response.response_types_supported);
+        applyDefault('token_endpoint', types.SET_TOKEN_ENDPOINT, tokenEndpoint);
 
         const authMethods = _.first(_.values(response.token_endpoint_auth_methods));
+        const defaultAuthMethod = _.first(_.values(response.default_token_endpoint_auth_method));
+        const currentAuthMethod = configuration.token_endpoint_auth_method;
+        if (!_.isEmpty(currentAuthMethod) && _.isArray(authMethods) && !_.isEmpty(authMethods)
+          && !_.includes(authMethods, currentAuthMethod) && _.has(previousDefaults, 'token_endpoint_auth_method')) {
+          commit(types.SET_TOKEN_ENDPOINT_AUTH_METHOD, defaultAuthMethod);
+          appliedDefaults.token_endpoint_auth_method = defaultAuthMethod;
+          dispatch('status/pushNotification', {
+            message: `Token endpoint auth method '${currentAuthMethod}' is not supported by this discovery, using '${defaultAuthMethod}'.`,
+          }, { root: true });
+        } else {
+          applyDefault('token_endpoint_auth_method', types.SET_TOKEN_ENDPOINT_AUTH_METHOD, defaultAuthMethod);
+        }
+
+        commit(types.SET_RESPONSE_TYPES_SUPPORTED, response.response_types_supported);
         commit(types.SET_TOKEN_ENDPOINT_AUTH_METHODS, authMethods);
 
         const reqObjSignMethods = _.first(_.values(response.request_object_signing_alg_values_supported));
         commit(types.SET_REQUEST_OBJECT_SIGNING_ALG_VALUES_SUPPORTED, reqObjSignMethods);
 
         const authorizationEndpoint = _.first(_.values(response.authorization_endpoints));
-        commit(types.SET_AUTHORIZATION_ENDPOINT, authorizationEndpoint);
+        applyDefault('authorization_endpoint', types.SET_AUTHORIZATION_ENDPOINT, authorizationEndpoint);
 
         const issuer = _.first(_.values(response.issuers));
-        commit(types.SET_ISSUER, issuer);
+        applyDefault('issuer', types.SET_ISSUER, issuer);
 
-        commit(types.SET_TRANSACTION_FROM_DATE, response.default_transaction_from_date);
-        commit(types.SET_TRANSACTION_TO_DATE, response.default_transaction_to_date);
+        applyDefault('transaction_from_date', types.SET_TRANSACTION_FROM_DATE, response.default_transaction_from_date);
+        applyDefault('transaction_to_date', types.SET_TRANSACTION_TO_DATE, response.default_transaction_to_date);
+        commit(types.SET_DISCOVERY_DEFAULTS, appliedDefaults);
 
         dispatch('status/clearErrors', null, { root: true });
         commit(types.SET_WIZARD_STEP, constants.WIZARD.STEP_THREE);

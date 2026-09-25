@@ -86,6 +86,11 @@ func GetConsentJobs() *ConsentJobs {
 	return cj
 }
 
+// ResetConsentJobs clears all consent jobs, so jobs from a previous run are not reused
+func ResetConsentJobs() {
+	GetConsentJobs().jobs = make(map[string]model.TestCase)
+}
+
 // Add a consent Job
 func (cj *ConsentJobs) Add(tc model.TestCase) {
 	cj.jobs[tc.ID] = tc

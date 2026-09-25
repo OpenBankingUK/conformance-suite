@@ -79,6 +79,7 @@ type AppJourney struct {
 	tlsValidator          discovery.TLSValidator
 	conditionalProperties []discovery.ConditionalAPIProperties
 	dynamicResourceIDs    bool
+	configSet             bool
 }
 
 // NewJourney creates an instance for a user journey
@@ -126,11 +127,16 @@ func (wj *AppJourney) SetDiscoveryModel(discoveryModel *discovery.Model) (discov
 		return failures, nil
 	}
 
+	wj.daemonController.Stop()
+
 	wj.journeyLock.Lock()
 	defer wj.journeyLock.Unlock()
 	wj.validDiscoveryModel = discoveryModel
 	wj.testCasesRunGenerated = false
 	wj.allCollected = false
+	if err := wj.resetRunState(); err != nil {
+		return nil, errors.Wrap(err, "journey.SetDiscoveryModel: error resetting journey state")
+	}
 
 	if discoveryModel.DiscoveryModel.DiscoveryVersion == "v0.4.0" { // Conditional properties requires 0.4.0
 		//TODO: remove this constraint once support for v0.3.0 discovery model is dropped
@@ -147,6 +153,28 @@ func (wj *AppJourney) SetDiscoveryModel(discoveryModel *discovery.Model) (discov
 	}
 
 	return discovery.NoValidationFailures(), nil
+}
+
+// resetRunState discards state produced by a previous run (consent ids, tokens, generated tests etc.)
+// so it cannot leak into newly generated test cases. The last saved config is re-applied in full.
+// Caller must hold journeyLock.
+func (wj *AppJourney) resetRunState() error {
+	wj.context = model.Context{}
+	wj.permissions = make(map[string][]manifest.RequiredTokens)
+	wj.specRun = generation.SpecRun{}
+	wj.filteredManifests = manifest.Scripts{}
+	wj.conditionalProperties = nil
+	wj.collector = nil
+	manifest.ResetConsentJobs()
+
+	if !wj.configSet {
+		return nil
+	}
+	if err := PutParametersToJourneyContext(wj.config, wj.context); err != nil {
+		return err
+	}
+	wj.customTestParametersToJourneyContext()
+	return nil
 }
 
 // DiscoveryModel -
@@ -646,7 +674,7 @@ func (wj *AppJourney) SetConfig(config JourneyConfig) error {
 	if err != nil {
 		return err
 	}
-
+	wj.configSet = true
 	wj.customTestParametersToJourneyContext()
 	return nil
 }

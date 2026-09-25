@@ -292,7 +292,7 @@ func MapTokensToPaymentTestCases(rt []RequiredTokens, tcs []model.TestCase, ctx 
 			logrus.Trace("MapTokensToPaymentTestCases: authCodeToken Required")
 			tokenName, isEmptyToken, err := getRequiredTokenForPaymentTestcase(rt, test.ID)
 			if err != nil {
-				logrus.Warnf("no token for Payment testcase %s %s %s", test.ID, test.Input.Method, test.Input.Endpoint)
+				logrus.Errorf("no token for Payment testcase %s %s %s - request will be sent without an Authorization header", test.ID, test.Input.Method, test.Input.Endpoint)
 				continue
 			}
 			if !isEmptyToken {
@@ -326,7 +326,7 @@ func MapTokensToCBPIITestCases(rt []RequiredTokens, tcs []model.TestCase, ctx *m
 		if authCodeTokenRequired {
 			tokenName, isEmptyToken, err := getRequiredTokenForPaymentTestcase(rt, test.ID)
 			if err != nil {
-				logrus.Warnf("no token for CBPII testcase %s %s %s", test.ID, test.Input.Method, test.Input.Endpoint)
+				logrus.Errorf("no token for CBPII testcase %s %s %s - request will be sent without an Authorization header", test.ID, test.Input.Method, test.Input.Endpoint)
 				continue
 			}
 			if !isEmptyToken {

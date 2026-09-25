@@ -8,6 +8,7 @@ import (
 	"github.com/OpenBankingUK/conformance-suite/pkg/discovery"
 	"github.com/OpenBankingUK/conformance-suite/pkg/discovery/mocks"
 	"github.com/OpenBankingUK/conformance-suite/pkg/generation"
+	"github.com/OpenBankingUK/conformance-suite/pkg/manifest"
 	"github.com/OpenBankingUK/conformance-suite/pkg/model"
 	"github.com/OpenBankingUK/conformance-suite/pkg/server/models"
 	"github.com/OpenBankingUK/conformance-suite/pkg/test"
@@ -160,4 +161,64 @@ func TestJourneySetConfig(t *testing.T) {
 	}
 	require.NoError(journey.SetConfig(config))
 	require.Equal(config, journey.config)
+}
+
+func TestJourneySetDiscoveryModelResetsRunStateAndKeepsConfig(t *testing.T) {
+	require := test.NewRequire(t)
+
+	discoveryModel := &discovery.Model{}
+	validator := &mocks.Validator{}
+	validator.On("Validate", discoveryModel).Return(discovery.NoValidationFailures(), nil)
+	generator := &gmocks.MockGenerator{}
+	journey := NewJourney(nullLogger(), generator, validator, discovery.NewNullTLSValidator(), false)
+
+	_, err := journey.SetDiscoveryModel(discoveryModel)
+	require.NoError(err)
+
+	certificate, err := authentication.NewCertificate(publicCertValid, privateCertValid)
+	require.NoError(err)
+	config := JourneyConfig{
+		certificateSigning:      certificate,
+		certificateTransport:    certificate,
+		clientID:                "client-id",
+		clientSecret:            "client-secret",
+		tokenEndpoint:           "https://bank/token",
+		tokenEndpointAuthMethod: authentication.PrivateKeyJwt,
+		resourceIDs: model.ResourceIDs{
+			AccountIDs:   []model.ResourceAccountID{{AccountID: "account-id"}},
+			StatementIDs: []model.ResourceStatementID{{StatementID: "statement-id"}},
+		},
+	}
+	require.NoError(journey.SetConfig(config))
+
+	// simulate state left behind by a previous run
+	journey.context.PutString("OB-400-VRP-100100-ConsentId", "stale-consent-id")
+	journey.context.PutString("vrpsToken0001", "stale-token")
+	journey.context.PutString("payment_ccg_token", "stale-ccg-token")
+	journey.permissions["vrps"] = []manifest.RequiredTokens{{Name: "vrpsToken0001"}}
+	journey.conditionalProperties = []discovery.ConditionalAPIProperties{{Name: "stale"}}
+	manifest.GetConsentJobs().Add(model.TestCase{ID: "OB-400-VRP-100100"})
+
+	_, err = journey.SetDiscoveryModel(discoveryModel)
+	require.NoError(err)
+
+	for _, key := range []string{"OB-400-VRP-100100-ConsentId", "vrpsToken0001", "payment_ccg_token"} {
+		_, ok := journey.context.Get(key)
+		require.False(ok, "stale key %s should be removed", key)
+	}
+	require.Empty(journey.permissions)
+	require.Nil(journey.conditionalProperties)
+	_, exists := manifest.GetConsentJobs().Get("OB-400-VRP-100100")
+	require.False(exists)
+
+	require.Equal(config, journey.config)
+	authMethod, err := journey.context.GetString(CtxConstTokenEndpointAuthMethod)
+	require.NoError(err)
+	require.Equal(authentication.PrivateKeyJwt, authMethod)
+	clientID, err := journey.context.GetString(CtxConstClientID)
+	require.NoError(err)
+	require.Equal("client-id", clientID)
+	tokenEndpoint, err := journey.context.GetString(CtxConstTokenEndpoint)
+	require.NoError(err)
+	require.Equal("https://bank/token", tokenEndpoint)
 }

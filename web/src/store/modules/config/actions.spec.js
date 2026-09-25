@@ -184,6 +184,95 @@ describe('validateDiscoveryConfig', () => {
   });
 });
 
+describe('validateDiscoveryConfig preserves user configuration on re-validation', () => {
+  const discoveryResponse = (overrides = {}) => ({
+    success: true,
+    problems: [],
+    response: {
+      token_endpoints: { a: 'https://bank/token' },
+      authorization_endpoints: { a: 'https://bank/auth' },
+      issuers: { a: 'https://bank' },
+      default_token_endpoint_auth_method: { a: 'client_secret_basic' },
+      token_endpoint_auth_methods: { a: ['client_secret_basic', 'private_key_jwt', 'tls_client_auth'] },
+      default_transaction_from_date: '2016-01-01T10:40:00+02:00',
+      default_transaction_to_date: '2025-12-31T10:40:00+02:00',
+      ...overrides,
+    },
+  });
+  const previousDefaults = {
+    token_endpoint: 'https://bank/token',
+    token_endpoint_auth_method: 'client_secret_basic',
+    authorization_endpoint: 'https://bank/auth',
+    issuer: 'https://bank',
+    transaction_from_date: '2016-01-01T10:40:00+02:00',
+    transaction_to_date: '2025-12-31T10:40:00+02:00',
+  };
+  let commit;
+  let dispatch;
+
+  beforeEach(() => {
+    commit = jest.fn();
+    dispatch = jest.fn();
+  });
+
+  afterEach(() => {
+    jest.resetAllMocks();
+  });
+
+  it('applies discovery defaults on first validation', async () => {
+    api.validateDiscoveryConfig.mockReturnValueOnce(discoveryResponse());
+    const state = {
+      discoveryModel: {},
+      discoveryDefaults: {},
+      configuration: { token_endpoint_auth_method: 'client_secret_basic' },
+    };
+    await actions.validateDiscoveryConfig({ commit, dispatch, state });
+    expect(commit).toHaveBeenCalledWith(types.SET_TOKEN_ENDPOINT, 'https://bank/token');
+    expect(commit).toHaveBeenCalledWith(types.SET_TOKEN_ENDPOINT_AUTH_METHOD, 'client_secret_basic');
+    expect(commit).toHaveBeenCalledWith(types.SET_ISSUER, 'https://bank');
+    expect(commit).toHaveBeenCalledWith(types.SET_DISCOVERY_DEFAULTS, previousDefaults);
+  });
+
+  it('keeps user-set values and updates untouched ones', async () => {
+    api.validateDiscoveryConfig.mockReturnValueOnce(discoveryResponse({
+      issuers: { a: 'https://bank/new-issuer' },
+    }));
+    const state = {
+      discoveryModel: {},
+      discoveryDefaults: previousDefaults,
+      configuration: {
+        token_endpoint: 'https://user/token',
+        token_endpoint_auth_method: 'private_key_jwt',
+        authorization_endpoint: 'https://user/auth',
+        issuer: 'https://bank',
+        transaction_from_date: '2020-01-01T00:00:00+00:00',
+        transaction_to_date: '2025-12-31T10:40:00+02:00',
+      },
+    };
+    await actions.validateDiscoveryConfig({ commit, dispatch, state });
+    expect(commit).not.toHaveBeenCalledWith(types.SET_TOKEN_ENDPOINT, expect.anything());
+    expect(commit).not.toHaveBeenCalledWith(types.SET_TOKEN_ENDPOINT_AUTH_METHOD, expect.anything());
+    expect(commit).not.toHaveBeenCalledWith(types.SET_AUTHORIZATION_ENDPOINT, expect.anything());
+    expect(commit).not.toHaveBeenCalledWith(types.SET_TRANSACTION_FROM_DATE, expect.anything());
+    expect(commit).toHaveBeenCalledWith(types.SET_ISSUER, 'https://bank/new-issuer');
+    expect(commit).toHaveBeenCalledWith(types.SET_TRANSACTION_TO_DATE, '2025-12-31T10:40:00+02:00');
+  });
+
+  it('falls back to the default auth method when the user choice is not supported', async () => {
+    api.validateDiscoveryConfig.mockReturnValueOnce(discoveryResponse({
+      token_endpoint_auth_methods: { a: ['client_secret_basic'] },
+    }));
+    const state = {
+      discoveryModel: {},
+      discoveryDefaults: previousDefaults,
+      configuration: { token_endpoint_auth_method: 'private_key_jwt' },
+    };
+    await actions.validateDiscoveryConfig({ commit, dispatch, state });
+    expect(commit).toHaveBeenCalledWith(types.SET_TOKEN_ENDPOINT_AUTH_METHOD, 'client_secret_basic');
+    expect(dispatch).toHaveBeenCalledWith('status/pushNotification', expect.any(Object), { root: true });
+  });
+});
+
 describe('v4 standing order frequency configuration', () => {
   let commit;
   let dispatch;

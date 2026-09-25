@@ -12,6 +12,9 @@ export const mutations = {
   [mutationTypes.DISCOVERY_MODEL_PROBLEMS](state, problems) {
     state.problems = problems;
   },
+  [mutationTypes.SET_DISCOVERY_DEFAULTS](state, defaults) {
+    state.discoveryDefaults = defaults;
+  },
 
   [mutationTypes.SET_CONFIGURATION](state, configuration) {
     state.configuration = configuration;
@@ -283,6 +286,7 @@ export const state = {
   discoveryTemplates: [],
   discoveryModel: null,
   problems: null,
+  discoveryDefaults: {},
   token_endpoint_auth_methods: [],
   request_object_signing_alg_values_supported: [],
   response_types_supported: [],
