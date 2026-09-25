@@ -1,5 +1,13 @@
 # Release history
 
+## Release [v1.12.0] TBD
+
+### Fixed
+
+- Fixed the Authorization header sometimes being missing from payment, VRP and CBPII requests after re-running tests without restarting the tool. State from previous runs (consent IDs, access tokens, consent jobs) is now cleared when a new discovery model is submitted, while the saved configuration is kept.
+- Configuration values set by the user (token endpoint, token endpoint auth method, authorization endpoint, issuer and transaction dates) are no longer reset to discovery defaults when the discovery model is re-submitted.
+- Corrected Product playback tests `OB-301-PRO-103403` and `OB-400-PRO-103403` to target the valid bulk Products endpoint `/products` instead of `/product`. This may cause the x-fapi-interaction-id playback check to run where it was previously skipped by discovery filtering.
+
 ## Release [v1.11.0] 18/09/2026
 
 This release incorporates the following changes:
@@ -519,7 +527,8 @@ v3.1 of the OBIE Accounts and Transactions specifications and Payments.
 ---
 
 [More Releases](docs/releases)
-[Unreleased]: https://github.com/OpenBankingUK/conformance-suite/compare/v1.10.0...HEAD
+[Unreleased]: https://github.com/OpenBankingUK/conformance-suite/compare/v1.12.0...HEAD
+[1.12.0]: https://github.com/OpenBankingUK/conformance-suite/compare/v1.11.0...v1.12.0
 [1.10.0]: https://github.com/OpenBankingUK/conformance-suite/compare/v1.9.9...v1.10.0
 [1.9.9]: https://github.com/OpenBankingUK/conformance-suite/compare/v1.9.8...v1.9.9
 [1.9.8]: https://github.com/OpenBankingUK/conformance-suite/compare/v1.9.8-beta1...v1.9.8
