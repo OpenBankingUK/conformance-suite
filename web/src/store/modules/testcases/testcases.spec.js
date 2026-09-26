@@ -207,6 +207,28 @@ describe('store/modules/testcases', () => {
       expect(dispatch).toHaveBeenCalledWith('config/setWizardStep', constants.WIZARD.STEP_FOUR, { root: true });
     });
 
+    it('testcases/computeTestCases clears the previous run before loading new test cases', async () => {
+      const store = createRealStore();
+      const connection = {
+        onmessage: jest.fn(), onerror: jest.fn(), onclose: jest.fn(), close: jest.fn(),
+      };
+      store.commit('SET_TEST_CASES', OK_RESPONSE.specCases);
+      store.commit('SET_HAS_RUN_STARTED', true);
+      store.commit('SET_TEST_CASES_COMPLETED', true);
+      store.commit('SET_WEBSOCKET_CONNECTION', connection);
+      store.commit('ADD_TOKEN_ACQUIRED', { type: 'ResultType_AcquiredAccessToken', value: { token_name: 'to1002' } });
+      store.commit('SET_ALL_TOKENS_ACQUIRED');
+
+      api.computeTestCases.mockRejectedValueOnce(ERROR_RESPONSE);
+      await actions.computeTestCases(store);
+
+      expect(connection.close).toHaveBeenCalled();
+      expect(store.state.hasRunStarted).toBe(false);
+      expect(store.state.test_cases_completed).toBe(false);
+      expect(store.state.tokens).toEqual({ acquired: [], all_acquired: false });
+      expect(store.state.ws.connection).toBeNull();
+    });
+
     it('testcases/computeTestCases sets config/errors.testCases, if unsuccessful', async () => {
       expect.assertions(6);
 

@@ -24,7 +24,6 @@ import (
 var (
 	errDiscoveryModelNotSet            = errors.New("error discovery model not set")
 	errTestCasesNotGenerated           = errors.New("error test cases not generated")
-	errTestCasesGenerated              = errors.New("error test cases already generated")
 	errNotFinishedCollectingTokens     = errors.New("error not finished collecting tokens")
 	errConsentIDAcquisitionFailed      = errors.New("ConsentId acquistion failed")
 	errDynamicResourceAllocationFailed = errors.New("Dynamic Resource allocation failed")
@@ -137,6 +136,7 @@ func (wj *AppJourney) SetDiscoveryModel(discoveryModel *discovery.Model) (discov
 	if err := wj.resetRunState(); err != nil {
 		return nil, errors.Wrap(err, "journey.SetDiscoveryModel: error resetting journey state")
 	}
+	wj.conditionalProperties = nil
 
 	if discoveryModel.DiscoveryModel.DiscoveryVersion == "v0.4.0" { // Conditional properties requires 0.4.0
 		//TODO: remove this constraint once support for v0.3.0 discovery model is dropped
@@ -163,7 +163,6 @@ func (wj *AppJourney) resetRunState() error {
 	wj.permissions = make(map[string][]manifest.RequiredTokens)
 	wj.specRun = generation.SpecRun{}
 	wj.filteredManifests = manifest.Scripts{}
-	wj.conditionalProperties = nil
 	wj.collector = nil
 	manifest.ResetConsentJobs()
 
@@ -248,11 +247,14 @@ func (wj *AppJourney) TestCases() (generation.SpecRun, error) {
 	}
 
 	if wj.testCasesRunGenerated {
-		logger.WithFields(logrus.Fields{
-			"err":                      errTestCasesGenerated,
-			"wj.testCasesRunGenerated": wj.testCasesRunGenerated,
-		}).Error("Error getting generation.TestCasesRun ...")
-		return generation.SpecRun{}, errTestCasesGenerated
+		// Returning to the test page (e.g. Back then Next on the config screen) regenerates the test cases,
+		// so consents from the previous generation, which may already be used, are not reused.
+		logger.Info("Test cases already generated, discarding previous run state and regenerating")
+		if err := wj.resetRunState(); err != nil {
+			return generation.SpecRun{}, errors.Wrap(err, "journey.TestCases: error resetting journey state")
+		}
+		wj.testCasesRunGenerated = false
+		wj.allCollected = false
 	}
 
 	jwksURI := authentication.GetJWKSUri()

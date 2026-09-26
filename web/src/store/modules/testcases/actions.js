@@ -73,14 +73,13 @@ export default {
    * retrieved test cases in the store.
    * Route: `/wizard/overview-run`.
    */
-  async computeTestCases({ commit, dispatch, state }) {
+  async computeTestCases({ commit, dispatch }) {
     try {
       const setShowLoading = flag => dispatch('status/setShowLoading', flag, { root: true });
       await api.stopTestRun(setShowLoading); // ensure any previous run is stopped
+      // The backend regenerates test cases and consents on every visit, so drop the previous run's state.
+      commit(types.RESET_RUN_STATE);
       const testCases = await api.computeTestCases(setShowLoading);
-      if (_.isEqual(testCases.specCases, state.testCases)) {
-        return;
-      }
 
       commit(types.SET_TEST_CASES, testCases.specCases);
       commit(types.SET_TEST_CASES_STATUS, '');
