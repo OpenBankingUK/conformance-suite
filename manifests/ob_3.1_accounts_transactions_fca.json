@@ -361,6 +361,31 @@
       "schemaCheck": false
     },
     {
+      "description": "Fails with a valid token that lacks the ReadBalances permission for Bulk Balances.",
+      "id": "OB-301-BAL-101501",
+      "refURI": "",
+      "detail": "Validates that the bulk balances resource is rejected when the access token was granted without the ReadBalances permission.",
+      "parameters": {
+        "tokenRequestScope": "accounts"
+      },
+      "permissions": [
+        "ReadAccountsBasic"
+      ],
+      "permissions-excluded": [
+        "ReadBalances"
+      ],
+      "uri": "/balances",
+      "uriImplementation": "optional",
+      "resource": "Balance",
+      "method": "get",
+      "asserts": [],
+      "asserts_one_of": [
+        "OB3GLOAssertOn400",
+        "OB3GLOAssertOn403"
+      ],
+      "schemaCheck": false
+    },
+    {
       "description": "Fails when account is invalid for Balances.",
       "id": "OB-301-BAL-101600",
       "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1000702294/Read+Write+Data+API+Specification+-+v3.1.1#Read/WriteDataAPISpecification-v3.1.1-400(BadRequest)v/s404(NotFound)",
@@ -554,6 +579,32 @@
       "schemaCheck": false
     },
     {
+      "description": "Fails with a valid token that lacks the Beneficiaries permissions for Bulk Beneficiaries.",
+      "id": "OB-301-BEN-102001",
+      "refURI": "",
+      "detail": "Validates that the bulk beneficiaries resource is rejected when the access token was granted without the ReadBeneficiariesBasic or ReadBeneficiariesDetail permissions.",
+      "parameters": {
+        "tokenRequestScope": "accounts"
+      },
+      "permissions": [
+        "ReadAccountsBasic"
+      ],
+      "permissions-excluded": [
+        "ReadBeneficiariesBasic",
+        "ReadBeneficiariesDetail"
+      ],
+      "uri": "/beneficiaries",
+      "uriImplementation": "optional",
+      "resource": "Beneficiary",
+      "method": "get",
+      "asserts": [],
+      "asserts_one_of": [
+        "OB3GLOAssertOn400",
+        "OB3GLOAssertOn403"
+      ],
+      "schemaCheck": false
+    },
+    {
       "description": "Fails given incorrect permission is provided for a Beneficiary.",
       "id": "OB-301-BEN-102100",
       "refURI": "",
@@ -572,6 +623,33 @@
       "method": "get",
       "asserts": [
         "OB3GLOAssertOn401"
+      ],
+      "schemaCheck": false
+    },
+    {
+      "description": "Fails with a valid token that lacks the Beneficiaries permissions for a given Account's Beneficiaries.",
+      "id": "OB-301-BEN-102101",
+      "refURI": "",
+      "detail": "Validates that the account beneficiaries resource is rejected when the access token was granted without the ReadBeneficiariesBasic or ReadBeneficiariesDetail permissions.",
+      "parameters": {
+        "tokenRequestScope": "accounts",
+        "accountId": "$consentedAccountId"
+      },
+      "permissions": [
+        "ReadAccountsBasic"
+      ],
+      "permissions-excluded": [
+        "ReadBeneficiariesBasic",
+        "ReadBeneficiariesDetail"
+      ],
+      "uri": "/accounts/$accountId/beneficiaries",
+      "uriImplementation": "conditional",
+      "resource": "Beneficiary",
+      "method": "get",
+      "asserts": [],
+      "asserts_one_of": [
+        "OB3GLOAssertOn400",
+        "OB3GLOAssertOn403"
       ],
       "schemaCheck": false
     },
@@ -1339,6 +1417,83 @@
       "schemaCheck": false
     },
     {
+      "description": "Fails with a valid token that lacks the ReadParty permission for a given Account's Party.",
+      "id": "OB-301-PAR-103109",
+      "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937984104/Party+v3.1#Partyv3.1-PermissionCodes",
+      "detail": "Validates that the account party resource is rejected when the access token was granted without the ReadParty permission.",
+      "parameters": {
+        "tokenRequestScope": "accounts",
+        "accountId": "$consentedAccountId"
+      },
+      "permissions": [
+        "ReadAccountsBasic"
+      ],
+      "permissions-excluded": [
+        "ReadParty"
+      ],
+      "uri": "/accounts/$accountId/party",
+      "uriImplementation": "conditional",
+      "resource": "Party",
+      "method": "get",
+      "asserts": [],
+      "asserts_one_of": [
+        "OB3GLOAssertOn400",
+        "OB3GLOAssertOn403"
+      ],
+      "schemaCheck": false
+    },
+    {
+      "description": "Fails with a valid token that lacks the ReadParty permission for a given Account's Parties.",
+      "id": "OB-301-PAR-103110",
+      "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937984104/Party+v3.1#Partyv3.1-PermissionCodes",
+      "detail": "Validates that the account parties resource is rejected when the access token was granted without the ReadParty permission.",
+      "parameters": {
+        "tokenRequestScope": "accounts",
+        "accountId": "$consentedAccountId"
+      },
+      "permissions": [
+        "ReadAccountsBasic"
+      ],
+      "permissions-excluded": [
+        "ReadParty"
+      ],
+      "uri": "/accounts/$accountId/parties",
+      "uriImplementation": "conditional",
+      "resource": "Party",
+      "method": "get",
+      "asserts": [],
+      "asserts_one_of": [
+        "OB3GLOAssertOn400",
+        "OB3GLOAssertOn403"
+      ],
+      "schemaCheck": false
+    },
+    {
+      "description": "Fails with a valid token that lacks the ReadPartyPSU permission for Bulk Party.",
+      "id": "OB-301-PAR-103111",
+      "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/1000015561/Parties+v3.1.1#Partiesv3.1.1-GET/party",
+      "detail": "Validates that the bulk party resource is rejected when the access token was granted without the ReadPartyPSU permission.",
+      "parameters": {
+        "tokenRequestScope": "accounts"
+      },
+      "permissions": [
+        "ReadAccountsBasic"
+      ],
+      "permissions-excluded": [
+        "ReadPartyPSU"
+      ],
+      "uri": "/party",
+      "uriImplementation": "conditional",
+      "resource": "Party",
+      "method": "get",
+      "asserts": [],
+      "asserts_one_of": [
+        "OB3GLOAssertOn400",
+        "OB3GLOAssertOn403"
+      ],
+      "schemaCheck": false
+    },
+    {
       "description": "All data returned for a given account with ReadProducts permission with additional schema checks, status and headers.",
       "id": "OB-301-PRO-103200",
       "refURI": "https://openbanking.atlassian.net/wiki/spaces/DZ/pages/937820288/Products+v3.1#Productsv3.1-PermissionCodes",
@@ -2051,6 +2206,35 @@
       "schemaCheck": false
     },
     {
+      "description": "Fails with a valid token that lacks the Transactions permissions for a given Account's Transactions.",
+      "id": "OB-301-TRA-105301",
+      "refURI": "",
+      "detail": "Validates that the account transactions resource is rejected when the access token was granted without any ReadTransactions permissions.",
+      "parameters": {
+        "tokenRequestScope": "accounts",
+        "accountId": "$consentedAccountId"
+      },
+      "permissions": [
+        "ReadAccountsBasic"
+      ],
+      "permissions-excluded": [
+        "ReadTransactionsBasic",
+        "ReadTransactionsDetail",
+        "ReadTransactionsDebits",
+        "ReadTransactionsCredits"
+      ],
+      "uri": "/accounts/$accountId/transactions",
+      "uriImplementation": "mandatory",
+      "resource": "Transaction",
+      "method": "get",
+      "asserts": [],
+      "asserts_one_of": [
+        "OB3GLOAssertOn400",
+        "OB3GLOAssertOn403"
+      ],
+      "schemaCheck": false
+    },
+    {
       "description": "Fails using incorrect permissions for Bulk Transaction.",
       "id": "OB-301-TRA-105400",
       "refURI": "",
@@ -2064,6 +2248,34 @@
       "method": "get",
       "asserts": [
         "OB3GLOAssertOn401"
+      ],
+      "schemaCheck": false
+    },
+    {
+      "description": "Fails with a valid token that lacks the Transactions permissions for Bulk Transactions.",
+      "id": "OB-301-TRA-105401",
+      "refURI": "",
+      "detail": "Validates that the bulk transactions resource is rejected when the access token was granted without any ReadTransactions permissions.",
+      "parameters": {
+        "tokenRequestScope": "accounts"
+      },
+      "permissions": [
+        "ReadAccountsBasic"
+      ],
+      "permissions-excluded": [
+        "ReadTransactionsBasic",
+        "ReadTransactionsDetail",
+        "ReadTransactionsDebits",
+        "ReadTransactionsCredits"
+      ],
+      "uri": "/transactions",
+      "uriImplementation": "optional",
+      "resource": "Transaction",
+      "method": "get",
+      "asserts": [],
+      "asserts_one_of": [
+        "OB3GLOAssertOn400",
+        "OB3GLOAssertOn403"
       ],
       "schemaCheck": false
     },
