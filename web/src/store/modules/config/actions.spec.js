@@ -120,6 +120,11 @@ describe('validateDiscoveryConfig', () => {
       await actions.validateDiscoveryConfig({ commit, dispatch, state });
       expect(dispatch).toHaveBeenCalledWith('status/clearErrors', null, { root: true });
     });
+
+    it('resets the previous test run', async () => {
+      await actions.validateDiscoveryConfig({ commit, dispatch, state });
+      expect(dispatch).toHaveBeenCalledWith('testcases/resetRunState', null, { root: true });
+    });
   });
 
   describe('when validation fails with problem messages', () => {
@@ -156,6 +161,11 @@ describe('validateDiscoveryConfig', () => {
       await actions.validateDiscoveryConfig({ commit, dispatch, state });
       const expected = [problems[0].error, problems[1].error];
       expect(dispatch).toHaveBeenCalledWith('status/setErrors', expected, { root: true });
+    });
+
+    it('does not reset the previous test run', async () => {
+      await actions.validateDiscoveryConfig({ commit, dispatch, state });
+      expect(dispatch).not.toHaveBeenCalledWith('testcases/resetRunState', null, { root: true });
     });
   });
 

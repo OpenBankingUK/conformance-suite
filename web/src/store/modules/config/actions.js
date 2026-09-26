@@ -112,6 +112,8 @@ export default {
         applyDefault('transaction_from_date', types.SET_TRANSACTION_FROM_DATE, response.default_transaction_from_date);
         applyDefault('transaction_to_date', types.SET_TRANSACTION_TO_DATE, response.default_transaction_to_date);
         commit(types.SET_DISCOVERY_DEFAULTS, appliedDefaults);
+        // The backend resets its run state when discovery is validated, so the previous run's results must go too.
+        dispatch('testcases/resetRunState', null, { root: true });
 
         dispatch('status/clearErrors', null, { root: true });
         commit(types.SET_WIZARD_STEP, constants.WIZARD.STEP_THREE);

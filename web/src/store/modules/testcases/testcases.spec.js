@@ -122,6 +122,35 @@ describe('store/modules/testcases', () => {
     expect(store.state.testCases).toEqual([]);
   });
 
+  describe('testcases/resetRunState', () => {
+    it('clears the previous run so the next run can be started', async () => {
+      const store = createRealStore();
+      const connection = {
+        onmessage: jest.fn(), onerror: jest.fn(), onclose: jest.fn(), close: jest.fn(),
+      };
+      store.commit('SET_TEST_CASES', OK_RESPONSE.specCases);
+      store.commit('SET_CONSENT_URLS', { [SPEC_NAME]: [CONSENT_URL] });
+      store.commit('SET_HAS_RUN_STARTED', true);
+      store.commit('SET_TEST_CASES_COMPLETED', true);
+      store.commit('SET_WEBSOCKET_CONNECTION', connection);
+      store.commit('SET_WEBSOCKET_MESSAGE', { test: { id: '#t1000', pass: true } });
+      store.commit('ADD_TOKEN_ACQUIRED', { type: 'ResultType_AcquiredAccessToken', value: { token_name: 'to1002' } });
+      store.commit('SET_ALL_TOKENS_ACQUIRED');
+
+      await actions.resetRunState(store);
+
+      expect(connection.close).toHaveBeenCalled();
+      expect(connection.onmessage).toBeNull();
+      expect(store.state.testCases).toEqual([]);
+      expect(store.state.consentUrls).toEqual({});
+      expect(store.state.hasRunStarted).toBe(false);
+      expect(store.state.test_cases_completed).toBe(false);
+      expect(store.state.ws).toEqual({ connection: null, messages: [] });
+      expect(store.state.tokens).toEqual({ acquired: [], all_acquired: false });
+      expect(store.getters.wsConnected).toBe(false);
+    });
+  });
+
   describe('testcases/computeTestCases', () => {
     const ERROR_RESPONSE = {
       error: 'error generation test cases, discovery model not set',

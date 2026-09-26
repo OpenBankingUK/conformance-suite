@@ -63,6 +63,12 @@ const consentUrls = (specTokens) => {
 
 export default {
   /**
+   * Clears results, tokens and run progress from a previous run, e.g. when a new discovery is loaded.
+   */
+  resetRunState({ commit }) {
+    commit(types.RESET_RUN_STATE);
+  },
+  /**
    * Step 4: Calls /api/test-cases to get all the test cases, then sets the
    * retrieved test cases in the store.
    * Route: `/wizard/overview-run`.
