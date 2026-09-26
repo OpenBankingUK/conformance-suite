@@ -33,5 +33,4 @@ jobs:
           push: true
           # Publish only the pushed git tag, never `latest`.
           tags: openbanking/conformance-suite:${{ github.ref_name }}
-          # Keep a plain single-platform image, as previously produced by Docker Hub Autobuild.
-          provenance: false
+          provenance: mode=max
