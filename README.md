@@ -48,11 +48,11 @@ To provide feedback, please see the [CONTRIBUTING.md](CONTRIBUTING.md).
 
 Pull and run the latest (stable) tagged Docker image:
 
-    > docker run --rm -it -p 127.0.0.1:8443:8443 "openbanking/conformance-suite:v1.12.0"
+    > docker run --rm -it -p 127.0.0.1:8443:8443 "openbanking/conformance-suite:v1.12.0-beta1"
 
 or
 
-    > docker run --rm -it -p 8443:8443 "openbanking/conformance-suite:v1.12.0"
+    > docker run --rm -it -p 8443:8443 "openbanking/conformance-suite:v1.12.0-beta1"
 [See Setup Guide](https://github.com/OpenBankingUK/conformance-suite/blob/develop/docs/setup-guide.md)
 
 ### Prerequisites
