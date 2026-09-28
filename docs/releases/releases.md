@@ -1,6 +1,6 @@
 # Release history
 
-## Release [v1.12.0] TBD
+## Release [v1.12.0-beta1] 2026-09-28
 
 ### Added
 
@@ -14,13 +14,24 @@
   - `PAR-103110` - `/accounts/{AccountId}/parties` without `ReadParty`
   - `PAR-103111` - `/party` without `ReadPartyPSU`
 - These tests need one additional account access consent to be authorised during Account and Transaction runs.
-- The existing "incorrect permissions" tests (`ACC-100500`, `ACC-100600`, `BAL-101500`, `BEN-102000`, `BEN-102100`, `PAR-103103`, `TRA-105300`, `TRA-105400`) are unchanged. They are sent without an access token, so they check the "no token" response rather than insufficient permissions. No equivalent new tests are added for `/accounts` and `/accounts/{AccountId}`, because every valid consent must include `ReadAccountsBasic` or `ReadAccountsDetail`, both of which grant access to those endpoints.
 
-### Fixed
+## Fixed
 
 - Fixed the Authorization header sometimes being missing from payment, VRP and CBPII requests after re-running tests without restarting the tool. State from previous runs (consent IDs, access tokens, consent jobs) is now cleared when a new discovery model is submitted, while the saved configuration is kept.
 - Configuration values set by the user (token endpoint, token endpoint auth method, authorization endpoint, issuer and transaction dates) are no longer reset to discovery defaults when the discovery model is re-submitted.
+- Fixed the Overview page showing an "Export" button instead of "Run" after a completed run when a new discovery and configuration were loaded. Clicking it returned the user to the home page. Test results, tokens and run progress from the previous run are now cleared when a new discovery model is submitted.
+- Fixed `error test cases already generated` being shown when returning to the test page, for example after going Back and then Next on the configuration screen. Test cases are now regenerated, keeping the saved configuration, and consents must be authorised again.
 - Corrected Product playback tests `OB-301-PRO-103403` and `OB-400-PRO-103403` to target the valid bulk Products endpoint `/products` instead of `/product`. This may cause the x-fapi-interaction-id playback check to run where it was previously skipped by discovery filtering.
+
+## Deprecated
+
+The following Account and Transaction tests may be removed in a future release. Each applies to both v3.1 (`OB-301-`) and v4.0 (`OB-400-`):
+
+| Test | Supplanted by |
+| --- | --- |
+| `ACC-100500` | `ACC-101000` |
+| `ACC-100600` | `ACC-101100` |
+| `PAR-103103` | `PAR-103109`, `PAR-103110`, `PAR-103111` |
 
 ## Release [v1.11.0] 18/09/2026
 
