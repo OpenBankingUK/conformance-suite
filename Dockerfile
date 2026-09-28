@@ -1,49 +1,39 @@
-# Image to compile go binaries
-FROM golang:1.21-alpine as gobuilder
+# syntax=docker/dockerfile:1
+
+# Image to compile Go binaries
+FROM --platform=$BUILDPLATFORM golang:1.21-alpine AS gobuilder
+
+ARG TARGETOS
+ARG TARGETARCH
+
 RUN apk add --no-cache --update --upgrade \
-	bash \
-	git \
-	make
+    bash \
+    git \
+    make
 
-# 1. disable crosscompiling
-# 2. compile linux only
-# 3. target x64_64
-#
-# A normal compiled app is dynamically linked to the libraries it needs to run (i.e., all the C libraries it binds to).
-# Unfortunately, scratch is empty, so there are no libraries and no loadpath for it to look in. What we have to do is modify our build script to statically compile our app with all libraries built in.
-#
-# https://github.com/AlessioCoser/minimal-docker-container-for-golang
 ENV CGO_ENABLED=0
-ENV GOOS=linux
-ENV GOARCH=amd64
 
-# For caching technique, see: https://medium.com/@petomalina/using-go-mod-download-to-speed-up-golang-docker-builds-707591336888
-
-# All these steps will be cached
 RUN mkdir /app
 WORKDIR /app
-# COPY go.mod and go.sum files to the workspace
+
 COPY go.mod .
 COPY go.sum .
-# Get dependancies - will also be cached if we won't change mod/sum
+
 RUN go mod download
-# COPY the source code as the last step
+
 COPY . .
 
-# Build the binary
-RUN make build
-RUN make build_cli
+RUN GOOS=${TARGETOS} GOARCH=${TARGETARCH} make build
+RUN GOOS=${TARGETOS} GOARCH=${TARGETARCH} make build_cli
 
-# Image to compile Single Page Application of the Vue.js site
-FROM node:14-alpine as nodebuilder
+
+# Image to compile Single Page Application
+FROM --platform=$BUILDPLATFORM node:14-alpine AS nodebuilder
+
 WORKDIR /app
 
-# This is to that JavaScript code can import code defined in the Go side, e.g.,
-# '../../../../../pkg/discovery/templates/ob-v3.1-generic.json'
-# '../../../pkg/model/testdata/spec-config.golden.json'
 COPY pkg/discovery/templates/*.json /pkg/discovery/templates/
 COPY pkg/model/testdata/*.json /pkg/model/testdata/
-# Copy all spec version folders in one shot - no manual update needed when new versions are added.
 COPY pkg/schema/spec/ /pkg/schema/spec/
 COPY web .
 
@@ -51,27 +41,30 @@ ENV FORCE_COLOR=1
 ENV NODE_DISABLE_COLORS=0
 
 RUN yarn install --frozen-lockfile --non-interactive \
-	&& NODE_ENV=production yarn build
+    && NODE_ENV=production yarn build
 
-# Certificates needed if you are building a networking application
-FROM alpine:latest as certs
+
+FROM alpine:latest AS certs
+
 RUN apk add --no-cache --update --upgrade ca-certificates
 
-# Final image to run the binary
+
 FROM alpine:3.18.6
+
 RUN apk add --no-cache --update --upgrade \
-	bash \
-	coreutils \
-	curl \
-	emacs \
-	git \
-	jq \
-	openssl \
-	tree \
-	wget \
-	vim
+    bash \
+    coreutils \
+    curl \
+    emacs \
+    git \
+    jq \
+    openssl \
+    tree \
+    wget \
+    vim
 
 LABEL MAINTAINER="Open Banking"
+
 COPY --from=certs /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
 
 WORKDIR /app
@@ -83,7 +76,6 @@ COPY --from=gobuilder /app/components /app/components
 COPY --from=gobuilder /app/manifests /app/manifests
 COPY --from=nodebuilder /app/dist /app/web/dist
 
-# Copy all spec version folders in one shot - no manual update needed when new versions are added.
 COPY pkg/schema/spec/ /app/pkg/schema/spec/
 
 EXPOSE 8443
