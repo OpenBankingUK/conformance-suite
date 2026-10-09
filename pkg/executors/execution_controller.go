@@ -130,10 +130,7 @@ func (r *TestCaseRunner) runConsentAcquisitionAsync(item TokenConsentIDItem, ctx
 		r.logger.WithError(err).Error("running consent acquisition async")
 	}
 
-	ruleCtx := r.makeRuleCtx(ctx)
-	ruleCtx.PutString("consent_id", item.TokenName)
-	ruleCtx.PutString("token_name", item.TokenName)
-	ruleCtx.PutString("permission_list", item.Permissions)
+	ruleCtx := r.makeConsentAcquisitionCtx(ctx, item)
 
 	ctxLogger := r.logger.WithField("id", uuid.New())
 	var comp model.Component
@@ -349,6 +346,17 @@ func (r *TestCaseRunner) setNotRunning() {
 func (r *TestCaseRunner) makeRuleCtx(ctx *model.Context) *model.Context {
 	ruleCtx := &model.Context{}
 	ruleCtx.PutContext(ctx)
+	return ruleCtx
+}
+
+func (r *TestCaseRunner) makeConsentAcquisitionCtx(ctx *model.Context, item TokenConsentIDItem) *model.Context {
+	ruleCtx := r.makeRuleCtx(ctx)
+	ruleCtx.PutString("consent_id", item.TokenName)
+	ruleCtx.PutString("token_name", item.TokenName)
+	ruleCtx.PutString("permission_list", item.Permissions)
+	// Drop any token left by an earlier consent flow (e.g. a payments CCG token) so the
+	// account consent request uses the accounts token acquired by this component.
+	ruleCtx.Delete("client_access_token")
 	return ruleCtx
 }
 

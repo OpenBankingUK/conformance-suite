@@ -1,5 +1,14 @@
 # Release history
 
+## Release [v1.12.0-beta2] 2026-10-09
+
+Includes all changes from v1.12.0-beta1, plus:
+
+### Fixed
+
+- Fixed Account and Transaction consent acquisition sometimes failing with `403` (for example `Required scope accounts missing on token`) when payment, VRP or CBPII resource groups were run in the same test run. The account access consent request could reuse the client credentials token obtained for a payment consent, depending on the order consents were acquired in. A fresh `accounts` token is now always used.
+- Clicking a "PSU Consent" link on the test run page no longer scrolls the page back to the top, so multiple consents can be authorised without losing your place.
+
 ## Release [v1.12.0-beta1] 2026-09-28
 
 ### Added
