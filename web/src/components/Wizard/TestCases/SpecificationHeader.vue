@@ -36,7 +36,7 @@
             :title="url"
             class="psu-consent-link"
             href="#"
-            @click="startPsuConsent(url)">
+            @click.prevent="startPsuConsent(url)">
             PSU Consent
           </a>
           <span :key="'s' + index">
@@ -45,7 +45,7 @@
               v-show="mobileConsent && localCallbackUrls[tokenName(url)] != null && !acquired(tokenName(url))"
               href="#"
               title="Use when popup blocker cause the callback handling to stop."
-              @click="openPopup(localCallbackUrls[tokenName(url)])"> Open local callback url</a></small>
+              @click.prevent="openPopup(localCallbackUrls[tokenName(url)])"> Open local callback url</a></small>
           </span>
           <br :key="index">
         </template>
