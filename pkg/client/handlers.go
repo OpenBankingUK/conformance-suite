@@ -2,6 +2,7 @@ package client
 
 import (
 	"encoding/json"
+
 	"github.com/pkg/errors"
 )
 
@@ -59,9 +60,9 @@ type TestCaseResult struct {
 
 // TestCase result for a run
 type TestCase struct {
-	Id   string `json:"id"`
-	Pass bool   `json:"pass"`
-	Fail string `json:"fail,omitempty"`
+	Id   string   `json:"id"`
+	Pass bool     `json:"pass"`
+	Fail []string `json:"fail,omitempty"`
 }
 
 type event struct {
