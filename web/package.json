@@ -47,7 +47,7 @@
     "@types/urijs": "^1.15.38",
     "@vue/cli-plugin-babel": "^3.0.5",
     "@vue/cli-plugin-eslint": "^3.0.5",
-    "@vue/cli-plugin-unit-jest": "4.0.4",
+    "@vue/cli-plugin-unit-jest": "5.0.0",
     "@vue/cli-service": "^3.0.5",
     "@vue/eslint-config-airbnb": "^4.0.0",
     "@vue/test-utils": "^1.0.0-beta.20",
