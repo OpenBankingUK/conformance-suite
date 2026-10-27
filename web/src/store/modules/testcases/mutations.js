@@ -90,4 +90,26 @@ export default {
   [types.SET_ALL_TOKENS_ACQUIRED](state) {
     state.tokens.all_acquired = true;
   },
+  [types.RESET_RUN_STATE](state) {
+    const { connection } = state.ws;
+    if (connection) {
+      // Detach handlers so a stale connection cannot update the new run.
+      connection.onmessage = null;
+      connection.onerror = null;
+      connection.onclose = null;
+      connection.close();
+    }
+    state.testCases = [];
+    state.consentUrls = {};
+    state.hasRunStarted = false;
+    state.test_cases_completed = false;
+    state.ws = {
+      connection: null,
+      messages: [],
+    };
+    state.tokens = {
+      acquired: [],
+      all_acquired: false,
+    };
+  },
 };

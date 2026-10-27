@@ -1,5 +1,47 @@
 # Release history
 
+## Release [v1.12.0-beta2] 2026-10-09
+
+Includes all changes from v1.12.0-beta1, plus:
+
+### Fixed
+
+- Fixed Account and Transaction consent acquisition sometimes failing with `403` (for example `Required scope accounts missing on token`) when payment, VRP or CBPII resource groups were run in the same test run. The account access consent request could reuse the client credentials token obtained for a payment consent, depending on the order consents were acquired in. A fresh `accounts` token is now always used.
+- Clicking a "PSU Consent" link on the test run page no longer scrolls the page back to the top, so multiple consents can be authorised without losing your place.
+
+## Release [v1.12.0-beta1] 2026-09-28
+
+### Added
+
+- New Account and Transaction tests that check a valid access token without the required permission is rejected with `400` or `403`. Each is added for v3.1 (`OB-301-`) and v4.0 (`OB-400-`), using a consent with `ReadAccountsBasic` and without the resource permission:
+  - `BAL-101501` - `/balances` without `ReadBalances`
+  - `BEN-102001` - `/beneficiaries` without `ReadBeneficiariesBasic`/`ReadBeneficiariesDetail`
+  - `BEN-102101` - `/accounts/{AccountId}/beneficiaries` without `ReadBeneficiariesBasic`/`ReadBeneficiariesDetail`
+  - `TRA-105301` - `/accounts/{AccountId}/transactions` without any `ReadTransactions*` permission
+  - `TRA-105401` - `/transactions` without any `ReadTransactions*` permission
+  - `PAR-103109` - `/accounts/{AccountId}/party` without `ReadParty`
+  - `PAR-103110` - `/accounts/{AccountId}/parties` without `ReadParty`
+  - `PAR-103111` - `/party` without `ReadPartyPSU`
+- These tests need one additional account access consent to be authorised during Account and Transaction runs.
+
+## Fixed
+
+- Fixed the Authorization header sometimes being missing from payment, VRP and CBPII requests after re-running tests without restarting the tool. State from previous runs (consent IDs, access tokens, consent jobs) is now cleared when a new discovery model is submitted, while the saved configuration is kept.
+- Configuration values set by the user (token endpoint, token endpoint auth method, authorization endpoint, issuer and transaction dates) are no longer reset to discovery defaults when the discovery model is re-submitted.
+- Fixed the Overview page showing an "Export" button instead of "Run" after a completed run when a new discovery and configuration were loaded. Clicking it returned the user to the home page. Test results, tokens and run progress from the previous run are now cleared when a new discovery model is submitted.
+- Fixed `error test cases already generated` being shown when returning to the test page, for example after going Back and then Next on the configuration screen. Test cases are now regenerated, keeping the saved configuration, and consents must be authorised again.
+- Corrected Product playback tests `OB-301-PRO-103403` and `OB-400-PRO-103403` to target the valid bulk Products endpoint `/products` instead of `/product`. This may cause the x-fapi-interaction-id playback check to run where it was previously skipped by discovery filtering.
+
+## Deprecated
+
+The following Account and Transaction tests may be removed in a future release. Each applies to both v3.1 (`OB-301-`) and v4.0 (`OB-400-`):
+
+| Test | Supplanted by |
+| --- | --- |
+| `ACC-100500` | `ACC-101000` |
+| `ACC-100600` | `ACC-101100` |
+| `PAR-103103` | `PAR-103109`, `PAR-103110`, `PAR-103111` |
+
 ## Release [v1.11.0] 18/09/2026
 
 This release incorporates the following changes:
@@ -519,7 +561,8 @@ v3.1 of the OBIE Accounts and Transactions specifications and Payments.
 ---
 
 [More Releases](docs/releases)
-[Unreleased]: https://github.com/OpenBankingUK/conformance-suite/compare/v1.10.0...HEAD
+[Unreleased]: https://github.com/OpenBankingUK/conformance-suite/compare/v1.12.0...HEAD
+[1.12.0]: https://github.com/OpenBankingUK/conformance-suite/compare/v1.11.0...v1.12.0
 [1.10.0]: https://github.com/OpenBankingUK/conformance-suite/compare/v1.9.9...v1.10.0
 [1.9.9]: https://github.com/OpenBankingUK/conformance-suite/compare/v1.9.8...v1.9.9
 [1.9.8]: https://github.com/OpenBankingUK/conformance-suite/compare/v1.9.8-beta1...v1.9.8

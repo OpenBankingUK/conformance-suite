@@ -318,3 +318,34 @@ func TestUnMappedManifestItemsReportedCorrectly(t *testing.T) {
 
 	require.Equal(exp, unmatched)
 }
+
+func TestProductPlaybackTestUsesBulkProductsEndpoint(t *testing.T) {
+	require := test.NewRequire(t)
+
+	testCases := []struct {
+		manifestPath string
+		testID       string
+	}{
+		{"file://manifests/ob_3.1_accounts_transactions_fca.json", "OB-301-PRO-103403"},
+		{"file://manifests/ob_4.0_accounts_transactions_fca.json", "OB-400-PRO-103403"},
+	}
+
+	for _, tc := range testCases {
+		scripts, err := LoadScripts(tc.manifestPath)
+		require.Nil(err)
+
+		found := false
+		for _, script := range scripts.Scripts {
+			if script.ID != tc.testID {
+				continue
+			}
+
+			found = true
+			require.Equal("/products", script.URI)
+			require.Equal("get", script.Method)
+			require.Equal("optional", script.URIImplemenation)
+		}
+
+		require.True(found)
+	}
+}
