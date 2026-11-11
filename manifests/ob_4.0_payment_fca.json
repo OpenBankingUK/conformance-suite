@@ -109,10 +109,10 @@
         "validateSignature": true
       },
       {
-        "description": "Domestic Payment Consent without signature fails with the correct error message.",
+        "description": "Domestic Payment Consent without a request signature returns HTTP 400 and error code U019.",
         "id": "OB-316-DOP-100310",
         "refURI": "https://openbankinguk.github.io/read-write-api-site3/v4.0/profiles/payment-initiation-api-profile.html",
-        "detail": "Check that the ASPSP returns the error code 400 and correct error in the response 'UK.OBIE.Signature.Missing' when the request doesn't contain the header 'x-jws-signature'.",
+        "detail": "The suite deliberately omits the request 'x-jws-signature' header. Expect HTTP 400 with Errors[].ErrorCode 'U019' (the v4 missing-signature code, not the legacy v3 code 'UK.OBIE.Signature.Missing'). The 'Message' wording is not standardised and is not matched by this test. Schema validation also checks the error response body and required response headers, including 'x-jws-signature' and 'x-fapi-interaction-id'. The ASPSP must still sign the error response; a missing response header failure is separate from the deliberately omitted request signature. Check the exact validation error and response headers when debugging.",
         "apiVersion": ">=3.1.5",
         "parameters": {
           "tokenRequestScope": "payments",

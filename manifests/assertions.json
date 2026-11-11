@@ -247,7 +247,7 @@
         "matches": [{
           "JSON": "Errors.#[ErrorCode=\"U019\"].ErrorCode",
           "Value": "U019",
-          "detail": "Expected a specific error code for missing signature."
+          "description": "Expected Errors[].ErrorCode 'U019' for a missing request 'x-jws-signature' header in v4. The 'Message' wording is not matched; the legacy v3 error code 'UK.OBIE.Signature.Missing' is not expected."
         }]
       }
     },
