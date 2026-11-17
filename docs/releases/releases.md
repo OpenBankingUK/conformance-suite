@@ -1,5 +1,38 @@
 # Release history
 
+## Release [v1.13.0-beta1] 2026-11-17
+
+Includes all changes from v1.12.0-beta2, plus the following. This is a security and dependency maintenance release. Test cases, discovery models, configuration, and report and configuration export are unchanged. See [v1.13.0-beta1](v1.13.0-beta1.md) for the full notes.
+
+### Security
+
+- Rebuilt the Docker image (`linux/amd64` and `linux/arm64`) on Go 1.26 (previously Go 1.21) and `alpine:3.24.4` (previously `alpine:3.24.3`).
+- Upgraded vulnerable Go dependencies, including `echo/v4` (4.11.3 to 4.16.4), `kin-openapi` (0.128.0 to 0.149.0), `jwx` (1.0.2 to 1.2.29), `golang-jwt/jwt/v5` (5.2.0 to 5.2.2), `gorilla/websocket` (1.4.1 to 1.5.3), `golang.org/x/net` (0.25.0 to 0.62.0), `golang.org/x/crypto` (0.23.0 to 0.59.0) and `logrus` (1.4.0 to 1.8.3).
+- Removed `github.com/refraction-networking/utls`. The TLS version check used when a proxy is configured now uses the Go standard library `crypto/tls`.
+- The tool's HTTPS listener now requires TLS 1.2 or later and no longer offers static-RSA key exchange or 3DES cipher suites. ECDHE cipher suites, including ECDHE-CBC, are still offered.
+- Removed the `git`, `wget` and `coreutils` packages from the Docker image. BusyBox still provides the common commands, including `ls`, `cp`, `sort` and `wget`.
+
+### Changed
+
+- Building from source now requires Go 1.26.11 or later. With the default `GOTOOLCHAIN=auto`, `go` downloads the required toolchain automatically.
+- `/favicon.ico` is now served with the content type `image/vnd.microsoft.icon` (previously `image/x-icon`).
+- WebSocket handshakes with an invalid `Sec-WebSocket-Key` are now rejected with `400`. Valid clients are unaffected.
+- A few error and log messages that include text containing `%` now show that text literally instead of treating it as a format directive.
+
+### Fixed
+
+- Fixed a possible crash (`fatal error: concurrent map writes`) while acquiring consents. Concurrent consent workers wrote to the shared run context at the same time. Each worker now returns its client access token, and the tokens are merged once all workers have finished.
+- Fixed a data race in the response property collector that could crash the tool or produce inconsistent collected-property data when several requests were processed at the same time.
+
+### Known limitations
+
+Deferred Docker Scout findings, not resolved or suppressed in this release:
+
+- musl libc `1.2.6-r3` (CVE-2026-107891, High). Scout reports a fix in `1.2.6-r6`, which is not available in the stable Alpine 3.24 repository. Alpine's own security database lists the installed version as fixed.
+- `echo/v4` `4.16.4` (CVE-2026-118651 / GO-2026-6875 and CVE-2026-118653 / GO-2026-6872, Medium). No Echo v4 fix is available, and the affected proxy and rate-limiter middleware are not used by the tool. Fixing this needs a migration to Echo v5, which is out of scope.
+- OpenSSL command-line tool `3.5.9-r0` (five unrated advisories). The `openssl` command remains in the image and is not invoked by the tool. The fixed Alpine package (`3.5.9-r1`) is not yet available for Alpine 3.24.
+- The investigation into client-side TLS certificate verification (`InsecureSkipVerify`) is deferred and tracked in [#357](https://github.com/OpenBankingUK/conformance-suite/pull/357).
+
 ## Release [v1.12.0-beta2] 2026-10-09
 
 Includes all changes from v1.12.0-beta1, plus:

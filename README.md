@@ -16,13 +16,13 @@ To provide feedback, please see the [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Release Notes
 
-### v1.12.0 - Beta 2 - 2026-10-09
+### v1.13.0 - Beta 1 - 2026-11-17
 
 [Full Release Notes](https://github.com/OpenBankingUK/conformance-suite/blob/develop/docs/releases/releases.md)
 
 ---
 **Download**:
-`docker run --rm -it -p 127.0.0.1:8443:8443 "openbanking/conformance-suite:v1.12.0-beta2"` |
+`docker run --rm -it -p 127.0.0.1:8443:8443 "openbanking/conformance-suite:v1.13.0-beta1"` |
 [DockerHub](https://hub.docker.com/r/openbanking/conformance-suite) |
 [Setup Guide](https://github.com/OpenBankingUK/conformance-suite/blob/develop/docs/setup-guide.md)
 ---
@@ -31,6 +31,7 @@ To provide feedback, please see the [CONTRIBUTING.md](CONTRIBUTING.md).
 
 | Release | Standard version |
 | --- | --- |
+| v1.13.0 | <ul><li>v4.0.1 Update 1</li><li>cVRP (based on OBL 4.0.1)</li></ul> |
 | v1.12.0 | <ul><li>v4.0.1 Update 1</li><li>cVRP (based on OBL 4.0.1)</li></ul> |
 | v1.11.0 | <ul><li>v4.0.1 Update 1</li><li>cVRP (based on OBL 4.0.1)</li></ul> |
 | v1.10.0 | v4.0.1 |
@@ -48,11 +49,11 @@ To provide feedback, please see the [CONTRIBUTING.md](CONTRIBUTING.md).
 
 Pull and run the latest (stable) tagged Docker image:
 
-    > docker run --rm -it -p 127.0.0.1:8443:8443 "openbanking/conformance-suite:v1.12.0-beta2"
+    > docker run --rm -it -p 127.0.0.1:8443:8443 "openbanking/conformance-suite:v1.13.0-beta1"
 
 or
 
-    > docker run --rm -it -p 8443:8443 "openbanking/conformance-suite:v1.12.0-beta2"
+    > docker run --rm -it -p 8443:8443 "openbanking/conformance-suite:v1.13.0-beta1"
 [See Setup Guide](https://github.com/OpenBankingUK/conformance-suite/blob/develop/docs/setup-guide.md)
 
 ### Prerequisites
