@@ -45,7 +45,7 @@ func TestTesterResopd(t *testing.T) {
 	err = validateTestResponse(t, req, resp, router)
 	assert.NoError(t, err)
 	if err != nil {
-		t.Logf(err.Error())
+		t.Log(err.Error())
 	}
 }
 
@@ -67,7 +67,7 @@ func TestVRPPost(t *testing.T) {
 	sl := openapi3.NewLoader()
 	doc, err := sl.LoadFromFile(filename)
 	require.NoError(t, err)
-	err = doc.Validate(context.Background())
+	err = doc.Validate(context.Background(), openapi3.AllowExtraSiblingFields("description"))
 	require.NoError(t, err)
 
 	resp := ResponseWrapper{
@@ -87,7 +87,7 @@ func TestVRPPost(t *testing.T) {
 		URL:    "/open-banking/v3.1/pisp/domestic-vrp-consents",
 	}
 
-	router, _ = legacyrouter.NewRouter(doc)
+	router, _ = legacyrouter.NewRouter(doc, openapi3.AllowExtraSiblingFields("description"))
 	require.NotNil(t, router)
 
 	err = validateTestResponse(t, req, resp, router)

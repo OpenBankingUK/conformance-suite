@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1
 
 # Image to compile Go binaries
-FROM --platform=$BUILDPLATFORM golang:1.21-alpine AS gobuilder
+FROM --platform=$BUILDPLATFORM golang:1.26-alpine AS gobuilder
 
 ARG TARGETOS
 ARG TARGETARCH
@@ -49,17 +49,14 @@ FROM alpine:latest AS certs
 RUN apk add --no-cache --update --upgrade ca-certificates
 
 # Final image to run the binary
-FROM alpine:3.24.3
+FROM alpine:3.24.4
 RUN apk add --no-cache --update --upgrade \
     bash \
-    coreutils \
     curl \
     emacs \
-    git \
     jq \
     openssl \
     tree \
-    wget \
     vim
 
 LABEL MAINTAINER="Open Banking"

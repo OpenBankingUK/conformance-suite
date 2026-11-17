@@ -154,19 +154,64 @@ func TestServerHTTPS(t *testing.T) {
 	// For how random port works: https://github.com/labstack/echo/issues/1065#issuecomment-367961653
 
 	// Start HTTPS server
+	listener, err := net.Listen("tcp", "127.0.0.1:0")
+	require.NoError(err)
+	tcpAddr, ok := listener.Addr().(*net.TCPAddr)
+	require.True(ok)
+	address := net.JoinHostPort("127.0.0.1", fmt.Sprint(tcpAddr.Port))
+	require.NoError(listener.Close())
+
 	go func() {
-		require.EqualError(server.StartTLS(":0", certFile, keyFile), "http: Server closed")
+		require.EqualError(server.StartTLS(address, certFile, keyFile), "http: Server closed")
 	}()
 	time.Sleep(100 * time.Millisecond)
 
-	tcpAddr, ok := server.TLSListener.Addr().(*net.TCPAddr)
-	require.True(ok)
-	require.NotNil(tcpAddr)
-	url := fmt.Sprintf("https://localhost:%d/", tcpAddr.Port)
+	url := fmt.Sprintf("https://127.0.0.1:%d/", tcpAddr.Port)
 	res, err := httpClient.Get(url)
 	require.NoError(err)
 	require.NotNil(res)
 	require.Equal(http.StatusOK, res.StatusCode)
+
+	for _, version := range []uint16{tls.VersionTLS10, tls.VersionTLS11} {
+		conn, err := tls.Dial("tcp", address, &tls.Config{
+			InsecureSkipVerify: true,
+			MinVersion:         version,
+			MaxVersion:         version,
+		})
+		if err == nil {
+			_ = conn.Close()
+		}
+		require.Error(err)
+	}
+
+	conn, err := tls.Dial("tcp", address, &tls.Config{
+		InsecureSkipVerify: true,
+		MinVersion:         tls.VersionTLS12,
+		MaxVersion:         tls.VersionTLS12,
+		CipherSuites:       []uint16{tls.TLS_RSA_WITH_AES_128_GCM_SHA256},
+	})
+	if err == nil {
+		_ = conn.Close()
+	}
+	require.Error(err)
+
+	conn, err = tls.Dial("tcp", address, &tls.Config{
+		InsecureSkipVerify: true,
+		MinVersion:         tls.VersionTLS12,
+		MaxVersion:         tls.VersionTLS12,
+		CipherSuites:       []uint16{tls.TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256},
+	})
+	require.NoError(err)
+	require.NoError(conn.Close())
+
+	conn, err = tls.Dial("tcp", address, &tls.Config{
+		InsecureSkipVerify: true,
+		MinVersion:         tls.VersionTLS12,
+		MaxVersion:         tls.VersionTLS12,
+		CipherSuites:       []uint16{tls.TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA},
+	})
+	require.NoError(err)
+	require.NoError(conn.Close())
 
 	require.NotNil(res.Body)
 	defer func() {

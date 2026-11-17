@@ -24,7 +24,7 @@ func getPaymentConsents(definition RunDefinition, requiredTokens []manifest.Requ
 
 	requiredTokens, err = runPaymentConsents(requiredTokens, ctx, executor)
 	if err != nil {
-		logrus.Errorf("getPaymentConsents error: " + err.Error())
+		logrus.Errorf("getPaymentConsents error: %s", err.Error())
 	}
 
 	consentItems := make([]TokenConsentIDItem, 0)

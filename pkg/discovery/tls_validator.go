@@ -8,7 +8,6 @@ import (
 
 	"github.com/magisterquis/connectproxy"
 	"github.com/pkg/errors"
-	utls "github.com/refraction-networking/utls"
 	"golang.org/x/net/http/httpproxy"
 	"golang.org/x/net/proxy"
 )
@@ -107,7 +106,7 @@ func getConnectionState(addr string, tlsConfig *tls.Config) (tls.ConnectionState
 	return state, nil
 }
 
-func getProxyConnectionState(addr string, InsecureSkipVerify bool) (utls.ConnectionState, error) {
+func getProxyConnectionState(addr string, InsecureSkipVerify bool) (tls.ConnectionState, error) {
 	var proxyStr string
 
 	if httpsProxy := httpproxy.FromEnvironment().HTTPSProxy; httpsProxy != "" {
@@ -121,7 +120,7 @@ func getProxyConnectionState(addr string, InsecureSkipVerify bool) (utls.Connect
 	if proxyStr != "" {
 		uris, err := url.Parse(proxyStr)
 		if err != nil {
-			return utls.ConnectionState{}, errors.Wrap(err, "unable to parse proxy URL")
+			return tls.ConnectionState{}, errors.Wrap(err, "unable to parse proxy URL")
 		}
 
 		proxyTLSConfig := &connectproxy.Config{
@@ -130,30 +129,35 @@ func getProxyConnectionState(addr string, InsecureSkipVerify bool) (utls.Connect
 
 		proxyDialer, err := connectproxy.NewWithConfig(uris, proxy.Direct, proxyTLSConfig)
 		if err != nil {
-			return utls.ConnectionState{}, errors.Wrapf(err, "unable to detect tls version for hostname %s using proxy", addr)
+			return tls.ConnectionState{}, errors.Wrapf(err, "unable to detect tls version for hostname %s using proxy", addr)
 		}
 
 		conn, err := proxyDialer.Dial("tcp", addr)
 		if err != nil {
-			return utls.ConnectionState{}, errors.Wrapf(err, "unable to detect tls version for hostname %s using proxy", addr)
+			return tls.ConnectionState{}, errors.Wrapf(err, "unable to detect tls version for hostname %s using proxy", addr)
 		}
 
 		defer conn.Close()
 
-		config := utls.Config{InsecureSkipVerify: true, Renegotiation: utls.RenegotiateFreelyAsClient}
-		uconn := utls.UClient(conn, &config, utls.HelloRandomizedALPN)
+		// No ServerName (so no SNI) and h2/http/1.1 ALPN match the hello sent previously.
+		// MinVersion TLS 1.0 keeps servers limited to TLS 1.0/1.1 detectable.
+		config := tls.Config{
+			InsecureSkipVerify: true,
+			MinVersion:         tls.VersionTLS10,
+			NextProtos:         []string{"h2", "http/1.1"},
+			Renegotiation:      tls.RenegotiateFreelyAsClient,
+		}
+		tlsConn := tls.Client(conn, &config)
 
-		err = uconn.Handshake()
+		err = tlsConn.Handshake()
 		if err != nil {
-			return utls.ConnectionState{}, errors.Wrapf(err, "unable to Handshake utls")
+			return tls.ConnectionState{}, errors.Wrapf(err, "unable to Handshake tls")
 		}
 
-		state := uconn.ConnectionState()
-
-		return state, nil
+		return tlsConn.ConnectionState(), nil
 	}
 
-	return utls.ConnectionState{}, nil
+	return tls.ConnectionState{}, nil
 }
 
 func tlsVersionToString(v uint16) (string, error) {

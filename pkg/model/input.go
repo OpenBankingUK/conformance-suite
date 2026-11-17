@@ -154,7 +154,7 @@ func (i *Input) setClaims(tc *TestCase, ctx *Context) error {
 
 			tc.Input.Endpoint = consent           // Result - set jwt token in endpoint url
 			ctx.PutString("consent_url", consent) // make consent available in context
-			logrus.Tracef("===> consentURL: " + consent)
+			logrus.Tracef("===> consentURL: %s", consent)
 			i.AppMsg("consent url: " + tc.Input.Endpoint)
 			if i.Generation["strategy"] == "psuConsenturl" {
 				tc.Input.Endpoint = i.Claims["aud"] + "/PsuDummyURL"

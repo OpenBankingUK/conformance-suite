@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"regexp"
+	"sync"
 	"testing"
 
 	"github.com/sirupsen/logrus"
@@ -88,6 +89,35 @@ func TestMergeUnnamedApiThenMerge(t *testing.T) {
 	assert.Contains(t, result, "MyFatMergeField")
 	fmt.Println(result)
 
+}
+
+func TestCollectPropertiesConcurrent(t *testing.T) {
+	c := MakeCollector()
+	c.SetCollectorAPIDetails("myapi", "v3.1.0")
+
+	const collectors = 32
+	var wg sync.WaitGroup
+	wg.Add(collectors + 2)
+
+	for i := 0; i < collectors; i++ {
+		go func(i int) {
+			defer wg.Done()
+			endpoint := fmt.Sprintf("https://myserver/open-banking/3.1/aisp/accounts/%d", i)
+			body := fmt.Sprintf(`{"field":"value-%d"}`, i)
+			c.CollectProperties("GET", endpoint, body, 200)
+		}(i)
+	}
+
+	for i := 0; i < 2; i++ {
+		go func() {
+			defer wg.Done()
+			c.GetProperties()
+			c.OutputJSON()
+		}()
+	}
+
+	wg.Wait()
+	assert.Len(t, c.GetProperties(), collectors)
 }
 
 var (

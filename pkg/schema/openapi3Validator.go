@@ -99,12 +99,18 @@ func getRouterForSpec(specName, version string) (routers.Router, *openapi3.T, er
 		return nil, nil, fmt.Errorf("cannot Load OpenApi Spec from file %s, %s", filename, err)
 	}
 
-	err = doc.Validate(context.Background(), openapi3.SetRegexCompiler(regexp2Compiler))
+	// Older kin-openapi silently ignored "description" next to a $ref; the VRP specs rely on that.
+	validationOpts := []openapi3.ValidationOption{
+		openapi3.SetRegexCompiler(regexp2Compiler),
+		openapi3.AllowExtraSiblingFields("description"),
+	}
+
+	err = doc.Validate(context.Background(), validationOpts...)
 	if err != nil {
 		return nil, nil, fmt.Errorf("cannot Load OpenApi Spec from file %s, %s", filename, err)
 	}
 
-	router, err := legacyrouter.NewRouter(doc, openapi3.SetRegexCompiler(regexp2Compiler))
+	router, err := legacyrouter.NewRouter(doc, validationOpts...)
 	if err != nil {
 		return nil, nil, fmt.Errorf("cannot Load OpenApi Router for %s file %s", specName, filename)
 	}
@@ -210,16 +216,19 @@ func (v OpenAPI3Validator) validateResponse(params validateParams) error {
 		Route:      params.route,
 	}
 
+	options := &openapi3filter.Options{
+		ExcludeRequestBody:    true,
+		IncludeResponseStatus: true,
+		MultiError:            false,
+		RegexCompiler:         regexp2Compiler,
+	}
+	options.WithCustomSchemaErrorFunc(legacyAllOfMessage)
+
 	responseValidationInput := &openapi3filter.ResponseValidationInput{
 		RequestValidationInput: requestValidationInput,
 		Status:                 params.statusCode,
-		Header:                 params.header,
-		Options: &openapi3filter.Options{
-			ExcludeRequestBody:    true,
-			IncludeResponseStatus: true,
-			MultiError:            false,
-			RegexCompiler:         regexp2Compiler,
-		},
+		Header:                 emptyHeaderValuesAsNull(params.header),
+		Options:                options,
 	}
 
 	if len(params.body) > 0 {

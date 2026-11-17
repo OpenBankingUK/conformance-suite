@@ -64,7 +64,7 @@ func getPaymentHeadlessTokens(paymentTests []model.TestCase, ctx *model.Context,
 
 	requiredTokens, err = runPaymentConsents(requiredTokens, ctx, &executor)
 	if err != nil {
-		logger.Errorf("getPaymentConsents error: " + err.Error())
+		logger.Errorf("getPaymentConsents error: %s", err.Error())
 	}
 
 	tokendata, err := CallPaymentHeadlessConsentUrls(&requiredTokens, ctx, logger)
@@ -251,7 +251,7 @@ func getHeadlessTokenComponent(ctx *model.Context) (*model.Component, error) {
 	}
 	comp, err := model.LoadComponent(fmt.Sprintf("headlessTokenProviderComponent%s.json", consentProviderVersionSuffix))
 	if err != nil {
-		return &comp, fmt.Errorf("error loading headlessTokenProvider component:" + err.Error())
+		return &comp, fmt.Errorf("error loading headlessTokenProvider component:%s", err.Error())
 	}
 	
 	return &comp, nil
@@ -270,7 +270,7 @@ func executeComponent(ctx *model.Context, executor TestCaseExecutor) (*model.Con
 	if err != nil {
 		msg := fmt.Sprintf("error validating headlesstTokenProvider component %s", err.Error())
 		logrus.Debug(msg)
-		return &model.Context{}, fmt.Errorf(msg)
+		return &model.Context{}, fmt.Errorf("%s", msg)
 	}
 
 	tests := comp.GetTests()

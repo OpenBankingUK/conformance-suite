@@ -9,6 +9,7 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+	"sync"
 
 	"github.com/sirupsen/logrus"
 )
@@ -21,6 +22,7 @@ type PropertyCollector interface {
 }
 
 type Collector struct {
+	mu         sync.Mutex
 	level      int
 	currentApi int
 	path       []string
@@ -57,13 +59,14 @@ var ConsentGathering = "ConsentGathering"
 var subPathx = "[a-zA-Z0-9_{}-]+" // url sub path regex
 
 var (
-	collector PropertyCollector
+	collectorOnce sync.Once
+	collector     PropertyCollector
 )
 
 func GetPropertyCollector() PropertyCollector {
-	if collector == nil {
+	collectorOnce.Do(func() {
 		collector = MakeCollector()
-	}
+	})
 	return collector
 }
 
@@ -75,14 +78,31 @@ func MakeCollector() PropertyCollector {
 }
 
 func (c *Collector) SetCollectorAPIDetails(api, version string) {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	c.setCollectorAPIDetails(api, version)
+}
+
+func (c *Collector) setCollectorAPIDetails(api, version string) {
 	p := PropertyOutput{Api: api, Version: version}
 	p.endpoints = make(map[string]map[string]int, 0)
 	c.Apis = append(c.Apis, p)
 	c.currentApi = len(c.Apis) - 1
 }
 
-func (c Collector) GetProperties() map[string]map[string]int {
-	return c.Apis[c.currentApi].endpoints
+func (c *Collector) GetProperties() map[string]map[string]int {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+
+	properties := make(map[string]map[string]int, len(c.Apis[c.currentApi].endpoints))
+	for endpoint, fields := range c.Apis[c.currentApi].endpoints {
+		fieldCopy := make(map[string]int, len(fields))
+		for field, value := range fields {
+			fieldCopy[field] = value
+		}
+		properties[endpoint] = fieldCopy
+	}
+	return properties
 }
 
 func sortEndpoints(m map[string]map[string]int) []string {
@@ -118,9 +138,12 @@ func sortPathStrings(m map[string]string) []string {
 }
 
 func (c *Collector) CollectProperties(method, endpoint, body string, code int) {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+
 	if len(c.Apis) == 0 {
 		logrus.Warnln("Warning no API defined yet")
-		c.SetCollectorAPIDetails("undefined", "0.0")
+		c.setCollectorAPIDetails("undefined", "0.0")
 	}
 
 	requestPaths := make(map[string]int, 20)
@@ -197,7 +220,10 @@ func (c *Collector) expand(i interface{}, m map[string]int) {
 	c.level--
 }
 
-func (c Collector) OutputJSON() string {
+func (c *Collector) OutputJSON() string {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+
 	apis := c.Apis
 	var err error
 
@@ -270,7 +296,7 @@ func (c Collector) OutputJSON() string {
 	return "{ \n\"responseFields\": " + string(jsondata) + "\n}"
 }
 
-func (c Collector) addConsentsToApiGroup(group string, consents, api *PropertyOutput) {
+func (c *Collector) addConsentsToApiGroup(group string, consents, api *PropertyOutput) {
 	for k, _ := range consents.endpoints {
 		_, path, _ := c.parseEndpoint(k)
 		apigroup, _ := FindApi(path)
@@ -286,7 +312,10 @@ func (c Collector) addConsentsToApiGroup(group string, consents, api *PropertyOu
 
 }
 
-func (c Collector) OutputJSON1() string {
+func (c *Collector) OutputJSON1() string {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+
 	apis := c.Apis
 	var err error
 	for i, api := range apis {

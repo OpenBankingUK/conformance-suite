@@ -113,12 +113,19 @@ func getAccountConsents(definition RunDefinition, permissions []manifest.Require
 	}
 
 	consentItems, err := waitForConsentIDs(consentIDChannel, len(tokenParameters))
+	storeConsentItems(ctx, consentItems, logger)
+	logrus.Debugf("we have %d consentIds: %#v", len(consentItems), consentItems)
+	return consentItems, tokenParameters, err
+}
+
+func storeConsentItems(ctx *model.Context, consentItems TokenConsentIDs, logger *logrus.Entry) {
 	for _, v := range consentItems {
 		logger.Debugf("Setting Token: %s, ConsentId: %s", v.TokenName, v.ConsentID)
 		ctx.PutString(v.TokenName, v.ConsentID)
+		if v.AccessToken != "" {
+			ctx.PutString("client_access_token", v.AccessToken)
+		}
 	}
-	logrus.Debugf("we have %d consentIds: %#v", len(consentItems), consentItems)
-	return consentItems, tokenParameters, err
 }
 
 func waitForConsentIDs(consentIDChannel chan TokenConsentIDItem, consentIDsRequired int) (TokenConsentIDs, error) {

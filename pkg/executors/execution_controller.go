@@ -182,13 +182,6 @@ func (r *TestCaseRunner) runConsentAcquisitionAsync(item TokenConsentIDItem, ctx
 	}
 
 	r.executeComponentTests(&comp, ruleCtx, ctxLogger, item, consentIDChannel, authMethod)
-	clientGrantToken, err := ruleCtx.GetString("client_access_token")
-	if err == nil {
-		logrus.StandardLogger().WithFields(logrus.Fields{
-			"clientGrantToken": clientGrantToken,
-		}).Debugf("Setting client_access_token")
-		ctx.PutString("client_access_token", clientGrantToken)
-	}
 
 	r.setNotRunning()
 }
@@ -314,6 +307,7 @@ func (r *TestCaseRunner) executeComponentTests(comp *model.Component, ruleCtx *m
 				}).Warn("Did not find consentID in context for item.TokenName")
 			}
 			item.ConsentID = consentID
+			item.AccessToken, _ = ruleCtx.GetString("client_access_token")
 
 			ctxLogger.WithFields(logrus.Fields{
 				"item": fmt.Sprintf("%#v", item),

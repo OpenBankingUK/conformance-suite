@@ -63,7 +63,7 @@ func TestInputParametersMissing(t *testing.T) {
 	}
 	err = c.ValidateParameters(&ctx)
 	assert.NotNil(t, err)
-	t.Logf(err.Error())
+	t.Log(err.Error())
 }
 
 func TestOutputParametersMissing(t *testing.T) {
@@ -82,7 +82,7 @@ func TestOutputParametersMissing(t *testing.T) {
 	}
 	err = c.ValidateParameters(&ctx)
 	assert.NotNil(t, err)
-	t.Logf(err.Error())
+	t.Log(err.Error())
 }
 
 func TestComponentGetTests(t *testing.T) {

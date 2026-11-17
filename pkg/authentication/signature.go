@@ -12,7 +12,7 @@ import (
 
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/lestrrat-go/jwx/jwa"
-	"github.com/lestrrat-go/jwx/jws/verify"
+	"github.com/lestrrat-go/jwx/jws"
 	"github.com/shopspring/decimal"
 	"github.com/sirupsen/logrus"
 )
@@ -235,7 +235,7 @@ func ValidateSignatureHeader(token string, b64 bool) error {
 
 	err := json.Unmarshal(decodedPayload, &tokenHeader)
 	if err != nil {
-		return fmt.Errorf("ValidateSignatureHeader: cannot convert header into JSON: " + err.Error())
+		return fmt.Errorf("ValidateSignatureHeader: cannot convert header into JSON: %s", err.Error())
 	}
 
 	dumpJSON(tokenHeader)
@@ -362,7 +362,7 @@ func containsAllElements(source, elements []string) bool {
 // If the verification is successful, `err` is nil, and the content of the
 // payload that was signed is returned.
 func JWSVerify(buf string, alg jwa.SignatureAlgorithm, key interface{}, b64 bool) (ret []byte, err error) {
-	verifier, err := verify.New(alg)
+	verifier, err := jws.NewVerifier(alg)
 	if err != nil {
 		return nil, errors.New("failed to create verifier")
 	}

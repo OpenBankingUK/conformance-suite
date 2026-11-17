@@ -1,6 +1,8 @@
 package server
 
 import (
+	"crypto/tls"
+	"os"
 	"strings"
 
 	"math"
@@ -31,6 +33,7 @@ func NewServer(journey Journey, logger *logrus.Entry, version version.Checker) *
 		version: version,
 	}
 	server.Validator = newEchoValidatorAdapter()
+	server.JSONSerializer = legacyJSONSerializer{}
 	server.HideBanner = true
 	server.HidePort = true
 
@@ -76,6 +79,57 @@ func NewServer(journey Journey, logger *logrus.Entry, version version.Checker) *
 	registerRoutes(journey, server, logger, version)
 
 	return server
+}
+
+func (server *Server) StartTLS(address string, certFile, keyFile interface{}) error {
+	certData, err := tlsServerInput(certFile)
+	if err != nil {
+		return err
+	}
+	keyData, err := tlsServerInput(keyFile)
+	if err != nil {
+		return err
+	}
+	cert, err := tls.X509KeyPair(certData, keyData)
+	if err != nil {
+		return err
+	}
+
+	tlsConfig := &tls.Config{
+		MinVersion: tls.VersionTLS12,
+		Certificates: []tls.Certificate{
+			cert,
+		},
+		CipherSuites: []uint16{
+			tls.TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,
+			tls.TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,
+			tls.TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA,
+			tls.TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384,
+			tls.TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,
+			tls.TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA,
+			tls.TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256,
+			tls.TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256,
+		},
+	}
+	if !server.DisableHTTP2 {
+		tlsConfig.NextProtos = append(tlsConfig.NextProtos, "h2")
+	}
+
+	tlsServer := server.TLSServer
+	tlsServer.Addr = address
+	tlsServer.TLSConfig = tlsConfig
+	return server.StartServer(tlsServer)
+}
+
+func tlsServerInput(fileOrContent interface{}) ([]byte, error) {
+	switch value := fileOrContent.(type) {
+	case string:
+		return os.ReadFile(value)
+	case []byte:
+		return value, nil
+	default:
+		return nil, echo.ErrInvalidCertOrKeyType
+	}
 }
 
 func registerRoutes(journey Journey, server *Server, logger *logrus.Entry, version version.Checker) {

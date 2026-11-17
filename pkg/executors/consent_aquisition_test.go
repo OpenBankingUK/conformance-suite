@@ -4,7 +4,10 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/OpenBankingUK/conformance-suite/pkg/model"
+	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestBuildParameters(t *testing.T) {
@@ -27,4 +30,20 @@ func TestBuildParameters(t *testing.T) {
 	assert.Equal(t, ``, buildstr)
 	fmt.Println(buildstr)
 
+}
+
+func TestStoreConsentItemsCopiesTokenAndClientAccessToken(t *testing.T) {
+	ctx := &model.Context{}
+	items := TokenConsentIDs{
+		{TokenName: "accountsToken", ConsentID: "consent-123", AccessToken: "access-token"},
+	}
+
+	storeConsentItems(ctx, items, logrus.NewEntry(logrus.New()))
+
+	consentID, err := ctx.GetString("accountsToken")
+	require.NoError(t, err)
+	assert.Equal(t, "consent-123", consentID)
+	accessToken, err := ctx.GetString("client_access_token")
+	require.NoError(t, err)
+	assert.Equal(t, "access-token", accessToken)
 }

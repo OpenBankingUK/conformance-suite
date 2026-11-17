@@ -93,7 +93,7 @@ func TestOzone314SignatureString(t *testing.T) {
 	segments := strings.Split(OzoneTestSignature, ".")
 	token := jwt.New(jwt.SigningMethodHS256)
 	segments[1] = token.EncodeSegment([]byte(OzoneResponseBody))
-	logrus.Printf(strings.Join(segments, "."))
+	logrus.Print(strings.Join(segments, "."))
 
 	pubkey, err := LoadRSAPublicKeyFromDisk("../../../certs/waiver007/DKePOLAOiXLwYhMfLS8aS6YU-d0.pem")
 	if err != nil {
@@ -104,7 +104,7 @@ func TestOzone314SignatureString(t *testing.T) {
 	modulus := pubkey.N.Bytes()
 	modulusBase64 := base64.RawURLEncoding.EncodeToString(modulus)
 	kid, err := authentication.CalcKid(modulusBase64)
-	logrus.Infof("kid: " + kid)
+	logrus.Infof("kid: %s", kid)
 	err = signingMethod.Verify(strings.Join(segments[:2], "."), []byte(segments[2]), pubkey)
 	logrus.Error(err)
 }

@@ -519,7 +519,7 @@ func FilterTestsBasedOnDiscoveryEndpointsPlayground(scripts Scripts, endpoints [
 			stripped := strings.Replace(scr.URI, "$", "", -1) // only works with a single character
 			matched, err := regexp.MatchString(regpath.Regex, stripped)
 			if err != nil {
-				fmt.Printf("matching err " + err.Error())
+				fmt.Printf("matching err %s", err.Error())
 				continue
 			}
 			if matched {
