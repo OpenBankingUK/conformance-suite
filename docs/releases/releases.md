@@ -1,5 +1,11 @@
 # Release history
 
+## Unreleased - v1.12.0 beta
+
+### Changed
+
+- Clarified v4 payment test `OB-316-DOP-100310`: omitting the request `x-jws-signature` must result in HTTP `400` with `Errors[].ErrorCode` of `U019`, not the legacy v3 code `UK.OBIE.Signature.Missing`. The test description and assertion guidance now explain that `Message` wording is not matched. The test details also distinguish the deliberately missing request signature from required error-response headers (`x-jws-signature` and `x-fapi-interaction-id`) to help diagnose schema-validation failures. Test IDs and pass/fail behaviour are unchanged.
+
 ## Release [v1.12.0-beta2] 2026-10-09
 
 Includes all changes from v1.12.0-beta1, plus:
