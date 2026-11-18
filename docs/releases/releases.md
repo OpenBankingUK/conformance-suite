@@ -1,10 +1,16 @@
 # Release history
 
-## Unreleased - v1.12.0 beta
+## Release [v1.12.0] 2026-11-18
+
+Includes all changes from v1.12.0-beta1 and v1.12.0-beta2, plus the following. See [v1.12.0](v1.12.0.md) for the full notes covering all changes since v1.11.0.
 
 ### Changed
 
 - Clarified v4 payment test `OB-316-DOP-100310`: omitting the request `x-jws-signature` must result in HTTP `400` with `Errors[].ErrorCode` of `U019`, not the legacy v3 code `UK.OBIE.Signature.Missing`. The test description and assertion guidance now explain that `Message` wording is not matched. The test details also distinguish the deliberately missing request signature from required error-response headers (`x-jws-signature` and `x-fapi-interaction-id`) to help diagnose schema-validation failures. Test IDs and pass/fail behaviour are unchanged.
+
+### Security
+
+- Updated the Docker image's runtime base image from `alpine:3.18.6` to `alpine:3.24.3` to address vulnerabilities in `musl`, `openssl` and `busybox`.
 
 ## Release [v1.12.0-beta2] 2026-10-09
 
