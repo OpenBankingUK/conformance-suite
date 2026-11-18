@@ -16,6 +16,7 @@ import (
 
 	"github.com/OpenBankingUK/conformance-suite/pkg/discovery"
 	"github.com/OpenBankingUK/conformance-suite/pkg/model"
+	"github.com/OpenBankingUK/conformance-suite/pkg/test"
 )
 
 func readVrpDiscoveryEndpoints() ([]discovery.ModelEndpoint, error) {
@@ -284,6 +285,124 @@ func findTestCaseByID(t *testing.T, tests []model.TestCase, id string) model.Tes
 	}
 	t.Fatalf("test case %s not found", id)
 	return model.TestCase{}
+}
+
+func TestV4MissingRequestSignature(t *testing.T) {
+	for _, version := range []string{"v4.0.0", "v4.0.1"} {
+		t.Run(version, func(t *testing.T) {
+			ctx := &model.Context{}
+			ctx.PutStringSlice("apiversions", []string{"payments_" + version})
+			scripts, refs, err := LoadGenerationResources("payments", "file://manifests/ob_4.0_payment_fca.json", ctx)
+			if !assert.NoError(t, err) {
+				return
+			}
+
+			var script Script
+			for _, candidate := range scripts.Scripts {
+				if candidate.ID == "OB-316-DOP-100310" {
+					script = candidate
+					break
+				}
+			}
+			if !assert.Equal(t, "OB-316-DOP-100310", script.ID) {
+				return
+			}
+
+			apiSpec := discovery.ModelAPISpecification{Name: "Payment Initiation API", Version: version}
+			validator, err := schema.NewSwaggerOBSpecValidator(apiSpec.Name, version)
+			if !assert.NoError(t, err) {
+				return
+			}
+			tc, err := buildTestCase(script, refs.References, ctx, "https://example.com", "payments", validator, apiSpec, "interaction-id")
+			if !assert.NoError(t, err) {
+				return
+			}
+
+			assert.Contains(t, tc.Name, "HTTP 400 and error code U019")
+			assert.Contains(t, tc.Detail, "deliberately omits the request 'x-jws-signature' header")
+			assert.Contains(t, tc.Detail, "'Message' wording is not standardised")
+			assert.Contains(t, tc.Detail, "required response headers")
+			assert.Equal(t, tc.Detail, tc.Purpose)
+			assert.Equal(t, []string{"x-jws-signature"}, tc.Input.RemoveHeaders)
+			assert.True(t, tc.Expect.SchemaValidation)
+			assert.False(t, tc.ValidateSignature)
+			if assert.Len(t, tc.Expect.Matches, 1) {
+				assert.Contains(t, tc.Expect.Matches[0].Description, "Expected Errors[].ErrorCode 'U019'")
+			}
+
+			cases := []struct {
+				name          string
+				status        int
+				body          string
+				missingHeader string
+				expectedError string
+			}{
+				{
+					name:   "accepts U019 with ASPSP message wording",
+					status: 400,
+					body:   `{"Errors":[{"ErrorCode":"U019","Message":"Signature validation failed"}]}`,
+				},
+				{
+					name:   "accepts U019 without a message",
+					status: 400,
+					body:   `{"Errors":[{"ErrorCode":"U019"}]}`,
+				},
+				{
+					name:   "accepts U019 with legacy wording only in the message",
+					status: 400,
+					body:   `{"Errors":[{"ErrorCode":"U019","Message":"UK.OBIE.Signature.Missing"}]}`,
+				},
+				{
+					name:          "rejects a different error code",
+					status:        400,
+					body:          `{"Errors":[{"ErrorCode":"U020","Message":"Signature validation failed"}]}`,
+					expectedError: "JSON Match Failed - expected (U019)",
+				},
+				{
+					name:          "rejects an incorrect HTTP status",
+					status:        401,
+					body:          `{"Errors":[{"ErrorCode":"U019"}]}`,
+					expectedError: "HTTP Status code does not match: expected 400 got 401",
+				},
+				{
+					name:          "reports a missing response signature even with U019",
+					status:        400,
+					body:          `{"Errors":[{"ErrorCode":"U019"}]}`,
+					missingHeader: "x-jws-signature",
+					expectedError: `response header "x-jws-signature" missing`,
+				},
+				{
+					name:          "reports a missing response interaction ID even with U019",
+					status:        400,
+					body:          `{"Errors":[{"ErrorCode":"U019"}]}`,
+					missingHeader: "x-fapi-interaction-id",
+					expectedError: `response header "x-fapi-interaction-id" missing`,
+				},
+			}
+
+			for _, scenario := range cases {
+				t.Run(scenario.name, func(t *testing.T) {
+					// Schema validation checks header presence, not the cryptographic signature.
+					resp := test.CreateHTTPResponse(scenario.status, "", scenario.body,
+						"Content-Type", "application/json",
+						"x-jws-signature", "schema-test-placeholder",
+						"x-fapi-interaction-id", "f27ca9f0-04e6-40da-a17a-8d26f12da01d")
+					if scenario.missingHeader != "" {
+						resp.Header().Del(scenario.missingHeader)
+					}
+
+					pass, errs := tc.Validate(resp, ctx)
+					if scenario.expectedError == "" {
+						assert.True(t, pass)
+						assert.Empty(t, errs)
+					} else {
+						assert.False(t, pass)
+						assert.Contains(t, fmt.Sprint(errs), scenario.expectedError)
+					}
+				})
+			}
+		})
+	}
 }
 
 func TestVrpGenerateTestCases(t *testing.T) {

@@ -151,3 +151,36 @@ func TestCompareApiVersions(t *testing.T) {
 	fmt.Printf("compare %s,%s = %d\n", api1[0], api3[0], s1.Compare(s3))
 
 }
+
+func TestUpdateTokensFromConsentLinksOnlyUnresolvedConsentIDReference(t *testing.T) {
+	rts := []RequiredTokens{{Name: "vrpsToken0001", ConsentParam: "OB-400-VRP-100100-ConsentId"}}
+
+	fresh := model.MakeTestCase()
+	fresh.ID = "OB-400-VRP-100600"
+	fresh.Context = model.Context{"consentId": "$OB-400-VRP-100100-ConsentId"}
+
+	linked, err := updateTokensFromConsent(rts, []model.TestCase{fresh})
+	assert.NoError(t, err)
+	assert.Equal(t, []string{"OB-400-VRP-100600"}, linked[0].IDs)
+
+	// a consentId resolved at generation time from a previous run's context cannot be linked,
+	// which is why journey state must be reset before test cases are regenerated
+	stale := model.MakeTestCase()
+	stale.ID = "OB-400-VRP-100600"
+	stale.Context = model.Context{"consentId": "VRP_SWP_stale"}
+
+	unlinked, err := updateTokensFromConsent([]RequiredTokens{{Name: "vrpsToken0001", ConsentParam: "OB-400-VRP-100100-ConsentId"}}, []model.TestCase{stale})
+	assert.NoError(t, err)
+	assert.Empty(t, unlinked[0].IDs)
+}
+
+func TestResetConsentJobs(t *testing.T) {
+	GetConsentJobs().Add(model.TestCase{ID: "OB-400-VRP-100100"})
+	_, exists := GetConsentJobs().Get("OB-400-VRP-100100")
+	assert.True(t, exists)
+
+	ResetConsentJobs()
+
+	_, exists = GetConsentJobs().Get("OB-400-VRP-100100")
+	assert.False(t, exists)
+}
